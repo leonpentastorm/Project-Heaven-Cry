@@ -1,6 +1,6 @@
 # Colour system
 
-One rule: **colour means a skill's attribute, or one of five game states. Nothing else gets a hue.** Decorative colour is neutral.
+One rule: **colour means a skill's attribute, or one of five game states. Nothing else gets a hue.** Decorative colour is neutral. The one light outside that rule is faith's gold, `--faith-light` (section 3: light only, always beside a word).
 
 Machine-readable values are in [`art/style-guide/palette.json`](../../art/style-guide/palette.json). This page explains them. If the two disagree, the JSON wins.
 
@@ -56,7 +56,10 @@ answered prayer, the Miracle, the Devotion meter's XP fill, a patron's mark lit.
 and never the only carrier of it: it always sits beside a word (the meter's "DEVOTION 4 · 12/32 XP", "✦ MIRACLE").
 Faith's words take Virtue ink `#D36A90`. The web app defines it once in `apps/web/index.html` (`:root`); templates use
 `var(--faith-light)`, code uses `FAITH_GOLD` (`apps/web/src/game/faithArt.ts`), the same value. It shares the Soul
-effects' warm gold (`SOUL_WARM`); Agility gold `#E3BF51` stays the attribute's.
+effects' warm gold (`SOUL_WARM`); Agility gold `#E3BF51` stays the attribute's. It is in `art/style-guide/palette.json`
+as `ui.states.faith_light`, so `tools/validate_art.py` holds it to the UI contrast rule (9.4:1 on the raised surface
+`#1C2536`, against the 4.5:1 floor) like every other state colour. Patron *accents* (style guide, "Patron apparition
+colour identities") are paint and FX colours, not UI tokens; they never replace this gold or the Virtue ink.
 
 Retired tokens: `#6FD8A0` (success; too close to Perception), `#F0907F` / `#E8604F` (failure, HP), `#FFD27A` (Echo/critical; too close to Agility).
 

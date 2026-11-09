@@ -25,6 +25,8 @@ Rules numbers are in the spec, [`docs/rules/PHC-Core-Rules-v1.0.md`](rules/PHC-C
 
 **Blessing 2.0, faith 1.6** (decision 102; [`design/blessing-2.0-spec.md`](design/blessing-2.0-spec.md); spec items 592–629). Faithful or Atheist, eight patrons (`data/patrons.json` v2), Devotion, Whisper/Hymn/Miracle, vows, rites, Witnessed, interventions. Engine `faith.ts`; hand-offs: [engine](design/handoffs/blessing-engine-HANDOFF.md), [web](design/handoffs/blessing-ui-HANDOFF.md).
 
+**Faith 2.1, rules 1.6.1** (decision 107; [`design/faith-2.1-spec.md`](design/faith-2.1-spec.md); items 701–718). Devotion XP toward the same 0–10 standing, tag caps kept on the character, the day counter (`g.day`, a long rest is a day, the Narrator's `days`), apostasy's 90-day cooldown, the direct switch with leave rolls, grudges and farewells. Hand-off: [`design/handoffs/faith-2.1-HANDOFF.md`](design/handoffs/faith-2.1-HANDOFF.md).
+
 **World Play 1.0, rules 1.7** (decision 105; [`design/world-play-spec.md`](design/world-play-spec.md); items 636–670; `data/world_play.json`). The area map tells the story: faces, carrying, caches, hazards, triggers, Talk, the HERE card, attempts with odds. Hand-offs: [part A (engine, Narrator tools)](design/handoffs/world-play-A-HANDOFF.md), [part B (web)](design/handoffs/world-play-B-HANDOFF.md).
 
 **Story mode, rooms and missions.** Speaking order (each player once a round, then the Narrator), human Narrator mode, OOC lines, the mission board and end states (decision 95), the Proving Ground with friends (decision 96). Campaigns are data: [`design/campaign-format.md`](design/campaign-format.md), `data/campaigns/m813.json` (the M813 one-shot).
@@ -74,12 +76,7 @@ Deploy (Leon or whoever he asks; never from a feature branch): `npm run build`, 
 
 ## Open decisions waiting on Leon
 
-1. **Faith rulings, decided but not built** (8 Nov 2026; the branch `fix/faith-rulings` was never pushed, so nothing of it exists in the repo):
-   - leaving a patron sets Devotion to 0 and starts a 90-day cooldown; leaving one patron *to join another* has no cooldown but the patron you leave may punish you, per patron (Jealous harder, Open may let you go);
-   - Devotion from liked tags is at most +1 per fight (now +2);
-   - the faith gold `#F2C46A` is approved as `--faith-light` (light only, always beside a word);
-   - art direction: patrons are painted as a god appears to an NPC (apparitions, effigies, masks); the delivered set is right; the style guide, [`blessing-art-brief.md`](design/handoffs/blessing-art-brief.md) and the Blessing spec section 8 still need that text.
-   Steps: [`ROADMAP.md`](ROADMAP.md) item 2.
+1. ~~**Faith rulings, decided but not built**~~ **Built** as Faith 2.1, rules 1.6.1 (branch `feature/faith-2.1`; decision 107; spec items 701–718; [`design/faith-2.1-spec.md`](design/faith-2.1-spec.md); hand-off [`design/handoffs/faith-2.1-HANDOFF.md`](design/handoffs/faith-2.1-HANDOFF.md)): the 90-day cooldown after apostasy on a new day counter, the direct switch with each patron's leave roll or grudge, Devotion XP with tag caps kept on the character (they replace the "+1 a fight" ruling), `--faith-light`, and the art direction text. **Still open:** the Miracle now resets Devotion XP to 0, so getting back to 7 takes about 10 sessions (item 707): Leon to say if that price is right. The numbers in items 701–718 are provisional.
 2. **Carry weight** (spec item 638): overweight uses the old rules (−1 Movement per started 5 kg over), so a 70 kg body takes most characters to the 0.5 Movement floor and a 40 kg robot overloads a starting character. Leon: change the weights or add a carry-specific penalty.
 3. **The Narrator's stall cost:** PACING says a stall costs something "small" without defining it (a robot died during a wait). Leon to define it.
 4. **Narrator length:** turns still run about 167 words even for quick exchanges. Leon to say what length he wants (a hard limit or a style rule).
@@ -100,6 +97,6 @@ Collected in [`ROADMAP.md`](ROADMAP.md) ("World Play gaps", "The Narrator", "Fai
 
 ## Next steps
 
-In [`ROADMAP.md`](ROADMAP.md) order: (1) a real M813 playtest of the new Narrator and World Play on a fresh key; (2) implement the faith rulings above; (3) rewrite M813 for World Play (every area: an objective with a `where`, a hazard with approaches and real costs, someone to talk to, a cache, a trigger where an ambush belongs); (4) the damage balance pass; (5) advanced classes batch 1.
+In [`ROADMAP.md`](ROADMAP.md) order: (1) a real M813 playtest of the new Narrator and World Play on a fresh key; (2) the faith rulings above (built as Faith 2.1; the Miracle's price is still for Leon); (3) rewrite M813 for World Play (every area: an objective with a `where`, a hazard with approaches and real costs, someone to talk to, a cache, a trigger where an ambush belongs); (4) the damage balance pass; (5) advanced classes batch 1.
 
 Detailed hand-offs from earlier sessions: [`docs/design/handoffs/README.md`](design/handoffs/README.md).

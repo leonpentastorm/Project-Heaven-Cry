@@ -32,6 +32,12 @@ Devotion stays the **0–10 standing**; the gates are unchanged (Hymn I 3, Hymn 
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Total XP | 0 | 10 | 25 | **45** | 70 | **102** | 152 | **212** | 277 | 347 | 432 |
 | Step | | 10 | 15 | 20 | 25 | 32 | 50 | 60 | 65 | 70 | 85 |
+| **Built (tuned)** | 0 | 10 | 25 | 45 | 70 | 102 | **147** | **200** | **270** | **350** | **450** |
+
+**As built** (spec items 701 and 717): the pace simulation tuned levels 6–10 to 147 / 200 / 270 / 350 / 450 (steps 10,
+15, 20, 25, 32, 45, 53, 70, 80, 100). With the numbers above, Devotion 7 averaged session 9.7 (up to 12) and 10 came as
+early as session 19; tuned, 5 lands at session 3.6 on average, 7 at 9.0 and 10 at 23 (40 seeds). The table above is
+the design as accepted, kept for the record; the spec wins.
 
 Target pace (Leon's table), checked by a simulation test (section 6):
 
@@ -61,7 +67,8 @@ Target pace (Leon's table), checked by a simulation test (section 6):
 
 Notes:
 
-- **A Miracle resets you to 0**: getting back to 7 takes about 212 XP, roughly 11 sessions at the target pace. That is
+- **A Miracle resets you to 0**: getting back to 7 takes about 212 XP (200 as built), roughly 11 sessions (10 as
+  built) at the target pace. That is
   the Miracle's real price now. (Flag for Leon at review.)
 - **The Narrator's `faith` op `devotion`** now moves **XP**: `delta` from −6 to +5 with a reason ("a deed", "broke
   character"), and the Narrator's gains are capped at **+10 XP a session** per character (losses aren't capped). The old

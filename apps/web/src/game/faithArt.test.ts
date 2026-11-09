@@ -55,4 +55,9 @@ describe('Blessing art placeholders', () => {
     const faithTab = main.slice(main.indexOf('{{tabFaith}}'), main.indexOf('aria-label="Rites"'));
     expect(faithTab).toMatch(/var\(--faith-light\)/); expect(faithTab).not.toMatch(/#F2C46A/i);
   });
+  it('the palette (art/style-guide/palette.json ui.states.faith_light) carries the same gold', () => {
+    const repo = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
+    const palette = JSON.parse(readFileSync(resolve(repo, 'art/style-guide/palette.json'), 'utf8'));
+    expect(String(palette.ui.states.faith_light).toUpperCase()).toBe(FAITH_GOLD);
+  });
 });
