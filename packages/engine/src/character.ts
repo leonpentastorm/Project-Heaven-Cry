@@ -51,8 +51,9 @@ export interface Character extends Sheet {
   loaded?: number;
   /** The main-hand weapon's condition (spec: Weapons v2): rarity, durability left, mods fitted, a custom name. */
   weaponState?: GearState;
-  /** What the off hand holds: a one-handed weapon, a shield, a light or a focus (spec: Hands). */
-  offHand?: ({ id: string } & GearState) | null;
+  /** What the off hand holds: a one-handed weapon, a shield, a light or a focus (spec: Hands). `loaded`: the rounds in
+   * an off-hand gun (rules 1.9, item 688; missing means full, old saves). */
+  offHand?: ({ id: string; loaded?: number; ammoType?: string | null } & GearState) | null;
   /** Slot armour worn, by slot (head, head_accessory, inner_torso, lower_torso, legs, hands, footwear). */
   worn?: Record<string, string>;
   /** Magic (spec: Mana, rules 1.2): Sigil words known; Outburst designs ready and the schools and modules learned;
@@ -78,6 +79,10 @@ export interface Character extends Sheet {
    * by dice, "<patronId>.<hymnId>" (an Atheist's, or kept from another patron under an Open rule); the vow of the
    * current fight (also on the unit); the session each rite was last kept in; the faith rules revision (16). */
   faithPieces?: Record<string, number>; hymns?: string[]; vow?: Vow | null; ritesKept?: Record<string, number>; faithRev?: number;
+  /** Rules 1.6.1 (Faith 2.1): Devotion XP, the total (devotion is the level it reaches, kept in step; devotionXpOf);
+   * the tag and Narrator caps this session, scene and fight (faith.ts FaithTally); the pact left, for the 90-day
+   * cooldown (day = g.day when they left); a patron's grudge after a switch (faith.ts Grudge). */
+  devotionXp?: number; faithTally?: any; faithLeft?: { patron: string; day: number } | null; grudge?: any;
   /** Karma −100 (Chaotic) to +100 (Lawful) (spec: Karma); 0 for old saves. */
   karma?: number;
   /** Companions who fight beside the character (a drone, a beast): their kind, name and HP between fights. */
@@ -134,6 +139,36 @@ export interface PackItem {
 
 /** Skill modifier (spec: Core resolution): −2 at 0 points, otherwise points − 1. */
 export const mod = (p: number) => (p <= 0 ? -2 : p - 1);
+
+// ---------- Devotion XP (rules 1.6.1, Faith 2.1; spec items 701-702) ----------
+/** The faith rules revision a character was written under (17: Devotion XP). */
+export const FAITH_REV = 17;
+/** Total Devotion XP to reach each level 0-10 (patrons.json devotion.xp.curve; PROVISIONAL). */
+export const DEVOTION_CURVE: number[] = (patronsJ as any).devotion?.xp?.curve || [0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450];
+export const DEVOTION_MAX_LEVEL = DEVOTION_CURVE.length - 1;
+export const DEVOTION_MAX_XP = DEVOTION_CURVE[DEVOTION_MAX_LEVEL];
+const lvClamp = (n: number) => Math.max(0, Math.min(DEVOTION_MAX_LEVEL, Math.round(Number(n) || 0)));
+/** The XP a level starts at. */
+export const devotionThreshold = (level: number) => DEVOTION_CURVE[lvClamp(level)];
+/** The level a total of XP reaches. */
+export function devotionLevelOf(xp: number): number { let lv = 0; for (let i = 0; i < DEVOTION_CURVE.length; i++) if (xp >= DEVOTION_CURVE[i]) lv = i; return lv; }
+/** A character's Devotion XP. The level (c.devotion) is kept in step; a level written on its own (an old save, an old
+ * writer) reads as that level's threshold (item 701). */
+export function devotionXpOf(c: Character): number {
+  const lv = lvClamp(c.devotion ?? (patronsJ as any).devotion?.start ?? 3), xp = c.devotionXp;
+  if (typeof xp === 'number' && Number.isFinite(xp) && devotionLevelOf(xp) === lv) return Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(xp)));
+  return devotionThreshold(lv);
+}
+/** Set the XP (0 to the curve's top) and the level with it. Returns the level. */
+export function setDevotionXp(c: Character, xp: number): number {
+  c.devotionXp = Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(Number(xp) || 0))); c.devotion = devotionLevelOf(c.devotionXp); return c.devotion;
+}
+/** Devotion XP in words, the one format every meter and log line uses (rules 1.6.1): the level, then the XP into it out
+ * of the step to the next ("Devotion 3 · 4/25 XP"); at full standing the total ("Devotion 10 · 450 XP · full"). */
+export function devotionWords(xp: number): string {
+  const total = Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(Number(xp) || 0))), lv = devotionLevelOf(total), at = devotionThreshold(lv);
+  return 'Devotion ' + lv + (lv < DEVOTION_MAX_LEVEL ? ' · ' + (total - at) + '/' + (devotionThreshold(lv + 1) - at) + ' XP' : ' · ' + total + ' XP · full');
+}
 export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 
 // ---------- creation (spec: Creation budget) ----------
@@ -369,8 +404,8 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   { const cap = armourCap(c); if (cap != null && c.armourClass > cap) { (c.state ||= {}).armourDropped = c.armourClass; c.armourClass = cap; } }
   c.hp = maxHp(c);
   // Belief (rules 1.6): a Faithful character is sworn at creation, Devotion 3; an Atheist has no patron.
-  if (s.belief?.kind === 'faithful') { c.patron = s.belief.patron; c.devotion = (patronsJ as any).devotion?.start ?? 3; } else if (s.belief) c.patron = null;
-  if (s.belief) c.faithRev = 16;
+  if (s.belief?.kind === 'faithful') { c.patron = s.belief.patron; setDevotionXp(c, devotionThreshold((patronsJ as any).devotion?.start ?? 3)); } else if (s.belief) c.patron = null;
+  if (s.belief) c.faithRev = FAITH_REV;
   startingMagic(c);
   grantStartItems(c);
   startCollection(c);
@@ -529,7 +564,9 @@ export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_a
 export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') / 3);
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'rumination'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
-export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power');
+/** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
+ * cap, so it never fills an ordinary slot, now or after Brain Power rises). */
+export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as any).sigilGrowth?.freeTaken || 0);
 /** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };
@@ -841,12 +878,16 @@ const equipBanWhy = (c: Character, ctx: any): string => {
   if ((c.traits || []).includes('old_school')) return ctx.mod === 'mod_red_dot' || (ctx.mods || []).includes('mod_red_dot') ? 'Old School: no red dot on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';
   return 'A trait won\'t let you.';
 };
+/** A pack entry that is ammunition (a magazine stack, loose rounds), never a thing for a hand (review fix). */
+export const isAmmoEntry = (it: PackItem) => !!(it.mags || it.calibre || it.kind === 'ammo' && !ITEM[it.item || it.id]);
+export const AMMO_WHY = 'That is ammunition, not a weapon.';
 export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
   if (isPlotItem(it)) return 'A plot item can\'t be equipped.';
+  if (isAmmoEntry(it)) return AMMO_WHY;
   const wid = it.weapon && WEAPON[it.weapon] ? it.weapon : null, item = ITEM[it.item || it.id] as any;
   const take = () => { if (it.qty > 1) it.qty--; else pack.splice(idx, 1); };
-  const putBack = (id: string, st: GearState | undefined, loaded?: number) => { if (WEAPON[id]) pack.push({ id, name: st?.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...(st || {}), ...(loaded ? { loaded } : {}) }); else if (ITEM[id]) pack.push({ id, item: id, name: ITEM[id].name, qty: 1, kind: 'tool', ...(st || {}) }); };
+  const putBack = (id: string, st: (GearState & { loaded?: number; id?: string; ammoType?: string | null }) | undefined, loaded?: number, ammoType?: string | null) => { const e = gearEntry(id, st, loaded ?? st?.loaded, ammoType); if (e) pack.push(e); };
   // Items may refuse what is equipped or fitted (stat 'equip_ban' {weapon, mod}: Old School won't carry an electronic or
   // Evoker-linked gun or a red dot; Forlorn Hope's armour cap is armourCap) — perk-runtime still-open item 6.
   const ban = (ctx: any) => statQuery({ c }, 'equip_ban', ctx).add > 0 ? equipBanWhy(c, ctx) : null;
@@ -854,24 +895,48 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (!wid) return 'Only weapons go in the main hand.';
     const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
-    take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined); // a stowed gun keeps the rounds in it (rules 1.3)
+    take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType); // a stowed gun keeps the rounds in it (rules 1.3), and their type
     if (twoHands(c, wid) && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
     c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = it.loaded ?? 0;
+    c.loadedType = it.loaded && it.ammoType ? it.ammoType : null; // the drawn gun holds the rounds its entry kept, of their type (review fix)
   } else if (to === 'off') {
     if (twoHands(c, c.weapon)) return 'Your main-hand weapon needs both hands.';
     if (wid) { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
-    c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods };
+    // An off-hand gun holds what its pack entry held, as the main hand does (rules 1.9, item 688).
+    c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };
   } else {
     const slot = item?.slot; if (!slot || slot === 'off_hand' || item.category !== 'armour') return 'That isn\'t slot armour.';
     take(); const worn = { ...(c.worn || {}) }; if (worn[slot]) putBack(worn[slot], undefined); worn[slot] = it.item || it.id; c.worn = worn;
   }
   c.pack = pack; return null;
 }
+/** The pack entry for a weapon or item taken out of a hand: a weapon keeps its rarity, wear, mods, name and the rounds
+ * in it (a stowed gun keeps its rounds, rules 1.3); anything else is a tool (a focus a focus). Fists are nothing. */
+export function gearEntry(id: string, st?: (GearState & { loaded?: number; id?: string; ammoType?: string | null }) | null, loaded?: number, ammoType?: string | null): PackItem | null {
+  if (!id || id === 'fists') return null;
+  const { loaded: _l, id: _i, ammoType: _t, ...g } = (st || {}) as any; void _l; void _i;
+  const keep = Object.fromEntries(Object.entries(g).filter(([, v]) => v != null)), type = ammoType === undefined ? _t : ammoType;
+  // The rounds in a stowed gun keep their type (review fix: incendiary rounds stayed incendiary only in the hand).
+  if (WEAPON[id]) return { id, name: g.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...keep, ...(loaded ? { loaded } : {}), ...(loaded && type ? { ammoType: type } : {}) } as PackItem;
+  if (ITEM[id]) return { id, item: id, name: ITEM[id].name, qty: 1, kind: (ITEM[id] as any).category === 'focus' ? 'focus' : 'tool', ...keep } as PackItem;
+  return { id, item: id, name: id, qty: 1, kind: 'tool' };
+}
+/** What a hand holds, as the pack entry it would become (rules 1.9: put away or dropped), or null for an empty hand. */
+export function handEntry(c: Character, hand: 'main' | 'off'): PackItem | null {
+  if (hand === 'main') return gearEntry(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType ?? null);
+  return c.offHand && !twoHands(c, c.weapon) ? gearEntry(c.offHand.id, c.offHand, c.offHand.loaded) : null;
+}
+/** Empty a hand without putting anything in the pack (the item is dropped or handed on). The main hand becomes fists. */
+export function emptyHand(c: Character, hand: 'main' | 'off') {
+  if (hand === 'main') { c.weapon = 'fists'; c.weaponState = {}; c.loaded = 0; c.loadedType = null; } else c.offHand = null;
+}
+/** Take something off into the pack: the off hand, a worn piece, or the main hand (it then holds fists). */
 export function unequip(c: Character, slot: string): string | null {
   const pack = packOf(c).map((x) => ({ ...x }));
-  if (slot === 'off') { if (!c.offHand) return 'Nothing there.'; const o = c.offHand; pack.push(WEAPON[o.id] ? { id: o.id, name: WEAPON[o.id].name, qty: 1, kind: 'weapon', weapon: o.id, rarity: o.rarity, dur: o.dur, mods: o.mods } : { id: o.id, item: o.id, name: ITEM[o.id]?.name || o.id, qty: 1, kind: 'tool' }); c.offHand = null; }
+  if (slot === 'main') { const e = handEntry(c, 'main'); if (!e) return 'Your hands are already empty.'; pack.push(e); emptyHand(c, 'main'); }
+  else if (slot === 'off') { if (!c.offHand) return 'Nothing there.'; const e = gearEntry(c.offHand.id, c.offHand, c.offHand.loaded); if (e) pack.push(e); c.offHand = null; }
   else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: 'tool' }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
   c.pack = pack; return null;
 }

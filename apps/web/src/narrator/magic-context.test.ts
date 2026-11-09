@@ -62,5 +62,12 @@ describe('Sigils on the map, in PARTY CONDITION', () => {
     expect(turnPrompt(g)).toMatch(/Sigils on the map: .*trap/);
     (g.story.zones![0] as any).side = 'foe';
     expect(sigilsOnMap(g)).toMatch(/\(unseen by the players\)/);
+    // Outburst 4.0 residue and Linger, and scuffed traces, carried onto the area map, are named too (merge review).
+    g.story.zones!.push({ id: 'rz1', kind: 'residue', tiles: [next], words: [], by: 'x', side: 'pc', left: 2, mult: 1, who: 'Ilse', feeling: 'rage', residueKind: 'harms' } as any,
+      { id: 'lz1', kind: 'linger', tiles: [next], words: [], by: 'x', side: 'pc', left: 1, mult: 1, who: 'Ilse', linger: { school: 'damage', tone: 'raw', hostile: true } } as any);
+    g.story.traces = [{ id: 't1', word: 'seek', pos: next, side: 'pc', by: 'x', who: 'Ilse', left: 3 }];
+    expect(sigilsOnMap(g)).toMatch(/Ilse's Rage residue \(harms\) at [A-Z]+\d+, 2 rounds/);
+    expect(sigilsOnMap(g)).toMatch(/Ilse's damage Linger at [A-Z]+\d+, 1 rounds/);
+    expect(sigilsOnMap(g)).toMatch(/a scuffed SEEK trace at [A-Z]+\d+/);
   });
 });

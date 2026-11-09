@@ -3,10 +3,13 @@
 // clear aim in every area (the HERE card and markers), and typed attempts rolled like buttons. The Narrator places
 // things and writes their choices; the engine runs every roll, cost and effect here, deterministically (g.rng).
 // The reducer (game.ts) calls in; game.ts's private helpers come through its `_world` object at call time.
-import { SKILL, TN_LADDER, WEAPON } from './data';
-import { type Character, mod, packOf, carriedKg, carryLimit, overweightKg } from './character';
-import { type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf } from './combat';
-import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy } from './objects';
+import { SKILL, TN_LADDER, WEAPON, SIGIL } from './data';
+import { type Character, mod, packOf, carriedKg, carryLimit, overweightKg, wordsKnownCap } from './character';
+import { copyWord, growthOf, knowsWord, learnedElsewhere } from './sigilgrowth';
+import { type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
+import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './containers';
+import { gearBonus, gearHas } from './character';
+import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy, MARK } from './objects';
 import { type Hazard, type HazardKind, WORLD_PLAY, HAZARD, HAZARD_KINDS, HAZARD_LIMITS, hazardApproaches, hazardHit, hazardTn, hazardLiveAt } from './hazards';
 import { applyCond, isCondition } from './magic';
 import { songMod } from './music';
@@ -41,7 +44,7 @@ export interface Trigger {
 export type NpcPlace = NonNullable<NarratorTurn['npcs']>[number];
 /** What the engine ran since the Narrator's last turn, for its next prompt (rules 1.7: triggers fired, hazards hit,
  * approaches tried, carrying, searches, talk). Host only: views never carry it. */
-export interface WorldEvent { seq: number; kind: 'trigger' | 'hazard' | 'approach' | 'carry' | 'search' | 'talk' | 'alarm'; text: string }
+export interface WorldEvent { seq: number; kind: 'trigger' | 'hazard' | 'approach' | 'carry' | 'search' | 'pickup' | 'talk' | 'alarm'; text: string }
 
 // ---------- data ----------
 export const KIND_DEFS: { id: string; name: string; weight_kg: number; avatar_pool: string | null }[] = WP.items;
@@ -321,7 +324,6 @@ export function landDropped(g: GameState, cb: Combat) {
 }
 
 // ---------- caches ----------
-export const isCache = (o: MapObject) => o.kind === 'cache' || (o.items != null && !!o.items.length);
 /** Clean a cache's items (the loot shape). */
 export function cleanItems(list: any): CacheItem[] {
   return (Array.isArray(list) ? list : []).filter((x) => x && typeof x === 'object' && (x.item || x.name)).slice(0, HAZARD_LIMITS.cache_items).map((x) => ({
@@ -337,6 +339,8 @@ function takeItems(g: GameState, c: Character, o: MapObject): number {
 /** Search a cache (1 AP, adjacent): its items into the pack. In a fight, the unit's AP pays (cb set). */
 export function search(g: GameState, c: Character, objId: string, cb?: Combat, u?: Unit) {
   const objs = cb ? objectsOf(cb) : storyObjects(g), o = objs.find((x) => x.id === objId);
+  // Rules 1.9: searching a pile (a body's drops) is picking up everything (1 AP, item 674).
+  if (o && isPile(o) && !o.hidden) { if (cb && u) { const e = pickUp(cb, u, o.pos, null, c); if (e) fail(e); return; } pickupWorld(g, c, o.pos); return; }
   if (!o || o.hidden || !isCache(o) && o.kind !== 'cache') fail('Nothing to search there.');
   const at = u ? u.pos : positionsOf(g)[c.id]; if (!at || dist(at, o!.pos) > 1) fail('Walk up to it first.');
   if (o!.locked || jammed(g, o!)) fail(o!.name + ' is locked: try its approaches first.');
@@ -356,6 +360,57 @@ export function cacheView(g: GameState, objId: string) {
   const o = (g.phase === 'combat' && g.combat ? objectsOf(g.combat) : storyObjects(g)).find((x) => x.id === objId); if (!o || o.hidden) return null;
   const count = (o as any).itemCount ?? (o.items || []).length;
   return { id: o.id, name: o.name, kind: o.kind, pos: o.pos, ref: refOf(o.pos), count, empty: !count, locked: !!o.locked || jammed(g, o), searched: !!o.searched, approaches: o.approaches.length };
+}
+
+// ---------- piles (rules 1.9, World Play 1.1; containers.ts) ----------
+/** Pick up on the area map (1 AP; item 674): the same pick-up as a fight's, run on the area map's fight and written
+ * back after it, as every area-map action is. take: entry keys or indices; none: everything. */
+export function pickupWorld(g: GameState, c: Character, tile: string, take?: (string | number)[] | null) {
+  const cb = storyCb(g), u = cb.units.find((x) => x.charId === c.id); if (!u) fail(c.name + ' isn\'t on the map.');
+  const before = u!.ap, was = bindGame(g); let err: string | null;
+  try { err = pickUp(cb, u!, tile, take, c); } finally { bindGame(was); }
+  if (err) fail(err);
+  W().spendAp(g, c, before - u!.ap);
+  const line = cb.log[cb.log.length - 1] || '';
+  writeBack(g, cb, c);
+  worldEvent(g, 'pickup', line);
+}
+/** The Narrator's ground[] entry (item 681): items in the loot shape (and mag:/rounds: ids) into the pile on that tile,
+ * at most PILE.narrator_items_per_pile; hidden only hides a new pile, hidden false reveals one. Bad entries do nothing. */
+export function applyGroundOp(g: GameState, op: NonNullable<NarratorTurn['ground']>[number]) {
+  if (!op || typeof op !== 'object') return null;
+  const map = zoneMap(g), at = String(op.at || ''), k = /^\d+,\d+$/.test(at) ? at : keyOf(at, map);
+  if (!k) return null; const [x, y] = k.split(',').map(Number);
+  if (x < 0 || y < 0 || x >= map.w || y >= map.h || map.solid.includes(k)) return null;
+  const items = (Array.isArray(op.items) ? op.items : []).filter((it) => it && typeof it === 'object').slice(0, PILE.narrator_items_per_pile).flatMap((it) => lootToPack(it as any));
+  if (!items.length) return null;
+  const objs = storyObjects(g), had = pileAt(objs, k);
+  const r = dropOnTile(objs, k, items, { hidden: !had && !!op.hidden, keepHidden: op.hidden !== false });
+  if (op.hidden === false) r.pile.hidden = false;
+  if (r.lost.length) W().push(g, { kind: 'system', text: 'The pile at ' + refOf(k) + ' is full: ' + r.lost.join(', ') + ' ' + (r.lost.length === 1 ? 'is' : 'are') + ' lost.' });
+  return r.pile;
+}
+/** The party's shared sight on the area map (item 676): each standing character where it stands, with its Vision,
+ * light and dark sight; the map's objects and the story's Sigil zones (smoke, light) as a fight would see them. */
+function storySight(g: GameState): Combat {
+  const pos = positionsOf(g), map = zoneMap(g);
+  const units = Object.values(g.characters).filter((c) => pos[c.id]).map((c) => ({ id: 'pc-' + c.id, side: 'pc', pos: pos[c.id], vision: visionOf(c), light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), dead: !!c.dead, downed: c.hp <= 0 })) as unknown as Unit[];
+  const zones = !g.story.glyphMap || g.story.glyphMap === map.id ? g.story.zones || [] : [];
+  return { map, units, objects: g.story.objects || [], zones } as unknown as Combat;
+}
+const partySees = (cb: Combat, side: 'pc' | 'foe', k: string) => cb.units.some((u) => u.side === side && !u.dead && !u.downed && unitSees(cb, u, k));
+/** A player's view keeps a pile only on a tile its party can see right now (item 676); piles in other zones go. */
+export function pileFog(g: GameState, v: GameState, side: 'pc' | 'foe') {
+  const any = (l?: MapObject[]) => !!l && l.some(isPile);
+  if (v.combat && g.combat && any(v.combat.objects)) { const cb = g.combat; v.combat = { ...v.combat, objects: v.combat.objects!.filter((o) => !isPile(o) || partySees(cb, side, o.pos)) }; }
+  if (any(v.story.objects)) { const cb = storySight(g); v.story = { ...v.story, objects: v.story.objects!.filter((o) => !isPile(o) || partySees(cb, 'pc', o.pos)) }; }
+  // A pile's fx (a drop, a death's drops, a pick-up's change) goes only to eyes that see its tile now, as the pile does
+  // (review fix: an unseen enemy's reload gave its tile away).
+  if (v.combat && g.combat && v.combat.fx?.some((e) => e.k === 'pile')) { const cb = g.combat; v.combat = { ...v.combat, fx: v.combat.fx.filter((e) => e.k !== 'pile' || partySees(cb, side, e.at)) }; }
+  if (v.combat && g.combat?.dropLines?.length) { const cb = g.combat, hide = new Map(g.combat.dropLines.filter((d) => !partySees(cb, side, d.at)).map((d) => [d.line, d.name + ' falls; whatever it carried lies where it fell.']));
+    v.combat = { ...v.combat, ...(hide.size ? { log: v.combat.log.map((l) => hide.get(l) ?? l) } : {}) }; delete (v.combat as any).dropLines; }
+  if (v.story.fx?.some((e: any) => e.k === 'pile')) { const cb = storySight(g); v.story = { ...v.story, fx: v.story.fx!.filter((e: any) => e.k !== 'pile' || partySees(cb, 'pc', e.at)) }; }
+  if (v.story.zoneObjects && Object.values(v.story.zoneObjects).some((l) => any(l))) v.story = { ...v.story, zoneObjects: Object.fromEntries(Object.entries(v.story.zoneObjects).map(([z, l]) => [z, l.filter((o) => !isPile(o))])) };
 }
 
 // ---------- approaches: objects, hazards and people ----------
@@ -411,6 +466,7 @@ export function tryApproach(g: GameState, c: Character, by: string, targetId: st
   if (t!.kind === 'obj' && t!.o.resolved) fail('That\'s already dealt with.');
   if (t!.kind === 'obj' && jammed(g, t!.o)) fail(t!.o.name + ' is jammed for now.');
   if (triedBy(ap!, c.id)) fail(c.name + ' already tried that.');
+  if (t!.kind === 'obj' && ap!.success === 'study' && t!.o.kind === 'sigil_mark') { const w = markWord(t!.o); if (!w) fail('The mark is too far gone to hold a word.'); if (knowsWord(c, w)) fail(c.name + ' knows ' + SIGIL[w].word + ' already.'); }
   const skills = (ap!.pick === 'best' ? [bestSkill(g, c, ap!.skills)] : ap!.skills).filter((s) => SKILL[s]); if (!skills.length) fail('That approach has no skill to roll.');
   const I = W();
   I.push(g, { kind: 'player', who: by, text: c.name + (t!.kind === 'npc' ? ' tries with ' + t!.n.name + ': ' : ' tries: ') + ap!.label + ' (' + nameOf(t!) + ', ' + refOf(p) + ').', head: c.name });
@@ -429,13 +485,36 @@ export function approachResult(g: GameState, ck: Check) {
   ap.tries.push({ charId: c.id, name: c.name, ok, total: ck.roll?.total || 0, scene: g.story.scene.n });
   canon(g, c.name + (ok ? ' succeeded at' : ' failed at') + ' "' + ap.label + '" on ' + nm + ' (scene ' + g.story.scene.n + ').', [c.name, nm], 2);
   let effect = '';
-  if (ok) effect = success(g, c, t, ap, p);
+  if (ok) effect = success(g, c, t, ap, p, !!ck.roll?.crit);
   else effect = failure(g, c, t, ap, p);
   worldFx(g, 'approach', { unit: 'pc-' + c.id, target: idOf(t), kind: t.kind, at: p, label: ap.label, ok, effect: effect || null });
   worldEvent(g, 'approach', c.name + ' ' + (ok ? 'succeeded' : 'failed') + ' at "' + ap.label + '" on ' + nm + ' (' + idOf(t) + ')' + (effect ? ': ' + effect : '') + '.');
   I.closeRoundIfDone(g);
 }
-function success(g: GameState, c: Character, t: Target, ap: Approach, p: string): string {
+// ---------- sigil marks (rules 1.10, Sigil 1.5; spec items 921-922) ----------
+/** The word a sigil mark holds (a real Sigil word id), or ''. */
+export const markWord = (o: MapObject): string => { const w = String(o.word || '').toLowerCase(); return SIGIL[w] ? w : ''; };
+/** A successful Investigate: the word copied for study (+3, on the known-to-study list); a critical teaches it outright
+ * when a slot is free (not the scene's one new thing: it is study). Returns the effect for the event line. */
+function investigateMark(g: GameState, c: Character, o: MapObject, crit: boolean): string {
+  const I = W(), say = (x: string) => I.push(g, { kind: 'system', text: x, charId: c.id }), w = markWord(o);
+  if (!w) return '';
+  (o as any).copiedBy = [...new Set([...((o as any).copiedBy || []), c.id])];
+  const name = SIGIL[w].word;
+  if (knowsWord(c, w)) { say(c.name + ' knows ' + name + ' already.'); return 'known'; }
+  if (crit && (c.sigils || []).length < wordsKnownCap(c)) {
+    c.sigils = [...(c.sigils || []), w]; learnedElsewhere(c, w);
+    say(c.name + ' reads the mark at ' + refOf(o.pos) + ' at a glance: a critical teaches the Sigil word ' + name + ' outright.');
+    worldFx(g, 'sigil_learned', { unit: 'pc-' + c.id, at: o.pos, word: w, why: 'mark' });
+    return 'learned ' + name;
+  }
+  const had = growthOf(c).toStudy.includes(w);
+  const lines = had ? [c.name + ' reads ' + name + ' again: already on the known-to-study list.'] : copyWord(c, w, MARK.study, 'a sigil mark');
+  if (crit) lines.push('A critical, but ' + c.name + ' knows as many words as Brain Power allows (' + wordsKnownCap(c) + '): ' + name + ' stays on the known-to-study list.');
+  for (const l of lines) say(l);
+  return had ? 'already copied ' + name : 'copied ' + name;
+}
+function success(g: GameState, c: Character, t: Target, ap: Approach, p: string, crit = false): string {
   const I = W(), say = (x: string) => I.push(g, { kind: 'system', text: x });
   const s = ap.success;
   if (s === 'advance') { const key = ap.objective || ''; const done = markObjective(g, key, 'done', (e) => I.push(g, e)); return done ? 'objective ' + key + ' done' : ''; }
@@ -454,6 +533,7 @@ function success(g: GameState, c: Character, t: Target, ap: Approach, p: string)
     return '';
   }
   const o = t.o;
+  if (s === 'study') return o.kind === 'sigil_mark' ? investigateMark(g, c, o, crit) : '';
   if (s === 'loot') { const n = takeItems(g, c, o); return n ? 'took ' + n + ' things' : 'nothing inside'; }
   if (s === 'remove' || s === 'disarm') {
     g.story.objects = storyObjects(g).filter((x) => x !== o);
@@ -551,7 +631,7 @@ export function npcView(g: GameState, tokenId: string, charId?: string) {
 export function approachOptions(g: GameState, targetId: string, charId?: string): TalkOption[] {
   const t = targetOf(g, targetId); if (!t || hiddenT(t)) return [];
   const c = charId ? g.characters[charId] : undefined, at = c ? positionsOf(g)[c.id] : undefined;
-  return approachesOf(t).map((a, i) => { if (a.gone) return null; const tried = !!c && triedBy(a, c.id), far = !!c && (!at || dist(at, posOf(t, at)) > rangeOf(t)), why = tried ? 'Already tried.' : far ? 'Get closer.' : '', pv = c ? previewOdds(g, c, a.skills, a.tn, a.pick) : null;
+  return approachesOf(t).map((a, i) => { if (a.gone) return null; const tried = !!c && triedBy(a, c.id), far = !!c && (!at || dist(at, posOf(t, at)) > rangeOf(t)), known = !!c && a.success === 'study' && t.kind === 'obj' && !!markWord(t.o) && knowsWord(c, markWord(t.o)), why = tried ? 'Already tried.' : known ? 'You know that word.' : far ? 'Get closer.' : '', pv = c ? previewOdds(g, c, a.skills, a.tn, a.pick) : null;
     return { kind: 'approach' as const, idx: i, label: a.label, ap: WORLD_AP.attempt, skills: a.skills, tn: a.tn, success: a.success, ...(a.fail ? { fail: a.fail } : {}), ...(pv ? { odds: pv.chance, mod: pv.mod } : {}), tried, available: !why, ...(why ? { why } : {}) }; }).filter(Boolean) as TalkOption[];
 }
 
@@ -588,7 +668,7 @@ export function walkStory(g: GameState, c: Character, k: string): boolean {
     positionsOf(g)[c.id] = k; W().push(g, { kind: 'system', text: c.name + ' moves to ' + refOf(k) + '.' }); return true;
   }
   const from = u.pos, ap0 = u.ap; u.ap = 999;
-  const was = bindGame(g); let err: string | null = null; try { err = moveUnit(cb, u, k, undefined, 'move'); } finally { bindGame(was); }
+  const was = bindGame(g); let err: string | null = null; try { err = moveUnit(cb, u, k, undefined, 'move', { shortest: true }); } finally { bindGame(was); }
   if (err) return false;
   u.ap = ap0;
   positionsOf(g)[c.id] = u.pos;
@@ -684,13 +764,17 @@ export function worldView(v: GameState) {
   delete s.triggers; delete s.events;
   if (s.npcs) s.npcs = s.npcs.map((n: Npc) => stripNpc(n));
   if (s.zoneNpcs) s.zoneNpcs = Object.fromEntries(Object.entries(s.zoneNpcs).map(([k, l]: any) => [k, l.map(stripNpc)]));
-  const cache = (o: MapObject) => (o.items ? { ...o, items: [], itemCount: o.items.length } : o);
+  const cache = (o: MapObject) => (o.items && !isPile(o) ? { ...o, items: [], itemCount: o.items.length } : o); // a pile is open (rules 1.9)
   if (s.objects) s.objects = s.objects.map(cache);
   if (s.zoneObjects) s.zoneObjects = Object.fromEntries(Object.entries(s.zoneObjects).map(([k, l]: any) => [k, l.filter((o: MapObject) => !o.hidden).map(cache)]));
-  if (v.combat) { v.combat = { ...v.combat, ...(v.combat.hazards ? { hazards: v.combat.hazards.filter((h) => !h.hidden) } : {}), ...(v.combat.objects ? { objects: v.combat.objects.map(cache) } : {}) }; delete (v.combat as any).worldRng; }
+  if (v.combat) { v.combat = { ...v.combat, ...(v.combat.hazards ? { hazards: v.combat.hazards.filter((h) => !h.hidden) } : {}), ...(v.combat.objects ? { objects: v.combat.objects.map(cache) } : {}) }; delete (v.combat as any).worldRng;
+    // Rules 1.9: the drop tables a fight rolls on, and what each enemy will drop, are never in a player's view (item 691).
+    delete v.combat.lootTables; if (v.combat.dropped?.length) v.combat.dropped = v.combat.dropped.map((d) => ({ ...d, npc: stripNpc(d.npc) })); // review fix: a carried person's drops
+    if (v.combat.units.some((u) => u.drops)) v.combat.units = v.combat.units.map((u) => { if (!u.drops) return u; const x = { ...u }; delete x.drops; return x; }); }
   v.characters = Object.fromEntries(Object.entries(v.characters).map(([id, c]) => [id, c.carried ? { ...c, carried: c.carried.map((x) => ({ ...x, npc: stripNpc(x.npc) })) } : c]));
 }
 function stripNpc(n: Npc): Npc {
+  if (n.drops) { n = { ...n }; delete n.drops; } // rules 1.9: what someone will drop is never in a player's view (item 691)
   if (!n.wants && !n.knows) return n;
   const x: any = { ...n };
   if (!n.wantsShown && n.wants) { x.wants = ''; x.wantsHidden = true; } // the button stays, the words don't

@@ -371,7 +371,7 @@
       "id": "damage_mult",
       "tier": "core",
       "summary": "Multiply damage dealt.",
-      "count": 19,
+      "count": 20,
       "params": [
         "context",
         "count",
@@ -903,16 +903,19 @@
       "id": "cleanse",
       "tier": "core",
       "summary": "Remove a condition or family.",
-      "count": 4,
+      "count": 5,
       "params": [
         "ap",
         "condition",
         "count",
         "family",
+        "scope",
         "target",
-        "uses"
+        "uses",
+        "what"
       ],
       "used_by": [
+        "patrons:mother_ember.everyone_home",
         "perks:shrug_it_off",
         "traits:daggerfall_veteran"
       ],
@@ -1239,16 +1242,20 @@
       "id": "free_action",
       "tier": "core",
       "summary": "An action costs 0 AP under a trigger.",
-      "count": 3,
+      "count": 5,
       "params": [
         "action",
         "ap",
         "context",
         "effect",
+        "scope",
         "target",
+        "until",
         "when"
       ],
       "used_by": [
+        "patrons:counting_weaver.rewoven",
+        "patrons:the_laughing_mask.encore",
         "perks:on_my_mark",
         "perks:open_hand",
         "perks:supreme_command"
@@ -3682,6 +3689,118 @@
         "jumps": 1,
         "range": 2,
         "mult": 0.5
+      }
+    },
+    {
+      "id": "inflection",
+      "tier": "sigil",
+      "summary": "A Mastered word's inflection (rules 1.10, Sigil 1.5): one small upgrade of that word, always on for its caster. stat names the number it moves (cond_rounds, save_tn, to_hit, damage_pct, push_tiles, shield_pct, heal_pct, charge, flux, lasts_rounds, radius, teleport_tiles, barrier_hp_pct, move_tiles, range, turret_def, pull_tiles, jump_radius, leech, mult, radius_at_4, cone_length, spare_downed); a stat the engine does not run goes to the Narrator with the text.",
+      "count": 40,
+      "params": [
+        "stat",
+        "value"
+      ],
+      "used_by": [
+        "sigils:fire",
+        "sigils:freeze",
+        "sigils:shock",
+        "sigils:stone",
+        "sigils:gale",
+        "sigils:spark",
+        "sigils:acid",
+        "sigils:bind",
+        "sigils:blind",
+        "sigils:slow",
+        "sigils:muddle",
+        "sigils:dread",
+        "sigils:silence",
+        "sigils:command",
+        "sigils:ward",
+        "sigils:mend",
+        "sigils:quicken",
+        "sigils:sharpen",
+        "sigils:cleanse",
+        "sigils:veil",
+        "sigils:light",
+        "sigils:step",
+        "sigils:raise",
+        "sigils:null",
+        "sigils:mask",
+        "sigils:seek",
+        "sigils:arc",
+        "sigils:sense",
+        "sigils:relay",
+        "sigils:stay",
+        "sigils:twice",
+        "sigils:pull",
+        "sigils:wait",
+        "sigils:watch",
+        "sigils:chain",
+        "sigils:leech",
+        "sigils:condense",
+        "sigils:spread",
+        "sigils:push",
+        "sigils:kin"
+      ],
+      "example": {
+        "op": "inflection",
+        "stat": "cond_rounds",
+        "value": 1
+      },
+      "provisional": true
+    },
+    {
+      "id": "repair_gear",
+      "tier": "bespoke",
+      "summary": "The Quartermaster's Requisition Approved (rules 1.6.2): every weapon the squad carries back to full durability (the main hand, the off hand, the pack).",
+      "count": 1,
+      "params": [
+        "scope",
+        "value"
+      ],
+      "used_by": [
+        "patrons:the_quartermaster.requisition_approved"
+      ],
+      "example": {
+        "op": "repair_gear",
+        "value": "full",
+        "scope": "squad"
+      }
+    },
+    {
+      "id": "clear_jam",
+      "tier": "bespoke",
+      "summary": "The Quartermaster's Requisition Approved (rules 1.6.2): every jam on the squad's weapons is cleared, and their heat with it.",
+      "count": 1,
+      "params": [
+        "heat",
+        "scope"
+      ],
+      "used_by": [
+        "patrons:the_quartermaster.requisition_approved"
+      ],
+      "example": {
+        "op": "clear_jam",
+        "heat": true,
+        "scope": "squad"
+      }
+    },
+    {
+      "id": "rewind_hp",
+      "tier": "bespoke",
+      "summary": "The Counting Weaver's Rewoven (rules 1.6.2): each ally's HP goes back to what it was at the start of this round, if that was higher (a Downed ally stands).",
+      "count": 1,
+      "params": [
+        "scope",
+        "to"
+      ],
+      "used_by": [
+        "patrons:counting_weaver.rewoven"
+      ],
+      "example": {
+        "op": "rewind_hp",
+        "to": "round_start",
+        "scope": "allies"
       }
     },
     {

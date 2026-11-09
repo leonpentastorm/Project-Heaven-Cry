@@ -52,6 +52,16 @@ export async function makeCharacter(page, name, archFamily, archName, kit) {
   await page.locator('button', { hasText: kit }).first().click();
   await click(page, 'Next ›'); // lock in
 }
+/** A BASE on this machine (127.0.0.1, localhost, ::1, or any 127.x address). */
+export function isLoopback(base) {
+  let host = '';
+  try { host = new URL(base).hostname.toLowerCase(); } catch { return false; }
+  host = host.replace(/^\[|\]$/g, '');
+  return host === 'localhost' || host.endsWith('.localhost') || host === '::1' || /^127(\.\d{1,3}){3}$/.test(host);
+}
+// A remote BASE goes through HTTPS_PROXY when one is set (an agent sandbox's only way out). A loopback BASE never does:
+// such a proxy only takes CONNECT to the outside, so a local wrangler dev page sent through it never loads.
+const useProxy = !!(process.env.BASE && process.env.HTTPS_PROXY && !isLoopback(process.env.BASE));
 const launch = chromium.launch.bind(chromium);
-chromium.launch = (o = {}) => launch({ ...o, ...(process.env.BASE && process.env.HTTPS_PROXY ? { proxy: { server: process.env.HTTPS_PROXY } } : {}) });
+chromium.launch = (o = {}) => launch({ ...o, ...(useProxy ? { proxy: { server: process.env.HTTPS_PROXY, bypass: '<-loopback>' } } : {}) });
 export { chromium };

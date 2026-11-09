@@ -3,6 +3,7 @@
 // The engine owns what they do (blocking, cover, HP, traps, hazards, explosions); the Narrator writes what they
 // mean and the ways to deal with them (approaches), which players can try, and retry, without a Narrator call.
 import objectsJ from '../../../data/objects.json';
+import type { PackItem } from './character';
 
 export interface ObjKind {
   id: string; name: string; glyph: string; blocks_move: boolean; blocks_sight: boolean; cover: 'half' | 'full' | null; hp: number | null;
@@ -10,6 +11,8 @@ export interface ObjKind {
   trap?: { damage: number; detect_tn: number; detect_range: number }; hazard?: { damage: number }; explodes?: { damage: number; radius: number };
   /** Light radius in tiles (spec: Vision). */
   light?: number;
+  /** A hidden one of this kind (a pile, rules 1.9) is spotted by passive Vigilant against detect_tn within detect_range. */
+  spot?: { detect_tn: number; detect_range: number };
 }
 export const OBJECT_KINDS: ObjKind[] = (objectsJ as any).items;
 export const OBJ: Record<string, ObjKind> = Object.fromEntries(OBJECT_KINDS.map((k) => [k.id, k]));
@@ -18,7 +21,7 @@ export const OBJ: Record<string, ObjKind> = Object.fromEntries(OBJECT_KINDS.map(
 export interface Approach {
   label: string; skills: string[]; tn: number; stakes: string;
   /** What success does by itself (rules 1.7 adds loot, advance, and on people ally and inform; safe: a hazard's safe path). */
-  success: '' | 'remove' | 'open' | 'reveal' | 'disarm' | 'loot' | 'advance' | 'ally' | 'inform' | 'safe';
+  success: '' | 'remove' | 'open' | 'reveal' | 'disarm' | 'loot' | 'advance' | 'ally' | 'inform' | 'safe' | 'study';
   /** What failure does by itself (rules 1.7; hostile on people; hazard: one tile of the hazard on the actor). */
   fail?: '' | 'hurt' | 'alarm' | 'condition' | 'jam' | 'lose' | 'hostile' | 'hazard';
   /** advance: the objective it completes ("mission/objective" or a bare objective id). */
@@ -33,7 +36,10 @@ export interface Approach {
 }
 /** A cache's contents (rules 1.7), in the loot shape: an item or weapon id, how many, a rarity and a name; an unknown
  * or empty id is a plot item (name, and text as its one line). */
-export interface CacheItem { item: string; qty: number; rarity?: string; name?: string; text?: string; note?: string }
+export interface CacheItem { item: string; qty: number; rarity?: string; name?: string; text?: string; note?: string;
+  /** A pile's entry (rules 1.9): the exact pack item (a magazine's rounds and type, a weapon's rarity, wear and mods),
+   * and its stable key (a pick-up names entries by key). Cache entries in the loot shape leave both out. */
+  pack?: PackItem; key?: string }
 export interface MapObject {
   id: string; kind: string; pos: string; name: string; text: string;
   hp?: number; max?: number; open?: boolean; locked?: boolean; hidden?: boolean; approaches: Approach[]; resolved?: boolean;
@@ -46,12 +52,40 @@ export interface MapObject {
   sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
   /** A cache's contents (rules 1.7); searched: emptied by a search or a loot success. */
   items?: CacheItem[]; searched?: boolean;
+  /** A pile's entry counter (its keys never repeat). */
+  seq?: number;
   /** Jammed: locked for the rest of this scene number (a failed approach's jam). */
   jam?: number;
+  /** A sigil mark (rules 1.10, Sigil 1.5): the word drawn into the world, its age and damage (they set the TN). */
+  word?: string; age?: string; damage?: string;
+}
+
+// ---------- sigil marks (rules 1.10, Sigil 1.5; spec items 921-922) ----------
+const MK: any = (OBJ.sigil_mark as any)?.mark || {};
+export const MARK = {
+  label: String(MK.label || 'Investigate the sigil'), skills: (MK.skills || ['analysis', 'rumination']) as string[], pick: (MK.pick || 'best') as 'best',
+  ages: (MK.ages || ['fresh', 'old', 'ancient']) as string[], damages: (MK.damages || ['intact', 'worn', 'broken']) as string[],
+  age: String(MK.default_age || 'old'), damage: String(MK.default_damage || 'intact'), tn: (MK.tn || {}) as Record<string, Record<string, number>>, study: Number(MK.study ?? 3),
+};
+/** A mark's TN by its age and damage (objects.json sigil_mark.mark.tn). */
+export const markTn = (age?: string, damage?: string) => MARK.tn[MARK.ages.includes(age || '') ? age! : MARK.age]?.[MARK.damages.includes(damage || '') ? damage! : MARK.damage] ?? 12;
+/** The engine's own Investigate approach on a sigil mark: always first, its TN from the mark's age and damage. Other
+ * approaches (the Narrator's) stay after it. Idempotent; keeps the tries already made. */
+export function ensureMark(o: MapObject): MapObject {
+  if (o.kind !== 'sigil_mark') return o;
+  if (o.age && !MARK.ages.includes(o.age)) delete o.age; if (o.damage && !MARK.damages.includes(o.damage)) delete o.damage;
+  const tn = markTn(o.age, o.damage), list = o.approaches || (o.approaches = []);
+  const i = list.findIndex((a) => a.success === 'study'), old = i >= 0 ? list.splice(i, 1)[0] : null;
+  list.unshift({ label: MARK.label, skills: [...MARK.skills], pick: MARK.pick, tn, stakes: 'Read the word drawn here, and copy it for study.', success: 'study', tries: old?.tries || [], ...(old?.gone ? { gone: true } : {}) });
+  return o;
 }
 
 export function makeObject(id: string, kind: string, pos: string, extra: Partial<MapObject> = {}): MapObject {
   const k = OBJ[kind] || OBJ.poi;
+  if (k.id === 'sigil_mark') return ensureMark(makeObject0(id, k, pos, extra));
+  return makeObject0(id, k, pos, extra);
+}
+function makeObject0(id: string, k: ObjKind, pos: string, extra: Partial<MapObject>): MapObject {
   return { id, kind: k.id, pos, name: extra.name || k.name, text: extra.text || '', approaches: extra.approaches || [],
     ...(k.hp != null ? { hp: k.hp, max: k.hp } : {}), ...(k.hidden ? { hidden: true } : {}), ...(k.door ? { open: false } : {}),
     ...Object.fromEntries(Object.entries(extra).filter(([key]) => !['name', 'text', 'approaches'].includes(key))) } as MapObject;

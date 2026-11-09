@@ -9,6 +9,7 @@ import patronsJ from '../../../data/patrons.json';
 import classesJ from '../../../data/classes.json';
 import sigilsJ from '../../../data/sigils.json';
 import enemiesJ from '../../../data/enemies.json';
+import lootJ from '../../../data/loot_tables.json';
 import feelingsJ from '../../../data/feelings.json';
 import { verdictFor } from './effects/coverage';
 
@@ -39,7 +40,7 @@ function build(): WikiEntry[] {
   for (const c of (classesJ as any).advanced || []) for (const m of c.moves || []) if (!seen.has('class:' + c.id + '.' + m.id)) add('class:' + c.id + '.' + m.id, m.name, line(m.name + ' (' + c.name + ', advanced; shelved).', who('class:' + c.id + '.' + m.id), m.text));
   { // Patrons (rules 1.6): likes and taboos are tag ids; Hymns tier I-III, a Miracle, the Open or Jealous rule.
     const tagName = (t: string) => ((patronsJ as any).tags || []).find((x: any) => x.id === t)?.name || t;
-    for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Likes: ' + (p.likes || []).map(tagName).join(', ') + '. Taboos: ' + (p.taboos || []).map(tagName).join(', ') + '.', (p.rule === 'jealous' ? 'Jealous: no Hymns of other patrons.' : 'Open: Hymns of other patrons are kept, prayed by dice.'), 'Hymns: ' + (p.hymns || p.blessings || []).map((b: any) => b.name).join(', ') + (p.miracle ? '. Miracle: ' + p.miracle.name : '') + '.'));
+    for (const p of (patronsJ as any).items) add('patron:' + p.id, p.name, line(p.name + ' (' + p.domain + ').', 'Costume: ' + str(p.costume), 'Likes: ' + (p.likes || []).map(tagName).join(', ') + '. Taboos: ' + (p.taboos || []).map(tagName).join(', ') + '.', (p.rule === 'jealous' ? 'Jealous: no Hymns of other patrons.' : 'Open: Hymns of other patrons are kept, prayed by dice.'), 'Hymns: ' + (p.hymns || p.blessings || []).map((b: any) => b.name).join(', ') + (p.miracle ? '. Miracle (Faith 7 and Devotion ' + ((patronsJ as any).devotion?.gates?.miracle ?? 10) + '; Devotion −' + ((patronsJ as any).prayer?.miracle?.devotion_cost_levels ?? 5) + ' levels): ' + p.miracle.name + ', ' + String(p.miracle.text || '').replace(/\.$/, '') : '') + '.'));
   }
   for (const e of ENEMIES as any[]) add('enemy:' + e.id, e.name, e.name + ' tier enemy. The engine sets its numbers.');
   for (const k of OBJECT_KINDS as any[]) add('object:' + k.id, k.name, line(k.name + '.', k.text));
@@ -84,6 +85,13 @@ function build(): WikiEntry[] {
     'Damage: 20 × the Soul multiplier × the stage × the shape. Raw Outbursts are Soul damage and ignore armour; a tone is Elemental (armour counts half) with a rider that grows with the stage. A Bolt and a Lance roll Will Power against Defense; a Wave, Burst and Aura hit everyone in the area (friendly fire, Buff only on allies). A second school (Will Power 5, on the same side as the first) rides at half strength where the first took effect. Describe the heart: violet heat, a heartbeat rising with every Pump, blooming into the tone\'s colour on release; a Short is the heartbeat stopping, then a crack. Never decide a number: the engine reports them. Tones: tone:<id>; shapes: form:<id>.'));
   for (const t of (TONES as any[])) add('tone:' + t.id, t.name, line(t.name + ' (Outburst tone' + (t.element ? ', the Sigil ' + t.element + ' element in the Soul style; +' + t.cost + ' MP' : '') + ').', t.text,
     Object.entries(t.stages || {}).map(([k, v]: [string, any]) => 'Stage ' + k + ': ' + v.text).join(' '), t.aura_look ? 'Held, it leaks as ' + t.aura_look + ' around the caster.' : ''));
+  // Rules 1.9 drop tables (data/loot_tables.json, loot.ts): what the fallen leave, rolled by the engine (items 691-700).
+  const lt: any = lootJ, nm = (id: string) => ITEM[id]?.name || (WEAPONS as any[]).find((w) => w.id === id)?.name || (id === 'personal' ? 'a personal effect' : id);
+  add('loot:rules', 'Drop tables', line('What the fallen leave (rules 1.9): the engine rolls it, seeded, once per death, into the pile on the tile where they died, and logs "X drops: …".',
+    'Always: the weapon they used, worn (' + Math.round(lt.worn_durability.min * 100) + '-' + Math.round(lt.worn_durability.max * 100) + '% durability), with its loaded rounds, and up to ' + lt.spare_mags_max + ' spare magazines with their real rounds. Fists and beasts\' bites drop nothing.',
+    'Rolled, by kind: people the person table, robots and drones machine, casters caster, beasts beast (empty); rolls by tier: ' + Object.entries(lt.rolls_by_tier).map(([k, v]) => k + ' ' + v).join(', ') + '. At most ' + Object.entries(lt.caps).map(([k, v]) => v + ' ' + k).join(', ') + ' rolled items a fight; a boss also always drops one notable thing.',
+    'Surrendered and subdued foes, companions and illusions drop nothing. Change it per enemy or person with drops {table, items: at most ' + lt.inline_max + ' (item, qty or [min, max], chance, rarity, name, text)}; the most specific layer wins (yours, then the campaign\'s, then these).'));
+  for (const t of lt.items as any[]) add('loot:' + t.id, t.name, line(t.name + ' (drop table).', t.text, t.entries.length ? 'Can drop: ' + t.entries.map((e: any) => nm(e.item) + (e.rarity ? ' (' + e.rarity + ')' : '')).join(', ') + '.' : 'Nothing by default.', t.none ? 'Often nothing.' : 'Always something.'));
   add('form:bolt', 'Bolt', line('Bolt (Outburst shape, the default): one target at the aim, 4 tiles (Far: 8) + the Soul range bonus, in sight; rolls Will Power against Defense; damage ×1.'));
   for (const m of (MODULES as any[]).filter((x) => x.form)) add('form:' + m.id, m.name, line(m.name + ' (Outburst shape; a module, +' + m.cost + ' MP).', m.text));
   return out;

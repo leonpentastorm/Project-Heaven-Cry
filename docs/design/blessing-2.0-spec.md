@@ -44,6 +44,16 @@ Every character is either **Faithful** or **Atheist**. The choice is a new step 
 
 ## 2. Devotion: the one meter (Faithful only)
 
+> **Superseded in part by Faith 2.1** (rules 1.6.1, 9 Nov 2026; `docs/design/faith-2.1-spec.md`, decision 107, spec
+> items 701–723). Devotion is still the 0–10 standing with the same gates, but events now move **Devotion XP** toward
+> the next level (a curve from 0 to 450 XP), not levels: the +1 / −1 / −2 values below are replaced by XP values, the
+> "+2 a fight" cap by tag caps kept on the character (2 XP a fight, 2 a scene, 6 a session), the Narrator's ±2 by −6 to
+> +5 XP with +10 a session, and a failed overreach costs 3 XP. The tables below are the 1.6 rules, kept for the record.
+>
+> **Superseded in part by Miracle 2.1** (rules 1.6.2, Leon, 9 Nov 2026; `docs/design/faith-2.1-spec.md` section 7, spec
+> items 724–737): the Miracle needs **Devotion 10** (Faith 7 as before), costs **5 levels** (10 → 5) instead of all
+> Devotion, and all eight Miracles in section 8 are stronger.
+
 Devotion runs 0–10 and is your **standing** with your patron. You do **not** spend it to ask for things; asking is
 limited by cooldowns.
 
@@ -66,7 +76,7 @@ limited by cooldowns.
 | A failed overreach (asking above your standing) | −1 |
 | Breaking character where your patron can see (Narrator) | −2 |
 
-**A Miracle is the one thing that spends Devotion:** all of it.
+**A Miracle is the one thing that spends Devotion:** all of it. *(Rules 1.6.2: 5 levels, 10 → 5.)*
 
 **Standing gates what you may ask for:**
 
@@ -76,7 +86,7 @@ limited by cooldowns.
 | Hymn I | Devotion 3 |
 | Hymn II | Devotion 5 |
 | Hymn III | Devotion 7 |
-| Miracle | Faith 7, Devotion 7, once a session; spends all Devotion |
+| Miracle | Faith 7, Devotion 7, once a session; spends all Devotion *(rules 1.6.2: Devotion 10; costs 5 levels)* |
 
 **Overreach: asking above your standing.**
 
@@ -99,7 +109,7 @@ Shared rules:
 |---|---|---|---|
 | **Whisper** | 1 | once per turn | anyone with Faith 3 |
 | **Hymn** | 3 | the prayer cooldown (derived stat, rounds) | Faithful: their patron's Hymns. Atheist: the Hymns they have learned (section 4) |
-| **Miracle** | 3 | once per session | Faithful only, Faith 7 (**atheists never**) |
+| **Miracle** | 3 | once per session | Faithful only, Faith 7 (**atheists never**); rules 1.6.2: Devotion 10 |
 
 ### Whispers: the same six for every patron
 
@@ -199,10 +209,24 @@ action.
 
   PROVISIONAL; open item.
 
+> **Settled by Faith 2.1** (Leon, 8 Nov 2026; `docs/design/faith-2.1-spec.md` section 3, spec items 709–714).
+> Apostasy also starts a **90-day cooldown** on the new day counter before any pact. A pact while Faithful to someone
+> else is a **direct switch**, not apostasy: no cooldown, but the patron you leave may punish you (its `leave` block in
+> `patrons.json`): Open patrons roll d20 + Faith against their TN to let you go, Jealous ones never do, and a grudge
+> puts a condition on you at each fight's start and halves your new Devotion XP gains for its sessions. The old patron
+> speaks a farewell line either way.
+
 ## 8. The eight launch patrons
 
 Every patron is a Celestial LARPing a god archetype (the Unspoken Name rule: no real god is ever named). We stay away
 from the central figures of living religions.
+
+**How patrons are painted** (Leon, 8 Nov 2026): as a god appears to a human of the world, an NPC. The portraits show
+apparitions, effigies and masks lit by the patron's answering light; never the Celestial behind the costume, never a
+player breaking character, never a real person. The LARP is the Narrator's truth (World Bible), not the portrait's: the
+art keeps the Veil as the world does, and any wink lives in the costume's details. **The delivered set in
+`art/portraits/patrons/` is right** and is the reference for new patrons. Rules for the artist: `art/style-guide/PHC-Style-Guide.md`
+("Patron apparition colour identities") and `docs/design/handoffs/blessing-art-brief.md`.
 
 Each patron has the following:
 
@@ -229,6 +253,9 @@ Each patron has the following:
 ### Hymns and Miracles
 
 Effects use existing engine conditions and ops where possible. All numbers are × Blessing power and provisional.
+
+> **Miracles superseded by Miracle 2.1** (rules 1.6.2): the Miracle column below is the 1.6 design, kept for the record.
+> The eight Miracles as built are in `docs/design/faith-2.1-spec.md` section 7 and the spec's patron table (items 727–734).
 
 | Patron | Hymn I (Devotion 3) | Hymn II (Devotion 5) | Hymn III (Devotion 7) | Miracle |
 |---|---|---|---|---|
@@ -315,8 +342,11 @@ Implementer 1 audits every reader of `pray`, `blessing`, `devotion`, `patron` an
 
 ## 11. Open items (for Leon)
 
-1. **Apostasy:** the rule in section 7 is a guess.
-2. **The +2 a fight cap** on tag gains.
-3. **Judgement (Guardian)** still spends Devotion.
+1. **Apostasy:** the rule in section 7 is a guess. *Settled by Faith 2.1* (decision 107): the 90-day cooldown, the
+   direct switch with the leave roll and grudges (section 7's note).
+2. **The +2 a fight cap** on tag gains. *Replaced by Faith 2.1*: Devotion XP with tag caps of 2 XP a fight, 2 a scene
+   and 6 a session, kept on the character (section 2's note; spec items 701–704).
+3. **Judgement (Guardian)** still spends Devotion. *Faith 2.1:* it spends 10 Devotion XP (spec item 706), so it can
+   drop a level but no longer costs a whole one.
 4. **Hymn numbers.** Every Hymn and Miracle number above needs a pass against `docs/design/balance-targets.md`.
 5. **The rival Thunder-Father,** and the many-masks pantheon, for later patrons.

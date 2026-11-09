@@ -43,11 +43,15 @@ await p.waitForSelector('.phc-story', { timeout: 15000 });
 await p.getByRole('tab', { name: 'FAITH' }).click().catch(async () => { await p.getByRole('button', { name: 'FAITH', exact: true }).click(); });
 const panel = p.locator('[data-phc-faith-panel]'); await panel.waitFor({ timeout: 5000 });
 const txt = await panel.textContent();
-ok('the panel: Mother Ember, Devotion 3 / 10 with the gates', /Mother Ember/.test(txt) && /DEVOTION · 3 \/ 10/.test(txt) && /HYMN I/.test(txt) && /HYMN III · MIRACLE/.test(txt));
+ok('the panel: Mother Ember, Devotion 3 with its XP toward 4 (DEVOTION 3 · 0/25 XP) and the gates (Hymn III at 7, the Miracle at 10: rules 1.6.2)', /Mother Ember/.test(txt) && /DEVOTION 3 · 0\/25 XP/.test(txt) && /HYMN I/.test(txt) && /HYMN III/.test(txt) && !/HYMN III · MIRACLE/.test(txt) && /MIRACLE/.test(txt));
+ok('the Miracle\'s heading gives its gate and price', /✦ MIRACLE · AT DEVOTION 10 · ONCE A SESSION · COSTS 5 LEVELS/.test(txt));
+ok('the panel shows the day (DAY 1), no cooldown and no grudge', /DAY 1/.test(await panel.locator('[data-faith-day]').textContent()) && (await panel.locator('[data-faith-cooldown]').count()) === 0 && (await panel.locator('[data-faith-grudge]').count()) === 0);
+ok('the meter says its words to a screen reader too', /DEVOTION 3 · 0\/25 XP/.test((await panel.locator('[role="meter"]').getAttribute('aria-valuetext')) || ''));
+ok('the gate marks are faith light (var(--faith-light) = #F2C46A)', await panel.evaluate((el) => { const s = [...el.querySelectorAll('[role="meter"] span')].find((x) => x.textContent === 'HYMN I'); return !!s && getComputedStyle(s).color === 'rgb(242, 196, 106)'; }));
 ok('likes and taboos, in words with their marks', /✓ HEAL/.test(txt) && /✕ BETRAY/.test(txt));
 ok('6 Whispers, 3 Hymns, the Miracle', (await panel.locator('[data-prayer^="whisper:"]').count()) === 6 && (await panel.locator('[data-prayer^="hymn:"]').count()) === 3 && (await panel.locator('[data-prayer^="miracle:"]').count()) === 1);
 ok('a Hymn shows AP, gate and odds', /3 AP · HYMN I · DEVOTION 3 · SURE/.test(await panel.locator('[data-prayer^="hymn:"]').first().textContent()));
-ok('an overreach shows its TN and the cost', /OVERREACH · TN \d+/.test(txt) && /a miss costs 1 Devotion/.test(txt));
+ok('an overreach shows its TN and the cost in Devotion XP', /OVERREACH · TN \d+/.test(txt) && /a miss costs 3 Devotion XP/.test(txt));
 ok('the Miracle is disabled with its reason', /✕ A Miracle needs Faith 7/.test(await panel.locator('[data-prayer^="miracle:"]').textContent()));
 // A targeted Whisper opens the party chips, then Pray (the reducer answers once implementer 1's rules land).
 const wBtns = panel.locator('[data-prayer^="whisper:"]');
@@ -67,6 +71,21 @@ if (await keep.count() && (await keep.getAttribute('aria-disabled')) !== 'true')
   await keep.click(); await p.waitForTimeout(500);
   ok('keeping a rite: the story says so and the card reads KEPT', /RITE ·/.test(await p.evaluate(() => window.__phc.getState().game.story.entries.map((e) => e.head || '').join(' '))) && /KEPT THIS SESSION/.test(await panel.textContent()));
 } else console.log('note no engine rite could be kept now: ' + ((await panel.locator('[data-rite]').first().textContent()) || '').slice(0, 120));
+const hereDay = p.locator('[data-here-day]').first();
+ok('the HERE card shows the day even with no objectives (' + ((await hereDay.count()) ? await hereDay.textContent() : 'no card') + ')', (await hereDay.count()) > 0 && /^DAY \d+$/.test((await hereDay.textContent()) || ''));
+ok('the liked-tag caps are on the faith tab (' + ((await panel.locator('[data-faith-tagcaps]').textContent()) || '') + ')', /^LIKED TAGS · \d\/2 THIS SCENE · \d\/6 THIS SESSION/.test((await panel.locator('[data-faith-tagcaps]').textContent()) || ''));
+// A day passes on a long rest: the faith tab and the HERE card follow.
+await p.evaluate(() => window.__phc.act({ type: 'narrator/turn', turn: { narration: 'They sleep by the fire.', rest: { kind: 'long' } } }));
+await p.waitForTimeout(400);
+ok('a long rest is a day: the faith tab reads DAY 2', /DAY 2/.test(await panel.locator('[data-faith-day]').textContent()));
+ok('and the HERE card follows (DAY 2)', /^DAY 2$/.test((await p.locator('[data-here-day]').first().textContent()) || ''));
+// The host's Next session (item 721): from Rest…, the session counter moves on in the same room.
+await p.locator('.phc-rest').first().click(); await p.waitForTimeout(200);
+const nextOpt = p.locator('.phc-rest-opt', { hasText: 'Next session' });
+ok('Rest… offers the host Next session', (await nextOpt.count()) === 1);
+if (await nextOpt.count()) { await nextOpt.click(); await p.waitForTimeout(500);
+  const sn = await p.evaluate(() => window.__phc.getState().game.sessionN);
+  ok('Next session: session 2 begins in the room (sessionN ' + sn + '), not a day (still DAY 2)', sn === 2 && /SESSION 2/.test(await p.evaluate(() => window.__phc.getState().game.story.entries.map((e) => e.head || '').join(' '))) && /DAY 2/.test(await panel.locator('[data-faith-day]').textContent())); }
 if (SHOTS) { await p.setViewportSize({ width: 1440, height: 1400 }); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-tab.png' }); await panel.evaluate((el) => el.scrollIntoView({ block: 'start' })); await p.locator('[data-phc-cutin]').count() && await p.keyboard.press('Escape'); await p.waitForTimeout(600); await panel.screenshot({ path: SHOTS + '/faith-panel-top.png', clip: undefined }); }
 
 // ---------- a fight ----------

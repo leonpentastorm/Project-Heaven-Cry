@@ -17,11 +17,21 @@ import { canSurrender, surrender } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { canReact, useReaction } from './tactics';
 import { makeObject } from './objects';
+import { rollDeathDrops } from './loot';
 import { itemWords, wordCostMods, immune, actionAp } from './effects/core';
+import { masteredWords } from './sigilgrowth';
 
 type Fam = 'body' | 'brain' | 'heart';
 /** A glyph on a tile. v: the rules revision it was drawn under (14 = rules 1.4; a glyph without it is from 1.2). */
-export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string; v?: number }
+/** A glyph on the ground. strokeId (rules 1.10, Sigil 1.5): the stroke it was drawn into (sigil.ts strokeRuns); a glyph
+ * without one is an old 1.4 glyph, read by the touching-group rule until it fades. */
+export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string; v?: number; strokeId?: string;
+  /** Rules 1.10 Junctions (Brain Power Mastered): the second stroke a crossing glyph belongs to. */
+  strokeId2?: string;
+  /** Rules 1.10: the characters who have copied this glyph's word (Read, or Analyzing its drawer): once each. */
+  copiedBy?: string[] }
+/** Rules 1.10: what a scuffed glyph leaves for a while (its word can still be read and copied); not a glyph. */
+export interface Trace { id: string; word: string; pos: string; side: 'pc' | 'foe'; by: string; who: string; left: number; copiedBy?: string[] }
 /** Placed magic and other standing zones. Sigil 1.4: 'field' (STAY), 'trap' (WAIT; hidden from the other side until
  * spotted), 'turret' (WATCH; hp, def), 'veil' (smoke), 'light'. 'wall' is a 1.2 standing wall (read as a field).
  * Class and gadget zones (scramble, seal, sanctuary, grand…) use the same shape. */
@@ -47,6 +57,8 @@ export interface MagicUnit {
   saves: Record<Fam, number>; debuff: Record<Fam, number>;
   /** Items' changes to a word's charge (word_cost), by word. */
   wordCost?: Record<string, number>;
+  /** Rules 1.10: the character's Mastered words (30 uses): their inflections are on in the spells this unit Evokes. */
+  inflect?: string[];
 }
 
 /** One pump this turn, for Revert Pump (rules 1.8, item 808): the stage before, the AP paid, the free Pump it used, the
@@ -103,6 +115,8 @@ const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brai
 /** Conditions kept as unit flags rather than in u.conds (applyCond sets them). */
 const FLAG_CONDS = new Set(['dazed', 'prone', 'bleeding', 'hidden', 'injured']);
 export const condId = (id: string) => ALIAS[id] || id;
+/** A condition's own rounds (conditions data), for durations an item lengthens. */
+export const condRoundsOf = (id: string): number | undefined => CONDS[condId(id)]?.rounds;
 export const condName = (id: string) => CONDS[condId(id)]?.name || ({ dazed: 'Dazed', prone: 'Prone', bleeding: 'Bleeding', hidden: 'Hidden' } as Record<string, string>)[id] || id;
 export const condText = (id: string) => CONDS[condId(id)]?.text || '';
 /** Is this a condition the engine knows, and which save family it belongs to. */
@@ -124,10 +138,16 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
   if (a !== b) emitFx(cb, 'mana', { band: b, mana: now });
   if (a !== b) cb.log.push('The air turns ' + b.toUpperCase() + ' (mana ' + now + ')' + (why ? ': ' + why : '') + '.');
 }
-/** Deaths release bots (spec: the meter): +5 a person, +2 a robot. Called once per turn; each death counts once. */
-export function noteDeaths(cb: Combat) {
+/** Deaths release bots (spec: the meter): +5 a person, +2 a robot. Called once per turn; each death counts once. Rules
+ * 1.9: the same sweep rolls each death's drops (loot.ts) on the fight's dice, so it happens exactly once per death; the
+ * area map's throwaway fight rolls none (item 697). */
+export function noteDeaths(cb: Combat, rng?: Rng) {
   const seen = new Set(cb.deadSeen || []);
-  for (const u of cb.units) if (u.dead && !seen.has(u.id)) { seen.add(u.id); shiftMana(cb, ['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name) ? 2 : 5, u.name + ' fell'); }
+  for (const u of cb.units) if (u.dead && !seen.has(u.id)) {
+    seen.add(u.id); cb.deadSeen = [...seen];
+    shiftMana(cb, ['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name) ? 2 : 5, u.name + ' fell');
+    if (rng && !cb.overworld) rollDeathDrops(cb, rng, u);
+  }
   cb.deadSeen = [...seen];
 }
 
@@ -145,6 +165,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
     debuff: { body: debuffStrength(c, 'body'), brain: debuffStrength(c, 'brain'), heart: debuffStrength(c, 'heart') },
     ...(() => { const wc = wordCostMods(c); return Object.keys(wc).length ? { wordCost: wc } : {}; })(),
+    ...(() => { const mw = masteredWords(c); return mw.length ? { inflect: mw } : {}; })(),
   };
 }
 /** Write a unit's magic back to its character (after a fight, or after an overworld action). */
@@ -410,7 +431,7 @@ export function magicShove(cb: Combat, t: Unit, from: string, n: number, by: Uni
  * strains, an elemental one leaks onto adjacent enemies), fields bite whoever starts inside. */
 export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   if (u.dead) return;
-  noteDeaths(cb);
+  noteDeaths(cb, rng);
   // Burning burns at the start of each turn (spec: 10, until put out; it ignores armour). Timed conditions tick at the
   // end of the bearer's turn (condTurnEnd, rules 1.3).
   if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, 10, 'true', 'fire'))); }
@@ -422,6 +443,8 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
 export function magicRoundTick(cb: Combat) { sigilRoundTick(cb); }
 /** Moving onto a tile: fields bite and traps go off (sigil.ts sigilEnter). */
 export function zoneEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean { const stop = sigilEnter(cb, rng, u, k); if (!u.dead && u.pos === k) feelEnter(cb, rng, u, k); return stop || u.pos !== k; }
+// A STEP landing (sigil.ts) enters its tile the same way a walk does, residue included.
+setEnterHook(zoneEnter);
 /** Sight blockers and light from magic (VEIL smoke, LIGHT). */
 export const veilTiles = (cb: Combat) => (cb.zones || []).filter((z) => z.kind === 'veil').flatMap((z) => z.tiles);
 export const magicLit = (cb: Combat, k: string) => (cb.zones || []).some((z) => z.kind === 'light' && z.tiles.includes(k));
@@ -435,8 +458,9 @@ export {
   strikeTurret, destroyPlaced, sigilEnter, sigilTurnStart, sigilRoundTick, sigilSpot, migrateSigil, migrateStorySigil, migrateWords, startingWordsError,
   enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, freeTile, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
+  evokeGrowth, strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, fadePattern, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
 } from './sigil';
-import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8 } from './sigil';
+import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, setEnterHook } from './sigil';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */
 let FX_ELEMENT: string | null = null;
 /** Where a Sigil spell's damage comes from (the missile's origin: a Line glyph, SEEK's far glyph, a chain's last target,
@@ -906,7 +930,7 @@ export function feedOutburst(cb: Combat, u: Unit): string | null {
   const g = (cb.glyphs || []).find((x) => x.pos === u.pos && !(x as any).keystone); if (!g) return 'No glyph on your tile to feed it.';
   if (u.ap < SOUL_AP.feed) return 'Needs ' + SOUL_AP.feed + ' AP.';
   u.ap -= SOUL_AP.feed; m.cast = true;
-  cb.glyphs = (cb.glyphs || []).filter((x) => x !== g);
+  cb.glyphs = (cb.glyphs || []).filter((x) => x !== g); tidyStrokesS(cb.glyphs); // rules 1.10 (item 903): a fed middle glyph splits its stroke
   m.held.stage++;
   emitFx(cb, 'feed', { unit: u.id, at: u.pos, word: g.word, glyph: g.id, stage: m.held.stage, mult: stageMult(m.held.stage) });
   cb.log.push(u.name + ' feeds the ' + g.word.toUpperCase() + ' glyph to the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ').');
@@ -1225,8 +1249,15 @@ function placeResidue(cb: Combat, u: Unit, feeling: string, tiles: string[]) {
   cb.log.push(f.name + ' lingers on ' + set.size + ' tile' + (set.size === 1 ? '' : 's') + ' (' + f.residue.text.replace(/\.$/, '') + ', ' + RESIDUE_ROUNDS + ' rounds).');
 }
 /** Practice (rules 1.8): kept on the character. fx 'practice' {unit, gain, total}. */
+let PRACTICE_HELD = 0;
+/** Run fn with practice held back (a fused Evoke releases once per creature it covers but practises once: perks/d.ts),
+ * then grant `after` practice once (0 for none). */
+export function practiceOnce<T>(cb: Combat, u: Unit, fn: () => T, after: () => number): T {
+  PRACTICE_HELD++; let r: T; try { r = fn(); } finally { PRACTICE_HELD--; }
+  gainPractice(cb, u, after()); return r;
+}
 function gainPractice(cb: Combat, u: Unit, n: number) {
-  if ((cb as any).dry) return; // the area map's dry run (game.ts): only the real release practises
+  if ((cb as any).dry || PRACTICE_HELD) return; // the area map's dry run (game.ts): only the real release practises
   const c = charOfUnit(u); if (!c || n <= 0 || u.companion) return;
   c.soulPractice = (c.soulPractice || 0) + n;
   emitFx(cb, 'practice', { unit: u.id, gain: n, total: c.soulPractice });

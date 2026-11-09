@@ -191,7 +191,7 @@ Evokers draw Sigils and use mana cores. Their actions can show loading, aiming, 
 
 Emanators support Soul practice. Give their use an expressive relationship to the caster's thought, breath, heart and gesture. Do not hand every scholar an Emanator or every civilian a magical device.
 
-Blessings involve faith and a Celestial's response. Prayer, a pact, an answering sign or an iconographic motif may express that relationship. Do not depict every faithful person as a generic hooded priest.
+Blessings involve faith and a Celestial's response. Prayer, a pact, an answering sign or an iconographic motif may express that relationship. Do not depict every faithful person as a generic hooded priest. A patron is shown as its faithful see it, never as the Celestial underneath (see "Patron apparition colour identities").
 
 ## Three visual grammars
 Sigil: deliberate geometry, construction marks, linked commands, hard measured edges. Soul: gestural flow, imagined forms, expressive ribbons and gathering matter. Blessing: focused radiance, sacred negative space, a deliberate halo or answering emblem. These are art-direction conventions derived from the pilot, not extra game mechanics.
@@ -482,7 +482,9 @@ The three key-art layers in `art/ui/title-screen/` retain Heavenprint's gouache,
 
 ## Patron apparition colour identities — review set, 2026-11-08
 
-For the current patron portraits, the user directs monumental divine apparitions in the approved Celestial/pilot language. Do not expose hidden origins through ordinary mortal casting. Use focused radiance, sacred negative space and a patron-specific halo or answering emblem. Ivory effigies, masks or radiant absence can supply the humanoid presence. Preserve Heavenprint gouache and broken ink.
+**The rule (Leon, 8 Nov 2026): a patron is painted as a god appears to a human, an NPC of the world.** What the faithful see is the god: an apparition, an effigy, a mask, a radiance with a shape in it. Never paint the Celestial behind the costume, never a tired player showing through the god, and never a real person or a recognisable real-world figure. The truth that a patron is a trapped human playing a part is the Narrator's (World Bible), not the portrait's; the art keeps the Veil the way the world does. The wink, where there is one, lives in the costume's details (a requisition stamp worn as a seal, a seating chart, a ledger-tape loom), not in a face breaking character.
+
+The delivered set in `art/portraits/patrons/` (8 Nov 2026) is right and is the reference for any new patron: monumental divine apparitions in the approved Celestial/pilot language. Do not expose hidden origins through ordinary mortal casting. Use focused radiance, sacred negative space and a patron-specific halo or answering emblem. Ivory effigies, masks or radiant absence can supply the humanoid presence; where a face shows, it is the god's face, held, not an actor's. Preserve Heavenprint gouache and broken ink. Patron marks and prayer icons stay pure-white flat ink (below); faith's UI gold is `--faith-light` `#F2C46A` (`docs/design/colour-system.md`), a light for the interface, not a paint anchor.
 
 Each patron has its own accent family, applied through light, vestments and motifs. Ivory and charcoal remain shared neutrals. These patron accents do not replace the skill/attribute palette, or the pure-white patron-mark and prayer-icon rules. Hexes are design anchors, not exact indexed paint colours.
 

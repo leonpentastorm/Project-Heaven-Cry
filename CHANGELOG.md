@@ -8,6 +8,112 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.5.0 — 9 November 2026
+
+Branch `claude/awesome-babbage-8gngk8`: **Sigil 1.5, rules revision 1.10** (`docs/design/sigil-1.5-spec.md`; spec section 14 items 901–923, all provisional). Sigil 1.5 was first numbered 1.9 / 671–693; it moved to 1.10 / 901–923 because World Play 1.1 took those numbers. **Lines of 5 are dropped** (Leon); Junctions stay.
+
+- **Strokes (the playtest fix):** a Line is what you drew as one. Glyphs that touch no longer join, poison or block. Two Lines can run side by side, cross or end next to each other.
+  - A new glyph extends a stroke only at its end, along its axis, up to 4 glyphs.
+  - A picker on the draw step names each option ("extends FIRE·SEEK", "new Line"). The default is the stroke you last drew into.
+  - An ally's Line is extended only when you pick it.
+  - Scuffing a middle glyph splits the stroke. Old glyphs keep the 1.4 reading until they fade.
+  - Enemies draw strokes too.
+  - On screen, faint lines join a stroke's glyphs, and hovering lights the whole stroke.
+- **Study:** every Evoke earns study: 1, +1 per glyph past 2, +1 if it hit an enemy. At 6, then every +8, you learn a word of your choice within your cap. A study bar and a "Learn a word" chooser are on the MAGIC tab.
+- **Copying:** Analyze or Read an enemy's glyph or a scuffed glyph's trace for study toward that word. **Sigil marks** on the map (doors, ruins, posts; 3 in M813, the Narrator can place more) have an Investigate approach (Analysis or Rumination); a critical teaches the word outright.
+- **Mastery:** each Mastery level in Brain Power, Rumination or Eloquence gives +5 study. Mastered gives a free word over the cap.
+- **Word mastery:** each word counts its uses. At 10 it is Practised (hollow star). At 30 it is Mastered (filled star) and unlocks its **inflection**, a small upgrade always on for you. All 40 are drafted, provisional, for Leon.
+- **Junctions** (Brain Power Mastered): one glyph shared by two Lines. It fades when the second Line is Evoked.
+- **One shared workshop** for both magics: collapsible groups that remember their state, on the MAGIC tab and in the Proving Ground. Sigil is grouped by its five word groups; Outburst 4.0's codex moved onto the same component.
+- **Proving Ground:** grant study, set a word's uses, place a sigil mark, toggle Junctions.
+- **Sound:** stroke join, inflection unlock and Investigate success are reused Kenney CC0 interface sounds, credited. Proper magic sounds can replace them.
+- **Fixed while merging with Outburst 4.0:** a fused Evoke (Twin Discipline) now gives practice once, and earns study and word uses. STEP meets residue.
+- **Waiting on Leon:**
+  - the 40 inflections;
+  - copying gives +2 study per glyph read (or should it be once per word?);
+  - the Narrator gives a word once a scene, where the Sigil 1.5 spec said once a long rest (item 914);
+  - study thresholds and the 10 / 30 word-mastery counts;
+  - the Junction gate.
+
+## 0.4.0 — 9 November 2026
+
+Branch `feature/faith-2.1`: **Faith 2.1, rules revisions 1.6.1 and 1.6.2** (decision 107; `docs/design/faith-2.1-spec.md`; spec section 14 items 701–737, all provisional; hand-off `docs/design/handoffs/faith-2.1-HANDOFF.md`). Playtest: a character reached Devotion 10 on the area map by turn 3. The +2-a-fight cap lived on the fight unit, and the area map rebuilds units on every action, so every action was a fresh +1.
+
+- **Devotion XP:** Devotion is still the 0–10 standing with the same Hymn gates, but each level now needs XP.
+  - The curve: 45 / 102 / 200 / 450 XP to reach 3 / 5 / 7 / 10. Faithful characters still start at 3.
+  - Sources: a liked tag +1, a vow kept +3, a rite +4, a Narrator deed +2 to +5 (its gains capped at +10 a session); a taboo −3 (−6 while Witnessed), a broken vow −5, a failed overreach −3. Judgement spends 10 XP.
+  - A seeded 30-session simulation checks the pace: Devotion 5 around sessions 3–4, 7 around 8–10, 10 after 20.
+- **Tag caps on the character:** each liked tag counts once a fight and once a scene; at most 2 XP a fight, 2 a scene and 6 a session from tags. The area map can't farm them any more.
+- **Leaving a patron** (Leon's rulings):
+  - **Apostasy:** Devotion 0 and no pact for **90 days**.
+  - **A new day counter:** a long rest is a day, and the Narrator's `days` field covers travel and time skips. Shown as "Day N" on the HERE card and the faith tab.
+  - **Switching** straight to another patron: no cooldown. Open patrons roll to let you go; Jealous ones never do. A **grudge** gives a condition at the start of each fight and halves your new patron's Devotion XP for 1–3 sessions.
+  - A new `farewell` line bank (3 lines a patron).
+  - A host **Next session** action (Rest… → Next session).
+- **Miracle 2.1** (Leon: "deserve the title"): a Miracle needs **Faith 7 and Devotion 10** and lowers Devotion by **5 levels**. The first comes around session 22, then about every 19 sessions. All eight are stronger:
+  - Saints' Verdict: 100 Soul and Stunned to every enemy in sight; double for those who harmed the helpless.
+  - Requisition Approved: a full restock, 2 cores each, every weapon repaired, +3 AP.
+  - Encore: free repeats, and enemies Confused.
+  - Turned Back: every fallen ally stands at half HP.
+  - Everyone Home: full heal, cleansed, a 40 shield each.
+  - The Sky Answers: 5×5, 150 Storm, enemies only.
+  - Love Conquers: non-bosses surrender with no save.
+  - Rewoven: HP rewound to the round's start, then another turn.
+- **The faith gold** `--faith-light` `#F2C46A`: light only, always beside a word (`apps/web/index.html`, colour system, palette).
+- **Art direction written down:** patrons are painted as a god appears to an NPC (apparitions, effigies, masks); the delivered set is right. It is now in the style guide, the art brief and the Blessing spec.
+- **On screen:** "DEVOTION 4 · 12/32 XP" meters, XP and level floats, the cooldown, the grudge and the tag caps on the faith tab, and the Miracle at 10 with its price. Encore marks a free repeat "FREE · ENCORE".
+- **Old saves:** Devotion levels become their threshold XP; day 1.
+- **e2e:** `heart.mjs`'s Mana Short step brings in a fresh boss if the snaps kill it first. Known flake, older than this branch: `faith-pg.mjs`'s "Old Overcast intervenes" step depends on the dice and sometimes needs a rerun.
+- **Waiting on Leon:**
+  - the tuned curve and every XP number;
+  - the grudges' conditions and lengths;
+  - whether a session start should count as a day;
+  - the Miracle numbers. They are × Blessing power: the old ×3 was never applied, and at ×3 they would be far beyond the balance targets.
+
+## 0.3.0 — 9 November 2026
+
+Branch `feature/world-play-1.1`: **World Play 1.1, rules revision 1.9** (decision 106; `docs/design/world-play-1.1-spec.md`; spec section 14 items 671–700, all provisional; hand-off `docs/design/handoffs/world-play-1.1-HANDOFF.md`). Playtest: rangers ran out of ammo all the time. Dropped magazines were a 10 px mark nobody saw, the fight's floor vanished when the fight ended, an area-map reload deleted the magazine, and enemies dropped nothing.
+
+- **Piles:** what lies on a tile is one pile (a `pile` map object sharing the cache code), drawn as a stack with a count on the combat grid, the area map and the minimap.
+  - Hover lists it: "Rifle magazine 7/24", "38 × .32 Decrkm".
+  - Pick up (1 AP, your tile or next to it, on any map) opens a checklist. Searching a body is "take everything".
+  - Piles keep exact items (rounds, ammo type, rarity, durability, mods), merge per tile (at most 24 entries), and persist between the area map, fights, zones and saves.
+  - Players see piles only on tiles the party can see. The Narrator can hide one until it is spotted.
+- **The Narrator places piles** with `ground[]`. `loot[]` and `ground[]` can now hand over ammo (`mag:<weapon>`, `rounds:<calibre>`). The Proving Ground has "A PILE (ON THE GROUND)".
+- **Reloading is a choice:**
+  - speed reload: the current cost; the old magazine drops into the pile;
+  - tactical reload: +1 AP; the old magazine goes back in your pack.
+- **Gear in a fight, 1 AP a hand:**
+  - draw 1, a two-handed weapon 2, swap hands 1, put away 1 a hand;
+  - drop is free and lands in the pile;
+  - light armour (1.2 kg or less) 1 AP a piece; heavier armour can't change in a fight;
+  - Hot-Swap still makes a swap free.
+  - A **backpack button** in the fight (key B) opens the inventory with each row's cost. "Hold the Evoker/Emanator" is gone, and a focus still counts only in a hand.
+- **Drop tables** (`data/loot_tables.json`):
+  - the engine rolls every drop on the fight's dice, once per death, into the pile where the enemy died;
+  - enemies always drop the weapon they used (worn) and their leftover magazines;
+  - rolled items by kind: parts and cores from machines, personal effects from people, cores and plates from casters;
+  - at most 2/3/4/5 rolled items a fight by difficulty; a boss always drops one notable thing;
+  - three layers: engine defaults < a campaign's `loot_tables`/`drops` < the Narrator's `drops` for one fight.
+- **Paths:** a player's click-path goes around revealed hazards when an affordable detour of at most 2 tiles exists. The preview marks any hazard it still crosses. Enemy paths are unchanged.
+- **Fixed:**
+  - picked-up off-hand magazines lost at the end of a fight;
+  - magazines counted twice after a mid-fight swap;
+  - the pack index shifting under an equip;
+  - objects lost when a fight ran on another zone's map;
+  - an off-hand gun reloading for free;
+  - stims and Essences picked up as dead weight.
+- **Merged with 0.2.1:**
+  - World Play 1.1 is rules **1.9**, since Outburst 4.0 took 1.8;
+  - dropped Heart plates never roll a shelved module;
+  - the Narrator's stable prompt guard is 25,000 tokens.
+- **e2e:** a new `ground.mjs`. `lib.mjs` no longer sends a loopback BASE through `HTTPS_PROXY`.
+- **Waiting on Leon:**
+  - the light-armour line (1.2 kg);
+  - the drop-table weights and the 20 personal effects;
+  - whether area-map kills (outside a fight) should drop loot;
+  - whether a click-path may walk straight through a revealed hazard on purpose.
+
 ## 0.2.1 — 9 November 2026
 
 Branch `hotfix/outburst-4.0-review`: **fixes from the Outburst 4.0 review**, before it went live. Each fix has a regression test.

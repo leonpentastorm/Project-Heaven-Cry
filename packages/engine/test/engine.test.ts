@@ -303,8 +303,11 @@ describe('combat', () => {
     const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0]; u.ap = 6;
     u.ammo = 5; expect(reload(cb, u)).toBeNull();
-    expect(u.ammo).toBe(12); expect(u.mags).toEqual([12]); expect(cb.floor![0].text).toBe('magazine with 5 rounds');
-    u.ammo = 0; expect(reload(cb, u)).toBeNull(); expect(cb.floor![1].text).toBe('empty magazine'); expect(u.mags).toEqual([]);
+    // Rules 1.9: a speed reload drops the old magazine into the pile on the tile, rounds kept (cb.floor is retired).
+    const pile = () => cb.objects!.find((o) => o.kind === 'pile' && o.pos === u.pos)!;
+    expect(u.ammo).toBe(12); expect(u.mags).toEqual([12]); expect(pile().items!.map((e) => e.name)).toEqual(['Service pistol magazine 5/12']);
+    u.ammo = 0; expect(reload(cb, u)).toBeNull(); expect(pile().items!.map((e) => e.pack!.mags)).toEqual([[5], [0]]); expect(u.mags).toEqual([]);
+    expect(cb.floor).toBeUndefined();
     u.ammo = 3; expect(reload(cb, u)).toMatch(/No loaded spare magazines/);
   });
   it('weights: everything counts, down to the round', () => {
@@ -332,7 +335,8 @@ describe('combat', () => {
     const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0]; u.ap = 6; u.ammo = 0;
     reload(cb, u); expect(u.mags).toEqual([12]);
-    u.ap = 6; expect(pickUp(cb, u, u.pos)).toBeNull(); expect(u.mags).toEqual([12, 0]); expect(u.ap).toBe(5);
+    u.ap = 6; expect(pickUp(cb, u, u.pos, null, c)).toBeNull(); expect(u.mags).toEqual([12, 0]); expect(u.ap).toBe(5);
+    expect(cb.objects!.some((o) => o.kind === 'pile')).toBe(false); // an empty pile leaves the map
     expect(loadMagazine(cb, u)).toBeNull(); // 12 rounds at 5 a point: 3 AP
     expect(u.mags).toEqual([12, 12]); expect(u.loose).toBe(12); expect(u.ap).toBe(2);
     c.pack = packOf(c).map((x) => (x.mags ? { ...x, mags: [0, 5] } : x));
@@ -756,6 +760,14 @@ describe('anyone is a target (spec: Anyone is a target)', () => {
     expect(g.story.objects!.find((o) => o.name === 'Enemy drop pod')!.sprite).toBe('sprite-obj-drop-pod');
     expect(() => apply(g, { type: 'campaign/refresh' }, 'p2')).toThrow(/Host only/);
   });
+  it('a resumed save from before the sigil marks gets them in zones not yet entered (objects only added are no layout change)', () => {
+    let { g } = two('marks');
+    const cur = g.story.zone;
+    for (const z of g.campaign!.zones) z.objects = (z.objects || []).filter((o: any) => o.kind !== 'sigil_mark');
+    g = apply(g, { type: 'campaign/refresh' }, 'host');
+    const withMarks = g.campaign!.zones.filter((z) => (z.objects || []).some((o: any) => o.kind === 'sigil_mark')).map((z) => z.id);
+    expect(withMarks.length).toBe(3); expect(withMarks.filter((id) => id !== cur).length).toBeGreaterThan(0);
+  });
   it("a custom campaign file is marked custom and can't take a built-in id", () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'custom');
     g = apply(g, { type: 'campaign/load', campaign: { ...BUILT_IN_CAMPAIGNS[0], title: 'Mine' } as any }, 'host');
@@ -858,12 +870,13 @@ describe('rerolls and edits by unanimous vote (spec: Rerolls and edits)', () => 
   });
   it('a passed reroll undoes the turn and everything after it, and asks the Narrator again', () => {
     let { g, before, line } = room();
-    const id = Object.keys(g.characters)[0], packed = JSON.stringify(before.characters[id].pack);
-    expect(JSON.stringify(g.characters[id].pack)).not.toBe(packed);
+    // loot[] stims join the character's stims (rules 1.9 review fix: a stim in the pack could never be used).
+    const id = Object.keys(g.characters)[0], packed = JSON.stringify(before.characters[id].pack), stims = before.characters[id].stims;
+    expect(g.characters[id].stims).toBe(stims + 2);
     g = apply(g, { type: 'vote/start', kind: 'reroll', entryId: line.id, note: 'Keel talks instead.' }, 'host');
     g = apply(g, { type: 'vote/cast', yes: true }, 'p2');
     const r = rerollFrom(g, before, 'Keel talks instead.');
-    expect(JSON.stringify(r.characters[id].pack)).toBe(packed); expect(r.v).toBe(g.v + 1);
+    expect(JSON.stringify(r.characters[id].pack)).toBe(packed); expect(r.characters[id].stims).toBe(stims); expect(r.v).toBe(g.v + 1);
     expect(r.story.work).toMatchObject({ kind: 'opening', redo: 'Keel talks instead.' }); expect(r.narrator.busy).toBe(false);
     expect(r.story.entries.find((e) => e.rerolled)!.text).toBe('Keel shoots first.');
     expect(votesOf(r).open).toBeNull();

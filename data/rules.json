@@ -503,7 +503,14 @@
       {
         "id": "reload",
         "ap": 2,
-        "text": "reload a magazine, or swap an Evoker core"
+        "text": "speed reload: swap in the fullest spare magazine, the old one drops into the pile on your tile (rules 1.9); or swap an Evoker core"
+      },
+      {
+        "id": "reload_tactical",
+        "ap": "reload + 1",
+        "extra_ap": 1,
+        "text": "tactical reload: the old magazine goes back in the pack, rounds still in it (rules 1.9, item 679)",
+        "provisional": true
       },
       {
         "id": "clear_jam",
@@ -516,7 +523,55 @@
       {
         "id": "interact",
         "ap": 1,
-        "text": "use an item, draw/swap a weapon, open a door"
+        "text": "use an item, open a door"
+      },
+      {
+        "id": "draw",
+        "ap": 1,
+        "text": "draw from the pack into one hand (a one-handed weapon, a focus, a torch, a shield); what the hand held goes to the pack (rules 1.9, item 684)",
+        "provisional": true
+      },
+      {
+        "id": "draw_two_handed",
+        "ap": 2,
+        "text": "draw a two-handed weapon: it fills both hands, what the off hand held goes to the pack (rules 1.9, item 684)",
+        "provisional": true
+      },
+      {
+        "id": "swap_hands",
+        "ap": 1,
+        "text": "swap main hand and off hand (rules 1.9, item 684)"
+      },
+      {
+        "id": "put_away",
+        "ap": 1,
+        "per_hand": true,
+        "text": "put away what a hand holds into the pack: 1 AP a hand, 2 for a two-handed weapon (rules 1.9, item 684)",
+        "provisional": true
+      },
+      {
+        "id": "drop_held",
+        "ap": 0,
+        "text": "drop what a hand holds: it lands in the pile on your tile (rules 1.9, item 684)",
+        "provisional": true
+      },
+      {
+        "id": "light_armour",
+        "ap": 1,
+        "max_kg": 1.2,
+        "text": "put on or take off a light armour piece (1.2 kg or less), each; heavier armour isn't changed in a fight (rules 1.9, item 685)",
+        "provisional": true
+      },
+      {
+        "id": "fit_mod",
+        "ap": 1,
+        "text": "fit a mod to the main-hand weapon (item 147)"
+      },
+      {
+        "id": "pickup",
+        "ap": 1,
+        "text": "pick up any or all of the pile on your tile or an adjacent one (rules 1.9, item 674)",
+        "provisional": true
       },
       {
         "id": "analyze",
@@ -916,13 +971,16 @@
     "calibres_provisional": true,
     "reloading": {
       "cost_ap": 2,
-      "magazine": "swap in the fullest spare magazine; the one in the gun drops on the floor with any rounds left in it",
+      "magazine": "speed reload (cost_ap): swap in the fullest spare magazine; the one in the gun drops into the pile on your tile, empty or with its rounds and ammo type (spec items 679, 680)",
+      "tactical": "tactical reload: the speed reload's cost + world_play.json pile.tactical_reload_extra_ap (1); the old magazine goes back to the spares in the pack with its rounds and type; not for a gun loaded round by round (spec item 679)",
+      "full": "a magazine gun that is full isn't reloaded (Already full.)",
+      "off_hand": "a character's off-hand gun reloads only from its own spares (or, loaded round by round, its loose rounds); an enemy's never runs out until stat blocks list it",
       "loose": "top up from loose rounds; nothing drops",
-      "enemies": "carry unlimited spares (until stat blocks list ammo)",
+      "enemies": "carry the spare magazines their tier lists (Enemy stat blocks) and always speed-reload, so their magazines feed the piles (spec item 679)",
       "provisional": true,
       "only_loaded": true,
       "pickup_ap": 1,
-      "pickup": "everything on your tile or one adjacent tile",
+      "pickup": "a selection of the entries in the pile on your tile or one adjacent tile, everything by default (world_play.json ap.pickup; spec items 674, 675)",
       "load_rounds_per_ap": 5,
       "load_out_of_combat_ap": 0
     }
@@ -1144,51 +1202,8 @@
       }
     },
     "prayer": {
-      "requires": {
-        "patron": true
-      },
-      "devotion": {
-        "min": 0,
-        "max": 10,
-        "start": 3,
-        "gain": {
-          "session_rites_kept": 1,
-          "convert_someone": 1
-        },
-        "loss": {
-          "broken_rite": 1,
-          "break_character_seen": 2
-        }
-      },
-      "tiers": [
-        {
-          "id": "pray",
-          "faith_min": 3,
-          "ap": 3,
-          "roll": "d20 + mod(faith) + floor(devotion/2)",
-          "tn": "patron mood (default 12, narrator moves it)",
-          "success": "one blessing from patron list x blessing_power",
-          "nat1": "-1 devotion",
-          "meter_delta": -5,
-          "cooldown": "prayer_cooldown_turns"
-        },
-        {
-          "id": "witnessed",
-          "faith_min": 5,
-          "trigger": "after a successful prayer, until your next turn",
-          "on_theme_bonus": 2,
-          "off_theme_cost_devotion": 1,
-          "theme_judged_by": "narrator"
-        },
-        {
-          "id": "miracle",
-          "faith_min": 7,
-          "uses": "once per session",
-          "cost": "all devotion",
-          "devotion_min": 5,
-          "effect": "blessing at triple power, or a story-sized intervention the narrator designs"
-        }
-      ],
+      "revision": "1.6.1",
+      "note": "Prayer, Devotion and its XP are in patrons.json (rules 1.6 and 1.6.1: Devotion XP, the tag caps, Whisper / Hymn / Miracle, overreach, Witnessed, vows, rites, leaving a patron). The rules 1.0 numbers once kept here (a level a rite, the patron's mood as a TN) are retired.",
       "data": "patrons.json"
     }
   },

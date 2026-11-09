@@ -4,6 +4,8 @@
 >
 > **Revision 1.1 (2026-11-05), synced to the living Doc:** skill modifier = points − 1; skill Voices replace Inner Voice; Overreach is indulge-or-resist; creation is 10 skill points; new XP table; HP rescale; class rank thresholds 13/18 (superseded by Class Roster Revision 3: ranks II and III at the class's attribute 5 and 8, items 551–552; see Classes). Rationale: `docs/design/proposals/2026-11-gameplay-fixes.md`.
 
+> **Revision 1.10 (2026-11-09), Sigil 1.5:** a Line is a stroke (the glyphs drawn as one); touching glyphs of other strokes no longer poison a Line; Lines stay 2–4 glyphs; study, copying and sigil marks; word mastery and inflections; Junctions at Brain Power Mastered. See Mana, Drawing a spell, rule 3, The Magic panel and learning, and items 901 on. Design: `docs/design/sigil-1.5-spec.md`.
+
 2026-11-03 · Leon PT
 
 ## How to use this spec
@@ -336,10 +338,18 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Aimed shot (+2 to hit) | 3 |
 | Burst: 3 rounds at one target, −1 to hit for each round after the first | 3 |
 | Full auto: a 3-tile cone, 10 rounds, one roll per target at −2 | 4 |
-| Reload a magazine, or swap an Evoker core | 2 |
+| Speed reload a magazine (the old one drops into the pile on your tile), or swap an Evoker core | 2 |
+| Tactical reload a magazine (the old one goes back in your pack; rules 1.9) | the reload's cost + 1 (3) |
 | Clear a jam | 2 |
 | Throw | 2 |
-| Use an item, draw or swap a weapon, open a door | 1 |
+| Use an item, open a door | 1 |
+| Draw from the pack into one hand (a one-handed weapon, a focus, a torch, a shield; what the hand held goes to the pack), or swap main hand and off hand (rules 1.9: Gear in a fight) | 1 |
+| Draw a two-handed weapon (it fills both hands; what the off hand held goes to the pack) | 2 |
+| Put away what a hand holds into the pack | 1 a hand (2 for a two-handed weapon) |
+| Drop what a hand holds (it lands in the pile on your tile) | 0 |
+| Put on or take off a light armour piece (1.2 kg or less, provisional: item 685); heavier armour is not changed in a fight | 1 each |
+| Fit a mod (item 147) | 1 |
+| Pick up from a pile on your tile or an adjacent one (any or all of it; rules 1.9) | 1 |
 | Analyze an enemy (reveals HP, armour, resistances, weak points) | 2 |
 | Overwatch: hold AP for one shot at the first enemy that moves into your line | AP of the shot |
 | Draw a Sigil glyph (on your own tile only, rules 1.4) | Glyph AP cost, see Derived stats (draft 1.2) |
@@ -357,7 +367,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Put out Burning (yourself or an adjacent ally) | 1 |
 | Break a grapple | 2 |
 | Recover a dropped weapon (raise a lowered one) | 2 (1) |
-| Reload both guns | 3 |
+| Reload both guns: speed / tactical | 3 / 4 |
 | Shove an adjacent enemy | 2 |
 | Brace (set a heavy weapon) | 1 |
 | Field Repair | 2 |
@@ -471,7 +481,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | Elite | 100 | 13 | +5 | 10 | 2 | 5 | 3 |
 | Boss | 200 | 14 | +6 | 10 | 2 | 7 | 4 |
 
-Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers. A Boss counts as 3 kills for weapon mastery. Their Endurance sets their Injury resistance (10% × (Endurance − 1)), like a character's. They carry their weapon's spare magazines, which they reload from like anyone else. When a gun runs dry they fight with their fists, and what they carry is there to be stolen or looted.
+Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers. A Boss counts as 3 kills for weapon mastery. Their Endurance sets their Injury resistance (10% × (Endurance − 1)), like a character's. They carry their weapon's spare magazines, which they reload from like anyone else. When a gun runs dry they fight with their fists, and what they carry is there to be stolen or looted: when they die, their weapon, their leftover magazines and what the drop tables roll land in the pile where they fell (rules 1.9, World Play: Drop tables).
 
 ## Weapons
 
@@ -496,9 +506,9 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Incendiary | target is Burning; −10% damage |
 | Enhanced | a sliver of mana core in every round. Ignores armour, deals Elemental damage, and each hit releases bots (+1 on the ambient mana meter). One core makes 10 rounds. Rare, and expensive to buy. |
 
-**Reloading** (2 AP) uses up ammo you carry. Magazine weapons (the pistol, SMG, service rifle, LMG, .700, and the revolver's speedloaders) swap in your fullest spare magazine, and the one in the gun drops on the floor: empty, or with whatever rounds were left in it, which are lost with it. Weapons loaded round by round (lever carbine, scattergun, long rifle, bows, crossbow) top up from loose rounds and drop nothing. No spares, no reload: fight with something else. Starting kits carry spares: the medic and the Sigil student 2 pistol magazines, the line soldier 3 rifle magazines, the Soul initiate 2 speedloaders. Enemies carry the spare magazines their tier lists (Enemy stat blocks). Provisional (item 55).
+**Reloading** uses up ammo you carry, and a magazine weapon (the pistol, SMG, service rifle, LMG, .700, and the revolver's speedloaders) offers two reloads (rules 1.9, World Play 1.1). A **speed reload** (2 AP) swaps in your fullest spare magazine and drops the one in the gun into the **pile** on your tile (World Play: Piles), empty or with whatever rounds were left in it, so it can be picked up again. A **tactical reload** (the speed reload's cost + 1, so 3 AP) puts the old magazine back in your pack, rounds still in it. Quick Release and Speed Loader lower the speed reload's cost as before; the tactical reload is that cost + 1. Each magazine keeps its own ammo type. Weapons loaded round by round (lever carbine, scattergun, long rifle, bows, crossbow) have one reload: they top up from loose rounds and drop nothing. No spares, no reload: fight with something else. Starting kits carry spares: the medic and the Sigil student 2 pistol magazines, the line soldier 3 rifle magazines, the Soul initiate 2 speedloaders. Enemies carry the spare magazines their tier lists (Enemy stat blocks) and always speed-reload, so their magazines feed the piles. On the area map the same two reloads exist. Provisional (items 55, 679, 680).
 
-**Magazines and rounds are inventory.** The backpack lists loaded, part-loaded and empty magazines, and loose rounds, separately, each with its weight. Reload only takes a magazine with rounds in it. **Picking up** (1 AP) takes everything on your tile or one adjacent tile: dropped magazines, empty or not, go back in the pack. **Loading** a magazine from loose rounds costs 1 AP per 5 rounds in combat (load part of one if you're short of AP), and nothing out of combat. Starting kits also carry loose rounds: 24 for the pistols, 48 rifle rounds for the line soldier, 12 for the revolver. Provisional (item 58).
+**Magazines and rounds are inventory.** The backpack lists loaded, part-loaded and empty magazines, and loose rounds, separately, each with its weight. Reload only takes a magazine with rounds in it. What is dropped lies in a **pile** on its tile, on every map, and stays there (World Play: Piles). **Picking up** (1 AP) takes what you tick from the pile on your tile or one adjacent tile (everything by default): a dropped magazine keeps its rounds and ammo type, loose rounds come in one stack per calibre, and weapons keep their rarity, wear and mods. In a fight a magazine for the gun in your main hand joins its spares, one for a different off-hand gun the off hand's spares, and everything else your pack. **Loading** a magazine from loose rounds costs 1 AP per 5 rounds in combat (load part of one if you're short of AP), and nothing out of combat. Starting kits also carry loose rounds: 24 for the pistols, 48 rifle rounds for the line soldier, 12 for the revolver. Provisional (items 58, 674, 675).
 
 **Plot items.** The Narrator's loot names a weapon or item id the engine knows, and the character gets that thing (with the Narrator's in-world name, if given). Anything else (an unknown or empty id) becomes a **plot item**: the Narrator's name and one-line description, no weight, no stats, never equipped, listed under PLOT ITEMS in the backpack. A player can give one to another character or drop it out of a fight; the Narrator takes one back when the story uses it up (its plot id with a negative quantity). The log line always says what was actually given.
 
@@ -563,10 +573,10 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 #### 3. Hands, off hands and dual wielding
 
 1. **Hands.** A 2H weapon fills both hands. The off hand takes a 1H weapon, a shield, a torch or a focus.
-2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Swapping what a hand holds costs 1 AP per hand (spec: draw or swap a weapon). Dropping is free.
+2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Changing what a hand holds in a fight costs **1 AP a hand** (rules 1.9, World Play: Gear in a fight): drawing from the pack into one hand 1, a two-handed weapon 2, swapping main and off hand 1, putting away 1 a hand, dropping 0 (it lands in the pile on your tile). A focus drawn from the pack counts at once. Out of a fight gear changes are free.
 3. **Single attacks.** With a weapon in each hand, attack with either one at its normal cost and modifiers.
 4. **Paired attack.** One action with both weapons. **AP = the higher attack cost + 1.** The main hand attacks at −1 and the off hand at −3, at the same target or two targets, each with its own roll. The off-hand penalty drops by 1 for every 3 points in its attack skill (Dexterity for guns, Athletics for blades), to a minimum of −1.
-5. **Two guns.** Each gun tracks its own heat, ammo and recoil. Reloading one gun is 2 AP; reloading both is 3 AP.
+5. **Two guns.** Each gun tracks its own heat, ammo and recoil. Reloading one gun is 2 AP; reloading both is 3 AP (a tactical reload of both, 4; item 679).
 6. **Gun and blade.** A paired attack may mix a shot and a strike: the strike needs an adjacent target, and firing at an adjacent enemy provokes as usual.
 7. **Injured arms.** An arm injury (spec: Injuries) applies to the weapon in that arm.
 8. **Mastery.** A kill counts for the weapon that dealt the final hit. Shield bashes and torch strikes count as Unarmed.
@@ -901,7 +911,7 @@ Weapon mastery is the second way a character grows, beside character level. It's
 | Taunted | Heart | your attacks must go at the one who taunted you while you can see them | 1 round, or until you attack them |
 | Commanded | Heart | you obey one short order on your next turn. Against an enemy the engine runs the order from a menu: halt, hold (no attacks), drop (Disarmed), kneel (prone), flee; anything else goes to the Narrator | 1 round |
 | Puppeted | Brain | the caster's player runs your next turn (your AP); you can't be made to harm yourself | 1 round |
-| Disarmed | Heart | your weapon is down: you strike with your fists until you recover it (2 AP). **Weapon lowered** is the light version: 1 AP to raise it | until recovered |
+| Disarmed | Heart | your weapon is down: you strike with your fists until you recover it (2 AP) or draw another (rules 1.9, item 687: the downed one stays in the pile). **Weapon lowered** is the light version: 1 AP to raise it | until recovered |
 | Augment Offline | Body | one augment, prosthetic or implant gives nothing and its actions are unavailable | until repaired |
 | Corroded | Body | 5 damage at the start of each turn; Defense −2. Set by ACID with no save to land it; a Body save at the end of each of your turns ends it early (rules 1.4, provisional) | 3 rounds |
 
@@ -950,12 +960,22 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 
 > **Rules revision 1.4: Sigil magic (accepted 7 Nov 2026, with Leon's answers; decision 98).** It replaces the 1.2 Sigil rules: 40 words in five groups, the Line as the only shape, glyphs drawn only on your own tile, Reach words for range and the facing rule for aim. The mana meter, cores, Flux and the Evoker are unchanged; Soul magic is now rules revision 1.5 (Outburst 2.0, below). Every new number is provisional (items 415–491). The design is in `docs/design/sigil-1.4-proposal.md`; what it changes in classes, perks and traits is in `docs/design/sigil-1.4-impact.md`.
 
+> **Rules revision 1.10: Sigil 1.5, strokes (accepted direction, Leon, 9 Nov 2026; design `docs/design/sigil-1.5-spec.md`).** A Line is what you drew as one: every glyph records its **stroke**, and glyphs of other strokes no longer join, poison or block a Line (Drawing, rule 3). Lines stay 2 to 4 glyphs for everyone (Leon, 9 Nov 2026: no Lines of 5). The facing rule, Evoking and fizzling are unchanged. **Study** (every Evoke and Mastery level builds toward guaranteed new words; glyphs can be read and copied) and **word mastery** (use counts and inflections) are in The Magic panel and learning, with **sigil marks** (words drawn into the world, copied with Investigate); **Junctions** (Brain Power Mastered: one glyph in two strokes, a crossing) are Drawing rule 3.11. Every new number and reading is provisional (items 901 on).
+
 ### The Magic panel and learning
 
 Magic has its own tab on the character sheet, **MAGIC**. It lists the Sigil words you know and your Outburst designs, and it is where you learn new ones and make designs. It shows for any character with Brain Power 1+, Will Power 1+, an Evoker or an Emanator.
 
 - **Starting magic.** A character with Brain Power 1+ picks **2 Sigil words** at creation. Together they must make a spell (one Subject and one other word), and **one of them must be a Reach word** (Leon, rules 1.4): SPARK · SEEK (the default), FIRE · ARC, MEND · RELAY, BIND · SEEK. A new caster can always hit something more than one tile away. A character with Will Power 1+ makes **1 Outburst design** from one school and one module. A character with both gets both.
 - **Learning Sigil words is study.** Each new word takes one long rest with a source: a tutor the Narrator places, a **Sigil plate** (loot: a slate with one word cut into it, used up), or an ally who knows the word. You know at most **4 + Brain Power** words, out of 40, so every Sigil user is a specialist.
+- **Rules revision 1.10 (Sigil 1.5): study guarantees new words.** You still know at most **4 + Brain Power** words. Every number here is provisional (items 906 on).
+  1. **Study.** Every Evoke earns study: **1**, **+1 per glyph past 2**, **+1 if it struck an enemy** (a 2-glyph miss earns 1, a 4-glyph hit 4). An Evoke that fizzles earns nothing.
+  2. **Thresholds.** At **6** study you may learn a word of your choice, then at every **8** more (6, 14, 22, 30…). The choice is any of the 40 words you don't know, within your cap; words you copied are listed first. Learn out of combat (`sigil/learn`). A pick you can't use yet (no slot free) is **banked** until a slot frees up (Brain Power rises).
+  3. **Copying in a fight.** **Read** (the Analyze action, the same AP and range, line of sight) a glyph on the map or the **trace** of a scuffed glyph that holds a word you don't know: **+2 study**, and the word joins your **known-to-study** list. Analyzing an enemy also reads the glyphs it has drawn within your Analyze range. A scuffed glyph leaves its trace for **2 rounds**. Each glyph (and its trace) copies once per character; copying never teaches a word outright (only a critical Investigate or a Narrator grant does).
+  4. **Copying on the map: sigil marks.** Words drawn into the world long ago (carved on doors and ruins, on Keystones and warding posts, old Sigil plates fixed to walls) are points of interest (`sigil_mark`, with its `word`, its `age` and its `damage`). Each has an **Investigate** approach (2 AP, standing on or next to it): **Analysis or Rumination** (the better one), the TN by age and damage (fresh and intact 8, up to ancient and broken 20; item 921). **Success:** +3 study and the word joins your known-to-study list. **A critical** (a natural 20) teaches it outright, if you have a slot free; with none free it counts as a success and the log says so. **Failure:** nothing learned, and the try is spent (each character investigates each mark once). A word you already know can't be investigated (item 922). The Narrator places marks with `objects[]`; the M813 campaign has three.
+  5. **Mastery study.** Each Mastery level (3/5/7/9 points) in **Brain Power, Rumination or Eloquence** gives **+5 study**, once. **Mastered** (10) in one of them gives **one free word** that ignores the cap, once per skill.
+  6. **Bonus sources** stay as before: a tutor, a Sigil plate, an ally who knows the word, or a Narrator grant, **one new thing a scene** from those. A Narrator grant that comes when the scene's new thing is spent, or with no slot free, isn't lost: the word joins your known-to-study list.
+- **Rules revision 1.10: word mastery.** Every word you know has a **use count**: each Evoke that includes it adds 1 (a word twice in one spell still adds 1). At **10** uses the word is **Practised** (a star on its chip); at **30** it is a **Mastered word** (a filled star) and its **inflection** is always on for you: one small upgrade of that word (about 10%, or +1 of something; never a new shape). The 40 inflections are in sigils.json (`inflection`), all provisional (item 916). Your inflections apply to the spells you Evoke, including words an ally drew, and to the fields, traps and turrets those spells leave. An inflection the engine doesn't run falls back to the Narrator with its text.
 - **Learning Outbursts is living.** New schools and modules come from tutors, and from experience: after a moment that shakes a character (a death, a vow, a betrayal), the Narrator may grant one module that fits it, like an Achieved perk. Designs are made out of combat; you keep 2 + floor(Empathy ÷ 2) ready.
 
 ### Sigil magic: commands written on the map (Mind, through an Evoker)
@@ -1082,12 +1102,23 @@ Every word answers one question:
 
 1. **You draw a glyph only on the tile you stand on**, with an Evoker in hand (Glyph AP, the word's charge, 1 Flux).
 2. **One glyph per tile.** A tile that holds any glyph (yours, an ally's or an enemy's) takes no other, unless a perk, trait or skill lets that caster put a second glyph there. None does yet: this is the hook for one (the **two-glyph hook**). With it, two glyphs on one tile on their own are a **Stack**; on a tile of a Line, both count as words of that Line. A spell still holds at most 4 glyphs.
-3. **The only shape is the Line:** 2 to 4 glyphs of your side (yours and your allies') on neighbouring tiles in one straight row, **horizontal, vertical or diagonal**. The glyphs that touch each other make one group; a group that isn't one straight row of 2–4 (a bend, an L, a cluster, a row of 5) is **no shape** and can't be Evoked until a glyph is scuffed or fades. An enemy's glyph never joins your group. **The Ring and the old Stack are gone.**
+3. **The only shape is the Line, and a Line is a stroke** (rules revision 1.10, Sigil 1.5). A **stroke** is a run of glyphs drawn as one Line; every glyph records the stroke it belongs to. A **Line** is a stroke of 2 to 4 glyphs in one straight row, **horizontal, vertical or diagonal**. **The Ring and the old Stack are gone.**
+   1. **Extending a stroke.** A new glyph **extends** a stroke when it is drawn next to that stroke's **end** glyph (the last one drawn) **and** continues its straight row (the same axis, the same direction), and the stroke has fewer than 4 glyphs. A stroke of one glyph can be extended in any of the 8 directions; the second glyph sets its axis.
+   2. **Otherwise the new glyph starts a new stroke**, even if it touches other glyphs.
+   3. **The stroke picker.** When a new glyph could extend more than one stroke, you pick which, or **new Line**, on the draw step. The default is the stroke you drew into last; a stroke you have no glyph in is never the default (item 901). The preview shows the result: "extends FIRE·SEEK" or "starts a new Line".
+   4. **Touching glyphs of other strokes don't matter:** they don't join, poison or block. Two Lines may run side by side, cross diagonally, or end next to each other.
+   5. **The draw's refusals read the stroke it extends:** a second Reach word, a second KIN, WATCH with STAY, past 4 glyphs or past the Max Sigil words of its drawers are refused before anything is spent; pick **new Line** to start a fresh stroke instead.
+   6. **Co-op:** an ally may extend **your** stroke by drawing at its end along its axis, picked on the same picker (rule 8). Allies' glyphs never join a stroke by accident. **Enemies** use strokes too; their glyphs never join yours, and yours never join theirs.
+   7. **The facing rule, Evoking and fizzling are unchanged:** they read the stroke's tiles exactly as they read a Line.
+   8. **Scuffing a middle glyph splits the stroke** in two. Each part still 2 or more long is a Line; a single glyph left alone is just a glyph (it can be extended again). The same holds when a middle glyph fades or is unmade (item 903).
+   9. **A Stack** (the two-glyph hook, rule 2): a second glyph on a tile joins the stroke of the glyph already there (item 902).
+   10. **Old saves:** glyphs drawn before rules 1.10 (no stroke recorded) keep the 1.4 reading until they fade: the ones of a side that touch each other make one group, and a group that isn't one straight row of 2–4 is no shape. They never join a stroke, and a stroke never joins them (item 904).
+   11. **Junctions** (rules 1.10, Brain Power **Mastered**, 10; items 917–920). A glyph may belong to **two strokes** at once: a crossing. When a new glyph could extend a stroke of your side, the picker also offers a **junction**: "junction: extends FIRE·SEEK and BIND" (the glyph extends both strokes at once, each on its own axis) or "junction: extends FIRE·SEEK + a new Line" (it extends that stroke and is also the first glyph of a new stroke, which you then extend from it in any direction). It is one glyph: one draw's AP, charge and Flux, and one of your glyphs on the ground. The draw's refusals (rule 3.5) read both strokes. A junction is never the default; without Brain Power Mastered the pick is refused. **Evoking either Line** counts the junction as a word of that Line; it stays, now in the other stroke only, and **fades when the second Line is Evoked**. Time, your glyph cap, a Scuff and NULL remove it like any glyph (both strokes lose it). Enemies don't draw junctions.
 4. **So you walk a spell:** draw, step, draw. A 4-word spell is a Line of 4 tiles: 3 steps, 4 glyphs, then Evoke. At Agility 1 and Expression 1 that's 3 + 4 + 1 = 8 AP, more than one turn's 6, so you finish it next turn. A Line can't cross a tile you can't stand on (walls, cover, deep water), and walking it can draw Overwatch.
 5. **Glyphs last** 2 rounds + your Sigil duration bonus (rounded down); out of combat, the same number of overworld rounds. They fade when the spell is Evoked (Keystones excepted).
 6. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
 7. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
-8. **Co-op.** Two Sigil users can build one Line together, each drawing their own glyphs. Whoever Evokes pays the firing charge, rolls, and needs Max Sigil words of at least the Line's length. **Enemy Sigil users** can Evoke any Line they can read, yours included, and the other way round.
+8. **Co-op.** Two Sigil users can build one Line together, each drawing their own glyphs: the second extends the first one's stroke by picking it on the draw step (rule 3.6). Whoever Evokes pays the firing charge, rolls, and needs Max Sigil words of at least the Line's length. **Enemy Sigil users** can Evoke any Line they can read, yours included, and the other way round.
 9. **Skill unlocks that change drawing and Evoking** (engine-run, items 482–485): **Brain Power · Overclock** (Mastery 1): your next glyph may make a spell one word longer than your Max Sigil words (never past 4), for 2 charge more. **Brain Power · Twin Draw** (Mastery 2): once per combat, the glyphs of two spells cost the Glyph AP of the longer spell only (steps still cost Movement). **Rumination · Proven Formula** (Mastery 2): a spell whose words, in order, match one you already Evoked this combat costs 1 AP less to Evoke. **Visualization · Paint the Field** (Mastery 2): once per Evoke, a spell with no Burst word gets a free SPREAD or PUSH (no glyph, no charge, not counted toward 4).
 
 #### 4. Evoking: the facing rule
@@ -1153,7 +1184,7 @@ Enemies with an Evoker use the 40 words by the same rules (Leon). In short: an e
 
 **Every Sigil spell shows everything it will do before it is Evoked, and everything it is doing while it lasts.** No rule the player can't see decides a Sigil spell. Each colour on screen is paired with a word or glyph (docs/design/colour-system.md). The client must show:
 
-1. **Before drawing:** the tile you'll draw on (yours), the word's cost, and whether this glyph extends a Line, starts a new one, or breaks a shape (a bend).
+1. **Before drawing:** the tile you'll draw on (yours), the word's cost, and which stroke the glyph joins (rules 1.10, rule 3): "extends FIRE·SEEK", "starts a new Line", a Stack or a junction, with the stroke picker when more than one fits. A glyph that turns off a stroke's row starts a new Line and breaks nothing; only glyphs from before rules 1.10 can still be left with no shape (rule 3.10).
 2. **While building:** the Line's words in order and its shape; whether it's a valid spell yet ("needs a Subject", "needs another word", "a second Reach word is refused"); glyphs left before your cap; charge, AP and Flux now and after Evoke; an overload warning.
 3. **Where to stand:** the tiles you can Evoke from, each with the direction its area opens; refused tiles say why (a middle glyph, too far).
 4. **Targeting:** the area you may pick from, tinted; out-of-reach tiles dimmed; the direction it fires, drawn before you Evoke.
@@ -1511,6 +1542,16 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 > someone is watching. Sigils own space, Outbursts own time and the body, Blessings own a relationship and are paid for
 > with obedience (vows, rites, taboos). Every number here is PROVISIONAL (section 14, items 592–629). The patron's mood
 > (the old prayer TN) is retired. The data is `patrons.json` (version 2); the engine is `faith.ts`.
+>
+> **Rules revision 1.6.1 (Faith 2.1, 9 Nov 2026; design `docs/design/faith-2.1-spec.md`, decision 107; Leon's rulings
+> of 8–9 Nov).** Devotion is earned as **Devotion XP**, the caps on tags live on the character (the area map can't farm
+> them), the Narrator moves XP within a session cap, leaving a pact has a 90-day cooldown on a new **day counter**, and
+> the patron you leave for another may hold a **grudge**. Every number is PROVISIONAL (section 14, items 701–723).
+>
+> **Rules revision 1.6.2 (Miracle 2.1, 9 Nov 2026; Leon's ruling: "Buff all miracles to deserve the title, miracle only
+> at 10 and it reduces your devotion by 5").** A Miracle needs **Devotion 10** (and Faith 7, as before); it lowers
+> Devotion by **5 levels** (10 → 5) instead of spending it all; and all eight Miracles are much stronger (the table
+> below). Devotion 7 now opens Hymn III only. PROVISIONAL (section 14, items 724–736).
 
 **Belief** (a step in character creation). Every character is **Faithful** (sworn to one patron of their Sector; all eight
 below for the Earth Sector; Devotion starts at 3) or an **Atheist** (no patron, no Devotion; prays by dice: the pilgrim).
@@ -1518,18 +1559,36 @@ Belief is chosen at Faith 0; **praying at all needs Faith 3**. Old saves: a char
 patron with their current Devotion; one without becomes an Atheist.
 
 **Devotion** (Faithful only) runs 0–10: your **standing**. You don't spend it to ask; asking is limited by cooldowns.
+Each level needs **Devotion XP** (rules 1.6.1): the character keeps the total, the level is what the total reaches, and
+events give or take XP, not levels. A loss can drop you a level, never below 0. The Faithful start at Devotion 3 (45 XP).
 
-| Rises | | Falls | |
+| Level | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Total XP | 0 | 10 | 25 | **45** | 70 | **102** | 147 | **200** | 270 | 350 | 450 |
+| Step | | 10 | 15 | 20 | 25 | 32 | 45 | 53 | 70 | 80 | 100 |
+
+The pace this aims at (checked by a simulation, items 717 and 726): Hymn I at creation, Hymn II (5) around sessions 3–4,
+Hymn III (7) around sessions 8–10, full standing (10) and with it the first Miracle after 20 sessions, then a Miracle
+about every 19 sessions (17–22 in the simulation: each one drops you to 5, and 5 → 10 is 348 XP at about 18 XP a session).
+
+| Rises | XP | Falls | XP |
 |---|---|---|---|
-| An action in a fight carries a tag your patron likes | +1, at most +2 a fight | An action carries a taboo tag | −1, −2 while Witnessed |
-| A vow kept | +1 | A vow broken | −2 |
-| A rite kept (once per rite per session) | +1 | A failed overreach | −1 |
-| Bringing someone into the faith (Narrator) | +1 | Breaking character where your patron can see (Narrator) | −2 |
-| Each knowledge piece of a new patron, on conversion | +1 | A Miracle | all of it |
+| An action carries a tag your patron likes | +1 (capped, below) | An action carries a taboo tag | −3, −6 while Witnessed |
+| A vow kept | +3 | A vow broken | −5 |
+| A rite kept (once per rite per session) | +4 | A failed overreach | −3 |
+| Bringing someone into the faith (Narrator) | +4 | Breaking character where your patron can see (Narrator) | −6 |
+| A deed the Narrator marks | +2 to +5 | Judgement (the Guardian's move) | −10 |
+| Each knowledge piece of a new patron, on conversion | +1 level (XP to that level's threshold) | A Miracle | 5 levels: Devotion 10 → 5 (XP to 102) |
 
-**What standing allows:** a Whisper at any Devotion; Hymn I at 3, II at 5, III at 7; a Miracle at Faith 7 and Devotion 7,
-once a session, spending all Devotion. **Overreach:** a Faithful may ask for their own patron's Hymn above their Devotion:
-d20 + Faith modifier against 12 + 2 × (the gate − your Devotion). A miss: nothing happens, the AP is spent, Devotion −1.
+**The caps on tags.** Each liked tag counts **once per fight and once per scene** (a story scene: a new scene title starts
+a new one). Liked tags give at most **2 XP a fight**, at most **2 XP a scene** out of fights (the area map counts as the
+scene) and at most **6 XP a session** in all. Taboos aren't capped; every tag still counts once per action. Vows, rites
+and the Narrator's moves don't count toward the tag caps. The caps are kept on the character, not on the fight's unit.
+
+**What standing allows:** a Whisper at any Devotion; Hymn I at 3, II at 5, III at 7; a Miracle at Faith 7 and **Devotion
+10**, once a session. A Miracle **lowers Devotion by 5 levels**, after its effect: the XP is set to the threshold of the
+level 5 below (10 → 5: 102 XP), so the XP into the level is lost too (rules 1.6.2). **Overreach:** a Faithful may ask for their own patron's Hymn above their Devotion:
+d20 + Faith modifier against 12 + 2 × (the gate − your Devotion). A miss: nothing happens, the AP is spent, −3 Devotion XP.
 Within your standing a Hymn needs no roll. There is no overreach for a Miracle.
 
 **The three sizes of prayer.** Every prayer drops the mana meter by 5. Silenced characters can't pray. Any prayer works in a
@@ -1540,16 +1599,16 @@ the Narrator narrates the rest.
 |---|---|---|---|
 | **Whisper** | 1 | once a turn (once a round in the story) | anyone with Faith 3 |
 | **Hymn** | 3 | the prayer cooldown (Derived stats; rounds) | the Faithful: their patron's Hymns; an Atheist: the Hymns they learned |
-| **Miracle** | 3 | once a session | the Faithful at Faith 7 (Atheists never) |
+| **Miracle** | 3 | once a session | the Faithful at Faith 7 and Devotion 10 (Atheists never); lowers Devotion by 5 levels |
 
 **Whispers**, the same six for every patron (the patron changes the look, the sound and the line): **Luck** (you or an ally
 in sight: +2 on the next roll), **Health** (heals 15 × Blessing power), **Protection** (a 15 × Blessing power shield),
 **Courage** (ends Fear or Shaken), **Guidance** (reveals Hidden enemies and traps within 6; +2 on your next notice roll),
 **Safe Passage** (your next move this turn draws no opportunity attacks). **Hymns and Miracles** belong to each patron
-(the table below). Effects are × Blessing power.
+(the table below). Effects are × Blessing power (damage, heals and shields; never rounds, AP, half HP or full HP).
 
 **Witnessed** (Faith 5, the Faithful only): after a successful Hymn or Miracle, until your next turn, your attack rolls
-that would carry a tag your patron likes get +2, and taboo actions cost double Devotion.
+that would carry a tag your patron likes get +2, and taboo actions cost double Devotion XP (−6).
 
 **Atheists and pilgrims.** An Atheist prays by dice: a Whisper is d20 + Faith modifier against 12; a learned Hymn I, II or
 III against 14, 16 or 18. A miss: nothing happens and the AP is spent. **Knowledge pieces:** an NPC with Faith above 5 can
@@ -1558,7 +1617,7 @@ Hymn in order (I, then II, then III). Pieces from several patrons give a mixed k
 never Witnessed.
 
 **Vows.** At the start of a fight, before you first act, any Faithful character may swear one vow (free). The engine
-tracks it: broken, −2 Devotion at once; kept to the end of the fight, +1. The patron speaks a line either way.
+tracks it: broken, −5 Devotion XP at once; kept to the end of the fight, +3. The patron speaks a line either way.
 
 | Vow | Broken when |
 |---|---|
@@ -1569,8 +1628,8 @@ tracks it: broken, −2 Devotion at once; kept to the end of the fight, +1. The 
 | **No Magic but Theirs** "No magic but theirs." | you draw, Evoke or Begin (Sigil or Outburst) |
 | **Nobody Left Behind** "Nobody left behind." | an ally is still Downed when the fight ends |
 
-**Tags: what your patron sees.** The engine tags actions in a fight; a tag counts once per action. Each patron likes 3 tags
-and holds 2 as taboo.
+**Tags: what your patron sees.** The engine tags actions in a fight and on the area map; a tag counts once per action
+(and a liked tag once per fight and once per scene, within the caps above). Each patron likes 3 tags and holds 2 as taboo.
 
 | Tag | When you… | Tag | When you… |
 |---|---|---|---|
@@ -1583,42 +1642,83 @@ and holds 2 as taboo.
 | storm | deal Storm (lightning) damage | trick | hide, a Trickster move, a False Image, a feint or a swap |
 
 **Conversion and the patron's rule about other gods.** The Narrator makes a pact (an Atheist converts): the new patron's
-knowledge pieces turn into Devotion, +1 each on top of the starting 3 (at most 10), and those Hymns are prayed by
-standing. Every patron is **Open** (you keep Hymns learned from other patrons and pray them by dice; you may keep learning)
-or **Jealous** (on the pact every other patron's Hymn and piece is gone, and you can't learn from other patrons).
-**Apostasy** (leaving a pact; a Narrator event): Devotion 0, you become an Atheist, and the old patron's Hymns stay as
-pieces, as many as the Hymn gates your Devotion had reached (at least 1). PROVISIONAL (item 606).
+knowledge pieces turn into Devotion, +1 level each on top of the starting 3 (at most 10; the XP is set to that level's
+threshold), and those Hymns are prayed by standing. Every patron is **Open** (you keep Hymns learned from other patrons
+and pray them by dice; you may keep learning) or **Jealous** (on the pact every other patron's Hymn and piece is gone, and
+you can't learn from other patrons).
+
+**Leaving a patron** (rules 1.6.1; Narrator events). There are two ways out.
+
+- **Apostasy** (walking away without joining anyone): Devotion XP 0, Devotion 0, you become an Atheist, and the old
+  patron's Hymns stay as pieces, as many as the Hymn gates your Devotion had reached (at least 1). The patron says
+  farewell. Then **nobody answers for 90 days**: a pact with any patron is refused until the day counter reaches the day
+  you left + 90 ("Nobody answers yet: N days").
+- **Leaving one patron for another** (a pact while Faithful) is not apostasy: no cooldown. The old patron's Hymns stay as
+  pieces (counted the same way) unless the new patron is Jealous (then they are gone). The patron you leave decides how
+  it takes it, from its data: an **Open** patron rolls d20 + your Faith modifier against its leave TN (10–12): on a
+  success it lets you go; on a miss it holds a **light grudge** (1 session). A **Jealous** patron never lets go: always a
+  **harder grudge** (2–3 sessions). Either way it says farewell. **A switch never raises Devotion:** the new pact starts at
+  the lower of the Devotion XP you had and what a conversion would give (item 719), so a pact can't undo a Miracle's
+  price, a taboo or a Judgement.
+- **A grudge:** at the start of each fight you begin with the old patron's chosen condition for its rounds (no save), and
+  your **new** patron's Devotion XP gains are multiplied by 0.5 (the old patron lobbies against you). It lasts the rest of
+  the session it began in and the grudge's sessions after it; going back to that patron ends it, and so does apostasy
+  (with no patron left there is nothing to lobby against; item 720). The condition lasts its rounds of your own turns
+  whatever the initiative, and ends with the fight: it is never carried into the story (item 723).
+
+| Patron left | Lets go | Grudge: condition at each fight's start | Sessions |
+|---|---|---|---|
+| Holy Father Nerukhan | never | Marked, 2 rounds (the saints point you out) | 3 |
+| The Quartermaster | d20 + Faith vs 11 | Nausea, 1 round (your rations were docked) | 1 |
+| The Laughing Mask | d20 + Faith vs 12 | Prone (something slippery at every curtain-up) | 1 |
+| The Toll-Keeper | never | Slowed, 2 rounds (the river drags at your legs) | 2 |
+| Mother Ember | d20 + Faith vs 10 | Shaken, 2 rounds (not angry, only disappointed) | 1 |
+| Old Overcast | never | Dazed (thunder at your every entrance) | 3 |
+| The Matchmaker | d20 + Faith vs 11 | Weakened, 1 round (no heart for it) | 1 |
+| The Counting Weaver | d20 + Faith vs 12 | Pinned, 1 round (she keeps a knot of your thread) | 1 |
+
+**The day counter** (rules 1.6.1). The game counts days from day 1: each **long rest** is a day, and the Narrator can
+move time on with **days** (1 to 3650: travel, a time skip, years passing). A turn's rest and days come before its faith
+events, so "three months later she swears to the Matchmaker" is one turn. Old saves start at day 1.
+
+**Sessions** (rules 1.6.1, item 721). A room plays session after session: the host ends one with **Next session** (in
+Rest… in the story, out of a fight) and the next begins at once. It counts as a long rest for recovery (not a day), Echo
+goes back to 1, and everything once a session starts over: rites, the Miracle, the tag and Narrator caps, a grudge's
+count. The Proving Ground has no sessions (its tools reset the limits); there the session's tag cap doesn't apply,
+the fight's and the scene's do (item 722).
 
 **Interventions.** Once a fight, while you are Witnessed, your patron acts unasked when its trigger happens.
 
 **Rites.** Each patron has two: an **engine rite** (a story button: a confession or a challenge at any time out of a
 fight, a vigil or a count after a rest, a ration given up) and a **Narrator rite** (marked kept by the Narrator). Each is
-kept once a session for +1 Devotion.
+kept once a session for +4 Devotion XP.
 
 **Voice lines.** Each patron has 3 lines for each event (answered, refused, taboo, vow kept, vow broken, Witnessed,
-intervention, Miracle, conversion), in its costume's voice. The engine picks one with the game's dice; the Narrator never
+intervention, Miracle, conversion, farewell), in its costume's voice. The engine picks one with the game's dice; the Narrator never
 writes them.
 
 **The eight launch patrons.** Each is a Celestial LARPing a god archetype; no real god is named, and none is a central
 figure of a living religion.
 
-| Patron | Likes | Taboos | Rule | Hymn I (Devotion 3) | Hymn II (5) | Hymn III (7) | Miracle | Intervention |
+| Patron | Likes | Taboos | Rule | Hymn I (Devotion 3) | Hymn II (5) | Hymn III (7) | Miracle (Devotion 10; rules 1.6.2) | Intervention |
 |---|---|---|---|---|---|---|---|---|
-| **Holy Father Nerukhan** (judge-saint) | judge, mercy, protect | betray, desecrate | Jealous | Saint's Shield: an ally gains a 40 shield | Judgement: an enemy takes 40 Soul; ×2 if it harmed the helpless | Absolution: an ally is cleansed of every condition and heals 30 | The Saints' Verdict: every enemy that harmed the helpless takes 60 Soul and is Stunned 1 round | an enemy damages a surrendered or Downed creature: it takes 20 Soul |
-| **The Quartermaster** (logistics god) | supply, hold, protect | flee, desecrate | Open | Resupply: an ally reloads every weapon free and regains 1 Supply | Dig In: an ally is dug in (half cover) until they move, and Braced | Covering Fire: a 3×3 area; enemies in it make a Body save or are Pinned 1 round | Requisition Approved: the squad is restocked (ammo, Supplies, a standard core each) and gets +2 AP next turn | your gun runs dry: it reloads, free |
-| **The Laughing Mask** (trickster) | trick, burn, flee | cower, mercy | Open | Lucky Break: an ally's next failed attack roll is rerolled at +5 | Switcheroo: swap two units in sight within 6 of you (an enemy gets a Brain save) | Pratfall: an enemy makes a Body save or falls Prone and drops its weapon | Encore: every ally gets back the AP of the last action they took this round | an enemy rolls a natural 1 against you: it falls Prone |
-| **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: an ally who died this fight returns at 1 HP | an ally would drop to 0 HP: they stay at 1 HP |
-| **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 40 | Hearthlight: a 3×3 area; allies starting a turn in it heal 10, for 3 rounds | Feed the Fire: an ally gets +1 AP now (ceiling applies) and loses Weakened and Slowed | Everyone Home: the squad heals to full and the Downed stand | an ally drops below a quarter HP: they heal 15 |
-| **Old Overcast** (thunder sky-father) | storm, kill, hold | flee, cower | Jealous | Thunderclap: enemies within 2 of a tile are pushed 1 and make a Heart save or are Shaken | Lightning Rod: 50 lightning to an enemy, then 25 to one more within 2 | Gather the Clouds: until your next turn, allies' Storm riders count a stage higher | The Sky Answers: a 3×3 area takes 80 lightning and is Shaken | you kill an enemy: 20 lightning to the nearest other enemy |
-| **The Matchmaker** (love goddess) | protect, mercy, heal | betray, kill (of the surrendered or Downed) | Open | Red Thread: two allies are linked for 2 rounds; damage to either is split between them | Sweet Nothings: an enemy makes a Heart save or is Smitten (can't attack you or your linked allies) next turn | Together: two adjacent allies get +2 to hit and +2 Defense until your next turn | Love Conquers: every enemy in sight that can surrender makes a Heart save or surrenders | an ally next to you is hit: half the damage moves to you |
-| **The Counting Weaver** (fate-spinner) | hold, trick, judge | flee, betray | Open | Foreknowing: the next attack against an ally misses | Unravel: every boon, shield and helpful state on an enemy ends | Cut Short: an enemy makes a Heart save or loses its next turn (bosses lose 2 AP) | Rewoven: every ally acts once more, right after this turn, in initiative order | an enemy crits you: it becomes a normal hit |
+| **Holy Father Nerukhan** (judge-saint) | judge, mercy, protect | betray, desecrate | Jealous | Saint's Shield: an ally gains a 40 shield | Judgement: an enemy takes 40 Soul; ×2 if it harmed the helpless | Absolution: an ally is cleansed of every condition and heals 30 | The Saints' Verdict: every enemy in sight takes 100 Soul and is Stunned 1 round; those that harmed the helpless this fight take double and are Stunned 2 rounds | an enemy damages a surrendered or Downed creature: it takes 20 Soul |
+| **The Quartermaster** (logistics god) | supply, hold, protect | flee, desecrate | Open | Resupply: an ally reloads every weapon free and regains 1 Supply | Dig In: an ally is dug in (half cover) until they move, and Braced | Covering Fire: a 3×3 area; enemies in it make a Body save or are Pinned 1 round | Requisition Approved: the whole squad is fully restocked (ammo, Supplies, throwables), gets 2 standard cores each, all gear repaired to full, jams and heat cleared, and +3 AP next turn | your gun runs dry: it reloads, free |
+| **The Laughing Mask** (trickster) | trick, burn, flee | cower, mercy | Open | Lucky Break: an ally's next failed attack roll is rerolled at +5 | Switcheroo: swap two units in sight within 6 of you (an enemy gets a Brain save) | Pratfall: an enemy makes a Body save or falls Prone and drops its weapon | Encore: every ally may repeat the last action they took this round for free, and every enemy in sight is Confused 1 round | an enemy rolls a natural 1 against you: it falls Prone |
+| **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: every ally who died or fell (Downed) this fight stands at half HP | an ally would drop to 0 HP: they stay at 1 HP |
+| **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 40 | Hearthlight: a 3×3 area; allies starting a turn in it heal 10, for 3 rounds | Feed the Fire: an ally gets +1 AP now (ceiling applies) and loses Weakened and Slowed | Everyone Home: the whole squad heals to full, the Downed stand, every harmful condition is cleared, and each gets a 40 shield | an ally drops below a quarter HP: they heal 15 |
+| **Old Overcast** (thunder sky-father) | storm, kill, hold | flee, cower | Jealous | Thunderclap: enemies within 2 of a tile are pushed 1 and make a Heart save or are Shaken | Lightning Rod: 50 lightning to an enemy, then 25 to one more within 2 | Gather the Clouds: until your next turn, allies' Storm riders count a stage higher | The Sky Answers: a 5×5 area in sight takes 150 Storm, enemies only (the sky picks), and they are Stunned 1 round and Shaken | you kill an enemy: 20 lightning to the nearest other enemy |
+| **The Matchmaker** (love goddess) | protect, mercy, heal | betray, kill (of the surrendered or Downed) | Open | Red Thread: two allies are linked for 2 rounds; damage to either is split between them | Sweet Nothings: an enemy makes a Heart save or is Smitten (can't attack you or your linked allies) next turn | Together: two adjacent allies get +2 to hit and +2 Defense until your next turn | Love Conquers: every non-boss enemy in sight surrenders, no save; a boss (or one that can't yield) makes a Heart save or is Commanded to hold 1 round | an ally next to you is hit: half the damage moves to you |
+| **The Counting Weaver** (fate-spinner) | hold, trick, judge | flee, betray | Open | Foreknowing: the next attack against an ally misses | Unravel: every boon, shield and helpful state on an enemy ends | Cut Short: an enemy makes a Heart save or loses its next turn (bosses lose 2 AP) | Rewoven: the squad takes another full turn now, and every ally's HP goes back to what it was at the start of this round, if that was higher | an enemy crits you: it becomes a normal hit |
 
-**What the Narrator owns:** pacts and conversions, knowledge pieces, Narrator rites kept, Devotion moves of at most ±2 a
-call with a reason (breaking character, bringing in a believer), holy ground (objects tagged holy), and what a prayer means
-in the story. **The engine owns** every number, the tags, vows, Witnessed, interventions and the dice.
+**What the Narrator owns:** pacts and conversions, apostasy, knowledge pieces, Narrator rites kept, Devotion XP moves of
+−6 to +5 a call with a reason (a deed, bringing in a believer, breaking character; its gains at most +10 XP a session per
+character, losses uncapped), days passing, holy ground (objects tagged holy), and what a prayer means in the story. **The
+engine owns** every number, the XP, the caps, the tags, vows, Witnessed, interventions, the leave roll, grudges, the day
+counter and the dice.
 
 **Still working as before:** the Guardian's Blessed Shells (they seal a Hymn), Under the Eye, and Judgement (which spends 1
-Devotion: the only spend besides a Miracle; item 619); Blessing power and the Faith perks; Rite in the Field (it cuts a
+Devotion, now 10 Devotion XP: the only spend besides a Miracle's 5 levels; item 706); Blessing power and the Faith perks; Rite in the Field (it cuts a
 Hymn's or Miracle's AP); the prayer traits; and the Factory Made and The Old Blood hooks on a Blessing landing
 (`blessing_in`).
 
@@ -1670,7 +1770,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Throwing** (2 AP): a grenade at a tile within Throwing range (6 + 0.5 × Dexterity) and line of sight; a satchel is placed on your tile or next to you. Frag: 40 to everyone within 2 tiles, and the objects there. Smoke: blocks sight within 3 tiles for 2 rounds. Flashbang: Blinded 1 round within 2 tiles (Body save). Incendiary: 15 and Burning (no save) within 2, and the tile burns. Bot-scrambler: robots, machines and drones within 2 are Stunned (no save), mana arms there jam, and Sigils drawn there cost +1 AP for 2 rounds. Satchel: 120 within 2. Explosive weapons (the thumper, the breacher tube) splash everyone else within their radius of the target on a hit, and the flamer's cone gives everyone in 3 tiles its own attack.
 
-**Swapping weapons** (1 AP a hand): bring the off-hand weapon to the main hand (the two change places), draw a weapon from the pack, or fit a mod. A stowed gun keeps the rounds in it. Reloading both of two guns is 3 AP.
+**Swapping weapons** (1 AP a hand; rules 1.9, World Play: Gear in a fight): bring the off-hand weapon to the main hand (the two change places, 1 AP), draw a weapon from the pack (1 AP; a two-handed one 2), put one away (1 a hand, 2 for a two-handed weapon), drop it (0 AP, into the pile on your tile), or fit a mod (1 AP). A stowed or dropped gun keeps the rounds in it, the off-hand gun too. Reloading both of two guns is 3 AP.
 
 **Burning, grapples and dropped weapons.** Putting out Burning is 1 AP (yourself or someone next to you). Breaking a grapple is 2 AP. Recovering a weapon is 2 AP (1 for a lowered one).
 
@@ -2117,7 +2217,7 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 | Short | 1 hour | 25% of max HP; Heat, Flux and Strain reset |
 | Long | 8 hours | all HP; MP to full if the air is Normal or richer; Supplies and toxins restocked from carried stock; a Bard can treat injuries (item 581) |
 
-The Narrator calls a rest (or the host does, with Rest… in the story; any player can ask for one, and the request goes to the Narrator). No rest in a fight. In the Proving Ground the host rests from the tools while gearing up. The start of a session counts as a long rest. Each rest starts a new window for once-per-rest uses (rules 1.3).
+The Narrator calls a rest (or the host does, with Rest… in the story; any player can ask for one, and the request goes to the Narrator). No rest in a fight. In the Proving Ground the host rests from the tools while gearing up. The start of a session counts as a long rest (the host starts the next session from the same menu: rules 1.6.1, item 721). Each rest starts a new window for once-per-rest uses (rules 1.3). A long rest is also a **day** on the day counter (rules 1.6.1, item 709; the start of a session isn't); the Narrator moves time on with days.
 
 **The Narrator's job.** The AI Dungeon Master and a human one follow the same brief:
 
@@ -2136,7 +2236,7 @@ Outside fights the story runs in rounds, the way a fight does, but with everyone
 - **Actions** are the fight's actions at the fight's AP costs, on the area map:
   - Moving: Move, Sprint, Sneak.
   - Attacking: Shot, Aimed shot, Melee. A shot at something with no HP (a console, a crate, a door) is a real shot: it spends a round, adds heat, needs sight and an unjammed, loaded weapon, and shows in the story as an action; the Narrator rules what it does.
-  - Analyze, Reload, Load a magazine, Clear a jam, Field Repair, Stim an ally, drop prone or stand.
+  - Analyze, Reload (speed or tactical), Load a magazine, Pick up from a pile, Clear a jam, Field Repair, Stim an ally, drop prone or stand.
   - Points of interest: examining one costs **1 AP**, trying an approach **2 AP**, stepping through an exit **1 AP** (and it asks the Narrator to travel). Opening a door costs 1 AP.
 - **Pass** gives up only the Say. **End turn** gives up the AP left, and the Say if unused. Running out of AP ends the turn too.
 - **The round closes** when every player has used or passed the Say and ended every character's turn (the host can skip an away player). It goes to the Narrator only if something needs judgement: a line said, an examine, an attempt, a travel request, or a sneaking character spotted. Otherwise the next round opens at once, with no Narrator call.
@@ -2226,6 +2326,48 @@ It's an RPG: players can attack anyone and anything. The game never refuses an a
 **Typing can't skip a check.** A typed attempt at something an approach, a hazard or a check covers maps to `actions[]` `attempt` (an object, hazard or person id and the approach's number as listed) and the engine rolls it like the button. The Narrator never grants it by fiat. People who give a task say what, where and why, plainly.
 
 **In the Proving Ground** the tools place caches, hazards, triggers, people (kind, avatar, wants, knows, talk) and objectives with `where`; attempts roll at once (there is no Narrator).
+
+> **Rules revision 1.9: World Play 1.1 (accepted direction, Leon, 9 Nov 2026; decision 106; design `docs/design/world-play-1.1-spec.md`).** What lands on the ground stays on the map, every map shows it, and the engine owns it. Every number below is provisional (items 671–700). Data: the `pile` kind in `data/objects.json`, the `pile` and `gear` blocks and `ap.pickup` in `data/world_play.json`, the gear actions in `data/rules.json`, the drop tables in `data/loot_tables.json`.
+
+**Piles: things on the ground.** Everything lying on a tile is **one pile** (an object of kind `pile`: open, never blocking movement or sight, weighing nothing to anyone). The caches' code holds it: a cache is closed (players see how many things it holds until it is searched), a pile is open (whoever can see the tile sees what is in it).
+- **Entries keep what they are:** a dropped magazine keeps its rounds and ammo type ("Rifle magazine 7/24"); loose rounds are one stack per calibre and ammo type ("38 × .32 Decrkm"); weapons keep rarity, durability, mods and loaded rounds; tools, consumables and plot items keep their qty and text.
+- **Merging:** dropping onto a tile with a pile adds to it. Loose rounds of the same calibre and type merge; plain items with the same id merge their qty; magazines, weapons and unique items stay separate entries. A pile holds at most **24 entries**: past that the oldest junk is lost (empty magazines first), with a log line (items 672, 673).
+- **Pick up** (1 AP, from your own tile or an adjacent one, on any map): tick the entries you want (all by default). In a fight it is a combat action; on the area map an area-map action that spends the round's AP. Searching a pile is picking up everything (item 674).
+- **What goes where:** in a fight a magazine for your main-hand gun joins its spares, one for a different off-hand gun the off hand's, any other magazine your pack after the fight; loose rounds for your gun's calibre join the rounds you carry for it; everything else goes into your pack at once. On the area map everything goes straight into the pack (item 675).
+- **Fog:** a player sees a pile only on a tile the party can see now (each party member's vision, halved in the dark, and line of sight, as for units). The Narrator sees every pile (item 676).
+- **Hidden piles:** a pile the Narrator places may be hidden: it is not drawn for players until it is spotted (passive Vigilant 10 + modifier against TN 12 within 2 tiles after a move) or revealed (an approach's reveal, a trigger). Reload drops are never hidden; one landing on a hidden pile reveals it (item 677).
+- **Persistence:** piles live with the map, not the fight: area map → fight → area map, on the same map or another zone's, across travel and saves (item 678).
+- **The Narrator** places piles with `ground[]` (`at`, `items[]` in the loot shape, `hidden`), the ids `loot[]` takes plus `mag:<weapon id>` (one magazine, full unless `qty` says rounds) and `rounds:<calibre>`; at most 6 a turn and 12 items each. `loot[]` takes the same two ammo ids (items 681, 682).
+
+**Paths and hazards.** A click-path for a player's unit (in a fight or on the area map) goes around every revealed hazard tile when such a route is at most **2 tiles** longer than the shortest; otherwise it takes the shortest, and the move preview names the revealed hazard tiles it crosses. Hidden hazards stay hidden; enemies and the Narrator's moves take the shortest path (item 683).
+
+**Gear in a fight.** One rule: changing what a hand holds costs **1 AP a hand**. The data: `data/world_play.json` `gear`, the action costs in `data/rules.json`.
+
+| Change | Cost |
+|---|---|
+| Draw from the backpack into one hand (a pistol, a focus, a torch, a shield; what the hand held goes to the pack) | 1 AP |
+| Draw a two-handed weapon (it fills both hands; what the off hand held goes to the pack) | 2 AP |
+| Swap main hand and off hand | 1 AP |
+| Put away what a hand holds into the backpack | 1 AP a hand (2 for a two-handed weapon) |
+| **Drop** what a hand holds | **0 AP**: it lands in the pile on your tile (Piles) |
+| **Light armour** piece (1.2 kg or less, provisional: the field helmet, gloves, goggles, masks, light belts, undershirts, light trousers, field boots…) on or off | 1 AP each |
+| Heavier armour (over 1.2 kg: the ballistic helmet, plates, greaves, the armoured belt, heavy boots…) and body armour | **not in a fight** |
+
+- **Hot-Swap** makes one draw, put-away or swap free (once a turn, twice at Tier II), a two-handed draw too; never armour (item 686).
+- **Disarmed:** you can draw another weapon into the main hand (or swap the off-hand one there): the weapon on the ground stays there, in the pile on your tile, and Disarmed ends. Recover is unchanged (item 687).
+- **A focus counts only in a hand** (item 630): drawn from the pack it counts at once; put away or dropped it stops new casts (item 632).
+- The change rebuilds the fighter from the character (armour, Defense, Movement, Vision, light, weight, the off-hand gun's spares, throwables), keeping HP, AP, conditions, heat, a held Outburst and the off-hand gun's real rounds (items 688, 689).
+- **The Proving Ground** charges the same for the player's own gear in its fights; its tools stay free (item 690).
+
+**Drop tables: what the fallen leave.** The engine rolls every drop on the fight's seeded dice, never the Narrator, once per death, and puts it in the **pile on the tile where the enemy died** (Piles; merged with what is there). The data: `data/loot_tables.json`. Every number is provisional (items 691–700).
+- **Three layers, the most specific winning** (item 691): the engine's defaults; a campaign's own `loot_tables` (a table with an engine table's id replaces it) and `drops` on its zone people and encounter enemies; the Narrator's `drops` on `combat.enemies[]` and `npcs[]` for one fight or one person. A layer that says anything about an enemy's rolled drops replaces the layers under it for that enemy.
+- **A `drops` value** is `{ table?, items? }`: a table id, and a list of `{ item, qty (n or [min, max]), chance?, rarity?, name?, text? }` in the loot shape (the ids `loot[]` takes, `mag:<weapon>` and `rounds:<calibre>` too; an unknown id is a plot item). The Narrator writes at most **4** items a list (item 698).
+- **Always dropped**, outside the cap (item 694): the weapon the enemy was using, **worn** (durability 40–80% of its maximum, rarity kept, the rounds in it still in it), and what it still carried for it: up to **2** spare magazines with their real rounds, or, for a weapon loaded round by round, its loose rounds (at most two magazines' worth). Natural weapons (fists, a beast's bite, a weapon with no item) drop nothing.
+- **Rolled**, by kind (items 692, 693): people roll on `person` (personal effects, rations, cigarettes, stims and the like); robots, machines, turrets and drones on `machine` (spare parts, mana cores); Sigil and Soul casters on `caster` (cores, rarely a heart or sigil plate); beasts on `beast` (empty: a campaign or the Narrator adds trophies). A minion and a soldier roll once, an elite and a boss twice; a roll may come up empty.
+- **The cap** (item 695): at most **2 / 3 / 4 / 5** rolled items a fight (easy / standard / hard / boss). Past it nothing more is rolled into the piles; the host's log says so ("loot cap reached").
+- **Bosses** always drop one **notable** thing (a roll on the `notable` table: a fine or masterwork weapon, a mod, an Essence of Experience, a plate), outside the cap (item 696).
+- **Nothing** from surrendered or subdued foes (they keep their gear as prisoners), companions, a player's own fighter, a Twin, or illusions (item 697).
+- **The Narrator learns what dropped:** a log line per death ("Rook drops: Service pistol (worn), magazine 9/12, a letter home, unsent") that the end-of-fight report carries (item 699).
 
 ## Rerolls and edits
 
@@ -2563,8 +2705,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 93. **Surrender** (plan 6a-3, the fix for The Name They Whisper): one surrender save per enemy per fight, Heart save vs 12 + the speaker's Heart debuff strength, only at half HP or less or alone; Bosses, machines and no_surrender never. Surrendered and subdued foes count as defeated (XP too) but give no kill credit and no meter rise; they stay as neutral prisoners.
 94. **Talking in a fight:** 2 AP, within 8 tiles; Persuade (Eloquence → Left Brain Debuff, Brain save), Threaten (Intimidation → Shaken, Body save), Parley (the surrender save).
 95. **Throwing and blasts:** Throwing range 6 + 0.5 × Dexterity (Derived stats; item 17 settles on it); the six thrown items as listed (an incendiary burns only its centre tile); explosive weapons splash their radius on a hit; the flamer's cone attacks everyone in 3 tiles. Enemies don't throw yet.
-96. **Swaps and companions:** 1 AP a hand; a stowed gun keeps its rounds; both guns reload for 3 AP. Drone (HP 30, Defense 12, +3, armour 5, Movement 2, a service pistol with only a plain shot and unlimited ammo) and beast (HP 60, Defense 12, +3, armour 0, Movement 2.5, bite 18) companions act after their owner and are destroyed at 0 HP (HP and the drone's gun settled in item 370). One advanced class at a time, learned with a tutor (c.tutors) from the level-up screen.
-97. **Prayer in the engine:** the cooldown counts rounds; a Blessing's hp numbers heal (positive) or deal Soul damage (negative), its shield numbers shield, all × Blessing power; a Miracle is a guaranteed success at ×3. Out of combat a heard prayer goes to the Narrator.
+96. **Swaps and companions:** 1 AP a hand (the full table: rules 1.9, items 684–690); a stowed gun keeps its rounds; both guns reload for 3 AP. Drone (HP 30, Defense 12, +3, armour 5, Movement 2, a service pistol with only a plain shot and unlimited ammo) and beast (HP 60, Defense 12, +3, armour 0, Movement 2.5, bite 18) companions act after their owner and are destroyed at 0 HP (HP and the drone's gun settled in item 370). One advanced class at a time, learned with a tutor (c.tutors) from the level-up screen.
+97. **Prayer in the engine:** the cooldown counts rounds; a Blessing's hp numbers heal (positive) or deal Soul damage (negative), its shield numbers shield, all × Blessing power; a Miracle is a guaranteed success at ×3. Out of combat a heard prayer goes to the Narrator. *(The ×3 predates Blessing 2.0 and is not applied: a Miracle is × Blessing power like a Hymn; rules 1.6.2, item 727.)*
 98. **Class resources:** Momentum +1 per melee hit, lost when a turn ends without an attack; Guard, Marks and Charges start each fight at 0; Supplies and toxins persist and restock at a long rest; Adamantile Knight carries Guard, Shade Marks, Storm Hand Charges, Gunslinger and Banner Dancer Momentum, RTC Contractor and Banner Dancer Supplies, CCEC Ballistician Marks.
 99. **Story plumbing:** Narrator-set conditions on NPCs (scene) and characters (scene, session or arc); Karma awards capped at 30 a turn, Conscience added; rests from the Narrator or the host; the voice cap per character, not per player; private perk lines outside the voice cap; Narrator-set item state (traitState).
 100. **Data fixes:** perk type labels (item 23: Origami Hands active, Hold the Stroke passive, Overruled and Outclassed AP mods, Pattern Lock and Heart Overload passive); Lab Coat II costs 2 AP; Born Performer's −100% is on dialogue XP; Bone Talk's Shaken is a Heart debuff (item 24); Mind Without Fog excludes Symbol of Order and Rogue Element (its Karma lock would contradict theirs); the start items (prescription glasses, smiling mask, prosthetic arm, Central City ID, bank card, contraband, grimoire) and a toolbox, spirits, cigarettes, a drone frame and the four special-ammo items exist now; cameras, alarm panels and emplaced turrets are map objects; terminals and lamps are electronic.
@@ -2752,7 +2894,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
       Proficiency above 3) × 2 of the drone's max HP and uses one spare-parts charge. There are no vehicles yet.
     - PROVISIONAL.
 147. *(C6)* **Hot-Swap (6b).** In a fight, swapping a mod costs 1 AP, like swapping a weapon. Hot-Swap makes the first swap
-    of the turn free (Tier II: the first two). PROVISIONAL.
+    of the turn free (Tier II: the first two). PROVISIONAL. *(Rules 1.9: the swaps it covers are drawing, putting away and swapping hands, a two-handed draw included; not armour: item 686.)*
 148. *(C7)* **Origami Hands (GAMEBREAKING, 6a-6).**
     - Each build uses one spare-parts charge, and at most 2 of your traps can stand on the map at once.
     - Trap: 25 damage (Tier II: 37).
@@ -3471,7 +3613,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - *The 1.2 outcomes (Ring 2 tiles, Line + SPREAD 6-tile cone, a bolt that carries on, a lone-target Stack, TWICE's 2
       more targets) are gone with the shapes they read.*
 285. *(I21)* **Raise Cover.**
-    - A lone STAY glyph of yours (alone on its tile, no glyph of its side touching it) becomes a cover rune (1 AP, 1
+    - A lone STAY glyph of yours (alone on its tile and the only glyph of its stroke; glyphs of other strokes touching it don't matter, rules 1.10; a STAY drawn before 1.10 keeps the old test, no glyph of its side touching it) becomes a cover rune (1 AP, 1
       charge): 2 tiles of full cover (barricade objects, 40 HP each). Under 1.4 you drew it standing on it, so you Evoke
       it from a tile next to it; the rune needs its tile clear. It is the class's one exception to the Line.
     - The tiles are the glyph's own and the free neighbour across the line to the nearest enemy.
@@ -3648,7 +3790,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     PROVISIONAL.
 328. *(J24)* **Spell Magazine** (audit 1-5). One magazine per rest (the alternative is the Rumination modifier, like Stored
     Spell). The cost is every word's charge plus the Evoke charge, paid out of combat; the Flux vents. Loading it costs
-    the weapon's reload AP and drops the old magazine on the floor. Its first hit auto-hits with damage words, while
+    the weapon's reload AP and drops the old magazine on the floor (superseded by item 679: it drops into the pile on your tile, empty or not, as a speed reload does). Its first hit auto-hits with damage words, while
     conditions still get saves. Stack and Line land on the target, SPREAD hits within 2 at ×0.6. An unfired spell fades
     at the next rest. PROVISIONAL.
 329. *(J25)* **Ricochet Glyph** (audit 1-5). Any ranged shot, not on a fumble or a shot cover stopped. The new target is the
@@ -3701,6 +3843,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     censer gun, coach gun, sawn-off, brigade auto). Damage × (1 + Blessing power), Blessing power = 1 + 0.1 × Faith.
     Spent hit or miss. A fight note asks the Narrator about taboos. Rename the move or Nerukhan's Blessing (both
     `judgement`). Data (done): `resource devotion -1`, `uses: per_combat`, text "Once per fight, spend 1 Devotion". PROVISIONAL.
+    *Rules 1.6.1: 1 Devotion is 10 Devotion XP (item 706); the data is now `resource devotion -10, unit xp`.*
 341. *(K7)* **Half-Sigil** (audit 1-5, GAMEBREAKING). A half-glyph costs **1 charge** (never free; the word's charge is
     skipped), +1 Flux, Glyph-limit and 2-per-tile rules as normal, an Evoker needed. Half-glyphs pair as a Stack: the
     second on a tile is drawn from the words that complete the grammar (a Subject with a Form/Motion word you know, and
@@ -4198,14 +4341,14 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 630. **A focus counts only in a hand** (Leon, 8 Nov 2026; retires item 77's "the Evoker and Emanator count when carried"; closes item 354's open note). The main or the off hand; a 2H weapon fills both, so an off-hand focus doesn't count beside one (and equipping one stows it). Evokers: the Evoker, the Evoker blade, the spellslinger's pistol, the Grand staff (2H). Emanators: the Emanator, the Emanator gauntlet. The refusals read "Needs an Evoker in hand." and "Needs an Emanator in hand." Carried, a focus keeps its store (core charge, MP; rests and refills still reach it), but nothing is cast or spent from it. Enemy casters hold theirs.
 631. **No Emanator in hand: Outbursts draw on the air** (Leon, 8 Nov 2026, choosing between Hands 2's "Soul spells need an Emanator in a hand" and Soul magic's "without one, every Begin pays from the air"). Begin costs no MP and +2 Strain; the MP stays in the carried Emanator. Syphon, Crystallise and every move that spends or fills MP need the Emanator in hand.
 632. **Putting a focus away mid-fight** (swapping a 2H weapon into the main hand, or something else into the off hand) stops new casts at once: drawing, Evoking, swapping a core, Venting, Syphon, Crystallise and MP. Glyphs already drawn stay on the ground (Evoking them needs an Evoker again). An Outburst already held stays held: it swells, can be Pumped, Fed, Steadied, let go and Released (the spec gives no rule that ends it). Disarmed leaves a focus weapon in reach: it still counts (the condition stops attacks, not casting).
-633. **Swapping a focus in a fight:** a focus from the pack into the off hand is 1 AP (one hand), like any swap; a 2H weapon into the main hand is 1 AP and stows the off hand with it (one motion). Story and area-map casting read the same hands.
+633. ~~**Swapping a focus in a fight:** a focus from the pack into the off hand is 1 AP (one hand), like any swap; a 2H weapon into the main hand is 1 AP and stows the off hand with it (one motion).~~ *(Superseded by rules 1.9: item 684. A focus into one hand is still 1 AP; a 2H weapon into the main hand is now 2 AP, one a hand, and still stows the off hand with it.)* Story and area-map casting read the same hands.
 634. **The Grand staff** (mana arms, 2H, 24 physical, reach 1, 2.5 kg, 2,400 credits, Brain Power 3, counts as an Evoker; item 353's data delta). PROVISIONAL: every number; the Grand Sigilist (shelved) doesn't need it to plant its Grand form yet.
 635. **The Proving Ground's magic kits** put the Evoker in the off hand when it is free and the main hand is 1H (the Sigil kit; also the both kit), the Emanator there for the Soul kit; anything that doesn't fit (a 2H weapon, a full off hand, the second focus of the both kit) goes to the pack, and the tool's line says where each one went.
 
 **Rules revision 1.6: Blessing 2.0 (8 Nov 2026; decision 102; `docs/design/blessing-2.0-spec.md`). Readings where the design was silent or open. PROVISIONAL.**
 
 592. **Blessing 2.0 numbers.** Every Hymn, Miracle, Whisper and intervention number (patrons.json v2, from the design spec) still needs a pass against `docs/design/balance-targets.md` (design open item 4).
-593. **The liked-tag cap:** +2 Devotion a fight from liked tags; vows, rites and the Narrator's moves don't count toward it, and taboo losses have no cap (design open item 2).
+593. ~~The liked-tag cap.~~ *Superseded in rules 1.6.1 (Faith 2.1): items 702–704 (XP; 2 a fight, 2 a scene, 6 a session; on the character).*
 594. **No roll within standing.** A Faithful character's Whisper, and a Hymn of their own patron at or under their Devotion, need no roll; only an overreach, an Atheist's prayer and a kept Hymn of another patron roll.
 595. **Witnessed's +2** goes on attack rolls that would carry a tag the patron likes: an attack on an enemy when the patron likes kill (or judge, when that enemy harmed the helpless), fire damage when it likes burn, lightning when it likes storm. Other rolls get nothing; the tag is judged before the roll.
 596. **A tag counts once per action** (one reducer action; what happens during an enemy's turn because of you, such as an Interpose, is its own action). Liked and taboo tags of one action all count.
@@ -4214,32 +4357,32 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 599. **Mercy** fires when an enemy surrenders to you (Parley or a non-lethal blow), and at the end of a fight for each surrendered enemy still alive that you never damaged after it yielded.
 600. **Protect** fires on a shield you give an ally, an Interpose, a Brace, or a hit you take in an ally's place (the Matchmaker's share, Red Thread); **heal** on a heal or stabilise given to someone else; **supply** on a stim given, an item handed over, an ally's reload, or cover placed.
 601. **Hold** is checked at the end of your turn (Braced, Anchored, or holding Overwatch); **cower** at the end of your turn (Hidden while an ally is Downed); **flee** on a Disengage that ends farther from the nearest enemy, or leaving the fight (Extraction).
-602. **Vows** are sworn in round 1 before the character first acts, one per fight. Bare Hands breaks on an attack with a gun or a thrown weapon, or any Sigil or Soul strike; Stand compares the distance to the nearest living enemy at the start and the end of each of your turns; Nobody Left Behind is checked at the fight's end (an ally still Downed breaks it then, −2).
+602. **Vows** are sworn in round 1 before the character first acts, one per fight. Bare Hands breaks on an attack with a gun or a thrown weapon, or any Sigil or Soul strike; Stand compares the distance to the nearest living enemy at the start and the end of each of your turns; Nobody Left Behind is checked at the fight's end (an ally still Downed breaks it then, −2). *Rules 1.6.1: a broken vow is −5 Devotion XP (item 702).*
 603. **Interventions** are once a fight per Faithful fighter, while that fighter is Witnessed; two Witnessed Faithful each get their patron's.
 604. **Prayers in the story** cost AP from the overworld round when rounds are running; the Hymn cooldown counts story rounds; a Whisper is once a story round. They go at the squad (characters); what they would do to anyone else goes to the Narrator. Story prayers don't make you Witnessed.
-605. **Engine rites** check one of three things: `story` (any time out of a fight), `after_rest` (a rest has been taken this session) or `tithe_item` (you give up one item of a category, such as a ration). Each rite is kept once a session for +1.
-606. **Apostasy** (design open item 1): Devotion 0, Atheist; the old patron's Hymns stay as pieces, one for each Hymn gate the Devotion had reached (3, 5, 7), at least 1, and never fewer than the pieces already held.
-607. **Changing patrons** (a pact while Faithful) is apostasy from the old patron, then the pact; the new patron's Jealous rule applies to everything kept.
+605. **Engine rites** check one of three things: `story` (any time out of a fight), `after_rest` (a rest has been taken this session) or `tithe_item` (you give up one item of a category, such as a ration). Each rite is kept once a session for +1. *Rules 1.6.1: +4 Devotion XP (item 702); the rite texts say so.*
+606. ~~Apostasy.~~ *Superseded in rules 1.6.1: items 707–710 and 714 (the pieces are counted as before; Devotion XP 0; a 90-day cooldown; the farewell).*
+607. ~~Changing patrons is apostasy, then the pact.~~ *Superseded in rules 1.6.1: items 711–714 (a direct switch, no cooldown; the leave roll and grudges).*
 608. **The Miracle** takes no roll and doesn't wait on the Hymn cooldown; it makes you Witnessed (Faith 5) like a Hymn. Whispers never make you Witnessed.
 609. **Luck and Lucky Break** act on attack rolls in a fight and on checks in the story. Luck: +2 on the next one. Lucky Break: in a fight the next failed attack roll is rerolled at +5; in the story it is +5 on the next check (a story check has no reroll step the engine can hook). Saves aren't touched.
 610. **Guidance** reveals Hidden enemies within 6 tiles and hidden traps there; the +2 goes on the character's next spotting roll in the fight, or next notice check in the story.
 611. **Safe Passage** makes your next move this turn draw no opportunity attacks (Overwatch still fires).
 612. **Dig In** gives the half-cover penalty (−5 to shots at the ally) and Braced until the ally moves (the engine has no cover on a unit's own tile; this reads it as a state).
 613. **Switcheroo** swaps two units in your sight, each within 6 tiles of you; an enemy among them makes a Brain save and the swap fails if it saves.
-614. **Encore** banks for every ally's next turn the AP of the last action they took this round (the AP ceiling applies when it arrives). **Rewoven** puts every living ally into the order right after the current turn, once each, in initiative order, this round only.
+614. ~~**Encore** banks for every ally's next turn the AP of the last action they took this round (the AP ceiling applies when it arrives).~~ *Superseded in rules 1.6.2: item 729.* **Rewoven** puts every living ally into the order right after the current turn, once each, in initiative order, this round only (rules 1.6.2 adds the HP rewind: item 734).
 615. **Hearthlight, Hold the Gate, Gather the Clouds and Together** last until the caster's next turn, except Hearthlight (3 rounds). **Red Thread** lasts 2 rounds: half of each hit on one of the pair moves to the other.
 616. **Foreknowing** lasts until the ally is next attacked or the fight ends. **Unravel** ends every boon condition, the shield, Braced, Overwatch and Hidden. **Cut Short** is Stunned 1 round (Heart save); a boss instead loses 2 AP on its next turn.
-617. **Last Crossing** kills outright on a failed save (no Downed state); **Turned Back at the Shore** brings an ally who died this fight back standing at 1 HP. **Love Conquers** uses the surrender rules: bosses, machines and the no_surrender never yield.
+617. **Last Crossing** kills outright on a failed save (no Downed state). ~~**Turned Back at the Shore** brings an ally who died this fight back standing at 1 HP. **Love Conquers** uses the surrender rules: bosses, machines and the no_surrender never yield.~~ *Superseded in rules 1.6.2: items 730 and 733.*
 618. **Enemy faithful:** one enemy type that prays (a Whisper and a Hymn) is deferred; enemies don't pray yet.
-619. **Judgement (Guardian)** still spends 1 Devotion, the only spend besides a Miracle (design open item 3); Blessed Shells' story prayer now uses the rules 1.6 roll (by standing, overreach or dice) instead of the patron's mood.
+619. ~~Judgement (Guardian) spends 1 Devotion.~~ *Superseded in rules 1.6.1: item 706 (10 Devotion XP). Blessed Shells' story prayer still uses the rules 1.6 roll (by standing, overreach or dice) instead of the patron's mood; its miss is item 716.*
 620. **Interventions scale with Blessing power** like Hymns: Nerukhan's 20 Soul, Mother Ember's 15 heal and Old Overcast's 20 lightning are × the praying character's Blessing power.
-621. **The Miracle spends Devotion after its effect:** tags its own effect carries (a heal for Mother Ember) give nothing back; Devotion is 0 when it ends.
+621. ~~The Miracle spends Devotion after its effect.~~ *Superseded in rules 1.6.1: item 707, then in rules 1.6.2: item 725 (still after its effect: now 5 levels).*
 622. **Harming the helpless** (judge, the Mercy vow, Nerukhan's intervention) counts any hostile hit on a Downed creature, even though a Downed creature takes the hit as a failed death save rather than HP, and any HP damage to a surrendered one. Killing a Downed creature (its third failed save) or a surrendered one is the "kill of the helpless" taboo.
 623. **Mercy at the fight's end** is one tag per fighter (not one per spared enemy), given when a surrendered enemy is alive and that fighter never harmed the helpless this fight. **Flee** on Extraction is one tag per fighter still standing.
 624. **Story prayers that need a tile or an enemy** (Thunderclap, Covering Fire, Judgement, Love Conquers…) and Whispers with no story meaning (Protection, Safe Passage) are paid and rolled as usual; what they do goes to the Narrator as a pending ruling. A story Hymn or Miracle also fires the items' `story_blessing` hook (Upper-Touched's d6). The old `story/pray` is a Hymn I of your patron through `faith/pray` (it now costs 3 AP while rounds run).
 625. **Knowledge pieces of your own patron** are refused (standing is what counts); a Faithful of a Jealous patron is refused pieces of other patrons; a fourth piece of a patron is refused.
 626. **Rites:** an engine rite is kept only from its button (the Narrator can't mark it), a Narrator rite only by the Narrator; a tithe takes one matching item (an item whose kind or id is the category, such as food).
-627. **The Narrator's Devotion move** is refused above ±2 and without a reason when the host sends `faith/devotion`; in the Narrator's turn (`patrons`, `faith`) it is clamped to ±2 instead. The turn's `patronMood` is no longer applied.
+627. ~~The Narrator's Devotion move (±2).~~ *Superseded in rules 1.6.1: item 705 (−6 to +5 XP, refused out of range when sent directly, clamped in a turn; +10 a session). The turn's `patronMood` is still not applied.*
 628. **Heretic's Stolen Fire** prays a stolen Hymn as an Atheist prays a learned one (d20 + Will Power against 14, 16 or 18; no Witnessed), with the Hymn's own target, second unit or tile. In the story it is d20 + Will Power against the same TN, and the Narrator rules the answer.
 629. **Old-shape patrons** (a patron added at run time with `blessings` and no `hymns`) still work: their Blessings are Hymns (tier 1 unless given), aimed at you or an ally, and run their data effects.
 
@@ -4281,6 +4424,82 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 669. **What the engine tells the Narrator:** up to 20 events (triggers fired, hazards hit, approaches tried with their effects, carrying, searches, talk, alarms) since its last turn, consumed by that turn; hazards hit in a fight are reported after it.
 670. **The Narrator's tool** stays the same all session: the new fields are optional, with fixed vocabularies only.
 
+**Rules revision 1.9: World Play 1.1 (9 Nov 2026; decision 106; `docs/design/world-play-1.1-spec.md`). Numbers and readings where the design was silent. PROVISIONAL.**
+
+671. **A pile is a map object** of kind `pile`, one per tile (its id is `pile-x-y`, so the tile names it): open, never blocking movement or sight, weighing nothing. Its entries are exact pack items (`items[].pack`) with a stable key each, so a pick-up names what it takes even after the pile changed.
+672. **The pile cap:** 24 entries (`world_play.json` `pile.max_entries`). Past that the engine loses, in this order, empty magazines (oldest first), then the oldest entry that is neither a weapon nor a plot item, then the oldest entry, with a log line for each.
+673. **Merging:** loose rounds of the same calibre and ammo type are one stack; items with the same id, name and note and no rarity above standard, durability, mods or magazine merge their qty (thrown weapons like grenades stack too); every other weapon and every magazine is its own entry.
+674. **Picking up:** 1 AP (`world_play.json` `ap.pickup`), from your own tile or an adjacent one, a selection of entry keys (or indices), everything by default; never from a hidden pile; a selection that matches nothing is refused. A Search on a pile picks up everything. Companions and puppets don't pick up. Review fix (9 Nov 2026): a stim injector picked up joins the character's stims (what Stim spends) and an Essence of Experience the Essence, on every map and from caches and `loot[]` too; neither is a pack entry.
+675. **Where picked-up things go in a fight:** a magazine for the main-hand gun into its spares (with its type); for a different off-hand gun into the off-hand spares; any other magazine into the pack after the fight; loose rounds of the main gun's calibre join the unit's loose rounds whichever way it loads (they are pack rounds, written back after the fight); thrown weapons, spare parts and mana cores join the unit's counts and the pack; everything else goes straight into the pack. The area map runs the same routing and writes it back after the action.
+676. **Fog for piles:** the party's shared sight, as in a fight: each standing party unit's Vision (halved in the dark unless it sees in the dark, lit tiles at full range) and line of sight; on the area map from where each character stands. Piles in other zones are never in a player's view. The host's state and the Narrator keep every pile. Review fix: a pile's fx (`pile` {at, id, count, why}) goes only to a view whose party sees its tile now, and a death's drop line ("X drops: …") reads "X falls; whatever it carried lies where it fell." in such a view; a reload's log line names no tile. The host's state and the end-of-fight report keep the full line.
+677. **Hidden piles** (the Narrator's `ground[]` only) are spotted by passive Vigilant (10 + modifier) against TN 12 within 2 tiles after a move (the `pile` kind's `detect_tn` and `detect_range`), by any reveal, or by the Narrator's `hidden: false`. A drop onto a hidden pile reveals it (reload drops are never hidden).
+678. **Persistence:** a fight on another zone's map starts from that zone's stashed objects, and when it ends there the zone the party was in is stashed first; old saves' `floor` entries become piles once (on the fight's map, and on the area map too when the finished fight was on the current zone).
+679. **Speed and tactical reload:** a tactical reload costs the speed reload's price + 1 (Quick Release and Speed Loader lower the base; the +1 stays); the old magazine, empty or not, goes to the end of the spares. Reloading both guns tactically is 4 AP; the off-hand gun's old magazine goes back to its own spares. Enemies always speed-reload. The spell magazine (Load the spell magazine) drops the old one as a speed reload does, empty or not. Review fix: a full magazine gun isn't reloaded either way ("Already full."); reload both is refused when either gun is full (reload the other alone). A character's off-hand gun reloads only from what it carries (its own spares, or the main gun's when both hands hold the same model; a round-by-round off-hand gun from loose rounds of its calibre); with none it is refused ("No loaded spare for the off-hand gun."). Enemies' off-hand guns still never run out.
+680. **Each magazine keeps its type:** the magazine swapped in sets the gun's loaded type (standard unless that spare's type says otherwise); the one dropped or put back keeps the type it had. Review fix: the off-hand gun's spares keep their types too (a picked-up typed magazine included, written back in line with the magazines), and with the same model in both hands the off-hand reload takes the shared spare's type with it. The rounds loaded in a gun keep their type when it leaves the hand (put away, dropped, swapped, a dead enemy's gun) and when it is drawn again; an empty gun has no type.
+681. **The Narrator's `ground[]`:** at most 6 entries a turn, 12 items an entry (`world_play.json` `pile`); a tile off the map or solid does nothing; it merges into the pile on the tile (the 24 cap applies); `hidden` only hides a new pile, `hidden: false` reveals one; `mag:<weapon>` is one magazine (qty is its rounds, at most the magazine; a qty of 1 or none is a full one, 0 an empty one), and for a weapon loaded round by round its rounds loose; `rounds:<calibre>` at most 120 rounds an entry; an unknown id is a plot item. An `objects[]` place of kind `pile` is read as a `ground[]` entry. Applied on the area map (the Narrator doesn't act mid-fight). Review fix: an `objects[]` entry of kind `pile` (or naming a pile's id) counts with `ground[]` against the 6 entries a turn; an `objects[]` op with no kind never matches a pile on its tile.
+682. **`loot[]` ammo:** `mag:<weapon>` puts one magazine per entry in the pack (qty as in `ground[]`: its rounds, 1 or none for a full one); `rounds:<calibre>` puts qty rounds (at most 120) in the pack's stack of that calibre.
+683. **Click-paths and hazards:** a player's unit (characters and companions, in a fight and on the area map) routes around every revealed, live hazard tile (not a safe-path or spent tile) when a route exists at most 2 path tiles longer than the shortest; a hazard tile that is the destination doesn't count against a route. Otherwise it takes the shortest. The engine's `routeHazards` lists the revealed hazard tiles a route crosses, for the preview. Review fix: the way round is taken only when the unit can still pay for it this way (AP for a move, plus a sneak's 1 AP a tile on the area map; 3 × Movement for a sprint); otherwise the click takes the shortest path, which the preview shows with what it crosses, so a tile shown as reachable is never refused for the detour's price.
+684. **Gear in a fight costs 1 AP a hand** (Leon, 9 Nov 2026; supersedes item 633's 2H row; `world_play.json` `gear`): a draw into one hand 1 (whatever that hand held goes to the pack in the same motion, so a draw into a full hand is still 1; a one-handed weapon into the main hand while a two-handed one is held is 1, the two-handed one going to the pack); a two-handed draw 2 (the off hand's item goes to the pack with it); swapping main and off hand 1; putting away 1 a hand, 2 for a two-handed weapon (the main hand is then empty: fists); dropping 0, into the pile on your tile, with its rounds, rarity, wear and mods; a mod 1 (item 147). The pack entry is named by its index or its id and found before the fight's state is written back, so a used-up entry ahead of it never shifts the choice. Handing over or dropping pack items and loading magazines out of the pack stay out of a fight (Load is its own combat action). A companion or a puppet has no pack.
+685. **Light armour is 1.2 kg or less** (`gear.light_armour_max_kg`). PROVISIONAL. Of today's pieces the field helmet (1.2 kg), field boots (1.2), night goggles, gas mask, glasses, smiling mask, padded undershirt, utility belt, runner trousers and both gloves are light; the ballistic helmet (2), trauma plate (2), armoured belt (1.5), armoured greaves (3) and heavy boots (2) are not, and are refused with "Heavy armour (over 1.2 kg) isn't changed in a fight." Body armour (the armour class) never changes in a fight. Putting a light piece on over another light piece in its slot is 2 AP (one off, one on); a heavy piece in the slot refuses it. *Decided 9 Nov 2026 (the review's open question):* the line was 1 kg, which left every helmet heavy although the design's examples (helmets, gloves, goggles, belts, undershirts) call helmets light; it is raised to 1.2 kg so the field helmet changes in a fight and the ballistic helmet stays out. The field boots (1.2 kg) come in with it. Leon to confirm in playtest.
+686. **Hot-Swap in rules 1.9:** it makes one whole draw, put-away, swap of hands or mod free (a two-handed draw's 2 AP too), once a turn (Tier II twice); never armour; a drop is 0 AP anyway and doesn't use it.
+687. **Disarmed and gear:** drawing a weapon into the main hand, or swapping the off-hand one there, leaves the weapon on the ground in the pile on your tile (it keeps its rounds) and ends Disarmed; drawing into the off hand leaves Disarmed as it is; putting away or dropping the weapon on the ground is refused ("Your weapon is on the ground: recover it (2 AP) or draw another."). Recover is unchanged.
+688. **The off-hand gun keeps its own rounds:** the character keeps the rounds in the off-hand gun (`offHand.loaded`) through a swap, a put-away and the end of a fight, like the main gun's; drawn from the pack, an off-hand gun holds what its pack entry held (nothing, if the entry says nothing, as the main hand); an old save's off-hand gun with no count starts full, as before.
+689. **The rebuild after a change:** Defense, armour, Movement and Vision change by the difference the gear makes (so a break, a slow or a guard on them stays); the weapon's numbers, the off-hand gun's spares, light, dark sight, hazard immunity, weight, throwables, spare parts and the d20 item modifiers are taken fresh from the character; HP, AP, conditions, heat, a held Outburst, Flux and Strain are kept (review fix, 9 Nov 2026: heat now stays, as the design says, so two swaps no longer cool a gun). A change of main weapon resets a jam and a brace; the gun drawn holds the rounds its pack entry kept, of their type (standard if none).
+690. **The Proving Ground** charges the same for the player's own gear actions in a live fight (on its turn, through the same combat checks); the tools (give, equip, take off, armour class, kits) stay free and rebuild the fighter as before. Gearing up between fights is free.
+691. **Drop table layers:** the engine's `data/loot_tables.json`; a campaign's `loot_tables` (a list of tables in the same shape; one with an engine table's id replaces it everywhere in that campaign) and `drops` on its zones' `npcs` and its encounters' `enemies` (an encounter is matched to the fight by name, as its music is, and its enemies to the fighters by name, first unused match); the Narrator's `drops` on `combat.enemies[]` and on `npcs[]` (place and update). The most specific layer that gives an enemy a `drops` value replaces the rest for that enemy's rolled drops (no merging); `drops: {}` means no rolled drops. A token keeps its `drops` when it walks away from a fight. Players never see a `drops` value.
+692. **Default rolls:** a minion and a soldier roll once on their kind's table, an elite and a boss twice (`rolls_by_tier`). A table is a weighted list with a weight for nothing (`none`); one roll picks one entry, its qty rolled within its range. Kinds: human, crawler, ork, upper realm, cursed and celestial roll `person`; robot, machine, turret and drone roll `machine`; beast rolls `beast` (empty); an enemy with an Evoker or an Emanator rolls `caster` whatever its kind. A `drops.table` rolls that table the same number of times; each `drops.items` entry rolls once against its chance (default certain). A Sigil plate or Heart plate that drops with no `note` rolls its lesson on the same dice, evenly: one Sigil word for a Sigil plate; one tone (not Raw), school or module for a Heart plate (note `tone: fire`, `school: …`, `module: …`), so every dropped plate can be studied (review fix, 9 Nov 2026).
+693. **Personal effects:** the `person` table's `personal` entry picks one of 20 in-world plot items (`personal_items`: "a ration tin with a Wick sticker", "a letter home, unsent", "a Lumeri prayer card"…), evenly.
+694. **Always-drops:** the weapon in the main hand, unless natural (`natural_weapons`: fists, the beast's bite) or unknown; durability a whole percent from 40 to 80 of the weapon's maximum at its rarity (`worn_durability`; a weapon with no durability drops as it is, a thrown one as one); the rounds loaded stay in it with their type. The spare magazines: the 2 fullest with any rounds left, with their types. A weapon loaded round by round: its loose rounds, at most 2 × its capacity (`spare_mags_max`).
+695. **The loot cap:** rolled items a fight by difficulty (`caps`: easy 2, standard 3, hard 4, boss 5), counted in the order enemies die; one entry is one item whatever its qty. A roll past the cap is not made into an item; the fight's host-only `lootLog` gets "loot cap reached" with what was skipped. Certain entries in a `drops.items` list (no `chance`, or 1) are given, not rolled: they are outside the cap, like the always-drops.
+696. **Boss notable:** every boss death rolls once on `notable` (no empty weight), outside the cap, whatever its `drops` say. A campaign may replace the table.
+697. **No drops:** a surrendered or subdued foe (even if killed later), a companion, a unit on the player's side or a player's own fighter (the Proving Ground's team fight), a Twin, the sentry turret; illusions are not units. Deaths on the area map's own sweep roll nothing (only fights roll).
+698. **Inline lists:** the Narrator's at most 4 entries a `drops` (`inline_max`; the rest are ignored); qty 1–20 or [min, max] within 1–20; chance 0–1; rarity one of the five; an unknown table id is ignored (the engine default stands); a plot item written the way `loot[]` writes one (item "", a name and a line of text) is kept and drops as that plot item, and an entry with neither an id nor a name is dropped. Campaign lists have no count limit but are validated (`validateCampaign`: unknown table, an unknown item id with no name, a bad qty, chance or rarity).
+699. **When and where:** in the death sweep (`noteDeaths`) on the fight's dice, so the same seed and actions give the same drops; into the pile on the death tile (the 24-entry cap applies); one log line per death, "<name> drops: …", which the end-of-fight report's key moments keep. Review fix: a Shade's silent takedown on the area map (no fight opens) runs the same sweep, so the victim's drops lie in the pile on its tile on the area map.
+700. **Labels in the drop line:** the weapon "(worn)", a magazine "magazine 9/12", rounds "38 × .32 Decrkm", anything else its name; nothing at all leaves no line. Review fix: in a pile's list (hover, checklist, Near you, the Narrator's ON THE GROUND) a weapon also says the rounds in it and its wear ("Service pistol · 9/12 loaded · worn 62%"), and loose rounds of a calibre named only for a gun say rounds ("30 × Rifle rounds").
+
+**Rules revision 1.6.1: Faith 2.1 (9 Nov 2026; decision 107; `docs/design/faith-2.1-spec.md`). Numbers and readings where the design was silent. PROVISIONAL.**
+
+701. **Devotion XP and the curve.** The total XP for levels 0–10 is 0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450 (the design's 152, 212, 277, 347 and 432 for levels 6–10 were tuned by the pace simulation, item 717). XP stops at 450. The level stays in `devotion` for old readers; a level written on its own (an old save, an old writer, the Proving Ground's stepper) reads as that level's threshold. *Data: `patrons.json` devotion.xp.curve.*
+702. **The sources in XP:** a liked tag +1, a vow kept +3, a rite kept +4, bringing someone into the faith +4 and a deed +2 to +5 (both the Narrator's), a taboo −3 (−6 while Witnessed), a vow broken −5, a failed overreach −3, breaking character where the patron can see −6 (the Narrator's), Judgement −10, a Miracle all of it (*rules 1.6.2: 5 levels, item 725*). *Data: devotion.gain and devotion.loss (losses written as positive numbers).*
+703. **The tag caps:** 2 XP a fight, 2 XP a scene out of fights, 6 XP a session from tags in all; each liked tag once per fight and once per scene. A fight and the scene it happens in are separate (a fight's tags don't use up the scene's 2); the session's 6 covers both. Caps count the XP before a grudge's multiplier. *Data: devotion.tag_caps.*
+704. **Where the caps live:** on the character (`faithTally`: the session, the scene with its XP and liked tags, the fight's id with its XP and liked tags, the last action's tags), reset by a new session and (the scene part) a new scene (`story.scene.n`). A fight's id is set when it starts. A tag counts once per action, keyed by the reducer step, the round and the turn and kept on the character, so the area map's rebuilt units can't reset it. The area map counts toward the scene. The Proving Ground's reset clears the tally.
+705. **The Narrator's devotion op:** −6 to +5 XP a call, with a reason. Sent directly (`faith/devotion`) outside that range it is refused; in a turn (`faith`, and the legacy `patrons`) it is clamped. Gains are capped at +10 XP a session per character: a gain over the cap is cut to what is left, and refused once nothing is left; losses aren't capped. The cap counts the XP asked for, before a grudge's multiplier. A refusal in a turn is logged out of character. *Data: devotion.narrator.*
+706. **Judgement** spends 10 Devotion XP (its "1 Devotion") and needs 10 XP; it can drop a level. *Data: classes.json, the move's resource effect −10 (unit xp).*
+707. ~~**The Miracle** sets Devotion XP 0 and Devotion 0, after its effect (its own tags give nothing back). Climbing back to 7 takes 200 XP, about 10 sessions at the target pace: the Miracle's real price now (for Leon at review).~~ *Superseded in rules 1.6.2 (Leon, 9 Nov 2026): items 724–726 (the Miracle at Devotion 10; it lowers Devotion by 5 levels; the pace).*
+708. **Conversion:** Devotion 3 + 1 level for each piece of the new patron (at most 10), the XP set to that level's threshold. A pact clears a sworn vow.
+709. **The day counter:** `g.day`, from 1 (old saves: 1). A long rest adds a day; the start of a session doesn't (it counts as a long rest only for recovery). The Narrator's turn field `days` adds 1 to 3650 days: rounded, clamped to 3650, ignored under 1. A turn's rest and days come before its faith ops (review fix, 9 Nov 2026: a time skip and a pact in one turn work; they used to come after, and the pact was refused).
+710. **The cooldown after apostasy:** no pact with any patron (the one left included) until the day counter reaches the day they left + 90; the refusal names the days left. The Proving Ground's tools ignore it. *Data: devotion.apostasy.cooldown_days.*
+711. **A direct switch** (a pact while Faithful to another patron) is not apostasy: no cooldown, no APOSTASY line. The old patron's Hymns stay as pieces counted as apostasy counts them (one per Hymn gate reached, at least 1, never fewer than already held), unless the new patron is Jealous (then all are gone).
+712. **The leave roll:** an Open patron rolls d20 + Faith modifier against its leave TN, a natural 20 always letting go and a natural 1 never: Mother Ember 10, the Quartermaster 11, the Matchmaker 11, the Laughing Mask 12, the Counting Weaver 12. Jealous patrons never let go (no roll). A patron with no leave data (one added at run time) lets go. *Data: each patron's leave block.*
+713. **Grudges:** Nerukhan Marked 2 rounds, 3 sessions; the Quartermaster Nausea 1 round, 1 session; the Laughing Mask Prone, 1; the Toll-Keeper Slowed 2 rounds, 2; Mother Ember Shaken 2 rounds, 1; Old Overcast Dazed (the first turn), 3; the Matchmaker Weakened 1 round, 1; the Counting Weaver Pinned 1 round, 1; every grudge ×0.5 XP. The condition lands on the character (not a companion) at each fight's start with no save. The multiplier applies to every gain (tags, vows, rites, the Narrator's), the fraction carried to the next gain. It lasts the rest of the session it began in and its sessions after that (so a light grudge is never shorter than one full session, whenever in a session you switch; the design's "1 session" read that way), and is announced over when the next session starts (item 721); apostasy ends it too (item 720). One grudge at a time (a newer one replaces it); going back to that patron ends it. *Data: leave.grudge.*
+714. **Farewell:** the patron left speaks a line from its farewell bank on apostasy and on a switch (let go or not), before any grudge. Ten line banks of 3 lines per patron.
+715. **Old saves:** faith rules revision 17. Devotion XP is set to the saved level's threshold (Devotion 6: 147 XP); no tally, no cooldown, no grudge; day 1.
+716. **A failed overreach** costs 3 XP everywhere: in a fight, in the story and in Blessed Shells' story prayer.
+717. **The pace simulation** (`packages/engine/test/faith-pace.test.ts`), the typical session: 2–4 fights and 2–4 scenes out of fights (about 3 each); a vow sworn in 80% of fights and kept 85% of the time; each of the patron's 3 liked tags comes up in 60% of fights and 30% of scenes; a taboo in 10% of fights and 5% of scenes; the engine rite every session and the Narrator rite in half (1–2 rites); one Narrator deed of 2–5. That is about 18 XP a session. Over 40 seeds Devotion 5 lands at session 3.6 on average (3–5), 7 at 9.0 (8–11), 10 at 23 (20–28). With the design's curve 7 landed at 9.7 (up to 12) and 10 as early as session 19, so levels 6–7 came down (152 → 147, 212 → 200) and the top went up (432 → 450). *Rules 1.6.2: the Miracle's pace is item 726.*
+718. **Heretic's Stolen Fire** puts back the Devotion XP, the tag tally, the pact cooldown and the grudge along with the rest of the faith it borrows.
+719. **A switch never raises Devotion.** A pact while Faithful to another patron starts the new pact at the lower of the Devotion XP held and the conversion's (Devotion 3 + 1 level a piece, at that level's threshold): Devotion 8 becomes 3 (45 XP), Devotion 0 after a Miracle stays 0 (*rules 1.6.2: a Miracle now leaves Devotion 5, and a switch keeps it at most there*), 1 stays 1 (its XP kept). An Atheist's conversion is unchanged (item 708). Without this, two pacts in a turn took a character from a Miracle's 0 back to Devotion 4 in the same session, and a switch was a cheaper way out than apostasy's 90 days. The pact's log and fx give the real change (from the old XP and level). *Review fix, 9 Nov 2026; for Leon with item 707.*
+720. **Apostasy ends a grudge.** A grudge lobbies against the new patron's Devotion (spec rules 1.6.1); an Atheist has neither, so leaving the pact ends it, with a line. (A later pact starts clean.) *Review fix.*
+721. **Next session.** A room's session counter moves on only when the host ends a session: `session/next` (Rest… → Next session; host only, in the story, out of a fight, not in the Proving Ground). It runs what a session's start runs (recovery as a long rest, Echo 1, `session_start`: rites, the Miracle, the tag and Narrator caps and grudges count from the new number) and is not a day (item 709). Before it, `session/start` ran only from the lobby and nothing returned a room there, so a grudge never ended and the session caps lasted the room's life. *Review fix; the product's first session boundary.*
+722. **The Proving Ground's tag caps:** it has no sessions, so the session's 6 XP doesn't apply there; the fight's 2 and the scene's 2 do, and the tools' reset still clears the tally. The faith tab shows the caps ("LIKED TAGS · 1/2 THIS FIGHT · 4/6 THIS SESSION", "CAPPED" once one is reached; no session part in the Proving Ground). *Review fix.*
+723. **A grudge's condition in the fight:** it lasts its rounds of the bearer's own turns whatever the initiative (landing before the first turn doesn't count as "on your own turn"), and it ends with the fight: Mother Ember's Shaken is not carried into the story as a scene's Shaken (and so not into later fights). The same condition put on again by something else in the fight is a real one and carries as usual. A story condition carried into the fight merges with it (the longer stays). *Review fix.*
+
+**Rules revision 1.6.2: Miracle 2.1 (9 Nov 2026; Leon's ruling: "Buff all miracles to deserve the title, miracle only at 10 and it reduces your devotion by 5"; decision 107; `docs/design/faith-2.1-spec.md` section 7). Numbers and readings where the ruling was silent. PROVISIONAL.**
+
+724. **The Miracle's gate:** Faith 7 and **Devotion 10**, once a session; Atheists never; no overreach. Devotion 7 now opens Hymn III only (the gates are Hymn I 3, II 5, III 7, the Miracle 10). The refusal names the number ("A Miracle needs Devotion 10 (you have 9)."). *Data: `patrons.json` devotion.gates.miracle 10 = prayer.miracle.devotion_min; the validator checks they agree and sit above Hymn III.* Supersedes the gate in item 707 and rules 1.6.
+725. **The Miracle's price:** it lowers Devotion by **5 levels**, after its effect (item 621's order): the XP is set to the threshold of the level 5 below the level held after the effect (10 → 5: 450 XP → 102), so the XP into the level goes too; through the one choke point (logged "−348 Devotion XP (the Miracle: Devotion −5 levels): DEVOTION 5", an fx event). Its own liked tags give nothing back (XP is at its 450 cap while it lands) and use none of the fight's or session's tag caps (item 737). In the story the price is paid after the effect too (it used to be paid before). A switch afterwards never raises it (item 719). The Guardian's Judgement is unchanged (item 706). *Data: prayer.miracle.devotion_cost_levels 5 (whole levels, 1 to the gate); "spends all" is retired (the validator refuses `spends`).*
+726. **The pace** (`packages/engine/test/faith-pace.test.ts`, the item 717 session run for 80 sessions over 12 seeds, the Miracle prayed in the first fight of a session that finds the character at 10): the first Miracle at session 22.6 on average (21–25), then one every 19.3 sessions (17–22; 5 → 10 is 348 XP at about 18 XP a session); 3–4 Miracles in 80 sessions. Never before session 20. Asserted loosely (first after 19 and by 32; gaps 12–26, averaging 17–21). The rules text says "about every 19 sessions" (item 737).
+727. **Scaling:** every Miracle number that is damage, a heal or a shield is × Blessing power (1 + 0.1 × Faith with items: 1.7 at Faith 7), as Hymns are. Rounds, AP, half HP, full HP, cores and the restock aren't scaled. Item 97's "×3" predates Blessing 2.0 and is not applied: 100 Soul × 1.7 already kills every tier but a boss (minion 30, soldier 60, elite 100, boss 200 HP). **The Saints' Verdict:** every enemy in sight (not Hidden, not surrendered) takes 100 Soul and is Stunned 1 round, no save; one that harmed the helpless this fight (item 622) takes 200 and is Stunned 2 rounds. Each lands through `blessing_in` (Blessed Shells, Factory Made, The Old Blood).
+728. **Requisition Approved**, for every character on the squad (not a companion; the Downed too): every magazine full (the loaded one and each spare, and at least as many spares as the fight began with), loose rounds and throwables back to at least what the fight began with (the engine keeps that at the fight's start), Supplies to their maximum, **2 standard cores** (into the Evoker kit's spares when the unit carries magic, else the pack), every weapon carried at full durability (the main hand, the off hand, the pack), no jam, no heat; and **+3 AP next turn**. The +3 is banked AP: it counts toward that turn's +3 perk-AP cap and the ceiling of 9 (6 + 3 = 9), so any other perk AP that turn is lost to the cap (the log says so); Stunned and Dazed still come off it. The writeback keeps what the fight's rules keep (no more loose rounds or throwables than you carried in).
+729. **Encore:** each ally (the one praying too) whose last action this round cost AP may repeat **that action** once for free: the same action type and kind (an attack's mode, a move's kind, a perk's id…), any target. It is lent the AP the action cost then (so it can be taken with too little AP); if the repeat costs more now, the rest is paid. It lasts until the end of the ally's next turn (the one praying: the rest of this turn), and ends unused with a log line. Prayers, ending a turn and declining a window can't be repeated; an ally who hasn't acted this round gets nothing. Every enemy in sight is Confused 1 round, no save. *Engine: the Encore key is kept on the unit after each action; the reducer lends and settles the AP (encoreBefore/encoreAfter).*
+730. **Turned Back at the Shore:** every ally who died or is Downed (fell) in this fight stands at half HP (rounded up), death saves cleared, the character no longer dead. No target to pick. Surrendered allies aren't touched.
+731. **Everyone Home:** every ally not dead (the Downed stand) heals to full (whatever trims a heal), every harmful condition ends (every non-boon condition, and Prone, Bleeding, Dazed and a fumble's stagger; boons such as Inspired stay; a grudge's condition ends too), and each gets a 40 shield (× Blessing power; shields don't stack: the larger stands).
+732. **The Sky Answers:** a tile in sight; the 5×5 around it; the sky picks: only enemies (alive, not surrendered) in it take 150 Storm (Elemental, lightning) and are Stunned 1 round and Shaken, no save. Allies in the area are untouched. The fx area is the 25 tiles.
+733. **Love Conquers:** every enemy in sight that can yield surrenders at once, no save (a refused parley doesn't matter). One that can't yield (a boss, a machine, robot, turret or drone, or no_surrender) makes a Heart save (TN 12 + the praying character's Heart debuff) or is **Commanded to hold** for 1 round: the engine's Commanded with the order hold (no attacks on its next turn), the closest engine-run reading of "Commanded" for a patron's order to a boss.
+734. **Rewoven:** each ally's HP goes back to what it was at the start of this round, if that was higher (a Downed ally stands at it; the dead stay dead: that is the Toll-Keeper's); then every living ally takes another full turn right after this one, in initiative order, this round only (item 614). The round's HP is kept on the fight at its start and at every round's start.
+735. **Miracles in the story** (item 624): Everyone Home heals the squad to full and ends their story conditions (the shield is a fight's); Requisition Approved fills the loaded magazine and the spares, gives 2 cores, repairs every weapon and fills Supplies, and its throwables and +3 AP go to the Narrator with the text; the other six are the Narrator's to rule (a pending ruling with the text and the power). Every story Miracle pays its 5 levels after its effect.
+736. **What this supersedes:** the gate and the reset of items 702 and 707, Encore in item 614, Turned Back and Love Conquers in item 617, and item 621's "spends"; the Miracle texts in the patron table. Every Miracle number is still for the balance pass (item 592). *Data: `patrons.json` items[].miracle text and effects (new bespoke ops `repair_gear`, `clear_jam` and `rewind_hp` in `effect_ops.json`).*
+737. **Miracle 2.1 review fixes** (9 Nov 2026), PROVISIONAL with the rest: (a) **Encore** remembers each unit's last action that can be repeated *and cost AP* this round; ending the turn, declining a window, a prayer or a free action never replaces it (an ally who acted and ended its turn used to lose its repeat). (b) **The lend in the previews:** the attack preview, the perk list and the move range count Encore's lent AP for the matching action, so the client offers the repeat even with too little AP and marks it "FREE · ENCORE"; never twice inside the reducer's own action. (c) **A Miracle that would find nobody is refused**, so its once a session and its 5 levels aren't spent: Turned Back with nobody fallen ("Nobody has fallen this fight."), The Saints' Verdict or Love Conquers with no enemy in sight ("No enemy in sight."), Encore with nobody who acted this round and no enemy in sight. Out of a fight they still go to the Narrator (item 735). (d) **Turned Back** never raises a companion (a drone, turret or pet): a destroyed companion is repaired or healed in the story first, as before. (e) **Rewoven** takes its extra turns from the round's own initiative, once each: two Rewovens in one round give each ally two extra turns, not a doubling. (f) **The log** reads the Miracle first, then its price. (g) **Tags at the top:** a liked tag that lands while Devotion XP is at its 450 cap gives nothing and uses none of the fight's, scene's or session's tag caps (the Miracle's own kill or storm used to eat the fight's cap and 2 of the session's 6). (h) **The pace** is written as measured (item 726): a Miracle about every 19 sessions (17–22), not 17–19.
+
 **Rules 1.8: Outburst 4.0** (decision 109; `docs/design/outburst-4.0-spec.md`). Numbered from 801 so they don't collide with items 671–700 (World Play 1.1) and 701 on (Faith 2.1), written on other branches at the same time. Every number here is provisional, for the damage balance pass.
 
 801. **Feeling steps, residue values and practice thresholds** (the design's open item 1): every step in the feelings table, the residue's 5 a turn, heal 5, +1, +2, −1, −2 and its 2 rounds, practice 1 + stages past 1 + feelings, the thresholds 5 / 15 / +15, and Mastery's +5 (`data/feelings.json`, `soul_modules.json` `practice`).
@@ -4301,3 +4520,35 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 816. **Mercy's surrender roll:** d20 + the target's Heart save against 12 + your Heart debuff strength (the Status school's save); a surrendered enemy is out of the fight as the surrender rules say.
 817. **Dread's "can't see Hidden things for a round"** runs as: the targets lose every reaction this round and their Overwatch. Sight for Hidden creatures is per side, not per unit, so a single foe can't be blinded to them yet; the rest waits for per-unit sight.
 818. **Hopeful** (Hope) is +2 to the next attack or spell roll, spent on that roll, at most 2 rounds; **Scorned** (Contempt) is −2 to attack the one who scorned you, 2 rounds, no save.
+
+**Rules revision 1.10: Sigil 1.5, strokes (9 Nov 2026; `docs/design/sigil-1.5-spec.md`). Readings where the design was silent. PROVISIONAL.** Sigil 1.5 was written on its own branch as revision 1.9 with items 671–693; World Play 1.1 reached develop first with the same numbers, so Sigil 1.5 is revision **1.10** and its items are numbered from **901** (clear of World Play 1.1's 671–700, Faith 2.1's 701 on and Outburst 4.0's 801–818).
+
+901. **The stroke picker's default:** the stroke among those the glyph could extend that holds your most recent glyph; if none holds a glyph of yours, **new Line**. So an ally's stroke is extended only when you pick it (or after you have drawn into it once), and a lone glyph of yours next to you is extended by default (pick **new Line** to keep them apart). An explicit pick the glyph can't extend is refused.
+902. **A Stack's second glyph** joins the stroke of the glyph already on the tile (no pick); the stroke's length counts tiles, its words count glyphs (a spell still holds at most 4 glyphs).
+903. **A split stroke's ids:** whatever removes a glyph from the middle of a stroke (Scuff, a fade, NULL, an Evoke that spares a Keystone) splits it; the part holding the stroke's oldest glyph keeps its id, every other part takes a fresh one named after its own oldest glyph. A Keystone left behind by an Evoke is a stroke of one glyph and can be extended again.
+904. **Old glyphs** (drawn before 1.10, with no stroke) never join a stroke and no stroke joins them; they keep the 1.4 touching-group reading among themselves until they fade. Saves are not migrated (no glyph is dropped).
+905. **Enemy casters** draw their Lines as strokes (the first glyph a new Line, then extending it), so a Line of theirs is no longer spoiled by a glyph of their side beside it.
+
+**Rules revision 1.10: Sigil 1.5, study and word mastery (9 Nov 2026; `docs/design/sigil-1.5-spec.md` sections 2 and 3). PROVISIONAL.**
+
+906. **Study per Evoke:** 1, +1 per glyph past 2 (a Stack's glyphs count), +1 if the spell struck an enemy (a damage roll that hits, or an Affliction, Boon or Working that reaches an enemy, saved against or not; a miss counts nothing, and a trap or turret placed strikes nothing yet). An Evoke that fizzles earns no study and no use count (no farming at empty ground). Enemies and companions earn nothing. Kept on the character (`sigilGrowth`), across fights and sessions.
+907. **Study thresholds:** the 1st pick at 6 study, then every 8 more (6, 14, 22, 30…); the balance pass may change both (design open item 1).
+908. **What a pick can learn (reading):** any of the 40 words you don't know, within your cap of 4 + Brain Power ("a word of your choice"). Copied words (the known-to-study list) are listed first; a copied word is guaranteed learnable even with no tutor, plate or ally. *Leon to confirm; the stricter reading (a pick only teaches a word you have a source for or copied) would make copying the only way past the bonus sources.*
+909. **Banked picks:** a pick with no free slot waits (no limit on how many). Learning is out of combat only; a pick is not a bonus source and doesn't take the scene's one new thing.
+910. **Copying a glyph:** Read is the Analyze action aimed at a glyph or a trace (2 AP, 1 with Quick Read; range 4 + Analysis; line of sight; no roll): +2 study and the word on your known-to-study list, for each glyph or trace on the tile that holds a word you don't know (a second glyph of a word already on the list pays its +2 too: the limit is per glyph, not per word). Analyzing an enemy also copies the glyphs it has drawn within your Analyze range (no extra AP). On the area map too. A glyph's trace keeps the glyph's copy marks.
+911. **Traces:** a glyph you scuff leaves a trace of its word for 2 rounds (a NULL or a fade leaves none). Traces can only be read; they are not glyphs.
+912. **Mastery study counts levels already reached**, creation included (a character made with Brain Power 3 starts with 5 study). Each level of each of the three skills pays once.
+913. **The Mastered free word:** once per skill (Brain Power, Rumination and Eloquence Mastered give up to three free words). It ignores the cap and is taken like a pick (`sigil/learn` with `free`); unused, it waits. Each free word taken raises your cap by one (`sigilGrowth.freeTaken`), so it never fills an ordinary slot, whether taken below the cap or at it, and a slot Brain Power opens later is an ordinary one. *Leon to confirm "once per skill" against "once in total".*
+914. **The Narrator's word grant** takes the scene's one new thing (as a plate or an ally), within the cap; one that can't land (the scene's new thing spent, no slot free) puts the word on the known-to-study list instead, and the log says so.
+915. **Use counts** are kept for the words you know (each Evoke that includes one adds 1, repeats once): Practised at 10, Mastered word at 30 (design open item 1).
+916. **The 40 inflections** (sigils.json `inflection`, op `inflection` with a `stat` and a `value`) are a first draft for Leon to strike or change. They apply to the caster's spells, whoever drew the glyphs, and ride on what the spell places (fields, traps, turrets keep the caster's inflections); charge and Flux inflections lower the cost of drawing the word (never below 1 charge).
+
+**Rules revision 1.10: Sigil 1.5, Junctions and sigil marks (9 Nov 2026; `docs/design/sigil-1.5-spec.md` sections 2.2 and 4.2). PROVISIONAL.**
+
+917. **Junctions' gate:** Brain Power Mastered (10) on the character (design open item 3). The Proving Ground can switch Junctions on for everyone there (`sandbox/junctions`). Enemies and companions never draw them.
+918. **Junction geometry:** a junction is drawn on an empty tile where it could extend a stroke (next to its end, along its axis; a 1-glyph stroke in any direction). It either extends two such strokes ("extends A and B") or extends one and starts a new stroke ("extends A + a new Line"). The pick is `junction:A,B` or `junction:A,new` on the draw action. It never joins two strokes that already share a glyph, and it is never a Stack.
+919. **A junction's life:** Evoking one of its Lines takes it out of that stroke only; it fades when its second Line is Evoked. Its rounds left are the glyph's own (it doesn't refresh), and it counts once toward your glyph cap. A junction Evoked as part of a Line that fizzles leaves that stroke too (the Line is spent).
+920. **Evoking from a junction's tile:** the tile reads the Line of the stroke it was drawn into first; the Evoke may name the other stroke (`stroke` on the Evoke), and a junction whose first stroke is a lone glyph reads its other stroke.
+921. **A sigil mark's TN** by age (fresh, old, ancient) and damage (intact, worn, broken): fresh 8 / 12 / 16, old 12 / 16 / 20, ancient 16 / 20 / 20. The default is old and intact (12). Success gives +3 study (copying a glyph in a fight gives 2: a mark costs a check and 2 AP). Numbers in objects.json `sigil_mark.mark`.
+922. **Investigate's limits:** each character tries each mark once (the approach rule); a word already on the known-to-study list gives no more study; a critical that teaches the word does not take the scene's one new thing (it is study, not a bonus source), and with no slot free the word goes on the known-to-study list with the study. A failure costs nothing more (no Flux sting: a mark is not your Evoker).
+923. **Narrator grants and the rest rule:** the spec's "one per long rest from those" bonus sources is the engine's "one new thing a scene" (it takes a rest to sink in); a Narrator word grant keeps item 914. *Leon to confirm a scene against a long rest.*

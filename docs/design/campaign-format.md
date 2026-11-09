@@ -18,7 +18,8 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `secrets` | no | Truths the Narrator never states outright. |
 | `opening` | yes | What the Narrator's first turn should do: where to open, who's there, the first problem, the last line. |
 | `cast` | no | `{ name, role, text }` for each important NPC. |
-| `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. Optional `music`: a track for this fight (see `music`). |
+| `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. Optional `music`: a track for this fight (see `music`). An enemy may carry `drops` (below); when a fight has the encounter's name, its enemies get them by name. |
+| `loot_tables` | no | Drop tables (rules 1.9): `[{ id, none?, entries: [{ item, weight, qty?, rarity?, name?, text? }] }]`, weighted, `none` the weight of nothing. A table with an engine table's id (`person`, `machine`, `caster`, `beast`, `notable`; `data/loot_tables.json`) replaces it in this campaign. A `drops` value on an encounter enemy or a zone NPC is `{ table?, items?: [{ item, qty (n or [min, max]), chance?, rarity?, name?, text? }] }`: it replaces the engine's rolled drops for that enemy (their weapon and leftover magazines always drop). Item ids as `loot[]` takes them, plus `mag:<weapon>`, `rounds:<calibre>` and `personal`; any other id needs a `name` and is a plot item. |
 | `startZone` | yes | The zone the party starts in. |
 | `zones` | yes | The maps (below). |
 | `lore` | no | Extra lore for the Narrator, as text. |
@@ -77,7 +78,7 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 | `exits` | no | `{ to, at, text }`: other zones you can reach from here. With an `at`, a "way out" marker appears there. The Narrator moves the party with travel. |
 | `art` | no | `{ map, banner }`: the painting under this zone's grid (the whole grid, `w` × `h` tiles) and the banner over the story while the party is here. |
 | `music` | no | `{ ambient, combat }`: this zone's tracks, in the format of the top-level `music`. |
-| `tags` · `terrain` · `in_city` · `urban` · `fear` · `upper_realm` · `faction` | no | Zone tags perks and traits read (rules 1.3): free tags, the terrain (open, forest, urban…), whether it is inside a city, a frightening place, the upper realm, the faction that holds it. Zone `npcs` may carry `kind` (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret) and `tags` (military, hunter, lawful, no_surrender…). |
+| `tags` · `terrain` · `in_city` · `urban` · `fear` · `upper_realm` · `faction` | no | Zone tags perks and traits read (rules 1.3): free tags, the terrain (open, forest, urban…), whether it is inside a city, a frightening place, the upper realm, the faction that holds it. Zone `npcs` may carry `kind` (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret) and `tags` (military, hunter, lawful, no_surrender…), and `drops` (what they drop if they die in a fight; see `loot_tables`). |
 
 ## Objects and points of interest
 
@@ -86,6 +87,12 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 - `door` (can be `locked`), `hole`, `trap` (`hidden` until spotted);
 - hazards: `fire`, `toxic`; `barrel`, `rubble`;
 - `container`, `terminal`, `poi`, `exit`.
+- `sigil_mark` (rules 1.10, Sigil 1.5): a Sigil word drawn into the world (carved on a door or a ruin, a Keystone, a warding
+  post, an old Sigil plate fixed to a wall). It takes `word` (one of the 40 Sigil word ids, lower case: `"mend"`) and
+  optionally `age` (`fresh`, `old` the default, `ancient`) and `damage` (`intact` the default, `worn`, `broken`). The
+  engine gives it its **Investigate** approach by itself (Analysis or Rumination, the TN by age and damage; success
+  copies the word for study, a critical teaches it): don't write one. You may add other approaches. Example:
+  `{ "kind": "sigil_mark", "at": "J2", "name": "Plate over the cradles", "word": "mend", "age": "old", "damage": "worn", "text": "A slate Sigil plate bolted over the repair cradles." }`
 
 **Approaches** are the ways to deal with an object, written ahead so players can try them without the Narrator setting anything up:
 
@@ -99,6 +106,36 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 - `success`: what the engine does by itself on a success: `remove` (it's gone, leaving rubble if it was cover), `open`, `reveal`, `disarm`, or `""` (the Narrator narrates the result).
 
 Mix Body, Mind and Soul skills, so every kind of character has a way in. Objects without approaches get theirs from the Narrator when a player examines them.
+
+## Loot: drop tables, drops and piles (rules 1.9)
+
+What the fallen leave is rolled by the engine, never written as a result: once per death, on the fight's seeded dice, into the **pile** on the tile where they died. Three layers, the most specific winning (spec section 14 item 691):
+
+1. the engine's tables (`data/loot_tables.json`: `person`, `machine`, `caster`, `beast`, `notable`; rolls by tier; the caps a fight);
+2. the campaign's: `loot_tables` (top level) and `drops` on a zone NPC or an encounter enemy;
+3. the Narrator's `drops` on `combat.enemies[]` and `npcs[]` for one fight or one person.
+
+The weapon the enemy used (worn) and up to 2 leftover magazines with their real rounds always drop, whatever the layers say. A `drops` value replaces the rolled drops of the layers under it; `drops: {}` means nothing rolled.
+
+```json
+"loot_tables": [
+  { "id": "trophies", "none": 2, "entries": [
+    { "item": "hound_tooth", "name": "Hound tooth", "text": "Yellow, as long as a finger.", "weight": 3 },
+    { "item": "spare_parts", "qty": [1, 3], "weight": 1 } ] }
+],
+"zones": [{ "id": "kennels", "npcs": [
+  { "name": "Kennel master", "side": "hostile", "tier": "elite", "weapon": "service_pistol", "at": "F4",
+    "drops": { "items": [ { "item": "kennel_key", "name": "Kennel key", "text": "Opens every run but one." },
+                          { "item": "mag:service_pistol", "qty": 12, "chance": 0.5 } ] } } ] }],
+"encounters": [{ "name": "The hounds get loose", "zone": "kennels", "when": "...", "difficulty": "standard",
+  "enemies": [ { "name": "Hound", "tier": "minion", "weapon": "beast_bite", "drops": { "table": "trophies" } } ] }]
+```
+
+- Ids: anything `loot[]` takes (weapon and item ids), `mag:<weapon id>` (`qty` is the magazine's rounds; 1 or none is full, 0 empty), `rounds:<calibre>`, and `personal` (one of the personal effects). Any other id needs a `name` and becomes a plot item. `qty` is a number or `[min, max]` (1–20; 0–120 for `mag:` and `rounds:`); `chance` 0–1 rolls an entry on its own; `rarity` for weapons.
+- An encounter's enemies get their `drops` when a fight has the encounter's name (matched by name, like `music`).
+- `validateCampaign` reports bad tables, unknown table names, unknown ids without a `name`, and bad `qty`, `chance` or `rarity`.
+
+**Piles** (object kind `pile`) aren't written in a campaign file: one per tile, they come from play (a speed reload's magazine, a drop, a death) and from the Narrator's `ground[]`, and they keep exact items (a magazine with its rounds, a worn weapon). Players see a pile's contents when the party can see its tile, and Pick up takes a selection (1 AP). A campaign's hidden stash is a closed `cache` the Narrator fills, or a person's `drops`.
 
 ## A minimal campaign
 

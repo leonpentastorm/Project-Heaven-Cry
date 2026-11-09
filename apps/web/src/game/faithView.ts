@@ -2,11 +2,34 @@
 // the combat FAITH tab, the story's prayer buttons, the resource rows under the HP bar and the turn card. Everything
 // comes from the engine's faithView() and previewPrayer() (packages/engine/src/faith.ts): this file computes no rule,
 // only words, odds, icons and the reason a button is disabled.
-import { faithView, previewPrayer, FAITH_PATRON, FAITH_PATRONS, GATE, MIRACLE_FAITH, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
+import { faithView, previewPrayer, devotionWords, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
 import { FAITH_INK, FAITH_GOLD, accentOf, patronMarkUri, prayerIconUri, vowIconUri, witnessedUri } from './faithArt';
 
 export type PrayerKindUI = 'whisper' | 'hymn' | 'miracle';
 const ROMAN = ['', 'I', 'II', 'III'];
+/** The Devotion meter's words: "DEVOTION 4 · 12/32 XP" (the level, then the XP into it out of the step to the next);
+ *  at the top, "DEVOTION 10 · 450 XP · FULL". */
+export function devotionLabel(x: FaithView['devotionXp'] | null | undefined, level?: number): string {
+  if (!x) return 'DEVOTION ' + (level ?? 0);
+  return devotionWords(x.total).toUpperCase(); // the engine's words, the same as its log lines
+}
+/** The tag caps (items 703, 722) in words: "LIKED TAGS · 1/2 THIS FIGHT · 4/6 THIS SESSION" (a scene out of fights;
+ *  no session part in the Proving Ground), and whether a cap is reached (liked tags give nothing until it resets). */
+export function tagCapsText(t: FaithView['tagXp']): { text: string; capped: boolean } {
+  const here = t.where === 'fight' ? { n: t.fight, cap: t.caps.fight, w: 'THIS FIGHT' } : { n: t.scene, cap: t.caps.scene, w: 'THIS SCENE' };
+  const sess = t.caps.session != null ? ' · ' + t.session + '/' + t.caps.session + ' THIS SESSION' : '';
+  const capped = here.n >= here.cap || (t.caps.session != null && t.session >= t.caps.session);
+  return { text: 'LIKED TAGS · ' + here.n + '/' + here.cap + ' ' + here.w + sess + (capped ? ' · CAPPED' : ''), capped };
+}
+/** The pact cooldown after leaving one (item 710), in the patrons' silence: "Nobody answers yet: 88 days". */
+export const cooldownText = (days: number) => 'Nobody answers yet: ' + days + (days === 1 ? ' day' : ' days');
+/** A grudge (item 713) in words: who, what it does, and how long. */
+export function grudgeText(gr: NonNullable<FaithView['grudge']>): { head: string; what: string; left: string } {
+  const pct = Math.round((1 - gr.xpMult) * 100);
+  return { head: 'GRUDGE · ' + gr.patronName.toUpperCase(),
+    what: gr.conditionName + (gr.rounds > 0 ? ' for ' + gr.rounds + (gr.rounds === 1 ? ' round' : ' rounds') : '') + ' at the start of every fight' + (pct > 0 ? '; your Devotion XP gains are cut by ' + pct + '%' : '') + '.',
+    left: gr.sessionsLeft > 0 ? 'Ends after ' + gr.sessionsLeft + (gr.sessionsLeft === 1 ? ' more session' : ' more sessions') + '.' : 'Ends with this session.' };
+}
 /** The chance a d20 + mod meets the TN (a 1 always misses, a 20 always hits), as a whole percent. */
 export function oddsOf(tn: number, mod: number): number {
   const need = tn - mod; // the die must show at least this
@@ -24,8 +47,8 @@ export function oddsText(p: PrayerPreview): string {
 export interface PrayerButton {
   key: string; kind: PrayerKindUI; id: string; name: string; text: string; icon: string;
   /** "1 AP", "3 AP". */ ap: string;
-  /** The gate or the dice: "ANYONE", "HYMN I · DEVOTION 3", "BY DICE · TN 14", "FAITH 7 · DEVOTION 7". */ gate: string;
-  odds: string; /** An overreach: its TN, and that a miss costs 1 Devotion. */ warn?: string;
+  /** The gate or the dice: "ANYONE", "HYMN I · DEVOTION 3", "BY DICE · TN 14", "FAITH 7 · DEVOTION 10". */ gate: string;
+  odds: string; /** An overreach: its TN, and what a miss costs in Devotion XP; the Miracle: its price (rules 1.6.2). */ warn?: string;
   ok: boolean; why?: string; /** What the player must pick: none, a unit (ally, enemy…), a tile, or two units. */ target: string;
   patron: string | null; tier: number; source?: 'patron' | 'kept' | 'learned';
 }
@@ -35,7 +58,8 @@ function button(kind: PrayerKindUI, id: string, name: string, text: string, p: P
     : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ROMAN[tier] + ' · DEVOTION ' + (p.gate ?? '?');
   return {
     key: kind + ':' + id, kind, id, name, text, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
-    odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs 1 Devotion' : undefined,
+    odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
+      : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : undefined,
     ok: !!p.ok, why: p.ok ? undefined : p.why || 'Not now.', target: p.target || 'none', patron: p.patron, tier, source,
   };
 }
@@ -72,7 +96,12 @@ export function pickerFor(target: string): { kind: 'none' | 'unit' | 'tile' | 't
 export interface MeterCell { n: number; on: boolean; gate?: string }
 export interface FaithPanel {
   faithful: boolean; title: string; sub: string; mark: string; accent: string;
-  /** Devotion 0–10 with the gate marks (3 Hymn I, 5 Hymn II, 7 Hymn III and Miracle). */ meter: MeterCell[]; devotion: number;
+  /** Devotion 0–10 with the gate marks (3 Hymn I, 5 Hymn II, 7 Hymn III, 10 the Miracle: rules 1.6.2). */ meter: MeterCell[]; devotion: number;
+  /** Rules 1.6.1: the level and the XP toward the next ("DEVOTION 4 · 12/32 XP"), and the fill of that step (0–1). */
+  devotionText: string; xpFill: number; xp: FaithView['devotionXp']; /** The word beside the XP fill: "TO DEVOTION 5", or "FULL". */ xpNextText: string;
+  /** The day counter (item 709), the cooldown after leaving a pact (item 710) and a grudge (item 713), in words. */
+  day: number; dayText: string; cooldown: string | null; grudge: { head: string; what: string; left: string; text: string } | null;
+  /** The liked-tag caps (items 703, 722): what tags have given against the caps, and whether one is reached. Faithful only. */ tagCaps: { text: string; capped: boolean } | null;
   witnessed: { on: boolean; icon: string; word: string; can: boolean };
   vow: { icon: string; label: string; state: 'sworn' | 'kept' | 'broken' } | null;
   rites: { id: string; name: string; text: string; kept: boolean; engine: boolean; available: boolean; why?: string }[];
@@ -87,11 +116,17 @@ export function faithPanel(v: FaithView | null): FaithPanel | null {
   if (!v) return null;
   const faithful = v.belief.kind === 'faithful', p = v.patron;
   const meter: MeterCell[] = Array.from({ length: 11 }, (_, n) => ({ n, on: faithful && n > 0 && n <= v.devotion,
-    gate: n === GATE[1] ? 'HYMN I' : n === GATE[2] ? 'HYMN II' : n === GATE[3] ? 'HYMN III · MIRACLE' : undefined }));
+    gate: [n === GATE[1] && 'HYMN I', n === GATE[2] && 'HYMN II', n === GATE[3] && 'HYMN III', n === GATE.miracle && 'MIRACLE'].filter(Boolean).join(' · ') || undefined }));
   const pieces = Object.entries(v.pieces || {}).filter(([, n]) => n > 0).map(([id, n]) => ({ patron: id, name: FAITH_PATRON[id]?.name || id, text: (FAITH_PATRON[id]?.name || id) + ' ' + Math.min(3, n) + '/3', mark: patronMarkUri(id) }));
   return {
     faithful, title: faithful && p ? p.name : 'ATHEIST · PILGRIM', sub: faithful && p ? p.archetype || '' : 'Prays by dice; teachers of the faiths unlock their Hymns',
     mark: p ? patronMarkUri(p.id) : witnessedUri(), accent: accentOf(p?.id, p?.accent), meter, devotion: v.devotion,
+    devotionText: faithful ? devotionLabel(v.devotionXp, v.devotion) : '', xp: v.devotionXp,
+    xpFill: v.devotionXp ? (v.devotionXp.step ? Math.max(0, Math.min(1, v.devotionXp.into / v.devotionXp.step)) : 1) : 0,
+    xpNextText: v.devotionXp ? (v.devotionXp.step ? 'TO DEVOTION ' + (v.devotionXp.level + 1) : 'FULL') : '',
+    day: v.day, dayText: 'DAY ' + v.day, cooldown: v.pactCooldown ? cooldownText(v.pactCooldown.daysLeft) : null,
+    grudge: v.grudge ? { ...grudgeText(v.grudge), text: v.grudge.text } : null,
+    tagCaps: faithful && v.tagXp ? tagCapsText(v.tagXp) : null,
     witnessed: { on: v.witnessed, icon: witnessedUri(), word: v.witnessed ? 'WITNESSED' : 'NOT WITNESSED', can: v.canBeWitnessed },
     vow: v.vow ? { icon: vowIconUri(v.vow.id), label: vowLabel(v.vow, v.vows), state: v.vow.state } : null,
     rites: v.rites.map((r) => ({ id: r.id, name: r.name, text: r.text, kept: r.keptThisSession, engine: r.engine, available: r.available, why: r.why })),
@@ -115,4 +150,4 @@ export const BELIEF_TEXT = {
   atheist: 'No patron, no leash. Pray by dice, learn Hymns from every faith you meet, and build a pilgrim\'s kit no believer can.',
   faith3: 'Praying needs Faith ' + FAITH_MIN + '. Belief is who you are; the Faith skill is what you can do with it.',
 };
-export { FAITH_INK, FAITH_GOLD, previewPrayer };
+export { FAITH_INK, FAITH_GOLD, previewPrayer, DEVOTION_XP };

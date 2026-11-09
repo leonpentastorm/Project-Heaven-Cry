@@ -5,32 +5,37 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
+import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
+import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
-import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches } from './objects';
+import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
 import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
-  applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, isCache } from './world';
+  applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
+import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
+import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
+import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
-import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
-import { condSource, applyCond as applyCondition, isCondition, revertPump } from './magic';
+import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
 import { soulPickError, moduleGateError, moduleShelved } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
-import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, FAITH_PATRON, VOW } from './faith';
+import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
+import { readGlyph, readDrawnBy } from './sigil';
+import { masterySync, learnStudied, noteToStudy, learnedElsewhere, growthOf, WORD_MASTERY } from './sigilgrowth';
 import { CASTER, armFoe } from './ai-sigil';
 import { HEART_CASTER, armHeart } from './ai-soul';
 
@@ -104,7 +109,7 @@ export interface GameState {
     heat?: Record<string, number>; jammed?: Record<string, boolean>;
     /** Magic on the story map (spec: Mana): glyphs and zones (and the zone they're drawn in), the mana meter, and each
      * character's Flux, Strain, held Outburst, conditions and shield between overworld actions. */
-    glyphs?: Glyph[]; zones?: Zone[]; glyphMap?: string; mana?: number;
+    glyphs?: Glyph[]; zones?: Zone[]; glyphMap?: string; mana?: number; /** Rules 1.10: scuffed glyphs' traces. */ traces?: Trace[];
     /** The last id number given to placed Sigil magic on the area map (glyphs 'gl', zones 'z', RAISE walls 'sw'): kept
      * so ids never repeat between area-map actions (an Evoke uses its glyphs up, a wall outlives them). */
     glyphSeq?: number;
@@ -157,6 +162,9 @@ export interface GameState {
   /** Sessions started in this room, and rests taken this session: the stamps of per-session and per-rest item uses
    * (effects/uses.ts). Old saves: session 1, no rests. */
   sessionN?: number; restN?: number;
+  /** Rules 1.6.1 (item 709): the day counter, from 1 (old saves: 1; dayOf). A long rest is a day; the Narrator's turn
+   * field days adds more (travel, time skips). The pact cooldown after leaving a patron counts it. */
+  day?: number;
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -195,13 +203,17 @@ export type NarratorTurn = {
   karma?: { charId: string; amount: number; unlawful?: boolean; why?: string }[];
   /** The party rests (spec: Rest): short (1 hour) or long (8 hours); settlement: somewhere safe and supplied. */
   rest?: { kind: 'short' | 'long'; settlement?: boolean } | null;
+  /** Rules 1.6.1 (item 709): days that pass (travel, a time skip), a whole number from 1 to 3650; a long rest is a day already. */
+  days?: number;
   /** Things a character now understands (Lab Coat's identified rules, an item's nature): by name. */
   identify?: { charId: string; what: string }[];
   /** A tutor met (spec: Classes, advanced classes): the advanced class id it can teach. */
   tutors?: { charId: string; classId: string }[];
-  /** Patron pacts and Devotion (spec: Patrons and prayer): make a pact (patron id), or change Devotion by delta. */
+  /** Patron pacts and Devotion (spec: Patrons and prayer): make a pact (patron id), or move Devotion XP by devotion (the
+   * legacy path: the same −6..+5 and session cap as faith devotion). */
   patrons?: { charId: string; patron?: string; devotion?: number; reason?: string }[];
-  /** Rules 1.6: the Narrator's faith events (faith.ts): a pact, a knowledge piece, Devotion ±2 with a reason, a Narrator rite kept, apostasy. */
+  /** Rules 1.6.1: the Narrator's faith events (faith.ts): a pact, a knowledge piece, Devotion XP −6..+5 with a reason
+   * (gains capped at +10 a session per character), a Narrator rite kept, apostasy. */
   faith?: { charId: string; op: 'pact' | 'piece' | 'devotion' | 'rite_kept' | 'apostasy'; patron?: string; from?: string; delta?: number; reason?: string; rite?: string }[];
   /** The patron's mood: the TN of prayers to it (12 by default). */
   patronMood?: { patron: string; tn: number }[];
@@ -212,12 +224,13 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string;
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; stroke?: string; feeling?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; tactical?: boolean; hand?: 'main' | 'off' | 'both';
     /** Rules 1.7: attempt: the approach's number as listed (1 = the first); ask: wants or objective. */ index?: number; what?: 'wants' | 'objective' }[];
   /** Place, move, update or remove people and enemies on the overworld map; rules 1.7: carry (id, charId) and drop
    * (id, charId, at) a creature in the story, and every person's face (kind, avatar) and talk (wants, knows, talk). */
   npcs?: { action: 'place' | 'move' | 'update' | 'remove' | 'carry' | 'drop'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string; kind?: string; tags?: string[]; hidden?: boolean;
-    avatar?: string; charId?: string; wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: NarratorApproach[] }[];
+    avatar?: string; charId?: string; wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: NarratorApproach[];
+    /** Rules 1.9: what this person drops if they die in a fight (loot.ts; at most 4 items; null clears it on update). */ drops?: Drops | null }[];
   /** Rules 1.7: hazards on the map (place, update, remove): a kind, a severity, tiles or a rectangle, hidden. */
   hazards?: { action: 'place' | 'update' | 'remove'; id?: string; kind?: string; severity?: 'light' | 'heavy'; tiles?: string[]; rect?: { from: string; to: string } | null; hidden?: boolean; name?: string; text?: string }[];
   /** Rules 1.7: triggers that fire without a call: when enter (tiles or rect), examine (objId) or objective; then spawn
@@ -225,7 +238,7 @@ export type NarratorTurn = {
   triggers?: { action?: 'place' | 'remove'; id?: string; when?: 'enter' | 'examine' | 'objective'; tiles?: string[]; rect?: { from: string; to: string } | null; objId?: string; objective?: string;
     then?: 'spawn' | 'fight' | 'reveal'; spawn?: NonNullable<NarratorTurn['npcs']>; difficulty?: string; name?: string; reveal?: string[]; text?: string }[];
   /** fromTalk: the fight broke out of the talk just had (Talks Broke Down); absent = the engine's guess from the last check. */
-  combat?: { name: string; map?: string; difficulty?: string; fear?: boolean; fromTalk?: boolean; enemies: ({ name: string; tier: string; weapon: string; at?: string } & FoeTraits)[] } | null;
+  combat?: { name: string; map?: string; difficulty?: string; fear?: boolean; fromTalk?: boolean; enemies: ({ name: string; tier: string; weapon: string; at?: string; /** Rules 1.9: this fight's drops for this enemy (loot.ts; at most 4 items). */ drops?: Drops } & FoeTraits)[] } | null;
   /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
   moves?: { charId: string; to: string }[];
   /** Move the whole party to another zone of the campaign (its id), or "". */
@@ -236,7 +249,13 @@ export type NarratorTurn = {
   /** The Narrator places, updates or removes map objects and points of interest, and writes their approaches. */
   objects?: { action: 'place' | 'update' | 'remove'; id: string; kind: string; at: string; name: string; text: string; hidden?: boolean; locked?: boolean;
     approaches: NarratorApproach[];
-    /** Rules 1.7: a cache's contents, in the loot shape. */ items?: CacheItem[] }[];
+    /** Rules 1.7: a cache's contents, in the loot shape. */ items?: CacheItem[];
+    /** Rules 1.10: a sigil mark's word (a Sigil word id), age (fresh, old, ancient) and damage (intact, worn, broken). */
+    word?: string; age?: string; damage?: string }[];
+  /** Rules 1.9 (World Play 1.1): things on the ground. Each entry merges into the pile on its tile: items in the loot
+   * shape, plus mag:<weapon id> (one magazine, qty its rounds) and rounds:<calibre>; hidden until spotted. At most 6 a
+   * turn, 12 items each (world.ts applyGroundOp). */
+  ground?: { at: string; items: { item: string; qty?: number; rarity?: string; name?: string; text?: string; note?: string }[]; hidden?: boolean }[];
   endScene?: { summary: string } | null;
   /** Memory upkeep (spec: The Narrator's memory): people, threads, facts, factions and pins to add or update. */
   memory?: MemOp[];
@@ -269,6 +288,8 @@ export type Action =
   | { type: 'settings'; patch: Partial<GameState['settings']> }
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
+  /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
+  | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
   | { type: 'narrator/begin' } | { type: 'narrator/turn'; turn: NarratorTurn } | { type: 'narrator/error'; message: string }
   | { type: 'narrator/usage'; input: number; output: number; cacheRead: number; costUsd: number; kind?: 'turn' | 'rewrite' } | { type: 'narrator/retry' }
@@ -280,10 +301,14 @@ export type Action =
   | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/gift'; unitId: string; aim: string }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string; targetId?: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
-  | { type: 'gear/equip'; charId: string; idx: number; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number }
-  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both' } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
+  | { type: 'gear/equip'; charId: string; idx: number | string; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number | string }
+  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
-  | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number; mod?: number; to?: 'main' | 'off' }
+  | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number | string; mod?: number | string; to?: 'main' | 'off' }
+  /** Rules 1.9 gear in a fight (items 684–690): draw from the pack into a hand, or put on a light armour piece ('worn');
+   * put away what a hand holds or take a light piece off; drop what a hand holds into the pile on your tile. `item` names
+   * a pack entry by its index or its id. */
+  | { type: 'combat/equip'; unitId: string; item: number | string; to: 'main' | 'off' | 'worn' } | { type: 'combat/stow'; unitId: string; slot: string } | { type: 'combat/drop'; unitId: string; slot: 'main' | 'off' }
   // Rules 1.6: kind and id name a Whisper, a Hymn or the Miracle (faith/pray in a fight comes here); choice/miracle is the old shape.
   | { type: 'combat/pray'; unitId: string; kind?: 'whisper' | 'hymn' | 'miracle'; id?: string; choice?: string; targetId?: string; targetId2?: string; tile?: string; miracle?: boolean; mods?: string[] }
   | { type: 'combat/parley'; unitId: string; targetId: string; kind: 'persuade' | 'threaten' | 'parley'; text?: string }
@@ -293,16 +318,17 @@ export type Action =
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
   | { type: 'gear/give'; charId: string; idx: number; to: string; qty?: number } | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
-  | { type: 'combat/pickup'; unitId: string; tile: string } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
+  | { type: 'combat/pickup'; unitId: string; tile: string; /** Rules 1.9: the pile entries to take (keys or indices); none: everything. */ take?: (string | number)[] } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
   // Rules 1.7: the Talk panel's asks (1 AP) and approaches (2 AP; poi/try works too), and Search in a fight.
   | { type: 'talk/ask'; charId: string; npcId: string; what: 'wants' | 'objective' } | { type: 'talk/try'; charId: string; npcId: string; idx: number }
   | { type: 'combat/search'; unitId: string; objId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; feeling?: string; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
-    /** Rules 1.7: attempt's approach number (1 = the first, as the Narrator lists them) or idx (0-based, the web's); ask's what. */ index?: number; idx?: number; what?: 'wants' | 'objective' }
+  | { type: 'world/act'; charId: string; act: WorldAct; feeling?: string; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; stroke?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
+    /** Rules 1.7: attempt's approach number (1 = the first, as the Narrator lists them) or idx (0-based, the web's); ask's what. */ index?: number; idx?: number; what?: 'wants' | 'objective';
+    /** Rules 1.9: reload's tactical choice and hand (off, both); pickup's entries (keys or indices; none: everything). */ tactical?: boolean; hand?: 'main' | 'off' | 'both'; take?: (string | number)[] }
   // Magic (spec: Mana, rules 1.2)
-  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
+  | { type: 'combat/draw'; unitId: string; word: string; tile: string; /** Rules 1.10: the stroke it extends (an id from previewDraw's strokes) or 'new'; none takes the default. */ stroke?: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push'; /** Rules 1.10 Junctions: on a junction's tile, which stroke to Evoke. */ stroke?: string } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean; watch?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   // Outburst 2.0 (rules 1.5): combat/outburst Begins and holds at stage 0; with an aim (and no hold: true) it is a snap
@@ -310,6 +336,8 @@ export type Action =
   | { type: 'combat/pump'; unitId: string; feeling?: string } | { type: 'combat/revert'; unitId: string } | { type: 'combat/letgo'; unitId: string } | { type: 'combat/steady'; unitId: string } | { type: 'combat/feed'; unitId: string }
   | { type: 'combat/heartwatch'; unitId: string; on?: boolean }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/pick'; charId: string; module: string; via?: string } | { type: 'magic/forget'; charId: string; designId: string }
+  // Rules 1.10 (Sigil 1.5): learn a word with a study pick (or the Mastered free word, over the cap); read a glyph or a trace (copying).
+  | { type: 'sigil/learn'; charId: string; word: string; free?: boolean } | { type: 'combat/read'; unitId: string; tile: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
   | { type: 'vote/suggest'; kind: 'reroll' | 'edit'; entryId: string; note?: string } | { type: 'vote/dismiss'; id: string }
   | { type: 'vote/start'; kind: 'reroll' | 'edit'; entryId: string; note?: string; suggestionId?: string; undo?: string } | { type: 'vote/cast'; yes: boolean } | { type: 'vote/close' }
@@ -342,9 +370,10 @@ export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; ti
   wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: Approach[];
   /** On the party's side (a talk success on someone neutral); asked what they want; told their hint; alerted by an alarm. */
   ally?: boolean; wantsShown?: boolean; informed?: boolean; alerted?: boolean;
-  /** In a player's view only: they want something, not yet asked (the words are stripped; world.ts worldView). */ wantsHidden?: boolean }
+  /** In a player's view only: they want something, not yet asked (the words are stripped; world.ts worldView). */ wantsHidden?: boolean;
+  /** Rules 1.9 drop tables (loot.ts): what they drop if they die in a fight, from the campaign or the Narrator (never in a player's view). */ drops?: Drops }
 
-export type WorldAct = 'move' | 'end' | 'reload' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door' | 'perk' | 'carry' | 'put_down' | 'search' | 'attempt' | 'ask'
+export type WorldAct = 'move' | 'end' | 'reload' | 'pickup' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'read' | 'attack' | 'door' | 'perk' | 'carry' | 'put_down' | 'search' | 'attempt' | 'ask'
   | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise' | 'pump' | 'letgo' | 'steady' | 'feed' | 'heartwatch' | 'revert';
 export interface Suggestion { id: string; by: string; kind: 'reroll' | 'edit'; entryId: string; note: string }
 export interface Vote { id: string; kind: 'reroll' | 'edit'; entryId: string; note: string; from: string; suggestedBy?: string; undo?: string;
@@ -383,16 +412,27 @@ export function roomSheetError(g: GameState, by: string, sheet: Sheet): string |
   return null;
 }
 
+/** Rules 1.9 (item 678): an old save's fight floor (dropped magazines) becomes piles on the fight's map, once; a finished
+ * fight on the current zone's map leaves them on the area map too (the fight's objects were already copied there). */
+function migrateFloor(g: GameState) {
+  const cb = g.combat; if (!cb || !cb.floor) return;
+  const list = cb.floor.filter((f) => f.weapon && WEAPON[f.weapon]); delete cb.floor;
+  for (const f of list) dropOnTile(objectsOf(cb), f.pos, [magItem(f.weapon!, f.rounds || 0)]);
+  if (cb.over && g.phase !== 'combat' && zoneMap(g).id === cb.map.id) for (const f of list) dropOnTile(storyObjects(g), f.pos, [magItem(f.weapon!, f.rounds || 0)]);
+}
 export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
-    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630)
+    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     if (c.classId !== cls0) refreshClassUnits(g, c); // migrated mid-fight: its units' held class and resources follow
     if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n });
   }
+  migrateFloor(g); // rules 1.9: an old save's floor becomes piles, once
   try { reduce(g, action, by); worldAfter(g); } finally { bindGame(was); } // rules 1.7: Downed carriers drop, objective triggers
+  // Rules 1.10 (Sigil 1.5): Mastery in Brain Power, Rumination or Eloquence pays its study (and the Mastered free word) once.
+  for (const c of Object.values(g.characters || {})) { const notes = masterySync(c); if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
@@ -457,17 +497,23 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase !== 'lobby') { c.echo = 1; if (!g.sandbox) emitStory(g, 'session_start', { g, n: g.sessionN, late: true }, [c]); }
       return;
     }
+    case 'session/next': {
+      // Rules 1.6.1 (item 721): a room plays many sessions. The host ends this one and the next begins: recovery as at a
+      // session's start, Echo 1, and every once-a-session thing starts over (rites, the Miracle, the faith caps, grudges).
+      if (!isHost(g, by)) fail('Only the host starts the next session.');
+      if (g.sandbox) fail('The Proving Ground has no sessions: reset the limits from the tools instead.');
+      if (g.phase === 'lobby') fail('The session hasn\'t started.');
+      if (g.phase !== 'story') fail('A session ends in the story: win the fight, or get out of it, first.');
+      beginSession(g);
+      push(g, { kind: 'system', head: 'SESSION ' + g.sessionN, text: 'Session ' + g.sessionN + ' begins (Day ' + dayOf(g) + '): everyone recovers as after a long rest, Echo is back to 1, and once-a-session things start over.' });
+      return;
+    }
     case 'char/remove': { const c = g.characters[a.charId]; if (!c) return; if (c.owner !== by && !isHost(g, by)) fail('Not your character.'); if (g.phase !== 'lobby') fail('Characters stay once the session starts.'); delete g.characters[a.charId]; return; }
     case 'session/start': {
       if (!isHost(g, by)) fail('Only the host starts the session.');
       if (g.phase !== 'lobby') fail('Already started.');
       if (!Object.keys(g.characters).length) fail('Lock in at least one character.');
-      g.phase = 'story'; g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
-      // Session start counts as a long rest. 'session_heal' {g, mult}: an item may give a character only part of it
-      // (Insomniac's Wired: half of what it would restore; perk-runtime H gap 2).
-      { const sh: any = emitStory(g, 'session_heal', { g, mult: {} as Record<string, { hp?: number; mp?: number }> });
-        for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); } }
-      emitStory(g, 'session_start', { g, n: g.sessionN }); // 'session_start' {g, n}: start items, Echo, faction starts (lanes)
+      g.phase = 'story'; beginSession(g);
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
@@ -722,6 +768,13 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at >= 0) list[at] = clean; else list.push(clean);
       return;
     }
+    case 'sigil/learn': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Learn after the fight.');
+      const e = learnStudied(c!, a.word, a.free); if (e) fail(e);
+      push(g, { kind: 'system', text: c!.name + ' learns the Sigil word ' + SIGIL[String(a.word).trim().toLowerCase()].word + ' (from study' + (a.free === true ? ', the Mastered free word' : '') + ').' });
+      return;
+    }
     case 'magic/pick': {
       // Rules 1.8 (Outburst 4.0, section 5): a module pick from practice, or a Mastered gate skill's free pick.
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
@@ -789,8 +842,9 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'gear/equip': case 'gear/unequip': case 'gear/mod': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
-      if (g.phase === 'combat') fail('Change gear after the fight.');
-      const err = a.type === 'gear/equip' ? equip(c!, a.idx, a.to) : a.type === 'gear/unequip' ? unequip(c!, a.slot) : fitMod(c!, a.idx);
+      if (g.phase === 'combat') { gearForward(g, a, by); return; } // rules 1.9: a combat action at its cost (items 684–690)
+      const ref = a.type === 'gear/unequip' ? 0 : a.idx, i = typeof ref === 'number' ? ref : packRef(c!, ref);
+      const err = a.type === 'gear/equip' ? equip(c!, i, a.to) : a.type === 'gear/unequip' ? unequip(c!, a.slot) : fitMod(c!, i);
       if (err) fail(err); return;
     }
     case 'gear/give': case 'gear/drop': {
@@ -834,10 +888,14 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
     const it = pack[i], k = Math.min(n, it.qty); it.qty -= k; if (it.qty <= 0) pack.splice(i, 1);
     c.pack = pack; push(g, { kind: 'system', text: c.name + ' no longer has ' + (k > 1 ? k + ' × ' : '') + it.name + '.' }); return;
   }
+  // Rules 1.9 (item 682): ammo by id: mag:<weapon> (one magazine; qty its rounds, 1 for a full one) and rounds:<calibre>.
+  if (/^(mag|rounds):/i.test(id)) { const its = lootToPack({ item: id, qty: Number(l.qty), name: label }); if (its.length && its.every((x) => x.kind === 'ammo')) {
+    for (const it of its) packAdd(pack, it); c.pack = pack; push(g, { kind: 'system', text: c.name + ' gets ' + its.map(itemLabel).join(', ') + '.' }); return; } }
   const rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? l.rarity : 'standard') as Rarity;
   let given = '';
   let guns: string[] = [];
   if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) { pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); guns.push(id); } if (rarity !== 'standard') given += ' (' + rarity + ')'; }
+  else if (id === 'stim_injector' || id === 'essence_of_experience') { if (id === 'stim_injector') c.stims += n; else c.essence += n; given = ITEM[id].name; }
   else if (ITEM[id]) { const note = String(l.note || '').trim().slice(0, 40); given = (label || ITEM[id].name).slice(0, 60) + (note ? ' (' + note.toUpperCase() + ')' : ''); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given && (x.note || '') === note); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool', ...(note ? { note } : {}) }); }
   else {
     const name = label || pack.find((x) => x.kind === 'plot' && x.id === id)?.name || id.replace(/^plot:/, '').replace(/_/g, ' ').trim(); if (!name) return;
@@ -950,6 +1008,7 @@ export const REST_INFO: Record<'short' | 'long', string> = {
  * uses. 'rest' {g, kind, chars} lets items change it (Insomniac, Old Timer…). */
 export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?: boolean } = {}) {
   g.restN = (g.restN || 0) + 1;
+  if (kind === 'long') g.day = dayOf(g) + 1; // rules 1.6.1 (item 709): a long rest is a day
   const chars = Object.values(g.characters).filter((c) => !c.dead);
   // ctx.mult[charId] = {hp, mp}: a fraction of what this character gets back (Insomniac's half rest: hooks gap H1).
   const ctx: any = emitStory(g, 'rest', { g, kind, chars, settlement: !!o.settlement, hpMult: 1, mult: {} as Record<string, { hp?: number; mp?: number }> });
@@ -962,7 +1021,25 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
     const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
     if (kind === 'long') { if (carriesEmanator(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
   }
-  push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
+  push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full. Day ' + dayOf(g) + '.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
+}
+/** A session begins (session/start, session/next): the counter moves on and it counts as a long rest for recovery, not a
+ * day (item 709). 'session_heal' {g, mult}: an item may give a character only part of it (Insomniac's Wired: half of
+ * what it would restore; perk-runtime H gap 2). 'session_start' {g, n}: start items, Echo, faction starts (lanes), an
+ * expired grudge. */
+function beginSession(g: GameState) {
+  g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
+  const sh: any = emitStory(g, 'session_heal', { g, mult: {} as Record<string, { hp?: number; mp?: number }> });
+  for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); }
+  emitStory(g, 'session_start', { g, n: g.sessionN });
+}
+/** Days pass (rules 1.6.1, item 709): the Narrator's turn field days, a whole number from 1 to 3650 (clamped; rounded;
+ * anything under 1 is ignored). */
+export const DAYS_MAX = 3650;
+export function advanceDays(g: GameState, n: number): number {
+  const d = Math.min(DAYS_MAX, Math.round(Number(n))); if (!Number.isFinite(d) || d < 1) return 0;
+  g.day = dayOf(g) + d; push(g, { kind: 'system', text: (d === 1 ? 'A day passes' : d + ' days pass') + ': Day ' + g.day + '.' });
+  return d;
 }
 /** The optional rules-1.3 fields of a Narrator turn (each ignored when absent or invalid). */
 function storyFields(g: GameState, t: NarratorTurn) {
@@ -989,19 +1066,25 @@ function storyFields(g: GameState, t: NarratorTurn) {
   for (const x of (t.identify || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && x.what) { const st = (c.state ||= {}), l: string[] = (st.identified ||= []); if (!l.includes(x.what)) l.push(String(x.what).slice(0, 60)); } }
   // Tutors (rules 1.3) only for advanced classes that are active again (Class Roster Revision 3 shelves them all).
   for (const x of (t.tutors || []).slice(0, 4)) { const c = g.characters[x.charId], adv = ADVANCED_CLASSES.find((a) => a.id === x.classId); if (!c || !adv || !advancedActive(adv.id)) continue; const l = (c.tutors ||= []); if (!l.includes(adv.id)) { l.push(adv.id); push(g, { kind: 'system', text: c.name + ' has found a tutor for the ' + adv.name + '.' }); } }
+  // Time first (item 709): the turn's rest and days pass before its faith events, so "months later she swears to Mother
+  // Ember" is one turn (the 90-day cooldown counts the days this turn moved on).
+  if (t.rest && (t.rest.kind === 'short' || t.rest.kind === 'long')) applyRest(g, t.rest.kind, { settlement: !!t.rest.settlement });
+  if (t.days != null) advanceDays(g, t.days);
   // Rules 1.6: a pact (conversion), Devotion moves of at most ±2 with a reason; the patron's mood (a TN) is retired.
+  // Rules 1.6.1: Devotion XP from −6 to +5 a move (clamped here, item 627), gains at most +10 a session per character.
   for (const x of (t.patrons || []).slice(0, 4)) {
     const c = g.characters[x.charId]; if (!c) continue;
-    if (x.patron && FAITH_PATRON[x.patron] && patronOf(c)?.id !== x.patron) makePact(g, c, x.patron);
-    if (Number.isFinite(x.devotion) && x.devotion && beliefOf(c).kind === 'faithful') narratorDevotion(g, c, Math.max(-2, Math.min(2, Math.round(x.devotion!))), x.reason || 'the Narrator');
+    const errs: string[] = [];
+    if (x.patron && FAITH_PATRON[x.patron] && patronOf(c)?.id !== x.patron) { const e = makePact(g, c, x.patron); if (e) errs.push(e); }
+    if (Number.isFinite(x.devotion) && x.devotion && beliefOf(c).kind === 'faithful') { const e = narratorDevotion(g, c, Number(x.devotion), x.reason || 'the Narrator', { clamp: true }); if (e) errs.push(e); }
+    for (const e of errs) push(g, { kind: 'system', text: 'Faith (' + c.name + '): ' + e, ooc: true });
   }
   for (const x of (t.faith || []).slice(0, 8)) {
     const c = g.characters[x.charId]; if (!c) continue;
-    const err = x.op === 'pact' ? makePact(g, c, x.patron || '') : x.op === 'piece' ? grantPiece(g, c, x.patron || '', x.from) : x.op === 'devotion' ? narratorDevotion(g, c, Math.max(-2, Math.min(2, Math.round(Number(x.delta) || 0))), x.reason || 'the Narrator')
+    const err = x.op === 'pact' ? makePact(g, c, x.patron || '') : x.op === 'piece' ? grantPiece(g, c, x.patron || '', x.from) : x.op === 'devotion' ? narratorDevotion(g, c, Number(x.delta) || 0, x.reason || 'the Narrator', { clamp: true })
       : x.op === 'rite_kept' ? narratorRite(g, c, x.rite || '', x.patron) : x.op === 'apostasy' ? apostasy(g, c) : 'Unknown faith op.';
     if (err) push(g, { kind: 'system', text: 'Faith (' + c.name + '): ' + err, ooc: true });
   }
-  if (t.rest && (t.rest.kind === 'short' || t.rest.kind === 'long')) applyRest(g, t.rest.kind, { settlement: !!t.rest.settlement });
 }
 
 function afterPending(g: GameState) {
@@ -1139,7 +1222,10 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     canon(g, 'The party travelled to ' + zoneMap(g).name + ' (scene ' + g.story.scene.n + ').', [], 2);
     musicOnTravel(g);
   }
-  for (const op of t.objects || []) applyObjectOp(g, op);
+  // Rules 1.9 (item 681): a pile entry in objects[] counts with ground[] against the entries a turn (review fix).
+  let pileBudget = PILE.narrator_entries_per_turn;
+  for (const op of t.objects || []) { if (pileObjectOp(g, op)) { if (pileBudget <= 0) continue; pileBudget--; } applyObjectOp(g, op); }
+  for (const op of (Array.isArray(t.ground) ? t.ground : []).slice(0, Math.max(0, pileBudget))) applyGroundOp(g, op); // rules 1.9
   for (const op of t.npcs || []) applyNpcOp(g, op);
   // Rules 1.7: hazards and triggers (world.ts); the events this call saw are consumed.
   for (const op of (t.hazards || []).slice(0, 12)) applyHazardOp(g, op);
@@ -1148,7 +1234,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   // 'zone_enter' {g, zone}: the party arrived in a zone this turn (Wind on the Skin feels who waits there).
   if ((g.story as any).entered) { const z = (g.story as any).entered; delete (g.story as any).entered; emitStory(g, 'zone_enter', { g, zone: z }); senseLurkers(g, 'zone'); }
   if (typeof t.mana === 'number') g.story.mana = Math.max(0, Math.min(40, Math.round(t.mana)));
-  for (const m of t.magic || []) { const c = g.characters[m.charId]; if (!c) continue; if (m.feeling) { if (FEELING[m.feeling]) feelChar(g, c, m.feeling, m.reason || 'the story'); continue; } teach(g, c, m, m.reason || 'the story'); }
+  for (const m of t.magic || []) { const c = g.characters[m.charId]; if (!c) continue; if (m.feeling) { if (FEELING[m.feeling]) feelChar(g, c, m.feeling, m.reason || 'the story'); continue; } narratorTeach(g, c, m); }
   if ((t.npcs || []).length) noticeAll(g);
   for (const l of t.loot || []) giveLoot(g, l);
   if (t.endScene?.summary) { g.story.journal.push(t.endScene.summary); noteScene(g, g.story.scene.title, t.endScene.summary); }
@@ -1165,20 +1251,33 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   newRound(g);
 }
 
+/** Rules 1.9 drop tables: the campaign's own tables (loot_tables), cleaned. */
+const campTables = (g: GameState): LootTable[] => cleanTables((campaignOf(g) as any)?.loot_tables);
+/** Rules 1.9 (item 691): a fight with a prepared encounter's name gives its enemies the campaign's drops, matched by
+ * name (first unused match), where no more specific layer (the Narrator's, a person's own) gave them any. */
+function encounterDrops<T extends { name: string; drops?: Drops }>(g: GameState, name: string, foes: T[]): T[] {
+  const enc = campaignOf(g)?.encounters?.find((e) => e.name.toLowerCase() === String(name || '').toLowerCase()); if (!enc) return foes;
+  const used = new Set<number>(), tables = campTables(g);
+  for (const f of foes) { const i = enc.enemies.findIndex((e, j) => !used.has(j) && e.name.toLowerCase() === String(f.name || '').toLowerCase()); if (i < 0) continue; used.add(i);
+    if (!f.drops && (enc.enemies[i] as any).drops) { const d = cleanDrops((enc.enemies[i] as any).drops, { max: Infinity, tables }); if (d) f.drops = d; } }
+  return foes;
+}
 /** Start a fight from the story (the Narrator's combat, a trigger's fight): on the current map everyone starts where they
  * stand and every hostile token joins where it stands (a lurker starts it Hidden); then the enemies act if they're first. */
 function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat']>) {
   const t = { combat };
   const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden }));
+  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden, drops: cleanDrops((e as any).drops, { tables: campTables(g) }) }));
   // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
   if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
     const used = new Set<number>();
-    for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait || n.avatar, ...(n.hidden ? { hidden: true } : {}), caster: n.caster ?? (i >= 0 ? foes[i].caster : undefined), kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])] }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
+    for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait || n.avatar, ...(n.hidden ? { hidden: true } : {}), caster: n.caster ?? (i >= 0 ? foes[i].caster : undefined), kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])], drops: (i >= 0 && foes[i].drops) || n.drops }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
     g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
   if (!foes.length) return; // nobody to fight (a trigger whose people couldn't be placed)
-  g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : undefined, { fear: !!t.combat.fear, ...(typeof t.combat.fromTalk === 'boolean' ? { fromTalk: t.combat.fromTalk } : {}) }); magicIn(g, g.combat);
+  encounterDrops(g, t.combat.name || '', foes); // rules 1.9: a prepared fight's enemies bring the campaign's drops
+  // Another zone's map starts from that zone's stashed objects (rules 1.9 fix: its piles and caches were ignored).
+  g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : g.story.zoneObjects?.[map.id], { fear: !!t.combat.fear, ...(typeof t.combat.fromTalk === 'boolean' ? { fromTalk: t.combat.fromTalk } : {}) }); magicIn(g, g.combat);
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
   // Every enemy gets a stable NPC id (its face and its survival after the fight follow it); a story NPC keeps its own.
   g.combat.units.filter((u) => u.side === 'foe').forEach((u, i) => { const f: any = foes[i]; u.npcId = (f && f.id) || 'n' + (++g.seq); if (f && f.portrait) u.img = f.portrait; });
@@ -1209,6 +1308,9 @@ function combatAction(g: GameState, a: Action, by: string) {
   // Toggles the player set on this action (Ricochet, Nonlethal…), read by items' hooks through modOn(); cleared after.
   const mods = (a as any).mods; cb!.mods = Array.isArray(mods) ? mods.filter((x: any) => typeof x === 'string').slice(0, 8) : [];
   const inWindow = !!cb!.window;
+  // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
+  const encore = inWindow ? null : encoreBefore(cb!, u, a);
+  (cb as any).acting = true; // encoreCredit: previews inside the action don't lend Encore's AP again
   try {
   switch (a.type) {
     case 'combat/perk': err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat'); break;
@@ -1230,25 +1332,29 @@ function combatAction(g: GameState, a: Action, by: string) {
       const pv = previewAttack(cb!, u, t!, a.mode); if (!pv.ok) fail(pv.why!);
       resolveAttack(cb!, g.rng, u, t!, a.mode, who); break;
     }
-    case 'combat/reload': err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand) : reload(cb!, u); break;
+    case 'combat/reload': err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical }); break;
     case 'combat/throw': err = throwItem(cb!, g.rng, u, a.item, tileKey(g, a.tile)); break;
     case 'combat/swap': err = swapWeapon(g, cb!, u, c!, a); break;
+    case 'combat/equip': err = gearInFight(g, cb!, u, c!, a.to === 'worn' ? { op: 'wear', item: a.item } : { op: 'draw', item: a.item, to: a.to === 'off' ? 'off' : 'main' }); break;
+    case 'combat/stow': err = gearInFight(g, cb!, u, c!, { op: 'stow', slot: String(a.slot || '') }); break;
+    case 'combat/drop': err = gearInFight(g, cb!, u, c!, { op: 'drop', slot: String(a.slot || '') }); break;
     case 'combat/pray': err = combatPray(cb!, g.rng, u, { kind: a.kind, id: a.id, choice: a.choice, targetId: a.targetId, targetId2: a.targetId2, tile: a.tile ? tileKey(g, a.tile) : undefined, miracle: a.miracle }, g); break;
     case 'combat/parley': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = parley(cb!, g.rng, u, t!, a.kind, a.text || ''); break; }
     case 'combat/hide': err = hideAction(cb!, u); break;
     case 'combat/extinguish': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) : u; if (!t) fail('Pick someone burning.'); err = extinguish(cb!, u, t!); break; }
     case 'combat/escape': err = escapeGrapple(cb!, g.rng, u); break;
     case 'combat/recover': err = recoverWeapon(cb!, u); break;
-    case 'combat/pickup': err = pickUp(cb!, u, a.tile); break;
+    case 'combat/pickup': err = pickUp(cb!, u, tileKey(g, a.tile), a.take, u.charId ? g.characters[u.charId] : null); break; // rules 1.9: a selection from the pile
     case 'combat/search': { if (!u.charId) fail('Only a character searches.'); searchCache(g, g.characters[u.charId!], a.objId, cb!, u); break; } // rules 1.7
     case 'combat/door': err = toggleDoor(cb!, u, a.tile); break;
     case 'combat/load': err = loadMagazine(cb!, u); break;
     case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c); break;
-    case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); break; }
+    case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); if (!err) readDrawnBy(cb!, u, t!); break; } // rules 1.10: its glyphs are read too
+    case 'combat/read': err = readGlyph(cb!, u, tileKey(g, a.tile)); break;
     case 'combat/clear': err = clearJam(cb!, u); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
-    case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile)); break;
+    case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile), a.stroke); break;
     case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined, evokeOptsOf(g, a)); break;
     case 'combat/strike-turret': err = strikeTurret(cb!, g.rng, u, tileKey(g, a.tile)); break;
     case 'combat/scuff': err = scuffGlyph(cb!, u); break;
@@ -1272,15 +1378,16 @@ function combatAction(g: GameState, a: Action, by: string) {
     }
     default: fail('Unknown action.');
   }
-  } finally { delete cb!.mods; }
+  } finally { delete cb!.mods; delete (cb as any).acting; }
   if (err) fail(err);
+  encoreAfter(cb!, u, encore);
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
   // 'action_done' {u, a, cb}: after every combat action and its window step (On My Mark settles its debt: hooks gap E-H2).
   emitHook(cb!, 'action_done', { u, a, cb: cb! });
   for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
-  noteDeaths(cb!);
+  noteDeaths(cb!, g.rng);
   checkOver(cb!);
   runEnemies(g);
 }
@@ -1314,35 +1421,87 @@ function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Char
   const by = condSource(u, 'puppeted'); if (!by) return null;
   const p = cb.units.find((x) => x.id === by); return p && p.charId && !p.dead && g.characters[p.charId] ? g.characters[p.charId] : null;
 }
-/** Swap what a hand holds mid-fight (spec: 1 AP per hand): the off hand into the main hand, or a weapon or mod from
- * the pack. The unit's weapon numbers are rebuilt from the character; the old weapon keeps its rounds and wear. */
-function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, a: { from?: string | number; mod?: number; to?: 'main' | 'off' }): string | null {
-  if (u.companion) return 'A companion has no pack.';
-  const ctx: any = emitHook(cb, 'swap', { u, c, from: a.from, mod: a.mod, ap: 1, cb });
-  const ap = Math.max(0, ctx.ap); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  unitToCharacter(g, u, false);
-  let err: string | null = null;
-  if (a.mod != null) err = fitMod(c, Number(a.mod));
-  else if (a.from === 'off') {
-    if (!c.offHand || !WEAPON[c.offHand.id] || (WEAPON[c.offHand.id] as any).hands !== '1H') return 'Your off hand holds no one-handed weapon.';
-    if ((WEAPON[c.weapon] as any)?.hands === '2H') return 'Your main-hand weapon needs both hands.';
-    const main = { id: c.weapon, ...(c.weaponState || {}) }, off = c.offHand, offRounds = u.offAmmo ?? 0;
-    c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods }; c.offHand = { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods };
-    const wasLoaded = c.loaded ?? 0; c.loaded = offRounds; u.offAmmo = wasLoaded;
-  } else if (typeof a.from === 'number' || /^\d+$/.test(String(a.from))) err = equip(c, Number(a.from), a.to === 'off' ? 'off' : 'main'); // a focus goes in the off hand (item 633)
-  else return 'Swap from your off hand, or a weapon in your pack.';
-  if (err) return err;
-  const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state });
-  for (const k of ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'mags', 'loose', 'ammoType', 'magTypes', 'unarmedBonus', 'def'] as const) (u as any)[k] = (fresh as any)[k];
-  if (a.from !== 'off') u.offAmmo = fresh.offAmmo;
+/** combat/swap (spec: Swapping weapons): the off hand into the main hand, a weapon or focus from the pack into a hand, or
+ * a mod onto the main-hand weapon. Rules 1.9: one of the gear changes, at 1 AP a hand (items 684–690). */
+function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, a: { from?: string | number; mod?: number | string; to?: 'main' | 'off' }): string | null {
+  if (a.mod != null) return gearInFight(g, cb, u, c, { op: 'mod', item: a.mod });
+  if (a.from === 'off') return gearInFight(g, cb, u, c, { op: 'swap' });
+  if (a.from != null && a.from !== '') return gearInFight(g, cb, u, c, { op: 'draw', item: a.from, to: a.to === 'off' ? 'off' : 'main' }); // a focus goes in the off hand
+  return 'Swap from your off hand, or a weapon in your pack.';
+}
+/** A gear change from the character sheet in a fight (gear/equip, gear/unequip, gear/mod): the same combat action, on
+ * the character's own unit and turn, at its cost (rules 1.9). */
+function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'gear/unequip' | 'gear/mod' }>, by: string) {
+  const c = g.characters[a.charId], u = g.combat?.units.find((x) => x.charId === a.charId && !x.companion);
+  if (!u || !c) fail('Change gear after the fight: ' + (c?.name || 'this character') + ' isn\'t in it.');
+  const ca: Action = a.type === 'gear/equip' ? { type: 'combat/equip', unitId: u!.id, item: a.idx, to: a.to }
+    : a.type === 'gear/unequip' ? { type: 'combat/stow', unitId: u!.id, slot: a.slot } : { type: 'combat/swap', unitId: u!.id, mod: a.idx };
+  combatAction(g, ca, by);
+}
+/** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
+ * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
+  'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'stealth', 'injResist'] as const;
+/** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
+ * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
+ * a slow, a blind or a guard on them stays; HP, AP, conditions, Flux, Strain and a held Outburst are kept. */
+function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base: Combat['units'][number]) {
+  const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state }), x = u as any, f = fresh as any;
+  for (const k of GEAR_FRESH) { if (f[k] === undefined) delete x[k]; else x[k] = JSON.parse(JSON.stringify(f[k])); }
+  const dDef = fresh.def - base.def, dArm = fresh.armour - base.armour, dMove = fresh.movement - base.movement, dVis = (fresh.vision || 12) - (base.vision || 12);
+  if (dDef) u.def += dDef;
+  if (dArm) { u.armour = Math.max(0, u.armour + dArm); if (u.baseArmour != null) u.baseArmour += dArm; }
+  if (dMove) { if (u.conds?.slowed && u.baseMove != null) { u.baseMove += dMove; u.movement = u.baseMove / 2; } else { u.movement = Math.max(0.5, u.movement + dMove); if (u.baseMove != null) u.baseMove += dMove; } }
+  if (dVis) { if (u.baseVision != null) u.baseVision += dVis; else u.vision = Math.max(1, (u.vision || 12) + dVis); }
   // A focus counts only in a hand (item 630): what the hands hold now decides what this fighter can cast. Its store
   // (core charge, MP) stays with it either way; an Outburst already held stays held (item 632).
   if (fresh.mg) { if (!u.mg) u.mg = fresh.mg; else { u.mg.evoker = fresh.mg.evoker; u.mg.emanator = fresh.mg.emanator; } }
   else if (u.mg) { u.mg.evoker = false; u.mg.emanator = false; }
-  if (a.to !== 'off') { u.heat = 0; u.jammed = false; }
-  u.braced = false; u.ap -= ap;
-  const offName = c.offHand ? WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id : '';
-  cb.log.push(c.name + (a.mod != null ? ' fits a mod' : a.to === 'off' ? ' takes the ' + offName + ' in the off hand' : ' swaps to the ' + (WEAPON[u.weapon]?.name || u.weapon)) + ' (' + ap + ' AP)' + (a.mod == null && u.mg ? focusLine(c) : '') + '.');
+}
+/** A gear change in a fight (rules 1.9, World Play: Gear in a fight; items 684–690): 1 AP a hand, Hot-Swap on the hand
+ * rows, light armour 1 AP a piece, heavy armour refused, a drop 0 AP into the pile on the unit's tile. The fighter's
+ * state is written back to the character first, the change is made there, and the fighter is rebuilt from it. The pack
+ * entry is marked before the write-back (which may drop used-up entries) and found again after it (item 684). */
+function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, op: GearOp): string | null {
+  if (u.companion) return 'A companion has no pack.';
+  if (!u.charId || u.charId !== c.id) return 'Only a character changes gear.';
+  const disarmed = condOn(u, 'disarmed'), plan = gearPlan(c, op, { disarmed }); if (plan.why) return plan.why;
+  let ap = plan.ap;
+  if (plan.hand && ap > 0) { const ctx: any = emitHook(cb, 'swap', { u, c, from: op.op === 'swap' ? 'off' : (op as any).item, mod: op.op === 'mod' ? op.item : undefined, ap, cb }); ap = Math.max(0, ctx.ap); }
+  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  if (plan.idx != null) { c.pack = packOf(c).map((x) => ({ ...x })); (c.pack[plan.idx] as any)._pick = 1; }
+  unitToCharacter(g, u, false);
+  let idx = -1;
+  if (plan.idx != null) { idx = packOf(c).findIndex((x: any) => x._pick); for (const x of packOf(c) as any[]) delete x._pick; if (idx < 0) return 'That is used up.'; }
+  const base = unitFromCharacter(c, u.pos, { state: g.rng.state }), wasMain = c.weapon, toPile: PackItem[] = [];
+  let err: string | null = null, rearm = false;
+  /** Disarmed (item 687): the weapon on the ground stays there, in the pile; drawing another ends the condition. */
+  const leaveDowned = () => { const e = handEntry(c, 'main'); if (e) toPile.push(e); emptyHand(c, 'main'); rearm = true; };
+  switch (op.op) {
+    case 'draw': if (op.to === 'main' && disarmed) leaveDowned(); err = equip(c, idx, op.to); break;
+    case 'wear': err = equip(c, idx, 'worn'); break; // a light piece already there comes off into the pack (item 685)
+    case 'mod': err = fitMod(c, idx); break;
+    case 'swap': {
+      if (disarmed) leaveDowned();
+      const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
+      c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods, ...(off.name ? { name: off.name } : {}) };
+      c.loaded = off.loaded ?? (WEAPON[off.id].magazine ?? 0); c.loadedType = c.loaded && off.ammoType ? off.ammoType : null; // each gun keeps its rounds' type
+      c.offHand = main ? { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods, ...(main.name ? { name: main.name } : {}), ...(WEAPON[main.id].magazine != null ? { loaded: main.loaded ?? 0, ...(main.loaded && main.ammoType ? { ammoType: main.ammoType } : {}) } : {}) } : null;
+      break;
+    }
+    case 'stow': err = unequip(c, op.slot); break;
+    case 'drop': { const e = handEntry(c, op.slot as 'main' | 'off'); if (e) toPile.push(e); emptyHand(c, op.slot as 'main' | 'off'); break; }
+  }
+  if (err) return err;
+  if (toPile.length) dropToPile(cb, u.pos, toPile, 'drop');
+  refitUnit(g, u, c, base);
+  if (rearm) endCond(u, 'disarmed', cb);
+  // Heat stays with the fighter (design section 3: the rebuild keeps heat; review fix: two swaps no longer cool a gun);
+  // a jam and a brace belong to the gun that left the hand.
+  if (c.weapon !== wasMain) { u.jammed = false; u.braced = false; }
+  u.ap -= ap;
+  const where = toPile.length ? (op.op === 'drop' ? ': it lands in the pile at ' : ', leaving the weapon on the ground in the pile at ') + refOf(u.pos) : '';
+  cb.log.push(c.name + ' ' + plan.label + ' (' + ap + ' AP)' + where + (op.op !== 'mod' && u.mg ? focusLine(c) : '') + '.');
   syncSong(g);
   return null;
 }
@@ -1378,7 +1537,7 @@ function finishCombat(g: GameState) {
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
-  noteDeaths(cb); magicOut(g, cb, true);
+  noteDeaths(cb, g.rng); magicOut(g, cb, true);
   const won = cb.over === 'win';
   emitHook(cb, 'combat_end', { cb, won, g }); // 'combat_end' {cb, won}: after the fighters are written back to their characters
   { const fallen = cb.units.filter((u) => u.side === 'foe' && u.dead).map((u) => u.name), lost = cb.units.filter((u) => u.side === 'pc' && u.dead).map((u) => u.name);
@@ -1391,6 +1550,9 @@ function finishCombat(g: GameState) {
   if (won && !cb.noXp) for (const c of Object.values(g.characters)) if (!c.dead) giveXp(g, c, 'combat', combatXp(cb), cb.difficulty + ' fight');
   // Where everyone ends up becomes the story's positions.
   if (g.story.zone && g.story.zone !== cb.map.id) { const zn = (g.story.zoneNpcs ||= {}); zn[g.story.zone] = npcsOf(g); g.story.npcs = zn[cb.map.id]; delete zn[cb.map.id]; }
+  // A fight on another zone's map: the zone the party was in keeps its objects (piles, caches) in its stash, and the
+  // fight's own objects become the story's (rules 1.9 fix: they were overwritten).
+  if (zoneMap(g).id !== cb.map.id) { const zo = (g.story.zoneObjects ||= {}); zo[zoneMap(g).id] = storyObjects(g); delete zo[cb.map.id]; }
   g.story.zone = cb.map.id; g.story.positions = {}; g.story.objects = JSON.parse(JSON.stringify((cb.objects || []).filter((o: any) => !o.grandWall)));
   for (const u of cb.units) if (u.side === 'foe' && u.dead && u.npcId) for (const o of g.story.objects!) if (o.npcId === u.npcId) { o.dead = true; o.resolved = true; }
   for (const u of cb.units) if (u.charId && !u.dead) g.story.positions[u.charId] = u.pos;
@@ -1398,7 +1560,7 @@ function finishCombat(g: GameState) {
   // Enemies still standing go back on the map as hostile tokens where they ended.
   { const map = zoneMap(g), taken = new Set([...Object.values(g.story.positions), ...npcsOf(g).map((n) => n.pos)]);
     const freeNear = (k: string) => { if (!taken.has(k)) return k; const [x0, y0] = k.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const n = (x0 + dx) + ',' + (y0 + dy); if (standable(map, n) && !taken.has(n) && !storyObjects(g).some((o) => o.pos === n && blocksMove(o))) return n; } return k; };
-    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed && !u.surrendered) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}), ...(u.tags?.length ? { tags: u.tags.filter((t) => t !== 'humanoid') } : {}) }); }
+    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed && !u.surrendered) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}), ...(u.tags?.length ? { tags: u.tags.filter((t) => t !== 'humanoid') } : {}), ...(u.drops ? { drops: u.drops } : {}) }); }
     // Surrendered and subdued foes stay as neutral prisoners where they gave up (rules 1.3), for the Narrator to deal with.
     for (const u of cb.units) if (u.side === 'foe' && u.surrendered && !u.dead) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'neutral', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, hp: Math.max(1, u.hp), prisoner: true, tags: ['prisoner', ...(u.tags || []).filter((t) => t !== 'prisoner' && t !== 'humanoid')], ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}) }); } }
   landDropped(g, cb); // rules 1.7: what Downed carriers dropped is a token again
@@ -1409,7 +1571,7 @@ function finishCombat(g: GameState) {
 
 /** The one Narrator call a fight costs gets this: the result, the moments that mattered, who's left where, and anything said mid-fight. */
 export function combatReport(cb: Combat): string {
-  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns/;
+  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns| drops: /;
   const moments = cb.log.filter((l) => key.test(l)).slice(-14);
   const where = cb.units.map((u) => u.name + (u.side === 'foe' ? ' (enemy)' : '') + ': ' + (u.dead ? 'dead' : u.surrendered ? (u.subdued ? 'subdued' : 'surrendered') + ' (a prisoner) at ' + refOf(u.pos) : (u.downed ? 'Downed, ' : '') + u.hp + '/' + u.maxHp + ' HP at ' + refOf(u.pos))
     + ((u.injuries || []).length ? ', injured ' + u.injuries!.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(' and ') : ''));
@@ -1453,21 +1615,45 @@ function arrive(g: GameState, c: Character, k: string) {
   }
   spotTraps(storyObjects(g), k, c.skills.vigilant || 0, c.name, (l) => push(g, { kind: 'system', text: l }));
 }
+/** An objects[] entry that is a pile op (rules 1.9): kind 'pile', or the id of a pile. */
+function pileObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[number]): boolean {
+  if (!op || typeof op !== 'object') return false;
+  if (op.kind === 'pile') return true;
+  const o = op.id ? storyObjects(g).find((x) => x.id === op.id) : undefined; return !!o && isPile(o);
+}
 function applyObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[number]) {
   const map = zoneMap(g), objs = storyObjects(g);
-  const approaches = cleanApproaches(op.approaches); // rules 1.7: success and failure effects (world.ts)
-  const existing = objs.find((o) => o.id === op.id) || (op.at ? objs.find((o) => o.pos === keyOf(op.at, map) && (!op.kind || o.kind === op.kind)) : undefined);
+  const approaches0 = cleanApproaches(op.approaches); // rules 1.7: success and failure effects (world.ts)
+  // Rules 1.10: a sigil mark's Investigate is the engine's own; a Narrator approach by that label is dropped (item 922).
+  const approaches = op.kind === 'sigil_mark' || objs.find((o) => o.id === op.id)?.kind === 'sigil_mark' ? approaches0.filter((a) => a.label.toLowerCase() !== MARK.label.toLowerCase()) : approaches0;
+  // A pile is matched only by its id or by kind 'pile' (review fix: an op with no kind on a pile's tile became a pile op).
+  const existing = objs.find((o) => o.id === op.id) || (op.at ? objs.find((o) => o.pos === keyOf(op.at, map) && (!op.kind ? !isPile(o) : o.kind === op.kind)) : undefined);
   if (op.action === 'remove') { if (existing) g.story.objects = objs.filter((o) => o !== existing); return; }
+  // Rules 1.9: a pile is placed (or added to) as a ground[] entry; an update may reveal it or add to it.
+  if (pileObjectOp(g, op)) {
+    if (op.action === 'update' && existing) { if (op.hidden === false) existing.hidden = false; if (Array.isArray(op.items) && op.items.length) applyGroundOp(g, { at: refOf(existing.pos), items: op.items as any, hidden: op.hidden }); return; }
+    if (op.action !== 'update') applyGroundOp(g, { at: op.at, items: (op.items || []) as any, hidden: op.hidden });
+    return;
+  }
   if (op.action === 'update' && existing) {
     if (op.name) existing.name = op.name.slice(0, 60); if (op.text) existing.text = op.text.slice(0, 400);
-    if (approaches.length) existing.approaches = mergeApproaches(existing.approaches, approaches);
+    if (approaches.length) {
+      // A sigil mark keeps its Investigate and its tries through the Narrator's new list (item 922: once per character).
+      const study = existing.kind === 'sigil_mark' ? existing.approaches.find((x) => x.success === 'study') : undefined;
+      existing.approaches = mergeApproaches(existing.approaches, existing.kind === 'sigil_mark' ? approaches.filter((x) => x.label.toLowerCase() !== MARK.label.toLowerCase()) : approaches);
+      if (study) existing.approaches.unshift(study);
+    }
     if (op.hidden === false) existing.hidden = false; if (op.locked != null && (kindOf(existing).door || isCache(existing))) existing.locked = op.locked;
     if (Array.isArray(op.items) && op.items.length) { existing.items = cleanItems(op.items); delete existing.searched; }
+    if (existing.kind === 'sigil_mark') { if (op.age) existing.age = String(op.age); if (op.damage) existing.damage = String(op.damage); ensureMark(existing); } // its Investigate stays first
     return;
   }
   const k = keyOf(op.at, map); if (!k || !OBJ[op.kind] || map.solid.includes(k)) return;
+  // Rules 1.10: a sigil mark needs a real word (the engine writes its Investigate approach; makeObject).
+  const markW = op.kind === 'sigil_mark' ? String(op.word || '').trim().toLowerCase() : ''; if (op.kind === 'sigil_mark' && !SIGIL[markW]) return;
   if (OBJ[op.kind].blocks_move && (objs.some((o) => o.pos === k && blocksMove(o)) || Object.values(positionsOf(g)).includes(k))) return;
-  const o = makeObject('o' + (++g.seq), op.kind, k, { name: op.name?.slice(0, 60), text: op.text?.slice(0, 400), approaches: approaches.map((a) => ({ ...a, tries: [] })) });
+  const o = makeObject('o' + (++g.seq), op.kind, k, { name: op.name?.slice(0, 60), text: op.text?.slice(0, 400), approaches: approaches.map((a) => ({ ...a, tries: [] })),
+    ...(markW ? { word: markW, ...(op.age ? { age: String(op.age) } : {}), ...(op.damage ? { damage: String(op.damage) } : {}) } : {}) });
   if (op.hidden != null && OBJ[op.kind].trap) o.hidden = op.hidden; if (op.locked && (kindOf(o).door || op.kind === 'cache')) o.locked = true;
   if (op.kind === 'cache' || (Array.isArray(op.items) && op.items.length)) o.items = cleanItems(op.items); // rules 1.7: a cache's contents
   objs.push(o);
@@ -1524,6 +1710,8 @@ export function viewFor(g: GameState, playerId: string): GameState {
   // Sigil traps and hidden turrets (rules 1.4) show to their own side only, until spotted; so do their fx.
   if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, me)), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === me) };
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
+  pileFog(g, v, me); // rules 1.9: a pile shows only on a tile the viewer's party sees now (item 676)
+  if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;
@@ -1552,24 +1740,38 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     c.hp = u.dead ? 0 : u.downed && keepDowned ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
     c.downedFails = u.downed && keepDowned && !u.dead ? u.saves.fail : 0;
     c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
-    // Ammo carried out of the fight (spec: Reloading).
+    // Ammo carried out of the fight (spec: Reloading); the off-hand gun's rounds too (rules 1.9, item 688).
     c.loaded = u.ammo;
+    if (c.offHand && u.offWeapon && u.offWeapon === c.offHand.id && WEAPON[c.offHand.id]?.magazine != null) { const { ammoType: _t, ...oh } = c.offHand; void _t; c.offHand = { ...oh, loaded: Math.max(0, u.offAmmo ?? 0), ...(u.offAmmo && u.offAmmoType ? { ammoType: u.offAmmoType } : {}) }; }
     magicToCharacter(c, u);
     if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur };
     { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
       if (used > 0) { let left = used; c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left) return x; const n = Math.min(left, x.qty); left -= n; return { ...x, qty: x.qty - n }; }).filter((x) => x.qty > 0 || x.mags); } }
     const pack = packOf(c).map((it) => ({ ...it }));
-    const mi = pack.findIndex((it) => it.weapon === c.weapon && it.mags);
+    let mi = pack.findIndex((it) => it.weapon === c.weapon && it.mags);
+    // A magazine picked up for a gun that had no spares entry gets one (rules 1.9: it was lost before).
+    if (mi < 0 && u.mags?.length && WEAPON[c.weapon]?.reload === 'magazine') { pack.push({ ...magsOf(c.weapon, 0), mags: [] }); mi = pack.length - 1; }
     if (mi >= 0 && u.mags) { pack[mi].mags = [...u.mags]; pack[mi].qty = u.mags.length; }
     const w = WEAPON[c.weapon];
-    if (u.loose != null) { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
-    for (const x of u.extra || []) { let it = pack.find((p) => p.weapon === x.weapon && p.mags); if (!it) { it = { ...magsOf(x.weapon, 0), mags: [] }; pack.push(it); } it.mags!.push(x.rounds); it.qty = it.mags!.length; }
-    // Rules 1.3: the off-hand gun's spares, thrown items used, special ammo, persisting class resources.
-    if (u.offMags && c.offHand) { const oi = pack.findIndex((it) => it.weapon === c.offHand!.id && it.mags); if (oi >= 0) { pack[oi].mags = [...u.offMags]; pack[oi].qty = u.offMags.length; } }
+    if (u.loose != null) {
+      // Loose rounds for the gun's calibre: used ones come off the stacks; rounds picked up mid-fight (rules 1.9) are added.
+      const have = pack.filter((it) => it.calibre && it.calibre === w?.ammo && !it.mags).reduce((t, it) => t + it.qty, 0);
+      if (u.loose > have && w?.ammo) packAdd(pack, roundsOf(w.ammo, u.loose - have));
+      else { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
+    }
+    // Rules 1.3: the off-hand gun's spares, thrown items used, special ammo, persisting class resources. The off hand's
+    // spares are written before u.extra (rules 1.9 fix: they used to overwrite magazines u.extra had just added).
+    if (u.offMags && c.offHand && c.offHand.id !== c.weapon) { let oi = pack.findIndex((it) => it.weapon === c.offHand!.id && it.mags); if (oi < 0 && u.offMags.length) { pack.push({ ...magsOf(c.offHand.id, 0), mags: [] }); oi = pack.length - 1; } if (oi >= 0) { pack[oi].mags = [...u.offMags]; pack[oi].qty = u.offMags.length;
+      // Each off-hand magazine keeps its type, in line with the magazines (review fix: picked-up types were lost).
+      if (u.offMagTypes || pack[oi].magTypes) { const t = Array.from({ length: u.offMags.length }, (_, i) => (u.offMagTypes ? u.offMagTypes[i] ?? null : pack[oi].magTypes?.[i] ?? null)); if (t.some(Boolean)) pack[oi].magTypes = t; else delete pack[oi].magTypes; } } }
+    // An off-hand gun loaded round by round, of another calibre: the rounds it used come off that calibre's stacks.
+    if (u.offLoose != null && c.offHand && WEAPON[c.offHand.id]?.ammo) { const cal = WEAPON[c.offHand.id].ammo; let left = u.offLoose; for (const it of pack) if (it.calibre === cal && !it.mags) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
+    for (const x of u.extra || []) packAdd(pack, magItem(x.weapon, x.rounds, x.type || null));
+    delete u.extra; // written back once (rules 1.9 fix: a mid-fight swap wrote them twice)
     if (u.throwables) for (const [item, left] of Object.entries(u.throwables)) { let have = pack.filter((it) => (it.weapon || it.id) === item && !it.mags).reduce((t, it) => t + it.qty, 0), drop = have - left;
       for (const it of pack) { if (drop <= 0) break; if ((it.weapon || it.id) !== item || it.mags) continue; const n = Math.min(drop, it.qty); it.qty -= n; drop -= n; } void have; }
     c.loadedType = u.ammoType || null;
-    if (mi >= 0 && u.magTypes) pack[mi].magTypes = [...u.magTypes];
+    if (mi >= 0 && u.magTypes) pack[mi].magTypes = Array.from({ length: (pack[mi].mags || []).length }, (_, i) => u.magTypes![i] ?? null);
     if (u.res && u.resMax) for (const r of Object.keys(u.res)) if (r === 'supplies' || r === 'toxins') (c.res ||= {})[r] = u.res[r];
     c.pack = pack.filter((it) => it.qty > 0 || it.mags);
     const fam = WEAPON[u.weapon]?.mastery_family; if (afterFight && fam && u.kills) c.weaponKills[fam] = (c.weaponKills[fam] || 0) + u.kills;
@@ -1609,7 +1811,7 @@ export function initialNpcs(g: GameState): Npc[] {
   const z = campaignOf(g)?.zones.find((x) => x.id === zoneMap(g).id), map = zoneMap(g);
   const seen: Record<string, number> = {};
   return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, ...((n as any).caster ? { caster: (n as any).caster } : {}), pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined,
-    ...(n.kind ? { kind: n.kind } : {}), ...(n.tags?.length ? { tags: [...n.tags] } : {}) }));
+    ...(n.kind ? { kind: n.kind } : {}), ...(n.tags?.length ? { tags: [...n.tags] } : {}), ...((n as any).drops ? { drops: cleanDrops((n as any).drops, { max: Infinity, tables: campTables(g) }) } : {}) }));
 }
 export function npcsOf(g: GameState): Npc[] { return (g.story.npcs ||= initialNpcs(g)); }
 function facingToward(from: string, to: string): [number, number] { const [a, b] = from.split(',').map(Number), [c, d] = to.split(',').map(Number); return [Math.sign(c - a), Math.sign(d - b)]; }
@@ -1628,7 +1830,7 @@ function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number])
     const tier = ENEMY_TIERS.includes(op.tier || '') ? op.tier! : 'minion', weapon = WEAPON[op.weapon || ''] ? op.weapon! : 'service_pistol';
     list.push({ id: 'n' + (++g.seq), name: op.name.slice(0, 40), side: op.side === 'hostile' ? 'hostile' : 'neutral', tier, weapon, pos: k, portrait: portraitFor(g, op.name) || undefined, facing: facingToward(k, partyCentre(g)),
       ...(op.kind && KINDS.includes(op.kind) ? { kind: op.kind } : {}), ...(Array.isArray(op.tags) ? { tags: op.tags.filter((x) => FOE_TAGS.includes(x)).slice(0, 6) } : {}), ...(op.hidden ? { hidden: true } : {}) });
-    { const n = list[list.length - 1]; npcTalkFields(g, n, op); if (!n.avatar) { const av = avatarOf(g, n); if (av) n.avatar = av; } } // rules 1.7: a face, wants, knows, talk
+    { const n = list[list.length - 1], d = cleanDrops(op.drops, { tables: campTables(g) }); if (d) n.drops = d; npcTalkFields(g, n, op); if (!n.avatar) { const av = avatarOf(g, n); if (av) n.avatar = av; } } // rules 1.7: a face, wants, knows, talk
     if (op.hidden) { npcSensed(g, list[list.length - 1], 'placed'); return; } // lurking: no line for the players
     push(g, { kind: 'system', text: op.name + ' at ' + refOf(k) + '.' });
     if (!GENERIC.test(op.name)) applyMemOp(g, { op: 'person', name: op.name, where: zoneMap(g).id, ...(op.side === 'hostile' ? { attitude: -2 } : {}) });
@@ -1638,6 +1840,7 @@ function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number])
   if (op.action === 'remove') { npcMoved(g, n, n.pos, null); g.story.npcs = list.filter((x) => x !== n); return; }
   if (op.action === 'update') { if (op.hidden !== undefined && !!op.hidden !== !!n.hidden) { if (op.hidden) { n.hidden = true; npcMoved(g, n, n.pos, n.pos, true); npcSensed(g, n, 'hid'); } else { delete n.hidden; push(g, { kind: 'system', text: n.name + ' shows themself at ' + refOf(n.pos) + '.' }); } }
     if (op.side) n.side = op.side === 'hostile' ? 'hostile' : 'neutral'; if (op.name) n.name = op.name.slice(0, 40); if (op.kind && KINDS.includes(op.kind)) n.kind = op.kind; if (Array.isArray(op.tags)) n.tags = op.tags.filter((x) => FOE_TAGS.includes(x)).slice(0, 6);
+    if (op.drops === null) delete n.drops; else if (op.drops !== undefined) { const d = cleanDrops(op.drops, { tables: campTables(g) }); if (d) n.drops = d; }
     npcTalkFields(g, n, op); return; }
   if (op.action === 'move') { const k = op.at ? keyOf(op.at, map) : null; if (!k || !free(k)) return; const from = n.pos; n.facing = facingToward(n.pos, k); n.pos = k; npcMoved(g, n, from, k); if (n.hidden) npcSensed(g, n, 'moved'); }
 }
@@ -1667,13 +1870,13 @@ const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outbu
 /** A tile from a grid reference ("C7") or a tile key ("2,6"). */
 function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
 /** The Evoke choices beyond the aim (rules 1.4): TWICE's other aims, STEP's landing tile, COMMAND's order. */
-function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }) {
-  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
+function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; stroke?: string }) {
+  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.stroke && a.stroke !== 'new' && !a.stroke.startsWith('junction:') ? { stroke: String(a.stroke) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
     ...(a.paint === 'spread' || a.paint === 'push' ? { paint: a.paint as 'spread' | 'push' } : {}) };
 }
-function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; feeling?: string; word?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; feeling?: string; word?: string; stroke?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
   switch (a.act) {
-    case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos) : 'Pick a word.';
+    case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos, a.stroke) : 'Pick a word.';
     case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim, g ? evokeOptsOf(g, a) : {}) : 'Pick a glyph of the pattern.';
     case 'scuff': return scuffGlyph(cb, u);
     case 'vent': return ventFlux(cb, u);
@@ -1697,8 +1900,9 @@ function magicIn(g: GameState, cb: Combat) {
   cb.mana = g.story.mana ?? MANA_START;
   // Rules 1.7: a fight takes its own copy of the map's hazards (magicOut writes it back when the fight ends).
   if (!cb.overworld) { const hz = zoneHazards(g, cb.map.id); if (hz.length) cb.hazards = JSON.parse(JSON.stringify(hz)); }
+  if (!cb.overworld) { const lt = campTables(g); if (lt.length) cb.lootTables = lt; } // rules 1.9: the campaign's own drop tables
   migrateStorySigil(g.story as any); cb.sigilV = SIGIL_REV; // 1.2 glyphs go, 1.2 walls become fields (item 441)
-  if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); }
+  if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); if (g.story.traces?.length) cb.traces = JSON.parse(JSON.stringify(g.story.traces)); }
   // Ids never repeat: the story's counter, the live glyphs and zones, and the RAISE walls standing (they outlive the
   // glyphs that made them, so a counter rebuilt from glyphs alone would hand out a wall's id again).
   const walls = (cb.objects || []).filter((o) => o.kind === 'sigil_wall' || /^sw\d+$/.test(String(o.id)));
@@ -1708,7 +1912,8 @@ function magicIn(g: GameState, cb: Combat) {
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held ? migrateHeld(s.held, u.mg.designs.find((d) => d.id === s.held!.design)) : null; u.mg.cast = !!s.cast;
       if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; if ((s as any).pumps) u.mg.pumps = JSON.parse(JSON.stringify((s as any).pumps)); }
     if (s.condBy) u.condBy = { ...s.condBy };
-    if (s.conds && Object.keys(s.conds).length) { u.conds = { ...s.conds }; if (u.conds.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded) u.def += 2; }
+    // Merged with what the fight's start put on (a grudge's condition, item 723): the longer of the two stays.
+    if (s.conds && Object.keys(s.conds).length) { const at0 = u.conds || {}; u.conds = { ...s.conds }; for (const [k, n] of Object.entries(at0)) u.conds[k] = Math.max(u.conds[k] || 0, n as number); if (u.conds.slowed && !at0.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded && !at0.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded && !at0.guarded) u.def += 2; }
     if (s.shield) u.shield = s.shield;
   }
   // Story conditions (the scene's, the session's, the arc's) come into a fight in their combat form, with no save
@@ -1734,6 +1939,7 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
   // on the area map). Linger fields and residue run down their rounds as zones do.
   const fuses = afterFight ? (cb.zones || []).filter((z: any) => z.kind === 'fuse').length : 0;
   g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = afterFight ? (cb.zones || []).filter((z: any) => z.kind !== 'grand' && !z.grandOf && z.kind !== 'fuse') : cb.zones || []; g.story.glyphMap = cb.map.id;
+  if (cb.traces?.length || g.story.traces) g.story.traces = cb.traces || []; // rules 1.10: scuffed glyphs' traces
   if (fuses) push(g, { kind: 'system', text: fuses === 1 ? 'A fuse fizzles out.' : fuses + ' fuses fizzle out.' });
   g.story.glyphSeq = Math.max(g.story.glyphSeq || 0, cb.glyphSeq || 0);
   const m = (g.story.magic ||= {});
@@ -1743,13 +1949,14 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
       ...(!afterFight && u.mg && u.mg.freePumps != null ? { freePumps: u.mg.freePumps } : {}), ...(!afterFight && u.mg?.pumps?.length ? { pumps: u.mg.pumps } : {}), ...(!afterFight && u.mg?.calmFight ? { calmFight: true } : {}), ...(!afterFight && u.mg?.calmTend ? { calmTend: true } : {}),
       ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}) };
     // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
-    if (afterFight && (u.conds?.shaken ?? 0) > 0) { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
+    // A grudge's Shaken (item 723) is the fight's only: it isn't carried.
+    if (afterFight && (u.conds?.shaken ?? 0) > 0 && u.faith?.grudgeCond !== 'shaken') { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
   }
 }
 /** A new overworld round is a turn for magic: glyphs and zones run down, held Outbursts grow, Strain eases, Burning
  * burns. Nothing happens (and nothing is logged) when there's no magic about. */
 function storyMagicRound(g: GameState) {
-  const live = (g.story.glyphs || []).length || (g.story.zones || []).length || (g.story.objects || []).some((o) => o.kind === 'sigil_wall') || Object.values(g.story.magic || {}).some((x) => x.strain || x.held || Object.keys(x.conds || {}).length || x.shield);
+  const live = (g.story.glyphs || []).length || (g.story.traces || []).length || (g.story.zones || []).length || (g.story.objects || []).some((o) => o.kind === 'sigil_wall') || Object.values(g.story.magic || {}).some((x) => x.strain || x.held || Object.keys(x.conds || {}).length || x.shield);
   if (!live || g.phase !== 'story') return;
   const cb = storyCb(g); cb.round = g.story.round;
   magicRoundTick(cb);
@@ -1786,13 +1993,25 @@ function teach(g: GameState, c: Character, m: { word?: string; school?: string; 
     if (!SIGIL[word]) return 'No such word.';
     const known = (c.sigils ||= []); if (known.includes(word)) return c.name + ' already knows ' + SIGIL[word].word + '.';
     if (known.length >= wordsKnownCap(c)) return c.name + ' knows ' + known.length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').';
-    known.push(word); push(g, { kind: 'system', text: c.name + ' learns the Sigil word ' + SIGIL[word].word + ' (' + why + ').' }); return '';
+    known.push(word); learnedElsewhere(c, word); push(g, { kind: 'system', text: c.name + ' learns the Sigil word ' + SIGIL[word].word + ' (' + why + ').' }); return '';
   }
   const k = (c.soulKnown ||= { schools: [], modules: [] });
   if (m.school) { if (!SCHOOL[m.school]) return 'No such school.'; if (!k.schools.includes(m.school)) { k.schools.push(m.school); push(g, { kind: 'system', text: c.name + ' learns the ' + SCHOOL[m.school].name + ' school of Outbursts (' + why + ').' }); } return ''; }
   if (m.module) { if (!MODULE[m.module]) return 'No such module.'; { const sh = moduleShelved(m.module); if (sh) return sh; } if (!k.modules.includes(m.module)) { k.modules.push(m.module); push(g, { kind: 'system', text: c.name + ' learns the Outburst module ' + MODULE[m.module].name + ' (' + why + ').' }); } return ''; }
   if (m.tone) { if (!TONE[m.tone] || m.tone === 'raw') return 'No such tone.'; const kt = (k.tones ||= []); if (!kt.includes(m.tone)) { kt.push(m.tone); push(g, { kind: 'system', text: c.name + ' learns the ' + TONE[m.tone].name + ' tone of Outbursts (' + why + ').' }); } return ''; }
   return 'Nothing to learn.';
+}
+
+/** The Narrator's grant (narrator/turn magic[]). Rules 1.10 (item 914): a word grant is a bonus source, so it takes the
+ * scene's one new thing and stays within the cap; one that can't land goes on the known-to-study list instead (a study
+ * pick can take it later), and the log says why. Schools, modules and tones are granted as before. */
+function narratorTeach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string; tone?: string; reason?: string }) {
+  const why = m.reason || 'the story';
+  if (!m.word) { teach(g, c, m, why); return; }
+  const w = m.word.trim().toLowerCase(); if (!SIGIL[w] || (c.sigils || []).includes(w)) { teach(g, c, m, why); return; }
+  const spent = g.phase === 'story' && c.learnedScene === g.story.scene.n, full = (c.sigils || []).length >= wordsKnownCap(c);
+  if (spent || full) { noteToStudy(c, w); push(g, { kind: 'system', text: c.name + ' glimpses the Sigil word ' + SIGIL[w].word + ' (' + why + '), but ' + (spent ? 'has learned something new this scene already' : 'knows as many words as Brain Power allows') + ': it goes on the known-to-study list.' }); return; }
+  if (!teach(g, c, m, why) && g.story?.scene) c.learnedScene = g.story.scene.n;
 }
 
 /** The overworld as a throwaway fight state, so every combat rule (paths, sight, actions) runs unchanged. Units carry
@@ -1862,6 +2081,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   if (a.act === 'carry') { carryNpc(g, c!, String(a.targetId || '')); closeRoundIfDone(g); return; }
   if (a.act === 'put_down') { putDown(g, c!, String(a.targetId || ''), a.to); closeRoundIfDone(g); return; }
   if (a.act === 'search') { searchCache(g, c!, String(a.objId || a.targetId || '')); closeRoundIfDone(g); return; }
+  // Rules 1.9: pick up from a pile (1 AP, your tile or an adjacent one; a selection, everything by default).
+  if (a.act === 'pickup') { const o = a.objId ? storyObjects(g).find((x) => x.id === a.objId && isPile(x)) : null; pickupWorld(g, c!, o ? o.pos : a.tile ? tileKey(g, a.tile) : positionsOf(g)[c!.id], a.take); closeRoundIfDone(g); return; }
   if (a.act === 'attempt') { const idx = a.idx != null ? Math.round(Number(a.idx)) : Math.round(Number(a.index) || 1) - 1; tryApproach(g, c!, by, String(a.objId || a.targetId || ''), idx); return; }
   if (a.act === 'ask') { talkAsk(g, c!, by, String(a.targetId || ''), a.what === 'objective' ? 'objective' : 'wants'); return; }
   const cb = storyCb(g), u = cb.units.find((x) => x.charId === c!.id)!;
@@ -1886,17 +2107,17 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   if (a.act === 'move') {
     const map = zoneMap(g), k = a.to ? (/,/.test(a.to) ? a.to : keyOf(a.to, map)) : null;
     if (!k || !standable(map, k)) fail('Nobody can stand there.');
-    const P = paths(cb, u.pos, u.id), tiles = P.dist[k!];
+    const P = movePaths(cb, u, k!, a.how === 'sprint' ? 'sprint' : a.how === 'sneak' ? 'sneak' : 'move'), tiles = P.dist[k!]; // rules 1.9: the click-path goes around revealed hazards (item 683)
     if (tiles === undefined) fail('There\'s no way through to there: a wall, a closed door or someone is in the way.');
     // 'world_move_cost' {c, u, tiles, how, extra}: sneaking costs 1 AP a tile on top (an item may change that).
     const wm: any = emitStory(g, 'world_move_cost', { c, u, tiles, how: a.how || 'move', extra: a.how === 'sneak' ? tiles : 0, g });
     // The move is priced by moveUnit through 'move_cost' (Charge!, Into the Dark, Shadow Step discount it: hooks gap B9);
     // the sneak's extra comes after. A failure throws, and apply() keeps the state from before the action.
     const extra = Math.max(0, wm.extra), ap0 = u.ap;
-    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move'); if (err) fail(err.replace(/^Needs (\d+(?:\.\d+)?) AP\.$/, (_m, n) => 'Needs ' + (+n + extra) + ' AP (' + ap0 + ' left).'));
+    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move', { via: P }); if (err) fail(err.replace(/^Needs (\d+(?:\.\d+)?) AP\.$/, (_m, n) => 'Needs ' + (+n + extra) + ' AP (' + ap0 + ' left).'));
     if (u.ap < extra && a.how !== 'sprint') fail('Needs ' + (Math.round((ap0 - u.ap + extra) * 10) / 10) + ' AP (' + ap0 + ' left).');
     u.ap -= extra;
-    const route: string[] = []; for (let x = k!; x && x !== from; x = P.prev[x]) route.unshift(x);
+    const route = routeTo(P, from, k!);
     walked = route.slice(0, route.indexOf(u.pos) + 1); // a hazard or a trap may have stopped the walk short
     ((g.story.trail ||= {})[c!.id] ||= []).push(...(route.length ? [from, ...route] : [from, k!]));
     positionsOf(g)[c!.id] = u.pos;
@@ -1922,13 +2143,14 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
       const t = cb.units.find((x) => x.id === req.targetId);
       if (t && t.side === 'foe') { overworldAttack(g, cb, c!, u, t, 'melee', (cbx, att) => { const tt = cbx.units.find((x) => x.npcId === t.id); if (!tt) return 'They are gone.'; att.ap = Math.max(0, Math.round((att.ap - req.ap) * 10) / 10); return req.perform(cbx, att, tt); }); return; }
     }
-  } else if (a.act === 'reload') err = reload(cb, u);
+  } else if (a.act === 'reload') err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb, u, a.hand, !!a.tactical) : reload(cb, u, { tactical: !!a.tactical }); // rules 1.9: speed or tactical
   else if (a.act === 'load') err = loadMagazine(cb, u);
   else if (a.act === 'clear') err = clearJam(cb, u);
   else if (a.act === 'repair') err = fieldRepair(cb, u);
   else if (a.act === 'prone') err = toggleProne(cb, u);
   else if (a.act === 'stim') { if (!target || target.side !== 'pc') fail('Pick an ally.'); err = useStim(cb, u, target!, c!, isMedicChar(c!)); }
-  else if (a.act === 'analyze') { if (!target || target.side !== 'foe') fail('Pick someone to read.'); err = analyze(cb, u, target!); if (!err) { const n = npcsOf(g).find((x) => x.id === target!.id); if (n) n.analyzed = true; } }
+  else if (a.act === 'analyze') { if (!target || target.side !== 'foe') fail('Pick someone to read.'); err = analyze(cb, u, target!); if (!err) { readDrawnBy(cb, u, target!); const n = npcsOf(g).find((x) => x.id === target!.id); if (n) n.analyzed = true; } }
+  else if (a.act === 'read') { if (!a.tile) fail('Pick a glyph or a trace to read.'); err = readGlyph(cb, u, tileKey(g, a.tile!)); }
   else if (a.act === 'attack') {
     // Anyone and anything is a target (spec: Anyone is a target).
     let t = target;
@@ -2054,7 +2276,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id], comp: pos }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
-  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
+  g.combat = startCombat(fightName, zoneMap(g), pcs, encounterDrops(g, fightName, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster, drops: n.drops }))), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || n.avatar || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } });
   if (!wasHostile) cbx.noXp = true;
@@ -2081,6 +2303,11 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
   if (!holdersOf({ c }).some((h) => h.key === 'class:shade.silent_kill')) return false;
   const others = cbx.units.filter((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered);
   if (!others.length || others.some((v) => unitSees(cbx, v, att.pos))) return false;
+  // Rules 1.9 (item 699): the death sweep still runs, so the body's drops lie in the pile on its tile on the area map
+  // (searching the body is picking up that pile).
+  noteDeaths(cbx, g.rng);
+  { const p = objectsOf(cbx).find((o) => isPile(o) && o.pos === tgt.pos);
+    if (p) { const objs = storyObjects(g), i = objs.findIndex((o) => isPile(o) && o.pos === tgt.pos), copy = JSON.parse(JSON.stringify(p)); if (i >= 0) objs[i] = copy; else objs.push(copy); } }
   for (const x of cbx.units) if (x.charId) unitToCharacter(g, x, false, true);
   magicOut(g, cbx, false);
   const back = others.map((u) => { const was = npcsOf(g).find((n) => n.id === u.npcId); return { ...(was || {}), id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos, portrait: u.img || undefined, ...(u.hp < u.maxHp ? { hp: u.hp } : {}) } as Npc; });
@@ -2121,9 +2348,11 @@ export function refreshCampaign(g: GameState): boolean {
   const old = g.campaign;
   if (g.phase === 'lobby' || !old || old.custom) return false;
   const fresh = builtInCampaign(old.id); if (!fresh || fresh.title !== old.title) return false;
-  const geom = (z: any) => JSON.stringify([z.w, z.h, z.solid, z.difficult, z.start, z.enemyStart, (z.objects || []).map((o: any) => [o.kind, o.at]), (z.exits || []).map((e: any) => [e.to, e.at])]);
+  const geom = (z: any) => JSON.stringify([z.w, z.h, z.solid, z.difficult, z.start, z.enemyStart, (z.exits || []).map((e: any) => [e.to, e.at])]);
+  // Objects only added (every old one still there by kind and tile, e.g. the rules 1.10 sigil marks) are no layout change.
+  const objsKept = (oz: any, fz: any) => (oz.objects || []).every((o: any) => (fz.objects || []).some((x: any) => x.kind === o.kind && x.at === o.at));
   const hadNpcs = new Set(old.zones.filter((z) => z.npcs).map((z) => z.id));
-  const zones = fresh.zones.map((fz) => { const oz = old.zones.find((z) => z.id === fz.id); return !oz || geom(oz) === geom(fz) ? fz : { ...oz, art: fz.art, music: fz.music, npcs: oz.npcs ?? fz.npcs }; });
+  const zones = fresh.zones.map((fz) => { const oz = old.zones.find((z) => z.id === fz.id); return !oz || (geom(oz) === geom(fz) && objsKept(oz, fz)) ? fz : { ...oz, art: fz.art, music: fz.music, npcs: oz.npcs ?? fz.npcs }; });
   for (const oz of old.zones) if (!zones.some((z) => z.id === oz.id)) zones.push(oz);
   g.campaign = { ...fresh, zones };
   // Art onto objects already on the maps: matched to their definition by kind and tile; only missing fields are filled.
@@ -2256,6 +2485,8 @@ export function rerollFrom(current: GameState, before: GameState, note: string):
 export interface Sandbox {
   /** ready: gearing up (sandboxNext is this wave); fighting; cleared / fallen: the last fight's result, gearing up again. */
   wave: number; best: number; attempt: number; ai: boolean;
+  /** Rules 1.10: Junctions on for every character here (testing; normally Brain Power Mastered). */
+  junctions?: boolean;
   /** Endless waves: after a cleared wave the next one comes by itself after a short pause (the host's client sends sandbox/wave). */
   auto: boolean;
   state: 'ready' | 'fighting' | 'cleared' | 'fallen';
@@ -2314,6 +2545,9 @@ export type SandboxAction =
   | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string; tone?: string; feeling?: string; forget?: boolean }
   /** Rules 1.8: add practice (n may be negative) to a character. */
   | { type: 'sandbox/practice'; charId: string; n: number }
+  // Rules 1.10: grant study; set a known word's use count (30 makes it a Mastered word, its inflection on).
+  | { type: 'sandbox/study'; charId: string; study: number } | { type: 'sandbox/word-uses'; charId: string; word: string; uses: number }
+  | { type: 'sandbox/mark'; at: string; word: string; age?: string; damage?: string; name?: string; text?: string } | { type: 'sandbox/junctions'; on: boolean }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
   | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string } | { type: 'sandbox/clear' }
   | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number }
@@ -2321,6 +2555,8 @@ export type SandboxAction =
   | { type: 'sandbox/faith'; charId: string; belief?: 'faithful' | 'atheist'; patron?: string; devotion?: number; faith?: number; pieces?: Record<string, number>; vow?: string | null; allyId?: string; reset?: boolean }
   // Rules 1.7 (World Play): place a cache, a hazard, a trigger, a person (face and talk), and an objective with where.
   | { type: 'sandbox/cache'; at: string; name?: string; text?: string; items: CacheItem[]; locked?: boolean; approaches?: NarratorApproach[] }
+  /** Rules 1.9: a pile on the ground (open: anyone who sees the tile sees it), the Narrator's ground[] entry. */
+  | { type: 'sandbox/pile'; at: string; items: CacheItem[]; hidden?: boolean }
   | { type: 'sandbox/hazard'; kind?: string; severity?: 'light' | 'heavy'; tiles?: string[]; rect?: { from: string; to: string }; hidden?: boolean; name?: string; remove?: string }
   | { type: 'sandbox/trigger'; when: 'enter' | 'examine' | 'objective'; tiles?: string[]; rect?: { from: string; to: string }; objId?: string; objective?: string; then: 'spawn' | 'fight' | 'reveal'; spawn?: NonNullable<NarratorTurn['npcs']>; difficulty?: string; name?: string; reveal?: string[]; text?: string; remove?: string }
   | { type: 'sandbox/npc'; name: string; at: string; side?: 'hostile' | 'neutral'; kind?: string; avatar?: string; tier?: string; weapon?: string; hidden?: boolean; wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: NarratorApproach[]; prisoner?: boolean }
@@ -2428,6 +2664,7 @@ export function sandboxResync(g: GameState, charId: string) { const c = g.charac
 function sbRefill(c: Character) {
   c.dead = false; c.hp = maxHp(c); c.injuries = []; c.downedFails = 0;
   c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  if (c.offHand && WEAPON[c.offHand.id]?.magazine != null) c.offHand = { ...c.offHand, loaded: magazineSize(c.offHand.id, c.offHand.mods) ?? 0 }; // the off-hand gun keeps its own rounds now (item 688)
   const pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : { ...it }));
   const w = WEAPON[c.weapon];
   if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
@@ -2478,18 +2715,13 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
 function sbEquip(c: Character, idx: number, to: 'main' | 'off' | 'worn' | 'mod'): string | null {
   const it = packOf(c)[idx]; if (!it) return 'Nothing there.';
   const err = to === 'mod' ? fitMod(c, idx) : equip(c, idx, to); if (err) return err;
-  if (to === 'main') c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  if (to === 'main') { c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0; c.loadedType = null; }
+  // The off hand's gun comes loaded too, as the tools say (review fix: item 688 left it empty here).
+  if (to === 'off' && c.offHand && WEAPON[c.offHand.id]?.magazine != null) { const { ammoType: _t, ...oh } = c.offHand; void _t; c.offHand = { ...oh, loaded: magazineSize(c.offHand.id, c.offHand.mods) ?? 0 }; }
   return null;
 }
-/** Take something off: the main hand too here (the weapon goes to the pack and the hands are empty: fists). */
-function sbUnequip(c: Character, slot: string): string | null {
-  if (slot !== 'main') return unequip(c, slot);
-  if (c.weapon === 'fists' || !WEAPON[c.weapon]) return 'Your hands are already empty.';
-  const st = c.weaponState || {};
-  c.pack = [...packOf(c).map((x) => ({ ...x })), { id: c.weapon, name: st.name || WEAPON[c.weapon].name, qty: 1, kind: 'weapon', weapon: c.weapon, ...(st.rarity ? { rarity: st.rarity } : {}), ...(st.dur != null ? { dur: st.dur } : {}), ...(st.mods ? { mods: st.mods } : {}) }];
-  c.weapon = 'fists'; c.weaponState = {}; c.loaded = 0;
-  return null;
-}
+/** Take something off: the main hand too (the weapon goes to the pack with its rounds and the hands are empty: fists). */
+const sbUnequip = (c: Character, slot: string): string | null => unequip(c, slot);
 /** The magic kit: the focus in the off hand where it fits (spec: Hands 2; a focus counts only in a hand, item 630), with
  * cores and a few words for Sigils, full MP and two ready designs for Outbursts. A focus that doesn't fit (a two-handed
  * weapon, a full off hand, the second focus of the both kit) goes to the pack, and the line says so (item 635). */
@@ -2591,7 +2823,7 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
     // The seated foes still standing go back as tokens with the HP they have left; everyone the fight did not seat
     // (overflow units, people who were not hostile) stays on the map as they were, moved aside if a fighter ended on their tile.
     const back = cb.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => ({ id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos,
-      portrait: u.img || undefined, ...(u.analyzedBy ? { analyzed: true } : {}), ...(u.hp < u.maxHp ? { hp: u.hp } : {}) }) as Npc);
+      portrait: u.img || undefined, ...(u.analyzedBy ? { analyzed: true } : {}), ...(u.hp < u.maxHp ? { hp: u.hp } : {}), ...(u.drops ? { drops: u.drops } : {}) }) as Npc);
     const ids = new Set(back.map((n) => n.id)), map = zoneMap(g), objs = g.story.objects || [];
     const taken = new Set<string>([...Object.values(pos), ...back.map((n) => n.pos)]);
     const free = (k: string) => standable(map, k) && !taken.has(k) && !objs.some((o) => o.pos === k && blocksMove(o));
@@ -2613,6 +2845,7 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
 /** A fight ends: cleared or the squad fell. The Proving Ground is gearing up again (the wave card offers the next fight). */
 function sandboxOver(g: GameState) {
   const sb = sbOf(g), cb = g.combat!, won = cb.over === 'win';
+  noteDeaths(cb, g.rng); // a death on the enemies' own turn is swept (and drops) before the field becomes the map again
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   if (sb.mode === 'teams') { sbTeamsOver(g); return; }
   if (won) sbNoteBest(g, sb.wave);
@@ -2756,6 +2989,16 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/auto': { hostOnly(); sb.auto = !!a.on; return; }
+    // Rules 1.10 (Sigil 1.5) tools: place a sigil mark (while gearing up); Junctions on for everyone here.
+    case 'sandbox/mark': {
+      fieldOnly(); if (!gearing) fail('Place things while gearing up (stop the fight first).');
+      const w = String(a.word || '').trim().toLowerCase(); if (!SIGIL[w]) fail('No such word.');
+      const before = storyObjects(g).length;
+      applyObjectOp(g, { action: 'place', id: '', kind: 'sigil_mark', at: a.at, name: a.name || 'Sigil mark: ' + SIGIL[w].word, text: a.text || 'A Sigil word cut into the wall.', approaches: [], word: w, ...(a.age ? { age: a.age } : {}), ...(a.damage ? { damage: a.damage } : {}) });
+      if (storyObjects(g).length === before) fail('Nothing can go there.');
+      const o = storyObjects(g).at(-1)!; sbLog(g, o.name + ' (' + (o.age || MARK.age) + ', ' + (o.damage || MARK.damage) + ', TN ' + o.approaches[0].tn + ') at ' + refOf(o.pos) + ' [' + o.id + '].'); return;
+    }
+    case 'sandbox/junctions': { hostOnly(); sb.junctions = !!a.on; sbLog(g, 'Junctions ' + (sb.junctions ? 'on for everyone here: a glyph may join two strokes.' : 'off: Brain Power Mastered only.')); return; }
     case 'sandbox/ai': { hostOnly(); sb.ai = !!a.on; sbLog(g, 'Enemy AI ' + (sb.ai ? 'on.' : 'off: enemies pass their turns.')); return; }
     case 'sandbox/faith': {
       const c = mine(a.charId), lines: string[] = [];
@@ -2763,15 +3006,16 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       if (a.vow && !VOW[a.vow]) fail('No such vow.');
       sbChange(g, c, () => {
         if (a.faith != null) sbSetSkill(c, 'faith', a.faith);
-        if (a.belief === 'atheist') { c.belief = { kind: 'atheist' }; c.patron = null; c.devotion = 0; }
-        else if (a.belief === 'faithful' || a.patron) { const pid = a.patron || patronOf(c)?.id || Object.keys(FAITH_PATRON)[0]; if (patronOf(c)?.id !== pid) c.devotion = 3; c.belief = { kind: 'faithful', patron: pid }; c.patron = pid; }
-        if (a.devotion != null && beliefOf(c).kind === 'faithful') c.devotion = Math.max(0, Math.min(10, Math.round(a.devotion)));
+        // Rules 1.6.1: the stepper sets the level (the XP at its threshold, item 701); the tools ignore the pact cooldown.
+        if (a.belief === 'atheist') { c.belief = { kind: 'atheist' }; c.patron = null; setDevotionXp(c, 0); }
+        else if (a.belief === 'faithful' || a.patron) { const pid = a.patron || patronOf(c)?.id || Object.keys(FAITH_PATRON)[0]; if (patronOf(c)?.id !== pid) setDevotionXp(c, devotionThreshold(3)); c.belief = { kind: 'faithful', patron: pid }; c.patron = pid; c.faithLeft = null; }
+        if (a.devotion != null && beliefOf(c).kind === 'faithful') setDevotionXp(c, devotionThreshold(a.devotion));
         if (a.pieces) {
           const own = patronOf(c)?.id, pc: Record<string, number> = {};
           for (const [pid, n] of Object.entries(a.pieces)) if (FAITH_PATRON[pid] && pid !== own && n > 0) pc[pid] = Math.min(3, Math.round(n));
           c.faithPieces = pc; c.hymns = Object.entries(pc).flatMap(([pid, n]) => (FAITH_PATRON[pid].hymns || []).slice(0, n).map((h: any) => pid + '.' + h.id));
         }
-        if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; const st: any = c.state; if (st?.faith) st.faith = {}; }
+        if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; delete c.faithTally; const st: any = c.state; if (st?.faith) st.faith = {}; }
       });
       const u = cb?.units.find((x) => x.charId === c.id);
       if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.intervened; u.faith.liked = 0; } }
@@ -2790,7 +3034,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       g.story.mana = v; if (cb) { cb.mana = v; emitFx(cb, 'mana', { band: MANA_BANDS.find((b) => v >= b.min && v <= b.max)?.id || '', mana: v }); }
       sbLog(g, 'The mana meter is set to ' + v + '.'); return;
     }
-    case 'sandbox/cache': case 'sandbox/hazard': case 'sandbox/trigger': case 'sandbox/npc': case 'sandbox/objective': {
+    case 'sandbox/cache': case 'sandbox/pile': case 'sandbox/hazard': case 'sandbox/trigger': case 'sandbox/npc': case 'sandbox/objective': {
       fieldOnly(); if (!gearing) fail('Place things while gearing up (stop the fight first).');
       sbWorldPlay(g, a); return;
     }
@@ -2990,12 +3234,28 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       });
       return;
     }
+    // Rules 1.10 (Sigil 1.5) tools: grant study; set a known word's use count (30: a Mastered word, its inflection on).
+    case 'sandbox/study': {
+      const c = mine(a.charId), n = Math.round(Number(a.study)); if (!Number.isFinite(n) || n === 0 || Math.abs(n) > 500) fail('Study: a whole number, at most 500.');
+      const s0 = growthOf(c); s0.study = Math.max(0, s0.study + n);
+      sbLog(g, c.name + (n > 0 ? ' gains ' + n : ' loses ' + -n) + ' study (' + s0.study + ').'); return;
+    }
+    case 'sandbox/word-uses': {
+      const c = mine(a.charId), w = String(a.word || '').toLowerCase(), n = Math.round(Number(a.uses));
+      if (!SIGIL[w]) fail('No such word.'); if (!(c.sigils || []).includes(w)) fail(c.name + ' doesn\'t know ' + SIGIL[w].word + '.');
+      if (!Number.isFinite(n) || n < 0 || n > 999) fail('Uses: 0 to 999.');
+      sbChange(g, c, () => { growthOf(c).uses[w] = n; });
+      sbLog(g, c.name + '\'s ' + SIGIL[w].word + ' has ' + n + ' use' + (n === 1 ? '' : 's') + (n >= WORD_MASTERY.mastered ? ': a Mastered word, its inflection on' : n >= WORD_MASTERY.practised ? ': Practised' : '') + '.'); return;
+    }
   }
   fail('Unknown action.');
 }
-/** The ordinary gear and magic-book actions, allowed mid-fight in the Proving Ground (the fighter is rebuilt). */
+/** The ordinary gear and magic-book actions in the Proving Ground: the magic book changes mid-fight for free (the fighter
+ * is rebuilt); gear in a live fight is a combat action at its cost (rules 1.9). */
 function sandboxGear(g: GameState, a: Action, by: string) {
   const charId = (a as any).charId as string, c = g.characters[charId]; if (!c || c.owner !== by) fail('Not your character.');
+  // The player's own gear in a live fight costs what it costs in any fight (rules 1.9, item 690); the tools stay free.
+  if (/^gear\/(equip|unequip|mod)$/.test(a.type) && liveFight(g)?.units.some((u) => u.charId === charId && !u.companion)) { gearForward(g, a as any, by); return; }
   const m: Record<string, () => SandboxAction> = {
     'gear/equip': () => ({ type: 'sandbox/equip', charId, idx: (a as any).idx, to: (a as any).to }),
     'gear/unequip': () => ({ type: 'sandbox/unequip', charId, slot: (a as any).slot }),
@@ -3265,12 +3525,17 @@ export const _world = {
 
 /** The Proving Ground's World Play tools (rules 1.7): the Narrator's own appliers, so part B and the e2e tests can drive
  * caches, hazards, triggers, people with faces and talk, and objectives with where, with no Narrator. */
-function sbWorldPlay(g: GameState, a: Extract<SandboxAction, { type: 'sandbox/cache' | 'sandbox/hazard' | 'sandbox/trigger' | 'sandbox/npc' | 'sandbox/objective' }>) {
+function sbWorldPlay(g: GameState, a: Extract<SandboxAction, { type: 'sandbox/cache' | 'sandbox/pile' | 'sandbox/hazard' | 'sandbox/trigger' | 'sandbox/npc' | 'sandbox/objective' }>) {
   if (a.type === 'sandbox/cache') {
     const before = storyObjects(g).length;
     applyObjectOp(g, { action: 'place', id: '', kind: 'cache', at: a.at, name: a.name || 'Supply crate', text: a.text || '', locked: !!a.locked, approaches: a.approaches || [], items: a.items || [] });
     if (storyObjects(g).length === before) fail('Nothing can go there.');
     const o = storyObjects(g).at(-1)!; sbLog(g, o.name + ' (' + (o.items || []).length + ' things' + (o.locked ? ', locked' : '') + ') at ' + refOf(o.pos) + ' [' + o.id + '].'); return;
+  }
+  if (a.type === 'sandbox/pile') { // rules 1.9: the same path as the Narrator's ground[] (merging, the cap, hidden)
+    const p = applyGroundOp(g, { at: a.at, items: Array.isArray(a.items) ? a.items : [], hidden: !!a.hidden });
+    if (!p) fail('Nothing can go there: an open tile, and at least one thing.');
+    sbLog(g, 'A pile at ' + refOf(p!.pos) + ' (' + (p!.items || []).length + (p!.items?.length === 1 ? ' thing' : ' things') + (p!.hidden ? ', hidden' : '') + ').'); return;
   }
   if (a.type === 'sandbox/hazard') {
     if (a.remove) { applyHazardOp(g, { action: 'remove', id: a.remove }); sbLog(g, 'Hazard ' + a.remove + ' removed.'); return; }

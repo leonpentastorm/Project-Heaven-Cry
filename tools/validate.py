@@ -346,6 +346,33 @@ if isinstance(sg, dict):
     for x in gr.get("retired", []) or []:
         if x.get("id") in smap:
             errors.append(f"sigils.grammar.retired: {x.get('id')} is still a word")
+    # rules 1.10 (Sigil 1.5): every word has a provisional inflection; study and word mastery numbers
+    INFL_STATS = {"cond_rounds", "save_tn", "to_hit", "damage_pct", "push_tiles", "shield_pct", "heal_pct", "charge", "flux",
+                  "lasts_rounds", "radius", "teleport_tiles", "barrier_hp_pct", "move_tiles", "range", "turret_def", "pull_tiles",
+                  "jump_radius", "leech", "mult", "radius_at_4", "cone_length", "spare_downed"}
+    for w in sw:
+        inf, where = w.get("inflection"), f"sigils:{w.get('id')}.inflection"
+        if not isinstance(inf, dict) or not inf.get("text") or not isinstance(inf.get("effects"), list) or not inf["effects"]:
+            errors.append(f"{where}: every word needs an inflection with text and effects (rules 1.10)")
+            continue
+        if inf.get("provisional") is not True:
+            errors.append(f"{where}: inflections are provisional (provisional: true)")
+        for e in inf["effects"]:
+            if e.get("op") != "inflection" or not isinstance(e.get("value"), (int, float)):
+                errors.append(f"{where}: an inflection effect is {{op: inflection, stat, value}}")
+            elif e.get("stat") not in INFL_STATS:
+                warns.append(f"{where}: stat {e.get('stat')} is not one the engine runs (the Narrator rules it)")
+    sd, wm = gr.get("study") or {}, gr.get("word_mastery") or {}
+    for k in ("per_evoke", "per_glyph_past_2", "hit_enemy", "first", "step", "copy", "trace_rounds", "mastery_study", "mastered_free_words"):
+        if not isinstance(sd.get(k), (int, float)):
+            errors.append(f"sigils.grammar.study: {k} must be a number (rules 1.10)")
+    if sd and sd.get("provisional") is not True:
+        errors.append("sigils.grammar.study: provisional (rules 1.10)")
+    for x in sd.get("mastery_skills") or []:
+        if x not in SKILLS:
+            errors.append(f"sigils.grammar.study.mastery_skills: unknown skill {x}")
+    if not (isinstance(wm.get("practised"), int) and isinstance(wm.get("mastered"), int) and 0 < wm["practised"] < wm["mastered"]):
+        errors.append("sigils.grammar.word_mastery: practised < mastered, whole numbers (rules 1.10)")
 
 # weapon mastery: families, levels, perks, and every weapon's family
 wm = data.get("weapon_mastery")
@@ -551,6 +578,91 @@ if wp:
                 errors.append(f"world_play: hazard approach {a.get('id')}: unknown skill {sk}")
     if "cache" not in ids_of(items("objects")):
         errors.append("objects: the cache kind (World Play) is missing")
+    # Rules revision 1.9 (World Play 1.1): the pile kind (open, never blocking, a spot TN and range) and its limits
+    pile = next((o for o in items("objects") if o.get("id") == "pile"), None)
+    if not pile:
+        errors.append("objects: the pile kind (World Play 1.1) is missing")
+    else:
+        if pile.get("blocks_move") or pile.get("blocks_sight") or pile.get("cover") is not None or pile.get("hp") is not None:
+            errors.append("objects:pile: a pile never blocks, gives no cover and has no HP")
+        sp = pile.get("spot") or {}
+        if not all(isinstance(sp.get(k), int) and sp[k] > 0 for k in ("detect_tn", "detect_range")):
+            errors.append("objects:pile: spot needs a positive detect_tn and detect_range")
+    pl = wp.get("pile") or {}
+    for k in ("max_entries", "narrator_entries_per_turn", "narrator_items_per_pile", "rounds_max", "route_slack_tiles", "tactical_reload_extra_ap"):
+        if not isinstance(pl.get(k), int) or pl[k] < 0:
+            errors.append(f"world_play: pile.{k} must be a whole number of 0 or more")
+    if isinstance(pl.get("narrator_items_per_pile"), int) and isinstance(pl.get("max_entries"), int) and pl["narrator_items_per_pile"] > pl["max_entries"]:
+        errors.append("world_play: pile.narrator_items_per_pile can't exceed pile.max_entries")
+    if not isinstance((wp.get("ap") or {}).get("pickup"), (int, float)):
+        errors.append("world_play: ap.pickup (World Play 1.1) is missing")
+    # Rules 1.9 gear in a fight (items 684-690): whole AP costs, a positive light-armour limit, and the action list agreeing
+    gr = wp.get("gear") or {}
+    for k in ("hand_ap", "two_handed_draw_ap", "swap_hands_ap", "put_away_ap_per_hand", "drop_ap", "light_armour_ap"):
+        if not isinstance(gr.get(k), int) or gr[k] < 0:
+            errors.append(f"world_play: gear.{k} must be a whole number of 0 or more")
+    if not isinstance(gr.get("light_armour_max_kg"), (int, float)) or gr["light_armour_max_kg"] <= 0:
+        errors.append("world_play: gear.light_armour_max_kg must be a positive weight")
+    def _acts(o):
+        if isinstance(o, dict):
+            for v in o.values():
+                r = _acts(v)
+                if r is not None:
+                    return r
+        elif isinstance(o, list):
+            if any(isinstance(x, dict) and x.get("id") == "interact" for x in o):
+                return o
+            for v in o:
+                r = _acts(v)
+                if r is not None:
+                    return r
+        return None
+    acts = {a.get("id"): a for a in (_acts(data.get("rules", {})) or []) if isinstance(a, dict)}
+    for aid, key in (("draw", "hand_ap"), ("draw_two_handed", "two_handed_draw_ap"), ("swap_hands", "swap_hands_ap"), ("put_away", "put_away_ap_per_hand"), ("drop_held", "drop_ap"), ("light_armour", "light_armour_ap")):
+        if aid not in acts:
+            errors.append(f"rules: action {aid} (rules 1.9 gear in a fight) is missing")
+        elif gr.get(key) is not None and acts[aid].get("ap") != gr.get(key):
+            errors.append(f"rules: action {aid} costs {acts[aid].get('ap')} but world_play gear.{key} is {gr.get(key)}")
+    if "light_armour" in acts and gr.get("light_armour_max_kg") is not None and acts["light_armour"].get("max_kg") != gr.get("light_armour_max_kg"):
+        errors.append("rules: action light_armour max_kg disagrees with world_play gear.light_armour_max_kg")
+
+# Rules 1.10 (Sigil 1.5): the sigil_mark kind's Investigate numbers, and the marks the campaigns place
+_mk = next((o for o in items("objects") if o.get("id") == "sigil_mark"), None)
+if _mk is None:
+    errors.append("objects: the sigil_mark kind (rules 1.10) is missing")
+else:
+    mk = _mk.get("mark") or {}
+    for sk in mk.get("skills") or []:
+        if sk not in SKILLS:
+            errors.append(f"objects:sigil_mark: unknown skill {sk}")
+    if not mk.get("skills"):
+        errors.append("objects:sigil_mark: mark.skills is empty")
+    for age in mk.get("ages") or []:
+        for dmg in mk.get("damages") or []:
+            if ((mk.get("tn") or {}).get(age) or {}).get(dmg) not in (8, 12, 16, 20):
+                errors.append(f"objects:sigil_mark: mark.tn {age}/{dmg} must be 8, 12, 16 or 20")
+    if mk.get("default_age") not in (mk.get("ages") or []) or mk.get("default_damage") not in (mk.get("damages") or []):
+        errors.append("objects:sigil_mark: the default age and damage must be listed")
+    if not isinstance(mk.get("study"), int) or mk["study"] <= 0:
+        errors.append("objects:sigil_mark: mark.study must be a positive whole number")
+    if mk.get("provisional") is not True:
+        errors.append("objects:sigil_mark: mark must be flagged provisional (rules 1.10)")
+    _words = {w.get("id") for w in items("sigils")}
+    for cp in sorted((root / "campaigns").glob("*.json")):
+        try:
+            camp = json.loads(cp.read_text())
+        except Exception:
+            continue
+        for z in camp.get("zones") or []:
+            for o in z.get("objects") or []:
+                if o.get("kind") != "sigil_mark":
+                    continue
+                if o.get("word") not in _words:
+                    errors.append(f"campaigns/{cp.name}:{z.get('id')}: sigil mark at {o.get('at')} needs a known word (got {o.get('word')!r})")
+                if o.get("age") is not None and o["age"] not in (mk.get("ages") or []):
+                    errors.append(f"campaigns/{cp.name}:{z.get('id')}: sigil mark at {o.get('at')}: unknown age {o['age']}")
+                if o.get("damage") is not None and o["damage"] not in (mk.get("damages") or []):
+                    errors.append(f"campaigns/{cp.name}:{z.get('id')}: sigil mark at {o.get('at')}: unknown damage {o['damage']}")
 
 # Soul magic, rules 1.5 (Outburst 2.0): tones, forms, retired modules, the cycle's numbers
 soul = data.get("soul_modules", {})
@@ -646,8 +758,61 @@ pat = data.get("patrons") or {}
 if isinstance(pat, dict) and pat.get("tags"):
     tag_ids = {t.get("id") for t in pat.get("tags") or []}
     banks = pat.get("line_banks") or []
-    if len(banks) != 9:
-        errors.append(f"patrons: line_banks should list 9 banks, has {len(banks)}")
+    if len(banks) != 10:
+        errors.append(f"patrons: line_banks should list 10 banks, has {len(banks)}")
+    # rules 1.6.1 (Faith 2.1): Devotion XP, the curve rising from 0 to its 10 levels; the sources, tag caps and the
+    # Narrator's range; the day cooldown after leaving a pact
+    dv = pat.get("devotion") or {}
+    curve = (dv.get("xp") or {}).get("curve") or []
+    if len(curve) != 11 or curve[0] != 0 or any(not isinstance(x, int) or x < 0 for x in curve) or any(b <= a for a, b in zip(curve, curve[1:])):
+        errors.append("patrons: devotion.xp.curve needs 11 rising whole numbers from 0 (levels 0-10)")
+    if not (isinstance(dv.get("start"), int) and 0 <= dv["start"] <= 10):
+        errors.append("patrons: devotion.start must be a level from 0 to 10")
+    for grp, keys in (("gain", ("liked_tag", "vow_kept", "rite_kept", "convert_someone", "deed_min", "deed_max", "piece_on_conversion")),
+                      ("loss", ("taboo_tag", "taboo_tag_witnessed", "vow_broken", "overreach_miss", "break_character_seen", "judgement")),
+                      ("tag_caps", ("fight", "scene", "session")), ("narrator", ("min", "max", "session_gain_cap")), ("apostasy", ("cooldown_days",))):
+        for k in keys:
+            v = (dv.get(grp) or {}).get(k)
+            if not isinstance(v, int) or (grp != "narrator" and v < 0):
+                errors.append(f"patrons: devotion.{grp}.{k} must be a whole number" + ("" if grp == "narrator" else " (0 or more; losses are written as positive numbers)"))
+    nar = dv.get("narrator") or {}
+    if isinstance(nar.get("min"), int) and isinstance(nar.get("max"), int) and not (nar["min"] < 0 < nar["max"]):
+        errors.append("patrons: devotion.narrator needs min below 0 and max above 0")
+    for k in ("liked_tag_fight_cap", "narrator_delta_max"):
+        if k in (dv.get("gain") or {}) or k in dv:
+            errors.append(f"patrons: devotion.{k} is retired (Faith 2.1: tag_caps, narrator)")
+    # rules 1.6.2 (Miracle 2.1): the Miracle needs Devotion 10 (the gate and prayer.miracle.devotion_min agree, above
+    # Hymn III) and lowers Devotion by whole levels (devotion_cost_levels, 1 up to the gate); "spends all" is retired
+    gates = dv.get("gates") or {}
+    pm = (pat.get("prayer") or {}).get("miracle") or {}
+    if not (isinstance(gates.get("miracle"), int) and isinstance(gates.get("hymn_3"), int) and gates["hymn_3"] < gates["miracle"] <= 10):
+        errors.append("patrons: devotion.gates.miracle must be a level above hymn_3, at most 10 (rules 1.6.2: 10)")
+    if pm.get("devotion_min") != gates.get("miracle"):
+        errors.append("patrons: prayer.miracle.devotion_min must equal devotion.gates.miracle")
+    cost = pm.get("devotion_cost_levels")
+    if not (isinstance(cost, int) and 1 <= cost <= (gates.get("miracle") if isinstance(gates.get("miracle"), int) else 10)):
+        errors.append("patrons: prayer.miracle.devotion_cost_levels must be a whole number of levels from 1 to the Miracle's gate")
+    if "spends" in pm:
+        errors.append("patrons: prayer.miracle.spends is retired (rules 1.6.2: devotion_cost_levels)")
+    if "miss_devotion" in ((pat.get("prayer") or {}).get("overreach") or {}):
+        errors.append("patrons: prayer.overreach.miss_devotion is retired (Faith 2.1: devotion.loss.overreach_miss, in XP)")
+    if "devotion" in (((data.get("rules") or {}).get("mana") or {}).get("prayer") or {}):
+        errors.append("rules: prayer.devotion is retired (rules 1.6.1: Devotion lives in patrons.json devotion, in XP)")
+    # Devotion is moved in XP (rules 1.6.1): a text giving an amount of Devotion must say XP ("+4 Devotion XP"), never a
+    # bare level ("+1 Devotion"); "spend 1 Devotion" style costs name their XP too
+    def faith_texts(x, path):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                yield from faith_texts(v, f"{path}.{k}")
+        elif isinstance(x, list):
+            for i, v in enumerate(x):
+                yield from faith_texts(v, f"{path}[{i}]")
+        elif isinstance(x, str):
+            yield path, x
+    for path, t in faith_texts(pat, "patrons"):
+        for m in re.finditer(r"[+\-−]\s?\d+ Devotion(?! XP)", t):
+            errors.append(f"{path}: '{m.group(0)}' gives Devotion in levels; rules 1.6.1 moves Devotion XP ('{m.group(0)} XP')")
+    cond_kinds = {c.get("id"): c.get("adjudication") for c in items("conditions")}
     if len(pat.get("whispers") or []) != 6:
         errors.append("patrons: there should be 6 Whispers")
     for w in pat.get("whispers") or []:
@@ -687,10 +852,118 @@ if isinstance(pat, dict) and pat.get("tags"):
                 errors.append(f"patrons:{pid}: engine rite {r.get('id')} needs check.kind story, after_rest or tithe_item")
         if not (p.get("intervention") or {}).get("trigger"):
             errors.append(f"patrons:{pid}: the intervention needs a trigger")
+        # leaving this patron (rules 1.6.1): Open patrons roll d20 + Faith vs their tn, Jealous ones never let go; the
+        # grudge's condition must be one the engine runs (conditions.json, adjudication engine)
+        lv = p.get("leave") or {}
+        if lv.get("lets_go") not in ("roll", "never"):
+            errors.append(f"patrons:{pid}: leave.lets_go must be roll or never")
+        if (lv.get("lets_go") == "roll") != (p.get("rule") == "open"):
+            errors.append(f"patrons:{pid}: an Open patron rolls to let you go (lets_go roll), a Jealous one never does")
+        if lv.get("lets_go") == "roll" and not (isinstance(lv.get("tn"), int) and 2 <= lv["tn"] <= 20):
+            errors.append(f"patrons:{pid}: leave.tn must be a TN from 2 to 20")
+        gr = lv.get("grudge") or {}
+        if not (isinstance(gr.get("sessions"), int) and gr["sessions"] >= 1):
+            errors.append(f"patrons:{pid}: leave.grudge.sessions must be 1 or more")
+        elif p.get("rule") == "jealous" and not 2 <= gr["sessions"] <= 3:
+            errors.append(f"patrons:{pid}: a Jealous patron's grudge is the harder one, 2 to 3 sessions")
+        elif p.get("rule") == "open" and gr["sessions"] != 1:
+            errors.append(f"patrons:{pid}: an Open patron's grudge is the light one, 1 session")
+        if not (isinstance(gr.get("rounds"), int) and gr["rounds"] >= 1):
+            errors.append(f"patrons:{pid}: leave.grudge.rounds must be 1 or more")
+        if not (isinstance(gr.get("xp_mult"), (int, float)) and 0 <= gr["xp_mult"] <= 1):
+            errors.append(f"patrons:{pid}: leave.grudge.xp_mult must be from 0 to 1")
+        if cond_kinds.get(gr.get("condition")) != "engine":
+            errors.append(f"patrons:{pid}: leave.grudge.condition '{gr.get('condition')}' must be a condition the engine runs")
+        if not gr.get("text"):
+            errors.append(f"patrons:{pid}: leave.grudge needs its text")
         lines = p.get("lines") or {}
         for b in banks:
             if len(lines.get(b) or []) != 3:
                 errors.append(f"patrons:{pid}: line bank {b} needs 3 lines")
+
+# Rules 1.9 drop tables (World Play 1.1, spec 14 items 691-700): data/loot_tables.json
+lt = data.get("loot_tables")
+if lt is not None:
+    RARITIES = {"standard", "fine", "masterwork", "relic", "celestial"}
+    # the engine's enemy kinds (packages/engine/src/tactics.ts KINDS)
+    FOE_KINDS = {"human", "robot", "crawler", "ork", "upper_realm", "cursed", "beast", "machine", "turret", "celestial", "drone"}
+    tables = {t.get("id"): t for t in items("loot_tables") if isinstance(t, dict)}
+    tiers = ids_of(items("enemies"))
+    def _qty_ok(q):
+        if isinstance(q, int) and not isinstance(q, bool):
+            return 1 <= q <= 20
+        return isinstance(q, list) and len(q) == 2 and all(isinstance(x, int) and not isinstance(x, bool) for x in q) and 1 <= q[0] <= q[1] <= 20
+    def _drop_id_ok(i):
+        if i in item_ids or i == "personal":
+            return True
+        if isinstance(i, str) and i.startswith("mag:"):
+            w = next((x for x in items("weapons") if x.get("id") == i[4:]), None)
+            return bool(w and w.get("magazine") is not None)
+        if isinstance(i, str) and i.startswith("rounds:"):
+            return True
+        return False
+    for tid, t in tables.items():
+        if not tid:
+            errors.append("loot_tables: a table has no id")
+            continue
+        if not isinstance(t.get("none"), (int, float)) or t["none"] < 0:
+            errors.append(f"loot_tables:{tid}: none (the weight of nothing) must be 0 or more")
+        if not isinstance(t.get("entries"), list):
+            errors.append(f"loot_tables:{tid}: entries must be a list")
+            continue
+        if not t["entries"] and not t.get("none"):
+            errors.append(f"loot_tables:{tid}: an empty table needs a weight for nothing")
+        for e in t["entries"]:
+            where = f"loot_tables:{tid}:{e.get('item')}"
+            if not _drop_id_ok(e.get("item")):
+                errors.append(f"{where}: unknown item or weapon id")
+            if not isinstance(e.get("weight"), (int, float)) or e["weight"] <= 0:
+                errors.append(f"{where}: weight must be above 0")
+            if "qty" in e and not _qty_ok(e["qty"]):
+                errors.append(f"{where}: qty must be 1-20 or [min, max] within 1-20")
+            if "rarity" in e and e["rarity"] not in RARITIES:
+                errors.append(f"{where}: unknown rarity {e['rarity']}")
+            if "chance" in e:
+                errors.append(f"{where}: a table entry is weighted; chance belongs to drops.items lists")
+            if "note" in e and (not isinstance(e["note"], str) or not e["note"].strip() or len(e["note"]) > 40):
+                errors.append(f"{where}: note must be a short text (a plate's lesson, item 692)")
+    if "personal" in str([e.get("item") for t in tables.values() for e in t.get("entries", [])]):
+        pi = lt.get("personal_items") or []
+        if not pi or not all(isinstance(x, dict) and x.get("name") and x.get("text") for x in pi):
+            errors.append("loot_tables: personal_items needs entries with a name and a text")
+    caps = lt.get("caps") or {}
+    for d in ("easy", "standard", "hard", "boss"):
+        if not isinstance(caps.get(d), int) or caps[d] < 0:
+            errors.append(f"loot_tables: caps.{d} must be a whole number of 0 or more")
+    wd = lt.get("worn_durability") or {}
+    if not all(isinstance(wd.get(k), (int, float)) for k in ("min", "max")) or not 0 < wd["min"] <= wd["max"] <= 1:
+        errors.append("loot_tables: worn_durability needs 0 < min <= max <= 1")
+    for k in ("spare_mags_max", "inline_max"):
+        if not isinstance(lt.get(k), int) or lt[k] < 0:
+            errors.append(f"loot_tables: {k} must be a whole number of 0 or more")
+    for w in lt.get("natural_weapons") or []:
+        if w not in wids:
+            errors.append(f"loot_tables: natural weapon {w} is not a weapon")
+    rbt = lt.get("rolls_by_tier") or {}
+    for tier in tiers:
+        if not isinstance(rbt.get(tier), int) or rbt[tier] < 0:
+            errors.append(f"loot_tables: rolls_by_tier needs a whole number for tier {tier}")
+    for tier in rbt:
+        if tier not in tiers:
+            errors.append(f"loot_tables: rolls_by_tier names unknown tier {tier}")
+    kt = lt.get("kind_tables") or {}
+    for k in FOE_KINDS:
+        if kt.get(k) not in tables:
+            errors.append(f"loot_tables: kind {k} needs a default table (kind_tables)")
+    for k in kt:
+        if k not in FOE_KINDS:
+            errors.append(f"loot_tables: kind_tables names unknown kind {k}")
+    for k in ("caster_table", "boss_table"):
+        if lt.get(k) not in tables:
+            errors.append(f"loot_tables: {k} must name a table")
+    bt = tables.get(lt.get("boss_table"))
+    if bt and (bt.get("none") or not bt.get("entries")):
+        errors.append("loot_tables: the boss table always drops something (no weight for nothing, at least one entry)")
 
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")

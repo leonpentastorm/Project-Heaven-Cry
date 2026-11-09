@@ -11,16 +11,19 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - The live harness is `apps/web/src/narrator/live-playtest.test.ts`; before/after transcripts are in
      `docs/design/handoffs/narrator-craft-transcripts/`.
    - Add a 14-turn run, which reaches the "carry everyone east" beat and so tests the skip-a-stage rule.
-2. **Implement Leon's faith rulings** (8 Nov 2026; the branch `fix/faith-rulings` was never pushed):
-   - Leaving a patron sets Devotion to 0 and starts a 90-day cooldown before joining another patron.
-   - Leaving one patron *to join another* has no cooldown. Instead the patron you leave may punish you, as each
-     patron's data says (Jealous patrons harder, Open ones may let you go).
-   - Devotion from liked tags is at most +1 per fight (was +2).
-   - The faith gold `#F2C46A` is approved as `--faith-light` (light only, always beside a word).
-   - Art direction: patrons are painted as a god appears to a human (an NPC): apparitions, effigies, masks. The
-     delivered set is right. Fix the style guide, `docs/design/handoffs/blessing-art-brief.md` and
-     `docs/design/blessing-2.0-spec.md` section 8.
-   - A ready prompt is in the chat history (summary in `docs/HANDOFF.md`).
+2. ~~**Implement Leon's faith rulings**~~ **Built** as Faith 2.1, rules 1.6.1 (branch `feature/faith-2.1`, decision 107,
+   spec items 701–723; `docs/design/faith-2.1-spec.md`; hand-off `docs/design/handoffs/faith-2.1-HANDOFF.md`):
+   - leaving a patron: Devotion 0 and a 90-day cooldown on the new day counter; a direct switch has no cooldown, but the
+     patron you leave rolls to let you go (Open) or always holds a grudge (Jealous), as its `leave` data says;
+   - Devotion is now **Devotion XP** toward the same 0–10 standing, and the tag cap lives on the character (2 XP a fight,
+     2 a scene, 6 a session; the "+1 a fight" ruling was in levels and is replaced by these, see the design doc);
+   - `--faith-light` `#F2C46A` is in the web app, `colour-system.md` and `palette.json`;
+   - the art direction (patrons painted as a god appears to an NPC; the delivered set is right) is in the style guide,
+     the Blessing art brief and the Blessing 2.0 spec section 8.
+
+   ~~**Still open for Leon:** the Miracle's price.~~ **Decided** (Leon, 9 Nov 2026) and built as **Miracle 2.1**, rules
+   1.6.2 (items 724–737): the Miracle needs Devotion 10 and lowers Devotion by 5 levels; all eight Miracles are
+   stronger and engine-run. Every number in items 701–736 is provisional for playtests.
 3. **Rewrite M813 for World Play.** Every area gets:
    - an objective with a `where`;
    - a hazard or obstacle with approaches and real failure costs;
@@ -87,7 +90,14 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 ## World Play gaps (from `docs/design/handoffs/world-play-A-HANDOFF.md` and `-B-HANDOFF.md`)
 
-- Paths (players' clicks and enemies) don't avoid hazards.
+- Enemy paths don't avoid hazards, and neither do the Narrator's moves. Since rules 1.9, a player's click-path goes around a revealed hazard when the detour is at most 2 tiles (item 683), and the preview names what a path crosses.
+- World Play 1.1 (`docs/design/handoffs/world-play-1.1-HANDOFF.md`):
+  - an enemy killed on the area map drops nothing (item 697);
+  - enemy weapons have no rarity, so worn drops are always standard;
+  - the host-only loot-cap log isn't shown on screen;
+  - companions don't add to the party's sight of piles;
+  - the light-armour line is now 1.2 kg (item 685, provisional; the field helmet and field boots change in a fight, the ballistic helmet doesn't): Leon to confirm in playtest;
+  - no built-in campaign uses `loot_tables` or `drops` yet.
 - Allies and companions don't fight beside the party; companion hazard damage on the area map isn't saved.
 - Talk and hazard panels exist only on the area map, not in fights.
 - **Carry weight is very punishing** (item 638): a 40 kg robot overloads a starting character, and a 70 kg body
@@ -109,11 +119,11 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
     same voices as Edge, e.g. en-US-ChristopherNeural, from any browser).
   - Confirm Kokoro on Leon's 9070 XT reads "Kokoro · WebGPU".
 
-## Faith, beyond the rulings (`docs/design/blessing-2.0-spec.md` section 11, spec items 592–629)
+## Faith, beyond the rulings (`docs/design/blessing-2.0-spec.md` section 11, spec items 592–629; Faith 2.1 items 701–723; Miracle 2.1 items 724–737)
 
 - More patrons: the rival Thunder-Father, and the "many masks" pantheon (one Celestial playing several patrons).
 - Witnessed doesn't exist in the story (engine item 604); vow and Witnessed icons are code-drawn placeholders.
-- The Guardian's Judgement still spends Devotion, the only spend besides a Miracle.
+- The Guardian's Judgement still spends Devotion (10 Devotion XP since Faith 2.1, item 706), the only spend besides a Miracle's 5 levels (rules 1.6.2).
 
 ## Magic
 
@@ -126,7 +136,6 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 ## Small engine oddities (Leon: not urgent)
 
-- Equipping a weapon into an empty main hand puts "Fists" into the pack.
 - A focus taken out of the off hand goes into the pack as kind `tool` instead of `focus`.
 
 ## Art

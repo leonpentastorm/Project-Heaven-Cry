@@ -43,6 +43,8 @@ export const SFX_CREDITS: Credit[] = [
   // The author's attribution instructions: "Wisdom Magic Sounds by Iwan Gabovitch http://opengameart.org/users/qubodup".
   { what: 'Wisdom Magic Sounds (the choir swell under a big release and a resonance)', who: 'Iwan Gabovitch, http://opengameart.org/users/qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
   { what: 'Deep Bone Crack/Break SFX (the heart cracking: Strain burning, a Mana Short)', who: 'Zane Little Music', licence: 'CC0', url: 'https://opengameart.org/content/deep-bone-crackbreak-sfx' },
+  // Sigil 1.5 (rules 1.10): public/sfx/cb/sg_join, sg_inflect, sg_study (layered from the pack's files; mono, levelled).
+  { what: 'Interface Sounds: glass and tick (a glyph joining a stroke), confirmation and a long glass ring (a word\'s inflection coming on), scratch and confirmation (a word copied or learned from a mark or a glyph)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
   // Outburst 4.0 (rules 1.8): feelings (public/sfx/cb/feel_*.ogg; trimmed, mono, levelled, some filtered). All CC0.
   { what: 'Interface Sounds: maximize, glass, bong, minimize and tick (the warm, cold and hollow pump layers, the cold residue, Revert pump\'s rewind, the multiplier\'s shake tick)', who: 'Kenney (www.kenney.nl), via OpenGameArt', licence: 'CC0', url: 'https://opengameart.org/content/interface-sounds' },
   { what: 'Sci-Fi Sounds: impactMetal and lowFrequency_explosion (the low pump layer\'s thud, the low residue\'s rumble)', who: 'Kenney (www.kenney.nl), via OpenGameArt', licence: 'CC0', url: 'https://opengameart.org/content/sci-fi-sounds' },

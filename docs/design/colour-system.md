@@ -1,6 +1,6 @@
 # Colour system
 
-One rule: **colour means a skill's attribute, or one of five game states. Nothing else gets a hue.** Decorative colour is neutral.
+One rule: **colour means a skill's attribute, or one of five game states. Nothing else gets a hue.** Decorative colour is neutral. The one light outside that rule is faith's gold, `--faith-light` (section 3: light only, always beside a word).
 
 Machine-readable values are in [`art/style-guide/palette.json`](../../art/style-guide/palette.json). This page explains them. If the two disagree, the JSON wins.
 
@@ -50,6 +50,16 @@ States always pair the colour with a word or a glyph, so colour-blind players lo
 | HP, damage, complication, hostile, downside | `#F65157` | ⚠ for complication | Shares Endurance's UI ink on purpose: Max HP comes from Endurance. HP bar fill uses the same ink. |
 | MP | `#5C9EFF` blue | | A hue no skill uses. |
 | Echo, still-to-do, selected tool, point of interest | `#FFFFFF` white | ◆ for Echo | Echo is not an attribute, so it takes no hue. White bold = "this still needs you"; green = done. |
+
+**Faith's light, `--faith-light` `#F2C46A` gold** (approved by Leon, 8 Nov 2026; rules 1.6). Light only: the glow of an
+answered prayer, the Miracle, the Devotion meter's XP fill, a patron's mark lit. It is never a text colour for meaning
+and never the only carrier of it: it always sits beside a word (the meter's "DEVOTION 4 · 12/32 XP", "✦ MIRACLE").
+Faith's words take Virtue ink `#D36A90`. The web app defines it once in `apps/web/index.html` (`:root`); templates use
+`var(--faith-light)`, code uses `FAITH_GOLD` (`apps/web/src/game/faithArt.ts`), the same value. It shares the Soul
+effects' warm gold (`SOUL_WARM`); Agility gold `#E3BF51` stays the attribute's. It is in `art/style-guide/palette.json`
+as `ui.states.faith_light`, so `tools/validate_art.py` holds it to the UI contrast rule (9.4:1 on the raised surface
+`#1C2536`, against the 4.5:1 floor) like every other state colour. Patron *accents* (style guide, "Patron apparition
+colour identities") are paint and FX colours, not UI tokens; they never replace this gold or the Virtue ink.
 
 Retired tokens: `#6FD8A0` (success; too close to Perception), `#F0907F` / `#E8604F` (failure, HP), `#FFD27A` (Echo/critical; too close to Agility).
 

@@ -235,7 +235,8 @@
       "hostile": "#F65157",
       "mp": "#5C9EFF",
       "echo": "#FFFFFF",
-      "pending": "#FFFFFF"
+      "pending": "#FFFFFF",
+      "faith_light": "#F2C46A"
     },
     "surfaces": {
       "ground": "#0A0D13",

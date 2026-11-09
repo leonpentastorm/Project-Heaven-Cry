@@ -19,11 +19,18 @@ Everything you need is on this page. The links are for the people who receive yo
 In this world, gods are **Celestials**: trapped humans from a world above, who play gods. Each one picks a costume and
 never breaks it. That is a LARP, in the world's words.
 
-A **patron** is a Celestial a character prays to. Faith in PHC is a relationship with someone who is watching you. The
-art has to show a person playing a god, with sincerity and with a wink:
+A **patron** is a Celestial a character prays to. Faith in PHC is a relationship with someone who is watching you.
+**The art paints the god as it appears to a human of the world (an NPC): an apparition, an effigy, a mask** (Leon,
+8 Nov 2026). The faithful never see the Celestial behind the costume, so the portrait doesn't either:
 
-- the costume is real and lovingly made;
-- the person inside it shows through.
+- the god is real and lovingly made, monumental, lit by its own answering light;
+- the humanoid presence is an effigy, a mask, a held divine face or a radiant absence, never an actor breaking
+  character, never a tired player showing through, never a real person;
+- the wink, where there is one, is in the costume's details (a stamp worn as a holy seal, a seating chart, a ledger-tape
+  loom), never in the face.
+
+**Status (9 Nov 2026): the delivered set in `art/portraits/patrons/` is right** and is the reference for new patrons.
+The style guide's "Patron apparition colour identities" holds the accents that replaced the ones in the table below.
 
 Blessing visual grammar (style guide 07): **focused radiance, sacred negative space, a deliberate halo or answering
 emblem.** Blessing motifs run gold. Don't make everyone a hooded priest.
@@ -40,21 +47,25 @@ emblem.** Blessing motifs run gold. Don't make everyone a hooded priest.
 ## Deliverable A: 8 patron portraits (Heavenprint character mode)
 
 - **Format:** 800 × 1000 PNG (4:5), the same as every character portrait.
-- **Style:** Heavenprint gouache and broken ink. Faces with restrained stylisation and convincing acting.
+- **Style:** Heavenprint gouache and broken ink. Where a face shows, it is the god's face, held and monumental, with
+  restrained stylisation; an ivory effigy, a mask or radiance can stand in for it.
 - **Composition:** a bust or three-quarter view.
 - **Light:** each patron is lit by their own **answering light**, a halo or radiance shape that belongs to their costume, in
   the accent colour listed below. Keep it practical light, no glow haze.
 - **Folder:** `art/portraits/patrons/`. File name = id (`nerukhan.png`).
-- **The test of a good portrait:** the costume is a god, the face is a person who chose to play that god.
+- **The test of a good portrait:** a faithful NPC would kneel to it. It is the god as they see it; nothing of the
+  Celestial behind the costume shows.
+- **Accents:** superseded by the style guide's patron table (distinct colour per patron); the column below is the
+  first brief's.
 
 | Id | Patron | Paint this | Accent |
 |---|---|---|---|
 | nerukhan | Holy Father Nerukhan | A stern holy father of the Lumeri saint-church. Heavy vestments embroidered with saints' hands (no real symbols). One hand raised in judgement, eyes that have already decided. Never smiles in costume. | pale gold |
 | the_quartermaster | The Quartermaster | A gruff officer-god of a war that never ended. Greatcoat with requisition tags, a ledger under the arm, a rubber stamp worn like a holy seal. A crate of rounds glows faintly behind. Loves paperwork, too much. | olive brass |
-| the_laughing_mask | The Laughing Mask | A grinning masked trickster mid-bow, as if the battlefield were a stage. Theatre curtains as a cape, one hand hiding a card. The mask is the costume; a real, tired smile shows at the jaw. | crimson and white |
+| the_laughing_mask | The Laughing Mask | A grinning masked trickster mid-bow, as if the battlefield were a stage. Theatre curtains as a cape, one hand hiding a card. The mask is the face: its grin never slips. | crimson and white |
 | the_toll_keeper | The Toll-Keeper | The quiet guide of the dead at the last crossing. A boatman in an oilskin, a small lantern on a pole, a box of coins at the hip. Kind, very patient, a little sad. Dusk light. | cold silver |
 | mother_ember | Mother Ember | The hearth-mother. Apron, rolled sleeves dusted with flour, a kettle that steams with sparks. She has just called you "love" and is about to feed you. | warm orange |
-| old_overcast | Old Overcast | The thunder sky-father, played big and theatrical: a beard made of storm cloud, a lightning rod held like a sceptre, a cape that is weather. A ham actor who loves the role. | storm blue |
+| old_overcast | Old Overcast | The thunder sky-father, played big and theatrical: a beard made of storm cloud, a lightning rod held like a sceptre, a cape that is weather. Played so big the sky is the stage. | storm blue |
 | the_matchmaker | The Matchmaker | The love goddess, played as a wedding planner. Spools of red thread on a bandolier, a clipboard of seating charts, scissors kept *away* from the thread. Fond, bossy, romantic. | rose red |
 | the_counting_weaver | The Counting Weaver | The fate-spinner, played as an auditor. A loom made of ledger tape, an abacus of bright beads, half-moon reading glasses. Not unkind, simply sure. | thread gold |
 

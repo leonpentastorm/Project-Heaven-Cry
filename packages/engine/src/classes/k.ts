@@ -17,7 +17,7 @@ import {
   checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
-import { mod, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign } from '../character';
+import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
@@ -25,10 +25,10 @@ import {
   pumpOutburst, formOf, MAX_STAGE, SOUL_AP,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
-import { castAt, compileSpell, evokeMarks } from '../sigil';
+import { castAt, compileSpell, evokeMarks, strokePick, tidyStrokes, fadePattern } from '../sigil';
 import { d20, die } from '../rng';
-import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, changeDevotion, reveal } from '../tactics';
-import { GATE, OVERREACH, devotionNow, patronOf, shiftDevotion } from '../faith';
+import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, reveal } from '../tactics';
+import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
 
@@ -204,11 +204,11 @@ register({
     available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < 3 ? 'Prayer needs Faith 3.' : true),
     run: (h, a, rng) => {
       const c = h.c!, p = PATRON[c.patron!], bl = (p.blessings || []).find((b: any) => b.id === a.choice) || (p.blessings || [])[0];
-      // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −1).
+      // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −3 XP, item 716).
       const gate = (GATE as any)[bl.tier || 1] ?? 3, dv = devotionNow(c), m = mod(c.skills.faith || 0);
       const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), r = tn ? d20(rng as any) : 0, ok = !tn || r === 20 || (r !== 1 && r + m >= tn);
       if (!ok) shiftDevotion(h.g || null, null, c, OVERREACH.miss, 'a failed overreach');
-      const line = c.name + ' prays over a shell to ' + p.name + (tn ? ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −1 Devotion.');
+      const line = c.name + ' prays over a shell to ' + p.name + (tn ? ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
       if (ok) charState(c).blessedShell = { id: bl.id, scene: sceneOf(h), power: blessPower(null, c) };
       postStory(h, line); if (h.g) pendRuling(h.g, c, h.key, line + ' Describe how the patron answers (or doesn\'t).');
       return null;
@@ -268,14 +268,14 @@ function eyeNote(ctx: any, h: Holder) {
 
 // Judgement (K6, PROVISIONAL, audit 1-5): 4 AP all told, once per fight: spend 1 Devotion (not 3: the 3 drained
 // prayer and made it a once-in-3-sessions move) for one melee or shotgun attack whose damage is × (1 + Blessing power).
-// The Devotion is spent hit or miss.
+// The Devotion is spent hit or miss. Rules 1.6.1 (item 706): "1 Devotion" is 10 Devotion XP, through the choke point.
 const shotgun = (u: Unit) => W(u)?.category === 'shotgun' || /scattergun|censer/.test(u.weapon);
 register({
   id: 'lumeri_templar.judgement', claims: 'all',
   actions: [{
     id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 4, uses: { per: 'per_combat', n: 1 },
-    text: 'Spend 1 Devotion: one melee or scattergun attack, damage × (1 + your Blessing power).',
-    available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionOf(h.c) < 1 ? 'Needs 1 Devotion.' : !(isMelee(W(h.u)) || shotgun(h.u)) ? 'Needs a melee weapon or a scattergun.' : true),
+    text: 'Spend 1 Devotion (' + DEVOTION_XP.judgement + ' Devotion XP): one melee or scattergun attack, damage × (1 + your Blessing power).',
+    available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionXpOf(h.c) < DEVOTION_XP.judgement ? 'Needs ' + DEVOTION_XP.judgement + ' Devotion XP.' : !(isMelee(W(h.u)) || shotgun(h.u)) ? 'Needs a melee weapon or a scattergun.' : true),
     preview: (h, a) => {
       const t = unitById(h.cb!, a.targetId); if (!t) return {};
       const pv = previewAttack(h.cb!, h.u!, t, isMelee(W(h.u!)) ? 'melee' : 'shot', { free: true });
@@ -283,8 +283,8 @@ register({
     },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, m = 1 + blessPower(u, h.c);
-      changeDevotion(h.c!, -1);
-      say(cb, u.name + ' passes Judgement on ' + t.name + ' (1 Devotion, ' + devotionOf(h.c!) + ' left).');
+      shiftDevotion(h.g || null, cb, h.c!, -DEVOTION_XP.judgement, 'Judgement');
+      say(cb, u.name + ' passes Judgement on ' + t.name + ' (' + DEVOTION_XP.judgement + ' Devotion XP; Devotion ' + devotionOf(h.c!) + ' left).');
       withMult(u, m, 'Judgement', () => resolveAttack(cb, rng, u, t, isMelee(W(u)) ? 'melee' : 'shot', null, { free: true }));
       note(h, 'Judgement by ' + u.name + ' on ' + t.name + ': does it keep or break a taboo of ' + (PATRON[h.c!.patron!]?.name || 'the patron') + '?');
       checkOver(cb); return null;
@@ -307,7 +307,8 @@ const isReachW = (w: string) => SIGIL[w]?.group === 'reach';
  * draw has (spec: Drawing; item 447): a second different Reach word, a second KIN, WATCH with STAY, past 4 glyphs or
  * past Max Sigil words. Pure: the glyph list is restored. */
 function joinCheck(cb: Combat, u: Unit, t: string, word: string, extra: Record<string, any> = {}): string | null {
-  const keep = cb.glyphs || [], fake = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV, ...extra } as any;
+  const sid = strokePick(cb, u, t).sid; // rules 1.10: the stroke it would go into by default
+  const keep = cb.glyphs || [], fake = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}), ...extra } as any;
   cb.glyphs = [...keep, fake]; let p: Pattern | string; try { p = findPattern(cb, t, u.pos); } finally { cb.glyphs = keep; }
   if (typeof p === 'string') return null;
   const c: Record<string, number> = {}; for (const w of p.words) c[w] = (c[w] || 0) + 1;
@@ -359,12 +360,13 @@ register({
       const u = h.u!, cb = h.cb!, m = u.mg!, t = aimOf(cb, a, 'tile') || u.pos, why = halfWhy(cb, u, t); if (why) return why;
       const pool = halfPool(cb, u, t), word = pool[die(rng as any, pool.length) - 1];
       m.charge -= 1;
-      const g: any = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, half: true, v: SIGIL_REV };
+      const sid = strokePick(cb, u, t).sid; // rules 1.10: a half-glyph goes into the default stroke, like any glyph
+      const g: any = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, half: true, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}) };
       cb.glyphs = [...(cb.glyphs || []), g]; (cb as any).sigilV = SIGIL_REV;
       const stacks = (cb.glyphs || []).filter((x) => x.pos === t).length > 1;
       emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: t, word, side: u.side, half: true, group: SIGIL[word]?.group, cls: SIGIL[word]?.class, element: SIGIL[word]?.class === 'subject_element' ? word : null, effect: stacks ? 'stacks' : 'starts' });
       const mine = cb.glyphs.filter((x) => x.by === u.id); let faded = '';
-      if (mine.length > groundCap(u)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades)'; }
+      if (mine.length > groundCap(u)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); tidyStrokes(cb.glyphs); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades)'; }
       say(cb, u.name + ' scratches a half-sigil at ' + refOf(t) + ': the stroke falls as ' + (SIGIL[word]?.word || word.toUpperCase()) + ' (1 charge' + (stacks ? ', a Stack' : '') + ')' + faded + '.' + fluxUp(cb, rng, u, 1));
       emit(cb, 'glyph_drawn', { u, glyph: g, cb, rng });
       return null;
@@ -417,7 +419,7 @@ register({
       const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, aim = aimOf(cb, a) || undefined, opts = stitchOpts(cb, a), p = findPattern(cb, t, u.pos);
       if (typeof p === 'string') return p;
       if (!halfOnly(p)) return 'Stitch fires a pattern made only of half-glyphs.';
-      if (grammarError(p.words, u.mg!.maxWords)) { const ids = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id)); for (const g of p.glyphs) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'fizzle' }); say(cb, u.name + '\'s Stitch fizzles: ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' make no spell, and the strokes fade.'); return null; }
+      if (grammarError(p.words, u.mg!.maxWords)) { const ids = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id)); tidyStrokes(cb.glyphs); for (const g of p.glyphs) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'fizzle' }); say(cb, u.name + '\'s Stitch fizzles: ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' make no spell, and the strokes fade.'); return null; }
       let pv; STITCHING = u.id; try { pv = previewEvoke(cb, u, t, aim, opts); } finally { STITCHING = null; }
       if (!pv.ok) return pv.why || 'Can\'t fire that.';
       let g = d20(rng as any); const first = g;
@@ -427,7 +429,7 @@ register({
       const st = stateOf(h);
       if (g <= 5) {
         u.ap = Math.round((u.ap - pv.ap) * 10) / 10; u.mg!.charge -= pv.charge; u.mg!.cast = true;
-        const ids = new Set(p.glyphs.filter((x) => !(x as any).keystone).map((x) => x.id)); cb.glyphs = (cb.glyphs || []).filter((x) => !ids.has(x.id));
+        fadePattern(cb, p);
         const v = backlashTarget(cb, u);
         emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.tiles[0], impact: v.pos, targets: [v.id], targetAt: [v.pos], words: p.words, element: p.words.find((w) => wordCls(w) === 'subject_element') || null, side: u.side, backlash: true });
         say(cb, u.name + ' evokes ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' and the Stitch tears: it lands on ' + (v === u ? u.name + ' instead' : v.name) + backlash(cb, rng, u, v, p) + '.');
@@ -663,7 +665,7 @@ register({
       // The runtime took r.ap (the Evoke's and the Outburst's); the Outburst's own AP is paid inside it, so it runs free.
       const pl = r.plan, sp = pl.spell!, name = r.p.words.map((w) => w.toUpperCase()).join(' · ');
       m.charge -= r.charge; m.cast = true;
-      const ids = new Set(r.p.glyphs.filter((g) => !(g as any).keystone).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id));
+      fadePattern(cb, r.p);
       emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: r.p.shape, tiles: r.p.tiles, words: r.p.words, element: null, side: u.side, facing: pl.facing?.mode, dir: pl.facing?.dir, area: pl.area,
         src: pl.missiles[0]?.origin, impact: pl.missiles[0]?.impact ?? null, targets: pl.targets, targetAt: pl.targets.map((id) => unitById(cb, id)?.pos), fusion: r.d.id,
         missiles: pl.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: null })) });
@@ -720,8 +722,12 @@ function ksRestore(h: Holder) {
   const s = cs(c).keystone; if (!s) return;
   if (s.zone !== cb.map.id || (s.session ?? 1) !== (h.g?.sessionN ?? 1)) return;
   const left = 2 + Math.floor(u.mg?.durBonus || 0), g = ksOf(cb, u);
-  if (g) { g.left = left; g.pos = s.pos; g.word = s.word; (g as any).v = SIGIL_REV; return; }
-  cb.glyphs = [...(cb.glyphs || []), { id: KS(u), word: s.word, pos: s.pos, by: 'ks:' + u.id, side: u.side, left, who: u.name, keystone: true, v: SIGIL_REV } as any];
+  if (g && (g as any).strokeId) { g.left = left; g.pos = s.pos; g.word = s.word; (g as any).v = SIGIL_REV; return; }
+  // A Keystone cut before rules 1.10 has no stroke: it is taken up and set again, so it joins a stroke like a new one.
+  if (g) cb.glyphs = (cb.glyphs || []).filter((x) => x !== g);
+  // Rules 1.10: a Keystone is a stroke anchor: it goes into the default stroke where it is cut (or starts its own).
+  const pk = strokePick(cb, u, s.pos), sid = pk.sid === 'sgl' + ((cb.glyphSeq || 0) + 1) ? 's' + KS(u) : pk.sid;
+  cb.glyphs = [...(cb.glyphs || []), { id: KS(u), word: s.word, pos: s.pos, by: 'ks:' + u.id, side: u.side, left, who: u.name, keystone: true, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}) } as any];
 }
 function ksWhy(cb: Combat, u: Unit, t: string | null, w: string): string | null {
   if (!SIGIL[w] || !u.mg!.words.includes(w)) return 'Pick a word you know (choice).';
@@ -920,7 +926,7 @@ function cleanGround(cb: Combat, z: Zone): string {
   const zs = (cb.zones || []).filter((x) => x !== z && ['field', 'trap', 'turret', 'wall', 'veil', 'light'].includes(x.kind) && x.tiles.some((k) => T.has(k)));
   const walls = objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && T.has(o.pos));
   if (!gl.length && !zs.length && !walls.length) return '';
-  cb.glyphs = (cb.glyphs || []).filter((g) => !gl.includes(g)); for (const g of gl) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'null' });
+  cb.glyphs = (cb.glyphs || []).filter((g) => !gl.includes(g)); tidyStrokes(cb.glyphs); for (const g of gl) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'null' });
   for (const x of zs) { if (['field', 'trap', 'turret', 'wall'].includes(x.kind)) destroyPlaced(cb, x, 'Clean ground (Grand NULL)'); else cb.zones = (cb.zones || []).filter((y) => y !== x); }
   if (walls.length) { cb.objects = objectsOf(cb).filter((o) => !walls.includes(o)); emitFx(cb, 'wall_crumbled', { tiles: walls.map((o) => o.pos), why: 'null' }); }
   emitFx(cb, 'null_wave', { at: zCentre(z), tiles: z.tiles, n: gl.length + zs.length + walls.length });

@@ -277,6 +277,73 @@
       "text": "A crate, a body, a locker: something holding things. Search it (1 AP, adjacent) to take everything inside; a locked one opens through its approaches first.",
       "adjudication": "engine",
       "provisional": true
+    },
+    {
+      "id": "sigil_mark",
+      "name": "Sigil mark",
+      "glyph": "✶",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "text": "A Sigil word drawn into the world long ago: carved on a door or a ruin, a Keystone, a warding post, an old plate fixed to a wall (rules 1.10). Investigate it (2 AP, adjacent): Analysis or Rumination, the TN by its age and damage. Success copies the word for study; a critical teaches it.",
+      "adjudication": "engine",
+      "provisional": true,
+      "mark": {
+        "label": "Investigate the sigil",
+        "skills": [
+          "analysis",
+          "rumination"
+        ],
+        "pick": "best",
+        "ages": [
+          "fresh",
+          "old",
+          "ancient"
+        ],
+        "damages": [
+          "intact",
+          "worn",
+          "broken"
+        ],
+        "default_age": "old",
+        "default_damage": "intact",
+        "tn": {
+          "fresh": {
+            "intact": 8,
+            "worn": 12,
+            "broken": 16
+          },
+          "old": {
+            "intact": 12,
+            "worn": 16,
+            "broken": 20
+          },
+          "ancient": {
+            "intact": 16,
+            "worn": 20,
+            "broken": 20
+          }
+        },
+        "study": 3,
+        "provisional": true
+      }
+    },
+    {
+      "id": "pile",
+      "name": "Pile",
+      "glyph": "≡",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "spot": {
+        "detect_tn": 12,
+        "detect_range": 2
+      },
+      "text": "Things on the ground: dropped magazines, loose rounds, weapons and whatever else fell there, one pile to a tile. Pick up (1 AP, your tile or an adjacent one) takes what you tick, everything by default. Players see it when the party can see the tile.",
+      "adjudication": "engine",
+      "provisional": true
     }
   ]
 }
