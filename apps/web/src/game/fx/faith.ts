@@ -1,5 +1,5 @@
 // Blessing 2.0 (rules 1.6) effects: what an answered prayer looks and sounds like. Driven by the engine's faith FX events
-// (docs/design/handoffs/blessing-implementer-1-engine.md, the contract; payloads below), drawn by this layer like every
+// (docs/design/handoffs/_archive/blessing-implementer-1-engine.md, the contract; payloads below), drawn by this layer like every
 // other effect, so everyone sees the same thing. Faith's words are Virtue ink; its light is gold; each patron's accent
 // colours light and particles only, never text.
 //   prayer       {unit, kind: whisper|hymn|miracle, id, patron, at, target, ok}

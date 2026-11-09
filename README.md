@@ -21,12 +21,13 @@ A revived 2020 tabletop RPG (a Disco Elysium-style skill web with tactical squad
 | Family | Use | Files |
 | --- | --- | --- |
 | Skill portraits — POC 4 / palette v3 | The player's own skills: faceless brush figures | [27 PNGs](art/icons/skills/) |
-| Character portraits — three Heavenprint sets | People in the world. First-Patch Revival is the EPCCG cast; Original Heavenprint and New Faces are a pool of world characters for NPCs | [81 PNGs](art/portraits/) |
-| M813 one-shot — version 1 candidates | MPAT, its comrade, the landing pad and the ending-only repair bay | [2 portraits](art/portraits/m813/) · [2 scenes](art/_archive/illustrations/m813/v1/README.md) |
-| Wick — Mind Without Fog | The approved icon; every trait and perk icon is Wick in pure white ink | [Transparent PNG and trait text](art/_archive/traits/wick/mind-without-fog/) |
-| Wick — ten test candidates | Eight traits and two perks, pending production approval | [Masters, UI exports and review sheets](art/_archive/traits/wick/test-set-1/README.md) |
+| Character portraits | People in the world: the EPCCG cast, the NPC pool, 46 archetype player cards, the M813 cast and the eight patrons | [art/portraits/](art/portraits/) |
+| Trait, perk and prayer icons | Wick in pure white ink; the approved master is Mind Without Fog | [art/icons/](art/icons/) · [the lock](art/icons/STYLE-LOCK.md) |
+| M813 one-shot | Banners, story moments, maps and object sprites | [illustrations](art/illustrations/m813/) · [maps](art/maps/m813/) · [sprites](art/sprites/objects/) |
 | Style guide v1.3 | The one guide for all future art | [PHC-Style-Guide.md](art/style-guide/PHC-Style-Guide.md) · [v1.2 illustrated PDF](art/_archive/style-guide/v1.2/PHC-Heavenprint-and-Wick-Style-Bible.pdf) |
-| Briefs | Art direction and delivery links for the M813 one-shot and ten Wick tests | [art/briefs/](art/briefs/) |
+| Briefs | Art direction for each art job | [art/briefs/](art/briefs/) |
+
+The layout (and what was moved to `art/_archive/` in the 0.0.1 tidy) is in [art/README.md](art/README.md).
 
 All three character sets were first painted as skill icons, one character per skill. Playtesters found it made no sense for the player's skills to be other people in the world, so skills became the abstract figures and the paintings became characters ([details](art/_archive/character-portraits/README.md)). Their filenames still record the skill each was painted to embody.
 
@@ -46,6 +47,6 @@ First-Patch Revival, the EPCCG cast:
 
 ### Validate
 
-Run `python3 tools/validate_art.py` from the repository root. It checks 123 primary images (including fourteen new candidates), PNG sizes and colour types, catalog paths, checksums, skill colours, UI-ink contrast, exact white ink and alpha in the new icons and their exports, brief coverage, rules-data bindings and ending spoiler metadata. Standard library only.
+Run `python3 tools/validate_art.py` from the repository root. It checks every catalog image, PNG sizes and colour types, catalog paths, checksums, skill colours, UI-ink contrast, exact white ink and alpha in the new icons and their exports, brief coverage, rules-data bindings and ending spoiler metadata. Standard library only.
 
 Source PNGs are unpacked for direct use; there is no ZIP or Git LFS step. Invented character names and imagery don't establish canon by themselves. For new art, attach the guide and the references for that art mode rather than relying on the style name alone.

@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Art pipeline helper from the 2026 deliveries (moved from scripts/ in 0.0.1). It was written for the old per-delivery
+# folders (revisions/vN, previews/, sources/); its paths were rewritten to where those files are now, but before reusing it
+# for new work, point its outputs at the 0.0.1 layout in art/README.md (production flat by use, the rest in art/_archive/).
 """Technical PNG exports for generated Wick art. Requires Pillow; does not draw art.
 
 Run with --source PATH --id DATA-ID --queue PATH [--revision]. Originals remain

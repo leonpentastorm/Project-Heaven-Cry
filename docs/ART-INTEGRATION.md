@@ -54,7 +54,9 @@ Wick trait and perk icons are both pure white; they never take a skill colour. S
 
 ## Updating the collection
 
-Wick production is delivered incrementally on `art/briefs-complete`. Seven round-2 fixes resolve through `art/_archive/traits/wick/test-set-1/revisions/`; later traits use `art/icons/traits/` and perks use `art/icons/perks/`. New masters include 44, 48 and 56 px exports alongside 256/128/64/40. Read `art/_archive/traits/wick/production-progress.json` for delivered IDs and current coverage; missing items are not silently reported complete. All new candidates retain `production_approved: false`. The source requirements are in `art/briefs/wick-production-icons.md`.
+**Since 0.0.1 (9 November 2026)** production art sits in flat folders by use and everything superseded is in `art/_archive/`; the layout and the rules for new work are in [art/README.md](../art/README.md). The paragraphs below record how the Wick run was delivered; their paths were rewritten to where those files are now.
+
+Wick production was delivered incrementally on `art/briefs-complete`. Seven round-2 fixes resolve through `art/_archive/traits/wick/test-set-1/revisions/`; later traits use `art/icons/traits/` and perks use `art/icons/perks/`. New masters include 44, 48 and 56 px exports alongside 256/128/64/40. Read `art/_archive/traits/wick/production-progress.json` for delivered IDs and current coverage; missing items are not silently reported complete. All new candidates retain `production_approved: false`. The source requirements are in `art/briefs/wick-production-icons.md`.
 
 `python3 tools/validate_art.py --asset <catalog-id>` checks all metadata and checksums and checks pixel ink/alpha for the selected incremental delivery. The default checks every icon's pixels. Add `--complete-icons` only when all 74 traits and 76 perks have been delivered. `tools/art/export_wick_icon.py` uses Pillow for technical white-ink separation, safe padding, exact-size exports and review layouts; it does not draw artwork.
 
@@ -62,6 +64,6 @@ The [Wick tests](../art/_archive/traits/wick/test-set-1/README.md) bind to rules
 
 Use `catalog.characters.mpat` and `catalog.characters['mpat-comrade']` for the M813 cast. Use `catalog.illustrations.outpost813` for the opening. `catalog.illustrations['outpost1-repair-bay']` has `spoiler: true`, `visibility: "ending-only"` and a `spoilers/` path. Resolve it only after the ending; exclude it from opening galleries and preload lists. These flags are not security for publicly served files. See the [world collection](../art/_archive/illustrations/m813/v1/README.md).
 
-Add revised art under a new versioned directory, update catalog paths and hashes, then update the palette and style guide if needed. Keep existing IDs stable. The local collection manifest describes artwork; the central catalog is the implementation map. Do not silently replace approved masters with a newly named "final" image.
+Put revised art in the production folder under the same file name and move the old file to `art/_archive/` (see [art/README.md](../art/README.md)), update catalog paths and hashes (`python3 tools/rehash_art_checksums.py`), then update the palette and style guide if needed. Keep existing IDs stable. The local collection manifest describes artwork; the central catalog is the implementation map. Do not silently replace approved masters with a newly named "final" image.
 
 The source art pack used numbered folders. Their repository equivalents are: `01-Style-Guide` → `art/_archive/style-guide/v1.2`; `02-Wick-Trait-Example` → `art/_archive/traits/wick/mind-without-fog`; `03-Character-Portraits` → `art/portraits/world/new-faces`; `04-POC4-Skill-Portraits` → `art/icons/skills`.

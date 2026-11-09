@@ -16,7 +16,7 @@ You are building the **player-facing side of Blessing 2.0 (rules revision 1.6)**
 1. `CLAUDE.md`, especially the UI direction and colour rules.
 2. `docs/design/colour-system.md`.
 3. **`docs/design/blessing-2.0-spec.md`**.
-4. `docs/design/handoffs/blessing-implementer-1-engine.md`. The section "Your first push: the contract" is your API.
+4. `docs/design/handoffs/_archive/blessing-implementer-1-engine.md`. The section "Your first push: the contract" is your API.
 5. `docs/design/handoffs/blessing-art-brief.md`. The art arrives later; you build with placeholders.
 6. Look at how Sigil and Outburst are presented in the web game:
    - `apps/web/src/screens/combat.js` and `main.js`, and `create.js`;

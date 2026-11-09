@@ -4,8 +4,8 @@ Status: **accepted direction, numbers provisional.** Built from Leon's brainstor
 1.6. This file is the shared source for the three work pieces:
 
 - the art brief: `docs/design/handoffs/blessing-art-brief.md`
-- implementer 1, engine: `docs/design/handoffs/blessing-implementer-1-engine.md`
-- implementer 2, web: `docs/design/handoffs/blessing-implementer-2-web.md`
+- implementer 1, engine: `docs/design/handoffs/_archive/blessing-implementer-1-engine.md`
+- implementer 2, web: `docs/design/handoffs/_archive/blessing-implementer-2-web.md`
 
 Once implementer 1 has written this into `docs/rules/PHC-Core-Rules-v1.0.md`, the spec there wins. Until then this file is
 the rule.
