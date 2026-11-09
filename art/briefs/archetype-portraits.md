@@ -8,7 +8,7 @@
 
 ## Style: the same painter as the character portraits
 
-- **Heavenprint**, exactly like the current character sets: style guide `art/style-guide/v1.3/PHC-Style-Guide.md` sections 01–07 and 12. Anchors are `approved-original-27.jpg`, `approved-new-faces-27.jpg` and the First-Patch Revival set.
+- **Heavenprint**, exactly like the current character sets: style guide `art/style-guide/PHC-Style-Guide.md` sections 01–07 and 12. Anchors are `approved-original-27.jpg`, `approved-new-faces-27.jpg` and the First-Patch Revival set.
 - **800 × 1000 PNG (4:5)**, an opaque painted scene, one person.
 - Lay each card out next to the existing 99 before delivering: it must look like the same hand.
 
@@ -121,9 +121,9 @@ The light key per family: Frontline warm amber; Guns and hunters cold dawn; Shad
 
 ## Delivery
 
-- **Folder:** `art/character-portraits/archetypes/<family>/<id>.png`, with families `frontline`, `gunners`, `shadows`, `sigils`, `minds`, `soul`, `voices`, `hybrids`, `all_in`. Add a `previews/all-46.jpg` contact sheet and a `README.md` like the other sets.
+- **Folder:** `art/portraits/archetypes/<family>/<id>.png`, with families `frontline`, `gunners`, `shadows`, `sigils`, `minds`, `soul`, `voices`, `hybrids`, `all_in`. Add a `previews/all-46.jpg` contact sheet and a `README.md` like the other sets.
 - **Catalog** (`art/catalog.json`, `characters`): one entry each, id `arch-<id>`. Fields: `label` (the archetype's name, for the team only; the game never shows it on the card), `path`, `sha256`, `width`, `height`, `background: "opaque painted scene"`, `usage: "character portrait"`, `collection: "archetypes"`, `pool: "player-card"`, `archetype: "<id>"`, and `tags` (the table's tags, plus `woman` / `man` / `androgynous` and an age band `young` / `adult` / `old`). The game uses the tags to swap an NPC's card when a player takes it.
-- **Checksums and validation:** update `art/checksums.sha256`, run `python3 scripts/validate_art.py`; it must pass.
+- **Checksums and validation:** update `art/checksums.sha256`, run `python3 tools/validate_art.py`; it must pass.
 - **Review sheet:** all 46 at thumbnail size (48 × 60) in a grid. Every face must still read, and no two cards should look like the same person.
 - If time allows, a **second card for any archetype** (a different gender or age) is welcome later in the same folder as `<id>-2.png`, with the same catalog fields. More cards means more choice for players and more room for the NPC swap.
 

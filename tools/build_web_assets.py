@@ -43,7 +43,7 @@ emit("emblem-ahoc-seal", ROOT / C["emblems"]["ahoc-seal-white"]["path"], (240, 2
 emit("wick-welcome", ROOT / C["mascot"]["wick-welcome"]["path"], (256, 256), (512, 512), 90)
 emit("world-pilot", STATIC / "world-pilot.jpg", (1400, 933), (1400, 933))
 emit("wick-narrator-placeholder", STATIC / "wick-narrator-placeholder.jpg", (256, 256), (256, 256))
-emit("wick-narrator-placeholder", ROOT / "art/style-guide/v1.3/references/wick-model-study.png", None, (1024, 1024))
+emit("wick-narrator-placeholder", ROOT / "art/style-guide/references/wick-model-study.png", None, (1024, 1024))
 # Campaign art (M813 handoff): zone banners and story moments, map backgrounds, object sprites. Catalog ids, selected paths.
 for iid, a in C.get("illustrations", {}).items():
     if a.get("campaign_id"):
@@ -55,14 +55,14 @@ for sid, a in C.get("sprites", {}).items():
     emit("sprite-" + sid, ROOT / a["path"], (w // 2, h // 2), None, 90)
 # Blessing 2.0 (docs/design/handoffs/blessing-art-brief.md): picked up from their folders as they are delivered, so the art
 # drops in with no code change (game/faithArt.ts falls back to code-drawn placeholders for anything missing):
-#   art/character-portraits/patrons/v1/<id>.png -> patron-<id> (4:5 portrait)
-#   art/emblems/patrons/v1/<id>.png             -> patron-mark-<id> (white mark)
-#   art/ui/prayers/v1/<file>.png                -> prayer-<file> (whisper-luck, hymn-<patron>-<n>, miracle-<patron>)
-for src in sorted((ROOT / "art/character-portraits/patrons/v1").glob("*.png")):
+#   art/portraits/patrons/<id>.png -> patron-<id> (4:5 portrait)
+#   art/emblems/patrons/<id>.png             -> patron-mark-<id> (white mark)
+#   art/icons/prayers/<file>.png                -> prayer-<file> (whisper-luck, hymn-<patron>-<n>, miracle-<patron>)
+for src in sorted((ROOT / "art/portraits/patrons").glob("*.png")):
     emit("patron-" + src.stem, src, (320, 400), (800, 1000))
-for src in sorted((ROOT / "art/emblems/patrons/v1").glob("*.png")):
+for src in sorted((ROOT / "art/emblems/patrons").glob("*.png")):
     emit("patron-mark-" + src.stem, src, (128, 128), (512, 512), 90)
-for src in sorted((ROOT / "art/ui/prayers/v1").glob("*.png")):
+for src in sorted((ROOT / "art/icons/prayers").glob("*.png")):
     emit("prayer-" + src.stem, src, (128, 128), (512, 512), 90)
 # Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
 # overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three

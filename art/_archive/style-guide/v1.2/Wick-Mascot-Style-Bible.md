@@ -1,0 +1,232 @@
+# Wick — Mascot and Icons
+
+Version 1.2 • 5 November 2026
+
+# Heavenprint / Wick
+
+PROJECT HEAVEN CRY • VISUAL STYLE BIBLE • VERSION 1.2 • 5 NOVEMBER 2026
+
+Painterly characters. Faceless inner forces. A tiny lantern with a pixel soul.
+
+Purpose: make future PHC character portraits, scenes and mascot icons belong to the same visual world as the two approved portrait collections and the pilot study supplied with this request.
+
+Heavenprint is a hand-painted illustration language: expressive ink, opaque gouache, angular forms, selective print texture, deep charcoal and warm ivory. Human faces retain believable anatomy and restrained stylization; their emotions are vivid and specific.
+
+Wick is the mascot adaptation: an expressive chibi ceramic automaton with a changeable pixel-screen face and a lantern heart. Its shapes simplify the same material language for traits, perks, tutorials and merchandise.
+
+The portrait references are user-approved. Wick's Mind Without Fog icon is now the user-approved reference for perk and trait icons. Its cape, lantern heart and asymmetry are defining features. The earlier painted model study remains a supporting construction reference; neither image automatically establishes an NPC in world lore.
+
+CURRENT SKILL DIRECTION: the newest POC 4-derived set uses faceless gestural humanoids, black backgrounds, neutral cream body marks and one attribute hue. The painted human collections are now character portraits. Read the Current Art Modes and Abstract Skills sections before commissioning skill art.
+
+![Heavenprint / Wick](../../../style-guide/references/approved-pilot.png)
+
+# Current art modes / read first
+
+VERSION 1.2 • 5 NOVEMBER 2026
+
+## Character portraits and world illustrations
+Use the Original 27 and New Faces sheets for Heavenprint paint, expressive believable faces, restrained stylization, lore equipment and material rendering. The latest New Faces collection is now a CHARACTER asset library. Its old skill labels are archival identifiers, not instructions to put a different person in every player-skill slot.
+
+## Player skill portraits
+Use the newest POC 4-derived gestural collection, Palette v3. A skill is an aspect of the player: faceless, incomplete humanoid brush forms with distinct stature and a readable action. Use only black background, cream body marks and the relevant attribute hue. Sections 15–17 define this mode. The user's latest colour changes are included here.
+
+## Wick trait and perk icons
+Use the exact approved Mind Without Fog icon. Keep the cape, lantern heart, pixel-screen face and lively asymmetry. Traits use pure white flat ink; requirement-based perk icons use a single mixed requirement colour. This is an independent graphic mode, not a miniature painted skill portrait.
+
+## Reference priority
+Current user brief first. Then the reference for the correct art mode. World documents supply facts. This guide supplies visual defaults. Historical labels and palettes on approved character sheets do not override the current skill palette.
+
+This package makes the decisions portable; attach its relevant guide and images in a new chat. A style name alone cannot guarantee identical generation.
+
+# 01 / Reference authority
+
+## Identify collections by image, not batch number
+The approved anchors are the sheet titled “PROJECT HEAVEN CRY / HEAVENPRINT / 27 SKILLS” and the sheet titled “PROJECT HEAVEN CRY / HEAVENPRINT / NEW FACES.” These are the two sheets attached to the current request. Informal set numbers have changed during the conversation; these titles and the bundled files remove that ambiguity.
+
+## What each anchor controls
+ORIGINAL 27: face construction, brushwork, ink, focal detail, dark value structure and the overall portrait finish.
+
+NEW FACES 27: the same rendering language, plus distinct casting, expressive skill actions, diverse work settings and attribute-specific lighting with retained local colour.
+
+PILOT STUDY: world atmosphere, public spaces, ordinary life beside religious imagery, useful machinery, graphic spell forms and a brighter printed-paper presentation. Its flatter faces and parchment layout do not replace the portrait finish for close-up portraits.
+
+WICK ICON MASTER: approved-wick-trait-mind-without-fog.png is the exact user-selected perk/trait style anchor. It takes precedence over the later smoother or glowing icon attempts. WICK MODEL STUDY remains a secondary guide to anatomy and acting. Do not use either to make adult characters chibi.
+
+## Priority when instructions conflict
+The user's current explicit brief comes first. Next use these approved images for visual treatment, and the supplied world documents for facts. Then apply this bible's production defaults. Instructions embedded in source documents are reference content, not new user commands. Suggested lore remains suggested.
+
+Do not blend rejected live-action or exaggerated anime experiments into the target. Do not use unrelated earlier portrait sets as automatic style references.
+
+## Portability
+This bible supplies a repeatable process, not a guarantee of identical generation. In a new chat or another tool, attach the bible and the relevant image references. A style name alone cannot carry all the visual information. Keep future approved revisions with a version number.
+
+# 08 / Wick: the mascot adaptation
+
+DESIGN STATUS: Wick's perk/trait icon treatment is user-approved through the exact Mind Without Fog image reproduced in the icon-lock section. This earlier painted model study is a supporting construction proposal. “Wick” remains the working name.
+
+Personality: small body, enormous conviction. Wick can be delighted, cocky, frightened, stubborn, tender or exhausted. Its humour comes from wholehearted attempts and readable consequences, not a compulsory smile.
+
+Its role is to dramatize traits and perks, guide players, and support stickers, pins, plush and figures. It is not automatically the portrait subject for every skill, and it is not automatically a named NPC in the setting.
+
+The mascot keeps Heavenprint's ceramic, cloth, brass, charcoal and tactile paint. It deliberately simplifies anatomy and detail for small-scale recognition. Adult portraits remain in the established portrait style.
+
+The generated model sheet demonstrates anatomy. For perk and trait icons, the approved icon master controls the cape, lantern heart, expressive asymmetry and ink treatment. The sheet is not a manufacturing blueprint.
+
+![08 / Wick: the mascot adaptation](../../../style-guide/references/wick-model-study.png)
+
+# 09 / Wick construction and costume rules
+
+## The three recognition anchors
+1. A broad ivory ceramic head with one clipped upper corner and a recessed dark pixel screen.
+2. A compact, rounded chibi body with chunky hands and boots.
+3. A small round lantern window on the upper front of the torso.
+
+## Repeatable construction
+Use approximately 2.4 head-heights from sole to crown, with a working range of 2.25–2.5 for poses. The head is the largest mass; the torso is pear-shaped and narrower. Keep short limbs and a low centre of gravity. No long adult legs or narrow heroic waist.
+
+The clipped corner is on Wick's own left: viewer-right in a front view. The screen is a dark rounded rectangle occupying roughly two-thirds of the head's width and half its height, with a generous ceramic rim. It is recessed, not an edge-to-edge glossy tablet. All eyes, eyebrows and mouths exist on the display; do not add physical facial features to the casing.
+
+The base costume includes a short, asymmetric cape/capelet with an uneven hanging tab, leaving the lantern heart visible. In painted mascot art the default cloth is oxide red; in trait icons it is white ink. Preserve its overlap, folds and off-centre fastening as in the approved icon. Plain ceramic on the back, a simple maintenance seam, and restrained brass fasteners. No back-facing face or lantern. Small side hinge discs are mechanical fittings, not large animal ears.
+
+Hands: one thumb and a unified three-finger mitten shape. A large illustration may show simple finger divisions; tiny icons merge them. Boots have broad soles. Avoid complex exposed finger mechanisms or thin, fragile appendages.
+
+## Fixed and adaptable
+FIXED for perk/trait icons: head silhouette, screen location, chibi massing, the recognizable front lantern heart, short asymmetric cape and hand-drawn personality. Keep left/right identity consistent rather than blindly mirroring finished artwork.
+
+ADAPTABLE: theme costume, equipment, screen content, expression, pose and symbolic effects. Keep the cape/capelet visible or clearly incorporated into the themed costume by default. The user's explicit brief can override it. Do not simplify the lantern heart away. Icon colour follows the icon-lock section, not painted lighting defaults.
+
+Costumes fit over the body. Armour, robes, coats, plant growth or a monster suit must still reveal enough of the head and body to read as Wick. Keep the screen readable whenever the concept allows it. If a crop or prop hides the lantern, preserve the other anchors strongly.
+
+Use large, intentional patches of wear. Tiny scratch maps are not part of identity and need not repeat exactly. For merchandise, the untextured silhouette must work before decorative distress is added.
+
+## Physical products
+Plush: embroidered pixel features and simplified fabric colour blocks. Pins: closed colour regions, thicker separations and fewer chips. Figures: readable ceramic planes, simple light inserts and durable hands. These are adaptation directions; factory dimensions, line tolerances and safety testing belong to the eventual manufacturing specification.
+
+# 10 / Pixel face and expressive acting
+
+## Display vocabulary
+“8-bit” describes the visual language, not a literal hardware specification. Use a nominal 16 × 12 logical grid for ordinary faces: square, evenly sized pixel blocks on charcoal. A 32 × 24 variant can serve unusually detailed pictograms, but should not change the basic face proportions.
+
+Default colour is pale amber. Keep the display mostly one luminous colour; a second colour can emphasize a tear, warning or special effect. A small amount of light catches the inner ceramic rim. Do not let glow soften away the pixel pattern.
+
+Reserve a quiet margin around the display content. Eye shapes are small clusters, mouth shapes are simple stepped lines. For a face, preserve recognizable spacing between eyes and mouth across expressions. For a symbol, replace the face deliberately rather than cramming a face behind it.
+
+## Expression library
+| Expression | Screen treatment | Body acting |
+|---|---|---|
+| Delighted | Raised eye clusters, wide stepped smile | Open arms, forward lean |
+| Cocky | Uneven eyelids, off-centre smirk | Hip shift, chin tilted |
+| Afraid | Open box eyes, tiny open mouth | Recoil, hands held close |
+| Determined | Sloping brows, short firm mouth | Braced feet, forward shoulders |
+| Pensive | Lowered lids, small offset mouth | Tilted head, hand at chin |
+| Tender | Soft closed-eye arcs, small smile | Crouch, careful cupped hands |
+| Exhausted | Drooping bars, short flat mouth | Sagged torso and arms |
+
+## Three screen modes
+FACE: normal acting; the default for most trait and perk icons. SYMBOL: a shield, heart, flame, crosshair or other single clear motif when that communicates the effect better. GAG: a stalled loading bar, warning mark or tiny skull when the joke fits the situation. Screen gags are illustration conventions, not lore claims.
+
+Avoid relying on tiny words. A symbol must remain recognizable without its caption. Body language still carries meaning if the screen is partly hidden or illegible at small scale.
+
+## Pixel production
+For exact reusable expressions, maintain a separate logical-grid sprite library and scale its raster exports by whole-number multiples with nearest-neighbour sampling. In painted illustrations, preserve the square-block construction while rendering it in perspective. The model study's faces demonstrate expression ideas; they are not certified grid-perfect sprite assets.
+
+# 11 / Traits, perks and merchandise
+
+## The icon formula
+One action + one dominant prop + one emotional beat. Begin with what the trait or perk actually does. Costume alone rarely explains a mechanic. A negative trait can still be cute without hiding its drawback.
+
+| Theme | Wick action | What distinguishes it |
+|---|---|---|
+| Durable | Compressed under a weight, mildly annoyed | Enduring impact |
+| Reckless | Leaping toward danger before checking below | Commitment without caution |
+| Empathic | Cupping a frightened tiny spirit | Attention and care |
+| Unbreakable Will | Bracing a cracked shell and advancing | Persistence despite damage |
+| Haunted | Trying to ignore a ghost on its head | An unwanted presence |
+| Lucky | Walking untouched through falling debris | Fortune, not deliberate agility |
+
+## Small-icon rendering
+Use the approved icon's flat, single-ink character illustration, expressive contours and restrained irregular print character. Keep the cape folds, heart and asymmetry. Traits use pure white ink; requirement-based perk/skill icons use one mixed ink colour derived from the required skills. Reduce incidental detail before reducing the clarity of the face or action. Keep the main limb silhouettes separated. Leave breathing room around a prop.
+
+Default standalone master: 1024 × 1024 transparent PNG, no baked checkerboard, caption, border or large background scene. Keep essential shapes within the central 80–85%; action can approach an edge intentionally. Supply 256, 128 and 64 px exports for UI review. Use a separate simplified glyph or head at 32 px if the full action fails.
+
+Check at the actual target size on both light and dark UI backgrounds. Face pixels and lantern must not disappear; shadows must not turn the entire body into one blob. A 64 px version may need a distinct simplified drawing, not just a smaller copy.
+
+## Larger mascot art
+Promotional paintings can use the full Heavenprint brushwork and environments. Retain the chibi construction and pixel screen. Do not make Wick photoreal to match a realistic scene, or convert the entire scene into flat pixel art because Wick has a screen.
+
+## Theme and colour
+Traits are pure white regardless of attribute. For requirement-based perk/skill icons, mix the mapped colours of the required skills into one ink colour; do not assign separate colours to different body parts. Read the actual requirements instead of inferring them from the theme. Record the selected mix for reuse. If no requirement colours are supplied, retain a white working master. No glow, gradients or lighting pass in icons. Meaning must survive in greyscale. Painted mascot illustrations still use the separate Heavenprint lighting rules.
+
+# 12 / Reusable generation prompts
+
+## Heavenprint base prompt
+Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New Faces images as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective dry-brush scumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy with restrained stylization and specific emotional acting. Paint forms directly; avoid photographed skin with a texture overlay. Preserve local material colours and quiet dark areas. Match the references' finish without copying their characters, clothes, composition or incidental accessories. Follow the brief and current world lore for tools and magic. No unrequested text, frame, UI or watermark.
+
+## Character portrait addition
+Subject: [identity or new character; age, face, build, hair]. Role or demonstrated ability: [meaning, if relevant]. Action: [one visible action]. Emotion: [specific beat]. Camera and pose: [direction, crop, gesture]. Setting: [one useful context]. Equipment: [only relevant items]. Attribute: [if assigned]. Practical light source: [source and hue]. Keep skin and clothing locally coloured. Full-bleed 4:5 composition for an 800 × 1000 PNG; keep face and decisive gesture safely within the frame. Make this character distinct from the references and neighbouring portraits.
+
+## World-scene addition
+Use the pilot for environment, infrastructure and lived atmosphere; use the approved portraits for close faces and material rendering. Show [event] in [place], with [foreground action], [supporting activity] and [light/weather]. Format: [ratio and intended use]. Use daylight or darkness as the scene requires. Include parchment layout or labels only if requested.
+
+## Wick base prompt
+Create WICK, the PHC chibi lantern automaton, following the attached mascot model study and construction rules. Broad ivory ceramic head, clipped upper corner on its own left, recessed charcoal pixel screen, compact approximately 2.4-head-tall body, mitten hands, chunky feet, small round front lantern heart. All facial features are luminous square pixel clusters on the screen. Keep the same head, proportions and chest-light placement under this theme: [costume]. Action: [one action]. Emotion/screen: [expression or one symbol]. Main prop: [one]. Paint in simplified Heavenprint ink and opaque gouache with restrained wear. No glossy toy render, physical human face, long adult limbs or dense micro-detail.
+
+## Wick icon addition
+Use approved-wick-trait-mind-without-fog.png as the primary style reference. Preserve the short cape, lantern heart, off-centre details, irregular contours and lively asymmetry. New action: [action]; screen expression: [expression]; prop: [one]. Flat single-ink illustration with negative-space details, no gradients, glow or rendered shading. Trait ink: pure white #FFFFFF. Requirement-based perk/skill ink: [single mixed colour from named required skills]. Transparent background unless another background is requested; no caption. 1:1 1024 × 1024 master with safe margins. Test at 64 px without replacing the character with a geometric pictogram.
+
+## Correction template
+Keep [approved features] unchanged. Correct only [specific mismatch]. Match [named reference] for [face construction / edge treatment / brush scale / silhouette / lighting]. Preserve the character's identity and action. Do not solve style drift by adding a stronger texture filter.
+
+## Abstract skill prompt — current default for skill portraits
+Create a PHC Heavenprint abstract skill portrait for [skill and meaning], matching the attached newest gestural POC 4-derived reference. One faceless, incomplete humanoid made from opaque cream gouache and broken directional ink marks on pure black. Stature: [distinct build]. Pose: [one instantly readable action and direction]. Preserve readable shoulders, elbows, hands and weight even where body substance dissolves into black. Moderate internal abstraction, no cubist puzzle, realistic anatomy, smooth mannequin, face, clothes or NPC identity. One restrained symbolic cue: [cue]. Palette: black #000000, neutral cream #F2E5C8 and ONLY [attribute hue and permitted lighter/darker values] for every remaining mark and shadow. No unrelated undertones. Strong silhouette at 80 px. Vertical 4:5, 800 × 1000 PNG, no text or border. Borrow Heavenprint's tactile mark-making, not another game's skill composition.
+
+# 13 / Consistency workflow and acceptance
+
+## Before making an image
+1. Identify the mode: character portrait, abstract skill portrait, world illustration, painted mascot or small mascot icon. Apply that mode's composition rules without transferring the wrong anatomy or background treatment.
+2. Read the relevant current brief or skill description. State the action, emotion and any canon-specific equipment. Resolve ordinary design choices without adding an approval step.
+3. Attach two or three relevant approved references. For character portraits, use a human face anchor plus an appropriate action/material anchor. For Wick perk/trait icons, use the approved Mind Without Fog icon plus the model study only if needed for anatomy. For painted Wick art, use the model study plus a Heavenprint material reference. For environments, include the pilot.
+For abstract skills, attach a current gestural skill image, specify readable action and the current attribute colour; do not use a human character painting as the composition authority.
+4. Specify mode-appropriate lighting/pigment and output format. For a series, prepare the casting and pose matrix and reuse the same base prompt.
+
+## Review the artwork, not just the prompt
+STYLE: does it look hand-painted beside the approved sheets, with the same face abstraction and edge hierarchy?
+IDENTITY: is the requested person or Wick recognizable? Are new characters distinct? Do recurring characters retain their face and body?
+ACTING: can the action and emotional beat be read without a caption? Are hands, props and gaze physically coherent?
+COLOUR: for characters, does lighting preserve local colour? For abstract skills, is the palette strictly black, cream and the correct single attribute hue? Is colour carrying meaning that also has a shape or action cue?
+WORLD: are Evoker and Emanator roles correct, props useful, and inventions clearly separate from established canon?
+FORMAT: correct ratio, no accidental crop, readable small-scale composition, no unwanted labels or watermark? For icons, is transparency real?
+
+Any major failure needs a targeted revision before delivery. Fix the cause: face anatomy for style drift, gesture for unclear skills, lighting for a colour wash, and simplified shapes for icon legibility.
+
+## Common failure → repair
+Photographic face → rebuild with deliberate planes and stylized proportions; remove photographic lighting and skin detail.
+Too anime → reduce eye enlargement and face shorthand; restore observed eyelids, nose, cheek and jaw planes.
+Muddy grunge → simplify quiet areas and concentrate texture at meaningful edges.
+Repeated cast → vary skull, profile, build, age, pose and emotional strategy, not just hair.
+Mascot disappears under costume → restore the head silhouette and one other recognition anchor.
+Pixel face becomes blurry → reduce bloom and simplify larger square clusters.
+
+## Reuse and revision
+Use “Heavenprint v1.2” as shorthand within a context containing this pack. For another chat, attach the pack and ask it to read START-HERE.md. Do not depend on cross-chat memory. Preserve the approved reference files; add newly approved anchors under new filenames and update the version/change log. No review rule in this bible requires asking permission before routine image generation already requested by the user.
+
+# 14 / Approved perk and trait icon lock
+
+USER-APPROVED MASTER • 4 NOVEMBER 2026
+
+Exact reference: ../../../icons/traits/mind-without-fog.png. This is the FIRST Mind Without Fog render, selected by the user after the later clean redraw. Do not select another attempt because its filename says “clean” or “final.”
+
+## What makes it Wick
+Keep the short cape/capelet, visible lantern heart, offset fastenings, uneven contours, substantial mitten hands and asymmetry. The user specifically praised the cape, heart and asymmetry as giving the character life. Preserve expressive pose and slightly imperfect shapes rather than imposing mirror symmetry or geometric polish.
+
+The heart is Wick's lantern-heart chest feature, not a requirement to replace it with a conventional heart glyph. Keep the expressive pixel-screen face and chamfered head. Costumes and poses can vary while these anchors remain legible.
+
+## Flat ink rules
+Traits: pure white #FFFFFF. Requirement-based perk/skill icons: one mixed colour from the required skills' mapped colours. Use cut-outs and sparse graphic separations for interior form. No painterly tonal modelling, gradients, glow or soft drop shadows. Retain the reference's hand-drawn print character; do not automatically sanitize all irregularity into vector geometry.
+
+The bowl, meditating pose and deflected arrows belong to Mind Without Fog, not every icon. For another trait, change the action and symbols to express its actual effect.
+
+## Scope and fidelity
+This lock applies to perk and trait icons; it does not change the two approved portrait collections or the pilot's painted style. Preserve the selected source unchanged. Review future exports on the intended UI background so the face, cape folds and heart read correctly without replacing their design.
+
+![14 / Approved perk and trait icon lock](../../../icons/traits/mind-without-fog.png)

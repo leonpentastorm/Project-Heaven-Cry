@@ -1,0 +1,308 @@
+{
+  "collection": "PHC First-Patch Revival",
+  "dimensions": [
+    800,
+    1000
+  ],
+  "format": "PNG",
+  "portraits": [
+    {
+      "order": 1,
+      "id": "durability",
+      "skill": "Durability",
+      "core": "body",
+      "attribute": "endurance",
+      "character": "Sanchez",
+      "epccg_subject": 1,
+      "epccg_skill": "Endurance",
+      "file": "../../../portraits/epccg/durability.png"
+    },
+    {
+      "order": 2,
+      "id": "pain-threshold",
+      "skill": "Pain Threshold",
+      "core": "body",
+      "attribute": "endurance",
+      "character": "Knight Jiren",
+      "epccg_subject": 2,
+      "epccg_skill": "Pain Threshold",
+      "file": "../../../portraits/epccg/pain-threshold.png"
+    },
+    {
+      "order": 3,
+      "id": "sensory",
+      "skill": "Sensory",
+      "core": "body",
+      "attribute": "endurance",
+      "character": "Mrs. Marry",
+      "epccg_subject": 3,
+      "epccg_skill": "Sensitivity",
+      "file": "../../../portraits/epccg/sensory.png"
+    },
+    {
+      "order": 4,
+      "id": "raw-power",
+      "skill": "Raw Power",
+      "core": "body",
+      "attribute": "strength",
+      "character": "Knight Andre — Giant Fist",
+      "epccg_subject": 4,
+      "epccg_skill": "Raw Power",
+      "file": "../../../portraits/epccg/raw-power.png"
+    },
+    {
+      "order": 5,
+      "id": "guts",
+      "skill": "Guts",
+      "core": "body",
+      "attribute": "strength",
+      "character": "Ragoul the Keeper",
+      "epccg_subject": 5,
+      "epccg_skill": "Guts",
+      "file": "../../../portraits/epccg/guts.png"
+    },
+    {
+      "order": 6,
+      "id": "intimidation",
+      "skill": "Intimidation",
+      "core": "body",
+      "attribute": "strength",
+      "character": "Tommy Avencio — Papa",
+      "epccg_subject": 6,
+      "epccg_skill": "Intimidation",
+      "file": "../../../portraits/epccg/intimidation.png"
+    },
+    {
+      "order": 7,
+      "id": "athletics",
+      "skill": "Athletics",
+      "core": "body",
+      "attribute": "agility",
+      "character": "Dominik Edelgard — Banner Lord",
+      "epccg_subject": 7,
+      "epccg_skill": "Athletics",
+      "file": "../../../portraits/epccg/athletics.png"
+    },
+    {
+      "order": 8,
+      "id": "dexterity",
+      "skill": "Dexterity",
+      "core": "body",
+      "attribute": "agility",
+      "character": "Ambrosius Costeau — Old Drifter",
+      "epccg_subject": 8,
+      "epccg_skill": "Hand/Eyes Cordination",
+      "file": "../../../portraits/epccg/dexterity.png"
+    },
+    {
+      "order": 9,
+      "id": "reaction-speed",
+      "skill": "Reaction Speed",
+      "core": "body",
+      "attribute": "agility",
+      "character": "Yukimura",
+      "epccg_subject": 9,
+      "epccg_skill": "Reaction Speed",
+      "file": "../../../portraits/epccg/reaction-speed.png"
+    },
+    {
+      "order": 10,
+      "id": "ingenuity",
+      "skill": "Ingenuity",
+      "core": "mind",
+      "attribute": "perception",
+      "character": "Lin Shin Long",
+      "epccg_subject": 10,
+      "epccg_skill": "Ingenuity",
+      "file": "../../../portraits/epccg/ingenuity.png"
+    },
+    {
+      "order": 11,
+      "id": "proficiency",
+      "skill": "Proficiency",
+      "core": "mind",
+      "attribute": "perception",
+      "character": "Demitri Kortev",
+      "epccg_subject": 11,
+      "epccg_skill": "Proficiency",
+      "file": "../../../portraits/epccg/proficiency.png"
+    },
+    {
+      "order": 12,
+      "id": "vigilant",
+      "skill": "Vigilant",
+      "core": "mind",
+      "attribute": "perception",
+      "character": "Vermilion Jasmine",
+      "epccg_subject": 12,
+      "epccg_skill": "Vigilant",
+      "file": "../../../portraits/epccg/vigilant.png"
+    },
+    {
+      "order": 13,
+      "id": "brain-power",
+      "skill": "Brain Power",
+      "core": "mind",
+      "attribute": "intelligence",
+      "character": "Professor Avdol",
+      "epccg_subject": 13,
+      "epccg_skill": "Brain Power",
+      "file": "../../../portraits/epccg/brain-power.png"
+    },
+    {
+      "order": 14,
+      "id": "rumination",
+      "skill": "Rumination",
+      "core": "mind",
+      "attribute": "intelligence",
+      "character": "Thalatûl the Librarian",
+      "epccg_subject": 14,
+      "epccg_skill": "Encyclopedia",
+      "file": "../../../portraits/epccg/rumination.png"
+    },
+    {
+      "order": 15,
+      "id": "eloquence",
+      "skill": "Eloquence",
+      "core": "mind",
+      "attribute": "intelligence",
+      "character": "Xander Badman",
+      "epccg_subject": 15,
+      "epccg_skill": "Eloquence",
+      "file": "../../../portraits/epccg/eloquence.png"
+    },
+    {
+      "order": 16,
+      "id": "visualization",
+      "skill": "Visualization",
+      "core": "mind",
+      "attribute": "expression",
+      "character": "Master Sakamoto",
+      "epccg_subject": 16,
+      "epccg_skill": "Visualization",
+      "file": "../../../portraits/epccg/visualization.png"
+    },
+    {
+      "order": 17,
+      "id": "analysis",
+      "skill": "Analysis",
+      "core": "mind",
+      "attribute": "expression",
+      "character": "D12.9.6",
+      "epccg_subject": 17,
+      "epccg_skill": "Analysis",
+      "file": "mind/expression/analysis.png"
+    },
+    {
+      "order": 18,
+      "id": "charisma",
+      "skill": "Charisma",
+      "core": "mind",
+      "attribute": "expression",
+      "character": "Damian Nox",
+      "epccg_subject": 18,
+      "epccg_skill": "Charima",
+      "file": "../../../portraits/epccg/charisma.png"
+    },
+    {
+      "order": 19,
+      "id": "empathy",
+      "skill": "Empathy",
+      "core": "soul",
+      "attribute": "insight",
+      "character": "Paul Remarque",
+      "epccg_subject": 19,
+      "epccg_skill": "Empathy",
+      "file": "soul/insight/empathy.png"
+    },
+    {
+      "order": 20,
+      "id": "camaraderie",
+      "skill": "Camaraderie",
+      "core": "soul",
+      "attribute": "insight",
+      "character": "Souji",
+      "epccg_subject": 20,
+      "epccg_skill": "Camaraderie",
+      "file": "soul/insight/camaraderie.png"
+    },
+    {
+      "order": 21,
+      "id": "implication",
+      "skill": "Implication",
+      "core": "soul",
+      "attribute": "insight",
+      "character": "Aleksandr Donovik Artem",
+      "epccg_subject": 21,
+      "epccg_skill": "Implication",
+      "file": "../../../portraits/epccg/implication.png"
+    },
+    {
+      "order": 22,
+      "id": "will-power",
+      "skill": "Will Power",
+      "core": "soul",
+      "attribute": "determination",
+      "character": "Nora — Witch of Arkvelton",
+      "epccg_subject": 22,
+      "epccg_skill": "Will Power",
+      "file": "../../../portraits/epccg/will-power.png"
+    },
+    {
+      "order": 23,
+      "id": "lore-master",
+      "skill": "Lore Master",
+      "core": "soul",
+      "attribute": "determination",
+      "character": "Andrade Lovelace — Mother",
+      "epccg_subject": 23,
+      "epccg_skill": "Lore Master",
+      "file": "soul/determination/lore-master.png"
+    },
+    {
+      "order": 24,
+      "id": "composure",
+      "skill": "Composure",
+      "core": "soul",
+      "attribute": "determination",
+      "character": "Kaizer Meyer Reinch Wolf",
+      "epccg_subject": 24,
+      "epccg_skill": "Composure",
+      "file": "../../../portraits/epccg/composure.png"
+    },
+    {
+      "order": 25,
+      "id": "faith",
+      "skill": "Faith",
+      "core": "soul",
+      "attribute": "virtue",
+      "character": "Sister October",
+      "epccg_subject": 25,
+      "epccg_skill": "Faith",
+      "file": "../../../portraits/epccg/faith.png"
+    },
+    {
+      "order": 26,
+      "id": "conscience",
+      "skill": "Conscience",
+      "core": "soul",
+      "attribute": "virtue",
+      "character": "The Azure Blood Holder",
+      "epccg_subject": 26,
+      "epccg_skill": "Consience",
+      "file": "soul/virtue/conscience.png"
+    },
+    {
+      "order": 27,
+      "id": "authority",
+      "skill": "Authority",
+      "core": "soul",
+      "attribute": "virtue",
+      "character": "Hank Ladan",
+      "epccg_subject": 27,
+      "epccg_skill": "Authority",
+      "file": "../../../portraits/epccg/authority.png"
+    }
+  ],
+  "note": "The EPCCG cast: each portrait is the person quoted (or described) in that skill's EPCCG entry. Source text: docs/lore/EPCCG-Player-Character-Creation-Guide.md."
+}

@@ -22,7 +22,7 @@
 | `rules.json` → `ownership` (what the engine owns, what the Narrator owns) | The engine/Narrator split, and the Narrator's tool list |
 | 27 voice cards, 46 archetypes, 14 origins, 13 + 15 classes | Loaded straight into creation, voices and class assignment |
 | UI prototypes: 11 boards in `design/canvas/`, 759 lines of logic in `design/canvas-build/` | The client's screens, ported board by board (section 6). Reusable logic: creation budgets and legality (`create.logic.js`, `derive()`), movement pathing with AP cost and carry-over (`combat.logic.js`, `paths()`), the EPCCG "?" entries, perk steps, the lightbox |
-| `art/catalog.json`, `art/style-guide/v1.3/palette.json` | The asset manifest (asset IDs to files) and the design tokens (CSS variables) |
+| `art/catalog.json`, `art/style-guide/palette.json` | The asset manifest (asset IDs to files) and the design tokens (CSS variables) |
 
 ## 3. Architecture
 

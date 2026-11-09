@@ -57,7 +57,7 @@ Carrying, put down, attempts and asks are **area-map only**; a fight refuses the
 | `sandbox/npc` | `name, at, side?, kind?, avatar?, tier?, weapon?, hidden?, wants?, knows?: {objective, hint, at?}, talk?: approaches, prisoner?` |
 | `sandbox/objective` | `id, text?, where?: {zone?, refs?}, status?: 'open'\|'done'\|'failed'` (lives in a "Drill" mission: `drill/<id>`) |
 
-Each tool logs a `⚙` line with the new id in brackets (`[hz12]`, `[o9]`, `[n14]`) for e2e scripts.
+Each tool logs a `⚙` line with the new id in brackets (`[hz12]`, `[o9]`, `[n14]`) for e2e tools.
 
 ## 3. View helpers (signatures and return shapes)
 

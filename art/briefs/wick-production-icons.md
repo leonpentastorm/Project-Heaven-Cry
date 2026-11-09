@@ -1,24 +1,24 @@
 # Wick production brief: all 74 trait icons and 106 perk icons
 
-**Delivered, 6 November 2026:** all 74 traits and 106 perks, plus the four Review 4 corrections. See [the complete 180-icon handoff](../traits/wick/library-review-v2/README.md). Earlier “NEXT UP” and pause notes below are retained as the production history; the current progress record has no remaining icons. New artwork is still review-candidate pending Leon. Sworn Sibling v4 preserves Leon’s explicit two-Wick reference direction.
+**Delivered, 6 November 2026:** all 74 traits and 106 perks, plus the four Review 4 corrections. See [the complete 180-icon handoff](../_archive/traits/wick/library-review-v2/README.md). Earlier “NEXT UP” and pause notes below are retained as the production history; the current progress record has no remaining icons. New artwork is still review-candidate pending Leon. Sworn Sibling v4 preserves Leon’s explicit two-Wick reference direction.
 
 
-**Status, 5 November 2026:** test set 1 passed review 1 in part (three approved, six to revise, one redo; verdicts in [`../traits/wick/test-set-1/README.md`](../traits/wick/test-set-1/README.md)). This brief covers everything left: the fixes, then the full run. Leon reviews each batch before the next one starts.
+**Status, 5 November 2026:** test set 1 passed review 1 in part (three approved, six to revise, one redo; verdicts in [`../_archive/traits/wick/test-set-1/README.md`](../_archive/traits/wick/test-set-1/README.md)). This brief covers everything left: the fixes, then the full run. Leon reviews each batch before the next one starts.
 
 **Leon's current delivery instruction, 5 November 2026:** fix the seven first and push them, then continue the full run, showing each newly drawn image in chat and pushing it immediately. This replaces the stop-between-batches timing below. It does not mark new images production-approved. The expanded run needs 169 new icons plus seven initial revisions; the four retained designs complete 180 distinct items. The four later Review 4 corrections are also delivered.
 
 > **NEXT UP when image generation resumes (Leon, 5 November 2026), in this order:**
-> 1. **Review 4 fixes (4 icons):** Into the Dark, Holy Ordnance, Supreme Command, Sworn Sibling. What to change: [perks production README, Review 4](../perks/wick/production-v1/README.md#review-4--5-november-2026-55-perks-plus-the-review-3-trait-fixes).
+> 1. **Review 4 fixes (4 icons):** Into the Dark, Holy Ordnance, Supreme Command, Sworn Sibling. What to change: [perks production README, Review 4](../_archive/perks/wick/production-v1/README.md#review-4--5-november-2026-55-perks-plus-the-review-3-trait-fixes).
 > 2. **Real Power**, then **Batch F** (20 Achieved and Ultimate perks), then **three new combo perks** added 5 November: Bite the Bullet, Sixth Sense, What Could Be (rows at the end of [Achieved](#achieved-19)). Note: Ultimate perks are now secret in the game (no screen lists them until one is awarded); draw them exactly as briefed.
 > 3. **Batch G, new: the 27 Mastered perks** (one per skill, granted at 10 points). Requirements in [Mastered (27)](#mastered-27) below. They're the game's top-tier perks: same flat white ink, plus the Mastered mark.
 >
 > The queue snapshot lists all 55 in this order; `production-progress.json` points at the first.
 
-**Attach to every job:** `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` (the only style anchor), the three approved test icons (Chain Smoker, The Brightest Light, Forlorn Hope) as quality references, and sections 08–14 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Item texts are in `data/traits.json` and `data/perks.json`: read what the item **does** before drawing it.
+**Attach to every job:** `art/icons/traits/mind-without-fog.png` (the only style anchor), the three approved test icons (Chain Smoker, The Brightest Light, Forlorn Hope) as quality references, and sections 08–14 of `art/style-guide/PHC-Style-Guide.md`. Item texts are in `data/traits.json` and `data/perks.json`: read what the item **does** before drawing it.
 
 ## What the artist needs to do, in order
 
-1. **Fix test set 1** (one batch, 7 icons). Revise Humanity First, The Old Blood, Factory Made, Rabbit's Foot, Field Surgeon and Supreme Command, and redo Raised by Orks. The changes are listed in the test set's README and in the tables below (status *revise* / *redo*). Deliver them as new files in `art/traits/wick/test-set-1/revisions/` and keep the first versions for comparison.
+1. **Fix test set 1** (one batch, 7 icons). Revise Humanity First, The Old Blood, Factory Made, Rabbit's Foot, Field Surgeon and Supreme Command, and redo Raised by Orks. The changes are listed in the test set's README and in the tables below (status *revise* / *redo*). Deliver them as new files in `art/_archive/traits/wick/test-set-1/revisions/` and keep the first versions for comparison.
 2. **Wait for Leon's pass** on those seven. If any rule below changes as a result, it changes here first.
 3. **Produce the rest in six batches.** After each batch: review sheets, Leon's review, fixes, then the next batch.
 
@@ -58,9 +58,9 @@
 - **Masters:** 1024 × 1024 RGBA PNG, transparent, essential shapes inside the central 80–85%, no caption.
 - **Exports:** 256, 128, 64 and 40 px, plus **56, 48 and 44 px** (the UI sizes).
 - **File names:** the data id in kebab case (`chain_smoker` → `chain-smoker.png`).
-- **Folders:** traits in `art/traits/wick/production-v1/`, perks in `art/perks/wick/production-v1/`, each with `exports/<size>/`, `previews/` and a `manifest.json` like test set 1's.
+- **Folders:** traits in `art/icons/traits/`, perks in `art/icons/perks/`, each with `exports/<size>/`, `previews/` and a `manifest.json` like test set 1's.
 - **Review sheets per batch:** the whole batch at 44 px and at 128 px on `#10151F`, labelled, plus a light/dark 64 px comparison.
-- **Catalog:** one entry per icon in `art/catalog.json` (`traits` or `perks` family, `data_id`, `status: "review-candidate"`, `production_approved: false`), then update `art/checksums.sha256` and run `python3 scripts/validate_art.py`; it must pass.
+- **Catalog:** one entry per icon in `art/catalog.json` (`traits` or `perks` family, `data_id`, `status: "review-candidate"`, `production_approved: false`), then update `art/checksums.sha256` and run `python3 tools/validate_art.py`; it must pass.
 
 ## Requirements: traits (74)
 
@@ -250,7 +250,7 @@ Acquired perks come two per skill (one perk step at each of 3, 5, 7 and 9 points
 3. **Fits the medallion:** keep Wick, the prop and the mark inside a centred circle of 90% of the frame; the UI shows these icons in a ring at 72–92 px.
 4. **Its own silhouette:** never reuse the silhouette of either Acquired perk of the same skill.
 
-Rules text is in `data/perks.json` (tier `mastered`; the file on this branch is current) and in the [queue snapshot](../traits/wick/pending-at-usage-limit-2026-11-05.json). Deliver to `art/perks/wick/production-v1/` with the usual exports and catalog entries (family `perks`, `status: "review-candidate"`).
+Rules text is in `data/perks.json` (tier `mastered`; the file on this branch is current) and in the [queue snapshot](../_archive/traits/wick/pending-at-usage-limit-2026-11-05.json). Deliver to `art/icons/perks/` with the usual exports and catalog entries (family `perks`, `status: "review-candidate"`).
 
 | Perk (id) | Skill | Status | Mood | Action | Screen | One prop |
 |---|---|---|---|---|---|---|

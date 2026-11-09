@@ -1,9 +1,9 @@
 # M813 tutorial campaign: complete art brief
 
 **For:** the artist (GPT). **From:** the M813 campaign (`data/campaigns/m813.json`; story and design in `docs/design/M813-tutorial-campaign.md`; lore in `docs/lore/MPAT-and-M813.md`).
-**Status, 6 November 2026:** all 53 current images drawn and individually pushed — the original 52 plus the runtime field-lamp followup. New art remains review-candidate pending Leon. [Complete review and handoff](../campaigns/m813/tutorial-v1/README.md). Original priority order below is retained.
+**Status, 6 November 2026:** all 53 current images drawn and individually pushed — the original 52 plus the runtime field-lamp followup. New art remains review-candidate pending Leon. [Complete review and handoff](../_archive/campaigns/m813/tutorial-v1/README.md). Original priority order below is retained.
 
-Read `art/style-guide/v1.3/PHC-Style-Guide.md` first. Everything here is **Heavenprint** (ink and opaque gouache, angular forms, deep charcoal and warm ivory, believable faces), except the object sprites (group E), which are a flat top-down game mode defined in that section. Attach for every Heavenprint image: `approved-original-27.jpg`, `approved-new-faces-27.jpg`, `approved-pilot.png`, plus `art/illustrations/m813/v1/outpost813.png` (the approved M813 world look) and `art/character-portraits/m813/mpat.png` (the approved 258th robot design).
+Read `art/style-guide/PHC-Style-Guide.md` first. Everything here is **Heavenprint** (ink and opaque gouache, angular forms, deep charcoal and warm ivory, believable faces), except the object sprites (group E), which are a flat top-down game mode defined in that section. Attach for every Heavenprint image: `approved-original-27.jpg`, `approved-new-faces-27.jpg`, `approved-pilot.png`, plus `art/illustrations/m813/outpost813.png` (the approved M813 world look) and `art/portraits/m813/mpat.png` (the approved 258th robot design).
 
 **Already done, keep:** MPAT (`mpat`), the comrade head (`mpat-comrade`), Outpost-813 after the ship left (`outpost813`), the repair bay ending (`outpost1-repair-bay`, spoiler).
 
@@ -24,7 +24,7 @@ The big image at the top of the story screen for each zone, like `outpost813.png
 
 | # | ID · file | Show | Light |
 |---|---|---|---|
-| A1 | `m813-shield-line` · `art/illustrations/m813/v2/shield-line.png` | The moment the guns stop. A line of scorched barrier stakes across a grey plain, smoke drifting. Sergeant Nine-Nine, an infantry torso, is wedged upright in the stakes. Four medic robots move among twenty-odd broken infantry robots laid in a row behind the line. In no-man's-land, a fallen squad half buried, and an abandoned enemy drop pod. **This is also the campaign's card art.** | B813 rising over the horizon, cold blue-white; small warm triage lamps. |
+| A1 | `m813-shield-line` · `art/illustrations/m813/shield-line.png` | The moment the guns stop. A line of scorched barrier stakes across a grey plain, smoke drifting. Sergeant Nine-Nine, an infantry torso, is wedged upright in the stakes. Four medic robots move among twenty-odd broken infantry robots laid in a row behind the line. In no-man's-land, a fallen squad half buried, and an abandoned enemy drop pod. **This is also the campaign's card art.** | B813 rising over the horizon, cold blue-white; small warm triage lamps. |
 | A2 | `m813-rear-pad-loading` · `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after). The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |
 | A3 | `m813-outpost-hangar` · `.../v2/outpost-hangar.png` | Inside Outpost-813's hangar, long after. A wrecked short-hop escape craft half rebuilt from mismatched parts; two repair cradles side by side; parts of fallen robots laid out like an orderly ossuary; MPAT's field stove. Time has passed: dust, makeshift lamps, tally marks on a wall. | One work lamp, warm; B813's cold light through a high hangar slot. |
 | A4 | `m813-outpost-1` · `.../v2/outpost-1.png` | Outpost-1, the Colonel's wing: clean, cold, polished floors, regimental banners. A long corridor leads to the repair bay's windows, where a black hole fills the glass. **Not the ending:** empty cradles, doors open, no one inside. | Even, cold institutional light; the black hole's ring as a reflection on the floor. |
@@ -70,7 +70,7 @@ Profile pictures for NPCs and enemies; the game also crops them into round map t
 
 The painted ground under each zone's grid. **Top-down, orthographic, no perspective.** **1600 × 1100 PNG** (16 × 11 tiles of 100 px; each tile is 1.5 m, so a robot fills about half a tile). Opaque.
 
-**Paint to the layout guides** in `art/briefs/m813-tutorial/maps/` (`<zone>-layout.png`), rendered from the campaign file, so the art matches the rules exactly:
+**Paint to the layout guides** in `art/_archive/briefs/m813-tutorial/maps/` (`<zone>-layout.png`), rendered from the campaign file, so the art matches the rules exactly:
 
 | Guide shows | Paint |
 |---|---|
@@ -83,7 +83,7 @@ No grid lines, letters or text in the painting; the game draws them. Keep floors
 
 | # | ID · file | Zone | Ground |
 |---|---|---|---|
-| C1 | `map-m813-shield-line` · `art/maps/m813/v1/shield_line.png` | The shield line | Grey ash plain, shell scars and scorch rings, tracks of the squads; west half (A–F) is no-man's-land with craters and wreckage; the trench line behind the stakes; coolant stains to the east. |
+| C1 | `map-m813-shield-line` · `art/_archive/maps/m813/v1/shield_line.png` | The shield line | Grey ash plain, shell scars and scorch rings, tracks of the squads; west half (A–F) is no-man's-land with craters and wreckage; the trench line behind the stakes; coolant stains to the east. |
 | C2 | `map-m813-rear-pad` · `.../rear_pad.png` | The rear pad | Scorched landing pad plating with painted landing markings (invented, no real symbols); the ship's hull in N1–P6 seen from above (wing and hull plates, ramp edge toward M); the wreck field's edge along rows 10–11. |
 | C3 | `map-m813-outpost` · `.../outpost.png` | Outpost-813 | Interior floor plan from above: barracks bunks (A1–E4), infirmary tiles (G1–J4), comms room (L1–P4), corridor (row 6), hangar deck with oil stains and tie-down rings (rows 8–11). Walls as thick ceramic-concrete. |
 | C4 | `map-m813-outpost-1` · `.../outpost_1.png` | Outpost-1 | Polished institutional floors; the Colonel's office carpet (A1–E4); security room (L1–P3); atrium (A6–F11); the repair bay's clean deck with drainage grilles (H7–P11); the bay doors' frame along the east wall. |
@@ -139,6 +139,6 @@ The implementer’s movement/vision update added two `lamp` objects to `data/cam
 
 ## Delivery
 
-- Group A and D → `art/illustrations/m813/v2/` (D4 in `spoilers/`); group B → `art/character-portraits/m813/v2/`; group C → `art/maps/m813/v1/`; group E → `art/sprites/objects/v1/`.
-- Add each to `art/catalog.json` with the ID above (new sections `maps` and `sprites`; mark `spoiler` and `visibility` for groups A and D), update `checksums.sha256`, and run `python3 scripts/validate_art.py`. Claude extends the validator and wires the art into the game on delivery: zone banners, portrait tokens, map backgrounds under the grid, and sprites on tiles.
+- Group A and D → `art/illustrations/m813/` (D4 in `spoilers/`); group B → `art/portraits/m813/`; group C → `art/maps/m813/`; group E → `art/sprites/objects/`.
+- Add each to `art/catalog.json` with the ID above (new sections `maps` and `sprites`; mark `spoiler` and `visibility` for groups A and D), update `checksums.sha256`, and run `python3 tools/validate_art.py`. Claude extends the validator and wires the art into the game on delivery: zone banners, portrait tokens, map backgrounds under the grid, and sprites on tiles.
 - Anything not stated in the lore is a *proposal*. Flag doubts in the delivery notes instead of guessing.

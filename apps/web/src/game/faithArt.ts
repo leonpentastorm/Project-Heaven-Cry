@@ -1,7 +1,7 @@
 // Blessing 2.0 (rules 1.6) art for the web game: the eight patrons' marks, the prayer icons (6 Whispers, the Hymns, the
 // Miracles), the vow glyphs, the Witnessed eye, and the patrons' portraits, each resolved to the painted art when it is
-// there (docs/design/handoffs/blessing-art-brief.md: art/character-portraits/patrons/v1/<id>.png, art/emblems/patrons/v1/
-// <id>.png, art/ui/prayers/v1/<file>.png; `npm run assets` builds them as patron-<id>, patron-mark-<id> and prayer-<file>)
+// there (docs/design/handoffs/blessing-art-brief.md: art/portraits/patrons/<id>.png, art/emblems/patrons/
+// <id>.png, art/icons/prayers/<file>.png; `npm run assets` builds them as patron-<id>, patron-mark-<id> and prayer-<file>)
 // and to a code-drawn white placeholder until then. Dropping the art in needs no code change: run `npm run assets`.
 //
 // Placeholders follow the art brief's ideas, drawn in the classIcons.ts style: 24 × 24 white line marks, no colour (the

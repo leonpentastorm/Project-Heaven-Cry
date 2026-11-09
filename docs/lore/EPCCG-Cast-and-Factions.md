@@ -2,7 +2,7 @@
 
 Index of the people and factions in the EPCCG (Emergency Player Character Creation Guide, Starter Edition), the 2020 guide most of PHC's world comes from. The full English text is in [`docs/lore/EPCCG-Player-Character-Creation-Guide.md`](EPCCG-Player-Character-Creation-Guide.md). This page only indexes it; where they differ, the EPCCG text wins for flavour and `docs/rules/` wins for rules.
 
-Each of the 27 skill entries opens with a field quote from someone who has far too much of that skill. The **First-Patch Revival** portraits (`art/character-portraits/first-patch-revival/`) paint those people. Catalog IDs are `first-patch-revival--<skill-id>`, for example `first-patch-revival--faith`.
+Each of the 27 skill entries opens with a field quote from someone who has far too much of that skill. The **First-Patch Revival** portraits (`art/portraits/epccg/`) paint those people. Catalog IDs are `first-patch-revival--<skill-id>`, for example `first-patch-revival--faith`.
 
 ## Factions
 

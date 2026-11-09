@@ -1,0 +1,39 @@
+{
+  "collection": "wick-test-set-1-revisions",
+  "version": 1,
+  "status": "review-candidate",
+  "production_approved": false,
+  "brief": "art/briefs/wick-production-icons.md",
+  "workflow": "Leon requested seven fixes first, then the full run with each new icon pushed and shown immediately.",
+  "icons": [
+    {
+      "id": "supreme-command",
+      "data_id": "supreme_command",
+      "name": "Supreme Command",
+      "family": "perks",
+      "order": 76,
+      "mood": "Heroic",
+      "action": "ONE large Wick stands on an unmarked ammunition crate, leaning forward and pointing decisively toward the right with one mitten. A simple row of THREE SMALL EMPTY HELMET SHAPES beneath the crate suggests troops; no second body, no miniature full figures.",
+      "screen": "Shouting pixel mouth, commanding brows",
+      "prop": "Ammo crate",
+      "path": "art/icons/perks/supreme-command.png",
+      "exports": {
+        "256": "art/icons/perks/exports/256/supreme-command.png",
+        "128": "art/icons/perks/exports/128/supreme-command.png",
+        "64": "art/icons/perks/exports/64/supreme-command.png",
+        "56": "art/icons/perks/exports/56/supreme-command.png",
+        "48": "art/icons/perks/exports/48/supreme-command.png",
+        "44": "art/icons/perks/exports/44/supreme-command.png",
+        "40": "art/icons/perks/exports/40/supreme-command.png"
+      },
+      "batch": "revisions",
+      "source_sha256": "da3d9977818a38518942c19ebfd542798d303bae2aef9563553bb920ca5cbe21",
+      "tier": "ultimate",
+      "visibility": "awarded-only",
+      "review_round": 4,
+      "previous_path": "art/_archive/traits/wick/test-set-1/supreme-command.png",
+      "revision": 4,
+      "previous_revision_path": "art/_archive/traits/wick/test-set-1/revisions/supreme-command.png"
+    }
+  ]
+}

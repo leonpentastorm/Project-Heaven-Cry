@@ -9,7 +9,7 @@ Wick is the EPCCG's printed mascot (style guide section 08; `docs/lore/Wick.md`)
 ## Build it from what's approved
 
 - **Construction:** style guide section 09 exactly. About 2.4 head-heights tall; broad ivory ceramic head with one clipped upper corner (Wick's own left, viewer-right from the front); recessed dark screen two-thirds of the head's width and half its height, with a generous ceramic rim; side hinge discs; pear-shaped torso; mitten hands (one thumb, three-finger mitten); broad-soled boots; short asymmetric capelet with an uneven hanging tab and an off-centre fastening; round lantern window high on the chest with the 258th's medical cross, **thick equal arms**.
-- **References:** `art/style-guide/v1.3/references/wick-model-study.png` (turnaround and screen faces: the main source), `art/mascot/wick-welcome.png` (Leon's chosen mark: its pose and attitude), `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` (asymmetry, cape, personality), and MPAT (`art/character-portraits/m813/mpat.png`) for 258th automaton materials.
+- **References:** `art/style-guide/references/wick-model-study.png` (turnaround and screen faces: the main source), `art/mascot/wick-welcome.png` (Leon's chosen mark: its pose and attitude), `art/icons/traits/mind-without-fog.png` (asymmetry, cape, personality), and MPAT (`art/portraits/m813/mpat.png`) for 258th automaton materials.
 - **Materials:** satin-glazed ivory ceramic with large, intentional wear patches and chips at edges (not a tiny scratch map; not glossy plastic); dark recessed screen with emissive warm pixel glyphs (as in the model study); emissive warm lantern heart; restrained brass fasteners and hinge discs; woven oxide-red capelet cloth with real folds.
 - **Look:** a stylised, high-quality render, like a premium designer figure: readable planes, soft studio key light, a warm rim from the lantern, soft contact shadow. Chibi proportions stay; don't make Wick photoreal or mechanical-detailed. No skill colours on the model.
 
@@ -31,4 +31,4 @@ Wick is the EPCCG's printed mascot (style guide section 08; `docs/lore/Wick.md`)
 
 ## Delivery
 
-`art/mascot/wick-3d/` with `turnaround/`, `avatar/`, `screen-states/`, `source/` and a `manifest.json` like the test sets'. Catalog family `mascot`, `status: "review-candidate"`. Update `art/checksums.sha256` and run `python3 scripts/validate_art.py`.
+`art/mascot/wick-3d/` with `turnaround/`, `avatar/`, `screen-states/`, `source/` and a `manifest.json` like the test sets'. Catalog family `mascot`, `status: "review-candidate"`. Update `art/checksums.sha256` and run `python3 tools/validate_art.py`.

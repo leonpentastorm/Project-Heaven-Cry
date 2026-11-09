@@ -103,9 +103,9 @@ You are building the **player-facing side of Blessing 2.0 (rules revision 1.6)**
    - The Narrator never writes patron lines (the engine does) and never sets numbers.
 10. **Art integration:**
     - Wire the asset paths from the art brief:
-      - `art/character-portraits/patrons/v1/<id>.png`
-      - `art/emblems/patrons/v1/<id>.png`
-      - `art/ui/prayers/v1/...`
+      - `art/portraits/patrons/<id>.png`
+      - `art/emblems/patrons/<id>.png`
+      - `art/icons/prayers/...`
     - Fallbacks: code-drawn placeholders (a white mark per patron in `classIcons.ts` style, generic prayer glyphs) until the files exist. Dropping the art in later must need no code change.
     - Note in the handoff what `npm run assets` needs.
 

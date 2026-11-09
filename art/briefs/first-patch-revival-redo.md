@@ -1,6 +1,6 @@
 # First-Patch Revival: five portraits to redo
 
-**Delivered and accepted (revision 3, 5 November 2026):** see [`../character-portraits/first-patch-revival/revisions/`](../character-portraits/first-patch-revival/revisions/README.md). Revision 3 keeps each person's role but drops the homage looks below where they came out too close to existing characters.
+**Delivered and accepted (revision 3, 5 November 2026):** see [`../_archive/character-portraits/first-patch-revival/revisions/`](../_archive/character-portraits/first-patch-revival/revisions/README.md). Revision 3 keeps each person's role but drops the homage looks below where they came out too close to existing characters.
 
 **From Leon, 5 November 2026.** Five of the 27 EPCCG cast portraits don't match who these people are. Redo them in the same set style. The other 22 stay.
 
@@ -51,7 +51,7 @@ Paint each as a First-Patch Revival portrait: Heavenprint brushwork (style guide
 
 ## Delivery
 
-- **Folder:** `art/character-portraits/first-patch-revival/revisions/`, same file names. Keep the old five where they are for comparison.
+- **Folder:** `art/_archive/character-portraits/first-patch-revival/revisions/`, same file names. Keep the old five where they are for comparison.
 - **Catalog:** point the five catalog entries at the new files (the ids don't change, so the game's EPCCG pop-ups pick them up). Update `manifest.json`, `art/checksums.sha256`, and `previews/all-27.jpg`.
-- **Validate:** run `python3 scripts/validate_art.py`; it must pass.
+- **Validate:** run `python3 tools/validate_art.py`; it must pass.
 - **Review sheet:** the five new beside the five old, plus Paul Remarque beside Aleksandr Donovik Artem to prove they no longer read as the same man.

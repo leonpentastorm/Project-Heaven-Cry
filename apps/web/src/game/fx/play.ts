@@ -856,5 +856,5 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number }
 export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; turnsUntil = 0; volley = null; bumpGen(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
-/** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */
+/** The Proving Ground and the e2e tools play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */
 if (typeof window !== 'undefined') (window as any).__phcFx = { playFx, queueFx };

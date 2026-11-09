@@ -42,8 +42,8 @@
   ],
   "completed_utc": "2026-11-07T00:53:25.551053+00:00",
   "validation": {
-    "full_library": "passed: python3 scripts/validate_art.py --complete-icons --complete-campaign --complete-wick-anim",
-    "animation": "passed: python3 scripts/validate_art.py --wick-anim-only --complete-wick-anim",
+    "full_library": "passed: python3 tools/validate_art.py --complete-icons --complete-campaign --complete-wick-anim",
+    "animation": "passed: python3 tools/validate_art.py --wick-anim-only --complete-wick-anim",
     "git_diff_check": "passed",
     "preservation": "All existing artwork retained; title-screen art, brief and implementation unchanged relative to implementer c4d329d."
   },

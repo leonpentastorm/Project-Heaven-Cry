@@ -38,83 +38,83 @@
     {
       "path": "art/ui/title-screen/README.md",
       "size_bytes": 4163,
-      "sha256": "55a2dde0eb9613cc3b3e5e92a1e2a084e99354f1e063d5907afe850f374dea0e",
+      "sha256": "5aaec3d9487a31f58032cfd1d771da793a1ff7d87bdf843188c18948b7d00163",
       "role": "implementation notes"
     },
     {
       "path": "art/ui/title-screen/foreground-placement.json",
       "size_bytes": 419,
-      "sha256": "7f6e42f96f7c091dd7046de8848c36555dbd99702e654d28f6d5d0ad1ec7abff",
+      "sha256": "0f6b9facd81bcd39eec0bc0f91f4f3d5e44d865cb19c4f4d7a75278b9b8a072b",
       "role": "foreground production provenance"
     },
     {
-      "path": "art/ui/title-screen/previews/alpha-edge-review.jpg",
+      "path": "art/_archive/ui/title-screen/previews/alpha-edge-review.jpg",
       "size_bytes": 335971,
       "sha256": "cf35339690e2890e380f57e8cbc3f00807feff47ff730cea72bc8a394ed5b9fb",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/back-only-1920.jpg",
+      "path": "art/_archive/ui/title-screen/previews/back-only-1920.jpg",
       "size_bytes": 583890,
       "sha256": "8cf8f4fcf51f8e64e7742a71a83a07af145d192dcaddb7231036d7f4b62300e5",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/back-only-phone.jpg",
+      "path": "art/_archive/ui/title-screen/previews/back-only-phone.jpg",
       "size_bytes": 191683,
       "sha256": "d80d1cc2464887b095a70f16ed3d69def67573344d75594e89c712ff9d747c83",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/composite-1920.jpg",
+      "path": "art/_archive/ui/title-screen/previews/composite-1920.jpg",
       "size_bytes": 762882,
       "sha256": "0791eeb90d2e128f638630a4106bff03ad8a92d0ab9b0c9df087ec6bbb5ba23b",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/menu-readability-72px.jpg",
+      "path": "art/_archive/ui/title-screen/previews/menu-readability-72px.jpg",
       "size_bytes": 762815,
       "sha256": "850430982494f65ff75f5462aa397a65fd8e0404f025879cb7c5cb69b5c81723",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/parallax-extremes.jpg",
+      "path": "art/_archive/ui/title-screen/previews/parallax-extremes.jpg",
       "size_bytes": 767627,
       "sha256": "8b6c8d50fe3654afd849666ccf1821c61c102cd55be25a809374afd63afb87f9",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/phone-crop.jpg",
+      "path": "art/_archive/ui/title-screen/previews/phone-crop.jpg",
       "size_bytes": 261718,
       "sha256": "adc9d06b3f3eebff2943b99551e2f58c9dd16fb3f0bdfd2d147a4ec378fba640",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/safe-zones.jpg",
+      "path": "art/_archive/ui/title-screen/previews/safe-zones.jpg",
       "size_bytes": 695027,
       "sha256": "da7f89e68b4cadc1052720c95340e0499744d03e6dcd5e23812fb20d1de4dff0",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/previews/screen-crop-1920.jpg",
+      "path": "art/_archive/ui/title-screen/previews/screen-crop-1920.jpg",
       "size_bytes": 730823,
       "sha256": "b84642769671b054c1cee716cce33c16fd51ed376b9a632696250a278bd8ba98",
       "role": "review preview"
     },
     {
-      "path": "art/ui/title-screen/source-renders/foreground-correction-v4-prompt.txt",
+      "path": "art/_archive/ui/title-screen/source-renders/foreground-correction-v4-prompt.txt",
       "size_bytes": 3106,
       "sha256": "1fa04461464ea25c0839e6aace51f727ac1876f8baca41ff4cb985fe1f0fabe8",
       "role": "foreground production provenance"
     },
     {
-      "path": "art/ui/title-screen/source-renders/foreground-repaint-prompt.txt",
+      "path": "art/_archive/ui/title-screen/source-renders/foreground-repaint-prompt.txt",
       "size_bytes": 4314,
       "sha256": "4fa3d64f1dc88cfa8c73795f3f01f84b2248583a8779186ef14afdc007330b19",
       "role": "foreground production provenance"
     },
     {
-      "path": "art/ui/title-screen/source-renders/title-back-native.png",
+      "path": "art/_archive/ui/title-screen/source-renders/title-back-native.png",
       "size_bytes": 2610236,
       "sha256": "3e2a46e3761f429c81126e838bf4f78c273bceec495c057bc5fa5db1dae8807a",
       "role": "native generated source render",
@@ -124,7 +124,7 @@
       "colour_type": 2
     },
     {
-      "path": "art/ui/title-screen/source-renders/title-front-native.png",
+      "path": "art/_archive/ui/title-screen/source-renders/title-front-native.png",
       "size_bytes": 2953965,
       "sha256": "e402ac5756d27cee84001e4c1095021821cfdbb484c5c376ce66d3b42b3d73c5",
       "role": "native generated source render",
@@ -134,7 +134,7 @@
       "colour_type": 6
     },
     {
-      "path": "art/ui/title-screen/source-renders/title-mid-native.png",
+      "path": "art/_archive/ui/title-screen/source-renders/title-mid-native.png",
       "size_bytes": 1438845,
       "sha256": "c116fc3201c5bc293ff601b0dae0694087512777909f5ec2293fbc49c570a635",
       "role": "native generated source render",
@@ -146,7 +146,7 @@
     {
       "path": "art/ui/title-screen/technical-review.json",
       "size_bytes": 2202,
-      "sha256": "4164bfcd6aa17bda1621e41f15593a35acebe3aa2ee30ef3e92fb5fba3b0f5db",
+      "sha256": "73bcb953e7eab53560e687056e0f2ffba498913fb4c114a358833ad0b0bb14a0",
       "role": "technical review evidence"
     },
     {
@@ -194,7 +194,7 @@
   "revision": 4,
   "foreground_placement": {
     "revision": 4,
-    "source": "source-renders/title-front-native.png",
+    "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
     "native_dimensions": [
       1774,
       887

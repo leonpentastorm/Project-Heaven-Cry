@@ -1,10 +1,10 @@
 # M813 one-shot: art briefs
 
-**Delivery, 5 November 2026:** all four images now have version-1 review candidates. Portraits: [`../character-portraits/m813/`](../character-portraits/m813/). World scenes, including the separated ending: [`../illustrations/m813/v1/`](../illustrations/m813/v1/). The original brief below remains the art direction; generated details do not establish canon.
+**Delivery, 5 November 2026:** all four images now have version-1 review candidates. Portraits: [`../portraits/m813/`](../portraits/m813/). World scenes, including the separated ending: [`../illustrations/m813/`](../illustrations/m813/). The original brief below remains the art direction; generated details do not establish canon.
 
 The M813 one-shot is the first playable product. These four images come before any further character portraits. Facts are from the EPCCG's MPAT sample sheet (`docs/lore/EPCCG-Player-Character-Creation-Guide.md`) and `docs/lore/MPAT-and-M813.md`. Anything not stated there is marked *proposal*.
 
-All four use the **Heavenprint base prompt** in section 12 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Attach the approved Original 27 and New Faces sheets, plus `art/character-portraits/first-patch-revival/previews/all-27.jpg` as the EPCCG-cast reference. For automaton construction, compare the New Faces automata (Mallow-3, Inspectant Latch-7).
+All four use the **Heavenprint base prompt** in section 12 of `art/style-guide/PHC-Style-Guide.md`. Attach the approved Original 27 and New Faces sheets, plus `art/_archive/character-portraits/first-patch-revival/previews/all-27.jpg` as the EPCCG-cast reference. For automaton construction, compare the New Faces automata (Mallow-3, Inspectant Latch-7).
 
 ## Design link: MPAT and Wick
 
@@ -12,7 +12,7 @@ Wick is the EPCCG's cartoon of a 258th Medical Unit field automaton (`docs/lore/
 
 ## 1. MPAT: character portrait
 
-- **Collection:** new versioned folder `art/character-portraits/m813/`, catalog ID `mpat`.
+- **Collection:** new versioned folder `art/portraits/m813/`, catalog ID `mpat`.
 - **Subject:** M1.4 8R4-D83-RRY, "MPAT". Robot combat medic of the 258th Medical Unit, built by the Factory. 7 years old, 180 cm, 73 kg, right-handed. Lean and fast (high Agility, a dodge-and-rescue medic), not a tank.
 - **Construction (proposal):** 258th field automaton. Ivory ceramic shell, chipped and field-patched with mismatched plates from other units. Charcoal screen face with sparse square pixel features. Triage lamp in the chest behind a medical-cross grille. Short, scorched field cloak. Surgical manipulators on the right hand.
 - **Action:** kneeling, with the still-running robot head of its last comrade strapped to its chest harness. MPAT's left hand rests on the head; its right hand holds a ration tin it is cooking over a small field stove. (It's a good cook, and it never leaves a teammate behind.)

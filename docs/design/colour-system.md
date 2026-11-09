@@ -2,7 +2,7 @@
 
 One rule: **colour means a skill's attribute, or one of five game states. Nothing else gets a hue.** Decorative colour is neutral.
 
-Machine-readable values are in [`art/style-guide/v1.3/palette.json`](../../art/style-guide/v1.3/palette.json). This page explains them. If the two disagree, the JSON wins.
+Machine-readable values are in [`art/style-guide/palette.json`](../../art/style-guide/palette.json). This page explains them. If the two disagree, the JSON wins.
 
 ## 1. Attributes: nine hues, two forms
 

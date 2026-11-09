@@ -1,12 +1,12 @@
 # Wick: ten test icons before the style is locked for production
 
-**Review 1, 5 November 2026:** three approved, six to revise, one redo. Verdicts in [`../traits/wick/test-set-1/README.md`](../traits/wick/test-set-1/README.md). The next step, revisions and then all 150 icons, is in [wick-production-icons.md](wick-production-icons.md). The placard lettering and the tiny commanded figures this brief asked for are now ruled out (no text; one full figure).
+**Review 1, 5 November 2026:** three approved, six to revise, one redo. Verdicts in [`../_archive/traits/wick/test-set-1/README.md`](../_archive/traits/wick/test-set-1/README.md). The next step, revisions and then all 150 icons, is in [wick-production-icons.md](wick-production-icons.md). The placard lettering and the tiny commanded figures this brief asked for are now ruled out (no text; one full figure).
 
-**Delivery, 5 November 2026:** all ten review candidates, 1024 px masters, 256/128/64/40 px exports and side-by-side sheets are in [`../traits/wick/test-set-1/`](../traits/wick/test-set-1/). They are catalogued as candidates, not approved production anchors. Review notes and remaining checks are in that collection's README. The production lock is still pending review.
+**Delivery, 5 November 2026:** all ten review candidates, 1024 px masters, 256/128/64/40 px exports and side-by-side sheets are in [`../_archive/traits/wick/test-set-1/`](../_archive/traits/wick/test-set-1/). They are catalogued as candidates, not approved production anchors. Review notes and remaining checks are in that collection's README. The production lock is still pending review.
 
 The Mind Without Fog master is approved. Before 150 trait and perk icons are made from one example, make these ten. Together they test every mood the set has to carry: grim, comic, ugly and tender, two perks, a robot trait, and a crowded idea. Lock the production rules only after all ten pass review.
 
-**For every icon:** attach `art/style-guide/v1.3/references/approved-wick-trait-mind-without-fog.png` and sections 08–14 of `art/style-guide/v1.3/PHC-Style-Guide.md`. Pure white `#FFFFFF` flat ink on transparency, 1024 × 1024 master, no caption. Traits and perks are both white.
+**For every icon:** attach `art/icons/traits/mind-without-fog.png` and sections 08–14 of `art/style-guide/PHC-Style-Guide.md`. Pure white `#FFFFFF` flat ink on transparency, 1024 × 1024 master, no caption. Traits and perks are both white.
 
 **Base prompt** (style guide v1.3, section 12): *Use approved-wick-trait-mind-without-fog.png as the primary style reference. Preserve the short cape, lantern heart, off-centre details, irregular contours and lively asymmetry. New action: [action]; screen expression: [expression]; prop: [one]. Flat single-ink illustration with negative-space details, no gradients, glow or rendered shading. Ink: pure white #FFFFFF, for traits and perks alike. Transparent background unless another background is requested; no caption. 1:1 1024 × 1024 master with safe margins. Test at 64 px without replacing the character with a geometric pictogram.*
 
@@ -38,4 +38,4 @@ Item texts are in `data/traits.json` and `data/perks.json`. If an icon would nee
 
 ## After the ten
 
-Review them side by side at 40 px and at 128 px. Then update the icon-lock section with anything the ten taught (for example, a minimum capelet size), and only then start production. Record the approved ten in a new versioned folder, `art/traits/wick/test-set-1/`, and add them to `art/catalog.json`.
+Review them side by side at 40 px and at 128 px. Then update the icon-lock section with anything the ten taught (for example, a minimum capelet size), and only then start production. Record the approved ten in a new versioned folder, `art/_archive/traits/wick/test-set-1/`, and add them to `art/catalog.json`.

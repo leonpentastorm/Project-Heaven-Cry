@@ -2,7 +2,7 @@
 
 **From Leon, 6 November 2026. Start now.** The title screen is being rebuilt to feel like a AAA game's front door: no header bar, full-bleed art, a big **PROJECT HEAVEN CRY**, and the menu under it. The art is **three painted layers** that shift and turn with the mouse. A little **Wick** runs to whichever menu item you point at, and jumps up to say hello when you press it. Screen behaviour (for reference, not for painting): `docs/design/title-screen.md`.
 
-Two deliverables: **A. the key art** (three layers) and **B. Wick's animations**. Both follow the style guide (`art/style-guide/v1.3/PHC-Style-Guide.md`).
+Two deliverables: **A. the key art** (three layers) and **B. Wick's animations**. Both follow the style guide (`art/style-guide/PHC-Style-Guide.md`).
 
 ---
 
@@ -88,7 +88,7 @@ The layers slide against each other by up to about **6% of the width** and tilt 
   - Optional: `title-fx.png`, `title-*-depth.png`, `title-sky.png` + `title-city.png`.
   - The layered source file (`.psd` or `.kra`).
   - `previews/composite-1920.jpg` (the three layers flattened), `previews/phone-crop.jpg` (the 9:16 crop), `previews/safe-zones.jpg` (the composite with the title zone marked).
-- **`manifest.json`:** each file with its size, sha256 and role. Add the hashes to `art/checksums.sha256`, then run `python3 scripts/validate_art.py`; it must pass. I'll add catalog entries and wire it into the game.
+- **`manifest.json`:** each file with its size, sha256 and role. Add the hashes to `art/checksums.sha256`, then run `python3 tools/validate_art.py`; it must pass. I'll add catalog entries and wire it into the game.
 
 ### Pass criteria (A)
 

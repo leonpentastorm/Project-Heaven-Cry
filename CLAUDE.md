@@ -46,7 +46,7 @@ design/canvas/            UI prototypes (.dc.html) + canvas.json layout, generat
                           design/canvas-build/build.py (templates, logic, blobs.json asset map)
 art/                      art library: catalog.json, skills/, character-portraits/, traits/ (Wick), emblems/ (AHOC seal), mascot/ (Wick's mark),
                           style-guide/v1.3/PHC-Style-Guide.md, briefs/
-scripts/validate_art.py   art handoff checker (catalog, checksums, palette and UI-ink rules)
+tools/validate_art.py   art handoff checker (catalog, checksums, palette and UI-ink rules)
 packages/engine/          the rules engine (TypeScript, deterministic, seeded): checks, characters, creation, voices,
                           progression, perks, grid combat; one reducer for every action; tests from the spec's tables
 apps/web/                 the game client: React + Vite rendering the prototype templates (src/templates) with
@@ -101,13 +101,13 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 ## UI direction (see `docs/design/ui-screens.md` and the canvas)
 
 - Inspired by AI-DM web RPGs (character panel | narrative stream | dice) and by **Disco Elysium's** skill screens: inner-voice cards in the story, a portrait card wall for skills, big `‹ 3 ›` steppers. Original art and text only; no DE assets.
-- Colour = meaning everywhere. Full rules in `docs/design/colour-system.md`; values in `art/style-guide/v1.3/palette.json`.
+- Colour = meaning everywhere. Full rules in `docs/design/colour-system.md`; values in `art/style-guide/palette.json`.
   - **Skills take their attribute's colour (9 hues).** Art uses the pigment; UI uses the contrast-safe ink: Endurance `#F65157`, Strength `#F68A38`, Agility `#E3BF51`, Perception `#40BAA0`, Intelligence `#8BDEEE`, Expression `#5394AC`, Insight `#EB95B7`, Determination `#9D7ADC`, Virtue `#D36A90`.
   - **Cores** keep family colours for core-level UI: Body amber `#F2A54A`, Mind cyan `#4FC8DF`, Soul violet `#AE9BFF`.
   - **States:** success `#6FEA77`, failure muted `#A3AEC2`, HP/damage/complication `#F65157` (HP comes from Endurance), MP `#5C9EFF`, Echo and still-to-do white `#FFFFFF`. Always pair with a word or glyph.
   - Neutrals: ground `#0A0D13`, panels `#10151F`, raised `#1C2536`, lines `#232D3F`, text `#E7EBF3`, muted `#A3AEC2`.
 - Type: **Spectral** for narrative prose and titles, **Chakra Petch** for UI and numbers.
-- Art has three modes (one style guide: `art/style-guide/v1.3/PHC-Style-Guide.md`): **skill portraits** are 27 faceless gesture figures at 4:5 (800 × 1000), black + cream + the attribute pigment; **character portraits** are 83 Heavenprint paintings in `art/character-portraits/` (First-Patch Revival = the EPCCG cast; Original Heavenprint and New Faces = a pool of world characters for NPCs; `m813/` = MPAT and the comrade; none of them are skill icons); **world illustrations** are in `art/illustrations/` (M813 v1; the ending image is spoiler-flagged); **trait and perk icons** are Wick, pure white flat ink (test set 1 plus the production run in `art/traits/wick/`); flat ink is for those icons only. The **Narrator's avatar** is Wick fully 3D and rendered (brief: `art/briefs/wick-narrator-3d.md`). The **AHOC seal** (Leon's 2020 emblem) is in `art/emblems/`, white ink in the UI. Wick's own mark (the welcome pose, the app icon) is in `art/mascot/`. Asset IDs resolve through `art/catalog.json`.
+- Art has three modes (one style guide: `art/style-guide/PHC-Style-Guide.md`): **skill portraits** are 27 faceless gesture figures at 4:5 (800 × 1000), black + cream + the attribute pigment; **character portraits** are 83 Heavenprint paintings in `art/portraits/` (First-Patch Revival = the EPCCG cast; Original Heavenprint and New Faces = a pool of world characters for NPCs; `m813/` = MPAT and the comrade; none of them are skill icons); **world illustrations** are in `art/illustrations/` (M813 v1; the ending image is spoiler-flagged); **trait and perk icons** are Wick, pure white flat ink (test set 1 plus the production run in `art/icons/traits/`); flat ink is for those icons only. The **Narrator's avatar** is Wick fully 3D and rendered (brief: `art/briefs/wick-narrator-3d.md`). The **AHOC seal** (Leon's 2020 emblem) is in `art/emblems/`, white ink in the UI. Wick's own mark (the welcome pose, the app icon) is in `art/mascot/`. Asset IDs resolve through `art/catalog.json`.
 - Dice are transparent: the screen always shows TN and the sum, so players can see the AI isn't fudging.
 
 ## Working agreements with Leon

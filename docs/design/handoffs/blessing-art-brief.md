@@ -5,14 +5,14 @@ For the artist (ChatGPT Pro). Written 8 Nov 2026 for Project Heaven Cry (PHC), a
 Everything you need is on this page. The links are for the people who receive your files.
 
 - Design source: `docs/design/blessing-2.0-spec.md`
-- Style guide: `art/style-guide/v1.3/PHC-Style-Guide.md`
+- Style guide: `art/style-guide/PHC-Style-Guide.md`
 
 **Attach to every job:**
 
 1. The style guide, sections 01–07. These cover Heavenprint paint, faces, light, and "World, tools and magic".
-2. Two portraits from `art/character-portraits/original-heavenprint/` and two from `heavenprint-new-faces/`, as paint anchors.
-3. `art/emblems/ahoc-seal-white.png`, as the anchor for flat white emblems.
-4. `art/traits/wick/mind-without-fog/` (the approved Wick icon), as the anchor for line weight and print character **only**. Wick himself does not appear in this brief.
+2. Two portraits from `art/portraits/world/original-heavenprint/` and two from `heavenprint-new-faces/`, as paint anchors.
+3. `art/emblems/ahoc/ahoc-seal-white.png`, as the anchor for flat white emblems.
+4. `art/_archive/traits/wick/mind-without-fog/` (the approved Wick icon), as the anchor for line weight and print character **only**. Wick himself does not appear in this brief.
 
 ## The idea, in one paragraph
 
@@ -44,7 +44,7 @@ emblem.** Blessing motifs run gold. Don't make everyone a hooded priest.
 - **Composition:** a bust or three-quarter view.
 - **Light:** each patron is lit by their own **answering light**, a halo or radiance shape that belongs to their costume, in
   the accent colour listed below. Keep it practical light, no glow haze.
-- **Folder:** `art/character-portraits/patrons/v1/`. File name = id (`nerukhan.png`).
+- **Folder:** `art/portraits/patrons/`. File name = id (`nerukhan.png`).
 - **The test of a good portrait:** the costume is a god, the face is a person who chose to play that god.
 
 | Id | Patron | Paint this | Accent |
@@ -68,7 +68,7 @@ buttons and over the battlefield when a prayer is answered.
   - Exports at 256, 128, 64, 48, 32 and 24 px.
 - **Style:** a simple, bold, emblem-like shape, readable at 24 px. Line weight like the AHOC seal. Meaning must survive in
   silhouette.
-- **Folder:** `art/emblems/patrons/v1/`. File name = id.
+- **Folder:** `art/emblems/patrons/`. File name = id.
 
 | Id | Mark idea (a starting point; improve on it) |
 |---|---|
@@ -101,7 +101,7 @@ Leon approves it.
   - 1024 × 1024 masters.
   - Exports at 256, 128, 64, 56, 48, 44 and 40 px.
   - Check on `#10151F` at 44 px: it must read.
-- **Folder:** `art/ui/prayers/v1/`. File names:
+- **Folder:** `art/icons/prayers/`. File names:
   - `whisper-luck.png`
   - `hymn-nerukhan-1.png`
   - `miracle-nerukhan.png`
@@ -152,4 +152,4 @@ For each delivery:
    4. Then the 32 Hymn and Miracle icons, in batches of 8 (one batch per two patrons), each batch shown for review.
 4. **Questions.** Note any question for Leon at the top of the README. Don't guess silently.
 5. **Catalog and checks.** If you can't edit the repo, send the files and READMEs to Leon. Claude will add them to
-   `art/catalog.json` and run `python3 scripts/validate_art.py`.
+   `art/catalog.json` and run `python3 tools/validate_art.py`.

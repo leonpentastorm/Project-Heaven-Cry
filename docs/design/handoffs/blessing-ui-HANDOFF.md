@@ -207,9 +207,9 @@ Run each with `SHOTS=<dir> node <file>.mjs`, with the dev server on port 8787. N
 
 ## Art slots still empty (placeholders in use)
 
-- `art/character-portraits/patrons/v1/<id>.png`: patron portraits. The Belief cards show the mark instead.
-- `art/emblems/patrons/v1/<id>.png`: patron marks. Code-drawn white line marks are used meanwhile.
-- `art/ui/prayers/v1/`:
+- `art/portraits/patrons/<id>.png`: patron portraits. The Belief cards show the mark instead.
+- `art/emblems/patrons/<id>.png`: patron marks. Code-drawn white line marks are used meanwhile.
+- `art/icons/prayers/`:
   - `whisper-<id>.png`;
   - `hymn-<patron>-<1..3>.png`;
   - `miracle-<patron>.png`;

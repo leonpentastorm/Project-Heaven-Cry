@@ -6,7 +6,7 @@ The guide shows, on a 100 px-per-tile grid with letter columns and number rows:
   - object tiles (crates, doors, terminals, POIs...): leave as plain floor in the background; the game draws a sprite there;
   - start tiles (party: green, enemies: red) and the zone's notes, for context.
 
-Usage: python3 tools/render_map_guides.py data/campaigns/m813.json art/briefs/m813-tutorial/maps
+Usage: python3 tools/render_map_guides.py data/campaigns/m813.json art/_archive/briefs/m813-tutorial/maps
 """
 import json, re, sys, pathlib
 from PIL import Image, ImageDraw, ImageFont

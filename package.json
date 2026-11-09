@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "workspaces": ["packages/*", "apps/*"],
-  "scripts": {
+  "tools": {
     "assets": "python3 tools/build_web_assets.py",
     "dev": "npm run dev -w @phc/web",
     "build": "npm run build -w @phc/web",

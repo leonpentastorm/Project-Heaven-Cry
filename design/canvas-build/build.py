@@ -18,7 +18,7 @@ BUILD = ROOT / "design" / "canvas-build"
 # --web: build the same screen data for the web game (apps/web), with its own image URLs (tools/build_web_assets.py).
 WEB = "--web" in sys.argv
 BLOBS = json.loads(((ROOT / "apps/web/src/game/assets.json") if WEB else (BUILD / "blobs.json")).read_text())
-PAL = json.loads((ROOT / "art/style-guide/v1.3/palette.json").read_text())
+PAL = json.loads((ROOT / "art/style-guide/palette.json").read_text())
 
 def load(name):
     return json.loads((ROOT / "data" / name).read_text())

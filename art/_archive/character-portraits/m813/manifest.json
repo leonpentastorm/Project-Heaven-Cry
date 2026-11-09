@@ -1,0 +1,19 @@
+{
+  "collection": "M813 portraits v1",
+  "status": "review-candidate",
+  "brief": "art/briefs/m813-mpat.md",
+  "portraits": [
+    {
+      "id": "mpat",
+      "path": "art/portraits/m813/mpat.png",
+      "spoiler": false,
+      "source_sha256": "1554fc60dc2efae0aaf2f4228d1403c8c6ff19fafd4baf85409382e988aedb25"
+    },
+    {
+      "id": "mpat-comrade",
+      "path": "art/portraits/m813/mpat-comrade.png",
+      "spoiler": false,
+      "source_sha256": "f1f9762a1f81de1046446f41c3fe07f89e12addb93884f2cd16a24ef92a72b45"
+    }
+  ]
+}
