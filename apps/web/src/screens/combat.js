@@ -2,8 +2,9 @@
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
 import { shellVals } from './shell';
 import { DCLogic } from '../dc/runtime';
-import { D, IMG, ART, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss } from './shared';
+import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss } from './shared';
 import { reducedMotion, sfx } from '../game/sfx';
+import { fightPace } from '../game/combatSpeed';
 import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
@@ -108,24 +109,30 @@ export function hitBreakdown(pv) {
 //   .phc-hp-fill / .phc-hp-chip   HP bars: the red drops at once, a white chip trails behind it (fighting-game style)
 //   .phc-pip-drain   an AP pip just spent: flashes white, then drains
 //   .phc-wait-dots   the waiting card's three dots
+// Their times are × var(--phc-k): the combat speed (game/combatSpeed.ts; Normal ≈ 15% slower than Fast).
 const COMBAT_CSS = [
   '.phc-cb-dock[data-lock="wait"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg):not([data-phc-vow-prompt]), .phc-cb-dock[data-lock="held"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg):not([data-phc-vow-prompt]){opacity:.38;filter:grayscale(1);pointer-events:none;transition:opacity .2s}',
   '.phc-cb-lockmsg{flex:none;padding:6px 10px;border:1px solid #232D3F;border-radius:8px;background:#10151F;color:#A3AEC2;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}',
   '@keyframes phcYtIn{0%{transform:translateX(70px) skewX(-14deg);opacity:0}60%{transform:translateX(-4px) skewX(-14deg);opacity:1}100%{transform:skewX(-14deg);opacity:1}}',
   '@keyframes phcYtShine{0%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(260%) skewX(-20deg)}}',
-  '.phc-yt{transform:skewX(-14deg);animation:phcYtIn .42s cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
-  '.phc-yt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:phcYtShine .9s ease-out .35s both;pointer-events:none}',
+  '.phc-yt{transform:skewX(-14deg);animation:phcYtIn calc(.42s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
+  '.phc-yt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:phcYtShine calc(.9s * var(--phc-k, 1)) ease-out calc(.35s * var(--phc-k, 1)) both;pointer-events:none}',
   '.phc-cb-act{transition:transform .12s ease-out,box-shadow .12s ease-out,background-color .12s}',
   '.phc-cb-act:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18)}',
   '.phc-cb-act:not(:disabled):active{transform:translateY(1px) scale(.985);box-shadow:none;transition-duration:.04s}',
-  '@keyframes phcCurRing{0%{transform:scale(1);opacity:.95}100%{transform:scale(1.32);opacity:0}}.phc-cur-ring{animation:phcCurRing 1.3s ease-out infinite}',
-  '@keyframes phcTgtRing{0%,100%{opacity:.45}50%{opacity:1}}.phc-tgt-ring{animation:phcTgtRing 1.6s ease-in-out infinite}',
-  '@keyframes phcPlanIn{from{opacity:0}to{opacity:1}}.phc-plan{animation:phcPlanIn .22s ease-out both}',
+  '@keyframes phcCurRing{0%{transform:scale(1);opacity:.95}100%{transform:scale(1.32);opacity:0}}.phc-cur-ring{animation:phcCurRing calc(1.3s * var(--phc-k, 1)) ease-out infinite}',
+  '@keyframes phcTgtRing{0%,100%{opacity:.45}50%{opacity:1}}.phc-tgt-ring{animation:phcTgtRing calc(1.6s * var(--phc-k, 1)) ease-in-out infinite}',
+  '@keyframes phcPlanIn{from{opacity:0}to{opacity:1}}.phc-plan{animation:phcPlanIn calc(.22s * var(--phc-k, 1)) ease-out both}',
   // A False Image's shimmer (game/classMarks.ts sets it inline on the decoy; still under reduced motion).
   '@keyframes phcDecoy{0%,100%{opacity:.42;filter:saturate(.4) brightness(1.05) drop-shadow(0 0 3px rgba(79,200,223,.6))}50%{opacity:.66;filter:saturate(.5) brightness(1.25) drop-shadow(0 0 7px rgba(79,200,223,.9))}}',
   '.phc-reduce .phc-plan{animation:none!important}@media (prefers-reduced-motion: reduce){.phc-plan{animation:none!important}}',
-  '.phc-hp-fill{transition:width .16s ease-out}.phc-hp-chip{transition:width .55s cubic-bezier(.4,0,.2,1) .4s}',
-  '@keyframes phcPipDrain{0%{background:#FFFFFF;transform:scaleY(1.7);box-shadow:0 0 12px rgba(255,255,255,.9)}35%{background:#FFFFFF;transform:scaleY(1.2)}100%{transform:none;box-shadow:none}}.phc-pips>span.phc-pip-drain{animation:phcPipDrain .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:0s}',
+  // The shared in-and-out pairs (main.tsx: .phc-a-right … .phc-closing) inside the combat screen: the TARGET card, the
+  // Sigil and Heart pads, the turn panels' swap. Only their durations change, × the combat speed (review, 9 Nov 2026:
+  // these are the pop-ups a player sees most in a fight). Reduce motion's !important fades still win.
+  '.phc-cb-root .phc-a-right,.phc-cb-root .phc-a-left,.phc-cb-root .phc-a-drop,.phc-cb-root .phc-a-rise{animation-duration:calc(.3s * var(--phc-k, 1))}.phc-cb-root .phc-a-pop{animation-duration:calc(.32s * var(--phc-k, 1))}.phc-cb-root .phc-a-fade{animation-duration:calc(.22s * var(--phc-k, 1))}',
+  '.phc-cb-root .phc-a-right.phc-closing,.phc-cb-root .phc-a-left.phc-closing,.phc-cb-root .phc-a-drop.phc-closing,.phc-cb-root .phc-a-rise.phc-closing,.phc-cb-root .phc-a-pop.phc-closing,.phc-cb-root .phc-a-fade.phc-closing{animation-duration:calc(.2s * var(--phc-k, 1))}',
+  '.phc-hp-fill{transition:width calc(.16s * var(--phc-k, 1)) ease-out}.phc-hp-chip{transition:width calc(.55s * var(--phc-k, 1)) cubic-bezier(.4,0,.2,1) calc(.4s * var(--phc-k, 1))}',
+  '@keyframes phcPipDrain{0%{background:#FFFFFF;transform:scaleY(1.7);box-shadow:0 0 12px rgba(255,255,255,.9)}35%{background:#FFFFFF;transform:scaleY(1.2)}100%{transform:none;box-shadow:none}}.phc-pips>span.phc-pip-drain{animation:phcPipDrain calc(.55s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both;animation-delay:0s}',
   '@keyframes phcWaitDot{0%,80%,100%{opacity:.25}40%{opacity:1}}.phc-wait-dots>span{animation:phcWaitDot 1.2s ease-in-out infinite}.phc-wait-dots>span:nth-child(2){animation-delay:.2s}.phc-wait-dots>span:nth-child(3){animation-delay:.4s}',
   '.phc-reduce .phc-yt,.phc-reduce .phc-plan,.phc-reduce .phc-pips>span.phc-pip-drain{animation:phcPlanIn .15s ease-out both}.phc-reduce .phc-yt::after{display:none}',
   '.phc-reduce .phc-cur-ring,.phc-reduce .phc-tgt-ring,.phc-reduce .phc-wait-dots>span{animation:none}.phc-reduce .phc-cb-act{transition:none}.phc-reduce .phc-hp-chip,.phc-reduce .phc-hp-fill{transition:none}',
@@ -157,7 +164,7 @@ const COMBAT_CSS = [
   '.phc-cb-mini{right:12px!important;bottom:12px!important}',
   // The dock scrolls inside itself when its content is taller than it may be (a landscape phone), and the Confirm row
   // sticks to its bottom edge, so it never sits below the screen.
-  '.phc-cb-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:64vh;max-height:64dvh;overflow-y:auto;overscroll-behavior:contain;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0A0D13;border-top:1px solid #232D3F;box-shadow:0 -10px 30px rgba(0,0,0,.55)}.phc-cb-dock .phc-cb-tabpanel{max-height:26vh;min-height:64px!important}.phc-cb-confirm{position:sticky;bottom:0;z-index:1;background:#0A0D13;box-shadow:0 -8px 12px #0A0D13}.phc-cb-turn.phc-a-right{animation:phcFadeIn .22s ease-out both!important}.phc-cb-turn.phc-a-left{animation:phcFadeOut .2s ease-in both!important}.phc-cb-spacer{display:block!important;height:calc(26vh + 290px)}}',
+  '.phc-cb-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:64vh;max-height:64dvh;overflow-y:auto;overscroll-behavior:contain;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0A0D13;border-top:1px solid #232D3F;box-shadow:0 -10px 30px rgba(0,0,0,.55)}.phc-cb-dock .phc-cb-tabpanel{max-height:26vh;min-height:64px!important}.phc-cb-confirm{position:sticky;bottom:0;z-index:1;background:#0A0D13;box-shadow:0 -8px 12px #0A0D13}.phc-cb-turn.phc-a-right{animation:phcFadeIn calc(.22s * var(--phc-k, 1)) ease-out both!important}.phc-cb-turn.phc-a-left{animation:phcFadeOut calc(.2s * var(--phc-k, 1)) ease-in both!important}.phc-cb-spacer{display:block!important;height:calc(26vh + 290px)}}',
   '@media (prefers-reduced-motion: reduce){.phc-yt,.phc-plan,.phc-pips>span.phc-pip-drain,.phc-cur-ring,.phc-tgt-ring,.phc-wait-dots>span{animation:none}.phc-yt::after{display:none}.phc-hp-chip,.phc-hp-fill,.phc-cb-act{transition:none}}',
 ].join('');
 ensureMotionCss();
@@ -289,7 +296,7 @@ export class CombatLogic extends DCLogic {
     const P = this._pres || (this._pres = {}), cur = P[name];
     if (val) { if (cur && cur.timer) clearTimeout(cur.timer); P[name] = { val }; return { show: true, cls: '', val }; }
     if (!cur) return { show: false, cls: '', val: null };
-    if (!cur.timer) cur.timer = setTimeout(() => { if (P[name] === cur) { delete P[name]; this.setState({}); } }, reducedMotion() ? 150 : ms);
+    if (!cur.timer) cur.timer = setTimeout(() => { if (P[name] === cur) { delete P[name]; this.setState({}); } }, reducedMotion() ? 150 : ms * fightPace()); // the out animation runs × the combat speed
     return { show: true, cls: ' phc-closing', val: cur.val };
   }
 
@@ -298,7 +305,7 @@ export class CombatLogic extends DCLogic {
     const P = this._panels || (this._panels = { cur: null, old: [] });
     if (P.cur && P.cur.key !== key) {
       const gone = P.cur; P.old = [gone, ...P.old.filter((o) => o.key !== gone.key)].slice(0, 2);
-      setTimeout(() => { if (P.old.includes(gone)) { P.old = P.old.filter((o) => o !== gone); this.setState({}); } }, reducedMotion() ? 150 : 230);
+      setTimeout(() => { if (P.old.includes(gone)) { P.old = P.old.filter((o) => o !== gone); this.setState({}); } }, reducedMotion() ? 150 : 230 * fightPace());
     }
     P.old = P.old.filter((o) => o.key !== key);
     P.cur = { key, vals };
@@ -803,9 +810,9 @@ export class CombatLogic extends DCLogic {
         hasHeart: !!(u && u.mg && u.mg.held), heart: u && u.mg && u.mg.held ? heartUri(u.mg.held.stage) : '', heartTitle: u && u.mg && u.mg.held ? u.name + ' is holding an Outburst: stage ' + u.mg.held.stage + ' (×' + stageMult(u.mg.held.stage) + ')' : '',
         sfx: isMagic && S.action === 'draw' && drawReach.has(k) ? 'none' : undefined,
         hasSprite: !!spr, sprite: spr ? spriteOf(g, spr) : '', spriteStyle: spr ? spriteStyle(spr) : '',
-        hasImg: !!(u && u.img), img: (u && (ART(u.img) || u.img)) || '',
+        hasImg: !!faceOf(u), img: faceOf(u),
         imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157')) + (u && u.downed ? '; opacity: 0.5' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : ''),
-        hasBadge: !!(u && !u.img), badge: u ? u.short : '',
+        hasBadge: !!(u && !faceOf(u)), badge: u ? u.short : '',
         badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + (u && u.downed ? '; opacity: 0.5' : ''),
         hasText: ((diff.has(k) && !mapArt) || !!cv) && !u, text: cv ? (ob ? cv.hp + '' : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + cv.hp) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',
         style: 'position: relative; display: grid; place-items: center; padding: 0; border-radius: 4px; cursor: pointer; background: ' + (k === hv ? 'rgba(255, 255, 255, 0.28)' : route[k] && k !== (cur && cur.pos) ? 'rgba(255, 255, 255, 0.18)' : paint(k, bg)) + '; border: ' + (k === hv ? '2px solid #FFFFFF' : border) + (!vis.tiles.has(k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, ' + (cb.map.dark && !litAt(cb, k) ? '0.72' : '0.5') + ')' : cb.map.dark && !litAt(cb, k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, 0.25)' : ''),
@@ -821,7 +828,7 @@ export class CombatLogic extends DCLogic {
       ...(() => { const kn = u.side === 'pc' || u.analyzedBy, pct = u.downed ? 0 : kn ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
         return { hpBox: 'position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; overflow: hidden; background: #1C2536' + (kn ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.45)'),
           hpChip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #FFFFFF', hpFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #F65157' + (kn ? '' : '; opacity: 0.6') }; })(),
-      key: u.id, zoom: zoomer(this, ART(u.img) || u.img || '', u.name, 'portrait'), name: seenFoe(u) ? u.name + (u.downed ? ' (down)' : '') : 'Unseen hostile', init: u.init, hasImg: !!u.img, noImg: !u.img, img: ART(u.img) || u.img || '', short: u.short,
+      key: u.id, zoom: zoomer(this, faceOf(u), u.name, 'portrait'), name: seenFoe(u) ? u.name + (u.downed ? ' (down)' : '') : 'Unseen hostile', init: u.init, hasImg: !!faceOf(u), noImg: !faceOf(u), img: faceOf(u), short: u.short,
       imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157'),
       badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; border-radius: ' + (u.side === 'pc' ? '50%' : '4px') + '; border: 2px solid ' + ring(u) + '; color: ' + ring(u) + '; font-size: 11px; font-weight: 700',
       style: 'display: flex; gap: 8px; align-items: center; padding: 6px 12px 6px 6px; border-radius: 999px; flex: none; ' + (cur && u.id === cur.id && !cb.over ? 'border: 1px solid #FFFFFF; background: #1C2536; box-shadow: 0 0 0 1px #FFFFFF, 0 0 14px rgba(255, 255, 255, 0.25)' : 'border: 1px solid #232D3F'),
@@ -929,7 +936,10 @@ export class CombatLogic extends DCLogic {
       pick: () => { const m = new Set(this.state.mods || []); if (t.on) { m.delete(t.id); if (t.defaultOn) m.add('!' + t.id); } else { m.add(t.id); m.delete('!' + t.id); } this.setState({ mods: [...m] }); },
       style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (t.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (t.why ? '; opacity: 0.45' : '') }));
     sel.hasToggles = sel.toggles.length > 0;
-    const target = tgtUnit ? { zoom: zoomer(this, tgtUnit.img || '', tgtUnit.name, 'portrait'), name: tgtUnit.name, img: tgtUnit.img || '', hasImg: !!tgtUnit.img,
+    // The target's face exactly as its token draws it (an art library name resolved, never the raw id: a raw id was a
+    // broken image on a black square), else its initials in the token's red frame.
+    const target = tgtUnit ? { zoom: zoomer(this, faceOf(tgtUnit), tgtUnit.name, 'portrait'), name: tgtUnit.name, img: faceOf(tgtUnit), hasImg: !!faceOf(tgtUnit), noImg: !faceOf(tgtUnit), short: tgtUnit.short || tgtUnit.name.slice(0, 2).toUpperCase(),
+      badgeStyle: 'display: grid; place-items: center; flex: none; width: 40px; height: 50px; box-sizing: border-box; border-radius: 6px; font-size: 13px; font-weight: 700; ' + (tgtUnit.side === 'pc' ? 'border: 2px dashed ' + ring(tgtUnit) + '; color: ' + ring(tgtUnit) + '; background: #10151F' : 'border: 2px solid #F65157; color: #F65157; background: #2A0F14'),
       known: !!tgtUnit.analyzedBy, hpFill: 'width: ' + Math.round(tgtUnit.hp / tgtUnit.maxHp * 100) + '%; height: 100%; background: #F65157',
       line: tgtUnit.analyzedBy ? 'HP ' + tgtUnit.hp + ' / ' + tgtUnit.maxHp + ' · Defense ' + tgtUnit.def + ' · Armour ' + tgtUnit.armour + (effectsOf(tgtUnit).length ? ' · ' + effectsOf(tgtUnit).map((f) => f[0]).join(', ') : '')
         : 'Looks ' + condWord(tgtUnit) + ' · ' + (tgtUnit.tier || 'hostile') + ' · Analyze to see its HP and status',
@@ -945,7 +955,7 @@ export class CombatLogic extends DCLogic {
       if (hh && (hh.strain || hh.held)) t += ' · Strain ' + hh.strain + '/' + hh.limit;
       if (hh && hh.held) t += ' · Holding ' + hh.held.name + ' (stage ' + hh.held.stage + ')';
       return t + (cs.length && (u.side === 'pc' || u.analyzedBy) ? ' · ' + cs.map((c) => c.k).join(' · ') : ''); };
-    const who = cur ? { name: cur.name, img: cur.img || IMG['wick-welcome'], title: cb.over ? 'The fight is over' : cur.side === 'foe' ? cur.name + ' acts' : mineTurn ? 'Your turn: ' + cur.name : cur.name + '\'s turn' + (curOwner ? ' (' + curOwner.name + ')' : ''),
+    const who = cur ? { name: cur.name, img: faceOf(cur) || IMG['wick-welcome'], title: cb.over ? 'The fight is over' : cur.side === 'foe' ? cur.name + ' acts' : mineTurn ? 'Your turn: ' + cur.name : cur.name + '\'s turn' + (curOwner ? ' (' + curOwner.name + ')' : ''),
       line: 'HP ' + cur.hp + ' / ' + cur.maxHp + ' · AP ' + cur.ap + (w && w.magazine ? ' · Ammo ' + cur.ammo + '/' + w.magazine : '') + (cur.heat ? ' · Heat ' + cur.heat : '') + (cur.jammed ? ' · JAMMED' : '') + (ch ? ' · Stims ' + ch.stims : '') + magicLine(cur),
       imgStyle: 'width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid ' + ring(cur) } : {};
     const anyMagic = (cb.glyphs || []).length > 0 || (cb.zones || []).length > 0 || cb.units.some((u) => u.mg);
@@ -961,7 +971,7 @@ export class CombatLogic extends DCLogic {
     const mc = myU ? g.characters[myU.charId] : null, mw = myU ? WEAPON[myU.weapon] : null;
     const FX_CHIP = 'padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157';
     const meCls = mc ? classOf(mc) : null; // the class emblem and name beside YOU (classIcons.ts)
-    const mePanel = myU && mc ? { name: myU.name, img: myU.img || IMG['wick-welcome'], zoom: zoomer(this, myU.img || '', myU.name, 'portrait'), hasCls: !!meCls, clsIcon: meCls ? meCls.icon : '', clsName: meCls ? meCls.name.toUpperCase() : '', clsStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (meCls ? meCls.ink : '#A3AEC2'),
+    const mePanel = myU && mc ? { name: myU.name, img: faceOf(myU) || IMG['wick-welcome'], zoom: zoomer(this, faceOf(myU), myU.name, 'portrait'), hasCls: !!meCls, clsIcon: meCls ? meCls.icon : '', clsName: meCls ? meCls.name.toUpperCase() : '', clsStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (meCls ? meCls.ink : '#A3AEC2'),
       hp: myU.hp + ' / ' + myU.maxHp, hpFill: abar(myU.hp / myU.maxHp * 100, '#F65157'), hpChip: abar(myU.hp / myU.maxHp * 100, '#FFFFFF'),
       // Everything you spend, below the HP bar (game/resources.ts): ammo, Heat, Evoker charge, cores, Flux, MP, Strain, the
       // held Outburst, class resources, companions. The line under HP keeps AP, Movement, Stims and Echo.
@@ -974,7 +984,7 @@ export class CombatLogic extends DCLogic {
       miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (effectsOf(myU).length || condChips(myU, g).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU, g).map((c) => c.k)].join(' · ') : ''),
       fx: [...effectsOf(myU).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...condChips(myU, g)], noFx: !effectsOf(myU).length && !condChips(myU, g).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
     const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u, g).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
-      return { key: u.id, name: u.name, img: ART(u.img) || u.img || '', hasImg: !!u.img, short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : u.hp + ' / ' + u.maxHp, hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),
+      return { key: u.id, name: u.name, img: faceOf(u), hasImg: !!faceOf(u), short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : u.hp + ' / ' + u.maxHp, hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),
         fx: fx.map((f) => f[0]).join(' · '), hasFx: fx.length > 0, t: tokenVals(u, { ally: true, player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#7FD4FF', inFight: true, right: false, up: false }),
         imgStyle: 'width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #000; flex: none; border: 2px solid ' + (p ? p.color : '#7FD4FF') + (u.downed || u.dead ? '; opacity: 0.5' : '') }; });
     const squad = true;
@@ -1046,7 +1056,7 @@ export class CombatLogic extends DCLogic {
     const seenCur = !!cur && seenFoe(cur), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
     const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
       name: cb.over ? cb.name : !cur ? '' : seenCur ? cur.name : 'Unseen hostile', line: cb.over ? 'The fight is over.' : !cur ? '' : cur.side === 'foe' ? (seenCur ? 'Round ' + cb.round + ' · it moves' : 'Something moves out of sight') : 'Round ' + cb.round + ' · ' + (cur.downed ? 'Downed' : cur.ap + ' AP') + (curOwner && curOwner.id !== me ? ' · their move' : ''),
-      hasImg: !!(cur && seenCur && cur.img) && !cb.over, img: cur && seenCur ? ART(cur.img) || cur.img || '' : '', noImg: !(cur && seenCur && cur.img) || !!cb.over, short: cb.over ? (won ? '✓' : '✕') : cur && seenCur ? cur.short : '?',
+      hasImg: !!(cur && seenCur && faceOf(cur)) && !cb.over, img: cur && seenCur ? faceOf(cur) : '', noImg: !(cur && seenCur && faceOf(cur)) || !!cb.over, short: cb.over ? (won ? '✓' : '✕') : cur && seenCur ? cur.short : '?',
       kickerStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: ' + curInk,
       imgStyle: 'width: 48px; height: 48px; object-fit: cover; background: #000; flex: none; ' + (cur && cur.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + curInk : 'border-radius: 6px; border: 2px solid ' + curInk),
       badgeStyle: 'display: grid; place-items: center; width: 48px; height: 48px; flex: none; font-size: 14px; font-weight: 700; border-radius: ' + (cur && cur.side === 'pc' ? '50%' : '6px') + '; border: 2px dashed ' + curInk + '; color: ' + curInk,
@@ -1106,8 +1116,11 @@ export class CombatLogic extends DCLogic {
     // with its action and the engine's cost (game/backpack.ts); greyed with the engine's reason off-turn or AP short.
     const canPack = !!myU && !!myU.charId && !myU.companion && !cb.over;
     const bpV = canPack && S.bp ? backpackView(g, cb, myU, !!(mineTurn && cur && myU.id === cur.id), holding ? lockMsg : '') : null;
-    const bpBtn = 'display: inline-flex; align-items: center; gap: 6px; min-height: 22px; margin: -5px 0; padding: 0 8px; border-radius: 6px; border: 1px solid ' + (bpV ? '#FFFFFF' : '#2E3A50') + '; background: ' + (bpV ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; cursor: pointer';
-    const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: bpV ? 'true' : 'false', btnStyle: bpBtn,
+    // The Backpack button sits in your unit card beside your name (Leon, 9 Nov 2026: one labelled button there, none by
+    // the AP bar); on short windows, where the card folds into the one-line bar, the bar carries it. Lit while open.
+    const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';
+    const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: S.bp ? 'true' : 'false', btnStyle: bpBtn(28) + '; margin-left: auto', miniStyle: bpBtn(26),
+      title: (S.bp ? 'Close your backpack' : 'Open your backpack: draw, put away, drop, light armour') + ' (key B)',
       show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '', reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
       sections: bpV ? bpV.sections.map((sc) => ({ key: sc.key, title: sc.title, isEmpty: !sc.rows.length, empty: sc.empty,
         rows: sc.rows.map((r) => ({ key: r.key, tag: r.tag, name: r.name, sub: r.sub, hasSub: !!r.sub, note: r.note, hasNote: !!r.note, hasActs: r.acts.length > 0,

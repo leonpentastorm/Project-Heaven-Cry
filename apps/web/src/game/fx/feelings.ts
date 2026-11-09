@@ -6,7 +6,7 @@
 // in fxCredits.ts); rings, lines, strokes and tints are drawn in code. Reduced motion is respected throughout (dom.ts).
 import type { FxEvent } from '@engine';
 import { type Sfx, reducedMotion } from '../sfx';
-import { type Pt, after, anim, burst, floatText, particle, ring } from './dom';
+import { type Pt, after, anim, burst, floatText, particle, ring, slow } from './dom';
 import { FEELING_INK, FEELING_MOTIF, feelingIconSrc, feelingName, feltCardText } from '../feelingsView';
 
 export interface FeelKit {
@@ -71,7 +71,8 @@ export function feltCard(feeling: string) {
   d.innerHTML = '<img alt="" src="' + feelingIconSrc(feeling, col, 40) + '" style="width:40px;height:40px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:10px;font-weight:700;letter-spacing:.18em;color:' + col + '">A NEW FEELING · ' + feelingName(feeling).toUpperCase() + '</span><span style="font-family:Spectral,serif;font-size:17px;line-height:1.3">' + feltCardText(feeling) + '</span></div>';
   document.body.appendChild(d);
   anim(d, reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(-10px) scale(.96)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0) scale(1)' }], { duration: 320, easing: 'ease-out', fill: 'both' });
-  setTimeout(() => { anim(d, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'both' }); setTimeout(() => d.remove(), 420); }, 3200);
+  // plain timers (not after(): the card must go even if the effects are cleared meanwhile), at the pace like its anim()s
+  setTimeout(() => { anim(d, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'both' }); setTimeout(() => d.remove(), slow(420)); }, slow(3200));
 }
 
 export function feelingHandlers(K: FeelKit): Record<string, (e: FxEvent) => void> {

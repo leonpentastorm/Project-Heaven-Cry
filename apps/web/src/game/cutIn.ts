@@ -16,7 +16,10 @@
 // the rings, the lines and the panels are CSS.
 import { FAITH_PATRON, type FxEvent } from '@engine';
 import { sfx, reducedMotion, type Sfx } from './sfx';
-import { anim, centre, floatText, burst, tileEl, type Pt } from './fx/dom';
+import { anim as domAnim, centre, floatText, burst, tileEl, withTempo, fxPace, type Pt } from './fx/dom';
+/** The cut-in's own motion: at the combat speed (fx/dom.ts, 1 outside a fight), never at a spotlight's slowed tempo (an
+ *  overlay is not the action), so its animations and its timers (at(), × fxPace) keep in step. */
+const anim = (el: Element, f: Keyframe[], o: KeyframeAnimationOptions) => withTempo(1, () => domAnim(el, f, o));
 import { FAITH_GOLD, FAITH_INK, accentOf, patronMarkUri, patronPortrait } from './faithArt';
 import { takeStage, stageBox } from './stage';
 
@@ -209,8 +212,11 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
   if (size === 'full' && current) current.skip();
   ensureCss();
   const rm = reducedMotion(), T = cutInTiming(size, rm), t0 = Date.now();
+  // In a fight every beat follows the combat speed (game/combatSpeed.ts): T stays in Fast's numbers (the effects queue
+  // scales the Miracle's beat the same way), the waits are × k, and anim() scales itself.
+  const k = fxPace();
   const timers: number[] = [];
-  const at = (f: () => void, ms: number) => { timers.push(window.setTimeout(f, Math.max(0, ms))); };
+  const at = (f: () => void, ms: number) => { timers.push(window.setTimeout(f, Math.max(0, ms * k))); };
   const nodes: HTMLElement[] = [];
   let landed = false, pulled = false, closed = false;
   // One stage (game/stage.ts, decision 113): a full cut-in clears a spotlight strip on screen and holds the next ones
@@ -237,7 +243,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
       document.body.appendChild(b); nodes.push(b);
       anim(b, rm ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(14px)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0)' }], { duration: rm ? 150 : 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
       let gone = false, unstage = () => {};
-      const shut = () => { if (gone) return; gone = true; live.delete(shut); unstage(); anim(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' }); window.setTimeout(() => b.remove(), 230); };
+      const shut = () => { if (gone) return; gone = true; live.delete(shut); unstage(); anim(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' }); window.setTimeout(() => b.remove(), 230 * k); };
       live.add(shut); unstage = stageBox(shut); // a spotlight cut-in that starts while the box is up closes it first
       x.addEventListener('click', shut); at(shut, o.box ? T.boxMs : 0);
     }, delay);
@@ -261,8 +267,8 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
     land(); showBox(T.boxAt);
     const end = () => {
       if (closed) return; closed = true; live.delete(end); timers.forEach(clearTimeout);
-      anim(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 }); window.setTimeout(() => { nodes.forEach((n) => n.remove()); }, 210);
-      smallOn = false; const next = smallQueue.shift(); if (next) window.setTimeout(() => showCutIn(next), 220);
+      anim(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 }); window.setTimeout(() => { nodes.forEach((n) => n.remove()); }, 210 * k);
+      smallOn = false; const next = smallQueue.shift(); if (next) window.setTimeout(() => showCutIn(next), 220 * k);
     };
     live.add(end); at(() => { anim(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }); }, T.pull); at(end, T.total);
     return { el: root, timing: T, skip: end, close: end };
@@ -388,7 +394,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
     if (pulled) { close(); return; }
     {
       timers.forEach(clearTimeout); timers.length = 0;
-      const elapsed = Date.now() - t0, ms = pull(true), saved = Math.max(0, T.land - elapsed - ms);
+      const elapsed = Date.now() - t0, ms = pull(true), saved = Math.max(0, (T.land - ms) * k - elapsed); // real ms (hurryFx)
       showBox(ms + 250); at(close, ms + 250 + T.boxMs + 300);
       if (saved > 0) try { o.onSkip?.(saved); } catch { /* */ }
     }

@@ -11,10 +11,12 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
-import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_MAX_MS, CUTIN_TEMPO } from '../spotlight';
+import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
+import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
-import { type Pt, after, bumpGen, withTempo, fxTempo, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
+import { reloadCard } from './reload';
+import { type Pt, after, bumpGen, withTempo, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
@@ -34,6 +36,7 @@ const ROBOT = /drone|robot|\bbot\b|turret|automaton|mech\b|android|construct|sen
 /** Called by FxLayer before playing a batch: where everyone is now, and (in a fight) what the squad can see. */
 export function setContext(g: GameState | null, screen: string) {
   units = new Map(); seenTiles = null; ctxGame = g; charNames = new Map();
+  setInBattle(!!g?.combat && screen === 'combat'); // the combat speed applies in a fight (game/combatSpeed.ts)
   if (!g) return;
   for (const c of Object.values(g.characters || {})) if (c && (c as any).id) charNames.set((c as any).id, String((c as any).name || ''));
   if (screen === 'combat' && g.combat) {
@@ -66,7 +69,7 @@ function ghostOf(id: string | null | undefined, key: string | null | undefined):
   const copy = src.cloneNode(true) as HTMLElement, ms = 2400;
   const box = put(copy, p, p.s, p.s, ms); box.style.zIndex = '1';
   anchor(box, key, ms);
-  ghosts.set(id, copy); setTimeout(() => { if (ghosts.get(id) === copy) ghosts.delete(id); }, ms);
+  ghosts.set(id, copy); setTimeout(() => { if (ghosts.get(id) === copy) ghosts.delete(id); }, slow(ms));
   return copy;
 }
 /** The token to shake: the live one, else (for a unit this action killed) its ghost. */
@@ -76,11 +79,12 @@ const visible = (k: string | null | undefined) => !k || !seenTiles || seenTiles.
 /** Where a unit's token is on screen now (it may have moved since the event). */
 const tokOf = (id: string | null | undefined, fallback?: string) => tokenEl(tileEl(unit(id)?.pos || fallback));
 const at = (k: string | null | undefined) => (visible(k) ? centre(k) : null);
-/** A one-shot combat sound at a point (panned). In an action slowed after a spotlight cut-in it plays at the tempo: its
- *  rate × 0.85 and its delay ÷ 0.85. */
+/** A one-shot combat sound at a point (panned). Its delay follows the combat speed and the tempo (fx/dom.ts fxScale); in
+ *  an action slowed after a spotlight cut-in it also plays at the tempo's rate (× 0.85). The combat speed alone never
+ *  changes a sound's pitch. */
 const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => {
-  const tp = fxTempo();
-  sfx(s, { ...o, pan: panOf(p), ...(tp !== 1 ? { rate: (o.rate || 1) * tp, ...(o.delay ? { delay: o.delay / tp } : {}) } : {}) });
+  const tp = fxTempo(), k = fxScale();
+  sfx(s, { ...o, pan: panOf(p), ...(tp !== 1 ? { rate: (o.rate || 1) * tp } : {}), ...(o.delay && k !== 1 ? { delay: o.delay * k } : {}) });
 };
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
 /** Which way each unit last aimed (radians on screen, 0 = right), from its last shot or Evoke: behind it (the opposite
@@ -217,9 +221,10 @@ function explosion(k: string | undefined, radius = 1, kind: 'frag' | 'fire' | 's
 }
 
 /** What a reload throws off, from behind the portrait: a revolver's or break-action's spent brass, the magazine (or
- *  canister, or bolt box) dropping to the floor (a tactical reload puts it back in the pack), a bow's arrows slid into
- *  the quiver, a crossbow's bolt drawn from behind and set. An off-hand gun's reload does the same for that gun; a
- *  reload of both guns (e.off) throws off both. */
+ *  canister, or bolt box) dropping to the floor, a bow's arrows slid into the quiver, a crossbow's bolt drawn from behind
+ *  and set. A tactical reload drops nothing: its old magazine goes into the pack on the reload card (fx/reload.ts), and
+ *  one falling under the portrait would read as a speed reload (review, 9 Nov 2026). An off-hand gun's reload does the
+ *  same for that gun; a reload of both guns (e.off) throws off both. */
 function reloadPieces(e: FxEvent, p: Pt, ms: number) {
   const who = whoOf(tokOf(e.unit, e.at));
   if (!who) return;
@@ -229,7 +234,9 @@ function reloadPieces(e: FxEvent, p: Pt, ms: number) {
     if (br.bow === 'bow') { stowArrows(who, how === 'loose' ? Math.min(3, Math.max(1, rounds || 2)) : 1, aim, ms * 0.8); return; }
     if (br.bow === 'crossbow' && how !== 'mag') { after(() => drawArrow(who, aim, { ms: ms * 0.6, bolt: true }), delay + ms * 0.15); return; }
     if (br.load) loadRounds(who, br, rounds || size, aim, ms, { delay: delay + ms * 0.06, spent: size });
-    if (how === 'mag' || br.mag === 'fuel_can') dropMag(who, br.mag, { delay: delay + ms * 0.12, tactical });
+    // a speed reload's magazine leaves the reload card falling toward the unit (fx/reload.ts) and reaches it about a
+    // third of the way in: from there it drops out from under the portrait to the ground, where the pile is
+    if (!tactical && (how === 'mag' || br.mag === 'fuel_can')) dropMag(who, br.mag, { delay: delay + ms * (br.mag === 'fuel_can' ? 0.12 : 0.3) });
   };
   one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, e.rounds, 0);
   if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, e.off.rounds, 160);
@@ -324,7 +331,7 @@ const H: Record<string, Handler> = {
   },
   volley(e) {
     const vs = volleySound(e.cat || '', e.mode), p = at(e.from) || centre(e.to);
-    volley = { unit: e.unit, silent: !!vs, until: performance.now() + 2500 };
+    volley = { unit: e.unit, silent: !!vs, until: performance.now() + slow(2500) }; // the shots it covers are spaced at the pace
     if (vs) play(vs.s, p, { rate: vs.rate });
     if (e.mode === 'skill' && e.name) { const q = centre(e.from); if (q && visible(e.from)) floatText(String(e.name).toUpperCase(), q, WHITE, { small: true, ms: 1100 }); }
     if (e.mode === 'auto' && p && e.to) {
@@ -348,8 +355,9 @@ const H: Record<string, Handler> = {
     else if (kind === 'shells') { play('reload_shells', p, { rate: Math.max(0.85, Math.min(1.3, 1250 / ms)) }); play('rack', p, { delay: ms * 0.8 }); }
     else if (e.how === 'loose') { for (let i = 0; i < n; i++) play('round_in', p, { delay: each(i, n), rate: jitter() }); play('mag_in', p, { delay: ms * 0.85 }); }
     else play(cat === 'rifle' || cat === 'heavy' || cat === 'smg' ? 'reload_rifle' : cat === 'pistol' || cat === 'revolver' ? 'reload_pistol' : 'reload_mag', p, { rate: Math.max(0.85, Math.min(1.3, 1250 / ms)) });
-    if (p) timerRing(e.at, ms, WHITE, kind === 'fuel' ? 'REFUEL' : 'RELOAD');
-    if (p) reloadPieces(e, p, ms);
+    // the reload card over the unit (fx/reload.ts): the magazine out and in, large, and the count; it replaces the timer
+    // ring, which a pile's stack on the tile hid (Leon, 9 Nov 2026)
+    if (p) { reloadCard(e, e.at, ms); reloadPieces(e, p, ms); }
   },
   load(e) {
     const p = at(e.at), ms = e.dur || 1400, n = Math.max(2, Math.min(8, Math.ceil((e.rounds || 5) / 2)));
@@ -844,8 +852,10 @@ Object.assign(H, worldHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play }
 Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, dust, corners, glitch, condWord }));
 
 // ---------- the queue ----------
-/** How long each kind holds the stage before the next event starts (ms). */
-function beatOf(e: FxEvent): number {
+/** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
+const beatOf = (e: FxEvent): number => { const b = baseBeat(e); return b ? b * fxPace() : b; };
+/** The beat at Fast (the written timings). */
+function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
   const sb = soulBeat(e); if (sb !== undefined) return sb;
@@ -887,7 +897,7 @@ export const TURNS_HOLD_MAX = 8000;
 // A fight's batch with a 'spotlight' moment stops at a gate just before the action it happened in (its `from`): the
 // cut-in plays, then that action plays slowed (tempo 0.85: every beat, duration and delay ÷ 0.85; one-shot sounds at
 // rate × 0.85), then everything after it at normal speed. Events behind a closed gate wait unscheduled and are scheduled
-// from the cut-in's actual end (a skip moves them earlier). The gate always opens by CUTIN_MAX_MS.
+// from the cut-in's actual end (a skip moves them earlier). The gate always opens by its cap (spotlight/timing.ts cutInCap).
 /** The events waiting behind a gate (new batches join behind them, in order). */
 let held: { evs: FxEvent[]; stream?: string; speed: number } | null = null;
 /** While a cut-in shows: its planned end (input is held only then). */
@@ -902,7 +912,7 @@ export function forgetSpotlights(stream?: string) { if (!stream) { decided.clear
 /** Until when (performance.now() clock) other units' turns are still being shown: the engine runs the enemies' turns at
  *  once, so the state says "your turn" while their moves still play. The combat screen holds your actions until then,
  *  and while a spotlight cut-in shows. */
-export const turnsBusyUntil = () => Math.min(Math.max(turnsUntil, gateUntil), performance.now() + TURNS_HOLD_MAX);
+export const turnsBusyUntil = () => Math.min(Math.max(turnsUntil, gateUntil), performance.now() + TURNS_HOLD_MAX * fxPace());
 // For the e2e suites (they wait for the other turns to finish playing before they act, as a player must).
 if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 /** When the queued effects will have played (performance.now() clock): a turn banner can wait for the enemies' moves. */
@@ -990,7 +1000,7 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
   if (!evs.length) return;
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
-  const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), room = Math.max(1500, 7000 - backlog);
+  const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), k = fxPace(), room = Math.max(1500 * k, 7000 * k - backlog);
   const gates = isFight(stream) ? gatesOf(evs, (e) => decided.has(keyOf(stream, e))) : [];
   const plan = planQueue(evs.map(beatOf), room, opts.keep, gates.length ? gates[0].at : -1);
   // A gate whose action is (partly) skipped shows no cut-in: the moment went by in the backlog.
@@ -1012,18 +1022,18 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
     }
     const slowed = slowedIn(e, seg), tp = slowed ? CUTIN_TEMPO : 1, beat = beatOf(e);
     if (e.k === 'turn') lastTurn = t;
-    const wait = t - now, go = () => { if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); playFx(e, stream, tp); };
+    const wait = t - now, go = () => { if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp); };
     if (wait <= 4) go();
     else schedule(go, t);
     // A slowed event's whole beat follows the tempo (a bow's draw included: its after() is slowed too). Otherwise a bow's
     // draw holds its full time even when a backlog plays faster (the arrow can't fly before it is loosed), and a Miracle
     // (behind a gate that was closed when it came) is never sped up.
-    const draw = drawsArrow(e) && mineOnly(e) ? DRAW_MS : 0;
+    const draw = drawsArrow(e) && mineOnly(e) ? DRAW_MS * fxPace() : 0;
     t += slowed ? beat / tp : e.k === 'miracle' ? beat : (beat - draw) * speed + draw;
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
-  if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120); if (turnsUntil !== was) holdChanged(); }
+  if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120 * fxPace()); if (turnsUntil !== was) holdChanged(); }
   clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, t - now + 50);
 }
 const holdChanged = () => { try { window.dispatchEvent(new CustomEvent(FX_HOLD)); } catch { /* */ } };
@@ -1037,14 +1047,14 @@ function schedule(run: () => void, t: number) {
  *  the rest plays from then, the gate's action slowed. Until then queueEnd and the turns' hold are estimates. */
 function closeGate(rest: FxEvent[], stream: string | undefined, t: number, gate: Gate, c: { spec: any; slow: boolean }, lastTurn: number, speed = 1) {
   held = { evs: rest, stream, speed };
-  const n = c.spec.strips.length, god = c.spec.strips.some((s: any) => s.god), cutMs = CUTIN_MS(n, god, !c.slow, !!c.spec.short);
+  const n = c.spec.strips.length, god = c.spec.strips.some((s: any) => s.god), k = fxPace(), cutMs = CUTIN_MS(n, god, !c.slow, !!c.spec.short) * k;
   const seg = c.slow ? { from: gate.from, to: gate.to } : null;
   // Estimates (a skip moves them earlier when the gate opens).
   const beats = rest.map(beatOf), times = timeline(rest, beats, t + cutMs, speed, seg);
   rest.forEach((e, i) => { if (e.k === 'turn') lastTurn = times[i]; });
   const turnsWas = turnsUntil;
   queueEnd = (times.length ? times[times.length - 1] + beats[beats.length - 1] / (slowedIn(rest[rest.length - 1], seg) ? CUTIN_TEMPO : 1) : t + cutMs);
-  if (lastTurn >= 0) turnsUntil = Math.max(turnsUntil, lastTurn + 120);
+  if (lastTurn >= 0) turnsUntil = Math.max(turnsUntil, lastTurn + 120 * k);
   gateUntil = t + cutMs; holdChanged();
   const id = c.spec.id;
   let opened = false, cap = 0;
@@ -1058,7 +1068,7 @@ function closeGate(rest: FxEvent[], stream: string | undefined, t: number, gate:
   };
   const go = () => {
     gateShowing = true; gateUntil = performance.now() + cutMs; holdChanged();
-    cap = window.setTimeout(() => open(false), CUTIN_MAX_MS + 100);
+    cap = window.setTimeout(() => open(false), (cutInCap(!!c.spec.short) + 100) * k);
     // preempt: a cut-in already on screen (a story one, a client-door preview) gives way at once, so this one plays
     // before its action, never after it.
     showSpotlight(c.spec, { prefApplied: true, preempt: true }).then((r) => open(r !== 'off')).catch(() => open(false));
@@ -1084,3 +1094,16 @@ export function clearFx() { for (const x of timers) clearTimeout(x.id); timers =
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */
 if (typeof window !== 'undefined') (window as any).__phcFx = { playFx, queueFx };
+
+// ---------- the combat speed's test hook ----------
+/** The last effects the queue played: kind, n, when (performance.now()) and the beat it held (ms, at the speed). */
+const FX_LOG: { n: number; k: string; at: number; beat: number }[] = [];
+function noteFx(e: FxEvent, beat: number) { FX_LOG.push({ n: e.n, k: e.k, at: Math.round(performance.now()), beat: Math.round(beat) }); if (FX_LOG.length > 40) FX_LOG.splice(0, FX_LOG.length - 40); }
+/** For the e2e suites (combat-speed.mjs): the speed, its multiplier, the pace in force now (1 outside a fight), the
+ *  spotlight tempo, the beat a kind of event would hold now (beat('shot')), and the last effects played. */
+export function combatTempoInfo() {
+  const speed = getCombatSpeed();
+  return { speed, mult: combatTempo(speed), pace: battlePace(), battle: inBattle(), tempo: fxTempo(), scale: fxScale(),
+    beat: (k: string, e: Record<string, unknown> = {}) => beatOf({ n: 0, ...e, k } as any), fx: FX_LOG.slice() };
+}
+if (typeof window !== 'undefined') (window as any).__phcCombatTempo = () => { const t = combatTempoInfo(); return { ...t, beat: undefined, shotBeat: t.beat('shot', { hit: true }) }; };

@@ -38,7 +38,7 @@ const round = (v: number) => Math.round(v * 10) / 10;
 export const pointsAttr = (pts: Pt[]) => pts.map(([x, y]) => x + ',' + y).join(' ');
 
 /** Every polygon of one strip, w × h px, torn from `seed`: the ink lip, the body, the eye window (left or right). */
-export interface StripShape { lip: string; body: string; window: string; windowLeft: boolean; edgeX: number }
+export interface StripShape { lip: string; body: string; window: string; windowLeft: boolean; edgeX: number; top: Pt[] }
 export function stripShape(seed: string | number, w: number, h: number, o: { windowFrac?: number; windowLeft?: boolean; inset?: number } = {}): StripShape {
   const r = mulberry32(hashSeed(seed));
   const left = o.windowLeft ?? r() < 0.5, frac = o.windowFrac ?? 0.62, inset = o.inset ?? 10;
@@ -47,5 +47,23 @@ export function stripShape(seed: string | number, w: number, h: number, o: { win
   const edgeX = left ? w * frac : w * (1 - frac);
   const col = tornColumn(r, edgeX, 0, h);
   const win: Pt[] = left ? [[-20, 0], ...col, [-20, h]] : [[w + 20, 0], ...col, [w + 20, h]];
-  return { lip: pointsAttr([...lipTop, ...lipBot]), body: pointsAttr([...top, ...bot]), window: pointsAttr(win), windowLeft: left, edgeX };
+  return { lip: pointsAttr([...lipTop, ...lipBot]), body: pointsAttr([...top, ...bot]), window: pointsAttr(win), windowLeft: left, edgeX, top };
+}
+/** How far down the torn top edge reaches between x0 and x1 (its lowest point there, the edge read between its points). */
+export function topDepth(top: Pt[], x0: number, x1: number): number {
+  let d = 0;
+  for (let i = 0; i < top.length; i++) {
+    const [x, y] = top[i];
+    if (x >= x0 && x <= x1) d = Math.max(d, y);
+    const nx = top[i + 1];
+    if (nx) for (const e of [x0, x1]) if ((x - e) * (nx[0] - e) < 0) d = Math.max(d, y + ((nx[1] - y) * (e - x)) / (nx[0] - x));
+  }
+  return d;
+}
+/** A whole avatar (a small square face drawn whole, its top at the picture's top: Wick's placeholder robot) in a strip
+ *  h px tall whose torn top edge reaches `depth` px down over the window: its size (about 1.15 × h) and its top, so the
+ *  whole head sits below the tear (the eyes as near the middle line as that allows). eyeY: the eyes' height in it, 0–1. */
+export function wholeFit(h: number, eyeY: number, depth: number): { side: number; y: number } {
+  const side = Math.round(h * 1.15), clear = Math.ceil(depth) + 3;
+  return { side, y: Math.max(clear, Math.min(h * 0.12, h / 2 - eyeY * side)) };
 }

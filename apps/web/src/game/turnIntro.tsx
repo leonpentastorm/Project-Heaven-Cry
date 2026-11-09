@@ -35,7 +35,8 @@ import { combatStreamKey } from './fx/FxLayer';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, readCardSide, cardOnRight, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
 import { resourcesOf, resRowView, type ResRow } from './resources';
-import { cutInActive, EV_CUTIN_END } from './spotlight';
+import { cutInActive, EV_CUTIN_END, CUTIN_MS, CUTIN_MAX_MS } from './spotlight';
+import { fightPace } from './combatSpeed';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
 
@@ -77,8 +78,8 @@ export function cue(name: Cue) {
 }
 
 // ---------- what a banner and a cut-in show ----------
-interface Banner { id: string; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number }
-interface Cut { id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
+interface Banner { id: string; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number }
+interface Cut { k?: number; id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
   hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): every row, in the You card's order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
 const dispatch = (name: string, detail: any) => { try { window.dispatchEvent(new CustomEvent(name, { detail })); } catch { /* */ } };
@@ -137,7 +138,7 @@ function estMs(e: any): number {
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(2500, Number(e.dur) || 900);
     case 'explode': case 'evoke': case 'release': return 700;
     case 'outburst': return 600;
-    case 'spotlight': return e.kind === 'crit' && e.via ? 900 : 1400; // the cut-in (game/spotlight) plays before its action (a crit in a fight: the short one)
+    case 'spotlight': return e.kind === 'crit' && e.via ? CUTIN_MS(1, false, false, true) : CUTIN_MS(1); // the cut-in (game/spotlight) plays before its action (a crit in a fight: the short one)
     default: return 220;
   }
 }
@@ -177,16 +178,18 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   // ----- showing one beat -----
   const showCombatTurn = (unitId: string, round: number) => {
     // A spotlight cut-in on screen: the banner waits for it to clear (decision 113).
-    if (cutInActive()) { const f = () => { removeEventListener(EV_CUTIN_END, f); later(() => showCombatTurn(unitId, round), 60); }; addEventListener(EV_CUTIN_END, f); later(() => removeEventListener(EV_CUTIN_END, f), 2500); return; }
+    if (cutInActive()) { const f = () => { removeEventListener(EV_CUTIN_END, f); later(() => showCombatTurn(unitId, round), 60); }; addEventListener(EV_CUTIN_END, f); later(() => removeEventListener(EV_CUTIN_END, f), (CUTIN_MAX_MS + 400) * fightPace()); return; }
     const { game: g, meId: me, screen: sc } = live.current, cb = g?.combat;
     if (!g || !cb || g.phase !== 'combat' || sc !== 'combat' || cb.over || document.hidden) return;
-    const b = bannerFor(g, cb, unitId, me, round); if (!b) return;
+    const b0 = bannerFor(g, cb, unitId, me, round); if (!b0) return;
+    // Every length here follows the combat speed (game/combatSpeed.ts: Normal ≈ 15% slower than Fast).
+    const k = fightPace(), b = { ...b0, k };
     setBanner(b);
     cue(b.mine ? 'banner_mine' : b.foe ? 'banner_foe' : 'banner_ally');
     // Fog of war: an unseen hostile's turn moves nobody's view (scrolling to its tile would give its place away).
     if (!b.unseen) dispatch(EV_FOCUS, { key: b.at, unit: unitId, mine: b.mine });
     dispatch(EV_TURN, { unit: unitId, side: b.side, mine: b.mine, round });
-    const total = (reducedMotion() ? 300 : 520) + b.hold;
+    const total = ((reducedMotion() ? 300 : 520) + b.hold) * k;
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
     // Yours: the card follows the banner in, once the turn is still yours.
     if (b.mine) later(() => {
@@ -194,9 +197,9 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       if (!g2 || !cb2 || cb2.order[cb2.turn] !== unitId || document.hidden || customOpen.current) return;
       const c = cutFor(g2, castFight(g2, cb2, ART) || cb2, unitId); if (!c) return;
       c.right = cardOnRight(readCardSide(), () => underLeftCard(c.at)); // the player's choice (customise dialog), else Auto
-      setCutOut(false); setCut(c); setCutImg(c.img); cue('cutin');
+      setCutOut(false); setCut({ ...c, k }); setCutImg(c.img); cue('cutin');
       if (/^data:/.test(c.img)) bigPortrait(c.img).then((big) => setCutImg((x) => (x === c.img ? big : x))).catch(() => {});
-    }, reducedMotion() ? 150 : 380);
+    }, (reducedMotion() ? 150 : 380) * k);
   };
   const showRound = (round: number, mineToo: boolean) => {
     if (document.hidden) return;
@@ -253,10 +256,10 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
         const clock = fxClock.current;
         if (clock.on && e.n > firstN && !newFight) {
           if (clock.at >= e.n) later(go, 0);
-          else { clock.waiters.set(e.n, go); later(() => { if (clock.waiters.get(e.n) === go) { clock.waiters.delete(e.n); go(); } }, 6000); }
+          else { clock.waiters.set(e.n, go); later(() => { if (clock.waiters.get(e.n) === go) { clock.waiters.delete(e.n); go(); } }, 6000 * fightPace()); }
         } else later(go, t);
       }
-      t += estMs(e);
+      t += estMs(e) * fightPace();
     }
   }, [fightId, lastN, turnKey, screen]);
 
@@ -275,13 +278,13 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
 
   // ----- the cut-in: auto-dismiss, any click or key dismisses, 1–4 picks a command -----
   const hovering = React.useRef(false);
-  const dismiss = React.useCallback(() => { setCutOut(true); later(() => { setCut(null); setCutOut(false); }, reducedMotion() ? 150 : 320); }, []);
+  const dismiss = React.useCallback(() => { setCutOut(true); later(() => { setCut(null); setCutOut(false); }, (reducedMotion() ? 150 : 320) * fightPace()); }, []);
   const pick = React.useCallback((c: Cut, cmd: Command) => { dispatch(EV_ACTION, { action: cmd.action, unit: c.unitId }); dismiss(); }, [dismiss]);
   const customise = React.useCallback((c: Cut) => { setCustom(c.charId); dismiss(); }, [dismiss]);
   React.useEffect(() => {
     if (!cut || cutOut) return;
     hovering.current = false;
-    const t0 = Date.now(), life = reducedMotion() ? 2200 : 2000;
+    const t0 = Date.now(), life = (reducedMotion() ? 2200 : 2000) * (cut.k || 1);
     const iv = setInterval(() => { if (!hovering.current && Date.now() - t0 > life) { clearInterval(iv); dismiss(); } }, 150);
     const onKey = (e: KeyboardEvent) => {
       const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target as HTMLElement)?.tagName || '');
@@ -329,7 +332,7 @@ const ensureCss = () => { if (cssIn || typeof document === 'undefined') return; 
 
 function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
   ensureCss();
-  const dur = (rm ? 300 : 520) + b.hold;
+  const dur = Math.round(((rm ? 300 : 520) + b.hold) * (b.k || 1)), k = b.k || 1;
   return (
     <div aria-live="polite" role="status" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 58, display: 'flex', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', paddingBottom: 12 }}>
       <div style={{ position: 'relative', marginTop: 10, animation: (rm ? 'phcBannerFade ' : 'phcBanner ') + dur + 'ms cubic-bezier(.2,.8,.2,1) both' }}>
@@ -346,7 +349,7 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2' }}>{b.sub}</span>
             </span>
           </span>
-          {!rm && <span aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent)', animation: 'phcBannerShine .7s ease-out .15s both' }} />}
+          {!rm && <span aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent)', animation: 'phcBannerShine ' + Math.round(700 * k) + 'ms ease-out ' + Math.round(150 * k) + 'ms both' }} />}
         </div>
       </div>
     </div>
@@ -387,7 +390,8 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
   ensureCss();
   // Mirrored (from the right) when the left card would cover the unit itself.
   const R = !!c.right, sfx2 = R ? 'R' : '';
-  const anim = out ? (rm ? 'phcFadeOut .15s ease-in both' : 'phcCutOut' + sfx2 + ' .3s cubic-bezier(.5,0,.75,0) both') : rm ? 'phcFadeIn .15s ease-out both' : 'phcCutIn' + sfx2 + ' .42s cubic-bezier(.2,.8,.2,1) both';
+  const k = c.k || 1, T = (ms: number) => Math.round(ms * k) + 'ms'; // the combat speed (game/combatSpeed.ts)
+  const anim = out ? (rm ? 'phcFadeOut ' + T(150) + ' ease-in both' : 'phcCutOut' + sfx2 + ' ' + T(300) + ' cubic-bezier(.5,0,.75,0) both') : rm ? 'phcFadeIn ' + T(150) + ' ease-out both' : 'phcCutIn' + sfx2 + ' ' + T(420) + ' cubic-bezier(.2,.8,.2,1) both';
   const slab = R ? 'polygon(0 0, 100% 0, 100% 100%, 22% 100%)' : 'polygon(0 0, 100% 0, 78% 100%, 0 100%)';
   // The card grows with its resource rows (about 38 px a line past the second; two to a line past four rows), and stays centred.
   const two = c.res.length > 4, lines = two ? Math.ceil(c.res.length / 2) : c.res.length;
@@ -395,14 +399,14 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
   return (
     <>
       {/* A dark veil on the left so the card reads over the grid; never clickable. */}
-      <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 57, pointerEvents: 'none', background: 'linear-gradient(' + (R ? 270 : 90) + 'deg, rgba(5,7,11,.82) 0%, rgba(5,7,11,.45) 38%, transparent 62%)', animation: out ? 'phcFadeOut .3s ease-in both' : 'phcCutVeil .3s ease-out both' }} />
+      <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 57, pointerEvents: 'none', background: 'linear-gradient(' + (R ? 270 : 90) + 'deg, rgba(5,7,11,.82) 0%, rgba(5,7,11,.45) 38%, transparent 62%)', animation: out ? 'phcFadeOut ' + T(300) + ' ease-in both' : 'phcCutVeil ' + T(300) + ' ease-out both' }} />
       <div data-phc-cutin="" role="dialog" aria-label={'Your turn: ' + c.name} onPointerMove={(e) => { if (e.movementX || e.movementY) onHover(true); }} onMouseLeave={() => onHover(false)}
         style={{ position: 'fixed', [R ? 'right' : 'left']: 0, top: '50%', marginTop: -H / 2, zIndex: 57, width: 'min(640px, 96vw)', display: 'flex', flexDirection: R ? 'row-reverse' : 'row', alignItems: 'stretch', fontFamily: "'Chakra Petch', sans-serif", color: '#E7EBF3', animation: anim, pointerEvents: out ? 'none' : 'auto' }}>
         {/* The portrait, cut on a diagonal, on a slab in the player's colour. */}
         <div style={{ position: 'relative', flex: 'none', width: 'min(230px, 36vw)', height: H }}>
           <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: c.color, clipPath: slab }} />
           <img src={img} alt="" style={{ position: 'absolute', inset: R ? '0 0 0 10px' : '0 10px 0 0', width: 'calc(100% - 10px)', height: '100%', objectFit: 'cover', objectPosition: '50% 20%', background: '#000', clipPath: slab }} />
-          {!rm && <div aria-hidden="true" style={{ position: 'absolute', inset: 0, overflow: 'hidden', clipPath: slab }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%)', animation: 'phcCutStreak .6s ease-out .2s both' }} /></div>}
+          {!rm && <div aria-hidden="true" style={{ position: 'absolute', inset: 0, overflow: 'hidden', clipPath: slab }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%)', animation: 'phcCutStreak ' + T(600) + ' ease-out ' + T(200) + ' both' }} /></div>}
         </div>
         <div style={{ position: 'relative', flex: 1, minWidth: 0, [R ? 'marginRight' : 'marginLeft']: -40, padding: R ? '18px 52px 18px 22px' : '18px 22px 18px 52px', background: '#0A0D13', clipPath: R ? 'polygon(0 0, 86% 0, 100% 100%, 0 100%)' : 'polygon(14% 0, 100% 0, 100% 100%, 0 100%)', borderTop: '3px solid #FFFFFF', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 20px 60px rgba(0,0,0,.7)' }}>
           <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', color: '#FFFFFF' }}>▶ {c.kicker}</span>
@@ -418,7 +422,7 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginTop: 4 }}>
             {c.cmds.map((cmd, i) => (
               <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click" data-act={cmd.action} title={cmd.off ? cmd.label + ': ' + cmd.sub : undefined}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 50, padding: '6px 10px', borderTop: '1px solid #3B475D', borderRight: '1px solid #3B475D', borderBottom: '1px solid #3B475D', borderLeft: '4px solid ' + (cmd.off ? '#3B475D' : i === 0 ? '#F65157' : c.color), background: '#10151F', color: cmd.off ? '#7F8BA1' : '#E7EBF3', opacity: cmd.off ? 0.7 : 1, fontFamily: 'inherit', textAlign: 'left', cursor: cmd.off ? 'default' : 'pointer', animation: rm ? undefined : 'phcCmdIn' + sfx2 + ' .3s cubic-bezier(.2,.8,.2,1) ' + (260 + i * 60) + 'ms both' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 50, padding: '6px 10px', borderTop: '1px solid #3B475D', borderRight: '1px solid #3B475D', borderBottom: '1px solid #3B475D', borderLeft: '4px solid ' + (cmd.off ? '#3B475D' : i === 0 ? '#F65157' : c.color), background: '#10151F', color: cmd.off ? '#7F8BA1' : '#E7EBF3', opacity: cmd.off ? 0.7 : 1, fontFamily: 'inherit', textAlign: 'left', cursor: cmd.off ? 'default' : 'pointer', animation: rm ? undefined : 'phcCmdIn' + sfx2 + ' ' + T(300) + ' cubic-bezier(.2,.8,.2,1) ' + T(260 + i * 60) + ' both' }}>
                 <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 11, fontWeight: 700 }}>{cmd.key}</span>
                 <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{cmd.label}</span>
