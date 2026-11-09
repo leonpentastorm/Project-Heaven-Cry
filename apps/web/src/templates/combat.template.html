@@ -24,8 +24,8 @@
 <div style="display: flex; align-items: center; gap: 10px; padding-right: 30px">
 <img src="{{fc.icon}}" alt="{{fc.bandName}} air" style="width: 30px; height: 30px; flex: none">
 <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1">
-<div role="status" aria-live="polite" style="display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden"><span style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">MANA FORECAST</span><span data-fc-headline="1" style="{{fc.headStyle}}">{{fc.headline}}</span><span data-fc-trend="1" style="{{fc.trendStyle}}">{{fc.arrow}} {{fc.trend}}</span></div>
-<div aria-hidden="true" style="position: relative; display: flex; height: 6px; border-radius: 99px; background: #1C2536"><sc-for list="{{fc.gauge}}" as="gs"><span title="{{gs.title}}" style="{{gs.style}}"></span></sc-for><span style="{{fc.marker}}"></span></div>
+<div role="status" aria-live="polite" style="display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden"><span style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">MANA FORECAST</span><span data-fc-headline="1" title="{{fc.headline}}" style="{{fc.headStyle}}">{{fc.headline}}</span></div>
+<div style="display: flex; align-items: center; gap: 10px; min-width: 0"><div aria-hidden="true" style="position: relative; flex: 1 1 auto; min-width: 60px; display: flex; height: 6px; border-radius: 99px; background: #1C2536"><sc-for list="{{fc.gauge}}" as="gs"><span title="{{gs.title}}" style="{{gs.style}}"></span></sc-for><span style="{{fc.marker}}"></span></div><span data-fc-trend="1" title="{{fc.trend}}" style="{{fc.trendStyle}}">{{fc.arrow}} {{fc.trend}}</span></div>
 <span title="{{fc.sky}}" style="{{fc.lineStyle}}">{{fc.sky}}</span>
 <span data-fc-outlook="1" title="{{fc.outlook}}" style="{{fc.outlookStyle}}">{{fc.outlook}}</span>
 </div>

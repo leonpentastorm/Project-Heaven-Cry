@@ -24,19 +24,19 @@ const pct = (m: number) => Math.round((m - 1) * 100);
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
 
 // ---------- the client's memory of the meter, per fight ----------
-/** The meter at the start of each round seen, per fight (keyed by the fight's name and map), kept in memory only. A
- * fight that starts again under the same name (a retry, a new wave on the same map) is told by its round or its effects
- * counter going back, and starts a fresh memory; the order's length is not part of the key (spawns and extra turns
- * change it mid-round). */
-const HISTORY = new Map<string, { h: Record<number, number>; round: number; seq: number }>();
+/** The meter at the start of each round seen, per fight (keyed by the fight's name and map), kept in memory only. When
+ * the round goes back (a reroll or Foreseen rewind to an earlier round, or the same fight started again) the readings
+ * after it are dropped and the rest kept; a rewind within the round changes nothing. The order's length is not part of
+ * the key (spawns and extra turns change it mid-round). */
+const HISTORY = new Map<string, { h: Record<number, number>; round: number }>();
 const keyOf = (cb: any) => String(cb?.name || '') + '|' + String(cb?.map?.id || '');
 /** Note the meter now: the first reading of a round is that round's start. Returns the fight's readings. */
 export function noteMana(cb: any): Record<number, number> {
   if (!cb) return {};
-  const k = keyOf(cb), r = Number(cb.round) || 1, seq = Number(cb.fxSeq) || 0, m = cb.mana ?? MANA_START;
-  let e = HISTORY.get(k);
-  if (!e || r < e.round || seq < e.seq) e = { h: {}, round: r, seq };
-  e.round = r; e.seq = seq;
+  const k = keyOf(cb), r = Number(cb.round) || 1, m = cb.mana ?? MANA_START;
+  const e = HISTORY.get(k) || { h: {}, round: r };
+  if (r < e.round) for (const x of Object.keys(e.h)) if (Number(x) > r) delete e.h[Number(x)];
+  e.round = r;
   if (e.h[r] == null) e.h[r] = m;
   HISTORY.delete(k); HISTORY.set(k, e); if (HISTORY.size > 20) HISTORY.delete(HISTORY.keys().next().value as string);
   return e.h;
@@ -138,12 +138,12 @@ export function forecastVals(cb: any, open: boolean, toggle: () => void, drop = 
     arrow: f.trend.arrow, trend: f.trend.text, outlook: f.outlookText,
     gauge: f.gauge.map((g) => ({ ...g, title: g.name + ' ' + g.from + '–' + g.to + (g.now ? ' (now)' : '') })),
     effects: f.effects.map((text, i) => ({ key: 'e' + i, text })), movers: f.movers.map((text, i) => ({ key: 'm' + i, text })),
-    headStyle: 'flex: none; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; color: ' + f.ink,
+    headStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; color: ' + f.ink,
     // One line each, cut with an ellipsis (the full text in the title), so the panel's height never changes with the
     // numbers and the map never rescales mid-fight.
     lineStyle: 'font-size: 12px; line-height: 1.35; color: #C9D3E3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
     outlookStyle: 'font-size: 11px; line-height: 1.35; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
-    trendStyle: 'min-width: 0; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + tInk,
+    trendStyle: 'flex: 0 1 auto; max-width: 60%; min-width: 0; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + tInk,
     boxStyle: 'display: flex; flex-direction: column; padding: 8px 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + f.ink,
     detailsStyle: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; padding: 8px 12px; border-top: 1px solid #232D3F' + (!drop ? '; margin-top: 6px' : '; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 7; border-radius: 12px; background: #10151F; border: 1px solid #2E3A50; border-left: 3px solid ' + f.ink + '; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55)'),
   };

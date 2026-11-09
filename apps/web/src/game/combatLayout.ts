@@ -194,6 +194,9 @@ export const LAYOUT_CSS = [
   // Narrow windows (stacked, the actions docked at the bottom) and very short ones: the map comes first, the mana
   // forecast right under it, then the legend and the log in their own order.
   '@media (max-width:999px),(max-height:620px){.phc-cb-left>[data-phc-panel="map"]{order:-2!important}.phc-cb-left>[data-phc-panel="mana"]{order:-1!important}}',
+  // Very short windows show the layout their own way (the extras under the map), so the controls that edit it hide there
+  // too, as on narrow windows: a move made there would change the saved layout with nothing to see.
+  '@media (max-height:620px){.phc-cb-split,.phc-grip,.phc-cb-layout-reset{display:none!important}}',
   '.phc-reduce .phc-grip,.phc-reduce .phc-cb-split>span{transition:none}',
 ].join('');
 

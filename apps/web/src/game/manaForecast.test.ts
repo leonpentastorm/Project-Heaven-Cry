@@ -40,8 +40,10 @@ describe('the mana forecast', () => {
     const other = noteMana({ ...fight(30, 2), name: 'Another fight' }); expect(other[1]).toBeUndefined(); // another fight, its own memory
     // a spawn or an extra turn changes the order mid-round: the same fight, the same memory
     expect(noteMana({ ...fight(25, 2), order: ['a', 'b', 'c'] })[2]).toBe(18);
-    // the same fight started again (a retry): its round goes back, so the memory starts fresh
+    // the round goes back (a rewind to round 1, or the fight started again): the readings after it go, the rest stay
     const again = noteMana(fight(15, 1)); expect(again).toEqual({ 1: 15 });
+    // a rewind within the round keeps the round's start
+    noteMana(fight(20, 2)); expect(noteMana(fight(17, 2))[2]).toBe(20);
   });
   it('the panel values: the toggle, the lists and the styles', () => {
     let n = 0; const v = forecastVals(fight(31), false, () => { n++; });
