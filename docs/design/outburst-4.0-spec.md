@@ -106,7 +106,7 @@ The **Step** column is the multiplier step a feeling pump adds, instead of the p
 | 22 | **Jealousy** | an ally kills a target you damaged this turn | +0.3 | steals one buff or shield from the target to you | none |
 | 23 | **Wonder** | a secret revealed or a new zone found (or Narrator) | +0.2 | reveals Hidden things and traps in its area | helps: spot Hidden things |
 | 24 | **Defiance** | you resist an Overreach, or pass a save against Fear | +0.3 | can't be resisted (no saves); your next save auto-passes | helps: immune to Fear |
-| 25 | **Abandon** | you indulge an Overreach | +0.8 | +2 Strain; if you're already over the limit, it goes off wild | harms: random condition |
+| 25 | **Abandon** | you indulge an Overreach | +0.8 | +2 Strain | harms: random condition |
 
 *Abandon is "Surrender" in the brainstorm, renamed because "surrender" is already a combat word.*
 
@@ -170,8 +170,9 @@ The **Step** column is the multiplier step a feeling pump adds, instead of the p
    - each Release earns **practice**: 1, +1 per stage reached past 1, +1 per feeling poured in;
    - at thresholds you **pick a new module** your gates allow: the 1st at 5 practice, the 2nd at 15, then +15 each;
    - a "practice" bar sits on the Magic tab.
-2. **Mastery steps:** each Mastery level (3/5/7/9) in a Soul skill grants **one module pick** from the modules that
-   skill gates, as well as the perk step.
+2. **Mastery** (Leon: picks at every level would drown players in modules):
+   - each Mastery level (3/5/7/9) in a Soul skill grants **+5 practice**, as well as the perk step;
+   - reaching **Mastered (10)** in a Soul skill grants **one free module pick** from the modules that skill gates.
 3. **Bonus sources:** tutors, heart plates and the Narrator's grants, as today.
 
 **Pen and paper (later; Leon: "converting will be such a bitch").** The tabletop version replaces practice with
@@ -235,7 +236,8 @@ The **Step** column is the multiplier step a feeling pump adds, instead of the p
 ## 10. Open items (Leon)
 
 1. Feeling step values, residue values and the practice thresholds: the balance pass.
-2. Abandon's "goes off wild" when you're already over the limit: confirm it reuses the Mana Short's wild release.
+2. ~~Abandon going off wild over the limit~~: dropped from the base rule (Leon, 9 Nov 2026). It sounds like a trait;
+   it's listed as a trait idea in `docs/ROADMAP.md`, for after 4.0 is built.
 3. How many feeling buttons show at once before they collapse: 6 is the proposal.
 4. The pen-and-paper conversion (one module pick per level-up): later.
 
