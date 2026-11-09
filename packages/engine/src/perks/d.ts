@@ -282,21 +282,23 @@ register({
 // heart can be held and swelled to stage 4 for nothing but the AP: once a fight (item 536, flagged).
 // =====================================================================================================================
 register({
-  id: 'the_twin_pays', claims: 'all', priority: 500,
+  // Used from Begin (the Twin Pays chip on an Outburst): no default button of its own (Leon, 9 Nov 2026: the Perks tab's
+  // Confirm spent a use and did nothing).
+  id: 'the_twin_pays', claims: 'all', priority: 500, noDefaultActions: true,
   toggles: [{
     id: 'twin', label: 'The Twin Pays', on: ['combat/outburst'],
-    available: (h) => (!h.u?.mg ? false : uses(h).left('per_combat', 1, h.key + '#twin') > 0 ? true : 'Used this fight.'),
+    available: (h) => (!h.u?.mg ? false : uses(h).left('per_combat', 1) > 0 ? true : 'Used this fight.'),
     preview: () => '0 MP, 0 Strain: your twin in the upper realm pays.',
   }],
   on: {
     outburst_cost: (ctx, h) => {
-      if (!me(h, ctx.u) || !modOn(h, 'twin') || uses(h).left('per_combat', 1, h.key + '#twin') <= 0) return;
+      if (!me(h, ctx.u) || !modOn(h, 'twin') || uses(h).left('per_combat', 1) <= 0) return;
       ctx.mp = 0; ctx.strain = 0; ctx.hp = 0;
     },
     outburst_begin: (ctx, h) => {
       if (!me(h, ctx.u)) return;
       // Any other Begin is an ordinary paid one: the free hold of an earlier, let-go twin cast ends here.
-      if (!modOn(h, 'twin') || !uses(h).take('per_combat', 1, h.key + '#twin')) { stateOf(h).free = null; return; }
+      if (!modOn(h, 'twin') || !uses(h).take('per_combat', 1)) { stateOf(h).free = null; return; }
       if (ctx.hold) stateOf(h).free = ctx.design.id;
       log(ctx.cb, 'Up there, someone with ' + h.u!.name + '\'s face flinches (The Twin Pays: no mana, no Strain).');
     },

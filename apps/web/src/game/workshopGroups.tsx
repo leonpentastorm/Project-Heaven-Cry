@@ -75,14 +75,20 @@ export function sigilWordGroups<T>(items: T[], idOf: (t: T) => string): Group<T>
 }
 
 // ---------- React (the Proving Ground) ----------
-function useOpenTick() { const [, set] = React.useState(0); React.useEffect(() => { const f = () => set((n) => n + 1); listeners.push(f); return () => { listeners = listeners.filter((x) => x !== f); }; }, []); }
+/** Re-render when any section or group is opened or closed (the Proving Ground's collapsible cards use it too). */
+export function useOpenTick() { const [, set] = React.useState(0); React.useEffect(() => { const f = () => set((n) => n + 1); listeners.push(f); return () => { listeners = listeners.filter((x) => x !== f); }; }, []); }
+/** A search over the groups (the Proving Ground's tool search): given, the section is open, the groups it finds are the
+ *  only ones shown, open, and no head folds anything (a fold under a search would be stored unseen). When it finds no
+ *  group, the groups are as usual. */
+export const GroupSearch = React.createContext<null | ((g: Group<any>) => boolean)>(null);
 /** A collapsible section of collapsible groups. render draws one group's items. The section header is drawn fully in
  * the magic's ink, as headCss(ink, true) is in the template. */
 export function Groups<T>({ section, title, ink, groups, render, aria }: { section: string; title: string; ink: string; groups: Group<T>[]; render: (items: T[], g: Group<T>) => React.ReactNode; aria?: string }) {
   useOpenTick();
-  const open = isOpen(section);
+  const find = React.useContext(GroupSearch), open = !!find || isOpen(section);
   return <section aria-label={aria || title} data-ws-section={section} style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-    <button type="button" aria-expanded={open} data-ws-head={section} onClick={() => setOpen(section, undefined, !open)} style={cssOf(headCss(ink, true))}><span aria-hidden="true">{open ? '▾' : '▸'}</span>{title}</button>
+    {find ? <span data-ws-head={section} style={cssOf(headCss(ink, true))}>{title}</span>
+      : <button type="button" aria-expanded={open} data-ws-head={section} onClick={() => setOpen(section, undefined, !open)} style={cssOf(headCss(ink, true))}><span aria-hidden="true">{open ? '▾' : '▸'}</span>{title}</button>}
     {open && <GroupList section={section} ink={ink} groups={groups} render={render} />}
   </section>;
 }
@@ -90,9 +96,12 @@ export function Groups<T>({ section, title, ink, groups, render, aria }: { secti
  * skill, 'sb.soul.modules', as the sheet's 'magic.soul.modules'). Each is collapsible and remembered under `section`. */
 export function GroupList<T>({ section, ink, groups, render }: { section: string; ink: string; groups: Group<T>[]; render: (items: T[], g: Group<T>) => React.ReactNode }) {
   useOpenTick();
-  return <>{groups.filter((g) => g.items.length > 0).map((g) => { const go = isOpen(section, g.key, g.dflt ?? true);
+  const find = React.useContext(GroupSearch), all = groups.filter((g) => g.items.length > 0), hits = find ? all.filter(find) : [];
+  const searching = hits.length > 0, count = (g: Group<T>) => <span style={{ marginLeft: 'auto', paddingLeft: 8, flex: 'none', whiteSpace: 'nowrap', color: '#7F8BA1' }}>{g.count ?? g.n ?? g.items.length}{g.locked ? ' · LOCKED' : ''}</span>;
+  return <>{(searching ? hits : all).map((g) => { const go = searching || isOpen(section, g.key, g.dflt ?? true);
     return <div key={g.key} role="group" aria-label={g.label} data-ws-group={g.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-      <button type="button" data-ws-toggle="1" aria-expanded={go} onClick={() => setOpen(section, g.key, !go)} style={cssOf(headCss(ink, false))}><span aria-hidden="true">{go ? '▾' : '▸'}</span>{g.label.toUpperCase()}<span style={{ marginLeft: 'auto', paddingLeft: 8, flex: 'none', whiteSpace: 'nowrap', color: '#7F8BA1' }}>{g.count ?? g.n ?? g.items.length}{g.locked ? ' · LOCKED' : ''}</span></button>
+      {searching ? <span style={cssOf(headCss(ink, false))}>{g.label.toUpperCase()}{count(g)}</span>
+        : <button type="button" data-ws-toggle="1" aria-expanded={go} onClick={() => setOpen(section, g.key, !go)} style={cssOf(headCss(ink, false))}><span aria-hidden="true">{go ? '▾' : '▸'}</span>{g.label.toUpperCase()}{count(g)}</button>}
       {go && g.note && <span style={{ fontSize: 11, color: '#A3AEC2' }}>{g.note}</span>}
       {go && render(g.items, g)}
     </div>; })}</>;

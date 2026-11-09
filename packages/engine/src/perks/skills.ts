@@ -141,7 +141,7 @@ register({
 // toggle on a Pump ("Overdraw"): that Pump adds 2 stages, not 1 (to stage 4 at most, so it needs stage 2 or lower),
 // for its own AP, and the heart pays: +1 Strain once the Pump is done (it can burn and short like any Strain).
 register({
-  id: 'skill:will_power.3', kind: 'skill', claims: 'all',
+  id: 'skill:will_power.3', kind: 'skill', claims: 'all', noDefaultActions: true, // used from Pump (the Overdraw chip)
   toggles: [{ id: 'overdraw', label: 'Overdraw (+2 stages, +1 Strain, once a fight)', on: ['combat/pump'],
     available: (h) => { const m = h.u?.mg; if (!m?.held) return false; if (m.held.stage > MAX_STAGE - 2) return 'Stage ' + (MAX_STAGE - 2) + ' or lower.'; return uses(h).left('per_combat', 1) > 0 ? true : 'Once a fight.'; },
     preview: () => 'This Pump adds 2 stages; +1 Strain after it.' }],
@@ -166,7 +166,7 @@ register({
 // fight, the first Strain that would short you (3 over your limit) is refused instead: your Strain falls to your limit,
 // with no Stun, no wild release and no backlash. Automatic.
 register({
-  id: 'skill:will_power.5', kind: 'skill', claims: 'all', priority: 950,
+  id: 'skill:will_power.5', kind: 'skill', claims: 'all', priority: 950, noDefaultActions: true, // automatic
   on: {
     strain: (ctx, h) => {
       const m = h.u?.mg; if (!mine(h, ctx.u) || !m || ctx.n <= 0 || !h.cb) return;
