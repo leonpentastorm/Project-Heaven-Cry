@@ -8,6 +8,7 @@ import { voiceState, voicePrefs } from './voice';
 import { usePresence, presenceCls } from './presence';
 import { callEstimate, COST_CEILING_USD, MODELS } from '../narrator/anthropic';
 import { isPriced, providerInfo } from '../narrator/providers';
+import { GAME_VERSION } from '../version';
 
 // ---------- open from anywhere (the screens' buttons) ----------
 let which: 'report' | 'spend' | null = null;
@@ -26,7 +27,7 @@ export function buildReport(what: string, withSave: boolean) {
   const build = (document.querySelector('script[type="module"][src*="assets/index-"]') as HTMLScriptElement | null)?.src.split('/').pop() || 'dev';
   const report = {
     format: 'phc-report', version: 1, at: new Date().toISOString(), what: what.trim(),
-    build, url: location.origin + location.pathname, userAgent: navigator.userAgent, viewport: innerWidth + '×' + innerHeight,
+    gameVersion: GAME_VERSION, build, url: location.origin + location.pathname, userAgent: navigator.userAgent, viewport: innerWidth + '×' + innerHeight,
     me: st.me, role: st.role, room: st.code, screen: st.screen, connection: st.conn, connNote: st.connNote,
     narrator: { provider: st.narrator.provider, baseUrl: st.narrator.baseUrl, model: st.narrator.model, effort: st.narrator.effort, scripted: st.narrator.scripted, hasKey: !!st.narrator.key },
     voice: { ...voiceState(), prefs: voicePrefs() }, rerollCopies: reportBefores(),

@@ -8,6 +8,7 @@ import { startProvingGround } from '../game/sandbox';
 import { forgetSession, getState, go, hostRoom, joinRoom, lastRoom, listSessions, removeFromLibrary, resumeSession, setName, subscribe } from '../game/store';
 import { exportCharacter, importCharacter } from '../game/charfile';
 import { openReport } from '../game/report';
+import { GAME_VERSION } from '../version';
 import { sfx, uiPrefs, setUiPrefs, onUiPrefs, reducedMotion } from '../game/sfx';
 import { voicePrefs, onVoice, loadVoice, detectInstalled } from '../game/voice';
 import { VoiceSettings } from '../game/voiceSettings';
@@ -369,6 +370,7 @@ export function Title() {
         <button type="button" onClick={openReport} style={{ padding: 0, border: 0, background: 'none', color: ink.dim, fontFamily: 'inherit', fontSize: 12, textDecoration: 'underline', cursor: 'pointer' }}>⚑ Report a problem</button>
         <span>Your API key stays in your browser and goes only to the AI service you pick.</span>
       </footer>
+      <div className="phc-version" title="Game version (CHANGELOG.md)" style={{ position: 'absolute', right: 16, bottom: 16, fontSize: 11, letterSpacing: '0.08em', color: ink.dim, pointerEvents: 'none' }}>v{GAME_VERSION}</div>
     </div>
   );
 }

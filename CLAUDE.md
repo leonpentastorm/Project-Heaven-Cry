@@ -126,8 +126,12 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - Never invent a number silently. Provisional numbers are flagged (`provisional: true`) and listed in spec section 14.
 - Keep text in-universe: no real-Earth names in game text (the Unspoken Name). Recognisable homages through Celestials are fine.
 - Rules revision 1.1 (accepted 5 Nov 2026) is in both the repo spec and the living Doc. Its provisional numbers are spec items 35–42.
+- **Versioning** (Leon, 9 Nov 2026; current version in `package.json`, history in `CHANGELOG.md`): **0.MINOR.PATCH** until the 1.0 release. Every branch merged into `develop` bumps the middle number; the first number becomes 1 at the 1.0 release. *Reading, for Leon to confirm:* a hotfix committed straight to `develop` without a branch bumps the last number. **Whoever merges a branch** bumps `"version"` in the root and every workspace `package.json` (all four stay equal) and adds a `CHANGELOG.md` entry in the same merge. The title screen and the Report a problem bundle show it.
+- **New collaborators** (human or AI) read this file, then `docs/HANDOFF.md` (how to pick the project up) and `docs/ROADMAP.md` (what's next).
 
 ## Next steps
+
+The ordered list with every planned-but-unbuilt lead is `docs/ROADMAP.md`; the decisions waiting on Leon are in `docs/HANDOFF.md`. The list below is the original brief's.
 
 0. **First playtest** (Leon + a friend, AI Narrator on Leon's key): the build is live; collect what breaks.
 1. **Tech plan:** in `docs/design/tech-plan.md`; M0–M5 are built in a first form (decision 62) (one deterministic TypeScript engine used by the browser and the room server; everything is an action; the event log is the save; the Narrator is a client of the engine with one tool per Narrator-owned job; BYOK in the host's browser; milestones M0–M7 to the M813 starter slice and then co-op). Waiting on Leon's decisions in its section 10.
