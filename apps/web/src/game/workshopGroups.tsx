@@ -7,19 +7,14 @@
 // never game state. A section or group nobody has touched uses its default (sections open, groups open unless the
 // caller says otherwise).
 //
-// The groups used today:
-//  · Sigil (both places): the five word groups, Subjects, Reach, Delivery, Burst and Filter (sigilWordGroups below).
-//  · Outburst (both places): what exists in Outburst 2.0: designs, schools, tones, shapes and the other modules.
-//
-// How Outburst 4.0 plugs in (docs/design/outburst-4.0-spec.md section 8; not built yet):
-//  · Modules group by their gate skill: one group per gate skill (key 'gate:<skillId>', label the skill's name, in
-//    its attribute ink), built from the module data's gate field the way outburstGroups() builds 'modules' today.
-//  · Gated modules the character can't take yet are still listed, as items with locked: true and a lock line naming
-//    the class or skill level that opens them (render them greyed, with the line, never hidden). A group whose every
-//    item is locked passes locked: true so its header shows "LOCKED" next to the count.
-//  · Feelings get their own group ('feelings'), tones keep 'tones'. Add new group keys; don't rename the old ones, so
-//    each player's saved open/closed state still applies.
-//  · Nothing else changes: groupedSection() and <Groups> take any list of groups.
+// The groups used today (both magics, both places, one look: a ▾/▸ header button with a count, open state remembered):
+//  · Sigil: the five word groups, Subjects, Reach, Delivery, Burst and Filter (sigilWordGroups below), on the sheet
+//    ('magic.sigil', and 'magic.learn' in Learn a word) and in the Proving Ground ('sb.sigil').
+//  · Outburst 4.0 (rules 1.8, its spec section 8): on the sheet ('magic.soul') the designs, the one-click templates,
+//    the feelings and the modules by gate skill, each gate a group of its own ('magic.soul.modules'; the advanced
+//    classes' modules listed locked, never hidden); in the Proving Ground ('sb.soul') schools and tones, modules by
+//    gate skill, feelings, practice, and the sound and effects test.
+//  · Add new group keys; don't rename the old ones, so each player's saved open/closed state still applies.
 import React from 'react';
 import { SIGIL } from '@engine';
 
@@ -43,7 +38,7 @@ export function setOpen(section: string, group: string | undefined, open: boolea
 /** Forget the cache (tests). */
 export function resetOpenCache() { for (const k of Object.keys(mem)) delete mem[k]; }
 
-export interface Group<T> { key: string; label: string; items: T[]; locked?: boolean; note?: string; dflt?: boolean; /** the count shown, when items aren't one per entry (a row of chips) */ n?: number }
+export interface Group<T> { key: string; label: string; items: T[]; locked?: boolean; note?: string; dflt?: boolean; /** the count shown, when items aren't one per entry (a row of chips) */ n?: number; /** the count as text ("3 / 25 FELT"), over n */ count?: string }
 export interface GroupVals<T> { key: string; label: string; count: string; open: boolean; expanded: string; toggle: () => void; chev: string; items: T[]; hasItems: boolean; empty: boolean; note: string; hasNote: boolean; headStyle: string }
 export interface SectionVals<T> { open: boolean; expanded: string; toggle: () => void; chev: string; groups: GroupVals<T>[]; headStyle: string }
 
@@ -58,7 +53,7 @@ export function groupedSection<T>(section: string, groups: Group<T>[], o: { ink:
     open, expanded: open ? 'true' : 'false', chev: open ? '▾' : '▸', headStyle: headCss(o.ink, true),
     toggle: () => { setOpen(section, undefined, !isOpen(section)); o.rerender(); },
     groups: groups.filter((g) => o.keepEmpty || g.items.length > 0).map((g) => { const go = isOpen(section, g.key, g.dflt ?? true);
-      return { key: g.key, label: g.label.toUpperCase(), count: String(g.n ?? g.items.length) + (g.locked ? ' · LOCKED' : ''), open: go, expanded: go ? 'true' : 'false', chev: go ? '▾' : '▸',
+      return { key: g.key, label: g.label.toUpperCase(), count: (g.count ?? String(g.n ?? g.items.length)) + (g.locked ? ' · LOCKED' : ''), open: go, expanded: go ? 'true' : 'false', chev: go ? '▾' : '▸',
         toggle: () => { setOpen(section, g.key, !isOpen(section, g.key, g.dflt ?? true)); o.rerender(); }, items: g.items, hasItems: go && g.items.length > 0, empty: go && !g.items.length,
         note: g.note || '', hasNote: go && !!g.note, headStyle: headCss(o.ink, false) }; }),
   };
@@ -88,7 +83,7 @@ export function Groups<T>({ section, title, ink, groups, render, aria }: { secti
     <button type="button" aria-expanded={open} data-ws-head={section} onClick={() => setOpen(section, undefined, !open)} style={cssOf(headCss('#A3AEC2', true))}><span aria-hidden="true" style={{ color: ink }}>{open ? '▾' : '▸'}</span>{title}</button>
     {open && groups.filter((g) => g.items.length > 0).map((g) => { const go = isOpen(section, g.key, g.dflt ?? true);
       return <div key={g.key} role="group" aria-label={g.label} data-ws-group={g.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-        <button type="button" data-ws-toggle="1" aria-expanded={go} onClick={() => setOpen(section, g.key, !go)} style={cssOf(headCss(ink, false))}><span aria-hidden="true">{go ? '▾' : '▸'}</span>{g.label.toUpperCase()}<span style={{ marginLeft: 'auto', color: '#7F8BA1' }}>{g.items.length}{g.locked ? ' · LOCKED' : ''}</span></button>
+        <button type="button" data-ws-toggle="1" aria-expanded={go} onClick={() => setOpen(section, g.key, !go)} style={cssOf(headCss(ink, false))}><span aria-hidden="true">{go ? '▾' : '▸'}</span>{g.label.toUpperCase()}<span style={{ marginLeft: 'auto', paddingLeft: 8, flex: 'none', whiteSpace: 'nowrap', color: '#7F8BA1' }}>{g.count ?? g.n ?? g.items.length}{g.locked ? ' · LOCKED' : ''}</span></button>
         {go && g.note && <span style={{ fontSize: 11, color: '#A3AEC2' }}>{g.note}</span>}
         {go && render(g.items, g)}
       </div>; })}

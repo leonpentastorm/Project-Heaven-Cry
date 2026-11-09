@@ -1,4 +1,4 @@
-// Sigil 1.5 (rules 1.9) end to end, through real buttons where the game has them:
+// Sigil 1.5 (rules 1.10) end to end, through real buttons where the game has them:
 //  (d) a sigil mark cut into the wall on the area map, Investigated (Analysis or Rumination): the word is copied, study
 //      rises, the panel says so, and the Investigate sound is served;
 //  (a) two Lines drawn side by side (the stroke picker's "new Line"), each Evoked as its own spell (touching glyphs no

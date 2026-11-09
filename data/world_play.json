@@ -1,7 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "world_play",
-  "source": "PHC Core Rules v1.0, rules revision 1.7: World Play (provisional, items 636-668; docs/design/world-play-spec.md)",
+  "source": "PHC Core Rules v1.0, rules revision 1.7: World Play (provisional, items 636-668; docs/design/world-play-spec.md); rules revision 1.9: World Play 1.1 (items 671-683; docs/design/world-play-1.1-spec.md)",
   "adjudication": "engine",
   "items": [
     {
@@ -119,7 +119,8 @@
     "put_down": 1,
     "search": 1,
     "ask": 1,
-    "attempt": 2
+    "attempt": 2,
+    "pickup": 1
   },
   "talk_range": 3,
   "reveal_radius": 3,
@@ -270,5 +271,26 @@
       "success": "disarm",
       "fail": "hazard"
     }
-  ]
+  ],
+  "pile": {
+    "max_entries": 24,
+    "narrator_entries_per_turn": 6,
+    "narrator_items_per_pile": 12,
+    "rounds_max": 120,
+    "route_slack_tiles": 2,
+    "tactical_reload_extra_ap": 1,
+    "provisional": true,
+    "text": "Rules 1.9 (World Play 1.1, items 671-683): a pile holds at most 24 entries; the Narrator's ground[] places at most 6 piles a turn and 12 items each; rounds:<calibre> gives at most 120 rounds an entry; player click-paths go around revealed hazards when a route is at most 2 tiles longer; a tactical reload costs the speed reload + 1 AP."
+  },
+  "gear": {
+    "hand_ap": 1,
+    "two_handed_draw_ap": 2,
+    "swap_hands_ap": 1,
+    "put_away_ap_per_hand": 1,
+    "drop_ap": 0,
+    "light_armour_ap": 1,
+    "light_armour_max_kg": 1.2,
+    "provisional": true,
+    "text": "Rules 1.9 (World Play 1.1, items 684-690): in a fight, changing what a hand holds costs 1 AP a hand: a draw into one hand 1, a two-handed draw 2, swapping main and off hand 1, putting away 1 a hand (2 for a two-handed weapon), dropping 0 (into the pile on your tile); a light armour piece (1.2 kg or less, provisional) on or off 1 AP each; heavier armour isn't changed in a fight. Hot-Swap covers the hand rows, not armour."
+  }
 }

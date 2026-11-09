@@ -165,14 +165,14 @@ export function casterCombos(words: string[], max: number): Combo[] {
 function planLine(cb: Combat, u: Unit, words: string[], tiles: string[], aim: string, opts: EvokeOpts): EvokePreview | null {
   const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq || 0, ap = u.ap, m = u.mg!, charge = m.charge;
   try {
-    // Rules 1.9: one stroke, with the id the real first glyph will give it, so nothing beside it joins or spoils it.
+    // Rules 1.10: one stroke, with the id the real first glyph will give it, so nothing beside it joins or spoils it.
     cb.glyphs = [...(glyphs || []), ...tiles.map((k, i) => ({ id: 'gl' + (seq + 1 + i), word: words[i], pos: k, by: u.id, side: u.side, left: 2, who: u.name, v: SIGIL_REV, strokeId: 'sgl' + (seq + 1) } as Glyph))];
     u.pos = tiles[tiles.length - 1]; u.ap = 99; m.charge = 99;
     const pv = planEvoke(cb, u, tiles[0], aim, opts);
     return pv.ok && !pv.fizzle && findLineOk(cb, tiles) ? pv : null;
   } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; u.ap = ap; m.charge = charge; }
 }
-/** The Line read is exactly the tiles drawn (a stroke: no other glyph joins it; rules 1.9). */
+/** The Line read is exactly the tiles drawn (a stroke: no other glyph joins it; rules 1.10). */
 function findLineOk(cb: Combat, tiles: string[]) { const p = findPattern(cb, tiles[0]); return typeof p !== 'string' && p.tiles.length === tiles.length; }
 
 // ---------- the caster: what a plan is worth ----------
@@ -438,7 +438,7 @@ function castChoice(cb: Combat, rng: Rng, u: Unit, c: Choice): boolean {
   if (c.existing) { evoke(cb, rng, u, c.existing, c.aim, c.opts); return true; }
   for (const p of c.pre) if ((p === 'vent' ? vent(cb, u) : swapCore(cb, u))) return false;
   const aimUnit = cb.units.find((x) => x.pos === c.aim && !x.dead && x !== u);
-  let sid = 'new'; // rules 1.9: the first glyph starts a new stroke, the rest extend that one (never another's)
+  let sid = 'new'; // rules 1.10: the first glyph starts a new stroke, the rest extend that one (never another's)
   for (let i = 0; i < c.words.length; i++) {
     if (i) { if (moveUnit(cb, u, c.tiles[i], rng) || u.pos !== c.tiles[i] || u.dead || u.downed) return true; }
     if (drawGlyph(cb, rng, u, c.words[i], undefined, sid)) return i > 0 || c.pre.length > 0;

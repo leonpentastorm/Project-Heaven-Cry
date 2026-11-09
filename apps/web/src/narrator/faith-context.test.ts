@@ -37,6 +37,8 @@ describe('the Narrator and faith', () => {
   // +1.2k cached tokens for CRAFT, PACING and THE MAP IS THE TRUTH (narrator-craft, Nov 2026): about $0.0002 a warm turn.
   it('the cost stays put (stable about 24k tokens for this party; World Play, rules 1.7, added about 1.5k)', () => {
     const e = callEstimate(party(), 'claude-sonnet-5-5');
-    expect(e.stable).toBeLessThan(24400);
+    // Outburst 4.0 (rules 1.8) and World Play 1.1 (rules 1.9: piles, ground[], drops) brought it to about 24.6k: cached, so
+    // about $0.00005 more a warm turn.
+    expect(e.stable).toBeLessThan(25000);
   });
 });

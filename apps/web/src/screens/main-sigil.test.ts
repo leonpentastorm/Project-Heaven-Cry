@@ -70,7 +70,7 @@ describe('area map: Sigils (rules 1.4)', () => {
   });
 });
 
-describe('area map: Sigil 1.5 review fixes (rules 1.9)', () => {
+describe('area map: Sigil 1.5 review fixes (rules 1.10)', () => {
   it('Analyze aimed at a trace on the map reads it (world/act read); the keyboard shows use counts and stars', () => {
     G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'seed-sigil-read');
     doAct({ type: 'char/add', sheet: sheetFrom('sigilist', 'Ilse') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });

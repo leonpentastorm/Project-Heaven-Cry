@@ -1,4 +1,4 @@
-// Sigil 1.5 strokes (rules 1.9) in a real browser, the Proving Ground as a Mage (Solo, Enemy AI off; Brain Power
+// Sigil 1.5 strokes (rules 1.10) in a real browser, the Proving Ground as a Mage (Solo, Enemy AI off; Brain Power
 // Mastered, so Junctions are on): two Lines drawn side by side with the glyph keyboard's stroke picker ("extends FIRE",
 // "new Line"), the dashed joining line of the preview, the faint joins on the grid (no join between the two rows), the
 // hovered stroke lit and named, each Line Evoked on its own reading (touching glyphs no longer poison), and a junction

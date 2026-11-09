@@ -33,7 +33,7 @@ describe('glyphs', () => {
 });
 
 describe('before drawing (spec 9.1)', () => {
-  it('each word shows its cost on your tile and whether it starts or extends a Line (rules 1.9: a bend starts a new stroke)', () => {
+  it('each word shows its cost on your tile and whether it starts or extends a Line (rules 1.10: a bend starts a new stroke)', () => {
     const { cb, u, rng } = setup(['fire', 'seek', 'condense', 'kin']);
     let s = drawStrip(cb, u);
     expect(s.tile).toBe('2,5');

@@ -117,7 +117,7 @@ describe('combat screen: Sigils (rules 1.4)', () => {
   });
 });
 
-describe('combat screen: Sigil 1.5 review fixes (rules 1.9)', () => {
+describe('combat screen: Sigil 1.5 review fixes (rules 1.10)', () => {
   it('the glyph keyboard shows each word\'s use count, and a star with its word when Practised or Mastered (spec 3.4, 5.3)', () => {
     fight(['fire', 'seek']); const c: any = G.characters[pc().charId]; c.sigils = ['fire', 'seek']; c.sigilGrowth = { study: 0, picksUsed: 0, free: 0, paid: [], toStudy: [], uses: { fire: 30, seek: 3 } }; snap = view();
     const keys = screen({ action: 'draw', tab: 'sigils', word: 'fire' }).renderVals().pad.wordList;

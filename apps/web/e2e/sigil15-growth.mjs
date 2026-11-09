@@ -1,4 +1,4 @@
-// Sigil 1.5 growth (rules 1.9) in a real browser, the Proving Ground solo, through real buttons where there are any:
+// Sigil 1.5 growth (rules 1.10) in a real browser, the Proving Ground solo, through real buttons where there are any:
 // the tools' MAGIC tab (the word groups, collapsible; grant study; set a word's use count; place a sigil mark; the
 // Junctions switch), the sheet's MAGIC tab (the study bar, Learn a word in the five groups, the known-to-study list,
 // word chips with uses and stars, inflections greyed until earned; the Sigil and Outburst sections collapse and stay
@@ -53,7 +53,7 @@ ok('tools: arrow keys move along the Sigil words (' + navTo + ', then ' + navDow
 await drawer.locator('[data-ws-section="sb.sigil"] [data-ws-group="delivery"] > button[data-ws-toggle]').click();
 ok('tools: a group closes', (await drawer.locator('[data-ws-section="sb.sigil"] [data-ws-group="delivery"] button[data-word]').count()) === 0);
 const soulGroups = await drawer.locator('[data-ws-section="sb.soul"] [data-ws-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-ws-group')));
-ok('tools: Outburst lessons grouped (' + soulGroups.join(' ') + ')', soulGroups.join(' ') === 'schools tones shapes modules');
+ok('tools: Outburst lessons grouped as Outburst 4.0 has them (' + soulGroups.join(' ') + ')', soulGroups.join(' ') === 'schools modules feelings practice fx');
 const tools = drawer.locator('section[aria-label="Sigil growth tools"]');
 await tools.scrollIntoViewIfNeeded();
 const s0 = (await G()).characters[cid].sigilGrowth?.study || 0;
@@ -119,7 +119,7 @@ ok('sheet: still closed after a reload', (await p.locator('[data-ws-head="magic.
 await p.locator('section[aria-label="Sigils"] [data-ws-group="reach"] > button[data-ws-toggle]').click();
 await p.locator('[data-ws-head="magic.soul"]').click(); await p.waitForTimeout(150);
 const soulG = await p.locator('section[aria-label="Outbursts"] [data-ws-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-ws-group')));
-ok('sheet: the Outburst section in groups (' + soulG.join(' ') + ')', soulG[0] === 'designs' && soulG.includes('schools') && soulG.includes('tones'));
+ok('sheet: the Outburst section in groups (' + soulG.join(' ') + ')', soulG.join(' ').startsWith('designs templates feelings modules'));
 await p.locator('section[aria-label="Outbursts"]').scrollIntoViewIfNeeded();
 await snap('04b-outbursts');
 

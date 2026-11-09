@@ -1,8 +1,8 @@
-// Sigil 1.5, rules revision 1.9 (spec: The Magic panel and learning; docs/design/sigil-1.5-spec.md sections 2 and 3):
+// Sigil 1.5, rules revision 1.10 (spec: The Magic panel and learning; docs/design/sigil-1.5-spec.md sections 2 and 3):
 // study, copying, Mastery study, picks and the Mastered free word; word use counts, Practised and Mastered words, and
 // the inflections a Mastered word turns on. Pure functions on a Character (no dice): the resolver (sigil.ts) calls
 // noteEvoke and copyWord through the bound game, the reducer (game.ts) calls learnStudied, masterySync and the view.
-// Every number comes from sigils.json grammar.study and grammar.word_mastery (provisional, spec 14 items 676-686).
+// Every number comes from sigils.json grammar.study and grammar.word_mastery (provisional, spec 14 items 906-916).
 import { SIGIL, SIGILS } from './data';
 import { G } from './sigilwords';
 import { type Character, wordsKnownCap } from './character';
@@ -44,7 +44,7 @@ export function addStudy(c: Character, n: number, why: string): string[] {
   return got > 0 ? [c.name + ' studies the Sigil words (+' + n + ', ' + why + '): ' + (got === 1 ? 'a new word can be learned' : got + ' new words can be learned') + ' (study ' + s.study + ').'] : [];
 }
 
-/** An Evoke by this character (rules 1.9): study, and a use for each known word in it (repeats once). Returns log lines. */
+/** An Evoke by this character (rules 1.10): study, and a use for each known word in it (repeats once). Returns log lines. */
 export function noteEvoke(c: Character, words: string[], glyphs: number, hitEnemy: boolean): string[] {
   const s = growthOf(c), out: string[] = [];
   for (const w of new Set(words)) {
@@ -64,7 +64,7 @@ export function copyWord(c: Character, word: string, n = STUDY.copy, why = 'a co
   return [c.name + ' copies ' + word.toUpperCase() + ' (+' + n + ' study; on the known-to-study list).', ...addStudy(c, n, why)];
 }
 
-/** The Mastery rewards (rules 1.9): each Mastery level (3/5/7/9) of Brain Power, Rumination or Eloquence gives +5 study
+/** The Mastery rewards (rules 1.10): each Mastery level (3/5/7/9) of Brain Power, Rumination or Eloquence gives +5 study
  * once; Mastered (10) gives one free word over the cap, once per skill. Idempotent: what is paid is recorded. */
 export function masterySync(c: Character): string[] {
   const out: string[] = [];
@@ -78,7 +78,7 @@ export function masterySync(c: Character): string[] {
 }
 const skillName = (id: string) => ({ brain_power: 'Brain Power', rumination: 'Rumination', eloquence: 'Eloquence' } as Record<string, string>)[id] || id;
 
-/** The words a pick may learn: every word not known (rule 1.9.2; item 678), the copied ones first. */
+/** The words a pick may learn: every word not known (rule 1.10.2; item 908), the copied ones first. */
 export function learnable(c: Character): string[] {
   const s = peek(c), copied = (s?.toStudy || []).filter((w) => SIGIL[w] && !knowsWord(c, w));
   return [...copied, ...SIGILS.map((w) => w.id).filter((w) => !knowsWord(c, w) && !copied.includes(w))];
@@ -129,7 +129,7 @@ export interface SigilGrowthView {
   toStudy: string[]; learnable: string[];
   words: { word: string; uses: number; tier: WordTier; practisedAt: number; masteredAt: number; inflection: { text: string; unlocked: boolean } | null }[];
 }
-/** What the Magic tab shows (rules 1.9): the study bar, the picks waiting, the copied words, and each known word's use
+/** What the Magic tab shows (rules 1.10): the study bar, the picks waiting, the copied words, and each known word's use
  * count, tier and inflection. */
 export function sigilGrowthView(c: Character): SigilGrowthView {
   const s = peek(c), study = s?.study || 0, used = s?.picksUsed || 0, earned = picksEarned(study);

@@ -5,7 +5,7 @@
 // Delivery, Burst and Filter words shape what it does. Every number comes from sigils.json; everything is
 // deterministic (rolls from the rng passed in). The planner (planEvoke) is pure and is shared by the preview, the
 // enemy AI and the real Evoke, so what the screen shows is what happens.
-// Rules revision 1.9 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
+// Rules revision 1.10 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
 // strokeRuns, strokePick); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the
 // 1.4 touching-group reading (groupAt) until they fade.
 import { WEAPON, type SigilDef } from './data';
@@ -56,7 +56,7 @@ export const glyphApOf = (u: Unit) => (u.mg?.glyphAp || 1) + (condOn(u, 'ldebuff
 /** A glyph's price for this unit: 'glyph_cost' {u, word, tile, ap, charge, flux, preview, fail} (mutable), after
  * word_cost items. fail = 'why' refuses the draw (hooks gap D2/K5). Flux is the word's (TWICE 2). */
 export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, tile?: string): { ap: number; charge: number; flux: number; fail?: string } {
-  // Rules 1.9: a Mastered word's charge or Flux inflection lowers what drawing it costs (never below 1 charge, 1 Flux).
+  // Rules 1.10: a Mastered word's charge or Flux inflection lowers what drawing it costs (never below 1 charge, 1 Flux).
   const w = W(word), inf = (u.mg?.inflect || []).includes(word), ic = inf ? inflectionValue(word, 'charge') : 0, ifx = inf ? inflectionValue(word, 'flux') : 0;
   const ch0 = (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0), fx0 = w?.flux ?? 1;
   const w0 = { charge: ic ? Math.max(Math.min(1, ch0), ch0 + ic) : ch0, flux: ifx ? Math.max(Math.min(1, fx0), fx0 + ifx) : fx0 };
@@ -84,15 +84,15 @@ export interface Pattern {
   axis?: Dir;
   /** Old fields kept for callers: the end nearer `from`, the far end, the direction near → far. */
   near?: string; far?: string; dir?: Dir; centre?: string;
-  /** The stroke it is (rules 1.9); absent for an old 1.4 group. strokeSrc: the id its glyphs carry (a split part not yet
-   * tidied differs); junctions: its glyphs that also lie in another stroke (rules 1.9, Junctions). */
+  /** The stroke it is (rules 1.10); absent for an old 1.4 group. strokeSrc: the id its glyphs carry (a split part not yet
+   * tidied differs); junctions: its glyphs that also lie in another stroke (rules 1.10, Junctions). */
   strokeId?: string; strokeSrc?: string; junctions?: string[];
 }
 const add = (k: string, d: Dir, n = 1) => { const [x, y] = xy(k); return key(x + d[0] * n, y + d[1] * n); };
 const onMap = (cb: Combat, k: string) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; };
 const neg = (d: Dir): Dir => [d[0] ? -d[0] : 0, d[1] ? -d[1] : 0];
 const sgn = (n: number) => (n > 0 ? 1 : n < 0 ? -1 : 0);
-/** Old glyphs only (rules 1.9 item 674): the 1.4 reading, for glyphs with no strokeId. Group the old glyphs of one side
+/** Old glyphs only (rules 1.10 item 904): the 1.4 reading, for glyphs with no strokeId. Group the old glyphs of one side
  * that touch (diagonals too); a stroke's glyphs never join such a group. */
 function groupAt(glyphs: Glyph[], tile: string, side: string): string[] {
   const at = new Set(glyphs.filter((g) => g.side === side && !g.strokeId).map((g) => g.pos)), comp: string[] = [], todo = [tile];
@@ -113,15 +113,15 @@ const glyphOrder = (a: Glyph, b: Glyph) => (+String(a.id).replace(/\D/g, '') || 
 /** The unit a glyph is counted to (a Keystone's 'ks:' tag and a 1.3 save's '#pool' tag left out). */
 export const glyphDrawer = (g: Glyph) => String(g.by || '').replace(/^ks:/, '').replace(/#pool$/, '');
 
-// ---------- strokes (rules 1.9, Sigil 1.5: a Line is what you drew as one) ----------
+// ---------- strokes (rules 1.10, Sigil 1.5: a Line is what you drew as one) ----------
 /** One stroke as it lies now: its glyphs (oldest first), its tiles in the order drawn (tiles[0] the end drawn first,
  * end the last), its axis (null for a stroke of one tile), its words in tile order, who started it. */
 export interface Stroke { id: string; side: 'pc' | 'foe'; glyphs: Glyph[]; tiles: string[]; axis: Dir | null; end: string; words: string[]; owner: string; drawers: string[];
   /** The stroke id its glyphs carry now (strokeId or, for a junction, strokeId2); id differs only for an untidied split part. */
   src: string }
-/** The strokes a glyph belongs to: its strokeId, and a junction's strokeId2 (rules 1.9). */
+/** The strokes a glyph belongs to: its strokeId, and a junction's strokeId2 (rules 1.10). */
 const memberships = (g: Glyph): string[] => (g.strokeId ? (g.strokeId2 && g.strokeId2 !== g.strokeId ? [g.strokeId, g.strokeId2] : [g.strokeId]) : []);
-/** Every stroke on the ground, read purely from the glyphs (item 673): the glyphs of one strokeId that lie in one unbroken
+/** Every stroke on the ground, read purely from the glyphs (item 903): the glyphs of one strokeId that lie in one unbroken
  * run; a stroke split by a removed middle glyph reads as two, the part with the stroke's oldest glyph keeping the id and
  * every other part named after its own oldest glyph ('s' + its id), exactly as tidyStrokes writes them. */
 export function strokeRuns(glyphs: Glyph[]): Stroke[] {
@@ -191,10 +191,10 @@ function readShape(members: Glyph[], comp: string[], side: 'pc' | 'foe', from?: 
   const near = from && dist(from, Z) < dist(from, A) ? Z : A, far = near === A ? Z : A;
   return { shape: 'line', tiles: s.tiles, glyphs: gs, words: gs.map((g) => g.word), side, axis: s.axis, near, far, dir: near === A ? s.axis : neg(s.axis), ...(sid ? { strokeId: sid } : {}) };
 }
-/** The glyphs and tiles of the pattern a glyph belongs to: its stroke (rules 1.9), or for an old glyph the 1.4 touching
+/** The glyphs and tiles of the pattern a glyph belongs to: its stroke (rules 1.10), or for an old glyph the 1.4 touching
  * group of old glyphs. */
 function membersOf(glyphs: Glyph[], start: Glyph, prefer?: string): { glyphs: Glyph[]; tiles: string[]; legacy: boolean; stroke: Stroke | null } {
-  // A junction (rules 1.9, item 690): the stroke named, else the one drawn into first, unless that is a lone glyph and
+  // A junction (rules 1.10, item 920): the stroke named, else the one drawn into first, unless that is a lone glyph and
   // the other is a Line.
   const sts = strokesOfGlyph(glyphs, start);
   let st = (prefer && sts.find((x) => x.id === prefer || x.src === prefer)) || sts[0] || null;
@@ -326,7 +326,7 @@ export function sigilPower(mg: { sigilMult?: number; elemMult?: number } | null 
 export function sigilParts(subjects: string[], infl?: string[]): { w: string; type: 'elemental' | 'sigil'; n: number }[] {
   const glyphs = subjects.map((w) => ({ w, d: W(w) as any })).filter((x) => x.d?.damage).sort((a, b) => b.d.damage - a.d.damage);
   const parts: { w: string; type: 'elemental' | 'sigil'; n: number }[] = [];
-  // Rules 1.9: a Mastered word's damage inflection (STONE, SPARK: +10%) scales its own glyphs.
+  // Rules 1.10: a Mastered word's damage inflection (STONE, SPARK: +10%) scales its own glyphs.
   const up = (w: string, n: number) => (infl?.includes(w) ? n * (1 + inflectionValue(w, 'damage_pct') / 100) : n);
   glyphs.forEach((x, i) => { const type = x.d.damage_type === 'elemental' ? 'elemental' : 'sigil', n = up(x.w, i === 0 ? x.d.damage : x.d.damage / 2), p = parts.find((y) => y.type === type); if (p) p.n += n; else parts.push({ w: x.w, type, n }); });
   return parts;
@@ -336,7 +336,7 @@ export function capParts(raws: number[], crit: boolean): number[] {
   const cap = crit ? SIGIL_CAP_CRIT : SIGIL_CAP, tot = raws.reduce((a, b) => a + b, 0);
   return tot <= cap ? raws : raws.map((r) => Math.floor((r * cap) / tot));
 }
-// ---------- inflections (rules 1.9, Sigil 1.5: a Mastered word's small upgrade, always on for its caster) ----------
+// ---------- inflections (rules 1.10, Sigil 1.5: a Mastered word's small upgrade, always on for its caster) ----------
 /** The inflection value of a stat for a word, when the word is one of the spell's inflected words (0 otherwise). */
 const iv = (sp: Spell, w: string, stat: string) => (sp.infl?.includes(w) ? inflectionValue(w, stat) : 0);
 const inflSum = (sp: Spell, stat: string) => (sp.infl || []).reduce((t, w) => t + inflectionValue(w, stat), 0);
@@ -398,7 +398,7 @@ function affectedOn(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp: Spe
     const ally = t.side === side, self = !!caster && t === caster, m = Math.round(base * mult[t.pos] * 1000) / 1000;
     const a: Affected = { unit: t.id, name: t.name, at: t.pos, ally, enemy: !ally, self, mult: m, via, missile, ...numbersFor(cb, caster, sp, t, m, roll, origin) };
     if (sp.kin && ally) a.kinSpared = true;
-    else if (sp.kin && (t.downed || t.surrendered) && iv(sp, 'kin', 'spare_downed')) a.kinSpared = true; // KIN's inflection (rules 1.9)
+    else if (sp.kin && (t.downed || t.surrendered) && iv(sp, 'kin', 'spare_downed')) a.kinSpared = true; // KIN's inflection (rules 1.10)
     else if ((t.downed || t.surrendered) && sp.harmful && !sp.subjects.some(isBoonWord) && !sp.workings.length) a.skipped = t.downed ? 'downed' : 'surrendered';
     else if (self && sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken') a.skipped = 'quicken_self';
     else if (sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken' && t.quickRound === cb.round) a.skipped = 'quicken_round';
@@ -473,7 +473,7 @@ function nullCatch(cb: Combat, tiles: string[]): { glyphs: Glyph[]; zones: Zone[
 // ---------- planning (the preview and the real Evoke share it) ----------
 export interface EvokeOpts { /** TWICE: the tiles of the second and later missiles (aims[0] = aim). */ aims?: string[]; /** STEP: where the target lands. */ dest?: string; /** COMMAND: halt | kneel | drop | move. */ order?: string; /** COMMAND move: the tile. */ orderTo?: string;
   /** Visualization's Paint the Field (item 450): the free Burst word a spell with none gets, 'spread' or 'push'. */ paint?: 'spread' | 'push';
-  /** Rules 1.9 Junctions: on a junction's tile, which of its strokes to Evoke (a stroke id). */ stroke?: string;
+  /** Rules 1.10 Junctions: on a junction's tile, which of its strokes to Evoke (a stroke id). */ stroke?: string;
   /** A stand-in Subject a class move puts in the spell's Subject place (the Circuit Mage's Fusion: the Outburst). It counts toward the 4-glyph cap but not Max Sigil words or the charge, and only shapes the plan (additive, lane classes-k). */ subject?: string }
 export interface MissilePlan {
   i: number; aim: string; kind: Spell['missile']; origin: string; impact: string; dir: Dir;
@@ -694,24 +694,24 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
 }
 
 // ---------- drawing ----------
-/** One choice on the draw step's stroke picker (rules 1.9): a stroke the glyph could extend, or 'new'. */
+/** One choice on the draw step's stroke picker (rules 1.10): a stroke the glyph could extend, or 'new'. */
 export interface StrokeOption {
   id: string; label: string; words: string[]; tiles: string[];
-  /** Who started the stroke, and whether you have a glyph in it (only those can be the default; item 671). */
+  /** Who started the stroke, and whether you have a glyph in it (only those can be the default; item 901). */
   owner: string; ownerName: string; mine: boolean;
   /** Whether the glyph may go into it (the draw's refusals read the stroke it extends). */
   ok: boolean; why?: string; isDefault: boolean;
-  /** Rules 1.9 Junctions: 'junction:A,B' (extends both) or 'junction:A,new' (extends A and starts a stroke); the second
+  /** Rules 1.10 Junctions: 'junction:A,B' (extends both) or 'junction:A,new' (extends A and starts a stroke); the second
    * stroke's words and tiles as it would read. */
   junction?: boolean; words2?: string[]; tiles2?: string[];
 }
 export interface DrawPreview {
   ok: boolean; why?: string; tile: string; cost: { ap: number; charge: number; flux: number }; effect: 'starts' | 'extends' | 'breaks' | 'stacks' | null; words: string[]; fades: Glyph | null; overload: boolean; capLeft: number;
-  /** Rules 1.9: the stroke the glyph goes into ('new' starts one), the id it gets, the picker's choices (the strokes it
+  /** Rules 1.10: the stroke the glyph goes into ('new' starts one), the id it gets, the picker's choices (the strokes it
    * could extend, then 'new'; none when it stacks or nothing is near), the default, and the tiles of the stroke it makes
    * (the preview's joining line). */
   stroke: string; strokeId: string; strokes: StrokeOption[]; defaultStroke: string; joins: string[];
-  /** Rules 1.9 Junctions: a junction's second stroke (its id, words and joining tiles). */
+  /** Rules 1.10 Junctions: a junction's second stroke (its id, words and joining tiles). */
   junction?: boolean; strokeId2?: string; words2?: string[]; joins2?: string[];
 }
 const up = (w: string) => w.toUpperCase();
@@ -728,7 +728,7 @@ function strokeRefusal(cb: Combat, u: Unit, ws: string[], tiles: number, drawers
   if (cnt.watch && cnt.stay) return 'WATCH and STAY are refused together: a turret already lasts.';
   return null;
 }
-// ---------- Junctions (rules 1.9; spec items 687-690) ----------
+// ---------- Junctions (rules 1.10; spec items 917-920) ----------
 const JD: any = G.shape?.junction || {};
 export const JUNCTION = { skill: String(JD.gate_skill || 'brain_power'), points: Number(JD.gate_points ?? 10) };
 /** Why u may not draw a junction (null: it may): Brain Power Mastered on the character, or the Proving Ground's toggle
@@ -739,13 +739,13 @@ export function junctionsFor(cb: Combat, u: Unit): string | null {
   const c = g?.characters?.[u.charId] as Character | undefined;
   return (c?.skills?.[JUNCTION.skill] || 0) >= JUNCTION.points ? null : 'Junctions need Brain Power Mastered (' + JUNCTION.points + ').';
 }
-/** The strokes of u's side a glyph on tile `at` could extend (rules 1.9, Drawing 3.1): next to the stroke's end glyph and
+/** The strokes of u's side a glyph on tile `at` could extend (rules 1.10, Drawing 3.1): next to the stroke's end glyph and
  * on along its axis, or next to a stroke of one glyph; fewer than 4 tiles. Enemies' strokes never. */
 export function strokeCandidates(cb: Combat, u: Unit, at: string): Stroke[] {
   return strokeRuns(cb.glyphs || []).filter((s) => s.side === u.side && s.tiles.length < MAX_GLYPHS && !s.tiles.includes(at)
     && (s.tiles.length === 1 ? dist(s.tiles[0], at) === 1 : !!s.axis && add(s.end, s.axis) === at));
 }
-/** Which stroke a new glyph of u's on tile `at` goes into (rules 1.9; items 671–672): on a tile that already holds a glyph
+/** Which stroke a new glyph of u's on tile `at` goes into (rules 1.10; items 901–902): on a tile that already holds a glyph
  * of its side, that glyph's stroke (a Stack; '' for an old 1.4 glyph: no stroke); else the pick, or by default the
  * candidate holding u's most recent glyph, or a new stroke ('sgl' + the next glyph number). Pure. */
 export function strokePick(cb: Combat, u: Unit, at: string, stroke?: string): { cands: Stroke[]; def: string; pick: string; sid: string; sid2?: string; effect: 'starts' | 'extends' | 'stacks'; error?: string } {
@@ -770,7 +770,7 @@ export function strokePick(cb: Combat, u: Unit, at: string, stroke?: string): { 
   // The id the stroke's glyphs carry now (an untidied split part's canonical id differs; tidyStrokes settles it after).
   return { cands, def, pick, sid: cands.find((s) => s.id === pick)!.src, effect: 'extends' };
 }
-/** Before drawing (spec: Mana, Sigils 9.1): the tile (yours), the cost, the stroke it goes into (rules 1.9: the picker's
+/** Before drawing (spec: Mana, Sigils 9.1): the tile (yours), the cost, the stroke it goes into (rules 1.10: the picker's
  * choices and the default) and whether it starts a Line, extends one or stacks on a tile (the two-glyph hook). stroke:
  * the pick (a stroke id or 'new'); none takes the default. Refusals cost nothing (item 447). */
 export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, stroke?: string): DrawPreview {
@@ -798,7 +798,7 @@ export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, st
   const sp = strokePick(cb, u, at, stroke), def = sp.def, pick = sp.pick, sid = sp.sid;
   let effect: DrawPreview['effect'] = sp.effect;
   const strokes: StrokeOption[] = sp.cands.map((s) => { const r = read(s.src), why = strokeRefusal(cb, u, r.ws, r.tiles.length, r.drawers); return { id: s.id, label: 'extends ' + s.words.map(up).join('·'), words: r.ws, tiles: r.tiles, owner: s.owner, ownerName: nameOf(s.owner), mine: s.glyphs.some((g) => glyphDrawer(g) === u.id), ok: !why, ...(why ? { why } : {}), isDefault: s.id === def }; });
-  // Junctions (rules 1.9, items 687-688): with the gate, each stroke it could extend also as a crossing, with a second
+  // Junctions (rules 1.10, items 917-918): with the gate, each stroke it could extend also as a crossing, with a second
   // stroke it could extend or a new Line. Never the default.
   const jx = (A: Stroke, B: Stroke | null): StrokeOption => {
     const sid2 = B ? B.src : newId, r1 = read(A.src, sid2, A.src), r2 = read(A.src, sid2, sid2);
@@ -826,7 +826,7 @@ export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, st
   return { ok: true, tile: at, ...base, fades, overload: m!.flux + gc.flux > FLUX_MAX, capLeft: Math.max(0, capG - mine.length - 1) };
 }
 /** Draw one glyph on your own tile (spec: Drawing): Glyph AP, the word's charge, its Flux. The oldest of yours fades past
- * your cap of glyphs on the ground. tile defaults to (and must be) your own. stroke (rules 1.9): the stroke it extends
+ * your cap of glyphs on the ground. tile defaults to (and must be) your own. stroke (rules 1.10): the stroke it extends
  * ('new' starts one); none takes the picker's default. */
 export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: string, stroke?: string): string | null {
   const pv = previewDraw(cb, u, word, tile, stroke); if (!pv.ok) return pv.why || 'Can\'t draw that.';
@@ -852,16 +852,16 @@ export function scuff(cb: Combat, u: Unit): string | null {
   if (!here.length && !tur.length) return (cb.glyphs || []).some((g) => g.pos === u.pos) ? 'A Keystone can\'t be scuffed.' : 'No glyphs under you.';
   if (u.ap < SPELL_AP.scuff) return 'Needs 1 AP.';
   u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos || (g as any).keystone);
-  // Rules 1.9: a scuffed glyph leaves a trace of its word for a while, which can be read (copied) like a glyph.
+  // Rules 1.10: a scuffed glyph leaves a trace of its word for a while, which can be read (copied) like a glyph.
   if (here.length) cb.traces = [...(cb.traces || []), ...here.map((g): Trace => ({ id: g.id, word: g.word, pos: g.pos, side: g.side, by: g.by, who: g.who, left: STUDY.traceRounds, ...((g as any).copiedBy?.length ? { copiedBy: [...(g as any).copiedBy] } : {}) }))];
-  tidyStrokes(cb.glyphs); // a middle glyph scuffed splits its stroke in two (rules 1.9, Drawing 3.8)
+  tidyStrokes(cb.glyphs); // a middle glyph scuffed splits its stroke in two (rules 1.10, Drawing 3.8)
   emitFx(cb, 'scuff', { unit: u.id, at: u.pos });
   for (const z of tur) destroyPlaced(cb, z, u.name + ' scuffs it out');
   cb.log.push(u.name + ' scuffs out ' + [...here.map((g) => g.word.toUpperCase()), ...tur.map(() => 'a turret')].join(' and ') + ' at ' + refOf(u.pos) + '.');
   return null;
 }
 
-// ---------- reading glyphs (rules 1.9, Sigil 1.5: copying words from the world) ----------
+// ---------- reading glyphs (rules 1.10, Sigil 1.5: copying words from the world) ----------
 /** What a character could copy on a tile: the other side's glyphs and any trace, with a word they don't know and haven't
  * copied there. */
 export function readable(cb: Combat, u: Unit, tile: string): (Glyph | Trace)[] {
@@ -870,13 +870,13 @@ export function readable(cb: Combat, u: Unit, tile: string): (Glyph | Trace)[] {
     .filter((g) => !knowsWord(c, g.word) && !((g as any).copiedBy || []).includes(c.id));
 }
 /** Copy what is readable on a tile for a character (no AP): +2 study for each glyph or trace of a word you don't know,
- * each glyph (and its trace) once per character (rule 3, item 680). Returns the log lines. */
+ * each glyph (and its trace) once per character (rule 3, item 910). Returns the log lines. */
 function copyFrom(cb: Combat, u: Unit, list: (Glyph | Trace)[]): string[] {
   const c = charOfUnit(cb, u)!, out: string[] = [];
   for (const g of list) { (g as any).copiedBy = [...((g as any).copiedBy || []), c.id]; out.push(...copyWord(c, g.word)); }
   return out;
 }
-/** Read (the Analyze action aimed at a glyph or a trace; rules 1.9): the Analyze AP and range, line of sight, no roll. */
+/** Read (the Analyze action aimed at a glyph or a trace; rules 1.10): the Analyze AP and range, line of sight, no roll. */
 export function readGlyph(cb: Combat, u: Unit, tile: string): string | null {
   const c = charOfUnit(cb, u); if (!c) return 'Only a character can read a glyph.';
   const any = [...(cb.glyphs || []).filter((g) => g.pos === tile), ...(cb.traces || []).filter((t) => t.pos === tile)];
@@ -899,7 +899,7 @@ export function readDrawnBy(cb: Combat, u: Unit, t: Unit): void {
   if (list.length) cb.log.push(...copyFrom(cb, u, list));
 }
 
-/** The glyphs of a fired pattern fade (a Keystone survives). Rules 1.9 Junctions (item 689): a junction leaves the
+/** The glyphs of a fired pattern fade (a Keystone survives). Rules 1.10 Junctions (item 919): a junction leaves the
  * fired stroke only, and stays in its other one. The strokes left are tidied, so a split stroke's parts are their own. */
 export function fadePattern(cb: Combat, p: Pattern) {
   const src = p.strokeSrc, keep = new Set<string>();
@@ -942,7 +942,7 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
   if (sp.leech && dealt > 0 && !u.dead) { const n = Math.floor(dealt * sp.leech), r = healUnit(cb, u, n, u, 'leech'); emitFx(cb, 'leech', { unit: u.id, to: u.pos, from: pv.missiles.map((x) => x.impact), amount: r.restored, element: sp.element }); line += ' · ' + u.name + ' drinks ' + r.restored + ' HP (LEECH)'; }
   if (sp.damaging && condOn(u, 'sharpened')) endCond(u, 'sharpened', cb); // Sharpened is spent on the next attack
   if (u.hidden && sp.harmful) line += revealUnit(cb, u, 'cast a spell'); // MASK lasts until you attack
-  // Rules 1.9 (Sigil 1.5): study and word use counts for the caster's character (not a fizzle; not an enemy or companion).
+  // Rules 1.10 (Sigil 1.5): study and word use counts for the caster's character (not a fizzle; not an enemy or companion).
   // What it learns rides on the Evoke's own log line (one line an Evoke), after it.
   let grew: string[] = [];
   { const c = charOfUnit(cb, u); if (c) { const hitEnemy = struckIds.some((id) => cb.units.find((x) => x.id === id)?.side !== u.side), was = new Set(masteredOf(c));
@@ -979,7 +979,7 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
     }
     dealt += Math.max(0, hp0 - (t.hp + (t.shield || 0)));
     if (!t.dead) {
-      // FIRE's inflection (rules 1.9): its Burning lasts a round past being put out (tactics extinguish reads 'linger').
+      // FIRE's inflection (rules 1.10): its Burning lasts a round past being put out (tactics extinguish reads 'linger').
       if (crit && sp.uniqueSubjects.includes('fire')) line += applyCond(cb, rng, by, t, 'burning', undefined, undefined, iv(sp, 'fire', 'cond_rounds') ? { arg: 'linger:' + iv(sp, 'fire', 'cond_rounds') } : {});
       for (const w of sp.uniqueSubjects) { const d: any = W(w); if (!isElement(w) || !d?.applies) continue; line += withElement(w, () => applyCond(cb, rng, by, t, condKey(d.applies.condition), inflRounds(sp, w, condKey(d.applies.condition), d.applies.rounds), (d.applies.save || undefined) as Fam | undefined, { skipSave: !d.applies.save, tnAdd: iv(sp, w, 'save_tn') })); }
       if (sp.uniqueSubjects.includes('gale')) line += magicShove(cb, t, o.origin, ((W('gale') as any)?.push_tiles || 2) + iv(sp, 'gale', 'push_tiles'), by);
@@ -1276,7 +1276,7 @@ export function placedMagic(cb: Combat, side: 'pc' | 'foe') {
 /** Is this zone hidden from a side (for views: a trap or hidden turret of the other side, not spotted)? */
 export const secretFrom = (z: any, side: 'pc' | 'foe') => (z.kind === 'trap' || (z.kind === 'turret' && z.hidden)) && z.side !== side && !(z.spotted || []).includes(side);
 
-/** The pattern under a glyph as the screen shows it while building (spec: Mana, Sigils 9.2). stroke (rules 1.9
+/** The pattern under a glyph as the screen shows it while building (spec: Mana, Sigils 9.2). stroke (rules 1.10
  * Junctions): on a junction's tile, which of its strokes to read. */
 export function patternAt(cb: Combat, tile: string, u?: Unit | null, stroke?: string) {
   migrateSigil(cb);
@@ -1294,10 +1294,10 @@ export function patternAt(cb: Combat, tile: string, u?: Unit | null, stroke?: st
     costNow: { charge: m?.charge ?? 0, ap: u?.ap ?? 0, flux: m?.flux ?? 0 }, costAfter: { charge: (m?.charge ?? 0) - charge, ap: (u?.ap ?? 0) - SPELL_AP.evoke, flux: m?.flux ?? 0, evokeCharge: charge },
     overloadWarning: !!m && m.flux >= FLUX_MAX ? 'Your Evoker is at ' + m.flux + ' Flux: the next glyph overloads it. Vent first (1 AP).' : null,
     spell: typeof p === 'string' || why ? null : compileSpell(p.words),
-    /** Rules 1.9: the stroke under the tile (its id, tiles in the order drawn, who started it); null for an old 1.4 glyph. */
+    /** Rules 1.10: the stroke under the tile (its id, tiles in the order drawn, who started it); null for an old 1.4 glyph. */
     strokeId: mm?.stroke?.id ?? null,
     stroke: mm?.stroke ? { id: mm.stroke.id, tiles: mm.stroke.tiles, words: mm.stroke.words, owner: mm.stroke.owner, axis: mm.stroke.axis } : null,
-    /** Rules 1.9 Junctions: the tile's glyph lies in two strokes; both, so the screen can offer either to Evoke. */
+    /** Rules 1.10 Junctions: the tile's glyph lies in two strokes; both, so the screen can offer either to Evoke. */
     junction: start && start.strokeId2 ? strokesOfGlyph(cb.glyphs || [], start).map((x) => ({ id: x.id, tiles: x.tiles, words: x.words })) : null,
   };
 }
@@ -1411,7 +1411,7 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
   if (!best.words.length) return !evoke(cb, rng, u, best.tiles[0], best.aim);
   if (best.pre === 'vent' && vent(cb, u)) return false;
   if (best.pre === 'core' && swapCore(cb, u)) return false;
-  let sid = 'new'; // rules 1.9: the first glyph starts a stroke, the rest extend it
+  let sid = 'new'; // rules 1.10: the first glyph starts a stroke, the rest extend it
   for (let i = 0; i < best.words.length; i++) {
     if (i) { if (moveUnit(cb, u, best.tiles[i], rng) || u.pos !== best.tiles[i] || u.dead || u.downed) return true; }
     if (drawGlyph(cb, rng, u, best.words[i], undefined, sid)) return i > 0;

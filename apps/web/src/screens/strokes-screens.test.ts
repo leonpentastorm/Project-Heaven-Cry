@@ -1,4 +1,4 @@
-// Sigil 1.5 strokes on the two maps (rules 1.9, spec 1.10, 5.3): the combat glyph keyboard's stroke picker ("extends
+// Sigil 1.5 strokes on the two maps (rules 1.10, spec 1.10, 5.3): the combat glyph keyboard's stroke picker ("extends
 // FIRE", "new Line"), the pick sent with the draw, the faint joins and the hovered stroke's words on the grid; the area
 // map does the same with g.story.glyphs.
 import { describe, expect, it, vi } from 'vitest';
@@ -36,7 +36,7 @@ const pc = () => (G.combat as any).units.find((x: any) => x.side === 'pc');
 const tileOf = (v: any, k: string) => v.tiles.find((t: any) => t.key === k);
 const sidAt = (k: string) => (G.combat as any).glyphs.find((g: any) => g.pos === k).strokeId;
 
-describe('combat: the stroke picker and the joins (rules 1.9)', () => {
+describe('combat: the stroke picker and the joins (rules 1.10)', () => {
   it('two Lines side by side: pick "new Line", then each glyph extends the Line picked; the grid joins each row', () => {
     fight(['fire', 'spark', 'seek', 'arc']);
     const l = screen({ action: 'draw', tab: 'sigils', word: 'fire' });
@@ -69,7 +69,7 @@ describe('combat: the stroke picker and the joins (rules 1.9)', () => {
   });
 });
 
-describe('area map: the stroke picker and the joins (rules 1.9)', () => {
+describe('area map: the stroke picker and the joins (rules 1.10)', () => {
   it('the picker shows on the area map\'s keyboard, the pick rides on world/act draw, and the cells show the joins', () => {
     SCREEN = 'main'; snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'strokes-area');
     doAct({ type: 'char/add', sheet: sheetFrom('Ilse') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });

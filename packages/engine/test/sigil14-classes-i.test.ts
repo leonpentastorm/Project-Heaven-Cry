@@ -63,7 +63,7 @@ describe('Mage under 1.4', () => {
     act(f, u, { type: 'combat/perk', id: 'class:mage.overcharge', actionId: 'overcharge' });
     walk(f, u, ['spark', 'seek', 'condense', 'condense'], ['3,2', '4,2', '5,2', '6,2']);
     at(f, u, '7,2');
-    // Rules 1.9: a stroke of 4 is full; the next glyph starts a new Line and the Line of 4 stays 4.
+    // Rules 1.10: a stroke of 4 is full; the next glyph starts a new Line and the Line of 4 stays 4.
     act(f, u, { type: 'combat/draw', word: 'condense', tile: '7,2' });
     const p = findPattern(f.cb, '3,2'); expect(typeof p === 'object' && p.words.length).toBe(4);
     expect(findPattern(f.cb, '7,2')).toMatch(/One glyph alone/);
@@ -159,7 +159,7 @@ describe('Warden under 1.4', () => {
     walk(f, u, ['stay', 'spark'], ['4,2', '5,2']); at(f, u, '4,3');
     expect(() => act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:warden.raise_cover' })).toThrow(/lone STAY/);
   });
-  it('Raise Cover under rules 1.9 (item 285): a STAY alone in its stroke is lone, a glyph of another stroke beside it doesn\'t matter', () => {
+  it('Raise Cover under rules 1.10 (item 285): a STAY alone in its stroke is lone, a glyph of another stroke beside it doesn\'t matter', () => {
     const f = fightWith([cls('warden', 1, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['stay', 'spark']); f.unit(f.foe.id).pos = '12,2';
     at(f, u, '4,2'); act(f, u, { type: 'combat/draw', word: 'stay', tile: '4,2' });
     at(f, u, '5,2'); act(f, u, { type: 'combat/draw', word: 'spark', tile: '5,2', stroke: 'new' }); // a new Line, touching

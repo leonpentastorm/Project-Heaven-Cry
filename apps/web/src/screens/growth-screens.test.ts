@@ -1,4 +1,4 @@
-// Sigil 1.5 growth on screen (rules 1.9; spec 2, 3, 7): the Magic tab's study bar, the Learn chooser in the five word
+// Sigil 1.5 growth on screen (rules 1.10; spec 2, 3, 7): the Magic tab's study bar, the Learn chooser in the five word
 // groups (copied words first), the known-to-study list, word chips with use counts and stars, inflections greyed until
 // earned; the collapsible, grouped workshop (open state remembered); a sigil mark on the area map and its panel.
 import { describe, expect, it, vi } from 'vitest';
@@ -31,7 +31,7 @@ function start(seed = 'growth-ui') {
   return { c: () => G.characters[c.id] as any, L };
 }
 
-describe('the Magic tab: study and learning (rules 1.9.2)', () => {
+describe('the Magic tab: study and learning (rules 1.10.2)', () => {
   it('shows study toward the next word; a pick opens the chooser in the five groups, copied words first; picking learns it', () => {
     const { c, L } = start();
     let r = L.renderVals();
@@ -66,7 +66,7 @@ describe('the Magic tab: study and learning (rules 1.9.2)', () => {
   });
 });
 
-describe('the Magic tab: word mastery (rules 1.9.3)', () => {
+describe('the Magic tab: word mastery (rules 1.10.3)', () => {
   it('each word shows its uses and star, and its inflection greyed until Mastered', () => {
     const { c, L } = start();
     let r = L.renderVals();
@@ -94,14 +94,19 @@ describe('the shared workshop: collapsible and grouped (spec 7)', () => {
     r.mg.sig.ws.toggle(); r = L.renderVals();
     expect(r.mg.sig.ws.open).toBe(false); expect(r.mg.sig.ws.expanded).toBe('false');
   });
-  it('the Outburst section groups designs, schools, tones, shapes and modules, and collapses on its own', () => {
+  it('the Outburst section groups the designs and the 4.0 codex (templates, feelings, modules by gate), and collapses on its own', () => {
     const { c, L } = start();
     c().soulKnown = { schools: ['force'], modules: ['burst_shape', 'pierce'], tones: [] };
     let r = L.renderVals();
     const keys = r.mg.soul.ws.groups.map((g: any) => g.key);
-    expect(keys).toEqual(expect.arrayContaining(['schools', 'tones', 'shapes']));
-    const tones = r.mg.soul.ws.groups.find((g: any) => g.key === 'tones');
-    expect(tones.items[0].chips[0].label).toBe('Raw');
+    expect(keys).toEqual(['designs', 'templates', 'feelings', 'modules']);
+    // The modules group holds one group per gate skill, each collapsible and remembered like the rest (closed at first).
+    const gates = r.mg.soul.ws.groups.find((g: any) => g.key === 'modules');
+    expect(gates.open).toBe(false); gates.toggle(); r = L.renderVals();
+    const mods = r.mg.soul.ws.groups.find((g: any) => g.key === 'modules').items[0].gates;
+    expect(mods.groups[0].key).toBe('lore_master'); expect(mods.groups.at(-1).key).toBe('advanced');
+    mods.groups[0].toggle(); r = L.renderVals();
+    expect(r.mg.soul.ws.groups.find((g: any) => g.key === 'modules').items[0].gates.groups[0].hasItems).toBe(true);
     r.mg.soul.ws.toggle(); r = L.renderVals();
     expect(r.mg.soul.ws.open).toBe(false); expect(r.mg.sig.ws.open).toBe(true);
   });
@@ -111,7 +116,7 @@ describe('the shared workshop: collapsible and grouped (spec 7)', () => {
   });
 });
 
-describe('a sigil mark on the area map (rules 1.9, The Magic panel rule 4)', () => {
+describe('a sigil mark on the area map (rules 1.10, The Magic panel rule 4)', () => {
   it('draws the carved plate (unread until copied), and the panel shows age, damage, TN, the skills and the outcome', () => {
     const { c, L } = start('mark-ui');
     const at = positionsOf(G)[c().id], map = zoneMap(G), [x, y] = at.split(',').map(Number);

@@ -39,7 +39,7 @@ export interface Spell {
   condense: number; spread: number; push: number; coreMult: number; radius: number; radiusMult: number; coneLen: number; coneMult: number; burst: boolean;
   kin: boolean; repeats: number; repMult: number;
   damaging: boolean; harmful: boolean; element: string | null; workings: string[];
-  /** Rules 1.9: the caster's Mastered words in this spell, whose inflections are on (sigil.ts applyInflections). */
+  /** Rules 1.10: the caster's Mastered words in this spell, whose inflections are on (sigil.ts applyInflections). */
   infl?: string[];
 }
 export function compileSpell(words: string[]): Spell {

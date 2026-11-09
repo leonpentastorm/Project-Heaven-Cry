@@ -1,4 +1,4 @@
-// Sigil 1.5 strokes on screen (rules 1.9, spec 1.10, 5.2, 5.3): the draw step's stroke picker, the joining line its
+// Sigil 1.5 strokes on screen (rules 1.10, spec 1.10, 5.2, 5.3): the draw step's stroke picker, the joining line its
 // preview shows, the faint joins between a stroke's glyphs (both joins on a junction), the hovered stroke lit with its
 // words, and a junction's two Lines offered on Evoke. Every choice comes from the engine's previewDraw / patternAt.
 import { describe, expect, it } from 'vitest';
@@ -89,7 +89,7 @@ describe('the draw step: the stroke picker (spec 1.3, 5.3)', () => {
   });
 });
 
-describe('junctions on screen (rules 1.9, items 687-690)', () => {
+describe('junctions on screen (rules 1.10, items 917-920)', () => {
   function junction() {
     const s = setup(['fire', 'seek', 'spark']), { cb, u, rng } = s;
     draw(cb, rng, u, 'fire', '2,5'); draw(cb, rng, u, 'seek', '3,5'); draw(cb, rng, u, 'spark', '3,4', 'new');

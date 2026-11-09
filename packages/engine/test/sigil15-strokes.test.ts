@@ -1,5 +1,5 @@
-// Sigil 1.5, strokes (rules revision 1.9; docs/design/sigil-1.5-spec.md section 1; spec: Mana, Drawing a spell, rule 3;
-// items 671-675). A Line is what you drew as one: each glyph records its stroke, and touching glyphs of other strokes no
+// Sigil 1.5, strokes (rules revision 1.10; docs/design/sigil-1.5-spec.md section 1; spec: Mana, Drawing a spell, rule 3;
+// items 901-905). A Line is what you drew as one: each glyph records its stroke, and touching glyphs of other strokes no
 // longer join, poison or block a Line. Every draw, scuff and Evoke here goes through the reducer (apply), the path a
 // player's click takes; the enemy AI runs its own turn (enemyTurn), which takes the same engine actions.
 import { describe, expect, it } from 'vitest';
@@ -45,7 +45,7 @@ const sidAt = (cb: Combat, tile: string) => (cb.glyphs || []).find((g) => g.pos 
 const evokes = (cb: Combat) => cb.log.filter((l) => / evokes /.test(l));
 
 // ---------------------------------------------------------------------------------------------------------------------
-describe('touching no longer poisons (rules 1.9, Drawing 3.4)', () => {
+describe('touching no longer poisons (rules 1.10, Drawing 3.4)', () => {
   it('a "+" of two Lines (one across, one down, touching at the corner) and both Evoke; under 1.4 they made one bent group', () => {
     const f = rig(['fire', 'seek', 'spark'], ['8,5', '4,10']);
     const [foe1, foe2] = f.foes;
@@ -84,7 +84,7 @@ describe('touching no longer poisons (rules 1.9, Drawing 3.4)', () => {
   });
 });
 
-describe('the stroke picker (rules 1.9, Drawing 3.3; item 671)', () => {
+describe('the stroke picker (rules 1.10, Drawing 3.3; item 901)', () => {
   it('two strokes it could extend: the default is the one you drew into last; the pick and "new" ride the draw action', () => {
     for (const [pick, want] of [[undefined, 'mend'], ['fire', 'fire'], ['new', null]] as const) {
       const f = rig(['fire', 'mend', 'seek']);
@@ -120,7 +120,7 @@ describe('the stroke picker (rules 1.9, Drawing 3.3; item 671)', () => {
   });
 });
 
-describe('co-op and enemies (rules 1.9, Drawing 3.6)', () => {
+describe('co-op and enemies (rules 1.10, Drawing 3.6)', () => {
   it('an ally may extend your stroke deliberately (the picker), and then Evoke the shared Line', () => {
     const f = rig(['fire', 'seek'], ['9,5'], ['8,8']); const [me, ally] = f.pcs;
     draw(f, me, ['fire'], ['3,5']); const mine = sidAt(f.cb, '3,5')!;
@@ -174,7 +174,7 @@ describe('co-op and enemies (rules 1.9, Drawing 3.6)', () => {
   });
 });
 
-describe('scuffing, fading and Evoking keep strokes whole (rules 1.9, Drawing 3.8; item 673)', () => {
+describe('scuffing, fading and Evoking keep strokes whole (rules 1.10, Drawing 3.8; item 903)', () => {
   it('scuffing a middle glyph splits the stroke: the part of 2 is a Line with a fresh id, the lone glyph is a glyph and can be extended again', () => {
     const f = rig(['spark', 'condense', 'fire', 'seek'], ['10,5']);
     draw(f, f.pc, ['spark', 'condense', 'fire', 'seek'], ['6,5', '5,5', '4,5', '3,5']);
@@ -225,7 +225,7 @@ describe('scuffing, fading and Evoking keep strokes whole (rules 1.9, Drawing 3.
   });
 });
 
-describe('old saves (rules 1.9, Drawing 3.10; item 674)', () => {
+describe('old saves (rules 1.10, Drawing 3.10; item 904)', () => {
   const old = (id: string, word: string, pos: string, by: string): Glyph => ({ id, word, pos, by, side: 'pc', left: 3, who: 'Old', v: SIGIL_REV } as Glyph);
   it('glyphs with no stroke keep the 1.4 reading (a straight touching group is a Line, a bend is no shape); none is dropped', () => {
     const f = rig(['fire', 'seek'], ['9,5']); const id = f.pc.id;
@@ -243,7 +243,7 @@ describe('old saves (rules 1.9, Drawing 3.10; item 674)', () => {
   });
 });
 
-describe('strokes on the area map (g.story.glyphs; rules 1.9)', () => {
+describe('strokes on the area map (g.story.glyphs; rules 1.10)', () => {
   const sheetOf = (name: string, words: string[]): Sheet => { const a = ARCHETYPES.find((x: any) => x.id === 'sigilist')!; return { name, portrait: '', origin: 'Central City', kit: 'sigil', sigils: words, traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as Sheet; };
   const start = () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'strokes');

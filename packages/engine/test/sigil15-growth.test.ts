@@ -1,5 +1,5 @@
-// Sigil 1.5, growth (rules revision 1.9; docs/design/sigil-1.5-spec.md sections 2 and 3; spec: The Magic panel and
-// learning; items 676-686). Study from Evokes and its thresholds, learning a word of your choice within the cap (banked
+// Sigil 1.5, growth (rules revision 1.10; docs/design/sigil-1.5-spec.md sections 2 and 3; spec: The Magic panel and
+// learning; items 906-916). Study from Evokes and its thresholds, learning a word of your choice within the cap (banked
 // when no slot is free), copying words from enemy glyphs and scuffed traces, Mastery study and the Mastered free word,
 // word use counts, and the inflection a Mastered word turns on. Every action goes through the reducer (apply).
 import { describe, expect, it } from 'vitest';
@@ -51,7 +51,7 @@ function plant(f: F, word: string, pos: string, by: Unit = f.foe): Glyph {
 function uses(f: F, word: string, n: number) { growth(f).uses[word] = n; const m = f.unit(f.pc.id).mg!; m.inflect = Object.entries(growth(f).uses).filter(([, v]) => (v as number) >= 30).map(([w]) => w); }
 
 // ---------------------------------------------------------------------------------------------------------------------
-describe('study (rules 1.9, item 676)', () => {
+describe('study (rules 1.10, item 906)', () => {
   it('the numbers: 1, +1 per glyph past 2, +1 if it struck an enemy', () => {
     expect(evokeStudy(2, false)).toBe(1); expect(evokeStudy(2, true)).toBe(2); expect(evokeStudy(3, false)).toBe(2); expect(evokeStudy(4, true)).toBe(4);
   });
@@ -82,7 +82,7 @@ describe('study (rules 1.9, item 676)', () => {
   });
 });
 
-describe('on the area map (rules 1.9)', () => {
+describe('on the area map (rules 1.10)', () => {
   const open = () => {
     let g = newGame('ROOM', { id: 'host', name: 'Leon' }, 'grow-map');
     const a = ARCHETYPES.find((x) => x.id === 'sigilist')!;
@@ -112,7 +112,7 @@ describe('on the area map (rules 1.9)', () => {
   });
 });
 
-describe('thresholds and picks (items 677-679)', () => {
+describe('thresholds and picks (items 907-909)', () => {
   it('the 1st pick at 6 study, then every 8 more: 6, 14, 22', () => {
     expect([1, 2, 3, 4].map(thresholdN)).toEqual([6, 14, 22, 30]);
     expect([0, 5, 6, 13, 14, 21, 22].map(picksEarned)).toEqual([0, 0, 1, 1, 2, 2, 3]);
@@ -153,11 +153,11 @@ describe('thresholds and picks (items 677-679)', () => {
   });
 });
 
-describe('copying in a fight (item 680-681)', () => {
+describe('copying in a fight (item 910-911)', () => {
   it('Analyzing an enemy also copies the glyphs it has drawn: +2 study and the word on the known-to-study list', () => {
     const f = rig(['spark', 'seek'], ['7,5']); plant(f, 'acid', '6,5'); plant(f, 'acid', '6,6');
     f.act({ type: 'combat/analyze', unitId: f.pc.id, targetId: f.foe.id } as any);
-    expect(growth(f).toStudy).toEqual(['acid']); expect(growth(f).study).toBe(4); // +2 for each glyph of a word you don't know (rule 3, item 680)
+    expect(growth(f).toStudy).toEqual(['acid']); expect(growth(f).study).toBe(4); // +2 for each glyph of a word you don't know (rule 3, item 910)
     expect(f.cb.log.join('\n').split('copies ACID (+2 study; on the known-to-study list)').length - 1).toBe(2);
     expect(sigilGrowthView(charOf(f)).learnable[0]).toBe('acid'); // copied words are listed first
     expect(() => f.act({ type: 'combat/read', unitId: f.pc.id, tile: '6,5' } as any)).toThrow(/copied that already/);
@@ -203,7 +203,7 @@ describe('copying in a fight (item 680-681)', () => {
   });
 });
 
-describe('Mastery study and the Mastered free word (items 682-683)', () => {
+describe('Mastery study and the Mastered free word (items 912-913)', () => {
   it('each Mastery level of Brain Power, Rumination or Eloquence pays +5 once; Mastered gives one free word over the cap', () => {
     const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 2, rumination: 0, eloquence: 0 } }]); const id = s.chars[0].id;
     s.g.characters[id].sigils = ['spark', 'seek', 'fire', 'ward', 'mend', 'acid']; (s.g.characters[id] as any).sigilGrowth = { study: 0, picksUsed: 0, free: 0, paid: [], toStudy: [], uses: {} };
@@ -223,11 +223,11 @@ describe('Mastery study and the Mastered free word (items 682-683)', () => {
     expect(s.g.characters[id].sigils.length).toBe(15); expect((s.g.characters[id] as any).sigilGrowth.free).toBe(0);
     expect(() => s.act({ type: 'sigil/learn', charId: id, word: SIGILS[21].id, free: true } as any)).toThrow(/No free word/);
     s.g.characters[id].skills.eloquence = 10; s.act({ type: 'story/unfocus' } as any);
-    expect((s.g.characters[id] as any).sigilGrowth.free).toBe(1); // once per skill (item 683)
+    expect((s.g.characters[id] as any).sigilGrowth.free).toBe(1); // once per skill (item 913)
   });
 });
 
-describe('the free word ignores the cap (item 683)', () => {
+describe('the free word ignores the cap (item 913)', () => {
   it('taken while a slot is open, it does not fill that slot: the picks still fill every ordinary slot', () => {
     const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 1 } }]); const id = s.chars[0].id, c = () => s.g.characters[id];
     c().sigils = ['spark', 'seek', 'fire', 'ward']; (c() as any).sigilGrowth = { study: 14, picksUsed: 0, free: 1, paid: [...ALL_PAID], toStudy: [], uses: {} };
@@ -250,7 +250,7 @@ describe('the free word ignores the cap (item 683)', () => {
   });
 });
 
-describe('the Narrator\'s word grant (item 684)', () => {
+describe('the Narrator\'s word grant (item 914)', () => {
   it('a grant with no slot free goes on the known-to-study list instead', () => {
     const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 0 } }]); const id = s.chars[0].id;
     s.g.characters[id].sigils = ['spark', 'seek', 'fire', 'ward'];
@@ -260,7 +260,7 @@ describe('the Narrator\'s word grant (item 684)', () => {
   });
 });
 
-describe('word mastery and inflections (items 685-686)', () => {
+describe('word mastery and inflections (items 915-916)', () => {
   it('every Evoke counts each known word once (repeats once): Practised at 10, Mastered at 30', () => {
     const f = rig(['spark', 'seek', 'condense'], ['10,5']);
     uses(f, 'spark', 9); uses(f, 'seek', 29);

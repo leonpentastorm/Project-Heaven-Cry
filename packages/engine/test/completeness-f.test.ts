@@ -32,7 +32,7 @@ function caster(u: Unit, words: string[], extra: any = {}) {
     saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any;
   return u;
 }
-// A glyph put down as the draw would (rules 1.9: into the default stroke there, strokePick).
+// A glyph put down as the draw would (rules 1.10: into the default stroke there, strokePick).
 const glyph = (cb: Combat, u: Unit, word: string, pos: string, stroke?: string) => { const sid = strokePick(cb, u, pos, stroke).sid; cb.glyphs = [...(cb.glyphs || []), { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos, by: u.id, side: u.side, left: 3, who: u.name, ...(sid ? { strokeId: sid } : {}) } as any]; };
 /** The PC ends its turn and the given units act next (their AI through combat/end-turn). */
 function enemyTurn(f: F, pc: Unit, ...foes: Unit[]) {
@@ -171,7 +171,7 @@ describe('Glyph Mason: an ally\'s Survey reach; the Keystone through two Evokes 
       at(f, m, '4,2'); at(f, ally, '4,5'); const foe = at(f, f.foe, '4,1'); foe.def = -40; foe.hp = foe.maxHp = 999;
       if (mason) { f.turn(m); act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', choice: 'fire' }); at(f, m, '8,8'); }
       else glyph(f.cb, f.unit(ally.id), 'fire', '4,2');
-      // Rules 1.9: the ally extends the Mason's stroke on purpose (the picker), as a co-op Line.
+      // Rules 1.10: the ally extends the Mason's stroke on purpose (the picker), as a co-op Line.
       glyph(f.cb, f.unit(ally.id), 'push', '4,3', (f.cb.glyphs || []).find((g) => g.pos === '4,2')?.strokeId);
       const a = f.turn(ally); const ch = f.unit(ally.id).mg!.charge;
       act(f, a, { type: 'combat/evoke', tile: '4,2', aim: '4,1' });

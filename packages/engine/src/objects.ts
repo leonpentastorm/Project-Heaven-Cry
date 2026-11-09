@@ -3,6 +3,7 @@
 // The engine owns what they do (blocking, cover, HP, traps, hazards, explosions); the Narrator writes what they
 // mean and the ways to deal with them (approaches), which players can try, and retry, without a Narrator call.
 import objectsJ from '../../../data/objects.json';
+import type { PackItem } from './character';
 
 export interface ObjKind {
   id: string; name: string; glyph: string; blocks_move: boolean; blocks_sight: boolean; cover: 'half' | 'full' | null; hp: number | null;
@@ -10,6 +11,8 @@ export interface ObjKind {
   trap?: { damage: number; detect_tn: number; detect_range: number }; hazard?: { damage: number }; explodes?: { damage: number; radius: number };
   /** Light radius in tiles (spec: Vision). */
   light?: number;
+  /** A hidden one of this kind (a pile, rules 1.9) is spotted by passive Vigilant against detect_tn within detect_range. */
+  spot?: { detect_tn: number; detect_range: number };
 }
 export const OBJECT_KINDS: ObjKind[] = (objectsJ as any).items;
 export const OBJ: Record<string, ObjKind> = Object.fromEntries(OBJECT_KINDS.map((k) => [k.id, k]));
@@ -33,7 +36,10 @@ export interface Approach {
 }
 /** A cache's contents (rules 1.7), in the loot shape: an item or weapon id, how many, a rarity and a name; an unknown
  * or empty id is a plot item (name, and text as its one line). */
-export interface CacheItem { item: string; qty: number; rarity?: string; name?: string; text?: string; note?: string }
+export interface CacheItem { item: string; qty: number; rarity?: string; name?: string; text?: string; note?: string;
+  /** A pile's entry (rules 1.9): the exact pack item (a magazine's rounds and type, a weapon's rarity, wear and mods),
+   * and its stable key (a pick-up names entries by key). Cache entries in the loot shape leave both out. */
+  pack?: PackItem; key?: string }
 export interface MapObject {
   id: string; kind: string; pos: string; name: string; text: string;
   hp?: number; max?: number; open?: boolean; locked?: boolean; hidden?: boolean; approaches: Approach[]; resolved?: boolean;
@@ -46,13 +52,15 @@ export interface MapObject {
   sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
   /** A cache's contents (rules 1.7); searched: emptied by a search or a loot success. */
   items?: CacheItem[]; searched?: boolean;
+  /** A pile's entry counter (its keys never repeat). */
+  seq?: number;
   /** Jammed: locked for the rest of this scene number (a failed approach's jam). */
   jam?: number;
-  /** A sigil mark (rules 1.9, Sigil 1.5): the word drawn into the world, its age and damage (they set the TN). */
+  /** A sigil mark (rules 1.10, Sigil 1.5): the word drawn into the world, its age and damage (they set the TN). */
   word?: string; age?: string; damage?: string;
 }
 
-// ---------- sigil marks (rules 1.9, Sigil 1.5; spec items 691-692) ----------
+// ---------- sigil marks (rules 1.10, Sigil 1.5; spec items 921-922) ----------
 const MK: any = (OBJ.sigil_mark as any)?.mark || {};
 export const MARK = {
   label: String(MK.label || 'Investigate the sigil'), skills: (MK.skills || ['analysis', 'rumination']) as string[], pick: (MK.pick || 'best') as 'best',

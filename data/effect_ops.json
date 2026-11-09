@@ -3687,7 +3687,7 @@
     {
       "id": "inflection",
       "tier": "sigil",
-      "summary": "A Mastered word's inflection (rules 1.9, Sigil 1.5): one small upgrade of that word, always on for its caster. stat names the number it moves (cond_rounds, save_tn, to_hit, damage_pct, push_tiles, shield_pct, heal_pct, charge, flux, lasts_rounds, radius, teleport_tiles, barrier_hp_pct, move_tiles, range, turret_def, pull_tiles, jump_radius, leech, mult, radius_at_4, cone_length, spare_downed); a stat the engine does not run goes to the Narrator with the text.",
+      "summary": "A Mastered word's inflection (rules 1.10, Sigil 1.5): one small upgrade of that word, always on for its caster. stat names the number it moves (cond_rounds, save_tn, to_hit, damage_pct, push_tiles, shield_pct, heal_pct, charge, flux, lasts_rounds, radius, teleport_tiles, barrier_hp_pct, move_tiles, range, turret_def, pull_tiles, jump_radius, leech, mult, radius_at_4, cone_length, spare_downed); a stat the engine does not run goes to the Narrator with the text.",
       "count": 40,
       "params": [
         "stat",
@@ -3741,6 +3741,30 @@
         "value": 1
       },
       "provisional": true
+    },
+    {
+      "id": "feeling_pour",
+      "tier": "bespoke",
+      "summary": "Rules 1.8: what a feeling does when it is poured into a held Outburst (engine: feelings.ts; numbers in feelings.json pour).",
+      "count": 25,
+      "params": [
+        "feeling"
+      ],
+      "used_by": [
+        "feelings:*"
+      ]
+    },
+    {
+      "id": "feeling_residue",
+      "tier": "bespoke",
+      "summary": "Rules 1.8: what a feeling's residue does to whoever stands on it (engine: feelings.ts; numbers in feelings.json residue).",
+      "count": 20,
+      "params": [
+        "feeling"
+      ],
+      "used_by": [
+        "feelings:*"
+      ]
     }
   ]
 }

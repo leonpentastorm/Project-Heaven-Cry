@@ -19,3 +19,7 @@ export * from './faith';
 export * from './world';
 export * from './hazards';
 export * from './sigilgrowth';
+export * from './containers';
+export * from './gear';
+export * from './loot';
+export * from './feelings';

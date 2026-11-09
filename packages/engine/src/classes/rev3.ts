@@ -610,7 +610,7 @@ register({ id: 'channeler.iron_heart', brief: () => null });
 // ---------- Occult Library (rank II) ----------
 // One more ready design (the data's stat_mod ready_designs, generic: character.ts readyDesigns) and one more tone:
 // a story action, once (per campaign), out of a fight: learn any element tone you don't know, as from a tutor (no
-// Visualization needed past the first tone's rule); it is the scene's one new thing (the magic/learn rule).
+// Lore Master needed past the first tone's rule (rules 1.8)); it is the scene's one new thing (the magic/learn rule).
 const ELEMENT_TONES = () => Object.values(TONE).filter((t: any) => t.element).map((t: any) => t.id as string);
 register({
   id: 'channeler.occult_library', claims: [0],

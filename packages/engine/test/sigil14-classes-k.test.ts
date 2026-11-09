@@ -30,7 +30,7 @@ function caster(u: Unit, words: string[], extra: any = {}) {
   return u;
 }
 /** A 1.4 glyph laid straight on the ground (drawing order = the order of these calls). */
-// A glyph put down as the draw would (rules 1.9: into the default stroke there, strokePick).
+// A glyph put down as the draw would (rules 1.10: into the default stroke there, strokePick).
 const glyph = (f: F, u: Unit, word: string, pos: string, extra: any = {}) => { const cb = f.cb, sid = strokePick(cb, u, pos).sid; cb.glyphs = [...(cb.glyphs || []), { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos, by: u.id, side: u.side, left: 3, who: u.name, v: 14, ...(sid ? { strokeId: sid } : {}), ...extra } as any]; };
 const glyphsAt = (f: F, k: string) => (f.cb.glyphs || []).filter((g) => g.pos === k);
 const ks = (f: F) => (f.cb.glyphs || []).find((g) => g.id === 'ks-' + f.pc.id);

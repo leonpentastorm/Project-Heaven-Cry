@@ -1,5 +1,5 @@
-// Sigil 1.5 review fixes (rules revision 1.9): every path that takes a glyph off the ground tidies the strokes left
-// (item 673), a fused Line keeps its junction in the other stroke (item 689), and a Keystone cut before 1.9 joins the
+// Sigil 1.5 review fixes (rules revision 1.10): every path that takes a glyph off the ground tidies the strokes left
+// (item 903), a fused Line keeps its junction in the other stroke (item 919), and a Keystone cut before 1.10 joins the
 // strokes. Every draw, feed, fuse and Keystone here goes through the reducer (apply).
 import { describe, expect, it } from 'vitest';
 import { d20, findPattern, type Unit } from '../src';
@@ -29,7 +29,7 @@ const draw = (f: F, w: string, t: string, stroke?: string) => { const u = me(f);
 const at = (f: F, t: string) => (f.cb.glyphs || []).find((g) => g.pos === t);
 const words = (f: F, t: string) => { const p = findPattern(f.cb, t); return typeof p === 'string' ? p : p.words; };
 
-describe('feeding a middle glyph splits its stroke (rules 1.9, Drawing 3.8; item 673)', () => {
+describe('feeding a middle glyph splits its stroke (rules 1.10, Drawing 3.8; item 903)', () => {
   it('the two parts take their own ids, so a glyph drawn in the gap extends one part, never all three tiles', () => {
     const f = rig(['fire', 'seek', 'spark', 'condense']);
     draw(f, 'fire', '2,2'); draw(f, 'seek', '3,2'); draw(f, 'spark', '4,2');
@@ -42,7 +42,7 @@ describe('feeding a middle glyph splits its stroke (rules 1.9, Drawing 3.8; item
   });
 });
 
-describe('Twin Discipline fuses a Line through a junction (rules 1.9 Junctions; item 689)', () => {
+describe('Twin Discipline fuses a Line through a junction (rules 1.10 Junctions; item 919)', () => {
   it('the junction leaves the fused stroke only and stays in its other one, as a plain Evoke leaves it', () => {
     for (const mode of ['evoke', 'fused']) {
       const f = rig(['fire', 'spark', 'seek', 'arc'], { twin_discipline: 'ultimate' });
@@ -63,12 +63,12 @@ describe('Twin Discipline fuses a Line through a junction (rules 1.9 Junctions; 
   });
 });
 
-describe('a Keystone cut before rules 1.9 (no stroke) joins the strokes (item 674)', () => {
+describe('a Keystone cut before rules 1.10 (no stroke) joins the strokes (item 904)', () => {
   it('the next restore gives it a stroke, and a glyph drawn beside it extends it into a Line', () => {
     const f = rig(['fire', 'seek'], {}, { archetype: 'sigilist', kit: 'sigil', advancedClass: 'glyph_mason', level: 5 });
     me(f).pos = '4,5'; f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:glyph_mason.keystone', tile: '4,5', choice: 'fire' } as any);
     const ks = at(f, '4,5')! as any; expect(ks.keystone).toBe(true);
-    delete ks.strokeId; // as a pre-1.9 save holds it
+    delete ks.strokeId; // as a pre-1.10 save holds it
     me(f).ap = 60; f.act({ type: 'combat/move', unitId: f.pc.id, to: '3,5' } as any); // a step: the moved hook restores it
     expect(at(f, '4,5')!.strokeId).toBeTruthy();
     draw(f, 'seek', '3,5'); expect(at(f, '3,5')!.strokeId).toBe(at(f, '4,5')!.strokeId);

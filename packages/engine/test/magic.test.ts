@@ -18,11 +18,12 @@ function fight(s: Sheet, foeAt = '6,5', seed = 7) {
 }
 
 describe('starting magic (spec: The Magic panel, rules 1.4)', () => {
-  it('a Sigil student starts with SPARK + SEEK (a spell with a Reach word) and a loaded Evoker; a Soul initiate with one Outburst', () => {
+  it('a Sigil student starts with SPARK + SEEK (a spell with a Reach word) and a loaded Evoker; a Soul initiate with the three starting designs (rules 1.8)', () => {
     const s = newCharacter('a', 'p', sheet('sigilist', 'S', { kit: 'sigil' }));
     expect(s.sigils).toEqual(['spark', 'seek']); expect(s.outbursts!.length).toBe(0);
     const w = newCharacter('b', 'p', sheet('stormcaller', 'W', { kit: 'soul' }));
-    expect(w.outbursts!.map((d) => d.school)).toEqual(['damage']); expect(w.soulKnown!.schools).toEqual(['damage']);
+    expect(w.outbursts!.map((d) => d.name)).toEqual(['Heart Bolt', 'Mend', 'Heart Wave']); expect(w.soulKnown!.schools).toEqual(['damage', 'buff', 'control']);
+    expect(w.soulKnown!.modules).toEqual(['wave', 'move']); expect(w.feelings).toEqual(['rage', 'love']);
   });
   it('picked words must make a spell with a Reach word; an Outburst fits the module slots', () => {
     expect(validateSheet(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'freeze'] }))).toMatch(/must make a spell/);
@@ -46,7 +47,7 @@ describe('Sigils on the map (spec: Sigils, rules 1.4)', () => {
     expect(u.mg!.charge).toBe(7 - 2); expect(cb.glyphs!.length).toBe(0); expect(cb.log.at(-1)).toMatch(/evokes SPARK · SEEK/);
     expect(e.hp < hp || /misses/.test(cb.log.at(-1)!)).toBe(true);
   });
-  it('drawing is refused off your own tile; a glyph that turns starts a new stroke and spoils nothing (rules 1.9)', () => {
+  it('drawing is refused off your own tile; a glyph that turns starts a new stroke and spoils nothing (rules 1.10)', () => {
     const { cb, u, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'seek'] }), '9,5');
     u.mg!.words.push('condense'); u.mg!.maxWords = 4;
     expect(drawGlyph(cb, rng, u, 'fire', '9,9')).toMatch(/own tile/);
@@ -132,6 +133,8 @@ describe('magic in the story (spec: Overworld rounds, Mana)', () => {
     expect(g.characters[a].sigils).toContain('spark');
     expect(() => apply(g, { type: 'magic/design', charId: b, design: { id: '', name: 'Hush', school: 'status', modules: [] } }, 'host')).toThrow(/haven't learned/);
     expect(() => apply(g, { type: 'magic/design', charId: b, design: { id: '', name: 'Big', school: 'damage', modules: ['move', 'rain'] } }, 'host')).toThrow(/module|know/);
+    expect(() => apply(g, { type: 'magic/design', charId: b, design: { id: '', name: 'Spark of Grief', school: 'damage', modules: ['move'] } }, 'host')).toThrow(/keep 3 designs/); // rules 1.8: 3 ready at the start
+    g = apply(g, { type: 'magic/forget', charId: b, designId: 'o3' }, 'host');
     g = apply(g, { type: 'magic/design', charId: b, design: { id: '', name: 'Spark of Grief', school: 'damage', modules: ['move'] } }, 'host');
     expect(g.characters[b].outbursts!.map((d) => d.name)).toContain('Spark of Grief');
   });

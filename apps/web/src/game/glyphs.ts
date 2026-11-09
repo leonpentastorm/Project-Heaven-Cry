@@ -85,7 +85,7 @@ export function heartUri(stage = 1): string {
   return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20 C5 15 3 11 3 8 A4.5 4.5 0 0 1 12 6 A4.5 4.5 0 0 1 21 8 C21 11 19 15 12 20 Z" fill="${c}" fill-opacity="0.85" stroke="#FFFFFF" stroke-width="1"/></svg>`);
 }
 
-/** Rules 1.9 strokes: the join marks one tile draws toward its stroke neighbours. d is the direction (dx, dy) to the
+/** Rules 1.10 strokes: the join marks one tile draws toward its stroke neighbours. d is the direction (dx, dy) to the
  * neighbour; kind: 'line' (your side, faint), 'hot' (the hovered stroke), 'foe' (a hostile stroke you can see), 'preview'
  * (the draw step's joining line, dashed white). Solid, opaque inks: two halves that overlap in the gap never darken. */
 export interface JoinSeg { d: [number, number]; kind: 'line' | 'hot' | 'foe' | 'preview' }
@@ -104,7 +104,7 @@ export function joinUri(segs: JoinSeg[], o: { size: number; pad: number; anchor:
   return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${v} ${v} ${span} ${span}" fill="none">${lines}</svg>`);
 }
 
-/** Rules 1.9 word mastery: a five-point star, hollow for a Practised word, filled for a Mastered one (Intelligence ink;
+/** Rules 1.10 word mastery: a five-point star, hollow for a Practised word, filled for a Mastered one (Intelligence ink;
  * always shown with its word, PRACTISED or MASTERED). 'new' draws a faint dotted outline. */
 export function starUri(tier: 'new' | 'practised' | 'mastered', color = SIGIL_INK): string {
   const pts: string[] = [];
@@ -113,7 +113,7 @@ export function starUri(tier: 'new' | 'practised' | 'mastered', color = SIGIL_IN
   return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="1.6" stroke-linejoin="round"${tier === 'new' ? ' stroke-dasharray="2 2"' : ''}/></svg>`);
 }
 
-/** Rules 1.9 sigil marks: an old Sigil word cut into a wall, as a carved stone plate. The groove is drawn three times
+/** Rules 1.10 sigil marks: an old Sigil word cut into a wall, as a carved stone plate. The groove is drawn three times
  * (a dark cut, a lit lower lip, the faint word ink inside), so it reads as carved, not painted. word: the glyph, or
  * null for a word you can't read yet (unread scratches in the same carved style). age: fresh glows faintly cyan, old is
  * plain stone, ancient is darker and weathered. damage: worn breaks the groove into dashes, broken adds a crack. */

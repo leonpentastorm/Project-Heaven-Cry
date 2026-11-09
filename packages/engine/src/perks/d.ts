@@ -431,7 +431,7 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
     }
   } finally { d.modules = mods0; m.soulRange = range0; s.fusing = null; m.held = null; }
   // The glyphs fade as the spell fires (a Keystone stays), and it counts as your Evoke for Parallel Thought and Clean Draw.
-  fadePattern(cb, p); // rules 1.9 (item 689): a junction stays in its other stroke; the strokes left are tidied
+  fadePattern(cb, p); // rules 1.10 (item 919): a junction stays in its other stroke; the strokes left are tidied
   const pt = holderOf({ u, cb, c: h.c }, 'parallel_thought'); if (pt) ptEvoked({ ...pt, u, cb }, cb);
   const cd = holderOf({ u, cb, c: h.c }, 'clean_draw'); if (cd) cleanEvoked({ ...cd, u, cb }, cb, p.glyphs);
   return null;

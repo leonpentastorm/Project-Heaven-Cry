@@ -307,7 +307,7 @@ const isReachW = (w: string) => SIGIL[w]?.group === 'reach';
  * draw has (spec: Drawing; item 447): a second different Reach word, a second KIN, WATCH with STAY, past 4 glyphs or
  * past Max Sigil words. Pure: the glyph list is restored. */
 function joinCheck(cb: Combat, u: Unit, t: string, word: string, extra: Record<string, any> = {}): string | null {
-  const sid = strokePick(cb, u, t).sid; // rules 1.9: the stroke it would go into by default
+  const sid = strokePick(cb, u, t).sid; // rules 1.10: the stroke it would go into by default
   const keep = cb.glyphs || [], fake = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}), ...extra } as any;
   cb.glyphs = [...keep, fake]; let p: Pattern | string; try { p = findPattern(cb, t, u.pos); } finally { cb.glyphs = keep; }
   if (typeof p === 'string') return null;
@@ -360,7 +360,7 @@ register({
       const u = h.u!, cb = h.cb!, m = u.mg!, t = aimOf(cb, a, 'tile') || u.pos, why = halfWhy(cb, u, t); if (why) return why;
       const pool = halfPool(cb, u, t), word = pool[die(rng as any, pool.length) - 1];
       m.charge -= 1;
-      const sid = strokePick(cb, u, t).sid; // rules 1.9: a half-glyph goes into the default stroke, like any glyph
+      const sid = strokePick(cb, u, t).sid; // rules 1.10: a half-glyph goes into the default stroke, like any glyph
       const g: any = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, half: true, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}) };
       cb.glyphs = [...(cb.glyphs || []), g]; (cb as any).sigilV = SIGIL_REV;
       const stacks = (cb.glyphs || []).filter((x) => x.pos === t).length > 1;
@@ -475,7 +475,7 @@ function parseDesign(text: string | undefined): Partial<OutburstDesign> | null {
 }
 /** The magic/design checks (rules 1.5, character.ts checkOutburstDesign) with a slot allowance: schools and modules
  * known, module slots + extra, a second school at Will Power 5 on the same side, one shape (Size needs one), a known
- * tone (the first free at Visualization 1), options checked; tone and option2 kept. Returns the clean design or an error. */
+ * tone (the first free at Lore Master 1, rules 1.8), options checked; tone and option2 kept. Returns the clean design or an error. */
 function checkDesign(c: Character, d: Partial<OutburstDesign> | null, extra: number, id: string): OutburstDesign | string {
   if (!d || !d.school || !SCHOOL[d.school]) return 'Name a school (and modules): "damage: burst, homing".';
   const r = checkOutburstDesign(c, d, baseSlots(c) + extra, id); if (typeof r === 'string') return r;
@@ -723,9 +723,9 @@ function ksRestore(h: Holder) {
   if (s.zone !== cb.map.id || (s.session ?? 1) !== (h.g?.sessionN ?? 1)) return;
   const left = 2 + Math.floor(u.mg?.durBonus || 0), g = ksOf(cb, u);
   if (g && (g as any).strokeId) { g.left = left; g.pos = s.pos; g.word = s.word; (g as any).v = SIGIL_REV; return; }
-  // A Keystone cut before rules 1.9 has no stroke: it is taken up and set again, so it joins a stroke like a new one.
+  // A Keystone cut before rules 1.10 has no stroke: it is taken up and set again, so it joins a stroke like a new one.
   if (g) cb.glyphs = (cb.glyphs || []).filter((x) => x !== g);
-  // Rules 1.9: a Keystone is a stroke anchor: it goes into the default stroke where it is cut (or starts its own).
+  // Rules 1.10: a Keystone is a stroke anchor: it goes into the default stroke where it is cut (or starts its own).
   const pk = strokePick(cb, u, s.pos), sid = pk.sid === 'sgl' + ((cb.glyphSeq || 0) + 1) ? 's' + KS(u) : pk.sid;
   cb.glyphs = [...(cb.glyphs || []), { id: KS(u), word: s.word, pos: s.pos, by: 'ks:' + u.id, side: u.side, left, who: u.name, keystone: true, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}) } as any];
 }

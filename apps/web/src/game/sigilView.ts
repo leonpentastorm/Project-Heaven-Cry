@@ -4,6 +4,7 @@
 // marks. Pure: no DOM, no store, so both screens share it and the tests drive it directly.
 // Look: Sigil magic is Mind cyan (#4FC8DF, ink #8BDEEE), square and snapping; element hues tint effects only and always
 // come with the element's word.
+import { feelingInk, feelingName, residueTileStyle, residueTitle } from './feelingsView';
 import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf, sigilGrowthView } from '@engine';
 import { glyphUri, scratchUri, starUri, SIGIL_INK, SIGIL_GLOW, type JoinSeg } from './glyphs';
 import { grandLook, grandTint } from './fx/grand';
@@ -56,13 +57,13 @@ export interface DrawWord {
   effect: 'starts' | 'extends' | 'breaks' | 'stacks' | null; effectText: string; after: string[]; fades: string | null; overload: boolean; capLeft: number;
   /** One short line under the word: "2 ch · 1 AP · extends", or "2 ch · tile taken" when refused. */ sub: string;
   /** Refused: the reason in a few words (shortWhy); '' when the word can be drawn. */ hint: string; title: string; img: string;
-  /** Rules 1.9 strokes (engine previewDraw): the picker's choices for this word on this tile (none when nothing is near
+  /** Rules 1.10 strokes (engine previewDraw): the picker's choices for this word on this tile (none when nothing is near
    * or it stacks), the default, the pick in force ('new' starts a Line), and the tiles of the stroke it makes (the
    * joining line; [] when it starts one). A junction also gives its second stroke's words and tiles. */
   strokes: any[]; defaultStroke: string; stroke: string; joins: string[]; junction: boolean; words2: string[]; joins2: string[];
 }
 const EFFECT_TEXT = { starts: 'starts a new Line', extends: 'extends the Line', breaks: 'joins old glyphs that don\'t make a Line', stacks: 'stacks on this tile' };
-/** Each word you know, as the engine would draw it on your own tile now (spec 9.1). stroke (rules 1.9): the stroke
+/** Each word you know, as the engine would draw it on your own tile now (spec 9.1). stroke (rules 1.10): the stroke
  * picked on the draw step (an id, 'new' or 'junction:…'); one the tile doesn't offer falls back to the engine's default. */
 export function drawStrip(cb: any, u: any, stroke?: string | null): { tile: string; words: DrawWord[]; stroke: string | null } {
   const c = view(cb), words: string[] = (u && u.mg && u.mg.words) || [];
@@ -82,7 +83,7 @@ export function drawStrip(cb: any, u: any, stroke?: string | null): { tile: stri
   }) };
 }
 
-// ---------- rules 1.9: the stroke picker on the draw step ----------
+// ---------- rules 1.10: the stroke picker on the draw step ----------
 export interface StrokeButton { key: string; label: string; title: string; ok: boolean; on: boolean; isDefault: boolean; junction: boolean; mine: boolean }
 /** The draw step's stroke picker for the word picked (spec 1.3): one button per stroke it could extend ("extends
  * FIRE·SEEK", an ally's named), the junctions when allowed, and "new Line"; the one in force is on (the engine's default
@@ -99,7 +100,7 @@ export function strokeButtons(dw: DrawWord | null | undefined): StrokeButton[] {
   });
 }
 
-// ---------- rules 1.9: strokes on the map ----------
+// ---------- rules 1.10: strokes on the map ----------
 export interface StrokeLayer {
   /** Join marks by tile (game/glyphs.ts joinUri draws them). */ tiles: Record<string, JoinSeg[]>;
   /** The hovered glyph's stroke(s): their tiles, and their words in order ("FIRE · SEEK"; a junction's two joined by " / "). */
@@ -144,7 +145,7 @@ export function glyphMark(gl: any, side: 'pc' | 'foe', knows: (w: string) => boo
     title: ours ? up(gl.word) + ' (' + (gl.who || 'yours') + life + ')' : readable ? 'hostile ' + up(gl.word) + life : 'an unreadable hostile glyph (you don\'t know the word)' };
 }
 
-// ---------- rules 1.9: word mastery on the draw keyboards (spec 3.4, 5.3) ----------
+// ---------- rules 1.10: word mastery on the draw keyboards (spec 3.4, 5.3) ----------
 export interface WordMasteryChip { uses: number; tier: 'new' | 'practised' | 'mastered'; hasStar: boolean; star: string; starAlt: string; text: string }
 /** Each known word's use count and star for a keyboard chip: a hollow star when Practised, filled when Mastered, always
  * with its word (PRACTISED, MASTERED) and the count. No character (an enemy, a companion): no chips. */
@@ -156,7 +157,7 @@ export function wordMasteryChips(c: any): Record<string, WordMasteryChip> {
   return out;
 }
 
-// ---------- rules 1.9: Read (copying a glyph or a trace) ----------
+// ---------- rules 1.10: Read (copying a glyph or a trace) ----------
 /** What a character could Read on a tile (the engine's readable(), for the screens): another side's glyphs and any
  * trace, of words it doesn't know, not yet copied by it. Pure. */
 export function readableAt(glyphs: any[], traces: any[], tile: string, side: 'pc' | 'foe', knows: (w: string) => boolean, charId?: string | null): { word: string; trace: boolean }[] {
@@ -218,7 +219,7 @@ export function spellSummary(words: string[]): string {
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 // ---------- 3–8. Evoke: where to stand, the area, delivery, burst, who is affected, fizzle ----------
-export interface EvokeChoice { /** Rules 1.9 Junctions: which of a junction's strokes to Evoke. */ stroke?: string | null; aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null; /** Paint the Field's free Burst word. */ paint?: 'spread' | 'push' | null }
+export interface EvokeChoice { /** Rules 1.10 Junctions: which of a junction's strokes to Evoke. */ stroke?: string | null; aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null; /** Paint the Field's free Burst word. */ paint?: 'spread' | 'push' | null }
 export interface SgMark { key: string; text: string; style: string; title: string }
 export interface SgTile { layer: string; marks: SgMark[]; note: string }
 export interface AffectedRow { key: string; unit: string; name: string; tag: string; ink: string; text: string; at: string; /** A summary row (LEECH's heal, NULL's catch), not a creature the spell affects. */ extra?: boolean }
@@ -230,7 +231,7 @@ export interface EvokeView {
   /** LEECH: the caster's heal if every hit lands (engine plan.leech), or null. */ leech: { heal: number; restored: number; expected: number } | null;
   /** NULL: what it would unmake that this viewer may know of (never the other side's unspotted traps). */ nulls: { kind: string; tiles: string[]; mine: boolean }[];
   facing: string; range: number | null; ap: number; charge: number; fizzle: boolean; fizzleText: string;
-  /** Rules 1.9 Junctions: on a junction's tile, its two strokes (words in order), the one read now on. */ junction: { key: string; label: string; on: boolean; ok: boolean }[];
+  /** Rules 1.10 Junctions: on a junction's tile, its two strokes (words in order), the one read now on. */ junction: { key: string; label: string; on: boolean; ok: boolean }[];
   affected: AffectedRow[]; tiles: Record<string, SgTile>; orders: string[] | null; order: string; payload: any | null; plan: any;
   /** Visualization · Paint the Field (items 450, 485): the free Burst words this caster may add (none if the spell has a
    * Burst or the caster doesn't hold it), and the one picked. */ paints: string[]; paint: string | null;
@@ -250,7 +251,7 @@ const ORDERS_DEFAULT = ['halt', 'kneel', 'drop', 'move'];
  * to its missiles), STEP's landing tile, COMMAND's order; hover: the tile under the cursor, previewed as the next pick. */
 export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {}, hover?: string | null, knows: (w: string) => boolean = () => false): EvokeView {
   const c = view(cb), aims = [...(choice.aims || [])];
-  // A junction's tile (rules 1.9) reads the stroke picked, else the engine's choice; both are offered on the pad.
+  // A junction's tile (rules 1.10) reads the stroke picked, else the engine's choice; both are offered on the pad.
   const pa0: any = patternAt(view(cb) as any, tile, u), jx: any[] = (pa0 && pa0.junction) || [];
   const strokeSel = choice.stroke && jx.some((x: any) => x.id === choice.stroke) ? choice.stroke : undefined;
   const pat: any = findPattern(c as any, tile, u?.pos, strokeSel);
@@ -441,7 +442,7 @@ export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choi
 export interface PlacedRow { key: string; kind: string; label: string; who: string; mine: boolean; tiles: string[]; text: string }
 /** Fields, traps, turrets, smoke, light and RAISE walls a side can see (spec 9.9), drawn per tile, plus a row each for
  * the legend. Enemy traps show only once spotted (the engine's placedMagic). */
-export function placedView(cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Record<string, SgTile>; rows: PlacedRow[]; kinds: Set<string> } {
+export function placedView(cb: any, side: 'pc' | 'foe' = 'pc', seen?: Set<string> | null): { tiles: Record<string, SgTile>; rows: PlacedRow[]; kinds: Set<string> } {
   const tiles: Record<string, SgTile> = {}, rows: PlacedRow[] = [], kinds = new Set<string>();
   let list: any[] = []; try { list = placedMagic(view(cb) as any, side); } catch { list = []; }
   const T = (k: string) => (tiles[k] ||= { layer: '', marks: [], note: '' });
@@ -484,13 +485,34 @@ export function placedView(cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Record<
       if (badgeText && (!first || k === first)) t.marks.push({ key: 'pl' + z.id, text: badgeText, style: badge(z.mine ? SIGIL_GLOW : HOSTILE_INK) + '; ' + CORNER.br, title: text });
     }
   }
+  // Rules 1.8 (Outburst 4.0): residue (a feeling's tint and glyph; another side's only where you can see: the fog), a
+  // waiting Fuse and a Linger field (yours always; others' where seen).
+  for (const z of cb.zones || []) {
+    if (!['residue', 'fuse', 'linger'].includes(z.kind) || !(z.left > 0)) continue;
+    const mine = z.side === side, show = (k: string) => mine || !seen || seen.has(k);
+    if (z.kind === 'residue') {
+      const r = { feeling: z.feeling, ink: feelingInk(z.feeling), kind: z.residueKind || 'none', left: z.left, name: feelingName(z.feeling) }, text = residueTitle(r);
+      kinds.add('residue'); rows.push({ key: z.id, kind: 'residue', label: r.name + ' residue', who: z.who || '', mine, tiles: z.tiles, text });
+      z.tiles.filter(show).forEach((k: string, i: number) => { const t = T(k); t.layer = residueTileStyle(r).replace(/^position: absolute; inset: 0; pointer-events: none; z-index: 1; /, ''); t.note += (t.note ? ' · ' : '') + text;
+        if (i === 0) t.marks.push({ key: 'rs' + z.id, text: '♥' + z.left, style: badge(r.ink) + '; ' + CORNER.br, title: text }); });
+      continue;
+    }
+    const ink = mine ? SOUL_INK_V : HOSTILE_INK, text = z.kind === 'fuse' ? 'A fused Outburst (' + (z.who || '') + '): goes off at its caster\'s next turn, or when someone steps in.' : 'A lingering Outburst (' + (z.who || '') + '): 5 a turn to whoever of its side starts there, ' + z.left + ' rounds left.';
+    kinds.add(z.kind); rows.push({ key: z.id, kind: z.kind, label: z.kind === 'fuse' ? 'Fuse' : 'Linger', who: z.who || '', mine, tiles: z.tiles, text });
+    z.tiles.filter(show).forEach((k: string, i: number) => { const t = T(k); t.layer = (t.layer ? t.layer + '; ' : '') + 'box-shadow: inset 0 0 0 2px ' + ink + (z.kind === 'fuse' ? '; background: repeating-radial-gradient(circle, rgba(174, 155, 255, 0.16) 0 3px, transparent 3px 7px)' : '; background: rgba(174, 155, 255, 0.12)'); t.note += (t.note ? ' · ' : '') + text;
+      if (i === 0) t.marks.push({ key: 'fz' + z.id, text: z.kind === 'fuse' ? '⏲' : '≋' + z.left, style: badge(ink) + '; ' + CORNER.br, title: text }); });
+  }
   return { tiles, rows, kinds };
 }
+const SOUL_INK_V = '#AE9BFF';
 /** The legend rows for the placed magic and glyphs on the map. */
 export function placedLegend(kinds: Set<string>, anyGlyph: boolean): { key: string; img?: string; box?: string; name: string }[] {
   const out: { key: string; img?: string; box?: string; name: string }[] = [];
   if (anyGlyph) out.push({ key: 'gl', img: glyphUri('fire', SIGIL_INK, { glow: true, frame: false }), name: 'Your side\'s glyph' }, { key: 'gf', img: glyphUri('fire', HOSTILE_INK, { frame: false }), name: 'Hostile glyph you can read' }, { key: 'gs', img: scratchUri(HOSTILE_INK), name: 'Unreadable glyph' });
   const box = (s: string) => 'width: 14px; height: 14px; border-radius: 2px; ' + s;
+  if (kinds.has('residue')) out.push({ key: 'zr', box: box('background: rgba(255, 106, 61, 0.22); box-shadow: inset 0 0 0 1px rgba(255, 106, 61, 0.55); background-image: repeating-linear-gradient(135deg, rgba(255, 106, 61, 0.18) 0 3px, transparent 3px 8px)'), name: '♥ Residue (a feeling left by an Outburst: striped harms anyone; plain helps its side)' });
+  if (kinds.has('fuse')) out.push({ key: 'zfu', box: box('box-shadow: inset 0 0 0 2px #AE9BFF'), name: '⏲ Fuse (an Outburst waiting: next turn, or a step in)' });
+  if (kinds.has('linger')) out.push({ key: 'zli', box: box('background: rgba(174, 155, 255, 0.12); box-shadow: inset 0 0 0 2px #AE9BFF'), name: '≋ Linger (an Outburst left as a field)' });
   if (kinds.has('field')) out.push({ key: 'zf', box: box('background: ' + ELEMENT_TINT.fire + '; box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▦ Field (tinted by its element; hurts whoever enters: full the first time, half after)' });
   if (kinds.has('trap')) out.push({ key: 'zt', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW + '; background: repeating-linear-gradient(45deg, rgba(79, 200, 223, 0.2) 0 3px, transparent 3px 6px)'), name: '⧗ Trap (yours, or a spotted one)' });
   if (kinds.has('turret')) out.push({ key: 'zu', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▲ Turret (rounds left, HP)' });

@@ -776,7 +776,7 @@ register({
 // exception to the Line. "Lone" is the glyph alone on its tile with no glyph of its side touching it (else it belongs to
 // a Line); you drew it standing on it, so you Evoke it from a tile next to it (the rune needs its tile clear). The
 // runes are barricades, not Sigil spells: NULL doesn't take them (item 430).
-// Rules 1.9: a glyph of a stroke is lone when its stroke holds only it (touching glyphs of other strokes don't matter);
+// Rules 1.10: a glyph of a stroke is lone when its stroke holds only it (touching glyphs of other strokes don't matter);
 // an old 1.4 glyph keeps the touching test.
 const isLoneStay = (cb: Combat, u: Unit, g: any) => g.by === u.id && g.word === 'stay' && (cb.glyphs || []).filter((x) => x.pos === g.pos).length === 1
   && (g.strokeId ? (strokeOfGlyph(cb.glyphs || [], g)?.glyphs.length ?? 1) === 1 : !(cb.glyphs || []).some((x) => x !== g && x.side === g.side && !x.strokeId && dist(x.pos, g.pos) === 1));

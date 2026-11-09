@@ -7,6 +7,7 @@ import type { Track } from './music';
 import { type Mission, type BoardNpc, validateMissions } from './missions';
 import { SKILL, TN_LADDER, ENEMY, WEAPON, SIGIL } from './data';
 import { CASTER } from './ai-sigil';
+import { type Drops, type LootTable, LOOT_TABLES, knownDropId } from './loot';
 import m813J from '../../../data/campaigns/m813.json';
 import godplotJ from '../../../data/campaigns/godplot.json';
 import curseJ from '../../../data/campaigns/curse.json';
@@ -18,7 +19,7 @@ export interface CampaignObject {
   /** Art: a sprite asset id (else the campaign's sprite for its kind), its box in tiles if bigger than one, an NPC portrait. */
   sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string;
   approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: '' | 'remove' | 'open' | 'reveal' | 'disarm' }[];
-  /** A sigil mark (rules 1.9): the Sigil word drawn there, its age (fresh, old, ancient) and damage (intact, worn, broken). */
+  /** A sigil mark (rules 1.10): the Sigil word drawn there, its age (fresh, old, ancient) and damage (intact, worn, broken). */
   word?: string; age?: string; damage?: string;
 }
 export interface CampaignZone {
@@ -31,7 +32,8 @@ export interface CampaignZone {
   /** Dark zones halve sight except near light sources (spec: Vision). */
   dark?: boolean;
   /** People and enemies standing on this zone's overworld map (spec: Overworld rounds). Facing: N, E, S or W. */
-  npcs?: { name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; at: string; portrait?: string; facing?: 'N' | 'E' | 'S' | 'W'; kind?: string; tags?: string[] }[];
+  npcs?: { name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; at: string; portrait?: string; facing?: 'N' | 'E' | 'S' | 'W'; kind?: string; tags?: string[];
+    /** Rules 1.9: what they drop if they die in a fight (a table id and/or a list; loot.ts). */ drops?: Drops }[];
   /** Art: the map painting under the grid and the zone's banner (asset ids). */
   art?: { map?: string; banner?: string };
   /** Area and fight music for this zone (spec: Music). */
@@ -47,7 +49,10 @@ export interface Campaign {
   /** Narrator only. */
   arc: { beginning: string; middle: string; end: string }; secrets?: string[]; opening: string;
   cast?: { name: string; role: string; text: string }[];
-  encounters?: { name: string; zone: string; when: string; difficulty: string; music?: Track; enemies: { name: string; tier: string; weapon: string; at?: string }[] }[];
+  encounters?: { name: string; zone: string; when: string; difficulty: string; music?: Track; enemies: { name: string; tier: string; weapon: string; at?: string; /** Rules 1.9: this enemy's drops (loot.ts). */ drops?: Drops }[] }[];
+  /** Rules 1.9 drop tables (spec 14 item 691): the campaign's own weighted tables; one with an engine table's id
+   * (person, machine, caster, beast, notable) replaces it in this campaign. */
+  loot_tables?: LootTable[];
   startZone: string; zones: CampaignZone[];
   /** Extra lore the Narrator reads (built-in campaigns name repo lore docs here; custom ones can inline text). */
   lore?: string;
@@ -141,6 +146,39 @@ export function validateCampaign(c: any): string[] {
   for (const z of c.zones || []) for (const n of z.npcs || []) if ((n as any)?.caster) need(!!CASTER[(n as any).caster] && CASTER[(n as any).caster].tier === n.tier, z.id + ': npc "' + n.name + '" names an unknown Sigil caster, or one of another tier (enemies.json casters).');
   for (const z of c.zones || []) for (const n of z.npcs || []) need(n && n.name && ['hostile', 'neutral'].includes(n.side) && ENEMY[n.tier] && WEAPON[n.weapon] && n.at, z.id + ': npc "' + (n?.name || '?') + '" needs name, side (hostile or neutral), a known tier and weapon, and at.');
   for (const m of c.moments || []) { need(m && m.id && m.art && m.caption, 'Every moment needs id, art and caption.'); if (m?.zone) need(ids.has(m.zone), 'Moment "' + m.id + '" names unknown zone "' + m.zone + '".'); }
+  // Rules 1.9 drop tables (items 691, 698): the campaign's own tables, and every drops value it gives.
+  const tableIds = new Set<string>(Object.keys(LOOT_TABLES));
+  const RAR = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
+  const qtyOk = (q: any, id: string) => { const [lo, hi] = /^(mag|rounds):/i.test(id) ? [0, 120] : [1, 20], ok = (n: any) => Number.isInteger(n) && n >= lo && n <= hi;
+    return q === undefined || ok(q) || (Array.isArray(q) && q.length === 2 && q.every(ok) && q[0] <= q[1]); };
+  const entryErrs = (e: any, where: string, weighted: boolean) => {
+    if (!e || typeof e !== 'object' || typeof e.item !== 'string' || !e.item.trim()) { errs.push(where + ': every entry needs an item id.'); return; }
+    const w = where + ' "' + e.item + '"';
+    if (!knownDropId(e.item) && !(typeof e.name === 'string' && e.name.trim())) errs.push(w + ': unknown item id (give it a name to make it a plot item).');
+    if (!qtyOk(e.qty, e.item)) errs.push(w + ': qty must be a whole number or [min, max] (1–20; rounds for mag: and rounds: ids, up to 120).');
+    if (e.rarity !== undefined && !RAR.includes(e.rarity)) errs.push(w + ': unknown rarity "' + e.rarity + '".');
+    if (weighted && !(Number(e.weight) > 0)) errs.push(w + ': a table entry needs a weight above 0.');
+    if (!weighted && e.chance !== undefined && !(typeof e.chance === 'number' && e.chance >= 0 && e.chance <= 1)) errs.push(w + ': chance must be between 0 and 1.');
+  };
+  if (c.loot_tables !== undefined) {
+    if (!Array.isArray(c.loot_tables)) errs.push('loot_tables must be a list of tables.');
+    else for (const t of c.loot_tables) {
+      if (!t || typeof t.id !== 'string' || !t.id) { errs.push('Every loot table needs an id.'); continue; }
+      tableIds.add(t.id);
+      if (!Array.isArray(t.entries)) { errs.push('Loot table "' + t.id + '": entries must be a list.'); continue; }
+      if (t.none !== undefined && !(typeof t.none === 'number' && t.none >= 0)) errs.push('Loot table "' + t.id + '": none (the weight of nothing) must be 0 or more.');
+      if (!t.entries.length && !(t.none > 0)) errs.push('Loot table "' + t.id + '": an empty table needs a weight for nothing.');
+      for (const e of t.entries) entryErrs(e, 'Loot table "' + t.id + '"', true);
+    }
+  }
+  const dropsErrs = (d: any, where: string) => {
+    if (d === undefined) return;
+    if (!d || typeof d !== 'object' || Array.isArray(d)) { errs.push(where + ': drops must be { table?, items? }.'); return; }
+    if (d.table !== undefined && !tableIds.has(d.table)) errs.push(where + ': drops name unknown loot table "' + d.table + '".');
+    if (d.items !== undefined) { if (!Array.isArray(d.items)) errs.push(where + ': drops.items must be a list.'); else for (const e of d.items) entryErrs(e, where + ' drops', false); }
+  };
+  for (const z of c.zones || []) for (const n of z.npcs || []) dropsErrs(n?.drops, z.id + ': npc "' + (n?.name || '?') + '"');
+  for (const e of c.encounters || []) for (const f of e.enemies || []) dropsErrs((f as any)?.drops, 'Encounter "' + e.name + '": enemy "' + (f?.name || '?') + '"');
   errs.push(...validateMissions(c));
   return errs;
 }

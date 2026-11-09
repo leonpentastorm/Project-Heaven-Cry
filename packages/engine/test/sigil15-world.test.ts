@@ -1,5 +1,5 @@
-// Sigil 1.5, the rest of Part A (rules revision 1.9; docs/design/sigil-1.5-spec.md sections 2.2, 4.2 and 7; spec: Mana,
-// Drawing a spell, rule 3.11; The Magic panel and learning, rule 4; items 687-693). Junctions (one glyph in two strokes at
+// Sigil 1.5, the rest of Part A (rules revision 1.10; docs/design/sigil-1.5-spec.md sections 2.2, 4.2 and 7; spec: Mana,
+// Drawing a spell, rule 3.11; The Magic panel and learning, rule 4; items 917-923). Junctions (one glyph in two strokes at
 // Brain Power Mastered), sigil marks on the map and their Investigate approach, the Narrator placing marks, the M813
 // campaign's marks, and the Proving Ground tools. Every action goes through the reducer (apply).
 import { describe, expect, it } from 'vitest';
@@ -38,7 +38,7 @@ const sid = (f: F, tile: string) => (f.cb.glyphs || []).find((g) => g.pos === ti
 const glyphAt = (f: F, tile: string) => (f.cb.glyphs || []).find((g) => g.pos === tile);
 const wordsOf = (f: F, tile: string, stroke?: string) => { const p = findPattern(f.cb, tile, undefined, stroke); return typeof p === 'string' ? p : p.words; };
 
-describe('Junctions (rules 1.9, Drawing 3.11; items 687-690)', () => {
+describe('Junctions (rules 1.10, Drawing 3.11; items 917-920)', () => {
   it('a crossing: SEEK at a junction of FIRE and SPARK; both Lines Evoke, and the junction fades only after the second', () => {
     const f = rig(['fire', 'spark', 'seek'], ['10,5', '5,9']);
     const [east, south] = f.foes;
@@ -145,7 +145,7 @@ function investigate(m: M, seed: number) {
   return m.s.g.checks.find((k) => k.id === ck.id) || ck;
 }
 
-describe('sigil marks and Investigate (rules 1.9, The Magic panel, rule 4; items 691-692)', () => {
+describe('sigil marks and Investigate (rules 1.10, The Magic panel, rule 4; items 921-922)', () => {
   it('the Narrator places one with a word: the engine writes its Investigate (Analysis or Rumination, TN by age and damage)', () => {
     const m = marked('mend', { age: 'ancient', damage: 'worn' });
     expect(m.mark).toMatchObject({ kind: 'sigil_mark', word: 'mend', age: 'ancient', damage: 'worn', name: 'Old plate' });
@@ -193,7 +193,7 @@ describe('sigil marks and Investigate (rules 1.9, The Magic panel, rule 4; items
     expect((ch(m) as any).sigilGrowth).toMatchObject({ study: 0, toStudy: [] });
     expect(() => m.s.act({ type: 'poi/try', charId: m.id, objId: m.mark.id, idx: 0 } as any)).toThrow(/already tried that/);
   });
-  it('a Narrator update keeps the Investigate and its tries, whether it leaves it out or echoes it back (item 692)', () => {
+  it('a Narrator update keeps the Investigate and its tries, whether it leaves it out or echoes it back (item 922)', () => {
     const m = marked('mend', { age: 'ancient', damage: 'broken' });
     expect(investigate(m, SEED).roll!.ok).toBe(false);
     const upd = (approaches: any[]) => m.s.act({ type: 'narrator/turn', turn: { narration: 'x', objects: [{ action: 'update', id: m.mark.id, kind: 'sigil_mark', at: '', name: '', text: '', approaches }] } } as any);
@@ -215,7 +215,7 @@ describe('sigil marks and Investigate (rules 1.9, The Magic panel, rule 4; items
   });
 });
 
-describe('the Narrator\'s grants keep the rest rule (item 693)', () => {
+describe('the Narrator\'s grants keep the rest rule (item 923)', () => {
   it('a second word grant in one scene goes on the known-to-study list', () => {
     const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 6 } }]); const id = s.chars[0].id;
     s.g.characters[id].sigils = ['spark', 'seek'];
@@ -226,7 +226,7 @@ describe('the Narrator\'s grants keep the rest rule (item 693)', () => {
   });
 });
 
-describe('M813 carries its sigil marks (rules 1.9)', () => {
+describe('M813 carries its sigil marks (rules 1.10)', () => {
   it('the campaign validates, and its zones load three marks with their Investigate approaches', () => {
     const c = builtInCampaign('m813')!;
     expect(validateCampaign(c)).toEqual([]);
@@ -242,7 +242,7 @@ describe('M813 carries its sigil marks (rules 1.9)', () => {
   });
 });
 
-describe('the Proving Ground tools (rules 1.9, spec section 7)', () => {
+describe('the Proving Ground tools (rules 1.10, spec section 7)', () => {
   const open = () => {
     let g = newGame('MARK15', { id: 'h1', name: 'Host' }, 'seed-mark');
     const a = ARCHETYPES.find((x) => x.id === 'sigilist')!;
