@@ -25,7 +25,7 @@ import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, hold
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
-import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, FAITH_PATRON, VOW } from './faith';
+import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
@@ -1233,6 +1233,8 @@ function combatAction(g: GameState, a: Action, by: string) {
   // Toggles the player set on this action (Ricochet, Nonlethal…), read by items' hooks through modOn(); cleared after.
   const mods = (a as any).mods; cb!.mods = Array.isArray(mods) ? mods.filter((x: any) => typeof x === 'string').slice(0, 8) : [];
   const inWindow = !!cb!.window;
+  // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
+  const encore = inWindow ? null : encoreBefore(cb!, u, a);
   try {
   switch (a.type) {
     case 'combat/perk': err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat'); break;
@@ -1297,6 +1299,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   }
   } finally { delete cb!.mods; }
   if (err) fail(err);
+  encoreAfter(cb!, u, encore);
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
   // 'action_done' {u, a, cb}: after every combat action and its window step (On My Mark settles its debt: hooks gap E-H2).

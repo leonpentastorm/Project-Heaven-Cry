@@ -620,6 +620,19 @@ if isinstance(pat, dict) and pat.get("tags"):
     for k in ("liked_tag_fight_cap", "narrator_delta_max"):
         if k in (dv.get("gain") or {}) or k in dv:
             errors.append(f"patrons: devotion.{k} is retired (Faith 2.1: tag_caps, narrator)")
+    # rules 1.6.2 (Miracle 2.1): the Miracle needs Devotion 10 (the gate and prayer.miracle.devotion_min agree, above
+    # Hymn III) and lowers Devotion by whole levels (devotion_cost_levels, 1 up to the gate); "spends all" is retired
+    gates = dv.get("gates") or {}
+    pm = (pat.get("prayer") or {}).get("miracle") or {}
+    if not (isinstance(gates.get("miracle"), int) and isinstance(gates.get("hymn_3"), int) and gates["hymn_3"] < gates["miracle"] <= 10):
+        errors.append("patrons: devotion.gates.miracle must be a level above hymn_3, at most 10 (rules 1.6.2: 10)")
+    if pm.get("devotion_min") != gates.get("miracle"):
+        errors.append("patrons: prayer.miracle.devotion_min must equal devotion.gates.miracle")
+    cost = pm.get("devotion_cost_levels")
+    if not (isinstance(cost, int) and 1 <= cost <= (gates.get("miracle") if isinstance(gates.get("miracle"), int) else 10)):
+        errors.append("patrons: prayer.miracle.devotion_cost_levels must be a whole number of levels from 1 to the Miracle's gate")
+    if "spends" in pm:
+        errors.append("patrons: prayer.miracle.spends is retired (rules 1.6.2: devotion_cost_levels)")
     if "miss_devotion" in ((pat.get("prayer") or {}).get("overreach") or {}):
         errors.append("patrons: prayer.overreach.miss_devotion is retired (Faith 2.1: devotion.loss.overreach_miss, in XP)")
     if "devotion" in (((data.get("rules") or {}).get("mana") or {}).get("prayer") or {}):

@@ -6,13 +6,15 @@
 // Rules 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md, items 701-723): Devotion is earned as XP through one choke
 // point (shiftDevotion); the tag caps live on the character (tallyOf); the Narrator's XP has a session cap; leaving a
 // pact has a 90-day cooldown on the day counter; a direct switch rolls the old patron's leave and may leave a grudge.
+// Rules 1.6.2 (Miracle 2.1, items 724-736): a Miracle needs Devotion 10 and lowers it by 5 levels after its effect
+// (miracleCost); the eight Miracles are the stronger ones Leon approved (runEntry; Encore's repeat: encoreBefore/After).
 //
 // Like missions.ts, this file imports only types from game.ts; game.ts binds the few helpers it needs (bindFaith).
 import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
-import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
+import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
-import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload } from './combat';
+import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor } from './combat';
 import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitDebuff, condSource, condIsBoon, condName as condNameOf, MANA_START } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
@@ -20,7 +22,7 @@ import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
-import { surrender, canSurrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing } from './tactics';
+import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing } from './tactics';
 import { d20, die, type Rng } from './rng';
 import { WEAPON, SKILL, ITEM } from './data';
 
@@ -44,9 +46,11 @@ export const FAITH_PATRON: Record<string, any> = Object.fromEntries(FAITH_PATRON
 export const patronById = (id: string | null | undefined): any | null => (id ? FAITH_PATRON[id] || LEGACY_PATRON[id] || null : null);
 const hymnsOf = (p: any): any[] => p?.hymns || p?.blessings || [];
 
-/** The gates (Devotion needed): Whisper 0, Hymn I 3, Hymn II 5, Hymn III 7, Miracle 7. */
-export const GATE = { whisper: 0, 1: PJ.devotion?.gates?.hymn_1 ?? 3, 2: PJ.devotion?.gates?.hymn_2 ?? 5, 3: PJ.devotion?.gates?.hymn_3 ?? 7, miracle: PJ.devotion?.gates?.miracle ?? 7 } as const;
 const PR = PJ.prayer || {};
+/** The gates (Devotion needed): Whisper 0, Hymn I 3, Hymn II 5, Hymn III 7, Miracle 10 (rules 1.6.2, item 724). */
+export const GATE = { whisper: 0, 1: PJ.devotion?.gates?.hymn_1 ?? 3, 2: PJ.devotion?.gates?.hymn_2 ?? 5, 3: PJ.devotion?.gates?.hymn_3 ?? 7, miracle: PJ.devotion?.gates?.miracle ?? PR.miracle?.devotion_min ?? 10 } as const;
+/** What a Miracle costs: whole Devotion levels, after its effect (rules 1.6.2, item 725: 10 → 5). */
+export const MIRACLE_COST_LEVELS: number = PR.miracle?.devotion_cost_levels ?? 5;
 export const FAITH_MIN = PR.faith_min ?? 3, WITNESS_FAITH = PR.witnessed?.faith_min ?? 5, MIRACLE_FAITH = PR.miracle?.faith_min ?? 7;
 export const AP_COST = { whisper: PR.whisper?.ap ?? 1, hymn: PR.hymn?.ap ?? 3, miracle: PR.miracle?.ap ?? 3 };
 export const OVERREACH = { base: PR.overreach?.tn_base ?? 12, step: PR.overreach?.tn_per_step ?? 2, miss: -(PJ.devotion?.loss?.overreach_miss ?? 3) };
@@ -356,6 +360,13 @@ export function shiftDevotion(g: GameState | null, cb: Combat | null, c: Charact
   logFaith(g, cb, text);
   return d;
 }
+/** A Miracle's price (rules 1.6.2, item 725): Devotion falls by MIRACLE_COST_LEVELS whole levels, run after its effect:
+ * the XP is set to the threshold of the level that many below the level held now (10 → 5: 102 XP), so the XP into the
+ * level goes too. Through shiftDevotion (a loss: no grudge, logged, an fx event). Returns the XP moved (negative). */
+export function miracleCost(g: GameState | null, cb: Combat | null, c: Character): number {
+  const lv = devotionLevelOf(devotionXpOf(c)), to = devotionThreshold(Math.max(0, lv - MIRACLE_COST_LEVELS));
+  return shiftDevotion(g, cb, c, to - devotionXpOf(c), 'the Miracle: Devotion −' + MIRACLE_COST_LEVELS + ' levels');
+}
 function logFaith(g: GameState | null, cb: Combat | null, text: string) { if (cb) cb.log.push(text); else if (g) B?.push(g, { kind: 'system', text }); }
 
 // ---------- the caps on tags, on the character (rules 1.6.1, items 703-704) ----------
@@ -561,6 +572,7 @@ export function registerFaithHooks() {
     const u: Unit = ctx.u;
     if (u.vow?.state === 'sworn' && u.vow.id === 'stand') fs(u).standFrom = nearestEnemy(cb, u);
     fs(u).apMark = u.ap; // Encore: the AP of the last action
+    if (u.faith?.encore) u.faith.encore.started = true; // Encore (item 729): it lasts to the end of this turn
     // Expiring "until your next turn" effects cast by this unit.
     const x: any = cb; if (x.faithGates) x.faithGates = x.faithGates.filter((gt: any) => gt.by !== u.id);
     if (x.faithClouds) x.faithClouds = x.faithClouds.filter((cl: any) => cl.by !== u.id);
@@ -568,7 +580,9 @@ export function registerFaithHooks() {
     for (const z of x.faithZones || []) if (z.until >= cb.round && z.side === u.side && z.tiles.includes(u.pos) && !u.dead) cb.log.push('Hearthlight: ' + u.name + healLine(cb, cb.units.find((v) => v.id === z.by) || null, u, z.heal));
   });
   onHook('turn_end', (ctx, cb) => {
-    const u: Unit = ctx.u; if (!u.charId) return;
+    const u: Unit = ctx.u;
+    if (u.faith?.encore?.started) { delete u.faith.encore; cb.log.push('Encore: ' + u.name + '\'s repeat is gone.'); }
+    if (!u.charId) return;
     if (u.braced || u.overwatch || condOn(u, 'anchored')) faithTag(cb, u, 'hold');
     if (u.hidden && cb.units.some((v) => v.side === u.side && v !== u && v.downed && !v.dead)) faithTag(cb, u, 'cower');
     if (u.vow?.state === 'sworn' && u.vow.id === 'stand' && fs(u).standFrom != null && nearestEnemy(cb, u) > fs(u).standFrom) breakVow(cb, u, 'ended the turn farther from the enemy');
@@ -576,6 +590,9 @@ export function registerFaithHooks() {
   // A fight starts: its id for the tag tally (item 704); a grudge's condition on each grudged fighter, no save (item 713).
   onHook('combat_start', (ctx, cb) => {
     const g = G(), rng: Rng = ctx.rng || rngOf(); (cb as any).faithFight = 'r' + String(rng.state) + '.' + String((g as any)?.v ?? 0);
+    snapRoundHp(cb); // Rewoven (item 734): round 1's HP (round_start fires from round 2)
+    // Requisition Approved (item 728): what each character brought into the fight (its restock tops up to at least this).
+    for (const u of cb.units) if (u.charId && !u.companion) fs(u).stock = { weapon: u.weapon, mags: u.mags?.length || 0, loose: u.loose || 0, throwables: { ...(u.throwables || {}) } };
     for (const u of cb.units) {
       if (!u.charId || u.companion || u.dead) continue; const c = unitChar(u); if (!c) continue;
       const gr = grudgeOf(g, c); if (!gr) continue; const p = patronById(gr.patron);
@@ -589,13 +606,13 @@ export function registerFaithHooks() {
     }
   });
   onHook('round_start', (_ctx, cb) => {
-    const x: any = cb;
+    const x: any = cb; snapRoundHp(cb); // Rewoven (item 734)
     if (x.faithOrderRestore) { const keep = x.faithOrderRestore as string[]; x.faithOrderRestore = null; const extra = [...new Set(cb.order)].filter((id) => !keep.includes(id)); cb.order = [...keep, ...extra]; } // Rewoven ends
     if (x.faithZones) x.faithZones = x.faithZones.filter((z: any) => z.until >= cb.round);
   });
   onHook('action_done', (ctx, cb) => { // Encore: the AP the last action took
     const u: Unit = ctx.u; if (!u) return; const st = fs(u);
-    if (st.apMark != null) { st.lastSpent = Math.max(0, st.apMark - u.ap); st.lastRound = cb.round; } st.apMark = u.ap;
+    if (st.apMark != null) { st.lastSpent = Math.max(0, st.apMark - u.ap); st.lastRound = cb.round; st.lastKey = encoreKey(ctx.a); } st.apMark = u.ap;
     st.acted = true;
     if (u.charId && /^combat\/(perk|move)$/.test(ctx.a?.type || '') && /trick|illusion|false_image|feint|swap|sleight/.test(String(ctx.a?.id || ctx.a?.key || ''))) faithTag(cb, u, 'trick');
   });
@@ -646,6 +663,8 @@ export function registerFaithHooks() {
     return out;
   });
 }
+/** Each unit's HP as a round starts (Rewoven, item 734), on the fight. */
+function snapRoundHp(cb: Combat) { (cb as any).faithRoundHp = Object.fromEntries(cb.units.filter((v) => !v.dead).map((v) => [v.id, v.hp])); }
 const nearestOf = (cb: Combat, u: Unit, at: string) => cb.units.filter((v) => v.side !== u.side && alive(v)).reduce((m, v) => Math.min(m, dist(v.pos, at)), 99);
 /** Would this attack carry a tag the attacker's patron likes (Witnessed's +2, item 595)? */
 function likedAttack(cb: Combat, att: Unit, tgt: Unit): boolean {
@@ -696,9 +715,9 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   }
   const power = u.blessPower || blessingPower(c);
   emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, target: typeof t === 'object' && t && 'id' in t ? (t as any).id : a.tile || null, ok: true });
-  if (kind === 'miracle') emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? area3(a.tile) : null, unit: u.id });
+  if (kind === 'miracle') emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? areaOf(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id });
   line += runEntry(cb, rng, u, kind, pe, t, a, power);
-  if (kind === 'miracle') shiftDevotion(g, cb, c, -devotionXpOf(c), 'the Miracle spends it all'); // after the effect: its own tags give nothing back; XP 0, Devotion 0 (item 707)
+  if (kind === 'miracle') miracleCost(g, cb, c); // after the effect (item 621's order): its own tags give nothing back; Devotion −5 levels (item 725)
   cb.log.push(line + '.');
   if (patron && kind !== 'whisper') speak(g, cb, rng, c, patron, kind === 'miracle' ? 'miracle' : 'answered');
   // Witnessed (Faith 5): after your own patron's Hymn or a Miracle (item 604).
@@ -734,7 +753,9 @@ function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs): 
     }
   }
 }
-const area3 = (tile: string) => { const [x, y] = tile.split(',').map(Number), out: string[] = []; for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) out.push((x + i) + ',' + (y + j)); return out; };
+/** The square of tiles within r of a tile (r 1: 3×3; r 2: 5×5). */
+const areaOf = (tile: string, r = 1) => { const [x, y] = tile.split(',').map(Number), out: string[] = []; for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) out.push((x + i) + ',' + (y + j)); return out; };
+const area3 = (tile: string) => areaOf(tile, 1);
 /** A Blessing lands on a unit: 'blessing_in' first (Blessed Shells may load it; Factory Made and The Old Blood change the
  * power), then the effect. */
 function land(cb: Combat, rng: Rng, u: Unit, t: Unit, entry: any, power: number, run: (power: number) => string): string {
@@ -747,7 +768,73 @@ function rollSaveVs(rng: Rng, by: Unit, t: Unit, fam: 'body' | 'brain' | 'heart'
   const r = d20(rng), m = unitSave(t, fam), tn = 12 + unitDebuff(by, fam), ok = r === 20 || (r !== 1 && r + m >= tn);
   return { ok, text: fam + ' save ' + (r + m) + ' vs ' + tn };
 }
-/** Run a Whisper, Hymn or Miracle's effect (spec 1.6 §3 and §8; items 607-617). */
+/** Enemies the praying unit sees (not Hidden, not out of the fight): a Miracle's "every enemy in sight". */
+const enemiesInSight = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, u, v.pos));
+/** Would this enemy yield to Love Conquers: not a boss, not a machine, not no_surrender (a refused parley doesn't matter). */
+const canYield = (v: Unit) => v.side === 'foe' && v.tier !== 'boss' && !['machine', 'robot', 'turret', 'drone'].includes(v.kind || '') && !(v.tags || []).includes('no_surrender');
+/** End every harmful condition on a unit (Everyone Home): the non-boon conditions, and Prone, Bleeding, Dazed and a
+ * fumble's stagger. Returns their ids. */
+function cleanseHarmful(cb: Combat, v: Unit): string[] {
+  const ids = Object.keys(v.conds || {}).filter((k) => !condIsBoon(k) && condOn(v, k));
+  if (v.prone) ids.push('prone'); if ((v.bleed || 0) > 0) ids.push('bleeding'); if (v.dazedNext) ids.push('dazed');
+  for (const k of ids) endCond(v, k, cb);
+  v.stunnedNext = 0; if (v.faith?.grudgeCond) delete v.faith.grudgeCond;
+  return ids;
+}
+/** Requisition Approved's restock of one fighter (item 728): every magazine full (the loaded one, the spares, at least
+ * as many spares as the fight began with), loose rounds and throwables back to at least what the fight began with,
+ * Supplies to their maximum, 2 standard cores, every weapon carried at full durability, no jam, no heat. */
+function restock(cb: Combat, v: Unit): string {
+  const st = fs(v).stock || {}, c = unitChar(v), bits: string[] = [];
+  const w = WEAPON[v.weapon], size = magazineSize(v.weapon, v.mods) ?? w?.magazine ?? null;
+  if (w && size != null && !v.infiniteAmmo) {
+    v.ammo = Math.max(v.ammo, size);
+    if (v.mags && w.reload !== 'loose') {
+      const n = Math.max(v.mags.length, st.weapon === v.weapon ? st.mags || 0 : 0);
+      while (v.mags.length < n) { v.mags.push(size); if (v.magTypes) v.magTypes.push(null); }
+      v.mags = v.mags.map(() => size);
+    }
+    if (st.weapon === v.weapon && (st.loose || 0) > (v.loose || 0)) v.loose = st.loose;
+    bits.push('magazines full');
+  }
+  if (v.offWeapon) { const ow = WEAPON[v.offWeapon]; if (ow?.magazine != null) { v.offAmmo = ow.magazine; if (v.offMags) v.offMags = v.offMags.map(() => ow.magazine!); } }
+  const thr = st.throwables || {}; let got = 0;
+  for (const [k, n] of Object.entries(thr) as [string, number][]) { const have = v.throwables?.[k] || 0; if (n > have) { (v.throwables ||= {})[k] = n; got += n - have; } }
+  if (got) bits.push(got + ' throwable' + (got === 1 ? '' : 's') + ' back');
+  if (v.res && v.resMax?.supplies != null) { v.res.supplies = v.resMax.supplies; bits.push(v.resMax.supplies + ' Supplies'); }
+  if (v.mg) v.mg.cores += 2; else if (c) c.pack = [...packOf(c).map((x) => ({ ...x })), { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: 'ammo' } as any];
+  bits.push('+2 cores');
+  if (v.maxDur) v.dur = v.maxDur;
+  if (c) {
+    if (c.offHand && c.offHand.dur != null) c.offHand = { ...c.offHand, dur: maxDurOf(c.offHand.id, c.offHand.rarity) };
+    c.pack = packOf(c).map((x) => (x.weapon && x.dur != null ? { ...x, dur: maxDurOf(x.weapon, x.rarity) } : x));
+  }
+  bits.push('repaired'); v.jammed = false; v.heat = 0;
+  return ': ' + bits.join(', ') + ', no jam, no heat';
+}
+/** An action's words for the log (Encore): "Shot", "Move", "Perk: x"… */
+function actionWords(key: string): string { const [t, what] = key.split(':'); const n = t.replace('combat/', ''); return (n.charAt(0).toUpperCase() + n.slice(1)).replace('-', ' ') + (what ? ' (' + what + ')' : ''); }
+/** Encore's key for an action: its type and what it is (a perk's id, an attack's mode, a move's kind…), never its
+ * target. Prayers, ending the turn and declining a window can't be repeated (null). */
+export function encoreKey(a: any): string | null {
+  const t = String(a?.type || ''); if (!t.startsWith('combat/') || ['combat/pray', 'combat/end-turn', 'combat/decline'].includes(t)) return null;
+  const what = t === 'combat/attack' ? a.mode || 'shot' : t === 'combat/move' ? a.how || 'move' : a.id ?? a.word ?? a.design ?? a.item ?? a.kind ?? a.hand ?? '';
+  return t + (what ? ':' + what : '');
+}
+/** Encore (item 729), before a combat action: when it repeats the unit's Encore action, lend the AP it cost (it can be
+ * taken with too little AP). Returns what to settle after, or null. */
+export function encoreBefore(cb: Combat, u: Unit, a: any): { credit: number; before: number } | null {
+  const en = u.faith?.encore; if (!en || encoreKey(a) !== en.key) return null;
+  const before = u.ap; u.ap += en.ap; return { credit: en.ap, before };
+}
+/** After it: the repeat is free up to the AP it cost before (any more it costs now is paid); the Encore is used. */
+export function encoreAfter(cb: Combat, u: Unit, x: { credit: number; before: number } | null) {
+  if (!x) return; const spent = x.before + x.credit - u.ap;
+  u.ap = x.before - spent + Math.min(x.credit, Math.max(0, spent));
+  const key = u.faith?.encore?.key || ''; if (u.faith) delete u.faith.encore;
+  cb.log.push('Encore: ' + u.name + ' repeats ' + actionWords(key) + (spent > x.credit ? ' (' + (spent - x.credit) + ' AP more than before)' : ', free') + '.');
+}
+/** Run a Whisper, Hymn or Miracle's effect (spec 1.6 §3 and §8; items 607-617; rules 1.6.2's Miracles, items 727-734). */
 function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: any; patron: any }, t: Target, a: CombatPrayArgs, power: number): string {
   const e = pe.entry, id = e.id, one = t && !('units' in (t as any)) ? (t as Unit) : null, two = t && 'units' in (t as any) ? (t as any).units as Unit[] : [];
   const allies = cb.units.filter((v) => v.side === u.side && !v.dead && !v.companion);
@@ -774,12 +861,20 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
     case 'saints_shield': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + ' gains a ' + grantShield(cb, one!, 40 * pw, u) + ' shield');
     case 'judgement': return land(cb, rng, u, one!, e, power, (pw) => harmLine(cb, u, one!, 40 * pw * (one!.faith?.harmedHelpless ? 2 : 1), 'soul') + (one!.faith?.harmedHelpless ? ' (×2: it harmed the helpless)' : ''));
     case 'absolution': return land(cb, rng, u, one!, e, power, (pw) => { const ids = Object.keys(one!.conds || {}).filter((k) => !condIsBoon(k) && condOn(one!, k)); for (const k of ids) endCond(one!, k, cb); return ' · ' + one!.name + ' is absolved' + (ids.length ? ' (' + ids.join(', ') + ')' : '') + ' and' + healLine(cb, u, one!, 30 * pw); });
-    case 'saints_verdict': { let out = ''; for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && x.faith?.harmedHelpless)) out += land(cb, rng, u, v, e, power, (pw) => harmLine(cb, u, v, 60 * pw, 'soul') + applyCond(cb, rng, u, v, 'stunned', 1, undefined, { skipSave: true })); return out || ' · nobody here harmed the helpless'; }
+    case 'saints_verdict': { // rules 1.6.2 (item 727): every enemy in sight; double and 2 rounds for those that harmed the helpless
+      let out = '';
+      for (const v of enemiesInSight(cb, u)) { const hh = !!v.faith?.harmedHelpless; out += land(cb, rng, u, v, e, power, (pw) => harmLine(cb, u, v, 100 * pw * (hh ? 2 : 1), 'soul') + (hh ? ' (×2: it harmed the helpless)' : '') + applyCond(cb, rng, u, v, 'stunned', hh ? 2 : 1, undefined, { skipSave: true })); }
+      return out || ' · no enemy in sight';
+    }
     // The Quartermaster
     case 'resupply': return land(cb, rng, u, one!, e, power, () => { const r = freeReload(cb, one!); const res = (one!.res ||= {}); if (res.supplies != null) res.supplies += 1; return r + (res.supplies != null ? ' · +1 Supply' : ''); });
     case 'dig_in': return land(cb, rng, u, one!, e, power, () => { fs(one!).dugIn = one!.pos; one!.braced = true; return ' · ' + one!.name + ' digs in (half cover until they move) and is Braced'; });
     case 'covering_fire': { let out = ''; for (const v of enemiesIn(cb, u, area3(a.tile!))) out += applyCond(cb, rng, u, v, 'pinned', 1, 'body'); return out || ' · nobody in the area'; }
-    case 'requisition_approved': { let out = ''; for (const v of allies.filter((x) => x.charId)) { out += freeReload(cb, v); const res = (v.res ||= {}); if (res.supplies != null) res.supplies = Math.max(res.supplies, 3); const ch = unitChar(v); if (ch) ch.pack = [...(ch.pack || []), { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 1, kind: 'ammo' } as any]; bankAp(v, 2, 'Requisition Approved', cb, u); } return out + ' · every ally +2 AP next turn'; }
+    case 'requisition_approved': { // rules 1.6.2 (item 728): the whole squad (characters), restocked, repaired, cleared, +3 AP banked
+      let out = ''; const squad = cb.units.filter((x) => x.side === u.side && x.charId && !x.companion && !x.dead);
+      for (const v of squad) { out += ' · ' + v.name + restock(cb, v); bankAp(v, 3, 'Requisition Approved', cb, u); }
+      return out + ' · every ally +3 AP next turn (banked: within the +3 a turn and the ceiling of 9)';
+    }
     // The Laughing Mask
     case 'lucky_break': fs(one!).luckyBreak = true; return ' · ' + one!.name + '\'s next failed attack roll is rerolled at +5';
     case 'switcheroo': {
@@ -787,7 +882,17 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
       const px = x.pos; x.pos = y.pos; y.pos = px; faithTag(cb, u, 'trick'); return ' · ' + x.name + ' and ' + y.name + ' swap places';
     }
     case 'pratfall': { const s = rollSaveVs(rng, u, one!, 'body'); if (s.ok) return ' · ' + one!.name + ' keeps its feet (' + s.text + ')'; return applyCond(cb, rng, u, one!, 'prone', undefined, undefined, { skipSave: true }) + applyCond(cb, rng, u, one!, 'disarmed', undefined, undefined, { skipSave: true }); }
-    case 'encore': { let out = ''; for (const v of allies) { const st = v.faith; if (st?.lastRound === cb.round && st.lastSpent > 0) { bankAp(v, st.lastSpent, 'Encore', cb, u); out += ' · ' + v.name + ' +' + st.lastSpent + ' AP'; } } return out || ' · nobody has acted yet this round'; }
+    case 'encore': { // rules 1.6.2 (item 729): each ally may repeat its last action this round for free; enemies in sight Confused
+      let out = '';
+      for (const v of allies) {
+        const st = v.faith; if (!(st?.lastRound === cb.round && st.lastKey && st.lastSpent > 0)) continue;
+        st.encore = { key: st.lastKey, ap: st.lastSpent, started: v === u, round: cb.round };
+        out += ' · ' + v.name + ' may repeat ' + actionWords(st.lastKey) + ' for free (' + st.lastSpent + ' AP' + (v === u ? ', this turn' : ', until the end of their next turn') + ')';
+      }
+      if (!out) out = ' · nobody has acted yet this round';
+      for (const v of enemiesInSight(cb, u)) out += applyCond(cb, rng, u, v, 'confused', 1, undefined, { skipSave: true });
+      return out;
+    }
     // The Toll-Keeper
     case 'coin_for_the_ferry': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, 10 * pw));
     case 'hold_the_gate': { const ids = allies.filter((v) => v === u || unitSees(cb, u, v.pos)).map((v) => v.id); ((cb as any).faithGates ||= []).push({ by: u.id, side: u.side, ids }); return ' · ' + ids.length + ' allies can\'t drop below 1 HP until your next turn'; }
@@ -797,30 +902,63 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
       const s = rollSaveVs(rng, u, v, 'heart'); if (s.ok) return ' · ' + v.name + ' holds on (' + s.text + ')';
       applyDamage(cb, v, v.hp + (v.shield || 0), { by: u, type: 'true', shield: false, credit: 'hp' }); return ' · ' + v.name + ' crosses over (' + s.text + ')';
     }
-    case 'turned_back': { const v = one!; if (!v.dead) return ' · ' + v.name + ' has not crossed'; v.dead = false; v.downed = false; v.hp = 1; v.saves = { ok: 0, fail: 0 }; const ch = unitChar(v); if (ch) ch.dead = false; return ' · ' + v.name + ' is turned back at the shore (1 HP)'; }
+    case 'turned_back': { // rules 1.6.2 (item 730): every ally who died or fell this fight stands at half HP
+      let out = '';
+      for (const v of cb.units.filter((x) => x.side === u.side && (x.dead || x.downed) && !x.surrendered)) {
+        const was = v.dead ? 'crossed' : 'fell', half = Math.ceil(v.maxHp / 2);
+        v.dead = false; v.downed = false; v.hp = half; v.saves = { ok: 0, fail: 0 }; v.stunnedNext = 0;
+        const ch = unitChar(v); if (ch) ch.dead = false;
+        emitFx(cb, 'heal', { target: v.id, at: v.pos, amount: half });
+        out += ' · ' + v.name + ' (' + was + ') is turned back at the shore: ' + half + ' HP';
+      }
+      return out || ' · nobody has crossed or fallen';
+    }
     // Mother Ember
     case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, 40 * pw));
     case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: area3(a.tile!), until: cb.round + 2, heal: P(10) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
     case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { one!.ap = Math.min(AP_MAX, one!.ap + 1); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +1 AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
-    case 'everyone_home': { let out = ''; for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += ' · ' + v.name + healLine(cb, u, v, v.maxHp); return out; }
+    case 'everyone_home': { // rules 1.6.2 (item 731): full HP, the Downed stand, every harmful condition ends, a 40 shield each
+      let out = '';
+      for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += land(cb, rng, u, v, e, power, (pw) => {
+        const up = v.downed; healUnit(cb, v, v.maxHp, u, 'blessing'); v.hp = v.maxHp; // to full whatever trims a heal
+        const ended = cleanseHarmful(cb, v);
+        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, 40 * pw, u) + ' shield';
+      });
+      return out;
+    }
     // Old Overcast
     case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && dist(x.pos, a.tile!) <= 2)) out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); return out || ' · nobody there'; }
     case 'lightning_rod': return land(cb, rng, u, one!, e, power, (pw) => { let out = harmLine(cb, u, one!, 50 * pw, 'elemental', 'lightning'); const n = cb.units.filter((x) => x.side !== u.side && alive(x) && x !== one && dist(x.pos, one!.pos) <= 2).sort((p, q) => dist(p.pos, one!.pos) - dist(q.pos, one!.pos))[0]; if (n) out += ' · it chains to ' + n.name + harmLine(cb, u, n, 25 * pw, 'elemental', 'lightning'); return out; });
     case 'gather_the_clouds': ((cb as any).faithClouds ||= []).push({ by: u.id, side: u.side }); return ' · until your next turn, your side\'s Storm riders count a stage higher';
-    case 'the_sky_answers': { let out = ''; for (const v of cb.units.filter((x) => !x.dead && area3(a.tile!).includes(x.pos))) out += harmLine(cb, u, v, P(80), 'elemental', 'lightning') + applyCond(cb, rng, u, v, 'shaken', undefined, undefined, { skipSave: true }); return out || ' · the sky strikes empty ground'; }
+    case 'the_sky_answers': { // rules 1.6.2 (item 732): a 5×5 in sight; the sky picks: enemies only; 150 Storm, Stunned 1, Shaken
+      let out = ''; const tiles = areaOf(a.tile!, 2);
+      for (const v of cb.units.filter((x) => x.side !== u.side && alive(x) && tiles.includes(x.pos))) out += harmLine(cb, u, v, P(150), 'elemental', 'lightning') + applyCond(cb, rng, u, v, 'stunned', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, v, 'shaken', undefined, undefined, { skipSave: true });
+      return out || ' · the sky strikes empty ground';
+    }
     // The Matchmaker
     case 'red_thread': { const [x, y] = two; ((cb as any).faithLinks ||= []).push({ a: x.id, b: y.id, until: cb.round + 1, by: u.id }); return ' · ' + x.name + ' and ' + y.name + ' are bound by a red thread for 2 rounds'; }
     case 'sweet_nothings': return applyCond(cb, rng, u, one!, 'smitten', 1, 'heart');
     case 'together': { const [x, y] = two; return applyCond(cb, rng, u, x, 'inspired', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, x, 'guarded', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'inspired', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'guarded', 1, undefined, { skipSave: true }); }
-    case 'love_conquers': { let out = ''; for (const v of cb.units.filter((x) => x.side !== u.side && canSurrender(x) && unitSees(cb, u, x.pos))) { const s = rollSaveVs(rng, u, v, 'heart'); out += s.ok ? ' · ' + v.name + ' resists (' + s.text + ')' : surrender(cb, v, u, 'Love Conquers'); } return out || ' · nobody here can be won over'; }
+    case 'love_conquers': { // rules 1.6.2 (item 733): non-boss enemies in sight surrender, no save; who can't yield: Heart save or Commanded (hold)
+      let out = '';
+      for (const v of enemiesInSight(cb, u)) {
+        if (canYield(v)) { out += surrender(cb, v, u, 'Love Conquers'); continue; }
+        out += applyCond(cb, rng, u, v, 'commanded', 1, 'heart', { arg: 'hold' }).replace(/ is Commanded/, ' lowers its weapon: Commanded to hold');
+      }
+      return out || ' · nobody here to win over';
+    }
     // The Counting Weaver
     case 'foreknowing': fs(one!).foreknown = true; return ' · the next attack on ' + one!.name + ' will miss';
     case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; v.braced = false; v.overwatch = null; if (v.hidden) v.hidden = false; return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
     case 'cut_short': { const v = one!; if (v.tier === 'boss') { apDebt(v, 2); return ' · ' + v.name + ' loses 2 AP on its next turn (a boss)'; } return applyCond(cb, rng, u, v, 'stunned', 1, 'heart'); }
-    case 'rewoven': {
-      const x: any = cb; if (!x.faithOrderRestore) x.faithOrderRestore = [...cb.order];
+    case 'rewoven': { // rules 1.6.2 (item 734): HP back to the round's start where that was higher (the Downed stand), then a full turn each
+      const x: any = cb, snap: Record<string, number> = x.faithRoundHp || {}; let out = '';
+      for (const v of allies) { const was = snap[v.id]; if (was == null || was <= v.hp) continue;
+        const up = v.downed; if (up) { v.downed = false; v.saves = { ok: 0, fail: 0 }; } v.hp = Math.min(v.maxHp, was);
+        emitFx(cb, 'heal', { target: v.id, at: v.pos, amount: v.hp }); out += ' · ' + v.name + ' is rewoven to ' + v.hp + ' HP' + (up ? ' (stands)' : ''); }
+      if (!x.faithOrderRestore) x.faithOrderRestore = [...cb.order];
       const ids = cb.order.filter((id) => allies.some((v) => v.id === id && alive(v)));
-      cb.order.splice(cb.turn + 1, 0, ...ids); return ' · ' + ids.length + ' allies act once more, right after this turn';
+      cb.order.splice(cb.turn + 1, 0, ...ids); return out + ' · ' + ids.length + ' allies take another full turn, right after this one';
     }
   }
   // Not one of the launch Hymns: its data effects run (tactics.ts blessing: heal, Soul damage, shield, a condition,
@@ -1083,19 +1221,22 @@ function storyPray(g: GameState, c: Character, a: Extract<FaithAction, { type: '
     B!.push(g, { kind: 'check', charId: c.id, ok: true, head: head + dice + ' · ✓ ANSWERED', text: said } as any);
   } else B!.push(g, { kind: 'check', charId: c.id, ok: true, head: head + ' · BY STANDING · ✓ ANSWERED', text: said } as any);
   storyFx(g, FAITH_FX.prayer, { unit: c.id, kind, id, patron: patron?.id || null, at: null, target: t.id, ok: true });
-  if (kind === 'miracle') { storyFx(g, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: null, area: null, unit: c.id }); shiftDevotion(g, null, c, -devotionXpOf(c), 'the Miracle spends it all'); }
-  const power = blessingPower(c), done = storyEffect(g, c, t, kind, pe.entry.id, power);
+  if (kind === 'miracle') storyFx(g, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: null, area: null, unit: c.id });
+  const power = blessingPower(c), eff = storyEffect(g, c, t, kind, pe.entry.id, power), done = typeof eff === 'object' && eff ? eff.done : eff;
   if (done) B!.push(g, { kind: 'system', charId: c.id, text: done.replace(/^ · /, '') + '.' } as any);
+  if (kind === 'miracle') miracleCost(g, null, c); // after its effect, as in a fight (items 621, 725)
   // 'story_blessing' {g, c, lines}: items roll what a story Blessing on the character does besides (Upper-Touched's d6).
   const sb: any = kind !== 'whisper' ? emitStory(g, 'story_blessing', { g, c, lines: [] as string[] }, [c]) : { lines: [] };
-  const rest = done === null || sb.lines.length;
+  // What the engine can't apply out of a fight goes to the Narrator with the text (item 624; a Miracle's rest, item 735).
+  const rest = done === null || (typeof eff === 'object' && eff?.partial) || sb.lines.length;
   if (rest) pendRuling(g, c, 'faith:' + (patron?.id || 'whisper') + '.' + pe.entry.id, c.name + ' prayed and was answered: ' + name + ' — ' + (pe.entry.text || '') + ' (× ' + (Math.round(power * 100) / 100) + ')' + (text ? '. They asked: "' + text + '"' : '') + (sb.lines.length ? '. ' + sb.lines.join(' ') : '') + (done ? ' The engine applied: ' + done.replace(/^ · /, '') + '.' : ''));
   if (patron && kind !== 'whisper') speak(g, null, rng, c, patron, kind === 'miracle' ? 'miracle' : 'answered');
   g.story.needs = true; B!.afterStory(g);
   return null;
 }
-/** A prayer's effect on the squad out of a fight: the text of what was applied, or null when it is all the Narrator's. */
-function storyEffect(g: GameState, c: Character, t: Character, kind: PrayerKind, id: string, power: number): string | null {
+/** A prayer's effect on the squad out of a fight: the text of what was applied, or null when it is all the Narrator's;
+ * { done, partial } when the engine applied part of it and the rest is the Narrator's (a Miracle, item 735). */
+function storyEffect(g: GameState, c: Character, t: Character, kind: PrayerKind, id: string, power: number): string | null | { done: string; partial: true } {
   const heal = (x: Character, n: number) => { const was = x.hp, max = maxHpOf(x); x.hp = Math.min(max, Math.max(0, x.hp) + Math.round(n)); return ' · ' + x.name + ' heals ' + (x.hp - was); };
   const endConds = (x: Character, ids: string[] | null) => { const had = (x.persistentConds || []).filter((p) => (ids ? ids.includes(p.id) : !condIsBoon(p.id))); x.persistentConds = (x.persistentConds || []).filter((p) => !had.includes(p)); return had.map((p) => p.id); };
   const st = (x: Character): any => storyFaith(g, x);
@@ -1112,11 +1253,28 @@ function storyEffect(g: GameState, c: Character, t: Character, kind: PrayerKind,
     case 'coin_for_the_ferry': return t.hp > 0 ? ' · ' + t.name + ' is not down' : heal(t, 10 * power);
     case 'feed_the_fire': { const e = endConds(t, ['weakened', 'slowed']); if (g.story.await === 'players') (g.story.ap ||= {})[t.id] = B!.apLeft(g, t) + 1; return ' · ' + t.name + ' +1 AP' + (e.length ? ', ' + e.join(' and ') + ' ended' : ''); }
     case 'lucky_break': st(t).luckyBreak = true; return ' · ' + t.name + ': +5 on the next check';
-    case 'everyone_home': { let out = ''; for (const x of Object.values(g.characters)) if (!x.dead) out += heal(x, maxHpOf(x)); return out; }
+    // Rules 1.6.2 (item 735): the squad's HP and story conditions are the engine's; a fight's shield is nothing out of one.
+    case 'everyone_home': { let out = ''; for (const x of Object.values(g.characters)) if (!x.dead) { const e = endConds(x, null); out += heal(x, maxHpOf(x)) + (e.length ? ' (' + e.join(', ') + ' ended)' : ''); } return out; }
+    // The restock, the cores and the repair are the engine's; throwables (a fight's count) and the AP go to the Narrator.
+    case 'requisition_approved': { let out = ''; for (const x of Object.values(g.characters)) if (!x.dead) out += ' · ' + x.name + storyRestock(x); return { done: out, partial: true }; }
   }
   return null;
 }
 const maxHpOf = (c: Character): number => maxHp(c);
+/** Requisition Approved out of a fight (item 735): the loaded magazine and every spare full, Supplies to their maximum,
+ * 2 standard cores, every weapon carried at full durability. */
+function storyRestock(c: Character): string {
+  const size = magazineSize(c.weapon, c.weaponState?.mods);
+  if (size != null) c.loaded = Math.max(c.loaded ?? 0, size);
+  let pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : it.weapon && it.dur != null ? { ...it, dur: maxDurOf(it.weapon, it.rarity) } : { ...it }));
+  const core = pack.find((it) => (it.item || it.id) === 'standard_core');
+  if (core) core.qty += 2; else pack = [...pack, { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: 'ammo' } as any];
+  c.pack = pack;
+  const sup = resourcesFor(c)?.resMax?.supplies; if (sup != null) (c.res ||= {}).supplies = sup;
+  if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };
+  if (c.offHand?.dur != null) c.offHand = { ...c.offHand, dur: maxDurOf(c.offHand.id, c.offHand.rarity) };
+  return ': magazines full' + (sup != null ? ', ' + sup + ' Supplies' : '') + ', +2 cores, repaired';
+}
 
 // The story's one-shot bonuses end with the check they helped (Luck, Lucky Break; Guidance on a notice check).
 onStoryHook('check_result', (ctx) => {

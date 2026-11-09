@@ -11,7 +11,7 @@
       "hymn_1": 3,
       "hymn_2": 5,
       "hymn_3": 7,
-      "miracle": 7
+      "miracle": 10
     },
     "xp": {
       "curve": [
@@ -74,9 +74,9 @@
     "miracle": {
       "ap": 3,
       "faith_min": 7,
-      "devotion_min": 7,
+      "devotion_min": 10,
       "limit": "once per session",
-      "spends": "all devotion"
+      "devotion_cost_levels": 5
     },
     "overreach": {
       "tn_base": 12,
@@ -461,20 +461,32 @@
       "miracle": {
         "id": "saints_verdict",
         "name": "The Saints' Verdict",
-        "text": "Every enemy that harmed the helpless this fight takes 60 Soul and is Stunned 1 round.",
+        "text": "Every enemy in sight takes 100 Soul and is Stunned 1 round; those that harmed the helpless this fight take double and are Stunned 2 rounds.",
         "target": "none",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "hp",
-            "value": -60,
+            "value": -100,
             "damage_type": "soul",
-            "target": "harmed_helpless"
+            "target": "enemies_in_sight"
           },
           {
             "op": "condition",
             "condition": "stunned",
             "rounds": 1,
+            "save": "none",
+            "target": "enemies_in_sight"
+          },
+          {
+            "op": "damage_mult",
+            "value": 2,
+            "target": "harmed_helpless"
+          },
+          {
+            "op": "condition",
+            "condition": "stunned",
+            "rounds": 2,
             "save": "none",
             "target": "harmed_helpless"
           }
@@ -676,28 +688,48 @@
       "miracle": {
         "id": "requisition_approved",
         "name": "Requisition Approved",
-        "text": "The whole squad is restocked (ammo, Supplies, one standard core each) and gets +2 AP next turn.",
+        "text": "The whole squad gets a full restock (ammo, Supplies, throwables), 2 standard cores each, all gear repaired to full durability, jams and heat cleared, and +3 AP next turn.",
         "target": "none",
         "effects": [
           {
             "op": "resource",
             "resource": "ammo",
-            "value": "restock"
+            "value": "restock",
+            "scope": "squad"
           },
           {
             "op": "resource",
             "resource": "supplies",
-            "value": "restock"
+            "value": "restock",
+            "scope": "squad"
           },
           {
-            "op": "start_item",
-            "item": "standard_core",
-            "qty": 1
+            "op": "resource",
+            "resource": "throwables",
+            "value": "restock",
+            "scope": "squad"
+          },
+          {
+            "op": "resource",
+            "resource": "core",
+            "value": 2,
+            "scope": "squad"
+          },
+          {
+            "op": "repair_gear",
+            "value": "full",
+            "scope": "squad"
+          },
+          {
+            "op": "clear_jam",
+            "heat": true,
+            "scope": "squad"
           },
           {
             "op": "stat_mod",
             "stat": "ap_next",
-            "value": 2
+            "value": 3,
+            "scope": "squad"
           }
         ],
         "scales_with": "blessing_power",
@@ -891,13 +923,21 @@
       "miracle": {
         "id": "encore",
         "name": "Encore",
-        "text": "Every ally may repeat the last action they took this round, for free, now.",
+        "text": "Every ally may repeat the last action they took this round for free, and every enemy in sight is Confused for 1 round.",
         "target": "none",
         "effects": [
           {
             "op": "free_action",
             "action": "repeat_last",
-            "scope": "allies"
+            "scope": "allies",
+            "until": "end_of_next_turn"
+          },
+          {
+            "op": "condition",
+            "condition": "confused",
+            "rounds": 1,
+            "save": "none",
+            "target": "enemies_in_sight"
           }
         ],
         "scales_with": "blessing_power",
@@ -1090,13 +1130,15 @@
       "miracle": {
         "id": "turned_back",
         "name": "Turned Back at the Shore",
-        "text": "An ally who died this fight returns at 1 HP.",
-        "target": "dead_ally",
+        "text": "Every ally who died or fell (Downed) this fight stands at half HP.",
+        "target": "none",
         "effects": [
           {
             "op": "heal",
-            "value": 1,
-            "revive_dead": true
+            "value": "half",
+            "revive": true,
+            "revive_dead": true,
+            "scope": "allies_fallen"
           }
         ],
         "scales_with": "blessing_power",
@@ -1298,7 +1340,7 @@
       "miracle": {
         "id": "everyone_home",
         "name": "Everyone Home",
-        "text": "The whole squad heals to full, and Downed allies stand.",
+        "text": "The whole squad heals to full, Downed allies stand, every harmful condition is cleared, and each gets a 40 shield.",
         "target": "none",
         "effects": [
           {
@@ -1306,6 +1348,16 @@
             "value": "full",
             "revive": true,
             "scope": "allies"
+          },
+          {
+            "op": "cleanse",
+            "what": "harmful",
+            "scope": "allies"
+          },
+          {
+            "op": "shield",
+            "value": 40,
+            "target": "allies"
           }
         ],
         "scales_with": "blessing_power",
@@ -1507,21 +1559,31 @@
       "miracle": {
         "id": "the_sky_answers",
         "name": "The Sky Answers",
-        "text": "A 3×3 area in sight takes 80 Elemental (Storm), and everyone in it is Shaken.",
+        "text": "A 5×5 area in sight takes 150 Elemental (Storm), enemies only (the sky picks), and they are Stunned 1 round and Shaken.",
         "target": "tile",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "hp",
-            "value": -80,
+            "value": -150,
             "damage_type": "lightning",
-            "area": "3x3"
+            "area": "5x5",
+            "filter": "enemies"
+          },
+          {
+            "op": "condition",
+            "condition": "stunned",
+            "rounds": 1,
+            "save": "none",
+            "area": "5x5",
+            "filter": "enemies"
           },
           {
             "op": "condition",
             "condition": "shaken",
             "save": "none",
-            "area": "3x3"
+            "area": "5x5",
+            "filter": "enemies"
           }
         ],
         "scales_with": "blessing_power",
@@ -1715,15 +1777,23 @@
       "miracle": {
         "id": "love_conquers",
         "name": "Love Conquers",
-        "text": "Every non-boss enemy in sight makes a Heart save or surrenders.",
+        "text": "Every non-boss enemy in sight surrenders, no save; a boss (or one that can't yield) makes a Heart save or is Commanded to hold (no attacks) for 1 round.",
         "target": "none",
         "effects": [
           {
             "op": "state",
             "state": "surrendered",
-            "save": "heart",
+            "save": "none",
             "scope": "enemies_in_sight",
             "not": "boss"
+          },
+          {
+            "op": "condition",
+            "condition": "commanded",
+            "rounds": 1,
+            "save": "heart",
+            "order": "hold",
+            "target": "boss_in_sight"
           }
         ],
         "scales_with": "blessing_power",
@@ -1913,12 +1983,17 @@
       "miracle": {
         "id": "rewoven",
         "name": "Rewoven",
-        "text": "Your squad takes another turn, now, in initiative order.",
+        "text": "The squad takes another full turn now, and every ally's HP is restored to what it was at the start of this round, if that was higher.",
         "target": "none",
         "effects": [
           {
             "op": "free_action",
             "action": "extra_turn",
+            "scope": "allies"
+          },
+          {
+            "op": "rewind_hp",
+            "to": "round_start",
             "scope": "allies"
           }
         ],

@@ -27,14 +27,17 @@ function winFight(s: { g: GameState }, act: (a: any, by?: string) => GameState) 
 }
 
 describe('a switch never raises Devotion (item 719)', () => {
-  it('a Miracle\'s reset to 0 can\'t be undone by two pacts in a turn', () => {
-    const { s, c, ally, act } = faithful('mother_ember', 8, 7); ally().hp = 10;
+  it('a Miracle\'s price can\'t be undone by two pacts in a turn (rules 1.6.2: the Miracle leaves Devotion 5)', () => {
+    const { s, c, ally, act } = faithful('mother_ember', 10, 7); ally().hp = 10;
     act({ type: 'faith/pray', charId: c().id, kind: 'miracle', id: 'everyone_home' });
-    expect(c().devotionXp).toBe(0);
+    expect(c().devotionXp).toBe(devotionThreshold(5)); expect(c().devotion).toBe(5);
+    // Three pieces of the Quartermaster would convert at Devotion 6 (147 XP): a switch never raises it past the 102 held.
+    c().faithPieces = { the_quartermaster: 3 };
     s.g.rng.state = rngFor(20); act({ type: 'faith/pact', charId: c().id, patron: 'the_quartermaster' });
-    expect(c().patron).toBe('the_quartermaster'); expect(c().devotionXp).toBe(0); expect(c().devotion).toBe(0);
+    expect(c().patron).toBe('the_quartermaster'); expect(c().devotionXp).toBe(devotionThreshold(5)); expect(c().devotion).toBe(5);
+    expect(said(s.g, /a new pact never raises Devotion/)).toBe(true);
     s.g.rng.state = rngFor(20); act({ type: 'faith/pact', charId: c().id, patron: 'mother_ember' });
-    expect(c().devotionXp).toBe(0); expect(said(s.g, /a new pact never raises Devotion/)).toBe(true);
+    expect(c().devotionXp).toBeLessThanOrEqual(devotionThreshold(5));
   });
   it('Devotion 1 stays 1 (its XP kept); Devotion 8 falls to the conversion\'s 3; an Atheist converts at 3 as before', () => {
     const a = faithful('mother_ember', 1, 7); setDevotionXp(a.c(), 17);

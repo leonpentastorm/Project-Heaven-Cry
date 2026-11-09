@@ -157,10 +157,13 @@ describe('the Narrator\'s Devotion XP (item 705)', () => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('the Miracle, Judgement and conversion (items 706-708)', () => {
-  it('a story Miracle spends it all: XP 0, Devotion 0', () => {
-    const { s, c, ally, act } = faithful('mother_ember', 8, 7); ally().hp = 10;
+  it('a story Miracle needs Devotion 10 and lowers it by 5 levels (rules 1.6.2: 450 XP → 102, Devotion 5)', () => {
+    const lo = faithful('mother_ember', 9, 7);
+    expect(() => lo.act({ type: 'faith/pray', charId: lo.c().id, kind: 'miracle', id: 'everyone_home' })).toThrow(/Devotion 10 \(you have 9\)/);
+    const { s, c, ally, act } = faithful('mother_ember', 10, 7); ally().hp = 10;
     act({ type: 'faith/pray', charId: c().id, kind: 'miracle', id: 'everyone_home' });
-    expect(c().devotionXp).toBe(0); expect(c().devotion).toBe(0); expect(ally().hp).toBeGreaterThan(10);
+    expect(c().devotionXp).toBe(102); expect(c().devotion).toBe(5); expect(ally().hp).toBeGreaterThan(10);
+    expect(s.g.story.entries.some((e) => /−348 Devotion XP \(the Miracle: Devotion −5 levels\): DEVOTION 5/.test(String(e.text)))).toBe(true);
   });
   it('Judgement spends 10 Devotion XP through the choke point; it needs 10', () => {
     const f = fightWith([{ name: 'Templar' }], [{ at: 'F6' }]);
