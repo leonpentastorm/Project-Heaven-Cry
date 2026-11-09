@@ -37,20 +37,20 @@
   "files": [
     {
       "path": "art/ui/title-screen/README.md",
-      "size_bytes": 5780,
-      "sha256": "d372bd0f213661dd2cc372bc9b4be85352689ea8dec6a538a2984973392501e1",
+      "size_bytes": 6068,
+      "sha256": "124029c9243549111855af3640409b48239db1b194e41cce63c3a3432d2acae5",
       "role": "implementation notes"
     },
     {
       "path": "art/ui/title-screen/foreground-placement.json",
-      "size_bytes": 1192,
-      "sha256": "06a95740a1f29f040d9a845786366b0212c2454c3cb9b961cbd5d28f1ecae8dd",
+      "size_bytes": 1868,
+      "sha256": "31a4a566d168cc35f3d59f6235ed39c53a9720f4f9b3296642127f6216e023ed",
       "role": "foreground production provenance"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/alpha-edge-review.jpg",
-      "size_bytes": 276724,
-      "sha256": "7078f0e51a7ccc4089b93a49aa88a6cd2dca4d7b44deeceb70570df509fdf815",
+      "size_bytes": 276967,
+      "sha256": "d7ff60b2950b46008ca6ce47c2b9faccc3dfd34edf12535639def8288c7968f4",
       "role": "review preview"
     },
     {
@@ -67,38 +67,38 @@
     },
     {
       "path": "art/_archive/ui/title-screen/previews/composite-1920.jpg",
-      "size_bytes": 680247,
-      "sha256": "7f1af54ea06ead07c2ed96de0efd946d1b1ae1b24fcbf0198710617d17da04b3",
+      "size_bytes": 680274,
+      "sha256": "e2a0a945f129752c67ae1aa28fd74deacd179b3103b657d6430bf6b4d0504110",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/menu-readability-72px.jpg",
-      "size_bytes": 687175,
-      "sha256": "99ceec88256f85e83ce4b167cb1d78640c8b76705daab625328288faa76355cd",
+      "size_bytes": 687190,
+      "sha256": "6990fc09a76fc4d93f5fb8242ad6bdb5c688135eb158c250a6e2462726e71ed5",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/parallax-extremes.jpg",
-      "size_bytes": 714520,
-      "sha256": "91066a6e61e6c8d9e5eb454bddeda1436c3fa1bfeef50af2632995f2eea563d4",
+      "size_bytes": 714917,
+      "sha256": "cb08fceb3ce029ab8795fea6f5fcf0474392ddd0a39c955d9c12ecdb6598797b",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/phone-crop.jpg",
-      "size_bytes": 226824,
-      "sha256": "2356459f8840c3d862dddac7e829b46c5417148f5a38353f9969433ba213c69f",
+      "size_bytes": 226834,
+      "sha256": "5276f9b8d8bceecf5e5aa747f893bf052f4db4c6dcafa2d6fe1115ac17faf066",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/safe-zones.jpg",
-      "size_bytes": 624429,
-      "sha256": "92d20f660ff974f95e32fd56ee1756944e124c0e8e04d1cf73bea73d0b916615",
+      "size_bytes": 624423,
+      "sha256": "977c9ccf3413432eace4a41df0a4da6ba689f0cd3c2d5a5581471a7c0b9a5833",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/screen-crop-1920.jpg",
-      "size_bytes": 655194,
-      "sha256": "1617fe6dedff478f9a52f86fb4b6d6555c00a426ebe773086009a45ad4c8000b",
+      "size_bytes": 655223,
+      "sha256": "ea0bc8cf281b348eacfd378afc8289d9d2765c0c3323b168dd4d33697694a849",
       "role": "review preview"
     },
     {
@@ -125,8 +125,8 @@
     },
     {
       "path": "art/_archive/ui/title-screen/source-renders/title-front-native.png",
-      "size_bytes": 462799,
-      "sha256": "620ee03b5a53a6e5374edbceae6c77d3fb821e48db549c7f088482ba110ca774",
+      "size_bytes": 461708,
+      "sha256": "5889019fa8c1adbfd8fa99a0de7f2874e5881913217dd44f3f0fb46ea3afca4e",
       "role": "native generated source render",
       "width": 1774,
       "height": 887,
@@ -145,8 +145,8 @@
     },
     {
       "path": "art/ui/title-screen/technical-review.json",
-      "size_bytes": 2644,
-      "sha256": "c2f80494bc4351ab993c171fe8f6e56ab8a2d59da82ae574dcd13daa3f8fdfc8",
+      "size_bytes": 3334,
+      "sha256": "601e1944aa9364405207175c22fa0fc1112c9fcdd4459f9c79b0347cd3dd0882",
       "role": "technical review evidence"
     },
     {
@@ -161,8 +161,8 @@
     },
     {
       "path": "art/ui/title-screen/title-front.png",
-      "size_bytes": 1779582,
-      "sha256": "ae3e0f57d4dce2857d72861ebc4318799e99274cba9a46d21b119af7faad3489",
+      "size_bytes": 1781432,
+      "sha256": "e36545c1220fd308eb681984e7401e434497c29e86b29d85feed5800de75c3b8",
       "role": "straight-alpha hero ridge layer",
       "width": 4096,
       "height": 2304,
@@ -181,8 +181,8 @@
     },
     {
       "path": "art/ui/title-screen/title-screen.psd",
-      "size_bytes": 9148712,
-      "sha256": "8e3c27fec9169c0aa4298c130de0967c690470de8fb553a00d13447eef011bfb",
+      "size_bytes": 9150404,
+      "sha256": "d495422fb0db4737e651853b4355d0b314680201586787f45858370142fbbbf7",
       "role": "three-layer raster source"
     },
     {
@@ -244,6 +244,30 @@
       "size_bytes": 481554,
       "sha256": "7e6ac685cf77d8fcde6fc5058d38f9f1fccb0e6158658c6e0c7e914d735c07fa",
       "role": "review preview: the gaze rule"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/history/2026-11-09-r6-original-glyph/README.md",
+      "size_bytes": 605,
+      "sha256": "cc1385c3120f264ca40fcc3c56815f7b718725d25e7b44202b4e80e9af4dfdb6",
+      "role": "archived revision notes"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/history/2026-11-09-r6-original-glyph/title-front-native.png",
+      "size_bytes": 462799,
+      "sha256": "620ee03b5a53a6e5374edbceae6c77d3fb821e48db549c7f088482ba110ca774",
+      "role": "Revision 6 native render as delivered (original glyph)"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/history/2026-11-09-r6-original-glyph/title-front.png",
+      "size_bytes": 1779582,
+      "sha256": "ae3e0f57d4dce2857d72861ebc4318799e99274cba9a46d21b119af7faad3489",
+      "role": "Revision 6 layer as shipped in 0.11.x"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/source-renders/glyph-ward-600.png",
+      "size_bytes": 311583,
+      "sha256": "1710db54abc4bbfd91dad6205a15a595a819580694f714b82ef8101a38e70317",
+      "role": "the WARD glyph render placed on the mage"
     }
   ],
   "layered_source_canvas": [
@@ -251,7 +275,7 @@
     941
   ],
   "source_note": "Repository PSD at original render resolution due 16MiB upload request limit; all PNG layers remain 4096x2304. Full-size PSD retained in downloadable Revision 2 package.",
-  "revision": 6,
+  "revision": "6.1",
   "foreground_placement": {
     "revision": 4,
     "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
