@@ -13,7 +13,7 @@ import { type Rng, d20, die } from './rng';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
-import { canSurrender, surrender } from './tactics';
+import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { canReact, useReaction } from './tactics';
 import { makeObject } from './objects';
@@ -138,14 +138,14 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
   if (a !== b) emitFx(cb, 'mana', { band: b, mana: now });
   if (a !== b) cb.log.push('The air turns ' + b.toUpperCase() + ' (mana ' + now + ')' + (why ? ': ' + why : '') + '.');
 }
-/** Deaths release bots (spec: the meter): +5 a person, +2 a robot. Called once per turn; each death counts once. Rules
+/** Deaths release bots (spec: the meter): +5 a person, +3 a beast, +2 a robot. Called once per turn; each death counts once. Rules
  * 1.9: the same sweep rolls each death's drops (loot.ts) on the fight's dice, so it happens exactly once per death; the
  * area map's throwaway fight rolls none (item 697). */
 export function noteDeaths(cb: Combat, rng?: Rng) {
   const seen = new Set(cb.deadSeen || []);
   for (const u of cb.units) if (u.dead && !seen.has(u.id)) {
     seen.add(u.id); cb.deadSeen = [...seen];
-    shiftMana(cb, ['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name) ? 2 : 5, u.name + ' fell');
+    shiftMana(cb, deathMana(u), u.name + ' fell');
     if (rng && !cb.overworld) rollDeathDrops(cb, rng, u);
   }
   cb.deadSeen = [...seen];

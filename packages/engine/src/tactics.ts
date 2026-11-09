@@ -334,6 +334,13 @@ export function applyFoeTraits(u: Unit, f: FoeTraits | undefined) {
   if (f?.hidden) { u.hidden = true; u.hideEntry = 1; }
 }
 /** Mana from a death (spec: the meter): +5 a person or beast, +2 a robot, machine, turret or drone. */
-export const deathMana = (u: Unit) => (['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name) ? 2 : 5);
+/** The bots one death releases (spec: the meter; rules.json mana.meter.events): a robot or machine +2, a beast or monster
+ * +3, a person +5. */
+export const deathMana = (u: Unit): number => {
+  const ev = (id: string, d: number) => Number((RULES as any)?.mana?.meter?.events?.find((e: any) => e.event === id)?.delta) || d;
+  if (['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name)) return ev('robot_destroyed', 2);
+  if (u.kind === 'beast' || u.kind === 'monster') return ev('beast_dies', 3);
+  return ev('person_dies', 5);
+};
 
 void ENEMY; void manaOf; void sightBlockers; void fxFell; void note;
