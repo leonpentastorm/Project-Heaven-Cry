@@ -63,17 +63,20 @@ describe('Wait for Kokoro', () => {
   });
 });
 
-describe('the model: WebGPU first, the CPU only on a real error', () => {
-  it('WebGPU when there is an adapter (fp32: q8 has no WebGPU kernels), fp16 next with shader-f16, the CPU last', () => {
-    expect(plansFor({ ok: true, f16: true })).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'webgpu', dtype: 'fp16' }, { device: 'wasm', dtype: 'q8' }]);
-    expect(plansFor({ ok: true, f16: false })).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'wasm', dtype: 'q8' }]);
-    expect(plansFor({ ok: false, f16: false })).toEqual([{ device: 'wasm', dtype: 'q8' }]);
+describe('the model: fp32 on WebGPU first, the CPU otherwise', () => {
+  it('WebGPU fp32 when there is an adapter (q8 has no WebGPU kernels; fp16 made noise on RDNA 4), then the CPU', () => {
+    expect(plansFor({ ok: true, f16: true }, new Set(), null)).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'wasm', dtype: 'q8' }]);
+    expect(plansFor({ ok: true, f16: false }, new Set(), null)).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'wasm', dtype: 'q8' }]);
+    expect(plansFor({ ok: false, f16: false }, new Set(), null)).toEqual([{ device: 'wasm', dtype: 'q8' }]);
   });
-  it('weights already in the cache go first (no second download)', () => {
+  it('fp16 in the cache is never preferred any more; a GPU that made noise goes straight to the CPU', () => {
+    expect(plansFor({ ok: true, f16: true, name: 'amd rdna-4' }, new Set(['fp16']), null)[0]).toEqual({ device: 'webgpu', dtype: 'fp32' });
+    expect(plansFor({ ok: true, f16: true, name: 'amd rdna-4' }, new Set(), 'amd rdna-4')).toEqual([{ device: 'wasm', dtype: 'q8' }]);
+    expect(plansFor({ ok: true, f16: true, name: 'nvidia ampere' }, new Set(), 'amd rdna-4')[0]).toEqual({ device: 'webgpu', dtype: 'fp32' });
+  });
+  it('the cached weights are recognised', () => {
     const cached = cachedWeights(['https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/onnx/model.onnx', 'https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/voices/af_heart.bin']);
     expect([...cached]).toEqual(['fp32']);
-    expect(plansFor({ ok: true, f16: true }, cached)[0]).toEqual({ device: 'webgpu', dtype: 'fp32' });
-    expect(plansFor({ ok: true, f16: true }, new Set(['fp16']))[0]).toEqual({ device: 'webgpu', dtype: 'fp16' });
     expect([...cachedWeights(['https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/onnx/model_quantized.onnx'])]).toEqual(['q8']);
     expect(cachedWeights(['https://example.com/other/model.onnx']).size).toBe(0);
   });
@@ -94,5 +97,16 @@ describe('the play screen chip', () => {
     expect(voiceChip(S({ status: 'loading', progress: 42 }), DEFAULT_PREFS)).toBe('Voice: Loading 42%');
     expect(voiceChip(S({ status: 'failed' }), DEFAULT_PREFS)).toBe('Voice: Browser voice');
     expect(voiceChip(S({ status: 'ready', device: 'webgpu' }), { ...DEFAULT_PREFS, voice: browserKey('Google US English') })).toBe('Voice: Browser voice');
+  });
+});
+
+describe('the voice speed (Leon, 9 Nov 2026)', () => {
+  it('defaults to 1, is kept between 0.75 and 1.5 in steps of 0.05, and survives old saves', () => {
+    expect(parsePrefs(null).speed).toBe(1);
+    expect(parsePrefs('{"speed":1.27}').speed).toBe(1.25);
+    expect(parsePrefs('{"speed":3}').speed).toBe(1.5);
+    expect(parsePrefs('{"speed":0.2}').speed).toBe(0.75);
+    expect(parsePrefs('{"speed":"fast"}').speed).toBe(1);
+    expect(parsePrefs('{"volume":50}').speed).toBe(1);
   });
 });

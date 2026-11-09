@@ -2,7 +2,7 @@
 // third-party sites), Anthropic-format third-party sites, and the settings helpers. Every reply here is faked.
 import { beforeEach, describe, expect, it } from 'vitest';
 import { apply, newGame, ARCHETYPES, type GameState } from '@engine';
-import { PROVIDERS, guessProvider, keyMismatch, cleanBase, baseOf, notReadyReason, isPriced, makeProvider, openaiProvider, listModels, polishWith, jsonFrom, resetQuirks, type NarratorConfig } from './providers';
+import { PROVIDERS, guessProvider, keyMismatch, cleanBase, baseOf, notReadyReason, isPriced, makeProvider, openaiProvider, listModels, testKey, polishWith, jsonFrom, resetQuirks, type NarratorConfig } from './providers';
 
 function game(): GameState {
   let g = newGame('ABC123', { id: 'host', name: 'Leon' });
@@ -203,3 +203,50 @@ describe('Anthropic-format third-party sites', () => {
   });
 });
 
+
+const FAKE = 'sk-' + 'ant-x'; // a fake key, split so the repo's key check stays clean
+describe('Test key (the room, UI pass)', () => {
+  const cfg = (o: Partial<NarratorConfig>): NarratorConfig => ({ provider: 'anthropic', key: FAKE, model: 'claude-opus-5-5', baseUrl: '', effort: 'medium', ...o } as NarratorConfig);
+  const fake = (status: number, body: any): typeof fetch => (async (url: any, init: any) => { seen.push({ url: String(url), init }); return new Response(JSON.stringify(body), { status }); }) as any;
+  let seen: { url: string; init: any }[] = [];
+  beforeEach(() => { seen = []; });
+  it('Anthropic: asks the models list directly (no tokens), and says the key works', async () => {
+    const r = await testKey(cfg({}), fake(200, { data: [{ id: 'a' }, { id: 'b' }] }));
+    expect(r).toEqual({ ok: true, text: 'Anthropic answered: the key works (2 models).' });
+    expect(seen[0].url).toBe('https://api.anthropic.com/v1/models?limit=100');
+    expect(seen[0].init.headers['x-api-key']).toBe(FAKE);
+  });
+  it('a refused key says why, in words', async () => {
+    const r = await testKey(cfg({}), fake(401, { error: { message: 'invalid x-api-key' } }));
+    expect(r.ok).toBe(false); expect(r.text).toMatch(/^Anthropic rejected the API key \(invalid x-api-key\)/);
+  });
+  it('no key: nothing is sent', async () => {
+    const r = await testKey(cfg({ key: '' }), fake(200, {}));
+    expect(r).toEqual({ ok: false, text: 'Add the key first.' }); expect(seen.length).toBe(0);
+  });
+  it('services whose models list needs the key: that list', async () => {
+    const r = await testKey(cfg({ provider: 'openai', key: 'sk-x', model: 'x' }), fake(200, { data: [{ id: 'm1' }] }));
+    expect(r.ok).toBe(true); expect(r.text).toMatch(/OpenAI answered: the key works \(1 model\)/);
+    expect(seen[0].url).toBe('https://api.openai.com/v1/models');
+  });
+  it('OpenRouter: its /key, not the public models list; a garbage key fails', async () => {
+    const bad = await testKey(cfg({ provider: 'openrouter', key: 'sk-or-v1-garbage', model: 'x/y' }), fake(401, { error: { message: 'User not found.', code: 401 } }));
+    expect(bad.ok).toBe(false); expect(bad.text).toMatch(/OpenRouter/); expect(bad.text).toMatch(/User not found/);
+    expect(seen[0].url).toBe('https://openrouter.ai/api/v1/key'); expect(seen[0].init.headers.authorization).toBe('Bearer sk-or-v1-garbage');
+    const good = await testKey(cfg({ provider: 'openrouter', key: 'sk-or-v1-good', model: 'x/y' }), fake(200, { data: { label: 'k', limit_remaining: 4.5 } }));
+    expect(good).toEqual({ ok: true, text: 'OpenRouter answered: the key works ($4.50 left on it).' });
+  });
+  it('a site with its own address: says the address answered, never that the key works', async () => {
+    const r = await testKey(cfg({ provider: 'custom', key: 'k', model: 'm', baseUrl: 'https://llm.example.com/v1' }), fake(200, { data: [{ id: 'm1' }, { id: 'm2' }] }));
+    expect(r).toEqual({ ok: true, text: 'The address answered (2 models); the key itself is checked on the Narrator\'s first turn.' });
+  });
+  it('a site with no address yet: nothing is sent (the key never goes to the game\'s own server)', async () => {
+    for (const provider of ['custom', 'custom-anthropic'] as const) {
+      const r = await testKey(cfg({ provider, key: FAKE, model: 'm', baseUrl: '' }), fake(200, {}));
+      expect(r).toEqual({ ok: false, text: 'Add the site\'s address first.' });
+    }
+    const rel = await testKey(cfg({ provider: 'custom', key: FAKE, model: 'm', baseUrl: 'llm.example.com/v1' }), fake(200, {}));
+    expect(rel.ok).toBe(false);
+    expect(seen.length).toBe(0);
+  });
+});

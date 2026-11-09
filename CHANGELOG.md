@@ -8,6 +8,80 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.13.0 — 9 November 2026
+
+Branch `claude/awesome-babbage-8gngk8`: **UI pass, the shell** (Leon's playtest feedback; design `docs/design/ui-pass-shell.md`).
+
+- **One header for every screen:**
+  - Area map (key M) replaces the unused STORY | COMBAT toggle. During a fight, "Back to the fight ›" shows instead.
+  - A Narrator chip with a menu holds status, voice, cost and Retry.
+  - The room code takes you to the room.
+  - **Save** is one click.
+  - **⚙ Settings**, then Report.
+  - **Leave** asks first, and for the host it saves before leaving.
+  - On narrow windows the header wraps instead of pushing buttons off screen.
+- **The room's way back:** the greyed "In session" button is now **Return to the session ›**. Changing the API key shows "Saved", and a **Test key** button tells you whether it works.
+- **Echo has a home:** a labelled row on the character next to HP, with an explainer: what it does (reroll a d20), how you earn it, and where you spend it (story checks; not yet in a fight).
+- **Right column:** the mana forecast now shows outside fights too, then the minimap. Near you is capped with its own scrollbar. The **Quest board** is always open, grouped by area or by quest, and scrolls on its own. Pass / End turn are pinned at the bottom.
+- **⚙ Settings** has four tabs:
+  - **Audio:** separate combat and interface volumes. Combat sounds are loudness-normalised (guns about 5 dB louder) and a real limiter is added, so a gunshot now sits above a button click.
+  - **Voice:** moved out of the music panel, which is now music only.
+  - **Combat:** speed and cut-ins.
+  - **Display:** opacity and fading for the Music and Memory buttons, which are now small icons that no longer cover the combat log or End turn.
+- **In-game dialogs** replace every browser confirm, prompt and alert, which some antivirus software blocks. A test fails the build if one comes back.
+- **A guest who leaves mid-fight** no longer freezes it: the host gets "Pass <name>'s turn ›".
+- **Waiting on Leon:**
+  - should an away player's turns pass on their own after a delay;
+  - should the combat volume slider stop at 100% (above it guns barely get louder);
+  - Echo in a fight is not built yet (engine work).
+
+## 0.12.0 — 9 November 2026
+
+Branch `feature/title-glyph-ward`: **a real Sigil on the title screen** (Leon: delete the made-up glyph, place one of our real Sigils, it's so dull you can't see anything; keep the original).
+
+- **The glyph:** the mage now draws **WARD**, using the game's own glyph path (`GLYPH_PATHS.ward`), its class frame and the Sigil inks. It's drawn bright: a white core line in a cyan glow, with the frame dimmer as in play. A thin thread of light runs from his fingertips to the shield's point. It replaces the generated render's dim made-up teal ring.
+- **The original is kept** in `art/_archive/ui/title-screen/history/2026-11-09-r6-original-glyph/`, with how to restore it.
+- **Checked by two independent reviewers:** no trace of the old ring, the hand untouched, no fringe. Their three polish notes are fixed: the old stem's foot on the fingertips, the frame drawn too strong, nothing tying the glyph to the hand. `validate_art.py` passes, with menu contrast unchanged.
+
+## 0.11.2 — 9 November 2026
+
+Hotfix on `develop`, from Leon's test of 0.10.2 on his RDNA 4 desktop:
+- **The tick shows what's running.** When the GPU makes noise and the CPU takes over, **Render by CPU** is ticked and the GPU button reads "✕ Render by GPU · failed here" (press it to try the GPU again). It used to stay ticked on the GPU.
+- **Voice speed** in Settings › VOICE: 0.75–1.5× in steps of 0.05, saved, for Kokoro and the browser voice.
+- **The warm-up check says why it failed**: the sample rate, the length ("2.4× the expected length") or the shape (the score), and logs `[voice] warm-up check: …`. Leon's GPU scored 0.00, which means the length check rejected it before any shape was measured.
+
+## 0.11.1 — 9 November 2026
+
+Straight to `develop` (a deploy fix): **replaced title art shows at once**. Deploying 0.11.0, the live title still showed the old front layer. Its URL never changed, and the Worker's edge cache keeps an asset for a day.
+
+- **New addresses for new art:** the title layers' URLs now carry a content hash (`?v=<hash>`, written by `tools/build_web_assets.py`), and the Worker keys its cache on it. A replaced picture gets a new address; an unchanged one keeps its cache, now as immutable.
+- **Only the title layers:** other assets are unchanged, since portrait URLs are parsed and saved elsewhere.
+
+## 0.11.0 — 9 November 2026
+
+Branch `feature/title-front-r6`: **the title screen's front layer, Revision 6** (Leon: "first good one we got").
+
+- **The picture:** the five heroes stand small on the lip of a rock outcrop at the right, every face turned up at the god, which fills the sky above them.
+- **The gaze rule holds:** the render is placed at the screen's size, shifted 5% right into the overscan. There, every hero's sightline ends within 7–12° of the god's face. The check is saved as `art/_archive/ui/title-screen/previews/gaze-check.jpg`.
+- Rock mirrored into the overscan; near-opaque alpha made opaque; Revision 5 archived. `validate_art.py` passes, with menu contrast unchanged at 5.6:1.
+
+## 0.10.2 — 9 November 2026
+
+Hotfix on `develop`: **Render by GPU | Render by CPU** (Leon: let the player choose; an NVIDIA laptop runs the GPU voice well, his RDNA 4 desktop buzzes).
+- Settings › VOICE has two buttons, **Render by GPU** (the default) and **Render by CPU**. The choice is kept in the browser.
+- **Before the install** the choice sets what's downloaded (about 326 MB for the GPU, 92 MB for the CPU). **After it**, the voice reloads on the chosen device.
+- **Render by GPU** forgets a GPU remembered as noisy and tries it again. The speech check still guards it: if the GPU makes noise, the CPU reads, and the panel says why ("Your GPU was picked, but …").
+- They replace 0.10.1's "Sounds wrong? Use the CPU" and "Try the GPU again" buttons. `voice.mjs` covers both choices before and after the install.
+
+## 0.10.1 — 9 November 2026
+
+Hotfix on `develop`: **the Narrator's voice made muffled buzzing on Leon's GPU** (Kokoro on WebGPU, AMD RDNA 4 with shader-f16).
+- **The warm-up now checks Kokoro sounds like speech**, not just that it isn't silent: "Ready." in af_heart is compared with a fingerprint of the fp32 model on the CPU (`apps/web/src/game/voiceCheck.ts`; the reference is made by `tools/voice_reference.mjs`). Real speech scores 0.94–0.99 and speech-shaped noise or buzz 0.38–0.84. Under 0.88 the GPU plan fails and the CPU reads.
+- **A GPU that made noise is remembered** per adapter and skipped next time.
+- **fp16 on WebGPU is no longer tried**, and fp16 weights left in the cache are no longer preferred. It's the usual cause of this noise.
+- **Settings › VOICE** shows the weights (fp32) and the check's score, with **Sounds wrong? Use the CPU** and **Try the GPU again**.
+- Tests: `voiceCheck.test.ts` (the real q8 model passes; muffled noise, buzz, white noise, silence, a wrong rate and a wrong length fail), and `voice.mjs` covers the noise fallback and both buttons.
+
 ## 0.10.0 — 9 November 2026
 
 Branch `claude/awesome-babbage-8gngk8`: **spotlight cut-ins** (decision 113; `docs/design/cutin-spec.md`).

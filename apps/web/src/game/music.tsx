@@ -6,10 +6,11 @@
 import React from 'react';
 import { musicFor, musicTraitOf, songOf, trackKey, type GameState } from '@engine';
 import { act, toast } from './store';
-import { uiPrefs, onUiPrefs } from './sfx';
+import { musicLevel, onUiPrefs, uiPrefs, setUiPrefs } from './sfx';
 import { ostPlay, ostVolume, ostPause, ostResume, ostRunning, ostPreload } from './ost';
 import { onVoice, voiceState } from './voice';
-import { VoiceSettings } from './voiceSettings';
+import { openSettings } from './settings';
+import { useFloatStyle } from './floaters';
 import { COMBAT_IN_MS, usePresence, presenceCls } from './presence';
 
 declare global { interface Window { YT?: any; onYouTubeIframeAPIReady?: () => void } }
@@ -30,7 +31,7 @@ const prefs = (): { paused: boolean; vol: number } => { try { return { paused: f
 const savePrefs = (p: { paused: boolean; vol: number }) => localStorage.setItem(LS, JSON.stringify(p));
 const FADE_MS = 1200;
 /** The level for a panel volume (0 to 100): times Settings' music volume, silent when muted. */
-const level = (vol: number) => { const u = uiPrefs(); return u.mute ? 0 : Math.round(vol * (u.music ?? 70) / 100); };
+const level = (vol: number) => Math.round(vol * musicLevel());
 
 type Want = ReturnType<typeof musicFor>;
 
@@ -193,9 +194,16 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   React.useEffect(() => applyLevel(FADE_MS), [ducked]);
   // Settings' music volume and mute apply at once.
   React.useEffect(() => onUiPrefs(() => applyLevel()), []);
+  // The floating button: see-through at rest, solid when the pointer is near or the panel is open (UI pass 7).
+  const btnRef = React.useRef<HTMLButtonElement>(null), [hover, setHover] = React.useState(false);
+  const floatStyle = useFloatStyle(btnRef, open);
   if (!game || game.phase === 'lobby') return null;
   const track = want?.track || null;
-  const side = game.phase === 'combat' ? 'left' : 'right';
+  // Bottom left on every screen (on the right it covered End turn), as its icon only: the title in its tooltip and on
+  // hover, so it keeps off the combat log, the sheet's skill rows and the room's text (review of the UI pass). Only a
+  // blocked start keeps its words: it is the one time the button asks for a click.
+  const side = 'left', iconOnly = !blocked && !hover && !open;
+  const btnText = blocked ? 'Click to start the music' : p.paused ? 'Music paused' : track ? track.title : 'No music';
   const mine = Object.values(game.characters).filter((c) => c.owner === meId && !c.dead && musicTraitOf(c) && songOf(c));
   const btn: React.CSSProperties = { minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid #2E3A50', background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer' };
   const label: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: '#A3AEC2' };
@@ -222,9 +230,10 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
             {track?.yt && <a href={'https://www.youtube.com/watch?v=' + track.yt} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#7FD4FF' }}>Open on YouTube ↗</a>}
           </div>
           <div style={{ fontSize: 11, color: '#A3AEC2' }}>Pause and volume are yours only: the room's music goes on, and song bonuses still count.</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8, borderTop: '1px solid #232D3F' }}>
-            <div style={label}>VOICE</div>
-            <VoiceSettings compact />
+          {/* Music only (Leon, UI pass): the Narrator's voice lives in Settings › Voice. */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 8, borderTop: '1px solid #232D3F' }}>
+            <span style={{ fontSize: 11, color: '#A3AEC2' }}>The Narrator's voice and the sound mix are in Settings.</span>
+            <button type="button" style={{ ...btn, marginLeft: 'auto', minHeight: 30 }} onClick={() => { setOpen(false); openSettings('voice'); }}>Voice settings ⚙</button>
           </div>
           {mine.map((c) => {
             const isMine = now?.charId === c.id;
@@ -239,10 +248,11 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
             );
           })}
       </div>
-      <button onClick={() => { setOpen(!open); if (blocked) setPrefs({ paused: false }); }} aria-expanded={open} aria-label={'Music: ' + (track ? track.title + ' by ' + track.artist : 'nothing playing')}
-        style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 9, maxWidth: 300, minHeight: 40, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}>
+      <button ref={btnRef} data-phc-float="music" onClick={() => { setOpen(!open); if (blocked) setPrefs({ paused: false }); }} aria-expanded={open} aria-label={'Music: ' + (track ? track.title + ' by ' + track.artist : 'nothing playing')}
+        title={iconOnly ? btnText : undefined} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
+        style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 9, maxWidth: 300, minHeight: 40, minWidth: 40, padding: iconOnly ? 0 : '0 14px', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
         <span aria-hidden style={{ fontSize: 16, color: hostCol || '#FFFFFF' }}>♪</span>
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{blocked ? 'Click to start the music' : p.paused ? 'Music paused' : track ? track.title : 'No music'}</span>
+        {!iconOnly && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{btnText}</span>}
       </button>
       {creditP.shown && (
         <div role="status" className={presenceCls(side === 'left' ? 'phc-a-left' : 'phc-a-right', creditP.closing)} style={{ position: 'fixed', [side]: 16, bottom: 112, zIndex: 9, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + creditP.shown.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>

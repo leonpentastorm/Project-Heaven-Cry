@@ -1,6 +1,8 @@
 // The Memory menu (spec: The Narrator's memory, editing by hand): the host reads and fixes everything the Narrator
 // remembers. Built to serve the human Narrator later as their memory aid. Every change is an engine action.
 import React from 'react';
+import { askConfirm } from './dialog';
+import { useFloatStyle } from './floaters';
 import type { GameState, MemEdit } from '@engine';
 import { act } from './store';
 import { usePresence, presenceCls } from './presence';
@@ -27,7 +29,7 @@ function Record({ head, sub, body, fields, values, onSave, onRemove }: {
         {sub && <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: ink.muted }}>{sub}</span>}
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
           <button type="button" style={btn} onClick={() => setOpen(!open)}>{open ? 'Cancel' : 'Edit'}</button>
-          {onRemove && <button type="button" style={{ ...btn, color: ink.red, borderColor: '#5A2A30' }} onClick={() => { if (confirm('Delete "' + head + '" from the Narrator\'s memory?')) onRemove(); }}>Delete</button>}
+          {onRemove && <button type="button" style={{ ...btn, color: ink.red, borderColor: '#5A2A30' }} onClick={() => { askConfirm({ title: 'Delete "' + head + '"?', body: 'The Narrator forgets it from its next turn.', confirm: 'Delete', danger: true }).then((ok) => { if (ok) onRemove(); }); }}>Delete</button>}
         </span>
       </div>
       {!open && body && <span style={{ fontSize: 13, lineHeight: 1.5, color: '#C9D3E3', whiteSpace: 'pre-wrap' }}>{body}</span>}
@@ -50,9 +52,18 @@ function Record({ head, sub, body, fields, values, onSave, onRemove }: {
   );
 }
 
-export function MemoryPanel({ game, isHost, side }: { game: GameState | null; isHost: boolean; side: 'left' | 'right' }) {
+// Open from anywhere (the Narrator chip's menu in the header): the same dialog as the floating button.
+let openFromAfar: (() => void) | null = null;
+export const openMemory = () => openFromAfar?.();
+
+/** compact: the button is its icon only, beside the ♪ button (every screen since the UI pass review), so it keeps off
+ *  the combat log and the sheet; its name shows on hover. */
+export function MemoryPanel({ game, isHost, side, compact = false }: { game: GameState | null; isHost: boolean; side: 'left' | 'right'; compact?: boolean }) {
+  const btnRef = React.useRef<HTMLButtonElement>(null), [hover, setHover] = React.useState(false);
   const [open, setOpen] = React.useState(false), [tab, setTab] = React.useState<Tab>('story'), [q, setQ] = React.useState(''), [adding, setAdding] = React.useState('');
   const pres = usePresence(open); // fades in with the card popping up; out the same way
+  const floatStyle = useFloatStyle(btnRef, open);
+  React.useEffect(() => { openFromAfar = () => setOpen(true); return () => { openFromAfar = null; }; }, []);
   if (!isHost || !game || game.phase === 'lobby') return null;
   const m = game.memory || { people: [], threads: [], facts: [], factions: [], scenes: [], chapters: [], saga: '', pins: [] } as any;
   const match = (s: string) => !q || s.toLowerCase().includes(q.toLowerCase());
@@ -60,8 +71,10 @@ export function MemoryPanel({ game, isHost, side }: { game: GameState | null; is
   const add = (kind: string, patch: Record<string, any>) => { edit({ kind, patch } as MemEdit); setAdding(''); };
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" style={{ position: 'fixed', [side]: 16, bottom: 64, zIndex: 9, minHeight: 40, padding: '0 14px', borderRadius: 999, border: '1px solid #3B475D', background: ink.panel, color: ink.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}>
-        ◈ Memory
+      <button ref={btnRef} type="button" data-phc-float="memory" onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" title={compact && !hover ? 'The Narrator\'s memory' : undefined}
+        onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
+        style={{ position: 'fixed', [side]: compact ? 64 : 16, bottom: compact ? 16 : 64, zIndex: 9, minHeight: 40, minWidth: 40, padding: compact && !hover ? 0 : '0 14px', borderRadius: 999, border: '1px solid #3B475D', background: ink.panel, color: ink.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
+        {compact && !hover ? '◈' : '◈ Memory'}
       </button>
       {pres.shown && (
         <div role="dialog" aria-modal="true" aria-label="The Narrator's memory" className={presenceCls('phc-a-fade', pres.closing)} style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(5, 7, 11, 0.88)', display: 'grid', placeItems: 'center', padding: 16 }}>

@@ -5,7 +5,7 @@
 // player joins for a team fight (Team A against Team B) fought until one side wins, then the host leaves and the
 // guest sees "The host closed the Proving Ground." on the title. No Narrator, ever.
 // Screenshots land in e2e/shots/sandbox-mp-*.png.
-import { chromium, player, click, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, autoConfirm } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -14,7 +14,7 @@ const G = (p) => p.evaluate(() => window.__phc.getState().game);
 const screen = (p) => p.evaluate(() => window.__phc.getState().screen);
 const act = (p, a) => p.evaluate((a) => window.__phc.act(a), a);
 const until = (p, f, arg, t = 15000) => p.waitForFunction(f, arg, { timeout: t });
-for (const p of [host, mai]) p.on('dialog', (d) => d.accept());
+for (const p of [host, mai]) await autoConfirm(p); // Leave and Remove ask in the game's own dialog
 const PROVIDERS = /api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com|openrouter\.ai|localhost:11434/;
 const calls = [];
 const watch = (p) => p.on('request', (r) => { if (PROVIDERS.test(r.url())) calls.push(r.url()); });
@@ -147,7 +147,7 @@ ok('the guest is on the title; their fighter is gone from the host\'s game', !Ob
 await snap(mai, '06-guest-left');
 
 // 7. PvP: a third player joins; the host switches to Team fight; Team A against Team B until one side wins
-const ona = await player(browser, 'ona'); ona.on('dialog', (d) => d.accept()); watch(ona);
+const ona = await player(browser, 'ona'); await autoConfirm(ona); watch(ona);
 await act(host, { type: 'sandbox/stop' });
 await until(host, () => window.__phc.getState().game.phase === 'story');
 await ona.goto(BASE + '/?room=' + code);

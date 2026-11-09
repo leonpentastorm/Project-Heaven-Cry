@@ -25,7 +25,11 @@ import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK }
 import { glyphKeyNav } from '../game/glyphKeys';
 import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer, wordMasteryChips, readableAt, traceMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
-import { missionsButton } from '../game/missionView';
+import { questGroups } from '../game/missionView';
+import { echoView, echoMax } from '../game/echoView';
+import { storyForecastVals } from '../game/manaForecast';
+import { askConfirm, askText } from '../game/dialog';
+import { shellVals, narratorVals } from './shell';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
@@ -38,6 +42,22 @@ const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) =
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
 // Main-screen extras: the dice verdict lands after the die does; the area map's planning marks breathe a little.
 ensureStyle('phc-resources', RES_CSS);
+// The UI pass (docs/design/ui-pass-shell.md 3, 4): Echo's flare when one is gained or spent, a new quest row's white
+// flash, and the minimap kept short enough that the quest board keeps its room on a short window.
+ensureStyle('phc-play-pass', '@keyframes phcEchoGain{0%{transform:rotate(45deg) scale(.4);box-shadow:0 0 0 0 #FFFFFF}45%{transform:rotate(45deg) scale(1.5);box-shadow:0 0 14px 4px #FFFFFF}100%{transform:rotate(45deg) scale(1)}}'
+  + '@keyframes phcEchoSpend{0%{transform:rotate(45deg) scale(1.4);background:#FFFFFF;box-shadow:0 0 12px 3px #FFFFFF}100%{transform:rotate(45deg) scale(1)}}'
+  + '.phc-echo-gain{animation:phcEchoGain .9s ease-out both}.phc-echo-spend{animation:phcEchoSpend .9s ease-out both}'
+  + '@keyframes phcEchoRow{0%,100%{background:transparent}30%{background:rgba(255,255,255,.14)}}[data-phc-echo].phc-echo-row-flare{animation:phcEchoRow 1.1s ease-out}'
+  + '@keyframes phcQNew{0%{background:rgba(255,255,255,.22)}100%{background:transparent}}.phc-q-new{animation:phcQNew 1.6s ease-out}'
+  + '[data-phc-echo]:hover,[data-phc-echo]:focus-visible{background:rgba(255,255,255,.06)!important}'
+  + '@media (max-height:760px){.phc-right-col .phc-mini-box{display:none!important}}'
+  + '@media (prefers-reduced-motion:reduce){.phc-echo-gain,.phc-echo-spend,.phc-q-new,[data-phc-echo].phc-echo-row-flare{animation:none}}');
+/** The quest board's fold (per group) and grouping, remembered on this computer. */
+const QFOLD = 'phc.questFold';
+const readFold = () => { try { return JSON.parse(localStorage.getItem(QFOLD) || '{}') || {}; } catch { return {}; } };
+// Quest rows seen, per room and grouping (a new one flashes white once; the first render of a room, or of a grouping,
+// only learns what is there, so entering a second room never flashes its whole board).
+const QSEEN = new Map();
 ensureStyle('phc-main-motion', '.phc-dice-verdict{animation:phcMRise .3s ease-out .75s both}'
   + '@keyframes phcPlanPulse{0%,100%{opacity:.75}50%{opacity:1}}.phc-plan-target{animation:phcPlanPulse 1.4s ease-in-out infinite}'
   + '.phc-rm .phc-die{animation:phcMFadeIn .2s ease-out both!important}.phc-rm .phc-dice-verdict{animation:phcMFadeIn .15s ease-out .2s both}.phc-rm .phc-plan-target{animation:none}');
@@ -153,7 +173,7 @@ function magicVals(self, g, c) {
       mods: d.modules.map((x) => ({ key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: MODULE[x]?.text || '', style: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + epRgba(SOUL_VIOLET, 0.6) + '; color: ' + SOUL_VIOLET })),
       hasMods: d.modules.length > 0, line: cost + ' MP · ' + designAp(m, d) + ' AP · ' + reachWords(m, d), held, heldText: held ? 'HELD · STAGE ' + N.held.stage : '', heart: heartUri(held ? N.held.stage : 1),
       edit: () => self.setState({ mgDraft: { id: d.id, name: d.name, school: d.school, school2: d.school2 || '', modules: [...d.modules], option: d.option || '', option2: d.option2 || '', tone: d.tone || 'raw' }, mgSaved: null }),
-      forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); if (window.confirm('Forget the design ' + d.name + '? You can design it again later.')) act({ type: 'magic/forget', charId: c.id, designId: d.id }); },
+      forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); askConfirm({ title: 'Forget the design ' + d.name + '?', body: 'You can design it again later.', confirm: 'Forget it', danger: true }).then((ok) => { if (ok) act({ type: 'magic/forget', charId: c.id, designId: d.id }); }); },
       locked: fight, noForget: fight || held, forgetTitle: held ? 'You are holding it: release it first.' : fight ? 'After the fight.' : 'Forget this design to make room.',
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (held ? SOUL_VIOLET : '#232D3F') + '; border-left: 3px solid ' + SOUL_VIOLET }; });
   const soulStats = [['Emanator', handWord(emaAt)], ['Strain now', N.strain + ' / ' + strainLimit(c) + ' (the limit; past it, a Mana Short)'], ['Ready designs', designs.length + ' / ' + readyDesigns(c)], ['Module slots', String(moduleSlots(c))],
@@ -279,9 +299,16 @@ export class MainLogic extends DCLogic {
     this.state = { tab: 'skills', core: 'body', sel: null, draft: '', rawDraft: '', polished: false, polishing: false, pickRoll: false, dice: null, custom: false, area: false, table: pref('table', 'felt'), skin: pref('skin', 'ivory') };
   }
 
+  /** The area map: open it (the header's Area map button, the M key), or close it if it is open. A key press never
+   *  opens it over another dialog. */
+  toggleArea(fromButton) {
+    if (this.state.area) { if (!fromButton) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); return; }
+    if (!fromButton && typeof document !== 'undefined' && document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+    this.setState({ area: true, shNarr: false });
+  }
   renderVals() {
     const S = this.state, st = getState(), g = st.game, me = st.me.id, isHost = st.role === 'host';
-    if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], echoPips: [], pc: {} };
+    if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], barsA: [], barsB: [], echoV: { has: false, pips: [], sections: [] }, qb: { has: false, groups: [] }, sfc: { has: false, gauge: [], effects: [], movers: [] }, pc: {} };
     const mine = Object.values(g.characters).filter((c) => c.owner === me);
     const c = mine.find((x) => x.id === S.sel) || mine[0] || null;
     const P = (id) => (c ? c.skills[id] || 0 : 0), A = (id) => (c ? c.attrs[id] || 1 : 1);
@@ -290,11 +317,30 @@ export class MainLogic extends DCLogic {
 
     // ---------- the sheet ----------
     const echo = c ? c.echo : 0;
-    const echoPips = [0, 1, 2].map((i) => ({ style: 'width: 12px; height: 12px; transform: rotate(45deg); box-sizing: border-box; ' + (i < echo ? 'background: #FFFFFF' : 'border: 1px solid #FFFFFF') }));
+    // Echo's row (UI pass 4): a change flares the diamond for a moment, and a gain says where it came from.
+    // Only a real change counts: every one of your characters is tracked each render (switching the sheet to another
+    // character is not a gain), a rewind (a reroll vote: the story got shorter) is not a gain, and the reason is read
+    // only from story entries that arrived since the last render (review of the UI pass).
+    const eKey = c ? c.id : '', was = (this._echoWas || {})[eKey];
+    const ents = g.story.entries || [], lastSeenId = this._entLast, rewound = this._entN != null && ents.length < this._entN;
+    if (c && was != null && was !== echo && !rewound) {
+      this._echoFx = { id: eKey, dir: echo > was ? 'up' : 'down', at: Date.now() };
+      if (echo > was) {
+        const at = lastSeenId ? ents.findIndex((e) => e.id === lastSeenId) : -1, from = at >= 0 ? at + 1 : Math.max(0, ents.length - 1);
+        const why = ents.slice(from).reverse().find((e) => e.charId === c.id && /\+1 ECHO/.test(e.head || '')), sk = why ? why.head.split(' · ')[0].toLowerCase().replace(/^./, (x) => x.toUpperCase()) : '';
+        setTimeout(() => toast('◆ +' + (echo - was) + ' ECHO · ' + (sk ? 'you indulged ' + sk : c.name + ' now holds ' + echo + ' / ' + echoMax()), true), 0);
+      }
+    }
+    this._echoWas = Object.fromEntries(Object.values(g.characters).filter((x) => x.owner === me).map((x) => [x.id, x.echo]));
+    this._entN = ents.length; this._entLast = ents.length ? ents[ents.length - 1].id : null;
+    const eFx = this._echoFx && this._echoFx.id === eKey && Date.now() - this._echoFx.at < 1400 ? this._echoFx.dir : '';
+    const echoV = c ? { ...echoView(echo, eFx), open: !!S.echoOpen, expanded: S.echoOpen ? 'true' : 'false', glyph: S.echoOpen ? '×' : '?', cls: eFx ? 'phc-echo-row-flare' : '',
+      toggle: () => this.setState({ echoOpen: !this.state.echoOpen }) } : { has: false, pips: [], sections: [] };
     const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && carriesEmanator(c), emaHeld = !!c && hasEmanator(c), next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
     const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), c.hp + ' / ' + hpMax], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax + (emaHeld ? '' : ' · in the pack') : 'no Emanator'],
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
       .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
+    const barsA = bars.filter((b) => b.label !== 'XP'), barsB = bars.filter((b) => b.label === 'XP');
     const TAB_IDS = ['skills', 'status', 'perks', 'gear', 'magic', 'faith'], tabDir = (to, from) => (TAB_IDS.indexOf(to) < TAB_IDS.indexOf(from) ? 'l' : 'r');
     const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR'], ['magic', 'MAGIC'], ['faith', 'FAITH']].map(([id, label]) => ({ label, pick: () => { if (this.state.tab !== id) this.setState({ tab: id, tabDir: tabDir(id, this.state.tab), tip: null, gearMenu: null }); }, selected: S.tab === id ? 'true' : 'false',
       style: 'flex: 1 1 auto; min-height: 38px; padding: 0 4px; border-radius: 8px; font-family: inherit; font-size: 10.5px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
@@ -510,14 +556,17 @@ export class MainLogic extends DCLogic {
       if (e.kind === 'narration') {
         // Rerolls and edits (spec: Rerolls and edits): players suggest, the host starts a vote, everyone must agree.
         const V = g.votes || { turns: [], open: null }, canReroll = V.turns.includes(e.id) && !e.rerolled, busyVote = !!(V.open && V.open.status === 'open');
-        const ask = (kind) => { const note = window.prompt(kind === 'reroll' ? 'What should the Narrator do differently? (optional)' : 'How should it be reworded? Only the words change, never what happened.', ''); if (note === null) return null; return note; };
+        const ask = (kind, then) => askText({ title: kind === 'reroll' ? (isHost ? 'Vote to reroll' : 'Suggest a reroll') : (isHost ? 'Vote to reword' : 'Suggest rewording'),
+          body: kind === 'reroll' ? 'What should the Narrator do differently? Everyone must agree before the turn is undone.' : 'How should it be reworded? Only the words change, never what happened.',
+          placeholder: kind === 'reroll' ? 'Optional: a note for the Narrator' : 'Optional: what to change', multiline: true, optional: true, maxLength: 400,
+          confirm: isHost ? 'Start the vote' : 'Suggest it' }).then((note) => { if (note !== null) then(note); });
         const undoText = () => { const i = g.story.entries.findIndex((x) => x.id === e.id), after = g.story.entries.slice(i + 1); const pl = after.filter((x) => x.kind === 'player').length, ck = after.filter((x) => x.kind === 'check').length, fights = after.filter((x) => x.kind === 'combat' && /^Combat: /.test(x.text)).map((x) => x.text.replace(/^Combat: /, ''));
           return [pl ? pl + (pl === 1 ? ' player action' : ' player actions') : '', ck ? ck + (ck === 1 ? ' roll' : ' rolls') : '', fights.length ? 'the fight ' + fights.join(', ') : ''].filter(Boolean).join(', ') || 'nothing after it'; };
         const voteActs = e.rerolled || !c ? [] : isHost
-          ? [...(canReroll ? [{ key: 'r', label: '⟲ Vote to reroll', title: 'Everyone must agree. Undoes this turn and everything after it.', go: () => { if (busyVote) return toast('A vote is already under way.'); const n = ask('reroll'); if (n !== null) act({ type: 'vote/start', kind: 'reroll', entryId: e.id, note: n, undo: undoText() }); } }] : []),
-             { key: 'e', label: '✎ Vote to reword', title: 'Everyone must agree. Only the words change.', go: () => { if (busyVote) return toast('A vote is already under way.'); const n = ask('edit'); if (n !== null) act({ type: 'vote/start', kind: 'edit', entryId: e.id, note: n }); } }]
-          : [...(canReroll ? [{ key: 'r', label: '⟲ Suggest reroll', title: 'The host can put it to a vote.', go: () => { const n = ask('reroll'); if (n !== null) { act({ type: 'vote/suggest', kind: 'reroll', entryId: e.id, note: n }); toast('Suggested to the host.', true); } } }] : []),
-             { key: 'e', label: '✎ Suggest rewording', title: 'The host can put it to a vote.', go: () => { const n = ask('edit'); if (n !== null) { act({ type: 'vote/suggest', kind: 'edit', entryId: e.id, note: n }); toast('Suggested to the host.', true); } } }];
+          ? [...(canReroll ? [{ key: 'r', label: '⟲ Vote to reroll', title: 'Everyone must agree. Undoes this turn and everything after it.', go: () => { if (busyVote) return toast('A vote is already under way.'); ask('reroll', (n) => act({ type: 'vote/start', kind: 'reroll', entryId: e.id, note: n, undo: undoText() })); } }] : []),
+             { key: 'e', label: '✎ Vote to reword', title: 'Everyone must agree. Only the words change.', go: () => { if (busyVote) return toast('A vote is already under way.'); ask('edit', (n) => act({ type: 'vote/start', kind: 'edit', entryId: e.id, note: n })); } }]
+          : [...(canReroll ? [{ key: 'r', label: '⟲ Suggest reroll', title: 'The host can put it to a vote.', go: () => ask('reroll', (n) => { act({ type: 'vote/suggest', kind: 'reroll', entryId: e.id, note: n }); toast('Suggested to the host.', true); }) }] : []),
+             { key: 'e', label: '✎ Suggest rewording', title: 'The host can put it to a vote.', go: () => ask('edit', (n) => { act({ type: 'vote/suggest', kind: 'edit', entryId: e.id, note: n }); toast('Suggested to the host.', true); }) }];
         return { ...base, ...readFor(e), isNarration: true, paras: e.text.split(/\n\s*\n/).map((t) => ({ text: t.trim() })).filter((x) => x.text),
           wrapStyle: 'display: flex; flex-direction: column; gap: 12px' + (e.rerolled ? '; opacity: 0.45' : ''), pStyle: "margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.7; color: #DCE2EC" + (e.rerolled ? '; text-decoration: line-through' : ''),
           hasTag: !!(e.rerolled || e.original), tag: e.rerolled ? 'REROLLED BY VOTE' : '✎ REWORDED BY VOTE', tagStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2',
@@ -1225,17 +1274,14 @@ export class MainLogic extends DCLogic {
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
     return {
-      ...epccgVals(this), ...lightboxVals(this), code: g.code, roomText: 'ROOM ' + g.code + (SB ? '' : ' · '), withNarrator: !SB, report: openReport, spend: openSpend, costText: (u.calls ? '$' + u.costUsd.toFixed(2) + ' · ' + u.calls + ' Narrator turn' + (u.calls === 1 ? '' : 's') : 'no Narrator turns yet'),
-      toRoom: () => go('room'), isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save', toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
-      // The voice chip: who reads the Narrator here (spec: The Narrator's voice), always in words.
-      ...(() => { const VS2 = voiceState(), txt = voiceChip(VS2, voicePrefs()), live = /Loading|Installing/.test(txt), kok = /Kokoro/.test(txt);
-        return { voiceChip: txt, voiceChipTitle: VS2.status === 'ready' ? 'Kokoro on ' + (VS2.device === 'webgpu' ? 'WebGPU · ' + VS2.gpu : 'the CPU' + (VS2.fellBack ? ' (WebGPU failed: ' + VS2.fellBack + ')' : '')) + ' · ' + VS2.dtype : VS2.status === 'failed' ? 'Kokoro failed: ' + VS2.error : 'Settings › Voice: install Kokoro, or pick a voice',
-          voiceChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; white-space: nowrap; border: 1px ' + (live ? 'dashed #FFFFFF; color: #FFFFFF' : kok ? 'solid #2E3A50; color: #E7EBF3' : 'solid #232D3F; color: #A3AEC2') }; })(),
-      narrChip: SB ? 'PROVING GROUND · ' + g.players.length + (g.players.length === 1 ? ' PLAYER' : ' PLAYERS') : 'AI NARRATOR · ' + (busy ? 'THINKING…' : err ? 'STUCK' : isHost ? 'YOUR KEY' : host.name.toUpperCase() + '’S KEY'),
-      narrChipStyle: 'padding: 6px 12px; border-radius: 999px; border: 1px solid ' + (err ? '#F65157' : '#232D3F') + '; font-size: 12px; color: ' + (err ? '#F65157' : busy ? '#FFFFFF' : '#A3AEC2'),
-      narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'), retry: () => (isHost ? retryNarrator() : toast('Only the host can retry the Narrator.')), retryLabel: isHost ? 'Retry' : 'Host retries',
+      ...epccgVals(this), ...lightboxVals(this), code: g.code, withNarrator: !SB, report: openReport,
+      // The header (UI pass): the shell's cluster (room, Save, ⚙, ⚑, Leave), the Narrator chip and its menu, and the
+      // Area map / Back to the fight button (screens/shell.js).
+      ...shellVals(this, 'main'), ...narratorVals(this, g, { openArea: () => this.toggleArea(true) }),
+      isHost, toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
+      narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'),
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
-      echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
+      echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
@@ -1275,9 +1321,30 @@ export class MainLogic extends DCLogic {
       oocStyle: 'min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; cursor: pointer; ' + (S.ooc ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2'),
       inputOff: cantSpeak && !(S.ooc && c && g.phase !== 'lobby'), sendLabel: S.ooc ? 'Ask OOC' : 'Send',
       inputHolder: S.ooc ? 'Ask the Narrator out of character (doesn\'t use your turn)…' : cantSpeak ? why : 'Say or do something… (' + (c ? c.name : '') + ')',
-      // The mission board (missionBoard.tsx): the header button, with the count of open objectives.
-      ...(() => { const mb = missionsButton(g); return { hasMissions: !!mb, missionsLabel: mb ? mb.label : '', missionsTitle: mb ? mb.title : '', openMissions: () => openMissionBoard(),
-        missionsStyle: 'min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid ' + (mb && mb.count ? '#FFFFFF' : '#2E3A50') + '; background: transparent; color: ' + (mb && mb.count ? '#FFFFFF' : '#A3AEC2') + '; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer' }; })(),
+      // The quest board (UI pass 3.3): always open in the right column, grouped by Area or by Quest, each group foldable
+      // (remembered), its own scrollbar; the old board stays one click away as Full board ⤢ (missionBoard.tsx).
+      qb: (() => { const by = (S.qGroup || pref('questGroup', 'area')) === 'quest' ? 'quest' : 'area';
+        const Q = questGroups(g, by), fold = { ...readFold(), ...(S.qFold || {}) };
+        const setBy = (v) => { savePref('questGroup', v); this.setState({ qGroup: v }); };
+        const tog = (on) => 'min-height: 24px; padding: 0 7px; border: 0; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; ' + (on ? 'background: #E7EBF3; color: #0A0D13' : 'background: transparent; color: #A3AEC2');
+        const qk = (g.code || '') + '|' + by, fresh = !QSEEN.has(qk); if (fresh) QSEEN.set(qk, new Set()); const seen = QSEEN.get(qk);
+        const groups = Q.groups.map((gr) => { const f = fold[by + ':' + gr.key] ?? gr.folded;
+          return { key: gr.key, title: gr.title, label: gr.title + ' · ' + gr.count, sub: gr.sub, hasSub: !!gr.sub && !f, count: gr.count, open: !f, expanded: f ? 'false' : 'true', glyph: f ? '▸' : '▾',
+            ink: gr.key === 'here' ? '#FFFFFF' : gr.key === 'failed' ? '#F65157' : gr.key === 'done' || gr.key === 'past' ? '#A3AEC2' : '#E7EBF3',
+            toggle: () => { const nf = { ...readFold(), [by + ':' + gr.key]: !f }; try { localStorage.setItem(QFOLD, JSON.stringify(nf)); } catch { /* */ } this.setState({ qFold: nf }); },
+            rows: gr.rows.map((r) => { const isNew = !fresh && !seen.has(r.key) && r.status === 'open'; seen.add(r.key);
+              return { ...r, cls: isNew ? 'phc-q-new' : '', hasMission: !!r.mission, hereTag: by === 'quest' && r.here, hasDetail: !!r.detail && r.status === 'open',
+                hasWhere: !!r.where, whereText: r.markers.length ? (r.here ? '' : r.where.replace(/◆.*$/, '')) : r.where,
+                markers: r.markers.map((m) => ({ ref: m.ref, go: () => this.setState({ area: true, hoverTile: m.tile }) })),
+                steps: r.steps.map((t, i) => ({ key: r.key + i, text: t })),
+                markStyle: 'font-size: 13px; font-weight: 700; color: ' + (r.status === 'done' ? '#6FEA77' : r.status === 'failed' ? '#F65157' : '#FFFFFF'),
+                textStyle: 'font-size: 13px; line-height: 1.35; font-weight: ' + (r.status === 'open' ? 700 : 400) + '; color: ' + (r.status === 'open' ? '#E7EBF3' : '#A3AEC2') + (r.status === 'failed' ? '; text-decoration: line-through' : '') }; }) }; });
+        return { has: Q.has, countText: Q.complete ? '· DONE' : '· ' + Q.open, countTitle: Q.complete ? 'The campaign is complete' : Q.open + ' open objective' + (Q.open === 1 ? '' : 's') + ' and side jobs', groups, empty: !groups.length,
+          hasStatus: Q.choosing || Q.complete, status: Q.complete ? 'The campaign is complete.' : 'What comes next is still open: the story decides.',
+          byArea: () => setBy('area'), byQuest: () => setBy('quest'), areaPressed: by === 'area' ? 'true' : 'false', questPressed: by === 'quest' ? 'true' : 'false',
+          areaStyle: tog(by === 'area'), questStyle: tog(by === 'quest'), full: () => openMissionBoard() }; })(),
+      // The mana forecast outside fights (UI pass 5): the fight's panel, fed by the story's meter, round and zone.
+      sfc: storyForecastVals(g, !!S.fcOpen, () => this.setState({ fcOpen: !this.state.fcOpen })),
       // The Perks strip (plan 3): story uses of perks, traits and class moves. Every input is a button: an action that
       // needs a pick (chips, a squadmate, someone on the map, a design) or words opens its own panel under the strip.
       // Never the Say box, never a shared detail field. The Proving Ground runs these as area-map actions.
@@ -1290,13 +1357,14 @@ export class MainLogic extends DCLogic {
       pass: () => act({ type: 'story/pass' }),
       endTurn: () => { if (c) act({ type: 'world/act', charId: c.id, act: 'end' }); if (this.state.area) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); else this.setState({ wTarget: null }); },
       cantEnd: !c || c.dead || g.phase !== 'story' || g.story.await !== 'players' || !!(g.story.ended || {})[c.id],
-      apText: c && g.phase === 'story' ? 'AP ' + apLeft(g, c) + ' / ' + ROUND_AP : '',
+      apText: c && g.phase === 'story' ? 'AP ' + apLeft(g, c) + ' / ' + ROUND_AP : '', apSub: SB ? 'a full turn on the area map' : 'one Say and a full turn of AP',
       skipRest: () => waitingOn.forEach((p) => act({ type: 'story/skip', playerId: p.id })), cantSkip: !isHost || g.story.await !== 'players' || !waitingOn.length,
       pickRoll: S.pickRoll, togglePick: () => this.setState({ pickRoll: !S.pickRoll }),
-      zoneLabel: 'ZONE · ' + map.name.toUpperCase(), zoneAria: inFight ? 'Open the combat zone' : 'Combat zone',
+      zoneLabel: 'ZONE · ' + map.name.toUpperCase(), zoneShort: map.name.toUpperCase(), hasZoneNote: inFight || !!cb, zoneAria: inFight ? 'Open the combat zone' : 'Combat zone',
       zoneStyle: 'display: block; width: 100%; box-sizing: border-box; padding: 6px; border-radius: 10px; background: #05070B; border: 1px solid ' + (inFight ? '#F65157' : '#232D3F'),
-      miniGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 1px',
-      objPanelOpen: !!objPanel, objPanel: objPanel || { approaches: [] }, nearby: nearAll, hasNearby: nearAll.length > 0,
+      // Kept short (UI pass 3.2): its height is capped by the window's, so the quest board below keeps its room.
+      miniGrid: 'display: grid; grid-template-columns: repeat(' + map.w + ', minmax(0, 1fr)); gap: 1px; margin: 0 auto; width: min(100%, calc(clamp(96px, 16vh, 200px) * ' + (map.w / map.h).toFixed(3) + '))',
+      objPanelOpen: !!objPanel, objPanel: objPanel || { approaches: [] }, nearby: nearAll, hasNearby: nearAll.length > 0, nearHead: 'NEAR YOU · ' + nearAll.length, hasDay: !!here.day && !inFight,
       wpOpen: !!wp.open, wp, wpCls: modalCls(this, 'wp'), here, hasHere: here.has, carried, hasCarried: carried.length > 0, carryLoad: LL.text, carryLoadStyle: 'font-size: 12px; font-weight: 700; line-height: 1.4; color: ' + (LL.over ? '#F65157' : '#A3AEC2'),
       worldLegend: WLs.big.legend, hasWorldLegend: WLs.big.legend.length > 0, pdOn, pdHint, cancelPd: () => this.setState({ putDown: null }),
       areaMagic: { has: GLY.length + ZON.length > 0 || Object.values(g.story.magic || {}).some((x) => x && x.held), legend: [
@@ -1327,6 +1395,7 @@ export class MainLogic extends DCLogic {
       mini, regions, area: S.area, openArea: () => this.setState({ area: true }), closeArea: () => closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })), order,
       orderTitle: SB ? 'SQUAD' : 'SPEAKING ORDER',
       orderNote: SB ? 'Each round: a full turn of AP on the area map, then End turn. Gear up with the tools; start the fight from the map or the tools.' : 'Each round: one Say and a full turn of AP (act on the area map). When everyone has ended their turn, the Narrator answers what needs it.',
+      endTitle: 'Done for this round: your AP (and your Say, if unused). ' + (SB ? 'Each round: a full turn of AP on the area map, then End turn.' : 'When everyone has ended their turn, the Narrator answers what needs it.'),
       areaCls: modalCls(this, 'area'), objCls: modalCls(this, 'obj'), rootCls: 'phc-play ' + motionRoot(), tabCls: 'phc-m-tab-' + (S.tabDir || 'r'),
       tipCls: 'phc-m-tip', levelCls: 'phc-m-pop',
     };

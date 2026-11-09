@@ -216,6 +216,16 @@ describe('team fight', () => {
     const after = apply(turnB, { type: 'combat/end-turn', unitId: b.id } as Action, P2);
     expect(active(after.combat!)!.id).not.toBe(b.id);
   });
+  it('a player who left mid-fight: the host may pass their unit\'s turn (and only end it); a guest may not', () => {
+    const g = apply(teams(), { type: 'sandbox/fight' }, HOST);
+    const b = g.combat!.units.find((u) => g.characters[u.charId!]?.owner === P2)!;
+    let turnB = g; while (active(turnB.combat!)!.id !== b.id) turnB = pass(turnB);
+    turnB = apply(turnB, { type: 'player/online', id: P2, online: false }, HOST);
+    expect(refused(turnB, { type: 'combat/overwatch', unitId: b.id } as Action, HOST)).toMatch(/Not your unit/);
+    const after = apply(turnB, { type: 'combat/end-turn', unitId: b.id } as Action, HOST);
+    expect(active(after.combat!)!.id).not.toBe(b.id);
+    expect(after.combat!.log.some((l) => /passes .*turn: .* is away/.test(l))).toBe(true);
+  });
   it('a team wins when the other is all Downed or out; everyone is back to gearing up with full HP', () => {
     let g = apply(teams(), { type: 'sandbox/fight' }, HOST);
     const x: GameState = JSON.parse(JSON.stringify(g)); for (const u of x.combat!.units) if (u.side === 'foe') { u.hp = 0; u.dead = true; }

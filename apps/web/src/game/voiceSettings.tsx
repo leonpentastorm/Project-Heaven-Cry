@@ -3,8 +3,8 @@
 // not, and test the voice (the device and the time to the first audio). Buttons and selects only.
 import React from 'react';
 import {
-  voicePrefs, setVoicePrefs, voiceState, onVoice, installVoice, loadVoice, testVoice, voiceGroups, browserVoices, browserKey, isBrowserKey, isKokoroKey,
-  waitForKokoro, bestVoice, voiceScore, probeVoice, EDGE_NOTE, MODEL_MB, CORES, CORE_VOICE, type BVoice,
+  voicePrefs, setVoicePrefs, voiceState, onVoice, installVoice, loadVoice, setVoiceDevice, voiceRender, testVoice, voiceGroups, browserVoices, browserKey, isBrowserKey, isKokoroKey,
+  waitForKokoro, bestVoice, SPEED_MIN, SPEED_MAX, voiceScore, probeVoice, EDGE_NOTE, MODEL_MB, CORES, CORE_VOICE, type BVoice,
 } from './voice';
 
 const C = { text: '#E7EBF3', muted: '#A3AEC2', line: '#2E3A50', panel: '#10151F', ground: '#0D1119', ok: '#6FEA77', bad: '#F65157', white: '#FFFFFF' };
@@ -43,6 +43,22 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
   const fallback = bestVoice(browserVoices());
   const where = s.device === 'webgpu' ? 'WebGPU' + (s.gpu ? ' (' + s.gpu + ')' : '') : 'the CPU' + (s.fellBack ? ' (WebGPU failed: ' + s.fellBack + ')' : s.gpu && !/adapter /.test(s.gpu) && s.device === 'wasm' ? ' (' + s.gpu + ')' : '');
   const test = s.test;
+  // Render on GPU | Render on CPU (Leon, 9 Nov 2026): the player picks. The GPU is the default and is tried first (the
+  // warm-up's speech check falls back to the CPU if it makes noise); the CPU works everywhere, a little slower to start.
+  // What is ticked is what is running (Leon: "the GPU button is still ticked" after the GPU made noise and the CPU took
+  // over). Once ready, the device in use is ticked; a GPU that failed here says so on its button, and pressing it tries
+  // the GPU again. Before the install, the player's choice is ticked.
+  const render = voiceRender(), noGpu = /no WebGPU|no adapter|adapter error/.test(s.gpu || ''), busy = s.status === 'loading' || s.status === 'installing';
+  const active: 'gpu' | 'cpu' = s.status === 'ready' ? (s.device === 'webgpu' ? 'gpu' : 'cpu') : render;
+  const gpuFailed = s.status === 'ready' && s.device === 'wasm' && render === 'gpu' && !!s.fellBack;
+  const seg = (on: boolean, off: boolean): React.CSSProperties => ({ ...btn(on), flex: '1 1 0', opacity: off ? 0.45 : 1, cursor: off ? 'not-allowed' : 'pointer' });
+  const renderRow = s.status !== 'loading' && s.status !== 'installing' && <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div role="group" aria-label="Render the voice on" style={{ ...row, flexWrap: 'nowrap' }}>
+      <button type="button" data-voice-render="gpu" data-failed={gpuFailed ? '1' : undefined} aria-pressed={active === 'gpu'} disabled={busy || noGpu} title={noGpu ? 'No GPU here: ' + s.gpu : gpuFailed ? 'Your GPU made noise, not speech: press to try it again.' : 'Faster to start each line. If your GPU makes noise instead of speech, the CPU takes over.'} style={{ ...seg(active === 'gpu', busy || noGpu), ...(gpuFailed ? { borderColor: C.bad, color: C.muted } : {}) }} onClick={() => { if (active !== 'gpu') setVoiceDevice('gpu'); }}>{active === 'gpu' ? '✓ ' : gpuFailed ? '✕ ' : ''}Render by GPU{gpuFailed ? ' · failed here' : ''}</button>
+      <button type="button" data-voice-render="cpu" aria-pressed={active === 'cpu'} disabled={busy} title="Works on every computer; a little slower to start each line." style={seg(active === 'cpu', busy)} onClick={() => { if (render !== 'cpu') setVoiceDevice('cpu'); }}>{active === 'cpu' ? '✓ ' : ''}Render by CPU</button>
+    </div>
+    <span style={note}>{noGpu ? 'No GPU voice in this browser: ' + s.gpu + '.' : gpuFailed ? 'Your GPU made noise, not speech, so the CPU reads. Press Render by GPU to try it again (after a driver or browser update).' : active === 'gpu' ? 'GPU: faster. If it sounds like buzzing, pick the CPU.' : 'CPU: works on every computer.'}</span>
+  </div>;
 
   return <div data-phc-voice-settings="" style={{ display: 'flex', flexDirection: 'column', gap: compact ? 8 : 12 }}>
     {/* Kokoro: install, progress, ready, failed */}
@@ -70,8 +86,9 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
       </>}
       {s.status === 'ready' && <>
         <span style={{ fontSize: fs, fontWeight: 700 }}><span style={{ color: C.ok }}>✓ </span>Ready · Kokoro on {where}</span>
-        <span style={note}>{s.device === 'webgpu' ? 'Running on your GPU.' : 'Running on the CPU: a little slower to start each line.'}</span>
+        <span style={note}>{s.device === 'webgpu' ? 'Running on your GPU' + (s.dtype ? ' (' + s.dtype + ')' : '') + '.' : 'Running on the CPU: a little slower to start each line.'}{s.likeness != null ? ' Warm-up check: sounds like speech (' + Math.round(s.likeness * 100) + '%).' : ''}</span>
       </>}
+      {renderRow}
       {s.status === 'failed' && <>
         <span style={{ fontSize: fs, fontWeight: 700 }}><span style={{ color: C.bad }}>✕ </span>Failed: {s.error}</span>
         <span style={note}>The browser's voice reads instead{fallback ? ' (' + fallback.name + ')' : ''}.</span>
@@ -100,6 +117,7 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
       <button type="button" data-voice-test="" style={btn()} disabled={testing} onClick={async () => { setTesting(true); try { await testVoice(); } finally { setTesting(false); } }}>{testing ? 'Testing…' : '▶ Test voice'}</button>
       {test && <span data-voice-test-result="" style={{ fontSize: fs }}>{test.engine === 'kokoro' ? 'Kokoro · ' + test.device : 'Browser voice · ' + test.device} · first audio in {(test.ms / 1000).toFixed(2)} s</span>}
     </div>
+    <label style={row}>Voice speed <input type="range" min={SPEED_MIN * 100} max={SPEED_MAX * 100} step={5} value={Math.round(p.speed * 100)} onChange={(e) => setVoicePrefs({ speed: Number(e.target.value) / 100 })} aria-label="Voice speed" data-voice-speed="" style={{ width: compact ? 100 : 160 }} /> <span style={{ color: C.muted }}>{p.speed.toFixed(2)}×</span></label>
     <label style={row}>Voice volume <input type="range" min={0} max={100} value={p.volume} onChange={(e) => setVoicePrefs({ volume: Number(e.target.value) })} aria-label="Voice volume" style={{ width: compact ? 100 : 160 }} /> <span style={{ color: C.muted }}>{p.volume}%</span></label>
   </div>;
 }

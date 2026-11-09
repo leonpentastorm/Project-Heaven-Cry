@@ -43,14 +43,17 @@ async function hfModel(req: Request, url: URL): Promise<Response> {
 async function serveSite(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
   const url = new URL(req.url);
-  const cache = caches.default, cacheKey = new Request(url.origin + url.pathname, { method: 'GET' });
+  // A versioned asset (?v=<content hash>: the title layers, replaced under the same name) is its own cache entry, so a
+  // new picture is never served from the old one's cache; any other query string is ignored.
+  const v = (url.searchParams.get('v') || '').replace(/[^\w-]/g, '').slice(0, 32);
+  const cache = caches.default, cacheKey = new Request(url.origin + url.pathname + (v ? '?v=' + v : ''), { method: 'GET' });
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
   let key = url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname.slice(1));
   let got = await env.SITE!.getWithMetadata<{ ct: string }>(key, 'arrayBuffer');
   if (!got.value && !key.includes('.')) { key = 'index.html'; got = await env.SITE!.getWithMetadata<{ ct: string }>(key, 'arrayBuffer'); }
   if (!got.value) return new Response('Not found', { status: 404 });
-  const hashed = /^assets\/index-[\w-]+\.(js|css)$/.test(key);
+  const hashed = /^assets\/index-[\w-]+\.(js|css)$/.test(key) || !!v;
   const res = new Response(got.value, { headers: {
     'content-type': got.metadata?.ct || 'application/octet-stream',
     'cache-control': key === 'index.html' ? 'no-cache' : hashed ? 'public, max-age=31536000, immutable' : 'public, max-age=86400',
