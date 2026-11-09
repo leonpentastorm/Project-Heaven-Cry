@@ -77,6 +77,17 @@ await p.waitForTimeout(300);
 g = await G();
 const crate = (g.story.objects || []).find((o) => o.kind === 'cache' && o.pos === cacheAt);
 ok('a cache at ' + ref(cacheAt) + ' shows a count, not its items (' + crate?.itemCount + ', items ' + JSON.stringify(crate?.items) + ')', !!crate && crate.itemCount === 2 && !(crate.items || []).length);
+// Rules 1.8: A PILE (ON THE GROUND) next to A CACHE: an open pile, its entries shown to the player who sees the tile.
+const pileAt = cands[2];
+const sp2 = drawer.locator('section[aria-label="World: a pile"]');
+ok('the WORLD tools have A PILE (ON THE GROUND) next to A CACHE', (await sp2.count()) === 1 && /A PILE \(ON THE GROUND\)/.test(await sp2.textContent()));
+await sp2.getByLabel('Tile for pile', { exact: true }).fill(ref(pileAt));
+await sp2.locator('button[data-world-place="pile"]').click();
+await p.waitForTimeout(300);
+g = await G();
+const heap = (g.story.objects || []).find((o) => o.kind === 'pile' && o.pos === pileAt);
+ok('a pile at ' + ref(pileAt) + ' is open: ' + JSON.stringify((heap?.items || []).map((e) => e.name)), !!heap && (heap.items || []).length === 2 && (heap.items || []).some((e) => e.pack?.mags?.[0] === 7));
+await sp2.scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(150); await snap('01b-tools-pile');
 await snap('01-tools-world');
 await closeTools();
 
@@ -86,6 +97,7 @@ const img = await miniTok.locator('img').first().getAttribute('src').catch(() =>
 ok('mini map token shows the avatar (' + img + ')', !!img && img.includes(avId.replace(/^char-/, '')) || !!img);
 ok('mini map token carries the BOT badge', (await miniTok.locator('[data-kind="BOT"]').count()) === 1);
 ok('mini map shows the cache glyph', (await tile(p.locator('.phc-mini'), ref(cacheAt)).locator('[data-cache]').count()) === 1);
+ok('mini map draws the pile (a stack with its count)', (await tile(p.locator('.phc-mini'), ref(pileAt)).locator('[data-pile]').count()) === 1);
 
 // 4. Talk: click the robot's token on the area map; ask what it wants, ask about the objective (marker + HERE).
 await openArea();

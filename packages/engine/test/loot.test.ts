@@ -117,6 +117,13 @@ describe('the Narrator\'s inline drops (item 698)', () => {
     expect(cleanDrops({ table: 'machine' })).toEqual({ table: 'machine' });
     expect(cleanDrops({ table: 'own' }, { tables: [{ id: 'own', entries: [] }] })).toEqual({ table: 'own' });
   });
+  it('a plot item written the loot[] way (item "", a name and a line) is kept and drops as that plot item; no name, no entry', () => {
+    const d = cleanDrops({ items: [{ item: '', qty: 1, name: 'A sealed letter', text: 'For the Warden.' }, { item: '', qty: 1 }] })!;
+    expect(d.items).toEqual([{ item: '', qty: 1, name: 'A sealed letter', text: 'For the Warden.' }]);
+    const { cb, rng, foes } = bare([{ name: 'Courier', tier: 'soldier', weapon: 'fists', drops: d }]);
+    kill(cb, foes[0], rng);
+    expect(labels(pileOn(cb.objects, foes[0].pos))).toContain('A sealed letter');
+  });
 });
 
 // ---------- the layers through the game ----------

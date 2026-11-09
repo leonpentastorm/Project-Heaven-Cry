@@ -1,8 +1,8 @@
 // The Proving Ground's WORLD tools (rules 1.7; part A's sandbox/cache, sandbox/hazard, sandbox/trigger, sandbox/npc and
-// sandbox/objective). Pure: each form becomes one engine action; the engine checks and places it. The panel lives in
+// sandbox/objective; rules 1.8's sandbox/pile). Pure: each form becomes one engine action; the engine checks and places it. The panel lives in
 // sandbox.tsx (WorldTab); the forms' defaults are a robot that wants something, a cache with a stim and rations, a light
 // minefield, an ambush on entering tiles, and a drill objective.
-import { AVATAR_POOLS, HAZARD_KINDS, KIND_DEFS, SKILLS, ITEM, WEAPON, TN_LADDER, type Action } from '@engine';
+import { AVATAR_POOLS, HAZARD_KINDS, KIND_DEFS, SKILLS, ITEM, WEAPON, WEAPONS, TN_LADDER, type Action } from '@engine';
 
 export const WORLD_KIND_IDS: string[] = KIND_DEFS.map((k) => k.id);
 /** The avatars a kind can wear in the picker (its pool; beasts have none: badge only). */
@@ -36,6 +36,24 @@ export const blankCache = (): CacheForm => ({ name: 'Supply crate', items: [{ it
 export function cacheAction(f: CacheForm, at: string): Action {
   return { type: 'sandbox/cache', at, name: f.name.trim() || 'Supply crate', items: f.items.filter((x) => x.item && (ITEM[x.item] || WEAPON[x.item])).slice(0, 12).map((x) => ({ item: x.item, qty: Math.max(1, Math.round(x.qty) || 1) })),
     ...(f.locked ? { locked: true, approaches: [approachOf(f.way)] } : {}) } as Action;
+}
+
+/** Rules 1.8: a pile on the ground (open: what is in it shows to anyone who sees the tile). Entries are item or weapon ids,
+ * plus mag:<weapon> (qty its rounds; 1 or none is a full magazine, 0 an empty one) and rounds:<calibre>; the engine merges
+ * them into the pile on the tile (the Narrator's ground[] path). */
+export interface PileForm { items: { item: string; qty: number }[]; hidden: boolean }
+export const blankPile = (): PileForm => ({ items: [{ item: 'mag:service_pistol', qty: 7 }, { item: 'rounds:' + (WEAPON.service_pistol?.ammo || ''), qty: 20 }], hidden: false });
+/** The ids a pile entry may name, for the form's picker: magazines and loose rounds first (the point of a pile). */
+export function pileChoices(): { id: string; name: string }[] {
+  const mags = WEAPONS.filter((w: any) => w.magazine != null && w.reload !== 'loose').map((w: any) => ({ id: 'mag:' + w.id, name: w.name + ' magazine' }));
+  const cals = [...new Set(WEAPONS.map((w: any) => w.ammo).filter(Boolean))].map((c: any) => ({ id: 'rounds:' + c, name: 'Loose rounds: ' + c }));
+  return [...mags, ...cals, ...WEAPONS.map((w: any) => ({ id: w.id, name: w.name + ' (weapon)' })), ...Object.values(ITEM).map((x: any) => ({ id: x.id, name: x.name }))];
+}
+export const isAmmoId = (id: string) => /^(mag|rounds):/.test(id);
+const pileOk = (id: string) => !!(ITEM[id] || WEAPON[id] || (id.startsWith('mag:') && WEAPON[id.slice(4)]) || id.startsWith('rounds:'));
+export function pileAction(f: PileForm, at: string): Action {
+  return { type: 'sandbox/pile', at, items: f.items.filter((x) => x.item && pileOk(x.item)).slice(0, 12).map((x) => ({ item: x.item, qty: Math.max(isAmmoId(x.item) ? 0 : 1, Math.round(x.qty) || 0) })),
+    ...(f.hidden ? { hidden: true } : {}) } as Action;
 }
 
 export interface HazardForm { kind: string; severity: 'light' | 'heavy'; hidden: boolean; name: string }

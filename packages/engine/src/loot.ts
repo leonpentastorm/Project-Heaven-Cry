@@ -47,8 +47,11 @@ function cleanQty(q: any, id: string): number | [number, number] | undefined {
   return undefined;
 }
 function cleanEntry(e: any, weighted: boolean): DropEntry | null {
-  if (!e || typeof e !== 'object' || typeof e.item !== 'string' || !e.item.trim()) return null;
-  const item = e.item.trim().slice(0, 60), out: DropEntry = { item };
+  if (!e || typeof e !== 'object') return null;
+  // A plot item as loot[] writes it (item "", a name and a line of text) is kept: it drops as that plot item (item 698).
+  const raw = typeof e.item === 'string' ? e.item.trim() : '', named = typeof e.name === 'string' && !!e.name.trim();
+  if (!raw && !named) return null;
+  const item = raw.slice(0, 60), out: DropEntry = { item };
   const q = cleanQty(e.qty, item); if (q !== undefined) out.qty = q;
   if (weighted) { const w = Number(e.weight); if (!(w > 0)) return null; out.weight = w; }
   else if (e.chance != null && Number.isFinite(Number(e.chance))) out.chance = Math.max(0, Math.min(1, Number(e.chance)));

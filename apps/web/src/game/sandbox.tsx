@@ -29,7 +29,7 @@ import { fxBusyUntil } from './fx/FxLayer';
 import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
-import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
+import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
 import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName } from '@engine';
 const ITEMS = Object.values(ITEM);
 import { ART } from '../screens/shared';
@@ -671,16 +671,18 @@ function ApproachEdit({ a, set, name }: { a: ApproachForm; set: (a: ApproachForm
     {a.fail === 'lose' && <input value={a.failItem} placeholder="item id it takes" aria-label={name + ' item lost'} onChange={(e) => set({ ...a, failItem: e.target.value })} style={field} />}
   </div>;
 }
-type Arm = { what: 'npc' | 'cache' | 'hazard' | 'trigger'; pts: string[] } | null;
+const PILE_CHOICES = pileChoices(), PILE_NAMES: Record<string, string> = Object.fromEntries(PILE_CHOICES.map((x) => [x.id, x.name]));
+type Arm = { what: 'npc' | 'cache' | 'pile' | 'hazard' | 'trigger'; pts: string[] } | null;
 function WorldTab({ game }: { game: GameState }) {
   const gearing = game.phase === 'story';
-  const [npc, setNpc] = React.useState(blankNpc()), [cache, setCache] = React.useState(blankCache()), [hz, setHz] = React.useState(blankHazard()), [tg, setTg] = React.useState(blankTrigger()), [ob, setOb] = React.useState(blankObjective());
+  const [npc, setNpc] = React.useState(blankNpc()), [cache, setCache] = React.useState(blankCache()), [pile, setPile] = React.useState(blankPile()), [pileAdd, setPileAdd] = React.useState('mag:service_pistol'), [hz, setHz] = React.useState(blankHazard()), [tg, setTg] = React.useState(blankTrigger()), [ob, setOb] = React.useState(blankObjective());
   const [arm, setArm] = React.useState<Arm>(null), [refs, setRefs] = React.useState<Record<string, string>>({}), [addItem, setAddItem] = React.useState('stim_injector'), [refPick, setRefPick] = React.useState('');
   const R = (k: string) => (refs[k] || '').trim().toUpperCase(), setR = (k: string, v: string) => setRefs({ ...refs, [k]: v.toUpperCase() });
   const two = (v: string): [string, string] => { const [a, b] = v.split(/[:\-–\s]+/).filter(Boolean); return [a || '', b || a || '']; };
   const fire = (what: NonNullable<Arm>['what'], pts: string[]) => {
     if (what === 'npc') act(npcAction(npc, pts[0]));
     if (what === 'cache') act(cacheAction(cache, pts[0]));
+    if (what === 'pile') act(pileAction(pile, pts[0]));
     if (what === 'hazard') act(hazardAction(hz, pts[0], pts[1]));
     if (what === 'trigger') act(triggerAction(tg, pts[0], pts[1]));
   };
@@ -716,7 +718,7 @@ function WorldTab({ game }: { game: GameState }) {
       {npc.talk.length < 4 && <button type="button" style={{ ...small, alignSelf: 'flex-start' }} onClick={() => setNpc({ ...npc, talk: [...npc.talk, { label: 'Lean on them', skill: 'intimidation', skill2: '', tn: 12, success: 'ally', fail: 'hostile', objective: '', failCondition: '', failItem: '', stakes: '' }] })}>+ Talk approach</button>}
       <div style={row}>{armBtn('npc', 'Place by clicking the map')}{placeBtn('npc', 'npc', 'or H6')}</div>
     </Section>
-    <Section title="A CACHE (LOOT ON THE GROUND)" aria="World: a cache">
+    <Section title="A CACHE (A CLOSED CONTAINER)" aria="World: a cache">
       <input value={cache.name} aria-label="Cache name" onChange={(e) => setCache({ ...cache, name: e.target.value })} style={field} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{cache.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 13 }}>{ITEM[x.item]?.name || WEAPON[x.item]?.name || x.item}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={1} max={20} set={(n) => setCache({ ...cache, items: cache.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Remove ' + x.item} onClick={() => setCache({ ...cache, items: cache.items.filter((_, j) => j !== i) })}>✕</button></div>)}</div>
@@ -725,6 +727,16 @@ function WorldTab({ game }: { game: GameState }) {
       <label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={cache.locked} onChange={(e) => setCache({ ...cache, locked: e.target.checked })} />Locked (needs its way in first)</label>
       {cache.locked && <ApproachEdit a={cache.way} name="Way in" set={(x) => setCache({ ...cache, way: x })} />}
       <div style={row}>{armBtn('cache', 'Place by clicking the map')}{placeBtn('cache', 'cache', 'or H6')}</div>
+    </Section>
+    <Section title="A PILE (ON THE GROUND)" aria="World: a pile">
+      <span style={{ fontSize: 12, color: C.muted }}>Things lying on a tile, in plain sight: anyone who can see the tile sees what is in it, and Pick up takes it (1 AP). Dropping onto a pile adds to it.</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{pile.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 13 }}>{PILE_NAMES[x.item] || x.item}{isAmmoId(x.item) ? ' · rounds' : ''}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={isAmmoId(x.item) ? 0 : 1} max={isAmmoId(x.item) ? 120 : 20} set={(n) => setPile({ ...pile, items: pile.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
+        <button type="button" style={{ ...small, color: C.muted }} aria-label={'Remove ' + x.item + ' from the pile'} onClick={() => setPile({ ...pile, items: pile.items.filter((_, j) => j !== i) })}>✕</button></div>)}</div>
+      <div style={row}><select value={pileAdd} aria-label="Thing to add to the pile" style={{ ...field, flex: 1 }} onChange={(e) => setPileAdd(e.target.value)}>{PILE_CHOICES.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>
+        <button type="button" style={small} disabled={pile.items.length >= 12} onClick={() => setPile({ ...pile, items: [...pile.items, { item: pileAdd, qty: pileAdd.startsWith('mag:') ? (WEAPON[pileAdd.slice(4)]?.magazine || 1) : pileAdd.startsWith('rounds:') ? 20 : 1 }] })}>+ Add</button></div>
+      <span style={{ fontSize: 12, color: C.muted }}>A magazine's number is its rounds (0: empty).</span>
+      <label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={pile.hidden} onChange={(e) => setPile({ ...pile, hidden: e.target.checked })} />Hidden (until spotted or searched)</label>
+      <div style={row}>{armBtn('pile', 'Place by clicking the map')}{placeBtn('pile', 'pile', 'or H6')}</div>
     </Section>
     <Section title="A HAZARD (AN AREA OF TILES)" aria="World: a hazard">
       <div style={row}><select value={hz.kind} aria-label="Hazard kind" style={field} onChange={(e) => setHz({ ...hz, kind: e.target.value })}>{HAZARD_KINDS.map((k) => <option key={k} value={k}>{HAZARD[k]?.name || k}</option>)}</select>

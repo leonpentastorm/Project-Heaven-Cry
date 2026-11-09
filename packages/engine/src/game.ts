@@ -2415,6 +2415,8 @@ export type SandboxAction =
   | { type: 'sandbox/faith'; charId: string; belief?: 'faithful' | 'atheist'; patron?: string; devotion?: number; faith?: number; pieces?: Record<string, number>; vow?: string | null; allyId?: string; reset?: boolean }
   // Rules 1.7 (World Play): place a cache, a hazard, a trigger, a person (face and talk), and an objective with where.
   | { type: 'sandbox/cache'; at: string; name?: string; text?: string; items: CacheItem[]; locked?: boolean; approaches?: NarratorApproach[] }
+  /** Rules 1.8: a pile on the ground (open: anyone who sees the tile sees it), the Narrator's ground[] entry. */
+  | { type: 'sandbox/pile'; at: string; items: CacheItem[]; hidden?: boolean }
   | { type: 'sandbox/hazard'; kind?: string; severity?: 'light' | 'heavy'; tiles?: string[]; rect?: { from: string; to: string }; hidden?: boolean; name?: string; remove?: string }
   | { type: 'sandbox/trigger'; when: 'enter' | 'examine' | 'objective'; tiles?: string[]; rect?: { from: string; to: string }; objId?: string; objective?: string; then: 'spawn' | 'fight' | 'reveal'; spawn?: NonNullable<NarratorTurn['npcs']>; difficulty?: string; name?: string; reveal?: string[]; text?: string; remove?: string }
   | { type: 'sandbox/npc'; name: string; at: string; side?: 'hostile' | 'neutral'; kind?: string; avatar?: string; tier?: string; weapon?: string; hidden?: boolean; wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: NarratorApproach[]; prisoner?: boolean }
@@ -2879,7 +2881,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       g.story.mana = v; if (cb) { cb.mana = v; emitFx(cb, 'mana', { band: MANA_BANDS.find((b) => v >= b.min && v <= b.max)?.id || '', mana: v }); }
       sbLog(g, 'The mana meter is set to ' + v + '.'); return;
     }
-    case 'sandbox/cache': case 'sandbox/hazard': case 'sandbox/trigger': case 'sandbox/npc': case 'sandbox/objective': {
+    case 'sandbox/cache': case 'sandbox/pile': case 'sandbox/hazard': case 'sandbox/trigger': case 'sandbox/npc': case 'sandbox/objective': {
       fieldOnly(); if (!gearing) fail('Place things while gearing up (stop the fight first).');
       sbWorldPlay(g, a); return;
     }
@@ -3343,12 +3345,17 @@ export const _world = {
 
 /** The Proving Ground's World Play tools (rules 1.7): the Narrator's own appliers, so part B and the e2e tests can drive
  * caches, hazards, triggers, people with faces and talk, and objectives with where, with no Narrator. */
-function sbWorldPlay(g: GameState, a: Extract<SandboxAction, { type: 'sandbox/cache' | 'sandbox/hazard' | 'sandbox/trigger' | 'sandbox/npc' | 'sandbox/objective' }>) {
+function sbWorldPlay(g: GameState, a: Extract<SandboxAction, { type: 'sandbox/cache' | 'sandbox/pile' | 'sandbox/hazard' | 'sandbox/trigger' | 'sandbox/npc' | 'sandbox/objective' }>) {
   if (a.type === 'sandbox/cache') {
     const before = storyObjects(g).length;
     applyObjectOp(g, { action: 'place', id: '', kind: 'cache', at: a.at, name: a.name || 'Supply crate', text: a.text || '', locked: !!a.locked, approaches: a.approaches || [], items: a.items || [] });
     if (storyObjects(g).length === before) fail('Nothing can go there.');
     const o = storyObjects(g).at(-1)!; sbLog(g, o.name + ' (' + (o.items || []).length + ' things' + (o.locked ? ', locked' : '') + ') at ' + refOf(o.pos) + ' [' + o.id + '].'); return;
+  }
+  if (a.type === 'sandbox/pile') { // rules 1.8: the same path as the Narrator's ground[] (merging, the cap, hidden)
+    const p = applyGroundOp(g, { at: a.at, items: Array.isArray(a.items) ? a.items : [], hidden: !!a.hidden });
+    if (!p) fail('Nothing can go there: an open tile, and at least one thing.');
+    sbLog(g, 'A pile at ' + refOf(p!.pos) + ' (' + (p!.items || []).length + (p!.items?.length === 1 ? ' thing' : ' things') + (p!.hidden ? ', hidden' : '') + ').'); return;
   }
   if (a.type === 'sandbox/hazard') {
     if (a.remove) { applyHazardOp(g, { action: 'remove', id: a.remove }); sbLog(g, 'Hazard ' + a.remove + ' removed.'); return; }

@@ -5,7 +5,7 @@
 // apply(), the path a player's click takes.
 import { describe, expect, it } from 'vitest';
 import {
-  apply, packOf, magsOf, refOf, RuleError, WEAPON, ITEM, GEAR, gearPlan, packRef, HEAVY_WHY, DOWN_WHY,
+  apply, packOf, magsOf, refOf, RuleError, WEAPON, ITEM, GEAR, gearPlan, gearCost, hotSwapLeft, packRef, HEAVY_WHY, DOWN_WHY,
   type Action, type Character, type GameState, type Unit,
 } from '../src';
 import { storyWith, withGame } from './helpers/perkfight';
@@ -118,6 +118,23 @@ describe('light and heavy armour in a fight (item 685)', () => {
     expect(HEAVY_WHY).toBe('Heavy armour (over 1 kg) isn\'t changed in a fight.');
     // out of a fight it is free and allowed (the sheet's own gear actions)
     const c = f.c; expect(gearPlan(c, { op: 'wear', item: 'field_helmet' }).why).toBe(HEAVY_WHY);
+  });
+});
+
+describe('gearCost: the price the backpack shows is the price the reducer charges (rules 1.8)', () => {
+  it('every row, Hot-Swap included, matches what the action then costs', () => {
+    const f = fight(() => {}, { hot_swap: 'I' }), cb = () => f.g.combat!;
+    const price = (op: any) => withGame(f.g, () => gearCost(cb(), f.u, f.c, op));
+    expect(withGame(f.g, () => hotSwapLeft(cb(), f.u))).toBe(1);
+    expect(price({ op: 'draw', item: 'hellraiser_service_rifle', to: 'main' })).toMatchObject({ ap: 0, free: true, why: null });
+    expect(price({ op: 'wear', item: 'night_goggles' })).toMatchObject({ ap: 1, free: false }); // armour: never Hot-Swap
+    f.act({ type: 'combat/equip', unitId: f.u.id, item: 'hellraiser_service_rifle', to: 'main' }); expect(f.u.ap).toBe(6);
+    expect(withGame(f.g, () => hotSwapLeft(cb(), f.u))).toBe(0);
+    expect(price({ op: 'stow', slot: 'main' })).toMatchObject({ ap: 2, free: false, why: null });
+    f.ap(1); expect(price({ op: 'stow', slot: 'main' }).why).toBe('Needs 2 AP.');
+    expect(price({ op: 'drop', slot: 'main' })).toMatchObject({ ap: 0, why: null });
+    expect(price({ op: 'wear', item: 'field_helmet' }).why).toBe(HEAVY_WHY);
+    expect(gearCost(cb(), { ...f.u, companion: true } as any, f.c, { op: 'swap' }).why).toBe('A companion has no pack.');
   });
 });
 

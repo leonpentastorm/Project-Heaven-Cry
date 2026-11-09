@@ -61,7 +61,14 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 ## World Play gaps (from `docs/design/handoffs/world-play-A-HANDOFF.md` and `-B-HANDOFF.md`)
 
-- Paths (players' clicks and enemies) don't avoid hazards.
+- Enemy paths don't avoid hazards, and neither do the Narrator's moves. Since rules 1.8, a player's click-path goes around a revealed hazard when the detour is at most 2 tiles (item 683), and the preview names what a path crosses.
+- World Play 1.1 (`docs/design/handoffs/world-play-1.1-HANDOFF.md`):
+  - an enemy killed on the area map drops nothing (item 697);
+  - enemy weapons have no rarity, so worn drops are always standard;
+  - the host-only loot-cap log isn't shown on screen;
+  - companions don't add to the party's sight of piles;
+  - every helmet is over the 1 kg light-armour line (item 685): Leon to raise the line or lighten the helmet;
+  - no built-in campaign uses `loot_tables` or `drops` yet.
 - Allies and companions don't fight beside the party; companion hazard damage on the area map isn't saved.
 - Talk and hazard panels exist only on the area map, not in fights.
 - **Carry weight is very punishing** (item 638): a 40 kg robot overloads a starting character, and a 70 kg body
@@ -100,7 +107,6 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 ## Small engine oddities (Leon: not urgent)
 
-- Equipping a weapon into an empty main hand puts "Fists" into the pack.
 - A focus taken out of the off hand goes into the pack as kind `tool` instead of `focus`.
 
 ## Art

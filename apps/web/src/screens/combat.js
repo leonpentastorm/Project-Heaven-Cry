@@ -26,15 +26,15 @@ import { glyphUri, scratchUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from 
 import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
-import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray, FOCUS_ACTS, focusPackIdx, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
+import { backpackView } from '../game/backpack';
+import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { prayerView, vowPromptVals, patronLogCard } from './faithCombat';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
-const SELF_TEXT = { reload2: 'Confirm to reload both guns: the old magazines drop into the pile on your tile.', 'reload2-tac': 'Confirm to reload both guns: the old magazines go back in your pack.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.',
-  'hold-evoker': 'Confirm to take the Evoker into your off hand (Sigils need it in a hand).', 'hold-emanator': 'Confirm to take the Emanator into your off hand (MP and Syphon need it in a hand).' };
+const SELF_TEXT = { reload2: 'Confirm to reload both guns: the old magazines drop into the pile on your tile.', 'reload2-tac': 'Confirm to reload both guns: the old magazines go back in your pack.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.' };
 const ARROWS = { '1,0': '→', '-1,0': '←', '0,1': '↓', '0,-1': '↑', '1,1': '↘', '-1,1': '↙', '1,-1': '↗', '-1,-1': '↖' };
 
 // ---------- magic (spec: Mana, rules 1.2; look: docs/design/magic-presentation.md) ----------
@@ -182,7 +182,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
   // Keys 1–6 flip the action tabs on your turn; a resize refits the grid beside the pinned action column.
-  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); } });
+  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); } });
   // Ctrl or ⌘ with the wheel over the map sizes the map (not the page). Non-passive, so the page zoom is held back there.
   window.addEventListener('wheel', (e) => { if (!LIVE || !onScreen() || !(e.ctrlKey || e.metaKey) || !e.target || typeof e.target.closest !== 'function' || !e.target.closest('.phc-grid-scroll, .phc-mapzoom')) return;
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
@@ -358,6 +358,14 @@ export class CombatLogic extends DCLogic {
     });
   }
   /** H or \ (not while typing, not under a dialog or the turn card): hide or show the column. */
+  /** The backpack (rules 1.8, Gear in a fight): B opens and closes it, Escape closes it. */
+  packKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat) return;
+    if (e.key === 'Escape' && this.state.bp) { e.preventDefault(); this.setState({ bp: false }); return; }
+    if (!(e.key === 'b' || e.key === 'B') || typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin]')) return;
+    if (!getState().game?.combat) return;
+    e.preventDefault(); this.setState({ bp: !this.state.bp });
+  }
   panelKey(e) {
     if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !(e.key === 'h' || e.key === 'H' || e.key === '\\')) return;
     if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
@@ -598,7 +606,7 @@ export class CombatLogic extends DCLogic {
     const waCost = cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap
       : cur && S.action === RELOAD_TAC ? ((weaponActions(cur).find((x) => x.id === 'reload') || {}).tactical || {}).ap
       : cur && (S.action === 'reload2' || S.action === RELOAD2_TAC) ? reloadBothAp(cur) + (S.action === RELOAD2_TAC ? PILE.tactical_reload_extra_ap : 0) : undefined; // the weapon's own AP (rules 1.8: speed or tactical)
-    const cost = pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' || FOCUS_ACTS[S.action] ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' ? PICKUP_AP : S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
+    const cost = pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' ? PICKUP_AP : S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
     const condWord = (u) => (u.dead ? 'dead' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'wounded' : 'badly hurt');
 
@@ -755,7 +763,7 @@ export class CombatLogic extends DCLogic {
         (why && S.action !== id ? 'opacity: 0.62; ' : '') + (S.action === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
     const actName = { skill: sk ? sk.name : 'Weapon skill', paired: 'Both hands', repair: 'Field Repair', song: 'Play my song', sprint: 'Sprint', disengage: 'Disengage', prone: cur && cur.prone ? 'Stand up' : 'Drop prone', burst: 'Burst', auto: 'Full auto', shove: 'Shove', overwatch: 'Overwatch', brace: 'Brace', move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Melee', reload: (weaponActions(cur || {}).find((x) => x.id === 'reload') || {}).tactical ? 'Reload (speed)' : 'Reload', [RELOAD_TAC]: 'Reload (tactical)', reload2: 'Reload both guns', [RELOAD2_TAC]: 'Reload both (tactical)', clear: 'Clear a jam', stim: 'Stim an ally', analyze: 'Analyze', cover: 'Shoot an object', door: 'Open or close a door', pickup: 'Pick up', load: 'Load a magazine',
       draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise',
-      pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch', 'hold-evoker': 'Hold the Evoker', 'hold-emanator': 'Hold the Emanator' }[S.action] || '';
+      pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch' }[S.action] || '';
     const sel = { name: actName + (isMove ? ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + ' tiles') : pv ? ' · ' + pv.ap + ' AP' : ''),
       text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? 'Hover a highlighted tile to see the path and its AP cost; click to move.' : S.action === 'stim' ? (stimTarget ? 'Target: ' + stimTarget.name + '. Confirm to use a stim.' : 'Click an adjacent ally.') : S.action === 'skill' ? (skRuns ? (skWhy ? skWhy : skFx.op === 'multi_shot' ? (tgtUnit ? sk.name + ' at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : 'Confirm to strike every adjacent enemy.') : skPassive ? 'Always on: it applies to every attack you make.' : 'Not run by the engine yet: use Say, and the Narrator rules it.') : S.action === 'paired' ? (tgtUnit ? 'Both hands at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : S.action === 'reload' ? 'Confirm to reload.' : SELF_TEXT[S.action] ? SELF_TEXT[S.action] : S.action === 'clear' ? 'Confirm to clear the jam.' : S.action === 'repair' ? 'Confirm to repair your weapon.' : S.action === 'song' ? 'Confirm to play your song for the room.' : ['prone', 'brace', 'overwatch'].includes(S.action) ? 'Confirm to ' + ({ prone: cur.prone ? 'stand up' : 'drop prone', brace: 'brace your weapon', overwatch: 'hold a shot on overwatch' }[S.action]) + '.' : S.action === 'shove' ? (tgtUnit ? 'Shove ' + tgtUnit.name + (Math.max(Math.abs(+tgtUnit.pos.split(',')[0] - +cur.pos.split(',')[0]), Math.abs(+tgtUnit.pos.split(',')[1] - +cur.pos.split(',')[1])) > 1 ? ': get next to it first.' : '. Confirm.') : 'Click an adjacent enemy.') : S.action === 'cover' ? (coverSel ? 'Target: ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).name + ', HP ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).hp + '. Confirm to shoot it.' : 'Click an object with HP.') : S.action === 'door' ? (doorSel ? (doorAt(doorSel).open ? 'Close' : 'Open') + ' the door at ' + refOf(doorSel) + '. Confirm.' : 'Click an adjacent door.') : S.action === 'pickup' ? '' : S.action === 'load' ? (loadInfo ? 'Confirm to load ' + loadInfo.rounds + ' rounds for ' + loadInfo.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.') : S.action === 'analyze' ? (tgtUnit ? (tgtUnit.analyzedBy ? tgtUnit.name + ' is already analyzed.' : 'Target: ' + tgtUnit.name + '. Click a hostile to change. Confirm to analyze.') : 'Click a hostile.') : pv ? (pv.ok ? (tgtUnit && tgtUnit.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgtUnit.name + '. Confirm if you mean it.' : 'Click a hostile to change target. Confirm to attack.') : pv.why) : 'Click a hostile to target it.',
       hasPick: false, pickFields: [], extra: mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
@@ -928,7 +936,7 @@ export class CombatLogic extends DCLogic {
     const hasTarget = !!target && ([...ATTACKS, 'shove', 'analyze', 'paired'].includes(S.action) || (S.action === 'skill' && skFx.op === 'multi_shot'));
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
-    const cantConfirm = !mineTurn || isMove || (FOCUS_ACTS[S.action] && !!((ITEMS.flatMap((gr) => gr[1]).find((it) => it[0] === S.action) || [])[4])) || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && (!pickSel || !!pickWhy)) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
+    const cantConfirm = !mineTurn || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && (!pickSel || !!pickWhy)) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
     const apNow = mineTurn ? (ap - cost < 0 ? 'needs ' + cost + ' · ' + ap + ' left' : Math.round((ap - cost) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur && seenFoe(cur), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
     const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
@@ -980,8 +988,20 @@ export class CombatLogic extends DCLogic {
     const lock = cb.over ? '' : holding ? 'held' : !mineTurn ? 'wait' : '';
     const lockMsg = lock === 'held' ? 'The other turns are still playing out…' : lock === 'wait' ? (cur && cur.side === 'foe' ? 'Hostiles acting…' : cur ? 'Waiting for ' + cur.name + '…' : 'Waiting…') : '';
     const vowV = vowPromptVals(this, g, cb, cur, mineTurn, act); this._vow = vowV.show ? vowV : null;
+    // The backpack (rules 1.8, World Play: Gear in a fight): hands, light armour, the pack and the unit's ammo, each row
+    // with its action and the engine's cost (game/backpack.ts); greyed with the engine's reason off-turn or AP short.
+    const canPack = !!myU && !!myU.charId && !myU.companion && !cb.over;
+    const bpV = canPack && S.bp ? backpackView(g, cb, myU, mineTurn && cur && myU.id === cur.id && !holding) : null;
+    const bpBtn = 'display: inline-flex; align-items: center; gap: 6px; min-height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid ' + (bpV ? '#FFFFFF' : '#2E3A50') + '; background: ' + (bpV ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; cursor: pointer';
+    const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: bpV ? 'true' : 'false', btnStyle: bpBtn,
+      show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '', reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
+      sections: bpV ? bpV.sections.map((sc) => ({ key: sc.key, title: sc.title, isEmpty: !sc.rows.length, empty: sc.empty,
+        rows: sc.rows.map((r) => ({ key: r.key, tag: r.tag, name: r.name, sub: r.sub, hasSub: !!r.sub, note: r.note, hasNote: !!r.note, hasActs: r.acts.length > 0,
+          acts: r.acts.map((a) => ({ key: a.key, text: a.label + (a.cost ? ' · ' + a.cost : ''), off: a.off, why: a.why || a.label + (a.cost ? ' · ' + a.cost : ''),
+            go: () => { if (!a.off && a.action) act(a.action); },
+            style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
     const T = {
-      tabs, tabPanel, showWho: !mePanel, lock, lockMsg, vow: vowV,
+      tabs, tabPanel, showWho: !mePanel, lock, lockMsg, vow: vowV, bp,
       mine: mineTurn, waiting: !mineTurn, wait, ytInk: curInk, ytSub: 'ROUND ' + cb.round + ' · ' + ap + ' AP',
       ytStyle: 'position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',
       who, zoomPc: zoomer(this, who.img, who.name, 'portrait'), apText: apNow, apPips, groups, sel, pad,
@@ -1021,7 +1041,7 @@ export class CombatLogic extends DCLogic {
       turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: 0; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),
       panelOpen: !hidden, panelHidden: hidden, togglePanel: () => this.togglePanel(), asideCls: mineTurn ? 'phc-mine' : '', mini, quick,
       canCustomise: !!myU && !cb.over, customise: () => openCustomise(myU && myU.charId),
-      pad, magicLegend, hasMagicLegend: magicLegend.length > 0,
+      pad, magicLegend, hasMagicLegend: magicLegend.length > 0, bp,
       worldLegend: WLc.legend, hasWorldLegend: WLc.legend.length > 0,
       ...(() => { // Search a cache in the fight (1 AP of the turn, adjacent): a button for each one next to the acting unit.
         const list = !mineTurn || !cur ? [] : objectsOf(cb).filter((o) => o.kind !== 'pile' && !o.hidden && !o.searched && (o.itemCount ?? (o.items || []).length) > 0 && (o.kind === 'cache' || o.itemCount != null || (o.items || []).length) && dist(cur.pos, o.pos) <= 1);
@@ -1110,7 +1130,6 @@ export class CombatLogic extends DCLogic {
     if (a === RELOAD2_TAC) return act({ type: 'combat/reload', unitId: cur.id, hand: 'both', tactical: true });
     if (a === 'hide') return act({ type: 'combat/hide', unitId: cur.id });
     if (a === 'extinguish') return act({ type: 'combat/extinguish', unitId: cur.id });
-    if (FOCUS_ACTS[a]) { const ch = getState().game.characters[cur.charId], i = focusPackIdx(ch, FOCUS_ACTS[a]); if (i >= 0) act({ type: 'combat/swap', unitId: cur.id, from: i, to: 'off' }); return this.setState({ action: 'move' }); }
     if (a === 'escape') return act({ type: 'combat/escape', unitId: cur.id });
     if (a === 'recover') return act({ type: 'combat/recover', unitId: cur.id });
     if (a === 'prone') return act({ type: 'combat/prone', unitId: cur.id });

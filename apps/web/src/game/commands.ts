@@ -5,7 +5,7 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry,
-  packOf, focusHand, twoHands, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, ITEM, reloadBothAp, PILE, PICKUP_AP, dist } from '@engine';
+  focusHand, NEEDS_EVOKER, NEEDS_EMANATOR, reloadBothAp, PILE, PICKUP_AP, dist } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
 import { faithView, beliefOf, FAITH_MIN } from '@engine';
@@ -157,7 +157,6 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(cur && cur.conds?.burning > 0 ? [['extinguish', 'Put out the fire', '1 AP', 'Burning: 10 damage at the start of each of your turns until someone spends 1 AP to put it out.'] as ActionItem] : []),
       ...(cur && cur.conds?.grappled > 0 ? [['escape', 'Break free', '2 AP', 'Grappled: d20 + the better of Raw Power and Athletics against the grappler\'s.'] as ActionItem] : []),
       ...(cur && (cur.conds?.disarmed > 0 || cur.conds?.lowered > 0) ? [['recover', cur.conds?.disarmed > 0 ? 'Recover your weapon' : 'Raise your weapon', cur.conds?.disarmed > 0 ? '2 AP' : '1 AP', 'Until then you attack with your fists.'] as ActionItem] : []),
-      ...focusItems(ch),
       ...reloadBothItems(cur),
       ...(cur && !cur.hidden && cur.side === 'pc' ? [['hide', 'Hide', '2 AP', 'Only out of every enemy\'s sight, and never while Marked. Hidden: enemies can\'t target you; your first attack from hiding is an ambush (crit on 19–20, × your Ambush multiplier). Enemies look for you at the end of their turns.', (cb && cb.units.some((v: any) => v.side !== cur.side && !v.dead && !v.downed && unitSees(cb, v, cur.pos))) ? 'An enemy can see you.' : cur.conds?.marked > 0 ? 'Marked.' : null] as ActionItem] : []),
       ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']], null, 'utility'],
@@ -208,19 +207,6 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
 // ---------- the turn card's four commands ----------
 export interface Command { action: string; label: string; sub: string; key: string; off?: boolean; custom?: boolean }
 export interface CatEntry { action: string; label: string; cost: string; text: string; tab: string; ink: string | null; why: string | null }
-
-/** A focus only in the pack (spec: Hands 2, item 630; item 633): take it into the off hand, 1 AP (combat/swap to 'off').
- *  Ids 'hold-evoker' / 'hold-emanator'; FOCUS_PACK_IDX finds its pack slot for the action. */
-export const FOCUS_ACTS: Record<string, 'evoker' | 'emanator'> = { 'hold-evoker': 'evoker', 'hold-emanator': 'emanator' };
-export const focusPackIdx = (ch: any, kind: 'evoker' | 'emanator') => (ch ? packOf(ch).findIndex((x: any) => x.qty > 0 && FOCUS_IDS[kind].includes(x.weapon || x.item || x.id)) : -1);
-function focusItems(ch: any): ActionItem[] {
-  if (!ch) return [];
-  return (['evoker', 'emanator'] as const).filter((k) => focusHand(ch, k) === 'pack').map((k) => {
-    const name = k === 'evoker' ? 'Evoker' : 'Emanator', off = ch.offHand ? ((WEAPON as any)[ch.offHand.id]?.name || (ITEM as any)[ch.offHand.id]?.name || ch.offHand.id) : '';
-    const why = twoHands(ch, ch.weapon) ? 'Your ' + ((WEAPON as any)[ch.weapon]?.name || 'weapon') + ' fills both hands.' : null;
-    return ['hold-' + k, 'Hold the ' + name + ' (off hand)', '1 AP', 'Take your ' + name + ' from the pack into the off hand' + (off ? ' (the ' + off + ' goes to the pack)' : '') + ': ' + (k === 'evoker' ? 'Sigils need an Evoker in hand.' : 'Outbursts spend MP, and Syphon works, only with an Emanator in hand.'), why] as ActionItem;
-  });
-}
 
 /** A quick "not now" for a command (a hint for the card; the engine still rules on the action itself). */
 export function whyNot(u: any, action: string, cost: string): string | null {

@@ -101,6 +101,36 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 
 Mix Body, Mind and Soul skills, so every kind of character has a way in. Objects without approaches get theirs from the Narrator when a player examines them.
 
+## Loot: drop tables, drops and piles (rules 1.8)
+
+What the fallen leave is rolled by the engine, never written as a result: once per death, on the fight's seeded dice, into the **pile** on the tile where they died. Three layers, the most specific winning (spec section 14 item 691):
+
+1. the engine's tables (`data/loot_tables.json`: `person`, `machine`, `caster`, `beast`, `notable`; rolls by tier; the caps a fight);
+2. the campaign's: `loot_tables` (top level) and `drops` on a zone NPC or an encounter enemy;
+3. the Narrator's `drops` on `combat.enemies[]` and `npcs[]` for one fight or one person.
+
+The weapon the enemy used (worn) and up to 2 leftover magazines with their real rounds always drop, whatever the layers say. A `drops` value replaces the rolled drops of the layers under it; `drops: {}` means nothing rolled.
+
+```json
+"loot_tables": [
+  { "id": "trophies", "none": 2, "entries": [
+    { "item": "hound_tooth", "name": "Hound tooth", "text": "Yellow, as long as a finger.", "weight": 3 },
+    { "item": "spare_parts", "qty": [1, 3], "weight": 1 } ] }
+],
+"zones": [{ "id": "kennels", "npcs": [
+  { "name": "Kennel master", "side": "hostile", "tier": "elite", "weapon": "service_pistol", "at": "F4",
+    "drops": { "items": [ { "item": "kennel_key", "name": "Kennel key", "text": "Opens every run but one." },
+                          { "item": "mag:service_pistol", "qty": 12, "chance": 0.5 } ] } } ] }],
+"encounters": [{ "name": "The hounds get loose", "zone": "kennels", "when": "...", "difficulty": "standard",
+  "enemies": [ { "name": "Hound", "tier": "minion", "weapon": "beast_bite", "drops": { "table": "trophies" } } ] }]
+```
+
+- Ids: anything `loot[]` takes (weapon and item ids), `mag:<weapon id>` (`qty` is the magazine's rounds; 1 or none is full, 0 empty), `rounds:<calibre>`, and `personal` (one of the personal effects). Any other id needs a `name` and becomes a plot item. `qty` is a number or `[min, max]` (1–20; 0–120 for `mag:` and `rounds:`); `chance` 0–1 rolls an entry on its own; `rarity` for weapons.
+- An encounter's enemies get their `drops` when a fight has the encounter's name (matched by name, like `music`).
+- `validateCampaign` reports bad tables, unknown table names, unknown ids without a `name`, and bad `qty`, `chance` or `rarity`.
+
+**Piles** (object kind `pile`) aren't written in a campaign file: one per tile, they come from play (a speed reload's magazine, a drop, a death) and from the Narrator's `ground[]`, and they keep exact items (a magazine with its rounds, a worn weapon). Players see a pile's contents when the party can see its tile, and Pick up takes a selection (1 AP). A campaign's hidden stash is a closed `cache` the Narrator fills, or a person's `drops`.
+
 ## A minimal campaign
 
 ```json
