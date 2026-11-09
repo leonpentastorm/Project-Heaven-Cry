@@ -4,6 +4,15 @@ Status: **accepted direction (Leon, 9 Nov 2026). Rules revision 1.8.** Every num
 damage balance pass (`docs/design/balance-targets.md`). Built on rules 1.5 (Outburst 2.0,
 `docs/design/outburst-2.0-proposal.md`), which this keeps and extends.
 
+**This is the only file to hand over.** It links everything else the implementer needs:
+- `CLAUDE.md`, especially the working agreements: the asset rule (sound and VFX from credited CC BY 4.0 or CC0
+  sources; make it yourself only when it looks good as pure SVG or CSS) and versioning;
+- `docs/HANDOFF.md`, for how to run, test and deploy;
+- `docs/design/outburst-2.0-proposal.md` (rules 1.5, which this extends);
+- `docs/design/handoffs/outburst-4.0-art-brief.md`: the icon ideas, used as the design source for the SVG icons
+  (section 11);
+- `docs/design/balance-targets.md`.
+
 ## 0. Why
 
 Playtest verdict:
@@ -243,9 +252,8 @@ The **Step** column is the multiplier step a feeling pump adds, instead of the p
 
 ## 11. Assets: what to find, what to commission, what to draw in code
 
-Part B **finds and wires** the sounds and effects. Leon's artist (`docs/design/handoffs/outburst-4.0-art-brief.md`)
-paints the icons. Nothing waits on the art: every icon slot has a code-drawn placeholder that a painted file replaces
-by name, with no code change, the way prayer icons work (`apps/web/src/game/faithArt.ts`).
+Part B **finds and wires** the sounds and effects. There is no artist for now: Part B draws the icons as SVG
+(item 4) and puts "COMING SOON" where painted art would be needed. Nothing waits on art.
 
 1. **Sound: Part B sources it.**
    - **What's needed:**
@@ -268,13 +276,20 @@ by name, with no code change, the way prayer icons work (`apps/web/src/game/fait
    - Reuse `apps/web/src/game/fx/` (the Soul family in `fx/soul.ts` and `fx/elements.ts`).
 3. **Feeling colours** are light and particles only, never body text (`docs/design/colour-system.md`). Each sits beside
    its word, since 25 colours can't carry meaning alone. Part B proposes the 25 values and Leon approves them.
-4. **Icons: commissioned** (the art brief), with placeholders until then:
-   - **25 feeling glyphs**;
-   - **39 module icons** (16 existing, 13 new, 10 gated);
-   - **3 UI marks**: Revert, Practice, the unlock card.
+4. **Icons: there is no artist for now (Leon, 9 Nov 2026).**
+   - **Make what looks good as pure SVG yourself:**
+     - the **39 module icons**, which are clean diagram lines;
+     - the **25 feeling glyphs**, which are flowing ribbon strokes with a heart-knot;
+     - the **3 UI marks**: Revert, Practice and the felt card.
 
-   Placeholders are simple white-stroke SVGs in code, like `glyphs.ts`. The painted files load by name from
-   `art/icons/feelings/` and `art/icons/modules/` through `npm run assets`.
+     Use the ideas and rules in `docs/design/handoffs/outburst-4.0-art-brief.md` (white strokes, readable at 40 px,
+     no text). Do it the way `apps/web/src/game/glyphs.ts` and `faithArt.ts` draw theirs.
+   - **Anything that needs bespoke painted art** (if a screen or card calls for an illustration or a painted texture)
+     shows a neutral **"COMING SOON"** placeholder in muted UI ink, with the item's name. Don't invent painted art.
+   - Make every icon slot load a painted file by name if one appears later (`art/icons/feelings/`,
+     `art/icons/modules/`, through `npm run assets`), so real art replaces the SVG or placeholder with no code change.
+   - **List every "COMING SOON" slot** for Leon in the handoff: what it is, where it shows, and what it should look
+     like.
 5. **Proving Ground:** a sound and effects test row for every feeling (pump, release, residue), so Leon can review them
    without playing a fight.
 
@@ -291,7 +306,8 @@ by name, with no code change, the way prayer icons work (`apps/web/src/game/fait
 - **Part B: web.**
   - The pump bar and multiplier counter with shake, colour and behaviour words.
   - Feeling buttons and revert.
-  - Residue on the map, effects and sound (section 11: sourcing and credits), the unlock cards, and icon placeholders
-    that the painted files replace by name.
+  - Residue on the map, effects and sound (section 11: sourcing and credits), the unlock cards.
+  - SVG feeling and module icons, "COMING SOON" where painted art is needed, and a handoff that lists those slots
+    for Leon.
   - The collapsible, grouped workshops for Sigil and Outburst, and the Proving Ground's grouped cheat menu.
   - e2e tests.
