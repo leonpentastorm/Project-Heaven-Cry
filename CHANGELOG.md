@@ -8,6 +8,15 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.10.1 — 9 November 2026
+
+Hotfix on `develop`: **the Narrator's voice made muffled buzzing on Leon's GPU** (Kokoro on WebGPU, AMD RDNA 4 with shader-f16).
+- **The warm-up now checks Kokoro sounds like speech**, not just that it isn't silent: "Ready." in af_heart is compared with a fingerprint of the fp32 model on the CPU (`apps/web/src/game/voiceCheck.ts`; the reference is made by `tools/voice_reference.mjs`). Real speech scores 0.94–0.99 and speech-shaped noise or buzz 0.38–0.84. Under 0.88 the GPU plan fails and the CPU reads.
+- **A GPU that made noise is remembered** per adapter and skipped next time.
+- **fp16 on WebGPU is no longer tried**, and fp16 weights left in the cache are no longer preferred. It's the usual cause of this noise.
+- **Settings › VOICE** shows the weights (fp32) and the check's score, with **Sounds wrong? Use the CPU** and **Try the GPU again**.
+- Tests: `voiceCheck.test.ts` (the real q8 model passes; muffled noise, buzz, white noise, silence, a wrong rate and a wrong length fail), and `voice.mjs` covers the noise fallback and both buttons.
+
 ## 0.10.0 — 9 November 2026
 
 Branch `claude/awesome-babbage-8gngk8`: **spotlight cut-ins** (decision 113; `docs/design/cutin-spec.md`).

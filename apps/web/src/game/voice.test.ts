@@ -63,17 +63,20 @@ describe('Wait for Kokoro', () => {
   });
 });
 
-describe('the model: WebGPU first, the CPU only on a real error', () => {
-  it('WebGPU when there is an adapter (fp32: q8 has no WebGPU kernels), fp16 next with shader-f16, the CPU last', () => {
-    expect(plansFor({ ok: true, f16: true })).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'webgpu', dtype: 'fp16' }, { device: 'wasm', dtype: 'q8' }]);
-    expect(plansFor({ ok: true, f16: false })).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'wasm', dtype: 'q8' }]);
-    expect(plansFor({ ok: false, f16: false })).toEqual([{ device: 'wasm', dtype: 'q8' }]);
+describe('the model: fp32 on WebGPU first, the CPU otherwise', () => {
+  it('WebGPU fp32 when there is an adapter (q8 has no WebGPU kernels; fp16 made noise on RDNA 4), then the CPU', () => {
+    expect(plansFor({ ok: true, f16: true }, new Set(), null)).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'wasm', dtype: 'q8' }]);
+    expect(plansFor({ ok: true, f16: false }, new Set(), null)).toEqual([{ device: 'webgpu', dtype: 'fp32' }, { device: 'wasm', dtype: 'q8' }]);
+    expect(plansFor({ ok: false, f16: false }, new Set(), null)).toEqual([{ device: 'wasm', dtype: 'q8' }]);
   });
-  it('weights already in the cache go first (no second download)', () => {
+  it('fp16 in the cache is never preferred any more; a GPU that made noise goes straight to the CPU', () => {
+    expect(plansFor({ ok: true, f16: true, name: 'amd rdna-4' }, new Set(['fp16']), null)[0]).toEqual({ device: 'webgpu', dtype: 'fp32' });
+    expect(plansFor({ ok: true, f16: true, name: 'amd rdna-4' }, new Set(), 'amd rdna-4')).toEqual([{ device: 'wasm', dtype: 'q8' }]);
+    expect(plansFor({ ok: true, f16: true, name: 'nvidia ampere' }, new Set(), 'amd rdna-4')[0]).toEqual({ device: 'webgpu', dtype: 'fp32' });
+  });
+  it('the cached weights are recognised', () => {
     const cached = cachedWeights(['https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/onnx/model.onnx', 'https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/voices/af_heart.bin']);
     expect([...cached]).toEqual(['fp32']);
-    expect(plansFor({ ok: true, f16: true }, cached)[0]).toEqual({ device: 'webgpu', dtype: 'fp32' });
-    expect(plansFor({ ok: true, f16: true }, new Set(['fp16']))[0]).toEqual({ device: 'webgpu', dtype: 'fp16' });
     expect([...cachedWeights(['https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/onnx/model_quantized.onnx'])]).toEqual(['q8']);
     expect(cachedWeights(['https://example.com/other/model.onnx']).size).toBe(0);
   });

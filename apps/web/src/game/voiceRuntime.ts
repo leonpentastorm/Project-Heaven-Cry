@@ -2,11 +2,12 @@
 // first page load and out of the unit tests). Two of the fixes for "Kokoro never plays" live here:
 //   - the ONNX runtime binary comes from this site (Vite emits it; the alias is in vite.config.ts), not from the
 //     jsDelivr CDN that transformers.js points at by default (blocked by some networks and content blockers);
-//   - every model is warmed up and its audio checked (not silent, no NaN) before it is called ready, so a WebGPU
-//     build that "loads" but sings garbage is caught and the next plan is tried.
+//   - every model is warmed up and its audio checked (not silent, no NaN, and shaped like speech: voiceCheck.ts)
+//     before it is called ready, so a WebGPU build that "loads" but sings garbage is caught and the next plan is tried.
 import { KokoroTTS } from 'kokoro-js';
 import { env } from '@huggingface/transformers';
 import ortWasm from '@ort/ort-wasm-simd-threaded.jsep.wasm?url';
+import { CHECK_TEXT, CHECK_VOICE, SPEECH_MIN, speechLikeness } from './voiceCheck';
 
 export const MODEL_ID = 'onnx-community/Kokoro-82M-v1.0-ONNX';
 export interface Plan { device: 'webgpu' | 'wasm'; dtype: 'fp32' | 'fp16' | 'q8' | 'q4' | 'q4f16' }
@@ -42,15 +43,22 @@ export async function load(plan: Plan, onProgress: (p: Progress) => void): Promi
   });
 }
 
-/** Warm up (compiles the GPU shaders once) and check the sound is sound: real samples, not silence, no NaN. */
-export async function check(tts: KokoroTTS, voice = 'af_heart'): Promise<{ ms: number; seconds: number }> {
+/** Warm up (compiles the GPU shaders once) and check the sound is speech: real samples, not silence, no NaN, and
+ *  the check line's spectral shape close to the fp32 fingerprint (voiceCheck.ts). A GPU build whose numbers go wrong
+ *  makes loud, finite noise that follows the words (Leon's RDNA 4: "muffled buzzing"); this catches it, and the next
+ *  plan (the CPU) is tried. Always the same line and voice, so the score is comparable on every device. */
+export async function check(tts: KokoroTTS, _voice = CHECK_VOICE): Promise<{ ms: number; seconds: number; likeness: number }> {
   const t0 = performance.now();
-  const out: any = await tts.generate('Ready.', { voice: voice as any });
+  const out: any = await tts.generate(CHECK_TEXT, { voice: CHECK_VOICE as any });
   const a: Float32Array = out.audio, ms = Math.round(performance.now() - t0);
   let peak = 0, bad = 0;
   for (let i = 0; i < a.length; i++) { const x = a[i]; if (!Number.isFinite(x)) bad++; else if (Math.abs(x) > peak) peak = Math.abs(x); }
   if (!a.length) throw new Error('the model made no audio');
   if (bad) throw new Error('the model made broken audio (' + bad + ' NaN samples)');
   if (peak < 1e-3) throw new Error('the model made silence');
-  return { ms, seconds: a.length / out.sampling_rate };
+  const likeness = speechLikeness(a, out.sampling_rate);
+  if (likeness < SPEECH_MIN) throw new VoiceNoise('the model made noise, not speech (likeness ' + likeness.toFixed(2) + ', needs ' + SPEECH_MIN + ')', likeness);
+  return { ms, seconds: a.length / out.sampling_rate, likeness };
 }
+/** The warm-up made loud noise instead of speech (the plan's numbers go wrong on this device). */
+export class VoiceNoise extends Error { constructor(m: string, public likeness: number) { super(m); this.name = 'VoiceNoise'; } }

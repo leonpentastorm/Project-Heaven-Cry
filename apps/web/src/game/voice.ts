@@ -120,6 +120,7 @@ export interface VoiceState {
   speaking: string | null; held: string[];
   /** The last Test voice: engine, device, time to the first audio. */ test: VoiceTest | null;
   /** Before installing: the download for this device (MB) and where it would run. */ planMB: number; planDevice: 'webgpu' | 'wasm' | null;
+  /** The warm-up's speech likeness (voiceCheck.ts), and whether the plan was forced from Settings or localStorage. */ likeness?: number | null; forced?: boolean;
 }
 let state: VoiceState = { status: 'idle', progress: 0, loadedMB: 0, totalMB: 0, device: null, dtype: null, gpu: '', fellBack: null, error: null, speaking: null, held: [], test: null, planMB: 0, planDevice: null };
 const subs = new Set<() => void>();
@@ -139,17 +140,19 @@ export function voiceChip(s: VoiceState = state, p: VoicePrefs = prefs): string 
 }
 
 // ---------- the model ----------
-/** What to try, in order. WebGPU first when there is an adapter, with the same 92 MB q8 weights the CPU uses, so a
- *  fallback to the CPU costs no second download; fp32 on the GPU (326 MB) only if q8 can't run there. */
-export function plansFor(gpu: { ok: boolean; f16: boolean }, cached: Set<string> = new Set()): { device: 'webgpu' | 'wasm'; dtype: 'fp32' | 'fp16' | 'q8' }[] {
-  if (!gpu.ok) return [{ device: 'wasm', dtype: 'q8' }];
-  // On the GPU, fp32: the q8 weights' MatMulInteger, ConvInteger and DynamicQuantizeLinear have no WebGPU kernel in
-  // onnxruntime-web, so "q8 on WebGPU" runs its heavy math on the CPU anyway (measured: slower than q8 on WASM).
-  // fp16 (half the download) needs shader-f16 and is tried next; the CPU only on a real error. Weights already in the
-  // cache go first (no second download).
-  const gpuPlans: ('fp32' | 'fp16')[] = gpu.f16 ? (cached.has('fp16') && !cached.has('fp32') ? ['fp16', 'fp32'] : ['fp32', 'fp16']) : ['fp32'];
-  return [...gpuPlans.map((dtype) => ({ device: 'webgpu' as const, dtype })), { device: 'wasm', dtype: 'q8' }];
+/** What to try, in order: fp32 on WebGPU when there is an adapter, then q8 on the CPU (WASM).
+ *  - Not q8 on the GPU: its MatMulInteger, ConvInteger and DynamicQuantizeLinear have no WebGPU kernel in onnxruntime-web,
+ *    so it runs its heavy math on the CPU anyway (measured: slower than q8 on WASM).
+ *  - Not fp16 (9 Nov 2026): on Leon's RDNA 4 (shader-f16) Kokoro "played" as muffled buzzing, and fp16 on WebGPU is the
+ *    usual cause of that. It can still be forced for a test (localStorage 'phc.voicePlan'); the speech check catches it.
+ *  - A GPU whose fp32 warm-up made noise before (remembered per adapter, 'phc.voiceGpuNoise') goes straight to the CPU. */
+export function plansFor(gpu: { ok: boolean; f16: boolean; name?: string }, _cached: Set<string> = new Set(), noisy: string | null = gpuNoise()): { device: 'webgpu' | 'wasm'; dtype: 'fp32' | 'fp16' | 'q8' }[] {
+  if (!gpu.ok || (noisy && noisy === (gpu.name || ''))) return [{ device: 'wasm', dtype: 'q8' }];
+  return [{ device: 'webgpu', dtype: 'fp32' }, { device: 'wasm', dtype: 'q8' }];
 }
+/** The adapter whose GPU voice made noise (so it isn't tried again), or null. */
+export const gpuNoise = (): string | null => { try { return localStorage.getItem('phc.voiceGpuNoise'); } catch { return null; } };
+const setGpuNoise = (name: string | null) => { try { if (name == null) localStorage.removeItem('phc.voiceGpuNoise'); else localStorage.setItem('phc.voiceGpuNoise', name); } catch { /* */ } };
 /** Is there a WebGPU adapter, and what is it? (Chrome and Edge on Windows: the GPU's D3D12 adapter.) */
 export interface Gpu { ok: boolean; why: string; name: string; f16: boolean }
 export async function gpuInfo(): Promise<Gpu> {
@@ -209,7 +212,9 @@ export function loadVoice(opts: { retry?: boolean } = {}): Promise<any> {
     put({ gpu: gpu.ok ? gpu.name + (gpu.f16 ? ' · shader-f16' : '') : gpu.why });
     console.info('[voice] WebGPU: ' + (gpu.ok ? 'adapter ' + gpu.name + ', shader-f16 ' + gpu.f16 : gpu.why));
     let gpuErr: string | null = null, last: unknown = null, triedGpu = false;
-    for (const plan of forced() || plansFor(gpu, cachedSet)) {
+    const plans = forced() || plansFor(gpu, cachedSet), isForced = !!forced();
+    if (!isForced && gpu.ok && gpuNoise() === gpu.name) { triedGpu = true; gpuErr = 'it made noise, not speech, on this GPU before'; }
+    for (const plan of plans) {
       try {
         console.info('[voice] Kokoro: loading ' + plan.dtype + ' on ' + plan.device);
         const tts = await rt.load(plan as any, (p) => {
@@ -218,19 +223,27 @@ export function loadVoice(opts: { retry?: boolean } = {}): Promise<any> {
         });
         put({ status: 'installing', progress: 100 });
         const w = await rt.check(tts, prefs.voice && isKokoroKey(prefs.voice) ? prefs.voice : 'af_heart');
-        put({ status: 'ready', device: plan.device as any, dtype: plan.dtype, fellBack: plan.device === 'wasm' && triedGpu ? gpuErr || 'WebGPU failed' : null });
+        put({ status: 'ready', device: plan.device as any, dtype: plan.dtype, fellBack: plan.device === 'wasm' && triedGpu ? gpuErr || 'WebGPU failed' : null, likeness: (w as any).likeness ?? null, forced: isForced });
         if (!prefs.ready) setVoicePrefs({ ready: true });
-        console.info('[voice] Kokoro ready on ' + (plan.device === 'webgpu' ? 'WebGPU (' + gpu.name + ')' : 'the CPU (WASM)') + ', ' + plan.dtype + ', in ' + Math.round((performance.now() - t0) / 100) / 10 + ' s; warm-up ' + w.ms + ' ms'
+        console.info('[voice] Kokoro ready on ' + (plan.device === 'webgpu' ? 'WebGPU (' + gpu.name + ')' : 'the CPU (WASM)') + ', ' + plan.dtype + ', in ' + Math.round((performance.now() - t0) / 100) / 10 + ' s; warm-up ' + w.ms + ' ms; sounds like speech: ' + ((w as any).likeness != null ? (w as any).likeness.toFixed(2) : '?')
           + (plan.device === 'wasm' && triedGpu ? '; WebGPU failed: ' + gpuErr : ''));
         return tts;
       } catch (e) {
-        last = e; if (plan.device === 'webgpu') { triedGpu = true; if (!gpuErr) gpuErr = msg(e); }
+        last = e; if (plan.device === 'webgpu') { triedGpu = true; if (!gpuErr) gpuErr = msg(e); if ((e as any)?.name === 'VoiceNoise' && !isForced) setGpuNoise(gpu.name || ''); }
         console.warn('[voice] Kokoro ' + plan.dtype + ' on ' + plan.device + ' failed: ' + msg(e), e);
       }
     }
     throw last || new Error('no way to run Kokoro here');
   })().catch((e) => { put({ status: 'failed', error: msg(e) }); return null; });
   return ttsP;
+}
+/** Settings: run Kokoro on the CPU from now on ('cpu'), or go back to the automatic choice ('auto': the GPU is tried
+ *  again, even one that made noise before). Reloads the voice. */
+export function setVoiceDevice(which: 'cpu' | 'auto'): Promise<any> {
+  try { if (which === 'cpu') localStorage.setItem('phc.voicePlan', JSON.stringify({ device: 'wasm', dtype: 'q8' })); else localStorage.removeItem('phc.voicePlan'); } catch { /* */ }
+  if (which === 'auto') setGpuNoise(null);
+  stopVoice(); ttsP = null; cache.clear();
+  return loadVoice({ retry: true });
 }
 /** The Settings button: opt in, remember it, start the download. */
 export function installVoice(): Promise<any> { setVoicePrefs({ install: true }); return loadVoice({ retry: true }); }
@@ -338,5 +351,5 @@ export function testVoice(voice = prefs.voice): Promise<VoiceTest> {
   });
 }
 
-// Diagnostics in the console (and the e2e): window.__phcVoice.state(), .test(), .load().
-if (typeof window !== 'undefined') (window as any).__phcVoice = { state: () => state, prefs: () => prefs, chip: () => voiceChip(), say: (id: string, text: string) => { hold(id); return speak(id, text); }, test: testVoice, load: loadVoice, voices: () => rankVoices(bvoices) };
+// Diagnostics in the console (and the e2e): window.__phcVoice.state(), .test(), .load(), .device('cpu' | 'auto').
+if (typeof window !== 'undefined') (window as any).__phcVoice = { state: () => state, prefs: () => prefs, chip: () => voiceChip(), say: (id: string, text: string) => { hold(id); return speak(id, text); }, test: testVoice, load: loadVoice, device: (w: 'cpu' | 'auto') => setVoiceDevice(w), voices: () => rankVoices(bvoices) };

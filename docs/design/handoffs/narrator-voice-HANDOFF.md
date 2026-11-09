@@ -131,12 +131,15 @@ The cause is not the GPU. Six things together sent almost every line to the brow
    - My only real numbers are from the CPU here (single-threaded WASM): **ready from the cache in 6 s, warm-up 3.4 s,
      first audio 4.36 s**.
 5. In a session, the header chip should read **Voice: Kokoro · WebGPU**, and lines should start in Kokoro's voice.
-6. **Worth trying, fp16 (half the download).** In the console:
-   - Run `localStorage.setItem('phc.voicePlan', JSON.stringify({ device: 'webgpu', dtype: 'fp16' }))`, reload, and use
-     Settings › VOICE › Load (or Retry). Then Test voice.
-   - If it sounds the same and is as fast, I'll make fp16 the first plan for GPUs with `shader-f16`: 163 MB instead
-     of 326.
-   - Undo it with `localStorage.removeItem('phc.voicePlan')`.
+6. ~~**Worth trying, fp16 (half the download).**~~ **Done, and it failed** (Leon, 9 Nov 2026: Kokoro on WebGPU "plays" as
+   muffled buzzing on the 9070 XT). fp16 is no longer tried automatically, and fp16 left in the cache is no longer
+   preferred. Every warm-up now checks the audio **sounds like speech**: the line "Ready." in af_heart is compared,
+   frame by frame, with a fingerprint of the fp32 model on the CPU (`apps/web/src/game/voiceCheck.ts`,
+   `voiceReference.json`, made by `tools/voice_reference.mjs`). The real model scores 0.94–0.99 and speech-shaped noise
+   or buzz 0.38–0.84; under 0.88 the plan fails and the next is tried (the CPU). A GPU that made noise is remembered per
+   adapter (`phc.voiceGpuNoise`) and skipped. Settings shows the dtype and the check's score, with **Sounds wrong? Use
+   the CPU** on the GPU and **Try the GPU again** on the CPU. If `phc.voicePlan` was set for check 6, remove it:
+   `localStorage.removeItem('phc.voicePlan')`.
 7. If something fails, Settings shows **Failed: <reason>** and the console has `[voice] Kokoro fp32 on webgpu failed: …`.
    Send those lines.
 

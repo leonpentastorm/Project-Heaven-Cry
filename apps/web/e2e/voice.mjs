@@ -25,7 +25,8 @@ const init = ({ edge }) => {
   synth.cancel = () => {};
   setTimeout(() => synth.dispatchEvent(new Event('voiceschanged')), 50);
   // The Kokoro stand-in: the same three functions as game/voiceRuntime.ts.
-  // __voiceFail: 'all' (every plan fails), 'webgpu' (only the GPU plans: a real WebGPU error), or null.
+  // __voiceFail: 'all' (every plan fails), 'webgpu' (only the GPU plans: a real WebGPU error), 'noise' (the GPU warms up
+  // but makes noise, not speech), or null.
   window.__voiceFail = null; window.__voiceStepMs = 120;
   const audio = () => ({ audio: new Float32Array(4800).fill(0.2), sampling_rate: 24000 });
   window.__phcVoiceRuntime = {
@@ -34,9 +35,10 @@ const init = ({ edge }) => {
       const total = plan.dtype === 'fp32' ? 325.5e6 : plan.dtype === 'fp16' ? 163.2e6 : 92.4e6;
       const fails = window.__voiceFail === 'all' || (window.__voiceFail === 'webgpu' && plan.device === 'webgpu');
       for (let i = 0; i <= 10; i++) { onProgress({ loaded: total * i / 10, total }); await new Promise((r) => setTimeout(r, window.__voiceStepMs)); if (fails && i === 4) throw new Error(plan.device === 'webgpu' ? 'WebGPU device lost' : 'the model download was cut off'); }
-      return { stream: async function* () { await new Promise((r) => setTimeout(r, 60)); yield { audio: audio() }; }, generate: async () => audio() };
+      return { device: plan.device, stream: async function* () { await new Promise((r) => setTimeout(r, 60)); yield { audio: audio() }; }, generate: async () => audio() };
     },
-    check: async () => ({ ms: 5, seconds: 0.2 }),
+    // __voiceFail 'noise': the GPU build warms up but its audio isn't speech (Leon's RDNA 4: muffled buzzing).
+    check: async (tts) => { if (window.__voiceFail === 'noise' && tts.device === 'webgpu') { const e = new Error('the model made noise, not speech (likeness 0.41, needs 0.88)'); e.name = 'VoiceNoise'; throw e; } return { ms: 5, seconds: 0.2, likeness: 0.97 }; },
   };
 };
 
@@ -176,5 +178,23 @@ await sec2.locator('[data-voice-status="ready"]').waitFor({ timeout: 10000 });
 ok('WebGPU fails for real: ' + (await sec2.textContent()).match(/Ready · [^.]*\)/)?.[0], /Ready · Kokoro on the CPU \(WebGPU failed: WebGPU device lost\)/.test(await sec2.textContent()));
 ok('and the chip says so: ' + await q.evaluate(() => window.__phcVoice.chip()), (await q.evaluate(() => window.__phcVoice.chip())) === 'Voice: Kokoro · CPU (WebGPU failed)');
 if (SHOTS) await sec2.screenshot({ path: SHOTS + '/voice-cpu-fallback.png' });
+
+// The GPU makes noise, not speech (9 Nov 2026): the warm-up check catches it, the CPU reads, the GPU is remembered as
+// noisy, and Settings offers to try the GPU again; on a GPU that works, "Sounds wrong? Use the CPU" switches.
+await q.evaluate(() => { localStorage.removeItem('phc.voiceGpuNoise'); window.__voiceFail = 'noise'; });
+await q.evaluate(() => window.__phcVoice.device('auto'));
+await sec2.locator('[data-voice-status="ready"]').waitFor({ timeout: 10000 });
+const noiseText = await sec2.textContent();
+ok('noise on the GPU: ' + (noiseText.match(/Ready · [^.]*\)/)?.[0] || noiseText.slice(0, 120)), /Ready · Kokoro on the CPU \(WebGPU failed: the model made noise, not speech/.test(noiseText));
+ok('the noisy GPU is remembered (' + await q.evaluate(() => localStorage.getItem('phc.voiceGpuNoise')) + ')', (await q.evaluate(() => localStorage.getItem('phc.voiceGpuNoise'))) === 'Test GPU');
+ok('Settings offers "Try the GPU again"', (await sec2.locator('[data-voice-gpu]').count()) === 1);
+await q.evaluate(() => { window.__voiceFail = null; });
+await sec2.locator('[data-voice-gpu]').click();
+await q.waitForFunction(() => /Ready · Kokoro on WebGPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
+ok('Try the GPU again: back on WebGPU, the check passed (' + ((await sec2.textContent()).match(/Warm-up check[^)]*\)/)?.[0] || '?') + ')', /Ready · Kokoro on WebGPU/.test(await sec2.textContent()) && /sounds like speech \(97%\)/.test(await sec2.textContent()) && (await q.evaluate(() => localStorage.getItem('phc.voiceGpuNoise'))) === null);
+await sec2.locator('[data-voice-cpu]').click();
+await q.waitForFunction(() => /Ready · Kokoro on the CPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
+ok('"Sounds wrong? Use the CPU" switches to the CPU and keeps it (' + await q.evaluate(() => localStorage.getItem('phc.voicePlan')) + ')', /Ready · Kokoro on the CPU/.test(await sec2.textContent()) && /wasm/.test(await q.evaluate(() => localStorage.getItem('phc.voicePlan')) || ''));
+if (SHOTS) await sec2.screenshot({ path: SHOTS + '/voice-noise-fallback.png' });
 await ctx2.close();
 await browser.close();

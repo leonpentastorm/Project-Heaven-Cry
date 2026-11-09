@@ -3,7 +3,7 @@
 // not, and test the voice (the device and the time to the first audio). Buttons and selects only.
 import React from 'react';
 import {
-  voicePrefs, setVoicePrefs, voiceState, onVoice, installVoice, loadVoice, testVoice, voiceGroups, browserVoices, browserKey, isBrowserKey, isKokoroKey,
+  voicePrefs, setVoicePrefs, voiceState, onVoice, installVoice, loadVoice, setVoiceDevice, testVoice, voiceGroups, browserVoices, browserKey, isBrowserKey, isKokoroKey,
   waitForKokoro, bestVoice, voiceScore, probeVoice, EDGE_NOTE, MODEL_MB, CORES, CORE_VOICE, type BVoice,
 } from './voice';
 
@@ -70,7 +70,9 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
       </>}
       {s.status === 'ready' && <>
         <span style={{ fontSize: fs, fontWeight: 700 }}><span style={{ color: C.ok }}>✓ </span>Ready · Kokoro on {where}</span>
-        <span style={note}>{s.device === 'webgpu' ? 'Running on your GPU.' : 'Running on the CPU: a little slower to start each line.'}</span>
+        <span style={note}>{s.device === 'webgpu' ? 'Running on your GPU' + (s.dtype ? ' (' + s.dtype + ')' : '') + '.' : 'Running on the CPU: a little slower to start each line.'}{s.likeness != null ? ' Warm-up check: sounds like speech (' + Math.round(s.likeness * 100) + '%).' : ''}</span>
+        {s.device === 'webgpu' && <div style={row}><button type="button" data-voice-cpu="" style={btn()} onClick={() => setVoiceDevice('cpu')}>Sounds wrong? Use the CPU</button></div>}
+        {s.device === 'wasm' && (s.forced || s.fellBack) && <div style={row}><button type="button" data-voice-gpu="" style={btn()} onClick={() => setVoiceDevice('auto')}>Try the GPU again</button></div>}
       </>}
       {s.status === 'failed' && <>
         <span style={{ fontSize: fs, fontWeight: 700 }}><span style={{ color: C.bad }}>✕ </span>Failed: {s.error}</span>
