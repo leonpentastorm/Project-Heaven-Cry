@@ -22,7 +22,7 @@ import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, core
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
 import { glyphKeyNav } from '../game/glyphKeys';
-import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer } from '../game/sigilView';
+import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer, wordMasteryChips, readableAt, traceMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
@@ -615,6 +615,9 @@ export class MainLogic extends DCLogic {
     const sameMap = !g.story.glyphMap || g.story.glyphMap === map.id;
     const GLY = inFight ? g.combat?.glyphs || [] : sameMap ? g.story.glyphs || [] : [], ZON = inFight ? g.combat?.zones || [] : sameMap ? g.story.zones || [] : [];
     const glAt = {}; GLY.forEach((x) => { (glAt[x.pos] ||= []).push(x); });
+    // Rules 1.9: scuffed glyphs' traces (2 rounds), faint on the map; Analyze aimed at one (or at a hostile glyph) reads it.
+    const TRC = inFight ? g.combat?.traces || [] : sameMap ? g.story.traces || [] : [], trAt = {}; TRC.forEach((x) => { (trAt[x.pos] ||= []).push(x); });
+    const readT = S.wTarget && S.wTarget.startsWith('read:') ? S.wTarget.slice(5) : null;
     const heldOf = (u) => (u.side !== 'pc' ? null : inFight ? (g.combat?.units.find((x) => x.id === u.id)?.mg?.held || null) : (g.story.magic || {})[u.charId]?.held || null);
     // The story map as a throwaway fight, for the engine's previews (built only when a spell is being lined up).
     let scbMemo; const scb = () => { if (scbMemo === undefined) { try { scbMemo = storyCb({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } }); } catch { scbMemo = null; } } return scbMemo; };
@@ -688,12 +691,14 @@ export class MainLogic extends DCLogic {
         mHint = say + (why ? ' Not now: ' + why : ''); mReady = !why; mLabel = { scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', syphon: 'Syphon', crystallise: 'Crystallise' }[W] + ' · ' + { scuff: 1, vent: 1, core: 2, syphon: 1, crystallise: 3 }[W] + ' AP';
       }
     }
+    const WMw = mOpen && W === 'draw' ? wordMasteryChips(c) : {}; // rules 1.9: use counts and stars on the keys
     const wMagic = {
       showWords: !!(mOpen && W === 'draw' && myWords.length), showDesigns: !!(mOpen && W === 'outburst' && myDesigns.length),
-      words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w], dw = drawAll.find((x) => x.id === w), off = !!(dw && !dw.ok);
+      words: myWords.map((w) => { const on = w === wordSel, def = SIGIL[w], dw = drawAll.find((x) => x.id === w), off = !!(dw && !dw.ok), wm = WMw[w];
         return { key: w, img: glyphUri(w, off ? '#7F8BA1' : SIGIL_INK, { glow: on && !off }), word: def.word, charge: String(def.charge), sub: off ? def.charge + ' ch' : def.charge + ' charge', hint: off ? dw.hint : '',
-          title: dw ? dw.title : def.word + ' · ' + def.text, pressed: on ? 'true' : 'false', disabled: off ? 'true' : 'false', onKey: glyphKeyNav,
-          aria: def.word + ', ' + (wordClassName(w) || 'word') + ', ' + (off ? 'can\'t draw now: ' + dw.why : def.charge + ' charge'),
+          title: (dw ? dw.title : def.word + ' · ' + def.text) + (wm ? ' · ' + wm.text : ''), pressed: on ? 'true' : 'false', disabled: off ? 'true' : 'false', onKey: glyphKeyNav,
+          hasUses: !!wm, uses: wm ? String(wm.uses) : '', hasStar: !!(wm && wm.hasStar), star: wm ? wm.star : '', starAlt: wm ? wm.starAlt : '',
+          aria: def.word + ', ' + (wordClassName(w) || 'word') + ', ' + (off ? 'can\'t draw now: ' + dw.why : def.charge + ' charge') + (wm ? '; ' + wm.text : ''),
           pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 66px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (off ? '#A3AEC2' : on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px ' + (off && !on ? 'dashed #2A3A48' : 'solid ' + (on ? SIG_CYAN : '#232D3F')) + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') + (off ? '; opacity: 0.8' : '') }; }),
       designs: wCards.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: d.line, icon: d.icon, title: d.title + ' ' + d.costText + '.', subStyle: 'font-size: 10px; font-weight: 700; color: ' + d.ink,
         pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; align-items: center; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? d.ink : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') + (d.canBegin ? '' : '; opacity: 0.6') }; }),
@@ -702,6 +707,11 @@ export class MainLogic extends DCLogic {
       showHeart: !!(mOpen && wHp && (W === 'release' || HEART_W.includes(W))),
       hv: heartVals(wHp, (id) => { if (id === 'release') return this.setState({ wAct: 'release', wAim: null }); act({ type: 'world/act', charId: c.id, act: id, ...(id === 'heartwatch' ? { on: !(MN.held && MN.held.watch) } : {}) }); if (id === 'letgo') this.setState({ wAct: 'outburst' }); }),
     };
+    // Rules 1.9 Junctions (item 690): on a junction's tile, pick which of its two Lines to Evoke (as on the combat pad).
+    const wJx = mOpen && W === 'evoke' && evW && (evW.junction || []).length > 1 ? evW.junction : [];
+    wMagic.hasJunction = wJx.length > 0;
+    wMagic.junctionBtns = wJx.map((j) => ({ key: j.key, label: (j.on ? '✓ ' : '') + j.label, title: 'Evoke the Line ' + j.label + ' from this junction', pressed: j.on ? 'true' : 'false', pick: () => this.setState({ wEvc: { stroke: j.key }, wAim: null }),
+      style: 'min-height: 26px; padding: 0 8px; border-radius: 6px; font-family: inherit; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; ' + (j.on ? 'border: 1px solid ' + SIG_CYAN + '; background: ' + epRgba(SIG_CYAN, 0.16) + '; color: #E7EBF3' : 'border: 1px solid #232D3F; background: #10151F; color: ' + SIG_CYAN) }));
     wMagic.wordRows = wordRows(wMagic.words, (w) => w.key).map((r) => ({ key: r.key, label: r.label.toUpperCase(), aria: r.label + ' words', words: r.items }));
     // Rules 1.9: the stroke picker for the word picked (as on the combat glyph keyboard), and what the glyph makes.
     const wSbs = wMagic.showWords ? strokeButtons(drawInfo) : [];
@@ -804,7 +814,7 @@ export class MainLogic extends DCLogic {
           const gl = glAt[k] || [], held = u ? heldOf(u) : null, sgT = sgTiles[k];
           const sgDim = labels && evW && evW.area.size > 0 && evW.stage !== 'stand' && !evW.area.has(k) && !evW.pickable.has(k) && !evW.stepTo.has(k) && !evW.orderTo.has(k) && k !== myAt;
           const sgLayer = [sgT && sgT.layer, sgDim ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
-          const mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => glyphMark(x, 'pc', knowsW).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
+          const tr = trAt[k] || [], mWhat = (gl.length ? ' · glyphs: ' + gl.map((x) => glyphMark(x, 'pc', knowsW).title).join(', ') : '') + (tr.length ? ' · ' + tr.map((x) => traceMark(x, knowsW).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (held ? ' · holding an Outburst, stage ' + held.stage : '');
           const mStyle = !labels ? '' : (mHi.pattern.has(k) ? '; outline: 2px solid ' + SIG_CYAN + '; outline-offset: -2px' : mHi.aim === k ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + (mHi.reach.has(k) ? '; box-shadow: inset 0 0 0 2px ' + epRgba(mHi.reachCol, 0.45) : '');
           const glyph = o && !u && !spr && !wc.cache && !wc.sigil && !(cov[k] && (o.kind === 'crate' || o.kind === 'pillar')) ? kindOf(o).glyph : '';
           const hzU = labels && u && mHz.on ? mHz.marks.get(u.id) : null, hzL = labels && mHz.on ? overlayTileStyle(mHz, k) : '';
@@ -836,12 +846,14 @@ export class MainLogic extends DCLogic {
             hasStrokeHot: labels && SLw.hot.has(k), hasStrokeTip: labels && k === S.hoverTile && !!SLw.hotText, strokeTip: SLw.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (x >= map.w / 2 ? 'right: 0' : 'left: 0') + '; z-index: 7; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
             glyphs: gl.slice(0, 2).map((x, i) => { const ours = x.side === 'pc';
               return { key: x.id, src: glyphMark(x, 'pc', knowsW).src,
-                style: 'position: absolute; z-index: 3; width: 44%; height: 44%; pointer-events: none; ' + (i ? 'right: 3%; bottom: 3%' : 'left: 3%; top: 3%') + (ours ? '; filter: drop-shadow(0 0 2px ' + SIG_CYAN + ')' : '; opacity: 0.7') }; }),
+                style: 'position: absolute; z-index: 3; width: 44%; height: 44%; pointer-events: none; ' + (i ? 'right: 3%; bottom: 3%' : 'left: 3%; top: 3%') + (ours ? '; filter: drop-shadow(0 0 2px ' + SIG_CYAN + ')' : '; opacity: 0.7') }; })
+              .concat(gl.length < 2 ? tr.slice(0, 2 - gl.length).map((x, i) => ({ key: 'tr-' + x.id, src: traceMark(x, knowsW).src, // a trace: faint, where a glyph would sit
+                style: 'position: absolute; z-index: 3; width: 44%; height: 44%; pointer-events: none; opacity: 0.45; ' + (i + gl.length ? 'right: 3%; bottom: 3%' : 'left: 3%; top: 3%') })) : []),
             hasZone: !!sgLayer, zoneStyle: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; ' + sgLayer,
             hasSg: labels && !!(sgT && sgT.marks.length), sg: labels && sgT ? sgT.marks : [],
             hasHeart: !!held, heart: held ? heartUri(held.stage) : '', heartStyle: 'position: absolute; z-index: 4; right: -6%; top: -6%; width: 40%; height: 40%; pointer-events: none; filter: drop-shadow(0 0 3px ' + SOUL_VIOLET + ')',
             label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : '') + mWhat + wWhat, title: u ? '' : ref + ' · ' + what + mWhat + wWhat + (note ? '\n' + note : ''),
-            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + mStyle + tgtMark });
+            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) || (readT && readT === k) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + mStyle + tgtMark });
         }
       }
       return out;
@@ -952,7 +964,7 @@ export class MainLogic extends DCLogic {
         const attacking = ['shot', 'aimed', 'melee'].includes(W), o = objAt[k];
         if (W === 'stim') { if (!u || u.side !== 'pc') return toast('Click an ally.'); return this.setState({ wTarget: u.id }); }
         if (u && u.charId === mover.id) return toast('Pick someone else.');
-        if (W === 'analyze') { if (!u || u.side !== 'foe') return toast('Click a person or enemy on the map.'); return this.setState({ wTarget: u.id }); }
+        if (W === 'analyze') { if (!u || u.side !== 'foe') { if (readableAt(GLY, TRC, k, 'pc', (w) => !!(mover.sigils || []).includes(w), mover.id).length) return this.setState({ wTarget: 'read:' + k }); return toast('Click a person or enemy on the map, or a glyph or trace to read.'); } return this.setState({ wTarget: u.id }); }
         if (attacking && u) return this.setState({ wTarget: u.id });
         if (attacking && o && !o.hidden) { if (o.dead) return toast(o.name + ' is dead.'); return this.setState({ wTarget: 'obj:' + o.id }); }
         return toast('Click a person, an ally or an object.');
@@ -1035,6 +1047,7 @@ export class MainLogic extends DCLogic {
       : W === 'twin' ? 'Click an open tile: the twin goes there on its own AP (4 a round), never more than 6 tiles from you.'
       : ['move', 'sprint', 'sneak'].includes(W) ? 'Click an open tile.' + (W === 'sneak' ? ' Sneaking hides you until a hostile notices you (Ingenuity to stay hidden).' : '')
       : isMagicW ? mHint
+      : W === 'analyze' && readT ? 'Read ' + readableAt(GLY, TRC, readT, 'pc', knowsW, c && c.id).map((x) => (knowsW(x.word) ? x.word.toUpperCase() : 'the') + (x.trace ? ' trace' : ' glyph')).join(' and ') + ' at ' + refOf(readT) + ' (2 AP): +2 study for each, and the word goes on your known-to-study list.'
       : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack ' + (tgt.person ? tgt.name + ': a person; this starts a fight.' : 'the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
       : 'Confirm to ' + ({ reload: 'reload', load: 'load loose rounds into a magazine', clear: 'clear a jam', repair: 'repair your weapon', prone: (c && c.prone ? 'stand up' : 'drop prone') }[W]) + '.';
     // The area map's pick for an on-map perk action (Called Shot's head / arm / leg, a Keystone's word): chips from the
@@ -1053,7 +1066,7 @@ export class MainLogic extends DCLogic {
       if (wPkE && wPanel) return wPanel.confirm();
       if (wPkE) { if (pkTargeted && !tgt) return; if (pkTile && !S.wTile) return toast('Click a tile first.'); if (pkObj && !(tgt && tgt.obj)) return toast('Click an object first.');
         act({ type: 'world/act', charId: c.id, act: 'perk', id: wPkE.id, actionId: wPkE.actionId, ...(pkTargeted && tgt ? { targetId: tgt.npc ? tgt.id : tgt.charId || tgt.id } : {}), ...(pkTile ? { tile: S.wTile } : {}), ...(pkObj && tgt && tgt.obj ? { objId: tgt.obj.id } : {}), ...(wDet ? { choice: pickChoice(wPkE, wDet) } : {}) });
-        if (wDet) this.setState({ wDetail: '' }); return; } if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
+        if (wDet) this.setState({ wDetail: '' }); return; } if (W === 'analyze' && readT) { act({ type: 'world/act', charId: c.id, act: 'read', tile: readT }); return this.setState({ wTarget: null }); } if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
         act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, ...(tgt.obj ? { objId: tgt.obj.id } : { targetId: tgt.npc ? tgt.id : tgt.charId }) }); this.setState({ wTarget: null, ...(fight ? { area: false } : {}) }); if (fight && getState().game.phase === 'combat') go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
     const regions = [];
     const storyPk = g.phase === 'story' && c && !c.dead ? storyPerkEntries(g, c) : [];
@@ -1218,7 +1231,7 @@ export class MainLogic extends DCLogic {
         ...(GLY.some((x) => x.side === 'pc') ? [{ key: 'g', img: glyphUri('fire', SIGIL_INK), swatch: '', text: 'Squad glyph' }] : []), ...(GLY.some((x) => x.side !== 'pc') ? [{ key: 'f', img: scratchUri('#F65157'), swatch: '', text: 'Enemy glyph' }] : []),
         ...placedLegend((placedW && placedW.kinds) || new Set(), false).map((l) => ({ key: l.key, img: l.img || '', swatch: l.box || '', text: l.name })),
         ...(Object.values(g.story.magic || {}).some((x) => x && x.held) ? [{ key: 'h', img: heartUri(2), swatch: '', text: 'Holding an Outburst' }] : [])] },
-      wGroups, wHint: wHintFull, ...wDetailVals, wPanelOpen: !!wPanel && !wPkE.why, wPanel: wPanel || { fields: [], opts: [] }, wHasConfirm: !wPanel && canAct && (isMagicW ? mReady : instant || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
+      wGroups, wHint: wHintFull, ...wDetailVals, wPanelOpen: !!wPanel && !wPkE.why, wPanel: wPanel || { fields: [], opts: [] }, wHasConfirm: !wPanel && canAct && (isMagicW ? mReady : instant || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why)) || (W === 'analyze' && !!readT)), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
       wHead: c ? c.name.toUpperCase() : '', /* AP shows once: the AP bar in the status box */ wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';

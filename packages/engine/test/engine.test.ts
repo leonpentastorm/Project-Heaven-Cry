@@ -756,6 +756,14 @@ describe('anyone is a target (spec: Anyone is a target)', () => {
     expect(g.story.objects!.find((o) => o.name === 'Enemy drop pod')!.sprite).toBe('sprite-obj-drop-pod');
     expect(() => apply(g, { type: 'campaign/refresh' }, 'p2')).toThrow(/Host only/);
   });
+  it('a resumed save from before the sigil marks gets them in zones not yet entered (objects only added are no layout change)', () => {
+    let { g } = two('marks');
+    const cur = g.story.zone;
+    for (const z of g.campaign!.zones) z.objects = (z.objects || []).filter((o: any) => o.kind !== 'sigil_mark');
+    g = apply(g, { type: 'campaign/refresh' }, 'host');
+    const withMarks = g.campaign!.zones.filter((z) => (z.objects || []).some((o: any) => o.kind === 'sigil_mark')).map((z) => z.id);
+    expect(withMarks.length).toBe(3); expect(withMarks.filter((id) => id !== cur).length).toBeGreaterThan(0);
+  });
   it("a custom campaign file is marked custom and can't take a built-in id", () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'custom');
     g = apply(g, { type: 'campaign/load', campaign: { ...BUILT_IN_CAMPAIGNS[0], title: 'Mine' } as any }, 'host');

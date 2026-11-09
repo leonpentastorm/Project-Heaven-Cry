@@ -71,6 +71,13 @@ describe('the draw step: the stroke picker (spec 1.3, 5.3)', () => {
     const L = strokeLayer(cb.glyphs!, { side: 'pc', seen: () => true, hover: '2,5', knows: (w) => w === 'seek' });
     expect(L.tiles['2,5']).toEqual([{ d: [1, 0], kind: 'hot' }]); expect(L.hotText).toBe('? · SEEK');
   });
+  it('hovering a hostile Line partly in fog lights and names only the glyphs you can see', () => {
+    const { cb, u, rng } = setup(['fire', 'seek', 'spread']);
+    draw(cb, rng, u, 'fire', '2,5'); draw(cb, rng, u, 'seek', '3,5'); draw(cb, rng, u, 'spread', '4,5');
+    for (const g of cb.glyphs!) g.side = 'foe';
+    const L = strokeLayer(cb.glyphs!, { side: 'pc', seen: (k) => k === '2,5', hover: '2,5' });
+    expect([...L.hot]).toEqual(['2,5']); expect(L.hotText).toBe('?');
+  });
   it('an old 1.4 glyph (no strokeId) joins nothing; a lone glyph names itself', () => {
     const { cb, u, rng } = setup(['fire', 'seek']);
     draw(cb, rng, u, 'fire', '2,5'); draw(cb, rng, u, 'seek', '3,5');

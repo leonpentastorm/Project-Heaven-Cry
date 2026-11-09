@@ -1,5 +1,5 @@
 // Sigil 1.5, the rest of Part A (rules revision 1.9; docs/design/sigil-1.5-spec.md sections 2.2, 4.2 and 7; spec: Mana,
-// Drawing a spell, rule 3.11; The Magic panel and learning, 3a; items 687-693). Junctions (one glyph in two strokes at
+// Drawing a spell, rule 3.11; The Magic panel and learning, rule 4; items 687-693). Junctions (one glyph in two strokes at
 // Brain Power Mastered), sigil marks on the map and their Investigate approach, the Narrator placing marks, the M813
 // campaign's marks, and the Proving Ground tools. Every action goes through the reducer (apply).
 import { describe, expect, it } from 'vitest';
@@ -145,7 +145,7 @@ function investigate(m: M, seed: number) {
   return m.s.g.checks.find((k) => k.id === ck.id) || ck;
 }
 
-describe('sigil marks and Investigate (rules 1.9, The Magic panel 3a; items 691-692)', () => {
+describe('sigil marks and Investigate (rules 1.9, The Magic panel, rule 4; items 691-692)', () => {
   it('the Narrator places one with a word: the engine writes its Investigate (Analysis or Rumination, TN by age and damage)', () => {
     const m = marked('mend', { age: 'ancient', damage: 'worn' });
     expect(m.mark).toMatchObject({ kind: 'sigil_mark', word: 'mend', age: 'ancient', damage: 'worn', name: 'Old plate' });
@@ -191,6 +191,19 @@ describe('sigil marks and Investigate (rules 1.9, The Magic panel 3a; items 691-
     const ck = investigate(m, SEED);
     expect(ck.roll!.ok).toBe(false);
     expect((ch(m) as any).sigilGrowth).toMatchObject({ study: 0, toStudy: [] });
+    expect(() => m.s.act({ type: 'poi/try', charId: m.id, objId: m.mark.id, idx: 0 } as any)).toThrow(/already tried that/);
+  });
+  it('a Narrator update keeps the Investigate and its tries, whether it leaves it out or echoes it back (item 692)', () => {
+    const m = marked('mend', { age: 'ancient', damage: 'broken' });
+    expect(investigate(m, SEED).roll!.ok).toBe(false);
+    const upd = (approaches: any[]) => m.s.act({ type: 'narrator/turn', turn: { narration: 'x', objects: [{ action: 'update', id: m.mark.id, kind: 'sigil_mark', at: '', name: '', text: '', approaches }] } } as any);
+    upd([{ label: 'Ask the medics', skills: ['empathy'], tn: 12, stakes: 'They may know it.', success: '' }]);
+    let o = storyObjects(m.s.g).find((x) => x.id === m.mark.id)!;
+    expect(o.approaches.map((a) => a.label)).toEqual([MARK.label, 'Ask the medics']); expect(o.approaches[0].tries.length).toBe(1);
+    expect(() => m.s.act({ type: 'poi/try', charId: m.id, objId: m.mark.id, idx: 0 } as any)).toThrow(/already tried that/);
+    upd([{ label: 'Investigate the sigil', skills: ['analysis'], tn: 8, stakes: 'x', success: 'study' }, { label: 'Ask the medics', skills: ['empathy'], tn: 12, stakes: 'x', success: '' }]);
+    o = storyObjects(m.s.g).find((x) => x.id === m.mark.id)!;
+    expect(o.approaches.map((a) => a.label)).toEqual([MARK.label, 'Ask the medics']); expect(o.approaches[0]).toMatchObject({ success: 'study', tn: 20 });
     expect(() => m.s.act({ type: 'poi/try', charId: m.id, objId: m.mark.id, idx: 0 } as any)).toThrow(/already tried that/);
   });
   it('a word you know can\'t be investigated; a word already on the known-to-study list gives no more study', () => {

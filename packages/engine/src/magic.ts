@@ -428,9 +428,9 @@ export {
   strikeTurret, destroyPlaced, sigilEnter, sigilTurnStart, sigilRoundTick, sigilSpot, migrateSigil, migrateStorySigil, migrateWords, startingWordsError,
   enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, freeTile, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
-  strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
+  strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, fadePattern, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
 } from './sigil';
-import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8 } from './sigil';
+import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS } from './sigil';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */
 let FX_ELEMENT: string | null = null;
 /** Where a Sigil spell's damage comes from (the missile's origin: a Line glyph, SEEK's far glyph, a chain's last target,
@@ -822,7 +822,7 @@ export function feedOutburst(cb: Combat, u: Unit): string | null {
   const g = (cb.glyphs || []).find((x) => x.pos === u.pos && !(x as any).keystone); if (!g) return 'No glyph on your tile to feed it.';
   if (u.ap < SOUL_AP.feed) return 'Needs ' + SOUL_AP.feed + ' AP.';
   u.ap -= SOUL_AP.feed; m.cast = true;
-  cb.glyphs = (cb.glyphs || []).filter((x) => x !== g);
+  cb.glyphs = (cb.glyphs || []).filter((x) => x !== g); tidyStrokesS(cb.glyphs); // rules 1.9 (item 673): a fed middle glyph splits its stroke
   m.held.stage++;
   emitFx(cb, 'feed', { unit: u.id, at: u.pos, word: g.word, glyph: g.id, stage: m.held.stage, mult: stageMult(m.held.stage) });
   cb.log.push(u.name + ' feeds the ' + g.word.toUpperCase() + ' glyph to the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ').');

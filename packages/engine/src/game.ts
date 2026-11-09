@@ -1454,12 +1454,19 @@ function arrive(g: GameState, c: Character, k: string) {
 }
 function applyObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[number]) {
   const map = zoneMap(g), objs = storyObjects(g);
-  const approaches = cleanApproaches(op.approaches); // rules 1.7: success and failure effects (world.ts)
+  const approaches0 = cleanApproaches(op.approaches); // rules 1.7: success and failure effects (world.ts)
+  // Rules 1.9: a sigil mark's Investigate is the engine's own; a Narrator approach by that label is dropped (item 692).
+  const approaches = op.kind === 'sigil_mark' || objs.find((o) => o.id === op.id)?.kind === 'sigil_mark' ? approaches0.filter((a) => a.label.toLowerCase() !== MARK.label.toLowerCase()) : approaches0;
   const existing = objs.find((o) => o.id === op.id) || (op.at ? objs.find((o) => o.pos === keyOf(op.at, map) && (!op.kind || o.kind === op.kind)) : undefined);
   if (op.action === 'remove') { if (existing) g.story.objects = objs.filter((o) => o !== existing); return; }
   if (op.action === 'update' && existing) {
     if (op.name) existing.name = op.name.slice(0, 60); if (op.text) existing.text = op.text.slice(0, 400);
-    if (approaches.length) existing.approaches = mergeApproaches(existing.approaches, approaches);
+    if (approaches.length) {
+      // A sigil mark keeps its Investigate and its tries through the Narrator's new list (item 692: once per character).
+      const study = existing.kind === 'sigil_mark' ? existing.approaches.find((x) => x.success === 'study') : undefined;
+      existing.approaches = mergeApproaches(existing.approaches, existing.kind === 'sigil_mark' ? approaches.filter((x) => x.label.toLowerCase() !== MARK.label.toLowerCase()) : approaches);
+      if (study) existing.approaches.unshift(study);
+    }
     if (op.hidden === false) existing.hidden = false; if (op.locked != null && (kindOf(existing).door || isCache(existing))) existing.locked = op.locked;
     if (Array.isArray(op.items) && op.items.length) { existing.items = cleanItems(op.items); delete existing.searched; }
     if (existing.kind === 'sigil_mark') { if (op.age) existing.age = String(op.age); if (op.damage) existing.damage = String(op.damage); ensureMark(existing); } // its Investigate stays first
@@ -2132,9 +2139,11 @@ export function refreshCampaign(g: GameState): boolean {
   const old = g.campaign;
   if (g.phase === 'lobby' || !old || old.custom) return false;
   const fresh = builtInCampaign(old.id); if (!fresh || fresh.title !== old.title) return false;
-  const geom = (z: any) => JSON.stringify([z.w, z.h, z.solid, z.difficult, z.start, z.enemyStart, (z.objects || []).map((o: any) => [o.kind, o.at]), (z.exits || []).map((e: any) => [e.to, e.at])]);
+  const geom = (z: any) => JSON.stringify([z.w, z.h, z.solid, z.difficult, z.start, z.enemyStart, (z.exits || []).map((e: any) => [e.to, e.at])]);
+  // Objects only added (every old one still there by kind and tile, e.g. the rules 1.9 sigil marks) are no layout change.
+  const objsKept = (oz: any, fz: any) => (oz.objects || []).every((o: any) => (fz.objects || []).some((x: any) => x.kind === o.kind && x.at === o.at));
   const hadNpcs = new Set(old.zones.filter((z) => z.npcs).map((z) => z.id));
-  const zones = fresh.zones.map((fz) => { const oz = old.zones.find((z) => z.id === fz.id); return !oz || geom(oz) === geom(fz) ? fz : { ...oz, art: fz.art, music: fz.music, npcs: oz.npcs ?? fz.npcs }; });
+  const zones = fresh.zones.map((fz) => { const oz = old.zones.find((z) => z.id === fz.id); return !oz || (geom(oz) === geom(fz) && objsKept(oz, fz)) ? fz : { ...oz, art: fz.art, music: fz.music, npcs: oz.npcs ?? fz.npcs }; });
   for (const oz of old.zones) if (!zones.some((z) => z.id === oz.id)) zones.push(oz);
   g.campaign = { ...fresh, zones };
   // Art onto objects already on the maps: matched to their definition by kind and tile; only missing fields are filled.

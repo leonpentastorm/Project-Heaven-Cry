@@ -18,7 +18,7 @@ export const WORD_MASTERY = { practised: WM.practised ?? 10, mastered: WM.master
 /** A character's Sigil growth (saved with the character): study so far, the picks taken, the free (over-the-cap) words
  * waiting, the Mastery rewards already paid ("brain_power:3", "rumination:10"), the copied words not yet learned, and
  * each known word's use count. */
-export interface SigilGrowth { study: number; picksUsed: number; free: number; paid: string[]; toStudy: string[]; uses: Record<string, number> }
+export interface SigilGrowth { study: number; picksUsed: number; free: number; freeTaken?: number; paid: string[]; toStudy: string[]; uses: Record<string, number> }
 export const growthOf = (c: Character): SigilGrowth => {
   const s = ((c as any).sigilGrowth ||= { study: 0, picksUsed: 0, free: 0, paid: [], toStudy: [], uses: {} }) as SigilGrowth;
   s.paid ||= []; s.toStudy ||= []; s.uses ||= {}; s.study ||= 0; s.picksUsed ||= 0; s.free ||= 0;
@@ -91,7 +91,7 @@ export function learnStudied(c: Character, word: string, free?: boolean): string
   if (knowsWord(c, w)) return c.name + ' already knows ' + SIGIL[w].word + '.';
   const s = growthOf(c), pick = pendingPicks(c) > 0, room = (c.sigils || []).length < wordsKnownCap(c);
   const useFree = free === true || (free === undefined && !(pick && room) && s.free > 0);
-  if (useFree) { if (s.free < 1) return 'No free word waiting (Mastered Brain Power, Rumination or Eloquence gives one).'; s.free--; }
+  if (useFree) { if (s.free < 1) return 'No free word waiting (Mastered Brain Power, Rumination or Eloquence gives one).'; s.free--; s.freeTaken = (s.freeTaken || 0) + 1; }
   else {
     if (!pick) return 'No word to learn yet: the next comes at ' + thresholdN(s.picksUsed + 1) + ' study (' + s.study + ' now).';
     if (!room) return c.name + ' knows ' + (c.sigils || []).length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + '): the pick is banked until a slot frees up.';

@@ -43,6 +43,13 @@ ok('tools: the Sigil words in five groups (' + groups.join(' ') + ')', groups.jo
 for (const w of ['mend', 'arc']) await drawer.locator('[data-ws-section="sb.sigil"] button[data-word="' + w + '"]').click();
 await p.waitForTimeout(200);
 g = await G(); ok('tools: learned MEND and ARC by their buttons', ['mend', 'arc'].every((w) => g.characters[cid].sigils.includes(w)));
+// The arrow keys move along the word keys (glyphKeyNav: each open group is a keyboard row, data-word-row).
+await drawer.locator('[data-ws-section="sb.sigil"] button[data-word="fire"]').focus();
+await p.keyboard.press('ArrowRight');
+const navTo = await p.evaluate(() => document.activeElement?.getAttribute('data-word'));
+await p.keyboard.press('ArrowDown');
+const navDown = await p.evaluate(() => document.activeElement?.getAttribute('data-word'));
+ok('tools: arrow keys move along the Sigil words (' + navTo + ', then ' + navDown + ')', !!navTo && navTo !== 'fire' && !!navDown && navDown !== navTo);
 await drawer.locator('[data-ws-section="sb.sigil"] [data-ws-group="delivery"] > button[data-ws-toggle]').click();
 ok('tools: a group closes', (await drawer.locator('[data-ws-section="sb.sigil"] [data-ws-group="delivery"] button[data-word]').count()) === 0);
 const soulGroups = await drawer.locator('[data-ws-section="sb.soul"] [data-ws-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-ws-group')));

@@ -869,15 +869,11 @@ export function readable(cb: Combat, u: Unit, tile: string): (Glyph | Trace)[] {
   return [...(cb.glyphs || []).filter((g) => g.pos === tile && g.side !== u.side), ...(cb.traces || []).filter((t) => t.pos === tile)]
     .filter((g) => !knowsWord(c, g.word) && !((g as any).copiedBy || []).includes(c.id));
 }
-/** Copy what is readable on a tile for a character (no AP): each glyph or trace once per character; a word already on
- * the known-to-study list gives no more study (item 680). Returns the log lines. */
+/** Copy what is readable on a tile for a character (no AP): +2 study for each glyph or trace of a word you don't know,
+ * each glyph (and its trace) once per character (rule 3, item 680). Returns the log lines. */
 function copyFrom(cb: Combat, u: Unit, list: (Glyph | Trace)[]): string[] {
-  const c = charOfUnit(cb, u)!, out: string[] = [], had = new Set(((c as any).sigilGrowth?.toStudy || []) as string[]);
-  for (const g of list) {
-    (g as any).copiedBy = [...((g as any).copiedBy || []), c.id];
-    if (had.has(g.word)) { out.push(c.name + ' reads ' + g.word.toUpperCase() + ' again: already on the known-to-study list.'); continue; }
-    had.add(g.word); out.push(...copyWord(c, g.word));
-  }
+  const c = charOfUnit(cb, u)!, out: string[] = [];
+  for (const g of list) { (g as any).copiedBy = [...((g as any).copiedBy || []), c.id]; out.push(...copyWord(c, g.word)); }
   return out;
 }
 /** Read (the Analyze action aimed at a glyph or a trace; rules 1.9): the Analyze AP and range, line of sight, no roll. */
@@ -903,6 +899,13 @@ export function readDrawnBy(cb: Combat, u: Unit, t: Unit): void {
   if (list.length) cb.log.push(...copyFrom(cb, u, list));
 }
 
+/** The glyphs of a fired pattern fade (a Keystone survives). Rules 1.9 Junctions (item 689): a junction leaves the
+ * fired stroke only, and stays in its other one. The strokes left are tidied, so a split stroke's parts are their own. */
+export function fadePattern(cb: Combat, p: Pattern) {
+  const src = p.strokeSrc, keep = new Set<string>();
+  if (src) for (const g of p.glyphs) if (g.strokeId2 && !(g as any).keystone && (g.strokeId === src || g.strokeId2 === src)) { if (g.strokeId === src) g.strokeId = g.strokeId2; delete g.strokeId2; keep.add(g.id); }
+  const used = new Set(p.glyphs.filter((g) => !(g as any).keystone && !keep.has(g.id)).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id)); tidyStrokes(cb.glyphs);
+}
 // ---------- Evoke ----------
 export function previewEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts: EvokeOpts = {}): EvokePreview { return planEvoke(cb, u, tile, aim, opts); }
 /** Evoke (spec: Evoking): fire the pattern from where you stand at the tile you pick. */
@@ -919,10 +922,7 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
     missiles: pv.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: x.placed })),
     stay: sp.stay, placed: pv.missiles[0]?.placed || null, fizzle: pv.fizzle });
   // The glyphs fade as the spell fires (a Keystone survives).
-  // Rules 1.9 Junctions (item 689): a junction leaves the Evoked stroke only, and stays in its other one.
-  const src = p.strokeSrc, keep = new Set<string>();
-  if (src) for (const g of p.glyphs) if (g.strokeId2 && !(g as any).keystone && (g.strokeId === src || g.strokeId2 === src)) { if (g.strokeId === src) g.strokeId = g.strokeId2; delete g.strokeId2; keep.add(g.id); }
-  const used = new Set(p.glyphs.filter((g) => !(g as any).keystone && !keep.has(g.id)).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id)); tidyStrokes(cb.glyphs);
+  fadePattern(cb, p);
   if (pv.fizzle) {
     emitFx(cb, 'fizzle', { unit: u.id, at: u.pos, tiles: pv.missiles.flatMap((x) => x.burst.tiles), words: p.words, element: sp.element });
     cb.log.push(head + ': nothing it may affect, and it fizzles (the charge, AP and Flux are spent).');

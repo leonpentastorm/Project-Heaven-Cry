@@ -116,3 +116,35 @@ describe('combat screen: Sigils (rules 1.4)', () => {
     expect(v.pad.wordList[0].sub).toBe('2 ch · needs 1 AP'); expect(v.pad.wordList[0].disabled).toBe('true');
   });
 });
+
+describe('combat screen: Sigil 1.5 review fixes (rules 1.9)', () => {
+  it('the glyph keyboard shows each word\'s use count, and a star with its word when Practised or Mastered (spec 3.4, 5.3)', () => {
+    fight(['fire', 'seek']); const c: any = G.characters[pc().charId]; c.sigils = ['fire', 'seek']; c.sigilGrowth = { study: 0, picksUsed: 0, free: 0, paid: [], toStudy: [], uses: { fire: 30, seek: 3 } }; snap = view();
+    const keys = screen({ action: 'draw', tab: 'sigils', word: 'fire' }).renderVals().pad.wordList;
+    const fire = keys.find((w: any) => w.key === 'fire'), seek = keys.find((w: any) => w.key === 'seek');
+    expect(fire).toMatchObject({ hasStar: true, starAlt: 'MASTERED', hasUses: true, uses: '30' }); expect(fire.aria).toMatch(/MASTERED · 30 uses \(its inflection is on\)$/);
+    expect(seek).toMatchObject({ hasStar: false, hasUses: true, uses: '3' }); expect(seek.title).toMatch(/3 uses \/ 10/);
+  });
+  it('Analyze aimed at a hostile glyph or a trace reads it (combat/read); traces show faint on their tile', () => {
+    const { e } = fight(['fire', 'seek']); const cb: any = G.combat;
+    cb.glyphs = [{ id: 'gx', word: 'acid', pos: '4,5', by: e.id, side: 'foe', left: 3, who: 'Engineer', v: 14 }];
+    cb.traces = [{ id: 'gy', word: 'bind', pos: '4,6', side: 'foe', by: e.id, who: 'Engineer', left: 2 }]; snap = view();
+    const l = screen({ action: 'analyze', tab: 'attack' });
+    let v = l.renderVals();
+    expect(tileOf(v, '4,6').glyphs.map((x: any) => x.key)).toEqual(['tr-gy']); expect(tileOf(v, '4,6').label).toMatch(/a trace of an unknown word/);
+    l.tileClick('4,5'); v = l.renderVals();
+    expect(l.state.readTile).toBe('4,5'); expect(v.sel.text).toMatch(/^Read the glyph at E6 \(2 AP\)/);
+    l.confirm(null);
+    expect((G.characters[pc().charId] as any).sigilGrowth.toStudy).toEqual(['acid']);
+    l.state.action = 'analyze'; l.tileClick('4,6'); l.confirm(null);
+    expect((G.characters[pc().charId] as any).sigilGrowth.toStudy).toEqual(['acid', 'bind']);
+  });
+  it('leaving the grid clears the hover (the stroke tip goes); a draw preview\'s join sits above the caster\'s token', () => {
+    fight(['fire', 'seek']); (G.combat as any).glyphs = [{ id: 'gx', word: 'fire', pos: '2,5', by: pc().id, side: 'pc', left: 3, who: 'Ilse', v: 14, strokeId: 'sgx' }]; pc().pos = '3,5'; snap = view();
+    const l = screen({ action: 'draw', tab: 'sigils', word: 'seek', hover: '2,5' });
+    let v = l.renderVals();
+    expect(tileOf(v, '2,5').hasStrokeTip).toBe(true); expect(tileOf(v, '3,5').joinStyle).toMatch(/z-index: 4/);
+    v.gridLeave(); v = l.renderVals();
+    expect(l.state.hover).toBe(null); expect(tileOf(v, '2,5').hasStrokeTip).toBe(false);
+  });
+});

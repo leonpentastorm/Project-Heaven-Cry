@@ -60,12 +60,49 @@ describe('area map: Sigils (rules 1.4)', () => {
     expect(r.wMagic.wordRows.map((x: any) => x.aria)).toEqual(['Elements words', 'Boons words', 'Reach words', 'Burst words']);
     const fire = r.wMagic.words.find((w: any) => w.key === 'fire');
     expect(fire).toMatchObject({ disabled: 'false', hint: '', pressed: 'true', sub: '2 charge' }); expect(fire.onKey).toBe(glyphKeyNav);
-    expect(fire.aria).toMatch(/^FIRE, Element, 2 charge$/);
+    expect(fire.aria).toMatch(/^FIRE, Element, 2 charge; 0 uses \/ 10$/);
     r.areaCells.find((x: any) => x.key === positionsOf(G)[c.id]).click(); // FIRE on your own tile: every key is now refused
     L.setState({ wWord: 'seek' }); r = L.renderVals();
     for (const w of r.wMagic.words) {
       expect(w).toMatchObject({ disabled: 'true', hint: 'tile taken' }); expect(w.sub).toMatch(/^\d+ ch$/);
       expect(w.aria).toMatch(/can't draw now: One glyph per tile/); expect(w.title).toMatch(/CAN'T NOW: One glyph per tile/); if (w.key !== 'seek') expect(w.style).toMatch(/dashed/); // the selected key keeps its solid cyan edge
     }
+  });
+});
+
+describe('area map: Sigil 1.5 review fixes (rules 1.9)', () => {
+  it('Analyze aimed at a trace on the map reads it (world/act read); the keyboard shows use counts and stars', () => {
+    G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'seed-sigil-read');
+    doAct({ type: 'char/add', sheet: sheetFrom('sigilist', 'Ilse') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
+    doAct({ type: 'narrator/turn', turn: { narration: 'The yard.', sceneTitle: 'Yard' } });
+    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).sigils = ['fire', 'seek'];
+    (G.characters[c.id] as any).sigilGrowth = { study: 0, picksUsed: 0, free: 0, paid: [], toStudy: [], uses: { seek: 12 } };
+    const at = positionsOf(G)[c.id], map = zoneMap(G), [x, y] = at.split(',').map(Number);
+    const near = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (x + dx) + ',' + (y + dy)).find((k) => standable(map, k) && !Object.values(positionsOf(G)).includes(k))!;
+    (G.story as any).traces = [{ id: 'tz', word: 'bind', pos: near, side: 'foe', by: 'x', who: 'Someone', left: 2 }];
+    const L: any = new MainLogic({});
+    L.setState({ area: true, wAct: 'draw', wWord: 'fire' });
+    let r = L.renderVals();
+    expect(r.wMagic.words.find((w: any) => w.key === 'seek')).toMatchObject({ hasStar: true, starAlt: 'PRACTISED', uses: '12' });
+    L.setState({ wAct: 'analyze' }); r = L.renderVals();
+    r.areaCells.find((q: any) => q.key === near).click(); r = L.renderVals();
+    expect(r.wHint).toMatch(/^Read the trace at /); expect(r.wHasConfirm).toBe(true);
+    r.wConfirm();
+    expect((G.characters[c.id] as any).sigilGrowth.toStudy).toEqual(['bind']);
+  });
+  it('a junction on the map offers both of its Lines to Evoke (JUNCTION · EVOKE chips), and the pick rides the payload', () => {
+    G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'seed-sigil-jx');
+    doAct({ type: 'char/add', sheet: sheetFrom('sigilist', 'Ilse') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
+    doAct({ type: 'narrator/turn', turn: { narration: 'The yard.', sceneTitle: 'Yard' } });
+    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).sigils = ['fire', 'seek', 'spark'];
+    const at = positionsOf(G)[c.id], [x, y] = at.split(',').map(Number), k = (dx: number, dy: number) => (x + dx) + ',' + (y + dy);
+    const gl = (id: string, word: string, pos: string, s1: string, s2?: string) => ({ id, word, pos, by: c.id, side: 'pc', left: 3, who: 'Ilse', v: 14, strokeId: s1, ...(s2 ? { strokeId2: s2 } : {}) });
+    (G.story as any).glyphs = [gl('g1', 'fire', k(-1, 0), 'sA'), gl('g2', 'seek', at, 'sA', 'sB'), gl('g3', 'spark', k(0, 1), 'sB')];
+    const L: any = new MainLogic({});
+    L.setState({ area: true, wAct: 'evoke', wTile: at, wEvc: {} });
+    let r = L.renderVals();
+    expect(r.wMagic.hasJunction).toBe(true); expect(r.wMagic.junctionBtns.length).toBe(2);
+    const other = r.wMagic.junctionBtns.find((b: any) => b.pressed === 'false'); other.pick(); r = L.renderVals();
+    expect(L.state.wEvc).toEqual({ stroke: other.key }); expect(r.wMagic.junctionBtns.find((b: any) => b.key === other.key).pressed).toBe('true');
   });
 });

@@ -244,7 +244,7 @@ export function nearItems(g: GameState, charId: string | undefined, busy = ''): 
   return out;
 }
 
-// ---------- sigil marks (rules 1.9, 3a): a carved word on the map, and its Investigate panel ----------
+// ---------- sigil marks (rules 1.9, The Magic panel rule 4): a carved word on the map, and its Investigate panel ----------
 /** Can this character read the mark's word (they know it, or copied it already)? Others see unread scratches: the
  * word is in the shared state, but the screen never names it before you have read it. */
 export function markReadable(g: GameState, o: MapObject, charId?: string): boolean {

@@ -159,6 +159,14 @@ describe('Warden under 1.4', () => {
     walk(f, u, ['stay', 'spark'], ['4,2', '5,2']); at(f, u, '4,3');
     expect(() => act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:warden.raise_cover' })).toThrow(/lone STAY/);
   });
+  it('Raise Cover under rules 1.9 (item 285): a STAY alone in its stroke is lone, a glyph of another stroke beside it doesn\'t matter', () => {
+    const f = fightWith([cls('warden', 1, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['stay', 'spark']); f.unit(f.foe.id).pos = '12,2';
+    at(f, u, '4,2'); act(f, u, { type: 'combat/draw', word: 'stay', tile: '4,2' });
+    at(f, u, '5,2'); act(f, u, { type: 'combat/draw', word: 'spark', tile: '5,2', stroke: 'new' }); // a new Line, touching
+    at(f, u, '4,3'); act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:warden.raise_cover' });
+    expect(objectsOf(f.cb).filter((o) => /^rune_/.test(o.id)).length).toBe(2);
+    expect(f.cb.glyphs!.map((g) => g.word)).toEqual(['spark']);
+  });
   it('Raise Cover on the area map: the rune stands as objects there and fades by overworld rounds', () => {
     const s = storyWith([cls('warden', 1, MIND)]); const c = s.chars[0], here = positionsOf(s.g)[c.id], map = zoneMap(s.g);
     const [hx, hy] = here.split(',').map(Number), taken = new Set([...Object.values(positionsOf(s.g)), ...npcsOf(s.g).map((n) => n.pos), ...storyObjects(s.g).map((o) => o.pos)]);

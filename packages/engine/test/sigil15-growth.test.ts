@@ -157,8 +157,8 @@ describe('copying in a fight (item 680-681)', () => {
   it('Analyzing an enemy also copies the glyphs it has drawn: +2 study and the word on the known-to-study list', () => {
     const f = rig(['spark', 'seek'], ['7,5']); plant(f, 'acid', '6,5'); plant(f, 'acid', '6,6');
     f.act({ type: 'combat/analyze', unitId: f.pc.id, targetId: f.foe.id } as any);
-    expect(growth(f).toStudy).toEqual(['acid']); expect(growth(f).study).toBe(2); // the second ACID glyph adds no more study
-    expect(f.cb.log.some((l) => /copies ACID \(\+2 study; on the known-to-study list\)/.test(l))).toBe(true);
+    expect(growth(f).toStudy).toEqual(['acid']); expect(growth(f).study).toBe(4); // +2 for each glyph of a word you don't know (rule 3, item 680)
+    expect(f.cb.log.join('\n').split('copies ACID (+2 study; on the known-to-study list)').length - 1).toBe(2);
     expect(sigilGrowthView(charOf(f)).learnable[0]).toBe('acid'); // copied words are listed first
     expect(() => f.act({ type: 'combat/read', unitId: f.pc.id, tile: '6,5' } as any)).toThrow(/copied that already/);
   });
@@ -191,6 +191,15 @@ describe('copying in a fight (item 680-681)', () => {
     const f = rig(['spark', 'seek'], ['7,5']); plant(f, 'acid', '6,5'); growth(f).study = 4;
     f.act({ type: 'combat/analyze', unitId: f.pc.id, targetId: f.foe.id } as any);
     const c = charOf(f); expect(sigilGrowthView(c)).toMatchObject({ study: 6, pending: 1, toStudy: ['acid'] });
+    f.g.phase = 'story'; // the fight is over: learning is allowed
+    f.act({ type: 'sigil/learn', charId: c.id, word: 'acid' } as any);
+    expect(charOf(f).sigils).toContain('acid'); expect(growth(f).toStudy).toEqual([]); // the stored list, not the view
+  });
+  it('a second glyph of a word already copied still pays +2 when read (each glyph copies once per character)', () => {
+    const f = rig(['spark', 'seek'], ['14,9']); plant(f, 'bind', '6,5'); plant(f, 'bind', '6,6');
+    f.act({ type: 'combat/read', unitId: f.pc.id, tile: '6,5' } as any); expect(growth(f).study).toBe(2);
+    f.unit(f.pc.id).ap = 60; f.act({ type: 'combat/read', unitId: f.pc.id, tile: '6,6' } as any);
+    expect(growth(f).study).toBe(4); expect(growth(f).toStudy).toEqual(['bind']);
   });
 });
 
@@ -215,6 +224,29 @@ describe('Mastery study and the Mastered free word (items 682-683)', () => {
     expect(() => s.act({ type: 'sigil/learn', charId: id, word: SIGILS[21].id, free: true } as any)).toThrow(/No free word/);
     s.g.characters[id].skills.eloquence = 10; s.act({ type: 'story/unfocus' } as any);
     expect((s.g.characters[id] as any).sigilGrowth.free).toBe(1); // once per skill (item 683)
+  });
+});
+
+describe('the free word ignores the cap (item 683)', () => {
+  it('taken while a slot is open, it does not fill that slot: the picks still fill every ordinary slot', () => {
+    const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 1 } }]); const id = s.chars[0].id, c = () => s.g.characters[id];
+    c().sigils = ['spark', 'seek', 'fire', 'ward']; (c() as any).sigilGrowth = { study: 14, picksUsed: 0, free: 1, paid: [...ALL_PAID], toStudy: [], uses: {} };
+    expect(wordsKnownCap(c())).toBe(5);
+    s.act({ type: 'sigil/learn', charId: id, word: 'mend', free: true } as any);
+    expect(wordsKnownCap(c())).toBe(6); // 4 + Brain Power 1, + the free word taken
+    s.act({ type: 'sigil/learn', charId: id, word: 'acid' } as any); // the open ordinary slot is still there for a pick
+    expect(c().sigils!.length).toBe(6); expect(sigilGrowthView(c())).toMatchObject({ known: 6, cap: 6, pending: 1 }); // cap 5, + 1 free
+    expect(() => s.act({ type: 'sigil/learn', charId: id, word: 'bind' } as any)).toThrow(/banked/);
+  });
+  it('a free word taken at the cap stays over it when Brain Power rises: the new slot is an ordinary one', () => {
+    const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 0 } }]); const id = s.chars[0].id, c = () => s.g.characters[id];
+    c().sigils = ['spark', 'seek', 'fire', 'ward']; (c() as any).sigilGrowth = { study: 6, picksUsed: 0, free: 1, paid: [...ALL_PAID], toStudy: [], uses: {} };
+    s.act({ type: 'sigil/learn', charId: id, word: 'mend' } as any); // no slot: the free word, over the cap
+    expect(c().sigils!.length).toBe(5); expect(sigilGrowthView(c()).pending).toBe(1);
+    expect(() => s.act({ type: 'sigil/learn', charId: id, word: 'acid', free: false } as any)).toThrow(/banked/);
+    c().skills.brain_power = 1; // one more slot
+    s.act({ type: 'sigil/learn', charId: id, word: 'acid', free: false } as any);
+    expect(c().sigils!.length).toBe(6);
   });
 });
 

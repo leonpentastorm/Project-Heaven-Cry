@@ -111,7 +111,7 @@ describe('the shared workshop: collapsible and grouped (spec 7)', () => {
   });
 });
 
-describe('a sigil mark on the area map (rules 1.9, 3a)', () => {
+describe('a sigil mark on the area map (rules 1.9, The Magic panel rule 4)', () => {
   it('draws the carved plate (unread until copied), and the panel shows age, damage, TN, the skills and the outcome', () => {
     const { c, L } = start('mark-ui');
     const at = positionsOf(G)[c().id], map = zoneMap(G), [x, y] = at.split(',').map(Number);

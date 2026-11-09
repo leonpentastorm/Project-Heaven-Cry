@@ -4,8 +4,8 @@
 // marks. Pure: no DOM, no store, so both screens share it and the tests drive it directly.
 // Look: Sigil magic is Mind cyan (#4FC8DF, ink #8BDEEE), square and snapping; element hues tint effects only and always
 // come with the element's word.
-import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf } from '@engine';
-import { glyphUri, scratchUri, SIGIL_INK, SIGIL_GLOW, type JoinSeg } from './glyphs';
+import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf, sigilGrowthView } from '@engine';
+import { glyphUri, scratchUri, starUri, SIGIL_INK, SIGIL_GLOW, type JoinSeg } from './glyphs';
 import { grandLook, grandTint } from './fx/grand';
 
 export const HOSTILE_INK = '#F65157', ALLY_INK = '#FFFFFF', SPARED_INK = '#6FEA77', MUTED_INK = '#A3AEC2';
@@ -125,7 +125,11 @@ export function strokeLayer(glyphs: any[], o: { side?: 'pc' | 'foe'; seen?: (k: 
   for (const t of o.preview || []) for (let i = 1; i < t.length; i++) pair(t[i - 1], t[i], 'preview');
   if (hereG.length) {
     const read = (w: string, sd: string) => (sd === side || knows(w) ? up(w) : '?');
-    if (hotStrokes.size) { for (const st of hotStrokes.values()) for (const k of st.tiles) out.hot.add(k); out.hotText = [...hotStrokes.values()].map((st) => st.words.map((w: string) => read(w, st.side)).join(' · ') + (st.glyphs.length < 2 ? ' (alone)' : '')).join(' / '); }
+    // A hostile stroke lights and names only its glyphs on tiles you can see (fog of war hides the rest and its length).
+    if (hotStrokes.size) {
+      for (const st of hotStrokes.values()) for (const k of st.tiles) if (st.side === side || seen(k)) out.hot.add(k);
+      out.hotText = [...hotStrokes.values()].map((st) => { const gl = st.glyphs.filter((g: any) => st.side === side || seen(g.pos)); return gl.map((g: any) => read(g.word, st.side)).join(' · ') + (st.glyphs.length < 2 ? ' (alone)' : ''); }).join(' / ');
+    }
     else { out.hot.add(o.hover!); out.hotText = hereG.map((g: any) => read(g.word, g.side)).join(' · '); }
   }
   return out;
@@ -138,6 +142,32 @@ export function glyphMark(gl: any, side: 'pc' | 'foe', knows: (w: string) => boo
   const life = gl.left != null ? ', ' + gl.left + (gl.left === 1 ? ' round' : ' rounds') : '';
   return { ours, readable, src: ours ? glyphUri(gl.word, SIGIL_INK, { glow: true }) : readable ? glyphUri(gl.word, HOSTILE_INK, { glow: true }) : scratchUri(HOSTILE_INK),
     title: ours ? up(gl.word) + ' (' + (gl.who || 'yours') + life + ')' : readable ? 'hostile ' + up(gl.word) + life : 'an unreadable hostile glyph (you don\'t know the word)' };
+}
+
+// ---------- rules 1.9: word mastery on the draw keyboards (spec 3.4, 5.3) ----------
+export interface WordMasteryChip { uses: number; tier: 'new' | 'practised' | 'mastered'; hasStar: boolean; star: string; starAlt: string; text: string }
+/** Each known word's use count and star for a keyboard chip: a hollow star when Practised, filled when Mastered, always
+ * with its word (PRACTISED, MASTERED) and the count. No character (an enemy, a companion): no chips. */
+export function wordMasteryChips(c: any): Record<string, WordMasteryChip> {
+  if (!c) return {};
+  const TIER = { new: 'new', practised: 'PRACTISED', mastered: 'MASTERED' } as const, out: Record<string, WordMasteryChip> = {};
+  for (const w of sigilGrowthView(c).words) out[w.word] = { uses: w.uses, tier: w.tier, hasStar: w.tier !== 'new', star: starUri(w.tier), starAlt: TIER[w.tier],
+    text: (w.tier === 'new' ? '' : TIER[w.tier] + ' · ') + w.uses + (w.uses === 1 ? ' use' : ' uses') + (w.tier === 'mastered' ? ' (its inflection is on)' : ' / ' + (w.tier === 'new' ? w.practisedAt : w.masteredAt)) };
+  return out;
+}
+
+// ---------- rules 1.9: Read (copying a glyph or a trace) ----------
+/** What a character could Read on a tile (the engine's readable(), for the screens): another side's glyphs and any
+ * trace, of words it doesn't know, not yet copied by it. Pure. */
+export function readableAt(glyphs: any[], traces: any[], tile: string, side: 'pc' | 'foe', knows: (w: string) => boolean, charId?: string | null): { word: string; trace: boolean }[] {
+  return [...(glyphs || []).filter((g: any) => g.pos === tile && g.side !== side).map((g: any) => ({ g, trace: false })), ...(traces || []).filter((t: any) => t.pos === tile).map((t: any) => ({ g: t, trace: true }))]
+    .filter(({ g }) => !knows(g.word) && !(charId && (g.copiedBy || []).includes(charId))).map(({ g, trace }) => ({ word: g.word, trace }));
+}
+/** A scuffed glyph's trace on the map: a faint scratch (its word unread until copied), with its rounds left. */
+export function traceMark(t: any, knows: (w: string) => boolean): { src: string; title: string; style: string } {
+  const w = knows(t.word) ? up(t.word) : 'an unknown word', left = t.left != null ? ', ' + t.left + (t.left === 1 ? ' round' : ' rounds') + ' left' : '';
+  return { src: knows(t.word) ? glyphUri(t.word, '#7F8BA1') : scratchUri('#7F8BA1'), title: 'a trace of ' + w + ' (scuffed; Analyze to read it' + left + ')',
+    style: 'width: 16px; height: 16px; border-radius: 3px; opacity: 0.55; background: rgba(5, 7, 11, 0.4); box-shadow: 0 0 0 1px rgba(127, 139, 161, 0.6)' };
 }
 
 // ---------- 2. while building: the pattern panel ----------

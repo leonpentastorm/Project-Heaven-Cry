@@ -539,7 +539,7 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
     </Section>
     {/* The five Sigil word groups, collapsible (the same component and open state model as the Magic tab). */}
     <div data-glyph-keyboard="1" style={{ minWidth: 0 }}><Groups section="sb.sigil" title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'} ink={C.mind} aria="Sigil words"
-      groups={sigilWordGroups(SIGILS, (w) => w.id)} render={(items) => <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
+      groups={sigilWordGroups(SIGILS, (w) => w.id)} render={(items, g) => <div data-word-row={g.key} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
         {items.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" data-word={w.id} title={w.word + ' · ' + w.text} aria-pressed={on} onKeyDown={glyphKeyNav}
           style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
           onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}><img src={glyphUri(w.id, on ? SIGIL_INK : '#7F8BA1', { glow: on })} alt="" width={16} height={16} />{w.word}</button>; })}
