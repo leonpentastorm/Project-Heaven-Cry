@@ -1,9 +1,9 @@
 // What weapons throw off (fx/brass.ts; Leon, 9 Nov 2026), in a Proving Ground fight: a shot's casing comes out from
 // behind the shooter's portrait (clipped where the portrait covers it) and lands behind the shooter, away from the
 // target; a pump gun's hull comes a beat after the shot; a bow's arrow is drawn from behind and swung to the front
-// before the shot flies; a reload's magazine drops straight down and is gone when it lands; a tactical reload takes it
-// back up; a revolver's brass drops and fresh rounds go in; a double barrel kicks both hulls out behind; an Evoker
-// throws out its spent core, the way opposite its last Evoke. Shots: e2e/shots/brass-*.png.
+// before the shot flies; a reload's magazine drops straight down and is gone when it lands; a tactical reload drops none
+// (the reload card puts it in the pack); a revolver's brass drops and fresh rounds go in; a double barrel kicks both
+// hulls out behind; an Evoker throws out its spent core, the way opposite its last Evoke. Shots: e2e/shots/brass-*.png.
 import { chromium, player, click, BASE, OUT } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
@@ -75,10 +75,10 @@ ok('it is gone once it lands (last visible at ' + seenTill + ' ms, of a 1200 ms 
 await p.evaluate((ev) => window.__phcFx.playFx(ev), { k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200 });
 await p.waitForTimeout(330); await p.screenshot({ path: OUT + 'brass-mag.png', clip: { x: Math.max(0, tok.x - 120), y: Math.max(0, tok.y - 100), width: 260, height: 200 } });
 await p.waitForTimeout(1500);
-// 6. Tactical: the magazine drops into view and goes back up behind the portrait.
+// 6. Tactical: nothing drops under the portrait (the reload card slides the old magazine into its pack; review, 9 Nov
+//    2026: a magazine falling under the token read as a speed reload).
 s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200, tactical: true }, 1300, 30); c = by(s, 'mag:curved_mag');
-const low = Math.max(...c.map((x) => x.y)), end = c.filter((x) => x.op > 0.2).pop();
-ok('a tactical reload takes the magazine back up into the pack (lowest ' + Math.round(low - tok.y) + ', last ' + Math.round(end.y - tok.y) + ' px)', end.y < low - tok.h * 0.4);
+ok('a tactical reload drops no magazine under the portrait (' + c.length + ' samples)', c.length === 0);
 // 7. A revolver: its brass drops, then fresh rounds go in; no magazine.
 s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'drifter_revolver', cat: 'revolver', how: 'mag', dur: 1200 }, 1500);
 ok('a revolver dumps its brass (' + new Set(by(s, 'shell:pistol').map((x) => x.t)).size + ' samples) and loads fresh rounds (' + by(s, 'round:pistol').length + '), no magazine',

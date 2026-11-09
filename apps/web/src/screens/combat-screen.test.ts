@@ -371,4 +371,39 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     expect(G.combat!.log.some((l) => /gives an order \(The Voice: kneel\)/.test(l))).toBe(true);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   });
+
+  it('the target card shows the face its token shows (an art library name resolved, never a black square); initials with none', async () => {
+    vi.useFakeTimers();
+    snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'tgt-face');
+    doAct({ type: 'char/add', sheet: { ...sheetFrom(ARCHETYPES[0].id, 'MPAT'), portrait: '/assets/wick-narrator-placeholder.webp' } }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
+    doAct({ type: 'narrator/turn', turn: { narration: 'Drones.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Drill drone', tier: 'minion', weapon: 'service_pistol', portrait: 'char-m813-scavenger-drone' }, { name: 'Sentry turret', tier: 'minion', weapon: 'service_pistol' }, { name: 'Sigil novice', tier: 'minion', weapon: 'service_pistol' }] } } });
+    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
+    await React.act(async () => { root.render(React.createElement(App)); });
+    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    const L = new CombatLogic({}) as any;
+    const drone = G.combat!.units.find((u) => u.name === 'Drill drone')!, novice = G.combat!.units.find((u) => u.name === 'Sigil novice')!, turret = G.combat!.units.find((u) => u.name === 'Sentry turret')!;
+    expect(drone.img).toBe('char-m813-scavenger-drone');
+    L.state = { ...L.state, action: 'analyze', target: drone.id }; const TT = () => L.renderVals().turnPanels[0]; expect(TT().mine).toBe(true); let t = TT().tgtList[0];
+    expect(t).toBeTruthy(); { expect(t.img).toMatch(/^\/assets\/char-m813-scavenger-drone\.webp$/); expect(t.hasImg).toBe(true); expect(t.noImg).toBe(false); }
+    // A person with no portrait of their own is cast a card from the pool (game/cast.ts): the card and the token agree.
+    L.state = { ...L.state, action: 'analyze', target: novice.id }; t = TT().tgtList[0];
+    expect(t.name).toBe('Sigil novice'); expect(t.img).toMatch(/^\/assets\/char-[\w-]+\.webp$/); expect(t.hasImg).toBe(true);
+    // A thing with no art (a turret): its token's initials, never an empty black frame.
+    L.state = { ...L.state, action: 'analyze', target: turret.id }; t = TT().tgtList[0];
+    expect(t.name).toBe('Sentry turret'); expect(t.img).toBe(''); expect(t.hasImg).toBe(false); expect(t.noImg).toBe(true); expect(t.short).toBe(turret.short);
+    // The token draws the same face.
+    const tok = Array.from(el.querySelectorAll('button.phc-tok img')).map((im) => im.getAttribute('src'));
+    expect(tok).toContain('/assets/char-m813-scavenger-drone.webp');
+    expect(tok.some((x) => x === 'char-m813-scavenger-drone')).toBe(false);
+    // The Backpack: one labelled button in your card (and the short-window bar), none by the AP bar.
+    const bps = Array.from(el.querySelectorAll('[data-backpack]'));
+    expect(bps.map((b) => b.getAttribute('data-backpack')).sort()).toEqual(['card', 'mini']);
+    for (const b of bps) { expect(b.textContent).toMatch(/Backpack/); expect(b.getAttribute('aria-keyshortcuts')).toBe('B'); expect(b.getAttribute('aria-pressed')).toBe('false'); }
+    expect(el.querySelector('.phc-cb-aplabel button')).toBeNull();
+    expect(el.querySelector('.phc-me-full [data-backpack="card"]')).toBeTruthy();
+    await React.act(async () => { (bps[0] as HTMLElement).click(); });
+    expect(el.querySelector('[data-bp-panel]')).toBeTruthy();
+    expect(el.querySelector('[data-backpack="card"]')!.getAttribute('aria-pressed')).toBe('true');
+    await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
+  });
 });

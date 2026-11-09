@@ -290,10 +290,10 @@ describe('an off-hand gun\'s reload has its picture too (fx only)', () => {
     const cb = g.combat!, u = me(g), seq = cb.fxSeq || 0;
     expect(reloadHands(cb, u, 'off')).toBeNull();
     const off = (cb.fx || []).filter((e) => e.n > seq && e.k === 'reload');
-    expect(off).toHaveLength(1); expect(off[0]).toMatchObject({ unit: u.id, weapon: 'decrkm_smg', cat: 'smg', how: 'mag', hand: 'off' });
+    expect(off).toHaveLength(1); expect(off[0]).toMatchObject({ unit: u.id, weapon: 'decrkm_smg', cat: 'smg', how: 'mag', hand: 'off', left: 0, ammo: 30, cap: 30 });
     u.ap = 9; u.offAmmo = 2; const seq2 = cb.fxSeq || 0;
     expect(reloadHands(cb, u, 'both', true)).toBeNull();
     const both = (cb.fx || []).filter((e) => e.n > seq2 && e.k === 'reload');
-    expect(both).toHaveLength(1); expect(both[0]).toMatchObject({ weapon: 'service_pistol', tactical: true, off: { weapon: 'decrkm_smg', how: 'mag', tactical: true } });
+    expect(both).toHaveLength(1); expect(both[0]).toMatchObject({ weapon: 'service_pistol', tactical: true, left: 3, ammo: 12, cap: 12, off: { weapon: 'decrkm_smg', how: 'mag', tactical: true, left: 2, ammo: 30, cap: 30 } });
   });
 });

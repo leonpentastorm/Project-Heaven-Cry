@@ -7800,6 +7800,27 @@
     }
   },
   "illustrations": {
+    "proving-ground-drill-yard": {
+      "id": "proving-ground-drill-yard",
+      "group": "PG",
+      "order": 1,
+      "name": "The Proving Ground",
+      "family": "illustrations",
+      "path": "art/illustrations/proving-ground/drill-yard.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "mode": "RGB",
+      "brief_row": "Leon's art (9 Nov 2026): an Anti-Heaven drill yard in a sandstone fort under a hazy sun; drill robots spar around wooden posts, a worn unit rests by the water trough. The Proving Ground's zone banner and card art.",
+      "spoiler": false,
+      "visibility": "opening-safe",
+      "width": 1600,
+      "height": 900,
+      "sha256": "66111608d79acc3f85f54ad31ff6f00773fc1ad454ff0b2ba7b8c4ae846cf692",
+      "source_path": "(delivered by Leon in chat, 1672 x 941 WebP; centre-cropped to 16:9 and resized)",
+      "campaign_id": "proving_ground"
+    },
     "outpost813": {
       "label": "Outpost-813 — abandoned landing pad",
       "collection": "m813-v1",

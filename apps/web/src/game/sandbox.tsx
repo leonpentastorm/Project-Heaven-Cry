@@ -41,7 +41,7 @@ import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
 import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName } from '@engine';
 const ITEMS = Object.values(ITEM);
-import { ART } from '../screens/shared';
+import { ART, zoneOf } from '../screens/shared';
 
 // ---------- starting it ----------
 /** From the title: open a fresh room and go straight into the Proving Ground with a test character (or the host's
@@ -106,7 +106,7 @@ html.phc-sb-gearing .phc-sb-dock,.phc-sb-dock[data-sb-on]{display:flex!important
 .phc-input>.phc-sb-dock[data-sb-on]:has([data-sb-hint])~.phc-turn-line{display:none}
 .phc-pg-fig{display:grid;margin:0;border-radius:14px;overflow:hidden}
 .phc-pg-fig>*{grid-area:1/1}
-.phc-pg-fig>figcaption{align-self:end}
+.phc-pg-fig>figcaption{align-self:end;position:relative}
 @media (max-height:800px){.phc-pg-fig>.phc-pg-grid{display:none}.phc-pg-fig>figcaption{padding:12px 18px!important}.phc-pg-centre{gap:12px!important;padding-top:16px!important}}
 .phc-pg-cols{column-width:330px;column-gap:14px}
 .phc-pg-cols>*{break-inside:avoid;margin:0 0 14px}
@@ -347,11 +347,15 @@ function CentreView({ game, meId, isHost, close, ...shared }: { game: GameState;
   const chars = Object.values(game.characters).filter((c) => isHost || c.owner === meId);
   const c = game.characters[shared.cid] && chars.some((x) => x.id === shared.cid) ? game.characters[shared.cid] : chars[0];
   const canField = isHost || !!sb.spawnAll, status = sb.state === 'cleared' ? 'wave ' + sb.wave + ' cleared' : sb.state === 'fallen' ? 'fell on wave ' + sb.wave : 'gearing up';
+  const banner = ART(zoneOf(game)?.art?.banner);
   const all: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ['faith', 'Faith'], ...(canField ? [['field', 'Field'] as [Tab, string], ['world', 'World'] as [Tab, string]] : [])];
   return <aside aria-label="Proving Ground tools" className="phc-fade-in phc-pg-centre" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 32px 32px', width: '100%', maxWidth: 1240, boxSizing: 'border-box', margin: '0 auto', fontFamily: UI, color: C.text }}>
     {/* The Practice card, as the story column had it (kept by Leon's brief). */}
-    <figure className="phc-pg-fig" style={{ border: '1px solid ' + C.line }}>
-      <div aria-hidden="true" className="phc-pg-grid" style={{ minHeight: 96, backgroundColor: '#0D1119', backgroundImage: 'linear-gradient(#161D2B 1px, transparent 1px), linear-gradient(90deg, #161D2B 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+    <figure className="phc-pg-fig" style={{ position: 'relative', border: '1px solid ' + C.line }}>
+      {/* The zone's banner (Leon's drill-yard painting, data/campaigns/proving.json art.banner); the grid when there is none. */}
+      {banner ? <><div aria-hidden="true" className="phc-pg-grid" style={{ minHeight: 230 }} />
+        <img className="phc-pg-grid" data-phc-pg-banner="" src={banner} alt="The Proving Ground: the drill yard" style={{ position: 'absolute', inset: 0, display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 40%', background: '#0D1119' }} /></>
+        : <div aria-hidden="true" className="phc-pg-grid" style={{ minHeight: 96, backgroundColor: '#0D1119', backgroundImage: 'linear-gradient(#161D2B 1px, transparent 1px), linear-gradient(90deg, #161D2B 1px, transparent 1px)', backgroundSize: '24px 24px' }} />}
       <figcaption style={{ padding: '16px 22px', background: 'rgba(10, 13, 19, 0.82)', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: '1 1 260px', minWidth: 0 }}>
           <span style={{ fontSize: 12, letterSpacing: '0.24em', color: C.muted }}>THE PROVING GROUND · {game.players.length} PLAYER{game.players.length === 1 ? '' : 'S'}{sb.mode === 'teams' ? ' · TEAM FIGHT' : ''}</span>

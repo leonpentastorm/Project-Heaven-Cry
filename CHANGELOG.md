@@ -8,6 +8,21 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.15.0 — 9 November 2026
+
+Branch `feature/combat-polish` (implementer 1), merged through `claude/awesome-babbage-8gngk8`: **UI pass, combat polish**.
+
+- **Combat speed** (⚙ Settings › Combat). **Normal** is the new default: every battle animation, pop-up and cut-in is about 15% slower than before. **Fast** is the old timing. It changes live, mid-fight. The crit cut-in stays up long enough to read at both speeds.
+- **Target card:** every enemy shows its face. Drill drones and others were black. An enemy you can't see shows only "?" in the initiative bar.
+- **Backpack:** the button sits next to your name on the You card. The one by the AP bar is gone.
+- **Cut-ins show who acted:** the acting character's own picture, the same one the HUD shows. The Proving Ground recruit's Wick head included, not a random archetype.
+- **A reload you can see:** a reload card pops over the unit, readable on a tile with a pile. Speed and tactical reloads read apart: speed shows PILE +1 when the magazine drops; tactical shows PACK, +1 AP. Units with unlimited spares (companions, twins) show no phantom drop.
+- **Proving Ground:** Leon's drill-yard painting across the Practice card, and the title theme plays from page load.
+- **Test fix:** the `title` e2e suite's "hover during hello" check (failing since 0.9.0) is fixed.
+- **Known:**
+  - a flamer's refuel still shows a canister dropping under a player's portrait, though nothing goes into the pile;
+  - the recruit's portrait is the Wick placeholder; a real recruit avatar would need art.
+
 ## 0.14.0 — 9 November 2026
 
 Branch `feature/pg-levelup-ui` (implementer 2), merged through `claude/awesome-babbage-8gngk8`: **UI pass, the Proving Ground, level up and the Perks tab**.

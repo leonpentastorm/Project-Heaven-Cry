@@ -36,8 +36,10 @@ await page.waitForTimeout(60);
 await page.locator('[data-item="settings"]').hover({ force: true, timeout: 1000 });
 await page.waitForTimeout(100);
 ok('the press shows Wick saying hello', await page.locator('.phc-bubble').count() === 1);
+// Read both rows at once, before the screenshot: the hello lasts under a second and a slow screenshot can outlast it.
+const rows = await page.evaluate(() => ({ on: document.querySelector('.phc-item.on')?.getAttribute('data-item'), pressed: document.querySelector('.phc-item.pressed')?.getAttribute('data-item') }));
 await page.screenshot({ path: SHOTS + '/title-hello.png' });
-ok('hover during hello highlights another row', (await page.locator('.phc-item.on').getAttribute('data-item')) === 'settings' && (await page.locator('.phc-item.pressed').getAttribute('data-item')) === 'chars');
+ok('hover during hello highlights another row (' + JSON.stringify(rows) + ')', rows.on === 'settings' && rows.pressed === 'chars');
 await page.waitForSelector('text=Your characters', { timeout: 3000 });
 ok('then the Characters screen slides in', true);
 await page.screenshot({ path: SHOTS + '/title-characters.png' });
