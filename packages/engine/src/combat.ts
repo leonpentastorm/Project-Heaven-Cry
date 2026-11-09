@@ -1374,13 +1374,15 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   if (pc && ow.reload === 'magazine' && !shared && !u.offMags) u.offMags = [];
   const pool = ow.reload === 'loose' ? null : shared ? u.mags : u.offMags;
   if (hand === 'off' && offFull) return 'Already full.';
+  let mainFx: FxEvent | null = null;
   if (hand === 'both') {
     const w = WEAPON[u.weapon]; if (w.magazine == null) return 'Your main hand holds no gun.';
     if (offFull && u.ammo >= w.magazine) return 'Already full.';
     if (offFull) return 'The off-hand gun is full: reload the main gun alone.';
     if (u.ammo >= w.magazine && w.reload === 'magazine') return 'The main gun is full: reload the off-hand gun alone.';
     // The main gun first, as before (a refusal throws in the reducer, so nothing it did stays).
-    const keep = u.ap; u.ap = 99; const e = reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' }); u.ap = keep; if (e && e !== 'Already full.') return e;
+    const keep = u.ap, seq = cb.fxSeq || 0; u.ap = 99; const e = reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' }); u.ap = keep; if (e && e !== 'Already full.') return e;
+    mainFx = (cb.fx || []).find((f) => f.n > seq && f.k === 'reload' && f.unit === u.id) || null;
   }
   // What goes in: a loose gun takes rounds (a character's from its loose rounds of that calibre); a magazine gun its
   // fullest spare, whose type it takes (item 680; the shared pool's types when both hands hold the same model).
@@ -1399,6 +1401,10 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   // The log names no tile (review fix: the pile shows where it fell, under fog).
   cb.log.push(u.name + (hand === 'both' ? ' reloads both guns' : ' reloads the off-hand gun') + (tactical ? ' (tactical)' : '') + ' (' + ap + ' AP)' + (kept ? (tactical ? '; the off-hand ' + unit + ' goes back in the pack' : '; the off-hand ' + unit + ' drops') : looseTake ? ' (' + looseTake + (looseTake === 1 ? ' round' : ' rounds') + ')' : '') + '.');
   if (kept && !tactical) dropToPile(cb, u.pos, [magItem(ow.id, left, leftType)]);
+  // The picture (no rules): the off-hand gun's reload, or, with both guns, the off hand's part of the main reload's event.
+  const off = { weapon: ow.id, cat: ow.category, how: ow.reload === 'loose' ? 'loose' : 'mag', ...(kept && tactical ? { tactical: true } : {}) };
+  if (mainFx) mainFx.off = off;
+  else emitFx(cb, 'reload', { unit: u.id, at: u.pos, ...off, hand: 'off', dur: ap <= 1 ? 800 : off.how === 'loose' ? 1400 : 1200, ...(looseTake ? { rounds: looseTake } : {}) });
   return null;
 }
 /** The type of spare i of the off-hand gun's pool (the main hand's spares when both hands hold the same model), taken out. */
