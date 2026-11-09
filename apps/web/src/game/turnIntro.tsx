@@ -29,7 +29,7 @@ import { type GameState, WEAPON, CLASS, FLUX_MAX, visibility } from '@engine';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
 import { bigPortrait } from './charfile';
-import { sfx, SFX_FILES, reducedMotion, uiPrefs, type Sfx } from './sfx';
+import { sfx, SFX_FILES, reducedMotion, busLevel, type Sfx } from './sfx';
 import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, readCardSide, cardOnRight, type Command } from './commands';
@@ -49,7 +49,7 @@ const CUES: Record<Cue, [string, Sfx[], 'boom' | 'thump' | null]> = {
 };
 let actx: AudioContext | null = null;
 function hit(kind: 'boom' | 'thump', delay: number) {
-  const p = uiPrefs(), vol = p.mute ? 0 : p.sfx / 100;
+  const vol = busLevel('combat');
   if (vol <= 0) return;
   try {
     const AC = (window as any).AudioContext || (window as any).webkitAudioContext; if (!AC) return;

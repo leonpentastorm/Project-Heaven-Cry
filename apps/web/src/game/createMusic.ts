@@ -1,11 +1,11 @@
 // The character-creation theme, "Intake": plays while a character is being made, loops softly (fades baked into the
 // file), and fades out when you leave creation. Same music volume and mute as the title theme. Browsers only allow
 // sound after a gesture; reaching creation always takes a click, and a refused start retries on the next gesture.
-import { uiPrefs, onUiPrefs } from './sfx';
+import { musicLevel, onUiPrefs } from './sfx';
 
 const SRC = '/music/intake.mp3';
 let el: HTMLAudioElement | null = null, fade = 0, want = 0;
-const vol = () => { const p = uiPrefs(); return p.mute ? 0 : (p.music ?? 70) / 100 * 0.7; };
+const vol = () => musicLevel() * 0.7;
 function ramp(to: number, ms: number, then?: () => void) {
   if (!el) return; cancelAnimationFrame(fade);
   const from = el.volume, t0 = performance.now();

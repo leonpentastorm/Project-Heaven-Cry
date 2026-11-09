@@ -19,6 +19,7 @@ import { Groups, GroupList, sigilWordGroups } from './workshopGroups';
 import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
 import { glyphKeyNav } from './glyphKeys';
+import { askConfirm } from './dialog';
 import {
   magicOf, FEELINGS, practiceOf, nextPickAt, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
@@ -60,13 +61,13 @@ export function leaveProvingGround(ask = true) {
   const st = getState(), sb = st.game?.sandbox;
   // A guest leaves on their own: their fighter goes, and they land on the title.
   if (st.role === 'guest') {
-    if (ask && typeof confirm === 'function' && !confirm('Leave the Proving Ground? Your fighter goes with you.')) return;
+    if (ask) { askConfirm({ title: 'Leave the Proving Ground?', body: 'Your fighter goes with you.', confirm: 'Leave' }).then((ok) => ok && leaveProvingGround(false)); return; }
     act({ type: 'sandbox/leave' });
     setTimeout(() => leaveRoom(), 250); // let the action reach the host first
     return;
   }
   const standalone = !!sb?.standalone, others = (st.game?.players?.length || 1) > 1;
-  if (ask && typeof confirm === 'function' && !confirm(standalone ? 'Leave the Proving Ground?' + (others ? ' It closes for everyone.' : '') : 'Leave the Proving Ground? The room goes back to how it was before.')) return;
+  if (ask) { askConfirm({ title: 'Leave the Proving Ground?', body: standalone ? (others ? 'It closes for everyone.' : 'Back to the title screen.') : 'The room goes back to how it was before.', confirm: 'Leave' }).then((ok) => ok && leaveProvingGround(false)); return; }
   act({ type: 'sandbox/end' });
   // From the title: the room was only for the Proving Ground; it closes, and everyone goes to the title.
   if (standalone) { const code = st.code; setTimeout(() => { leaveRoom(); if (code) forgetSession(code); }, others ? 250 : 0); return; }
@@ -901,7 +902,7 @@ function Players({ game, meId, isHost }: { game: GameState; meId: string; isHost
           </span>
           {teams && <span aria-label={'Team ' + t} style={{ padding: '2px 8px', borderRadius: 999, fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', border: '1px solid ' + TEAM_INK[t], color: TEAM_INK[t] }}>{t === 'A' ? '◆' : '■'} TEAM {t}</span>}
           {fs.length > 0 && <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: ready ? C.ok : C.muted }}>{ready ? '✓ READY' : '○ NOT READY'}</span>}
-          {isHost && p.id !== meId && <button type="button" style={{ ...small, minHeight: 24, color: C.muted }} aria-label={'Remove ' + p.name} title="Remove from the Proving Ground" onClick={() => { if (typeof confirm !== 'function' || confirm('Remove ' + p.name + ' from the Proving Ground?')) act({ type: 'player/kick', id: p.id }); }}>✕</button>}
+          {isHost && p.id !== meId && <button type="button" style={{ ...small, minHeight: 24, color: C.muted }} aria-label={'Remove ' + p.name} title="Remove from the Proving Ground" onClick={() => { askConfirm({ title: 'Remove ' + p.name + ' from the Proving Ground?', confirm: 'Remove', danger: true }).then((ok) => ok && act({ type: 'player/kick', id: p.id })); }}>✕</button>}
         </div>;
       })}
     </div>

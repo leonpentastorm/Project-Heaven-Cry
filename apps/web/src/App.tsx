@@ -35,6 +35,8 @@ import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
 import { MissionLayer } from './game/missionBoard';
+import { DialogHost } from './game/dialog';
+import { SettingsHost } from './game/settings';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
@@ -95,7 +97,7 @@ export function App() {
       {st.role && <Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role && <NarratorVoice game={st.game || null} />}
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side={st.game?.phase === 'combat' ? 'left' : 'right'} />}
+      {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side="left" compact={st.screen === 'combat'} />}
       {st.screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
       {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
       {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
@@ -105,6 +107,9 @@ export function App() {
       {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
       <PlaytestTools />
       <Tips />
+      {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
+      <SettingsHost />
+      <DialogHost />
       {barP.shown && <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{barP.shown}</div>}
       {toastP.shown && <div style={{ position: 'fixed', bottom: 20, left: 0, right: 0, zIndex: 70, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div key={toastP.shown.at} role={toastP.shown.ok ? 'status' : 'alert'} className={presenceCls('phc-a-rise', toastP.closing)} style={{ pointerEvents: 'auto', maxWidth: 'min(640px, 92vw)', padding: '12px 18px', borderRadius: 10, background: '#10151F', border: '1px solid ' + (toastP.shown.ok ? '#6FEA77' : '#F65157'), color: '#E7EBF3', fontSize: 14, boxShadow: '0 8px 30px rgba(0,0,0,.5)' }}>{toastP.shown.ok ? '✓ ' : ''}{toastP.shown.text}</div>

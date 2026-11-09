@@ -26,6 +26,7 @@ import { glyphKeyNav } from '../game/glyphKeys';
 import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer, wordMasteryChips, readableAt, traceMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
+import { askConfirm, askText } from '../game/dialog';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
@@ -153,7 +154,7 @@ function magicVals(self, g, c) {
       mods: d.modules.map((x) => ({ key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: MODULE[x]?.text || '', style: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + epRgba(SOUL_VIOLET, 0.6) + '; color: ' + SOUL_VIOLET })),
       hasMods: d.modules.length > 0, line: cost + ' MP · ' + designAp(m, d) + ' AP · ' + reachWords(m, d), held, heldText: held ? 'HELD · STAGE ' + N.held.stage : '', heart: heartUri(held ? N.held.stage : 1),
       edit: () => self.setState({ mgDraft: { id: d.id, name: d.name, school: d.school, school2: d.school2 || '', modules: [...d.modules], option: d.option || '', option2: d.option2 || '', tone: d.tone || 'raw' }, mgSaved: null }),
-      forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); if (window.confirm('Forget the design ' + d.name + '? You can design it again later.')) act({ type: 'magic/forget', charId: c.id, designId: d.id }); },
+      forget: () => { if (held) return toast('Release ' + d.name + ' first: a held Outburst can\'t be forgotten.'); askConfirm({ title: 'Forget the design ' + d.name + '?', body: 'You can design it again later.', confirm: 'Forget it', danger: true }).then((ok) => { if (ok) act({ type: 'magic/forget', charId: c.id, designId: d.id }); }); },
       locked: fight, noForget: fight || held, forgetTitle: held ? 'You are holding it: release it first.' : fight ? 'After the fight.' : 'Forget this design to make room.',
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (held ? SOUL_VIOLET : '#232D3F') + '; border-left: 3px solid ' + SOUL_VIOLET }; });
   const soulStats = [['Emanator', handWord(emaAt)], ['Strain now', N.strain + ' / ' + strainLimit(c) + ' (the limit; past it, a Mana Short)'], ['Ready designs', designs.length + ' / ' + readyDesigns(c)], ['Module slots', String(moduleSlots(c))],
@@ -510,14 +511,17 @@ export class MainLogic extends DCLogic {
       if (e.kind === 'narration') {
         // Rerolls and edits (spec: Rerolls and edits): players suggest, the host starts a vote, everyone must agree.
         const V = g.votes || { turns: [], open: null }, canReroll = V.turns.includes(e.id) && !e.rerolled, busyVote = !!(V.open && V.open.status === 'open');
-        const ask = (kind) => { const note = window.prompt(kind === 'reroll' ? 'What should the Narrator do differently? (optional)' : 'How should it be reworded? Only the words change, never what happened.', ''); if (note === null) return null; return note; };
+        const ask = (kind, then) => askText({ title: kind === 'reroll' ? (isHost ? 'Vote to reroll' : 'Suggest a reroll') : (isHost ? 'Vote to reword' : 'Suggest rewording'),
+          body: kind === 'reroll' ? 'What should the Narrator do differently? Everyone must agree before the turn is undone.' : 'How should it be reworded? Only the words change, never what happened.',
+          placeholder: kind === 'reroll' ? 'Optional: a note for the Narrator' : 'Optional: what to change', multiline: true, optional: true, maxLength: 400,
+          confirm: isHost ? 'Start the vote' : 'Suggest it' }).then((note) => { if (note !== null) then(note); });
         const undoText = () => { const i = g.story.entries.findIndex((x) => x.id === e.id), after = g.story.entries.slice(i + 1); const pl = after.filter((x) => x.kind === 'player').length, ck = after.filter((x) => x.kind === 'check').length, fights = after.filter((x) => x.kind === 'combat' && /^Combat: /.test(x.text)).map((x) => x.text.replace(/^Combat: /, ''));
           return [pl ? pl + (pl === 1 ? ' player action' : ' player actions') : '', ck ? ck + (ck === 1 ? ' roll' : ' rolls') : '', fights.length ? 'the fight ' + fights.join(', ') : ''].filter(Boolean).join(', ') || 'nothing after it'; };
         const voteActs = e.rerolled || !c ? [] : isHost
-          ? [...(canReroll ? [{ key: 'r', label: '⟲ Vote to reroll', title: 'Everyone must agree. Undoes this turn and everything after it.', go: () => { if (busyVote) return toast('A vote is already under way.'); const n = ask('reroll'); if (n !== null) act({ type: 'vote/start', kind: 'reroll', entryId: e.id, note: n, undo: undoText() }); } }] : []),
-             { key: 'e', label: '✎ Vote to reword', title: 'Everyone must agree. Only the words change.', go: () => { if (busyVote) return toast('A vote is already under way.'); const n = ask('edit'); if (n !== null) act({ type: 'vote/start', kind: 'edit', entryId: e.id, note: n }); } }]
-          : [...(canReroll ? [{ key: 'r', label: '⟲ Suggest reroll', title: 'The host can put it to a vote.', go: () => { const n = ask('reroll'); if (n !== null) { act({ type: 'vote/suggest', kind: 'reroll', entryId: e.id, note: n }); toast('Suggested to the host.', true); } } }] : []),
-             { key: 'e', label: '✎ Suggest rewording', title: 'The host can put it to a vote.', go: () => { const n = ask('edit'); if (n !== null) { act({ type: 'vote/suggest', kind: 'edit', entryId: e.id, note: n }); toast('Suggested to the host.', true); } } }];
+          ? [...(canReroll ? [{ key: 'r', label: '⟲ Vote to reroll', title: 'Everyone must agree. Undoes this turn and everything after it.', go: () => { if (busyVote) return toast('A vote is already under way.'); ask('reroll', (n) => act({ type: 'vote/start', kind: 'reroll', entryId: e.id, note: n, undo: undoText() })); } }] : []),
+             { key: 'e', label: '✎ Vote to reword', title: 'Everyone must agree. Only the words change.', go: () => { if (busyVote) return toast('A vote is already under way.'); ask('edit', (n) => act({ type: 'vote/start', kind: 'edit', entryId: e.id, note: n })); } }]
+          : [...(canReroll ? [{ key: 'r', label: '⟲ Suggest reroll', title: 'The host can put it to a vote.', go: () => ask('reroll', (n) => { act({ type: 'vote/suggest', kind: 'reroll', entryId: e.id, note: n }); toast('Suggested to the host.', true); }) }] : []),
+             { key: 'e', label: '✎ Suggest rewording', title: 'The host can put it to a vote.', go: () => ask('edit', (n) => { act({ type: 'vote/suggest', kind: 'edit', entryId: e.id, note: n }); toast('Suggested to the host.', true); }) }];
         return { ...base, ...readFor(e), isNarration: true, paras: e.text.split(/\n\s*\n/).map((t) => ({ text: t.trim() })).filter((x) => x.text),
           wrapStyle: 'display: flex; flex-direction: column; gap: 12px' + (e.rerolled ? '; opacity: 0.45' : ''), pStyle: "margin: 0; font-family: 'Spectral', serif; font-size: 18px; line-height: 1.7; color: #DCE2EC" + (e.rerolled ? '; text-decoration: line-through' : ''),
           hasTag: !!(e.rerolled || e.original), tag: e.rerolled ? 'REROLLED BY VOTE' : '✎ REWORDED BY VOTE', tagStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2',

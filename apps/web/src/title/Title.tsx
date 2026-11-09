@@ -9,10 +9,10 @@ import { forgetSession, getState, go, hostRoom, joinRoom, lastRoom, listSessions
 import { exportCharacter, importCharacter } from '../game/charfile';
 import { openReport } from '../game/report';
 import { GAME_VERSION } from '../version';
-import { sfx, uiPrefs, setUiPrefs, onUiPrefs, reducedMotion } from '../game/sfx';
+import { sfx, onUiPrefs, reducedMotion } from '../game/sfx';
 import { voicePrefs, onVoice, loadVoice, detectInstalled } from '../game/voice';
-import { VoiceSettings } from '../game/voiceSettings';
-import { resetTips } from '../game/tips';
+import { askConfirm, dialogOpen } from '../game/dialog';
+import { SettingsBody } from '../game/settings';
 import { CREDITS, licenceUrl } from '../game/credits';
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
 import { LAYERS, clamp, layerShift, titleGeometry } from './geometry';
@@ -205,7 +205,7 @@ export function Title() {
     const k = (e: KeyboardEvent) => {
       if (!pressed) return;
       // The Report and Spend dialogs own the keyboard while open; so do text fields.
-      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      if (dialogOpen() || document.querySelector('[role="dialog"][aria-modal="true"]')) return;
       const t = e.target as HTMLElement | null, typing = !!t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable);
       if (e.key === 'Escape' && panel) { e.preventDefault(); back(); return; }
       if (panel || typing) return;
@@ -474,7 +474,7 @@ function CharactersPanel() {
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontWeight: 700 }}>{c.name}{(c as any).draft ? ' (draft)' : ''}</span><span style={{ fontSize: 12, color: ink.muted }}>{c.origin || 'no origin'} · Classless</span></div>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} onClick={() => toCreate(c)}>Open</button>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} aria-label={'Download ' + c.name + ' as a file'} title="Download as a file to keep or send to a friend" onClick={() => exportCharacter(c)}>⬇</button>
-          <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px', color: ink.muted }} aria-label={'Delete ' + c.name} onClick={() => { if (confirm('Delete ' + c.name + ' from this browser?')) removeFromLibrary(c.name); }}>✕</button>
+          <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px', color: ink.muted }} aria-label={'Delete ' + c.name} onClick={() => { askConfirm({ title: 'Delete ' + c.name + '?', body: 'The character is removed from this browser. Export it first if you want to keep a copy.', confirm: 'Delete', danger: true }).then((ok) => { if (ok) removeFromLibrary(c.name); }); }}>✕</button>
         </div>
       ))}
     </div>
@@ -495,33 +495,17 @@ function SavedPanel() {
           <span style={{ fontSize: 10, letterSpacing: '0.12em', color: ink.muted }}>{(x.role === 'host' ? 'YOU HOST · SAVED IN THIS BROWSER' : 'YOU JOINED · THE HOST KEEPS THE SAVE') + ' · ' + (x.phase === 'lobby' ? 'LOBBY' : x.phase === 'combat' ? 'IN A FIGHT' : 'ROUND ' + x.round) + ' · ' + ago(x.savedAt).toUpperCase()}</span>
         </div>
         <button type="button" data-sfx="start" style={{ ...btn, borderColor: '#FFFFFF' }} onClick={() => resumeSession(x.code)}>{last?.code === x.code ? 'Continue ›' : 'Resume ›'}</button>
-        <button type="button" style={{ ...btn, padding: '0 12px', color: ink.muted }} aria-label={'Remove room ' + x.code} onClick={() => { if (confirm('Remove room ' + x.code + ' from this list?' + (x.role === 'host' ? ' This deletes the save in this browser.' : ''))) { forgetSession(x.code); force(); } }}>✕</button>
+        <button type="button" style={{ ...btn, padding: '0 12px', color: ink.muted }} aria-label={'Remove room ' + x.code} onClick={() => { askConfirm({ title: 'Remove room ' + x.code + '?', body: x.role === 'host' ? 'This deletes the save in this browser. The room can\'t be resumed from here after that.' : 'It leaves this list. You can rejoin with the code while the host keeps the room.', confirm: 'Remove', danger: true }).then((ok) => { if (ok) { forgetSession(x.code); force(); } }); }}>✕</button>
       </div>
     ))}
   </>;
 }
 function SettingsPanel() {
-  const p = uiPrefs();
-  const row: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', fontSize: 14 };
+  // The same settings as the in-game ⚙ (game/settings.tsx), plus your name.
   return <>
     <h2 style={h2}>Settings</h2>
     <NameInput />
-    <span style={lab}>SOUND</span>
-    <label style={row}>Interface sounds <input type="range" min={0} max={100} value={p.sfx} onChange={(e) => setUiPrefs({ sfx: Number(e.target.value) })} aria-label="Interface sounds volume" /> <span style={{ color: ink.muted }}>{p.sfx}%</span></label>
-    <label style={row}>Title music <input type="range" min={0} max={100} value={p.music} onChange={(e) => setUiPrefs({ music: Number(e.target.value) })} aria-label="Title music volume" /> <span style={{ color: ink.muted }}>{p.music}%</span></label>
-    <label style={row}><input type="checkbox" checked={p.mute} onChange={(e) => setUiPrefs({ mute: e.target.checked })} /> Mute interface sounds and title music</label>
-    <span style={lab}>VOICE</span>
-    <VoiceSettings />
-    <span style={lab}>COMFORT</span>
-    <label style={row}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
-    {/* Spotlight cut-ins (decision 113): the torn strips for a big moment, and the slowed attack after them. */}
-    <div role="group" aria-label="Cut-ins" style={row}>Cut-ins
-      {([['all', 'All'], ['scene', 'Once per scene'], ['off', 'Off']] as const).map(([v, label]) => (
-        <button key={v} type="button" data-phc-cutins={v} aria-pressed={(p.cutins || 'all') === v} onClick={() => setUiPrefs({ cutins: v })}
-          style={{ ...btn, ...((p.cutins || 'all') === v ? { background: '#1C2536', borderColor: '#E7EBF3', color: '#FFFFFF' } : { color: ink.muted }) }}>{(p.cutins || 'all') === v ? '● ' : ''}{label}</button>
-      ))}
-    </div>
-    <div style={row}><button type="button" style={btn} onClick={() => { resetTips(); alert('Tips will show again.'); }}>Show tips again</button></div>
+    <SettingsBody compact />
   </>;
 }
 function CreditsPanel() {
