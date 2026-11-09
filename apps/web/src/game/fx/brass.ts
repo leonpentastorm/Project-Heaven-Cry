@@ -7,7 +7,7 @@
 // portrait covers it, so it comes out from behind. Pure presentation: nothing here reads or changes the game.
 import { reducedMotion } from '../sfx';
 import { SIGIL_INK, SOUL_WARM } from '../glyphs';
-import { layerEl, anim } from './dom';
+import { layerEl, anim, after } from './dom';
 
 // ---------- what each weapon throws off ----------
 /** The casing a weapon ejects: one per shot, or (revolvers, break-actions) all of them at the reload. */
@@ -302,7 +302,7 @@ function wisp(parent: HTMLElement, x: number, y: number, size: number, tint: str
       { transform: 'translate(' + dx + 'px,' + (dy - rise) + 'px) scale(1.7)', opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.6,.35,1)', fill: 'forwards' });
     setTimeout(() => d.remove(), ms + 40);
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }
 
 // ---------- the throw: out behind the shooter, an arc over the ground, a hop, lying there, gone ----------
@@ -339,8 +339,9 @@ export function arcFrames(t: Arc): { piece: Keyframe[]; shadow: Keyframe[]; tota
  *  off) a puff where it clears the portrait's rim and a thread off it as it lands. */
 function toss(who: Who, P: Pic, len: number, t: Arc, o: { delay?: number; smoke?: boolean; tag?: string; from?: { x: number; y: number } } = {}) {
   if (live >= CAP) return;
-  live++;
   const run = () => {
+    if (live >= CAP) return;
+    live++;
     const u = who.w / 38, f = arcFrames(t), ox = o.from ? o.from.x : who.x, oy = o.from ? o.from.y : who.y;
     const box = behind(who, f.total + 100); if (!box) { live--; return; }
     const w = len * u, h = (len * P.h / P.w) * u;
@@ -360,14 +361,15 @@ function toss(who: Who, P: Pic, len: number, t: Arc, o: { delay?: number; smoke?
     }
     setTimeout(() => { live = Math.max(0, live - 1); }, f.total + 60);
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }
 /** A piece dropped straight down from behind the portrait to the ground under it: gone the moment it lands (a puff
  *  of dust), or (bounce) a little hop where it lands before it fades. */
 function drop(who: Who, P: Pic, w: number, h: number, o: { x?: number; y0?: number; ground?: number; delay?: number; tag?: string; spin?: number; bounce?: boolean; g?: number } = {}) {
   if (live >= CAP) return;
-  live++;
   const run = () => {
+    if (live >= CAP) return;
+    live++;
     const u = who.w / 38, x = o.x ?? who.x, y0 = o.y0 ?? who.y, ground = o.ground ?? who.y + who.h * 0.5 + who.h * 0.55, yG = ground - h / 2;
     const g = (o.g ?? 1500) * u, fall = Math.sqrt((2 * Math.max(4, yG - y0)) / g) * 1000, hop = o.bounce ? 260 : 0, fade = o.bounce ? 220 : 0, ms = fall + hop + fade;
     const box = behind(who, ms + 700); if (!box) { live--; return; }
@@ -386,7 +388,7 @@ function drop(who: Who, P: Pic, w: number, h: number, o: { x?: number; y0?: numb
       live = Math.max(0, live - 1);
     }, fall);
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }
 /** A round (or shell) taken from the belt and pushed into the gun: it appears at the hip and slides up behind the
  *  portrait, out of sight. */
@@ -400,7 +402,7 @@ function feed(who: Who, P: Pic, len: number, side: number, o: { delay?: number; 
     anim(el, [{ transform: 'translate(0,' + 6 * u + 'px) rotate(' + r0 + 'deg)', opacity: 0 }, { transform: 'translate(0,0) rotate(' + r0 + 'deg)', opacity: 1, offset: 0.25 },
       { transform: 'translate(' + (-side * who.w * 0.42).toFixed(1) + 'px,' + (-who.h * 0.45).toFixed(1) + 'px) rotate(' + (r0 - side * 30) + 'deg)', opacity: 1 }], { duration: ms, easing: 'cubic-bezier(.4,.1,.5,1)', fill: 'forwards' });
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }
 
 // ---------- the effects ----------
@@ -437,7 +439,7 @@ export function dropMag(who: Who | null, mag: Mag | null, o: { delay?: number; t
     anim(el, [{ transform: 'translate(0,0)', opacity: 1 }, { transform: 'translate(0,' + down + 'px) rotate(4deg)', opacity: 1, offset: 0.3 }, { transform: 'translate(0,' + (down + 2 * u) + 'px) rotate(5deg)', opacity: 1, offset: 0.48 },
       { transform: 'translate(0,' + (-who.h * 0.45) + 'px) rotate(0deg)', opacity: 1, offset: 0.9 }, { transform: 'translate(0,' + (-who.h * 0.5) + 'px)', opacity: 0 }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }
 /** A gun with no magazine takes its rounds (see Load): a cylinder's spent brass dropped straight out and fresh rounds
  *  pushed in; a break-action opened, both hulls kicked out behind and two fresh shells dropped in; a pump gun's shells
