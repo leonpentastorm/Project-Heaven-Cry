@@ -8,6 +8,27 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.2.0 — 9 November 2026
+
+Branch `feature/outburst-4.0`: **Outburst 4.0, Soul magic rules 1.8** (decision 109; `docs/design/outburst-4.0-spec.md`; spec "Soul magic" section 12, items 801–818; hand-off `docs/design/handoffs/outburst-4.0-HANDOFF.md`).
+
+- **Feelings:** 25 (`data/feelings.json`), poured in while you pump:
+  - each has its own step on the multiplier and a behaviour (Love heals the allies in the shape, Joy chains, Calm can't miss, Mercy spares…);
+  - each unlocks the first time it happens to you (the engine watches; the Narrator can grant one);
+  - you start with 2 picked at creation;
+  - residue from the strongest one stays on the tiles for 2 rounds;
+  - **Revert Pump** takes back a misclick.
+- **Modules:** 13 new for everyone (Split, Ricochet, Fuse, Return, Volley, Bloom, Anchor, Lure, Shell, Linger, Quiet, Silent, Thread) and 10 shown locked with their advanced classes. They're gated by Soul skills (never Visualization) and learned by **practice** (picks at 5, 15, then every +15; +5 a Mastery level; a free pick at Mastered).
+- **Low level:** 3 starting designs (Heart Bolt, Mend, Heart Wave), the snap cast ×0.8, and the fight's first Pump free. The first tone comes at Lore Master 1.
+- **On screen:**
+  - the HEART panel's feeling buttons (collapsed past six, with a search), coloured stage segments and the counter's shake and "now HEALS";
+  - residue on the grid;
+  - the unlock card;
+  - the MAGIC tab's collapsible codex (practice, templates, feelings, modules by gate skill);
+  - the Proving Ground's grouped tools with a sound and effects test row for each feeling.
+- **Art and sound:** SVG icons for the feelings, modules and marks (painted art replaces them by file name); 19 CC0 sounds, credited.
+- **Waiting on Leon:** the 25 feeling colours, the readings in items 801–818, the placeholder icons, and the sounds (unheard).
+
 ## 0.1.0 — 9 November 2026
 
 Branch `chore/lore-ladder-canon`.

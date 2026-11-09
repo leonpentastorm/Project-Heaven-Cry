@@ -8,6 +8,7 @@
 import { SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
   previewOutburst, previewOutburstPlan, previewPump, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START,
   type OutburstPlan, type OutburstAffected } from '@engine';
+import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
 import { heldOutburstOf } from './resources';
 import { OPT_LABEL, optValue } from './actionPickers';
 
@@ -123,7 +124,9 @@ export interface HeartBtn { id: string; label: string; cost: string; ok: boolean
 export interface HeartPanel {
   name: string; designId: string; tone: string; toneName: string; ink: string; form: Form; formName: string; icon: string; shape: string;
   stage: number; maxStage: number; mult: number; resonance: number;
-  stages: { n: number; mult: number; on: boolean; now: boolean; next: boolean }[];
+  stages: { n: number; mult: number; on: boolean; now: boolean; next: boolean; feeling: string | null }[];
+  /** Rules 1.8: the feelings poured in, what they change ("now HEALS"), the feeling buttons and Revert Pump. */
+  felt: string[]; does: string[]; feelings: FeelingBtn[]; revert: HeartBtn;
   freePumps: number | null; strain: number; limit: number; warn: string; warnLevel: '' | 'caution' | 'alert'; swell: string;
   watch: boolean; steady: boolean; rider: string; feedShow: boolean;
   pump: HeartBtn & { ap: number }; release: HeartBtn; steadyBtn: HeartBtn; letgo: HeartBtn & { strainOff: number }; feed: HeartBtn; watchBtn: HeartBtn;
@@ -136,6 +139,8 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const info = d ? designInfo(m, d, cb?.mana) : null;
   const plan = previewOutburstPlan(cb, u, 'held', undefined, mods ? { mods } : {});
   const pp = previewPump(cb, u);
+  const felt: string[] = m.held.felt || [], feltAt: number[] = m.held.feltAt || [], fAt = (n: number) => { const i = feltAt.lastIndexOf(n); return i >= 0 ? felt[i] : null; };
+  const rv = revertBtn(cb, u);
   const stage = h.stage, maxStage = h.maxStage || MAX_STAGE;
   const dry = (fn: (c: any, x: any) => string | null) => dryHeart(cb, u.id, fn);
   const st = dry((c, x) => steadyHeart(c, x)), lg = dry((c, x) => letGo(c, x)), fd = dry((c, x) => feedOutburst(c, x)), wt = dry((c, x) => setHeartWatch(c, x, !m.held.watch));
@@ -149,11 +154,13 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   return {
     name: h.name, designId: h.designId, tone: h.tone, toneName: h.toneName, ink: toneInk(h.tone), form: (info?.form || 'bolt') as Form, formName: info?.formName || h.form, icon: info?.icon || formIconUri('bolt', toneInk(h.tone)), shape: info ? info.line : '',
     stage, maxStage, mult: plan.mult || STAGE_MULT[stage], resonance: plan.resonanceBonus || 0,
-    stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === stage + 1 })),
+    stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === stage + 1, feeling: n <= stage ? fAt(n) : null })),
+    felt, does: plan.does || [], feelings: feelingButtons(cb, u),
+    revert: { id: 'revert', label: '↶ Revert', cost: 'FREE', ok: rv.ok, why: rv.ok ? '' : rv.why, title: 'Take back your last pump this turn: its stage, its feeling, the AP and the Strain it cost.' },
     freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
     pump: { id: 'pump', label: 'Pump', ap: pp.ap, cost: pp.ok ? (pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
-      title: pp.ok ? 'Stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.free ? ': a free Pump (Empathy), ' + freeLeft + ' left this round.' : '.') : pp.why || '' },
+      title: pp.ok ? 'A plain Pump: stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? ': the fight\'s free first Pump.' : pp.free ? ': a free Pump (Empathy), ' + freeLeft + ' left this round.' : '.') : pp.why || '' },
     release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (info?.form === 'aura' ? ': all around you, no aim.' : ': pick the aim on the grid.') },
     steadyBtn: { id: 'steady', label: 'Steady', cost: SOUL_AP.steady + ' AP', ok: !st.err, why: st.err || '', title: '−1 Strain, and no swell at the start of your next turn.' },
     letgo: { id: 'letgo', label: 'Let go', cost: 'FREE', ok: !lg.err, why: lg.err || '', strainOff: off, title: 'Drop it unreleased: the built power is lost; Strain −' + off + '.' },
@@ -168,6 +175,8 @@ export interface HeartOverlay {
   on: boolean; mode: 'aim' | 'idle'; form: Form; isArea: boolean; ink: string;
   reach: Set<string>; area: Set<string>; aim: string | null; aura: Set<string>;
   marks: Map<string, UnitMark>; ok: boolean; why: string;
+  /** Rules 1.8: the residue the release would leave (its tiles, its feeling's colour). */
+  residue?: { tiles: Set<string>; ink: string } | null;
   /** The chip over the aimed tile: "BURST r1 · 2 ENEMIES · 1 ALLY" or "BOLT · ONE TARGET". */
   chip: string; summary: string[]; plan: OutburstPlan | null;
 }
@@ -206,7 +215,11 @@ export function aimOverlay(cb: any, u: any, src: string | 'held', aim?: string |
   const chip = !plan.ok && plan.why && !/Pick a|direction/.test(plan.why) ? String(plan.why).split(/[:.(]/)[0].toUpperCase() : shapeW + (isArea || who ? ' · ' + (who || 'NO ONE') : '');
   const summary = (plan.affected || []).map((a) => { const k = affectedMark(a); return k.title; });
   if (plan.resonance) summary.unshift('Resonance: +' + plan.resonanceBonus + ' on the multiplier (an ally released this round).');
-  return { on: true, mode: 'aim', form, isArea, ink, reach: new Set(plan.reachTiles || []), area, aim: form === 'aura' ? u.pos : aim || null, aura: new Set(), marks, ok: plan.ok, why: plan.why || '', chip, summary, plan };
+  // Rules 1.8: what the feelings change, and the residue the release would leave (its tiles get a dashed edge in its colour).
+  if (plan.does?.length) summary.unshift('Feelings: ' + plan.does.join(' · ') + '.');
+  if (plan.residue) summary.push(feelingName(plan.residue.feeling) + ' residue on ' + plan.residue.tiles.length + ' tile' + (plan.residue.tiles.length === 1 ? '' : 's') + ' for 2 rounds: ' + plan.residue.text);
+  return { on: true, mode: 'aim', form, isArea, ink, reach: new Set(plan.reachTiles || []), area, aim: form === 'aura' ? u.pos : aim || null, aura: new Set(), marks, ok: plan.ok, why: plan.why || '', chip, summary, plan,
+    residue: plan.residue ? { tiles: new Set(plan.residue.tiles), ink: feelingInk(plan.residue.feeling) } : null };
 }
 /** While holding (not aiming): your reach ring, faint, and the tiles next to you where an elemental heart leaks. */
 export function idleOverlay(cb: any, u: any): HeartOverlay {
@@ -223,7 +236,7 @@ export function overlayTileStyle(o: HeartOverlay, k: string): string {
   const base = 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; box-sizing: border-box; ';
   if (o.mode === 'aim' && o.area.has(k)) {
     if (!o.isArea) return base + 'border: 3px double ' + WHITE + '; background: radial-gradient(circle, ' + rgba(o.ink, 0.55) + ' 0 18%, transparent 19% 34%, ' + rgba(o.ink, 0.5) + ' 35% 40%, transparent 41%); box-shadow: 0 0 12px ' + o.ink;
-    return base + 'border: 2px solid ' + o.ink + '; background: repeating-linear-gradient(45deg, ' + rgba(o.ink, 0.42) + ' 0 5px, ' + rgba(o.ink, 0.16) + ' 5px 10px); box-shadow: inset 0 0 10px ' + rgba(o.ink, 0.5);
+    return base + 'border: 2px solid ' + o.ink + '; background: repeating-linear-gradient(45deg, ' + rgba(o.ink, 0.42) + ' 0 5px, ' + rgba(o.ink, 0.16) + ' 5px 10px); box-shadow: inset 0 0 10px ' + rgba(o.ink, 0.5) + (o.residue?.tiles.has(k) ? ', inset 0 0 0 4px ' + rgba(o.residue.ink, 0.55) : '');
   }
   if (o.mode === 'aim' && o.aim === k) return base + 'border: 2px solid ' + WHITE;
   if (o.aura.has(k)) return base + 'border: 2px dotted ' + rgba(o.ink, 0.85) + '; background: ' + rgba(o.ink, 0.12);
@@ -239,8 +252,9 @@ export const overlayRingStyle = (o: HeartOverlay) => 'position: absolute; inset:
 
 // ---------- the panel's styles (shared by the combat tab and the area map) ----------
 export function heartStyles(p: HeartPanel) {
-  const seg = (s: HeartPanel['stages'][number]) => 'flex: 1; display: flex; flex-direction: row; justify-content: center; align-items: baseline; gap: 4px; padding: 2px 0; line-height: 1.2; border-radius: 4px; font-size: 10px; font-weight: 700; '
-    + (s.now ? 'background: ' + p.ink + '; color: #0A0D13; box-shadow: 0 0 12px ' + rgba(p.ink, 0.7) : s.on ? 'background: ' + rgba(p.ink, 0.35) + '; color: #E7EBF3' : s.next ? 'background: transparent; color: #E7EBF3; border: 1px dashed ' + p.ink : 'background: #1C2536; color: ' + MUTED);
+  const seg = (s: HeartPanel['stages'][number]) => 'flex: 1; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 4px; padding: 2px 0; line-height: 1.2; border-radius: 4px; font-size: 10px; font-weight: 700; '
+    + (s.feeling ? 'background: ' + rgba(feelingInk(s.feeling), s.now ? 0.85 : 0.45) + '; color: ' + (s.now ? '#0A0D13' : '#E7EBF3') + '; box-shadow: ' + (s.now ? '0 0 12px ' + rgba(feelingInk(s.feeling), 0.8) : 'inset 0 0 0 1px ' + feelingInk(s.feeling))
+    : s.now ? 'background: ' + p.ink + '; color: #0A0D13; box-shadow: 0 0 12px ' + rgba(p.ink, 0.7) : s.on ? 'background: ' + rgba(p.ink, 0.35) + '; color: #E7EBF3' : s.next ? 'background: transparent; color: #E7EBF3; border: 1px dashed ' + p.ink : 'background: #1C2536; color: ' + MUTED);
   // Compact: one line per button (the label left, its cost or its refusal right), so the panel's buttons sit in two rows.
   const btn = (b: HeartBtn, primary?: boolean) => 'display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 4px; min-width: 0; min-height: 30px; padding: 2px 7px; border-radius: 8px; font-family: inherit; text-align: left; overflow: hidden; cursor: ' + (b.ok ? 'pointer' : 'default') + '; '
     + (primary ? 'border: 1px solid ' + p.ink + '; background: ' + rgba(p.ink, 0.18) + '; color: #E7EBF3' : 'border: 1px solid #3A2E5C; background: #120E1E; color: #E7EBF3') + (b.ok ? '' : '; opacity: 0.5');
@@ -252,32 +266,37 @@ export function heartStyles(p: HeartPanel) {
     warnStyle: 'font-size: 12px; font-weight: 700; line-height: 1.35; color: ' + (p.warnLevel === 'alert' ? RED : WHITE) };
 }
 /** Template-ready rows for the HEART panel (both screens use this, so the two read alike). */
-export function heartVals(p: HeartPanel | null, run: (id: string) => void) {
+export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: { open?: boolean; query?: string; toggle?: () => void; search?: (e: any) => void } = {}) {
   if (!p) return { show: false };
   // A refused button shows its reason in place of its cost (✕ Needs 1 AP), the whole reason in its title: one line each.
   const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.label, cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
     costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
   const S = heartStyles(p);
-  const btns = [b(p.pump, true), b(p.release, true), b(p.steadyBtn), b(p.letgo, false, 'FREE' + (p.letgo.strainOff ? ' · −' + p.letgo.strainOff + ' STRAIN' : '')), ...(p.feedShow ? [b(p.feed)] : []), b(p.watchBtn)];
+  const btns = [b(p.pump, true), b(p.release, true), b(p.steadyBtn), b(p.letgo, false, 'FREE' + (p.letgo.strainOff ? ' · −' + p.letgo.strainOff + ' STRAIN' : '')), ...(p.feedShow ? [b(p.feed)] : []), b(p.watchBtn), ...(p.revert.ok ? [b(p.revert)] : [])];
+  const fr = feelingRows(p.feelings, !!fo.open, fo.query || '', run);
+  const doesInk = p.felt.length ? feelingInk(p.felt[p.felt.length - 1]) : p.ink;
   // Two rows: three across, four when Feed shows (seven buttons).
   const cols = btns.length > 6 ? 4 : 3;
   return { show: true, name: p.name, icon: p.icon, kicker: 'HEART · ' + p.formName.toUpperCase() + ' · ' + p.toneName.toUpperCase(), shape: p.shape,
-    stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: '×' + r2(p.mult) + (p.resonance ? ' (Resonance +' + p.resonance + ')' : ''),
-    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), label: 'Stage ' + s.n + ' ×' + s.mult + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
+    stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: '×' + r2(p.mult) + (p.does.length ? ' · ' + p.does.join(' · ') : '') + (p.resonance ? ' (Resonance +' + p.resonance + ')' : ''),
+    multKey: 'm' + r2(p.mult) + '-' + p.felt.length, multCls: 'phc-mult-shake phc-mult-s' + Math.min(4, p.stage),
+    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
+    feel: { ...fr, toggle: fo.toggle || (() => {}), onSearch: fo.search || (() => {}), query: fo.query || '', openStr: fr.open ? 'true' : 'false',
+      searchStyle: 'min-height: 26px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 11px' },
     freeShort: p.freePumps == null ? '' : p.freePumps + ' FREE PUMP' + (p.freePumps === 1 ? '' : 'S'),
     free: p.freePumps == null ? 'No free Pumps (Empathy 3 gives one a round)' : p.freePumps + ' free Pump' + (p.freePumps === 1 ? '' : 's') + ' left this round',
     strainText: 'STRAIN ' + p.strain + ' / ' + p.limit, strainTrack: S.strainTrack, strainFill: S.strainFill, strainMark: S.strainMark,
     warn: p.warn, hasWarn: !!p.warn, warnStyle: S.warnStyle, swell: p.swell, rider: p.rider,
     btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,
     boxStyle: 'flex: none; position: sticky; top: 0; z-index: 3; display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; border-radius: 12px; background: #120E1E; border: 1px solid ' + p.ink + '; box-shadow: 0 0 14px ' + rgba(p.ink, 0.25),
-    multStyle: 'font-size: 17px; line-height: 1; font-weight: 700; white-space: nowrap; color: ' + p.ink };
+    multStyle: 'display: inline-block; font-size: ' + (17 + Math.min(4, p.stage) * 2) + 'px; line-height: 1; font-weight: 700; white-space: nowrap; color: ' + (p.does.length ? doesInk : p.ink) + (p.does.length ? '; text-shadow: 0 0 10px ' + rgba(doesInk, 0.7) : '') };
 }
 
 // ---------- tones a character can choose (workshop, creation) ----------
 export interface ToneChip { id: string; name: string; ink: string; known: boolean; free: boolean; text: string }
-/** Raw, and every element tone: known ones, plus (at Visualization 1 with none learned yet) the first one free. */
-export function toneChips(knownTones: string[] = [], visualization = 0): ToneChip[] {
-  const firstFree = visualization >= 1 && !knownTones.length;
+/** Raw, and every element tone: known ones, plus (at Lore Master 1 with none learned yet: rules 1.8) the first one free. */
+export function toneChips(knownTones: string[] = [], loreMaster = 0): ToneChip[] {
+  const firstFree = loreMaster >= 1 && !knownTones.length;
   return [{ id: 'raw', name: 'Raw', ink: SOUL_INK, known: true, free: false, text: (TONE as any).raw?.text || 'Soul damage, armour ignored, no rider.' },
     ...TONES.filter((t: any) => t.id !== 'raw').map((t: any) => ({ id: t.id, name: t.name, ink: toneInk(t.id), known: knownTones.includes(t.id), free: firstFree && !knownTones.includes(t.id), text: t.text || '' }))];
 }

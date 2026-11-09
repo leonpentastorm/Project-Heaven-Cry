@@ -66,7 +66,7 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(pad.designList.map((d: any) => d.key)).toEqual(['fb', 'sb']);
     expect(pad.designList[0].line).toMatch(/^BURST · radius 1 · reach \d+ · Fire · \d+ MP$/);
     expect(pad.designList[0].icon).toMatch(/^data:image\/svg\+xml/);
-    expect(pad.beginLabel).toBe('Begin Heartfire · 2 AP'); expect(pad.snapLabel).toBe('Snap · 3 AP ×0.6');
+    expect(pad.beginLabel).toBe('Begin Heartfire · 2 AP'); expect(pad.snapLabel).toBe('Snap · 3 AP ×0.8');
     expect(pad.nowStyle).toBeUndefined(); // the 1.2 Hold / Release-now toggle is gone
     // Snap: hover a foe, the area is hatched and both foes carry their expected numbers.
     const foe = G.combat!.units.find((v) => v.side === 'foe')!;

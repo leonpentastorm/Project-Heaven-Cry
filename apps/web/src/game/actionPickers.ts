@@ -343,11 +343,11 @@ export function buildArgs(p: Picker, v: Values, x: PickCtx): Args | string {
 const lower = (s: string) => s.replace(/\s*\(optional\)/, '').replace(/^./, (y) => y.toLowerCase());
 
 /** The chips a design slot offers, from the engine's data (the MAGIC tab workshop's rules, rules 1.5): schools, the
- * option, a second school on the same side with its own option, the tones you know (the first free at Visualization 1),
+ * option, a second school on the same side with its own option, the tones you know (the first free at Lore Master 1, rules 1.8),
  * one shape (Bolt by default), the other modules (Size locked until a shape is on), up to the slots. */
 export function designSlotView(c: any, d: DesignDraft, extra: number) {
   const known = c?.soulKnown || { schools: [], modules: [] }, slots = designSlots(c, extra), kTones: string[] = known.tones || [];
-  const vis = c?.skills?.visualization || 0, firstFree = vis >= 1 && !kTones.length, shape = d.modules.find(isShapeMod) || '';
+  const vis = c?.skills?.lore_master || 0, firstFree = vis >= 1 && !kTones.length, shape = d.modules.find(isShapeMod) || '';
   const mods = (known.modules as string[]).filter((m) => (MODULE as any)[m]);
   const opt = (school: string) => (((SCHOOL as any)[school]?.options || []) as string[]).map((o) => ({ id: optValue(o), label: OPT_LABEL[o] || o }));
   const full = d.modules.length >= slots;
@@ -357,7 +357,7 @@ export function designSlotView(c: any, d: DesignDraft, extra: number) {
     options: d.school ? opt(d.school) : [],
     options2: d.school2 ? opt(d.school2) : [],
     tones: [{ id: 'raw', label: 'Raw', title: (TONE as any).raw?.text || 'Soul damage, armour ignored, no rider.', can: true, free: false },
-      ...(TONES as any[]).filter((t) => t.id !== 'raw').map((t) => { const k = kTones.includes(t.id), free = firstFree && !k; return { id: t.id, label: t.name + (free ? ' · free' : ''), title: (t.text || '') + (k || free ? '' : ' Not learned yet (a teacher or a plate).') + (free ? ' Your first tone is free at Visualization 1.' : ''), can: k || free, free }; })],
+      ...(TONES as any[]).filter((t) => t.id !== 'raw').map((t) => { const k = kTones.includes(t.id), free = firstFree && !k; return { id: t.id, label: t.name + (free ? ' · free' : ''), title: (t.text || '') + (k || free ? '' : ' Not learned yet (a teacher or a plate).') + (free ? ' Your first tone is free at Lore Master 1.' : ''), can: k || free, free }; })],
     shapes: [{ id: '', label: 'Bolt', title: 'One target (the default; no module).', cost: 0, off: false },
       ...mods.filter(isShapeMod).map((m) => ({ id: m, label: (MODULE as any)[m].name, title: (MODULE as any)[m].text || '', cost: (MODULE as any)[m].cost || 0, off: shape !== m && !shape && full }))],
     modules: mods.filter((m) => !isShapeMod(m)).map((m) => { const on = d.modules.includes(m), noShape = m === 'size' && !shape && !on;

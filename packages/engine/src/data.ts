@@ -90,6 +90,6 @@ export const TONES: ToneDef[] = (soulJ as any).tones || [];
 export const TONE: Record<string, ToneDef> = Object.fromEntries(TONES.map((x) => [x.id, x]));
 export const RETIRED_MODULE: Record<string, { id: string; becomes: string | null; why: string }> = Object.fromEntries(((soulJ as any).retired || []).map((x: any) => [x.id, x]));
 export const SOUL_RULES: any = soulJ;
-export const SOUL_REV = 15;
+export const SOUL_REV = 18;
 export const MANA_BANDS: { id: string; min: number; max: number; soul_cost_mult: number; syphon_mp: number; healing_given_mult: number; strain_per_cast_extra: number }[] = RULES.mana.meter.bands;
 

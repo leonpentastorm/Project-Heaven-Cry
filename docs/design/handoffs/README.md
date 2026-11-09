@@ -14,6 +14,7 @@ Notes one session (or one person) left for the next. The project-wide hand-off i
 | [blessing-ui-HANDOFF.md](blessing-ui-HANDOFF.md) (+ `blessing-ui-shots/`) | Blessing 2.0 web UI | Same |
 | [blessing-art-brief.md](blessing-art-brief.md) | The patron, mark and prayer art brief | Referenced by the asset pipeline (`tools/build_web_assets.py`, `faithArt.ts`) |
 | [focus-in-hand-HANDOFF.md](focus-in-hand-HANDOFF.md) | Focus in hand: the browser follow-up (decision 103) | The latest combat-rules change and its e2e notes |
+| [outburst-4.0-HANDOFF.md](outburst-4.0-HANDOFF.md) (+ `outburst-4.0-shots/`) | Outburst 4.0 (rules 1.8, items 801–818): feelings, residue, Revert, new modules and gates, practice; the web panel, codex, tools, icons and sounds | The feeling colours, readings, icons and sounds wait for Leon's verdict |
 | [grand-sigilist.md](grand-sigilist.md) | Open design for the Grand Sigilist's Grand forms | Input to the first advanced-class batch |
 
 ## Archived (`_archive/`)

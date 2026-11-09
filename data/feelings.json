@@ -1,0 +1,950 @@
+{
+  "$schema_version": "2.0",
+  "kind": "feelings",
+  "revision": 18,
+  "source": "PHC Core Rules v1.0, rules revision 1.8 (Outburst 4.0, accepted direction 9 Nov 2026; docs/design/outburst-4.0-spec.md section 3). Engine: packages/engine/src/feelings.ts and magic.ts.",
+  "plain_step": 0.4,
+  "max_feelings_per_hold": 4,
+  "start_count": 2,
+  "start_default": [
+    "rage",
+    "love"
+  ],
+  "residue_rounds": 2,
+  "families": {
+    "warm": "heat and closeness",
+    "cold": "distance and loss",
+    "sharp": "edges and grudges",
+    "low": "dread and the gut",
+    "bright": "light and lift",
+    "hollow": "emptiness and the self",
+    "wild": "the heart off its leash",
+    "holy": "stillness and the high"
+  },
+  "notes": "Steps replace the plain Pump's +0.4: a release's multiplier is the stage table's plus (step - 0.4) for each feeling pump (item 804). Residue: the strongest feeling poured in (most pumps, ties to the latest) on every tile the release covered, for residue_rounds. Every number is provisional (spec 14, item 801).",
+  "items": [
+    {
+      "id": "rage",
+      "name": "Rage",
+      "n": 1,
+      "family": "wild",
+      "step": {
+        "base": 0.5
+      },
+      "trigger": {
+        "event": "big_hit",
+        "text": "You take 25% of your max HP or more in one hit."
+      },
+      "pour": {
+        "text": "Hits harder; +1 Strain to you at the pump.",
+        "strain": 1,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "rage"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "5 Soul damage a turn.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "rage"
+          }
+        ],
+        "damage": 5,
+        "when": "turn"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "grief",
+      "name": "Grief",
+      "n": 2,
+      "family": "cold",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "ally_down",
+        "text": "An ally goes Down or dies."
+      },
+      "pour": {
+        "text": "Targets hit are Slowed (Body save).",
+        "condition": "slowed",
+        "rounds": 2,
+        "save": true,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "grief"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "Slowed a turn (no save).",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "grief"
+          }
+        ],
+        "condition": "slowed",
+        "rounds": 1,
+        "save": false,
+        "when": "turn"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "fear",
+      "name": "Fear",
+      "n": 3,
+      "family": "low",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "dread_fight",
+        "text": "A fight with an Elite or Boss starts, or you are made Afraid."
+      },
+      "pour": {
+        "text": "Targets hit are pushed 1 and Shaken (Heart save).",
+        "push": 1,
+        "condition": "shaken",
+        "rounds": 2,
+        "save": true,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "fear"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "Shaken on entry (Heart save).",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "fear"
+          }
+        ],
+        "condition": "shaken",
+        "rounds": 2,
+        "save": true,
+        "when": "entry"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "love",
+      "name": "Love",
+      "n": 4,
+      "family": "warm",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "tend_ally",
+        "text": "You heal or shield an ally."
+      },
+      "pour": {
+        "text": "The shape also heals the allies inside it by the release's power x 0.5, and spares them its damage.",
+        "heal_of_power": 0.5,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "love"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "Heal 5 a turn.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "love"
+          }
+        ],
+        "heal": 5,
+        "when": "turn"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "joy",
+      "name": "Joy",
+      "n": 5,
+      "family": "bright",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "nat20",
+        "text": "You roll a natural 20."
+      },
+      "pour": {
+        "text": "Chains to one more enemy within 2 of the first hit, at half, no roll.",
+        "chain": 1,
+        "range": 2,
+        "mult": 0.5,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "joy"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "+1 to rolls while you stand there.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "joy"
+          }
+        ],
+        "roll": 1,
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "calm",
+      "name": "Calm",
+      "n": 6,
+      "family": "holy",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "calm_turn",
+        "text": "You end a turn having Steadied, or with 0 Strain."
+      },
+      "pour": {
+        "text": "Ignores cover; a Bolt or Lance can't miss (no roll).",
+        "ignore_cover": true,
+        "no_miss": true,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "calm"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "Strain -1 on entry.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "calm"
+          }
+        ],
+        "strain": -1,
+        "when": "entry"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "spite",
+      "name": "Spite",
+      "n": 7,
+      "family": "sharp",
+      "step": {
+        "base": 0.4,
+        "vs_last_hurt": 0.8
+      },
+      "trigger": {
+        "event": "hurt_by_enemy",
+        "text": "An enemy damages you."
+      },
+      "pour": {
+        "text": "Revenge: its step is +0.8 against whoever last hurt you.",
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "spite"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "5 Soul damage a turn to whoever hurt the caster last.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "spite"
+          }
+        ],
+        "damage": 5,
+        "when": "turn",
+        "only": "last_hurt"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "shame",
+      "name": "Shame",
+      "n": 8,
+      "family": "hollow",
+      "step": {
+        "base": 0.6
+      },
+      "trigger": {
+        "event": "nat1",
+        "text": "You roll a natural 1, or a vow breaks."
+      },
+      "pour": {
+        "text": "5 true damage to you on release.",
+        "self_damage": 5,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "shame"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "-1 to rolls while you stand there.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "shame"
+          }
+        ],
+        "roll": -1,
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "pride",
+      "name": "Pride",
+      "n": 9,
+      "family": "holy",
+      "step": {
+        "per_stage": 0.2
+      },
+      "trigger": {
+        "event": "big_kill",
+        "text": "You take down an Elite or Boss."
+      },
+      "pour": {
+        "text": "Rewards big casts: +0.2 a stage reached.",
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "pride"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "none",
+        "text": ""
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "despair",
+      "name": "Despair",
+      "n": 10,
+      "family": "hollow",
+      "step": {
+        "per_10pct_missing": 0.1
+      },
+      "trigger": {
+        "event": "low_hp",
+        "text": "You drop below a quarter of your max HP."
+      },
+      "pour": {
+        "text": "Stronger near death: +0.1 per 10% of max HP you are missing.",
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "despair"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "Weakened a turn.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "despair"
+          }
+        ],
+        "condition": "weakened",
+        "rounds": 1,
+        "save": false,
+        "when": "turn"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "hope",
+      "name": "Hope",
+      "n": 11,
+      "family": "bright",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "got_up",
+        "text": "You get back up from Downed."
+      },
+      "pour": {
+        "text": "Allies in the shape (and you) lose Afraid and Shaken; their next roll is +2 (Hopeful).",
+        "cleanse": [
+          "fear",
+          "shaken"
+        ],
+        "condition": "hopeful",
+        "rounds": 2,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "hope"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "+2 to saves while you stand there.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "hope"
+          }
+        ],
+        "save": 2,
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "mercy",
+      "name": "Mercy",
+      "n": 12,
+      "family": "holy",
+      "step": {
+        "base": 0.2
+      },
+      "trigger": {
+        "event": "accept_surrender",
+        "text": "A foe surrenders to you because of you: talked down, or spared by a non-lethal blow (you accept it)."
+      },
+      "pour": {
+        "text": "Downs instead of killing; a target hit at a quarter HP or less makes a Heart save or surrenders.",
+        "nonlethal": true,
+        "surrender_at": 0.25,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "mercy"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "The Downed who lie there are stable.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "mercy"
+          }
+        ],
+        "stabilise": true,
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "cruelty",
+      "name": "Cruelty",
+      "n": 13,
+      "family": "low",
+      "step": {
+        "base": 0.4
+      },
+      "trigger": {
+        "event": "hit_helpless",
+        "text": "You hit someone Downed or helpless (Stunned, Pinned, Grappled)."
+      },
+      "pour": {
+        "text": "Adds Bleeding (no save); Bleeding spreads to one enemy next to the target.",
+        "condition": "bleeding",
+        "spread": 1,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "cruelty"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "Bleeding on entry and each turn.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "cruelty"
+          }
+        ],
+        "condition": "bleeding",
+        "rounds": 2,
+        "save": false,
+        "when": "turn_entry"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "loneliness",
+      "name": "Loneliness",
+      "n": 14,
+      "family": "cold",
+      "step": {
+        "base": 0.2,
+        "alone_extra": 0.3,
+        "alone_range": 3
+      },
+      "trigger": {
+        "event": "last_standing",
+        "text": "You are the last of your side standing."
+      },
+      "pour": {
+        "text": "The lone caster's power: +0.3 more with no ally within 3.",
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "loneliness"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "none",
+        "text": ""
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "belonging",
+      "name": "Belonging",
+      "n": 15,
+      "family": "warm",
+      "step": {
+        "per_ally": 0.1,
+        "range": 3,
+        "max": 0.5
+      },
+      "trigger": {
+        "event": "together",
+        "text": "You stand with 3 or more allies within 2."
+      },
+      "pour": {
+        "text": "Togetherness: counts twice for allies' Resonance this round.",
+        "resonance": 2,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "belonging"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "+1 Defense while you stand there.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "belonging"
+          }
+        ],
+        "defense": 1,
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "dread",
+      "name": "Dread",
+      "n": 16,
+      "family": "low",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "ambushed",
+        "text": "An attacker who was Hidden hits you, or a trap or hazard goes off on you."
+      },
+      "pour": {
+        "text": "Targets hit lose their reactions this round and their Overwatch.",
+        "no_reaction": true,
+        "blind_hidden": 1,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "dread"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "No reactions while you stand there.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "dread"
+          }
+        ],
+        "no_reaction": true,
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "awe",
+      "name": "Awe",
+      "n": 17,
+      "family": "holy",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "witness",
+        "text": "A Miracle or a Grand form happens in your sight."
+      },
+      "pour": {
+        "text": "Targets hit lose 1 AP next turn.",
+        "ap_loss": 1,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "awe"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "none",
+        "text": ""
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "longing",
+      "name": "Longing",
+      "n": 18,
+      "family": "cold",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "apart",
+        "text": "A scene starts with your linked ally gone (or the Narrator grants it)."
+      },
+      "pour": {
+        "text": "+2 reach; pulls targets hit 1 toward you.",
+        "reach": 2,
+        "pull": 1,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "longing"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "none",
+        "text": ""
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "relief",
+      "name": "Relief",
+      "n": 19,
+      "family": "warm",
+      "step": {
+        "base": 0.2
+      },
+      "trigger": {
+        "event": "clean_win",
+        "text": "A fight you win ends with no ally Down."
+      },
+      "pour": {
+        "text": "The Strain this hold added is given back at the release.",
+        "refund_strain": true,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "relief"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "Strain -1 on entry.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "relief"
+          }
+        ],
+        "strain": -1,
+        "when": "entry"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "contempt",
+      "name": "Contempt",
+      "n": 20,
+      "family": "sharp",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "enemy_yields",
+        "text": "An enemy gives up while you were its last attacker."
+      },
+      "pour": {
+        "text": "Targets hit take -2 to attack you (Scorned, 2 rounds).",
+        "condition": "scorned",
+        "rounds": 2,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "contempt"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "-2 to attacks while you stand there.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "contempt"
+          }
+        ],
+        "attack": -2,
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "guilt",
+      "name": "Guilt",
+      "n": 21,
+      "family": "hollow",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "hurt_ally",
+        "text": "You damage an ally."
+      },
+      "pour": {
+        "text": "Heals the ally you hurt last by 10 x the stage; 5 true damage to you.",
+        "heal_per_stage": 10,
+        "self_damage": 5,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "guilt"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "Heal 5 a turn.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "guilt"
+          }
+        ],
+        "heal": 5,
+        "when": "turn"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "jealousy",
+      "name": "Jealousy",
+      "n": 22,
+      "family": "sharp",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "stolen_kill",
+        "text": "An ally takes down a creature you damaged this round."
+      },
+      "pour": {
+        "text": "Steals one boon or the shield from the first enemy hit, to you.",
+        "steal": 1,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "jealousy"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "none",
+        "text": ""
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "wonder",
+      "name": "Wonder",
+      "n": 23,
+      "family": "bright",
+      "step": {
+        "base": 0.2
+      },
+      "trigger": {
+        "event": "discover",
+        "text": "A hidden thing is revealed to you, or you reach a zone for the first time (or the Narrator grants it)."
+      },
+      "pour": {
+        "text": "Reveals Hidden creatures, traps and hazards in its area.",
+        "reveal": true,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "wonder"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "Spot Hidden things within 3 at the start of your turn.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "wonder"
+          }
+        ],
+        "reveal_radius": 3,
+        "when": "turn"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "defiance",
+      "name": "Defiance",
+      "n": 24,
+      "family": "wild",
+      "step": {
+        "base": 0.3
+      },
+      "trigger": {
+        "event": "defy",
+        "text": "You resist an Overreach, or pass a save against Afraid."
+      },
+      "pour": {
+        "text": "Can't be resisted (no saves on its conditions, pushes and riders); your next save passes.",
+        "no_saves": true,
+        "next_save": true,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "defiance"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "helps",
+        "text": "Immune to Afraid while you stand there.",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "defiance"
+          }
+        ],
+        "immune": "fear",
+        "when": "stand"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "abandon",
+      "name": "Abandon",
+      "n": 25,
+      "family": "wild",
+      "step": {
+        "base": 0.8
+      },
+      "trigger": {
+        "event": "indulge",
+        "text": "You indulge an Overreach."
+      },
+      "pour": {
+        "text": "+2 Strain to you at the pump.",
+        "strain": 2,
+        "effects": [
+          {
+            "op": "feeling_pour",
+            "feeling": "abandon"
+          }
+        ]
+      },
+      "residue": {
+        "kind": "harms",
+        "text": "A random condition on entry (Slowed, Weakened, Shaken, Confused or Bleeding; no save).",
+        "effects": [
+          {
+            "op": "feeling_residue",
+            "feeling": "abandon"
+          }
+        ],
+        "random": [
+          "slowed",
+          "weakened",
+          "shaken",
+          "confused",
+          "bleeding"
+        ],
+        "rounds": 1,
+        "save": false,
+        "when": "entry"
+      },
+      "adjudication": "engine",
+      "provisional": true
+    }
+  ]
+}

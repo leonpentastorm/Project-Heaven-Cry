@@ -25,6 +25,8 @@ Rules numbers are in the spec, [`docs/rules/PHC-Core-Rules-v1.0.md`](rules/PHC-C
 
 **Blessing 2.0, faith 1.6** (decision 102; [`design/blessing-2.0-spec.md`](design/blessing-2.0-spec.md); spec items 592–629). Faithful or Atheist, eight patrons (`data/patrons.json` v2), Devotion, Whisper/Hymn/Miracle, vows, rites, Witnessed, interventions. Engine `faith.ts`; hand-offs: [engine](design/handoffs/blessing-engine-HANDOFF.md), [web](design/handoffs/blessing-ui-HANDOFF.md).
 
+**Outburst 4.0, Soul magic 1.8** (decision 109; [`design/outburst-4.0-spec.md`](design/outburst-4.0-spec.md); spec "Soul magic" section 12, items 801–818; hand-off [`design/handoffs/outburst-4.0-HANDOFF.md`](design/handoffs/outburst-4.0-HANDOFF.md)). Feelings poured in while you pump (25, `data/feelings.json`; engine `feelings.ts`), residue, Revert Pump, 23 new modules gated by Soul skills, practice and picks, Visualization out of Soul magic, three starting designs.
+
 **World Play 1.0, rules 1.7** (decision 105; [`design/world-play-spec.md`](design/world-play-spec.md); items 636–670; `data/world_play.json`). The area map tells the story: faces, carrying, caches, hazards, triggers, Talk, the HERE card, attempts with odds. Hand-offs: [part A (engine, Narrator tools)](design/handoffs/world-play-A-HANDOFF.md), [part B (web)](design/handoffs/world-play-B-HANDOFF.md).
 
 **Story mode, rooms and missions.** Speaking order (each player once a round, then the Narrator), human Narrator mode, OOC lines, the mission board and end states (decision 95), the Proving Ground with friends (decision 96). Campaigns are data: [`design/campaign-format.md`](design/campaign-format.md), `data/campaigns/m813.json` (the M813 one-shot).

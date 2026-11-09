@@ -337,7 +337,12 @@ const marks = await host.locator('.phc-story').textContent();
 ok('story magic lines carry the Sigil mark ✧ (an evoke that strikes is still a spell, not ⚔)', /✧ Chalkhand draws FIRE/.test(marks) && /✧ Chalkhand evokes/.test(marks) && !/⚔ Chalkhand evokes/.test(marks));
 await host.evaluate(() => { const s = document.querySelector('.phc-story'); s.scrollTop = 0; });
 await snap('17-story-after');
-// the workshop: a second design, saved through the engine
+// the workshop: rules 1.8 starts a caster with 3 designs (the ready list is full at low Empathy), so forget one, then
+// save a new design through the engine
+const n0 = await host.evaluate((id) => window.__phc.getState().game.characters[id].outbursts.length, me);
+ok('a new Soul caster remembers 3 designs (rules 1.8): ' + n0, n0 === 3);
+const lastD = await host.evaluate((id) => window.__phc.getState().game.characters[id].outbursts.at(-1).id, me);
+await host.evaluate(([id, d]) => window.__phc.act({ type: 'magic/forget', charId: id, designId: d }), [me, lastD]); await host.waitForTimeout(300);
 await host.getByRole('button', { name: '+ NEW DESIGN' }).click();
 const ws = host.locator('div[aria-label="Outburst workshop"]');
 await ws.waitFor();
@@ -348,7 +353,7 @@ await ws.scrollIntoViewIfNeeded(); await snap('18-workshop');
 await ws.getByRole('button', { name: 'Save design' }).click();
 await host.waitForTimeout(400);
 const ds = await host.evaluate((id) => window.__phc.getState().game.characters[id].outbursts.map((d) => d.name + ':' + d.school + '/' + d.modules.join('+')), me);
-ok('a second design is saved: ' + ds.join(', '), ds.length === 2 && ds.some((x) => x.startsWith('Quiet Hand:')));
+ok('a new design is saved: ' + ds.join(', '), ds.length === 3 && ds.some((x) => x.startsWith('Quiet Hand:')));
 ok('the workshop closes after the save', await ws.count() === 0);
 console.log('errors', JSON.stringify(host.errors));
 if (host.errors.length) process.exitCode = 1;

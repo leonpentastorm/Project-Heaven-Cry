@@ -1191,8 +1191,8 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 1. **Begin** (2 AP; **Swift**: 1 AP): open a ready design. Pay its MP (cost below) and take **1 Strain** (2 in Flooded air). It is now **held at stage 0**: your heart glows and everyone can see it. You hold one Outburst at a time.
 2. **Pump** (1 AP each): +1 stage, up to **stage 4**. Every AP you don't spend moving or shooting can go into the heart. Pumping adds no Strain.
-3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers: 0 → ×0.6, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2.** The multiplier scales damage and healing; conditions keep their durations.
-4. **A snap cast** is Begin and Release at once (3 AP, ×0.6). A full turn (Begin, Pump × 3, Release) is ×1.8. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.2.
+3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers: 0 → ×0.8 (rules 1.8; was ×0.6), 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2.** The multiplier scales damage and healing; conditions keep their durations.
+4. **A snap cast** is Begin and Release at once (3 AP, ×0.8 under rules 1.8). A full turn (Begin, Pump × 3, Release) is ×1.8. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.2.
 5. **Holding past your turn keeps the stage.** At the start of each of your next turns the held Outburst **swells**: +1 stage for free and +1 Strain (+2 in Flooded air). While holding you can move, shoot, Syphon, Steady or Feed, but not Begin another.
 6. **Empathy** gives **free Pumps each round**: 1 from Empathy 3, a second from Empathy 7. They come back at the start of each of your turns. Empathy no longer lowers any AP; it still sets your ready designs (2 + floor(Empathy ÷ 2)).
 7. **Every Pump has its heartbeat** (section 9): pumping must feel like the heart filling.
@@ -1225,7 +1225,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 1. **Design out of combat** from one **school** plus **modules** (soul_modules.json) and a **tone**. Module slots: 1 + floor(Will Power ÷ 3). **One shape a design** (a shape is a module and takes a slot); a tone takes no slot.
 2. **The second school** (from Will Power 5): a design has a **primary school** (full effect) and may add a **secondary school** with **its own option** at **half strength**, as a rider after the first. They must be different schools, **working on the same side** (item 542): Buff, and Damage with Inverse (a shield), work on allies; Damage, Control and Status on foes. So Buff pairs only with Inverse Damage, and the hostile schools with each other; the workshop refuses the rest (a Buff design's heal would otherwise carry a push, a Status or damage onto the ally it healed). Damage + Control (push) = damage, then a 1-tile push; Damage + Status (Shaken) = the damage, then Shaken 1 round; Buff (heal) + Damage with Inverse = the heal, then a shield of half the damage; Control (Pinned) + Damage = Pinned and half damage (no roll). The rider lands only where the primary did (item 543): a Bolt that misses, a push the target saves against (it holds its ground) and a condition it resists or is immune to carry nothing. Half strength: half damage or healing, half the push (rounded down, at least 1), half the rounds (at least 1).
 3. **Cost** (paid at Begin): school base + modules + 10 for a second school + the tone's cost (an element 5, Raw 0), × the meter band's Soul cost, × (1 − 5% × (Insight − 1)), minimum 5; +20% under a Right Brain Debuff. Pumps cost no MP.
-4. **Learning.** Schools, modules and tones come from tutors, plates (a **Heart plate** holds one Outburst lesson, used up: item 546) and the Narrator's grants after a moment that shakes you. **Tones:** one at Visualization 1 (picked with the starting design, or with your first toned design), more from tutors or plates.
+4. **Learning.** Schools, modules and tones come from tutors, plates (a **Heart plate** holds one Outburst lesson, used up: item 546) and the Narrator's grants after a moment that shakes you. **Tones:** one at Lore Master 1 (rules 1.8; was Visualization 1), picked with the starting design or with your first toned design; more from tutors or plates.
 
 | School | Base cost | Effect (at ×1) |
 |---|---|---|
@@ -1342,6 +1342,100 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 | **Hollow Heart** (trait) | When your own heart's burn Downs you, you are stable; **a Mana Short doesn't Stun you**. +10% reaches elemental Outbursts. |
 | **Overdraw** (Will Power 3) | Once a fight, a toggle on a Pump: +2 stages (from stage 2 or lower), then +1 Strain. |
 | **Pure Heart** (Will Power 5) | Once a fight, the first Strain that would short you is refused: Strain falls to your limit, no Stun, no wild release. |
+
+#### 12. Rules 1.8: Outburst 4.0, remembered spells felt live
+
+> **Rules revision 1.8 (Outburst 4.0, accepted direction 9 Nov 2026; decision 109; design `docs/design/outburst-4.0-spec.md`).** It keeps everything in sections 1–11 and adds **feelings** poured in live while you pump (*how* the remembered spell feels this time), **many more modules** with **guaranteed ways to unlock them** (*what* you can remember), takes **Visualization out of Soul magic**, and fixes low-level play. Sigil you **show** (you draw, and the world obeys the drawing; it lives on the map); Outburst you **hold** (you remember a spell and feel it, and the world obeys the heart; it lives in the caster). **Every number is provisional** (items 801–818) until the damage balance pass. Data: `data/feelings.json` (the 25 feelings), `soul_modules.json` (revision 18: the new modules, gates, the starting templates). Engine: `magic.ts` (the cycle) and `feelings.ts` (triggers, residue, practice).
+
+**1. Visualization leaves Soul magic** (Leon: "it's a Mind skill").
+- The first tone is free at **Lore Master 1** (was Visualization 1): picked with the starting design or the first toned design. More from tutors, plates and the Narrator, as before.
+- A toned Outburst uses the **Soul multiplier only**, never the Elemental one (Expression and Visualization). Storm Hand's Infusion and Discharge, which run through an Emanator gauntlet, also use the Soul multiplier (item 802). Sigil keeps the Elemental multiplier; Visualization stays a Mind skill (Sigil forms, the Elemental multiplier, the Trickster).
+
+**2. The stage table and the snap cast.** Stage 0 is now **×0.8** (was ×0.6): **0 → ×0.8, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2**. A snap cast (Begin and Release at once, 3 AP) and a Begin released straight away are the same thing at ×0.8 (item 803).
+
+**3. Feelings.**
+1. **Pouring one in.** While you hold an Outburst, each **Pump** (1 AP, or a free one) is **plain** (+1 stage, as before) or a **feeling pump**: +1 stage and one feeling you know. A feeling pump has **its own step** on the multiplier instead of the plain +0.4: the release's multiplier is the stage table's, plus (step − 0.4) for each feeling pump (item 804). Stages from the swell, Feeding, Overdraw and Heart Surge are plain. Up to stage 4, as now. Feelings stack with themselves (Rage, Rage, Rage is three Rage steps) and combine freely with each other, the tone and the modules, each rider by its own rules ("lightning love" heals the allies it touches and chains by Storm's rule, healing along the chain).
+2. **Behaviour changes are real.** A feeling's behaviour joins the spell at the release (the table): Love on a Damage design also heals the allies inside its shape, and spares them the damage; Joy chains; Calm can't miss. A feeling poured in twice applies its behaviour once (its step counts twice) (item 806).
+3. **Residue.** On a Release, the **strongest feeling poured in** (the most pumps; ties go to the latest) leaves **residue** on every tile the release covered (a Bolt: the tile it struck) **for 2 rounds**. **Helping** residue (Love, Hope, Belonging, Calm, Relief, Mercy, Joy, Guilt, Wonder, Defiance) works for the caster's side only. **Harming** residue (Rage, Grief, Fear, Spite, Shame, Despair, Cruelty, Dread, Contempt, Abandon) works on **anyone** who stands there, the caster's side too. "A turn" effects land at the start of the turn of whoever stands on the tile; "on entry" effects when a creature steps in; the rest hold while it stands there. A tile holds one residue; a newer one replaces it (item 807).
+4. **Revert Pump** (0 AP): undoes your **last pump this turn**, refunding its AP, the free Pump it used and the Strain it added. Repeat to undo more, back to the start of your turn. It can't undo the swell, a Feed, or a pump that set off a Mana Short (item 808).
+5. **Learning them: you feel it first.** A feeling **unlocks the first time its trigger happens to you** (the table); the engine detects every trigger, and the Narrator may grant one at a story moment as a bonus. Every Soul caster **starts with 2 feelings** of their choice (default Rage and Love). Unlocks are permanent: a log line and a card say "You have felt Grief. You can pour it in now." Only characters who can cast Outbursts (a design or a known school) feel (item 809).
+
+| # | Feeling | Unlocked when the engine sees… | Step | Poured in, it… | Residue |
+|---|---|---|---|---|---|
+| 1 | Rage | you take 25% of your max HP or more in one hit | +0.5 | hits harder; +1 Strain to you at the pump | harms: 5 Soul damage a turn |
+| 2 | Grief | an ally goes Down or dies | +0.3 | targets hit are Slowed (Body save) | harms: Slowed a turn (no save) |
+| 3 | Fear | a fight with an Elite or Boss starts, or you're made Afraid | +0.3 | targets hit are pushed 1 and Shaken (Heart save) | harms: Shaken on entry (Heart save) |
+| 4 | Love | you heal or shield an ally | +0.3 | the shape also heals the allies inside it by the release's power × 0.5, and spares them its damage | helps: heal 5 a turn |
+| 5 | Joy | you roll a natural 20 | +0.3 | chains to one more enemy within 2 of the first hit, at half, no roll | helps: +1 to rolls |
+| 6 | Calm | you end a turn having Steadied, or with 0 Strain | +0.3 | ignores cover; a Bolt or Lance can't miss (no roll) | helps: Strain −1 on entry |
+| 7 | Spite | an enemy damages you | +0.4; +0.8 against whoever last hurt you | revenge | harms: 5 a turn to whoever hurt you last |
+| 8 | Shame | you roll a natural 1, or a vow breaks | +0.6 | 5 true damage to you on release | harms: −1 to rolls |
+| 9 | Pride | you take down an Elite or Boss | +0.2 a stage reached | rewards big casts | none |
+| 10 | Despair | you drop below a quarter of your max HP | +0.1 per 10% of max HP you're missing | stronger near death | harms: Weakened a turn |
+| 11 | Hope | you get back up from Downed | +0.3 | allies in the shape (and you) lose Afraid and Shaken, and their next roll is +2 (Hopeful) | helps: +2 to saves |
+| 12 | Mercy | a foe surrenders to you because of you (you accept it) | +0.2 | Downs instead of killing; a target hit at a quarter HP or less makes a Heart save or surrenders | helps: the Downed are stable |
+| 13 | Cruelty | you hit someone Downed or helpless (Stunned, Pinned, Grappled) | +0.4 | adds Bleeding (no save); Bleeding spreads to one enemy next to the target | harms: Bleeding |
+| 14 | Loneliness | you're the last of your side standing | +0.2, +0.3 more with no ally within 3 | the lone caster's power | none |
+| 15 | Belonging | you stand with 3 or more allies within 2 | +0.1 per ally within 3 (up to +0.5) | counts twice for allies' Resonance this round (the +0.4 ceiling stands) | helps: +1 Defense |
+| 16 | Dread | an attacker who was Hidden hits you, or a trap or hazard goes off on you | +0.3 | targets hit lose their reactions this round and their Overwatch (item 817) | harms: no reactions |
+| 17 | Awe | a Miracle or a Grand form happens in your sight | +0.3 | targets hit lose 1 AP next turn | none |
+| 18 | Longing | a scene starts with your linked ally gone (or the Narrator grants it) | +0.3 | +2 reach; pulls targets hit 1 toward you | none |
+| 19 | Relief | a fight you win ends with no ally Down | +0.2 | the Strain this hold added (Begin, swells, feelings) is given back at the release | helps: Strain −1 on entry |
+| 20 | Contempt | an enemy gives up while you were its last attacker | +0.3 | targets hit take −2 to attack you (Scorned, 2 rounds) | harms: −2 to attacks |
+| 21 | Guilt | you damage an ally | +0.3 | heals the ally you hurt last by 10 × the stage; 5 true damage to you | helps: heal 5 a turn |
+| 22 | Jealousy | an ally takes down a target you damaged this round | +0.3 | steals one boon or the shield from the first enemy hit, to you | none |
+| 23 | Wonder | a hidden thing is revealed to you, or you reach a zone for the first time (or the Narrator grants it) | +0.2 | reveals Hidden creatures, traps and hazards in its area | helps: spot Hidden things within 3 |
+| 24 | Defiance | you resist an Overreach, or pass a save against Fear | +0.3 | can't be resisted (no saves on its conditions, pushes and riders); your next save passes | helps: immune to Fear |
+| 25 | Abandon | you indulge an Overreach | +0.8 | +2 Strain to you at the pump | harms: a random condition on entry (Slowed, Weakened, Shaken, Confused or Bleeding; no save) |
+
+*Abandon is "Surrender" in the brainstorm, renamed because "surrender" is already a combat word.*
+
+**4. Modules: many more, gated by Soul skills, the strongest by advanced class.** Today's 16 stay (Move, Homing, Swift, Ether, Right, Left, Time, Inverse, Size, Random, Impact, At Once; the shapes Wave, Burst, Aura, Lance). New, for everyone (item 810):
+
+| Module | Gate | What it does |
+|---|---|---|
+| Split | Empathy 2 | a Bolt also strikes the nearest other creature it can reach within 2 of the aim (the same side rule), at full power |
+| Ricochet | Lore Master 4 | a Bolt needs no line of sight and ignores half cover when a wall or cover tile lies within 2 of the aim (a bank shot) |
+| Fuse | Lore Master 4 | the release lands and waits: it goes off at the start of your next turn, or when a creature steps into its area, whichever is first |
+| Return | Lore Master 4 | a Bolt or Lance goes out and comes back: each target is struck twice (each strike rolls) |
+| Volley | Will Power 4 | a Bolt becomes 3 small bolts at the aim, each ×0.4, each rolling |
+| Bloom | Will Power 4 | a Burst or Aura grows +1 radius a stage reached |
+| Anchor | Implication 2 | targets hit are Pinned 1 round (Body save) |
+| Lure | Implication 2 | targets hit are pulled 2 toward you |
+| Shell | Camaraderie 2 | you gain a shield of the release's power × 0.5 as it leaves |
+| Linger | Implication 2 | the area stays as a field for 2 rounds: a creature of the side it works on that starts its turn there takes 5 (Damage, + the tone's stage-1 rider) or heals 5 (Buff) |
+| Quiet | Will Power 2 | the hold's Strain (Begin, swells, feelings) is halved, rounded down; the release ×0.8 |
+| Silent | Composure 2 | Begin, Pump and Release don't reveal you while Hidden |
+| Thread | Camaraderie 2 | a Buff release threads the first two allies it reaches: the next heal on one heals the other as much (once) |
+
+**Gated to advanced and hybrid classes with Soul (Leon)**, shown locked with their class and unlocked when the class's batch goes live (`class-roster-rev3-proposal.md` section 7): Echo and Cascade (Heartfed), Tether (Heartbinder), Siphon (Hexer), Phantom (Shade), Orbit (Banner Dancer), Volatile (Storm Hand), Bastion (Adamantile Knight), Judgement-mark (Inquisitor), Halo (Saint). Their texts are in `soul_modules.json`; the engine refuses them until then.
+
+**Gating by Soul skill** (never Visualization). A module needs **2 points in its gate skill**, or **4 for the second tier** (Bloom, Volley, Ricochet, Fuse, Return), to be learned by practice, a Mastered pick, a plate or a tutor; the Narrator's grants and the Proving Ground ignore gates, and a module already known stays known (item 811).
+
+| Skill | Gates |
+|---|---|
+| Lore Master | structure and the strange: the shapes (Wave, Burst, Aura, Lance), Time, Ether, Fuse, Return, Ricochet (and Phantom) |
+| Will Power | power and Strain: Impact, Size, Bloom, Volley, Quiet |
+| Empathy | the design itself: Move, Random, At Once, Split (and ready designs, as now) |
+| Camaraderie | ally modules: Inverse, Thread, Shell |
+| Implication | status modules: Anchor, Lure, Linger |
+| Composure | precision: Homing, Swift, Left, Right, Silent |
+
+**5. Guaranteed ways to unlock modules** (Leon: the Narrator granting one is a bonus, not the only way).
+1. **Practice** (the engine keeps it on the character): each Release you make earns **1, +1 per stage reached past 1, +1 per feeling poured in** (a wild release earns none). At **5** practice you pick a new module your gates allow, at **15** the second, then every **+15** (30, 45, …). A practice bar sits on the Magic tab. Picks are made out of combat (`magic/pick`).
+2. **Mastery:** each Mastery level (3/5/7/9) in a gate skill (Lore Master, Will Power, Empathy, Camaraderie, Implication, Composure) adds **+5 practice**, as well as its perk step; **Mastered (10)** in one grants **one free module pick** from the modules that skill gates (item 812).
+3. **Bonus sources:** tutors, Heart plates and the Narrator's grants, as before.
+
+*Pen and paper (later):* the tabletop version replaces practice with one module pick per level-up for Soul casters, alongside the Mastery picks. Not built.
+
+**6. Low level: no more three sessions of "magic bolt 1"** (item 813).
+- A new Soul caster starts with **3 remembered designs**: the starting kit's **Heart Bolt** (Damage, Bolt, Move: reach 8), **Mend** (Buff heal, Bolt) and **Heart Wave** (Control push, Wave); a design picked at creation takes the first one's place. They know the Damage, Buff and Control schools, the shape Wave and the module Move (the old default cantrip's), and the module they picked. Ready designs are at least 3 (3, or 2 + floor(Empathy ÷ 2) when that is more).
+- **2 feelings** of their choice, **one tone** at Lore Master 1.
+- **Snap cast ×0.8.**
+- **The first Pump each fight is free**, before Empathy's free Pumps.
+- **Starting templates** in the workshop: one-click designs (`soul_modules.json` `templates`), so nobody faces an empty builder.
+
+**7. Classes re-derived.** Shape's free Pump works on feeling pumps too. Heart Surge's extra stage is counted after the feelings (a plain stage on top). Occult Library's tone is now at Lore Master. Eye of the Storm's "no Strain" covers feelings' Strain. The Heartfed's gauges (Rage, Grief, Fear, Devotion) map onto the feelings of the same name when the class returns.
 
 ### Magic advanced classes (draft)
 
@@ -3983,7 +4077,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 503. **Let it go:** free, on your own turn; Strain −stage (0 at stage 0), at most the Strain the swells cost (item 541); the meter +1.
 504. **Steady the heart:** 1 AP, while holding, once per turn: −1 Strain and no swell at your next turn start (the Strain of the swell is skipped too).
 505. **The second school:** from Will Power 5, its own option, half strength (damage, healing, push rounded down to at least 1, rounds halved to at least 1), +10 MP (was +20); on the same side as the primary (item 542); it lands only where the primary landed (item 543).
-506. **Tone cost** 5 MP for an element, 0 for Raw. One tone at Visualization 1, learned with the starting design or the first toned design; more by `magic/learn` (tone) from an ally, a tutor or the Narrator.
+506. **Tone cost** 5 MP for an element, 0 for Raw. One tone at Lore Master 1 (rules 1.8, section 12; was Visualization 1), learned with the starting design or the first toned design; more by `magic/learn` (tone) from an ally, a tutor or the Narrator.
 507. **The riders table** (soul_modules.json `tones`): stage 0 none; enemies only; Fire's Burning has no save; Storm's Shaken at 4 has a Heart save; Stone's +10 and full armour from stage 1; Stone 4 puts rubble (difficult ground, no cover) on every empty tile around the target; Acid 4's Defense −2 more lasts as long as that Corroded.
 508. **The air's shift:** riders read one stage higher in Flooded air, one lower in Thin (0 to 4); the multiplier doesn't shift.
 509. **The aura:** 5 Elemental (Stone 15, armour in full) and the stage-1 rider (shifted) to enemies within 1 at your turn start, after the swell.
@@ -4186,3 +4280,24 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 668. **The Proving Ground:** attempts and asks roll at once (no Narrator, AP always full); the tools place things only while gearing up; their objectives live in a "Drill" mission.
 669. **What the engine tells the Narrator:** up to 20 events (triggers fired, hazards hit, approaches tried with their effects, carrying, searches, talk, alarms) since its last turn, consumed by that turn; hazards hit in a fight are reported after it.
 670. **The Narrator's tool** stays the same all session: the new fields are optional, with fixed vocabularies only.
+
+**Rules 1.8: Outburst 4.0** (decision 109; `docs/design/outburst-4.0-spec.md`). Numbered from 801 so they don't collide with items 671–700 (World Play 1.1) and 701 on (Faith 2.1), written on other branches at the same time. Every number here is provisional, for the damage balance pass.
+
+801. **Feeling steps, residue values and practice thresholds** (the design's open item 1): every step in the feelings table, the residue's 5 a turn, heal 5, +1, +2, −1, −2 and its 2 rounds, practice 1 + stages past 1 + feelings, the thresholds 5 / 15 / +15, and Mastery's +5 (`data/feelings.json`, `soul_modules.json` `practice`).
+802. **Storm Hand's Infusion and Discharge use the Soul multiplier** (they used the Elemental one): the gauntlet is an Emanator, and the design says Outburst tones use the Soul multiplier only. The class is shelved.
+803. **Stage 0 is ×0.8 for every release at stage 0**, not only the one-action snap cast: a Begin released at once in two actions is the same spell, and two prices for it would punish the interface.
+804. **A feeling pump's arithmetic:** the multiplier is the stage table's plus (step − 0.4) for each feeling pump, so every other way to gain a stage (the swell, Feeding, Overdraw, Heart Surge) stays a plain +0.4 step, and anything that reads the stage still works. Steps that depend on the moment (Pride by the stage reached, Despair by HP missing, Loneliness and Belonging by allies near, Spite by the target) are read at the release. A Resonance bonus and items' multipliers apply on top, as before.
+805. **A feeling pump's price** is a plain Pump's (1 AP, or a free one); Rage's +1 and Abandon's +2 Strain are added at the pump (Quiet halves them with the rest of the hold's Strain; Eye of the Storm's "no Strain" covers them).
+806. **Behaviour once, step each time:** a feeling poured in twice applies its behaviour once; its step counts each time. Behaviours on "targets" reach the creatures the primary school landed on (a missed Bolt carries none); Love's and Hope's reach the allies inside the shape.
+807. **Residue** is a zone (`kind: 'residue'`) on the release's area for 2 rounds (counted down with the round, like a field). Helping residue works for the caster's side only, harming residue for anyone. Per-turn effects land at the start of the stander's turn; on-entry effects when it steps in (a turn started there is not an entry). A tile holds one residue; the newest replaces it.
+808. **Revert Pump** keeps an undo stack for the turn: each entry the AP paid, the free Pump used (the fight's first, Empathy's or an item's), the feeling and the Strain added. Anything that ends the hold (a Release, Let go, a Mana Short) clears it; Feeding and the swell are not pumps and can't be reverted.
+809. **Who feels:** player characters who can cast Outbursts (an Outburst design, or a known school). Enemies and companions don't. Characters made before rules 1.8 get Rage and Love once, when their Soul magic is next read (`soulRev` 18).
+810. **The 13 new modules' numbers and readings:** Split at full power on the second target (Bolt only; a Lance or an area ignores it); Ricochet's bank shot within 2 of the aim; Fuse waits until your next turn's start or an entry into its area (the fuse is lost if you are Downed first); Return's second strike rolls again; Volley ×0.4 per bolt; Bloom on Burst and Aura only; Anchor Pinned 1 round with a Body save; Lure 2 tiles; Shell the release's power × 0.5 as a shield; Linger 5 a turn for 2 rounds; Quiet half the hold's Strain and ×0.8; Silent keeps you Hidden through Begin, Pump and Release: under rules 1.8 a hostile release reveals a Hidden caster, as a harmful Sigil does (Outbursts revealed nobody before); Thread once. Module costs: Split 15, Ricochet 15, Fuse 10, Return 20, Volley 15, Bloom 20, Anchor 15, Lure 10, Shell 10, Linger 15, Quiet −5, Silent 10, Thread 10 MP.
+811. **What the gates gate:** learning (practice picks, Mastered picks, Heart plates, an ally or tutor teaching), not designing with a module already known. Move, Random, At Once and Split sit under Empathy (the design spec leaves them unassigned; Empathy "gates the design itself"). The Narrator's grants and the Proving Ground's tools ignore the gates.
+812. **Mastery's practice and picks** read the six gate skills only (Lore Master, Will Power, Empathy, Camaraderie, Implication, Composure), since those are the skills Soul magic is built on; Faith, Conscience and Authority (Virtue) feed the Blessings. Practice from Mastery is derived from your points, so it is never lost or doubled; practice from releases is kept on the character.
+813. **The starting designs:** Heart Bolt (Damage), Mend (Buff, heal) and Heart Wave (Control, push, Wave). A picked starting design replaces Heart Bolt; ready designs are at least 3. A character made before rules 1.8 keeps its designs and gains the missing templates while it has room (`soulRev` 18).
+814. **The fight's free first Pump** is spent before Empathy's free Pumps and before Shape's; it comes back at the start of each fight, not each round. Player characters only (not enemies, companions or the Twinbound twin), and not on the area map (no fight).
+815. **Feeling triggers the engine reads** (item 809's characters): Rage from one hit's HP damage after armour and shields; Grief from an ally of your side (not you) Downed or killed in your fight; Fear when a fight starts with an Elite or Boss among the foes, or when Afraid lands on you; Love from a heal or shield of more than 0 on an ally (not yourself); Joy and Shame from a natural 20 or 1 on any d20 you roll (attacks, spell rolls, story checks); Calm at the end of a turn you Steadied in or ended at 0 Strain; Spite from damage by an enemy; Pride from taking down an Elite or Boss; Despair when one hit takes you from a quarter of your max HP or more to below it; Hope when you are back up from Downed; Mercy when a foe surrenders to you because of you (talked down, or spared by a non-lethal blow: the engine has no separate "accept", so the surrender you brought about is the one you accepted); Cruelty when you hit someone Downed, Stunned, Pinned or Grappled; Loneliness when everyone else on your side is Down or dead and you stand; Belonging at the start or end of your turn with 3 allies within 2; Dread when a Hidden attacker hits you or a trap or hazard goes off on you; Awe when a Miracle is worked or a Grand form Evoked within your sight; Longing at a scene start with your Heartbinder link's ally dead or away (else the Narrator); Relief at the end of a fight your side wins with nobody of it Down or dead; Contempt when an enemy gives up some other way while you were its last attacker (there is no flee rule yet, so fleeing waits for one); Guilt when you damage an ally; Jealousy when an ally takes down a creature you damaged this round; Wonder when a hidden thing is revealed to you (a reveal, a spotted trap) or you enter a zone for the first time; Defiance when you resist an Overreach or pass a save against Afraid; Abandon when you indulge an Overreach.
+816. **Mercy's surrender roll:** d20 + the target's Heart save against 12 + your Heart debuff strength (the Status school's save); a surrendered enemy is out of the fight as the surrender rules say.
+817. **Dread's "can't see Hidden things for a round"** runs as: the targets lose every reaction this round and their Overwatch. Sight for Hidden creatures is per side, not per unit, so a single foe can't be blinded to them yet; the rest waits for per-unit sight.
+818. **Hopeful** (Hope) is +2 to the next attack or spell roll, spent on that roll, at most 2 rounds; **Scorned** (Contempt) is −2 to attack the one who scorned you, 2 rounds, no save.

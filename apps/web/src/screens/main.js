@@ -5,7 +5,8 @@ import { resourcesOf, resView, RES_CSS } from '../game/resources';
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
-import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
+import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
+import { practiceView, feelingCodex, moduleGroups } from '../game/feelingsView';
 import { startOf } from '../game/starts';
 import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '../game/voice';
 import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange } from '@engine';
@@ -136,8 +137,8 @@ function magicVals(self, g, c) {
   const opts = B ? (SCHOOL[B.school]?.options || []) : [];
   const opts2 = B && B.school2 ? (SCHOOL[B.school2]?.options || []) : [];
   const draftD = B && B.school ? { id: B.id || '', name: B.name, school: B.school, ...(B.school2 ? { school2: B.school2 } : {}), modules: B.modules, ...(B.option ? { option: B.option } : {}), ...(B.school2 && B.option2 ? { option2: B.option2 } : {}), ...(B.tone && B.tone !== 'raw' ? { tone: B.tone } : {}) } : null;
-  // Rules 1.5: a tone (Raw default; the first one free at Visualization 1), one shape (Size only with a shape), the rest.
-  const kTones = known.tones || [], vis = c.skills.visualization || 0, shapeOn = B ? B.modules.find((x) => isShape(x)) || null : null;
+  // Rules 1.5: a tone (Raw default; the first one free at Lore Master 1, rules 1.8), one shape (Size only with a shape), the rest.
+  const kTones = known.tones || [], vis = c.skills.lore_master || 0, shapeOn = B ? B.modules.find((x) => isShape(x)) || null : null;
   const verdict = draftD ? designVerdict(m, draftD, mana) : null;
   const b = B ? {
     open: true, title: B.id ? 'EDIT ' + (B.name || 'DESIGN').toUpperCase() : 'NEW OUTBURST DESIGN', name: B.name, onName: (e) => set({ name: e.target.value.slice(0, 40) }),
@@ -150,7 +151,7 @@ function magicVals(self, g, c) {
         pick: () => { const o2 = SCHOOL[o.id]?.options || []; set({ school2: o.id, option2: o2.length ? optValue(o2[0]) : '' }); } }; }),
     hasOptions2: opts2.length > 0, options2: opts2.map((o) => { const v = optValue(o), on = B.option2 === v; return { key: o, label: OPT_LABEL[o] || o, pressed: on ? 'true' : 'false', pick: () => set({ option2: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
     tones: toneChips(kTones, vis).map((t) => { const on = (B.tone || 'raw') === t.id, can = t.known || t.free;
-      return { key: t.id, label: t.name + (t.free ? ' · free' : ''), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Visualization 1: learned with this design.' : ''),
+      return { key: t.id, label: t.name + (t.free ? ' · free' : ''), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Lore Master 1: learned with this design.' : ''),
         pick: () => { if (can) set({ tone: t.id }); }, style: chipStyle(t.ink, on) + (can ? '' : '; opacity: 0.4; cursor: default') }; }),
     shapes: [{ id: '', name: 'Bolt' }, ...known.modules.filter((x) => isShape(x)).map((x) => ({ id: x, name: MODULE[x]?.name || x }))].map((x) => { const on = (shapeOn || '') === x.id, full = !on && !!x.id && !shapeOn && B.modules.length >= slots;
       return { key: x.id || 'bolt', label: x.name + (x.id ? ' ' + signed(MODULE[x.id]?.cost || 0) : ''), icon: formIconUri(x.id || 'bolt', toneInk(B.tone)), pressed: on ? 'true' : 'false', locked: full, title: x.id ? MODULE[x.id]?.text || '' : 'One target (the default; no module).',
@@ -160,7 +161,7 @@ function magicVals(self, g, c) {
       return { key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: (MODULE[x]?.text || '') + (noShape ? ' Size needs a shape.' : ''), pressed: on ? 'true' : 'false', locked: lock,
         pick: () => set({ modules: on ? self.state.mgDraft.modules.filter((y) => y !== x) : [...self.state.mgDraft.modules, x] }), style: chipStyle(SOUL_VIOLET, on) + (lock ? '; opacity: 0.45; cursor: default' : '') }; }),
     verdictEffects: verdict ? verdict.effects : '', verdictRider: verdict ? verdict.rider : '', verdictLine: verdict ? verdict.line : '', verdictIcon: draftD ? designInfo(m, draftD, mana).icon : formIconUri('bolt'),
-    cost: draftD ? designCost(m, draftD, mana) + ' MP · Begin ' + designAp(m, draftD) + ' AP, Pump 1 AP a stage, Release 1 AP (Snap: 3 AP ×0.6) · in ' + bandName(N.band) + ' air' : 'Pick a school.',
+    cost: draftD ? designCost(m, draftD, mana) + ' MP · Begin ' + designAp(m, draftD) + ' AP, Pump 1 AP a stage, Release 1 AP (Snap: 3 AP ×' + STAGE_MULT[0] + ') · in ' + bandName(N.band) + ' air' : 'Pick a school.',
     cantSave: !draftD || fight, save: () => { if (!draftD) return; self.setState({ mgSaved: JSON.stringify(c.outbursts || []), mgSavedGame: getState().game, mgSavedAt: Date.now() }); act({ type: 'magic/design', charId: c.id, design: draftD }); },
     cancel: () => self.setState({ mgDraft: null, mgSaved: null }), saveLabel: B.id ? 'Save changes' : 'Save design',
   } : none.b;
@@ -191,18 +192,43 @@ function magicVals(self, g, c) {
       title: def ? def.text || '' : 'The lesson is too worn to read.',
       go: () => { if (!off) act({ type: 'magic/learn', charId: c.id, [kind]: id, from: 'plate' }); }, style: chipStyle(SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (off ? '; opacity: 0.5; cursor: default' : '') }; });
   plates.push(...heartPlates);
+  // Rules 1.8 (Outburst 4.0): the codex, collapsible and grouped (feelings; modules by gate skill, the advanced classes'
+  // locked), practice and its picks, and the starting templates as one-click designs.
+  const pv = showSoul ? practiceView(c) : null, left = pv ? soulPicksLeft(c) : { practice: 0, mastered: [] };
+  const room = designs.length < readyDesigns(c) && !fight && !designBan(c);
+  const viaFor = (id) => (left.practice > 0 ? 'practice' : left.mastered.find((sk) => gatedBy(sk).includes(id)) || null);
+  const codex = {
+    feltCount: (c.feelings || []).length + ' / ' + FEELINGS.length + ' FELT',
+    feelings: feelingCodex(c).map((f) => ({ key: f.id, name: f.name, icon: f.icon, line: f.known ? f.step + ' · ' + f.effect : f.trigger, sub: f.known ? f.residue : '', known: f.known,
+      title: f.name + (f.known ? '' : ' (not felt yet)') + ': ' + f.effect + ' ' + f.residue + ' ' + f.trigger,
+      style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 1px 8px; align-items: start; padding: 6px 8px; border-radius: 8px; background: #10151F; border: 1px solid ' + (f.known ? epRgba(f.ink, 0.55) : '#1C2536') + (f.known ? '' : '; opacity: 0.65'),
+      nameStyle: 'font-size: 12px; font-weight: 700; color: ' + (f.known ? f.ink : '#A3AEC2') })),
+    groups: moduleGroups(c).map((gr) => ({ key: gr.key, label: gr.label.toUpperCase() + ' · ' + gr.blurb, count: gr.modules.filter((x) => x.known).length + ' / ' + gr.modules.length,
+      modules: gr.modules.map((md) => { const via = !md.known && md.ok ? viaFor(md.id) : null;
+        return { key: md.id, name: md.name, icon: md.icon, state: md.known ? '✓ KNOWN' : md.locked ? 'LOCKED · ' + (md.why || 'its class') : md.ok ? (md.gate ? md.gate + ' · learnable' : 'learnable') : '✕ ' + md.why.replace(/\.$/, ''),
+          title: md.name + ' (' + (md.cost >= 0 ? '+' : '−') + Math.abs(md.cost) + ' MP): ' + md.text, canPick: !!via && !fight, pickLabel: via === 'practice' ? 'Pick (practice)' : via ? 'Pick (Mastered ' + (SKILL[via]?.name || via) + ')' : '',
+          pick: () => { if (via) act({ type: 'magic/pick', charId: c.id, module: md.id, via }); },
+          style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 1px 8px; align-items: center; padding: 5px 8px; border-radius: 8px; background: #10151F; border: 1px solid ' + (md.known ? '#3A2E5C' : '#1C2536') + (md.known || md.ok ? '' : '; opacity: 0.6'),
+          stateStyle: 'grid-column: 2; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: ' + (md.known ? '#6FEA77' : md.ok ? '#C9D3E3' : '#A3AEC2') }; }) })),
+    hasPractice: !!pv, practiceText: pv ? pv.text : '', practiceHint: pv ? pv.hint + (left.mastered.length ? ' · free picks from Mastered ' + left.mastered.map((sk) => SKILL[sk]?.name || sk).join(', ') : '') : '',
+    practiceFill: 'height: 100%; width: ' + (pv ? pv.pct : 0) + '%; background: #AE9BFF',
+    templates: DESIGN_TEMPLATES().map((t) => { const ok = room && (known.schools || []).includes(t.school) && (t.modules || []).every((x) => (known.modules || []).includes(x));
+      return { key: t.id, name: t.name, text: t.text || '', icon: formIconUri((t.modules || []).find((x) => isShape(x)) || 'bolt'), off: !ok,
+        title: ok ? 'Add ' + t.name + ' to your ready designs.' : fight ? 'After the fight.' : !room ? 'No room: forget a design first.' : 'You need its school and modules first.',
+        add: () => { if (ok) act({ type: 'magic/design', charId: c.id, design: { id: '', name: t.name, school: t.school, modules: [...(t.modules || [])], ...(t.option ? { option: t.option } : {}) } }); } }; }),
+  };
   const anyMagic = showSigil || showSoul;
   return {
     has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
     showSigil, showSoul, noEvoker: words.length > 0 && !evo, noEvokerText: evoC ? '⚠ ' + NEEDS_EVOKER + ' Yours is in the pack: it keeps its charge, but you can\'t draw until you hold it (GEAR: the off hand).' : '⚠ No Evoker carried: you know the words but can\'t draw them until you hold one.',
-    sig: { words: wordCards, stats: sigStats, noWords: !wordCards.length, head: 'SIGILS · MIND · ' + words.length + (words.length === 1 ? ' WORD' : ' WORDS') },
+    sig: { words: wordCards, groups: wordRows(wordCards, (w) => w.key).map((r) => ({ key: r.key, label: r.label.toUpperCase() + ' · ' + r.items.length, words: r.items })), stats: sigStats, noWords: !wordCards.length, head: 'SIGILS · MIND · ' + words.length + (words.length === 1 ? ' WORD' : ' WORDS') },
     soul: { designs: designCards, noDesigns: !designs.length, stats: soulStats, ema: emaC, noEma: !ema, noEmaText: emaC ? NEEDS_EMANATOR + ' Yours is in the pack: it keeps its MP, but an Outburst pulls from the air instead, at +2 Strain a cast, and Syphon waits (GEAR: the off hand).' : 'No Emanator carried: an Outburst pulls from the air instead of your MP, at +2 Strain a cast.',
       mpText: N.mp + ' / ' + mpMax + ' MP', mpFill: 'height: 100%; width: ' + Math.max(0, Math.min(100, mpPct)) + '%; background: ' + MP_BLUE,
       held: !!N.held, heldText: N.held ? 'HOLDING ' + ((designs.find((d) => d.id === N.held.design) || {}).name || 'an Outburst').toUpperCase() + ' · STAGE ' + N.held.stage + ' · it grows each round, and strains the heart, until you release it' : '', heldImg: heartUri(N.held ? N.held.stage : 1),
       head: 'OUTBURSTS · SOUL · ' + designs.length + (designs.length === 1 ? ' DESIGN' : ' DESIGNS'), canNew, newDesign: () => self.setState({ mgDraft: { id: null, name: '', school: known.schools[0], school2: '', option2: '', tone: 'raw', modules: [], option: optValue((SCHOOL[known.schools[0]]?.options || [''])[0] || '') }, mgSaved: null }),
       newWhy: fight ? 'Design Outbursts after the fight.' : !known.schools.length ? 'Learn a school first (Will Power, or a teacher).' : designs.length >= readyDesigns(c) ? 'You keep ' + readyDesigns(c) + ' designs ready (Empathy): forget one to make room.' : '',
       knownText: 'Schools: ' + (known.schools.map((x) => SCHOOL[x]?.name || x).join(', ') || 'none') + ' · Tones: Raw' + (known.tones || []).map((x) => ', ' + (TONE[x]?.name || x)).join('') + ' · Modules: ' + (known.modules.map((x) => MODULE[x]?.name || x).join(', ') || 'none') },
-    b, learn: { ally, plates, hasAlly: ally.length > 0, hasPlates: plates.length > 0, any: ally.length + plates.length > 0, locked: learnLocked,
+    codex, b, learn: { ally, plates, hasAlly: ally.length > 0, hasPlates: plates.length > 0, any: ally.length + plates.length > 0, locked: learnLocked,
       why: fight ? 'Learn after the fight.' : learnedNow ? 'One new thing a scene: it takes a rest to sink in.' : 'One new thing a scene. Words: ' + words.length + ' / ' + wordsKnownCap(c) + ' known.' },
   };
 }
@@ -659,10 +685,14 @@ export class MainLogic extends DCLogic {
           pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 66px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (off ? '#A3AEC2' : on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px ' + (off && !on ? 'dashed #2A3A48' : 'solid ' + (on ? SIG_CYAN : '#232D3F')) + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') + (off ? '; opacity: 0.8' : '') }; }),
       designs: wCards.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: d.line, icon: d.icon, title: d.title + ' ' + d.costText + '.', subStyle: 'font-size: 10px; font-weight: 700; color: ' + d.ink,
         pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; align-items: center; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? d.ink : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') + (d.canBegin ? '' : '; opacity: 0.6') }; }),
-      modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (×0.6)']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
+      modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (×' + STAGE_MULT[0] + ')']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
         style: 'flex: 1; min-height: 32px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; color: ' + (on ? '#E7EBF3' : SOUL_VIOLET) + '; border: 1px solid ' + SOUL_VIOLET + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.2) : 'transparent') }; }),
       showHeart: !!(mOpen && wHp && (W === 'release' || HEART_W.includes(W))),
-      hv: heartVals(wHp, (id) => { if (id === 'release') return this.setState({ wAct: 'release', wAim: null }); act({ type: 'world/act', charId: c.id, act: id, ...(id === 'heartwatch' ? { on: !(MN.held && MN.held.watch) } : {}) }); if (id === 'letgo') this.setState({ wAct: 'outburst' }); }),
+      hv: heartVals(wHp, (id) => { if (id === 'release') return this.setState({ wAct: 'release', wAim: null });
+        // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump run as world acts too.
+        if (id.startsWith('pump:')) return act({ type: 'world/act', charId: c.id, act: 'pump', feeling: id.slice(5) });
+        act({ type: 'world/act', charId: c.id, act: id, ...(id === 'heartwatch' ? { on: !(MN.held && MN.held.watch) } : {}) }); if (id === 'letgo') this.setState({ wAct: 'outburst' }); },
+        { open: !!S.wFeelOpen, query: S.wFeelQ || '', toggle: () => this.setState({ wFeelOpen: !S.wFeelOpen }), search: (e) => this.setState({ wFeelQ: e && e.target ? e.target.value : String(e || '') }) }),
     };
     wMagic.wordRows = wordRows(wMagic.words, (w) => w.key).map((r) => ({ key: r.key, label: r.label.toUpperCase(), aria: r.label + ' words', words: r.items }));
     const magicClick = (k) => {

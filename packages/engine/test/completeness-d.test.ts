@@ -41,6 +41,7 @@ describe('Vessel: no Outburst designs', () => {
     const s = storyWith([adv('vessel', SOUL), SOUL]); const [v, o] = s.chars;
     const design = { name: 'Bolt', school: 'damage', modules: [] };
     expect(() => s.act({ type: 'magic/design', charId: v.id, design } as any)).toThrow(/Vessel designs no Outbursts/);
+    s.g.characters[o.id].outbursts = s.g.characters[o.id].outbursts!.slice(0, 1); // rules 1.8: 3 starting designs fill the ready list
     s.act({ type: 'magic/design', charId: o.id, design } as any);
   });
 });
