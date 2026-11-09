@@ -48,13 +48,15 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 - Spec: `docs/design/outburst-4.0-spec.md`. It covers:
   - feelings poured in live (25), with residue, Revert pump and the multiplier counter;
   - 23 new modules: 13 for everyone, 10 gated to Soul advanced classes;
-  - guaranteed unlocks: practice, plus a module pick at each Mastery level;
+  - guaranteed unlocks: practice (+5 at each Mastery level), plus a module pick at Mastered;
   - Visualization removed from Soul magic;
   - fixes for low-level play.
 - **Task (Leon):** make the Magic tab's Sigil and Outburst workshops collapsible, with grouped sections, and group the
   Proving Ground's cheat menu the same way (Sigil words by group; Outburst modules by gate skill, gated ones shown
   locked).
 - **Later:** the pen-and-paper conversion. Practice becomes one module pick per level-up for Soul casters.
+- **Trait idea, after 4.0 is built:** Abandon goes off wild when you're already over the Strain limit (Leon: "sounds
+  more like a trait than a base mechanic").
 
 ## Classes
 
