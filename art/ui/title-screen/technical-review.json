@@ -25,7 +25,7 @@
       941
     ],
     "front": [
-      1672,
+      1671,
       941
     ]
   },
@@ -58,11 +58,11 @@
       "top40_max_alpha": 1
     },
     "front": {
-      "transparent_pixels": 7652539,
-      "partial_alpha_pixels": 193624,
-      "opaque_pixels": 1591021,
-      "left38_max_alpha": 1,
-      "top40_max_alpha": 1
+      "transparent_pixels": 8634075,
+      "partial_alpha_pixels": 60353,
+      "opaque_pixels": 742756,
+      "left38_max_alpha": 0,
+      "top40_max_alpha": 0
     }
   },
   "psd_layers": [
@@ -76,27 +76,42 @@
     941
   ],
   "foreground_placement": {
-    "revision": 5,
+    "revision": 6,
     "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
     "native_dimensions": [
-      1672,
+      1671,
       941
     ],
     "destination_xy": [
-      256,
-      144
+      2048,
+      1152
     ],
     "scaled_dimensions": [
-      3584,
-      2016
+      1792,
+      1009
     ],
     "overscan": "mirror",
+    "alpha_floor": 245,
     "canvas": [
       4096,
       2304
     ],
-    "notes": "Revision 5 (Leon, 9 Nov 2026): a full 16:9 frame composed for the screen (a wide shot: the squad small on a rock outcrop at the right, all looking up at the Celestial; the left 58% empty). Placed 1:1 on the central safe rect (the window shows exactly this frame at 16:9); the rock is mirrored into the right and bottom overscan. The render's near-opaque pixels (alpha 245\u2013254; it painted the rock at 252\u2013253) are made opaque. Uniform resize, no sharpening.",
-    "alpha_floor": 245
+    "gaze": {
+      "target_face_canvas": [
+        2745,
+        250
+      ],
+      "scale_about_safe_bottom_right": 0.5,
+      "sightline_error_deg": {
+        "lead": 19,
+        "tank": 19,
+        "gunner": 23,
+        "mage": 16,
+        "support": 6
+      },
+      "rule": "art/briefs/title-screen.md, The gaze: every sightline ends on the god's head or upper body"
+    },
+    "notes": "Revision 6 (Leon, 9 Nov 2026): the gaze-corrected render (every head thrown back, looking up and left at 45-60 degrees). The 16:9 frame is scaled to half the safe rect about its bottom-right corner, the placement that best aims the five sightlines at the god's face while keeping the squad on screen (errors 6-23 degrees; every line crosses the god's head or upper body). The rock is mirrored into the right and bottom overscan; near-opaque alpha (245-254) is made opaque. Uniform resize, no sharpening."
   },
   "visual_review": "pending",
   "full_repository_validation": "not run by this export script"
