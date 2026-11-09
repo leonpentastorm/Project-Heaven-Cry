@@ -2687,13 +2687,8 @@ c2f80494bc4351ab993c171fe8f6e56ab8a2d59da82ae574dcd13daa3f8fdfc8  art/ui/title-s
 5ab63288cb2e6efd57f6989781a75ecab80dd1f92fc3e5ddb38bbe4fb3342f36  art/ui/title-screen/title-back.png
 ae3e0f57d4dce2857d72861ebc4318799e99274cba9a46d21b119af7faad3489  art/ui/title-screen/title-front.png
 5cf1806cf75f5601f4455c90100a8b27fd242707b25b41bf1e11401af98a68fa  art/ui/title-screen/title-mid.png
-<<<<<<< HEAD
-3248784da7263d8a9f74d6e2afac44ff614d1d8be1fa4ef0767b405ee62d69b0  art/ui/title-screen/title-screen.psd
-5833d495396399bf678fa5a2defb622623172e9b5d39c3738030a740c479c810  docs/ART-INTEGRATION.md
-=======
 8e3c27fec9169c0aa4298c130de0967c690470de8fb553a00d13447eef011bfb  art/ui/title-screen/title-screen.psd
-4e7fc2f9da656b4d6247b449dcc54e513ea02956e6b6954cc66a98cda1c10581  docs/ART-INTEGRATION.md
->>>>>>> feature/title-front-r6
+5833d495396399bf678fa5a2defb622623172e9b5d39c3738030a740c479c810  docs/ART-INTEGRATION.md
 a9279716f976bf8268407d505444b2000ee50ca7e57e88b7c6968edf0cfba748  docs/ASSET-DIRECTORY.md
 6de65e53e188ecbce5e1f2c19aabc745f5f6e06ee73f4bcbe82249108a8bdd0e  tools/art/export_m813_campaign.py
 d11fb5d194cac8e8fd09dc4bb4bc90bea07012599d2f5942081bf57923720ea5  tools/art/export_wick_animation.py
