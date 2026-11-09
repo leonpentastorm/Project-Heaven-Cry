@@ -64,7 +64,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
   - **strokes**: a Line is what you drew as one, so touching glyphs no longer poison each other (playtest fix);
   - guaranteed new words: study, copying enemy glyphs and investigating sigils drawn in the world, Mastery;
   - word mastery and inflections;
-  - late-game Lines of 5 and Junctions;
+  - late-game Junctions (one glyph shared by two Lines; Lines of 5 were dropped);
   - gated power for the advanced Mind classes.
 
 ## Classes

@@ -102,8 +102,8 @@ The cap on words known stays at 4 + Brain Power.
 
 ## 4. Late-game grammar (Leon: "cool for late game")
 
-1. **Lines of 5:** at **Intelligence 9**, or by a Mastered free pick, a stroke may hold 5 glyphs. The spell cap becomes
-   5 for you. Max Sigil words still limits you below that.
+1. **No Lines of 5** (Leon, 9 Nov 2026: "doubling a glyph at one place is already a huge enough reward"). A Line stays
+   2–4 glyphs for everyone.
 2. **Junctions:** at **Brain Power Mastered (10)**, one glyph may belong to **two strokes** (a crossing):
    - Evoking either Line counts it as a word of that Line;
    - it fades only when the second Line is Evoked;
@@ -138,7 +138,7 @@ These mirror Outburst 4.0's gated modules. They come back with their classes; mo
   - grant study;
   - set a word's use count;
   - place a `sigil_mark`;
-  - toggle Lines of 5 and Junctions for testing.
+  - toggle Junctions for testing.
 
 ## 8. Assets
 
@@ -155,7 +155,7 @@ These mirror Outburst 4.0's gated modules. They come back with their classes; mo
 
 1. Study thresholds (6, then +8) and the word-mastery counts (10 / 30): the balance pass.
 2. The 40 inflections: the implementer drafts them; Leon strikes or changes them.
-3. Lines of 5 at Intelligence 9 and Junctions at Brain Power Mastered: confirm the gates.
+3. Junctions at Brain Power Mastered: confirm the gate. (Lines of 5 were dropped, Leon 9 Nov 2026.)
 
 ## Build split
 
@@ -165,7 +165,7 @@ These mirror Outburst 4.0's gated modules. They come back with their classes; mo
   - Study, copying, `sigil_mark` and Investigate.
   - Mastery study and the Mastered word.
   - Word use counts and inflections.
-  - Lines of 5 and Junctions.
+  - Junctions.
   - Enemy AI on strokes.
   - Narrator fields (`sigil_mark` placement, grants).
   - Proving Ground actions.
