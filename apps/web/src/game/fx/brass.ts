@@ -249,6 +249,11 @@ function fresh(shell: Shell): Pic {
   return { w: W, h: P.h, smoke: P.smoke, glow: P.glow, el: () => pic(W, P.h, (id) => '<defs>' + lin(id('n'), col) + '</defs><path d="' + tip + '" fill="url(#' + id('n') + ')" stroke="#4A2412" stroke-width="0.45"/><svg x="0" y="0" width="' + P.w + '" height="' + P.h + '" viewBox="0 0 ' + P.w + ' ' + P.h + '" overflow="visible">' + P.el().innerHTML + '</svg>') };
 }
 
+/** The pictures, for the reload card (fx/reload.ts): a magazine (upright), a fresh round (nose right), an arrow or bolt. */
+export const magPicture = (m: Mag) => { const P = MAGS[m]; return { w: P.w, h: P.h, glow: P.glow, el: P.el }; };
+export const roundPicture = (s: Shell) => { const P = fresh(s); return { w: P.w, h: P.h, glow: P.glow, el: P.el }; };
+export const arrowPicture = (bolt = false) => arrowPic(bolt);
+
 // ---------- behind the portrait ----------
 /** A portrait on screen: its centre and size, its shape, and the frame ring drawn round it (its box-shadow spread). */
 export interface Who { x: number; y: number; w: number; h: number; round: boolean; ring: number }
@@ -459,21 +464,14 @@ export function ejectCore(who: Who | null, core: Core, aim: number, o: { delay?:
   for (let i = 0; i < 3; i++) wisp(L, rx + cx * i * 3 * u, ry + cy * i * 3 * u, (13 + i * 3) * u, SIGIL_SMOKE, { drift: cx * 9 * u, dy: cy * 9 * u, rise: 18 * u, ms: 1300, delay: (o.delay || 0) + i * 110, alpha: 0.32 });
 }
 /** A reload's magazine (or canister, or bolt box): straight down out of the gun from behind the portrait, gone the
- *  moment it reaches the ground. A tactical reload keeps it: it drops into view, then goes back up behind the portrait
- *  into the pack. */
-export function dropMag(who: Who | null, mag: Mag | null, o: { delay?: number; tactical?: boolean } = {}) {
+ *  moment it reaches the ground (a speed reload: the pile on the tile now holds it). A tactical reload calls nothing
+ *  here: its magazine goes into the pack on the reload card (fx/reload.ts), never under the portrait. */
+export function dropMag(who: Who | null, mag: Mag | null, o: { delay?: number } = {}) {
   if (!who || !mag || reducedMotion()) return;
   // it comes out of the magwell just under the portrait's middle, its top still behind it; the ground is far enough
   // below that it falls in plain sight before it lands
   const P = MAGS[mag], u = who.w / 38, w = P.w * 0.62 * BIG * u, h = P.h * 0.62 * BIG * u, y0 = who.y + who.h * 0.25 + h * 0.3;
-  if (!o.tactical) { drop(who, P, w, h, { y0, ground: who.y + who.h * 0.7 + h * 0.9, delay: o.delay, tag: 'mag:' + mag, spin: rnd(-10, 10), g: 1100 }); return; }
-  const run = () => {
-    const ms = 950, box = behind(who, ms); if (!box) return;
-    const el = piece(box, P.el(), who.x, y0, w, h, P.glow, 'mag:' + mag), down = who.y + who.h * 0.5 + h * 0.6 - y0;
-    anim(el, [{ transform: 'translate(0,0)', opacity: 1 }, { transform: 'translate(0,' + down + 'px) rotate(4deg)', opacity: 1, offset: 0.3 }, { transform: 'translate(0,' + (down + 2 * u) + 'px) rotate(5deg)', opacity: 1, offset: 0.48 },
-      { transform: 'translate(0,' + (-who.h * 0.45) + 'px) rotate(0deg)', opacity: 1, offset: 0.9 }, { transform: 'translate(0,' + (-who.h * 0.5) + 'px)', opacity: 0 }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
-  };
-  if (o.delay) after(run, o.delay); else run();
+  drop(who, P, w, h, { y0, ground: who.y + who.h * 0.7 + h * 0.9, delay: o.delay, tag: 'mag:' + mag, spin: rnd(-10, 10), g: 1100 });
 }
 /** A gun with no magazine takes its rounds (see Load): a cylinder's spent brass dropped straight out and fresh rounds
  *  pushed in; a break-action opened, both hulls kicked out behind and two fresh shells dropped in; a pump gun's shells

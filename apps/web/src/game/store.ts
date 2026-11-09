@@ -5,6 +5,8 @@ import { type Action, type GameState, type Sheet, RuleError, apply, newGame, vie
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, type Conn } from './net';
+import { battlePace } from './combatSpeed';
+
 
 export type Screen = 'home' | 'create' | 'room' | 'main' | 'combat' | 'levelup' | 'ultimate';
 export interface Me { id: string; name: string }
@@ -46,7 +48,8 @@ const subs = new Set<() => void>();
 export const getState = () => S;
 export const subscribe = (f: () => void) => { subs.add(f); return () => { subs.delete(f); }; };
 function set(patch: Partial<ClientState>) { S = { ...S, ...patch }; subs.forEach((f) => f()); }
-export const toast = (text: string, ok = false) => { set({ toast: { text, at: Date.now(), ok } }); setTimeout(() => { if (S.toast && Date.now() - S.toast.at >= 4500) set({ toast: null }); }, 5000); };
+/** A toast for 4.5 s (in a fight, × the combat speed: game/combatSpeed.ts). */
+export const toast = (text: string, ok = false) => { const k = battlePace(); set({ toast: { text, at: Date.now(), ok } }); setTimeout(() => { if (S.toast && Date.now() - S.toast.at >= 4500 * k) set({ toast: null }); }, 5000 * k); };
 
 let conn: Conn | null = null;
 let hostState: GameState | null = null;

@@ -154,7 +154,7 @@ await pickAction(p, /^Draw a glyph/).catch(() => {});
 const drawTxt = ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().getAttribute('title').catch(() => '')) || '') + ' ' + ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().textContent().catch(() => '')) || '');
 ok('the Evoker stowed: Draw a glyph says "Needs an Evoker in hand."', /Needs an Evoker in hand\./.test(drawTxt));
 const ap0 = (await G()).combat.units.find((u) => u.charId === me.id).ap;
-await p.locator('[data-backpack]').first().click();
+await p.locator('[data-backpack]:visible').first().click();
 const bpPanel = p.locator('[data-bp-panel]');
 await bpPanel.waitFor({ timeout: 3000 }).then(() => ok('the backpack button opens the inventory panel over the fight', true), () => ok('the backpack button opens the inventory panel over the fight', false));
 const evoRow = bpPanel.locator('[data-bp-row]', { hasText: 'counts only in a hand' }).filter({ hasText: /FOCUS\s*Evoker/ }).first();

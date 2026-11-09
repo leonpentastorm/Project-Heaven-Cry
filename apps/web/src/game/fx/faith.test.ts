@@ -8,6 +8,7 @@ import { setLayer, clampCentre } from './dom';
 import { playFx, setContext, clearFx } from './play';
 import { faithBeat, miracleOverlay, devotionWord, FACE_MS } from './faith';
 import * as sfxMod from '../sfx';
+import { setCombatSpeed } from '../combatSpeed';
 
 function grid(w = 14, h = 10) {
   document.body.innerHTML = '';
@@ -41,7 +42,8 @@ export const FAITH_EVENTS: any[] = [
 
 describe('the faith effects (Blessing 2.0)', () => {
   let spy: any;
-  beforeEach(() => { vi.useFakeTimers(); grid(); spy = vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {}); });
+  // The written timings are Fast's (game/combatSpeed.ts; Normal's are × 1/0.85, tested in combatSpeed.test.ts).
+  beforeEach(() => { setCombatSpeed('fast'); vi.useFakeTimers(); grid(); spy = vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {}); });
   afterEach(() => { spy.mockRestore(); clearFx(); vi.advanceTimersByTime(20000); vi.useRealTimers(); });
 
   it('every faith event plays without an error, draws or sounds something, takes its beat, and cleans up', () => {

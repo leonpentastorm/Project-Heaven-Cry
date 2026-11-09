@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 // What weapons throw off (fx/brass.ts): every ranged weapon in the data has its casing, magazine or draw; casings fly
 // behind the shooter (away from the target); a bow's shot waits for the draw; a reload drops its magazine straight down
-// (a tactical one takes it back); guns with no magazine load their own way; an Evoker throws its spent core.
+// (a tactical one drops nothing: the reload card puts it in the pack); guns with no magazine load their own way; an
+// Evoker throws its spent core.
 import { describe, expect, it, vi } from 'vitest';
 import { refOf, WEAPONS } from '@engine';
 import { setLayer } from './dom';
@@ -112,7 +113,9 @@ describe('the pictures over the grid', () => {
   it('reloads: a magazine drops; a revolver dumps its brass and loads; a double barrel kicks its hulls out and takes two; a pump feeds shells', () => {
     vi.useFakeTimers();
     expect(run({ k: 'reload', unit: 'u', at: '1,1', weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200 }).seen).toContain('mag:curved_mag');
-    expect(run({ k: 'reload', unit: 'u', at: '1,1', weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200, tactical: true }).seen).toContain('mag:curved_mag');
+    // a tactical reload drops nothing under the portrait: its magazine goes into the pack on the reload card (review)
+    expect(run({ k: 'reload', unit: 'u', at: '1,1', weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200, tactical: true }).seen.some((p) => /^mag:/.test(p))).toBe(false);
+    expect(run({ k: 'reload', unit: 'u', at: '1,1', weapon: 'service_pistol', cat: 'pistol', how: 'mag', dur: 1200, tactical: true, off: { weapon: 'decrkm_smg', cat: 'smg', how: 'mag', tactical: true } }).seen.some((p) => /^mag:/.test(p))).toBe(false);
     const rev = run({ k: 'reload', unit: 'u', at: '1,1', weapon: 'drifter_revolver', cat: 'revolver', how: 'mag', dur: 1200 }).seen;
     expect(rev).toEqual(expect.arrayContaining(['shell:pistol', 'round:pistol'])); expect(rev.some((p) => /^mag:/.test(p))).toBe(false);
     expect(run({ k: 'reload', unit: 'u', at: '1,1', weapon: 'coach_gun', cat: 'shotgun', how: 'loose', rounds: 2, dur: 1400 }).seen).toEqual(expect.arrayContaining(['shell:hull', 'round:hull']));

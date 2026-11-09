@@ -216,6 +216,7 @@ const key = async (w) => { const b = host.locator('div[aria-label="Glyph keyboar
 // little to step, draw, step, draw and Evoke in one go (the raider must not walk out of the Line's area in between).
 if ((u.mg?.charge || 0) < 6) { await act({ type: 'combat/core', unitId: u.id }); await host.waitForTimeout(250); ({ cb, u } = await CB()); }
 if (u.ap < 5) { await host.getByRole('button', { name: 'End turn', exact: true }).click(); await host.waitForTimeout(300); await waitMine(); ({ cb, u } = await CB()); }
+await idleOn(host); // the other turns finish playing first (a player can't click the grid until then; longer at Normal speed)
 const plan = await host.evaluate((id) => { const cb = window.__phc.getState().game.combat, m = cb.map, me = cb.units.find((x) => x.charId === id);
   const K = (x, y) => x + ',' + y, P = (k) => k.split(',').map(Number), [mx, my] = P(me.pos);
   const bad = new Set([...(m.solid || []), ...(m.cover || []), ...(m.full || []), ...(cb.objects || []).map((o) => o.pos), ...cb.units.filter((u) => !u.dead && u !== me).map((u) => u.pos)]);

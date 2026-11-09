@@ -18,6 +18,10 @@ export const IMG = D.img;
 /** Any built asset by name (tools/build_web_assets.py): campaign maps, sprites, banners, portraits. URLs pass through. */
 export const ART = (n) => (!n ? '' : ASSETS[n] || (/^(\/|https?:|data:|blob:)/.test(n) ? n : ''));
 export const ART_BIG = (n) => ASSETS[n + '-lg'] || ART(n);
+/** A unit's face as its token draws it: the portrait or avatar resolved through the art library (an asset name like
+ *  'char-m813-scavenger-drone', a built URL, an upload). '' when nothing resolves (an archived or unknown id): the
+ *  token, the target card and the HUD then show the unit's initials, never a broken black square. */
+export const faceOf = (u) => (u && u.img ? ART(u.img) : '');
 /** The campaign zone a state is in (the fight's map during a fight). */
 export const zoneOf = (g) => g?.campaign?.zones?.find((z) => z.id === (g.phase === 'combat' && g.combat ? g.combat.map.id : g.story.zone)) || null;
 /** An object's sprite: its own, else the campaign's for its kind (an open door has its own). */
@@ -163,7 +167,7 @@ export function tokenVals(u, opt) {
   const word = u.dead ? 'DEAD' : u.downed ? 'DOWNED' : hpPct >= 100 ? 'UNHURT' : hpPct > 50 ? 'WOUNDED' : 'BADLY HURT';
   const known = !!opt.ally || !!u.analyzedBy, fx = known ? effectsOf(u) : [];
   return {
-    ally: !!opt.ally, foe: !opt.ally, known, unknown: !known, img: ART(u.img) || u.img || '', hasImg: !!u.img, noImg: !u.img, short: u.short, name: u.name,
+    ally: !!opt.ally, foe: !opt.ally, known, unknown: !known, img: faceOf(u), hasImg: !!faceOf(u), noImg: !faceOf(u), short: u.short, name: u.name,
     sub: (opt.ref ? opt.ref + ' · ' : '') + (opt.ally ? opt.player : u.npc ? opt.player + (u.analyzedBy ? ' · ANALYZED' : '') : 'ENEMY · ' + (u.tier || 'hostile').toUpperCase() + (u.analyzedBy ? ' · ANALYZED' : '')), subStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (opt.ally ? opt.color : '#F65157'),
     hp: u.hp + ' / ' + u.maxHp + ' HP', hpFill: 'height: 100%; width: ' + hpPct + '%; background: #F65157', state: word,
     stateStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (u.downed || u.dead ? '#F65157' : '#A3AEC2'),
