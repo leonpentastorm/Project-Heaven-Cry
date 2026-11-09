@@ -1412,8 +1412,9 @@ function songTriggers(g: GameState, u: Combat['units'][number], c: Character, be
   const song2 = !big && revived ? startSong(g, c, 'brought ' + revived.name + ' back', 'spotlight', log) : false;
   if (big) spotlight(g, { kind: 'takedown', char: c.id, unit: u.id, reason: 'took down ' + big.name, target: big.id, targetName: (cb.sighted || []).includes(big.id) ? big.name : 'an unseen hostile', song: song1 });
   if (revived) spotlight(g, { kind: 'revive', char: c.id, unit: u.id, reason: 'brought ' + revived.name + ' back', target: revived.id, targetName: revived.name, targetChar: revived.charId || null, song: song2 });
-  else if (killed.length) startSong(g, c, 'a kill', 'trait', log);
-  else if (healed) startSong(g, c, 'a big heal', 'trait', log);
+  // The music traits' own triggers only when no spotlight moment happened (the chain the music always had: a boss's kill
+  // never falls through to "a kill").
+  if (!big && !revived) { if (killed.length) startSong(g, c, 'a kill', 'trait', log); else if (healed) startSong(g, c, 'a big heal', 'trait', log); }
   if (revived && musicOf(g).now?.charId !== c.id) startSong(g, c, 'brought ' + revived.name + ' back', 'trait', log);
   syncSong(g);
 }

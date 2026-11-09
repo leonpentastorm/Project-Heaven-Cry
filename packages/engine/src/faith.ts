@@ -498,10 +498,11 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, ru
   const what = run();
   cb.log.push(p.name + ' intervenes for ' + f.name + what + '.');
   const line = speak(G(), cb, rngOf(), c, p, 'intervention');
-  // Decision 110: a god breaking in is a spotlight moment (the patron's torn strip, then the fighter's; the action it
-  // happened in plays back slower). Presentation only.
+  // Decision 111: a god breaking in is a spotlight moment (the patron's torn strip, then the fighter's; the action it
+  // happened in plays back slower). Presentation only. Never from the area map's dry run (game.ts: a throwaway copy of
+  // the map, marked dry): only the real run's intervention happened.
   const g = G(), why = String(what || '').replace(/^[\s:·]+/, '').trim();
-  if (g) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
+  if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
     ...(target ? { target: target.id, targetName: target.name } : {}), ...(target?.charId && target.charId !== c.id && target.side === f.side ? { targetChar: target.charId } : {}) });
 }
 

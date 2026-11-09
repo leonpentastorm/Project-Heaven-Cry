@@ -1,6 +1,6 @@
 // What a spotlight cut-in shows (docs/design/cutin-spec.md 3–5): the engine's `spotlight` events turned into strips (whose
 // eyes, in which ink), a label and a caption. Pure apart from the art lookups (tests).
-import { type GameState, type FxEvent, ATTRS, CLASS, FAITH_PATRON, SKILL, SPOTLIGHT_PRIORITY, type SpotlightKind } from '@engine';
+import { type GameState, type FxEvent, ARCHETYPES, ATTRS, CLASS, FAITH_PATRON, SKILL, SPOTLIGHT_PRIORITY, type SpotlightKind } from '@engine';
 import { ART, ART_BIG, IMG } from '../../screens/shared';
 import { ATTR_INK } from '../classView';
 import { accentOf, patronPortrait, FAITH_INK } from '../faithArt';
@@ -59,13 +59,28 @@ export function inkOfChar(ch: any): { attr: string; name: string; ink: string } 
 
 /** The asset name behind a portrait value: a name ('char-mallow-3') or a built URL ('/assets/char-mallow-3.webp'). */
 export const assetName = (p: string | null | undefined): string => { const m = String(p || '').match(/^\/assets\/([\w-]+?)(?:-lg)?\.webp$/); return m ? m[1] : String(p || ''); };
-/** A character's strip: their portrait (the large copy), its eye line (the art's, or the sheet's for an upload), their ink. */
+/** The archetype card that stands in for a character with no portrait of their own, by attribute: the archetype that
+ *  leans hardest on it (the All-in 7/1/1 set left out; a tie goes to the data's order). */
+const STAND_IN: Record<string, string> = (() => {
+  const out: Record<string, string> = {}, items = (ARCHETYPES || []).filter((a: any) => a?.family !== 'all_in');
+  for (const at of ATTRS) {
+    let best: any = null;
+    for (const a of items) if (EYE_MAP['char-arch-' + a.id] && (!best || (a.attributes?.[at.id] || 0) > (best.attributes?.[at.id] || 0))) best = a;
+    if (best) out[at.id] = 'char-arch-' + best.id;
+  }
+  return out;
+})();
+/** A character portrait the strip can use: an art library character ('char-…'), or the player's own (an upload or a URL).
+ *  Anything else (the Narrator's Wick standing in for the Proving Ground's recruit, an archived or renamed id) is not. */
+const ownPortrait = (p: string, name: string) => (name.startsWith('char-') ? !!ART(name) : /^(data:|blob:|https?:)/.test(p) || (p.startsWith('/') && !p.startsWith('/assets/')));
+/** A character's strip: their portrait (the large copy), its eye line (the art's, or the sheet's for an upload), their ink.
+ *  With no portrait of their own, the archetype card for their highest attribute stands in. */
 export function stripForChar(g: GameState | null | undefined, charId: string | null | undefined): CutInStrip | null {
   const ch: any = charId && g?.characters?.[charId]; if (!ch) return null;
-  const p: string = ch.portrait || '', name = assetName(p);
-  const img = ART_BIG(name) || ART(p) || p || IMG['wick-welcome'] || '';
-  const eye = eyeFor(name) || (typeof ch.portraitEye === 'number' ? { x: 0.5, y: ch.portraitEye } : null) || DEFAULT_EYE;
   const k = inkOfChar(ch);
+  const p: string = String(ch.portrait || ''), own = ownPortrait(p, assetName(p)), name = own ? assetName(p) : STAND_IN[k.attr] || '';
+  const img = (own ? ART_BIG(name) || ART(p) : ART_BIG(name)) || IMG['wick-welcome'] || '';
+  const eye = eyeFor(name) || (own && typeof ch.portraitEye === 'number' ? { x: 0.5, y: ch.portraitEye } : null) || DEFAULT_EYE;
   return { key: 'c:' + ch.id, img, eye, ink: k.ink, name: ch.name || 'Someone', word: k.name };
 }
 
@@ -97,7 +112,7 @@ export function captionOf(e: any, g?: GameState | null): string {
     case 'ultimate': return 'An Ultimate, earned'; // never the perk's name: the secrecy rule (its own award screen names it)
     case 'legend': return 'A legendary deed';
     case 'song': return 'Plays their song'; // never the title (the Unspoken Name)
-    case 'god': return cap(String(e.reason || 'intervenes'));
+    case 'god': return cap(String(e.reason || (e.interject ? 'speaks' : 'intervenes')));
     default: return cap(String(e.reason || ''));
   }
 }
@@ -125,7 +140,8 @@ export function cutInFromFx(g: GameState | null | undefined, events: FxEvent[], 
   const shown = strips.slice(0, 4), more = strips.length - shown.length;
   const leadChar = stripForChar(g, lead.char);
   const word = lead.kind === 'god' ? (patronData(lead.patron)?.name || 'a patron').toUpperCase() : (leadChar ? leadChar.word.toUpperCase() : '');
-  const label = KIND_WORD[lead.kind as CutInKind] + (word ? ' · ' + word : '');
+  // A god interjection (lead.interject: the patron speaks up, nothing intervenes) is labelled with the bare name.
+  const label = lead.kind === 'god' && lead.interject ? word : KIND_WORD[lead.kind as CutInKind] + (word ? ' · ' + word : '');
   const caps = [captionOf(lead, g), ...evs.slice(1).filter((e: any) => e.kind !== lead.kind || e.reason !== lead.reason).map((e) => low(captionOf(e, g)))];
   const caption = [...new Set(caps)].join(' · ') + (more > 0 ? ' · +' + more + ' more' : '');
   const line = lead.kind === 'legend' ? (lead.line ? cut(String(lead.line), 90) : undefined) : lead.line ? cut(String(lead.line), 140) : undefined;

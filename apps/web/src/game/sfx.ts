@@ -17,7 +17,7 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'reload_pistol' | 'reload_mag' | 'reload_rifle' | 'reload_shells' | 'rack' | 'jam_clear' | 'round_in' | 'mag_in' | 'dry_click'
   | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
   | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
-  // The spotlight cut-in (game/cutin, decision 110): a tear and a low ring.
+  // The spotlight cut-in (game/spotlight, decision 111): a tear and a low ring.
   | 'spotlight_tear'
   | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent'
   | ElementSfx | WordSfx | SoulSfx | FeelSfx;
@@ -128,7 +128,7 @@ const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f)
 
 // ---------- settings (shared with the title screen's Settings) ----------
 const LS = 'phc.ui';
-/** cutins (decision 110): the spotlight cut-ins: every one, once per character per scene, or none. */
+/** cutins (decision 111): the spotlight cut-ins: every one, once per character per scene, or none. */
 export type CutinPref = 'all' | 'scene' | 'off';
 export interface UiPrefs { sfx: number; music: number; mute: boolean; reduceMotion: boolean; cutins: CutinPref }
 let prefs: UiPrefs = (() => { try { return { sfx: 60, music: 70, mute: false, reduceMotion: false, cutins: 'all' as CutinPref, ...JSON.parse(localStorage.getItem(LS) || '{}') }; } catch { return { sfx: 60, music: 70, mute: false, reduceMotion: false, cutins: 'all' as CutinPref }; } })();

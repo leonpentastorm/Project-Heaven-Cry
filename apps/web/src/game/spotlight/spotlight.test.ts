@@ -1,14 +1,18 @@
 // @vitest-environment jsdom
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 110): the seeded tear, the strips and captions built from the
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111): the seeded tear, the strips and captions built from the
 // engine's events, merging, the player's setting, the geometry, and the effects queue's gate and slowed segment.
 import { describe, expect, it, beforeEach } from 'vitest';
 import { newGame, apply, ARCHETYPES, type GameState, type Sheet } from '@engine';
 import { hashSeed, mulberry32, stripShape, tornEdge } from './tear';
 import { cutInFromFx, inkOfChar, stripForPatron, stripForChar, eyeFor, assetName, DEFAULT_EYE, captionOf } from './spec';
-import { applyPref, showCutIn, skipCutIn, cutInActive, specFromTrigger } from './index';
-import { stackLayout, cropOf, tornStripMarkup } from './layout';
+import { applyPref, showSpotlight, skipCutIn, cutInActive, cutInNow, cancelSpotlight, specFromTrigger } from './index';
+import { stackLayout, cropOf, tornStripMarkup, MAX_MAGNIFY } from './layout';
+import { importedEye } from '../charfile';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { CutInView } from './CutInLayer';
 import { CUTIN_MS, CUTIN_MAX_MS, CUTIN_TEMPO } from './timing';
-import { gatesOf, slowedIn, timeline, planQueue, queueFx, clearFx, turnsBusyUntil, setContext } from '../fx/play';
+import { gatesOf, slowedIn, timeline, planQueue, queueFx, clearFx, turnsBusyUntil, fxBusyUntil, setContext, forgetSpotlights, PROTECT_GRACE, MAX_SPEEDUP } from '../fx/play';
 import { setUiPrefs } from '../sfx';
 import { ATTR_INK } from '../classView';
 
@@ -112,8 +116,8 @@ describe('the player\'s setting', () => {
 });
 
 describe('geometry', () => {
-  it('one wide strip at 26vh (150–280 px) around 46% of the height; a stack within the screen', () => {
-    const [one] = stackLayout(1, 1440, 900); expect(one.h).toBe(234); expect(one.top + one.h / 2).toBeCloseTo(414);
+  it('one wide strip at 29vh (150–290 px) around 46% of the height; a stack within the screen', () => {
+    const [one] = stackLayout(1, 1440, 900); expect(one.h).toBe(261); expect(one.top + one.h / 2).toBeCloseTo(414);
     const four = stackLayout(4, 1440, 900, [true, false, false, false]);
     expect(four[0].h).toBeGreaterThan(four[1].h); expect(four[3].top + four[3].h).toBeLessThan(900);
     expect(four.map((x) => x.fromLeft)).toEqual([true, false, true, false]);
@@ -175,7 +179,116 @@ describe('the effects queue\'s gate (fx/play.ts)', () => {
   });
   it('the client door honours Off', async () => {
     setUiPrefs({ cutins: 'off' });
-    expect(await showCutIn(stripForPatron('nerukhan') ? { kind: 'god', strips: [stripForPatron('nerukhan')!], label: 'NERUKHAN' } : (null as any))).toBe('off');
+    expect(await showSpotlight(stripForPatron('nerukhan') ? { kind: 'god', strips: [stripForPatron('nerukhan')!], label: 'NERUKHAN' } : (null as any))).toBe('off');
     setUiPrefs({ cutins: 'all' });
+  });
+});
+
+describe('review fixes (decision 111)', () => {
+  beforeEach(() => { sessionStorage.clear(); clearFx(); setUiPrefs({ cutins: 'all', reduceMotion: false }); });
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  it('planQueue: the protection holds only while the protected tail fits; past that the moment is skipped like any old effect', () => {
+    const fits = planQueue(Array(30).fill(400), 7000, undefined, 10);
+    expect(fits.protected).toBe(true); expect(fits.from).toBeLessThanOrEqual(10); // the tail from 10 fits the room
+    const long = planQueue(Array(60).fill(400), 7000, undefined, 2); // 58 × 400 / 1.35 ≈ 17 s: past 1.5 × the room
+    expect(long.protected).toBe(false); expect(long.from).toBeGreaterThan(2);
+    expect((58 * 400) / MAX_SPEEDUP).toBeGreaterThan(7000 * PROTECT_GRACE);
+    // A decided fight's trim (keep) still gives way to a moment whose tail fits.
+    expect(planQueue(Array(30).fill(400), 7000, 6, 20)).toMatchObject({ from: 20, protected: true });
+  });
+  it('a gate whose action the backlog skipped shows no cut-in and holds nothing', () => {
+    const { g, a } = room(); setContext(g, 'combat');
+    const N = 400, evs = [...Array.from({ length: N }, (_, i) => ({ n: i + 1, k: 'shot', unit: 'u', at: 'A1', to: 'A2' })), { n: N + 1, k: 'spotlight', kind: 'takedown', char: a, targetName: 'W', from: 2, scene: 'fight1' }];
+    // n 2 is far back in a 400-shot backlog: its action is skipped, so the moment is too.
+    queueFx(evs as any, 'cb|long');
+    expect(cutInActive()).toBe(false);
+  });
+  it('the decided set: a fight started over under the same stream key gets its cut-ins again', async () => {
+    const { g, a } = room(); setContext(g, 'combat');
+    const batch = (scene: string) => [{ n: 40, k: 'shot' }, { n: 43, k: 'spotlight', kind: 'takedown', char: a, targetName: 'W', from: 40, scene }] as any;
+    const drain = () => wait(Math.max(0, fxBusyUntil() - performance.now()) + 30);
+    queueFx(batch('fight1'), 'cb|pg'); expect(cutInActive()).toBe(true); skipCutIn(); await wait(250); await drain();
+    queueFx(batch('fight1'), 'cb|pg'); expect(cutInActive()).toBe(false); await drain(); // the same moment: decided
+    queueFx(batch('fight2'), 'cb|pg'); expect(cutInActive()).toBe(true); skipCutIn(); await wait(250); await drain(); // a new fight's
+    forgetSpotlights('cb|pg'); // FxLayer: the fight's numbering restarted under the same key and scene (a Retry)
+    queueFx(batch('fight2'), 'cb|pg'); expect(cutInActive()).toBe(true); skipCutIn(); await wait(250);
+  });
+  it('a gate preempts a cut-in already on screen, so its cut-in plays before its action, never after', async () => {
+    const { g, a, b } = room(); setContext(g, 'combat');
+    const story = cutInFromFx(g, [ev(5, { kind: 'crit', char: b, tn: 20, scene: 'scene1' })] as any, 'st|x')!;
+    void showSpotlight(story, { prefApplied: true });
+    expect(cutInNow()?.spec.kind).toBe('crit');
+    queueFx([{ n: 40, k: 'shot' }, { n: 43, k: 'spotlight', kind: 'takedown', char: a, targetName: 'W', from: 40, scene: 'fight1' }] as any, 'cb|pre');
+    await wait(220); // the story one's 150 ms way out
+    expect(cutInNow()?.spec.kind).toBe('takedown');
+    skipCutIn(); await wait(250);
+  });
+  it('cancelSpotlight drops a queued cut-in (it resolves off) and clears one on screen', async () => {
+    const { g, a, b } = room();
+    const one = cutInFromFx(g, [ev(1, { kind: 'crit', char: a, tn: 20, scene: 's1' })] as any, 'x')!;
+    const two = cutInFromFx(g, [ev(2, { kind: 'crit', char: b, tn: 20, scene: 's1' })] as any, 'x')!;
+    const p1 = showSpotlight(one, { prefApplied: true }), p2 = showSpotlight(two, { prefApplied: true });
+    cancelSpotlight(two.id); expect(await p2).toBe('off');
+    cancelSpotlight(one.id); expect(await p1).toBe('skipped'); expect(cutInActive()).toBe(false);
+  });
+  it('a character with no portrait of their own (the Narrator\'s Wick, an archived id) gets the archetype card for their top attribute', () => {
+    const { g, a } = room(), c: any = g.characters[a];
+    const top = inkOfChar(c).attr;
+    for (const p of ['/assets/wick-narrator-placeholder.webp', 'char-long-gone-archived', 'wick-welcome', '']) {
+      c.portrait = p; const s = stripForChar(g, a)!;
+      expect(s.img).toMatch(/char-arch-[\w-]+\.webp$/);
+      const arch = s.img.match(/char-arch-([\w]+?)(?:-lg)?\.webp$/)![1];
+      const best = Math.max(...ARCHETYPES.filter((x: any) => x.family !== 'all_in').map((x: any) => x.attributes?.[top] || 0));
+      expect(ARCHETYPES.find((x: any) => x.id === arch)!.attributes[top]).toBe(best);
+      expect(s.eye).toEqual(eyeFor('char-arch-' + arch));
+    }
+    c.portrait = '/assets/char-arch-bulwark.webp'; expect(stripForChar(g, a)!.img).toMatch(/char-arch-bulwark/); // a real one is kept
+  });
+  it('an interjection is labelled with the patron\'s bare name; an intervention keeps INTERVENTION', () => {
+    const { g, a } = room();
+    expect(cutInFromFx(g, [ev(9, { kind: 'god', patron: 'toll_keeper', char: a, reason: 'speaks', line: 'Not yet.', interject: true })] as any)!.label).toBe('THE TOLL-KEEPER');
+    expect(cutInFromFx(g, [ev(9, { kind: 'god', patron: 'toll_keeper', char: a, reason: 'x' })] as any)!.label).toBe('INTERVENTION · THE TOLL-KEEPER');
+    const t = specFromTrigger({ patron: 'nerukhan', char: a, line: 'Kneel.', interject: true }, g)!;
+    expect(t.label).toBe(stripForPatron('nerukhan')!.name.toUpperCase()); expect(t.caption).toBe('Speaks');
+  });
+  it('an imported file keeps an upload\'s framing (clamped), never without its own portrait', () => {
+    expect(importedEye(0.22, true)).toBe(0.22); expect(importedEye('0.3', true)).toBe(0.3);
+    expect(importedEye(0.9, true)).toBe(0.7); expect(importedEye(-1, true)).toBe(0.05);
+    expect(importedEye(0.22, false)).toBeUndefined(); expect(importedEye('x', true)).toBeUndefined(); expect(importedEye(null, true)).toBeUndefined();
+  });
+  it('the crop: never past MAX_MAGNIFY × the source, anchored to the screen edge; the image reaches past the visible edge', () => {
+    const thumb = cropOf({ x: 0.5, y: 0.3 }, 128, 952, 187, 0.17, { natW: 320, anchor: 'l', l: 104, r: 972 });
+    expect(thumb.capped).toBe(true); expect(thumb.w).toBeCloseTo(320 * MAX_MAGNIFY); expect(thumb.x).toBe(104);
+    const right = cropOf({ x: 0.5, y: 0.3 }, 600, 1400, 187, 0.17, { natW: 320, anchor: 'r', l: 580, r: 1424 });
+    expect(right.x + right.w).toBeCloseTo(1424);
+    const big = cropOf({ x: 0.5, y: 0.3 }, 128, 952, 187, 0.17, { natW: 800, l: 60, r: 972 });
+    expect(big.capped).toBe(false); expect(big.x).toBeLessThanOrEqual(60); expect(big.x + big.w).toBeGreaterThanOrEqual(972);
+  });
+  it('the Miracle\'s strip: the eyes in a left window (beside a centred mark), the image clipped to it', () => {
+    const m = tornStripMarkup(stripForPatron('nerukhan')!, 'miracle|nerukhan', 1536, 160);
+    const x = Number(m.match(/<image[^>]* x="([-\d.]+)"/)![1]), w = Number(m.match(/<image[^>]* width="([-\d.]+)"/)![1]);
+    const eyeX = x + stripForPatron('nerukhan')!.eye.x * w;
+    expect(eyeX).toBeLessThan(1536 * 0.42); // left of the screen's middle (768 in strip space is the centre)
+    expect((m.match(/clipPath id=/g) || []).length).toBe(2);
+  });
+  it('a phone: no words in the strips; the plate under them names everyone (name and word) and the caption', () => {
+    const { g, a, b } = room();
+    const was = { w: innerWidth, h: innerHeight };
+    Object.assign(window, { innerWidth: 390, innerHeight: 844 });
+    try {
+      const one = cutInFromFx(g, [ev(43, { kind: 'takedown', char: a, targetName: 'the Warden', from: 40 })] as any, 'cb|x')!;
+      const html1 = renderToStaticMarkup(React.createElement(CutInView, { show: { spec: one, id: 'x', t0: 0, ms: 1400, hold: 1000, rm: false, out: false, skipped: false } }));
+      expect(html1).toContain('data-phc-spotlight-plate'); expect(html1).toContain('Mallow Vey'); expect(html1).toContain('Took down the Warden');
+      const four = cutInFromFx(g, [ev(9, { kind: 'god', patron: 'toll_keeper', char: a, targetChar: b, reason: 'x' })] as any, 'cb|x')!;
+      const html4 = renderToStaticMarkup(React.createElement(CutInView, { show: { spec: four, id: 'y', t0: 0, ms: 1400, hold: 1000, rm: false, out: false, skipped: false } }));
+      expect(html4).toContain('data-phc-spotlight-names');
+      for (const s of four.strips) { expect(html4).toContain(s.name); }
+      expect(html4).toContain('PATRON');
+      expect(html4).not.toMatch(/text-overflow:\s*ellipsis/); // nothing is cut to a letter
+      Object.assign(window, { innerWidth: 1280, innerHeight: 720 });
+      const wide = renderToStaticMarkup(React.createElement(CutInView, { show: { spec: four, id: 'z', t0: 0, ms: 1400, hold: 1000, rm: false, out: false, skipped: false } }));
+      expect(wide).not.toContain('data-phc-spotlight-names');
+    } finally { Object.assign(window, { innerWidth: was.w, innerHeight: was.h }); }
   });
 });

@@ -1,6 +1,6 @@
 # Spotlight cut-ins: torn eye strips (design, 9 Nov 2026)
 
-Status: **built** (decision 110; see section 11 for what the build changed or left out), open questions in section 10
+Status: **built** (decision 111; see section 11 for what the build changed or left out), open questions in section 10
 for Leon. Presentation only: no rule, no number the engine resolves, no dice changes. Built on branch
 `claude/awesome-babbage-8gngk8` from develop 0.5.0.
 
@@ -58,11 +58,13 @@ A takedown and a revive in the same action emit both events; the client merges t
 ### 1.3 Faith moments (decided)
 
 - **Intervention** (once a fight per Witnessed fighter, Faith 5): **yes**, kind `god` (the patron's strip over the
-  fighter's). This is the natural fit Leon described: a god breaking in.
+  fighter's). This is the natural fit Leon described: a god breaking in. Faith 2.2's intervention hook
+  (`playIntervention`) is the same moment: section 12 says how the two meet.
 - **Miracle** (once a session, Devotion 10): **no separate cut-in**. The Miracle already has its full-screen answer
-  (`miracleOverlay`, 2.3 s, Leon-approved). With cut-ins on, that overlay gains the patron's torn eye strip behind the
-  mark (same seeded tear, the patron's accent), so it is one moment, still under 2.5 s. With cut-ins off it stays as it
-  is today.
+  (`miracleOverlay`, 2.3 s, Leon-approved). With cut-ins on, that overlay gains the patron's torn eye strip above the
+  mark, its eye window on the left so the painted eyes are never behind the mark (same seeded tear, the patron's accent,
+  opaque), so it is one moment, still under 2.5 s. With cut-ins off it stays as it is today. Faith 2.2 replaces this
+  overlay with its own large portrait cut-in (section 12).
 - Witnessed, prayers, vows, Devotion: no (they are frequent or already have their own marks).
 
 ## 2. The event (engine)
@@ -154,7 +156,7 @@ caption.
 </svg>
 
 - **Strip:** full viewport width plus 10% overhang each side (so the tilt never shows a corner), height
-  `clamp(150px, 26vh, 280px)`, centred at 46% of the height, tilted −4°. Body `#10151F`; the ink lip 6–9 px wider on
+  `clamp(150px, 29vh, 290px)`, centred at 46% of the height, tilted −4°. Body `#10151F`; the ink lip 6–9 px wider on
   each long edge, in the character's ink; a 1 px inner line of `#0A0D13` between lip and body so the ink reads as an
   edge, not a fill.
 - **Eye window:** the portrait clipped to the strip's body, 62% of the visible width, its inner edge torn (a short
@@ -214,7 +216,7 @@ Events that belong together become **one** cut-in:
 
 ### 3.5 The tear
 
-`tear(seed, edge, widthPx)` in `apps/web/src/game/cutin/tear.ts`: mulberry32 from a 32-bit hash of
+`tear(seed, edge, widthPx)` in `apps/web/src/game/spotlight/tear.ts`: mulberry32 from a 32-bit hash of
 `streamKey + '|' + n` (local cut-ins: `spec.seed`, else the id). About one point every 28 px of width; each point's
 depth 3–12 px, one in seven a deep notch of 16–22 px; the ink lip reuses the points pushed out 6–9 px with its own
 jitter, so the lip is uneven. Drawn as SVG `<polygon>`s and the portrait as an SVG `<image>` in a `<clipPath>` (crisp
@@ -235,8 +237,10 @@ spotlight(g, {
   kind: 'god',
   patron: 'toll_keeper',          // data/patrons.json id (required for 'god')
   char: c.id,                     // whom the patron speaks to or acts for (null: the patron alone, one strip)
-  reason: 'interjects',           // short words for the caption when there is no line
+  reason: 'speaks',               // short words for the caption
   line: 'Not yet. You haven\'t paid.', // optional: the god's words, shown in quotes
+  interject: true,                // an interjection (the patron speaks up): the label is the bare name, "THE TOLL-KEEPER";
+                                  // leave it out for an intervention: "INTERVENTION · THE TOLL-KEEPER"
   group: [otherCharId],           // optional: more characters in the moment (max 4 strips in all)
   target: unitId, targetName: 'Ana', // optional
 });
@@ -248,27 +252,38 @@ spotlight(g, {
   per scene**, so the moment stays a moment. Players can also set "Once per scene" (§7).
 - It does nothing else: no Devotion, no log line. Log the words the usual way (`speak()` / `cb.log`) if they should
   also be read later.
+- It emits nothing inside the area map's dry run (a copy of the map marked `dry`, game.ts): faith.ts `intervene()`
+  checks the copy it was given, and `spotlight()` returns null when the fight on the state is a dry copy.
 
 ### 4.2 Client (this browser only)
 
 ```ts
-import { showCutIn, EV_CUTIN, EV_CUTIN_START, EV_CUTIN_END, type CutInSpec } from './game/cutin';
+import { showSpotlight, EV_CUTIN, EV_CUTIN_START, EV_CUTIN_END, type CutInSpec } from './game/spotlight';
 
-showCutIn(spec): Promise<'shown' | 'skipped' | 'off'>      // resolves when the cut-in has cleared
+showSpotlight(spec): Promise<'shown' | 'skipped' | 'off'>      // resolves when the cut-in has cleared
 window.dispatchEvent(new CustomEvent('phc:cutin', { detail: spec }))   // the same, for .js screens and devtools
 
+interface CutInStrip {            // build these with stripForPatron(id) and stripForChar(g, charId), never by hand
+  key: string;                     // 'c:<charId>' or 'p:<patronId>': unique; "Once per scene" counts these
+  img: string; eye: { x: number; y: number };
+  ink: string;                     // the lip, the label, the name chip
+  word: string;                    // the word beside the ink (the attribute, or the patron's name)
+  name: string; god?: boolean;
+}
 interface CutInSpec {
   id?: string; seed?: number | string;
   kind: 'crit' | 'takedown' | 'revive' | 'ultimate' | 'legend' | 'song' | 'god';
-  strips: { img: string; eye?: { x: number; y: number }; ink: string; name: string; god?: boolean }[]; // 1–4
-  label: string;                 // "INTERVENTION · THE TOLL-KEEPER"
-  caption?: string; line?: string;
+  strips: CutInStrip[];           // 1–4
+  label: string;                  // "INTERVENTION · THE TOLL-KEEPER"
+  caption?: string; line?: string; more?: number; scene?: string; aria?: string;
 }
+// The shorthand (strips built for you): { kind?, patron?, char?, line?, reason?, group?, targetChar?, interject? }
 // Out: 'phc:cutin-start' {id, kind}, 'phc:cutin-end' {id, kind, skipped}
-// Helpers: cutInFromFx(g, events): CutInSpec | null (the engine events → a spec; tested), stripForChar(g, charId), stripForPatron(id)
+// Helpers: cutInFromFx(g, events): CutInSpec | null (the engine events → a spec; tested), stripForChar(g, charId),
+//          stripForPatron(id), cancelSpotlight(id) (drop it from the queue, or clear it if it is showing)
 ```
 
-`showCutIn` honours the Settings choice and reduced motion. It never slows anything: only the effects queue does, for
+`showSpotlight` honours the Settings choice and reduced motion. It never slows anything: only the effects queue does, for
 the combat stream. Use it for previews (the Proving Ground gets a "Cut-in" test button), never for a moment other
 players should see.
 
@@ -314,7 +329,7 @@ under it (store.ts switches to `ultimate`), blurred, and is revealed as the cut-
 | Blur clears | 1200–1400 | to ≤ 1600 | to ≤ 1600 | 900–1000 |
 | **Total** | **1400** | **1470–1610 → capped 1600** | **1500–1600** | **1000** |
 
-Constants in `cutin/timing.ts`: `CUTIN_MS(n, god, rm)`, `CUTIN_MAX_MS = 1700` (the safety cap, §6.3).
+Constants in `spotlight/timing.ts`: `CUTIN_MS(n, god, rm)`, `CUTIN_MAX_MS = 1700` (the safety cap, §6.3).
 
 **Skip:** any pointer down or key (armed 150 ms after the cut-in starts, so the click that made the action never
 skips it) goes straight to Out (150 ms) and clears the blur with it. The skipping click is consumed (capture phase,
@@ -336,9 +351,16 @@ The engine resolves the whole action before anything plays, so the queue knows w
    swishes, explosions, element impacts) play at `rate × 0.85` with their delays divided by 0.85; loops, UI sounds,
    chimes, the choir, voices and music are untouched.
 4. The `spotlight` event itself plays nothing (beat 0). Everything after it (the enemy phase) plays at normal speed.
-5. The slowed segment is **never compressed** by `MAX_SPEEDUP` and **never skipped** by the backlog trim or by a
-   decided fight's `keep` (the gate segment is kept whole; older events go first).
-6. Reduced motion, a "Once per scene" repeat or Settings Off: **no gate, no slow-mo**; the batch plays as today.
+5. The slowed segment is **never compressed** by `MAX_SPEEDUP` and **not skipped** by the backlog trim or by a
+   decided fight's `keep` (the gate segment is kept whole; older events go first), **as long as** the tail from the
+   gate on fits in `PROTECT_GRACE` (1.5) × the room at `MAX_SPEEDUP`. Past that (a long catch-up batch, a moment early
+   in a big enemy phase) the moment went by in the backlog: it is skipped like any old effect, with no cut-in, so play
+   never lags far behind the state.
+6. Reduced motion: **the gate stays, no slow-mo** (the cut-in, 1000 ms, plays before the action; the action plays at
+   normal speed). A "Once per scene" repeat or Settings Off: **no gate, no slow-mo**; the batch plays as today.
+7. A cut-in already on screen (a story moment, a client-door preview) gives way to a gate's: it is skipped (its 150 ms
+   way out) and the gate's plays next, so the cut-in always comes before its action. If the gate's cap opens it first,
+   its cut-in is cancelled, never shown late over the aftermath.
 
 Example, the shot that drops the boss (the fight's fx, as one batch):
 
@@ -365,8 +387,8 @@ n=40 shot (from=40) · 41 hurt · 42 down(Warden) · 43 spotlight{takedown, from
 
 The story stream (`g.story.fx`) is watched by the cut-in layer itself, on every in-room screen (the area map, the sheet,
 the level-up and Ultimate screens), not by `FxLayer` (which only draws the area map's stream when its grid is on
-screen). A `crit` waits **1100 ms** after the state lands, so the dice verdict (shown at ~1.05 s) comes first; every
-other kind waits 200 ms. No slow-mo, no input hold.
+screen). A `crit` comes with the check's accept (the dice dialog closing) and waits **350 ms**, or **1100 ms** after an
+Echo reroll (the new verdict, shown at ~1.05 s, comes first); every other kind waits 200 ms. No slow-mo, no input hold.
 
 ## 7. Settings
 
@@ -407,8 +429,8 @@ Each portrait needs where the eyes are, as fractions of the 4:5 image:
   detector's values are still checked on a contact sheet with the line drawn on each face.
 - Default when missing: `{ y: 0.38, x: 0.5 }`; the strip crop is built so 0.38 still frames the brow-to-cheek band of
   a typical Heavenprint bust.
-- `tools/validate_art.py`: every `characters` and `patrons` entry has `eye_line` with `0.15 ≤ y ≤ 0.70`,
-  `0.25 ≤ x ≤ 0.75`; `docs/ART-INTEGRATION.md` and `art/README.md` document the field.
+- `tools/validate_art.py`: every `characters` and `patrons` entry has `eye_line` with `0.05 ≤ y ≤ 0.70`,
+  `0.15 ≤ x ≤ 0.85` (section 11.1: Heavenprint eyes sit high); `docs/ART-INTEGRATION.md` and `art/README.md` document the field.
 - `tools/build_web_assets.py` writes `apps/web/src/game/eyelines.json` (`{ "char-<id>": [x, y], "patron-<id>": [x, y] }`,
   keyed by the asset names the game already uses).
 - **Patron ids:** `data/patrons.json` says `toll_keeper` and `counting_weaver`, the catalog and the files say
@@ -418,8 +440,8 @@ Each portrait needs where the eyes are, as fractions of the 4:5 image:
   handlers call `accentOf(e.patron, e.accent)` with no data accent, and `PATRON_ACCENT` is keyed on the `the_` names, so
   today the Toll-Keeper's and the Counting Weaver's intervention and Witnessed glows fall back to gold; the build fixes
   `accentOf` to read the data accent itself.
-- **Uploaded portraits:** the sheet gains `portraitEye` (y, 0.15–0.70, two decimals; the engine's sheet check clamps
-  it). Character creation's portrait step shows, under an uploaded portrait, a small **Cut-in framing** slider with a
+- **Uploaded portraits:** the sheet gains `portraitEye` (y, 0.05–0.70, two decimals; `newCharacter` clamps it, and a
+  character file's import keeps it, clamped the same way, only with the file's own portrait). Character creation's portrait step shows, under an uploaded portrait, a small **Cut-in framing** slider with a
   live strip preview of the crop; default 0.38. Saved with the sheet and the character file.
 - **The crop:** the portrait is drawn at the eye window's width (W) and offset so the eye line sits at the strip's
   vertical centre: `top = h/2 − y × 1.25W`, `left = W/2 − x × W` clamped to the image. A 1100 px window from the
@@ -442,9 +464,9 @@ Each portrait needs where the eyes are, as fractions of the 4:5 image:
 ### 9.3 Code (where things go)
 
 - `packages/engine/src/spotlight.ts` (new), the call sites in `game.ts` and `faith.ts`, `cb.actFrom`, tests.
-- `apps/web/src/game/cutin/`: `CutInLayer.tsx` (mounted in `App.tsx` beside `TurnIntro`, z-index 64: over the turn
+- `apps/web/src/game/spotlight/`: `CutInLayer.tsx` (mounted in `App.tsx` beside `TurnIntro`, z-index 64: over the turn
   intro's 57–58 and the effects layer's 45, under the Miracle's 66), `tear.ts`, `spec.ts` (`cutInFromFx`, strips,
-  inks, captions), `timing.ts`, `index.ts` (`showCutIn`, the events); tests for the tear's determinism, the spec from
+  inks, captions), `timing.ts`, `index.ts` (`showSpotlight`, the events); tests for the tear's determinism, the spec from
   events, merging, Once per scene and the gate's timing (`planQueue`-style pure functions).
 - `fx/play.ts`: the gate and the tempo; `fx/dom.ts`: the tempo; `fx/faith.ts`: the Miracle overlay's strip.
 - `sfx.ts` (`cutins` pref), `title/Title.tsx` (the row), `screens/create.js` (the slider), the sheet field.
@@ -468,8 +490,13 @@ status, `docs/HANDOFF.md`.
 5. **Enemy moments:** only party moments cut in. A boss's own entrance or its big attack could use the same strip
    (red-inked) later. Want that?
 6. **Revive layout:** the reviver's strip and the revived one's, stacked. Or only the reviver?
-7. **Decision number:** this is decision 110. If the god interjection branch also takes 110, whoever merges second
-   renumbers.
+7. **Decision number:** this is decision 111 (develop's 0.6.0 took 110 for the mana forecast). Faith 2.2
+   (`feature/faith-presence`) also claims 110: it renumbers when it merges develop.
+8. **Interventions gate and slow (section 12):** an intervention is a spotlight moment here, so it holds the queue
+   (about 1.5 s, input held only while it shows) and slows the action it happened in. Faith 2.2's draft wanted a small
+   cut-in that never holds the queue. I chose one path, this one, because you asked for this UI at the god's moment.
+   If you'd rather the god's moment stayed small, the switch is one line in `faith.ts` `intervene()` (drop the
+   `spotlight` call) and the small cut-in in `playIntervention`.
 
 ## 11. Build notes (9 Nov 2026)
 
@@ -481,7 +508,7 @@ What the build did differently from the design above, and why:
    `validate_art.py`'s range is therefore 0.05 ≤ y ≤ 0.70 and 0.15 ≤ x ≤ 0.85. The default for an upload with no framing
    stays 0.38 (a phone photo or a headshot); a patron with no line uses 0.18.
 2. **The crop** shows about 17% of the portrait's height in a strip (so the eyes fill it), never less than the window's
-   width (`cutin/layout.ts` `cropOf`).
+   width (`spotlight/layout.ts` `cropOf`).
 3. **accentOf** now finds a patron's light under both id forms (`toll_keeper` and `the_toll_keeper`), which fixes the
    gold fallback for the Toll-Keeper and the Counting Weaver; it still prefers the art brief's table over the data's
    accent, so no existing glow changes colour. The strips use the data's accent first (it matches the paintings).
@@ -497,3 +524,42 @@ What the build did differently from the design above, and why:
    `fx/dom.ts` (`after`, `anim`, `put`, bursts, particles, floating text, rings) and every `play()` one-shot sound is.
 8. **e2e:** `apps/web/e2e/cutins.mjs` (two browsers in the Proving Ground, then a story room with the scripted Narrator
    and a third player set to Off).
+9. **Review fixes (same day):** checksums regenerated after the README edit; no spotlight from the area map's dry run;
+   the queue's protection is bounded (section 6.2, item 5); the decided set is keyed by stream, scene and n and cleared
+   with the queue and on a fight that starts over (the Proving Ground's Retry); a gate's cut-in preempts one on screen
+   and is cancelled if its cap opens the gate first; a character with no portrait of their own (the Proving Ground's
+   recruit stands in with the Narrator's Wick) gets the archetype card for their highest attribute; a phone (under
+   720 px wide) puts every word in the plate under the strips, names and words as coloured chips; the image always
+   reaches past the visible screen edge (no flat slab on shifted strips); a small source (an upload's 320 × 400 room
+   copy) is never magnified past 2.2× and its window narrows to the image; the single strip's name is sized to its
+   column; one strip is 29vh (150–290 px); the Miracle's strip sits above the mark with its window on the left, opaque;
+   the module is `game/spotlight/` and the client door `showSpotlight` (Faith 2.2 owns `game/cutIn.ts` and
+   `showCutIn`; two paths that differ only by case break on macOS and Windows); a music trait's "a kill" never fires on
+   a boss kill (the music's old chain); the `interject` flag. Tests through `apply()` for the enemy-turn `from`, the
+   dry run and the song chain.
+
+## 12. Meeting Faith 2.2 (`feature/faith-presence`)
+
+Faith 2.2 (the other implementer's branch, pushed 9 Nov 2026, based on develop 0.4.0) left the trigger Leon asked for:
+`playIntervention(e, kit)` in `apps/web/src/game/cutIn.ts`, called by `fx/faith.ts` for every `intervention` fx event.
+It is not merged into develop yet, and it predates Sigil 1.5 and the mana forecast, so this branch does not merge it
+(that would pull an unreviewed feature and its Sigil conflicts in here). Instead the two are made to meet cleanly:
+
+- **One path for an intervention's cut-in: the engine's `spotlight` event** (kind `god`, from `faith.ts` `intervene()`).
+  It is the only one that can gate the queue (the client knows about it before the action plays) and it already carries
+  the patron, the fighter, the patron's line and the target. When Faith 2.2 merges, `playIntervention` keeps the map
+  effect it plays today (the bell, the mark at the tile, "<PATRON> INTERVENES") and **does not draw a cut-in**: its
+  small-cut-in draft is not used for interventions. `faithBeat('intervention')` stays 650 ms (the gate is separate).
+- **Their `intervene()` rewrite:** keep it whole and add the one call after its `speak()`, as here:
+  `if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron, char, unit, reason, line, target, targetName, targetChar })`.
+  `speak()` returns the line (this branch's change). Faith 2.2 widens the triggers and allows a second intervention from
+  Devotion 7, so god cut-ins come more often; "Once per scene" is the player's brake.
+- **The Miracle:** Faith 2.2 replaces the Miracle overlay with its own large portrait cut-in (`miracleCutIn`), the
+  patron appearing at full size. At the merge, take theirs and drop this branch's strip from `miracleOverlay` (it
+  stays only as their wrapper). Whether their Miracle portrait gets the torn edges is Leon's call (open question 2).
+- **Names:** this branch's module is `game/spotlight/` (`showSpotlight`, `cancelSpotlight`, `CutInLayer`); theirs is
+  `game/cutIn.ts` (`showCutIn`, `closeCutIns`). Their `clearFx` closing every cut-in and this branch's `dropCutIns()`
+  both stay in `fx/play.ts` `clearFx`; their `hurryFx` (a skipped Miracle moves the queue up) and this branch's gate
+  touch the same scheduler: a skipped spotlight already reschedules from its real end, so `hurryFx` only needs to
+  leave a closed gate alone (`if (held) return`).
+- **Decision numbers:** develop 110 (mana forecast), this 111, Faith 2.2 becomes 112.

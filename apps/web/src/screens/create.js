@@ -143,7 +143,7 @@ const STAND_IN = (() => {
   return out;
 })();
 const cardFor = (arch) => (arch && STAND_IN[arch.id]) || '';
-/** The spotlight cut-in's framing for an uploaded portrait (decision 110): the eye line's default, and the preview: the
+/** The spotlight cut-in's framing for an uploaded portrait (decision 111): the eye line's default, and the preview: the
  *  upload drawn as the strip crops it (zoomed, the eye line on the strip's middle). */
 const EYE_DEFAULT = 0.38;
 const eyePreviewStyle = (img, y) => {
@@ -484,7 +484,7 @@ export class CreateLogic extends DCLogic {
       lockLabel: S.stamp ? 'Approved ✓' : getState().code && getState().game?.phase === 'lobby' ? 'Lock in and bring to the room' : 'Lock in',
       generate: () => this.setState({ name: NAMES[Math.floor(Math.random() * NAMES.length)], origin: Math.floor(Math.random() * D.origins.length), portrait: Math.floor(Math.random() * D.portraits.length), upload: null }),
       upload: () => uploadPortrait((url) => this.setState({ upload: url, portraitEye: null })),
-      // Decision 110: where an uploaded portrait's eyes are, for the spotlight cut-in's torn strip (a live preview of the crop).
+      // Decision 111: where an uploaded portrait's eyes are, for the spotlight cut-in's torn strip (a live preview of the crop).
       hasUpload: !!S.upload, eyePct: Math.round((S.portraitEye ?? EYE_DEFAULT) * 100),
       onEye: (e) => this.setState({ portraitEye: Math.max(0.05, Math.min(0.7, Number(e.target.value) / 100)) }),
       eyePreview: eyePreviewStyle(S.upload, S.portraitEye ?? EYE_DEFAULT),

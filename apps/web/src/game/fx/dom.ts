@@ -15,7 +15,7 @@ export const layerEl = () => layer;
  *  dropped when the queue is cleared meanwhile (the room was left, the tab hidden, a new game loaded). */
 let gen = 0;
 export const bumpGen = () => { gen++; };
-// ---------- tempo (the spotlight cut-in's slowed action, decision 110) ----------
+// ---------- tempo (the spotlight cut-in's slowed action, decision 111) ----------
 /** The playback tempo: 1 normally; 0.85 while an action after a spotlight cut-in plays (every duration and delay drawn
  *  here is divided by it). Set around one event's handler by play.ts (withTempo); later steps keep the tempo they were
  *  scheduled under. */

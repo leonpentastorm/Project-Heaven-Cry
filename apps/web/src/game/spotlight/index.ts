@@ -1,18 +1,18 @@
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 110): the client door and the one overlay's state.
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111): the client door and the one overlay's state.
 //
 // Two doors, one look. Anything every player should see goes through the ENGINE door (packages/engine/src/spotlight.ts
 // spotlight(g, {...}) on the host: a 'spotlight' fx event in the shared state). This file is the CLIENT door, for this
 // browser only (previews, the Proving Ground's test button, devtools):
 //
-//   import { showCutIn } from './game/cutin';
-//   showCutIn({ kind: 'god', strips: [stripForPatron('nerukhan')!], label: 'NERUKHAN', caption: 'Speaks' })
+//   import { showSpotlight } from './game/spotlight';
+//   showSpotlight({ kind: 'god', strips: [stripForPatron('nerukhan')!], label: 'NERUKHAN', caption: 'Speaks' })
 //     → Promise<'shown' | 'skipped' | 'off'>                 resolves when it has cleared
 //   window.dispatchEvent(new CustomEvent('phc:cutin', { detail: spec }))     the same, from .js screens and devtools
 //   window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'nerukhan', char, line } }))
 //                                                            a shorthand: the strips are built here (patron, char, group)
 // Out: 'phc:cutin-start' {id, kind} and 'phc:cutin-end' {id, kind, skipped}.
 //
-// showCutIn honours the player's Settings (All / Once per scene / Off) and reduced motion. It never slows anything: only
+// showSpotlight honours the player's Settings (All / Once per scene / Off) and reduced motion. It never slows anything: only
 // the effects queue does, for a fight's own stream (fx/play.ts).
 import type { FxEvent, GameState } from '@engine';
 import { uiPrefs, reducedMotion, sfx, SFX_FILES, type Sfx } from '../sfx';
@@ -121,6 +121,13 @@ export function skipCutIn() {
   c.skipped = true; c.out = true; notify();
   c.timers.push(setTimeout(() => finish(c.id, 'skipped'), CUTIN_SKIP_MS));
 }
+/** Take one cut-in back by its id: dropped from the queue (it resolves 'off'), or cleared at once if it is on screen.
+ *  The effects gate calls it when its cap opened the gate first, so a late cut-in never shows over the aftermath. */
+export function cancelSpotlight(id: string | null | undefined) {
+  if (!id) return;
+  for (let i = queue.length - 1; i >= 0; i--) if (queue[i].spec.id === id) queue.splice(i, 1)[0].resolve('off');
+  if (current?.id === id) finish(id, 'skipped');
+}
 /** Drop everything (the effects were cleared: the room was left, the tab hidden). */
 export function dropCutIns() {
   while (queue.length) queue.shift()!.resolve('off');
@@ -128,11 +135,17 @@ export function dropCutIns() {
 }
 
 /** Show a cut-in in this browser. Honours Settings (Off resolves 'off' at once; Once per scene drops strips already
- *  shown in spec.scene) and a hidden tab. Queued behind one already on screen. */
-export function showCutIn(spec: CutInSpec, o: { code?: string; prefApplied?: boolean } = {}): Promise<CutInResult> {
+ *  shown in spec.scene) and a hidden tab. Queued behind one already on screen; preempt (a fight's gate): goes to the
+ *  front of the queue and the one on screen is skipped (its 150 ms way out), so this one plays before its action. */
+export function showSpotlight(spec: CutInSpec, o: { code?: string; prefApplied?: boolean; preempt?: boolean } = {}): Promise<CutInResult> {
   const s = o.prefApplied ? spec : applyPref(spec, o.code ?? (getState().game?.code || ''));
   if (!s || !s.strips?.length || (typeof document !== 'undefined' && document.hidden)) return Promise.resolve('off');
-  return new Promise((resolve) => { const it = { spec: s, resolve }; if (current) queue.push(it); else start(it); });
+  return new Promise((resolve) => {
+    const it = { spec: s, resolve };
+    if (!current) start(it);
+    else if (o.preempt) { queue.unshift(it); skipCutIn(); }
+    else queue.push(it);
+  });
 }
 
 /** The shorthand trigger's spec ({kind:'god', patron, char, line, reason, group}), built from the game on screen. */
@@ -140,10 +153,10 @@ export function specFromTrigger(d: any, g: GameState | null = getState().game ||
   if (!d) return null;
   if (Array.isArray(d.strips)) return d as CutInSpec;
   const ev: any = { n: Date.now(), k: 'spotlight', kind: d.kind || (d.patron ? 'god' : 'crit'), char: d.char ?? null, patron: d.patron ?? null, reason: d.reason || (d.patron ? 'speaks' : ''),
-    line: d.line, group: d.group, targetChar: d.targetChar, targetName: d.targetName, tn: d.tn, skill: d.skill, scene: d.scene };
+    interject: !!d.interject, line: d.line, group: d.group, targetChar: d.targetChar, targetName: d.targetName, tn: d.tn, skill: d.skill, scene: d.scene };
   const spec = cutInFromFx(g, [ev], 'local');
   if (spec) return spec;
   const strips = [stripForPatron(d.patron), stripForChar(g, d.char)].filter(Boolean) as CutInStrip[];
   return strips.length ? { kind: ev.kind, strips, label: d.label || (patronData(d.patron)?.name || '').toUpperCase(), caption: d.caption || d.reason, line: d.line } : null;
 }
-if (typeof window !== 'undefined') window.addEventListener(EV_CUTIN, (e: Event) => { const s = specFromTrigger((e as CustomEvent).detail); if (s) showCutIn(s); });
+if (typeof window !== 'undefined') window.addEventListener(EV_CUTIN, (e: Event) => { const s = specFromTrigger((e as CustomEvent).detail); if (s) showSpotlight(s); });

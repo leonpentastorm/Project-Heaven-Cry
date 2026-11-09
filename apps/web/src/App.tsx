@@ -30,7 +30,7 @@ import { Tips } from './game/tips';
 import { StoryScroll } from './game/storyScroll';
 import { FxLayer } from './game/fx/FxLayer';
 import { TurnIntro, cue } from './game/turnIntro';
-import { CutInLayer } from './game/cutin/CutInLayer';
+import { CutInLayer } from './game/spotlight/CutInLayer';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
@@ -99,7 +99,7 @@ export function App() {
       {st.screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
       {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
       {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
-      {/* Spotlight cut-ins (decision 110): torn eye strips over a blurred screen, z-index 64. */}
+      {/* Spotlight cut-ins (decision 111): torn eye strips over a blurred screen, z-index 64. */}
       {st.role && <CutInLayer game={st.game || null} screen={st.screen} />}
       {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
       {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}

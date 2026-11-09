@@ -514,7 +514,7 @@ function SettingsPanel() {
     <VoiceSettings />
     <span style={lab}>COMFORT</span>
     <label style={row}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
-    {/* Spotlight cut-ins (decision 110): the torn strips for a big moment, and the slowed attack after them. */}
+    {/* Spotlight cut-ins (decision 111): the torn strips for a big moment, and the slowed attack after them. */}
     <div role="group" aria-label="Cut-ins" style={row}>Cut-ins
       {([['all', 'All'], ['scene', 'Once per scene'], ['off', 'Off']] as const).map(([v, label]) => (
         <button key={v} type="button" data-phc-cutins={v} aria-pressed={(p.cutins || 'all') === v} onClick={() => setUiPrefs({ cutins: v })}

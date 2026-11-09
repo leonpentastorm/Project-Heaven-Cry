@@ -1,4 +1,4 @@
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 110): a presentation event, never a rule. The music's
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111): a presentation event, never a rule. The music's
 // spotlight moments (a natural 20 on a Hard or Heroic check, an elite or boss taken down, a revive, an Ultimate, a
 // legendary deed), Play my song when it starts, and a patron breaking in (an intervention, or the god interjection
 // system) each put one `spotlight` event on the fx stream. Every client plays it from the shared state: a torn eye
@@ -34,6 +34,9 @@ export interface SpotlightFx extends FxEvent {
   targetChar?: string | null;
   /** 'god': the patron id (data/patrons.json). */
   patron?: string | null;
+  /** 'god': an interjection (the patron speaks up; nothing intervenes): the label is the patron's bare name, not
+   *  "INTERVENTION · <PATRON>". */
+  interject?: boolean;
   /** 'crit': the check's TN and skill id. */
   tn?: number; skill?: string;
   /** 'crit': it came with an Echo reroll (the dice dialog is still showing the new verdict: the client waits for it). */
@@ -67,7 +70,11 @@ export function clearAction(cb: Combat) { delete cb.actFrom; }
  * a patron, or a moment with neither a character nor a patron, emits nothing (returns null).
  *
  * The god interjection trigger (docs/design/cutin-spec.md section 4.1): call it from the reducer, on the host:
- *   spotlight(g, { kind: 'god', patron: 'toll_keeper', char: c.id, reason: 'interjects', line: 'Not yet.' })
+ *   spotlight(g, { kind: 'god', patron: 'toll_keeper', char: c.id, reason: 'speaks', line: 'Not yet.', interject: true })
+ * (interject: the label is the patron's bare name; leave it out for an intervention, "INTERVENTION · <PATRON>").
+ *
+ * Inside a dry run (the area map resolves an evoke or a release on a throwaway copy first: cb.dry) it emits nothing:
+ * the moment is the real run's.
  */
 export function spotlight(g: GameState, s: SpotlightInput): SpotlightFx | null {
   if (!g || !s || !(SPOTLIGHT_KINDS as readonly string[]).includes(s.kind)) return null;
@@ -75,8 +82,10 @@ export function spotlight(g: GameState, s: SpotlightInput): SpotlightFx | null {
   if (!s.char && !s.patron) return null;
   const data: Record<string, any> = { kind: s.kind, char: s.char ?? null, reason: String(s.reason || ''), scene: spotlightScene(g), song: !!s.song };
   for (const f of ['unit', 'target', 'targetName', 'targetChar', 'patron', 'tn', 'skill', 'perk', 'line', 'echo'] as const) if (s[f] != null && s[f] !== '') data[f] = s[f];
+  if (s.kind === 'god' && s.interject) data.interject = true;
   if (Array.isArray(s.group) && s.group.length) data.group = s.group.filter((x) => typeof x === 'string').slice(0, 8);
   const cb = g.phase === 'combat' ? g.combat : null;
+  if ((cb as any)?.dry) return null;
   if (cb) {
     if (cb.actFrom) data.from = cb.actFrom;
     return emitFx(cb, SPOTLIGHT_FX, data) as SpotlightFx;

@@ -8,7 +8,7 @@ import type { FxEvent, GameState } from '@engine';
 import { preloadCombatSfx, reducedMotion } from '../sfx';
 import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
-import { canDraw, clearFx, queueFx, rememberTokens, setContext, seenNow } from './play';
+import { canDraw, clearFx, forgetSpotlights, queueFx, rememberTokens, setContext, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 import { getState } from '../store';
 
@@ -71,7 +71,7 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
         opening = s.key.startsWith('cb|') && (game.combat?.round || 1) <= 1 && s.list.length <= 40 && (s.list[0]?.n || 1) <= 1;
         fresh = opening ? s.list.slice(-24) : [];
       }
-    } else if (s.key.startsWith('cb|') && top < h.n) { opening = true; fresh = s.list.slice(-24); } // the same fight started over (its numbering restarted)
+    } else if (s.key.startsWith('cb|') && top < h.n) { opening = true; forgetSpotlights(s.key); fresh = s.list.slice(-24); } // the same fight started over (its numbering restarted)
     else fresh = s.list.filter((e) => e.n > h.n);
     seen.current = { key: s.key, n: top, code: game.code };
     if (s.key.startsWith('cb|')) fight.current = { key: s.key, n: top };

@@ -1,32 +1,51 @@
-// The spotlight cut-in overlay (docs/design/cutin-spec.md 3, decision 110): the screen behind blurs and dims, and torn
+// The spotlight cut-in overlay (docs/design/cutin-spec.md 3, decision 111): the screen behind blurs and dims, and torn
 // strips of painted eyes cross it, inked in each character's colour (a god's in its accent). Mounted once in App.tsx
 // over every in-room screen, z-index 64 (over the turn intro's 57–58 and the effects layer's 45, under the Miracle's 66).
 //
-// It draws whatever cutin/index.ts says is showing (a fight's moment comes from fx/play.ts's gate; anything else from
-// showCutIn). It also watches the story's own fx stream (out of a fight: a crit, an Ultimate, a deed, Play my song) and
+// It draws whatever spotlight/index.ts says is showing (a fight's moment comes from fx/play.ts's gate; anything else from
+// showSpotlight). It also watches the story's own fx stream (out of a fight: a crit, an Ultimate, a deed, Play my song) and
 // plays those moments on any in-room screen. Any click or key skips; the skipping click never reaches the game.
 import React from 'react';
 import type { FxEvent, GameState } from '@engine';
 import { bigPortrait } from '../charfile';
 import { reducedMotion } from '../sfx';
 import { stripShape } from './tear';
-import { stackLayout, cropOf } from './layout';
-export { stackLayout, cropOf, tornStripMarkup } from './layout';
-import { type CutInSpec, type CutInStrip, type Showing, GOD_WORD_INK, cutInNow, onCutIn, skipCutIn, cutInForFx, showCutIn, stripForChar, stripForPatron } from './index';
+import { stackLayout, cropOf, NARROW_PX } from './layout';
+export { stackLayout, cropOf, tornStripMarkup, NARROW_PX } from './layout';
+import { type CutInSpec, type CutInStrip, type Showing, GOD_WORD_INK, cutInNow, onCutIn, skipCutIn, cutInForFx, showSpotlight, stripForChar, stripForPatron } from './index';
 import { CUTIN_ARM_MS } from './timing';
 
 const BODY = '#10151F', GROUND = '#0A0D13', TEXT = '#E7EBF3';
 
-function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, single, spec, dx = 0 }: { s: CutInStrip; i: number; w: number; h: number; seed: string; frac: number; windowLeft: boolean; rm: boolean; out: boolean; single: boolean; spec: CutInSpec; dx?: number }) {
-  const shape = React.useMemo(() => stripShape(seed + '|' + i + '|' + s.key, w, h, { windowFrac: frac, windowLeft }), [seed, i, s.key, w, h, frac, windowLeft]);
+/** A portrait's source width, as far as it is known before it loads: the room's copy of an upload is 320 px wide, the
+ *  art library's large copies 800. Measured once it loads. */
+const natGuess = (src: string) => (/^data:/.test(src) ? 320 : 800);
+/** words: where the strip's words go: 'side' (one wide strip: beside the eyes), 'chip' (a stack: the name in the torn-off
+ *  end), 'none' (a narrow screen: all of it in the plate under the strips). */
+function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 0 }: { s: CutInStrip; i: number; w: number; h: number; seed: string; frac: number; windowLeft: boolean; rm: boolean; out: boolean; words: 'side' | 'chip' | 'none'; spec: CutInSpec; dx?: number }) {
   const [img, setImg] = React.useState(s.img);
-  React.useEffect(() => { setImg(s.img); if (/^data:/.test(s.img)) bigPortrait(s.img).then((b) => setImg(b)).catch(() => {}); }, [s.img]);
+  const [natW, setNatW] = React.useState(() => natGuess(s.img));
+  React.useEffect(() => { setImg(s.img); setNatW(natGuess(s.img)); if (/^data:/.test(s.img)) bigPortrait(s.img).then((b) => setImg(b)).catch(() => {}); }, [s.img]);
+  React.useEffect(() => { if (!img) return; const im = new Image(); im.onload = () => { if (im.naturalWidth) setNatW(im.naturalWidth); }; im.src = img; }, [img]);
   const over = w * 0.0833; // the strip overhangs the screen by 10% of the screen's width on each side (w = 1.2 vw)
+  // The image reaches past what the screen shows of the window's outer side: the strip is shifted by dx and tilted, so
+  // the screen's edge can sit further out than `over` (never a flat untorn slab at the edge).
+  const cropFor = (edgeX: number) => {
+    const x0 = windowLeft ? over : edgeX, x1 = windowLeft ? edgeX : w - over;
+    return cropOf(s.eye, x0, x1, h, 0.17, windowLeft ? { l: over - Math.max(0, dx) - 24, r: x1 + 20, natW, anchor: 'l' } : { l: x0 - 20, r: w - over + Math.max(0, -dx) + 24, natW, anchor: 'r' });
+  };
+  // A capped crop (a small source, an upload's room copy, on a wide screen) can't fill the window: the window narrows to
+  // the image (its torn side 24 px inside the image's end) and the strip's body and its words take the rest.
+  const first = cropFor(windowLeft ? w * frac : w * (1 - frac));
+  const fit = first.capped ? Math.min(frac, Math.max(0.3, windowLeft ? (first.x + first.w - 24) / w : 1 - (first.x + 24) / w)) : frac;
+  const shape = React.useMemo(() => stripShape(seed + '|' + i + '|' + s.key, w, h, { windowFrac: fit, windowLeft }), [seed, i, s.key, w, h, fit, windowLeft]);
   const winX0 = windowLeft ? over : shape.edgeX, winX1 = windowLeft ? shape.edgeX : w - over;
-  const crop = cropOf(s.eye, winX0, winX1, h);
+  const crop = fit === frac ? first : cropFor(shape.edgeX);
   const id = 'ci' + i + '-' + String(seed).replace(/[^\w]/g, '').slice(-10);
   const inkEdgeA = windowLeft ? shape.edgeX - w * 0.18 : shape.edgeX, inkEdgeB = windowLeft ? shape.edgeX : shape.edgeX + w * 0.18;
   const textSide = windowLeft ? { left: shape.edgeX + 28, right: over + 24 } : { left: over + 24, right: w - shape.edgeX + 28 };
+  // The name on one line where it can be: its size from the column's width (Spectral 600 is about 0.52 em a letter).
+  const colW = w - textSide.left - textSide.right, nameSize = Math.round(Math.max(24, Math.min(44, colW / Math.max(6, s.name.length * 0.52))));
   const labelInk = s.god ? GOD_WORD_INK : s.ink;
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
@@ -46,7 +65,7 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, single, spec, dx =
         </defs>
         <polygon points={shape.lip} fill={s.ink} />
         <polygon points={shape.body} fill={s.god ? GROUND : BODY} stroke={GROUND} strokeWidth="2" strokeLinejoin="round" />
-        <g clipPath={'url(#' + id + 'b)'}>
+        <g clipPath={'url(#' + id + 'b)'} data-phc-spotlight-window={Math.round(winX1 - winX0)}>
           <g clipPath={'url(#' + id + 'w)'}>
             <rect x="0" y="0" width={w} height={h} fill="#1C2536" />
             {img && <image href={img} x={crop.x} y={crop.y} width={crop.w} height={crop.h} preserveAspectRatio="xMidYMid slice" />}
@@ -58,15 +77,15 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, single, spec, dx =
           <polyline points={shape.window.split(' ').slice(1, -1).join(' ')} fill="none" stroke={s.ink} strokeWidth="3" strokeLinejoin="round" />
         </g>
       </svg>
-      {single ? (
+      {words === 'side' ? (
         <div style={{ position: 'absolute', top: 0, bottom: 0, ...textSide, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6, minWidth: 0, textAlign: windowLeft ? 'left' : 'right',
           opacity: out ? 0 : 1, transition: 'opacity .15s', animation: rm ? 'none' : 'phcCiText .3s ease-out .22s both' }}>
-          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '.3em', color: labelInk, textTransform: 'uppercase' }}>{spec.label}</span>
-          <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.05, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
+          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '.22em', color: labelInk, textTransform: 'uppercase', overflowWrap: 'anywhere' }}>{spec.label}</span>
+          <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: nameSize, lineHeight: 1.05, color: '#FFFFFF', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{s.name}</span>
           {spec.line && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.35, color: TEXT, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>“{spec.line}”</span>}
           {spec.caption && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: spec.line ? 16 : 20, lineHeight: 1.35, color: spec.line ? '#A3AEC2' : TEXT, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{spec.caption}</span>}
         </div>
-      ) : (
+      ) : words === 'none' ? null : (
         // The name sits in the torn-off end, inside what the screen shows of it (the strip is shifted by dx).
         <div style={{ position: 'absolute', top: 0, bottom: 0, ...(windowLeft ? { left: shape.edgeX + 22, right: over + 16 + Math.max(0, dx) } : { left: over + 16 + Math.max(0, -dx), right: w - shape.edgeX + 22 }), display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: windowLeft ? 'flex-start' : 'flex-end', gap: 2, minWidth: 0 }}>
           <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: '.12em', color: s.ink, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{s.name}</span>
@@ -95,11 +114,13 @@ export function CutInView({ show }: { show: Showing }) {
   const { spec, rm, out, skipped } = show;
   const [size, setSize] = React.useState(() => ({ vw: innerWidth, vh: innerHeight }));
   React.useEffect(() => { const f = () => setSize({ vw: innerWidth, vh: innerHeight }); addEventListener('resize', f); return () => removeEventListener('resize', f); }, []);
-  const { vw, vh } = size, n = spec.strips.length, single = n === 1;
+  const { vw, vh } = size, n = spec.strips.length, single = n === 1, narrow = vw < NARROW_PX;
+  // A narrow screen: the eye window runs nearly the strip's width and every word goes in the plate under the strips.
+  const words: 'side' | 'chip' | 'none' = narrow ? 'none' : single ? 'side' : 'chip', frac = narrow ? 0.86 : single ? 0.62 : 0.76;
   const lay = stackLayout(n, vw, vh, spec.strips.map((s) => !!s.god));
   const w = vw * 1.2, seed = String(spec.seed ?? spec.id ?? 'cutin');
   const outMs = skipped ? 150 : 250, lead = spec.strips[0];
-  const plateTop = single ? 0 : lay[n - 1].top + lay[n - 1].h + vh * 0.025;
+  const plate = words !== 'side', plateTop = lay[n - 1].top + lay[n - 1].h + vh * 0.025;
   return (
     <div data-phc-spotlight={spec.kind} data-phc-spotlight-id={show.id} style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
       <style>{CSS}</style>
@@ -111,15 +132,22 @@ export function CutInView({ show }: { show: Showing }) {
         return (
           <div key={s.key + i} data-phc-spotlight-strip={s.key} style={{ position: 'absolute', left: -vw * 0.1 + L.dx, top: L.top, width: w, height: L.h, transform: 'rotate(' + L.tilt + 'deg)', transformOrigin: '50% 50%', filter: 'drop-shadow(0 10px 24px rgba(0,0,0,.55))' }}>
             <div style={{ position: 'absolute', inset: 0, animation: out ? outAnim : inAnim, transformOrigin: '50% 50%' }}>
-              <Strip s={s} i={i} w={w} h={L.h} seed={seed} frac={single ? 0.62 : 0.76} windowLeft={L.windowLeft} rm={rm} out={out} single={single} spec={spec} dx={L.dx} />
+              <Strip s={s} i={i} w={w} h={L.h} seed={seed} frac={frac} windowLeft={L.windowLeft} rm={rm} out={out} words={words} spec={spec} dx={L.dx} />
             </div>
           </div>
         );
       })}
-      {!single && (
-        <div data-phc-spotlight-plate="" style={{ position: 'absolute', left: 'calc(50% - min(360px, 46vw))', top: Math.min(plateTop, vh - 120), width: 'min(720px, 92vw)', boxSizing: 'border-box', padding: '12px 18px 14px', background: 'rgba(10,13,19,.92)', borderTop: '3px solid ' + (lead.god ? lead.ink : lead.ink), boxShadow: '0 10px 30px rgba(0,0,0,.5)',
+      {plate && (
+        <div data-phc-spotlight-plate="" style={{ position: 'absolute', left: 'calc(50% - min(360px, 46vw))', top: Math.min(plateTop, vh - (narrow ? 180 : 120)), width: 'min(720px, 92vw)', boxSizing: 'border-box', padding: '12px 18px 14px', background: 'rgba(10,13,19,.92)', borderTop: '3px solid ' + (lead.god ? lead.ink : lead.ink), boxShadow: '0 10px 30px rgba(0,0,0,.5)',
           display: 'flex', flexDirection: 'column', gap: 4, opacity: out ? 0 : 1, transition: 'opacity .15s', animation: rm ? 'phcCiFade 120ms ease-out both' : 'phcCiText .3s ease-out ' + (260 + 70 * (n - 1)) + 'ms both' }}>
-          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '.3em', color: lead.god ? GOD_WORD_INK : lead.ink }}>{spec.label}</span>
+          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: narrow ? '.14em' : '.3em', color: lead.god ? GOD_WORD_INK : lead.ink, overflowWrap: 'anywhere' }}>{spec.label}</span>
+          {narrow && single && <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 30, lineHeight: 1.1, color: '#FFFFFF', overflowWrap: 'anywhere' }}>{lead.name}</span>}
+          {narrow && !single && (
+            // Who is in the moment: each name in its ink with its word (colour is never the only signal).
+            <span data-phc-spotlight-names="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', fontFamily: "'Chakra Petch', sans-serif", fontSize: 13, fontWeight: 700, lineHeight: 1.3 }}>
+              {spec.strips.map((x) => <span key={x.key} style={{ whiteSpace: 'nowrap' }}><span style={{ color: x.ink }}>{x.name}</span> <span style={{ fontSize: 10, letterSpacing: '.16em', color: x.god ? GOD_WORD_INK : '#A3AEC2' }}>{x.god ? 'PATRON' : x.word.toUpperCase()}</span></span>)}
+            </span>
+          )}
           {spec.line && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 19, lineHeight: 1.35, color: TEXT }}>“{spec.line}”</span>}
           {spec.caption && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: spec.line ? 15 : 19, lineHeight: 1.35, color: spec.line ? '#A3AEC2' : TEXT }}>{spec.caption}</span>}
         </div>
@@ -158,7 +186,7 @@ export function CutInLayer({ game, screen }: { game: GameState | null; screen: s
     const fresh = (fx || []).filter((e) => e.n > h.n && e.k === 'spotlight');
     seen.current = { code: game.code, n: top };
     if (!fresh.length || !IN_ROOM.has(screen) || document.hidden) return;
-    const t = setTimeout(() => { const g = latest.current; const c = cutInForFx(g, fresh, 'st|' + game.code); if (c) showCutIn(c.spec, { prefApplied: true }); }, storyDelay(fresh));
+    const t = setTimeout(() => { const g = latest.current; const c = cutInForFx(g, fresh, 'st|' + game.code); if (c) showSpotlight(c.spec, { prefApplied: true }); }, storyDelay(fresh));
     return () => { /* a moment that has landed still plays */ void t; };
   }, [top, game?.code]);
 

@@ -1,4 +1,4 @@
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 110), in the Proving Ground with two browsers:
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111), in the Proving Ground with two browsers:
 //  (a) the host's fighter takes down a boss: the cut-in plays (the screen behind blurred), then that attack's effects play
 //      15% slower (window.__phcCutins records the slowed events and their beats), and the input hold releases;
 //  (d) the guest, on the same fight, sees the same cut-in from the shared state;
