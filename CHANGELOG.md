@@ -8,6 +8,14 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.12.0 — 9 November 2026
+
+Branch `feature/title-glyph-ward`: **a real Sigil on the title screen** (Leon: delete the made-up glyph, place one of our real Sigils, it's so dull you can't see anything; keep the original).
+
+- **The glyph:** the mage now draws **WARD**, using the game's own glyph path (`GLYPH_PATHS.ward`), its class frame and the Sigil inks. It's drawn bright: a white core line in a cyan glow, with the frame dimmer as in play. A thin thread of light runs from his fingertips to the shield's point. It replaces the generated render's dim made-up teal ring.
+- **The original is kept** in `art/_archive/ui/title-screen/history/2026-11-09-r6-original-glyph/`, with how to restore it.
+- **Checked by two independent reviewers:** no trace of the old ring, the hand untouched, no fringe. Their three polish notes are fixed: the old stem's foot on the fingertips, the frame drawn too strong, nothing tying the glyph to the hand. `validate_art.py` passes, with menu contrast unchanged.
+
 ## 0.11.2 — 9 November 2026
 
 Hotfix on `develop`, from Leon's test of 0.10.2 on his RDNA 4 desktop:
