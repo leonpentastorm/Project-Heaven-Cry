@@ -1,12 +1,12 @@
 {
-  "revision": 5,
+  "revision": 6,
   "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
   "native_dimensions": [
     1672,
     941
   ],
   "destination_xy": [
-    256,
+    436,
     144
   ],
   "scaled_dimensions": [
@@ -14,10 +14,25 @@
     2016
   ],
   "overscan": "mirror",
+  "alpha_floor": 245,
   "canvas": [
     4096,
     2304
   ],
-  "notes": "Revision 5 (Leon, 9 Nov 2026): a full 16:9 frame composed for the screen (a wide shot: the squad small on a rock outcrop at the right, all looking up at the Celestial; the left 58% empty). Placed 1:1 on the central safe rect (the window shows exactly this frame at 16:9); the rock is mirrored into the right and bottom overscan. The render's near-opaque pixels (alpha 245\u2013254; it painted the rock at 252\u2013253) are made opaque. Uniform resize, no sharpening.",
-  "alpha_floor": 245
+  "gaze": {
+    "rule": "art/briefs/title-screen.md, The gaze: every sightline ends on the god's head or upper body",
+    "target_face_canvas": [
+      2745,
+      250
+    ],
+    "sightline_error_deg": {
+      "lead": 12,
+      "gunner": 12,
+      "mage": 7,
+      "tank": 8,
+      "support": 10
+    },
+    "check": "art/_archive/ui/title-screen/previews/gaze-check.jpg"
+  },
+  "notes": "Revision 6 (Leon, 9 Nov 2026: \"first good one we got\"): the squad small on the lip of a rock outcrop, every face turned up. The 16:9 frame at the safe rect's size, shifted 180 canvas px (5% of the screen) right into the overscan: there every sightline ends within 7-12 degrees of the god's face (at 1:1 they were 0-23 degrees left of it). The rock is mirrored into the right and bottom overscan; near-opaque alpha (245-254) is made opaque. Uniform resize, no sharpening."
 }

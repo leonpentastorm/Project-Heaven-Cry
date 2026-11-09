@@ -55,6 +55,14 @@ Branch `claude/awesome-babbage-8gngk8`: **spotlight cut-ins** (decision 113; `do
   - enemy cut-ins;
   - reduced motion;
   - the slimmer crit strip.
+## 0.10.0 — 9 November 2026
+
+Branch `feature/title-front-r6`: **the title screen's front layer, Revision 6** (Leon: "first good one we got").
+
+- **The picture:** the five heroes stand small on the lip of a rock outcrop at the right, every face turned up at the god, which fills the sky above them.
+- **The gaze rule holds:** the render is placed at the screen's size, shifted 5% right into the overscan. There, every hero's sightline ends within 7–12° of the god's face. The check is saved as `art/_archive/ui/title-screen/previews/gaze-check.jpg`.
+- Rock mirrored into the overscan; near-opaque alpha made opaque; Revision 5 archived. `validate_art.py` passes, with menu contrast unchanged at 5.6:1.
+
 ## 0.9.1 — 9 November 2026
 
 Straight to `develop` (an art brief fix): **the title heroes look at the god, as a fixed rule**. Leon: Revision 5's squad "still looks at nothing". Close up, their faces turn left, only 10–20° above level, while the god's face is almost straight above them. The title-screen brief (`art/briefs/title-screen.md`) now fixes the target: the god's face at screen x 69%, y 5%, 65–90° above level from the outcrop. It adds a guide image (`art/briefs/title-screen/gaze-guide.jpg`: the scene, the squad's place, the face and each hero's sightline) and a sightline check before any front layer ships. The front layer itself waits for the corrected painting.
