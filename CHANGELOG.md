@@ -8,6 +8,14 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.9.0 — 9 November 2026
+
+Branch `feature/title-front-v5`: **the title screen's front layer, Revision 5**. Leon: the heroes looked like they were facing a wall, not the god, and the picture didn't show how much bigger the god is than a person.
+
+- **A wide shot from Leon's layout sketch:** the five heroes stand small on the lip of a rock outcrop at the right, all looking and pointing up and to the left at the Celestial, ready. The god now towers over them. The left of the screen stays clear for the title and menu.
+- **Fitting it in:** a full 16:9 frame placed 1:1 on what the screen shows. The rock is mirrored into the overscan, so the parallax never shows a cut edge. The render's near-opaque rock (alpha 252) is made fully opaque. Back and middle layers are unchanged; Revision 4 is archived.
+- **Tooling:** `tools/art/rebuild_title_screen.py` now follows the repository layout, and its placement can mirror the overscan and floor the alpha. The 4K PSD is written only on request. Previews, manifest, checksums and the technical review are regenerated; `validate_art.py` passes, with menu sample-text contrast unchanged at 5.6:1.
+
 ## 0.8.0 — 9 November 2026
 
 Branch `feature/shell-casings`: **brass, what weapons throw off, drawn in SVG** (decision 112; Leon: casings behind the portrait on every shot with faint smoke, an Evoker ejecting its mana core like a casing, a shell for every weapon type, the Evokers and the enchanted guns, the archer's draw, a magazine dropping to the ground on a reload; "behind" is the opposite of the shot's direction).
