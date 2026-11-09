@@ -147,6 +147,9 @@ export interface Unit {
   vow?: import('./character').Vow | null; faith?: Record<string, any>;
   /** What a Trickster's Read showed this unit means to do on its next turn (enemyIntent; cleared when its turn ends). */
   readIntent?: Intent & { by: string; round: number };
+  /** Rules 1.8 drop tables (loot.ts): what this enemy drops beyond its weapon and magazines, from the campaign or the
+   * Narrator (absent: the engine's default for its kind and tier). */
+  drops?: import('./loot').Drops;
 }
 export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
   /** Retired in rules 1.8: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
@@ -189,7 +192,10 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
    * (the game's own rng; a fight passes its rng to every move), what they hit this action, and creatures a Downed
    * carrier dropped (tokens again when the fight ends). */
   hazards?: Hazard[]; worldRng?: Rng; hazardHits?: { id: string; kind: string; unit: string; charId?: string; name: string; at: string; dmg: number; cond?: string; attempt?: boolean }[];
-  dropped?: { npc: any; at: string; by: string }[] }
+  dropped?: { npc: any; at: string; by: string }[];
+  /** Rules 1.8 drop tables (loot.ts): the campaign's own tables for this fight, the rolled items so far (the cap), and
+   * the host-only log of what the cap held back. */
+  lootTables?: import('./loot').LootTable[]; lootRolled?: number; lootLog?: string[] }
 
 /** A presentation event: what just happened, precisely enough to animate (the client plays new ones by n). Tiles are
  * "x,y" keys; unit fields are unit ids. Kinds and fields:
@@ -202,7 +208,7 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
  *  trap, hazard, bleed, burn, sigil, elemental, soul, true, short, overload, wall) · shield {target, at, absorbed} ·
  *  down {unit, at, dead} · explode {at, radius, what} · object {at, what, dmg, broken, hp?} · door {unit?, at, open} ·
  *  trap {unit, at} · shove {unit, target, from, to, ok, prone?, magic?, pull?} · stance {unit, at, what: 'prone'|'stand'|'brace'|'overwatch'} ·
- *  analyze {unit, target, from, to} · pickup {unit, at, items} (the labels taken) · pile {at, id, n, why: 'drop'|'take'} (rules 1.8: a pile changed) · cover {unit, target, at, dmg} (a shot stopped by cover) ·
+ *  analyze {unit, target, from, to} · pickup {unit, at, items} (the labels taken) · pile {at, id, n, why: 'drop'|'take'|'death'} (rules 1.8: a pile changed; 'death': a fallen enemy's drops) · cover {unit, target, at, dmg} (a shot stopped by cover) ·
  *  draw {unit, at, tile, word, side, group, cls, element, effect, words} · glyph_fade {tile, word, side, why} · scuff {unit, at} ·
  *  evoke {unit, at, shape, tiles, words, element, side, facing, dir, area, src, impact, targets, targetAt, missiles: [{origin,
  *  kind: touch|bolt|lob|appear|relay, path, blockedAt, impact, arc, hops, burst, core, chain, placed}], stay, placed, fizzle} ·
@@ -860,7 +866,8 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
 /** Start a fight. PCs stand where they stood in the story (pos), enemies where the Narrator put them (at, a grid reference); otherwise the map's start tiles. */
 /** sigils: an Evoker and its words (true: the tier's default set; sigils.json enemy_ai), rules 1.4. */
 export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number; sigils?: string[] | true;
-  /** A caster archetype from enemies.json `casters` (its words and spell bias; sigils, if given, wins). Rules 1.4, ai-sigil.ts. */ caster?: string }
+  /** A caster archetype from enemies.json `casters` (its words and spell bias; sigils, if given, wins). Rules 1.4, ai-sigil.ts. */ caster?: string;
+  /** Rules 1.8: what it drops when it dies (loot.ts; already cleaned by the caller). */ drops?: import('./loot').Drops }
 export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
@@ -876,6 +883,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
     armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
+    if (f.drops && typeof f.drops === 'object') u.drops = JSON.parse(JSON.stringify(f.drops)); // rules 1.8 drop tables
     units.push(u);
   });
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);

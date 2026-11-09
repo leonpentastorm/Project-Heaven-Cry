@@ -690,6 +690,88 @@ if isinstance(pat, dict) and pat.get("tags"):
             if len(lines.get(b) or []) != 3:
                 errors.append(f"patrons:{pid}: line bank {b} needs 3 lines")
 
+# Rules 1.8 drop tables (World Play 1.1, spec 14 items 691-700): data/loot_tables.json
+lt = data.get("loot_tables")
+if lt is not None:
+    RARITIES = {"standard", "fine", "masterwork", "relic", "celestial"}
+    # the engine's enemy kinds (packages/engine/src/tactics.ts KINDS)
+    FOE_KINDS = {"human", "robot", "crawler", "ork", "upper_realm", "cursed", "beast", "machine", "turret", "celestial", "drone"}
+    tables = {t.get("id"): t for t in items("loot_tables") if isinstance(t, dict)}
+    tiers = ids_of(items("enemies"))
+    def _qty_ok(q):
+        if isinstance(q, int) and not isinstance(q, bool):
+            return 1 <= q <= 20
+        return isinstance(q, list) and len(q) == 2 and all(isinstance(x, int) and not isinstance(x, bool) for x in q) and 1 <= q[0] <= q[1] <= 20
+    def _drop_id_ok(i):
+        if i in item_ids or i == "personal":
+            return True
+        if isinstance(i, str) and i.startswith("mag:"):
+            w = next((x for x in items("weapons") if x.get("id") == i[4:]), None)
+            return bool(w and w.get("magazine") is not None)
+        if isinstance(i, str) and i.startswith("rounds:"):
+            return True
+        return False
+    for tid, t in tables.items():
+        if not tid:
+            errors.append("loot_tables: a table has no id")
+            continue
+        if not isinstance(t.get("none"), (int, float)) or t["none"] < 0:
+            errors.append(f"loot_tables:{tid}: none (the weight of nothing) must be 0 or more")
+        if not isinstance(t.get("entries"), list):
+            errors.append(f"loot_tables:{tid}: entries must be a list")
+            continue
+        if not t["entries"] and not t.get("none"):
+            errors.append(f"loot_tables:{tid}: an empty table needs a weight for nothing")
+        for e in t["entries"]:
+            where = f"loot_tables:{tid}:{e.get('item')}"
+            if not _drop_id_ok(e.get("item")):
+                errors.append(f"{where}: unknown item or weapon id")
+            if not isinstance(e.get("weight"), (int, float)) or e["weight"] <= 0:
+                errors.append(f"{where}: weight must be above 0")
+            if "qty" in e and not _qty_ok(e["qty"]):
+                errors.append(f"{where}: qty must be 1-20 or [min, max] within 1-20")
+            if "rarity" in e and e["rarity"] not in RARITIES:
+                errors.append(f"{where}: unknown rarity {e['rarity']}")
+            if "chance" in e:
+                errors.append(f"{where}: a table entry is weighted; chance belongs to drops.items lists")
+    if "personal" in str([e.get("item") for t in tables.values() for e in t.get("entries", [])]):
+        pi = lt.get("personal_items") or []
+        if not pi or not all(isinstance(x, dict) and x.get("name") and x.get("text") for x in pi):
+            errors.append("loot_tables: personal_items needs entries with a name and a text")
+    caps = lt.get("caps") or {}
+    for d in ("easy", "standard", "hard", "boss"):
+        if not isinstance(caps.get(d), int) or caps[d] < 0:
+            errors.append(f"loot_tables: caps.{d} must be a whole number of 0 or more")
+    wd = lt.get("worn_durability") or {}
+    if not all(isinstance(wd.get(k), (int, float)) for k in ("min", "max")) or not 0 < wd["min"] <= wd["max"] <= 1:
+        errors.append("loot_tables: worn_durability needs 0 < min <= max <= 1")
+    for k in ("spare_mags_max", "inline_max"):
+        if not isinstance(lt.get(k), int) or lt[k] < 0:
+            errors.append(f"loot_tables: {k} must be a whole number of 0 or more")
+    for w in lt.get("natural_weapons") or []:
+        if w not in wids:
+            errors.append(f"loot_tables: natural weapon {w} is not a weapon")
+    rbt = lt.get("rolls_by_tier") or {}
+    for tier in tiers:
+        if not isinstance(rbt.get(tier), int) or rbt[tier] < 0:
+            errors.append(f"loot_tables: rolls_by_tier needs a whole number for tier {tier}")
+    for tier in rbt:
+        if tier not in tiers:
+            errors.append(f"loot_tables: rolls_by_tier names unknown tier {tier}")
+    kt = lt.get("kind_tables") or {}
+    for k in FOE_KINDS:
+        if kt.get(k) not in tables:
+            errors.append(f"loot_tables: kind {k} needs a default table (kind_tables)")
+    for k in kt:
+        if k not in FOE_KINDS:
+            errors.append(f"loot_tables: kind_tables names unknown kind {k}")
+    for k in ("caster_table", "boss_table"):
+        if lt.get(k) not in tables:
+            errors.append(f"loot_tables: {k} must name a table")
+    bt = tables.get(lt.get("boss_table"))
+    if bt and (bt.get("none") or not bt.get("entries")):
+        errors.append("loot_tables: the boss table always drops something (no weight for nothing, at least one entry)")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 

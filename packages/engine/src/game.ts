@@ -20,6 +20,7 @@ import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
 import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
+import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
@@ -217,7 +218,8 @@ export type NarratorTurn = {
   /** Place, move, update or remove people and enemies on the overworld map; rules 1.7: carry (id, charId) and drop
    * (id, charId, at) a creature in the story, and every person's face (kind, avatar) and talk (wants, knows, talk). */
   npcs?: { action: 'place' | 'move' | 'update' | 'remove' | 'carry' | 'drop'; id?: string; name?: string; side?: 'hostile' | 'neutral'; tier?: string; weapon?: string; at?: string; kind?: string; tags?: string[]; hidden?: boolean;
-    avatar?: string; charId?: string; wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: NarratorApproach[] }[];
+    avatar?: string; charId?: string; wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: NarratorApproach[];
+    /** Rules 1.8: what this person drops if they die in a fight (loot.ts; at most 4 items; null clears it on update). */ drops?: Drops | null }[];
   /** Rules 1.7: hazards on the map (place, update, remove): a kind, a severity, tiles or a rectangle, hidden. */
   hazards?: { action: 'place' | 'update' | 'remove'; id?: string; kind?: string; severity?: 'light' | 'heavy'; tiles?: string[]; rect?: { from: string; to: string } | null; hidden?: boolean; name?: string; text?: string }[];
   /** Rules 1.7: triggers that fire without a call: when enter (tiles or rect), examine (objId) or objective; then spawn
@@ -225,7 +227,7 @@ export type NarratorTurn = {
   triggers?: { action?: 'place' | 'remove'; id?: string; when?: 'enter' | 'examine' | 'objective'; tiles?: string[]; rect?: { from: string; to: string } | null; objId?: string; objective?: string;
     then?: 'spawn' | 'fight' | 'reveal'; spawn?: NonNullable<NarratorTurn['npcs']>; difficulty?: string; name?: string; reveal?: string[]; text?: string }[];
   /** fromTalk: the fight broke out of the talk just had (Talks Broke Down); absent = the engine's guess from the last check. */
-  combat?: { name: string; map?: string; difficulty?: string; fear?: boolean; fromTalk?: boolean; enemies: ({ name: string; tier: string; weapon: string; at?: string } & FoeTraits)[] } | null;
+  combat?: { name: string; map?: string; difficulty?: string; fear?: boolean; fromTalk?: boolean; enemies: ({ name: string; tier: string; weapon: string; at?: string; /** Rules 1.8: this fight's drops for this enemy (loot.ts; at most 4 items). */ drops?: Drops } & FoeTraits)[] } | null;
   /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
   moves?: { charId: string; to: string }[];
   /** Move the whole party to another zone of the campaign (its id), or "". */
@@ -351,7 +353,8 @@ export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; ti
   wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: Approach[];
   /** On the party's side (a talk success on someone neutral); asked what they want; told their hint; alerted by an alarm. */
   ally?: boolean; wantsShown?: boolean; informed?: boolean; alerted?: boolean;
-  /** In a player's view only: they want something, not yet asked (the words are stripped; world.ts worldView). */ wantsHidden?: boolean }
+  /** In a player's view only: they want something, not yet asked (the words are stripped; world.ts worldView). */ wantsHidden?: boolean;
+  /** Rules 1.8 drop tables (loot.ts): what they drop if they die in a fight, from the campaign or the Narrator (never in a player's view). */ drops?: Drops }
 
 export type WorldAct = 'move' | 'end' | 'reload' | 'pickup' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door' | 'perk' | 'carry' | 'put_down' | 'search' | 'attempt' | 'ask'
   | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise' | 'pump' | 'letgo' | 'steady' | 'feed' | 'heartwatch';
@@ -1174,19 +1177,31 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   newRound(g);
 }
 
+/** Rules 1.8 drop tables: the campaign's own tables (loot_tables), cleaned. */
+const campTables = (g: GameState): LootTable[] => cleanTables((campaignOf(g) as any)?.loot_tables);
+/** Rules 1.8 (item 691): a fight with a prepared encounter's name gives its enemies the campaign's drops, matched by
+ * name (first unused match), where no more specific layer (the Narrator's, a person's own) gave them any. */
+function encounterDrops<T extends { name: string; drops?: Drops }>(g: GameState, name: string, foes: T[]): T[] {
+  const enc = campaignOf(g)?.encounters?.find((e) => e.name.toLowerCase() === String(name || '').toLowerCase()); if (!enc) return foes;
+  const used = new Set<number>(), tables = campTables(g);
+  for (const f of foes) { const i = enc.enemies.findIndex((e, j) => !used.has(j) && e.name.toLowerCase() === String(f.name || '').toLowerCase()); if (i < 0) continue; used.add(i);
+    if (!f.drops && (enc.enemies[i] as any).drops) { const d = cleanDrops((enc.enemies[i] as any).drops, { max: Infinity, tables }); if (d) f.drops = d; } }
+  return foes;
+}
 /** Start a fight from the story (the Narrator's combat, a trigger's fight): on the current map everyone starts where they
  * stand and every hostile token joins where it stands (a lurker starts it Hidden); then the enemies act if they're first. */
 function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat']>) {
   const t = { combat };
   const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden }));
+  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden, drops: cleanDrops((e as any).drops, { tables: campTables(g) }) }));
   // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
   if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
     const used = new Set<number>();
-    for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait || n.avatar, ...(n.hidden ? { hidden: true } : {}), caster: n.caster ?? (i >= 0 ? foes[i].caster : undefined), kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])] }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
+    for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait || n.avatar, ...(n.hidden ? { hidden: true } : {}), caster: n.caster ?? (i >= 0 ? foes[i].caster : undefined), kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])], drops: (i >= 0 && foes[i].drops) || n.drops }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
     g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
   if (!foes.length) return; // nobody to fight (a trigger whose people couldn't be placed)
+  encounterDrops(g, t.combat.name || '', foes); // rules 1.8: a prepared fight's enemies bring the campaign's drops
   // Another zone's map starts from that zone's stashed objects (rules 1.8 fix: its piles and caches were ignored).
   g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : g.story.zoneObjects?.[map.id], { fear: !!t.combat.fear, ...(typeof t.combat.fromTalk === 'boolean' ? { fromTalk: t.combat.fromTalk } : {}) }); magicIn(g, g.combat);
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
@@ -1292,7 +1307,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   emitHook(cb!, 'action_done', { u, a, cb: cb! });
   for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
-  noteDeaths(cb!);
+  noteDeaths(cb!, g.rng);
   checkOver(cb!);
   runEnemies(g);
 }
@@ -1440,7 +1455,7 @@ function finishCombat(g: GameState) {
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
-  noteDeaths(cb); magicOut(g, cb, true);
+  noteDeaths(cb, g.rng); magicOut(g, cb, true);
   const won = cb.over === 'win';
   emitHook(cb, 'combat_end', { cb, won, g }); // 'combat_end' {cb, won}: after the fighters are written back to their characters
   { const fallen = cb.units.filter((u) => u.side === 'foe' && u.dead).map((u) => u.name), lost = cb.units.filter((u) => u.side === 'pc' && u.dead).map((u) => u.name);
@@ -1463,7 +1478,7 @@ function finishCombat(g: GameState) {
   // Enemies still standing go back on the map as hostile tokens where they ended.
   { const map = zoneMap(g), taken = new Set([...Object.values(g.story.positions), ...npcsOf(g).map((n) => n.pos)]);
     const freeNear = (k: string) => { if (!taken.has(k)) return k; const [x0, y0] = k.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const n = (x0 + dx) + ',' + (y0 + dy); if (standable(map, n) && !taken.has(n) && !storyObjects(g).some((o) => o.pos === n && blocksMove(o))) return n; } return k; };
-    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed && !u.surrendered) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}), ...(u.tags?.length ? { tags: u.tags.filter((t) => t !== 'humanoid') } : {}) }); }
+    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed && !u.surrendered) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}), ...(u.tags?.length ? { tags: u.tags.filter((t) => t !== 'humanoid') } : {}), ...(u.drops ? { drops: u.drops } : {}) }); }
     // Surrendered and subdued foes stay as neutral prisoners where they gave up (rules 1.3), for the Narrator to deal with.
     for (const u of cb.units) if (u.side === 'foe' && u.surrendered && !u.dead) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'neutral', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, hp: Math.max(1, u.hp), prisoner: true, tags: ['prisoner', ...(u.tags || []).filter((t) => t !== 'prisoner' && t !== 'humanoid')], ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}) }); } }
   landDropped(g, cb); // rules 1.7: what Downed carriers dropped is a token again
@@ -1474,7 +1489,7 @@ function finishCombat(g: GameState) {
 
 /** The one Narrator call a fight costs gets this: the result, the moments that mattered, who's left where, and anything said mid-fight. */
 export function combatReport(cb: Combat): string {
-  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns/;
+  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns| drops: /;
   const moments = cb.log.filter((l) => key.test(l)).slice(-14);
   const where = cb.units.map((u) => u.name + (u.side === 'foe' ? ' (enemy)' : '') + ': ' + (u.dead ? 'dead' : u.surrendered ? (u.subdued ? 'subdued' : 'surrendered') + ' (a prisoner) at ' + refOf(u.pos) : (u.downed ? 'Downed, ' : '') + u.hp + '/' + u.maxHp + ' HP at ' + refOf(u.pos))
     + ((u.injuries || []).length ? ', injured ' + u.injuries!.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(' and ') : ''));
@@ -1596,6 +1611,7 @@ export function viewFor(g: GameState, playerId: string): GameState {
   if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, me)), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === me) };
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
   pileFog(g, v, me); // rules 1.8: a pile shows only on a tile the viewer's party sees now (item 676)
+  if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.8: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;
@@ -1691,7 +1707,7 @@ export function initialNpcs(g: GameState): Npc[] {
   const z = campaignOf(g)?.zones.find((x) => x.id === zoneMap(g).id), map = zoneMap(g);
   const seen: Record<string, number> = {};
   return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, ...((n as any).caster ? { caster: (n as any).caster } : {}), pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined,
-    ...(n.kind ? { kind: n.kind } : {}), ...(n.tags?.length ? { tags: [...n.tags] } : {}) }));
+    ...(n.kind ? { kind: n.kind } : {}), ...(n.tags?.length ? { tags: [...n.tags] } : {}), ...((n as any).drops ? { drops: cleanDrops((n as any).drops, { max: Infinity, tables: campTables(g) }) } : {}) }));
 }
 export function npcsOf(g: GameState): Npc[] { return (g.story.npcs ||= initialNpcs(g)); }
 function facingToward(from: string, to: string): [number, number] { const [a, b] = from.split(',').map(Number), [c, d] = to.split(',').map(Number); return [Math.sign(c - a), Math.sign(d - b)]; }
@@ -1710,7 +1726,7 @@ function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number])
     const tier = ENEMY_TIERS.includes(op.tier || '') ? op.tier! : 'minion', weapon = WEAPON[op.weapon || ''] ? op.weapon! : 'service_pistol';
     list.push({ id: 'n' + (++g.seq), name: op.name.slice(0, 40), side: op.side === 'hostile' ? 'hostile' : 'neutral', tier, weapon, pos: k, portrait: portraitFor(g, op.name) || undefined, facing: facingToward(k, partyCentre(g)),
       ...(op.kind && KINDS.includes(op.kind) ? { kind: op.kind } : {}), ...(Array.isArray(op.tags) ? { tags: op.tags.filter((x) => FOE_TAGS.includes(x)).slice(0, 6) } : {}), ...(op.hidden ? { hidden: true } : {}) });
-    { const n = list[list.length - 1]; npcTalkFields(g, n, op); if (!n.avatar) { const av = avatarOf(g, n); if (av) n.avatar = av; } } // rules 1.7: a face, wants, knows, talk
+    { const n = list[list.length - 1], d = cleanDrops(op.drops, { tables: campTables(g) }); if (d) n.drops = d; npcTalkFields(g, n, op); if (!n.avatar) { const av = avatarOf(g, n); if (av) n.avatar = av; } } // rules 1.7: a face, wants, knows, talk
     if (op.hidden) { npcSensed(g, list[list.length - 1], 'placed'); return; } // lurking: no line for the players
     push(g, { kind: 'system', text: op.name + ' at ' + refOf(k) + '.' });
     if (!GENERIC.test(op.name)) applyMemOp(g, { op: 'person', name: op.name, where: zoneMap(g).id, ...(op.side === 'hostile' ? { attitude: -2 } : {}) });
@@ -1720,6 +1736,7 @@ function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number])
   if (op.action === 'remove') { npcMoved(g, n, n.pos, null); g.story.npcs = list.filter((x) => x !== n); return; }
   if (op.action === 'update') { if (op.hidden !== undefined && !!op.hidden !== !!n.hidden) { if (op.hidden) { n.hidden = true; npcMoved(g, n, n.pos, n.pos, true); npcSensed(g, n, 'hid'); } else { delete n.hidden; push(g, { kind: 'system', text: n.name + ' shows themself at ' + refOf(n.pos) + '.' }); } }
     if (op.side) n.side = op.side === 'hostile' ? 'hostile' : 'neutral'; if (op.name) n.name = op.name.slice(0, 40); if (op.kind && KINDS.includes(op.kind)) n.kind = op.kind; if (Array.isArray(op.tags)) n.tags = op.tags.filter((x) => FOE_TAGS.includes(x)).slice(0, 6);
+    if (op.drops === null) delete n.drops; else if (op.drops !== undefined) { const d = cleanDrops(op.drops, { tables: campTables(g) }); if (d) n.drops = d; }
     npcTalkFields(g, n, op); return; }
   if (op.action === 'move') { const k = op.at ? keyOf(op.at, map) : null; if (!k || !free(k)) return; const from = n.pos; n.facing = facingToward(n.pos, k); n.pos = k; npcMoved(g, n, from, k); if (n.hidden) npcSensed(g, n, 'moved'); }
 }
@@ -1778,6 +1795,7 @@ function magicIn(g: GameState, cb: Combat) {
   cb.mana = g.story.mana ?? MANA_START;
   // Rules 1.7: a fight takes its own copy of the map's hazards (magicOut writes it back when the fight ends).
   if (!cb.overworld) { const hz = zoneHazards(g, cb.map.id); if (hz.length) cb.hazards = JSON.parse(JSON.stringify(hz)); }
+  if (!cb.overworld) { const lt = campTables(g); if (lt.length) cb.lootTables = lt; } // rules 1.8: the campaign's own drop tables
   migrateStorySigil(g.story as any); cb.sigilV = SIGIL_REV; // 1.2 glyphs go, 1.2 walls become fields (item 441)
   if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); }
   // Ids never repeat: the story's counter, the live glyphs and zones, and the RAISE walls standing (they outlive the
@@ -2132,7 +2150,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id], comp: pos }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
-  g.combat = startCombat(fightName, zoneMap(g), pcs, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster })), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
+  g.combat = startCombat(fightName, zoneMap(g), pcs, encounterDrops(g, fightName, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster, drops: n.drops }))), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || n.avatar || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } });
   if (!wasHostile) cbx.noXp = true;
@@ -2661,7 +2679,7 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
     // The seated foes still standing go back as tokens with the HP they have left; everyone the fight did not seat
     // (overflow units, people who were not hostile) stays on the map as they were, moved aside if a fighter ended on their tile.
     const back = cb.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => ({ id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos,
-      portrait: u.img || undefined, ...(u.analyzedBy ? { analyzed: true } : {}), ...(u.hp < u.maxHp ? { hp: u.hp } : {}) }) as Npc);
+      portrait: u.img || undefined, ...(u.analyzedBy ? { analyzed: true } : {}), ...(u.hp < u.maxHp ? { hp: u.hp } : {}), ...(u.drops ? { drops: u.drops } : {}) }) as Npc);
     const ids = new Set(back.map((n) => n.id)), map = zoneMap(g), objs = g.story.objects || [];
     const taken = new Set<string>([...Object.values(pos), ...back.map((n) => n.pos)]);
     const free = (k: string) => standable(map, k) && !taken.has(k) && !objs.some((o) => o.pos === k && blocksMove(o));
@@ -2683,6 +2701,7 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
 /** A fight ends: cleared or the squad fell. The Proving Ground is gearing up again (the wave card offers the next fight). */
 function sandboxOver(g: GameState) {
   const sb = sbOf(g), cb = g.combat!, won = cb.over === 'win';
+  noteDeaths(cb, g.rng); // a death on the enemies' own turn is swept (and drops) before the field becomes the map again
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   if (sb.mode === 'teams') { sbTeamsOver(g); return; }
   if (won) sbNoteBest(g, sb.wave);

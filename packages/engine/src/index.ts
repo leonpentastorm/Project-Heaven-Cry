@@ -20,3 +20,4 @@ export * from './world';
 export * from './hazards';
 export * from './containers';
 export * from './gear';
+export * from './loot';

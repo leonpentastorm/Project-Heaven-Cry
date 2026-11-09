@@ -18,7 +18,8 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `secrets` | no | Truths the Narrator never states outright. |
 | `opening` | yes | What the Narrator's first turn should do: where to open, who's there, the first problem, the last line. |
 | `cast` | no | `{ name, role, text }` for each important NPC. |
-| `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. Optional `music`: a track for this fight (see `music`). |
+| `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. Optional `music`: a track for this fight (see `music`). An enemy may carry `drops` (below); when a fight has the encounter's name, its enemies get them by name. |
+| `loot_tables` | no | Drop tables (rules 1.8): `[{ id, none?, entries: [{ item, weight, qty?, rarity?, name?, text? }] }]`, weighted, `none` the weight of nothing. A table with an engine table's id (`person`, `machine`, `caster`, `beast`, `notable`; `data/loot_tables.json`) replaces it in this campaign. A `drops` value on an encounter enemy or a zone NPC is `{ table?, items?: [{ item, qty (n or [min, max]), chance?, rarity?, name?, text? }] }`: it replaces the engine's rolled drops for that enemy (their weapon and leftover magazines always drop). Item ids as `loot[]` takes them, plus `mag:<weapon>`, `rounds:<calibre>` and `personal`; any other id needs a `name` and is a plot item. |
 | `startZone` | yes | The zone the party starts in. |
 | `zones` | yes | The maps (below). |
 | `lore` | no | Extra lore for the Narrator, as text. |
@@ -77,7 +78,7 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 | `exits` | no | `{ to, at, text }`: other zones you can reach from here. With an `at`, a "way out" marker appears there. The Narrator moves the party with travel. |
 | `art` | no | `{ map, banner }`: the painting under this zone's grid (the whole grid, `w` × `h` tiles) and the banner over the story while the party is here. |
 | `music` | no | `{ ambient, combat }`: this zone's tracks, in the format of the top-level `music`. |
-| `tags` · `terrain` · `in_city` · `urban` · `fear` · `upper_realm` · `faction` | no | Zone tags perks and traits read (rules 1.3): free tags, the terrain (open, forest, urban…), whether it is inside a city, a frightening place, the upper realm, the faction that holds it. Zone `npcs` may carry `kind` (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret) and `tags` (military, hunter, lawful, no_surrender…). |
+| `tags` · `terrain` · `in_city` · `urban` · `fear` · `upper_realm` · `faction` | no | Zone tags perks and traits read (rules 1.3): free tags, the terrain (open, forest, urban…), whether it is inside a city, a frightening place, the upper realm, the faction that holds it. Zone `npcs` may carry `kind` (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret) and `tags` (military, hunter, lawful, no_surrender…), and `drops` (what they drop if they die in a fight; see `loot_tables`). |
 
 ## Objects and points of interest
 

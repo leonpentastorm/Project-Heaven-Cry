@@ -23,6 +23,7 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 | `soul_modules.json` | 4 schools, 20 modules | Soul spell construction, MP, Strain; **provisional numbers** |
 | `patrons.json` | 3 | Nerukhan plus 2 invented patrons (flagged); blessings by Faith tier; **provisional numbers** |
 | `effect_ops.json` | 132 | Registry of every effect op: tier (50 core, 82 bespoke), parameters, who uses it, an example |
+| `loot_tables.json` | 5 tables | Drop tables (rules 1.8, World Play 1.1): tables by enemy kind (`person`, `machine`, `caster`, `beast`) and the bosses' `notable`, rolls by tier, the per-fight caps, the worn-weapon range, natural weapons and 20 personal effects; the engine rolls them (`packages/engine/src/loot.ts`); **provisional numbers** |
 
 ## Loading order
 `rules` → `attributes` → `skills` → `conditions` → `effect_ops` → `weapon_mastery` → `weapons`, `items`, `sigils`, `soul_modules`, `patrons` → `traits`, `perks` → `classes`.
