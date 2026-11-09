@@ -11,6 +11,7 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
+import { closeCutIns } from '../cutIn';
 import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
@@ -21,13 +22,16 @@ export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle', FX_HOLD = 'phc-fx-hol
 interface UnitInfo { pos: string; name: string; side: string; robot: boolean; dead?: boolean; charId?: string }
 let units = new Map<string, UnitInfo>();
 let seenTiles: Set<string> | null = null;
+/** The characters' names (a Miracle's cut-in calls the devoted by name). */
+let charNames = new Map<string, string>();
 /** World Play 1.7 kinds that are machines (a robot bleeds sparks, not blood). */
 const MACHINE_KIND = new Set(['robot', 'drone', 'machine']);
 const ROBOT = /drone|robot|\bbot\b|turret|automaton|mech\b|android|construct|sentry/i;
 /** Called by FxLayer before playing a batch: where everyone is now, and (in a fight) what the squad can see. */
 export function setContext(g: GameState | null, screen: string) {
-  units = new Map(); seenTiles = null;
+  units = new Map(); seenTiles = null; charNames = new Map();
   if (!g) return;
+  for (const c of Object.values(g.characters || {})) if (c && (c as any).id) charNames.set((c as any).id, String((c as any).name || ''));
   if (screen === 'combat' && g.combat) {
     for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name) || MACHINE_KIND.has((u as any).kind), dead: !!u.dead, charId: u.charId || undefined });
     try { seenTiles = visibility(g.combat, 'pc').tiles; } catch { seenTiles = null; }
@@ -590,7 +594,8 @@ Object.assign(H, soulHandlers(SOUL_KIT));
 // Outburst 4.0 (fx/feelings.ts): feelings felt and poured, residue, Revert, practice, Fuse, Linger, Thread.
 Object.assign(H, feelingHandlers(SOUL_KIT));
 // Blessing 2.0 (fx/faith.ts): prayers, Witnessed, interventions, Devotion, vows, the patron's lines and Miracles.
-Object.assign(H, faithHandlers({ ...SOUL_KIT, posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; } }));
+Object.assign(H, faithHandlers({ ...SOUL_KIT, posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; },
+  nameOfChar: (charId) => (charId ? charNames.get(charId) : undefined), hurry: (ms) => hurryFx(ms) }));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 const COND_WORD: Record<string, string> = { slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
@@ -810,7 +815,7 @@ function beatOf(e: FxEvent): number {
     default: return 200;
   }
 }
-let timers: number[] = [];
+let timers: { id: number; at: number; e: FxEvent; stream?: string }[] = [];
 let queueEnd = 0, idleTimer = 0, turnsUntil = 0;
 /** The longest the screen may hold the player's input while other units' turns play (a stuck clock never locks play). */
 export const TURNS_HOLD_MAX = 8000;
@@ -847,10 +852,27 @@ export function planQueue(beats: number[], room: number, keep?: number): { from:
 /** Queue events to play in order, each after the previous one's beat. A long backlog plays a little faster, and past that
  *  its oldest effects are skipped, so play never lags far and never races. keep: play only the last few (the fight is
  *  decided: what happened after it matters, not a replay of every step). */
-export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number } = {}) {
+export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; from?: number } = {}) {
+  if (!evs.length) return;
+  // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
+  // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms
+  // to the map, then the miracle happens". What came before it plays first as usual (a decided fight skips it: the
+  // Miracle is what it shows); what follows is planned on its own, its room counted from the landing.
+  const mi = evs.findIndex((e) => e.k === 'miracle');
+  if (mi >= 0) {
+    const pre = evs.slice(0, mi), post = evs.slice(mi + 1);
+    if (opts.keep != null) for (const e of pre) skipFx(e, stream); else queuePlain(pre, stream, {});
+    queuePlain([evs[mi]], stream, { from: Math.max(performance.now(), queueEnd) }); // never skipped or sped up: it starts at the queue's end and holds its full beat
+    queueFx(post, stream, { from: Math.max(performance.now(), queueEnd) }); // a later Miracle in the batch: the same again
+    return;
+  }
+  queuePlain(evs, stream, opts);
+}
+/** queueFx for a batch with no Miracle in it. from: count the backlog from this time (after a Miracle's hold). */
+function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: number; from?: number }) {
   if (!evs.length) return;
   const now = performance.now(), base = Math.max(now, queueEnd);
-  const backlog = base - now, room = Math.max(1500, 7000 - backlog);
+  const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), room = Math.max(1500, 7000 - backlog);
   const plan = planQueue(evs.map(beatOf), room, opts.keep), speed = plan.speed;
   for (const e of evs.slice(0, plan.from)) skipFx(e, stream);
   evs = evs.slice(plan.from);
@@ -859,7 +881,7 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number }
     if (e.k === 'turn') lastTurn = t;
     const wait = t - now;
     if (wait <= 4) playFx(e, stream);
-    else { const id: number = window.setTimeout(() => { timers = timers.filter((x) => x !== id); playFx(e, stream); }, wait); timers.push(id); }
+    else schedule(e, stream, t);
     t += beatOf(e) * speed;
   }
   queueEnd = t;
@@ -867,8 +889,24 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number }
   if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120); if (turnsUntil !== was) try { window.dispatchEvent(new CustomEvent(FX_HOLD)); } catch { /* */ } }
   clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, t - now + 50);
 }
+/** Play e at performance.now() time t (a timer the queue can move: hurryFx). */
+function schedule(e: FxEvent, stream: string | undefined, t: number) {
+  const entry = { id: 0, at: t, e, stream };
+  entry.id = window.setTimeout(() => { timers = timers.filter((x) => x !== entry); playFx(e, stream); }, Math.max(0, t - performance.now()));
+  timers.push(entry);
+}
+/** Move everything queued up by ms (a skipped cut-in: what it was holding plays now). Never before now; the turn hold
+ *  and the idle signal move with it. */
+export function hurryFx(ms: number) {
+  if (!(ms > 0)) return;
+  const now = performance.now(), was = timers; timers = [];
+  for (const x of was) { clearTimeout(x.id); schedule(x.e, x.stream, Math.max(now, x.at - ms)); }
+  queueEnd = Math.max(now, queueEnd - ms);
+  if (turnsUntil > now) { turnsUntil = Math.max(now, turnsUntil - ms); try { window.dispatchEvent(new CustomEvent(FX_HOLD)); } catch { /* */ } }
+  clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, queueEnd - now + 50);
+}
 /** Drop everything queued (the game changed, the tab was hidden). */
-export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; turnsUntil = 0; volley = null; bumpGen(); }
+export function clearFx() { for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; volley = null; bumpGen(); closeCutIns(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */

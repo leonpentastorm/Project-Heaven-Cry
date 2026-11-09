@@ -8,6 +8,32 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.7.0 — 9 November 2026
+
+Branch `feature/faith-presence`: **Faith 2.2, rules revision 1.6.3: the god shows up** (decision 111; `docs/design/faith-presence-spec.md`; spec items 738–747, all provisional; hand-off `docs/design/handoffs/faith-presence-HANDOFF.md`). The patrons' portraits only appeared at character creation, and interventions almost never fired.
+
+- **Witnessed** (Leon): a successful Hymn (or a Miracle) makes you Witnessed until the fight ends or your patron intervenes.
+- **Interventions:**
+  - each one ends Witnessed;
+  - once a fight, twice from Devotion 7;
+  - Nerukhan's Soul, Mother Ember's heal and Old Overcast's Storm are 20 + 4 × Devotion (× Blessing power);
+  - wider triggers: the Laughing Mask fires on any enemy miss against you. The Quartermaster (Leon) fires on any reload of yours (it's free), on your Evoker's core running dry (a fresh core, your spares untouched) and on your MP running out (25% of your max back);
+  - the patron's own act never counts as the devoted's deed (no XP, taboo or vow effects).
+- **The `grant` line bank** (the 11th): the god calls the devoted by name when granting a Miracle ("ROOK. THE SAINTS HAVE HEARD YOU. I GRANT THEE THIS REQUEST.").
+- **The Miracle cut-in:**
+  1. the screen dims under light in the god's colour;
+  2. the portrait cuts in over everything, larger than the map;
+  3. the god calls your name;
+  4. the view zooms to the map, the Miracle plays, and a box says what it did.
+
+  Skippable, reduced motion respected, seen by everyone in the room. Built on a reusable `showCutIn` (`apps/web/src/game/cutIn.ts`). The sound sting is "30_revive_03" by leohpaz (CC BY 4.0, credited).
+- **The patron on screen:**
+  - a Whisper's icon rises over the head; a Hymn shows a square crop of the god's portrait;
+  - the faith tab header shows the portrait (click for the large view);
+  - pact, switch, farewell and grudge cards carry a small portrait (greyed for a grudge), and voice-line cards a round crop.
+- **The intervention cut-in is left as a trigger:** `playIntervention()` in `cutIn.ts` (spec section 3) for the implementer building the cut-in UI.
+- **Waiting on Leon:** item 747. Should Witnessed's +2 to liked-tag attacks, and the Guardian's Under the Eye, keep their old one-turn length now that Witnessed lasts the fight?
+
 ## 0.6.0 — 9 November 2026
 
 Branch `feature/mana-forecast`: **the mana meter becomes a forecast panel** (decision 110; Leon: the meter leaves the combat header and becomes a movable module beside the map, read like a weather forecast).

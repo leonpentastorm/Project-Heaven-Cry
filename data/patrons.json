@@ -1,7 +1,7 @@
 {
   "$schema_version": "2.0",
   "kind": "patrons",
-  "source": "PHC Core Rules v1.0, rules 1.6 (Blessing 2.0, docs/design/blessing-2.0-spec.md) and 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md; section 14 items 701-723) + Narrator's World Bible",
+  "source": "PHC Core Rules v1.0, rules 1.6 (Blessing 2.0, docs/design/blessing-2.0-spec.md) and 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md; section 14 items 701-723) and 1.6.3 (Faith 2.2, docs/design/faith-presence-spec.md; items 738-746) + Narrator's World Bible",
   "devotion": {
     "min": 0,
     "max": 10,
@@ -91,7 +91,23 @@
     "witnessed": {
       "faith_min": 5,
       "like_bonus": 2,
-      "taboo_mult": 2
+      "taboo_mult": 2,
+      "until": [
+        "fight_end",
+        "intervention"
+      ]
+    },
+    "intervention": {
+      "per_fight": 1,
+      "per_fight_high": 2,
+      "high_from_devotion": 7,
+      "ends_witnessed": true,
+      "amount": {
+        "base": 20,
+        "per_devotion": 4,
+        "scales_with": "blessing_power"
+      },
+      "text": "While you are Witnessed your patron acts unasked when its trigger happens, and Witnessed ends. Once a fight; twice from Devotion 7. Soul, heals and Storm are 20 + 4 × Devotion, × Blessing power."
     },
     "provisional": true
   },
@@ -321,7 +337,8 @@
     "intervention",
     "miracle",
     "conversion",
-    "farewell"
+    "farewell",
+    "grant"
   ],
   "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator.",
   "items": [
@@ -384,12 +401,15 @@
       ],
       "intervention": {
         "trigger": "enemy_harms_helpless",
-        "text": "An enemy damages a surrendered or Downed creature: that enemy takes 20 Soul.",
+        "text": "An enemy damages a surrendered or Downed creature: that enemy takes 20 + 4 × Devotion Soul (× Blessing power).",
+        "scale": "devotion",
+        "scales_with": "blessing_power",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "hp",
             "value": -20,
+            "per_devotion": -4,
             "damage_type": "soul",
             "target": "trigger_source"
           }
@@ -545,6 +565,11 @@
           "Go, then. The saints keep a list.",
           "You knelt here once, child. Remember it.",
           "I release no one. I only let them walk."
+        ],
+        "grant": [
+          "{name}. THE SAINTS HAVE HEARD YOU. I GRANT THEE THIS REQUEST.",
+          "KNEEL NO LONGER, {name}. THE SAINTS RISE WITH YOU.",
+          "{name}, CHILD OF THE CHAPEL. JUDGEMENT IS GRANTED IN YOUR NAME."
         ]
       },
       "source_note": "Named in the 2020 material; reading as a Celestial in a pact is from the World Bible. Tenets, rites and blessings are new."
@@ -608,14 +633,36 @@
         }
       ],
       "intervention": {
-        "trigger": "ammo_dry",
-        "text": "Your gun runs dry: it reloads, free.",
+        "trigger": "you_reload",
+        "triggers": [
+          "you_reload",
+          "core_dry",
+          "mp_out"
+        ],
+        "text": "You reload (any reload of yours): it is free, its AP comes back. Your Evoker's core runs dry (its charge hits 0): a fresh core from the Quartermaster slots in, free (no AP; your spare cores untouched). Your MP runs out (it hits 0): you get 25% of your max MP back (rounded down).",
         "effects": [
           {
             "op": "resource",
-            "resource": "ammo",
-            "value": "reload_free",
-            "target": "self"
+            "resource": "ap",
+            "value": "refund_reload",
+            "target": "self",
+            "when": "you_reload"
+          },
+          {
+            "op": "resource",
+            "resource": "evoker_charge",
+            "value": "fresh_core",
+            "target": "self",
+            "when": "core_dry"
+          },
+          {
+            "op": "resource",
+            "resource": "mp",
+            "value": 0.25,
+            "of": "max",
+            "round": "down",
+            "target": "self",
+            "when": "mp_out"
           }
         ],
         "adjudication": "engine",
@@ -786,6 +833,11 @@
           "Return your locker key on the way out.",
           "Discharge papers, stamped. Don't lose them.",
           "Transfer approved. Reluctantly."
+        ],
+        "grant": [
+          "{name}. REQUISITION RECEIVED, STAMPED AND APPROVED. SIGN HERE.",
+          "A REQUEST FROM {name}? IN TRIPLICATE? GRANTED. ALL OF IT.",
+          "{name}! YOUR FORM HAS CLEARED EVERY DESK IN HEAVEN. DELIVERING NOW."
         ]
       }
     },
@@ -848,8 +900,8 @@
         }
       ],
       "intervention": {
-        "trigger": "enemy_nat1",
-        "text": "An enemy rolls a natural 1 against you: it falls Prone.",
+        "trigger": "enemy_misses_you",
+        "text": "An enemy misses you: it falls Prone.",
         "effects": [
           {
             "op": "condition",
@@ -994,6 +1046,11 @@
           "Leaving mid-show? Bold.",
           "Exit, stage left! Mind the trapdoor.",
           "Fine. Everyone gets one walk-off."
+        ],
+        "grant": [
+          "{name}! OH, YOU WANT A SHOW? THEN LET'S GIVE THEM ONE.",
+          "LADIES, GENTLEMEN AND THE SOON-TO-BE-SORRY: {name} HAS ASKED NICELY!",
+          "{name}, DARLING, YOU'RE ON. CURTAIN UP!"
         ]
       }
     },
@@ -1195,6 +1252,11 @@
           "The river remembers who crossed it.",
           "Keep your coin. You will need it later.",
           "Go. The water is patient."
+        ],
+        "grant": [
+          "{name}. THE RIVER HAS HEARD YOU. I WILL ROW AGAINST IT, ONCE.",
+          "{name}. YOUR COIN IS GOOD TONIGHT. THE SHORE GIVES WAY.",
+          "PUT AWAY YOUR COIN, {name}. THIS CROSSING IS ON ME."
         ]
       }
     },
@@ -1259,11 +1321,14 @@
       ],
       "intervention": {
         "trigger": "ally_below_quarter",
-        "text": "An ally drops below a quarter HP: they heal 15.",
+        "text": "An ally drops below a quarter HP: they heal 20 + 4 × Devotion (× Blessing power).",
+        "scale": "devotion",
+        "scales_with": "blessing_power",
         "effects": [
           {
             "op": "heal",
-            "value": 15,
+            "value": 20,
+            "per_devotion": 4,
             "target": "trigger_ally"
           }
         ],
@@ -1414,6 +1479,11 @@
           "Wrap up warm, love. Wherever you're going.",
           "There'll always be a plate for you. Always.",
           "Go on, then. Write."
+        ],
+        "grant": [
+          "{name}, LOVE. MOTHER HEARD YOU. COME HERE, ALL OF YOU.",
+          "OH, {name}. OF COURSE, LOVE. IT'S ALREADY ON THE STOVE.",
+          "{name}! WHO TAUGHT YOU TO ASK SO NICELY? GRANTED, LOVE. GRANTED."
         ]
       }
     },
@@ -1476,12 +1546,15 @@
       ],
       "intervention": {
         "trigger": "you_kill",
-        "text": "You kill an enemy: 20 Storm to the nearest other enemy.",
+        "text": "You kill an enemy: 20 + 4 × Devotion Storm (× Blessing power) to the nearest other enemy.",
+        "scale": "devotion",
+        "scales_with": "blessing_power",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "hp",
             "value": -20,
+            "per_devotion": -4,
             "damage_type": "lightning",
             "target": "nearest_other_enemy"
           }
@@ -1640,6 +1713,11 @@
           "LEAVE, THEN! THE SKY HAS OTHER FAVOURITES!",
           "You'll hear from me. Everyone hears from me.",
           "Go to my rival, then. I DARE you."
+        ],
+        "grant": [
+          "{name}! YOU CALLED, AND THE SKY ANSWERS! I GRANT THEE THIS REQUEST!",
+          "HEAR ME, {name}! LET MY RIVAL WATCH AND WEEP!",
+          "{name}, SMALL ONE! STAND BACK AND BEHOLD!"
         ]
       }
     },
@@ -1850,6 +1928,11 @@
           "It's not you, darling. It's definitely you.",
           "I'll keep your seat warm. For a while.",
           "Fine. But I'm keeping the gifts."
+        ],
+        "grant": [
+          "{name}, DARLING! I'VE CHECKED THE SEATING CHART. YOU'RE AT THE TOP TABLE.",
+          "OH, {name}. YOU ASKED WITH YOUR WHOLE HEART. YES. A THOUSAND TIMES, YES.",
+          "{name}! SAY NO MORE, DARLING. EVERYONE'S INVITED."
         ]
       }
     },
@@ -2051,6 +2134,11 @@
           "Account closed.",
           "Your thread is cut loose. The knot stays.",
           "Balance settled. Mostly."
+        ],
+        "grant": [
+          "{name}. YOUR ACCOUNT IS IN GOOD STANDING. THE REQUEST IS GRANTED.",
+          "{name}. I HAVE COUNTED EVERY BEAD. THE THREAD ALLOWS IT.",
+          "ENTERED IN THE LEDGER, {name}: ONE MIRACLE, PAID IN FULL."
         ]
       }
     }

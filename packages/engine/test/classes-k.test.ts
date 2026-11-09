@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   apply, condOn, applyCond, applyDamage, resolveAttack, previewAttack, previewEvoke, previewOutburst, d20, endTurn, glyphCost, manaOf,
-  coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, type Unit, type Combat, type Character,
+  coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, condTurnEnd, type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -116,6 +116,14 @@ describe('Lumeri Templar', () => {
     s.act({ type: 'check/roll', checkId: ck.id } as any);
     const done = s.g.checks.find((k: any) => k.id === ck.id) || ck;
     expect(JSON.stringify(s.g.story.entries || s.g.story).includes('Under the Eye') || JSON.stringify(done).includes('Under the Eye')).toBe(true);
+  });
+  it('Under the Eye with rules 1.6.3\'s long Witnessed (item 738\'s playtest flag, item 747): still +2 after many of the Templar\'s turn ends', () => {
+    const f = fightWith([TEMPLAR, {}], [{}]); templar(f);
+    const [t, ally] = f.pcs; at(f, t, '3,2'); at(f, ally, '5,2'); const foe = at(f, f.foe, '9,2');
+    f.unit(t.id).conds = { witnessed: 99 } as any; // as a Hymn now leaves it
+    for (let i = 0; i < 6; i++) withGame(f.g, () => condTurnEnd(f.cb, f.unit(t.id), f.g.rng));
+    expect(condOn(f.unit(t.id), 'witnessed')).toBe(true); f.unit(ally.id).ap = 6;
+    expect(withGame(f.g, () => previewAttack(f.cb, f.unit(ally.id), foe, 'shot')).terms!.some((x) => x.label === 'Under the Eye' && x.v === 2)).toBe(true);
   });
   it('Judgement: 4 AP, once a fight, 1 Devotion; damage × (1 + Blessing power)', () => {
     const run = (judge: boolean) => {

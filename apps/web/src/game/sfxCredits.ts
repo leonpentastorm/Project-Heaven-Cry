@@ -1,4 +1,4 @@
-// Credits for the sounds in SFX_FILES (game/sfx.ts): the interface, and combat and spells (public/sfx/cb). All CC0 (credit optional and given anyway) except Wisdom Magic, CC-BY 3.0 (credit required).
+// Credits for the sounds in SFX_FILES (game/sfx.ts): the interface, and combat and spells (public/sfx/cb). All CC0 (credit optional and given anyway) except Wisdom Magic, CC-BY 3.0, and the Miracle sting, CC-BY 4.0 (credit required).
 import type { Credit } from './credits';
 export const SFX_CREDITS: Credit[] = [
   { what: 'Interface Sounds (select, click, confirmation, back, maximize, minimize, error, toggle, pluck)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
@@ -55,5 +55,8 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'Bell dings/chimes (the holy pump layer\'s bell)', who: 'PWL', licence: 'CC0', url: 'https://opengameart.org/content/bell-dingschimes' },
   // The author's attribution notice: "Produced by Julie Damsgaard/Spring Spring/Spring Enterprises @ https://spring-enterprises.neocities.org".
   { what: 'Magic Words + Healing Sound Effect: the healing harp ("You have felt…", a feeling unlocked)', who: 'Produced by Julie Damsgaard/Spring Spring/Spring Enterprises, https://spring-enterprises.neocities.org', licence: 'CC0', url: 'https://opengameart.org/content/magic-words-healing-sound-effect' },
+  // Faith 2.2 (rules 1.6.3): the Miracle cut-in's sting (public/sfx/cb/miracle_sting.ogg). The author asks for nothing
+  // beyond the licence's attribution; changes: trimmed to the first rising run (2.8 s), mono, levelled. Master in audio/sfx/.
+  { what: '8 Heals and Buffs SFX: 30_revive_03 (the Miracle cut-in\'s sting; trimmed, mono, levelled)', who: 'leohpaz', licence: 'CC-BY 4.0', url: 'https://opengameart.org/content/8-heals-and-buffs-sfx' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
 ];

@@ -240,7 +240,7 @@ WORLD RULES THAT NEVER BREAK
 - Keep traits that are deliberately ugly in clean in-world language.
 
 FAITH (rules 1.6.1)
-- The engine runs prayer, Devotion XP (liked and taboo tags, capped; vows; rites), Witnessed, interventions, Miracles (Faith ${MIRACLE_FAITH} and Devotion ${GATE.miracle}, once a session; each lowers Devotion by ${MIRACLE_COST_LEVELS} levels), grudges and every patron line. Never write a patron's words; never set a TN.
+- The engine runs prayer, Devotion XP (liked and taboo tags, capped; vows; rites), Witnessed (from a Hymn until the fight ends or the patron intervenes), interventions, Miracles (Faith ${MIRACLE_FAITH} and Devotion ${GATE.miracle}, once a session; each lowers Devotion by ${MIRACLE_COST_LEVELS} levels), grudges and every patron line. Never write a patron's words; never set a TN.
 - Your faith ops, only when the story earns them: pact (swear to a patron, or convert; a switch from another patron: the engine rolls if the old one lets go), piece (an NPC teacher with Faith above 5 teaches an Atheist one piece of their faith: name them in from), devotion (Devotion XP, ${NARRATOR_XP.min} to +${NARRATOR_XP.max}, with a reason: a deed the tags miss +${DEVOTION_XP.deedMin} to +${DEVOTION_XP.deedMax}, bringing someone into the faith +${DEVOTION_XP.convert}, breaking character where the patron sees ${-DEVOTION_XP.breakCharacter}; your gains stop at +${NARRATOR_XP.sessionCap} a session per character), rite_kept (a rite the Narrator marks), apostasy (leaving for no one: no pact for ${PACT_COOLDOWN_DAYS} days).
 - Each character's belief, Devotion, vow and pieces are in THE PARTY. A patron's likes, taboos and rites: wiki_lookup patron:<id>.
 

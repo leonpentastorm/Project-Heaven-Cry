@@ -1,9 +1,13 @@
 // The Proving Ground's FAITH tools (rules 1.6; sandbox/faith): make the fighter Faithful to Mother Ember with Faith 7
-// and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
-// reset the limits; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
-// a Hymn at its gate, an overreach, an intervention (a kill brings 20 Storm on the next enemy), a vow kept to the end
+// and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (Faith 2.2's
+// cut-in: the portrait, the name, the grant line, the zoom, the box; SHOTS=dir saves screenshots), then reset the limits and
+// skip a second one with a key; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
+// a Hymn at its gate, an overreach, an intervention (a kill brings 20 + 4 × Devotion Storm on the next enemy), a vow kept to the end
 // of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one;
 // leaving a patron; then the Laughing Mask's Encore offered free in the action panel (items 729, 737).
+// Faith 2.2's patron on screen (spec 2.1, 2.2, 2.4-2.6): the FAITH tab's header portrait and its lightbox, the Hymn's face over the
+// head (and greyed on a miss), the Whisper's icon over the head, the Witnessed chip's words, round crops on the voice-line cards,
+// portraits on the pact / switch / grudge / apostasy cards (the grudge's greyed), the story faith tab's header portrait.
 import { chromium, click, BASE, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -14,6 +18,11 @@ const p = await ctx.newPage();
 const errors = []; p.on('pageerror', (e) => errors.push(e.message));
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const me = () => p.evaluate(() => Object.values(window.__phc.getState().game.characters)[0]);
+/** The effects layer's box around a node (fx/dom.ts put()): where it is placed (the layer is the viewport), before its
+ *  animation moves it. */
+const fxRect = (sel) => p.evaluate((sel) => { const el = document.querySelector(sel); if (!el) return null; let b = el; while (b && !(b.style && b.style.position === 'absolute' && b.style.left)) b = b.parentElement; if (!b) return null; return { x: parseFloat(b.style.left), y: parseFloat(b.style.top), w: parseFloat(b.style.width), h: parseFloat(b.style.height) }; }, sel);
+/** A unit's token on the grid, on screen. */
+const tokRect = (pos) => p.evaluate((pos) => { const cb = window.__phc.getState().game.combat, [x, y] = pos.split(',').map(Number); const b = document.querySelectorAll('.phc-grid button.phc-tok')[y * cb.map.w + x]; if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; }, pos);
 
 await p.goto(BASE);
 await click(p, 'PROVING GROUND', { timeout: 90000 });
@@ -44,16 +53,57 @@ const vow = await p.evaluate(() => { const cb = window.__phc.getState().game.com
 ok('a vow set from the tools is on the unit (' + JSON.stringify(vow) + ')', vow?.id === 'stand');
 await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {});
 await p.locator('[role="tab"][data-tab="faith"]').click();
+// Faith 2.2 (spec 2.4): the FAITH tab's header in a fight: your patron's portrait beside the Devotion meter; a click opens it large.
+{
+  const head = p.locator('[role="tabpanel"] [data-faith-head="mother_ember"]');
+  ok('the fight\'s FAITH tab opens with Mother Ember\'s portrait beside the Devotion meter', (await head.count()) === 1 && /patron-mother_ember/.test((await head.locator('[data-faith-portrait] img').getAttribute('src')) || '') && /DEVOTION 10/.test((await head.textContent()) || ''));
+  if (SHOTS) { await p.waitForTimeout(1800); await p.screenshot({ path: SHOTS + '/faith-combat-head.png' }); }
+  await head.locator('[data-faith-portrait]').click();
+  const lb = p.getByRole('dialog', { name: /Mother Ember/ });
+  const lbUp = await lb.waitFor({ timeout: 3000 }).then(() => true, () => false);
+  ok('a click on it opens the portrait large (the lightbox)', lbUp && /patron-mother_ember-lg/.test((await lb.locator('img').first().getAttribute('src')) || ''));
+  if (lbUp) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {}); }
+}
 const mir = p.locator('[role="tabpanel"] [data-act^="pr:miracle:"]');
 ok('the Miracle is in the FAITH tab and ready', (await mir.count()) === 1);
 await mir.click(); await p.waitForTimeout(300);
 const t0 = Date.now();
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
-const shown = await p.locator('[data-phc-miracle]').waitFor({ timeout: 3000 }).then(() => true, () => false);
-ok('the Miracle answers on the whole screen', shown);
-if (shown && SHOTS) { await p.waitForTimeout(900); await p.screenshot({ path: SHOTS + '/faith-miracle.png' }); }
-await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 4000 }).catch(() => {});
-ok('and clears within 2.5 s (' + (Date.now() - t0) + ' ms)', Date.now() - t0 < 3200 && (await p.locator('[data-phc-miracle]').count()) === 0);
+// Faith 2.2 (spec 2.3): the cut-in. The portrait over the whole screen, the god calling the devoted by name with the
+// grant line, then the pull-away and the zoom to where it lands, the effect, and a box of what it did.
+const cut = p.locator('[data-phc-cut="full"][data-phc-miracle="mother_ember"]');
+const shown = await cut.waitFor({ timeout: 3000 }).then(() => true, () => false);
+const tCut = Date.now(); // the cut-in's own clock (it comes up once the fx event plays)
+ok('the Miracle cuts in over the whole screen', shown);
+if (shown) {
+  const portrait = await cut.locator('[data-phc-cut-portrait]').getAttribute('src');
+  ok('with Mother Ember\'s portrait (' + portrait + ')', /patron-mother_ember/.test(portrait || ''));
+  const big = await cut.locator('[data-phc-cut-portrait]').boundingBox(), map = await p.locator('.phc-grid').boundingBox();
+  ok('larger than the combat map (' + Math.round(big?.height || 0) + ' px tall vs the map\'s ' + Math.round(map?.height || 0) + ')', !!big && !!map && big.height > map.height && big.width * big.height > map.width * map.height);
+  const z = await cut.evaluate((el) => Number(getComputedStyle(el).zIndex));
+  ok('above everything (z-index ' + z + ')', z >= 90);
+  const name = (await cut.locator('[data-phc-cut-name]').first().textContent()) || '', line = (await cut.locator('[data-phc-cut-line]').textContent()) || '';
+  const nameCol = await cut.locator('[data-phc-cut-name]').first().evaluate((el) => getComputedStyle(el).color);
+  const who = String((await me()).name || '').toUpperCase();
+  ok('the god calls the devoted by name (' + name + ', in the faith light ' + nameCol + ')', !!who && name === who && nameCol === 'rgb(242, 196, 106)');
+  ok('with a grant line (' + line + ')', line.includes(who) && line.length > who.length + 8);
+  const font = await cut.locator('[data-phc-cut-line]').evaluate((el) => getComputedStyle(el).fontFamily + ' ' + getComputedStyle(el).fontSize);
+  ok('in large Spectral (' + font + ')', /Spectral/.test(font) && parseFloat(font.split(' ').pop()) >= 26);
+  if (SHOTS) { await p.waitForTimeout(700); await p.screenshot({ path: SHOTS + '/faith-miracle-cutin.png' }); }
+}
+// The pull-away (from 2.3 s): the screen opens on the spot and the map punches in.
+if (SHOTS) { await p.waitForTimeout(Math.max(0, 2420 - (Date.now() - tCut))); await p.screenshot({ path: SHOTS + '/faith-miracle-zoom.png' });
+  await p.waitForTimeout(Math.max(0, 2900 - (Date.now() - tCut))); await p.screenshot({ path: SHOTS + '/faith-miracle-land.png' }); }
+await cut.waitFor({ state: 'detached', timeout: 4500 }).catch(() => {});
+const landed = Date.now() - tCut;
+ok('it lands in about 3 s and lets go of the screen (' + landed + ' ms after it came up)', landed < 3600 && (await cut.count()) === 0);
+const box = p.locator('[data-phc-cut-box]');
+const boxShown = await box.waitFor({ timeout: 2500 }).then(() => true, () => false);
+const boxText = boxShown ? (await box.textContent()) || '' : '';
+ok('then a box says what happened (' + boxText.slice(0, 120) + ')', boxShown && /MIRACLE · MOTHER EMBER/.test(boxText) && /WHAT IT DID/.test(boxText));
+if (boxShown && SHOTS) await p.screenshot({ path: SHOTS + '/faith-miracle-box.png' });
+await box.waitFor({ state: 'detached', timeout: 4000 }).catch(() => {});
+ok('and closes itself; all in about 6 s (' + (Date.now() - tCut) + ' ms)', (await box.count()) === 0 && Date.now() - tCut < 7000);
 c = await me();
 ok('the Miracle lowers Devotion by 5 levels (10 → 5, 102 XP: rules 1.6.2; now ' + c.devotion + ' · ' + c.devotionXp + ' XP)', c.devotion === 5 && c.devotionXp === 102);
 ok('and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')));
@@ -62,6 +112,27 @@ await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-faith-reset]').click(); await p.waitForTimeout(300);
 c = await me();
 ok('Reset the limits clears the Miracle\'s session mark', c.miracleSession == null);
+// A second Miracle, skipped with a key: it lands at once and the box still follows; the key does nothing else.
+{
+  await act({ type: 'sandbox/faith', charId: c.id, devotion: 10, reset: true });
+  await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {});
+  const uu = await p.evaluate(() => window.__phc.getState().game.combat.units.find((x) => x.charId));
+  const err = await act({ type: 'faith/pray', unitId: uu.id, kind: 'miracle' });
+  const up = await cut.waitFor({ timeout: 3000 }).then(() => true, () => false);
+  ok('a second Miracle cuts in (' + (err || 'prayed') + ')', !err && up);
+  await p.waitForTimeout(500); const k0 = Date.now(); await p.keyboard.press('x');
+  await cut.waitFor({ state: 'detached', timeout: 1500 }).catch(() => {});
+  ok('a key skips it (' + (Date.now() - k0) + ' ms)', (await cut.count()) === 0 && Date.now() - k0 < 1000);
+  ok('and the box still follows', await box.waitFor({ timeout: 1500 }).then(() => true, () => false));
+  const bx = await box.boundingBox(), grid = await p.locator('.phc-grid').boundingBox(), panel = await p.locator('[role="tabpanel"]').boundingBox();
+  const overlaps = (a, b) => !!a && !!b && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  ok('the box sits over the map, not over the FAITH tab (' + JSON.stringify(bx && { x: Math.round(bx.x), y: Math.round(bx.y), w: Math.round(bx.width) }) + ')', !!bx && !!grid && bx.y >= grid.y - 1 && !overlaps(bx, panel));
+  ok('and clicks go through it (only its × takes one)', (await box.evaluate((el) => getComputedStyle(el).pointerEvents)) === 'none');
+  await box.getByRole('button', { name: 'Close' }).click().catch(() => {}); await p.waitForTimeout(400);
+  ok('its × closes the box', (await box.count()) === 0);
+  if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
+  await drawer.getByRole('tab', { name: 'Faith' }).click();
+}
 // An Atheist with two pieces of Mother Ember: her first two Hymns, by dice.
 await drawer.locator('[data-sb-belief="atheist"]').click(); await p.waitForTimeout(200);
 await drawer.getByRole('button', { name: 'Raise Mother Ember pieces' }).click(); await p.waitForTimeout(150);
@@ -101,10 +172,31 @@ const [ux, uy] = meU.pos.split(',').map(Number), foe = { pos: meU.pos }; void ux
 const tileBtn = (k) => { const [x, y] = k.split(',').map(Number); return p.locator('.phc-grid button.phc-tok').nth(y * mapW + x); };
 await tileBtn(foe.pos).click(); await p.waitForTimeout(250);
 const n1 = (await G()).combat.log.length;
-await p.getByRole('button', { name: 'Confirm', exact: true }).first().click(); await p.waitForTimeout(600);
+await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
+// Faith 2.2 (spec 2.2): a square crop of the patron's portrait over the head of the one who prays, framed in the accent.
+{
+  const face = p.locator('[data-phc-faith-face="old_overcast"]');
+  const up = await face.first().waitFor({ timeout: 2500 }).then(() => true, () => false);
+  const tF = Date.now();
+  ok('a Hymn: Old Overcast\'s face over the head of the one who prays', up && /patron-old_overcast/.test((await face.first().locator('img').getAttribute('src').catch(() => '')) || ''));
+  if (up) {
+    const r = await fxRect('[data-phc-faith-face="old_overcast"]'), t = await tokRect(meU.pos);
+    ok('square, over the token\'s head, not on it (' + JSON.stringify(r) + ' over ' + JSON.stringify(t) + ')', !!r && !!t && Math.abs(r.w - r.h) < 1 && r.y + r.h <= t.y + 2 && Math.abs(r.x + r.w / 2 - (t.x + t.w / 2)) < 2);
+    const border = await face.first().evaluate((el) => getComputedStyle(el).borderTopColor);
+    ok('framed in the patron\'s accent (' + border + ')', /rgb\(110, 156, 240\)|rgb\(/.test(border) && border !== 'rgb(0, 0, 0)');
+    if (SHOTS) { await p.waitForTimeout(250); await p.screenshot({ path: SHOTS + '/faith-hymn-face.png', clip: { x: Math.max(0, t.x - 160), y: Math.max(0, t.y - 200), width: 360, height: 300 } }); }
+    await face.first().waitFor({ state: 'detached', timeout: 2500 }).catch(() => {});
+    ok('and gone in about 1.5 s (' + (Date.now() - tF) + ' ms after it was seen)', (await face.count()) === 0 && Date.now() - tF < 2200);
+  }
+}
+await p.waitForTimeout(300);
 ok('Thunderclap is prayed by standing: 3 AP, in the log', (await G()).combat.log.length > n1 && (await myU()).ap <= 3);
 ok('Faith 7 and your patron\'s Hymn: Witnessed', !!(await myU()).conds?.witnessed);
 ok('the resource rows say WITNESSED', /WITNESSED/.test(await p.locator('aside').first().textContent()));
+{ const chip = p.locator('aside').first().locator('[title^="Witnessed:"]').first();
+  const ct = (await chip.count()) ? { text: (await chip.textContent()) || '', title: (await chip.getAttribute('title')) || '', color: await chip.evaluate((el) => getComputedStyle(el).color) } : null;
+  ok('the Witnessed chip: short, in the faith light (not the harm red), its title says how long (' + JSON.stringify(ct) + ')', !!ct && /◉ WITNESSED/.test(ct.text) && /until the fight ends or Old Overcast acts/.test(ct.title) && ct.color !== 'rgb(246, 81, 87)' && !/WITNESSED · 99/.test(await p.locator('body').textContent())); }
+ok('the FAITH tab\'s header says so too', /WITNESSED · UNTIL THE FIGHT ENDS OR OLD OVERCAST ACTS/.test((await p.locator('[role="tabpanel"] [data-faith-head="old_overcast"]').textContent().catch(() => '')) || ''));
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn.png' });
 // An overreach: Gather the Clouds (Hymn III, gate 7) at Devotion 5: TN 16; the limits reset so the cooldown allows it.
 await act({ type: 'sandbox/faith', charId: cid, reset: true });
@@ -112,9 +204,14 @@ await p.locator('[role="tabpanel"] [data-act="pr:hymn:old_overcast.gather_the_cl
 ok('Gather the Clouds is an overreach (TN 16, a miss costs 3 Devotion XP)', /OVERREACH · TN 16/.test(await p.locator('aside').first().textContent()) && /a miss costs 3 Devotion XP/.test(await p.locator('aside').first().textContent()));
 const c0 = (await G()).characters[cid], dv0 = c0.devotion, xp0 = c0.devotionXp, n2 = (await G()).combat.log.length;
 ok('the tools\' Devotion 5 is the level-5 threshold (' + xp0 + ' XP)', xp0 === 102);
-await p.getByRole('button', { name: 'Confirm', exact: true }).first().click(); await p.waitForTimeout(600);
+await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
+const faceSeen = await p.locator('[data-phc-faith-face="old_overcast"]').first().waitFor({ timeout: 2500 }).then(() => true, () => false);
+const faceMiss = faceSeen && (await p.locator('[data-phc-faith-face="old_overcast"][data-phc-faith-miss]').count()) > 0;
+if (faceMiss && SHOTS) { await p.waitForTimeout(450); await p.screenshot({ path: SHOTS + '/faith-hymn-miss.png' }); }
+await p.waitForTimeout(600);
 const c1 = (await G()).characters[cid], dv1 = c1.devotion, xp1 = c1.devotionXp, lg2 = (await G()).combat.log.slice(n2).join(' | ');
 ok('the overreach rolls: answered, or missed for −3 Devotion XP (' + dv0 + ' · ' + xp0 + ' XP → ' + dv1 + ' · ' + xp1 + ' XP)', (await G()).combat.log.length > n2 && (xp1 === xp0 || (xp1 === xp0 - 3 && dv1 === dv0 - 1)));
+ok('the overreach shows the face too: greyed on a miss, lit when answered (' + (faceMiss ? 'missed' : 'answered') + ')', faceSeen && faceMiss === (xp1 < xp0));
 if (xp1 < xp0) ok('a miss below the threshold drops the level, and the log says so (' + lg2.slice(0, 120) + ')', /−3 Devotion XP \(a failed overreach\): DEVOTION 4/.test(lg2));
 // The intervention and the kept vow: shoot (and pray) until a foe dies; Old Overcast answers the kill once a fight.
 // The wave's units are far off: clear the field and set two minions beside us.
@@ -132,7 +229,7 @@ for (let i = 0; i < 14 && !(await logHas(/Old Overcast intervenes/)); i++) {
   const g3 = await G(); if (g3.combat && !g3.combat.over && g3.combat.order[g3.combat.turn] === me2.id) await act({ type: 'combat/end-turn', unitId: me2.id });
   await p.waitForTimeout(400);
 }
-ok('a kill while Witnessed: Old Overcast intervenes (20 Storm to the nearest other enemy)', await logHas(/Old Overcast intervenes/));
+ok('a kill while Witnessed: Old Overcast intervenes (20 + 4 × Devotion Storm to the nearest other enemy)', await logHas(/Old Overcast intervenes/));
 // Finish them: the fight ends with Mercy kept (+3 Devotion XP).
 const dvK = (await G()).characters[cid].devotion;
 for (let i = 0; i < 14; i++) {
@@ -148,6 +245,10 @@ const kept = [...((await G()).combat?.log || []), ...(await G()).story.entries.m
 ok('the fight won with Mercy unbroken: the vow is kept (' + kept.slice(0, 140) + '; Devotion ' + dvK + ' → ' + (await G()).characters[cid].devotion + ')', /kept/i.test(kept));
 const cards = await p.locator('[data-phc-patron-line]').count();
 console.log('note patron line cards in the combat log: ' + cards);
+{ const crop = p.locator('[data-phc-patron-line] [data-phc-patron-face="old_overcast"]').last();
+  const has = (await crop.count()) > 0, st = has ? await crop.evaluate((el) => { const cs = getComputedStyle(el); return { r: cs.borderRadius, o: cs.overflow, w: el.getBoundingClientRect().width, src: el.querySelector('img').getAttribute('src') }; }) : null;
+  ok('the combat log\'s voice-line cards: a small round crop of the portrait (' + JSON.stringify(st) + ')', has && st.r === '50%' && st.o === 'hidden' && st.w <= 32 && /patron-old_overcast/.test(st.src));
+  if (SHOTS && has) await crop.locator('xpath=..').screenshot({ path: SHOTS + '/faith-log-card.png' }).catch((e) => console.log('note no shot of the card: ' + String(e.message).split('\n')[0])); }
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-intervention.png' });
 await act({ type: 'sandbox/clear' }); await p.waitForTimeout(300);
 await act({ type: 'sandbox/stop' }); await p.waitForTimeout(800);
@@ -171,7 +272,16 @@ await p.locator('[role="tab"][data-tab="faith"]').click();
 await p.locator('[role="tabpanel"] [data-act="pr:whisper:guidance"]').click(); await p.waitForTimeout(250);
 ok('an Atheist\'s Whisper is by dice (TN 12)', /WHISPER · Guidance · 1 AP · TN 12/.test(await p.locator('aside').first().textContent()));
 const n5 = (await G()).combat.log.length;
-await p.getByRole('button', { name: 'Confirm', exact: true }).first().click(); await p.waitForTimeout(600);
+await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
+// Faith 2.2 (spec 2.1): the Whisper's own icon rises over the head of the one who prays (grey and sinking on a miss); no portrait.
+{ const w = p.locator('[data-phc-faith-whisper="guidance"]');
+  const up = await w.first().waitFor({ timeout: 2500 }).then(() => true, () => false);
+  const miss = up && (await w.first().getAttribute('data-phc-faith-miss')) === '1';
+  const r = up ? await fxRect('[data-phc-faith-whisper="guidance"]') : null, t = await tokRect((await myU()).pos);
+  ok('a Whisper: its icon over the head of the one who prays (' + (miss ? 'unanswered, grey' : 'answered') + '; ' + JSON.stringify(r) + ' over ' + JSON.stringify(t) + ')', up && !!r && !!t && r.y + r.h <= t.y + 2 && Math.abs(r.x + r.w / 2 - (t.x + t.w / 2)) < 2);
+  ok('and no portrait with it', (await p.locator('[data-phc-faith-face]').count()) === 0);
+  if (up && SHOTS) { await p.waitForTimeout(200); await p.screenshot({ path: SHOTS + '/faith-whisper.png', clip: { x: Math.max(0, t.x - 160), y: Math.max(0, t.y - 160), width: 360, height: 260 } }); } }
+await p.waitForTimeout(600);
 ok('and it rolls: ' + (await G()).combat.log.slice(n5).join(' | ').slice(0, 90), /d20/.test((await G()).combat.log.slice(n5).join(' ')));
 // Conversion (the Narrator's pact): an Atheist with 2 pieces of Mother Ember swears to the Quartermaster (Open: the
 // Hymns stay, by dice), then to Holy Father Nerukhan (Jealous: the other Hymns go).
@@ -194,6 +304,22 @@ const fp = await openFaithTab(); await p.waitForTimeout(300);
 const gtxt = (await fp.locator('[data-faith-grudge]').textContent().catch(() => '')) || '';
 ok('the faith tab shows the grudge: who, what, how long (' + gtxt.slice(0, 140) + ')', /GRUDGE · HOLY FATHER NERUKHAN/.test(gtxt) && /Marked for 2 rounds at the start of every fight/.test(gtxt) && /cut by 50%/.test(gtxt) && /Ends after 3 more sessions/.test(gtxt));
 ok('the switch has no APOSTASY line', !(await G()).story.entries.some((e) => e.head === 'APOSTASY'));
+// Faith 2.2 (spec 2.4-2.6): the story faith tab's header portrait; the grudge banner greyed; the cards in the story stream.
+{
+  const port = fp.locator('[data-faith-portrait="mother_ember"]');
+  ok('the story faith tab: Mother Ember\'s portrait beside the Devotion meter', (await port.count()) === 1 && /patron-mother_ember/.test((await port.locator('img').getAttribute('src')) || '') && (await fp.locator('section[aria-label="Belief"] [data-faith-devotion]').count()) === 1);
+  const gf = fp.locator('[data-faith-grudge-face="nerukhan"]');
+  ok('the grudge banner shows Nerukhan, greyed', (await gf.count()) === 1 && /grayscale\(1\)/.test(await gf.evaluate((el) => getComputedStyle(el).filter)) && /patron-nerukhan/.test((await gf.locator('img').getAttribute('src')) || ''));
+  const pact = p.locator('[data-phc-faith-card="pact"]'), grudgeC = p.locator('[data-phc-faith-card="grudge"]:has([data-phc-faith-card-face="nerukhan"])'), leave = p.locator('[data-phc-faith-card="leave"]');
+  await grudgeC.first().waitFor({ timeout: 3000 }).catch(() => {});
+  ok('pact cards in the story with a small portrait (' + (await pact.count()) + ')', (await pact.count()) >= 3 && /patron-/.test((await pact.last().locator('[data-phc-faith-card-face] img').getAttribute('src')) || ''));
+  ok('the switch away from Nerukhan: its card with his portrait', (await leave.count()) >= 1 && /patron-nerukhan/.test((await leave.last().locator('img').getAttribute('src')) || ''));
+  ok('the grudge card: Nerukhan greyed (the Quartermaster may hold one too: the switch to Nerukhan rolls)', (await grudgeC.count()) === 1 && (await grudgeC.locator('[data-phc-faith-card-face="nerukhan"][data-grey="true"]').count()) === 1 && /grayscale/.test(await grudgeC.locator('[data-phc-faith-card-face]').evaluate((el) => getComputedStyle(el).filter)));
+  const voice = p.locator('.phc-story [data-phc-patron-line] [data-phc-patron-face]');
+  ok('the story\'s voice-line cards (the conversion, the farewell): round crops (' + (await voice.count()) + ')', (await voice.count()) >= 2 && (await voice.last().evaluate((el) => getComputedStyle(el).borderRadius)) === '50%');
+  if (SHOTS) { await port.scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-tab-head.png' });
+    await grudgeC.scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-story-cards.png' }); }
+}
 const tc = (await fp.locator('[data-faith-tagcaps]').textContent().catch(() => '')) || '';
 ok('the tag caps on the faith tab, with no session part in the Proving Ground (' + tc + ')', /^LIKED TAGS · \d\/2 THIS (SCENE|FIGHT)/.test(tc) && !/SESSION/.test(tc));
 if (SHOTS) { await fp.locator('[data-faith-grudge]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-grudge.png' }); }
@@ -202,6 +328,7 @@ cc = (await G()).characters[cid];
 ok('apostasy: an Atheist, Devotion XP 0, the day recorded (' + (e4 || JSON.stringify(cc.faithLeft)) + ')', cc.belief?.kind === 'atheist' && !cc.devotionXp && !!cc.faithLeft);
 const ctxt = (await fp.locator('[data-faith-day]').textContent().catch(() => '')) || '';
 ok('the faith tab: the day and "Nobody answers yet: 90 days" (' + ctxt + ')', /DAY \d+/.test(ctxt) && /Nobody answers yet: 90 days/.test(ctxt));
+ok('apostasy: its card with Mother Ember\'s portrait', /patron-mother_ember/.test((await p.locator('[data-phc-faith-card="apostasy"] img').last().getAttribute('src').catch(() => '')) || ''));
 ok('apostasy ends the grudge (item 720): no grudge card, nothing on the character', !cc.grudge && (await fp.locator('[data-faith-grudge]').count()) === 0);
 if (SHOTS) { await fp.locator('[data-faith-day]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-cooldown.png' }); }
 const e5 = await act({ type: 'faith/pact', charId: cid, patron: 'the_matchmaker' }); await p.waitForTimeout(200);
@@ -241,5 +368,33 @@ await p.waitForTimeout(300);
   const lgE = (await G()).combat.log.slice(nE).join(' | ');
   ok('the repeat runs free (' + lgE.slice(0, 120) + ')', /Encore: .* repeats Attack \(shot\), free/.test(lgE) && (await myU()).ap === uE.ap); }
 await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await p.waitForTimeout(300);
+// Review fix (Faith 2.2): a Miracle with many effects (Nerukhan's Judgement on a crowd) plays them after its cut-in lands,
+// never under the portrait, and none of the first kills is skipped.
+{
+  await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'nerukhan', faith: 7, devotion: 10, reset: true });
+  await act({ type: 'sandbox/fight' });
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+  await myTurn(); await calm(); await p.waitForTimeout(1200);
+  const gN = await G(), mN = gN.combat.units.find((x) => x.charId), [nx, ny] = mN.pos.split(',').map(Number), M = gN.combat.map;
+  let spawned = 0;
+  for (const [dx, dy] of [[2, 0], [3, 0], [2, 1], [3, 1], [2, -1], [3, -1], [4, 0], [-2, 0], [-2, 1], [-2, -1]]) {
+    const x = nx + dx, y = ny + dy; if (x < 0 || y < 0 || x >= M.w || y >= M.h || M.solid.includes(x + ',' + y)) continue;
+    if (!(await act({ type: 'sandbox/spawn', tier: 'minion', weapon: 'fists', at: String.fromCharCode(65 + x) + (y + 1) }))) spawned++;
+  }
+  await p.waitForTimeout(900);
+  await p.evaluate(() => {
+    const w = window; w.__mlog = []; const t0 = performance.now(), L = document.querySelector('.phc-fx-layer');
+    new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) { const t = (n.textContent || '').trim(); if (/^[−-]\d|^DEAD|^DOWN/.test(t)) w.__mlog.push(['hit', performance.now() - t0, t.slice(0, 12)]); } }).observe(L, { childList: true });
+    new MutationObserver(() => { const c = !!document.querySelector('[data-phc-cut="full"]'); if (c !== w.__mc) { w.__mc = c; w.__mlog.push(['cut', performance.now() - t0, c]); } }).observe(document.body, { childList: true });
+  });
+  const errN = await act({ type: 'faith/pray', unitId: mN.id, kind: 'miracle' });
+  await p.waitForTimeout(9000);
+  const log = await p.evaluate(() => window.__mlog), cutOff = log.find((e) => e[0] === 'cut' && e[2] === false), hits = log.filter((e) => e[0] === 'hit');
+  const early = hits.filter((h) => !cutOff || h[1] < cutOff[1] - 60);
+  const foesNow = (await G()).combat.units.filter((u) => u.side === 'foe').length;
+  ok('Nerukhan\'s Miracle on a crowd (' + spawned + ' minions spawned, ' + (errN || 'prayed') + '): ' + hits.length + ' damage floats, none before the cut-in lands (' + (cutOff ? Math.round(cutOff[1]) + ' ms' : 'never') + '; first hit ' + (hits[0] ? Math.round(hits[0][1]) + ' ms' : '-') + ')',
+    !errN && spawned >= 6 && !!cutOff && hits.length >= Math.min(spawned, foesNow) && early.length === 0);
+  await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await p.waitForTimeout(300);
+}
 console.log('errors', errors);
 await browser.close();

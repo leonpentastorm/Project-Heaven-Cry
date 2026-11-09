@@ -3,7 +3,7 @@
 // comes from the engine's faithView() and previewPrayer() (packages/engine/src/faith.ts): this file computes no rule,
 // only words, odds, icons and the reason a button is disabled.
 import { faithView, previewPrayer, devotionWords, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
-import { FAITH_INK, FAITH_GOLD, accentOf, patronMarkUri, prayerIconUri, vowIconUri, witnessedUri } from './faithArt';
+import { FAITH_INK, FAITH_GOLD, accentOf, patronFace, patronMarkUri, patronPortrait, prayerIconUri, vowIconUri, witnessedUri } from './faithArt';
 
 export type PrayerKindUI = 'whisper' | 'hymn' | 'miracle';
 const ROMAN = ['', 'I', 'II', 'III'];
@@ -96,11 +96,14 @@ export function pickerFor(target: string): { kind: 'none' | 'unit' | 'tile' | 't
 export interface MeterCell { n: number; on: boolean; gate?: string }
 export interface FaithPanel {
   faithful: boolean; title: string; sub: string; mark: string; accent: string;
+  /** Faith 2.2 (spec 2.4): the patron's id and portrait (the header's picture beside the Devotion meter; null with no
+   *  patron or no painting, when the mark shows) and the large one the lightbox opens. */
+  patronId: string | null; portrait: string | null; portraitLarge: string | null;
   /** Devotion 0–10 with the gate marks (3 Hymn I, 5 Hymn II, 7 Hymn III, 10 the Miracle: rules 1.6.2). */ meter: MeterCell[]; devotion: number;
   /** Rules 1.6.1: the level and the XP toward the next ("DEVOTION 4 · 12/32 XP"), and the fill of that step (0–1). */
-  devotionText: string; xpFill: number; xp: FaithView['devotionXp']; /** The word beside the XP fill: "TO DEVOTION 5", or "FULL". */ xpNextText: string;
+  devotionText: string; xpFill: number; xp: FaithView['devotionXp']; /** The word beside the XP fill: "TO DEVOTION 5"; empty at Devotion 10 (the Devotion line already says FULL). */ xpNextText: string;
   /** The day counter (item 709), the cooldown after leaving a pact (item 710) and a grudge (item 713), in words. */
-  day: number; dayText: string; cooldown: string | null; grudge: { head: string; what: string; left: string; text: string } | null;
+  day: number; dayText: string; cooldown: string | null; grudge: { head: string; what: string; left: string; text: string; patron: string; face: { src: string; imgStyle: string } } | null;
   /** The liked-tag caps (items 703, 722): what tags have given against the caps, and whether one is reached. Faithful only. */ tagCaps: { text: string; capped: boolean } | null;
   witnessed: { on: boolean; icon: string; word: string; can: boolean };
   vow: { icon: string; label: string; state: 'sworn' | 'kept' | 'broken' } | null;
@@ -121,11 +124,12 @@ export function faithPanel(v: FaithView | null): FaithPanel | null {
   return {
     faithful, title: faithful && p ? p.name : 'ATHEIST · PILGRIM', sub: faithful && p ? p.archetype || '' : 'Prays by dice; teachers of the faiths unlock their Hymns',
     mark: p ? patronMarkUri(p.id) : witnessedUri(), accent: accentOf(p?.id, p?.accent), meter, devotion: v.devotion,
+    patronId: faithful && p ? p.id : null, portrait: faithful && p ? patronPortrait(p.id) : null, portraitLarge: faithful && p ? patronPortrait(p.id, true) : null,
     devotionText: faithful ? devotionLabel(v.devotionXp, v.devotion) : '', xp: v.devotionXp,
     xpFill: v.devotionXp ? (v.devotionXp.step ? Math.max(0, Math.min(1, v.devotionXp.into / v.devotionXp.step)) : 1) : 0,
-    xpNextText: v.devotionXp ? (v.devotionXp.step ? 'TO DEVOTION ' + (v.devotionXp.level + 1) : 'FULL') : '',
+    xpNextText: v.devotionXp?.step ? 'TO DEVOTION ' + (v.devotionXp.level + 1) : '', // at the top the Devotion line ends "· FULL": once is enough
     day: v.day, dayText: 'DAY ' + v.day, cooldown: v.pactCooldown ? cooldownText(v.pactCooldown.daysLeft) : null,
-    grudge: v.grudge ? { ...grudgeText(v.grudge), text: v.grudge.text } : null,
+    grudge: v.grudge ? { ...grudgeText(v.grudge), text: v.grudge.text, patron: v.grudge.patron, face: patronFace(v.grudge.patron) } : null, // its banner shows the patron greyed (spec 2.5)
     tagCaps: faithful && v.tagXp ? tagCapsText(v.tagXp) : null,
     witnessed: { on: v.witnessed, icon: witnessedUri(), word: v.witnessed ? 'WITNESSED' : 'NOT WITNESSED', can: v.canBeWitnessed },
     vow: v.vow ? { icon: vowIconUri(v.vow.id), label: vowLabel(v.vow, v.vows), state: v.vow.state } : null,
