@@ -251,7 +251,7 @@ describe('the tools', () => {
     expect(charOf(g).offHand?.id).toBe('evoker'); expect(hasEvoker(charOf(g))).toBe(true); expect(pc(g).mg?.evoker).toBe(true);
     g = apply(g, { type: 'sandbox/armour', charId: c.id, armourClass: 4 }, HOST); expect(pc(g).armour).toBeGreaterThanOrEqual(20);
     expect(pc(g).ap).toBe(start().combat!.units.find((u) => u.side === 'pc')!.ap); // every tool above was free (item 690)
-    // the player's own equip action mid-fight costs what it costs in any fight (rules 1.8, item 690): a two-handed draw 2 AP;
+    // the player's own equip action mid-fight costs what it costs in any fight (rules 1.9, item 690): a two-handed draw 2 AP;
     // the tools above stayed free
     const idx = packOf(charOf(g)).findIndex((it) => it.weapon === 'hellraiser_service_rifle' && it.kind === 'weapon');
     expect(idx).toBeGreaterThanOrEqual(0);

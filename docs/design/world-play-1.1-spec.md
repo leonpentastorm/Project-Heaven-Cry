@@ -1,6 +1,6 @@
 # World Play 1.1: piles, reload choices, gear in a fight, drop tables (design spec, 9 Nov 2026)
 
-Status: **accepted direction (Leon, 9 Nov 2026), numbers provisional.** Rules revision **1.8**. This file is the shared
+Status: **accepted direction (Leon, 9 Nov 2026), numbers provisional.** Rules revision **1.9** (Outburst 4.0 took 1.8 on develop). This file is the shared
 source for the build on `feature/world-play-1.1`; once its rules are written into `docs/rules/PHC-Core-Rules-v1.0.md`
 (section "World Play", the Weapons and Hands sections, and section 14 **items 671–700**; Faith 2.1, built in parallel,
 takes 701 on; decision **106**), the spec there wins.

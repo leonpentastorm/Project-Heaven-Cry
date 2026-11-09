@@ -1,4 +1,4 @@
-// World Play 1.1 (rules revision 1.8; docs/design/world-play-1.1-spec.md), part A1: piles (one shared container
+// World Play 1.1 (rules revision 1.9; docs/design/world-play-1.1-spec.md), part A1: piles (one shared container
 // module with caches), speed and tactical reloads, pick-up of a selection on every map, where picked things go, fog,
 // hidden piles, persistence across fights, zones and saves, the Narrator's ground[] and loot[] ammo, old saves'
 // floors, the click-path around revealed hazards, and the write-back bugs fixed on the way.

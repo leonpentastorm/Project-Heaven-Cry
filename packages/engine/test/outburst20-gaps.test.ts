@@ -114,7 +114,9 @@ describe('tones, schools and modules from Heart plates (section 5; spec 4.4, ite
   it('a school or a module from a plate ("school:control", "Wave module" read as their ids)', () => {
     const a = learner([plate('school:control')]); a.s.act({ type: 'magic/learn', charId: a.id, school: 'control', from: 'plate' });
     expect(a.c().soulKnown!.schools).toContain('control'); expect(a.c().pack!.some((x: any) => x.item === 'heart_plate')).toBe(false);
-    const b = learner([plate('Wave module')]); b.s.act({ type: 'magic/learn', charId: b.id, module: 'wave', from: 'plate' });
+    const b = learner([plate('Wave module')]); b.c().skills.lore_master = 0;
+    expect(() => b.s.act({ type: 'magic/learn', charId: b.id, module: 'wave', from: 'plate' })).toThrow(/Lore Master 2/); // rules 1.8: gates (item 811)
+    b.c().skills.lore_master = 2; b.s.act({ type: 'magic/learn', charId: b.id, module: 'wave', from: 'plate' });
     expect(b.c().soulKnown!.modules).toContain('wave');
   });
   it('refused without the plate, for a known lesson (the plate is kept), or for a Sigil word without a Sigil plate', () => {

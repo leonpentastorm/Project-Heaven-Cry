@@ -1,4 +1,4 @@
-// Rules 1.8 in the Proving Ground's WORLD tools, part A5: "A PILE (ON THE GROUND)" next to "A CACHE". The form becomes
+// Rules 1.9 in the Proving Ground's WORLD tools, part A5: "A PILE (ON THE GROUND)" next to "A CACHE". The form becomes
 // one sandbox/pile action, which goes the Narrator's ground[] way (merging, the cap, hidden): the pile is open (its
 // entries show to the player who can see the tile) where a cache shows only a count; magazines keep their rounds.
 import { describe, expect, it } from 'vitest';

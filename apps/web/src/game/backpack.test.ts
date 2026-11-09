@@ -1,4 +1,4 @@
-// The backpack in a fight (rules 1.8, World Play 1.1 section 3), part A5: the panel's rows and costs come from the
+// The backpack in a fight (rules 1.9, World Play 1.1 section 3), part A5: the panel's rows and costs come from the
 // engine (gearCost: 1 AP a hand, 2 for a two-handed draw, drop 0, light armour 1, heavy armour never, Hot-Swap); a row
 // is greyed with the engine's reason off-turn or AP short; ammo and throwables are read from the unit, not the stale
 // pack; a focus in the pack says it counts only in a hand; and a row's action, sent through apply(), does what it says.
@@ -34,7 +34,7 @@ const row = (b: Backpack, sec: string, re: RegExp) => b.sections.find((x) => x.k
 const actOf = (r: any, re: RegExp) => r.acts.find((a: any) => re.test(a.label));
 const txt = (a: any) => a.label + (a.cost ? ' · ' + a.cost : '');
 
-describe('the backpack in a fight (rules 1.8)', () => {
+describe('the backpack in a fight (rules 1.9)', () => {
   it('hands, armour, the pack and the ammo, each with the engine\'s action and cost', () => {
     const f = fight(), b = f.view();
     expect(b.sections.map((x) => x.title)).toEqual(['HANDS', 'ARMOUR', 'BACKPACK', 'AMMO AND THROWABLES']);

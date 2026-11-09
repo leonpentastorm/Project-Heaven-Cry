@@ -503,13 +503,13 @@
       {
         "id": "reload",
         "ap": 2,
-        "text": "speed reload: swap in the fullest spare magazine, the old one drops into the pile on your tile (rules 1.8); or swap an Evoker core"
+        "text": "speed reload: swap in the fullest spare magazine, the old one drops into the pile on your tile (rules 1.9); or swap an Evoker core"
       },
       {
         "id": "reload_tactical",
         "ap": "reload + 1",
         "extra_ap": 1,
-        "text": "tactical reload: the old magazine goes back in the pack, rounds still in it (rules 1.8, item 679)",
+        "text": "tactical reload: the old magazine goes back in the pack, rounds still in it (rules 1.9, item 679)",
         "provisional": true
       },
       {
@@ -528,38 +528,38 @@
       {
         "id": "draw",
         "ap": 1,
-        "text": "draw from the pack into one hand (a one-handed weapon, a focus, a torch, a shield); what the hand held goes to the pack (rules 1.8, item 684)",
+        "text": "draw from the pack into one hand (a one-handed weapon, a focus, a torch, a shield); what the hand held goes to the pack (rules 1.9, item 684)",
         "provisional": true
       },
       {
         "id": "draw_two_handed",
         "ap": 2,
-        "text": "draw a two-handed weapon: it fills both hands, what the off hand held goes to the pack (rules 1.8, item 684)",
+        "text": "draw a two-handed weapon: it fills both hands, what the off hand held goes to the pack (rules 1.9, item 684)",
         "provisional": true
       },
       {
         "id": "swap_hands",
         "ap": 1,
-        "text": "swap main hand and off hand (rules 1.8, item 684)"
+        "text": "swap main hand and off hand (rules 1.9, item 684)"
       },
       {
         "id": "put_away",
         "ap": 1,
         "per_hand": true,
-        "text": "put away what a hand holds into the pack: 1 AP a hand, 2 for a two-handed weapon (rules 1.8, item 684)",
+        "text": "put away what a hand holds into the pack: 1 AP a hand, 2 for a two-handed weapon (rules 1.9, item 684)",
         "provisional": true
       },
       {
         "id": "drop_held",
         "ap": 0,
-        "text": "drop what a hand holds: it lands in the pile on your tile (rules 1.8, item 684)",
+        "text": "drop what a hand holds: it lands in the pile on your tile (rules 1.9, item 684)",
         "provisional": true
       },
       {
         "id": "light_armour",
         "ap": 1,
         "max_kg": 1.2,
-        "text": "put on or take off a light armour piece (1.2 kg or less), each; heavier armour isn't changed in a fight (rules 1.8, item 685)",
+        "text": "put on or take off a light armour piece (1.2 kg or less), each; heavier armour isn't changed in a fight (rules 1.9, item 685)",
         "provisional": true
       },
       {
@@ -570,7 +570,7 @@
       {
         "id": "pickup",
         "ap": 1,
-        "text": "pick up any or all of the pile on your tile or an adjacent one (rules 1.8, item 674)",
+        "text": "pick up any or all of the pile on your tile or an adjacent one (rules 1.9, item 674)",
         "provisional": true
       },
       {

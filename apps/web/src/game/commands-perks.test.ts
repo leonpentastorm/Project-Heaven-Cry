@@ -34,7 +34,7 @@ describe('weapon-granted actions in the action list', () => {
   it('a revolver reloads with a speedloader; an LMG braces; a knife reloads nothing and holds a strike', () => {
     const { cb, u, g } = fight(charWith());
     u.weapon = 'drifter_revolver'; u.ammo = 2; u.mags = [6];
-    // Rules 1.8: a gun with tracked spares offers the speed and the tactical reload, by its own word.
+    // Rules 1.9: a gun with tracked spares offers the speed and the tactical reload, by its own word.
     expect(labels(actionGroups(cb, u, null, { g }), 'utility')).toContain('Speedloader (speed)');
     expect(labels(actionGroups(cb, u, null, { g }), 'utility')).toContain('Speedloader (tactical)');
     u.weapon = 'hellraiser_lmg'; expect(ids(actionGroups(cb, u, null, { g }), 'attack')).toContain('brace');

@@ -240,7 +240,7 @@ describe('hazards (section 5)', () => {
   const hz = (kind: string, severity: 'light' | 'heavy', tiles: string[], extra: any = {}) => bare(turn(start(), { hazards: [{ action: 'place', kind, severity, tiles, ...extra }] }));
   const walk = (g: GameState, to: string, how: 'move' | 'sprint' = 'move', by = H, c = rook(g)) => ap(g, { type: 'world/act', charId: c.id, act: 'move', to, how }, by);
   it('a minefield fires on the tile entered on the area map: damage, a Body save halves it, the mine is spent, the walk stops', () => {
-    // A column of mines across the whole map: no way around it (rules 1.8 click-paths go around revealed hazards).
+    // A column of mines across the whole map: no way around it (rules 1.9 click-paths go around revealed hazards).
     let g = hz('minefield', 'light', [], { rect: { from: 'D1', to: 'D12' } }); const hp0 = rook(g).hp;
     g = walk(g, 'H2', 'sprint');
     expect(positionsOf(g)[rook(g).id]).toBe(K('D2')); // a sprint through a minefield still sets the first mine off and stops there
@@ -450,7 +450,7 @@ describe('the Proving Ground tools (rules 1.7)', () => {
     expect(g.checks).toEqual([]); expect(npc(g, 'Mallow').talk![0].tries.length).toBe(1); expect(g.story.await).toBe('players');
     const stims0 = g.characters[c.id].stims;
     g = ap(g, { type: 'world/act', charId: c.id, act: 'search', objId: storyObjects(g).find((o) => o.name === 'Locker')!.id });
-    expect(g.characters[c.id].stims).toBe(stims0 + 1); // a stim found joins the usable stims (rules 1.8 review fix)
+    expect(g.characters[c.id].stims).toBe(stims0 + 1); // a stim found joins the usable stims (rules 1.9 review fix)
     g = ap(g, { type: 'sandbox/objective', id: 'arm', status: 'done' }); expect(hereCard(g).objectives).toEqual([]);
   });
 });

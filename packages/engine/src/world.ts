@@ -338,7 +338,7 @@ function takeItems(g: GameState, c: Character, o: MapObject): number {
 /** Search a cache (1 AP, adjacent): its items into the pack. In a fight, the unit's AP pays (cb set). */
 export function search(g: GameState, c: Character, objId: string, cb?: Combat, u?: Unit) {
   const objs = cb ? objectsOf(cb) : storyObjects(g), o = objs.find((x) => x.id === objId);
-  // Rules 1.8: searching a pile (a body's drops) is picking up everything (1 AP, item 674).
+  // Rules 1.9: searching a pile (a body's drops) is picking up everything (1 AP, item 674).
   if (o && isPile(o) && !o.hidden) { if (cb && u) { const e = pickUp(cb, u, o.pos, null, c); if (e) fail(e); return; } pickupWorld(g, c, o.pos); return; }
   if (!o || o.hidden || !isCache(o) && o.kind !== 'cache') fail('Nothing to search there.');
   const at = u ? u.pos : positionsOf(g)[c.id]; if (!at || dist(at, o!.pos) > 1) fail('Walk up to it first.');
@@ -361,7 +361,7 @@ export function cacheView(g: GameState, objId: string) {
   return { id: o.id, name: o.name, kind: o.kind, pos: o.pos, ref: refOf(o.pos), count, empty: !count, locked: !!o.locked || jammed(g, o), searched: !!o.searched, approaches: o.approaches.length };
 }
 
-// ---------- piles (rules 1.8, World Play 1.1; containers.ts) ----------
+// ---------- piles (rules 1.9, World Play 1.1; containers.ts) ----------
 /** Pick up on the area map (1 AP; item 674): the same pick-up as a fight's, run on the area map's fight and written
  * back after it, as every area-map action is. take: entry keys or indices; none: everything. */
 export function pickupWorld(g: GameState, c: Character, tile: string, take?: (string | number)[] | null) {
@@ -738,17 +738,17 @@ export function worldView(v: GameState) {
   delete s.triggers; delete s.events;
   if (s.npcs) s.npcs = s.npcs.map((n: Npc) => stripNpc(n));
   if (s.zoneNpcs) s.zoneNpcs = Object.fromEntries(Object.entries(s.zoneNpcs).map(([k, l]: any) => [k, l.map(stripNpc)]));
-  const cache = (o: MapObject) => (o.items && !isPile(o) ? { ...o, items: [], itemCount: o.items.length } : o); // a pile is open (rules 1.8)
+  const cache = (o: MapObject) => (o.items && !isPile(o) ? { ...o, items: [], itemCount: o.items.length } : o); // a pile is open (rules 1.9)
   if (s.objects) s.objects = s.objects.map(cache);
   if (s.zoneObjects) s.zoneObjects = Object.fromEntries(Object.entries(s.zoneObjects).map(([k, l]: any) => [k, l.filter((o: MapObject) => !o.hidden).map(cache)]));
   if (v.combat) { v.combat = { ...v.combat, ...(v.combat.hazards ? { hazards: v.combat.hazards.filter((h) => !h.hidden) } : {}), ...(v.combat.objects ? { objects: v.combat.objects.map(cache) } : {}) }; delete (v.combat as any).worldRng;
-    // Rules 1.8: the drop tables a fight rolls on, and what each enemy will drop, are never in a player's view (item 691).
+    // Rules 1.9: the drop tables a fight rolls on, and what each enemy will drop, are never in a player's view (item 691).
     delete v.combat.lootTables; if (v.combat.dropped?.length) v.combat.dropped = v.combat.dropped.map((d) => ({ ...d, npc: stripNpc(d.npc) })); // review fix: a carried person's drops
     if (v.combat.units.some((u) => u.drops)) v.combat.units = v.combat.units.map((u) => { if (!u.drops) return u; const x = { ...u }; delete x.drops; return x; }); }
   v.characters = Object.fromEntries(Object.entries(v.characters).map(([id, c]) => [id, c.carried ? { ...c, carried: c.carried.map((x) => ({ ...x, npc: stripNpc(x.npc) })) } : c]));
 }
 function stripNpc(n: Npc): Npc {
-  if (n.drops) { n = { ...n }; delete n.drops; } // rules 1.8: what someone will drop is never in a player's view (item 691)
+  if (n.drops) { n = { ...n }; delete n.drops; } // rules 1.9: what someone will drop is never in a player's view (item 691)
   if (!n.wants && !n.knows) return n;
   const x: any = { ...n };
   if (!n.wantsShown && n.wants) { x.wants = ''; x.wantsHidden = true; } // the button stays, the words don't

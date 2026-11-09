@@ -77,7 +77,7 @@ await p.waitForTimeout(300);
 g = await G();
 const crate = (g.story.objects || []).find((o) => o.kind === 'cache' && o.pos === cacheAt);
 ok('a cache at ' + ref(cacheAt) + ' shows a count, not its items (' + crate?.itemCount + ', items ' + JSON.stringify(crate?.items) + ')', !!crate && crate.itemCount === 2 && !(crate.items || []).length);
-// Rules 1.8: A PILE (ON THE GROUND) next to A CACHE: an open pile, its entries shown to the player who sees the tile.
+// Rules 1.9: A PILE (ON THE GROUND) next to A CACHE: an open pile, its entries shown to the player who sees the tile.
 const pileAt = cands[2];
 const sp2 = drawer.locator('section[aria-label="World: a pile"]');
 ok('the WORLD tools have A PILE (ON THE GROUND) next to A CACHE', (await sp2.count()) === 1 && /A PILE \(ON THE GROUND\)/.test(await sp2.textContent()));
@@ -199,7 +199,7 @@ await endTurn();
 await world();
 g = await G();
 const at2 = g.story.positions[me.id], [bx, by] = at2.split(',').map(Number);
-// A column of mines two tiles to one side, wall to wall (rules 1.8: a click-path goes around revealed hazards when it
+// A column of mines two tiles to one side, wall to wall (rules 1.9: a click-path goes around revealed hazards when it
 // can, so a short column would be walked round), and the target tile beyond it.
 const dir = bx > 6 ? -1 : 1, mcol = bx + 2 * dir, zh = (g.campaign?.zones || []).find((z) => z.id === g.story.zone)?.h || 12;
 const sh = drawer.locator('section[aria-label="World: a hazard"]');

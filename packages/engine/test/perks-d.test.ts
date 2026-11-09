@@ -115,9 +115,9 @@ describe('Resonance (rules 1.5: the perk widens the rule\'s window, item 535)', 
     const ub = f.turn(b); ub.ap = 9; f.act({ type: 'combat/outburst', unitId: ub.id, design: ub.mg!.designs[0].id, aim: '5,5' });
     return (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1)!.mult as number;
   }
-  it('without the perk, a release last round gives nothing (the rule is one round)', () => { expect(twoRounds({}, {})).toBe(0.6); });
-  it('I: the holder\'s release hears an ally\'s release from the round before: +0.2', () => { expect(twoRounds({}, { resonance: 'I' })).toBe(0.8); });
-  it('II: and allies hear the holder\'s from the round before', () => { expect(twoRounds({ resonance: 'II' }, {})).toBe(0.8); expect(twoRounds({ resonance: 'I' }, {})).toBe(0.6); });
+  it('without the perk, a release last round gives nothing (the rule is one round)', () => { expect(twoRounds({}, {})).toBe(0.8); }); // rules 1.8: a snap is ×0.8
+  it('I: the holder\'s release hears an ally\'s release from the round before: +0.2', () => { expect(twoRounds({}, { resonance: 'I' })).toBe(1); });
+  it('II: and allies hear the holder\'s from the round before', () => { expect(twoRounds({ resonance: 'II' }, {})).toBe(1); expect(twoRounds({ resonance: 'I' }, {})).toBe(0.8); });
   it('the 1.2 MP discount is gone', () => {
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: { resonance: 'II' } }, { archetype: 'stormcaller', kit: 'soul', name: 'Ally' }], [{ at: 'H6' }]);
     open(f.cb); const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '3,5';

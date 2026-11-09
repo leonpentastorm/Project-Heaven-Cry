@@ -175,7 +175,7 @@ describe('a fight saved under 1.2 gets its free Pumps back', () => {
 describe('the release preview (the same standard as Sigil\'s)', () => {
   const cls = (id: string, rank: 1 | 3): CharSpec => { const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : [1, 1, 1]; return { archetype: 'stormcaller', kit: 'soul', classId: id, level: 5, skills: Object.fromEntries(sig.map((s, i) => [s, pts[i]])) }; };
   it('Pumps are priced through outburst_pump (Shape): stage 1 → 3 with 2 AP is legal', () => {
-    const f = fightWith([cls('channeler', 1)], [{}]); const u = f.turn(f.pc); const m = u.mg!; m.freePumps = 0; m.freePumpsMax = 0; m.mp = 500; u.ap = 9;
+    const f = fightWith([cls('channeler', 1)], [{}]); const u = f.turn(f.pc); const m = u.mg!; m.freePumps = 0; m.freePumpsMax = 0; m.firstUsed = true; m.mp = 500; u.ap = 9;
     const d = m.designs.find((x) => x.school === 'damage')!.id; f.foe.pos = '6,' + u.pos.split(',')[1];
     f.act({ type: 'combat/outburst', unitId: u.id, design: d, hold: true } as any);
     const v = f.unit(u.id); v.mg!.held!.stage = 1; v.ap = 2;

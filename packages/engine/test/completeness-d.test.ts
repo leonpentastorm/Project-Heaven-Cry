@@ -41,6 +41,7 @@ describe('Vessel: no Outburst designs', () => {
     const s = storyWith([adv('vessel', SOUL), SOUL]); const [v, o] = s.chars;
     const design = { name: 'Bolt', school: 'damage', modules: [] };
     expect(() => s.act({ type: 'magic/design', charId: v.id, design } as any)).toThrow(/Vessel designs no Outbursts/);
+    s.g.characters[o.id].outbursts = s.g.characters[o.id].outbursts!.slice(0, 1); // rules 1.8: 3 starting designs fill the ready list
     s.act({ type: 'magic/design', charId: o.id, design } as any);
   });
 });
@@ -84,7 +85,7 @@ describe('Shade: a silent takedown on the area map', () => {
     const plain = run({});
     expect(plain.g.phase).toBe('combat');
   });
-  it('rules 1.8 (review fix): the silent victim still drops what it carried, in the pile on its tile on the area map', () => {
+  it('rules 1.9 (review fix): the silent victim still drops what it carried, in the pile on its tile on the area map', () => {
     const s = storyWith([{ ...adv('shade'), weapon: 'combat_knife' }]); const c = s.chars[0], here = positionsOf(s.g)[c.id];
     s.act({ type: 'narrator/turn', turn: { narration: 'A guard.', npcs: [{ action: 'place', name: 'Lone guard', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: refOf(freeNear(s.g, here, 1)) }] } } as any);
     const n = npcsOf(s.g)[0], at = n.pos; n.facing = [Math.sign(+n.pos.split(',')[0] - +here.split(',')[0]) || 1, Math.sign(+n.pos.split(',')[1] - +here.split(',')[1])] as any; (n as any).hp = 1;

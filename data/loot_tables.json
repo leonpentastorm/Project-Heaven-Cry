@@ -1,7 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "loot_tables",
-  "source": "World Play 1.1 design spec (docs/design/world-play-1.1-spec.md section 4, Leon 9 Nov 2026); PHC Core Rules v1.0, rules revision 1.8, World Play: Drop tables (spec 14 items 691-700)",
+  "source": "World Play 1.1 design spec (docs/design/world-play-1.1-spec.md section 4, Leon 9 Nov 2026); PHC Core Rules v1.0, rules revision 1.9, World Play: Drop tables (spec 14 items 691-700)",
   "provisional": true,
   "provisional_note": "Every number here is provisional (spec 14 items 691-700): the caps, the worn range, the rolls by tier, every weight and qty, the personal effects.",
   "caps": {

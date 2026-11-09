@@ -142,7 +142,7 @@ await p.waitForTimeout(2600); await dismissCut();
 for (let i = 0; i < 12; i++) { g = await G(); const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur?.charId === me.id) break; if (cur?.side === 'pc') await act({ type: 'combat/end-turn', unitId: cur.id }); await p.waitForTimeout(200); }
 g = await G();
 // A focus counts only in a hand (spec: Hands 2, items 630 and 633): stow the Evoker (the tools), and the Sigil buttons
-// grey with the reason; the backpack (rules 1.8, Gear in a fight) draws it back into the off hand for 1 AP.
+// grey with the reason; the backpack (rules 1.9, Gear in a fight) draws it back into the off hand for 1 AP.
 await act({ type: 'sandbox/unequip', charId: me.id, slot: 'off' });
 await p.waitForTimeout(300); await dismissCut();
 if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {}); await p.waitForTimeout(200); }

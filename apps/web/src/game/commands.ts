@@ -79,7 +79,7 @@ export function classOf(ch: any, origin?: string | null): { id: string; name: st
   return { id, name: name || id, ink, icon: classIconUri(id, ink) };
 }
 
-// ---------- reloading: speed or tactical (rules 1.8) ----------
+// ---------- reloading: speed or tactical (rules 1.9) ----------
 /** The tactical reload's action ids (the speed reload keeps 'reload' and 'reload2'). */
 export const RELOAD_TAC = 'reload-tac', RELOAD2_TAC = 'reload2-tac';
 /** A gun's reload rows, at the engine's real costs (weaponActions): a magazine gun with tracked spares offers the speed

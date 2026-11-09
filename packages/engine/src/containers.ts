@@ -1,4 +1,4 @@
-// Containers (rules revision 1.8, World Play 1.1; docs/design/world-play-1.1-spec.md): one module for everything that
+// Containers (rules revision 1.9, World Play 1.1; docs/design/world-play-1.1-spec.md): one module for everything that
 // holds things on a map tile. A cache is closed (players see how many things it holds until it is searched); a pile is
 // open (whoever can see the tile sees what is in it). A pile is a map object of kind `pile`, one per tile, whose entries
 // are exact pack items (a magazine keeps its rounds and type, a weapon its rarity, wear and mods). Piles live with the
@@ -131,7 +131,7 @@ export function pileEntries(o: MapObject): { key: string; label: string; item: s
 
 // ---------- the loot shape as pack items ----------
 const calibreId = (s: string) => Object.keys(CALIBRE_NAME).find((k) => k.toLowerCase() === s.toLowerCase() || CALIBRE_NAME[k].toLowerCase() === s.toLowerCase());
-/** Things the character keeps as counts, not pack entries (rules 1.8 review fix): a stim injector joins c.stims (what
+/** Things the character keeps as counts, not pack entries (rules 1.9 review fix): a stim injector joins c.stims (what
  * combat/stim spends) and an Essence of Experience joins c.essence. True when it was counted. */
 export function intoCounts(c: Character, it: PackItem): boolean {
   if (it.kind === 'plot' || it.mags) return false;

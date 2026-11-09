@@ -30,7 +30,8 @@ function rig(foes: string[] = ['6,5'], allies: string[] = [], mana = 15) {
 }
 function arm(u: Unit) {
   if (!u.mg) throw new Error('no magic');
-  Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, debuff: { body: 0, brain: 0, heart: 0 } });
+  // firstUsed: rules 1.8's free first Pump of the fight is spent, so these 1.5 tests price every Pump (outburst40.test.ts covers it).
+  Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, debuff: { body: 0, brain: 0, heart: 0 } });
   u.sk = {}; u.dbf = { body: 0, brain: 0, heart: 0 };
 }
 type F = ReturnType<typeof rig>;
@@ -45,8 +46,8 @@ const me = (f: F) => f.unit(f.pc.id);
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('the heart cycle: Begin, Pump, Release (rules 1.5, section 1)', () => {
-  it('Begin is 2 AP at stage 0 and +1 Strain; Pump 1 AP +1 stage to 4; Release 1 AP; the stage table ×0.6 … ×2.2', () => {
-    expect(STAGE_MULT).toEqual([0.6, 1, 1.4, 1.8, 2.2]); expect([0, 1, 2, 3, 4].map(stageMult)).toEqual([0.6, 1, 1.4, 1.8, 2.2]);
+  it('Begin is 2 AP at stage 0 and +1 Strain; Pump 1 AP +1 stage to 4; Release 1 AP; the stage table ×0.8 (rules 1.8) … ×2.2', () => {
+    expect(STAGE_MULT).toEqual([0.8, 1, 1.4, 1.8, 2.2]); expect([0, 1, 2, 3, 4].map(stageMult)).toEqual([0.8, 1, 1.4, 1.8, 2.2]);
     const f = rig(); const d = give(f.pc, {});
     begin(f, d); expect(me(f).ap).toBe(58); expect(me(f).mg!.held!.stage).toBe(0); expect(me(f).mg!.strain).toBe(1);
     expect(fx(f.cb, 'outburst').at(-1)).toMatchObject({ stage: 0, hold: true, form: 'bolt', tone: 'raw' });
@@ -57,9 +58,9 @@ describe('the heart cycle: Begin, Pump, Release (rules 1.5, section 1)', () => {
     expect(lost(f.foe)).toBe(Math.floor(20 * 2.2));
     expect(fx(f.cb, 'release').at(-1)).toMatchObject({ form: 'bolt', tone: 'raw', stage: 4, mult: 2.2, targets: [f.foe.id] });
   });
-  it('a snap cast (combat/outburst with an aim) is Begin + Release at once: 3 AP at ×0.6', () => {
+  it('a snap cast (combat/outburst with an aim) is Begin + Release at once: 3 AP at ×0.8 (rules 1.8)', () => {
     const f = rig(); const d = give(f.pc, {});
-    begin(f, d, f.pc, { aim: '6,5' }); expect(me(f).ap).toBe(57); expect(lost(f.foe)).toBe(12); expect(me(f).mg!.held).toBeNull();
+    begin(f, d, f.pc, { aim: '6,5' }); expect(me(f).ap).toBe(57); expect(lost(f.foe)).toBe(16); expect(me(f).mg!.held).toBeNull();
   });
   it('each stage, released through the reducer, deals 20 × the stage multiplier (Raw ignores armour)', () => {
     for (let s = 0; s <= 4; s++) {
@@ -226,7 +227,7 @@ describe('tones: Raw and the six elements, riders by stage (section 5)', () => {
     const f4 = hit('frost', 4); expect(condOn(f4.foe, 'pinned')).toBe(true); expect(condOn(f4.foe, 'slowed')).toBe(true);
   });
   it('Stone: armour counts in full and +10 from stage 1; Prone at 2–3; rubble around the target at 4', () => {
-    expect(lost(hit('stone', 0, { armour: 10 }).foe)).toBe(Math.floor(20 * 0.6) - 5);
+    expect(lost(hit('stone', 0, { armour: 10 }).foe)).toBe(Math.floor(20 * 0.8) - 5);
     expect(lost(hit('stone', 1, { armour: 10 }).foe)).toBe(20 + 10 - 10);
     expect(hit('stone', 2).foe.prone).toBe(true);
     const f = hit('stone', 4); expect(objectsOf(f.cb).filter((o) => o.kind === 'rubble').length).toBeGreaterThanOrEqual(6);
@@ -390,21 +391,22 @@ describe('old saves (1.2 designs and holds) convert', () => {
     expect(migrateDesign({ id: 'x', name: 'x', school: 'damage', modules: [], tone: 'plasma' }).tone).toBeUndefined();
   });
   it('a 1.2 hold keeps its stage; a character’s old designs and modules convert once on the next action', () => {
-    expect(migrateHeld({ design: 'o1', stage: 3, cost: 20 })).toMatchObject({ design: 'o1', stage: 3, tone: 'raw', form: 'bolt', v: 15 });
+    expect(migrateHeld({ design: 'o1', stage: 3, cost: 20 })).toMatchObject({ design: 'o1', stage: 3, tone: 'raw', form: 'bolt', v: 18 });
     const s = storyWith([{ archetype: 'stormcaller', kit: 'soul' }]); const id = s.chars[0].id;
     const g0 = JSON.parse(JSON.stringify(s.g)); const c = g0.characters[id];
     c.outbursts = [{ id: 'o1', name: 'Red Rain', school: 'damage', modules: ['rain', 'bounce'] }]; c.soulKnown = { schools: ['damage'], modules: ['rain', 'bounce', 'homing'] }; delete c.soulRev;
     g0.story.magic = { [id]: { flux: 0, strain: 2, held: { design: 'o1', stage: 2, cost: 25 }, conds: {} } };
     const g1 = apply(g0, { type: 'magic/forget', charId: id, designId: 'none' } as any, c.owner);
-    expect(g1.characters[id].outbursts![0].modules).toEqual(['burst']); expect(g1.characters[id].soulKnown!.modules).toEqual(['burst', 'homing']);
-    expect(g1.characters[id].soulRev).toBe(15);
+    // Rules 1.8 (item 813): the starting designs it lacks and their schools and modules come along, room permitting.
+    expect(g1.characters[id].outbursts![0].modules).toEqual(['burst']); expect(g1.characters[id].soulKnown!.modules).toEqual(['burst', 'homing', 'wave', 'move']);
+    expect(g1.characters[id].soulRev).toBe(18); expect(g1.characters[id].feelings).toEqual(['rage', 'love']);
   });
 });
 
 describe('designing under 1.5 (magic/design)', () => {
-  it('one shape a design; Size needs a shape; a tone you know (the first free at Visualization 1); option2 for the second school', () => {
+  it('one shape a design; Size needs a shape; a tone you know (the first free at Lore Master 1, rules 1.8); option2 for the second school', () => {
     const s = storyWith([{ archetype: 'stormcaller', kit: 'soul' }]); const c = s.g.characters[s.chars[0].id];
-    c.soulKnown = { schools: ['damage', 'control'], modules: ['wave', 'burst', 'size'], tones: [] }; c.skills.will_power = 6; c.skills.visualization = 1; c.outbursts = [];
+    c.soulKnown = { schools: ['damage', 'control'], modules: ['wave', 'burst', 'size'], tones: [] }; c.skills.will_power = 6; c.skills.lore_master = 1; c.outbursts = [];
     expect(() => s.act({ type: 'magic/design', charId: c.id, design: { id: '', name: 'Two', school: 'damage', modules: ['wave', 'burst'] } } as any, c.owner)).toThrow(/One shape/);
     expect(() => s.act({ type: 'magic/design', charId: c.id, design: { id: '', name: 'S', school: 'damage', modules: ['size'] } } as any, c.owner)).toThrow(/Size needs a shape/);
     s.act({ type: 'magic/design', charId: c.id, design: { id: '', name: 'Hot', school: 'damage', school2: 'control', option2: 'push', modules: ['burst'], tone: 'fire' } } as any, c.owner);

@@ -279,7 +279,7 @@ register({
 
 // ---------- Hot-Swap (Proficiency β) ----------
 // I: a hand's gear change mid-fight (draw, put away, swap main and off hand, a two-handed draw's 2 AP too) or fitting a
-// mod costs 0 AP, once per turn (plan 6b; rules 1.8, item 686: never armour, and a drop is 0 AP anyway). II: twice per
+// mod costs 0 AP, once per turn (plan 6b; rules 1.9, item 686: never armour, and a drop is 0 AP anyway). II: twice per
 // turn. Out of combat gear changes are already free.
 register({
   id: 'hot_swap', claims: 'all',

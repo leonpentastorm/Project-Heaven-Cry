@@ -16,6 +16,7 @@ import { actionAp } from './effects/core';
 import { note } from './effects/narrator';
 import { sessionN } from './effects/uses';
 import { makeObject } from './objects';
+import { residueFlag } from './feelings';
 
 // ---------- damage types, special ammo, the damage bucket ----------
 export interface AmmoType { id: string; damage_mult?: number; ignores_armor?: boolean; armor_mult?: number; applies?: string; damage_type?: string; meter_per_hit?: number }
@@ -45,19 +46,20 @@ export function stackDamage(mults: Term[], vs: Term[]): { mult: number; vsMult: 
 
 // ---------- reactions (spec: one per round; items may add) ----------
 /** Reactions a unit gets each round: 1, + items (stat 'reactions'); none while Suppressed, Stunned or out of the fight. */
-export function maxReactions(u: Unit): number {
+export function maxReactions(u: Unit, cb?: Combat | null): number {
   if (!alive(u) || condOn(u, 'suppressed') || condOn(u, 'stunned') || u.skipTurn) return 0;
+  if (cb && residueFlag(cb, u, 'no_reaction')) return 0; // rules 1.8: Dread underfoot
   return Math.max(0, 1 + statQuery({ u }, 'reactions').add);
 }
 export function reactionsUsed(cb: Combat, u: Unit): number {
   if (u.reactUsed && u.reactUsed.r === cb.round) return u.reactUsed.n;
   return u.reactedRound === cb.round ? 1 : 0; // old saves
 }
-const ownReact = (cb: Combat, u: Unit) => reactionsUsed(cb, u) < maxReactions(u);
+const ownReact = (cb: Combat, u: Unit) => reactionsUsed(cb, u) < maxReactions(u, cb);
 /** Many Hands (Camaraderie Mastered, perk-runtime E-H1): an ally whose reactions are spent may spend a holder's who can
  * see them (alive, same side, not the same unit). The first such holder in unit order. */
 export function reactionDonor(cb: Combat, u: Unit): Unit | null {
-  if (!alive(u) || maxReactions(u) <= 0) return null; // Stunned, Suppressed: no reaction to take anyone's
+  if (!alive(u) || maxReactions(u, cb) <= 0) return null; // Stunned, Suppressed: no reaction to take anyone's
   return cb.units.find((v) => v !== u && v.side === u.side && alive(v) && !v.companion && heldOfUnit(v).perks.some((p) => p.id === 'many_hands') && ownReact(cb, v) && unitSees(cb, v, u.pos)) || null;
 }
 export const canReact = (cb: Combat, u: Unit) => ownReact(cb, u) || !!reactionDonor(cb, u);

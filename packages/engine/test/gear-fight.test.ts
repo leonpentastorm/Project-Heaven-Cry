@@ -1,4 +1,4 @@
-// World Play 1.1 (rules revision 1.8; docs/design/world-play-1.1-spec.md section 3), part A2: gear in a fight under one
+// World Play 1.1 (rules revision 1.9; docs/design/world-play-1.1-spec.md section 3), part A2: gear in a fight under one
 // rule, 1 AP a hand (spec section 14 items 684–690). Every row of the table, Hot-Swap, light and heavy armour, the drop
 // into the pile, Disarmed, the rebuild (armour, Movement, dark sight, conditions kept, the off-hand gun's real rounds),
 // the sheet's gear actions forwarded to the combat actions, and a pack entry named by id. Every rule goes through
@@ -129,7 +129,7 @@ describe('light and heavy armour in a fight (item 685)', () => {
   });
 });
 
-describe('gearCost: the price the backpack shows is the price the reducer charges (rules 1.8)', () => {
+describe('gearCost: the price the backpack shows is the price the reducer charges (rules 1.9)', () => {
   it('every row, Hot-Swap included, matches what the action then costs', () => {
     const f = fight(() => {}, { hot_swap: 'I' }), cb = () => f.g.combat!;
     const price = (op: any) => withGame(f.g, () => gearCost(cb(), f.u, f.c, op));

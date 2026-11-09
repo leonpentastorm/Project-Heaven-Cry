@@ -1,5 +1,5 @@
 // The Proving Ground's WORLD tools (rules 1.7; part A's sandbox/cache, sandbox/hazard, sandbox/trigger, sandbox/npc and
-// sandbox/objective; rules 1.8's sandbox/pile). Pure: each form becomes one engine action; the engine checks and places it. The panel lives in
+// sandbox/objective; rules 1.9's sandbox/pile). Pure: each form becomes one engine action; the engine checks and places it. The panel lives in
 // sandbox.tsx (WorldTab); the forms' defaults are a robot that wants something, a cache with a stim and rations, a light
 // minefield, an ambush on entering tiles, and a drill objective.
 import { AVATAR_POOLS, HAZARD_KINDS, KIND_DEFS, SKILLS, ITEM, WEAPON, WEAPONS, TN_LADDER, calName, type Action } from '@engine';
@@ -38,7 +38,7 @@ export function cacheAction(f: CacheForm, at: string): Action {
     ...(f.locked ? { locked: true, approaches: [approachOf(f.way)] } : {}) } as Action;
 }
 
-/** Rules 1.8: a pile on the ground (open: what is in it shows to anyone who sees the tile). Entries are item or weapon ids,
+/** Rules 1.9: a pile on the ground (open: what is in it shows to anyone who sees the tile). Entries are item or weapon ids,
  * plus mag:<weapon> (qty its rounds; 1 or none is a full magazine, 0 an empty one) and rounds:<calibre>; the engine merges
  * them into the pile on the tile (the Narrator's ground[] path). */
 export interface PileForm { items: { item: string; qty: number }[]; hidden: boolean }

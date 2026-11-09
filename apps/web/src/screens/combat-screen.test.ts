@@ -279,7 +279,7 @@ describe('combat screen', () => {
     expect(cb.fx).toEqual([{ n: 1, k: 'turn' }]);
     expect(cb.fxSeq).toBe(1);
   });
-  it('rules 1.8 on the grid: a speed reload drops a pile (stack, count, hover, legend); the two reloads; Pick up\'s checklist sends the ticked', () => {
+  it('rules 1.9 on the grid: a speed reload drops a pile (stack, count, hover, legend); the two reloads; Pick up\'s checklist sends the ticked', () => {
     fight('panel', 'service_pistol');
     const L = new CombatLogic({}) as any, u = active(G.combat!)!;
     expect(u.side).toBe('pc');

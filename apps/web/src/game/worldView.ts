@@ -102,7 +102,7 @@ export function cacheLook(o: MapObject & { itemCount?: number }, big = true): { 
 }
 export const holdsText = (n: number, searched?: boolean) => (searched || !n ? 'Searched: nothing left.' : 'Holds ' + n + (n === 1 ? ' thing' : ' things') + '. Search to take them all into your pack.');
 
-// ---------- piles (rules 1.8): things on the ground ----------
+// ---------- piles (rules 1.9): things on the ground ----------
 // A pile is open: whoever can see its tile sees what is in it (the engine's view drops piles out of the party's sight,
 // and hidden ones). It draws as a small drawn stack with its count in the tile's bottom-left corner, so it shows under a
 // token standing on it, and never looks like a cache's closed box (▣). Neutral ink: a pile isn't a hazard or a goal.
@@ -171,7 +171,7 @@ export function pickupWhy(from: string | null | undefined, o: MapObject | null |
   if (apNow < PICKUP_AP) return 'Needs ' + PICKUP_AP + ' AP.';
   return null;
 }
-/** The host's line for what the loot cap held back this fight (rules 1.8, item 695): "HOST ONLY · Loot cap reached: …"
+/** The host's line for what the loot cap held back this fight (rules 1.9, item 695): "HOST ONLY · Loot cap reached: …"
  * (the latest entry, and how many more). The engine strips lootLog from every other player's view. */
 export function lootLogLine(log: string[] | null | undefined): string {
   if (!log || !log.length) return '';
@@ -323,7 +323,7 @@ export function nearItems(g: GameState, charId: string | undefined, busy = ''): 
   for (const o of storyObjects(g)) { if (o.hidden || !isCacheV(o) || dist(at, o.pos) > 1) continue; const n = (o as any).itemCount ?? (o.items || []).length;
     const why = o.searched || !n ? 'Nothing left.' : o.locked ? 'Locked: open it first.' : busy || (apL < WORLD_AP.search ? 'Needs ' + WORLD_AP.search + ' AP.' : '');
     out.push({ key: 's' + o.id, kind: 'cache', id: o.id, label: 'Search ' + o.name + ' · ' + WORLD_AP.search + ' AP', sub: (o.searched || !n ? 'searched, empty' : 'holds ' + n + (n === 1 ? ' thing' : ' things')) + (why && why !== 'Nothing left.' ? ' · ' + why : ''), off: !!why, why, style: btn('#FFFFFF') }); }
-  // Rules 1.8: a pile on your tile or next to it (the view holds only the piles the party can see).
+  // Rules 1.9: a pile on your tile or next to it (the view holds only the piles the party can see).
   for (const o of pilesIn(storyObjects(g)).values()) { const d = dist(at, o.pos); if (d > 1) continue;
     const L = pileLook(o, true), why = busy || (apL < PICKUP_AP ? 'Needs ' + PICKUP_AP + ' AP.' : '');
     out.push({ key: 'p' + o.id, kind: 'pile', id: o.id, label: 'Pick up from the pile' + (d ? ' at ' + refOf(o.pos) : ' here') + ' · ' + PICKUP_AP + ' AP',

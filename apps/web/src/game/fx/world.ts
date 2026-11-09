@@ -38,7 +38,7 @@ export function worldWord(e: Partial<FxEvent> & { k: string }): string {
     case 'approach': return x.ok ? 'SUCCESS' : 'FAILED';
     case 'talk': return x.what === 'objective' ? 'ASKED ABOUT THE OBJECTIVE' : 'ASKED WHAT THEY WANT';
     case 'marker': return 'MARKED';
-    // Rules 1.8: a pick-up names what was taken (the first thing, and how many more); a pile says why it grew.
+    // Rules 1.9: a pick-up names what was taken (the first thing, and how many more); a pile says why it grew.
     case 'pickup': return pickupWords(x.items);
     case 'pile': return x.why === 'death' ? 'DROPS' : x.why === 'take' ? '' : 'DROPPED';
     default: return '';
@@ -127,7 +127,7 @@ export function worldHandlers(K: WorldKit): Record<string, (e: FxEvent) => void>
       burst('dust', p, p.s * 1.1, 500, { color: '#C9D3E3' });
       if (x.items) { for (let i = 0; i < Math.min(6, x.items + 2); i++) particle(p, Math.max(4, p.s * 0.12), 'border-radius:2px;background:' + WHITE + ';box-shadow:0 0 6px ' + WHITE, [{ transform: 'translate(0,0)', opacity: 1 }, { transform: 'translate(' + ((Math.random() - 0.5) * p.s) + 'px,-' + p.s * (0.5 + Math.random() * 0.5) + 'px)', opacity: 0 }], 600, 80 + i * 40); play('crystal', p, { rate: 1.6, gain: 0.4, delay: 200 }); }
       floatText(worldWord(e), p, x.items ? WHITE : MUTED, { small: true, delay: 150 }); },
-    // Rules 1.8: the pick-up floats what was taken from the pile's tile; a pile that grows pops its stack in.
+    // Rules 1.9: the pick-up floats what was taken from the pile's tile; a pile that grows pops its stack in.
     pickup(e) { const x: any = e, p = at(x.at) || actorAt(x); play('mag_in', p, { rate: 0.85 }); if (p) floatText(worldWord(e), p, WHITE, { small: true }); },
     pile(e) { const x: any = e; if (x.why === 'take') return; const p = at(x.at); if (!p) return;
       const s = svg(16, 16, '<image href="' + PILE_ICON + '" width="16" height="16"/>'), box = put(s, p, p.s * 0.45, p.s * 0.45, 600);

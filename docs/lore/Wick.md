@@ -33,4 +33,4 @@ That gives every icon a second reading, especially the ugly ones. When the manua
 
 ## Art rules
 
-The approved master is [`art/_archive/traits/wick/mind-without-fog/`](../../art/_archive/traits/wick/mind-without-fog/). Trait and perk icons are pure white flat ink. Construction, acting and icon rules are in the style guide, `art/style-guide/` (sections 08–14). The first ten production tests are briefed in [`art/briefs/wick-test-icons.md`](../../art/briefs/wick-test-icons.md).
+The approved master is [`art/icons/traits/mind-without-fog.png`](../../art/icons/traits/mind-without-fog.png) (its delivery notes are archived in `art/_archive/traits/wick/mind-without-fog/`). Trait and perk icons are pure white flat ink. Construction, acting and icon rules are in the style guide, `art/style-guide/` (sections 08–14). The first ten production tests are briefed in [`art/briefs/wick-test-icons.md`](../../art/briefs/wick-test-icons.md).

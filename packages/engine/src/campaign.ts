@@ -31,7 +31,7 @@ export interface CampaignZone {
   dark?: boolean;
   /** People and enemies standing on this zone's overworld map (spec: Overworld rounds). Facing: N, E, S or W. */
   npcs?: { name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; at: string; portrait?: string; facing?: 'N' | 'E' | 'S' | 'W'; kind?: string; tags?: string[];
-    /** Rules 1.8: what they drop if they die in a fight (a table id and/or a list; loot.ts). */ drops?: Drops }[];
+    /** Rules 1.9: what they drop if they die in a fight (a table id and/or a list; loot.ts). */ drops?: Drops }[];
   /** Art: the map painting under the grid and the zone's banner (asset ids). */
   art?: { map?: string; banner?: string };
   /** Area and fight music for this zone (spec: Music). */
@@ -47,8 +47,8 @@ export interface Campaign {
   /** Narrator only. */
   arc: { beginning: string; middle: string; end: string }; secrets?: string[]; opening: string;
   cast?: { name: string; role: string; text: string }[];
-  encounters?: { name: string; zone: string; when: string; difficulty: string; music?: Track; enemies: { name: string; tier: string; weapon: string; at?: string; /** Rules 1.8: this enemy's drops (loot.ts). */ drops?: Drops }[] }[];
-  /** Rules 1.8 drop tables (spec 14 item 691): the campaign's own weighted tables; one with an engine table's id
+  encounters?: { name: string; zone: string; when: string; difficulty: string; music?: Track; enemies: { name: string; tier: string; weapon: string; at?: string; /** Rules 1.9: this enemy's drops (loot.ts). */ drops?: Drops }[] }[];
+  /** Rules 1.9 drop tables (spec 14 item 691): the campaign's own weighted tables; one with an engine table's id
    * (person, machine, caster, beast, notable) replaces it in this campaign. */
   loot_tables?: LootTable[];
   startZone: string; zones: CampaignZone[];
@@ -139,7 +139,7 @@ export function validateCampaign(c: any): string[] {
   for (const z of c.zones || []) for (const n of z.npcs || []) if ((n as any)?.caster) need(!!CASTER[(n as any).caster] && CASTER[(n as any).caster].tier === n.tier, z.id + ': npc "' + n.name + '" names an unknown Sigil caster, or one of another tier (enemies.json casters).');
   for (const z of c.zones || []) for (const n of z.npcs || []) need(n && n.name && ['hostile', 'neutral'].includes(n.side) && ENEMY[n.tier] && WEAPON[n.weapon] && n.at, z.id + ': npc "' + (n?.name || '?') + '" needs name, side (hostile or neutral), a known tier and weapon, and at.');
   for (const m of c.moments || []) { need(m && m.id && m.art && m.caption, 'Every moment needs id, art and caption.'); if (m?.zone) need(ids.has(m.zone), 'Moment "' + m.id + '" names unknown zone "' + m.zone + '".'); }
-  // Rules 1.8 drop tables (items 691, 698): the campaign's own tables, and every drops value it gives.
+  // Rules 1.9 drop tables (items 691, 698): the campaign's own tables, and every drops value it gives.
   const tableIds = new Set<string>(Object.keys(LOOT_TABLES));
   const RAR = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
   const qtyOk = (q: any, id: string) => { const [lo, hi] = /^(mag|rounds):/i.test(id) ? [0, 120] : [1, 20], ok = (n: any) => Number.isInteger(n) && n >= lo && n <= hi;

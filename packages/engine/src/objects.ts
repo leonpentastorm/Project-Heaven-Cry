@@ -11,7 +11,7 @@ export interface ObjKind {
   trap?: { damage: number; detect_tn: number; detect_range: number }; hazard?: { damage: number }; explodes?: { damage: number; radius: number };
   /** Light radius in tiles (spec: Vision). */
   light?: number;
-  /** A hidden one of this kind (a pile, rules 1.8) is spotted by passive Vigilant against detect_tn within detect_range. */
+  /** A hidden one of this kind (a pile, rules 1.9) is spotted by passive Vigilant against detect_tn within detect_range. */
   spot?: { detect_tn: number; detect_range: number };
 }
 export const OBJECT_KINDS: ObjKind[] = (objectsJ as any).items;
@@ -37,7 +37,7 @@ export interface Approach {
 /** A cache's contents (rules 1.7), in the loot shape: an item or weapon id, how many, a rarity and a name; an unknown
  * or empty id is a plot item (name, and text as its one line). */
 export interface CacheItem { item: string; qty: number; rarity?: string; name?: string; text?: string; note?: string;
-  /** A pile's entry (rules 1.8): the exact pack item (a magazine's rounds and type, a weapon's rarity, wear and mods),
+  /** A pile's entry (rules 1.9): the exact pack item (a magazine's rounds and type, a weapon's rarity, wear and mods),
    * and its stable key (a pick-up names entries by key). Cache entries in the loot shape leave both out. */
   pack?: PackItem; key?: string }
 export interface MapObject {

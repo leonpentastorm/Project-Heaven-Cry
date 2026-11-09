@@ -55,7 +55,7 @@ describe('the World Play fields in submit_turn', () => {
     expect(s.properties.missions.items.properties.where).toBeTruthy(); expect(s.properties.missions.items.required).toEqual(['mission']);
     for (const a of ['carry', 'put_down', 'search', 'attempt', 'ask']) expect(s.properties.actions.items.properties.act.enum).toContain(a);
     expect(s.properties.actions.items.properties.index).toBeTruthy();
-    // Rules 1.8 (review fix): a typed "tactical reload" or "reload my off-hand gun" maps to world/act reload {tactical, hand}.
+    // Rules 1.9 (review fix): a typed "tactical reload" or "reload my off-hand gun" maps to world/act reload {tactical, hand}.
     expect(s.properties.actions.items.properties.tactical).toEqual({ type: 'boolean' }); expect(s.properties.actions.items.properties.hand.enum).toEqual(['main', 'off', 'both']);
     expect(RULES_PROMPT).toMatch(/reload \(tactical: the magazine to the pack, \+1 AP; hand\)/);
     expect(RULES_PROMPT).toMatch(/what the dead carry is the engine's \(piles\)/); expect(RULES_PROMPT).not.toMatch(/a body searched/);

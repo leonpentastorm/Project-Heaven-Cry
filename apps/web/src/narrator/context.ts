@@ -101,7 +101,7 @@ export const PACING = `PACING (stage discipline)
 - Plain objectives: people who give a task say what, where and why, plainly. Wit and evasion are fine for everything else, never for the objective.
 - Typing can't skip a check: never grant by fiat what an approach, a hazard or a check covers. A typed try at one is actions[] attempt (its id and the approach's number); the engine rolls it.`;
 
-/** The kinds the Narrator places with objects[]: piles are ground[] (rules 1.8), never an object the Narrator names. */
+/** The kinds the Narrator places with objects[]: piles are ground[] (rules 1.9), never an object the Narrator names. */
 const OBJ_KINDS: string[] = OBJECT_KINDS.map((k: any) => k.id).filter((k: string) => k !== 'pile');
 /** The map checklist: at the end of the rules and as the submit_turn tool's description. */
 export const MAP_TRUTH = `THE MAP IS THE TRUTH (check before you call submit_turn)
@@ -164,7 +164,7 @@ MAGIC (the engine runs every number)
 - Strain rises with each Begin and held turn; over the limit the heart burns (it Downs, never kills); 3 over is a Mana Short (Stunned, the held one goes off wild). No vent: it falls each turn and by calming the heart (a still turn, fighting, tending an ally, letgo, steady). Syphon draws mana into MP; crystallise turns 10 mana into a core.
 - Players' spell words map to actions[]: draw (word, on their own tile), evoke (tile: a glyph of the Line, aim; aims for TWICE, dest for STEP, order and orderTo for COMMAND), scuff, vent, core, outburst (design id, aim, hold), pump, release (aim), letgo, steady, feed, heartwatch, syphon, crystallise. tile and aim are grid references (aim may be a token id). A spell aimed at someone outside a fight starts the fight, like an attack.
 - The mana meter (0 to 40; thin, normal, rich, flooded) is in PARTY CONDITION. Deaths, venting and Grand forms raise it; Soul casting, syphon and crystallise lower it. Set mana only when the story changes the place itself (a ley spring, a dead zone); null otherwise. Flooded places strain Soul casters; thin places starve them.
-- Teaching: when a character truly learns in the story (a mentor, a plate deciphered, a revelation), add magic[] with charId and one word (a Sigil word id), school, module or tone id, and a reason. Rare: a word is a reward, at most one per character per scene.
+- Teaching: when a character truly learns in the story (a mentor, a plate deciphered, a revelation), add magic[] with charId and one word (a Sigil word id), school, module or tone id, and a reason. Rare: a word is a reward, at most one per character per scene. Feelings (rules 1.8): a Soul caster unlocks most feelings by itself when they happen (the engine sees them), but at a story moment that truly makes them feel something (Longing for someone gone, Wonder at a revealed place, Awe at a god), grant it with magic[] feeling (an id from the wiki: feeling:<id>) and a reason; never for a feeling they already have.
 
 THE MAP (grid references)
 - Every place is a grid: columns are letters (A, B, C… left to right), rows are numbers (1, 2, 3… top to bottom). "C7" is column C, row 7. Each turn gives you the current map, what is where, and where everyone stands.
@@ -380,7 +380,7 @@ export function turnPrompt(g: GameState): string {
   return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${ground}${world}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}${craft ? '\n' + craft + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
 }
 
-/** Rules 1.8: the piles on the ground, compactly (at most 6 piles, 3 entries each, "+N more"), for OBJECTS ON THE MAP. */
+/** Rules 1.9: the piles on the ground, compactly (at most 6 piles, 3 entries each, "+N more"), for OBJECTS ON THE MAP. */
 export const GROUND_PILES = 6, GROUND_ENTRIES = 3;
 export function groundText(piles: any[]): string {
   if (!piles.length) return '';
@@ -522,8 +522,8 @@ export function submitTool(g: GameState) {
     index: { type: 'integer', description: 'attempt: the approach number' }, what: { type: 'string', enum: ['wants', 'objective'] },
     tactical: { type: 'boolean' }, hand: { type: 'string', enum: ['main', 'off', 'both'] },
   }, required: ['charId', 'act'] } };
-  schema.properties.magic = { type: 'array', description: 'Magic a character truly learned in the story (empty otherwise): one word, school, module or tone each', items: { type: 'object', properties: {
-    charId: { type: 'string', enum: Object.keys(g.characters) }, word: { type: 'string' }, school: { type: 'string' }, module: { type: 'string' }, tone: { type: 'string' }, reason: { type: 'string' },
+  schema.properties.magic = { type: 'array', description: 'Magic a character truly learned in the story (empty otherwise): one word, school, module, tone or feeling each', items: { type: 'object', properties: {
+    charId: { type: 'string', enum: Object.keys(g.characters) }, word: { type: 'string' }, school: { type: 'string' }, module: { type: 'string' }, tone: { type: 'string' }, feeling: { type: 'string', description: 'A feeling id (feeling:<id> in the wiki), granted to a Soul caster at a story moment that truly makes them feel it' }, reason: { type: 'string' },
   }, required: ['charId', 'reason'] } };
   schema.properties.mana = { anyOf: [{ type: 'null' }, { type: 'integer' }], description: 'Set the place\'s mana meter (0 to 40) only when the story changes the place itself; null otherwise' };
   schema.properties.memory = { type: 'array', description: 'Memory upkeep: people, threads, facts, factions, pins (empty when nothing changes)', items: { type: 'object', properties: {
@@ -568,7 +568,7 @@ export function submitTool(g: GameState) {
     severity: { type: 'string', enum: ['light', 'heavy'] }, ...AREA, hidden: B, name: S, text: S }, ['action']);
   schema.properties.triggers = opt({ action: { type: 'string', enum: ['place', 'remove'] }, id: S, when: { type: 'string', enum: ['enter', 'examine', 'objective'] }, ...AREA, objId: S, objective: S,
     then: { type: 'string', enum: ['spawn', 'fight', 'reveal'] }, spawn: { type: 'array', items: { type: 'object' }, description: 'npcs[] place shapes' }, difficulty: S, name: S, reveal: { type: 'array', items: S }, text: S }, ['action']);
-  // Rules 1.8 (World Play 1.1): things on the ground, and what an enemy or person drops if they die (optional, enum-free).
+  // Rules 1.9 (World Play 1.1): things on the ground, and what an enemy or person drops if they die (optional, enum-free).
   schema.properties.ground = opt({ at: S, items: { type: 'array', items: { type: 'object' }, description: 'loot shape' }, hidden: B }, ['at', 'items']);
   const DROPS = { type: 'object', description: 'If they die: {table} or {items}' };
   schema.properties.combat.anyOf[1].properties.enemies.items.properties.drops = DROPS; schema.properties.npcs.items.properties.drops = DROPS;

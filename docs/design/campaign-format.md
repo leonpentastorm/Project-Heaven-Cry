@@ -19,7 +19,7 @@ The Narrator reads everything in the file. Players see only the title, the pitch
 | `opening` | yes | What the Narrator's first turn should do: where to open, who's there, the first problem, the last line. |
 | `cast` | no | `{ name, role, text }` for each important NPC. |
 | `encounters` | no | Prepared fights: `{ name, zone, when, difficulty, enemies: [{ name, tier, weapon, at }] }`. Tiers: minion, soldier, elite, boss. Weapons: ids from `data/weapons.json`. `at` is a grid reference. Optional `music`: a track for this fight (see `music`). An enemy may carry `drops` (below); when a fight has the encounter's name, its enemies get them by name. |
-| `loot_tables` | no | Drop tables (rules 1.8): `[{ id, none?, entries: [{ item, weight, qty?, rarity?, name?, text? }] }]`, weighted, `none` the weight of nothing. A table with an engine table's id (`person`, `machine`, `caster`, `beast`, `notable`; `data/loot_tables.json`) replaces it in this campaign. A `drops` value on an encounter enemy or a zone NPC is `{ table?, items?: [{ item, qty (n or [min, max]), chance?, rarity?, name?, text? }] }`: it replaces the engine's rolled drops for that enemy (their weapon and leftover magazines always drop). Item ids as `loot[]` takes them, plus `mag:<weapon>`, `rounds:<calibre>` and `personal`; any other id needs a `name` and is a plot item. |
+| `loot_tables` | no | Drop tables (rules 1.9): `[{ id, none?, entries: [{ item, weight, qty?, rarity?, name?, text? }] }]`, weighted, `none` the weight of nothing. A table with an engine table's id (`person`, `machine`, `caster`, `beast`, `notable`; `data/loot_tables.json`) replaces it in this campaign. A `drops` value on an encounter enemy or a zone NPC is `{ table?, items?: [{ item, qty (n or [min, max]), chance?, rarity?, name?, text? }] }`: it replaces the engine's rolled drops for that enemy (their weapon and leftover magazines always drop). Item ids as `loot[]` takes them, plus `mag:<weapon>`, `rounds:<calibre>` and `personal`; any other id needs a `name` and is a plot item. |
 | `startZone` | yes | The zone the party starts in. |
 | `zones` | yes | The maps (below). |
 | `lore` | no | Extra lore for the Narrator, as text. |
@@ -101,7 +101,7 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 
 Mix Body, Mind and Soul skills, so every kind of character has a way in. Objects without approaches get theirs from the Narrator when a player examines them.
 
-## Loot: drop tables, drops and piles (rules 1.8)
+## Loot: drop tables, drops and piles (rules 1.9)
 
 What the fallen leave is rolled by the engine, never written as a result: once per death, on the fight's seeded dice, into the **pile** on the tile where they died. Three layers, the most specific winning (spec section 14 item 691):
 

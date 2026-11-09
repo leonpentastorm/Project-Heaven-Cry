@@ -1,7 +1,7 @@
-# World Play 1.1 hand-off (rules revision 1.8: piles, reload choices, gear in a fight, drop tables)
+# World Play 1.1 hand-off (rules revision 1.9: piles, reload choices, gear in a fight, drop tables)
 
 Branch `feature/world-play-1.1`, 9 Nov 2026, built in five parts (A1–A5). Design: `docs/design/world-play-1.1-spec.md`
-(Leon's accepted direction). Rules: `docs/rules/PHC-Core-Rules-v1.0.md`, "Rules revision 1.8: World Play 1.1" in World
+(Leon's accepted direction). Rules: `docs/rules/PHC-Core-Rules-v1.0.md`, "Rules revision 1.9: World Play 1.1" in World
 Play, the AP table, Hands 2, Swapping weapons, Reloading, "Magazines and rounds are inventory", and section 14 items
 **671–700** (every number provisional). Decision **106**. Not merged, not deployed: the CHANGELOG entry and the version
 bump belong to the merge into `develop`.

@@ -1,4 +1,4 @@
-// World Play 1.1 (rules 1.8) on the Narrator's side, part A5: ground[] and drops in submit_turn (optional, enum-free, so
+// World Play 1.1 (rules 1.9) on the Narrator's side, part A5: ground[] and drops in submit_turn (optional, enum-free, so
 // the tool stays the same all session), 'pile' kept out of the objects[] kinds, pickup among the actions, the rules text
 // (piles, the engine rolls drops), the wiki's loot entries, and the turn prompt showing piles compactly (at most 6 piles,
 // 3 entries each, "+N more"). A provider turn with ground[] and drops goes through the engine.

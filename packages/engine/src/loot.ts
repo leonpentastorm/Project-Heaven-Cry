@@ -1,11 +1,11 @@
-// Drop tables (rules revision 1.8, World Play 1.1; docs/design/world-play-1.1-spec.md section 4; spec 14 items
+// Drop tables (rules revision 1.9, World Play 1.1; docs/design/world-play-1.1-spec.md section 4; spec 14 items
 // 691–700). The engine rolls every drop, on the fight's seeded dice, once per death (noteDeaths, the one sweep that sees
 // every death), and puts it in the pile on the tile where the enemy died (containers.ts through dropToPile).
 // Three layers, the most specific winning: the engine's defaults (data/loot_tables.json), a campaign's own tables and
 // `drops` on its zone people and encounter enemies, and the Narrator's `drops` on combat.enemies[] and npcs[].
 import ltJ from '../../../data/loot_tables.json';
 import { WEAPON, ITEM, CALIBRE_NAME, SIGIL, TONE, SCHOOL, MODULE } from './data';
-import { type PackItem, type Rarity, maxDurOf, plotItem, roundsOf } from './character';
+import { type PackItem, type Rarity, maxDurOf, plotItem, roundsOf, moduleShelved } from './character';
 import { lootToPack, magItem, itemLabel } from './containers';
 import { type Combat, type Unit, dropToPile } from './combat';
 import { type Rng, next, die } from './rng';
@@ -99,7 +99,7 @@ export function rollPlateNote(rng: Rng, item: string): string {
   const pick = (l: string[]) => (l.length ? l[die(rng, l.length) - 1] : '');
   if (item === 'sigil_plate') return pick(Object.keys(SIGIL).sort());
   if (item === 'heart_plate') {
-    const l = [...Object.keys(TONE).filter((t) => t !== 'raw').sort().map((t) => 'tone: ' + t), ...Object.keys(SCHOOL).sort().map((t) => 'school: ' + t), ...Object.keys(MODULE).sort().map((t) => 'module: ' + t)];
+    const l = [...Object.keys(TONE).filter((t) => t !== 'raw').sort().map((t) => 'tone: ' + t), ...Object.keys(SCHOOL).sort().map((t) => 'school: ' + t), ...Object.keys(MODULE).filter((t) => !moduleShelved(t)).sort().map((t) => 'module: ' + t)]; // shelved modules (rules 1.8, Outburst 4.0) never roll
     return pick(l);
   }
   return '';

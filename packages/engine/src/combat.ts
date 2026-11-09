@@ -1,4 +1,5 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
+import { fxTaps } from './fxtap';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
 import { type Character, type PackItem, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult,
   saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
@@ -149,12 +150,12 @@ export interface Unit {
   vow?: import('./character').Vow | null; faith?: Record<string, any>;
   /** What a Trickster's Read showed this unit means to do on its next turn (enemyIntent; cleared when its turn ends). */
   readIntent?: Intent & { by: string; round: number };
-  /** Rules 1.8 drop tables (loot.ts): what this enemy drops beyond its weapon and magazines, from the campaign or the
+  /** Rules 1.9 drop tables (loot.ts): what this enemy drops beyond its weapon and magazines, from the campaign or the
    * Narrator (absent: the engine's default for its kind and tier). */
   drops?: import('./loot').Drops;
 }
 export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
-  /** Retired in rules 1.8: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
+  /** Retired in rules 1.9: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
   notes?: string[];
@@ -195,10 +196,10 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
    * carrier dropped (tokens again when the fight ends). */
   hazards?: Hazard[]; worldRng?: Rng; hazardHits?: { id: string; kind: string; unit: string; charId?: string; name: string; at: string; dmg: number; cond?: string; attempt?: boolean }[];
   dropped?: { npc: any; at: string; by: string }[];
-  /** Rules 1.8 drop tables (loot.ts): the campaign's own tables for this fight, the rolled items so far (the cap), and
+  /** Rules 1.9 drop tables (loot.ts): the campaign's own tables for this fight, the rolled items so far (the cap), and
    * the host-only log of what the cap held back. */
   lootTables?: import('./loot').LootTable[]; lootRolled?: number; lootLog?: string[];
-  /** Rules 1.8: each death-drop log line with its tile, so a player's view can drop the contents of an unseen one. */
+  /** Rules 1.9: each death-drop log line with its tile, so a player's view can drop the contents of an unseen one. */
   dropLines?: { line: string; at: string; name: string }[] }
 
 /** A presentation event: what just happened, precisely enough to animate (the client plays new ones by n). Tiles are
@@ -212,7 +213,7 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
  *  trap, hazard, bleed, burn, sigil, elemental, soul, true, short, overload, wall) · shield {target, at, absorbed} ·
  *  down {unit, at, dead} · explode {at, radius, what} · object {at, what, dmg, broken, hp?} · door {unit?, at, open} ·
  *  trap {unit, at} · shove {unit, target, from, to, ok, prone?, magic?, pull?} · stance {unit, at, what: 'prone'|'stand'|'brace'|'overwatch'} ·
- *  analyze {unit, target, from, to} · pickup {unit, at, items} (the labels taken) · pile {at, id, count, why: 'drop'|'take'|'death'} (rules 1.8: a pile changed; 'death': a fallen enemy's drops) · cover {unit, target, at, dmg} (a shot stopped by cover) ·
+ *  analyze {unit, target, from, to} · pickup {unit, at, items} (the labels taken) · pile {at, id, count, why: 'drop'|'take'|'death'} (rules 1.9: a pile changed; 'death': a fallen enemy's drops) · cover {unit, target, at, dmg} (a shot stopped by cover) ·
  *  draw {unit, at, tile, word, side, group, cls, element, effect, words} · glyph_fade {tile, word, side, why} · scuff {unit, at} ·
  *  evoke {unit, at, shape, tiles, words, element, side, facing, dir, area, src, impact, targets, targetAt, missiles: [{origin,
  *  kind: touch|bolt|lob|appear|relay, path, blockedAt, impact, arc, hops, burst, core, chain, placed}], stay, placed, fizzle} ·
@@ -238,8 +239,10 @@ export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): F
   const n = (cb.fxSeq = (cb.fxSeq || 0) + 1), list = (cb.fx ||= []), ev: FxEvent = { k, ...data, n };
   list.push(ev);
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
+  for (const f of fxTaps) f(cb, ev);
   return ev;
 }
+
 /** A unit went down or died: one event (the client drops and greys the token). */
 export function fxFell(cb: Combat, u: Unit) { emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
 function chained<T>(f: () => T, volley?: string): T { fxChain++; const was = VOLLEY; if (volley) VOLLEY = volley; try { return f(); } finally { fxChain--; VOLLEY = was; } }
@@ -456,7 +459,7 @@ export function spotTraps(objs: MapObject[], pos: string, vigilant: number, name
     const t = kindOf(o).trap!, passive = 10 + (vigilant <= 0 ? -2 : vigilant - 1);
     if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots a trap at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
   }
-  // Rules 1.8: a hidden pile (the Narrator's) falls to the same passive Vigilant, by its kind's spot TN and range (item 677).
+  // Rules 1.9: a hidden pile (the Narrator's) falls to the same passive Vigilant, by its kind's spot TN and range (item 677).
   for (const o of objs) if (o.hidden && !isTrap(o) && kindOf(o).spot) {
     const t = kindOf(o).spot!, passive = 10 + (vigilant <= 0 ? -2 : vigilant - 1);
     if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots something on the ground at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
@@ -526,7 +529,7 @@ export function paths(cb: Combat, from: string, self: string, avoid?: Set<string
   for (const o of objectsOf(cb)) if ((o as any).sabotaged && kindOf(o).blocks_move && o.pos !== from) delete d[o.pos];
   return { dist: d, prev };
 }
-/** The revealed hazard tiles that would go off for this side (rules 1.8: not hidden, not spent, not on its safe path). */
+/** The revealed hazard tiles that would go off for this side (rules 1.9: not hidden, not spent, not on its safe path). */
 export function revealedHazardTiles(cb: Combat, side: 'pc' | 'foe'): Map<string, Hazard> {
   const out = new Map<string, Hazard>();
   for (const h of cb.hazards || []) if (!h.hidden) for (const t of h.tiles) if (hazardLiveAt(h, t, side) && !out.has(t)) out.set(t, h);
@@ -545,7 +548,7 @@ export function canAffordTiles(u: Unit, tiles: number, how: MoveHow = 'move'): b
   if (how === 'disengage') return tiles <= 1;
   return apForTiles(tiles, u.bank || 0, u.movement) + (how === 'sneak' ? tiles : 0) <= u.ap;
 }
-/** The paths a move to `to` uses (rules 1.8, item 683): a player's unit (a character or a companion) goes around every
+/** The paths a move to `to` uses (rules 1.9, item 683): a player's unit (a character or a companion) goes around every
  * revealed hazard tile when that route is at most PILE.route_slack_tiles longer than the shortest AND the unit can still
  * pay for it this way (AP, or a sprint's 3 × Movement); otherwise, and for everyone else, the shortest (and the preview
  * warns what it crosses). Hidden hazards don't count (nobody knows them). */
@@ -557,7 +560,7 @@ export function movePaths(cb: Combat, u: Unit, to: string, how: MoveHow = 'move'
   const A = paths(cb, u.pos, u.id, new Set(hz.keys()));
   return A.dist[to] !== undefined && A.dist[to] <= P.dist[to] + PILE.route_slack_tiles && canAffordTiles(u, A.dist[to], how) ? A : P;
 }
-/** For the move preview (rules 1.8): the route a click to `to` takes, its length, and every revealed hazard tile on
+/** For the move preview (rules 1.9): the route a click to `to` takes, its length, and every revealed hazard tile on
  * it ("Path crosses: mines at C4"). Null when the tile can't be reached. */
 export function routeHazards(cb: Combat, u: Unit, to: string, how: MoveHow = 'move'): { route: string[]; tiles: number; crosses: { tile: string; ref: string; id: string; kind: string; name: string }[] } | null {
   const P = movePaths(cb, u, to, how); if (P.dist[to] === undefined || to === u.pos) return null;
@@ -885,7 +888,7 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
 /** sigils: an Evoker and its words (true: the tier's default set; sigils.json enemy_ai), rules 1.4. */
 export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number; sigils?: string[] | true;
   /** A caster archetype from enemies.json `casters` (its words and spell bias; sigils, if given, wins). Rules 1.4, ai-sigil.ts. */ caster?: string;
-  /** Rules 1.8: what it drops when it dies (loot.ts; already cleaned by the caller). */ drops?: import('./loot').Drops }
+  /** Rules 1.9: what it drops when it dies (loot.ts; already cleaned by the caller). */ drops?: import('./loot').Drops }
 export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
@@ -901,7 +904,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
     armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
-    if (f.drops && typeof f.drops === 'object') u.drops = JSON.parse(JSON.stringify(f.drops)); // rules 1.8 drop tables
+    if (f.drops && typeof f.drops === 'object') u.drops = JSON.parse(JSON.stringify(f.drops)); // rules 1.9 drop tables
     units.push(u);
   });
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
@@ -1031,11 +1034,11 @@ export function moveBlock(u: Unit): string | null {
  * i, route, stop} (set stop to end the walk there), and opportunity attacks and Overwatch are checked on every step,
  * not only at the end. A walk cut short (a trap, a reaction that Downs or Pins you, a handler) keeps the tiles not
  * walked in the turn's bank. Sprint is once per turn. Afraid units can't move closer to what they fear. */
-/** o.shortest: the plain shortest path (the Narrator's own moves; rules 1.8 routes only a player's click-path around hazards). */
+/** o.shortest: the plain shortest path (the Narrator's own moves; rules 1.9 routes only a player's click-path around hazards). */
 export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> } } = {}): string | null {
   const blk = moveBlock(u); if (blk) return blk;
   // o.via: paths the caller already chose (the area map's sneak prices its detour with the sneak's extra AP).
-  const P = o.via || (o.shortest ? paths(cb, u.pos, u.id) : movePaths(cb, u, to, how)); // rules 1.8: a player's click-path goes around revealed hazards (item 683)
+  const P = o.via || (o.shortest ? paths(cb, u.pos, u.id) : movePaths(cb, u, to, how)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
   { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
@@ -1285,7 +1288,7 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   emit(cb, 'volley_end', { u, mode: 'paired', target: t, cb, rng }); checkOver(cb); return null;
 }
 
-/** Drop things into the pile on a fight's tile (rules 1.8, World Play 1.1): never hidden; the cap's losses are logged. */
+/** Drop things into the pile on a fight's tile (rules 1.9, World Play 1.1): never hidden; the cap's losses are logged. */
 export function dropToPile(cb: Combat, at: string, list: PackItem[], why = 'drop') {
   const { pile, lost } = dropOnTile(objectsOf(cb), at, list);
   emitFx(cb, 'pile', { at, id: pile.id, count: (pile.items || []).length, why });
@@ -1293,7 +1296,7 @@ export function dropToPile(cb: Combat, at: string, list: PackItem[], why = 'drop
 }
 /** Line up a unit's spare types with its spares (special ammo, item 680): null for a standard one. */
 const typesFor = (types: (string | null)[] | undefined, n: number) => Array.from({ length: n }, (_, i) => types?.[i] ?? null);
-/** Reload (spec: Reloading; rules 1.8): a magazine weapon swaps in the fullest spare. A speed reload (2 AP) drops the
+/** Reload (spec: Reloading; rules 1.9): a magazine weapon swaps in the fullest spare. A speed reload (2 AP) drops the
  * one in the gun into the pile on the unit's tile, rounds and type kept; a tactical reload (+1 AP, item 679) puts it
  * back with the spares. A weapon loaded round by round tops up from loose rounds and has one reload. Enemies carry
  * their tier's spares and always speed-reload. */
@@ -1415,7 +1418,7 @@ export function intoUnit(u: Unit, c: Character, it: PackItem) {
   else if ((it.item || it.id) === 'standard_core' && u.mg) u.mg.cores += it.qty;
   addPack();
 }
-/** Pick up (spec: Magazines and rounds are inventory; rules 1.8): 1 AP, from the pile on your tile or an adjacent one,
+/** Pick up (spec: Magazines and rounds are inventory; rules 1.9): 1 AP, from the pile on your tile or an adjacent one,
  * the entries named (keys or indices; none named: everything). A character's unit only (its pack takes the rest). */
 export function pickUp(cb: Combat, u: Unit, tile: string, take?: (string | number)[] | null, c?: Character | null): string | null {
   if (dist(u.pos, tile) > 1) return 'Stand on it or next to it.';
@@ -1648,7 +1651,7 @@ export const reloadAp = (u: Unit) => { const w: any = WEAPON[u.weapon] || {}; re
 const RELOAD_LABEL: Record<string, string> = { magazine: 'Swap magazine', speedloader: 'Speedloader', drum: 'Swap drum', belt: 'Feed belt' };
 const LOOSE_LABEL: Record<string, string> = { arrow: 'Nock an arrow', bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
 export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'repair' | 'overwatch' | 'burst' | 'auto' | 'skill'; label: string; ap: number; why: string | null; text: string;
-  /** The reload's tactical variant (rules 1.8): its AP and why it can't be used now. */
+  /** The reload's tactical variant (rules 1.9): its AP and why it can't be used now. */
   tactical?: { ap: number; why: string | null } }
 /** The actions a unit's weapon grants, and why each can't be used now (null when it can). The UI shows exactly these:
  * an action the weapon doesn't grant never shows (a bow has no Clear jam; a revolver's reload is a Speedloader). */
@@ -1661,7 +1664,7 @@ export function weaponActions(u: Unit): WeaponAction[] {
     const r = reloadAp(u), unit = w.reload_unit || 'magazine';
     const label = w.reload === 'loose' ? LOOSE_LABEL[w.ammo] || 'Load rounds' : RELOAD_LABEL[w.reload_unit] || 'Reload';
     const why = u.jammed ? 'Jammed: clear it first.' : u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) ? 'Already full.' : u.mags && w.reload !== 'loose' && !u.mags.some((n) => n > 0) ? 'No loaded spare ' + unit + 's.' : w.reload === 'loose' && u.mags && !(u.loose || 0) ? 'No rounds left to load.' : need(r);
-    // Rules 1.8 (item 679): a magazine weapon with tracked spares also offers the tactical reload (+1 AP; the old one goes back in the pack).
+    // Rules 1.9 (item 679): a magazine weapon with tracked spares also offers the tactical reload (+1 AP; the old one goes back in the pack).
     const tac = w.reload !== 'loose' && u.mags ? { ap: r + PILE.tactical_reload_extra_ap, why: why && /^Needs/.test(why) || !why ? need(r + PILE.tactical_reload_extra_ap) : why } : undefined;
     add({ id: 'reload', label, ap: r, why, text: w.reload === 'loose' ? 'Top up from loose rounds (' + (u.loose ?? 0) + ' carried). Nothing drops.' : 'Swap in your fullest spare ' + unit + ' (' + (u.mags ? u.mags.length + ' left' : 'unlimited') + '). Speed: the one in the gun drops into the pile on your tile, rounds still in it. Tactical (+' + PILE.tactical_reload_extra_ap + ' AP): it goes back in your pack.', ...(tac ? { tactical: tac } : {}) });
   }

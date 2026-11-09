@@ -1,4 +1,4 @@
-// Gear in a fight (rules revision 1.8, World Play 1.1; docs/design/world-play-1.1-spec.md section 3; spec section 14
+// Gear in a fight (rules revision 1.9, World Play 1.1; docs/design/world-play-1.1-spec.md section 3; spec section 14
 // items 684–690). One rule: changing what a hand holds costs 1 AP a hand. Draw into one hand 1, a two-handed weapon 2,
 // swap main and off hand 1, put away 1 a hand (2 for a two-handed weapon), drop 0 (into the pile on your tile); a light
 // armour piece (1.2 kg or less; provisional) on or off 1 AP each; heavier armour isn't changed in a fight. This module only plans: it

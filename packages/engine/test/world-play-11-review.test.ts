@@ -1,4 +1,4 @@
-// World Play 1.1 (rules revision 1.8), the review fixes: the fx numbering, click-paths a unit can pay for, dropped
+// World Play 1.1 (rules revision 1.9), the review fixes: the fx numbering, click-paths a unit can pay for, dropped
 // plates that can be studied, stims and Essence from piles, off-hand guns that reload only from what is carried, each
 // magazine's and each loaded gun's ammo type through reloads, pick-ups and gear changes, a full gun that isn't
 // reloaded, fog for piles' fx and drop lines, the Narrator's pile ops counted and matched, the Proving Ground's
@@ -105,7 +105,9 @@ describe('dropped plates can be studied (review fix to item 692)', () => {
     expect(g.phase).toBe('story');
     const plates = (pileOn(storyObjects(g), at)!.items || []).map((e) => e.pack!).filter((p) => /plate/.test(p.id));
     expect(plates.length).toBe(2); for (const p of plates) expect(p.note).toBeTruthy();
-    g = set(g, (x) => { const c = rook(x); c.pack = [...packOf(c), ...plates]; c.soulKnown = { schools: [], modules: [], tones: [] } as any; });
+    g = set(g, (x) => { const c = rook(x); c.pack = [...packOf(c), ...plates]; c.soulKnown = { schools: [], modules: [], tones: [] } as any;
+      // Outburst 4.0 (rules 1.8) gates modules by Soul skill and tones by Lore Master: a trained reader learns any lesson.
+      for (const k of ['empathy', 'camaraderie', 'implication', 'will_power', 'lore_master', 'composure', 'faith', 'conscience', 'authority']) c.skills[k] = Math.max(c.skills[k] || 0, 4); });
     const hp = plates.find((p) => p.id === 'heart_plate')!, id = plateLesson(hp.note), kind = hp.note!.split(':')[0];
     g = ap(g, { type: 'magic/learn', charId: rook(g).id, [kind]: id, from: 'plate' } as any);
     const k: any = rook(g).soulKnown; expect((kind === 'tone' ? k.tones : kind === 'school' ? k.schools : k.modules)).toContain(id);

@@ -371,7 +371,7 @@ describe('Spellslinger', () => {
     const pc = f.turn(at(f.pc, '2,5')); tough(at(f.foe, '5,5')); pc.ap = 6; pc.ammo = 3;
     f.act({ type: 'combat/perk', unitId: pc.id, id: 'spellslinger.spell_magazine', actionId: 'load_spell_magazine' } as any);
     expect(f.pc.ammo).toBe(12); expect(f.pc.ap).toBe(4);
-    // Rules 1.8 (item 679): the old magazine drops into the pile on the tile, as a speed reload's does.
+    // Rules 1.9 (item 679): the old magazine drops into the pile on the tile, as a speed reload's does.
     expect(f.cb.objects!.find((o) => o.kind === 'pile' && o.pos === '2,5')!.items!.map((e) => e.name)).toEqual(['Service pistol magazine 3/12']);
     seed(f, 10);
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);

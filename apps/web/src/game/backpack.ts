@@ -1,4 +1,4 @@
-// The backpack in a fight (rules 1.8, World Play: Gear in a fight; docs/design/world-play-1.1-spec.md section 3): what the
+// The backpack in a fight (rules 1.9, World Play: Gear in a fight; docs/design/world-play-1.1-spec.md section 3): what the
 // hands hold, the light armour worn, the pack, and the ammo and throwables the fighter carries, each row with its action
 // and cost as the engine prices it (engine gear.ts gearCost: 1 AP a hand, 2 for a two-handed draw, a drop 0, light
 // armour 1 a piece, heavy armour never, Hot-Swap on the hand rows). The UI computes no rule: a row is greyed with the

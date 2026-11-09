@@ -1,4 +1,4 @@
-// World Play 1.1 (rules revision 1.8) in the Proving Ground, through the real buttons: a speed reload in a fight drops
+// World Play 1.1 (rules revision 1.9) in the Proving Ground, through the real buttons: a speed reload in a fight drops
 // the old magazine into a pile on the tile, drawn on the grid as a stack with its count, with a legend entry and a hover
 // that lists it; the tactical reload row at its own cost; a second drop, then Pick up's checklist (both ticked, one
 // unticked) takes only the ticked one; the fight stops and the pile is still there on the minimap and the area map;

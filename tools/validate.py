@@ -551,7 +551,7 @@ if wp:
                 errors.append(f"world_play: hazard approach {a.get('id')}: unknown skill {sk}")
     if "cache" not in ids_of(items("objects")):
         errors.append("objects: the cache kind (World Play) is missing")
-    # Rules revision 1.8 (World Play 1.1): the pile kind (open, never blocking, a spot TN and range) and its limits
+    # Rules revision 1.9 (World Play 1.1): the pile kind (open, never blocking, a spot TN and range) and its limits
     pile = next((o for o in items("objects") if o.get("id") == "pile"), None)
     if not pile:
         errors.append("objects: the pile kind (World Play 1.1) is missing")
@@ -569,7 +569,7 @@ if wp:
         errors.append("world_play: pile.narrator_items_per_pile can't exceed pile.max_entries")
     if not isinstance((wp.get("ap") or {}).get("pickup"), (int, float)):
         errors.append("world_play: ap.pickup (World Play 1.1) is missing")
-    # Rules 1.8 gear in a fight (items 684-690): whole AP costs, a positive light-armour limit, and the action list agreeing
+    # Rules 1.9 gear in a fight (items 684-690): whole AP costs, a positive light-armour limit, and the action list agreeing
     gr = wp.get("gear") or {}
     for k in ("hand_ap", "two_handed_draw_ap", "swap_hands_ap", "put_away_ap_per_hand", "drop_ap", "light_armour_ap"):
         if not isinstance(gr.get(k), int) or gr[k] < 0:
@@ -593,7 +593,7 @@ if wp:
     acts = {a.get("id"): a for a in (_acts(data.get("rules", {})) or []) if isinstance(a, dict)}
     for aid, key in (("draw", "hand_ap"), ("draw_two_handed", "two_handed_draw_ap"), ("swap_hands", "swap_hands_ap"), ("put_away", "put_away_ap_per_hand"), ("drop_held", "drop_ap"), ("light_armour", "light_armour_ap")):
         if aid not in acts:
-            errors.append(f"rules: action {aid} (rules 1.8 gear in a fight) is missing")
+            errors.append(f"rules: action {aid} (rules 1.9 gear in a fight) is missing")
         elif gr.get(key) is not None and acts[aid].get("ap") != gr.get(key):
             errors.append(f"rules: action {aid} costs {acts[aid].get('ap')} but world_play gear.{key} is {gr.get(key)}")
     if "light_armour" in acts and gr.get("light_armour_max_kg") is not None and acts["light_armour"].get("max_kg") != gr.get("light_armour_max_kg"):
@@ -637,6 +637,55 @@ if soul:
             errors.append(f"soul_modules: retired module {r['id']} is still in items")
         if r.get("becomes") and r["becomes"] not in mod_ids:
             errors.append(f"soul_modules: retired {r.get('id')} becomes unknown module {r['becomes']}")
+    # rules 1.8 (Outburst 4.0): gates name Soul skills and real modules; templates use real schools and modules;
+    # class-gated modules name a class
+    gates = soul.get("gates") or {}
+    for sk, ms in (gates.get("skills") or {}).items():
+        if known["skill"] and sk not in known["skill"]:
+            errors.append(f"soul_modules: gate skill '{sk}' is not a skill")
+        for m in ms:
+            if m not in mod_ids:
+                errors.append(f"soul_modules: gate {sk} names unknown module '{m}'")
+    for m in items("soul_modules"):
+        g = m.get("gate")
+        if g and (g.get("points") not in (2, 4) or m.get("id") not in (gates.get("skills") or {}).get(g.get("skill"), [])):
+            errors.append(f"soul_modules: module {m.get('id')} gate {g} disagrees with gates.skills")
+        if m.get("locked") and not m.get("class"):
+            errors.append(f"soul_modules: locked module {m.get('id')} names no class")
+    for t in (soul.get("start") or {}).get("designs") or []:
+        if t.get("school") not in {s.get("id") for s in soul.get("schools") or []}:
+            errors.append(f"soul_modules: start design {t.get('id')} has unknown school {t.get('school')}")
+        for m in t.get("modules") or []:
+            if m not in mod_ids:
+                errors.append(f"soul_modules: start design {t.get('id')} has unknown module {m}")
+
+# feelings (rules 1.8, Outburst 4.0): 25, numbered 1-25, a family from the list, a step, a trigger, a residue kind;
+# the conditions they put on people exist
+fe = data.get("feelings") or {}
+if isinstance(fe, dict) and fe.get("items"):
+    fams = set((fe.get("families") or {}).keys())
+    fl = fe["items"]
+    if len(fl) != 25 or sorted(x.get("n") for x in fl) != list(range(1, 26)):
+        errors.append("feelings: there must be 25 feelings numbered 1-25")
+    for x in fl:
+        w = f"feelings:{x.get('id')}"
+        if x.get("family") not in fams:
+            errors.append(f"{w}: unknown family {x.get('family')}")
+        if not isinstance(x.get("step"), dict) or not x["step"]:
+            errors.append(f"{w}: needs a step")
+        if not (x.get("trigger") or {}).get("event"):
+            errors.append(f"{w}: needs a trigger event")
+        r = x.get("residue") or {}
+        if r.get("kind") not in ("helps", "harms", "none"):
+            errors.append(f"{w}: residue kind must be helps, harms or none")
+        for part in (x.get("pour") or {}, r):
+            cs = [part.get("condition")] + list(part.get("random") or []) + list(part.get("cleanse") or [])
+            for c in cs:
+                if c and known["condition"] and c not in known["condition"] and c not in ("bleeding",):
+                    errors.append(f"{w}: unknown condition '{c}'")
+    for d0 in fe.get("start_default") or []:
+        if d0 not in {x.get("id") for x in fl}:
+            errors.append(f"feelings: start_default names unknown feeling {d0}")
 
 # patrons (rules 1.6, Blessing 2.0): tags exist, 3 Hymns at tiers 1-3, a Miracle, an Open or Jealous rule, two rites
 # (one an engine button), an intervention, every voice-line bank with 3 lines; Whispers and vows complete.
@@ -690,7 +739,7 @@ if isinstance(pat, dict) and pat.get("tags"):
             if len(lines.get(b) or []) != 3:
                 errors.append(f"patrons:{pid}: line bank {b} needs 3 lines")
 
-# Rules 1.8 drop tables (World Play 1.1, spec 14 items 691-700): data/loot_tables.json
+# Rules 1.9 drop tables (World Play 1.1, spec 14 items 691-700): data/loot_tables.json
 lt = data.get("loot_tables")
 if lt is not None:
     RARITIES = {"standard", "fine", "masterwork", "relic", "celestial"}

@@ -303,7 +303,7 @@ describe('combat', () => {
     const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0]; u.ap = 6;
     u.ammo = 5; expect(reload(cb, u)).toBeNull();
-    // Rules 1.8: a speed reload drops the old magazine into the pile on the tile, rounds kept (cb.floor is retired).
+    // Rules 1.9: a speed reload drops the old magazine into the pile on the tile, rounds kept (cb.floor is retired).
     const pile = () => cb.objects!.find((o) => o.kind === 'pile' && o.pos === u.pos)!;
     expect(u.ammo).toBe(12); expect(u.mags).toEqual([12]); expect(pile().items!.map((e) => e.name)).toEqual(['Service pistol magazine 5/12']);
     u.ammo = 0; expect(reload(cb, u)).toBeNull(); expect(pile().items!.map((e) => e.pack!.mags)).toEqual([[5], [0]]); expect(u.mags).toEqual([]);
@@ -862,7 +862,7 @@ describe('rerolls and edits by unanimous vote (spec: Rerolls and edits)', () => 
   });
   it('a passed reroll undoes the turn and everything after it, and asks the Narrator again', () => {
     let { g, before, line } = room();
-    // loot[] stims join the character's stims (rules 1.8 review fix: a stim in the pack could never be used).
+    // loot[] stims join the character's stims (rules 1.9 review fix: a stim in the pack could never be used).
     const id = Object.keys(g.characters)[0], packed = JSON.stringify(before.characters[id].pack), stims = before.characters[id].stims;
     expect(g.characters[id].stims).toBe(stims + 2);
     g = apply(g, { type: 'vote/start', kind: 'reroll', entryId: line.id, note: 'Keel talks instead.' }, 'host');

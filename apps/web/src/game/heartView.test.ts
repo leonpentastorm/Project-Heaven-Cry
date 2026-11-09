@@ -47,7 +47,7 @@ describe('design cards', () => {
   it('the workshop verdict names both effects with numbers, and the tone\'s rider', () => {
     const { u } = fight();
     const v = designVerdict(u.mg, DESIGNS[2]);
-    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.6 \d+, stage 4 ×2.2 \d+\); then Push 3 tiles \(half\)/);
+    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.8 \d+, stage 4 ×2.2 \d+\); then Push 3 tiles \(half\)/);
     expect(designVerdict(u.mg, DESIGNS[0]).rider).toMatch(/^Fire: armour counts half; stage 2–3 Burning/);
     expect(toneChips([], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: true });
     expect(toneChips(['storm'], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: false });
@@ -60,7 +60,7 @@ describe('the HEART panel', () => {
     expect(beginOutburst(cb, rng, u, 'fb', undefined, true)).toBeNull();
     let p = heartPanel(cb, u)!;
     expect(p).toMatchObject({ name: 'Heartfire', stage: 0, tone: 'fire', form: 'burst' });
-    expect(p.stages.map((s) => s.mult)).toEqual([0.6, 1, 1.4, 1.8, 2.2]);
+    expect(p.stages.map((s) => s.mult)).toEqual([0.8, 1, 1.4, 1.8, 2.2]);
     expect(p.pump.ok).toBe(true);
     expect(p.pump.cost).toBe(u.mg.freePumps > 0 ? 'FREE' : '1 AP');
     expect(p.feedShow).toBe(false); // no glyph on your tile
@@ -70,7 +70,7 @@ describe('the HEART panel', () => {
     expect(p.letgo.strainOff).toBe(0); // pumped stages give no Strain back (spec item 541)
     u.mg.held.paid = 2; expect(heartPanel(cb, u)!.letgo.strainOff).toBe(Math.min(2, u.mg.strain)); p = heartPanel(cb, u)!;
     const v: any = heartVals(p, () => {});
-    expect(v.stageText).toBe('STAGE 3 / 4'); expect(v.btns.map((b: any) => b.key)).toEqual(['pump', 'release', 'steady', 'letgo', 'heartwatch']);
+    expect(v.stageText).toBe('STAGE 3 / 4'); expect(v.btns.map((b: any) => b.key)).toEqual(['pump', 'release', 'steady', 'letgo', 'heartwatch', 'revert']); // rules 1.8: Revert while a pump this turn can be taken back
     u.ap = 0;
     expect(heartPanel(cb, u)!.steadyBtn).toMatchObject({ ok: false, why: 'Needs 1 AP.' });
   });

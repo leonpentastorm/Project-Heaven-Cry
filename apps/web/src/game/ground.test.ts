@@ -1,4 +1,4 @@
-// World Play 1.1 on screen (rules revision 1.8; docs/design/world-play-1.1-spec.md), part A4: what the maps draw for
+// World Play 1.1 on screen (rules revision 1.9; docs/design/world-play-1.1-spec.md), part A4: what the maps draw for
 // piles (the stack with a count, the legend, the hover's lines), the Pick up checklist and what it sends, Near you, fog,
 // the two reloads in the action lists at the engine's real costs, the path's hazard words, and the pick-up's float. Built
 // on real games through the engine's actions, read through a player's view.

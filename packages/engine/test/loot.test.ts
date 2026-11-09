@@ -1,4 +1,4 @@
-// World Play 1.1 (rules revision 1.8), part A3: drop tables (docs/design/world-play-1.1-spec.md section 4; spec 14
+// World Play 1.1 (rules revision 1.9), part A3: drop tables (docs/design/world-play-1.1-spec.md section 4; spec 14
 // items 691–700). The engine rolls every drop on the fight's dice, once per death, into the pile on the death tile:
 // the weapon worn and the leftover magazines always, rolled things capped a fight, a boss's notable thing, and three
 // layers of tables (the engine's, the campaign's, the Narrator's), the most specific winning.
