@@ -1,8 +1,8 @@
 {
   "$schema_version": "2.0",
   "kind": "soul_modules",
-  "revision": 15,
-  "source": "PHC Core Rules v1.0, rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
+  "revision": 18,
+  "source": "PHC Core Rules v1.0, rules revision 1.8 (Outburst 4.0, accepted direction 9 Nov 2026; docs/design/outburst-4.0-spec.md), on rules 1.5 (Outburst 2.0, accepted 8 Nov 2026; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
   "cycle": {
     "begin_ap": 2,
     "swift_begin_ap": 1,
@@ -12,7 +12,7 @@
     "feed_ap": 1,
     "max_stage": 4,
     "stage_mult": [
-      0.6,
+      0.8,
       1,
       1.4,
       1.8,
@@ -33,7 +33,8 @@
       }
     ],
     "provisional": true,
-    "text": "Begin (2 AP, Swift 1) opens a ready design at stage 0 (+1 Strain). Pump (1 AP) +1 stage, to 4. Release (1 AP) fires it. Held past your turn: +1 stage free at your next turn start (the swell), +1 Strain (+2 Flooded). Empathy 3: 1 free Pump a round; Empathy 7: 2."
+    "text": "Begin (2 AP, Swift 1) opens a ready design at stage 0 (+1 Strain). Pump (1 AP) +1 stage, to 4, plain or with a feeling (rules 1.8). Release (1 AP) fires it: x0.8 / 1 / 1.4 / 1.8 / 2.2. Held past your turn: +1 stage free at your next turn start (the swell), +1 Strain (+2 Flooded). The first Pump each fight is free; Empathy 3: 1 free Pump a round; Empathy 7: 2. Revert Pump (0 AP) undoes the last pump this turn.",
+    "first_pump_free": true
   },
   "strain": {
     "limit": "3 + floor(will_power/2)",
@@ -131,8 +132,8 @@
     "module_slots": "1 + floor(will_power/3)",
     "forms_per_design": 1,
     "two_schools_from_will_power": 5,
-    "ready_designs": "2 + floor(empathy/2)",
-    "tones": "one at Visualization 1; more from tutors or plates"
+    "ready_designs": "max(3, 2 + floor(empathy/2)) (rules 1.8: at least 3)",
+    "tones": "one at Lore Master 1 (rules 1.8; was Visualization 1); more from tutors or plates"
   },
   "notes": "Every number from rules 1.5 is provisional until the damage balance pass. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead.",
   "schools": [
@@ -648,7 +649,11 @@
       "text": "Far: reach 8 tiles instead of 4 (+ the Soul range bonus). Bolt and Burst only matter; a Wave, Lance or Aura keeps its own length.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "range_tiles": 8
+      "range_tiles": 8,
+      "gate": {
+        "skill": "empathy",
+        "points": 2
+      }
     },
     {
       "id": "homing",
@@ -658,7 +663,11 @@
       "strain_extra": 0,
       "text": "+2 to the release roll and ignores half cover (Bolt and Lance roll; the areas don't).",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "gate": {
+        "skill": "composure",
+        "points": 2
+      }
     },
     {
       "id": "swift",
@@ -668,7 +677,11 @@
       "strain_extra": 0,
       "text": "Begin costs 1 AP instead of 2 (rules 1.5).",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "gate": {
+        "skill": "composure",
+        "points": 2
+      }
     },
     {
       "id": "ether",
@@ -678,7 +691,11 @@
       "strain_extra": 0,
       "text": "The release needs no line of sight and passes walls and cover (old Teleport designs become Ether).",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "gate": {
+        "skill": "lore_master",
+        "points": 2
+      }
     },
     {
       "id": "right",
@@ -688,7 +705,11 @@
       "strain_extra": 0,
       "text": "Status options use the Heart save.",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "gate": {
+        "skill": "composure",
+        "points": 2
+      }
     },
     {
       "id": "left",
@@ -698,7 +719,11 @@
       "strain_extra": 0,
       "text": "Status options use the Brain save.",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "gate": {
+        "skill": "composure",
+        "points": 2
+      }
     },
     {
       "id": "time",
@@ -709,7 +734,11 @@
       "text": "Conditions the Outburst gives (its school's option, the second school's rider) last 2 rounds longer. Element riders keep their own durations.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "extra_rounds": 2
+      "extra_rounds": 2,
+      "gate": {
+        "skill": "lore_master",
+        "points": 2
+      }
     },
     {
       "id": "inverse",
@@ -720,7 +749,11 @@
       "text": "Flips the effect: damage becomes a shield of the same size on an ally (enemies in the area are skipped); the Narrator rules a flipped debuff.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "adjudication": "hybrid"
+      "adjudication": "hybrid",
+      "gate": {
+        "skill": "camaraderie",
+        "points": 2
+      }
     },
     {
       "id": "size",
@@ -731,7 +764,11 @@
       "text": "A shape grows by one: Wave cone 4, Burst radius 2, Aura radius 2, Lance 6 tiles. Needs a shape (a Bolt can't take it).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "area_plus": 1
+      "area_plus": 1,
+      "gate": {
+        "skill": "will_power",
+        "points": 2
+      }
     },
     {
       "id": "random",
@@ -742,7 +779,11 @@
       "text": "Cost −10, but the engine picks the aim among every creature within reach (a Bolt or Burst lands on one of them; a Wave or Lance faces one).",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "random_target": true
+      "random_target": true,
+      "gate": {
+        "skill": "empathy",
+        "points": 2
+      }
     },
     {
       "id": "impact",
@@ -752,7 +793,11 @@
       "strain_extra": 0,
       "text": "Default: the effect happens when the Outburst lands. No change (kept so old designs stay readable).",
       "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new"
+      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
+      "gate": {
+        "skill": "will_power",
+        "points": 2
+      }
     },
     {
       "id": "at_once",
@@ -764,7 +809,11 @@
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "no_roll": true,
-      "damage_mult": 0.5
+      "damage_mult": 0.5,
+      "gate": {
+        "skill": "empathy",
+        "points": 2
+      }
     },
     {
       "id": "wave",
@@ -782,7 +831,11 @@
       "text": "Shape: a 3-tile cone from you toward the aim (Size: 4). Everyone in it, no roll; damage ×0.7.",
       "provisional": true,
       "look": "a violet crescent rolling off your chest",
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "gate": {
+        "skill": "lore_master",
+        "points": 2
+      }
     },
     {
       "id": "burst",
@@ -800,7 +853,11 @@
       "text": "Shape: radius 1 around the aimed tile (Size: radius 2). Everyone in it, no roll; damage ×0.7. Old Rain designs become Burst.",
       "provisional": true,
       "look": "a heart-shaped bloom opening at the aim",
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "gate": {
+        "skill": "lore_master",
+        "points": 2
+      }
     },
     {
       "id": "aura",
@@ -818,7 +875,11 @@
       "text": "Shape: radius 1 around you, all at once (Size: radius 2); no aim. You are spared unless it's a Buff. Damage ×0.6.",
       "provisional": true,
       "look": "a ring of violet heat breaking off you",
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "gate": {
+        "skill": "lore_master",
+        "points": 2
+      }
     },
     {
       "id": "lance",
@@ -836,7 +897,518 @@
       "text": "Shape: a straight 4-tile line from you toward the aim (8 directions), piercing everyone on it (Size: 6); walls stop it. Each target rolls; damage ×0.8.",
       "provisional": true,
       "look": "a narrow violet spear of light",
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "gate": {
+        "skill": "lore_master",
+        "points": 2
+      }
+    },
+    {
+      "id": "split",
+      "name": "Split",
+      "family": "behaviour",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "Two targets: a Bolt also strikes the nearest other creature within 2 of the aim that the school reaches, at full power. Bolt only.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "gate": {
+        "skill": "empathy",
+        "points": 2
+      }
+    },
+    {
+      "id": "ricochet",
+      "name": "Ricochet",
+      "family": "behaviour",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "A Bolt bounces off walls and cover: with a wall or cover tile within 2 of the aim it needs no line of sight and ignores half cover.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "bank_radius": 2,
+      "gate": {
+        "skill": "lore_master",
+        "points": 4
+      }
+    },
+    {
+      "id": "fuse",
+      "name": "Fuse",
+      "family": "trigger",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "The release lands and waits: it goes off at the start of your next turn, or when a creature steps into its area, whichever comes first.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "gate": {
+        "skill": "lore_master",
+        "points": 4
+      }
+    },
+    {
+      "id": "return",
+      "name": "Return",
+      "family": "behaviour",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "Out and back: a Bolt or Lance strikes each target twice (each strike rolls).",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "gate": {
+        "skill": "lore_master",
+        "points": 4
+      }
+    },
+    {
+      "id": "volley",
+      "name": "Volley",
+      "family": "behaviour",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "A Bolt becomes 3 small bolts at the aim, each x0.4, each rolling.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "bolts": 3,
+      "bolt_mult": 0.4,
+      "gate": {
+        "skill": "will_power",
+        "points": 4
+      }
+    },
+    {
+      "id": "bloom",
+      "name": "Bloom",
+      "family": "augment",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "A Burst or Aura grows +1 radius a stage reached.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "radius_per_stage": 1,
+      "gate": {
+        "skill": "will_power",
+        "points": 4
+      }
+    },
+    {
+      "id": "anchor",
+      "name": "Anchor",
+      "family": "augment",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "Targets hit are Pinned 1 round (Body save).",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "condition": "pinned",
+      "rounds": 1,
+      "gate": {
+        "skill": "implication",
+        "points": 2
+      }
+    },
+    {
+      "id": "lure",
+      "name": "Lure",
+      "family": "augment",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "Targets hit are pulled 2 tiles toward you.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "pull": 2,
+      "gate": {
+        "skill": "implication",
+        "points": 2
+      }
+    },
+    {
+      "id": "shell",
+      "name": "Shell",
+      "family": "augment",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "As it leaves, you gain a shield of the release's power x 0.5.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "shield_of_power": 0.5,
+      "gate": {
+        "skill": "camaraderie",
+        "points": 2
+      }
+    },
+    {
+      "id": "linger",
+      "name": "Linger",
+      "family": "trigger",
+      "cost": 15,
+      "strain_extra": 0,
+      "text": "The area stays as a field for 2 rounds: a creature of the side it works on that starts its turn there takes 5 (Damage, plus the tone's stage-1 rider) or heals 5 (Buff).",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "rounds": 2,
+      "tick": 5,
+      "gate": {
+        "skill": "implication",
+        "points": 2
+      }
+    },
+    {
+      "id": "quiet",
+      "name": "Quiet",
+      "family": "augment",
+      "cost": -5,
+      "strain_extra": 0,
+      "text": "The hold's Strain (Begin, swells, feelings) is halved, rounded down; the release x0.8.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "strain_mult": 0.5,
+      "damage_mult": 0.8,
+      "gate": {
+        "skill": "will_power",
+        "points": 2
+      }
+    },
+    {
+      "id": "silent",
+      "name": "Silent",
+      "family": "behaviour",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "Begin, Pump and Release don't reveal you while Hidden.",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "gate": {
+        "skill": "composure",
+        "points": 2
+      }
+    },
+    {
+      "id": "thread",
+      "name": "Thread",
+      "family": "augment",
+      "cost": 10,
+      "strain_extra": 0,
+      "text": "A Buff release threads the first two allies it reaches: the next heal on one heals the other as much (once).",
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "engine",
+      "gate": {
+        "skill": "camaraderie",
+        "points": 2
+      }
+    },
+    {
+      "id": "echo",
+      "name": "Echo",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "Casts again next turn at half. Learned only with the class, when its batch goes live.",
+      "class": "heartfed",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "cascade",
+      "name": "Cascade",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "+1 target a stage. Learned only with the class, when its batch goes live.",
+      "class": "heartfed",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "tether",
+      "name": "Tether",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "A beam between you and an ally that hits what crosses it. Learned only with the class, when its batch goes live.",
+      "class": "heartbinder",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "siphon",
+      "name": "Siphon",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "Steals MP. Learned only with the class, when its batch goes live.",
+      "class": "hexer",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "phantom",
+      "name": "Phantom",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "Passes through cover. Learned only with the class, when its batch goes live.",
+      "class": "shade",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator",
+      "gate": {
+        "skill": "lore_master",
+        "points": 2
+      }
+    },
+    {
+      "id": "orbit",
+      "name": "Orbit",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "Circles you for 2 rounds, hitting what comes near. Learned only with the class, when its batch goes live.",
+      "class": "banner_dancer",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "volatile",
+      "name": "Volatile",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "A kill makes the target explode. Learned only with the class, when its batch goes live.",
+      "class": "storm_hand",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "bastion",
+      "name": "Bastion",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "Shell on every ally in the shape. Learned only with the class, when its batch goes live.",
+      "class": "adamantile_knight",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "judgement_mark",
+      "name": "Judgement-mark",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "The target takes +25% from all sources for a round. Learned only with the class, when its batch goes live.",
+      "class": "inquisitor",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
+    },
+    {
+      "id": "halo",
+      "name": "Halo",
+      "family": "advanced",
+      "cost": 20,
+      "strain_extra": 0,
+      "text": "The Release also blesses with a Whisper effect. Learned only with the class, when its batch goes live.",
+      "class": "saint",
+      "locked": true,
+      "provisional": true,
+      "rules": "1.8",
+      "adjudication": "narrator"
     }
-  ]
+  ],
+  "practice": {
+    "per_release": 1,
+    "per_stage_past_1": 1,
+    "per_feeling": 1,
+    "thresholds": [
+      5,
+      15
+    ],
+    "then_every": 15,
+    "mastery_levels": [
+      3,
+      5,
+      7,
+      9
+    ],
+    "mastery_bonus": 5,
+    "gate_skills": [
+      "lore_master",
+      "will_power",
+      "empathy",
+      "camaraderie",
+      "implication",
+      "composure"
+    ],
+    "text": "Each Release earns 1, +1 per stage reached past 1, +1 per feeling poured in (a wild release none). A module pick at 5 practice, the second at 15, then every +15. Each Mastery level (3/5/7/9) in a gate skill adds +5 practice; Mastered (10) in one gives a free pick from the modules it gates.",
+    "provisional": true
+  },
+  "gates": {
+    "tier1_points": 2,
+    "tier2_points": 4,
+    "skills": {
+      "lore_master": [
+        "wave",
+        "burst",
+        "aura",
+        "lance",
+        "time",
+        "ether",
+        "fuse",
+        "return",
+        "ricochet",
+        "phantom"
+      ],
+      "will_power": [
+        "impact",
+        "size",
+        "bloom",
+        "volley",
+        "quiet"
+      ],
+      "empathy": [
+        "move",
+        "random",
+        "at_once",
+        "split"
+      ],
+      "camaraderie": [
+        "inverse",
+        "thread",
+        "shell"
+      ],
+      "implication": [
+        "anchor",
+        "lure",
+        "linger"
+      ],
+      "composure": [
+        "homing",
+        "swift",
+        "left",
+        "right",
+        "silent"
+      ]
+    },
+    "tier2": [
+      "bloom",
+      "volley",
+      "ricochet",
+      "fuse",
+      "return"
+    ],
+    "text": "A module needs 2 points in its gate skill (4 for the second tier) to be learned by practice, a Mastered pick, a plate or a tutor. The Narrator's grants and the Proving Ground ignore gates; designing uses what you know.",
+    "provisional": true
+  },
+  "start": {
+    "designs": [
+      {
+        "id": "heart_bolt",
+        "name": "Heart Bolt",
+        "school": "damage",
+        "modules": [
+          "move"
+        ],
+        "text": "Damage, one target, reach 8 (Move)."
+      },
+      {
+        "id": "mend",
+        "name": "Mend",
+        "school": "buff",
+        "option": "heal",
+        "modules": [],
+        "text": "Heal one ally."
+      },
+      {
+        "id": "heart_wave",
+        "name": "Heart Wave",
+        "school": "control",
+        "option": "push",
+        "modules": [
+          "wave"
+        ],
+        "text": "Push everyone in a 3-tile cone."
+      }
+    ],
+    "schools": [
+      "damage",
+      "buff",
+      "control"
+    ],
+    "modules": [
+      "wave",
+      "move"
+    ],
+    "feelings": 2,
+    "default_feelings": [
+      "rage",
+      "love"
+    ],
+    "min_ready_designs": 3,
+    "text": "A new Soul caster starts with 3 remembered designs (a design picked at creation replaces Heart Bolt), the Damage, Buff and Control schools, the shape Wave (Bolt is the default), 2 feelings and one tone at Lore Master 1.",
+    "provisional": true
+  },
+  "templates": [
+    {
+      "id": "heart_bolt",
+      "name": "Heart Bolt",
+      "school": "damage",
+      "modules": [
+        "move"
+      ],
+      "text": "Damage, one target, reach 8 (Move)."
+    },
+    {
+      "id": "mend",
+      "name": "Mend",
+      "school": "buff",
+      "option": "heal",
+      "modules": [],
+      "text": "Heal one ally."
+    },
+    {
+      "id": "heart_wave",
+      "name": "Heart Wave",
+      "school": "control",
+      "option": "push",
+      "modules": [
+        "wave"
+      ],
+      "text": "Push everyone in a 3-tile cone."
+    }
+  ],
+  "residue": {
+    "rounds": 2,
+    "text": "The strongest feeling poured in leaves residue on every tile the release covered, for 2 rounds (data/feelings.json).",
+    "provisional": true
+  }
 }

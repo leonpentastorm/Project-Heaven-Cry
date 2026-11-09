@@ -47,7 +47,7 @@ describe('design cards', () => {
   it('the workshop verdict names both effects with numbers, and the tone\'s rider', () => {
     const { u } = fight();
     const v = designVerdict(u.mg, DESIGNS[2]);
-    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.6 \d+, stage 4 ×2.2 \d+\); then Push 3 tiles \(half\)/);
+    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.8 \d+, stage 4 ×2.2 \d+\); then Push 3 tiles \(half\)/);
     expect(designVerdict(u.mg, DESIGNS[0]).rider).toMatch(/^Fire: armour counts half; stage 2–3 Burning/);
     expect(toneChips([], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: true });
     expect(toneChips(['storm'], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: false });
@@ -60,7 +60,7 @@ describe('the HEART panel', () => {
     expect(beginOutburst(cb, rng, u, 'fb', undefined, true)).toBeNull();
     let p = heartPanel(cb, u)!;
     expect(p).toMatchObject({ name: 'Heartfire', stage: 0, tone: 'fire', form: 'burst' });
-    expect(p.stages.map((s) => s.mult)).toEqual([0.6, 1, 1.4, 1.8, 2.2]);
+    expect(p.stages.map((s) => s.mult)).toEqual([0.8, 1, 1.4, 1.8, 2.2]);
     expect(p.pump.ok).toBe(true);
     expect(p.pump.cost).toBe(u.mg.freePumps > 0 ? 'FREE' : '1 AP');
     expect(p.feedShow).toBe(false); // no glyph on your tile
