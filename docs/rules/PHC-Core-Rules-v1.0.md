@@ -952,6 +952,8 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 | Crystallise | −10 |
 | A prayer | −5 |
 
+**On screen** (Leon, 9 Nov 2026; decision 110): the meter is a **mana forecast**, its own movable panel on the combat screen (above the map by default; drag it under the map or into the action column; under the map on narrow windows), read like the weather: the band and the number on a gauge of the four bands, the trend this round and last, the outlook to the next band up and down (in deaths and Crystallises), what this air does to magic and what moves it. It left the header. Every number comes from the tables above.
+
 **Mana cores** are bot clusters. A standard core holds 10 charge (small 5, heavy 20) and costs 150 credits. One standard core also makes 10 enhanced rounds.
 
 > **Rules revision 1.2 (accepted 6 Nov 2026, with Leon's answers: Line range by length; charge paid on drawing and more on firing; enemy Sigil users Evoke your patterns).** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76). **Its Sigil part is replaced by rules revision 1.4** (below); its Soul part is replaced by **rules revision 1.5** (Outburst 2.0, below).

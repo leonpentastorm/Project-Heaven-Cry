@@ -1,36 +1,41 @@
-// The combat screen's adjustable layout: two zones split by a draggable bar, and four panels you drag by their grip.
+// The combat screen's adjustable layout: two zones split by a draggable bar, and five panels you drag by their grip.
 //   - The map zone holds the map; the action zone holds the action menu (the turn column). Each can also hold the
-//     legend and the combat log, in any order. Dragging the map or the action menu into the other zone swaps the zones.
+//     mana forecast, the legend and the combat log, in any order (the forecast starts above the map). Dragging the map or the action menu into the other zone swaps the zones.
 //   - The splitter between the zones sets the map zone's width (drag, arrow keys; double-click or Home resets it).
 // The layout is a per-browser preference (localStorage), never game state. Pure functions first (tested in
 // combatLayout.test.ts), then the pointer handling the screen (screens/combat.js) calls.
-export type PanelId = 'map' | 'legend' | 'log' | 'actions';
+export type PanelId = 'map' | 'mana' | 'legend' | 'log' | 'actions';
 export type ZoneId = 'mapZone' | 'sideZone';
 export interface CombatLayout {
   /** The map zone's width in px (null: the screen's own fit). */
   width: number | null;
   /** The action zone sits on the left (the map zone on the right). */
   swap: boolean;
-  /** Panels in the map zone, top to bottom: always the map, plus any of legend and log. */
+  /** Panels in the map zone, top to bottom: always the map, plus any of the mana forecast, legend and log. */
   mapZone: PanelId[];
-  /** Panels in the action zone, top to bottom: always the action menu, plus any of legend and log. */
+  /** Panels in the action zone, top to bottom: always the action menu, plus any of the mana forecast, legend and log. */
   sideZone: PanelId[];
 }
-export const DEFAULT_LAYOUT: CombatLayout = { width: null, swap: false, mapZone: ['map', 'legend', 'log'], sideZone: ['actions'] };
+export const DEFAULT_LAYOUT: CombatLayout = { width: null, swap: false, mapZone: ['mana', 'map', 'legend', 'log'], sideZone: ['actions'] };
+/** The panels that move freely between the zones (the map and the action menu each anchor theirs). */
+const EXTRAS: PanelId[] = ['mana', 'legend', 'log'];
 export const LAYOUT_KEY = 'phc.combatLayout';
 /** The narrowest either zone may get (px): the map zone, and the action zone (screens/combat.js ASIDE_MIN is 410). */
 export const MAP_MIN = 320, SIDE_MIN = 360, SPLIT_W = 12, KEY_STEP = 24;
 
 /** Any stored value, made sound: every panel exactly once, the map in the map zone, the action menu in the other. */
 export function normalise(x: any): CombatLayout {
-  const ok = (l: any): PanelId[] => (Array.isArray(l) ? l.filter((p: any) => p === 'legend' || p === 'log') : []);
+  const ok = (l: any): PanelId[] => (Array.isArray(l) ? l.filter((p: any) => EXTRAS.includes(p)) : []);
   const seen = new Set<PanelId>();
   const take = (list: PanelId[]) => list.filter((p) => !seen.has(p) && (seen.add(p), true));
   const m = take(ok(x?.mapZone)), s = take(ok(x?.sideZone));
+  // A layout saved before the forecast existed gets it in its default place, just above the map.
+  const noMana = !seen.has('mana');
   for (const p of ['legend', 'log'] as PanelId[]) if (!seen.has(p)) m.push(p);
   const mapAt = Array.isArray(x?.mapZone) ? Math.max(0, x.mapZone.indexOf('map')) : 0;
   // The action menu always heads its zone (its Say row and turn card stay on top); extras sit under it.
   m.splice(Math.min(mapAt, m.length), 0, 'map'); s.unshift('actions');
+  if (noMana) m.splice(m.indexOf('map'), 0, 'mana');
   const w = Number(x?.width);
   return { width: Number.isFinite(w) && w > 0 ? Math.round(w) : null, swap: !!x?.swap, mapZone: m, sideZone: s };
 }
@@ -60,7 +65,8 @@ export function placement(l0: CombatLayout, sideHidden: boolean) {
   return {
     swap: l.swap && !sideHidden,
     /** CSS order of each panel inside its zone (the zones are flex columns). */
-    order: { map: order(map, 'map'), legend: Math.max(order(map, 'legend'), order(side, 'legend')), log: Math.max(order(map, 'log'), order(side, 'log')) },
+    order: { map: order(map, 'map'), mana: Math.max(order(map, 'mana'), order(side, 'mana')), legend: Math.max(order(map, 'legend'), order(side, 'legend')), log: Math.max(order(map, 'log'), order(side, 'log')) },
+    manaIn: (map.includes('mana') ? 'mapZone' : 'sideZone') as ZoneId,
     legendIn: (map.includes('legend') ? 'mapZone' : 'sideZone') as ZoneId,
     logIn: (map.includes('log') ? 'mapZone' : 'sideZone') as ZoneId,
     width: l.width,
@@ -72,7 +78,7 @@ export function readLayout(): CombatLayout { try { return normalise(JSON.parse(l
 export function saveLayout(l: CombatLayout) { try { if (isDefault(l)) localStorage.removeItem(LAYOUT_KEY); else localStorage.setItem(LAYOUT_KEY, JSON.stringify(normalise(l))); } catch { /* private mode: kept for this visit */ } }
 
 // ---------- dragging a panel by its grip ----------
-const PANEL_NAME: Record<PanelId, string> = { map: 'Map', legend: 'Legend', log: 'Combat log', actions: 'Action menu' };
+const PANEL_NAME: Record<PanelId, string> = { map: 'Map', mana: 'Mana forecast', legend: 'Legend', log: 'Combat log', actions: 'Action menu' };
 /** Start dragging a panel (pointerdown on its grip). A ghost follows the pointer; the zone and the gap it would drop
  * into light up; letting go moves it, Escape cancels. onDrop gets the new layout. */
 export function startPanelDrag(e: PointerEvent, panel: PanelId, layout: CombatLayout, onDrop: (l: CombatLayout) => void) {
@@ -182,6 +188,8 @@ export const LAYOUT_CSS = [
   '.phc-cb-split:hover>span,.phc-cb-split:focus-visible>span,.phc-cb-split.phc-split-on>span{width:4px;background:#6FEA77}',
   '.phc-cb-split:focus-visible{box-shadow:0 0 0 2px #FFFFFF}',
   '@media (max-width:999px){.phc-cb-split,.phc-grip,.phc-cb-layout-reset{display:none!important}.phc-cb-row{flex-direction:row!important}.phc-cb-left{max-width:none!important}}',
+  // Narrow windows stack the screen and dock the actions at the bottom: the map comes first, the mana forecast under it.
+  '@media (max-width:999px){.phc-cb-left>[data-phc-panel="mana"]{order:50!important}}',
   '.phc-reduce .phc-grip,.phc-reduce .phc-cb-split>span{transition:none}',
 ].join('');
 
@@ -189,7 +197,7 @@ export const LAYOUT_CSS = [
  * so a panel renders in whichever zone it is in (only one of the two sc-if blocks is ever on). */
 export function expandLayout(tpl: string): string {
   let t = tpl;
-  for (const id of ['legend', 'log']) {
+  for (const id of ['mana', 'legend', 'log']) {
     const m = t.match(new RegExp('<!--PANEL:' + id + '-->([\\s\\S]*?)<!--/PANEL:' + id + '-->'));
     if (m) t = t.replace('<!--SLOT:' + id + '-->', () => m[1]);
   }

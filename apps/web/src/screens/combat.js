@@ -19,6 +19,7 @@ const act = (a) => {
 };
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
+import { forecastVals } from '../game/manaForecast';
 import { castFight } from '../game/cast';
 import { worldLayer, kindBadge, pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { openReport } from '../game/report';
@@ -435,7 +436,9 @@ export class CombatLogic extends DCLogic {
   layoutVals(hidden) {
     const pl = placement(LAYOUT, hidden), o = pl.order;
     const panel = (n) => 'position: relative; order: ' + n + '; flex: none; min-width: 0';
-    const side = '; flex: 0 1 auto; min-height: 64px; max-height: 30vh; overflow-y: auto; scrollbar-width: thin';
+    // In the action zone an extra gives up its height before the turn box does (a high shrink factor): down to 64 px, then
+    // it scrolls inside, so the footer (Confirm, End turn) never spills under it on a short window.
+    const side = '; flex: 0 100 auto; min-height: 64px; max-height: 30vh; overflow-y: auto; scrollbar-width: thin';
     const grip = (id) => (e) => startPanelDrag(e.nativeEvent || e, id, LAYOUT, (l) => this.setLayout(l));
     const gripKey = (id) => (e) => { const n = keyMovePanel(e.nativeEvent || e, id, LAYOUT); if (!n) return; e.preventDefault(); this.setLayout(n);
       if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => requestAnimationFrame(() => { const b = id === 'actions' ? document.querySelector('.phc-cb-bar .phc-grip') : document.querySelector('[data-phc-panel="' + id + '"] > .phc-grip'); if (b && b.focus) b.focus(); })); };
@@ -444,11 +447,13 @@ export class CombatLogic extends DCLogic {
     const live = (w) => { this._liveW = w; const el = sec(); if (el) el.style.flex = '0 1 ' + w + 'px'; this.fitGrid(); };
     return {
       swap: pl.swap, custom: !isDefault(LAYOUT), reset: () => this.setLayout(DEFAULT_LAYOUT),
+      sideExtras: !hidden && (pl.manaIn === 'sideZone' || pl.legendIn === 'sideZone' || pl.logIn === 'sideZone'),
       // In the action zone the legend and the log take what room they need up to a cap, then scroll, so the actions keep theirs.
       mapStyle: panel(o.map), legendStyle: panel(o.legend) + (pl.legendIn === 'sideZone' ? side : ''), logStyle: panel(o.log) + (pl.logIn === 'sideZone' ? side : ''),
+      manaStyle: panel(o.mana) + (pl.manaIn === 'sideZone' ? side : ''), manaMap: pl.manaIn === 'mapZone', manaSide: pl.manaIn === 'sideZone',
       legendMap: pl.legendIn === 'mapZone', legendSide: pl.legendIn === 'sideZone', logMap: pl.logIn === 'mapZone', logSide: pl.logIn === 'sideZone',
-      grip: { map: grip('map'), legend: grip('legend'), log: grip('log'), actions: grip('actions') },
-      gripKey: { map: gripKey('map'), legend: gripKey('legend'), log: gripKey('log'), actions: gripKey('actions') },
+      grip: { map: grip('map'), mana: grip('mana'), legend: grip('legend'), log: grip('log'), actions: grip('actions') },
+      gripKey: { map: gripKey('map'), mana: gripKey('mana'), legend: gripKey('legend'), log: gripKey('log'), actions: gripKey('actions') },
       splitNow: pl.width ? Math.round((pl.width / rowW()) * 100) : 50,
       splitDown: (e) => { const bar = e.currentTarget, row = bar && bar.parentElement; if (!row) return; startSplit(e.nativeEvent || e, bar, row, pl.swap, live, (w) => this.setLayout({ ...LAYOUT, width: w })); },
       splitKey: (e) => { const el = sec(); const cur = LAYOUT.width || (el ? el.getBoundingClientRect().width : 600); const r = splitKey(e.nativeEvent || e, cur, rowW(), pl.swap);
@@ -465,12 +470,17 @@ export class CombatLogic extends DCLogic {
     if (!sec || !row || !cb) return;
     // Anything that changes the room (the header wrapping, the window) refits: watch the grid's column itself.
     if (this._roEl !== sec && typeof ResizeObserver !== 'undefined') { if (this._ro) this._ro.disconnect(); this._ro = new ResizeObserver(() => { if (LIVE === this) this.fitGrid(); }); this._ro.observe(sec); this._roEl = sec; }
+    // The panels in the map zone (the mana forecast wraps or opens, the legend grows) change the room too: watch them.
+    if (this._ro) for (const pnl of sec.querySelectorAll(':scope > [data-phc-panel]')) if (!(this._roSeen ||= new WeakSet()).has(pnl)) { this._roSeen.add(pnl); this._ro.observe(pnl); }
     const natW = 48 * cb.map.w + 36, natH = 48 * cb.map.h + 36, narrow = window.innerWidth < 1000;
     const rs = getComputedStyle(row), rowW = row.clientWidth - (parseFloat(rs.paddingLeft) || 0) - (parseFloat(rs.paddingRight) || 0);
     const sized = !narrow && !PANEL_HIDDEN && (LAYOUT.width || this._liveW);
     // The map's size toolbar sits above the grid: Auto leaves it its room.
     const tb = sec.querySelector('.phc-mapzoom'), toolH = tb ? tb.offsetHeight + 6 : 0;
-    const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = (narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18) - toolH;
+    // Panels set above the map in its zone (the mana forecast by default; the legend or log if moved there) take their room too.
+    const mapP = sec.querySelector(':scope > [data-phc-panel="map"]'), mapOrd = mapP ? Number(getComputedStyle(mapP).order) || 0 : 0, gap = parseFloat(getComputedStyle(sec).rowGap) || 0;
+    const panelsAboveH = [...sec.querySelectorAll(':scope > [data-phc-panel]')].filter((p) => p !== mapP && (Number(getComputedStyle(p).order) || 0) < mapOrd).reduce((t, p) => t + p.offsetHeight + gap, 0);
+    const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = (narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18) - toolH - panelsAboveH;
     // Manual: the player's own size (the map scrolls inside its zone when bigger).
     if (ZOOM.mode === 'manual') { if (ZOOM.scale !== (this._zoom || 1)) { this._zoom = ZOOM.scale; this.setState({}); } return; }
     // Auto: the largest size that fits, growing past 100% on big screens (up to the manual maximum).
@@ -480,7 +490,7 @@ export class CombatLogic extends DCLogic {
     if (PANEL_HIDDEN && !narrow) {
       const r = sec.getBoundingClientRect(), miniRight = getState().game?.sandbox ? 64 : 20;
       const besideW = window.innerWidth - miniRight - Math.min(380, window.innerWidth - 32) - 16 - (r.left + 2);
-      const aboveH = window.innerHeight - 16 - MINI_H - 12 - (r.top + 16);
+      const aboveH = window.innerHeight - 16 - MINI_H - 12 - (r.top + 16) - panelsAboveH;
       fit = Math.max(Math.min(fit, besideW / natW), Math.min(fit, aboveH / natH));
     }
     const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, fit) * 100) / 100;
@@ -1073,7 +1083,10 @@ export class CombatLogic extends DCLogic {
       leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : Math.ceil((48 * cb.map.w + 36) * zoom + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
       // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
       // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
-      turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: 0; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),
+      // With a panel moved into the action column (the forecast, the legend or the log) the turn box keeps a floor of
+      // 320 px on your turn (YOUR TURN, AP and the tabs about 130, a usable tab panel, the footer about 113), so the extra
+      // gives up its room first (it scrolls inside) and the footer never spills under it; the tab panel still scrolls.
+      turnBoxStyle: 'position: relative; display: flex; flex-direction: column; min-height: ' + (lay.sideExtras && mineTurn ? '320px' : '0') + '; flex: ' + (mineTurn ? '1 1 0px' : '0 0 auto'),
       panelOpen: !hidden, panelHidden: hidden, togglePanel: () => this.togglePanel(), asideCls: mineTurn ? 'phc-mine' : '', mini, quick,
       canCustomise: !!myU && !cb.over, customise: () => openCustomise(myU && myU.charId),
       pad, magicLegend, hasMagicLegend: magicLegend.length > 0, bp,
@@ -1083,8 +1096,8 @@ export class CombatLogic extends DCLogic {
         const cs = list.map((o) => { const n = o.itemCount ?? (o.items || []).length, why = o.searched || !n ? 'empty' : o.locked ? 'locked' : cur.ap < 1 ? 'needs 1 AP' : '';
           return { key: o.id, label: 'Search ' + o.name + ' · 1 AP', sub: why || 'holds ' + n + (n === 1 ? ' thing' : ' things'), off: !!why, go: () => { if (!why) act({ type: 'combat/search', unitId: cur.id, objId: o.id }); } }; });
         return { cbSearch: cs, hasCbSearch: cs.length > 0 }; })(),
-      manaText: 'MANA ' + mana + ' · ' + BAND_NAME[band.id], manaTitle: 'The ambient mana meter (0 to 40): ' + BAND_NAME[band.id] + ' air. Deaths and vented Flux raise it; Outbursts, Syphon and Crystallise draw it down.',
-      manaStyle: 'padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid #232D3F; color: #A3AEC2', showMana: anyMagic,
+      // The mana forecast (game/manaForecast.ts): the air as weather, in its own movable panel (it left the header).
+      fc: forecastVals(cb, !!S.fcOpen, () => { this.setState({ fcOpen: !this.state.fcOpen }); if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => this.fitGrid()); }),
       confirmSfx: isMagic ? 'none' : undefined, confirmText: T.confirmText,
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),

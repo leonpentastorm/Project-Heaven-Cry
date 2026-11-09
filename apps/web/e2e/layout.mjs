@@ -59,7 +59,8 @@ const m = await box0('[data-phc-panel="map"]');
 ok('holding a panel at the zone\'s top edge scrolls the zone (the map\'s top is back in view)', m.y >= zt.y - 2);
 await p.mouse.move(m.cx, m.y + 10, { steps: 4 }); await p.waitForTimeout(80); await p.mouse.up(); await p.waitForTimeout(500);
 const order = await p.evaluate(() => [...document.querySelectorAll('.phc-cb-left > [data-phc-panel]')].map((e) => ({ id: e.dataset.phcPanel, top: e.getBoundingClientRect().top })).sort((x, y) => x.top - y.top).map((x) => x.id));
-ok('the legend moves above the map: ' + order.join(', '), order[0] === 'legend' && order[1] === 'map');
+// The mana forecast heads the map zone by default (Leon, 9 Nov 2026): the legend lands just above the map, under it.
+ok('the legend moves above the map: ' + order.join(', '), order.indexOf('legend') === order.indexOf('map') - 1);
 
 // 4. Drag the action menu to the left: the zones swap sides.
 g = await box(gripOf('actions')); const mz = await box('.phc-cb-left');
