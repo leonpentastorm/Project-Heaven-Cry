@@ -87,7 +87,7 @@ Shown at each level-up. The prototype shows level 3 at the end of session 1:
 - **Skill point:** every skill, with its cap shown. After creation a skill can't pass its Attribute; capped skills explain what unlocks them (an attribute point at the next even level).
 - **Cores:** the Disco Elysium-style big rows (descriptor word, value, diamonds). Attribute and Core points are spent here when the level grants them.
 
-## Spotlight cut-ins (decision 111; `docs/design/cutin-spec.md`)
+## Spotlight cut-ins (decision 113; `docs/design/cutin-spec.md`)
 
 Over every in-room screen, z-index 64 (`apps/web/src/game/spotlight/`). A spotlight moment (the music's list, Play my song, a
 patron's intervention, the god interjection trigger) blurs and dims the screen (3 px) and tears one wide strip across it

@@ -4,6 +4,16 @@ import { SFX_CREDITS } from './sfxCredits';
 import { FX_CREDITS } from './fx/fxCredits';
 
 export interface Credit { what: string; who: string; licence?: string; url?: string }
+/** The deed each open licence links to: CC BY asks for the licence's URI or a link to it with every credit (CC BY 4.0
+ *  section 3(a)(1)(C); 3.0 section 4(b)), so the credits page links the licence name. */
+export const LICENCE_URL: Record<string, string> = {
+  'CC0': 'https://creativecommons.org/publicdomain/zero/1.0/',
+  'CC-BY 3.0': 'https://creativecommons.org/licenses/by/3.0/',
+  'CC-BY 4.0': 'https://creativecommons.org/licenses/by/4.0/',
+  'Apache-2.0': 'https://www.apache.org/licenses/LICENSE-2.0',
+  'MIT': 'https://opensource.org/license/mit',
+};
+export const licenceUrl = (licence: string | undefined): string | undefined => (licence ? LICENCE_URL[licence] : undefined);
 export const CREDITS: { group: string; items: Credit[] }[] = [
   { group: 'Game', items: [
     { what: 'Project Heaven Cry', who: 'Leon ("Romantic B0ss") and friends, from the 2020 tabletop game' },

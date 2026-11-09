@@ -10,7 +10,7 @@ import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from '.
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
-  /** An uploaded portrait's eye line for the spotlight cut-in's torn strip (y from the top, 0.05–0.70; decision 111).
+  /** An uploaded portrait's eye line for the spotlight cut-in's torn strip (y from the top, 0.05–0.70; decision 113).
    * Presentation only; the art library's portraits carry their own (art/catalog.json eye_line). */
   portraitEye?: number;
   /** Death-save failures while Downed outside a fight (spec: Anyone is a target). */

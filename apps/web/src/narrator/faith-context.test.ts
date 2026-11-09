@@ -26,6 +26,8 @@ describe('the Narrator and faith', () => {
     // Rules 1.6.2: the Miracle's gate and price, in one clause.
     expect(RULES_PROMPT).toMatch(/Miracles \(Faith 7 and Devotion 10, once a session; each lowers Devotion by 5 levels\)/);
     expect(RULES_PROMPT).not.toMatch(/patronMood/);
+    // Rules 1.6.3: Witnessed lasts the fight (the engine runs it; the Narrator only needs to know how long).
+    expect(RULES_PROMPT).toMatch(/Witnessed \(from a Hymn until the fight ends or the patron intervenes\)/);
   });
   it('each character carries a faith clause: belief, Devotion, Faith (and an Atheist with Faith)', () => {
     const g = party(), [v, k] = Object.values(g.characters);

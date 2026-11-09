@@ -15,7 +15,7 @@ export const layerEl = () => layer;
  *  dropped when the queue is cleared meanwhile (the room was left, the tab hidden, a new game loaded). */
 let gen = 0;
 export const bumpGen = () => { gen++; };
-// ---------- tempo (the spotlight cut-in's slowed action, decision 111) ----------
+// ---------- tempo (the spotlight cut-in's slowed action, decision 113) ----------
 /** The playback tempo: 1 normally; 0.85 while an action after a spotlight cut-in plays (every duration and delay drawn
  *  here is divided by it). Set around one event's handler by play.ts (withTempo); later steps keep the tempo they were
  *  scheduled under. */
@@ -243,6 +243,7 @@ export function timerRing(key: string, ms: number, color: string, label: string)
     + '<text x="20" y="24.5" text-anchor="middle" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="11" fill="#FFFFFF" class="sec"></text>'
     + '<text x="20" y="50" text-anchor="middle" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="8" letter-spacing="1" fill="' + color + '" stroke="#0A0D13" stroke-width="2.5" paint-order="stroke">' + label + '</text>');
   const box = put(s, { x: p.x, y: p.y - p.s * 1.05 }, size, size * 1.3, ms + 250);
+  box.style.zIndex = '2'; // over what a reload throws off (fx/brass.ts), under floating text
   anchor(box, key, ms + 250, -1.05);
   const run = s.querySelector('.run') as SVGCircleElement, sec = s.querySelector('.sec') as SVGTextElement;
   anim(run, [{ strokeDashoffset: 0 }, { strokeDashoffset: C }], { duration: ms, easing: 'linear', fill: 'forwards' });

@@ -177,7 +177,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
 
   // ----- showing one beat -----
   const showCombatTurn = (unitId: string, round: number) => {
-    // A spotlight cut-in on screen: the banner waits for it to clear (decision 111).
+    // A spotlight cut-in on screen: the banner waits for it to clear (decision 113).
     if (cutInActive()) { const f = () => { removeEventListener(EV_CUTIN_END, f); later(() => showCombatTurn(unitId, round), 60); }; addEventListener(EV_CUTIN_END, f); later(() => removeEventListener(EV_CUTIN_END, f), 2500); return; }
     const { game: g, meId: me, screen: sc } = live.current, cb = g?.combat;
     if (!g || !cb || g.phase !== 'combat' || sc !== 'combat' || cb.over || document.hidden) return;

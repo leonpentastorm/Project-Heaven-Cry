@@ -1,6 +1,6 @@
 # Spotlight cut-ins: torn eye strips (design, 9 Nov 2026)
 
-Status: **built** (decision 111; see section 11 for what the build changed or left out), open questions in section 10
+Status: **built** (decision 113; see section 11 for what the build changed or left out), open questions in section 10
 for Leon. Presentation only: no rule, no number the engine resolves, no dice changes. Built on branch
 `claude/awesome-babbage-8gngk8` from develop 0.5.0.
 
@@ -490,7 +490,7 @@ status, `docs/HANDOFF.md`.
 5. **Enemy moments:** only party moments cut in. A boss's own entrance or its big attack could use the same strip
    (red-inked) later. Want that?
 6. **Revive layout:** the reviver's strip and the revived one's, stacked. Or only the reviver?
-7. **Decision number:** this is decision 111 (develop's 0.6.0 took 110 for the mana forecast). Faith 2.2
+7. **Decision number:** this is decision 113 (develop's 0.6.0 took 110 for the mana forecast). Faith 2.2
    (`feature/faith-presence`) also claims 110: it renumbers when it merges develop.
 8. **Interventions gate and slow (section 12):** an intervention is a spotlight moment here, so it holds the queue
    (about 1.5 s, input held only while it shows) and slows the action it happened in. Faith 2.2's draft wanted a small

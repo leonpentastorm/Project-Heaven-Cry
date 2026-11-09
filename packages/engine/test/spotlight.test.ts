@@ -1,4 +1,4 @@
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111): the engine's `spotlight` presentation event. Every test
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 113): the engine's `spotlight` presentation event. Every test
 // goes through apply() (the path a player's click takes), except the direct calls that check the trigger API itself.
 import { describe, expect, it } from 'vitest';
 import { apply, d20, spotlight, SPOTLIGHT_FX, musicOf, viewFor, type Combat, type GameState } from '../src';
@@ -156,9 +156,9 @@ describe('spotlight: the trigger API (the god interjection system calls it)', ()
     const f = fightWith([{ name: 'Priest', skills: { faith: 7 } }, { name: 'Ally' }], [{ at: 'F6' }, { at: 'G6' }]);
     const c = f.g.characters[f.pc.charId!];
     c.belief = { kind: 'faithful', patron: 'the_quartermaster' } as any; c.patron = 'the_quartermaster'; c.devotion = 3;
-    const me = f.turn(f.pc); me.conds = { ...(me.conds || {}), witnessed: 2 } as any; me.ammo = 1;
-    for (const u of f.cb.units) if (u.side === 'foe') { u.hp = u.maxHp; }
-    f.act({ type: 'combat/attack', unitId: me.id, targetId: f.foe.id, mode: 'shot' } as any);
+    // Faith 2.2 (rules 1.6.3, item 742): the Quartermaster refunds any reload of yours while you are Witnessed.
+    const me = f.turn(f.pc); me.conds = { ...(me.conds || {}), witnessed: 2 } as any; me.ammo = 0;
+    f.act({ type: 'combat/reload', unitId: me.id } as any);
     const e = spots(f.cb.fx).find((x) => x.kind === 'god');
     expect(e).toMatchObject({ kind: 'god', patron: 'the_quartermaster', char: c.id, unit: me.id });
     expect(e.reason).toMatch(/reloads|reload/);

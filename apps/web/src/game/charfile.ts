@@ -61,7 +61,7 @@ export async function exportCharacter(sheet: Sheet & { savedAt?: number; draft?:
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = slug(sheet.name) + '.phc.zip'; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
-/** An imported file's cut-in framing (the uploaded portrait's eye line, decision 111): kept only with the file's own
+/** An imported file's cut-in framing (the uploaded portrait's eye line, decision 113): kept only with the file's own
  *  portrait, as a finite number clamped as the engine does (0.05–0.70, two decimals). Pure (tests). */
 export function importedEye(v: unknown, ownPortrait: boolean): number | undefined {
   if (!ownPortrait || v == null || v === '' || typeof v === 'boolean') return undefined;
@@ -105,7 +105,7 @@ export async function readCharacterFile(f: Blob): Promise<Sheet & { draft?: bool
     ...(typeof ob.name === 'string' && ob.name.trim() ? { name: ob.name.slice(0, 40) } : {}), ...(typeof ob.option === 'string' ? { option: ob.option.slice(0, 40) } : {}) };
   if (portrait) sheet.portrait = await portraitFrom(new Blob([portrait as BlobPart]));
   else if (typeof s.portrait === 'string' && BUILT_IN.has(s.portrait)) sheet.portrait = s.portrait; // a built-in portrait, never an outside link
-  // The cut-in framing an uploaded portrait was given (decision 111): only with that portrait.
+  // The cut-in framing an uploaded portrait was given (decision 113): only with that portrait.
   { const eye = importedEye(s.portraitEye, !!portrait); if (eye != null) sheet.portraitEye = eye; }
   if (s.draft || validateSheet(sheet)) sheet.draft = true;
   return sheet;

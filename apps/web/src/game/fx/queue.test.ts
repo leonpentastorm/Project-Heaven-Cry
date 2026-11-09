@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 // The effects queue (fx/play.ts planQueue): a backlog plays at most a little faster, then skips its oldest effects, and
 // a decided fight plays only its last few ("the battle keeps going in super speed after you've died").
-import { describe, expect, it } from 'vitest';
-import { planQueue, MAX_SPEEDUP, queueFx, clearFx, turnsBusyUntil, TURNS_HOLD_MAX } from './play';
+import { describe, expect, it, vi } from 'vitest';
+import { planQueue, MAX_SPEEDUP, queueFx, clearFx, turnsBusyUntil, TURNS_HOLD_MAX, FX_EVENT } from './play';
+import { faithBeat } from './faith';
 
 describe('the effects queue', () => {
   it('a short batch plays as it is', () => expect(planQueue([300, 300, 300], 7000)).toEqual({ from: 0, speed: 1 }));
@@ -26,5 +27,40 @@ describe('the effects queue', () => {
     queueFx([{ n: 4, k: 'shot', unit: 'p1', at: '5,5' }] as any, 'cb|t'); // your own shot holds nothing
     expect(turnsBusyUntil()).toBeLessThanOrEqual(performance.now() + 1);
     clearFx();
+  });
+});
+
+describe('a Miracle in the queue (Faith 2.2, Leon: "zoom to the map, then the miracle happens")', () => {
+  /** Queue a batch with fake clocks; return when (ms after queueing) each event played, by its n, and which never did. */
+  function run(evs: any[], opts: { keep?: number } = {}) {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance', 'Date'] });
+    clearFx(); const t0 = performance.now(), at = new Map<number, number>();
+    const on = (ev: Event) => { const d = (ev as CustomEvent).detail; if (d?.n) at.set(d.n, performance.now() - t0); };
+    window.addEventListener(FX_EVENT, on);
+    try { queueFx(evs, 'cb|t', opts); vi.advanceTimersByTime(60000); } finally { window.removeEventListener(FX_EVENT, on); clearFx(); vi.useRealTimers(); }
+    return at;
+  }
+  const miracle = (n: number) => ({ n, k: 'miracle', patron: 'nerukhan', id: 'judgement', at: '3,5', unit: 'u', char: 'c', name: 'Judgement', text: 'x', line: 'CHILD.', summary: 'y' });
+  const hurts = (from: number, count: number) => Array.from({ length: count }, (_, i) => ({ n: from + i, k: 'hurt', target: 'f' + i, at: '4,5', dmg: 170, killed: true }));
+  it('a Miracle followed by 20 hits: none plays before the cut-in lands; the Miracle itself plays at once', () => {
+    const land = faithBeat({ k: 'miracle' } as any)!;
+    const at = run([miracle(1), ...hurts(2, 20)]);
+    expect(at.get(1)).toBe(0);
+    for (let n = 2; n <= 21; n++) if (at.has(n)) expect(at.get(n)!, 'hit ' + n).toBeGreaterThanOrEqual(land);
+    expect(at.has(21)).toBe(true); // the last of its effects always plays
+  });
+  it('a long backlog before the Miracle: it still plays (after what came before), and its effects still wait for it', () => {
+    const land = faithBeat({ k: 'miracle' } as any)!;
+    const at = run([...hurts(1, 40), miracle(100), ...hurts(101, 12)]);
+    const m = at.get(100)!; expect(m).toBeGreaterThanOrEqual(0);
+    for (const [n, t] of at) if (n < 100) expect(t).toBeLessThanOrEqual(m); else if (n > 100) expect(t, 'hit ' + n).toBeGreaterThanOrEqual(m + land);
+    expect([...at.keys()].filter((n) => n > 100).length).toBe(12); // a dozen hits fit in the room after the landing: none skipped
+  });
+  it('a decided fight (keep): what came before is skipped, the Miracle and its effects play, the effects after the landing', () => {
+    const land = faithBeat({ k: 'miracle' } as any)!;
+    const at = run([...hurts(1, 10), miracle(50), ...hurts(51, 8)], { keep: 6 });
+    expect([...at.keys()].some((n) => n < 50)).toBe(false); expect(at.get(50)).toBe(0);
+    expect([...at.keys()].filter((n) => n > 50).length).toBe(8); // not trimmed to the last 6
+    for (const [n, t] of at) if (n > 50) expect(t).toBeGreaterThanOrEqual(land);
   });
 });

@@ -1,0 +1,102 @@
+// What weapons throw off (fx/brass.ts; Leon, 9 Nov 2026), in a Proving Ground fight: a shot's casing comes out from
+// behind the shooter's portrait (clipped where the portrait covers it) and lands behind the shooter, away from the
+// target; a pump gun's hull comes a beat after the shot; a bow's arrow is drawn from behind and swung to the front
+// before the shot flies; a reload's magazine drops straight down and is gone when it lands; a tactical reload takes it
+// back up; a revolver's brass drops and fresh rounds go in; a double barrel kicks both hulls out behind; an Evoker
+// throws out its spent core, the way opposite its last Evoke. Shots: e2e/shots/brass-*.png.
+import { chromium, player, click, BASE, OUT } from './lib.mjs';
+const browser = await chromium.launch();
+const p = await player(browser, 'host');
+const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
+const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
+await p.setViewportSize({ width: 1440, height: 900 });
+await p.goto(BASE);
+await click(p, 'PROVING GROUND');
+const nm = p.getByPlaceholder('Leon');
+await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForTimeout(2400);
+for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await p.waitForTimeout(380); }
+await p.waitForTimeout(1200);
+
+const me = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.side === 'pc' && !x.dead); return { id: u.id, pos: u.pos }; });
+const [mx, my] = me.pos.split(',').map(Number);
+// the portrait on screen
+const tok = await p.evaluate((k) => { const [x, y] = k.split(',').map(Number); const ref = String.fromCharCode(65 + x) + (y + 1);
+  const b = [...document.querySelectorAll('button.phc-tok[aria-label]')].find((el) => { const l = el.getAttribute('aria-label') || ''; return l.startsWith(ref) && !/[0-9A-Za-z]/.test(l.charAt(ref.length)); });
+  const img = [...b.children].find((c) => /z-index:\s*2/.test(c.getAttribute('style') || '')); const r = img.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }, me.pos);
+/** Play an effect and sample the pieces (tag, centre on screen, opacity, the clip on their box) every step ms. */
+const watch = (ev, ms = 1600, step = 40) => p.evaluate(async ({ ev, ms, step }) => {
+  const seen = [], t0 = performance.now();
+  window.__phcFx.playFx(ev);
+  while (performance.now() - t0 < ms) {
+    for (const el of document.querySelectorAll('[data-fx-piece]')) {
+      const r = el.getBoundingClientRect(), box = el.parentElement;
+      seen.push({ t: Math.round(performance.now() - t0), tag: el.getAttribute('data-fx-piece'), x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height, op: Number(getComputedStyle(el).opacity), clip: getComputedStyle(box).clipPath || '' });
+    }
+    await new Promise((res) => setTimeout(res, step));
+  }
+  return seen;
+}, { ev, ms, step });
+const by = (s, tag) => s.filter((x) => x.tag === tag);
+const shot = (weapon, cat, to) => ({ k: 'shot', unit: me.id, target: null, from: me.pos, to, weapon, cat, mode: 'shot', hit: true, dmg: 5 });
+const right = (mx + 4) + ',' + my, up = mx + ',' + Math.max(0, my - 4);
+
+// 1. A pistol shot to the right: the casing starts behind the portrait (its box cut where the portrait is) and lands left.
+let s = await watch(shot('service_pistol', 'pistol', right), 1300);
+let c = by(s, 'shell:pistol');
+ok('a pistol shot throws a casing (' + c.length + ' samples)', c.length > 5);
+ok('it comes out from behind the portrait: its box is cut out where the portrait is (' + (c[0]?.clip || '').slice(0, 40) + '…)', /evenodd/.test(c[0]?.clip || ''));
+const last = c.filter((x) => x.op > 0.5).pop();
+ok('the target is to the right, so it lands to the left, behind the shooter (' + Math.round(last?.x - tok.x) + ' px)', last && last.x < tok.x - tok.w * 0.4);
+await p.screenshot({ path: OUT + 'brass-pistol.png', clip: { x: Math.max(0, tok.x - 120), y: Math.max(0, tok.y - 100), width: 260, height: 200 } });
+// 2. A shot straight up: the casing lands below (behind is the opposite of the aim, not just left or right).
+s = await watch(shot('service_pistol', 'pistol', up), 1300); c = by(s, 'shell:pistol');
+const lastUp = c.filter((x) => x.op > 0.5).pop();
+ok('shooting up, it lands below the shooter (' + Math.round(lastUp?.y - tok.y) + ' px)', lastUp && lastUp.y > tok.y + tok.h * 0.4);
+// 3. A pump gun: the hull comes a beat after the shot.
+s = await watch(shot('lumeri_scattergun', 'shotgun', right), 1300); c = by(s, 'shell:hull');
+ok('a pump gun\'s hull comes out after the pump (first seen at ' + c[0]?.t + ' ms)', c.length && c[0].t >= 150);
+// 4. A bow: the arrow is drawn from behind (first on the side away from the target), then the shot flies.
+s = await watch(shot('longbow', 'bow', right), 900, 25); c = by(s, 'arrow');
+ok('a bow draws an arrow first (' + c.length + ' samples, first at ' + Math.round((c[0]?.x ?? 0) - tok.x) + ' px)', c.length > 4 && c[0].x <= tok.x + 2);
+const front = c.filter((x) => x.op > 0.5 && x.t > 350).pop();
+ok('…and swings it to the front, toward the target (' + Math.round((front?.x ?? 0) - tok.x) + ' px)', front && front.x > tok.x + tok.w * 0.2);
+// 5. A magazine reload: it drops straight down and is gone the moment it lands.
+s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200 }, 1200, 20); c = by(s, 'mag:curved_mag');
+const xs = c.map((x) => x.x), ys = c.map((x) => x.y);
+ok('a reload drops the magazine (' + c.length + ' samples)', c.length > 3);
+ok('straight down: it hardly moves sideways (' + Math.round(Math.max(...xs) - Math.min(...xs)) + ' px) and falls (' + Math.round(Math.max(...ys) - Math.min(...ys)) + ' px)', Math.max(...xs) - Math.min(...xs) < tok.w * 0.25 && Math.max(...ys) - Math.min(...ys) > tok.h * 0.3);
+const seenTill = c.filter((x) => x.op > 0.05).pop()?.t;
+ok('it is gone once it lands (last visible at ' + seenTill + ' ms, of a 1200 ms reload)', seenTill < 800);
+await p.evaluate((ev) => window.__phcFx.playFx(ev), { k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200 });
+await p.waitForTimeout(330); await p.screenshot({ path: OUT + 'brass-mag.png', clip: { x: Math.max(0, tok.x - 120), y: Math.max(0, tok.y - 100), width: 260, height: 200 } });
+await p.waitForTimeout(1500);
+// 6. Tactical: the magazine drops into view and goes back up behind the portrait.
+s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200, tactical: true }, 1300, 30); c = by(s, 'mag:curved_mag');
+const low = Math.max(...c.map((x) => x.y)), end = c.filter((x) => x.op > 0.2).pop();
+ok('a tactical reload takes the magazine back up into the pack (lowest ' + Math.round(low - tok.y) + ', last ' + Math.round(end.y - tok.y) + ' px)', end.y < low - tok.h * 0.4);
+// 7. A revolver: its brass drops, then fresh rounds go in; no magazine.
+s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'drifter_revolver', cat: 'revolver', how: 'mag', dur: 1200 }, 1500);
+ok('a revolver dumps its brass (' + new Set(by(s, 'shell:pistol').map((x) => x.t)).size + ' samples) and loads fresh rounds (' + by(s, 'round:pistol').length + '), no magazine',
+  by(s, 'shell:pistol').length > 3 && by(s, 'round:pistol').length > 3 && !s.some((x) => /^mag:/.test(x.tag)));
+// 8. A double barrel: both hulls kicked out behind (the shooter last aimed right: they go left), two fresh ones in.
+s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'coach_gun', cat: 'shotgun', how: 'loose', rounds: 2, dur: 1400 }, 1500); c = by(s, 'shell:hull');
+const hullEnd = c.filter((x) => x.op > 0.5).pop();
+ok('a double barrel kicks its hulls out behind (' + Math.round((hullEnd?.x ?? 0) - tok.x) + ' px) and takes two fresh ones (' + by(s, 'round:hull').length + ' samples)', hullEnd && hullEnd.x < tok.x - tok.w * 0.3 && by(s, 'round:hull').length > 2);
+// 9. An Evoker after an Evoke to the right: the spent core goes left.
+await p.evaluate((u) => window.__phcFx.playFx({ k: 'evoke', unit: u.id, at: u.pos, shape: 'line', tiles: [], dir: [1, 0], element: 'fire', missiles: [] }), me);
+await p.waitForTimeout(900);
+s = await watch({ k: 'core', unit: me.id, at: me.pos, dur: 1000, focus: 'evoker' }, 1500); c = by(s, 'core:evoker');
+const coreEnd = c.filter((x) => x.op > 0.5).pop();
+ok('the Evoker throws its spent core out behind, away from its last Evoke (' + Math.round((coreEnd?.x ?? 0) - tok.x) + ' px)', coreEnd && coreEnd.x < tok.x - tok.w * 0.4);
+s = await watch({ k: 'core', unit: me.id, at: me.pos, dur: 1000, focus: 'grand_staff' }, 600);
+ok('a grand staff throws its orb', by(s, 'core:staff').length > 2);
+await p.waitForTimeout(1500);
+ok('nothing left on the layer afterwards', (await p.locator('[data-fx-piece]').count()) === 0);
+ok('no page errors', p.errors.length === 0);
+if (p.errors.length) console.log(p.errors);
+await browser.close();

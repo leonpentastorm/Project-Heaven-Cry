@@ -1,4 +1,4 @@
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111): the client door and the one overlay's state.
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 113): the client door and the one overlay's state.
 //
 // Two doors, one look. Anything every player should see goes through the ENGINE door (packages/engine/src/spotlight.ts
 // spotlight(g, {...}) on the host: a 'spotlight' fx event in the shared state). This file is the CLIENT door, for this
@@ -19,6 +19,7 @@ import { uiPrefs, reducedMotion, sfx, SFX_FILES, type Sfx } from '../sfx';
 import { getState } from '../store';
 import { type CutInSpec, type CutInStrip, cutInFromFx, stripForChar, stripForPatron, patronData } from './spec';
 import { CUTIN_MS, CUTIN_MAX_MS, CUTIN_SKIP_MS, holdUntil } from './timing';
+import { stageBusy, claimStage, onStage } from '../stage';
 
 export * from './spec';
 export * from './timing';
@@ -92,6 +93,7 @@ function sound(spec: CutInSpec) {
 }
 
 function start(it: Item) {
+  claimStage(); // one stage (game/stage.ts): a Miracle's box still up closes first
   const rm = reducedMotion(), n = it.spec.strips.length, god = it.spec.strips.some((s) => s.god);
   const ms = CUTIN_MS(n, god, rm), id = it.spec.id || 'cutin-' + Math.random().toString(36).slice(2, 8);
   const timers: ReturnType<typeof setTimeout>[] = [];
@@ -113,8 +115,14 @@ function finish(id: string, r: CutInResult) {
   fire(EV_CUTIN_END, { id, kind: c.spec.kind, skipped: r === 'skipped' });
   notify();
   c.resolve(r);
-  const next = queue.shift(); if (next) start(next);
+  if (!stageBusy()) { const next = queue.shift(); if (next) start(next); }
 }
+// One stage with the Miracle (game/stage.ts, decision 113): a Miracle coming on clears the strip on screen at once (no
+// way out: the two never draw over each other); the queue waits while its scene is up and moves on when it lands.
+if (typeof window !== 'undefined') onStage(
+  () => { if (current) { current.skipped = true; finish(current.id, 'skipped'); } },
+  () => { if (!current) { const next = queue.shift(); if (next) start(next); } },
+);
 /** Skip the cut-in on screen: straight to its way out (150 ms), then it clears. */
 export function skipCutIn() {
   const c = current; if (!c || c.skipped) return;
@@ -142,7 +150,7 @@ export function showSpotlight(spec: CutInSpec, o: { code?: string; prefApplied?:
   if (!s || !s.strips?.length || (typeof document !== 'undefined' && document.hidden)) return Promise.resolve('off');
   return new Promise((resolve) => {
     const it = { spec: s, resolve };
-    if (!current) start(it);
+    if (!current && !stageBusy()) start(it);
     else if (o.preempt) { queue.unshift(it); skipCutIn(); }
     else queue.push(it);
   });

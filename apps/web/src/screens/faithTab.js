@@ -3,7 +3,8 @@
 // faithView and previewPrayer); this file is screen glue: state, words and styles. Buttons only, never a typed field.
 import { faithView, previewPrayer, FAITH_PATRON, GATE, MIRACLE_COST_LEVELS } from '@engine';
 import { faithPanel, prayerButtons, prayAction, pickerFor, FAITH_INK, FAITH_GOLD } from '../game/faithView';
-import { accentOf, patronMarkUri } from '../game/faithArt';
+import { accentOf, patronFace, patronMarkUri } from '../game/faithArt';
+import { zoomer } from './shared';
 import { act, toast } from '../game/store';
 
 const btnStyle = (on, off, ink = '#FFFFFF') => 'display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 10px; align-items: center; text-align: left; width: 100%; padding: 8px 10px; border-radius: 10px; font-family: inherit; color: #E7EBF3; cursor: ' + (off ? 'default' : 'pointer')
@@ -48,15 +49,25 @@ export function faithTabVals(sc, g, c) {
       open, opts, hasOpts: opts.length > 0, verdict, verdictStyle: 'font-size: 12px; line-height: 1.4; color: ' + (ready ? '#6FEA77' : '#A3AEC2'),
       cantConfirm: !ready, confirm: () => { if (!ready) return toast(verdict || 'Not now.'); pray(b, args); }, cancel: () => sc.setState({ faOpen: null, faPick: null }) };
   };
-  const meter = P.meter.filter((m) => m.n > 0).map((m) => ({ key: m.n, gate: m.gate || '', hasGate: !!m.gate, label: String(m.n),
+  // A gate's word stays on one line: centred under its cell, spilling into the gaps; the last (MIRACLE) ends at the edge.
+  const gateStyle = (n) => 'display: flex; justify-content: ' + (n === 10 ? 'flex-end' : 'center') + '; white-space: nowrap; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; line-height: 1.2; color: var(--faith-light); min-height: 11px';
+  const meter = P.meter.filter((m) => m.n > 0).map((m) => ({ key: m.n, gate: m.gate || '', hasGate: !!m.gate, label: String(m.n), gateStyle: gateStyle(m.n),
     style: 'height: 12px; border-radius: 3px; ' + (m.on ? 'background: ' + FAITH_INK : 'background: transparent; border: 1px solid #2E3A50') + (m.gate ? '; box-shadow: 0 0 0 1px ' + FAITH_GOLD : '') }));
   const rites = P.rites.map((r) => { const why = r.kept ? 'Kept this session.' : !story && r.engine ? 'Out of a fight.' : r.why || '';
     return { key: r.id, name: r.name, text: r.text, state: r.kept ? '✓ KEPT THIS SESSION' : r.engine ? (r.available ? 'READY' : 'NOT NOW') : 'THE NARRATOR MARKS IT',
       isEngine: r.engine, off: !r.available || r.kept || !story, why, label: r.kept ? '✓ Kept' : 'Keep the rite',
       keep: () => (why || !r.available ? toast(why || 'Not now.') : act({ type: 'faith/rite', charId: c.id, id: r.id })),
       style: 'min-height: 32px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (!r.available || r.kept || !story ? 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + FAITH_INK + '; background: transparent; color: #FFFFFF') }; });
+  // Faith 2.2 (spec 2.4): your patron's portrait beside the Devotion meter; a click opens it large (the lightbox).
+  const portrait = { has: !!P.portrait, img: P.portrait || '', zoom: zoomer(sc, P.portraitLarge || P.portrait, P.title, 'patron'), label: 'View ' + P.title + ' large',
+    style: 'display: block; flex: none; width: 76px; height: 95px; padding: 0; border-radius: 8px; overflow: hidden; background: #05070B; cursor: zoom-in; border: 1px solid ' + P.accent + '; box-shadow: 0 0 0 1px #05070B, 0 0 12px ' + P.accent + '55' };
+  // A grudge's banner shows the patron who holds it, greyed (spec 2.5).
+  const grudgeFace = P.grudge ? { src: P.grudge.face.src, imgStyle: P.grudge.face.imgStyle } : { src: '', imgStyle: '' };
   return {
-    has: true, ...P, faithful: P.faithful, atheist: !P.faithful, hasVow: !!P.vow, vow: P.vow || {}, hasRule: !!P.rule, hasLikes: P.likes.length > 0, hasTaboos: P.taboos.length > 0,
+    has: true, ...P, portrait, noPortrait: !P.portrait, grudgeFace,
+    // The portrait beside the patron's name, the Devotion words and the XP toward the next level; the meter's ten cells and
+    // their gates run under both, the panel's full width.
+    headStyle: 'display: grid; grid-template-columns: ' + (P.portrait ? '76px' : '48px') + ' minmax(0, 1fr); gap: 10px 12px; align-items: ' + (P.portrait ? 'start' : 'center') + '; padding: 12px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F; border-top: 3px solid ' + P.accent, faithful: P.faithful, atheist: !P.faithful, hasVow: !!P.vow, vow: P.vow || {}, hasRule: !!P.rule, hasLikes: P.likes.length > 0, hasTaboos: P.taboos.length > 0,
     likes: P.likes.map((t) => ({ key: t, t })), taboos: P.taboos.map((t) => ({ key: t, t })),
     meter, devotionLine: P.faithful ? P.devotionText : '', faithLine: 'FAITH ' + v.faith,
     // Rules 1.6.1: the XP toward the next level (its fill is faith light, always beside the words), the day, the cooldown, a grudge.
@@ -64,7 +75,6 @@ export function faithTabVals(sc, g, c) {
     xpNextText: P.xpNextText, dayText: P.dayText, hasCooldown: !!P.cooldown, cooldown: P.cooldown || '', hasGrudge: !!P.grudge, grudge: P.grudge || {},
     // Items 703 and 722: liked tags against their caps, so a capped tag's silence has a reason on screen.
     hasTagCaps: !!P.tagCaps, tagCaps: P.tagCaps?.text || '', tagCapsStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (P.tagCaps?.capped ? '#E7EBF3' : '#A3AEC2'),
-    headStyle: 'display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F; border-top: 3px solid ' + P.accent,
     witnessedStyle: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; ' + (P.witnessed.on ? 'border: 1px solid ' + FAITH_GOLD + '; color: #FFFFFF' : 'border: 1px dashed #2E3A50; color: #7F8BA1'),
     witnessedTitle: P.witnessed.can ? 'Witnessed: your patron is watching this fight (Faith 5 and up).' : 'Being Witnessed needs a patron and Faith 5.',
     hasClosed: !!P.closed, rites, hasRites: rites.length > 0, hasPieces: P.pieces.length > 0, hasLearned: P.learned.length > 0,
@@ -91,8 +101,39 @@ export function patronOfLog(line) {
 export function patronLineCard(e) {
   const pid = patronOfEntry(e); if (!pid) return null;
   const name = (FAITH_PATRON[pid]?.name || pid).toUpperCase();
-  return { patronMark: patronMarkUri(pid), patronName: name + (e.head && String(e.head).toUpperCase() !== name ? ' · ' + String(e.head).toUpperCase() : ''), patronText: String(e.text || '').replace(/^"(.*)"$/s, '$1'),
+  // Faith 2.2 (spec 2.6): a small round crop of the patron's face (the mark where there is no painting).
+  const f = patronFace(pid);
+  return { patronMark: patronMarkUri(pid), patronFace: f.src, patronFaceStyle: f.imgStyle, patronFaceBox: FACE_BOX(32, accentOf(pid), true), patronId: pid, patronName: name + (e.head && String(e.head).toUpperCase() !== name ? ' · ' + String(e.head).toUpperCase() : ''), patronText: String(e.text || '').replace(/^"(.*)"$/s, '$1'),
     patronStyle: 'margin: 0; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 10px; align-items: start; padding: 10px 12px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + accentOf(pid),
     patronHeadStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: ' + FAITH_INK,
     patronTextStyle: "margin: 0; font-family: 'Spectral', serif; font-size: 15px; font-style: italic; line-height: 1.5; color: #E7EBF3" };
+}
+
+/** The box a face crop sits in: a square (or a circle) of side px, edged in the patron's accent; grey: greyed (a grudge). */
+export const FACE_BOX = (px, accent, round, grey) => 'position: relative; display: block; flex: none; width: ' + px + 'px; height: ' + px + 'px; overflow: hidden; border-radius: ' + (round ? '50%' : '6px')
+  + '; background: #05070B; box-shadow: 0 0 0 1px ' + (grey ? '#3A4456' : accent) + (grey ? '; filter: grayscale(1) brightness(0.7); opacity: 0.85' : '');
+
+// ---------- the faith cards in the story stream (Faith 2.2, spec 2.5) ----------
+/** A story entry about a pact, a switch (leaving one patron for another), a grudge or apostasy, with its patron:
+ *  {kind, patron}, or null. The engine heads them "PACT · <PATRON>", "LEAVING · <PATRON> · …", "GRUDGE · <PATRON>" and
+ *  "APOSTASY" (packages/engine/src/faith.ts); apostasy names the patron in its text. */
+export function faithEventOf(e) {
+  if (!e || (e.kind !== 'system' && e.kind !== 'check')) return null;
+  const head = String(e.head || ''), names = BY_NAME();
+  const m = /^(PACT|LEAVING|GRUDGE) · ([^·]+?)(?: · |$)/.exec(head);
+  if (m && names[m[2].trim()]) return { kind: m[1] === 'LEAVING' ? 'leave' : m[1].toLowerCase(), patron: names[m[2].trim()] };
+  if (head === 'APOSTASY') { const t = /the pact with (.+?):/.exec(String(e.text || '')); const id = t && names[t[1].trim().toUpperCase()]; if (id) return { kind: 'apostasy', patron: id }; }
+  return null;
+}
+/** The card for one: a small portrait beside the words, edged in the patron's accent; a grudge's is greyed and edged in
+ *  complication red. A switch's roll stays in its head ("d20 14 +3 = 17 vs 11 · LET GO"). */
+export function faithEventCard(e) {
+  const x = faithEventOf(e); if (!x) return null;
+  const grudge = x.kind === 'grudge', acc = accentOf(x.patron), f = patronFace(x.patron), held = x.kind === 'leave' && /A GRUDGE$/.test(String(e.head || ''));
+  const ink = grudge || held ? '#F65157' : e.kind === 'check' ? (e.ok ? '#6FEA77' : '#A3AEC2') : FAITH_INK;
+  return { faithKind: x.kind, faithPatron: x.patron, faithFace: f.src, faithFaceStyle: f.imgStyle, faithFaceBox: FACE_BOX(40, acc, false, grudge), faithGrey: grudge ? 'true' : 'false',
+    faithHead: (grudge || held ? '✕ ' : '') + String(e.head || ''), faithText: String(e.text || ''),
+    faithStyle: 'margin: 0; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 10px; align-items: start; padding: 8px 12px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + (grudge ? '#F65157' : acc),
+    faithHeadStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
+    faithTextStyle: 'font-size: 13px; line-height: 1.5; color: #E7EBF3' };
 }

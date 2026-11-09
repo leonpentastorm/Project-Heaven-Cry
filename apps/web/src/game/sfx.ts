@@ -17,10 +17,12 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'reload_pistol' | 'reload_mag' | 'reload_rifle' | 'reload_shells' | 'rack' | 'jam_clear' | 'round_in' | 'mag_in' | 'dry_click'
   | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
   | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
-  // The spotlight cut-in (game/spotlight, decision 111): a tear and a low ring.
+  // The spotlight cut-in (game/spotlight, decision 113): a tear and a low ring.
   | 'spotlight_tear'
   | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent'
-  | ElementSfx | WordSfx | SoulSfx | FeelSfx;
+  | ElementSfx | WordSfx | SoulSfx | FeelSfx | FaithSfx;
+/** Faith 2.2 (rules 1.6.3): the Miracle cut-in's heavenly sting (game/cutIn.ts). */
+export type FaithSfx = 'miracle_sting';
 /** The eight feeling families (data/feelings.json `families`). */
 export type FeelingFamily = 'warm' | 'cold' | 'sharp' | 'low' | 'bright' | 'hollow' | 'wild' | 'holy';
 export const FEELING_FAMILIES: FeelingFamily[] = ['warm', 'cold', 'sharp', 'low', 'bright', 'hollow', 'wild', 'holy'];
@@ -91,6 +93,8 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   feel_residue_bright: CB('feel_residue_bright'), feel_residue_hollow: CB('feel_residue_hollow'), feel_residue_wild: CB('feel_residue_wild'), feel_residue_holy: CB('feel_residue_holy'),
   feel_unlock: CB('feel_unlock'), feel_revert: CB('feel_revert'), feel_tick: CB('feel_tick'),
   spotlight_tear: CB('spotlight_tear'),
+  // Faith 2.2: the Miracle cut-in's sting (leohpaz's revive, CC BY 4.0: trimmed to its first rising run, mono, levelled).
+  miracle_sting: CB('miracle_sting'),
 };
 /** Combat sounds load when a game is on screen (preloadCombatSfx), not on the title screen's first key press. */
 const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
@@ -104,6 +108,7 @@ const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   sg_trap_set: 'draw', sg_trap_sprung: 'evoke', sg_light: 'start', sg_turret: 'draw', sg_turret_break: 'hit', sg_fizzle: 'error', sg_cleanse: 'draw',
   sg_join: 'toggle', sg_inflect: 'start', sg_study: 'start', spotlight_tear: 'melee',
   soul_breath_in: 'outburst', soul_breath_out: 'release', soul_sigh: 'release', soul_gasp: 'miss', soul_thump: 'outburst', soul_choir: 'outburst', soul_crack: 'short',
+  miracle_sting: 'start',
 };
 /** The mix: how loud each event sits under the master UI volume. */
 const MIX: Partial<Record<Sfx, number>> = {
@@ -122,13 +127,13 @@ const MIX: Partial<Record<Sfx, number>> = {
   // Feelings: the pump layer sits under the thump (0.55); residue stings are quieter still.
   feel_pump_warm: 0.4, feel_pump_cold: 0.4, feel_pump_sharp: 0.38, feel_pump_low: 0.45, feel_pump_bright: 0.45, feel_pump_hollow: 0.45, feel_pump_wild: 0.4, feel_pump_holy: 0.4,
   feel_residue_warm: 0.28, feel_residue_cold: 0.28, feel_residue_sharp: 0.3, feel_residue_low: 0.3, feel_residue_bright: 0.28, feel_residue_hollow: 0.3, feel_residue_wild: 0.3, feel_residue_holy: 0.3,
-  feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3, spotlight_tear: 0.55,
+  feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3, spotlight_tear: 0.55, miracle_sting: 0.55,
   sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
 // ---------- settings (shared with the title screen's Settings) ----------
 const LS = 'phc.ui';
-/** cutins (decision 111): the spotlight cut-ins: every one, once per character per scene, or none. */
+/** cutins (decision 113): the spotlight cut-ins: every one, once per character per scene, or none. */
 export type CutinPref = 'all' | 'scene' | 'off';
 export interface UiPrefs { sfx: number; music: number; mute: boolean; reduceMotion: boolean; cutins: CutinPref }
 let prefs: UiPrefs = (() => { try { return { sfx: 60, music: 70, mute: false, reduceMotion: false, cutins: 'all' as CutinPref, ...JSON.parse(localStorage.getItem(LS) || '{}') }; } catch { return { sfx: 60, music: 70, mute: false, reduceMotion: false, cutins: 'all' as CutinPref }; } })();

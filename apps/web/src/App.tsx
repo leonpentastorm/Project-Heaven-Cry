@@ -99,7 +99,7 @@ export function App() {
       {st.screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
       {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
       {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
-      {/* Spotlight cut-ins (decision 111): torn eye strips over a blurred screen, z-index 64. */}
+      {/* Spotlight cut-ins (decision 113): torn eye strips over a blurred screen, z-index 64. */}
       {st.role && <CutInLayer game={st.game || null} screen={st.screen} />}
       {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
       {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}

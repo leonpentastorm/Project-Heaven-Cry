@@ -6,7 +6,7 @@ Everything the game and the artists use, organised **by use** (tidied for 0.0.1,
 - **`checksums.sha256`** lists every file under `art/` (archive included) plus the art tooling. Regenerate it with `python3 tools/rehash_art_checksums.py`; check everything with `python3 tools/validate_art.py` and `python3 tools/validate_patrons.py`.
 - **`style-guide/PHC-Style-Guide.md`** is the only style guide (v1.3); `AGENTS.md` is the short version for image agents.
 - `npm run assets` (`tools/build_web_assets.py`) turns the production files into the game's `apps/web/public/assets/*.webp`.
-- **`eye_line`** (`{ "x": 0.5, "y": 0.2 }`) on every `characters` and `patrons` entry: where the eyes are, as fractions of the 4:5 image (y from the top, x the point between the eyes), for the spotlight cut-in's torn eye strip (decision 111). Set from a face detector (OpenCV's YuNet) and checked by eye on contact sheets; the robots, masks and apparitions by eye. `tools/validate_art.py` requires it (0.05 ≤ y ≤ 0.70, 0.15 ≤ x ≤ 0.85); `npm run assets` writes them to `apps/web/src/game/eyelines.json`. A new portrait needs one.
+- **`eye_line`** (`{ "x": 0.5, "y": 0.2 }`) on every `characters` and `patrons` entry: where the eyes are, as fractions of the 4:5 image (y from the top, x the point between the eyes), for the spotlight cut-in's torn eye strip (decision 113). Set from a face detector (OpenCV's YuNet) and checked by eye on contact sheets; the robots, masks and apparitions by eye. `tools/validate_art.py` requires it (0.05 ≤ y ≤ 0.70, 0.15 ≤ x ≤ 0.85); `npm run assets` writes them to `apps/web/src/game/eyelines.json`. A new portrait needs one.
 
 ## Layout
 

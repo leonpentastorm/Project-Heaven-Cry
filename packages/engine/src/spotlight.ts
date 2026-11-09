@@ -1,4 +1,4 @@
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111): a presentation event, never a rule. The music's
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 113): a presentation event, never a rule. The music's
 // spotlight moments (a natural 20 on a Hard or Heroic check, an elite or boss taken down, a revive, an Ultimate, a
 // legendary deed), Play my song when it starts, and a patron breaking in (an intervention, or the god interjection
 // system) each put one `spotlight` event on the fx stream. Every client plays it from the shared state: a torn eye

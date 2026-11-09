@@ -1,4 +1,4 @@
-// The spotlight cut-in overlay (docs/design/cutin-spec.md 3, decision 111): the screen behind blurs and dims, and torn
+// The spotlight cut-in overlay (docs/design/cutin-spec.md 3, decision 113): the screen behind blurs and dims, and torn
 // strips of painted eyes cross it, inked in each character's colour (a god's in its accent). Mounted once in App.tsx
 // over every in-room screen, z-index 64 (over the turn intro's 57–58 and the effects layer's 45, under the Miracle's 66).
 //

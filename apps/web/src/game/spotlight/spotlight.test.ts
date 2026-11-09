@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// Spotlight cut-ins (docs/design/cutin-spec.md, decision 111): the seeded tear, the strips and captions built from the
+// Spotlight cut-ins (docs/design/cutin-spec.md, decision 113): the seeded tear, the strips and captions built from the
 // engine's events, merging, the player's setting, the geometry, and the effects queue's gate and slowed segment.
 import { describe, expect, it, beforeEach } from 'vitest';
 import { newGame, apply, ARCHETYPES, type GameState, type Sheet } from '@engine';
@@ -184,7 +184,7 @@ describe('the effects queue\'s gate (fx/play.ts)', () => {
   });
 });
 
-describe('review fixes (decision 111)', () => {
+describe('review fixes (decision 113)', () => {
   beforeEach(() => { sessionStorage.clear(); clearFx(); setUiPrefs({ cutins: 'all', reduceMotion: false }); });
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

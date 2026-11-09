@@ -61,7 +61,7 @@ as `ui.states.faith_light`, so `tools/validate_art.py` holds it to the UI contra
 `#1C2536`, against the 4.5:1 floor) like every other state colour. Patron *accents* (style guide, "Patron apparition
 colour identities") are paint and FX colours, not UI tokens; they never replace this gold or the Virtue ink.
 
-**Spotlight cut-ins** (decision 111). A character's strip takes the UI ink of their highest attribute (a tie: the class's
+**Spotlight cut-ins** (decision 113). A character's strip takes the UI ink of their highest attribute (a tie: the class's
 attribute, else the tree order) for the torn lip, the label and the name chip; the label always carries the attribute's
 word (`TAKEDOWN · AGILITY`). A god's strip takes the patron's accent (`data/patrons.json`) for the lip only; its words are
 Virtue ink `#D36A90`. Bodies are the neutrals `#10151F` / `#0A0D13`; text white and `#E7EBF3`.

@@ -29,3 +29,12 @@ new loop points.
 
 Web copies: `ffmpeg -i <master> -map 0:a -c:a copy -map_metadata -1 -id3v2_version 0 <web copy>` (all three are under
 4 MB, so they are not re-encoded).
+
+## Sound effect masters
+
+Most sound effects ship only as their web copies in `apps/web/public/sfx/` (CC0 packs, credited in
+`apps/web/src/game/sfxCredits.ts`). A third-party file that needs attribution keeps its original here:
+
+| File | What | Source and licence | Web copy |
+|---|---|---|---|
+| `sfx/leohpaz-30_revive_03.ogg` | `30_revive_03.ogg` from **8 Heals and Buffs SFX** by leohpaz, as downloaded 9 Nov 2026 | https://opengameart.org/content/8-heals-and-buffs-sfx, **CC BY 4.0** (attribution: leohpaz) | `apps/web/public/sfx/cb/miracle_sting.ogg`, the Miracle cut-in's sting (Faith 2.2): the first rising run (0–2.8 s, a 0.7 s fade-out from 2.1 s), mono, +12.5 dB, Vorbis q3: `ffmpeg -i <master> -t 2.8 -ac 1 -af "afade=t=out:st=2.1:d=0.7,volume=12.5dB" -c:a libvorbis -q:a 3 <web copy>` |
