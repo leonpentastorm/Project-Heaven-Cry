@@ -5,7 +5,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { newGame, apply, ARCHETYPES, refOf, type GameState, type Sheet } from '@engine';
 import { cutInFromFx, captionOf } from './spec';
-import { CUTIN_MS, holdUntil, CUTIN_TEMPO } from './timing';
+import { CUTIN_MS, holdUntil, CUTIN_TEMPO, CRIT_READ_MS, CRIT_TEXT_IN, CUTIN_MAX_MS } from './timing';
 import { cutInActive, cutInNow, skipCutIn } from './index';
 import { resetStage } from '../stage';
 import { queueFx, clearFx, gatesOf, slowedIn, setContext, playFx } from '../fx/play';
@@ -44,9 +44,12 @@ describe('the crit cut-in: short, one strip', () => {
     const s = cutInFromFx(g, [crit(12, a), { n: 13, k: 'spotlight', kind: 'takedown', char: a, targetName: 'Warden', reason: 'took down Warden', scene: 'fight1', from: 10 }] as any, 'cb|x')!;
     expect(s.kind).toBe('takedown'); expect(s.short).toBeUndefined(); expect(s.label).toMatch(/^TAKEDOWN/);
   });
-  it('timing: 900 ms (reduced motion 800), the way out from 600', () => {
-    expect(CUTIN_MS(1, false, false, true)).toBe(900); expect(CUTIN_MS(1, false, true, true)).toBe(800);
-    expect(holdUntil(1, false, false, true)).toBe(600); expect(CUTIN_MS(1)).toBe(1400);
+  it('timing (at Fast): the words fully in at 340 ms and held 1.6 s to read, the way out from 1940, 2240 in all (reduced motion: in at 120, 2020)', () => {
+    expect(CRIT_READ_MS).toBe(1600);
+    expect(CUTIN_MS(1, false, false, true)).toBe(2240); expect(CUTIN_MS(1, false, true, true)).toBe(2020);
+    expect(holdUntil(1, false, false, true)).toBe(1940); expect(holdUntil(1, false, true, true)).toBe(1720);
+    expect(holdUntil(1, false, false, true) - CRIT_TEXT_IN()).toBe(CRIT_READ_MS); expect(CUTIN_MS(1)).toBe(1400);
+    expect(CUTIN_MAX_MS).toBeGreaterThan(CUTIN_MS(1, false, false, true));
   });
 });
 
@@ -60,7 +63,7 @@ describe('the crit in the effects queue', () => {
     expect(gate).toMatchObject({ at: 0, from: 10, to: 12 });
     expect(slowedIn(evs[0], gate)).toBe(true); expect(slowedIn(evs[1], gate)).toBe(true); expect(slowedIn(evs[2], gate)).toBe(false);
     queueFx(evs, 'cb|crit');
-    expect(cutInActive()).toBe(true); expect(cutInNow()!.ms).toBe(900); expect(cutInNow()!.spec.short).toBe(true);
+    expect(cutInActive()).toBe(true); expect(cutInNow()!.ms).toBe(2240); expect(cutInNow()!.spec.short).toBe(true);
     skipCutIn(); clearFx();
   });
   it('Off: no gate, no cut-in', () => {

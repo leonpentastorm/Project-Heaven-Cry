@@ -80,6 +80,7 @@ s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup'
 const low = Math.max(...c.map((x) => x.y)), end = c.filter((x) => x.op > 0.2).pop();
 ok('a tactical reload takes the magazine back up into the pack (lowest ' + Math.round(low - tok.y) + ', last ' + Math.round(end.y - tok.y) + ' px)', end.y < low - tok.h * 0.4);
 // 7. A revolver: its brass drops, then fresh rounds go in; no magazine.
+await p.waitForTimeout(400); // the tactical magazine above is still going back up at Normal speed (× 1.176: game/combatSpeed.ts)
 s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'drifter_revolver', cat: 'revolver', how: 'mag', dur: 1200 }, 1500);
 ok('a revolver dumps its brass (' + new Set(by(s, 'shell:pistol').map((x) => x.t)).size + ' samples) and loads fresh rounds (' + by(s, 'round:pistol').length + '), no magazine',
   by(s, 'shell:pistol').length > 3 && by(s, 'round:pistol').length > 3 && !s.some((x) => /^mag:/.test(x.tag)));

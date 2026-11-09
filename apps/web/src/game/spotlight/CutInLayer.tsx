@@ -22,7 +22,9 @@ const BODY = '#10151F', GROUND = '#0A0D13', TEXT = '#E7EBF3';
 const natGuess = (src: string) => (/^data:/.test(src) ? 320 : 800);
 /** words: where the strip's words go: 'side' (one wide strip: beside the eyes), 'chip' (a stack: the name in the torn-off
  *  end), 'none' (a narrow screen: all of it in the plate under the strips). */
-function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 0 }: { s: CutInStrip; i: number; w: number; h: number; seed: string; frac: number; windowLeft: boolean; rm: boolean; out: boolean; words: 'side' | 'chip' | 'none'; spec: CutInSpec; dx?: number }) {
+/** A CSS time at the combat speed's pace (k: Showing.pace, 1 outside a fight). */
+const T = (ms: number, k: number) => Math.round(ms * k) + 'ms';
+function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 0, k = 1 }: { s: CutInStrip; i: number; w: number; h: number; seed: string; frac: number; windowLeft: boolean; rm: boolean; out: boolean; words: 'side' | 'chip' | 'none'; spec: CutInSpec; dx?: number; k?: number }) {
   const [img, setImg] = React.useState(s.img);
   const [natW, setNatW] = React.useState(() => natGuess(s.img));
   React.useEffect(() => { setImg(s.img); setNatW(natGuess(s.img)); if (/^data:/.test(s.img)) bigPortrait(s.img).then((b) => setImg(b)).catch(() => {}); }, [s.img]);
@@ -76,14 +78,14 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
             <rect x={inkEdgeA} y="0" width={inkEdgeB - inkEdgeA} height={h} fill={'url(#' + id + 'g)'} style={{ mixBlendMode: 'screen' }} />
             <rect x="0" y="0" width={w} height={h} fill={'url(#' + id + 'v)'} />
             {!rm && <rect className="phc-ci-light" x={windowLeft ? over : shape.edgeX} y="-10" width={w * 0.16} height={h + 20} fill={'url(#' + id + 'l)'}
-              style={{ animation: 'phcCiLight .4s ease-out ' + (300 + 70 * i) + 'ms both', ['--ci-run' as any]: (winX1 - winX0) + 'px' }} />}
+              style={{ animation: 'phcCiLight ' + T(400, k) + ' ease-out ' + T(300 + 70 * i, k) + ' both', ['--ci-run' as any]: (winX1 - winX0) + 'px' }} />}
           </g>
           <polyline points={shape.window.split(' ').slice(1, -1).join(' ')} fill="none" stroke={s.ink} strokeWidth="3" strokeLinejoin="round" />
         </g>
       </svg>
       {words === 'side' ? (
-        <div style={{ position: 'absolute', top: 0, bottom: 0, ...textSide, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6, minWidth: 0, textAlign: windowLeft ? 'left' : 'right',
-          opacity: out ? 0 : 1, transition: 'opacity .15s', animation: rm ? 'none' : spec.short ? 'phcCiText .2s ease-out .14s both' : 'phcCiText .3s ease-out .22s both' }}>
+        <div data-phc-spotlight-words="" style={{ position: 'absolute', top: 0, bottom: 0, ...textSide, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6, minWidth: 0, textAlign: windowLeft ? 'left' : 'right',
+          opacity: out ? 0 : 1, transition: 'opacity ' + T(150, k), animation: rm ? 'none' : spec.short ? 'phcCiText ' + T(200, k) + ' ease-out ' + T(140, k) + ' both' : 'phcCiText ' + T(300, k) + ' ease-out ' + T(220, k) + ' both' }}>
           <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '.22em', color: labelInk, textTransform: 'uppercase', overflowWrap: 'anywhere' }}>{spec.label}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: nameSize, lineHeight: 1.05, color: '#FFFFFF', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{s.name}</span>
           {spec.line && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.35, color: TEXT, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>“{spec.line}”</span>}
@@ -124,27 +126,27 @@ export function CutInView({ show }: { show: Showing }) {
   const words: 'side' | 'chip' | 'none' = narrow ? 'none' : single ? 'side' : 'chip', frac = narrow ? 0.86 : single ? 0.62 : 0.76;
   const lay = stackLayout(n, vw, vh, spec.strips.map((s) => !!s.god), !!spec.short);
   const w = vw * 1.2, seed = String(spec.seed ?? spec.id ?? 'cutin');
-  const outMs = skipped ? 150 : spec.short ? 200 : 250, lead = spec.strips[0];
+  const k = show.pace || 1, outMs = (skipped ? 150 : spec.short ? 200 : 250) * k, lead = spec.strips[0];
   const plate = words !== 'side', plateTop = lay[n - 1].top + lay[n - 1].h + vh * 0.025;
   return (
     <div data-phc-spotlight={spec.kind} data-phc-spotlight-id={show.id} style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
       <style>{CSS}</style>
-      <div className="phc-ci-veil" data-phc-spotlight-blur="" style={{ animation: out ? 'phcCiOutF ' + (outMs + 100) + 'ms ease-in ' + (skipped ? 0 : 100) + 'ms both' : 'phcCiVeil ' + (rm ? 120 : 160) + 'ms ease-out both' }} />
+      <div className="phc-ci-veil" data-phc-spotlight-blur="" style={{ animation: out ? 'phcCiOutF ' + T(outMs / k + 100, k) + ' ease-in ' + T(skipped ? 0 : 100, k) + ' both' : 'phcCiVeil ' + T(rm ? 120 : 160, k) + ' ease-out both' }} />
       {spec.strips.map((s, i) => {
-        const L = lay[i], delay = 40 + 70 * i;
-        const inAnim = rm ? 'phcCiFade 120ms ease-out both' : (L.fromLeft ? 'phcCiInL' : 'phcCiInR') + ' 240ms cubic-bezier(.2,.9,.25,1) ' + delay + 'ms both';
-        const outAnim = rm ? 'phcCiOutF ' + outMs + 'ms ease-in both' : (i % 2 ? 'phcCiOutD' : 'phcCiOutU') + ' ' + outMs + 'ms ease-in both';
+        const L = lay[i], delay = T(40 + 70 * i, k);
+        const inAnim = rm ? 'phcCiFade ' + T(120, k) + ' ease-out both' : (L.fromLeft ? 'phcCiInL' : 'phcCiInR') + ' ' + T(240, k) + ' cubic-bezier(.2,.9,.25,1) ' + delay + ' both';
+        const outAnim = rm ? 'phcCiOutF ' + T(outMs, 1) + ' ease-in both' : (i % 2 ? 'phcCiOutD' : 'phcCiOutU') + ' ' + T(outMs, 1) + ' ease-in both';
         return (
           <div key={s.key + i} data-phc-spotlight-strip={s.key} style={{ position: 'absolute', left: -vw * 0.1 + L.dx, top: L.top, width: w, height: L.h, transform: 'rotate(' + L.tilt + 'deg)', transformOrigin: '50% 50%', filter: 'drop-shadow(0 10px 24px rgba(0,0,0,.55))' }}>
             <div style={{ position: 'absolute', inset: 0, animation: out ? outAnim : inAnim, transformOrigin: '50% 50%' }}>
-              <Strip s={s} i={i} w={w} h={L.h} seed={seed} frac={frac} windowLeft={L.windowLeft} rm={rm} out={out} words={words} spec={spec} dx={L.dx} />
+              <Strip s={s} i={i} w={w} h={L.h} seed={seed} frac={frac} windowLeft={L.windowLeft} rm={rm} out={out} words={words} spec={spec} dx={L.dx} k={k} />
             </div>
           </div>
         );
       })}
       {plate && (
         <div data-phc-spotlight-plate="" style={{ position: 'absolute', left: 'calc(50% - min(360px, 46vw))', top: Math.min(plateTop, vh - (narrow ? 180 : 120)), width: 'min(720px, 92vw)', boxSizing: 'border-box', padding: '12px 18px 14px', background: 'rgba(10,13,19,.92)', borderTop: '3px solid ' + (lead.god ? lead.ink : lead.ink), boxShadow: '0 10px 30px rgba(0,0,0,.5)',
-          display: 'flex', flexDirection: 'column', gap: 4, opacity: out ? 0 : 1, transition: 'opacity .15s', animation: rm ? 'phcCiFade 120ms ease-out both' : 'phcCiText .3s ease-out ' + (260 + 70 * (n - 1)) + 'ms both' }}>
+          display: 'flex', flexDirection: 'column', gap: 4, opacity: out ? 0 : 1, transition: 'opacity ' + T(150, k), animation: rm ? 'phcCiFade ' + T(120, k) + ' ease-out both' : spec.short ? 'phcCiText ' + T(200, k) + ' ease-out ' + T(140, k) + ' both' : 'phcCiText ' + T(300, k) + ' ease-out ' + T(260 + 70 * (n - 1), k) + ' both' }}>
           <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: narrow ? '.14em' : '.3em', color: lead.god ? GOD_WORD_INK : lead.ink, overflowWrap: 'anywhere' }}>{spec.label}</span>
           {narrow && single && <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 30, lineHeight: 1.1, color: '#FFFFFF', overflowWrap: 'anywhere' }}>{lead.name}</span>}
           {narrow && !single && (

@@ -20,6 +20,7 @@ import { getState } from '../store';
 import { type CutInSpec, type CutInStrip, cutInFromFx, stripForChar, stripForPatron, patronData } from './spec';
 import { CUTIN_MS, CUTIN_MAX_MS, CUTIN_SKIP_MS, holdUntil } from './timing';
 import { stageBusy, claimStage, onStage } from '../stage';
+import { battlePace } from '../combatSpeed';
 
 export * from './spec';
 export * from './timing';
@@ -59,7 +60,9 @@ export function cutInForFx(g: GameState | null | undefined, events: FxEvent[], s
 }
 
 // ---------- the overlay's state ----------
-export interface Showing { spec: CutInSpec; id: string; t0: number; ms: number; hold: number; rm: boolean; out: boolean; skipped: boolean }
+/** pace: the combat speed's multiplier when it came on in a fight (game/combatSpeed.ts; 1 elsewhere): ms and hold are
+ *  already × pace, and the overlay's own animations follow it. */
+export interface Showing { spec: CutInSpec; id: string; t0: number; ms: number; hold: number; rm: boolean; out: boolean; skipped: boolean; pace?: number }
 interface Item { spec: CutInSpec; resolve: (r: CutInResult) => void }
 let current: (Showing & { resolve: (r: CutInResult) => void; timers: ReturnType<typeof setTimeout>[] }) | null = null;
 const queue: Item[] = [];
@@ -74,7 +77,9 @@ export const cutInUntil = () => (current ? current.t0 + current.ms : 0);
 const fire = (name: string, detail: any) => { try { window.dispatchEvent(new CustomEvent(name, { detail })); } catch { /* */ } };
 
 /** For the e2e suites: every cut-in shown ({kind, at, ms, slow, strips, label, caption, skipped, slowed: [{n, k, at}]}). */
-export interface CutInLog { id: string; kind: string; at: number; ms: number; end?: number; slow: boolean; strips: string[]; label: string; caption?: string; skipped?: boolean; tempo?: number; slowed: { n: number; k: string; at: number; beat: number }[]; rm: boolean }
+/** textIn / outAt: when (ms from its start) its words are fully on screen and when its way out begins (the words' time
+ *  fully visible is outAt − textIn unless skipped); pace: the combat speed's multiplier it played at. */
+export interface CutInLog { id: string; kind: string; at: number; ms: number; textIn: number; outAt: number; pace: number; end?: number; slow: boolean; strips: string[]; label: string; caption?: string; skipped?: boolean; tempo?: number; slowed: { n: number; k: string; at: number; beat: number }[]; rm: boolean }
 const LOG: CutInLog[] = [];
 if (typeof window !== 'undefined') {
   (window as any).__phcCutins = LOG;
@@ -84,6 +89,15 @@ if (typeof window !== 'undefined') {
 export function noteSlowed(id: string, e: { n: number; k: string }, beat: number, tempo: number) {
   const l = [...LOG].reverse().find((x) => x.id === id); if (!l) return;
   l.slow = true; l.tempo = tempo; l.slowed.push({ n: e.n, k: e.k, at: Math.round(performance.now()), beat: Math.round(beat) });
+}
+
+/** When the words are fully in (ms from the start, at Fast; CutInLayer's own timings): a wide single strip's side words
+ *  (.22 s + .3 s; a crit .14 + .2), a stack's plate (.26 s + 70 ms a strip + .3 s; a crit .14 + .2), reduced motion the
+ *  120 ms fade. Pure. */
+export function textInOf(n: number, rm: boolean, short: boolean): number {
+  if (rm) return 120;
+  if (short) return 340;
+  return n <= 1 ? 520 : 560 + 70 * (n - 1);
 }
 
 /** The cut-in's sounds: the tear (with a low sting), and for a god the choir under it. */
@@ -97,16 +111,17 @@ function sound(spec: CutInSpec) {
 function start(it: Item) {
   claimStage(); // one stage (game/stage.ts): a Miracle's box still up closes first
   const rm = reducedMotion(), n = it.spec.strips.length, god = it.spec.strips.some((s) => s.god);
-  const short = !!it.spec.short, ms = CUTIN_MS(n, god, rm, short), id = it.spec.id || 'cutin-' + Math.random().toString(36).slice(2, 8);
-  const timers: ReturnType<typeof setTimeout>[] = [];
-  current = { spec: { ...it.spec, id }, id, t0: performance.now(), ms, hold: holdUntil(n, god, rm, short), rm, out: false, skipped: false, resolve: it.resolve, timers };
-  LOG.push({ id, kind: it.spec.kind, at: Math.round(performance.now()), ms, slow: false, strips: it.spec.strips.map((s) => s.name), label: it.spec.label, caption: it.spec.caption, slowed: [], rm });
+  // In a fight every length follows the combat speed (Normal ≈ 15% slower than Fast).
+  const k = battlePace(), short = !!it.spec.short, ms = CUTIN_MS(n, god, rm, short) * k, id = it.spec.id || 'cutin-' + Math.random().toString(36).slice(2, 8);
+  const timers: ReturnType<typeof setTimeout>[] = [], hold = holdUntil(n, god, rm, short) * k;
+  current = { spec: { ...it.spec, id }, id, t0: performance.now(), ms, hold, rm, out: false, skipped: false, resolve: it.resolve, timers, pace: k };
+  LOG.push({ id, kind: it.spec.kind, at: Math.round(performance.now()), ms: Math.round(ms), textIn: Math.round(textInOf(n, rm, short) * k), outAt: Math.round(hold), pace: k, slow: false, strips: it.spec.strips.map((s) => s.name), label: it.spec.label, caption: it.spec.caption, slowed: [], rm });
   if (LOG.length > 50) LOG.splice(0, LOG.length - 50);
   sound(it.spec);
   fire(EV_CUTIN_START, { id, kind: it.spec.kind });
   timers.push(setTimeout(() => { if (current?.id === id) { current.out = true; notify(); } }, current.hold));
   timers.push(setTimeout(() => finish(id, 'shown'), ms));
-  timers.push(setTimeout(() => finish(id, 'shown'), CUTIN_MAX_MS)); // the cap, whatever happens
+  timers.push(setTimeout(() => finish(id, 'shown'), CUTIN_MAX_MS * k)); // the cap, whatever happens
   notify();
 }
 function finish(id: string, r: CutInResult) {
@@ -129,7 +144,7 @@ if (typeof window !== 'undefined') onStage(
 export function skipCutIn() {
   const c = current; if (!c || c.skipped) return;
   c.skipped = true; c.out = true; notify();
-  c.timers.push(setTimeout(() => finish(c.id, 'skipped'), CUTIN_SKIP_MS));
+  c.timers.push(setTimeout(() => finish(c.id, 'skipped'), CUTIN_SKIP_MS * (c.pace || 1)));
 }
 /** Take one cut-in back by its id: dropped from the queue (it resolves 'off'), or cleared at once if it is on screen.
  *  The effects gate calls it when its cap opened the gate first, so a late cut-in never shows over the aftermath. */

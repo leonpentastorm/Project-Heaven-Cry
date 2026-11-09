@@ -3,6 +3,7 @@
 // nothing here touches the React-managed DOM except through animations (which leave its attributes alone).
 import { refOf } from '@engine';
 import { reducedMotion } from '../sfx';
+import { battlePace } from '../combatSpeed';
 
 let layer: HTMLDivElement | null = null;
 export const setLayer = (el: HTMLDivElement | null) => { layer = el; };
@@ -15,18 +16,24 @@ export const layerEl = () => layer;
  *  dropped when the queue is cleared meanwhile (the room was left, the tab hidden, a new game loaded). */
 let gen = 0;
 export const bumpGen = () => { gen++; };
-// ---------- tempo (the spotlight cut-in's slowed action, decision 113) ----------
-/** The playback tempo: 1 normally; 0.85 while an action after a spotlight cut-in plays (every duration and delay drawn
- *  here is divided by it). Set around one event's handler by play.ts (withTempo); later steps keep the tempo they were
- *  scheduled under. */
+// ---------- tempo (the combat speed, and the spotlight cut-in's slowed action, decision 113) ----------
+/** The spotlight tempo: 1 normally; 0.85 while an action after a spotlight cut-in plays (every duration and delay drawn
+ *  here is divided by it, and one-shot sounds play at its rate). Set around one event's handler by play.ts (withTempo);
+ *  later steps keep the tempo they were scheduled under. */
 let tempo = 1;
 export const fxTempo = () => tempo;
+/** The combat speed's multiplier (game/combatSpeed.ts: Normal ≈ 1.176, Fast 1; 1 outside a fight). */
+export const fxPace = () => battlePace();
+/** Everything together: how much longer than its written length a duration or delay drawn now plays (pace ÷ tempo;
+ *  the spotlight's slow-mo stacks on the combat speed). */
+export const fxScale = () => battlePace() / tempo;
 /** Run f with this tempo (its own later steps, scheduled with after(), keep it). */
 export function withTempo<T>(tp: number, f: () => T): T { const was = tempo; tempo = tp > 0 ? tp : 1; try { return f(); } finally { tempo = was; } }
-/** ms at the current tempo. */
-export const slow = (ms: number) => (tempo === 1 ? ms : ms / tempo);
-/** Run f after ms, unless the effects were cleared meanwhile. The wait follows the tempo, and f runs under it. */
-export const after = (f: () => void, ms: number) => { const g0 = gen, tp = tempo; setTimeout(() => { if (g0 === gen) withTempo(tp, f); }, tp === 1 ? ms : ms / tp); };
+/** ms at the current pace and tempo. */
+export const slow = (ms: number) => { const k = fxScale(); return k === 1 ? ms : ms * k; };
+/** Run f after ms, unless the effects were cleared meanwhile. The wait follows the pace and tempo, and f runs under the
+ *  same tempo. */
+export const after = (f: () => void, ms: number) => { const g0 = gen, tp = tempo; setTimeout(() => { if (g0 === gen) withTempo(tp, f); }, slow(ms)); };
 
 // ---------- finding tiles and tokens ----------
 /** The on-screen tile for a grid key ("x,y"): a button.phc-tok whose aria-label starts with its reference ("C7 · …" or
@@ -93,7 +100,8 @@ export function sprite(name: string, color?: string): HTMLElement {
 }
 /** Animate a node; returns the animation (or null where the browser has none). Errors never escape. */
 export function anim(el: Element, frames: Keyframe[], opts: KeyframeAnimationOptions): Animation | null {
-  if (tempo !== 1) opts = { ...opts, ...(typeof opts.duration === 'number' ? { duration: opts.duration / tempo } : {}), ...(opts.delay ? { delay: opts.delay / tempo } : {}) };
+  const k = fxScale();
+  if (k !== 1) opts = { ...opts, ...(typeof opts.duration === 'number' ? { duration: opts.duration * k } : {}), ...(opts.delay ? { delay: opts.delay * k } : {}) };
   try { return (el as any).animate ? el.animate(frames, opts) : null; } catch { return null; }
 }
 /** A sprite burst at a point: scale from a to b and fade, rotated. */
@@ -155,7 +163,7 @@ function track() {
 }
 /** Keep a node centred over a tile (dy in tiles) while it lives, so it follows scrolling and re-layouts. */
 export function anchor(box: HTMLElement, key: string, ms: number, dy = 0) {
-  anchored.push({ box, key, until: performance.now() + ms, dy });
+  anchored.push({ box, key, until: performance.now() + slow(ms), dy });
   if (!raf) raf = requestAnimationFrame(track);
 }
 
@@ -248,8 +256,8 @@ export function timerRing(key: string, ms: number, color: string, label: string)
   const run = s.querySelector('.run') as SVGCircleElement, sec = s.querySelector('.sec') as SVGTextElement;
   anim(run, [{ strokeDashoffset: 0 }, { strokeDashoffset: C }], { duration: ms, easing: 'linear', fill: 'forwards' });
   anim(box, [{ transform: 'scale(.6)', opacity: 0 }, { transform: 'scale(1)', opacity: 1, offset: 0.08 }, { transform: 'scale(1)', opacity: 1, offset: 0.85 }, { transform: 'scale(1.15)', opacity: 0 }], { duration: ms + 250, fill: 'forwards' });
-  const t0 = performance.now();
-  const tick = () => { const left = Math.max(0, ms - (performance.now() - t0)); sec.textContent = (left / 1000).toFixed(1); if (left > 0 && box.isConnected) setTimeout(tick, 100); else sec.textContent = '✓'; };
+  const t0 = performance.now(), real = slow(ms); // the countdown runs the time the ring really takes (the pace and tempo)
+  const tick = () => { const left = Math.max(0, real - (performance.now() - t0)); sec.textContent = (left / 1000).toFixed(1); if (left > 0 && box.isConnected) setTimeout(tick, 100); else sec.textContent = '✓'; };
   tick();
 }
 /** A pulse ring from a tile (turn start, heartbeat, a shield). */

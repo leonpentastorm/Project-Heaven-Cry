@@ -59,6 +59,9 @@ await act(host, { type: 'sandbox/fight' });
 await until(host, () => window.__phc.getState().screen === 'combat');
 await until(mai, () => window.__phc.getState().screen === 'combat');
 ok('both players are on the combat screen', true);
+// The combat speed (game/combatSpeed.ts): every length below is Fast's, × K at the player's speed (Normal ≈ 1.176).
+const K = (await host.evaluate(() => window.__phcCombatTempo())).mult;
+ok('the combat speed in force: × ' + K.toFixed(4), K >= 1 && K < 1.2);
 
 // 2. (a) The host's turn: a boss next to the host's fighter, at 1 HP; shoot it down.
 const cur = (p) => p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb && cb.units.find((x) => x.id === cb.order[cb.turn]); });
@@ -111,13 +114,13 @@ ok('input is held while it shows', holdDuring);
 await settle(host);
 let L = (await logs(host)).slice(before), td = L.find((x) => x.kind === 'takedown');
 ok('the host\'s cut-in is a takedown, "' + (td && td.caption) + '", ' + (td && td.label), !!td && /Took down Warden/.test(td.caption) && /^TAKEDOWN · /.test(td.label));
-ok('it lasts about 1.4 s (' + (td && td.end - td.at) + ' ms)', !!td && td.end - td.at >= 1300 && td.end - td.at <= 1700);
+ok('it lasts about 1.4 s × the speed (' + (td && td.end - td.at) + ' ms)', !!td && td.end - td.at >= 1300 * K && td.end - td.at <= 1700 * K);
 await host.waitForTimeout(800); L = (await logs(host)).slice(before); td = L.find((x) => x.kind === 'takedown');
 const sl = td ? td.slowed : [];
 ok('the shot that took it down plays after the cut-in, slowed (tempo ' + (td && td.tempo) + '; ' + sl.map((x) => x.k + ' ' + x.beat).join(', ') + ')', !!td && td.slow && td.tempo === 0.85 && sl.length >= 2 && sl[0].at >= td.end - 5);
 const shotEv = sl.find((x) => x.k === 'shot'), i0 = sl.indexOf(shotEv);
 const gap = shotEv && sl[i0 + 1] ? sl[i0 + 1].at - shotEv.at : 0;
-ok('the shot holds 400 / 0.85 ≈ 471 ms instead of 400 (beat ' + (shotEv && shotEv.beat) + ', measured ' + gap + ' ms)', !!shotEv && shotEv.beat >= 465 && shotEv.beat <= 476 && gap >= 440);
+ok('the shot holds 400 / 0.85 ≈ 471 ms (× the speed: ' + Math.round(400 / 0.85 * K) + ') instead of 400 (beat ' + (shotEv && shotEv.beat) + ', measured ' + gap + ' ms)', !!shotEv && Math.abs(shotEv.beat - 400 / 0.85 * K) <= 6 && gap >= 440 * K);
 await settle(host);
 ok('and the input hold releases', await host.evaluate(() => window.__phcHold() <= performance.now() + 5));
 
@@ -177,7 +180,7 @@ const cr = await critShot('Rook', 'sturdy');
 ok('the host\'s shot is a critical hit (a natural 20)', !!cr);
 let critCut = null, critStrip = false, casingAt = 0;
 if (cr) {
-  // the short cut-in is 0.9 s: the screenshot is taken as soon as the strip is in (its slide-in ends at 280 ms)
+  // the short cut-in is 2.24 s (× the speed): the screenshot is taken as soon as the strip is in (its slide-in ends at 280 ms)
   await host.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-strip]').first().waitFor({ timeout: 3000 }).catch(() => {});
   critStrip = await host.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-strip]').count() === 1;
   await host.waitForTimeout(140); await snap(host, 'f-crit');
@@ -187,9 +190,9 @@ if (cr) {
   critCut = (await logs(host)).slice(cr.nb).find((x) => x.kind === 'crit');
 }
 ok('the crit cut-in: one strip, "' + (critCut && critCut.label) + '", "' + (critCut && critCut.caption) + '"', critStrip && !!critCut && /^CRITICAL HIT · /.test(critCut.label) && /^Critical hit on (Rook|an unseen hostile)$/.test(critCut.caption) && critCut.strips.length === 1);
-ok('it is the short one (' + (critCut && critCut.end - critCut.at) + ' ms)', !!critCut && critCut.end - critCut.at >= 800 && critCut.end - critCut.at <= 1150);
+ok('it is the short one: its words held 1.6 s to read (' + (critCut && critCut.end - critCut.at) + ' ms in all, words ' + (critCut && critCut.outAt - critCut.textIn) + ' ms)', !!critCut && critCut.end - critCut.at >= 2140 * K && critCut.end - critCut.at <= 2400 * K && critCut.outAt - critCut.textIn >= 1600 * K - 1);
 const csl = critCut ? critCut.slowed : [], cShot = csl.find((x) => x.k === 'shot');
-ok('then the shot plays 15% slower (tempo ' + (critCut && critCut.tempo) + '; ' + csl.map((x) => x.k + ' ' + x.beat).join(', ') + ')', !!critCut && critCut.slow && critCut.tempo === 0.85 && !!cShot && cShot.beat >= 465 && cShot.beat <= 476 && cShot.at >= critCut.end - 5);
+ok('then the shot plays 15% slower (tempo ' + (critCut && critCut.tempo) + '; ' + csl.map((x) => x.k + ' ' + x.beat).join(', ') + ')', !!critCut && critCut.slow && critCut.tempo === 0.85 && !!cShot && Math.abs(cShot.beat - 400 / 0.85 * K) <= 6 && cShot.at >= critCut.end - 5);
 ok('its casing comes with the slowed shot, after the cut-in (' + Math.round(casingAt - (critCut ? critCut.end : 0)) + ' ms after it ended; cut-in ' + (critCut && critCut.at) + '–' + (critCut && critCut.end) + ', casing ' + Math.round(casingAt) + ')', !!critCut && casingAt >= critCut.end - 5);
 if (cr) { await mai.waitForTimeout(400); const mc = (await logs(mai)).slice(cr.nbM).find((x) => x.kind === 'crit'); ok('the guest sees the same crit cut-in (' + (mc && mc.caption) + ')', !!mc && !!critCut && mc.caption === critCut.caption && mc.label === critCut.label); }
 
