@@ -8,6 +8,20 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.14.0 — 9 November 2026
+
+Branch `feature/pg-levelup-ui` (implementer 2), merged through `claude/awesome-babbage-8gngk8`: **UI pass, the Proving Ground, level up and the Perks tab**.
+
+- **Proving Ground:** while gearing up, the whole centre column is the spawn and cheat screen. It has search, grouped collapsible sections and room to breathe. The "Practice fights · no Narrator" card stays on top. The hint and wave lines move to the bottom panel. During a fight, the floating tools drawer stays, and now opens under the header so Save, ⚙ and Leave remain clickable.
+- **Level up** is laid out as the character tree (Cores → Attributes → Skills). Each skill's card shows its points, its Mastery marks and its perk steps (owned, available, locked, Mastered), with what owned perks do.
+- **Perks tab:** perks you use from another action's button or chip (Overdraw, The Twin Pays, Pure Heart, Verse of War in a fight, Running Reload…) are listed read-only, with no Confirm that spent a use for nothing. Confirm stays only where the tab is the way to use the perk.
+- **Fixed:**
+  - in a Proving Ground team fight, a Team B fighter changed mid-fight (Give, equip, kit, level) no longer switches to Team A;
+  - Settings opens above the fight drawer.
+- **Waiting on Leon:**
+  - two Leave buttons while gearing up (the card's and the header's; both ask the same question);
+  - the music and memory buttons hide on level up so they don't cover the tree.
+
 ## 0.13.0 — 9 November 2026
 
 Branch `claude/awesome-babbage-8gngk8`: **UI pass, the shell** (Leon's playtest feedback; design `docs/design/ui-pass-shell.md`).
