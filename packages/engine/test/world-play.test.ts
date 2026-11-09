@@ -240,7 +240,8 @@ describe('hazards (section 5)', () => {
   const hz = (kind: string, severity: 'light' | 'heavy', tiles: string[], extra: any = {}) => bare(turn(start(), { hazards: [{ action: 'place', kind, severity, tiles, ...extra }] }));
   const walk = (g: GameState, to: string, how: 'move' | 'sprint' = 'move', by = H, c = rook(g)) => ap(g, { type: 'world/act', charId: c.id, act: 'move', to, how }, by);
   it('a minefield fires on the tile entered on the area map: damage, a Body save halves it, the mine is spent, the walk stops', () => {
-    let g = hz('minefield', 'light', ['D2', 'E2', 'F2']); const hp0 = rook(g).hp;
+    // A column of mines across the whole map: no way around it (rules 1.8 click-paths go around revealed hazards).
+    let g = hz('minefield', 'light', [], { rect: { from: 'D1', to: 'D12' } }); const hp0 = rook(g).hp;
     g = walk(g, 'H2', 'sprint');
     expect(positionsOf(g)[rook(g).id]).toBe(K('D2')); // a sprint through a minefield still sets the first mine off and stops there
     const lost = hp0 - rook(g).hp; expect([12, 25]).toContain(lost);
@@ -249,32 +250,32 @@ describe('hazards (section 5)', () => {
     expect(g.story.fx!.some((e) => e.k === 'hazard' && e.kind === 'minefield')).toBe(true);
     expect(g.story.events!.some((e) => e.kind === 'hazard')).toBe(true);
     // The spent mine is safe now; the next one isn't.
-    const hp1 = rook(g).hp; g = walk(g, 'E2'); expect(rook(g).hp).toBeLessThan(hp1);
+    const hp1 = rook(g).hp; g = walk(g, 'D3'); expect(rook(g).hp).toBeLessThan(hp1);
   });
   it('fire burns per tile and sets Burning (no armour); collapse knocks prone and stops; radiation weakens from the third tile', () => {
-    let g = hz('fire', 'heavy', ['C2', 'D2', 'E2']); const hp0 = rook(g).hp;
+    let g = hz('fire', 'heavy', [], { rect: { from: 'C1', to: 'E12' } }); const hp0 = rook(g).hp; // no way around
     g = walk(g, 'F2'); expect(hp0 - rook(g).hp).toBe(60); expect(positionsOf(g)[rook(g).id]).toBe(K('F2'));
     expect(g.story.magic![rook(g).id].conds!.burning).toBeGreaterThan(0);
-    g = hz('collapse', 'light', ['C2', 'D2']); const hp1 = rook(g).hp;
+    g = hz('collapse', 'light', [], { rect: { from: 'C1', to: 'D12' } }); const hp1 = rook(g).hp;
     g = walk(g, 'F2'); expect(positionsOf(g)[rook(g).id]).toBe(K('C2')); expect(hp1 - rook(g).hp).toBe(20);
-    g = hz('radiation', 'light', ['C2', 'D2', 'E2', 'F2']); const hp2 = rook(g).hp;
+    g = hz('radiation', 'light', [], { rect: { from: 'C1', to: 'F12' } }); const hp2 = rook(g).hp;
     g = walk(g, 'D2'); expect(g.story.magic?.[rook(g).id]?.conds?.weakened ?? 0).toBe(0);
     g = walk(g, 'F2'); expect(hp2 - rook(g).hp).toBe(20); expect(g.story.magic![rook(g).id].conds!.weakened).toBeGreaterThan(0);
   });
   it('gas: a Heart save, or Shaken (light) / Stunned (heavy, the walk stops)', () => {
     let saw = { shaken: 0, stunned: 0, saved: 0 };
     for (let i = 0; i < 12; i++) {
-      let g = turn(start('gas-' + i), { hazards: [{ action: 'place', kind: 'gas', severity: 'heavy', tiles: ['C2'] }] });
+      let g = turn(start('gas-' + i), { hazards: [{ action: 'place', kind: 'gas', severity: 'heavy', rect: { from: 'C1', to: 'C12' } }] });
       g = walk(g, 'E2');
       const conds = g.story.magic?.[rook(g).id]?.conds || {};
       if (conds.stunned) { saw.stunned++; expect(positionsOf(g)[rook(g).id]).toBe(K('C2')); } else saw.saved++;
     }
     expect(saw.stunned).toBeGreaterThan(0); expect(saw.saved + saw.stunned).toBe(12);
-    let g = turn(start('gas-l'), { hazards: [{ action: 'place', kind: 'gas', severity: 'light', tiles: ['C2', 'D2', 'E2', 'F2', 'G2'] }] });
+    let g = turn(start('gas-l'), { hazards: [{ action: 'place', kind: 'gas', severity: 'light', rect: { from: 'C1', to: 'G12' } }] });
     g = walk(g, 'H2'); expect(g.story.fx!.filter((e) => e.k === 'hazard').length).toBe(5);
   });
   it('hazards fire per tile in a fight too, for enemies as well', () => {
-    let g = hz('fire', 'light', ['C2', 'D2', 'E2']);
+    let g = hz('fire', 'light', [], { rect: { from: 'C1', to: 'E12' } }); // no way around it
     g = turn(g, { combat: { name: 'Fight', difficulty: 'easy', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists', at: 'P11' }] } });
     expect(g.combat!.hazards!.length).toBe(1);
     for (let i = 0; i < 6 && active(g.combat!)!.charId !== rook(g).id; i++) { const u = active(g.combat!)!; g = ap(g, { type: 'combat/end-turn', unitId: u.id }, u.charId === rook(g).id ? H : P2); }

@@ -303,8 +303,11 @@ describe('combat', () => {
     const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0]; u.ap = 6;
     u.ammo = 5; expect(reload(cb, u)).toBeNull();
-    expect(u.ammo).toBe(12); expect(u.mags).toEqual([12]); expect(cb.floor![0].text).toBe('magazine with 5 rounds');
-    u.ammo = 0; expect(reload(cb, u)).toBeNull(); expect(cb.floor![1].text).toBe('empty magazine'); expect(u.mags).toEqual([]);
+    // Rules 1.8: a speed reload drops the old magazine into the pile on the tile, rounds kept (cb.floor is retired).
+    const pile = () => cb.objects!.find((o) => o.kind === 'pile' && o.pos === u.pos)!;
+    expect(u.ammo).toBe(12); expect(u.mags).toEqual([12]); expect(pile().items!.map((e) => e.name)).toEqual(['Service pistol magazine 5/12']);
+    u.ammo = 0; expect(reload(cb, u)).toBeNull(); expect(pile().items!.map((e) => e.pack!.mags)).toEqual([[5], [0]]); expect(u.mags).toEqual([]);
+    expect(cb.floor).toBeUndefined();
     u.ammo = 3; expect(reload(cb, u)).toMatch(/No loaded spare magazines/);
   });
   it('weights: everything counts, down to the round', () => {
@@ -332,7 +335,8 @@ describe('combat', () => {
     const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0]; u.ap = 6; u.ammo = 0;
     reload(cb, u); expect(u.mags).toEqual([12]);
-    u.ap = 6; expect(pickUp(cb, u, u.pos)).toBeNull(); expect(u.mags).toEqual([12, 0]); expect(u.ap).toBe(5);
+    u.ap = 6; expect(pickUp(cb, u, u.pos, null, c)).toBeNull(); expect(u.mags).toEqual([12, 0]); expect(u.ap).toBe(5);
+    expect(cb.objects!.some((o) => o.kind === 'pile')).toBe(false); // an empty pile leaves the map
     expect(loadMagazine(cb, u)).toBeNull(); // 12 rounds at 5 a point: 3 AP
     expect(u.mags).toEqual([12, 12]); expect(u.loose).toBe(12); expect(u.ap).toBe(2);
     c.pack = packOf(c).map((x) => (x.mags ? { ...x, mags: [0, 5] } : x));

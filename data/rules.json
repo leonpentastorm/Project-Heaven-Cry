@@ -503,7 +503,14 @@
       {
         "id": "reload",
         "ap": 2,
-        "text": "reload a magazine, or swap an Evoker core"
+        "text": "speed reload: swap in the fullest spare magazine, the old one drops into the pile on your tile (rules 1.8); or swap an Evoker core"
+      },
+      {
+        "id": "reload_tactical",
+        "ap": "reload + 1",
+        "extra_ap": 1,
+        "text": "tactical reload: the old magazine goes back in the pack, rounds still in it (rules 1.8, item 679)",
+        "provisional": true
       },
       {
         "id": "clear_jam",
@@ -517,6 +524,12 @@
         "id": "interact",
         "ap": 1,
         "text": "use an item, draw/swap a weapon, open a door"
+      },
+      {
+        "id": "pickup",
+        "ap": 1,
+        "text": "pick up any or all of the pile on your tile or an adjacent one (rules 1.8, item 674)",
+        "provisional": true
       },
       {
         "id": "analyze",

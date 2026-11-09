@@ -551,6 +551,24 @@ if wp:
                 errors.append(f"world_play: hazard approach {a.get('id')}: unknown skill {sk}")
     if "cache" not in ids_of(items("objects")):
         errors.append("objects: the cache kind (World Play) is missing")
+    # Rules revision 1.8 (World Play 1.1): the pile kind (open, never blocking, a spot TN and range) and its limits
+    pile = next((o for o in items("objects") if o.get("id") == "pile"), None)
+    if not pile:
+        errors.append("objects: the pile kind (World Play 1.1) is missing")
+    else:
+        if pile.get("blocks_move") or pile.get("blocks_sight") or pile.get("cover") is not None or pile.get("hp") is not None:
+            errors.append("objects:pile: a pile never blocks, gives no cover and has no HP")
+        sp = pile.get("spot") or {}
+        if not all(isinstance(sp.get(k), int) and sp[k] > 0 for k in ("detect_tn", "detect_range")):
+            errors.append("objects:pile: spot needs a positive detect_tn and detect_range")
+    pl = wp.get("pile") or {}
+    for k in ("max_entries", "narrator_entries_per_turn", "narrator_items_per_pile", "rounds_max", "route_slack_tiles", "tactical_reload_extra_ap"):
+        if not isinstance(pl.get(k), int) or pl[k] < 0:
+            errors.append(f"world_play: pile.{k} must be a whole number of 0 or more")
+    if isinstance(pl.get("narrator_items_per_pile"), int) and isinstance(pl.get("max_entries"), int) and pl["narrator_items_per_pile"] > pl["max_entries"]:
+        errors.append("world_play: pile.narrator_items_per_pile can't exceed pile.max_entries")
+    if not isinstance((wp.get("ap") or {}).get("pickup"), (int, float)):
+        errors.append("world_play: ap.pickup (World Play 1.1) is missing")
 
 # Soul magic, rules 1.5 (Outburst 2.0): tones, forms, retired modules, the cycle's numbers
 soul = data.get("soul_modules", {})

@@ -14,6 +14,8 @@ import {
   moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode,
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
+import { dropToPile } from '../combat';
+import { magItem } from '../containers';
 import { mod, healingMult, magazineSize } from '../character';
 import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE, applyToneRiders } from '../magic';
 import { castAt, glyphCost, sigilReady } from '../sigil';
@@ -959,7 +961,8 @@ register({
       available: (h) => { const s = smOf(h); if (!s || s.rest !== restStamp(h.g) || !h.u) return false; return !isRanged(h.u) || W(h.u).magazine == null ? 'Needs a gun.' : stateOf(h).loaded ? 'Already loaded.' : true; },
       run: (h) => {
         const u = h.u!, cb = h.cb!, s = smOf(h)!, cap = magazineSize(u.weapon, u.mods) || 0;
-        if (u.ammo > 0) (cb.floor ||= []).push({ pos: u.pos, weapon: u.weapon, rounds: u.ammo, text: (W(u).reload_unit || 'magazine') + ' with ' + u.ammo + ' rounds' });
+        // Rules 1.8 (item 679): the old magazine drops into the pile on the tile, as a speed reload's does, empty or not.
+        if (W(u).reload === 'magazine') dropToPile(cb, u.pos, [magItem(u.weapon, u.ammo, u.ammoType || null)]);
         u.ammo = cap; u.jammed = false; stateOf(h).loaded = s.words; delete charState(h.c)[h.key];
         emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: u.weapon, cat: W(u).category, how: 'mag', dur: 1200 });
         say(cb, u.name + ' slaps in the spell magazine (' + s.words.map((w) => w.toUpperCase()).join(' · ') + ').'); return null;
