@@ -299,7 +299,7 @@ export type Action =
   // Rules 1.7: the Talk panel's asks (1 AP) and approaches (2 AP; poi/try works too), and Search in a fight.
   | { type: 'talk/ask'; charId: string; npcId: string; what: 'wants' | 'objective' } | { type: 'talk/try'; charId: string; npcId: string; idx: number }
   | { type: 'combat/search'; unitId: string; objId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
+  | { type: 'world/act'; charId: string; act: WorldAct; feeling?: string; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
     /** Rules 1.7: attempt's approach number (1 = the first, as the Narrator lists them) or idx (0-based, the web's); ask's what. */ index?: number; idx?: number; what?: 'wants' | 'objective' }
   // Magic (spec: Mana, rules 1.2)
   | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
@@ -1671,7 +1671,7 @@ function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: 
   return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
     ...(a.paint === 'spread' || a.paint === 'push' ? { paint: a.paint as 'spread' | 'push' } : {}) };
 }
-function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; feeling?: string; word?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
   switch (a.act) {
     case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos) : 'Pick a word.';
     case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim, g ? evokeOptsOf(g, a) : {}) : 'Pick a glyph of the pattern.';
@@ -1679,7 +1679,7 @@ function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act
     case 'vent': return ventFlux(cb, u);
     case 'core': return swapCore(cb, u);
     case 'outburst': return a.design ? beginOutburst(cb, rng, u, a.design, aim, a.hold ?? !aim, { watch: !!a.watch }) : 'Pick a design.';
-    case 'pump': return pumpOutburst(cb, rng, u, (a as any).feeling || null);
+    case 'pump': return pumpOutburst(cb, rng, u, a.feeling || null);
     case 'revert': return revertPump(cb, u);
     case 'letgo': return letGo(cb, u);
     case 'steady': return steadyHeart(cb, u);

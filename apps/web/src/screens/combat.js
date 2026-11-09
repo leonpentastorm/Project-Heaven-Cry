@@ -6,7 +6,7 @@ import { reducedMotion, sfx } from '../game/sfx';
 import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
-  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions } from '@engine';
+  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions , STAGE_MULT } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
 import { turnsBusyUntil } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
@@ -628,7 +628,7 @@ export class CombatLogic extends DCLogic {
     // Placed magic (spec 9.9: fields tinted by element, your traps, spotted enemy traps, turrets, RAISE walls, smoke,
     // light) under the Evoke plan's overlay; outside the area is dimmed while aiming (spec 9.4).
     // Class Roster Revision 3's standing marks (game/classMarks.ts): False Images, Read's intents, rigged and sabotaged tiles.
-    const placed0 = placedView(pcb, 'pc'), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { seen: vis.tiles, imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
+    const placed0 = placedView(pcb, 'pc', vis.tiles), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { seen: vis.tiles, imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
     const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, pkPv, cur.side) : null;
@@ -758,7 +758,7 @@ export class CombatLogic extends DCLogic {
         sel.extra = meter + (pp && pp.overload ? ' · ' + pp.overload : '');
       } else if (S.action === 'outburst') {
         const pl = hzPlan, aura = card && card.form === 'aura';
-        sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×0.6' : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
+        sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×' + STAGE_MULT[0] : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
         sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×0.6). Pump it (1 AP a stage, to ×2.2) and Release it (1 AP). Confirm to begin.' : card.beginWhy)
           : !S.aim && !aura ? (card.snapWhy || (hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').')) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
         sel.extra = card ? card.line + ' · ' + heart : heart;
@@ -866,8 +866,8 @@ export class CombatLogic extends DCLogic {
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
       begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true, ...(this._mods && this._mods.length ? { mods: this._mods } : {}) }); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
-      beginLabel: 'Begin' + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×0.6',
-      beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×0.6: hover to preview, click a tile to aim, then Confirm.',
+      beginLabel: 'Begin' + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×' + STAGE_MULT[0],
+      beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×' + STAGE_MULT[0] + ': hover to preview, click a tile to aim, then Confirm.',
       beginOff: !card || !card.canBegin, beginStyle: padBtn(obMode === 'begin', SOUL_INK), snapStyle: padBtn(obMode === 'snap', SOUL_INK), snapPressed: obMode === 'snap' ? 'true' : 'false',
       repick: isMagic && mineTurn && S.action === 'evoke' && !!evTile, repickFn: () => this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }),
       ...sigilPad(evV, S, (x) => this.setState(x)),
@@ -877,7 +877,8 @@ export class CombatLogic extends DCLogic {
     const hpB = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn } : {};
     const magicCant = !isMagic ? false : S.action === 'draw' ? true : S.action === 'evoke' ? !evV || !evV.ok : S.action === 'outburst' ? (obMode === 'snap' ? !hzPlan || !hzPlan.ok : !card || !card.canBegin) : S.action === 'release' ? !hzPlan || !hzPlan.ok : HEART_ACTS.includes(S.action) ? !hpB[S.action] || !hpB[S.action].ok : !simpleTry || !!simpleTry.err;
     // The HEART panel at the top of the Outbursts tab while holding: its buttons run the moves at once (Release picks the aim).
-    const heartV = heartVals(hp, (id) => { if (id === 'release') return this.pickAction('release'); this.heartAct(id); });
+    const heartV = heartVals(hp, (id) => { if (id === 'release') return this.pickAction('release'); this.heartAct(id); },
+      { open: !!S.feelOpen, query: S.feelQ || '', toggle: () => this.setState({ feelOpen: !S.feelOpen }), search: (e) => this.setState({ feelQ: e && e.target ? e.target.value : String(e || '') }) });
     if (heartV.show) heartV.btns = heartV.btns.map((x) => ({ ...x, pressed: S.action === x.key ? 'true' : 'false' }));
     const won = cb.over === 'win', extracted = cb.over === 'extracted';
     this._ids = new Set(ITEMS.flatMap((gr) => gr[1].map((x) => x[0])));
@@ -1029,6 +1030,9 @@ export class CombatLogic extends DCLogic {
   heartAct(id) {
     const cb = getState().game?.combat, cur = cb && active(cb); if (!cur || !cur.mg) return;
     if (id === 'heartwatch') return act({ type: 'combat/heartwatch', unitId: cur.id, on: !(cur.mg.held && cur.mg.held.watch) });
+    // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump.
+    if (id.startsWith('pump:')) return act({ type: 'combat/pump', unitId: cur.id, feeling: id.slice(5), ...(this._mods && this._mods.length ? { mods: this._mods } : {}) });
+    if (id === 'revert') return act({ type: 'combat/revert', unitId: cur.id });
     if (['pump', 'steady', 'letgo', 'feed'].includes(id)) act({ type: 'combat/' + id, unitId: cur.id, ...(id === 'pump' && this._mods && this._mods.length ? { mods: this._mods } : {}) });
     if (id === 'letgo') this.setState({ action: 'outburst', aim: null, obMode: 'begin' });
   }

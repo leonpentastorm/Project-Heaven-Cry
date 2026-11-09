@@ -522,7 +522,9 @@ export interface HeldOutburst { design: string; stage: number; cost: number; ton
   paid?: number;
   /** Rules 1.8: the feelings poured in, in order (one per feeling pump); the Strain this hold has added (Begin, swells,
    * feelings: Relief gives it back); Quiet's running raw total (the hold's Strain is halved, rounded down). */
-  felt?: string[]; strainIn?: number; quietRaw?: number }
+  felt?: string[]; strainIn?: number; quietRaw?: number;
+  /** The stage each feeling filled (parallel to felt), for the stage bar's coloured segments. */
+  feltAt?: number[] }
 /** Read any held Outburst (an old save's included) in the 1.5 shape. */
 export function migrateHeld(h: any, d?: OutburstDesign): HeldOutburst | null {
   if (!h || !h.design) return null;
@@ -805,7 +807,7 @@ export function pumpOutburst(cb: Combat, rng: Rng, u: Unit, feeling?: string | n
   u.ap -= pv.ap; m.cast = true;
   if (pv.freeKind === 'first') m.firstUsed = true; else if (pv.freeKind === 'empathy') m.freePumps = Math.max(0, (m.freePumps || 0) - 1);
   h.stage = Math.min(MAX_STAGE, h.stage + 1);
-  if (feeling) (h.felt ||= []).push(feeling);
+  if (feeling) { (h.felt ||= []).push(feeling); (h.feltAt ||= []).push(h.stage); }
   emit(cb, 'outburst_pump', { u, design: d, stage: h.stage, ap: pv.ap, free: pv.free, fail: '', preview: false, feeling: feeling || null, cb, rng });
   const f = feeling ? FEELING[feeling] : null, mult = heldMult(cb, u, h);
   emitFx(cb, 'pump', { unit: u.id, at: u.pos, stage: h.stage, mult, free: pv.free, max: h.stage >= MAX_STAGE, tone: h.tone || 'raw', ...(f ? { feeling: f.id, family: f.family, step: pv.step, does: feelingWord(d, f.id) } : {}) });
@@ -828,7 +830,7 @@ export function revertPump(cb: Combat, u: Unit): string | null {
   if (!onTurn(cb, u)) return 'On your own turn.';
   const r = (m.pumps || []).at(-1); if (!r || r.design !== m.held.design) return 'No pump to undo this turn.';
   m.pumps!.pop();
-  const h = m.held; h.stage = r.stage0; if (h.felt) h.felt = h.felt.slice(0, r.felt0);
+  const h = m.held; h.stage = r.stage0; if (h.felt) h.felt = h.felt.slice(0, r.felt0); if (h.feltAt) h.feltAt = h.feltAt.slice(0, r.felt0);
   u.ap += r.ap;
   if (r.free === 'first') m.firstUsed = false; else if (r.free === 'empathy') m.freePumps = Math.min(m.freePumpsMax || 0, (m.freePumps || 0) + 1);
   if (r.strain > 0) { const back = easeStrain(cb, u, r.strain, 'revert'); h.strainIn = Math.max(0, (h.strainIn || 0) - back); }
@@ -1371,6 +1373,8 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
   const at = form === 'aura' ? u.pos : aim;
   const base: Partial<OutburstPlan> = { ap, mp, strain, strainAfter, strainLimit: m.strainLimit, burnWarning: Math.max(0, over) * STRAIN_BURN, shortWarning: over >= SHORT_AT_OVER, stage, mult: Math.round(sm * 100) / 100, riderStage: rs, form, tone, element: toneElement(tone),
     design: d.id, school: d.school, school2: d.school2 || null, reach, reachTiles, resonance: res.with.length > 0, resonanceBonus: res.bonus, riderText: tone === 'raw' ? 'Raw: Soul damage, armour ignored; no rider.' : TONE[tone].name + ' at stage ' + rs + ': ' + toneRiders(tone, rs).text, needsAim: form !== 'aura' };
+  // Rules 1.8: the feelings held and the words for what they change, with or without an aim.
+  if (felt.length) { base.felt = felt; base.does = [...new Set(felt.map((x) => feelingWord(d, x)).filter(Boolean) as string[])]; }
   if (!at) return no(why || 'Pick a target tile.', base);
   const area = outburstArea(cb, u, d, at, stage), targets = affectedBy(cb, u, d, area);
   const hostile = d.school !== 'buff' && !(d.school === 'damage' && d.modules.includes('inverse'));
@@ -1419,10 +1423,10 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
       add({ ...blankAffected(u, v, 'push'), rider: 'pushed ' + pushAll.tiles + ' tiles away from ' + t.name + ' (' + TONE[tone].name + ')' });
   }
   emit(cb, 'outburst_plan', { u, design: d, stage, mult: sm, riderStage: rs, aim: at, area, targets, affected, add, preview: true, cb });
-  // Rules 1.8: what the feelings change, and where their residue would lie.
-  const top = strongestFeeling(felt), does = [...new Set(felt.map((x) => feelingWord(d, x)).filter(Boolean) as string[])];
-  const feel = felt.length ? { felt, does, ...(top && FEELING[top].residue.kind !== 'none' ? { residue: { feeling: top, kind: FEELING[top].residue.kind, text: FEELING[top].residue.text, tiles: form === 'bolt' ? [at] : area } } : {}) } : {};
-  return { ...(base as OutburstPlan), ok: !why, ...(why ? { why } : {}), area, affected, ...feel };
+  // Rules 1.8: where the residue of the strongest feeling would lie.
+  const top = strongestFeeling(felt);
+  const res18 = top && FEELING[top].residue.kind !== 'none' ? { residue: { feeling: top, kind: FEELING[top].residue.kind, text: FEELING[top].residue.text, tiles: form === 'bolt' ? [at] : area } } : {};
+  return { ...(base as OutburstPlan), ok: !why, ...(why ? { why } : {}), area, affected, ...res18 };
 }
 function blankAffected(u: Unit, t: Unit, via: OutburstAffected['via']): OutburstAffected {
   return { unit: t.id, name: t.name, at: t.pos, ally: t.side === u.side && t !== u, enemy: t.side !== u.side, self: t === u, dmg: 0, dmgAfterArmour: 0, heal: 0, shield: 0, roll: null, saves: [], rider: '', second: '', via };

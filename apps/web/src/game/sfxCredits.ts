@@ -43,5 +43,15 @@ export const SFX_CREDITS: Credit[] = [
   // The author's attribution instructions: "Wisdom Magic Sounds by Iwan Gabovitch http://opengameart.org/users/qubodup".
   { what: 'Wisdom Magic Sounds (the choir swell under a big release and a resonance)', who: 'Iwan Gabovitch, http://opengameart.org/users/qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
   { what: 'Deep Bone Crack/Break SFX (the heart cracking: Strain burning, a Mana Short)', who: 'Zane Little Music', licence: 'CC0', url: 'https://opengameart.org/content/deep-bone-crackbreak-sfx' },
+  // Outburst 4.0 (rules 1.8): feelings (public/sfx/cb/feel_*.ogg; trimmed, mono, levelled, some filtered). All CC0.
+  { what: 'Interface Sounds: maximize, glass, bong, minimize and tick (the warm, cold and hollow pump layers, the cold residue, Revert pump\'s rewind, the multiplier\'s shake tick)', who: 'Kenney (www.kenney.nl), via OpenGameArt', licence: 'CC0', url: 'https://opengameart.org/content/interface-sounds' },
+  { what: 'Sci-Fi Sounds: impactMetal and lowFrequency_explosion (the low pump layer\'s thud, the low residue\'s rumble)', who: 'Kenney (www.kenney.nl), via OpenGameArt', licence: 'CC0', url: 'https://opengameart.org/content/sci-fi-sounds' },
+  { what: '80 CC0 RPG SFX: blade, creature roar and fire spell (the sharp and wild pump layers and residues)', who: 'rubberduck', licence: 'CC0', url: 'https://opengameart.org/content/80-cc0-rpg-sfx' },
+  { what: '100 CC0 SFX: gong (the holy residue)', who: 'rubberduck', licence: 'CC0', url: 'https://opengameart.org/content/100-cc0-sfx' },
+  { what: '100 CC0 SFX #2: air flowing (the hollow residue\'s breath)', who: 'rubberduck', licence: 'CC0', url: 'https://opengameart.org/content/100-cc0-sfx-2' },
+  { what: 'Theremin Sci-Fi Sparkles (the bright pump layer and residue, the warm residue\'s glow)', who: 'Zane Little Music', licence: 'CC0', url: 'https://opengameart.org/content/theremin-sci-fi-sparkles' },
+  { what: 'Bell dings/chimes (the holy pump layer\'s bell)', who: 'PWL', licence: 'CC0', url: 'https://opengameart.org/content/bell-dingschimes' },
+  // The author's attribution notice: "Produced by Julie Damsgaard/Spring Spring/Spring Enterprises @ https://spring-enterprises.neocities.org".
+  { what: 'Magic Words + Healing Sound Effect: the healing harp ("You have felt…", a feeling unlocked)', who: 'Produced by Julie Damsgaard/Spring Spring/Spring Enterprises, https://spring-enterprises.neocities.org', licence: 'CC0', url: 'https://opengameart.org/content/magic-words-healing-sound-effect' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
 ];

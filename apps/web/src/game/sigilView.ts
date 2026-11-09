@@ -4,6 +4,7 @@
 // marks. Pure: no DOM, no store, so both screens share it and the tests drive it directly.
 // Look: Sigil magic is Mind cyan (#4FC8DF, ink #8BDEEE), square and snapping; element hues tint effects only and always
 // come with the element's word.
+import { feelingInk, feelingName, residueTileStyle, residueTitle } from './feelingsView';
 import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf } from '@engine';
 import { glyphUri, scratchUri, SIGIL_INK, SIGIL_GLOW } from './glyphs';
 import { grandLook, grandTint } from './fx/grand';
@@ -346,7 +347,7 @@ export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choi
 export interface PlacedRow { key: string; kind: string; label: string; who: string; mine: boolean; tiles: string[]; text: string }
 /** Fields, traps, turrets, smoke, light and RAISE walls a side can see (spec 9.9), drawn per tile, plus a row each for
  * the legend. Enemy traps show only once spotted (the engine's placedMagic). */
-export function placedView(cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Record<string, SgTile>; rows: PlacedRow[]; kinds: Set<string> } {
+export function placedView(cb: any, side: 'pc' | 'foe' = 'pc', seen?: Set<string> | null): { tiles: Record<string, SgTile>; rows: PlacedRow[]; kinds: Set<string> } {
   const tiles: Record<string, SgTile> = {}, rows: PlacedRow[] = [], kinds = new Set<string>();
   let list: any[] = []; try { list = placedMagic(view(cb) as any, side); } catch { list = []; }
   const T = (k: string) => (tiles[k] ||= { layer: '', marks: [], note: '' });
@@ -389,13 +390,34 @@ export function placedView(cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Record<
       if (badgeText && (!first || k === first)) t.marks.push({ key: 'pl' + z.id, text: badgeText, style: badge(z.mine ? SIGIL_GLOW : HOSTILE_INK) + '; ' + CORNER.br, title: text });
     }
   }
+  // Rules 1.8 (Outburst 4.0): residue (a feeling's tint and glyph; another side's only where you can see: the fog), a
+  // waiting Fuse and a Linger field (yours always; others' where seen).
+  for (const z of cb.zones || []) {
+    if (!['residue', 'fuse', 'linger'].includes(z.kind) || !(z.left > 0)) continue;
+    const mine = z.side === side, show = (k: string) => mine || !seen || seen.has(k);
+    if (z.kind === 'residue') {
+      const r = { feeling: z.feeling, ink: feelingInk(z.feeling), kind: z.residueKind || 'none', left: z.left, name: feelingName(z.feeling) }, text = residueTitle(r);
+      kinds.add('residue'); rows.push({ key: z.id, kind: 'residue', label: r.name + ' residue', who: z.who || '', mine, tiles: z.tiles, text });
+      z.tiles.filter(show).forEach((k: string, i: number) => { const t = T(k); t.layer = residueTileStyle(r).replace(/^position: absolute; inset: 0; pointer-events: none; z-index: 1; /, ''); t.note += (t.note ? ' · ' : '') + text;
+        if (i === 0) t.marks.push({ key: 'rs' + z.id, text: '♥' + z.left, style: badge(r.ink) + '; ' + CORNER.br, title: text }); });
+      continue;
+    }
+    const ink = mine ? SOUL_INK_V : HOSTILE_INK, text = z.kind === 'fuse' ? 'A fused Outburst (' + (z.who || '') + '): goes off at its caster\'s next turn, or when someone steps in.' : 'A lingering Outburst (' + (z.who || '') + '): 5 a turn to whoever of its side starts there, ' + z.left + ' rounds left.';
+    kinds.add(z.kind); rows.push({ key: z.id, kind: z.kind, label: z.kind === 'fuse' ? 'Fuse' : 'Linger', who: z.who || '', mine, tiles: z.tiles, text });
+    z.tiles.filter(show).forEach((k: string, i: number) => { const t = T(k); t.layer = (t.layer ? t.layer + '; ' : '') + 'box-shadow: inset 0 0 0 2px ' + ink + (z.kind === 'fuse' ? '; background: repeating-radial-gradient(circle, rgba(174, 155, 255, 0.16) 0 3px, transparent 3px 7px)' : '; background: rgba(174, 155, 255, 0.12)'); t.note += (t.note ? ' · ' : '') + text;
+      if (i === 0) t.marks.push({ key: 'fz' + z.id, text: z.kind === 'fuse' ? '⏲' : '≋' + z.left, style: badge(ink) + '; ' + CORNER.br, title: text }); });
+  }
   return { tiles, rows, kinds };
 }
+const SOUL_INK_V = '#AE9BFF';
 /** The legend rows for the placed magic and glyphs on the map. */
 export function placedLegend(kinds: Set<string>, anyGlyph: boolean): { key: string; img?: string; box?: string; name: string }[] {
   const out: { key: string; img?: string; box?: string; name: string }[] = [];
   if (anyGlyph) out.push({ key: 'gl', img: glyphUri('fire', SIGIL_INK, { glow: true, frame: false }), name: 'Your side\'s glyph' }, { key: 'gf', img: glyphUri('fire', HOSTILE_INK, { frame: false }), name: 'Hostile glyph you can read' }, { key: 'gs', img: scratchUri(HOSTILE_INK), name: 'Unreadable glyph' });
   const box = (s: string) => 'width: 14px; height: 14px; border-radius: 2px; ' + s;
+  if (kinds.has('residue')) out.push({ key: 'zr', box: box('background: rgba(255, 106, 61, 0.22); box-shadow: inset 0 0 0 1px rgba(255, 106, 61, 0.55); background-image: repeating-linear-gradient(135deg, rgba(255, 106, 61, 0.18) 0 3px, transparent 3px 8px)'), name: '♥ Residue (a feeling left by an Outburst: striped harms anyone; plain helps its side)' });
+  if (kinds.has('fuse')) out.push({ key: 'zfu', box: box('box-shadow: inset 0 0 0 2px #AE9BFF'), name: '⏲ Fuse (an Outburst waiting: next turn, or a step in)' });
+  if (kinds.has('linger')) out.push({ key: 'zli', box: box('background: rgba(174, 155, 255, 0.12); box-shadow: inset 0 0 0 2px #AE9BFF'), name: '≋ Linger (an Outburst left as a field)' });
   if (kinds.has('field')) out.push({ key: 'zf', box: box('background: ' + ELEMENT_TINT.fire + '; box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▦ Field (tinted by its element; hurts whoever enters: full the first time, half after)' });
   if (kinds.has('trap')) out.push({ key: 'zt', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW + '; background: repeating-linear-gradient(45deg, rgba(79, 200, 223, 0.2) 0 3px, transparent 3px 6px)'), name: '⧗ Trap (yours, or a spotted one)' });
   if (kinds.has('turret')) out.push({ key: 'zu', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▲ Turret (rounds left, HP)' });

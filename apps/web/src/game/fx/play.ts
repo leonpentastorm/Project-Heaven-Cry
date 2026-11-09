@@ -6,6 +6,7 @@ import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
 import { soulHandlers, soulBeat, discharge } from './soul';
+import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
@@ -575,6 +576,8 @@ const H: Record<string, Handler> = {
 /** The Soul heart's handlers (fx/soul.ts), lent this layer's fog-aware lookups. They override the 1.2 names they share. */
 const SOUL_KIT = { at, tokOf, posOf: (id: string | null | undefined) => unit(id)?.pos, play };
 Object.assign(H, soulHandlers(SOUL_KIT));
+// Outburst 4.0 (fx/feelings.ts): feelings felt and poured, residue, Revert, practice, Fuse, Linger, Thread.
+Object.assign(H, feelingHandlers(SOUL_KIT));
 // Blessing 2.0 (fx/faith.ts): prayers, Witnessed, interventions, Devotion, vows, the patron's lines and Miracles.
 Object.assign(H, faithHandlers({ ...SOUL_KIT, posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; } }));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
@@ -766,6 +769,7 @@ Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, 
 function beatOf(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
+  const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
   const wb = worldBeat(e); if (wb !== undefined) return wb;

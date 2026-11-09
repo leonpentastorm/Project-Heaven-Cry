@@ -43,19 +43,21 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    moves to bring back are listed in `docs/design/move-pool.md`. The data already carries `kind`/`pair`/`batch`, so
    turning a batch on is mostly data.
 
-## Outburst 4.0 (accepted direction, 9 Nov 2026)
+## Outburst 4.0 (built: rules 1.8, decision 109)
 
-- Spec: `docs/design/outburst-4.0-spec.md`. It covers:
-  - feelings poured in live (25), with residue, Revert pump and the multiplier counter;
-  - 23 new modules: 13 for everyone, 10 gated to Soul advanced classes;
-  - guaranteed unlocks: practice (+5 at each Mastery level), plus a module pick at Mastered;
-  - Visualization removed from Soul magic;
-  - fixes for low-level play.
-- **Task (Leon):** make the Magic tab's Sigil and Outburst workshops collapsible, with grouped sections, and group the
-  Proving Ground's cheat menu the same way (Sigil words by group; Outburst modules by gate skill, gated ones shown
-  locked).
+- Built on `feature/outburst-4.0` from `docs/design/outburst-4.0-spec.md`; hand-off
+  `docs/design/handoffs/outburst-4.0-HANDOFF.md`. Waiting on Leon:
+  - the 25 feeling colours;
+  - the readings in spec items 801–818;
+  - the placeholder icons;
+  - the sounds, which nobody has listened to yet.
+- Still to do:
+  - the 10 class-gated modules' behaviours, when their classes return;
+  - a flee rule, for Contempt's "or flees";
+  - per-unit sight, for Dread's "can't see Hidden things";
+  - painted art for the COMING SOON slots the hand-off lists.
 - **Later:** the pen-and-paper conversion. Practice becomes one module pick per level-up for Soul casters.
-- **Trait idea, after 4.0 is built:** Abandon goes off wild when you're already over the Strain limit (Leon: "sounds
+- **Trait idea, now that 4.0 is built:** Abandon goes off wild when you're already over the Strain limit (Leon: "sounds
   more like a trait than a base mechanic").
 
 ## Classes

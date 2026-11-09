@@ -70,7 +70,7 @@ describe('the HEART panel', () => {
     expect(p.letgo.strainOff).toBe(0); // pumped stages give no Strain back (spec item 541)
     u.mg.held.paid = 2; expect(heartPanel(cb, u)!.letgo.strainOff).toBe(Math.min(2, u.mg.strain)); p = heartPanel(cb, u)!;
     const v: any = heartVals(p, () => {});
-    expect(v.stageText).toBe('STAGE 3 / 4'); expect(v.btns.map((b: any) => b.key)).toEqual(['pump', 'release', 'steady', 'letgo', 'heartwatch']);
+    expect(v.stageText).toBe('STAGE 3 / 4'); expect(v.btns.map((b: any) => b.key)).toEqual(['pump', 'release', 'steady', 'letgo', 'heartwatch', 'revert']); // rules 1.8: Revert while a pump this turn can be taken back
     u.ap = 0;
     expect(heartPanel(cb, u)!.steadyBtn).toMatchObject({ ok: false, why: 'Needs 1 AP.' });
   });

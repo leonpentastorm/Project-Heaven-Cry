@@ -12,6 +12,7 @@ import { type Sfx, duckSfx, reducedMotion } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type ElementId, ELEMENTS, elementFx, elementImpact, jag, mix, shardCss } from './elements';
 import { type Pt, after, anim, burst, centre, edgePulse, flash, floatText, particle, put, ring, screenTint, shake, shakeScreen, svg } from './dom';
+import { feelingPump } from './feelings';
 
 const HP = '#F65157', WHITE = '#FFFFFF', MUTED = '#A3AEC2', COOL = '#8FB4FF', MP = '#5C9EFF';
 /** What play.ts lends the Soul handlers: where things are (respecting fog), tokens, and panned sound. */
@@ -224,6 +225,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
     pump(e) {
       const p = at(e.at), el = toneEl(e), L = pumpLook(e.stage, !!e.free), st = Math.max(1, Math.min(4, e.stage || 1)), col = stageColour(st, el);
       play('soul_thump', p, { rate: L.rate, gain: L.gain });
+      if (!p) feelingPump(K, e, null);
       if (st >= 2) play('soul_thump', p, { rate: L.rate * 1.12, gain: L.gain * 0.45, delay: 190 }); // the dub
       if (L.shimmer) play('crystal', p, { rate: 1.6, gain: 0.5, delay: 70 });
       if (L.edge) play('soul_choir', p, { rate: 0.85, gain: 0.55, delay: 120 });
@@ -237,6 +239,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
       if (L.shimmer) { shimmer(p, 4 + st); dashRing(p, '#DCD6FF', 700, L.ringTo + 0.2); }
       if (L.edge) { edgePulse(col, 900, 1); shakeScreen(0.18); }
       floatText('STAGE ' + st + (e.mult ? ' ×' + e.mult : '') + (e.free ? ' · FREE' : ''), p, col, { small: true, delay: 120 });
+      feelingPump(K, e, p); // rules 1.8: the feeling's colour, motif and sound layer, the counter's shake
     },
     // The swell at the turn's start: one slow, deep beat and a wide, slow ring.
     swell(e) {
