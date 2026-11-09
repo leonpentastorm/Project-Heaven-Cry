@@ -37,10 +37,10 @@ Design notes for `data/campaigns/m813.json`. M813 is PHC's first campaign and it
 | Ingenuity | Perception | Enemy drop pod: Pick the cargo lock (TN 12) |
 | Proficiency | Perception | Sergeant Nine-Nine: Stabilise him (TN 8); The fallen squad: Strip usable parts (TN 12); A robot still moving: Wake it (TN 12) |
 | Vigilant | Perception | No-man's-land: Read the ground for mines (TN 8) |
-| Brain Power | Intelligence | Enemy drop pod: Copy the sigil on the hatch (TN 16) |
+| Brain Power | Intelligence | Enemy drop pod: Work out what the hatch sigil did (TN 16) |
 | Rumination | Intelligence | Enemy drop pod: Read its logs (TN 12) |
 | Eloquence | Intelligence | The squad radio: Talk the pad into waiting (TN 12) |
-| Visualization | Expression | Enemy drop pod: Copy the sigil on the hatch (TN 16) |
+| Visualization | Expression | Enemy drop pod: Work out what the hatch sigil did (TN 16) |
 | Analysis | Expression | The triage line: Sort who can be saved (TN 12); The fallen squad: Read their last logs (TN 12) |
 | Charisma | Expression | The squad radio: Talk the pad into waiting (TN 12) |
 | Empathy | Insight | Sergeant Nine-Nine: Hear what he won't say (TN 12); A robot still moving: Wake it (TN 12) |

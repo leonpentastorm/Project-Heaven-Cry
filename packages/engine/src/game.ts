@@ -7,14 +7,14 @@ import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
-import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches } from './objects';
+import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
 import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
@@ -34,6 +34,8 @@ import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, f
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
+import { readGlyph, readDrawnBy } from './sigil';
+import { masterySync, learnStudied, noteToStudy, learnedElsewhere, growthOf, WORD_MASTERY } from './sigilgrowth';
 import { CASTER, armFoe } from './ai-sigil';
 import { HEART_CASTER, armHeart } from './ai-soul';
 
@@ -107,7 +109,7 @@ export interface GameState {
     heat?: Record<string, number>; jammed?: Record<string, boolean>;
     /** Magic on the story map (spec: Mana): glyphs and zones (and the zone they're drawn in), the mana meter, and each
      * character's Flux, Strain, held Outburst, conditions and shield between overworld actions. */
-    glyphs?: Glyph[]; zones?: Zone[]; glyphMap?: string; mana?: number;
+    glyphs?: Glyph[]; zones?: Zone[]; glyphMap?: string; mana?: number; /** Rules 1.10: scuffed glyphs' traces. */ traces?: Trace[];
     /** The last id number given to placed Sigil magic on the area map (glyphs 'gl', zones 'z', RAISE walls 'sw'): kept
      * so ids never repeat between area-map actions (an Evoke uses its glyphs up, a wall outlives them). */
     glyphSeq?: number;
@@ -222,7 +224,7 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; tactical?: boolean; hand?: 'main' | 'off' | 'both';
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; stroke?: string; feeling?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; tactical?: boolean; hand?: 'main' | 'off' | 'both';
     /** Rules 1.7: attempt: the approach's number as listed (1 = the first); ask: wants or objective. */ index?: number; what?: 'wants' | 'objective' }[];
   /** Place, move, update or remove people and enemies on the overworld map; rules 1.7: carry (id, charId) and drop
    * (id, charId, at) a creature in the story, and every person's face (kind, avatar) and talk (wants, knows, talk). */
@@ -247,7 +249,9 @@ export type NarratorTurn = {
   /** The Narrator places, updates or removes map objects and points of interest, and writes their approaches. */
   objects?: { action: 'place' | 'update' | 'remove'; id: string; kind: string; at: string; name: string; text: string; hidden?: boolean; locked?: boolean;
     approaches: NarratorApproach[];
-    /** Rules 1.7: a cache's contents, in the loot shape. */ items?: CacheItem[] }[];
+    /** Rules 1.7: a cache's contents, in the loot shape. */ items?: CacheItem[];
+    /** Rules 1.10: a sigil mark's word (a Sigil word id), age (fresh, old, ancient) and damage (intact, worn, broken). */
+    word?: string; age?: string; damage?: string }[];
   /** Rules 1.9 (World Play 1.1): things on the ground. Each entry merges into the pile on its tile: items in the loot
    * shape, plus mag:<weapon id> (one magazine, qty its rounds) and rounds:<calibre>; hidden until spotted. At most 6 a
    * turn, 12 items each (world.ts applyGroundOp). */
@@ -320,11 +324,11 @@ export type Action =
   // Rules 1.7: the Talk panel's asks (1 AP) and approaches (2 AP; poi/try works too), and Search in a fight.
   | { type: 'talk/ask'; charId: string; npcId: string; what: 'wants' | 'objective' } | { type: 'talk/try'; charId: string; npcId: string; idx: number }
   | { type: 'combat/search'; unitId: string; objId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; feeling?: string; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
+  | { type: 'world/act'; charId: string; act: WorldAct; feeling?: string; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; stroke?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
     /** Rules 1.7: attempt's approach number (1 = the first, as the Narrator lists them) or idx (0-based, the web's); ask's what. */ index?: number; idx?: number; what?: 'wants' | 'objective';
     /** Rules 1.9: reload's tactical choice and hand (off, both); pickup's entries (keys or indices; none: everything). */ tactical?: boolean; hand?: 'main' | 'off' | 'both'; take?: (string | number)[] }
   // Magic (spec: Mana, rules 1.2)
-  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
+  | { type: 'combat/draw'; unitId: string; word: string; tile: string; /** Rules 1.10: the stroke it extends (an id from previewDraw's strokes) or 'new'; none takes the default. */ stroke?: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push'; /** Rules 1.10 Junctions: on a junction's tile, which stroke to Evoke. */ stroke?: string } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean; watch?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   // Outburst 2.0 (rules 1.5): combat/outburst Begins and holds at stage 0; with an aim (and no hold: true) it is a snap
@@ -332,6 +336,8 @@ export type Action =
   | { type: 'combat/pump'; unitId: string; feeling?: string } | { type: 'combat/revert'; unitId: string } | { type: 'combat/letgo'; unitId: string } | { type: 'combat/steady'; unitId: string } | { type: 'combat/feed'; unitId: string }
   | { type: 'combat/heartwatch'; unitId: string; on?: boolean }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/pick'; charId: string; module: string; via?: string } | { type: 'magic/forget'; charId: string; designId: string }
+  // Rules 1.10 (Sigil 1.5): learn a word with a study pick (or the Mastered free word, over the cap); read a glyph or a trace (copying).
+  | { type: 'sigil/learn'; charId: string; word: string; free?: boolean } | { type: 'combat/read'; unitId: string; tile: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
   | { type: 'vote/suggest'; kind: 'reroll' | 'edit'; entryId: string; note?: string } | { type: 'vote/dismiss'; id: string }
   | { type: 'vote/start'; kind: 'reroll' | 'edit'; entryId: string; note?: string; suggestionId?: string; undo?: string } | { type: 'vote/cast'; yes: boolean } | { type: 'vote/close' }
@@ -367,7 +373,7 @@ export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; ti
   /** In a player's view only: they want something, not yet asked (the words are stripped; world.ts worldView). */ wantsHidden?: boolean;
   /** Rules 1.9 drop tables (loot.ts): what they drop if they die in a fight, from the campaign or the Narrator (never in a player's view). */ drops?: Drops }
 
-export type WorldAct = 'move' | 'end' | 'reload' | 'pickup' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'attack' | 'door' | 'perk' | 'carry' | 'put_down' | 'search' | 'attempt' | 'ask'
+export type WorldAct = 'move' | 'end' | 'reload' | 'pickup' | 'load' | 'clear' | 'repair' | 'prone' | 'stim' | 'analyze' | 'read' | 'attack' | 'door' | 'perk' | 'carry' | 'put_down' | 'search' | 'attempt' | 'ask'
   | 'draw' | 'evoke' | 'scuff' | 'vent' | 'core' | 'outburst' | 'release' | 'syphon' | 'crystallise' | 'pump' | 'letgo' | 'steady' | 'feed' | 'heartwatch' | 'revert';
 export interface Suggestion { id: string; by: string; kind: 'reroll' | 'edit'; entryId: string; note: string }
 export interface Vote { id: string; kind: 'reroll' | 'edit'; entryId: string; note: string; from: string; suggestedBy?: string; undo?: string;
@@ -425,6 +431,8 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   }
   migrateFloor(g); // rules 1.9: an old save's floor becomes piles, once
   try { reduce(g, action, by); worldAfter(g); } finally { bindGame(was); } // rules 1.7: Downed carriers drop, objective triggers
+  // Rules 1.10 (Sigil 1.5): Mastery in Brain Power, Rumination or Eloquence pays its study (and the Mastered free word) once.
+  for (const c of Object.values(g.characters || {})) { const notes = masterySync(c); if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
@@ -758,6 +766,13 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at < 0) g.seq++;
       if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
       if (at >= 0) list[at] = clean; else list.push(clean);
+      return;
+    }
+    case 'sigil/learn': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Learn after the fight.');
+      const e = learnStudied(c!, a.word, a.free); if (e) fail(e);
+      push(g, { kind: 'system', text: c!.name + ' learns the Sigil word ' + SIGIL[String(a.word).trim().toLowerCase()].word + ' (from study' + (a.free === true ? ', the Mastered free word' : '') + ').' });
       return;
     }
     case 'magic/pick': {
@@ -1219,7 +1234,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   // 'zone_enter' {g, zone}: the party arrived in a zone this turn (Wind on the Skin feels who waits there).
   if ((g.story as any).entered) { const z = (g.story as any).entered; delete (g.story as any).entered; emitStory(g, 'zone_enter', { g, zone: z }); senseLurkers(g, 'zone'); }
   if (typeof t.mana === 'number') g.story.mana = Math.max(0, Math.min(40, Math.round(t.mana)));
-  for (const m of t.magic || []) { const c = g.characters[m.charId]; if (!c) continue; if (m.feeling) { if (FEELING[m.feeling]) feelChar(g, c, m.feeling, m.reason || 'the story'); continue; } teach(g, c, m, m.reason || 'the story'); }
+  for (const m of t.magic || []) { const c = g.characters[m.charId]; if (!c) continue; if (m.feeling) { if (FEELING[m.feeling]) feelChar(g, c, m.feeling, m.reason || 'the story'); continue; } narratorTeach(g, c, m); }
   if ((t.npcs || []).length) noticeAll(g);
   for (const l of t.loot || []) giveLoot(g, l);
   if (t.endScene?.summary) { g.story.journal.push(t.endScene.summary); noteScene(g, g.story.scene.title, t.endScene.summary); }
@@ -1334,11 +1349,12 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/door': err = toggleDoor(cb!, u, a.tile); break;
     case 'combat/load': err = loadMagazine(cb!, u); break;
     case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c); break;
-    case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); break; }
+    case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); if (!err) readDrawnBy(cb!, u, t!); break; } // rules 1.10: its glyphs are read too
+    case 'combat/read': err = readGlyph(cb!, u, tileKey(g, a.tile)); break;
     case 'combat/clear': err = clearJam(cb!, u); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
-    case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile)); break;
+    case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile), a.stroke); break;
     case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined, evokeOptsOf(g, a)); break;
     case 'combat/strike-turret': err = strikeTurret(cb!, g.rng, u, tileKey(g, a.tile)); break;
     case 'combat/scuff': err = scuffGlyph(cb!, u); break;
@@ -1607,7 +1623,9 @@ function pileObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[num
 }
 function applyObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[number]) {
   const map = zoneMap(g), objs = storyObjects(g);
-  const approaches = cleanApproaches(op.approaches); // rules 1.7: success and failure effects (world.ts)
+  const approaches0 = cleanApproaches(op.approaches); // rules 1.7: success and failure effects (world.ts)
+  // Rules 1.10: a sigil mark's Investigate is the engine's own; a Narrator approach by that label is dropped (item 922).
+  const approaches = op.kind === 'sigil_mark' || objs.find((o) => o.id === op.id)?.kind === 'sigil_mark' ? approaches0.filter((a) => a.label.toLowerCase() !== MARK.label.toLowerCase()) : approaches0;
   // A pile is matched only by its id or by kind 'pile' (review fix: an op with no kind on a pile's tile became a pile op).
   const existing = objs.find((o) => o.id === op.id) || (op.at ? objs.find((o) => o.pos === keyOf(op.at, map) && (!op.kind ? !isPile(o) : o.kind === op.kind)) : undefined);
   if (op.action === 'remove') { if (existing) g.story.objects = objs.filter((o) => o !== existing); return; }
@@ -1619,14 +1637,23 @@ function applyObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[nu
   }
   if (op.action === 'update' && existing) {
     if (op.name) existing.name = op.name.slice(0, 60); if (op.text) existing.text = op.text.slice(0, 400);
-    if (approaches.length) existing.approaches = mergeApproaches(existing.approaches, approaches);
+    if (approaches.length) {
+      // A sigil mark keeps its Investigate and its tries through the Narrator's new list (item 922: once per character).
+      const study = existing.kind === 'sigil_mark' ? existing.approaches.find((x) => x.success === 'study') : undefined;
+      existing.approaches = mergeApproaches(existing.approaches, existing.kind === 'sigil_mark' ? approaches.filter((x) => x.label.toLowerCase() !== MARK.label.toLowerCase()) : approaches);
+      if (study) existing.approaches.unshift(study);
+    }
     if (op.hidden === false) existing.hidden = false; if (op.locked != null && (kindOf(existing).door || isCache(existing))) existing.locked = op.locked;
     if (Array.isArray(op.items) && op.items.length) { existing.items = cleanItems(op.items); delete existing.searched; }
+    if (existing.kind === 'sigil_mark') { if (op.age) existing.age = String(op.age); if (op.damage) existing.damage = String(op.damage); ensureMark(existing); } // its Investigate stays first
     return;
   }
   const k = keyOf(op.at, map); if (!k || !OBJ[op.kind] || map.solid.includes(k)) return;
+  // Rules 1.10: a sigil mark needs a real word (the engine writes its Investigate approach; makeObject).
+  const markW = op.kind === 'sigil_mark' ? String(op.word || '').trim().toLowerCase() : ''; if (op.kind === 'sigil_mark' && !SIGIL[markW]) return;
   if (OBJ[op.kind].blocks_move && (objs.some((o) => o.pos === k && blocksMove(o)) || Object.values(positionsOf(g)).includes(k))) return;
-  const o = makeObject('o' + (++g.seq), op.kind, k, { name: op.name?.slice(0, 60), text: op.text?.slice(0, 400), approaches: approaches.map((a) => ({ ...a, tries: [] })) });
+  const o = makeObject('o' + (++g.seq), op.kind, k, { name: op.name?.slice(0, 60), text: op.text?.slice(0, 400), approaches: approaches.map((a) => ({ ...a, tries: [] })),
+    ...(markW ? { word: markW, ...(op.age ? { age: String(op.age) } : {}), ...(op.damage ? { damage: String(op.damage) } : {}) } : {}) });
   if (op.hidden != null && OBJ[op.kind].trap) o.hidden = op.hidden; if (op.locked && (kindOf(o).door || op.kind === 'cache')) o.locked = true;
   if (op.kind === 'cache' || (Array.isArray(op.items) && op.items.length)) o.items = cleanItems(op.items); // rules 1.7: a cache's contents
   objs.push(o);
@@ -1843,13 +1870,13 @@ const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outbu
 /** A tile from a grid reference ("C7") or a tile key ("2,6"). */
 function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
 /** The Evoke choices beyond the aim (rules 1.4): TWICE's other aims, STEP's landing tile, COMMAND's order. */
-function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }) {
-  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
+function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; stroke?: string }) {
+  return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.stroke && a.stroke !== 'new' && !a.stroke.startsWith('junction:') ? { stroke: String(a.stroke) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
     ...(a.paint === 'spread' || a.paint === 'push' ? { paint: a.paint as 'spread' | 'push' } : {}) };
 }
-function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; feeling?: string; word?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; feeling?: string; word?: string; stroke?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
   switch (a.act) {
-    case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos) : 'Pick a word.';
+    case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos, a.stroke) : 'Pick a word.';
     case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim, g ? evokeOptsOf(g, a) : {}) : 'Pick a glyph of the pattern.';
     case 'scuff': return scuffGlyph(cb, u);
     case 'vent': return ventFlux(cb, u);
@@ -1875,7 +1902,7 @@ function magicIn(g: GameState, cb: Combat) {
   if (!cb.overworld) { const hz = zoneHazards(g, cb.map.id); if (hz.length) cb.hazards = JSON.parse(JSON.stringify(hz)); }
   if (!cb.overworld) { const lt = campTables(g); if (lt.length) cb.lootTables = lt; } // rules 1.9: the campaign's own drop tables
   migrateStorySigil(g.story as any); cb.sigilV = SIGIL_REV; // 1.2 glyphs go, 1.2 walls become fields (item 441)
-  if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); }
+  if (!g.story.glyphMap || g.story.glyphMap === cb.map.id) { cb.glyphs = JSON.parse(JSON.stringify(g.story.glyphs || [])); cb.zones = JSON.parse(JSON.stringify(g.story.zones || [])); if (g.story.traces?.length) cb.traces = JSON.parse(JSON.stringify(g.story.traces)); }
   // Ids never repeat: the story's counter, the live glyphs and zones, and the RAISE walls standing (they outlive the
   // glyphs that made them, so a counter rebuilt from glyphs alone would hand out a wall's id again).
   const walls = (cb.objects || []).filter((o) => o.kind === 'sigil_wall' || /^sw\d+$/.test(String(o.id)));
@@ -1912,6 +1939,7 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
   // on the area map). Linger fields and residue run down their rounds as zones do.
   const fuses = afterFight ? (cb.zones || []).filter((z: any) => z.kind === 'fuse').length : 0;
   g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = afterFight ? (cb.zones || []).filter((z: any) => z.kind !== 'grand' && !z.grandOf && z.kind !== 'fuse') : cb.zones || []; g.story.glyphMap = cb.map.id;
+  if (cb.traces?.length || g.story.traces) g.story.traces = cb.traces || []; // rules 1.10: scuffed glyphs' traces
   if (fuses) push(g, { kind: 'system', text: fuses === 1 ? 'A fuse fizzles out.' : fuses + ' fuses fizzle out.' });
   g.story.glyphSeq = Math.max(g.story.glyphSeq || 0, cb.glyphSeq || 0);
   const m = (g.story.magic ||= {});
@@ -1928,7 +1956,7 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
 /** A new overworld round is a turn for magic: glyphs and zones run down, held Outbursts grow, Strain eases, Burning
  * burns. Nothing happens (and nothing is logged) when there's no magic about. */
 function storyMagicRound(g: GameState) {
-  const live = (g.story.glyphs || []).length || (g.story.zones || []).length || (g.story.objects || []).some((o) => o.kind === 'sigil_wall') || Object.values(g.story.magic || {}).some((x) => x.strain || x.held || Object.keys(x.conds || {}).length || x.shield);
+  const live = (g.story.glyphs || []).length || (g.story.traces || []).length || (g.story.zones || []).length || (g.story.objects || []).some((o) => o.kind === 'sigil_wall') || Object.values(g.story.magic || {}).some((x) => x.strain || x.held || Object.keys(x.conds || {}).length || x.shield);
   if (!live || g.phase !== 'story') return;
   const cb = storyCb(g); cb.round = g.story.round;
   magicRoundTick(cb);
@@ -1965,13 +1993,25 @@ function teach(g: GameState, c: Character, m: { word?: string; school?: string; 
     if (!SIGIL[word]) return 'No such word.';
     const known = (c.sigils ||= []); if (known.includes(word)) return c.name + ' already knows ' + SIGIL[word].word + '.';
     if (known.length >= wordsKnownCap(c)) return c.name + ' knows ' + known.length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').';
-    known.push(word); push(g, { kind: 'system', text: c.name + ' learns the Sigil word ' + SIGIL[word].word + ' (' + why + ').' }); return '';
+    known.push(word); learnedElsewhere(c, word); push(g, { kind: 'system', text: c.name + ' learns the Sigil word ' + SIGIL[word].word + ' (' + why + ').' }); return '';
   }
   const k = (c.soulKnown ||= { schools: [], modules: [] });
   if (m.school) { if (!SCHOOL[m.school]) return 'No such school.'; if (!k.schools.includes(m.school)) { k.schools.push(m.school); push(g, { kind: 'system', text: c.name + ' learns the ' + SCHOOL[m.school].name + ' school of Outbursts (' + why + ').' }); } return ''; }
   if (m.module) { if (!MODULE[m.module]) return 'No such module.'; { const sh = moduleShelved(m.module); if (sh) return sh; } if (!k.modules.includes(m.module)) { k.modules.push(m.module); push(g, { kind: 'system', text: c.name + ' learns the Outburst module ' + MODULE[m.module].name + ' (' + why + ').' }); } return ''; }
   if (m.tone) { if (!TONE[m.tone] || m.tone === 'raw') return 'No such tone.'; const kt = (k.tones ||= []); if (!kt.includes(m.tone)) { kt.push(m.tone); push(g, { kind: 'system', text: c.name + ' learns the ' + TONE[m.tone].name + ' tone of Outbursts (' + why + ').' }); } return ''; }
   return 'Nothing to learn.';
+}
+
+/** The Narrator's grant (narrator/turn magic[]). Rules 1.10 (item 914): a word grant is a bonus source, so it takes the
+ * scene's one new thing and stays within the cap; one that can't land goes on the known-to-study list instead (a study
+ * pick can take it later), and the log says why. Schools, modules and tones are granted as before. */
+function narratorTeach(g: GameState, c: Character, m: { word?: string; school?: string; module?: string; tone?: string; reason?: string }) {
+  const why = m.reason || 'the story';
+  if (!m.word) { teach(g, c, m, why); return; }
+  const w = m.word.trim().toLowerCase(); if (!SIGIL[w] || (c.sigils || []).includes(w)) { teach(g, c, m, why); return; }
+  const spent = g.phase === 'story' && c.learnedScene === g.story.scene.n, full = (c.sigils || []).length >= wordsKnownCap(c);
+  if (spent || full) { noteToStudy(c, w); push(g, { kind: 'system', text: c.name + ' glimpses the Sigil word ' + SIGIL[w].word + ' (' + why + '), but ' + (spent ? 'has learned something new this scene already' : 'knows as many words as Brain Power allows') + ': it goes on the known-to-study list.' }); return; }
+  if (!teach(g, c, m, why) && g.story?.scene) c.learnedScene = g.story.scene.n;
 }
 
 /** The overworld as a throwaway fight state, so every combat rule (paths, sight, actions) runs unchanged. Units carry
@@ -2109,7 +2149,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   else if (a.act === 'repair') err = fieldRepair(cb, u);
   else if (a.act === 'prone') err = toggleProne(cb, u);
   else if (a.act === 'stim') { if (!target || target.side !== 'pc') fail('Pick an ally.'); err = useStim(cb, u, target!, c!, isMedicChar(c!)); }
-  else if (a.act === 'analyze') { if (!target || target.side !== 'foe') fail('Pick someone to read.'); err = analyze(cb, u, target!); if (!err) { const n = npcsOf(g).find((x) => x.id === target!.id); if (n) n.analyzed = true; } }
+  else if (a.act === 'analyze') { if (!target || target.side !== 'foe') fail('Pick someone to read.'); err = analyze(cb, u, target!); if (!err) { readDrawnBy(cb, u, target!); const n = npcsOf(g).find((x) => x.id === target!.id); if (n) n.analyzed = true; } }
+  else if (a.act === 'read') { if (!a.tile) fail('Pick a glyph or a trace to read.'); err = readGlyph(cb, u, tileKey(g, a.tile!)); }
   else if (a.act === 'attack') {
     // Anyone and anything is a target (spec: Anyone is a target).
     let t = target;
@@ -2307,9 +2348,11 @@ export function refreshCampaign(g: GameState): boolean {
   const old = g.campaign;
   if (g.phase === 'lobby' || !old || old.custom) return false;
   const fresh = builtInCampaign(old.id); if (!fresh || fresh.title !== old.title) return false;
-  const geom = (z: any) => JSON.stringify([z.w, z.h, z.solid, z.difficult, z.start, z.enemyStart, (z.objects || []).map((o: any) => [o.kind, o.at]), (z.exits || []).map((e: any) => [e.to, e.at])]);
+  const geom = (z: any) => JSON.stringify([z.w, z.h, z.solid, z.difficult, z.start, z.enemyStart, (z.exits || []).map((e: any) => [e.to, e.at])]);
+  // Objects only added (every old one still there by kind and tile, e.g. the rules 1.10 sigil marks) are no layout change.
+  const objsKept = (oz: any, fz: any) => (oz.objects || []).every((o: any) => (fz.objects || []).some((x: any) => x.kind === o.kind && x.at === o.at));
   const hadNpcs = new Set(old.zones.filter((z) => z.npcs).map((z) => z.id));
-  const zones = fresh.zones.map((fz) => { const oz = old.zones.find((z) => z.id === fz.id); return !oz || geom(oz) === geom(fz) ? fz : { ...oz, art: fz.art, music: fz.music, npcs: oz.npcs ?? fz.npcs }; });
+  const zones = fresh.zones.map((fz) => { const oz = old.zones.find((z) => z.id === fz.id); return !oz || (geom(oz) === geom(fz) && objsKept(oz, fz)) ? fz : { ...oz, art: fz.art, music: fz.music, npcs: oz.npcs ?? fz.npcs }; });
   for (const oz of old.zones) if (!zones.some((z) => z.id === oz.id)) zones.push(oz);
   g.campaign = { ...fresh, zones };
   // Art onto objects already on the maps: matched to their definition by kind and tile; only missing fields are filled.
@@ -2442,6 +2485,8 @@ export function rerollFrom(current: GameState, before: GameState, note: string):
 export interface Sandbox {
   /** ready: gearing up (sandboxNext is this wave); fighting; cleared / fallen: the last fight's result, gearing up again. */
   wave: number; best: number; attempt: number; ai: boolean;
+  /** Rules 1.10: Junctions on for every character here (testing; normally Brain Power Mastered). */
+  junctions?: boolean;
   /** Endless waves: after a cleared wave the next one comes by itself after a short pause (the host's client sends sandbox/wave). */
   auto: boolean;
   state: 'ready' | 'fighting' | 'cleared' | 'fallen';
@@ -2500,6 +2545,9 @@ export type SandboxAction =
   | { type: 'sandbox/learn'; charId: string; word?: string; school?: string; module?: string; tone?: string; feeling?: string; forget?: boolean }
   /** Rules 1.8: add practice (n may be negative) to a character. */
   | { type: 'sandbox/practice'; charId: string; n: number }
+  // Rules 1.10: grant study; set a known word's use count (30 makes it a Mastered word, its inflection on).
+  | { type: 'sandbox/study'; charId: string; study: number } | { type: 'sandbox/word-uses'; charId: string; word: string; uses: number }
+  | { type: 'sandbox/mark'; at: string; word: string; age?: string; damage?: string; name?: string; text?: string } | { type: 'sandbox/junctions'; on: boolean }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
   | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string } | { type: 'sandbox/clear' }
   | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number }
@@ -2941,6 +2989,16 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/auto': { hostOnly(); sb.auto = !!a.on; return; }
+    // Rules 1.10 (Sigil 1.5) tools: place a sigil mark (while gearing up); Junctions on for everyone here.
+    case 'sandbox/mark': {
+      fieldOnly(); if (!gearing) fail('Place things while gearing up (stop the fight first).');
+      const w = String(a.word || '').trim().toLowerCase(); if (!SIGIL[w]) fail('No such word.');
+      const before = storyObjects(g).length;
+      applyObjectOp(g, { action: 'place', id: '', kind: 'sigil_mark', at: a.at, name: a.name || 'Sigil mark: ' + SIGIL[w].word, text: a.text || 'A Sigil word cut into the wall.', approaches: [], word: w, ...(a.age ? { age: a.age } : {}), ...(a.damage ? { damage: a.damage } : {}) });
+      if (storyObjects(g).length === before) fail('Nothing can go there.');
+      const o = storyObjects(g).at(-1)!; sbLog(g, o.name + ' (' + (o.age || MARK.age) + ', ' + (o.damage || MARK.damage) + ', TN ' + o.approaches[0].tn + ') at ' + refOf(o.pos) + ' [' + o.id + '].'); return;
+    }
+    case 'sandbox/junctions': { hostOnly(); sb.junctions = !!a.on; sbLog(g, 'Junctions ' + (sb.junctions ? 'on for everyone here: a glyph may join two strokes.' : 'off: Brain Power Mastered only.')); return; }
     case 'sandbox/ai': { hostOnly(); sb.ai = !!a.on; sbLog(g, 'Enemy AI ' + (sb.ai ? 'on.' : 'off: enemies pass their turns.')); return; }
     case 'sandbox/faith': {
       const c = mine(a.charId), lines: string[] = [];
@@ -3175,6 +3233,19 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (a.designId) { const u = cb?.units.find((x) => x.charId === c.id); if (u?.mg?.held?.design === a.designId) fail('That Outburst is being held: release it first.'); c.outbursts = (c.outbursts || []).filter((x) => x.id !== a.designId); }
       });
       return;
+    }
+    // Rules 1.10 (Sigil 1.5) tools: grant study; set a known word's use count (30: a Mastered word, its inflection on).
+    case 'sandbox/study': {
+      const c = mine(a.charId), n = Math.round(Number(a.study)); if (!Number.isFinite(n) || n === 0 || Math.abs(n) > 500) fail('Study: a whole number, at most 500.');
+      const s0 = growthOf(c); s0.study = Math.max(0, s0.study + n);
+      sbLog(g, c.name + (n > 0 ? ' gains ' + n : ' loses ' + -n) + ' study (' + s0.study + ').'); return;
+    }
+    case 'sandbox/word-uses': {
+      const c = mine(a.charId), w = String(a.word || '').toLowerCase(), n = Math.round(Number(a.uses));
+      if (!SIGIL[w]) fail('No such word.'); if (!(c.sigils || []).includes(w)) fail(c.name + ' doesn\'t know ' + SIGIL[w].word + '.');
+      if (!Number.isFinite(n) || n < 0 || n > 999) fail('Uses: 0 to 999.');
+      sbChange(g, c, () => { growthOf(c).uses[w] = n; });
+      sbLog(g, c.name + '\'s ' + SIGIL[w].word + ' has ' + n + ' use' + (n === 1 ? '' : 's') + (n >= WORD_MASTERY.mastered ? ': a Mastered word, its inflection on' : n >= WORD_MASTERY.practised ? ': Practised' : '') + '.'); return;
     }
   }
   fail('Unknown action.');

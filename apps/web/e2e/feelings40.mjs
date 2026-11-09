@@ -183,15 +183,23 @@ const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click().catch(() => {});
 await drawer.waitFor({ timeout: 5000 }).catch(() => {});
 await drawer.getByRole('tab', { name: 'Magic', exact: true }).first().click().catch(() => {}); await p.waitForTimeout(400);
-const groups = await p.locator('[data-pg-group]').evaluateAll((ns) => ns.map((n) => n.getAttribute('data-pg-group')));
+// The Outburst tools share the Sigil words' collapsible groups (workshopGroups.tsx): section sb.soul.
+const SB = '[data-ws-section="sb.soul"]';
+const groups = await p.locator(SB + ' [data-ws-group]').evaluateAll((ns) => ns.map((n) => n.getAttribute('data-ws-group')));
 ok('the tools group Outbursts: ' + JSON.stringify(groups), ['schools', 'modules', 'feelings', 'practice', 'fx'].every((x) => groups.includes(x)));
 if (groups.includes('modules')) {
-  await p.locator('[data-pg-group="modules"] > summary').click(); await p.waitForTimeout(200);
-  const mg = await p.locator('[data-pg-group="modules"] [data-module-group]').evaluateAll((ns) => ns.map((n) => n.getAttribute('data-module-group')));
+  if ((await p.locator(SB + ' [data-ws-group="modules"] > button[data-ws-toggle]').getAttribute('aria-expanded')) !== 'true') await p.locator(SB + ' [data-ws-group="modules"] > button[data-ws-toggle]').click(); await p.waitForTimeout(200);
+  // Each gate skill is its own collapsible, remembered group (sb.soul.modules), as on the sheet; open the advanced one.
+  const GATE = SB + ' [data-ws-group="modules"] [data-ws-group]';
+  const mg = await p.locator(GATE).evaluateAll((ns) => ns.map((n) => n.getAttribute('data-ws-group')));
   ok('modules by gate skill, the advanced classes\' last: ' + JSON.stringify(mg), mg[0] === 'lore_master' && mg.at(-1) === 'advanced');
+  const gateHeads = await p.locator(GATE + ' > button[data-ws-toggle]').count();
+  ok('every gate has its own toggle with a count: ' + gateHeads + ' / ' + mg.length, gateHeads === mg.length && /\d+ \/ \d+/.test(await p.locator(GATE + ' > button[data-ws-toggle]').first().innerText()));
+  const adv = p.locator(SB + ' [data-ws-group="modules"] [data-ws-group="advanced"] > button[data-ws-toggle]');
+  if ((await adv.getAttribute('aria-expanded')) !== 'true') await adv.click(); await p.waitForTimeout(200);
   const lockedN = await p.locator('[data-module-group="advanced"] button[data-locked="true"]:disabled').count();
   ok('the shelved advanced classes\' modules show locked (can\'t be granted): ' + lockedN, lockedN === 10);
-  await p.locator('[data-pg-group="fx"] > summary').click(); await p.waitForTimeout(200);
+  if ((await p.locator(SB + ' [data-ws-group="fx"] > button[data-ws-toggle]').getAttribute('aria-expanded')) !== 'true') await p.locator(SB + ' [data-ws-group="fx"] > button[data-ws-toggle]').click(); await p.waitForTimeout(200);
   ok('a test row for every feeling: ' + await p.locator('[data-fx-test]').count(), await p.locator('[data-fx-test]').count() === 25);
   await snap('5-tools');
 }

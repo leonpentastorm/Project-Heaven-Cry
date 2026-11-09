@@ -47,13 +47,14 @@ describe('Sigils on the map (spec: Sigils, rules 1.4)', () => {
     expect(u.mg!.charge).toBe(7 - 2); expect(cb.glyphs!.length).toBe(0); expect(cb.log.at(-1)).toMatch(/evokes SPARK · SEEK/);
     expect(e.hp < hp || /misses/.test(cb.log.at(-1)!)).toBe(true);
   });
-  it('drawing is refused off your own tile; a bend is no shape and can\'t be Evoked', () => {
+  it('drawing is refused off your own tile; a glyph that turns starts a new stroke and spoils nothing (rules 1.10)', () => {
     const { cb, u, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil', sigils: ['fire', 'seek'] }), '9,5');
     u.mg!.words.push('condense'); u.mg!.maxWords = 4;
     expect(drawGlyph(cb, rng, u, 'fire', '9,9')).toMatch(/own tile/);
     u.pos = '3,5'; drawGlyph(cb, rng, u, 'fire'); u.pos = '4,5'; drawGlyph(cb, rng, u, 'condense'); u.pos = '4,6'; drawGlyph(cb, rng, u, 'seek');
-    expect(findPattern(cb, '3,5')).toMatch(/No shape/);
-    expect(previewEvoke(cb, u, '3,5', '9,5').ok).toBe(false);
+    // Under 1.4 the bend made no shape; now SEEK is a stroke of its own and FIRE · CONDENSE is still a Line.
+    const p = findPattern(cb, '3,5'); expect(typeof p === 'object' && p.words).toEqual(['fire', 'condense']);
+    expect(findPattern(cb, '4,6')).toMatch(/One glyph alone/);
   });
   it('Flux past 6 overloads the Evoker; Vent dumps Flux into the air; scuff wipes your tile', () => {
     const { cb, u, rng } = fight(sheet('sigilist', 'S', { kit: 'sigil' }), '9,9');

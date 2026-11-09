@@ -94,4 +94,19 @@ describe('effects layer', () => {
     expect(spy.mock.calls.length).toBe(before);
     spy.mockRestore(); vi.useRealTimers();
   });
+  it('Sigil 1.5 sounds: a stroke join, an inflection coming on, a word copied (Analyze on a glyph, Investigate on a mark)', () => {
+    vi.useFakeTimers(); grid();
+    setContext({ code: 'X', characters: {}, story: { positions: {}, npcs: [] }, combat: null } as any, 'main');
+    const spy = vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
+    const heard = (e: any) => { spy.mockClear(); playFx(e); vi.advanceTimersByTime(1500); return spy.mock.calls.map((c) => c[0]); };
+    expect(heard({ k: 'draw', unit: 'u', at: '1,1', tile: '2,2', word: 'seek', effect: 'extends' })).toContain('sg_join');
+    expect(heard({ k: 'draw', unit: 'u', at: '1,1', tile: '2,2', word: 'fire', effect: 'starts' })).not.toContain('sg_join');
+    expect(heard({ k: 'sigil_growth', unit: 'u', at: '1,1', study: 30, mastered: ['fire'] })).toContain('sg_inflect');
+    expect(heard({ k: 'sigil_growth', unit: 'u', at: '1,1', study: 6, mastered: [] })).toContain('sg_study');
+    expect(heard({ k: 'analyze', unit: 'u', from: '1,1', to: '4,1', glyph: true })).toContain('sg_study');
+    expect(heard({ k: 'analyze', unit: 'u', target: 't', from: '1,1', to: '4,1' })).not.toContain('sg_study');
+    expect(heard({ k: 'approach', unit: 'pc-a', at: '3,3', label: 'Investigate', ok: true, effect: 'copied PULL' })).toContain('sg_study');
+    expect(heard({ k: 'approach', unit: 'pc-a', at: '3,3', label: 'Search', ok: true, effect: 'removed' })).not.toContain('sg_study');
+    spy.mockRestore(); clearFx(); vi.advanceTimersByTime(5000); vi.useRealTimers();
+  });
 });

@@ -54,8 +54,14 @@ describe('the Narrator teaches 1.4 words (magic[])', () => {
     expect(g.story.entries.some((x) => /learns the Sigil word ACID/.test(x.text))).toBe(true);
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'A plate.', magic: [{ charId: id, word: 'return', reason: 'a plate' }, { charId: id, word: 'shield', reason: 'a plate' }] } as any }, 'host');
     expect(g.characters[id].sigils).not.toContain('return'); expect(g.characters[id].sigils).not.toContain('shield');
+    // Rules 1.10 (item 914): a Narrator grant is a bonus source and takes the scene's one new thing. A second word in the
+    // same scene is not learned: it goes on the known-to-study list (and the log says so); in a new scene it lands.
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'A turret plate.', magic: [{ charId: id, word: 'watch', reason: 'a plate' }] } as any }, 'host');
+    expect(g.characters[id].sigils).not.toContain('watch'); expect((g.characters[id] as any).sigilGrowth.toStudy).toContain('watch');
+    expect(g.story.entries.some((x) => /glimpses the Sigil word WATCH .*learned something new this scene already.*known-to-study/.test(x.text))).toBe(true);
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Later, at the workbench.', sceneTitle: 'The workbench', magic: [{ charId: id, word: 'watch', reason: 'a plate' }] } as any }, 'host');
     expect(g.characters[id].sigils).toContain('watch'); expect(SIGIL.watch.group).toBe('delivery');
+    expect((g.characters[id] as any).sigilGrowth.toStudy).not.toContain('watch');
   });
 });
 

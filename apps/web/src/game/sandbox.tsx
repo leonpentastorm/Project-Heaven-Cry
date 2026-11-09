@@ -15,12 +15,13 @@ import React from 'react';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
 import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
 import { OPT_LABEL, optValue } from './actionPickers';
-import { wordRows } from './sigilView';
+import { Groups, GroupList, sigilWordGroups } from './workshopGroups';
+import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
 import { glyphKeyNav } from './glyphKeys';
 import {
   magicOf, FEELINGS, practiceOf, nextPickAt, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
+  ENEMIES, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
 import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, devotionWords, GATE, moduleShelved } from '@engine';
@@ -251,7 +252,7 @@ function Drawer({ game, meId, isHost, screen, closing, close }: { game: GameStat
       {tab === 'squad' && <Players game={game} meId={meId} isHost={isHost} />}
       {tab === 'gear' && c && <GearTab c={c} />}
       {tab === 'squad' && c && <SquadTab game={game} c={c} isHost={isHost} />}
-      {tab === 'magic' && c && <MagicTab c={c} />}
+      {tab === 'magic' && c && <MagicTab c={c} game={game} canField={field} />}
       {tab === 'faith' && c && <FaithTab game={game} c={c} />}
       {tab === 'field' && field && <FieldTab game={game} isHost={isHost} />}
       {tab === 'world' && field && <WorldTab game={game} />}
@@ -517,8 +518,6 @@ function FaithTab({ game, c }: { game: GameState; c: Character }) {
   </>;
 }
 
-const pgDet: React.CSSProperties = { borderTop: '1px solid ' + C.line, paddingTop: 4 };
-const pgSum: React.CSSProperties = { cursor: 'pointer', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: C.muted, padding: '4px 0' };
 /** Where a character's unit stands now (the fight's, else the area map's), for the effects test row. */
 function playerUnitPos(charId: string): string | null {
   const g: any = getState().game; const u = g?.combat?.units?.find((x: any) => x.charId === charId); return u ? u.pos : g?.story?.positions?.[charId] || null;
@@ -531,7 +530,7 @@ function testFeelingFx(feeling: string, family: string, what: 'pump' | 'release'
   else if (what === 'release') fx.playFx({ k: 'release', at, to, form: 'bolt', tone: 'raw', stage: 3, mult: 1.8, felt: [feeling], area: [to], targets: [] });
   else fx.playFx({ k: 'residue', tiles: [to, (x + 2) + ',' + (y + 1), (x + 3) + ',' + y], feeling, family, kind: 'harms', rounds: 2 });
 }
-function MagicTab({ c }: { c: Character }) {
+function MagicTab({ c, game, canField }: { c: Character; game: GameState; canField: boolean }) {
   const known = c.sigils || [], k: any = c.soulKnown || { schools: [], modules: [] };
   const [school, setSchool] = React.useState(SCHOOLS[0]?.id || ''), [mods, setMods] = React.useState<string[]>([]), [name, setName] = React.useState('');
   // Rules 1.5: a tone, a shape (one form module), a second school with its own option (a rider at half).
@@ -540,6 +539,7 @@ function MagicTab({ c }: { c: Character }) {
   const optsOf = (sc: string) => ((SCHOOL as any)[sc]?.options || []) as string[];
   const chip = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 26, fontSize: 11, padding: '0 6px', border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
   const others = MODULES.filter((m) => !isShape(m.id));
+  const kb = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
   const draft: any = { id: '', name: name || (SCHOOL as any)[school]?.name + ' Outburst', school, modules: [...(shape ? [shape] : []), ...mods.filter((x) => x !== 'size' || shape)], ...(opt ? { option: opt } : {}), ...(school2 && school2 !== school ? { school2, ...(opt2 ? { option2: opt2 } : {}) } : {}), ...(tone !== 'raw' ? { tone } : {}) };
   const v = (() => { try { return designVerdict(magicOf(c) || null, draft); } catch { return null; } })();
   return <>
@@ -551,58 +551,51 @@ function MagicTab({ c }: { c: Character }) {
         <button type="button" style={btn} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'standard_core', qty: 4 })}>+4 mana cores</button>
       </div>
     </Section>
-    <Section title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'}>
-      {/* One labelled row per Sigil 1.4 word group (Elements … Filter), the same rows as the combat glyph keyboard. */}
-      <div role="group" aria-label="Sigil words" data-glyph-keyboard="1" style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-        {wordRows(SIGILS, (w) => w.id).map((r) => <div key={r.key} role="group" aria-label={r.label + ' words'} data-word-row={r.key} style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-          <span aria-hidden="true" style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: '#8BDEEE' }}>{r.label.toUpperCase()}</span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
-            {r.items.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" data-word={w.id} title={w.word + ' · ' + w.text} aria-pressed={on} onKeyDown={glyphKeyNav}
-              style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
-              onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}><img src={glyphUri(w.id, on ? SIGIL_INK : '#7F8BA1', { glow: on })} alt="" width={16} height={16} />{w.word}</button>; })}
-          </div>
-        </div>)}
-      </div>
-    </Section>
-    {/* Rules 1.8: schools, tones, modules grouped by gate skill (the advanced classes' shown, learnable here: no gates in
-        the Proving Ground), feelings (grant or forget), practice, and a sound and effects test row for every feeling. */}
-    <Section title="OUTBURSTS: SCHOOLS, TONES, MODULES, FEELINGS">
-      <details data-pg-group="schools" open style={pgDet}><summary style={pgSum}>SCHOOLS AND TONES</summary>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
-          {SCHOOLS.map((s) => <button key={s.id} type="button" title={s.text} disabled={k.schools.includes(s.id)} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (k.schools.includes(s.id) ? C.soul : C.line), color: k.schools.includes(s.id) ? C.soul : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, school: s.id })}>{s.name}</button>)}
-          {toneChips(k.tones || []).filter((t) => t.id !== 'raw').map((t) => <button key={t.id} type="button" title={t.text} disabled={t.known} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (t.known ? t.ink : C.line), color: t.known ? t.ink : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, tone: t.id })}>{t.name}</button>)}
+    {/* The five Sigil word groups, collapsible (the same component and open state model as the Magic tab). */}
+    <div data-glyph-keyboard="1" style={{ minWidth: 0 }}><Groups section="sb.sigil" title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'} ink={C.mind} aria="Sigil words"
+      groups={sigilWordGroups(SIGILS, (w) => w.id)} render={(items, g) => <div data-word-row={g.key} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
+        {items.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" data-word={w.id} title={w.word + ' · ' + w.text} aria-pressed={on} onKeyDown={glyphKeyNav}
+          style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
+          onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}><img src={glyphUri(w.id, on ? SIGIL_INK : '#7F8BA1', { glow: on })} alt="" width={16} height={16} />{w.word}</button>; })}
+      </div>} /></div>
+    <SigilTools c={c} game={game} canField={canField} />
+    {/* Rules 1.8 (Outburst 4.0): schools, tones, modules grouped by gate skill (the advanced classes' shown, learnable here:
+        no gates in the Proving Ground), feelings (grant or forget), practice, and a sound and effects test row for every
+        feeling; in the shared workshop groups (workshopGroups.tsx), like the Sigil words above. */}
+    <Groups<{ key: string }> section="sb.soul" title="OUTBURSTS: SCHOOLS, TONES, MODULES, FEELINGS" ink={C.soul} aria="Outburst lessons"
+      groups={[
+        { key: 'schools', label: 'Schools and tones', n: SCHOOLS.length + toneChips(k.tones || []).filter((t) => t.id !== 'raw').length, items: [{ key: 'schools' }] },
+        { key: 'modules', label: 'Modules by gate skill', count: k.modules.length + ' KNOWN', dflt: false, items: [{ key: 'modules' }] },
+        { key: 'feelings', label: 'Feelings', count: (c.feelings || []).length + ' / ' + FEELINGS.length + ' FELT', dflt: false, items: [{ key: 'feelings' }] },
+        { key: 'practice', label: 'Practice', count: practiceOf(c) + '; NEXT PICK AT ' + nextPickAt(practiceOf(c)), dflt: false, items: [{ key: 'practice' }] },
+        { key: 'fx', label: 'Feelings: sound and effects test', n: FEELINGS.length, dflt: false, items: [{ key: 'fx' }] },
+      ]}
+      render={(_, g) => g.key === 'schools' ? <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          {SCHOOLS.map((s) => <button key={s.id} type="button" title={s.text} disabled={k.schools.includes(s.id)} style={kb(k.schools.includes(s.id))} onClick={() => act({ type: 'sandbox/learn', charId: c.id, school: s.id })}>{s.name}</button>)}
+          {toneChips(k.tones || []).filter((t) => t.id !== 'raw').map((t) => <button key={t.id} type="button" title={t.text} disabled={t.known} style={kb(t.known, t.ink)} onClick={() => act({ type: 'sandbox/learn', charId: c.id, tone: t.id })}>{t.name}</button>)}
         </div>
-      </details>
-      <details data-pg-group="modules" style={pgDet}><summary style={pgSum}>MODULES BY GATE SKILL ({k.modules.length} KNOWN)</summary>
-        {moduleGroups(c).map((gr) => <div key={gr.key} role="group" aria-label={gr.label + ' modules'} data-module-group={gr.key} style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 6 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: C.soul }}>{gr.label.toUpperCase()} · {gr.blurb}</span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {gr.modules.map((m) => <button key={m.id} type="button" data-module={m.id} title={m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : '')} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
-          </div>
-        </div>)}
-      </details>
-      <details data-pg-group="feelings" style={pgDet}><summary style={pgSum}>FEELINGS ({(c.feelings || []).length} / {FEELINGS.length} FELT)</summary>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
+        : g.key === 'modules' ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {/* Each gate skill its own collapsible, remembered group, as on the sheet ('magic.soul.modules'). */}
+          <GroupList section="sb.soul.modules" ink="#C9D3E3" groups={moduleGroups(c).map((gr) => ({ key: gr.key, label: gr.label + ' · ' + gr.blurb, items: gr.modules, count: gr.modules.filter((x) => x.known).length + ' / ' + gr.modules.length, dflt: false }))}
+            render={(ms, gr) => <div role="group" aria-label={gr.label + ' modules'} data-module-group={gr.key} style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {ms.map((m) => <button key={m.id} type="button" data-module={m.id} title={m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : '')} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
+          </div>} />
+        </div>
+        : g.key === 'feelings' ? <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           <button type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => FEELINGS.forEach((f) => { if (!(c.feelings || []).includes(f.id)) act({ type: 'sandbox/learn', charId: c.id, feeling: f.id }); })}>Feel them all</button>
           {FEELINGS.map((f) => { const on = (c.feelings || []).includes(f.id), ink = feelingInk(f.id); return <button key={f.id} type="button" data-feeling={f.id} aria-pressed={on} title={f.name + ': ' + f.pour.text + ' · ' + f.trigger.text}
             style={{ ...btn, minHeight: 28, fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted }}
             onClick={() => act({ type: 'sandbox/learn', charId: c.id, feeling: f.id, ...(on ? { forget: true } : {}) })}><img src={feelingIconSrc(f.id, on ? ink : '#7F8BA1')} alt="" width={16} height={16} />{f.name}</button>; })}
         </div>
-      </details>
-      <details data-pg-group="practice" style={pgDet}><summary style={pgSum}>PRACTICE ({practiceOf(c)}; NEXT PICK AT {nextPickAt(practiceOf(c))})</summary>
-        <div style={{ ...row, marginTop: 6 }}>
+        : g.key === 'practice' ? <div style={row}>
           {[5, 15, -5].map((n) => <button key={n} type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => act({ type: 'sandbox/practice', charId: c.id, n })}>{n > 0 ? '+' + n : n} practice</button>)}
         </div>
-      </details>
-      <details data-pg-group="fx" style={pgDet}><summary style={pgSum}>FEELINGS: SOUND AND EFFECTS TEST</summary>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 6 }}>
+        : <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {FEELINGS.map((f) => { const ink = feelingInk(f.id), me = playerUnitPos(c.id); return <div key={f.id} data-fx-test={f.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
             <img src={feelingIconSrc(f.id, ink)} alt="" width={18} height={18} /><span style={{ width: 90, color: ink, fontWeight: 700 }}>{f.name}</span>
             {(['pump', 'release', 'residue'] as const).map((w) => <button key={w} type="button" style={{ ...btn, minHeight: 26, fontSize: 11, padding: '0 8px' }} onClick={() => testFeelingFx(f.id, f.family, w, me)}>{w}</button>)}
           </div>; })}
-        </div>
-      </details>
-    </Section>
+        </div>} />
     <Section title={'DESIGNS (' + (c.outbursts || []).length + ')'}>
       {(c.outbursts || []).map((d) => { const i = designInfo(magicOf(c) || null, d); return <div key={d.id} style={{ ...row, fontSize: 13 }}><img src={i.icon} alt="" width={20} height={20} /><span style={{ flex: 1 }}><b>{d.name}</b> <span style={{ color: i.ink }}>{i.line}</span> <span style={{ color: C.muted }}>{i.schools}</span></span>
         <button type="button" style={{ ...btn, minHeight: 28, color: C.muted }} aria-label={'Forget ' + d.name} onClick={() => act({ type: 'sandbox/forget', charId: c.id, designId: d.id })}>✕</button></div>; })}
@@ -633,6 +626,51 @@ function MagicTab({ c }: { c: Character }) {
       <span style={{ fontSize: 12, color: C.muted }}>The school, tone and modules are learned with the design. One shape, up to 4 modules, 8 designs.</span>
     </Section>
   </>;
+}
+
+/** Rules 1.10 testing tools: grant study, set a word's use count, place a sigil mark (host, while gearing up), and
+ * Junctions for everyone here (host). The engine checks everything (sandbox/study, word-uses, mark, junctions). */
+function SigilTools({ c, game, canField }: { c: Character; game: GameState; canField: boolean }) {
+  const gv = sigilGrowthView(c), known = (c.sigils || []).filter((w) => (SIGILS as any[]).some((x) => x.id === w));
+  const [word, setWord] = React.useState(known[0] || ''), [uses, setUses] = React.useState('10'), [study, setStudy] = React.useState('8');
+  const [mw, setMw] = React.useState('seek'), [age, setAge] = React.useState(MARK.age), [dmg, setDmg] = React.useState(MARK.damage), [at, setAt] = React.useState(''), [arm, setArm] = React.useState(false);
+  const gearing = game.phase === 'story', isHost = getState().role === 'host', jOn = !!game.sandbox?.junctions;
+  const w = known.includes(word) ? word : known[0] || '', u = gv.words.find((x) => x.word === w);
+  const place = (ref: string) => act({ type: 'sandbox/mark', at: ref, word: mw, age, damage: dmg, name: 'Sigil mark', text: 'A Sigil word cut into the wall.' });
+  useTilePick(arm && gearing, (r) => { place(r); setArm(false); });
+  return <Section title="SIGIL GROWTH (TESTING)" aria="Sigil growth tools">
+    <div style={row} data-sb-study="1"><span style={{ fontSize: 12 }}>Study <b>{gv.study}</b> · next word at {gv.next} · {gv.pending} pick{gv.pending === 1 ? '' : 's'} waiting{gv.free ? ' · ' + gv.free + ' free' : ''}</span></div>
+    <div style={row}>
+      {[6, 8, 30].map((n) => <button key={n} type="button" style={small} onClick={() => act({ type: 'sandbox/study', charId: c.id, study: n })}>+{n} study</button>)}
+      <input value={study} onChange={(e) => setStudy(e.target.value.replace(/[^\d-]/g, '').slice(0, 4))} aria-label="Study to grant" style={{ ...field, width: 60 }} />
+      <button type="button" data-sb-grant-study="1" style={small} onClick={() => act({ type: 'sandbox/study', charId: c.id, study: Number(study) })}>Grant</button>
+    </div>
+    {known.length > 0 ? <div style={row} data-sb-uses="1">
+      <select value={w} aria-label="Word to set uses for" onChange={(e) => setWord(e.target.value)} style={field}>{known.map((x) => <option key={x} value={x}>{x.toUpperCase()}</option>)}</select>
+      {u && <span style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, color: u.tier === 'new' ? C.muted : C.mind }}><img src={starUri(u.tier)} alt="" width={14} height={14} />{u.uses} uses · {u.tier.toUpperCase()}</span>}
+      <input value={uses} onChange={(e) => setUses(e.target.value.replace(/\D/g, '').slice(0, 3))} aria-label="Uses" style={{ ...field, width: 56 }} />
+      <button type="button" style={small} data-sb-set-uses="1" onClick={() => act({ type: 'sandbox/word-uses', charId: c.id, word: w, uses: Number(uses) })}>Set uses</button>
+      <button type="button" style={small} onClick={() => act({ type: 'sandbox/word-uses', charId: c.id, word: w, uses: WORD_MASTERY.practised })}>Practised ({WORD_MASTERY.practised})</button>
+      <button type="button" style={small} onClick={() => act({ type: 'sandbox/word-uses', charId: c.id, word: w, uses: WORD_MASTERY.mastered })}>Mastered ({WORD_MASTERY.mastered})</button>
+    </div> : <span style={{ fontSize: 12, color: C.muted }}>Learn a word above to set its use count.</span>}
+    {canField && <>
+      <span style={label}>A SIGIL MARK ON THE MAP</span>
+      <div style={row} data-sb-mark="1">
+        <img src={markUri(mw, { age, damage: dmg })} alt="" width={34} height={34} />
+        <select value={mw} aria-label="Mark word" onChange={(e) => setMw(e.target.value)} style={field}>{(SIGILS as any[]).map((x) => <option key={x.id} value={x.id}>{x.word}</option>)}</select>
+        <select value={age} aria-label="Mark age" onChange={(e) => setAge(e.target.value)} style={field}>{MARK.ages.map((x) => <option key={x} value={x}>{x}</option>)}</select>
+        <select value={dmg} aria-label="Mark damage" onChange={(e) => setDmg(e.target.value)} style={field}>{MARK.damages.map((x) => <option key={x} value={x}>{x}</option>)}</select>
+        <span style={{ fontSize: 12, color: C.muted }}>TN {markTn(age, dmg)}</span>
+      </div>
+      <div style={row}>
+        <button type="button" data-sb-mark-arm="1" disabled={!gearing} aria-pressed={arm} style={arm ? { ...primary, background: C.red, color: C.white } : primary} onClick={() => setArm(!arm)}>{arm ? 'Click a tile · stop' : 'Place by clicking the map'}</button>
+        <input value={at} onChange={(e) => setAt(e.target.value.toUpperCase())} placeholder="or H6" aria-label="Tile for the mark" style={{ ...field, width: 70 }} />
+        <button type="button" data-sb-mark-place="1" disabled={!gearing || !at.trim()} style={btn} onClick={() => place(at.trim())}>Place</button>
+      </div>
+      {!gearing && <span style={{ fontSize: 12, color: C.muted }}>Stop the fight to place a mark.</span>}
+    </>}
+    {isHost && <label style={{ fontSize: 12, display: 'flex', gap: 6, alignItems: 'center' }} data-sb-junctions="1"><input type="checkbox" checked={jOn} onChange={(e) => act({ type: 'sandbox/junctions', on: e.target.checked })} />Junctions for everyone here (a glyph may join two strokes; otherwise Brain Power Mastered only)</label>}
+  </Section>;
 }
 
 // ---------- the field (host) ----------

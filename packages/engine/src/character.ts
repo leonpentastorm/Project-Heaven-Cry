@@ -564,7 +564,9 @@ export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_a
 export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') / 3);
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'rumination'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
-export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power');
+/** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
+ * cap, so it never fills an ordinary slot, now or after Brain Power rises). */
+export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as any).sigilGrowth?.freeTaken || 0);
 /** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };
