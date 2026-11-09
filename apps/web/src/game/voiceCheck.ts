@@ -66,20 +66,27 @@ export function fingerprint(a: ArrayLike<number>): { frames: number; keep: numbe
   return { frames: bands.length, keep, shape };
 }
 
-/** How like the reference the audio is: the correlation of the loud frames' spectral shapes (1 = the same). */
-export function speechLikeness(a: ArrayLike<number>, sampleRate = SR, ref: { frames: number; keep: number[]; shape: number[][] } = REF as any): number {
-  if (sampleRate !== SR || !a.length) return 0;
+/** How like the reference the audio is, and why a low score is low: 'rate' (not 24 kHz), 'length' (the line came out
+ *  much longer or shorter than "Ready." should be), 'shape' (the right length but the wrong sound), or null. */
+export function speechCheck(a: ArrayLike<number>, sampleRate = SR, ref: { frames: number; keep: number[]; shape: number[][] } = REF as any): { likeness: number; why: 'rate' | 'length' | 'shape' | null; detail: string } {
+  if (sampleRate !== SR) return { likeness: 0, why: 'rate', detail: sampleRate + ' Hz, not ' + SR };
+  if (!a.length) return { likeness: 0, why: 'length', detail: 'no audio' };
   const { bands } = bandFrames(a);
-  if (Math.abs(bands.length - ref.frames) > Math.max(4, ref.frames * 0.25)) return 0; // a different length: not this line
+  if (Math.abs(bands.length - ref.frames) > Math.max(4, ref.frames * 0.25)) return { likeness: 0, why: 'length', detail: (bands.length / ref.frames).toFixed(1) + '× the expected length' };
   const xs: number[] = [], ys: number[] = [];
   ref.keep.forEach((fi, j) => {
     const r = bands[fi]; if (!r) return;
     const m = r.reduce((x, y) => x + y, 0) / r.length;
     r.forEach((x, b) => { xs.push(x - m); ys.push(ref.shape[j][b]); });
   });
-  if (xs.length < 24) return 0;
+  if (xs.length < 24) return { likeness: 0, why: 'length', detail: 'too short' };
   const mx = xs.reduce((s, x) => s + x, 0) / xs.length, my = ys.reduce((s, y) => s + y, 0) / ys.length;
   let sxy = 0, sxx = 0, syy = 0;
   for (let i = 0; i < xs.length; i++) { const dx = xs[i] - mx, dy = ys[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
-  return sxx && syy ? sxy / Math.sqrt(sxx * syy) : 0;
+  const likeness = sxx && syy ? sxy / Math.sqrt(sxx * syy) : 0;
+  return { likeness, why: likeness < SPEECH_MIN ? 'shape' : null, detail: 'shape ' + likeness.toFixed(2) };
+}
+/** How like the reference the audio is: the correlation of the loud frames' spectral shapes (1 = the same). */
+export function speechLikeness(a: ArrayLike<number>, sampleRate = SR, ref: { frames: number; keep: number[]; shape: number[][] } = REF as any): number {
+  return speechCheck(a, sampleRate, ref).likeness;
 }

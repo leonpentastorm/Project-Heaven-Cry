@@ -37,22 +37,26 @@ export const isKokoroKey = (k: string | null | undefined) => !!k && NARRATOR_VOI
 export interface VoicePrefs {
   /** Read new Narrator lines aloud. */ auto: boolean;
   /** 0–100. */ volume: number;
+  /** Speaking speed, 0.75–1.5 (1 = normal), for Kokoro and the browser voice (Leon, 9 Nov 2026). */ speed: number;
   /** The Narrator: a Kokoro id or a browser key. */ voice: string;
   /** Skill voices by core: a Kokoro id or a browser key each. */ skill: Record<Core, string>;
   /** The player opted in to Kokoro: it downloads (or loads from the cache) on the title screen. */ install: boolean;
   /** Kokoro has been installed in this browser at least once. */ ready: boolean;
   /** "Wait for Kokoro (no browser voice)"; null: the default, on once Kokoro is installed. */ wait: boolean | null;
 }
-export const DEFAULT_PREFS: VoicePrefs = { auto: true, volume: 90, voice: 'af_heart', skill: { ...CORE_VOICE } as Record<Core, string>, install: false, ready: false, wait: null };
+/** The speed slider's range (Settings › VOICE). */
+export const SPEED_MIN = 0.75, SPEED_MAX = 1.5;
+export const DEFAULT_PREFS: VoicePrefs = { auto: true, volume: 90, speed: 1, voice: 'af_heart', skill: { ...CORE_VOICE } as Record<Core, string>, install: false, ready: false, wait: null };
 /** Saved preferences (older saves had only auto, volume and voice), cleaned up. */
 export function parsePrefs(raw: string | null | undefined): VoicePrefs {
   let o: any = {};
   try { o = JSON.parse(raw || '{}') || {}; } catch { o = {}; }
   const key = (k: any, d: string) => (typeof k === 'string' && (isKokoroKey(k) || (isBrowserKey(k) && k.length > BROWSER.length)) ? k : d);
   const skill = Object.fromEntries(CORES.map((c) => [c, key(o.skill?.[c], CORE_VOICE[c])])) as Record<Core, string>;
-  const vol = Number(o.volume);
+  const vol = Number(o.volume), spd = Number(o.speed);
   return {
     auto: typeof o.auto === 'boolean' ? o.auto : DEFAULT_PREFS.auto, volume: Number.isFinite(vol) ? Math.max(0, Math.min(100, Math.round(vol))) : DEFAULT_PREFS.volume,
+    speed: Number.isFinite(spd) && spd > 0 ? Math.max(SPEED_MIN, Math.min(SPEED_MAX, Math.round(spd * 20) / 20)) : DEFAULT_PREFS.speed,
     voice: key(o.voice, DEFAULT_PREFS.voice), skill, install: o.install === true, ready: o.ready === true, wait: typeof o.wait === 'boolean' ? o.wait : null,
   };
 }
@@ -292,7 +296,7 @@ export async function speak(id: string, text: string, voice = prefs.voice, onFir
   const viaBrowser = (who: string) => { release(id); browserVoice(clean, my, done, isBrowserKey(voice) ? voice.slice(BROWSER.length) : null, who, (ms, dev) => onFirst?.(ms, 'browser', dev)); };
   // A browser voice the player picked, or Kokoro not installed: the browser reads it, no download, no waiting.
   if (!kokoroWanted(voice)) return viaBrowser(isBrowserKey(voice) ? 'picked' : 'Kokoro not installed');
-  const cached = cache.get(id + '|' + voice);
+  const ckey = id + '|' + voice + '|' + prefs.speed, cached = cache.get(ckey);
   if (cached) { release(id); const ms = playBuffers(cached, my, done); onFirst?.(Math.round(performance.now() - t0 + ms), 'kokoro', deviceWord()); return; }
   const waiting = waitForKokoro();
   // Waiting for Kokoro: the text shows after FIRST_SENTENCE_MS, the audio follows when it's made.
@@ -306,7 +310,7 @@ export async function speak(id: string, text: string, voice = prefs.voice, onFir
   const slow = waiting ? null : setTimeout(() => { if (first && run === my) { console.info('[voice] first sentence too slow; the browser voice reads this line'); run++; const me = run; put({ speaking: id }); release(id); browserVoice(clean, me, () => { if (run === me) put({ speaking: null }); }, null, 'Kokoro too slow'); } }, FIRST_SENTENCE_MS);
   const clear = () => { if (slow) clearTimeout(slow); if (showText) clearTimeout(showText); };
   try {
-    for await (const chunk of (tts as any).stream(clean, { voice })) {
+    for await (const chunk of (tts as any).stream(clean, { voice, speed: prefs.speed })) {
       if (run !== my) { clear(); return; }
       const a = chunk.audio, b = ac.createBuffer(1, a.audio.length, a.sampling_rate); b.copyToChannel(a.audio, 0); bufs.push(b);
       if (first) {
@@ -315,7 +319,7 @@ export async function speak(id: string, text: string, voice = prefs.voice, onFir
       }
       at = schedule(b, at, my);
     }
-    cache.set(id + '|' + voice, bufs); if (cache.size > 40) cache.delete(cache.keys().next().value!);
+    cache.set(ckey, bufs); if (cache.size > 40) cache.delete(cache.keys().next().value!);
     const left = Math.max(0, at - ac.currentTime);
     setTimeout(() => { if (run === my) done(); }, left * 1000 + 50);
   } catch (e) { clear(); console.warn('[voice] Kokoro failed on this line', e); release(id); if (run === my) browserVoice(clean, my, done, null, 'Kokoro error'); }
@@ -335,7 +339,7 @@ function playBuffers(bufs: AudioBuffer[], my: number, done: () => void): number 
 /** The browser's own voice: instant, free. The one the player picked, else the best natural one available. */
 function browserVoice(text: string, my: number, done: () => void, name: string | null, why: string, onFirst?: (ms: number, device: string) => void) {
   try {
-    const u = new SpeechSynthesisUtterance(text), t0 = performance.now(); u.volume = prefs.volume / 100; u.rate = 1;
+    const u = new SpeechSynthesisUtterance(text), t0 = performance.now(); u.volume = prefs.volume / 100; u.rate = prefs.speed;
     const all = speechSynthesis.getVoices(), pick = (name && all.find((v) => v.name === name)) || (() => { const b = bestVoice(all); return b ? all.find((v) => v.name === b.name) : null; })();
     if (pick) { try { u.voice = pick; } catch { /* not a SpeechSynthesisVoice: keep the language */ } u.lang = pick.lang; }
     console.info('[voice] browser voice (' + why + '): ' + (pick ? pick.name : 'the default'));

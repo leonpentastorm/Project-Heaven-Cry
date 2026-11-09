@@ -88,6 +88,9 @@ ok('nothing was downloaded for it', (await sec.getAttribute('data-voice-status')
 await sec.locator('[data-voice-select="Body skill voice"]').selectOption('browser:Microsoft Sonia Online (Natural) - English (United Kingdom)');
 saved = await p.evaluate(() => JSON.parse(localStorage.getItem('phc.voice')));
 ok('a skill voice is saved per core (Body: ' + saved.skill.body + ')', saved.skill.body === 'browser:Microsoft Sonia Online (Natural) - English (United Kingdom)' && saved.skill.mind === 'bf_emma');
+// Voice speed (Leon, 9 Nov 2026): 0.75–1.5×, saved, used by the browser voice (and Kokoro's stream).
+await sec.locator('[data-voice-speed]').fill('125');
+ok('the speed slider is saved (' + await p.evaluate(() => JSON.parse(localStorage.getItem('phc.voice') || '{}').speed) + '×)', (await p.evaluate(() => JSON.parse(localStorage.getItem('phc.voice') || '{}').speed)) === 1.25 && /1\.25×/.test(await sec.textContent()));
 
 // Install Kokoro: progress, a failure with its reason and Retry, then Installing… and Ready.
 await sec.locator('[data-voice-select="Narrator voice"]').selectOption('af_heart');
@@ -195,11 +198,12 @@ await sec2.locator('[data-voice-status="ready"]').waitFor({ timeout: 10000 });
 const noiseText = await sec2.textContent();
 ok('noise on the GPU: ' + (noiseText.match(/Ready · [^.]*\)/)?.[0] || noiseText.slice(0, 120)), /Ready · Kokoro on the CPU \(WebGPU failed: the model made noise, not speech/.test(noiseText));
 ok('the noisy GPU is remembered (' + await q.evaluate(() => localStorage.getItem('phc.voiceGpuNoise')) + ')', (await q.evaluate(() => localStorage.getItem('phc.voiceGpuNoise'))) === 'Test GPU');
-ok('Settings says the GPU was picked but the CPU reads (' + ((await sec2.textContent()).match(/Your GPU was picked[^.]*\./)?.[0] || '?') + ')', /Your GPU was picked, but/.test(await sec2.textContent()) && (await sec2.locator('[data-voice-render="gpu"]').getAttribute('aria-pressed')) === 'true');
+ok('after the noise the CPU is ticked and the GPU says it failed (' + await sec2.locator('[data-voice-render="gpu"]').textContent() + ')', (await sec2.locator('[data-voice-render="cpu"]').getAttribute('aria-pressed')) === 'true' && (await sec2.locator('[data-voice-render="gpu"]').getAttribute('aria-pressed')) === 'false' && /failed here/.test(await sec2.locator('[data-voice-render="gpu"]').textContent()) && /Your GPU made noise, not speech, so the CPU reads/.test(await sec2.textContent()));
 await q.evaluate(() => { window.__voiceFail = null; });
 await sec2.locator('[data-voice-render="gpu"]').click();
 await q.waitForFunction(() => /Ready · Kokoro on WebGPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
 ok('Render by GPU again: back on WebGPU, the check passed (' + ((await sec2.textContent()).match(/Warm-up check[^)]*\)/)?.[0] || '?') + ')', /Ready · Kokoro on WebGPU/.test(await sec2.textContent()) && /sounds like speech \(97%\)/.test(await sec2.textContent()) && (await q.evaluate(() => localStorage.getItem('phc.voiceGpuNoise'))) === null);
+ok('back on the GPU, its button is ticked again', (await sec2.locator('[data-voice-render="gpu"]').getAttribute('aria-pressed')) === 'true' && !/failed here/.test(await sec2.locator('[data-voice-render="gpu"]').textContent()));
 await sec2.locator('[data-voice-render="cpu"]').click();
 await q.waitForFunction(() => /Ready · Kokoro on the CPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
 ok('Render by CPU switches to the CPU and keeps it (' + await q.evaluate(() => localStorage.getItem('phc.voicePlan')) + ')', /Ready · Kokoro on the CPU/.test(await sec2.textContent()) && /wasm/.test(await q.evaluate(() => localStorage.getItem('phc.voicePlan')) || '') && (await sec2.locator('[data-voice-render="cpu"]').getAttribute('aria-pressed')) === 'true');

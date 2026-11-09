@@ -8,6 +8,13 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.11.2 — 9 November 2026
+
+Hotfix on `develop`, from Leon's test of 0.10.2 on his RDNA 4 desktop:
+- **The tick shows what's running.** When the GPU makes noise and the CPU takes over, **Render by CPU** is ticked and the GPU button reads "✕ Render by GPU · failed here" (press it to try the GPU again). It used to stay ticked on the GPU.
+- **Voice speed** in Settings › VOICE: 0.75–1.5× in steps of 0.05, saved, for Kokoro and the browser voice.
+- **The warm-up check says why it failed**: the sample rate, the length ("2.4× the expected length") or the shape (the score), and logs `[voice] warm-up check: …`. Leon's GPU scored 0.00, which means the length check rejected it before any shape was measured.
+
 ## 0.11.1 — 9 November 2026
 
 Straight to `develop` (a deploy fix): **replaced title art shows at once**. Deploying 0.11.0, the live title still showed the old front layer. Its URL never changed, and the Worker's edge cache keeps an asset for a day.

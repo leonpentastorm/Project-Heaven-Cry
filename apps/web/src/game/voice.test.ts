@@ -99,3 +99,14 @@ describe('the play screen chip', () => {
     expect(voiceChip(S({ status: 'ready', device: 'webgpu' }), { ...DEFAULT_PREFS, voice: browserKey('Google US English') })).toBe('Voice: Browser voice');
   });
 });
+
+describe('the voice speed (Leon, 9 Nov 2026)', () => {
+  it('defaults to 1, is kept between 0.75 and 1.5 in steps of 0.05, and survives old saves', () => {
+    expect(parsePrefs(null).speed).toBe(1);
+    expect(parsePrefs('{"speed":1.27}').speed).toBe(1.25);
+    expect(parsePrefs('{"speed":3}').speed).toBe(1.5);
+    expect(parsePrefs('{"speed":0.2}').speed).toBe(0.75);
+    expect(parsePrefs('{"speed":"fast"}').speed).toBe(1);
+    expect(parsePrefs('{"volume":50}').speed).toBe(1);
+  });
+});

@@ -7,7 +7,7 @@
 import { KokoroTTS } from 'kokoro-js';
 import { env } from '@huggingface/transformers';
 import ortWasm from '@ort/ort-wasm-simd-threaded.jsep.wasm?url';
-import { CHECK_TEXT, CHECK_VOICE, SPEECH_MIN, speechLikeness } from './voiceCheck';
+import { CHECK_TEXT, CHECK_VOICE, SPEECH_MIN, speechCheck } from './voiceCheck';
 
 export const MODEL_ID = 'onnx-community/Kokoro-82M-v1.0-ONNX';
 export interface Plan { device: 'webgpu' | 'wasm'; dtype: 'fp32' | 'fp16' | 'q8' | 'q4' | 'q4f16' }
@@ -56,8 +56,9 @@ export async function check(tts: KokoroTTS, _voice = CHECK_VOICE): Promise<{ ms:
   if (!a.length) throw new Error('the model made no audio');
   if (bad) throw new Error('the model made broken audio (' + bad + ' NaN samples)');
   if (peak < 1e-3) throw new Error('the model made silence');
-  const likeness = speechLikeness(a, out.sampling_rate);
-  if (likeness < SPEECH_MIN) throw new VoiceNoise('the model made noise, not speech (likeness ' + likeness.toFixed(2) + ', needs ' + SPEECH_MIN + ')', likeness);
+  const sc = speechCheck(a, out.sampling_rate), likeness = sc.likeness;
+  console.info('[voice] warm-up check: ' + sc.detail + ' (' + (a.length / out.sampling_rate).toFixed(2) + ' s at ' + out.sampling_rate + ' Hz, peak ' + peak.toFixed(2) + ')');
+  if (likeness < SPEECH_MIN) throw new VoiceNoise('the model made noise, not speech (' + sc.detail + (sc.why === 'shape' ? ', needs ' + SPEECH_MIN : '') + ')', likeness);
   return { ms, seconds: a.length / out.sampling_rate, likeness };
 }
 /** The warm-up made loud noise instead of speech (the plan's numbers go wrong on this device). */

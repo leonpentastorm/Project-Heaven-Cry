@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { speechLikeness, fingerprint, SPEECH_MIN } from './voiceCheck';
+import { speechLikeness, speechCheck, fingerprint, SPEECH_MIN } from './voiceCheck';
 import REF from './voiceReference.json';
 import { Q8_READY_B64 } from './voiceCheck.fixture';
 
@@ -29,5 +29,12 @@ describe('the voice warm-up check: does it sound like speech? (Leon: muffled buz
   });
   it('a fingerprint of the reference matches itself', () => {
     const fp = fingerprint(q8); expect(speechLikeness(q8, 24000, fp)).toBeCloseTo(1, 5);
+  });
+  it('a low score says why: the rate, the length or the shape', () => {
+    expect(speechCheck(q8, 22050).why).toBe('rate');
+    expect(speechCheck(new Float32Array(q8.length * 3)).why).toBe('length');
+    expect(speechCheck(new Float32Array(q8.length * 3)).detail).toMatch(/^3\.\d× the expected length$/);
+    expect(speechCheck(Float32Array.from(q8, () => rnd())).why).toBe('shape');
+    expect(speechCheck(q8).why).toBe(null);
   });
 });
