@@ -142,7 +142,7 @@ await p.waitForTimeout(2600); await dismissCut();
 for (let i = 0; i < 12; i++) { g = await G(); const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur?.charId === me.id) break; if (cur?.side === 'pc') await act({ type: 'combat/end-turn', unitId: cur.id }); await p.waitForTimeout(200); }
 g = await G();
 // A focus counts only in a hand (spec: Hands 2, items 630 and 633): stow the Evoker (the tools), and the Sigil buttons
-// grey with the reason; the Utility tab's Hold the Evoker takes it back into the off hand for 1 AP.
+// grey with the reason; the backpack (rules 1.9, Gear in a fight) draws it back into the off hand for 1 AP.
 await act({ type: 'sandbox/unequip', charId: me.id, slot: 'off' });
 await p.waitForTimeout(300); await dismissCut();
 if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {}); await p.waitForTimeout(200); }
@@ -150,12 +150,24 @@ await pickAction(p, /^Draw a glyph/).catch(() => {});
 const drawTxt = ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().getAttribute('title').catch(() => '')) || '') + ' ' + ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().textContent().catch(() => '')) || '');
 ok('the Evoker stowed: Draw a glyph says "Needs an Evoker in hand."', /Needs an Evoker in hand\./.test(drawTxt));
 const ap0 = (await G()).combat.units.find((u) => u.charId === me.id).ap;
-await pickAction(p, /^Hold the Evoker/);
-await p.getByRole('button', { name: /^Confirm/ }).first().click(); await p.waitForTimeout(400);
+await p.locator('[data-backpack]').first().click();
+const bpPanel = p.locator('[data-bp-panel]');
+await bpPanel.waitFor({ timeout: 3000 }).then(() => ok('the backpack button opens the inventory panel over the fight', true), () => ok('the backpack button opens the inventory panel over the fight', false));
+const evoRow = bpPanel.locator('[data-bp-row]', { hasText: 'counts only in a hand' }).filter({ hasText: /FOCUS\s*Evoker/ }).first();
+const evoTxt = (await evoRow.textContent().catch(() => '')) || '';
+ok('the Evoker in the pack: "' + evoTxt.replace(/\s+/g, ' ').trim() + '"', /counts only in a hand/.test(evoTxt) && /Draw · 1 AP · off hand/.test(evoTxt));
+const heavyTxt = (await bpPanel.textContent().catch(() => '')) || '';
+ok('the panel names the hands, armour, backpack and ammo, and the actions with their costs', /HANDS/.test(heavyTxt) && /BACKPACK/.test(heavyTxt) && /AMMO AND THROWABLES/.test(heavyTxt) && /Drop · 0 AP/.test(heavyTxt));
+await p.waitForTimeout(300); await snap('05b-backpack');
+await evoRow.locator('button', { hasText: /^Draw · 1 AP/ }).click(); await p.waitForTimeout(400);
 g = await G();
 const u0 = g.combat.units.find((u) => u.charId === me.id);
-ok('Hold the Evoker (Utility, 1 AP): back in the off hand (' + g.characters[me.id].offHand?.id + ', AP ' + ap0 + ' → ' + u0.ap + ', ' + g.combat.log.at(-1) + ')', g.characters[me.id].offHand?.id === 'evoker' && u0.mg?.evoker && u0.ap === ap0 - 1);
-await snap('05b-hold-evoker');
+ok('Draw the Evoker from the backpack (1 AP): back in the off hand (' + g.characters[me.id].offHand?.id + ', AP ' + ap0 + ' → ' + u0.ap + ', ' + g.combat.log.at(-1) + ')', g.characters[me.id].offHand?.id === 'evoker' && u0.mg?.evoker && u0.ap === ap0 - 1);
+const offTxt = ((await bpPanel.locator('[data-bp-row="off"]').textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
+ok('the panel shows it in the off hand now: "' + offTxt.trim() + '"', /Evoker/.test(offTxt) && /Put away · 1 AP/.test(offTxt));
+await snap('05c-backpack-drawn');
+await p.keyboard.press('Escape'); await p.waitForTimeout(250);
+ok('Escape closes the backpack', (await bpPanel.count()) === 0);
 const u1 = g.combat.units.find((u) => u.charId === me.id);
 const drew = await act({ type: 'combat/draw', unitId: u1.id, word: 'fire', tile: ref(u1.pos) });
 await p.waitForTimeout(300);

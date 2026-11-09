@@ -683,7 +683,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You drop or lower your weapon. Recovering it costs 2 AP (1 AP if it is in your tile).",
+      "text": "You drop or lower your weapon. Recovering it costs 2 AP (1 AP if it is in your tile). Drawing another weapon into the main hand, or swapping the off-hand one there, also ends it; the downed weapon stays in the pile on your tile (rules 1.9, item 687).",
       "effects": [
         {
           "op": "forbid",

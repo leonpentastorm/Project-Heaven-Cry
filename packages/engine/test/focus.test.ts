@@ -92,11 +92,23 @@ describe('a focus counts only in a hand', () => {
     expect(f.g.combat!.log.some((l) => /takes the Evoker in the off hand \(1 AP\) · an Evoker in hand/.test(l))).toBe(true);
     expect(draw(f, f.sig).some((x) => x.word === 'fire')).toBe(true);
   });
-  it('a two-handed weapon refuses the off-hand swap; swapping one in stows the Evoker and stops new casts', () => {
+  it('rules 1.9: the sheet\'s equip action in a fight draws the Evoker from the pack (1 AP) and casting works; put away (1 AP), it stops', () => {
+    const f = fight((a) => { a.offHand = null; a.pack = [...packOf(a), tool('evoker')]; });
+    let u = f.turn(f.sig); expect(drawRefused(f, f.sig)).toBe('Needs an Evoker in hand.');
+    const ap = u.ap;
+    f.act({ type: 'gear/equip', charId: f.sig.id, idx: 'evoker', to: 'off' }); u = f.unit(f.sig);
+    expect(u.ap).toBe(ap - 1); expect(u.mg!.evoker).toBe(true); expect(u.mg!.charge).toBe(10); // the core's charge came with it
+    expect(draw(f, f.sig).some((x) => x.word === 'fire')).toBe(true);
+    u = f.unit(f.sig); const ap2 = u.ap;
+    f.act({ type: 'combat/stow', unitId: u.id, slot: 'off' }); u = f.unit(f.sig);
+    expect(u.ap).toBe(ap2 - 1); expect(u.mg!.evoker).toBe(false); expect(drawRefused(f, f.sig)).toBe('Needs an Evoker in hand.');
+  });
+  it('a two-handed weapon refuses the off-hand swap; drawing one in (2 AP) stows the Evoker and stops new casts', () => {
     const f = fight((a) => { a.pack = [...packOf(a), gun('hellraiser_service_rifle')]; });
     let u = f.turn(f.sig);
-    const idx = packOf(f.char(f.sig)).findIndex((x) => x.weapon === 'hellraiser_service_rifle');
+    const idx = packOf(f.char(f.sig)).findIndex((x) => x.weapon === 'hellraiser_service_rifle'), ap = u.ap;
     f.act({ type: 'combat/swap', unitId: u.id, from: idx }); u = f.unit(f.sig);
+    expect(u.ap).toBe(ap - 2); // rules 1.9 (item 684): a two-handed draw is 2 AP, one a hand (item 633's 1 AP is superseded)
     expect(f.char(f.sig).weapon).toBe('hellraiser_service_rifle'); expect(f.char(f.sig).offHand ?? null).toBeNull(); expect(u.mg!.evoker).toBe(false);
     expect(f.g.combat!.log.some((l) => /the Evoker stowed: no Sigils/.test(l))).toBe(true);
     expect(drawRefused(f, f.sig)).toBe('Needs an Evoker in hand.');

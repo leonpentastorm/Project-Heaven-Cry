@@ -8,6 +8,50 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.3.0 — 9 November 2026
+
+Branch `feature/world-play-1.1`: **World Play 1.1, rules revision 1.9** (decision 106; `docs/design/world-play-1.1-spec.md`; spec section 14 items 671–700, all provisional; hand-off `docs/design/handoffs/world-play-1.1-HANDOFF.md`). Playtest: rangers ran out of ammo all the time. Dropped magazines were a 10 px mark nobody saw, the fight's floor vanished when the fight ended, an area-map reload deleted the magazine, and enemies dropped nothing.
+
+- **Piles:** what lies on a tile is one pile (a `pile` map object sharing the cache code), drawn as a stack with a count on the combat grid, the area map and the minimap.
+  - Hover lists it: "Rifle magazine 7/24", "38 × .32 Decrkm".
+  - Pick up (1 AP, your tile or next to it, on any map) opens a checklist. Searching a body is "take everything".
+  - Piles keep exact items (rounds, ammo type, rarity, durability, mods), merge per tile (at most 24 entries), and persist between the area map, fights, zones and saves.
+  - Players see piles only on tiles the party can see. The Narrator can hide one until it is spotted.
+- **The Narrator places piles** with `ground[]`. `loot[]` and `ground[]` can now hand over ammo (`mag:<weapon>`, `rounds:<calibre>`). The Proving Ground has "A PILE (ON THE GROUND)".
+- **Reloading is a choice:**
+  - speed reload: the current cost; the old magazine drops into the pile;
+  - tactical reload: +1 AP; the old magazine goes back in your pack.
+- **Gear in a fight, 1 AP a hand:**
+  - draw 1, a two-handed weapon 2, swap hands 1, put away 1 a hand;
+  - drop is free and lands in the pile;
+  - light armour (1.2 kg or less) 1 AP a piece; heavier armour can't change in a fight;
+  - Hot-Swap still makes a swap free.
+  - A **backpack button** in the fight (key B) opens the inventory with each row's cost. "Hold the Evoker/Emanator" is gone, and a focus still counts only in a hand.
+- **Drop tables** (`data/loot_tables.json`):
+  - the engine rolls every drop on the fight's dice, once per death, into the pile where the enemy died;
+  - enemies always drop the weapon they used (worn) and their leftover magazines;
+  - rolled items by kind: parts and cores from machines, personal effects from people, cores and plates from casters;
+  - at most 2/3/4/5 rolled items a fight by difficulty; a boss always drops one notable thing;
+  - three layers: engine defaults < a campaign's `loot_tables`/`drops` < the Narrator's `drops` for one fight.
+- **Paths:** a player's click-path goes around revealed hazards when an affordable detour of at most 2 tiles exists. The preview marks any hazard it still crosses. Enemy paths are unchanged.
+- **Fixed:**
+  - picked-up off-hand magazines lost at the end of a fight;
+  - magazines counted twice after a mid-fight swap;
+  - the pack index shifting under an equip;
+  - objects lost when a fight ran on another zone's map;
+  - an off-hand gun reloading for free;
+  - stims and Essences picked up as dead weight.
+- **Merged with 0.2.1:**
+  - World Play 1.1 is rules **1.9**, since Outburst 4.0 took 1.8;
+  - dropped Heart plates never roll a shelved module;
+  - the Narrator's stable prompt guard is 25,000 tokens.
+- **e2e:** a new `ground.mjs`. `lib.mjs` no longer sends a loopback BASE through `HTTPS_PROXY`.
+- **Waiting on Leon:**
+  - the light-armour line (1.2 kg);
+  - the drop-table weights and the 20 personal effects;
+  - whether area-map kills (outside a fight) should drop loot;
+  - whether a click-path may walk straight through a revealed hazard on purpose.
+
 ## 0.2.1 — 9 November 2026
 
 Branch `hotfix/outburst-4.0-review`: **fixes from the Outburst 4.0 review**, before it went live. Each fix has a regression test.

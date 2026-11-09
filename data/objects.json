@@ -277,6 +277,22 @@
       "text": "A crate, a body, a locker: something holding things. Search it (1 AP, adjacent) to take everything inside; a locked one opens through its approaches first.",
       "adjudication": "engine",
       "provisional": true
+    },
+    {
+      "id": "pile",
+      "name": "Pile",
+      "glyph": "≡",
+      "blocks_move": false,
+      "blocks_sight": false,
+      "cover": null,
+      "hp": null,
+      "spot": {
+        "detect_tn": 12,
+        "detect_range": 2
+      },
+      "text": "Things on the ground: dropped magazines, loose rounds, weapons and whatever else fell there, one pile to a tile. Pick up (1 AP, your tile or an adjacent one) takes what you tick, everything by default. Players see it when the party can see the tile.",
+      "adjudication": "engine",
+      "provisional": true
     }
   ]
 }

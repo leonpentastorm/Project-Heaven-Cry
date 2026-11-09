@@ -29,6 +29,8 @@ Rules numbers are in the spec, [`docs/rules/PHC-Core-Rules-v1.0.md`](rules/PHC-C
 
 **World Play 1.0, rules 1.7** (decision 105; [`design/world-play-spec.md`](design/world-play-spec.md); items 636–670; `data/world_play.json`). The area map tells the story: faces, carrying, caches, hazards, triggers, Talk, the HERE card, attempts with odds. Hand-offs: [part A (engine, Narrator tools)](design/handoffs/world-play-A-HANDOFF.md), [part B (web)](design/handoffs/world-play-B-HANDOFF.md).
 
+**World Play 1.1, rules 1.9** (decision 106; [`design/world-play-1.1-spec.md`](design/world-play-1.1-spec.md); items 671–700; `data/loot_tables.json`). One pile a tile holds what lands on the ground, on every map. Speed or tactical reloads. Gear changes in a fight from the combat backpack, at 1 AP a hand. The engine rolls drop tables once per death. Hand-off: [`design/handoffs/world-play-1.1-HANDOFF.md`](design/handoffs/world-play-1.1-HANDOFF.md).
+
 **Story mode, rooms and missions.** Speaking order (each player once a round, then the Narrator), human Narrator mode, OOC lines, the mission board and end states (decision 95), the Proving Ground with friends (decision 96). Campaigns are data: [`design/campaign-format.md`](design/campaign-format.md), `data/campaigns/m813.json` (the M813 one-shot).
 
 **The AI Narrator** (`apps/web/src/narrator/`). Bring your own key; it stays in the host's browser and goes only to the provider. `anthropic.ts` (Anthropic and Anthropic-format sites) and `providers.ts` (one OpenAI-compatible adapter: OpenRouter, OpenAI, DeepSeek, Gemini, local, third-party; decision 104). The Narrator never sets engine-owned numbers: it requests checks through tools and the engine resolves them. Prose rules (CRAFT, PACING, THE MAP IS THE TRUTH) and the live playtest harness: [`design/handoffs/narrator-craft-HANDOFF.md`](design/handoffs/narrator-craft-HANDOFF.md).
@@ -94,7 +96,7 @@ Deploy (Leon or whoever he asks; never from a feature branch): `npm run build`, 
 
 Collected in [`ROADMAP.md`](ROADMAP.md) ("World Play gaps", "The Narrator", "Faith", "Small engine oddities"). The ones a playtester will hit first:
 
-- Paths (clicks and enemies) don't avoid hazards; allies and companions don't fight beside the party; Talk and hazard panels exist only on the area map; the Ask buttons stay after asking; beasts have no avatar art.
+- Enemy paths don't avoid hazards (players' clicks go around revealed ones since rules 1.9); allies and companions don't fight beside the party; Talk and hazard panels exist only on the area map; the Ask buttons stay after asking; beasts have no avatar art.
 - A few recaps survive as trailing clauses; "named but not placed" detection is a heuristic; providers other than Anthropic are untested with real keys.
 - Voice: confirm Kokoro reads "Kokoro · WebGPU" on Leon's GPU; hosting the model in R2 would remove the Hugging Face dependency.
 - M813 was written before World Play, so its areas don't yet use objectives with a `where`, hazards, talk or caches.
