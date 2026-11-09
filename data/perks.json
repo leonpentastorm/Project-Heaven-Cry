@@ -1804,7 +1804,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: swapping a weapon or a mod costs 0 AP, once per turn. II: twice per turn.",
+      "text": "I: in a fight, drawing, putting away or swapping what a hand holds (a two-handed draw too), or fitting a mod, costs 0 AP, once per turn; not armour (rules 1.8, item 686). II: twice per turn.",
       "effects": [
         {
           "op": "cost_mod",

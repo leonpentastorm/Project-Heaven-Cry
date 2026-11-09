@@ -311,7 +311,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
     vigilant: c.skills.vigilant || 0, overweight: overweightKg(c),
     dmgMult: RARITY[c.weaponState?.rarity || 'standard'].dmg, dur: weaponDurOf(c), maxDur: maxDurOf(w.id, c.weaponState?.rarity), mods: [...(c.weaponState?.mods || [])],
-    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, offAmmo: c.offHand && WEAPON[c.offHand.id] ? WEAPON[c.offHand.id].magazine ?? 0 : 0,
+    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? WEAPON[c.offHand.id].magazine ?? 0, WEAPON[c.offHand.id].magazine ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
     parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,

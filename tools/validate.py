@@ -569,6 +569,35 @@ if wp:
         errors.append("world_play: pile.narrator_items_per_pile can't exceed pile.max_entries")
     if not isinstance((wp.get("ap") or {}).get("pickup"), (int, float)):
         errors.append("world_play: ap.pickup (World Play 1.1) is missing")
+    # Rules 1.8 gear in a fight (items 684-690): whole AP costs, a positive light-armour limit, and the action list agreeing
+    gr = wp.get("gear") or {}
+    for k in ("hand_ap", "two_handed_draw_ap", "swap_hands_ap", "put_away_ap_per_hand", "drop_ap", "light_armour_ap"):
+        if not isinstance(gr.get(k), int) or gr[k] < 0:
+            errors.append(f"world_play: gear.{k} must be a whole number of 0 or more")
+    if not isinstance(gr.get("light_armour_max_kg"), (int, float)) or gr["light_armour_max_kg"] <= 0:
+        errors.append("world_play: gear.light_armour_max_kg must be a positive weight")
+    def _acts(o):
+        if isinstance(o, dict):
+            for v in o.values():
+                r = _acts(v)
+                if r is not None:
+                    return r
+        elif isinstance(o, list):
+            if any(isinstance(x, dict) and x.get("id") == "interact" for x in o):
+                return o
+            for v in o:
+                r = _acts(v)
+                if r is not None:
+                    return r
+        return None
+    acts = {a.get("id"): a for a in (_acts(data.get("rules", {})) or []) if isinstance(a, dict)}
+    for aid, key in (("draw", "hand_ap"), ("draw_two_handed", "two_handed_draw_ap"), ("swap_hands", "swap_hands_ap"), ("put_away", "put_away_ap_per_hand"), ("drop_held", "drop_ap"), ("light_armour", "light_armour_ap")):
+        if aid not in acts:
+            errors.append(f"rules: action {aid} (rules 1.8 gear in a fight) is missing")
+        elif gr.get(key) is not None and acts[aid].get("ap") != gr.get(key):
+            errors.append(f"rules: action {aid} costs {acts[aid].get('ap')} but world_play gear.{key} is {gr.get(key)}")
+    if "light_armour" in acts and gr.get("light_armour_max_kg") is not None and acts["light_armour"].get("max_kg") != gr.get("light_armour_max_kg"):
+        errors.append("rules: action light_armour max_kg disagrees with world_play gear.light_armour_max_kg")
 
 # Soul magic, rules 1.5 (Outburst 2.0): tones, forms, retired modules, the cycle's numbers
 soul = data.get("soul_modules", {})

@@ -281,5 +281,16 @@
     "tactical_reload_extra_ap": 1,
     "provisional": true,
     "text": "Rules 1.8 (World Play 1.1, items 671-683): a pile holds at most 24 entries; the Narrator's ground[] places at most 6 piles a turn and 12 items each; rounds:<calibre> gives at most 120 rounds an entry; player click-paths go around revealed hazards when a route is at most 2 tiles longer; a tactical reload costs the speed reload + 1 AP."
+  },
+  "gear": {
+    "hand_ap": 1,
+    "two_handed_draw_ap": 2,
+    "swap_hands_ap": 1,
+    "put_away_ap_per_hand": 1,
+    "drop_ap": 0,
+    "light_armour_ap": 1,
+    "light_armour_max_kg": 1,
+    "provisional": true,
+    "text": "Rules 1.8 (World Play 1.1, items 684-690): in a fight, changing what a hand holds costs 1 AP a hand: a draw into one hand 1, a two-handed draw 2, swapping main and off hand 1, putting away 1 a hand (2 for a two-handed weapon), dropping 0 (into the pile on your tile); a light armour piece (1 kg or less) on or off 1 AP each; heavier armour isn't changed in a fight. Hot-Swap covers the hand rows, not armour."
   }
 }

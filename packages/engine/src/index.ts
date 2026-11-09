@@ -19,3 +19,4 @@ export * from './faith';
 export * from './world';
 export * from './hazards';
 export * from './containers';
+export * from './gear';

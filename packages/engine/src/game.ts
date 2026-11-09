@@ -5,11 +5,11 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -20,11 +20,12 @@ import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
 import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
+import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
 import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
-import { condSource, applyCond as applyCondition, isCondition } from './magic';
+import { condSource, applyCond as applyCondition, isCondition, condOn, endCond } from './magic';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -283,10 +284,14 @@ export type Action =
   | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/gift'; unitId: string; aim: string }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string; targetId?: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
-  | { type: 'gear/equip'; charId: string; idx: number; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number }
+  | { type: 'gear/equip'; charId: string; idx: number | string; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number | string }
   | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.8: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
-  | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number; mod?: number; to?: 'main' | 'off' }
+  | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number | string; mod?: number | string; to?: 'main' | 'off' }
+  /** Rules 1.8 gear in a fight (items 684–690): draw from the pack into a hand, or put on a light armour piece ('worn');
+   * put away what a hand holds or take a light piece off; drop what a hand holds into the pile on your tile. `item` names
+   * a pack entry by its index or its id. */
+  | { type: 'combat/equip'; unitId: string; item: number | string; to: 'main' | 'off' | 'worn' } | { type: 'combat/stow'; unitId: string; slot: string } | { type: 'combat/drop'; unitId: string; slot: 'main' | 'off' }
   // Rules 1.6: kind and id name a Whisper, a Hymn or the Miracle (faith/pray in a fight comes here); choice/miracle is the old shape.
   | { type: 'combat/pray'; unitId: string; kind?: 'whisper' | 'hymn' | 'miracle'; id?: string; choice?: string; targetId?: string; targetId2?: string; tile?: string; miracle?: boolean; mods?: string[] }
   | { type: 'combat/parley'; unitId: string; targetId: string; kind: 'persuade' | 'threaten' | 'parley'; text?: string }
@@ -790,8 +795,9 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'gear/equip': case 'gear/unequip': case 'gear/mod': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
-      if (g.phase === 'combat') fail('Change gear after the fight.');
-      const err = a.type === 'gear/equip' ? equip(c!, a.idx, a.to) : a.type === 'gear/unequip' ? unequip(c!, a.slot) : fitMod(c!, a.idx);
+      if (g.phase === 'combat') { gearForward(g, a, by); return; } // rules 1.8: a combat action at its cost (items 684–690)
+      const ref = a.type === 'gear/unequip' ? 0 : a.idx, i = typeof ref === 'number' ? ref : packRef(c!, ref);
+      const err = a.type === 'gear/equip' ? equip(c!, i, a.to) : a.type === 'gear/unequip' ? unequip(c!, a.slot) : fitMod(c!, i);
       if (err) fail(err); return;
     }
     case 'gear/give': case 'gear/drop': {
@@ -1237,6 +1243,9 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/reload': err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical }); break;
     case 'combat/throw': err = throwItem(cb!, g.rng, u, a.item, tileKey(g, a.tile)); break;
     case 'combat/swap': err = swapWeapon(g, cb!, u, c!, a); break;
+    case 'combat/equip': err = gearInFight(g, cb!, u, c!, a.to === 'worn' ? { op: 'wear', item: a.item } : { op: 'draw', item: a.item, to: a.to === 'off' ? 'off' : 'main' }); break;
+    case 'combat/stow': err = gearInFight(g, cb!, u, c!, { op: 'stow', slot: String(a.slot || '') }); break;
+    case 'combat/drop': err = gearInFight(g, cb!, u, c!, { op: 'drop', slot: String(a.slot || '') }); break;
     case 'combat/pray': err = combatPray(cb!, g.rng, u, { kind: a.kind, id: a.id, choice: a.choice, targetId: a.targetId, targetId2: a.targetId2, tile: a.tile ? tileKey(g, a.tile) : undefined, miracle: a.miracle }, g); break;
     case 'combat/parley': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = parley(cb!, g.rng, u, t!, a.kind, a.text || ''); break; }
     case 'combat/hide': err = hideAction(cb!, u); break;
@@ -1317,41 +1326,85 @@ function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Char
   const by = condSource(u, 'puppeted'); if (!by) return null;
   const p = cb.units.find((x) => x.id === by); return p && p.charId && !p.dead && g.characters[p.charId] ? g.characters[p.charId] : null;
 }
-/** Swap what a hand holds mid-fight (spec: 1 AP per hand): the off hand into the main hand, or a weapon or mod from
- * the pack. The unit's weapon numbers are rebuilt from the character; the old weapon keeps its rounds and wear. */
-function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, a: { from?: string | number; mod?: number; to?: 'main' | 'off' }): string | null {
-  if (u.companion) return 'A companion has no pack.';
-  const ctx: any = emitHook(cb, 'swap', { u, c, from: a.from, mod: a.mod, ap: 1, cb });
-  const ap = Math.max(0, ctx.ap); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  // The client names a pack entry by its index in the pack it saw; the write-back below may drop used-up entries
-  // (grenades thrown, spare parts used), so mark the entry and find it again after (rules 1.8 fix: the index shift).
-  const numeric = a.mod == null && (typeof a.from === 'number' || /^\d+$/.test(String(a.from ?? '')));
-  let pick = a.mod != null ? Number(a.mod) : numeric ? Number(a.from) : -1;
-  if (pick >= 0) { c.pack = packOf(c).map((x) => ({ ...x })); const it: any = c.pack[pick]; if (!it) return 'Nothing there in your pack.'; it._pick = 1; }
-  unitToCharacter(g, u, false);
-  if (pick >= 0) { pick = packOf(c).findIndex((x: any) => x._pick); for (const x of packOf(c) as any[]) delete x._pick; if (pick < 0) return 'That is used up.'; }
-  let err: string | null = null;
-  if (a.mod != null) err = fitMod(c, pick);
-  else if (a.from === 'off') {
-    if (!c.offHand || !WEAPON[c.offHand.id] || (WEAPON[c.offHand.id] as any).hands !== '1H') return 'Your off hand holds no one-handed weapon.';
-    if ((WEAPON[c.weapon] as any)?.hands === '2H') return 'Your main-hand weapon needs both hands.';
-    const main = { id: c.weapon, ...(c.weaponState || {}) }, off = c.offHand, offRounds = u.offAmmo ?? 0;
-    c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods }; c.offHand = { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods };
-    const wasLoaded = c.loaded ?? 0; c.loaded = offRounds; u.offAmmo = wasLoaded;
-  } else if (numeric) err = equip(c, pick, a.to === 'off' ? 'off' : 'main'); // a focus goes in the off hand (item 633)
-  else return 'Swap from your off hand, or a weapon in your pack.';
-  if (err) return err;
-  const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state });
-  for (const k of ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'mags', 'loose', 'ammoType', 'magTypes', 'unarmedBonus', 'def'] as const) (u as any)[k] = (fresh as any)[k];
-  if (a.from !== 'off') u.offAmmo = fresh.offAmmo;
+/** combat/swap (spec: Swapping weapons): the off hand into the main hand, a weapon or focus from the pack into a hand, or
+ * a mod onto the main-hand weapon. Rules 1.8: one of the gear changes, at 1 AP a hand (items 684–690). */
+function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, a: { from?: string | number; mod?: number | string; to?: 'main' | 'off' }): string | null {
+  if (a.mod != null) return gearInFight(g, cb, u, c, { op: 'mod', item: a.mod });
+  if (a.from === 'off') return gearInFight(g, cb, u, c, { op: 'swap' });
+  if (a.from != null && a.from !== '') return gearInFight(g, cb, u, c, { op: 'draw', item: a.from, to: a.to === 'off' ? 'off' : 'main' }); // a focus goes in the off hand
+  return 'Swap from your off hand, or a weapon in your pack.';
+}
+/** A gear change from the character sheet in a fight (gear/equip, gear/unequip, gear/mod): the same combat action, on
+ * the character's own unit and turn, at its cost (rules 1.8). */
+function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'gear/unequip' | 'gear/mod' }>, by: string) {
+  const c = g.characters[a.charId], u = g.combat?.units.find((x) => x.charId === a.charId && !x.companion);
+  if (!u || !c) fail('Change gear after the fight: ' + (c?.name || 'this character') + ' isn\'t in it.');
+  const ca: Action = a.type === 'gear/equip' ? { type: 'combat/equip', unitId: u!.id, item: a.idx, to: a.to }
+    : a.type === 'gear/unequip' ? { type: 'combat/stow', unitId: u!.id, slot: a.slot } : { type: 'combat/swap', unitId: u!.id, mod: a.idx };
+  combatAction(g, ca, by);
+}
+/** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
+ * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'unarmedBonus',
+  'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'stealth', 'injResist'] as const;
+/** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
+ * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
+ * a slow, a blind or a guard on them stays; HP, AP, conditions, Flux, Strain and a held Outburst are kept. */
+function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base: Combat['units'][number]) {
+  const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state }), x = u as any, f = fresh as any;
+  for (const k of GEAR_FRESH) { if (f[k] === undefined) delete x[k]; else x[k] = JSON.parse(JSON.stringify(f[k])); }
+  const dDef = fresh.def - base.def, dArm = fresh.armour - base.armour, dMove = fresh.movement - base.movement, dVis = (fresh.vision || 12) - (base.vision || 12);
+  if (dDef) u.def += dDef;
+  if (dArm) { u.armour = Math.max(0, u.armour + dArm); if (u.baseArmour != null) u.baseArmour += dArm; }
+  if (dMove) { if (u.conds?.slowed && u.baseMove != null) { u.baseMove += dMove; u.movement = u.baseMove / 2; } else { u.movement = Math.max(0.5, u.movement + dMove); if (u.baseMove != null) u.baseMove += dMove; } }
+  if (dVis) { if (u.baseVision != null) u.baseVision += dVis; else u.vision = Math.max(1, (u.vision || 12) + dVis); }
   // A focus counts only in a hand (item 630): what the hands hold now decides what this fighter can cast. Its store
   // (core charge, MP) stays with it either way; an Outburst already held stays held (item 632).
   if (fresh.mg) { if (!u.mg) u.mg = fresh.mg; else { u.mg.evoker = fresh.mg.evoker; u.mg.emanator = fresh.mg.emanator; } }
   else if (u.mg) { u.mg.evoker = false; u.mg.emanator = false; }
-  if (a.to !== 'off') { u.heat = 0; u.jammed = false; }
-  u.braced = false; u.ap -= ap;
-  const offName = c.offHand ? WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id : '';
-  cb.log.push(c.name + (a.mod != null ? ' fits a mod' : a.to === 'off' ? ' takes the ' + offName + ' in the off hand' : ' swaps to the ' + (WEAPON[u.weapon]?.name || u.weapon)) + ' (' + ap + ' AP)' + (a.mod == null && u.mg ? focusLine(c) : '') + '.');
+}
+/** A gear change in a fight (rules 1.8, World Play: Gear in a fight; items 684–690): 1 AP a hand, Hot-Swap on the hand
+ * rows, light armour 1 AP a piece, heavy armour refused, a drop 0 AP into the pile on the unit's tile. The fighter's
+ * state is written back to the character first, the change is made there, and the fighter is rebuilt from it. The pack
+ * entry is marked before the write-back (which may drop used-up entries) and found again after it (item 684). */
+function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, op: GearOp): string | null {
+  if (u.companion) return 'A companion has no pack.';
+  if (!u.charId || u.charId !== c.id) return 'Only a character changes gear.';
+  const disarmed = condOn(u, 'disarmed'), plan = gearPlan(c, op, { disarmed }); if (plan.why) return plan.why;
+  let ap = plan.ap;
+  if (plan.hand && ap > 0) { const ctx: any = emitHook(cb, 'swap', { u, c, from: op.op === 'swap' ? 'off' : (op as any).item, mod: op.op === 'mod' ? op.item : undefined, ap, cb }); ap = Math.max(0, ctx.ap); }
+  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  if (plan.idx != null) { c.pack = packOf(c).map((x) => ({ ...x })); (c.pack[plan.idx] as any)._pick = 1; }
+  unitToCharacter(g, u, false);
+  let idx = -1;
+  if (plan.idx != null) { idx = packOf(c).findIndex((x: any) => x._pick); for (const x of packOf(c) as any[]) delete x._pick; if (idx < 0) return 'That is used up.'; }
+  const base = unitFromCharacter(c, u.pos, { state: g.rng.state }), wasMain = c.weapon, toPile: PackItem[] = [];
+  let err: string | null = null, rearm = false;
+  /** Disarmed (item 687): the weapon on the ground stays there, in the pile; drawing another ends the condition. */
+  const leaveDowned = () => { const e = handEntry(c, 'main'); if (e) toPile.push(e); emptyHand(c, 'main'); rearm = true; };
+  switch (op.op) {
+    case 'draw': if (op.to === 'main' && disarmed) leaveDowned(); err = equip(c, idx, op.to); break;
+    case 'wear': err = equip(c, idx, 'worn'); break; // a light piece already there comes off into the pack (item 685)
+    case 'mod': err = fitMod(c, idx); break;
+    case 'swap': {
+      if (disarmed) leaveDowned();
+      const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined } : null;
+      c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods, ...(off.name ? { name: off.name } : {}) };
+      c.loaded = off.loaded ?? (WEAPON[off.id].magazine ?? 0); c.loadedType = null;
+      c.offHand = main ? { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods, ...(main.name ? { name: main.name } : {}), ...(WEAPON[main.id].magazine != null ? { loaded: main.loaded ?? 0 } : {}) } : null;
+      break;
+    }
+    case 'stow': err = unequip(c, op.slot); break;
+    case 'drop': { const e = handEntry(c, op.slot as 'main' | 'off'); if (e) toPile.push(e); emptyHand(c, op.slot as 'main' | 'off'); break; }
+  }
+  if (err) return err;
+  if (toPile.length) dropToPile(cb, u.pos, toPile, 'drop');
+  refitUnit(g, u, c, base);
+  if (rearm) endCond(u, 'disarmed', cb);
+  if (c.weapon !== wasMain) { u.heat = 0; u.jammed = false; u.braced = false; }
+  u.ap -= ap;
+  const where = toPile.length ? (op.op === 'drop' ? ': it lands in the pile at ' : ', leaving the weapon on the ground in the pile at ') + refOf(u.pos) : '';
+  cb.log.push(c.name + ' ' + plan.label + ' (' + ap + ' AP)' + where + (op.op !== 'mod' && u.mg ? focusLine(c) : '') + '.');
   syncSong(g);
   return null;
 }
@@ -1571,8 +1624,9 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     c.hp = u.dead ? 0 : u.downed && keepDowned ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
     c.downedFails = u.downed && keepDowned && !u.dead ? u.saves.fail : 0;
     c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
-    // Ammo carried out of the fight (spec: Reloading).
+    // Ammo carried out of the fight (spec: Reloading); the off-hand gun's rounds too (rules 1.8, item 688).
     c.loaded = u.ammo;
+    if (c.offHand && u.offWeapon && u.offWeapon === c.offHand.id && WEAPON[c.offHand.id]?.magazine != null) c.offHand = { ...c.offHand, loaded: Math.max(0, u.offAmmo ?? 0) };
     magicToCharacter(c, u);
     if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur };
     { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
@@ -2450,6 +2504,7 @@ export function sandboxResync(g: GameState, charId: string) { const c = g.charac
 function sbRefill(c: Character) {
   c.dead = false; c.hp = maxHp(c); c.injuries = []; c.downedFails = 0;
   c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  if (c.offHand && WEAPON[c.offHand.id]?.magazine != null) c.offHand = { ...c.offHand, loaded: magazineSize(c.offHand.id, c.offHand.mods) ?? 0 }; // the off-hand gun keeps its own rounds now (item 688)
   const pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : { ...it }));
   const w = WEAPON[c.weapon];
   if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
@@ -2503,15 +2558,8 @@ function sbEquip(c: Character, idx: number, to: 'main' | 'off' | 'worn' | 'mod')
   if (to === 'main') c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
   return null;
 }
-/** Take something off: the main hand too here (the weapon goes to the pack and the hands are empty: fists). */
-function sbUnequip(c: Character, slot: string): string | null {
-  if (slot !== 'main') return unequip(c, slot);
-  if (c.weapon === 'fists' || !WEAPON[c.weapon]) return 'Your hands are already empty.';
-  const st = c.weaponState || {};
-  c.pack = [...packOf(c).map((x) => ({ ...x })), { id: c.weapon, name: st.name || WEAPON[c.weapon].name, qty: 1, kind: 'weapon', weapon: c.weapon, ...(st.rarity ? { rarity: st.rarity } : {}), ...(st.dur != null ? { dur: st.dur } : {}), ...(st.mods ? { mods: st.mods } : {}) }];
-  c.weapon = 'fists'; c.weaponState = {}; c.loaded = 0;
-  return null;
-}
+/** Take something off: the main hand too (the weapon goes to the pack with its rounds and the hands are empty: fists). */
+const sbUnequip = (c: Character, slot: string): string | null => unequip(c, slot);
 /** The magic kit: the focus in the off hand where it fits (spec: Hands 2; a focus counts only in a hand, item 630), with
  * cores and a few words for Sigils, full MP and two ready designs for Outbursts. A focus that doesn't fit (a two-handed
  * weapon, a full off hand, the second focus of the both kit) goes to the pack, and the line says so (item 635). */
@@ -3002,9 +3050,12 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
   }
   fail('Unknown action.');
 }
-/** The ordinary gear and magic-book actions, allowed mid-fight in the Proving Ground (the fighter is rebuilt). */
+/** The ordinary gear and magic-book actions in the Proving Ground: the magic book changes mid-fight for free (the fighter
+ * is rebuilt); gear in a live fight is a combat action at its cost (rules 1.8). */
 function sandboxGear(g: GameState, a: Action, by: string) {
   const charId = (a as any).charId as string, c = g.characters[charId]; if (!c || c.owner !== by) fail('Not your character.');
+  // The player's own gear in a live fight costs what it costs in any fight (rules 1.8, item 690); the tools stay free.
+  if (/^gear\/(equip|unequip|mod)$/.test(a.type) && liveFight(g)?.units.some((u) => u.charId === charId && !u.companion)) { gearForward(g, a as any, by); return; }
   const m: Record<string, () => SandboxAction> = {
     'gear/equip': () => ({ type: 'sandbox/equip', charId, idx: (a as any).idx, to: (a as any).to }),
     'gear/unequip': () => ({ type: 'sandbox/unequip', charId, slot: (a as any).slot }),
