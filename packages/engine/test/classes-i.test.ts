@@ -351,7 +351,7 @@ const designOf = (u: Unit, school = 'damage', option?: string) => { const d = { 
 describe('Channeler', () => {
   it('Shape (rules 1.5): the first Pump a turn that would cost AP is free, on a Damage design; the second costs 1', () => {
     const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
-    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; f.unit(f.foe.id).hp = 999; const m = f.unit(u.id).mg!; m.freePumps = 0; m.freePumpsMax = 0;
+    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; f.unit(f.foe.id).hp = 999; const m = f.unit(u.id).mg!; m.freePumps = 0; m.freePumpsMax = 0; m.firstUsed = true; // rules 1.8's free first Pump spent
     const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); expect(f.pc.ap).toBe(7);
     act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(1); expect(logHas(f.cb, /Shape: the first Pump/)).toBe(true);
@@ -359,7 +359,7 @@ describe('Channeler', () => {
   });
   it('Shape: Empathy\'s free Pump goes first; Shape takes the next one', () => {
     const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
-    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.freePumps = 1; m.freePumpsMax = 1;
+    const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.freePumps = 1; m.freePumpsMax = 1; m.firstUsed = true;
     const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d });
     act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7);

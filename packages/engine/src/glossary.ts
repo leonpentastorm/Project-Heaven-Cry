@@ -9,6 +9,7 @@ import patronsJ from '../../../data/patrons.json';
 import classesJ from '../../../data/classes.json';
 import sigilsJ from '../../../data/sigils.json';
 import enemiesJ from '../../../data/enemies.json';
+import feelingsJ from '../../../data/feelings.json';
 import { verdictFor } from './effects/coverage';
 
 export interface WikiEntry { key: string; name: string; text: string }
@@ -70,7 +71,10 @@ function build(): WikiEntry[] {
   if (hearts.length) add('enemy:soul_casters', 'Enemy Soul casters', line('Enemy Soul casters (rules 1.5): a foe of the same tier may name one by caster; it fights with an Emanator and these ready designs, its heart glowing as it fills.',
     hearts.map((c) => c.name + ' (' + c.tier + '): ' + (c.designs || []).map((d: any) => d.name + ' (' + [d.tone && d.tone !== 'raw' ? d.tone : 'raw', d.school, ...(d.modules || [])].join(' ') + ')').join(', ') + '. ' + (c.text || '')).join(' ')));
   for (const s of SCHOOLS as any[]) add('school:' + s.id, s.name, line(s.name + ' (Soul school, ' + s.base_cost + ' MP base).', s.text));
-  for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', +' + m.cost + ' MP).', m.text));
+  for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', ' + (m.cost >= 0 ? '+' : '−') + Math.abs(m.cost) + ' MP' + (m.gate ? '; learned at ' + (SKILL[m.gate.skill]?.name || m.gate.skill) + ' ' + m.gate.points : '') + (m.locked ? '; only with its advanced class, shelved: not learnable yet' : '') + ').', m.text));
+  // Feelings (rules 1.8, Outburst 4.0): poured into a held Outburst with a Pump; the Narrator may grant one at a story moment
+  // (magic[] feeling), and the engine unlocks the rest when their trigger happens.
+  for (const f of (feelingsJ as any).items) add('feeling:' + f.id, f.name, line(f.name + ' (a feeling a Soul caster pours into an Outburst; rules 1.8).', 'Felt first when: ' + f.trigger.text, 'Poured in: ' + f.pour.text, f.residue.kind !== 'none' ? 'Residue (' + f.residue.kind + '): ' + f.residue.text : ''));
   // Soul 1.5 (Outburst 2.0): the heart cycle in one entry (soul:heart), each tone (tone:<id>) and each shape (form:<id>).
   const sr: any = SOUL_RULES || {}, cyc = sr.cycle || {}, mult = (cyc.stage_mult || []).map((x: number, i: number) => i + ' ×' + x).join(', ');
   add('soul:heart', 'The heart (Outbursts)', line('How an Outburst is cast (Soul magic, rules 1.5).',

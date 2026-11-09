@@ -18,7 +18,19 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
   | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
   | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent'
-  | ElementSfx | WordSfx | SoulSfx;
+  | ElementSfx | WordSfx | SoulSfx | FeelSfx;
+/** The eight feeling families (data/feelings.json `families`). */
+export type FeelingFamily = 'warm' | 'cold' | 'sharp' | 'low' | 'bright' | 'hollow' | 'wild' | 'holy';
+export const FEELING_FAMILIES: FeelingFamily[] = ['warm', 'cold', 'sharp', 'low', 'bright', 'hollow', 'wild', 'holy'];
+/** Outburst 4.0 (rules 1.8): feelings. A family's layer over the pump heartbeat (short; pitched up per stage), a quieter
+ *  residue sting (a residue tile laid or ticking), the unlock ("You have felt X"), Revert pump's soft rewind, and the
+ *  multiplier counter's shake tick. */
+export type FeelSfx = `feel_pump_${FeelingFamily}` | `feel_residue_${FeelingFamily}` | 'feel_unlock' | 'feel_revert' | 'feel_tick';
+/** A feeling family's pump layer and residue sting (an unknown family sounds warm). */
+export function FEELING_FAMILY_SFX(family: string): { pump: Sfx; residue: Sfx } {
+  const f = (FEELING_FAMILIES as string[]).includes(family) ? family as FeelingFamily : 'warm';
+  return { pump: `feel_pump_${f}`, residue: `feel_residue_${f}` };
+}
 /** Outburst 2.0 (rules 1.5): the heart. A breath in (Begin), a thump per Pump, a gasp (Heart Overwatch), a long breath
  *  out (calming, Steady), a violet sigh (Let go), a crack (Strain burns, a Mana Short), the choir under a big release; and
  *  the held elemental aura's sound beds (the Sigil field loops played lower and softer, a stone rumble of its own). */
@@ -67,6 +79,12 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   soul_thump: CB('soul_thump'), soul_choir: CB('soul_choir'), soul_crack: CB('soul_crack'),
   soul_fire_loop: CB('el_fire_loop'), soul_storm_loop: CB('el_shock_loop'), soul_frost_loop: CB('el_freeze_loop'), soul_stone_loop: CB('soul_stone_loop'),
   soul_gale_loop: CB('el_gale_loop'), soul_acid_loop: CB('el_acid_loop'),
+  // Outburst 4.0 (rules 1.8): feelings (public/sfx/cb/feel_*.ogg; trimmed, mono, levelled).
+  feel_pump_warm: CB('feel_pump_warm'), feel_pump_cold: CB('feel_pump_cold'), feel_pump_sharp: CB('feel_pump_sharp'), feel_pump_low: CB('feel_pump_low'),
+  feel_pump_bright: CB('feel_pump_bright'), feel_pump_hollow: CB('feel_pump_hollow'), feel_pump_wild: CB('feel_pump_wild'), feel_pump_holy: CB('feel_pump_holy'),
+  feel_residue_warm: CB('feel_residue_warm'), feel_residue_cold: CB('feel_residue_cold'), feel_residue_sharp: CB('feel_residue_sharp'), feel_residue_low: CB('feel_residue_low'),
+  feel_residue_bright: CB('feel_residue_bright'), feel_residue_hollow: CB('feel_residue_hollow'), feel_residue_wild: CB('feel_residue_wild'), feel_residue_holy: CB('feel_residue_holy'),
+  feel_unlock: CB('feel_unlock'), feel_revert: CB('feel_revert'), feel_tick: CB('feel_tick'),
 };
 /** Combat sounds load when a game is on screen (preloadCombatSfx), not on the title screen's first key press. */
 const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
@@ -93,6 +111,10 @@ const MIX: Partial<Record<Sfx, number>> = {
   sg_trap_set: 0.2, sg_trap_sprung: 0.45, sg_light: 0.3, sg_turret: 0.35, sg_turret_break: 0.4, sg_fizzle: 0.35, sg_cleanse: 0.35,
   soul_breath_in: 0.4, soul_breath_out: 0.32, soul_sigh: 0.3, soul_gasp: 0.42, soul_thump: 0.55, soul_choir: 0.32, soul_crack: 0.5,
   soul_fire_loop: 0.12, soul_storm_loop: 0.06, soul_frost_loop: 0.07, soul_stone_loop: 0.14, soul_gale_loop: 0.1, soul_acid_loop: 0.1,
+  // Feelings: the pump layer sits under the thump (0.55); residue stings are quieter still.
+  feel_pump_warm: 0.4, feel_pump_cold: 0.4, feel_pump_sharp: 0.38, feel_pump_low: 0.45, feel_pump_bright: 0.45, feel_pump_hollow: 0.45, feel_pump_wild: 0.4, feel_pump_holy: 0.4,
+  feel_residue_warm: 0.28, feel_residue_cold: 0.28, feel_residue_sharp: 0.3, feel_residue_low: 0.3, feel_residue_bright: 0.28, feel_residue_hollow: 0.3, feel_residue_wild: 0.3, feel_residue_holy: 0.3,
+  feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3,
   sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
@@ -238,7 +260,26 @@ function synth(ac: AudioContext, dest: GainNode, name: Sfx) {
   };
   /** A heartbeat: lub-dub, two low thumps. */
   const beat = (at = 0, vol = 0.3) => { tone(70, 42, 0.13, 'sine', vol, at); tone(62, 38, 0.11, 'sine', vol * 0.7, at + 0.17); };
+  // Feelings (until their file loads): a family's colour in one tone; the residue is the same, softer and longer.
+  const fam = /^feel_(pump|residue)_(\w+)$/.exec(name);
+  if (fam) {
+    const r = fam[1] === 'residue', v = r ? 0.6 : 1, d = r ? 1.8 : 1;
+    switch (fam[2]) {
+      case 'warm': swell(262, 392, 0.3 * d, 'sine', 0.12 * v); break;
+      case 'cold': tone(1900, 1880, 0.25 * d, 'sine', 0.06 * v); break;
+      case 'sharp': tone(5600, 5300, 0.12 * d, 'triangle', 0.04 * v); break;
+      case 'low': tone(150, 55, 0.3 * d, 'sine', 0.28 * v); break;
+      case 'bright': tone(1240, 1480, 0.18 * d, 'sine', 0.07 * v); tone(2480, 2960, 0.12 * d, 'sine', 0.03 * v, 0.04); break;
+      case 'hollow': tone(230, 220, 0.12 * d, 'triangle', 0.16 * v); break;
+      case 'wild': noise(0.3 * d, 420, 0.16 * v); tone(90, 60, 0.25 * d, 'sawtooth', 0.05 * v); break;
+      case 'holy': swell(312, 312, 0.5 * d, 'sine', 0.1 * v); swell(624, 624, 0.5 * d, 'sine', 0.04 * v); break;
+    }
+    return;
+  }
   switch (name) {
+    case 'feel_unlock': [392, 494, 587, 784].forEach((f, i) => swell(f, f, 0.6, 'sine', 0.07, i * 0.12)); break;
+    case 'feel_revert': swell(600, 280, 0.35, 'sine', 0.12); break;
+    case 'feel_tick': tone(800, 800, 0.02, 'square', 0.03); break;
     // Sigils: a tone per word that locks with a click.
     case 'draw': tone(660, 660, 0.09, 'triangle', 0.1); tone(990, 990, 0.05, 'square', 0.035, 0.03); tone(2400, 1800, 0.015, 'square', 0.06, 0.1); break;
     case 'evoke': [523, 659, 784].forEach((f, i) => tone(f, f, 0.07, 'square', 0.05, i * 0.055)); tone(1568, 392, 0.16, 'sawtooth', 0.07, 0.17); noise(0.08, 5200, 0.12, 0.17); break;

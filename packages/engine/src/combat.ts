@@ -1,4 +1,5 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
+import { fxTaps } from './fxtap';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
 import { type Character, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult,
   saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
@@ -227,8 +228,10 @@ export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): F
   const n = (cb.fxSeq = (cb.fxSeq || 0) + 1), list = (cb.fx ||= []), ev: FxEvent = { n, k, ...data };
   list.push(ev);
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
+  for (const f of fxTaps) f(cb, ev);
   return ev;
 }
+
 /** A unit went down or died: one event (the client drops and greys the token). */
 export function fxFell(cb: Combat, u: Unit) { emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
 function chained<T>(f: () => T, volley?: string): T { fxChain++; const was = VOLLEY; if (volley) VOLLEY = volley; try { return f(); } finally { fxChain--; VOLLEY = was; } }

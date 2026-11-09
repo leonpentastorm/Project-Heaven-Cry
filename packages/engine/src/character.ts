@@ -1,9 +1,10 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, CLASS, CLASS_MIGRATION, CLASS_RULES } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
+import feelJ from '../../../data/feelings.json';
 import { skillRollMod } from './effects/core';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
@@ -19,8 +20,11 @@ export interface Sheet {
   sigils?: string[];
   /** Sigil rules revision the words were checked under (14 = rules 1.4); free words owed from retired ones (RETURN). */
   sigilRev?: number; sigilFree?: number; outburst?: { name?: string; school: string; modules: string[]; option?: string; tone?: string } | null;
-  /** Soul rules revision the designs were converted to (15 = rules 1.5, Outburst 2.0). */
+  /** Soul rules revision the designs were converted to (15 = rules 1.5, Outburst 2.0; 18 = rules 1.8, Outburst 4.0). */
   soulRev?: number;
+  /** Rules 1.8 (Outburst 4.0): the feelings known (picked at creation: 2; then felt in play); practice from releases;
+   * the module picks taken (practice or a Mastered skill's free pick). */
+  feelings?: string[]; soulPractice?: number; soulPicks?: { module: string; via: string }[];
   /** Belief (rules 1.6, Blessing 2.0): Faithful to one patron, or Atheist. Chosen at creation; old saves derive it from
    * their pact (faith.ts beliefOf). */
   belief?: Belief;
@@ -186,34 +190,54 @@ export function validateSheet(s: Sheet): string | null {
 /** Starting magic (spec: The Magic panel, rules 1.4): 2 Sigil words making a spell, one of them a Reach word (default
  * SPARK · SEEK); 1 Outburst design from one school and one module. Both optional: a caster without a choice gets the
  * defaults. */
-export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skills'>, d?: unknown): string | null {
+export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skills'> & { feelings?: string[] }, d?: unknown): string | null {
+  // Rules 1.8: 2 different starting feelings (optional: none picked means the defaults).
+  if (s.feelings && s.feelings.length) {
+    const fj: any = feelJ, ids = new Set((fj.items || []).map((x: any) => x.id)), n = fj.start_count ?? 2;
+    if (s.feelings.length !== n || new Set(s.feelings).size !== s.feelings.length) return 'Pick ' + n + ' different feelings.';
+    if (s.feelings.some((x) => !ids.has(x))) return 'Unknown feeling.';
+  }
   if (s.sigils && s.sigils.length) {
     const e = startingWordsError(s.sigils); if (e) return e;
   }
   if (s.outburst) {
     if (!SCHOOL[s.outburst.school]) return 'Pick an Outburst school.';
     if ((s.outburst.modules || []).some((m) => !MODULE[m])) return 'Unknown Outburst module.';
-    if (s.outburst.tone && s.outburst.tone !== 'raw') { if (!TONE[s.outburst.tone]) return 'Unknown Outburst tone.'; if (((s.skills || {}) as any).visualization < 1 || !((s.skills || {}) as any).visualization) return 'A tone needs Visualization 1.'; }
+    { const sh = (s.outburst.modules || []).map(moduleShelved).find(Boolean); if (sh) return sh; }
+    if (s.outburst.tone && s.outburst.tone !== 'raw') { if (!TONE[s.outburst.tone]) return 'Unknown Outburst tone.'; if (!((s.skills || {}) as any).lore_master) return 'A tone needs Lore Master 1.'; }
     // One school and exactly one module; the Will Power module slots are for designs made in play.
     if ((s.outburst.modules || []).length !== 1) return 'Your starting Outburst takes one school and exactly one module (more module slots are for designs made in play).';
   }
   return null;
 }
-/** The magic a new character starts with: their picks, or a default cantrip for anyone with the skill or the kit. */
+/** The magic a new character starts with: their picks, or a default cantrip for anyone with the skill or the kit.
+ * Rules 1.8 (Outburst 4.0, item 813): a Soul caster starts with the 3 starting designs (a picked design takes Heart
+ * Bolt's place), the Damage, Buff and Control schools, the shape Wave, 2 feelings, and a tone at Lore Master 1. */
 function startingMagic(c: Character) {
   const bp = c.skills.brain_power || 0, wp = c.skills.will_power || 0;
   c.sigils = c.sigils && c.sigils.length ? [...c.sigils] : bp >= 1 || c.kit === 'sigil' ? [...STARTING_DEFAULT] : [];
   c.sigilRev = SIGIL_REV;
-  const o: Sheet['outburst'] = c.outburst || (wp >= 1 || c.kit === 'soul' ? { school: 'damage', modules: ['move'] } : null);
-  // A tone (rules 1.5): one at Visualization 1, picked with the starting design.
-  const tone = o?.tone && o.tone !== 'raw' && TONE[o.tone] && (c.skills.visualization || 0) >= 1 ? o.tone : undefined;
-  c.outbursts = o ? [{ id: 'o1', name: o.name || (SCHOOL[o.school]?.name || 'Outburst') + ' Outburst', school: o.school, modules: [...(o.modules || [])], ...(o.option ? { option: o.option } : {}), ...(tone ? { tone } : {}) }] : [];
-  c.soulKnown = o ? { schools: [o.school], modules: [...(o.modules || [])].filter((m) => MODULE[m] && !(MODULE[m] as any).form), tones: tone ? [tone] : [] } : { schools: [], modules: [], tones: [] };
-  // A form module picked at creation is known too (it is a module).
-  if (o) for (const m of o.modules || []) if ((MODULE[m] as any)?.form && !c.soulKnown.modules.includes(m)) c.soulKnown.modules.push(m);
+  const caster = !!c.outburst || wp >= 1 || c.kit === 'soul', o = c.outburst || null;
+  const tone = o?.tone && o.tone !== 'raw' && TONE[o.tone] && (c.skills.lore_master || 0) >= 1 ? o.tone : undefined;
+  if (!caster) { c.outbursts = []; c.soulKnown = { schools: [], modules: [], tones: [] }; c.feelings = []; c.soulRev = SOUL_REV; delete c.outburst; return; }
+  const st = SOUL_START();
+  const designs: OutburstDesign[] = st.designs.map((t: any, i: number) => ({ id: 'o' + (i + 1), name: t.name, school: t.school, modules: [...(t.modules || [])], ...(t.option ? { option: t.option } : {}) }));
+  if (o) designs[0] = { id: 'o1', name: o.name || (SCHOOL[o.school]?.name || 'Outburst') + ' Outburst', school: o.school, modules: [...(o.modules || [])], ...(o.option ? { option: o.option } : {}), ...(tone ? { tone } : {}) };
+  c.outbursts = designs;
+  const schools = [...new Set([...st.schools, ...designs.map((d) => d.school)])].filter((x) => SCHOOL[x]);
+  const modules = [...new Set([...st.modules, ...designs.flatMap((d) => d.modules)])].filter((m) => MODULE[m]);
+  c.soulKnown = { schools, modules, tones: tone ? [tone] : [] };
+  c.feelings = c.feelings && c.feelings.length ? [...c.feelings] : [...st.feelings];
   c.soulRev = SOUL_REV;
   delete c.outburst;
 }
+/** The starting designs, schools, modules and feelings (soul_modules.json start; feelings.json start_default). */
+const SOUL_START = (): { designs: any[]; schools: string[]; modules: string[]; feelings: string[] } => {
+  const st: any = (SOUL_RULES as any).start || {};
+  return { designs: st.designs || [{ name: 'Heart Bolt', school: 'damage', modules: [] }], schools: st.schools || ['damage'], modules: st.modules || [], feelings: (feelJ as any).start_default || ['rage', 'love'] };
+};
+/** The starting templates (rules 1.8): one-click designs in the workshop. */
+export const DESIGN_TEMPLATES = (): { id: string; name: string; school: string; modules: string[]; option?: string; text?: string }[] => ((SOUL_RULES as any).templates || []).map((t: any) => ({ ...t, modules: [...(t.modules || [])] }));
 
 /** An old character's Sigil words under rules 1.4 (item 441, 438): RETURN and unknown words go (one free word each at
  * the next rest: c.sigilFree), and two starting words with no Reach word swap the non-Subject one for SEEK. Runs once
@@ -266,7 +290,7 @@ export function pairingError(school: string, school2: string | undefined, mods: 
 }
 /** Every design rule of rules 1.5 (magic/design, Beloved Spells, the Twinbound twin): schools known, a second school at
  * Will Power 5 on the same side, modules known and within `slots`, one shape (Size needs one), a known tone (the first
- * is free at Visualization 1: `learnTone` names it), options checked. Pure: returns the clean design or an error. */
+ * is free at Lore Master 1 (rules 1.8): `learnTone` names it), options checked. Pure: returns the clean design or an error. */
 export function checkOutburstDesign(c: Character, d: Partial<OutburstDesign> | null | undefined, slots: number, id: string): { design: OutburstDesign; learnTone?: string } | string {
   if (!d || !d.school || !SCHOOL[d.school]) return 'Pick a school.';
   const k = c.soulKnown || { schools: [], modules: [] };
@@ -278,13 +302,14 @@ export function checkOutburstDesign(c: Character, d: Partial<OutburstDesign> | n
     const pe = pairingError(d.school, d.school2, mods); if (pe) return pe;
   }
   if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) return 'Use only modules you know.';
+  { const sh = mods.map(moduleShelved).find(Boolean); if (sh) return sh; }
   if (mods.length > slots) return 'At most ' + slots + ' module' + (slots === 1 ? '' : 's') + ' (Will Power).';
   { const why = designShapeError(mods); if (why) return why; }
   const tone = d.tone && d.tone !== 'raw' ? d.tone : undefined; let learnTone: string | undefined;
   if (tone) {
     if (!TONE[tone]) return 'No such tone.';
     const kt = k.tones || [];
-    if (!kt.includes(tone)) { if ((c.skills.visualization || 0) >= 1 && !kt.length) learnTone = tone; else return 'You haven\'t learned the ' + TONE[tone].name + ' tone.'; }
+    if (!kt.includes(tone)) { if ((c.skills.lore_master || 0) >= 1 && !kt.length) learnTone = tone; else return 'You haven\'t learned the ' + TONE[tone].name + ' tone.'; }
   }
   const option = optionOf(d.school, d.option), option2 = d.school2 ? optionOf(d.school2, d.option2) : undefined;
   const design: OutburstDesign = { id, name: String(d.name || SCHOOL[d.school].name + ' Outburst').slice(0, 40), school: d.school, ...(d.school2 ? { school2: d.school2 } : {}), modules: mods, ...(option ? { option } : {}), ...(option2 ? { option2 } : {}), ...(tone ? { tone } : {}) };
@@ -293,8 +318,26 @@ export function checkOutburstDesign(c: Character, d: Partial<OutburstDesign> | n
 /** An old character's Outburst designs and learned modules under rules 1.5 (runs once: c.soulRev). Returns log notes. */
 export function migrateCharacterSoul(c: Character): string[] {
   if (c.soulRev === SOUL_REV) return [];
+  const was = c.soulRev || 0;
   c.soulRev = SOUL_REV;
   const notes: string[] = [];
+  // Rules 1.8 (items 809, 813): a caster made before Outburst 4.0 gets the default feelings and, while it has room, the
+  // starting designs it lacks (and their schools and the shape Wave).
+  if (was < 18 && ((c.outbursts || []).length || (c.soulKnown?.schools || []).length)) {
+    const st = SOUL_START();
+    if (!(c.feelings || []).length) { c.feelings = [...st.feelings]; notes.push(c.name + ' can pour in ' + st.feelings.join(' and ') + ' (rules 1.8).'); }
+    const k = (c.soulKnown ||= { schools: [], modules: [] }); k.tones ||= [];
+    for (const x of st.schools) if (!k.schools.includes(x)) k.schools.push(x);
+    for (const x of st.modules) if (MODULE[x] && !k.modules.includes(x)) k.modules.push(x);
+    const list = (c.outbursts ||= []), room = readyDesigns(c);
+    for (const t of st.designs) {
+      if (list.length >= room) break;
+      if (list.some((d) => d.school === t.school && (d.option || '') === (t.option || '') && (d.modules || []).join() === (t.modules || []).join())) continue;
+      let n = list.length + 1; while (list.some((d) => d.id === 'o' + n)) n++;
+      list.push({ id: 'o' + n, name: t.name, school: t.school, modules: [...(t.modules || [])], ...(t.option ? { option: t.option } : {}) });
+      notes.push(c.name + ' remembers ' + t.name + ' (rules 1.8).');
+    }
+  }
   if (c.outbursts?.length) c.outbursts = c.outbursts.map((d) => { const n = migrateDesign(d); if (n.modules.join() !== (d.modules || []).join()) notes.push(c.name + ': the Outburst ' + d.name + ' now reads ' + (n.modules.map((m) => MODULE[m]?.name || m).join(', ') || 'a plain Bolt') + ' (rules 1.5).'); return n; });
   if (c.soulKnown) {
     const k = c.soulKnown, mods: string[] = [];
@@ -497,7 +540,68 @@ export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
 export const strainLimit = (c: Character) => fx(c, 'strain_limit', 3 + Math.floor(P(c, 'will_power') / 2));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
-export const readyDesigns = (c: Character) => fx(c, 'ready_designs', 2 + Math.floor(P(c, 'empathy') / 2));
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'empathy') / 2)));
+// ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
+const PR = (): any => (SOUL_RULES as any).practice || {};
+const GATES = (): any => (SOUL_RULES as any).gates || {};
+/** A module's gate (soul_modules.json items[].gate): the Soul skill and the points it needs, or null (no gate). */
+export const moduleGate = (id: string): { skill: string; points: number } | null => (MODULE[id] as any)?.gate || null;
+/** A module only an advanced class teaches (rules 1.8), and that class. */
+export const moduleClass = (id: string): string | null => ((MODULE[id] as any)?.locked ? (MODULE[id] as any).class || null : null);
+/** Why a module can't be learned or used at all yet: an advanced class's own module while that class is shelved (rules
+ * 1.8 section 4: they unlock when the class's batch goes live), or null. Every way of learning (the Proving Ground too)
+ * and every design checks it. */
+export function moduleShelved(id: string): string | null {
+  const m: any = MODULE[id]; if (!m || !m.locked || advancedActive(m.class)) return null;
+  const cls = (ADVANCED as any)[m.class]?.name || String(m.class || '').split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return m.name + ' comes with the ' + cls + ' class (not learnable yet).';
+}
+/** Why this character can't learn a module through a gated way (practice, a Mastered pick, a plate, a tutor), or null. */
+export function moduleGateError(c: Character, id: string): string | null {
+  const m: any = MODULE[id]; if (!m) return 'No such module.';
+  { const sh = moduleShelved(id); if (sh) return sh; }
+  const g = moduleGate(id); if (!g) return null;
+  if ((c.skills[g.skill] || 0) < g.points) return m.name + ' needs ' + (SKILL[g.skill]?.name || g.skill) + ' ' + g.points + '.';
+  return null;
+}
+/** Practice from Mastery (item 812): +5 a Mastery level (3/5/7/9) in each gate skill. Derived, never stored. */
+export function masteryPractice(c: Character): number {
+  const pr = PR(), lv: number[] = pr.mastery_levels || [3, 5, 7, 9], per = pr.mastery_bonus ?? 5;
+  return (pr.gate_skills || []).reduce((t: number, sk: string) => t + per * lv.filter((x) => (c.skills[sk] || 0) >= x).length, 0);
+}
+/** All practice: from releases (kept) plus from Mastery (derived). */
+export const practiceOf = (c: Character) => Math.max(0, Math.floor(c.soulPractice || 0)) + masteryPractice(c);
+/** Module picks earned by practice p: at 5, 15, then every +15 (30, 45…). */
+export function picksAt(p: number): number {
+  const pr = PR(), th: number[] = pr.thresholds || [5, 15], every = pr.then_every ?? 15;
+  let n = th.filter((x) => p >= x).length; const last = th[th.length - 1];
+  if (p >= last) n += Math.floor((p - last) / every);
+  return n;
+}
+/** The practice the next pick needs. */
+export function nextPickAt(p: number): number {
+  const pr = PR(), th: number[] = pr.thresholds || [5, 15], every = pr.then_every ?? 15;
+  for (const x of th) if (p < x) return x;
+  const last = th[th.length - 1]; return last + (Math.floor((p - last) / every) + 1) * every;
+}
+/** Picks left: practice picks not yet taken, and each Mastered gate skill's free pick not yet taken. */
+export function soulPicksLeft(c: Character): { practice: number; mastered: string[] } {
+  const used = c.soulPicks || [], pr = PR();
+  const practice = Math.max(0, picksAt(practiceOf(c)) - used.filter((x) => x.via === 'practice').length);
+  const mastered = (pr.gate_skills || []).filter((sk: string) => (c.skills[sk] || 0) >= 10 && !used.some((x) => x.via === sk));
+  return { practice, mastered };
+}
+/** The modules a gate skill gates (soul_modules.json gates.skills). */
+export const gatedBy = (skill: string): string[] => (GATES().skills || {})[skill] || [];
+/** Why a pick can't be taken (via 'practice' or a Mastered skill id), or null. */
+export function soulPickError(c: Character, id: string, via: string): string | null {
+  if (!MODULE[id]) return 'No such module.';
+  if ((c.soulKnown?.modules || []).includes(id)) return 'You know ' + MODULE[id].name + ' already.';
+  const left = soulPicksLeft(c);
+  if (via === 'practice') { if (left.practice <= 0) return 'No practice pick yet (next at ' + nextPickAt(practiceOf(c)) + ' practice).'; }
+  else { if (!left.mastered.includes(via)) return 'No free pick from ' + (SKILL[via]?.name || via) + '.'; if (!gatedBy(via).includes(id)) return MODULE[id].name + ' is not a ' + (SKILL[via]?.name || via) + ' module.'; }
+  return moduleGateError(c, id);
+}
 /** Save bonuses and debuff strength (spec: Conditions and saves). */
 export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = fam === 'body' ? 'guts' : fam === 'brain' ? 'charisma' : 'composure'; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
 export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, fx(c, 'debuff_' + fam, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication'))));

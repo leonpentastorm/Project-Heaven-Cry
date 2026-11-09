@@ -64,6 +64,16 @@ for src in sorted((ROOT / "art/emblems/patrons").glob("*.png")):
     emit("patron-mark-" + src.stem, src, (128, 128), (512, 512), 90)
 for src in sorted((ROOT / "art/icons/prayers").glob("*.png")):
     emit("prayer-" + src.stem, src, (128, 128), (512, 512), 90)
+# Outburst 4.0 (docs/design/handoffs/outburst-4.0-art-brief.md): feeling glyphs and module icons, picked up by file name
+# the same way (game/heartIcons.ts draws SVG for anything missing). Either folder may be absent.
+#   art/icons/feelings/feeling-<id>.png -> feeling-<id>
+#   art/icons/modules/module-<id>.png   -> module-<id>
+#   ui-<mark>.png in either folder      -> heart-ui-<mark> (revert, practice, felt)
+for folder, prefix in (("feelings", "feeling-"), ("modules", "module-")):
+    for src in sorted((ROOT / "art/icons" / folder).glob("*.png")):
+        stem = src.stem
+        key = "heart-" + stem if stem.startswith("ui-") else prefix + (stem[len(prefix):] if stem.startswith(prefix) else stem)
+        emit(key, src, (128, 128), (512, 512), 90)
 # Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
 # overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three
 # widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.

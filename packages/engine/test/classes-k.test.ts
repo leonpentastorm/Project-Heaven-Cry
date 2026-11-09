@@ -301,7 +301,7 @@ describe('Heartfed', () => {
     expect((charOf(g, g.pc) as any).state.heartfed.overflow).toBe('grief');
     const v = g.turn(g.pcs[0].id); const strain = v.mg!.strain;
     act(g, g.unit(v.id), { type: 'combat/outburst', design: 'o1', hold: true });
-    expect(g.pc.mg!.strain).toBe(strain); expect(logHas(g.cb, /Overflow: Damage Outburst Begins at stage 2/)).toBe(true);
+    expect(g.pc.mg!.strain).toBe(strain); expect(logHas(g.cb, /Overflow: .+ Begins at stage 2/)).toBe(true); // rules 1.8: o1 is the starting Heart Bolt
     expect(g.unit(v.id).mg!.held!.stage).toBe(2); // rules 1.5: the held stage itself, at once
     g.turn(v.id); expect(g.unit(v.id).mg!.held!.stage).toBe(3);
     void f;

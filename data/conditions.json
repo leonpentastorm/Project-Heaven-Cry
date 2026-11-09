@@ -996,6 +996,57 @@
       "stacks": false,
       "adjudication": "engine",
       "provisional": true
+    },
+    {
+      "id": "hopeful",
+      "name": "Hopeful",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "text": "Your next attack or spell roll gets +2 (Hope, rules 1.8).",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": 2,
+          "context": "next_attack"
+        }
+      ],
+      "duration": {
+        "until": "your next attack roll, or the end of your next turn"
+      },
+      "ends_on": [
+        "you roll to attack",
+        "the end of your next turn"
+      ],
+      "stacks": false,
+      "set_by": "feelings:hope",
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "scorned",
+      "name": "Scorned",
+      "kind": "condition",
+      "family": "heart",
+      "save": false,
+      "text": "-2 to attack the one who scorned you (Contempt, rules 1.8).",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": -2,
+          "context": "vs_source"
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "2 rounds"
+      ],
+      "stacks": false,
+      "set_by": "feelings:contempt",
+      "adjudication": "engine",
+      "provisional": true
     }
   ],
   "families": {
