@@ -39,7 +39,11 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
   // A capped crop (a small source, an upload's room copy, on a wide screen) can't fill the window: the window narrows to
   // the image (its torn side 24 px inside the image's end) and the strip's body and its words take the rest.
   const first = cropFor(windowLeft ? w * frac : w * (1 - frac));
-  const fit = first.capped ? Math.min(frac, Math.max(0.3, windowLeft ? (first.x + first.w - 24) / w : 1 - (first.x + 24) / w)) : frac;
+  // A whole avatar (a small square face: Wick's placeholder robot) is drawn whole at 1.3 × the strip's height, in a
+  // window fitted to it with room either side (where the same picture, blurred and dimmed, fills in).
+  const side = Math.round(h * 1.3);
+  const fitWhole = Math.min(frac, Math.max(0.3, (over + side + 2 * Math.max(60, h * 0.45)) / w));
+  const fit = s.whole ? fitWhole : first.capped ? Math.min(frac, Math.max(0.3, windowLeft ? (first.x + first.w - 24) / w : 1 - (first.x + 24) / w)) : frac;
   const shape = React.useMemo(() => stripShape(seed + '|' + i + '|' + s.key, w, h, { windowFrac: fit, windowLeft }), [seed, i, s.key, w, h, fit, windowLeft]);
   const winX0 = windowLeft ? over : shape.edgeX, winX1 = windowLeft ? shape.edgeX : w - over;
   const crop = fit === frac ? first : cropFor(shape.edgeX);
@@ -65,6 +69,9 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
           <linearGradient id={id + 'l'} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><stop offset=".5" stopColor="#FFFFFF" stopOpacity=".28" /><stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
           </linearGradient>
+          <filter id={id + 'f'} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation={Math.max(8, h * 0.06)} /></filter>
+          <linearGradient id={id + 'e'} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><stop offset=".14" stopColor="#FFFFFF" stopOpacity="1" /><stop offset=".86" stopColor="#FFFFFF" stopOpacity="1" /><stop offset="1" stopColor="#FFFFFF" stopOpacity="0" /></linearGradient>
+          <mask id={id + 'm'} maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill={'url(#' + id + 'e)'} /></mask>
           <linearGradient id={id + 'v'} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor={GROUND} stopOpacity=".55" /><stop offset=".22" stopColor={GROUND} stopOpacity="0" /><stop offset=".78" stopColor={GROUND} stopOpacity="0" /><stop offset="1" stopColor={GROUND} stopOpacity=".6" />
           </linearGradient>
@@ -74,7 +81,18 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
         <g clipPath={'url(#' + id + 'b)'} data-phc-spotlight-window={Math.round(winX1 - winX0)}>
           <g clipPath={'url(#' + id + 'w)'}>
             <rect x="0" y="0" width={w} height={h} fill="#1C2536" />
-            {img && <image href={img} x={crop.x} y={crop.y} width={crop.w} height={crop.h} preserveAspectRatio="xMidYMid slice" />}
+            {img && !s.whole && <image data-phc-spotlight-face="crop" href={img} x={crop.x} y={crop.y} width={crop.w} height={crop.h} preserveAspectRatio="xMidYMid slice" />}
+            {img && s.whole && (() => {
+              // Centred in what the screen shows of the window; the eyes on the strip's middle line where the picture allows.
+              const vx0 = windowLeft ? winX0 - Math.min(0, dx) : winX0, vx1 = windowLeft ? winX1 : Math.min(winX1, w - over - dx);
+              const cx = (vx0 + vx1) / 2, y = Math.min(h * 0.12, Math.max(h - side, h / 2 - s.eye.y * side)); // the eyes on the middle line, the whole head in
+              return <>
+                <image href={img} x={winX0 - 40} y={-h} width={winX1 - winX0 + 80} height={h * 3} preserveAspectRatio="xMidYMid slice" filter={'url(#' + id + 'f)'} opacity=".5" />
+                <image data-phc-spotlight-face="whole" href={img} x={cx - side / 2} y={y} width={side} height={side} preserveAspectRatio="xMidYMid meet" mask={'url(#' + id + 'm)'} />
+              </>;
+            })()}
+            {!img && s.badge && <text x={(winX0 + winX1) / 2} y={h / 2} textAnchor="middle" dominantBaseline="central" data-phc-spotlight-face="badge"
+              style={{ fontFamily: "'Chakra Petch', sans-serif", fontWeight: 700, fontSize: Math.round(h * 0.42), letterSpacing: '.06em' }} fill={s.ink}>{s.badge}</text>}
             <rect x={inkEdgeA} y="0" width={inkEdgeB - inkEdgeA} height={h} fill={'url(#' + id + 'g)'} style={{ mixBlendMode: 'screen' }} />
             <rect x="0" y="0" width={w} height={h} fill={'url(#' + id + 'v)'} />
             {!rm && <rect className="phc-ci-light" x={windowLeft ? over : shape.edgeX} y="-10" width={w * 0.16} height={h + 20} fill={'url(#' + id + 'l)'}

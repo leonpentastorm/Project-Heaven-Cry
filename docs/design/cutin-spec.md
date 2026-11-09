@@ -568,7 +568,8 @@ What the build did differently from the design above, and why:
    the queue's protection is bounded (section 6.2, item 5); the decided set is keyed by stream, scene and n and cleared
    with the queue and on a fight that starts over (the Proving Ground's Retry); a gate's cut-in preempts one on screen
    and is cancelled if its cap opens the gate first; a character with no portrait of their own (the Proving Ground's
-   recruit stands in with the Narrator's Wick) gets the archetype card for their highest attribute; a phone (under
+   recruit stands in with the Narrator's Wick) gets the archetype card for their highest attribute (superseded 9 Nov
+   2026, item 12 below: the strip shows the actor's own face, as the HUD does); a phone (under
    720 px wide) puts every word in the plate under the strips, names and words as coloured chips; the image always
    reaches past the visible screen edge (no flat slab on shifted strips); a small source (an upload's 320 × 400 room
    copy) is never magnified past 2.2× and its window narrows to the image; the single strip's name is sized to its
@@ -593,6 +594,16 @@ What the build did differently from the design above, and why:
    at 1280 px) and a god's name is in Virtue ink, not the accent (§3.3). Tests: `spotlight.test.ts` (engine) for the
    area-map opener in the open, from Hidden (a 19 too) and a boss downed by it, and Storm Front's arc; `spotlight.test.ts`
    (web) for a crit then a takedown by one fighter under Once per scene.
+12. **The actor's own face (Leon, 9 Nov 2026: "the cut in animation uses some random character's profile instead even
+   though i just got a crit as the recruit in proving ground"):** a strip shows the face the actor's token and HUD
+   show (`spec.ts` `faceFor`: the art library name or URL resolved, an upload as it is), never an archetype card. With
+   nothing that resolves, Wick's welcome pose, as the HUD shows it. Small square avatars (Wick's placeholder robot, the
+   Proving Ground recruit's face; Wick's welcome pose) are framed by hand (`FRAMES`) and drawn whole: 1.3 × the strip's
+   height, centred in a window fitted to them, feathered at the sides over the same picture blurred and dimmed, the
+   eyes on the middle line. A companion's crit or takedown (the engine's event carries its `unit`) leads with the
+   companion's own strip (`stripForUnit`: its portrait, else its token's initials large in the window, in its
+   controller's ink; the caption drops the engine's "Combat drone: " prefix). A companion's own `img` now reaches its
+   unit (engine `companionUnits`). e2e: `combat-portraits.mjs`.
 
 ## 12. Meeting Faith 2.2 (`feature/faith-presence`): merged
 

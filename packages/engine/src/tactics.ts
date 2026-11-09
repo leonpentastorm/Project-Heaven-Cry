@@ -298,7 +298,7 @@ export function companionUnits(cb: Combat | null, c: Character, owner: Unit, tak
     if (!at) continue; taken.add(at);
     const u = unitFromEnemy('cp-' + c.id + '-' + comp.id, comp.name || k.name, 'minion', k.weapon || 'fists', at, rng);
     Object.assign(u, { side: 'pc', tier: undefined, hp: Math.min(k.hp, comp.hp ?? k.hp), maxHp: k.hp, def: k.defense, armour: k.armour, attack: k.attack_bonus, movement: k.movement, strength: k.attack_bonus,
-      init: owner.init - 0.5, agility: 1, ctrl: c.id, companion: comp.kind, kind: k.kind || comp.kind, tags: [...(k.tags || [])], short: (comp.name || k.name).slice(0, 2).toUpperCase(), img: k.portrait || undefined });
+      init: owner.init - 0.5, agility: 1, ctrl: c.id, companion: comp.kind, kind: k.kind || comp.kind, tags: [...(k.tags || [])], short: (comp.name || k.name).slice(0, 2).toUpperCase(), img: comp.img || k.portrait || undefined }); // its own portrait first (the cut-in and the HUD show it)
     u.mags = undefined; // unlimited spares, as enemies carry
     // A fixed action list and a gun that never runs dry (the drone: move and shoot, no reload, no Heat or jams; spec §14
     // item 370), from the stat block.

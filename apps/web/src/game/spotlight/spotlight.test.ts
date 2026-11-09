@@ -2,9 +2,9 @@
 // Spotlight cut-ins (docs/design/cutin-spec.md, decision 113): the seeded tear, the strips and captions built from the
 // engine's events, merging, the player's setting, the geometry, and the effects queue's gate and slowed segment.
 import { describe, expect, it, beforeEach } from 'vitest';
-import { newGame, apply, ARCHETYPES, type GameState, type Sheet } from '@engine';
+import { newGame, apply, ARCHETYPES, SANDBOX_PORTRAIT, type GameState, type Sheet } from '@engine';
 import { hashSeed, mulberry32, stripShape, tornEdge } from './tear';
-import { cutInFromFx, inkOfChar, stripForPatron, stripForChar, eyeFor, assetName, DEFAULT_EYE, captionOf } from './spec';
+import { cutInFromFx, inkOfChar, stripForPatron, stripForChar, eyeFor, assetName, DEFAULT_EYE, captionOf, FRAMES } from './spec';
 import { applyPref, showSpotlight, skipCutIn, cutInActive, cutInNow, cancelSpotlight, specFromTrigger } from './index';
 import { stackLayout, cropOf, tornStripMarkup, MAX_MAGNIFY } from './layout';
 import { importedEye } from '../charfile';
@@ -242,18 +242,29 @@ describe('review fixes (decision 113)', () => {
     cancelSpotlight(two.id); expect(await p2).toBe('off');
     cancelSpotlight(one.id); expect(await p1).toBe('skipped'); expect(cutInActive()).toBe(false);
   });
-  it('a character with no portrait of their own (the Narrator\'s Wick, an archived id) gets the archetype card for their top attribute', () => {
+  it('the cut-in shows the character\'s own face exactly as the HUD resolves it: the Proving Ground recruit\'s robot, never an archetype', () => {
     const { g, a } = room(), c: any = g.characters[a];
-    const top = inkOfChar(c).attr;
-    for (const p of ['/assets/wick-narrator-placeholder.webp', 'char-long-gone-archived', 'wick-welcome', '']) {
-      c.portrait = p; const s = stripForChar(g, a)!;
-      expect(s.img).toMatch(/char-arch-[\w-]+\.webp$/);
-      const arch = s.img.match(/char-arch-([\w]+?)(?:-lg)?\.webp$/)![1];
-      const best = Math.max(...ARCHETYPES.filter((x: any) => x.family !== 'all_in').map((x: any) => x.attributes?.[top] || 0));
-      expect(ARCHETYPES.find((x: any) => x.id === arch)!.attributes[top]).toBe(best);
-      expect(s.eye).toEqual(eyeFor('char-arch-' + arch));
-    }
-    c.portrait = '/assets/char-arch-bulwark.webp'; expect(stripForChar(g, a)!.img).toMatch(/char-arch-bulwark/); // a real one is kept
+    // The recruit's placeholder robot (SANDBOX_PORTRAIT): its own picture, framed whole (a small square avatar).
+    c.portrait = SANDBOX_PORTRAIT; let s = stripForChar(g, a)!;
+    expect(s.img).toMatch(/wick-narrator-placeholder(-lg)?\.webp$/); expect(s.whole).toBe(true); expect(s.eye).toEqual({ x: FRAMES['wick-narrator-placeholder'].x, y: FRAMES['wick-narrator-placeholder'].y });
+    // The same by its art library name; a painting keeps its eye line and its close crop.
+    c.portrait = 'wick-narrator-placeholder'; expect(stripForChar(g, a)!.img).toMatch(/wick-narrator-placeholder/);
+    c.portrait = 'char-m813-keel'; s = stripForChar(g, a)!; expect(s.img).toMatch(/char-m813-keel-lg\.webp$/); expect(s.whole).toBeUndefined(); expect(s.eye).toEqual(eyeFor('char-m813-keel'));
+    c.portrait = '/assets/char-arch-bulwark.webp'; expect(stripForChar(g, a)!.img).toMatch(/char-arch-bulwark/);
+    // Nothing that resolves (no portrait, an archived id): Wick's welcome pose, as the HUD shows it.
+    for (const p of ['char-long-gone-archived', '']) { c.portrait = p; s = stripForChar(g, a)!; expect(s.img).toMatch(/wick-welcome/); expect(s.img).not.toMatch(/char-arch-/); }
+  });
+  it('a companion\'s crit leads with the companion\'s own face (its initials with none), in its controller\'s ink', () => {
+    const { g, a } = room(), gg: any = g;
+    gg.combat = { units: [{ id: 'pc-' + a, charId: a, name: 'Ana', short: 'AN' }, { id: 'cp-1', name: 'Combat drone', short: 'CO', companion: 'drone', ctrl: a, img: 'char-m813-scavenger-drone' }, { id: 'cp-2', name: 'Beast companion', short: 'BE', companion: 'beast', ctrl: a }] };
+    const s1 = cutInFromFx(g, [ev(1, { kind: 'crit', char: a, unit: 'cp-1', via: 'weapon', reason: 'Combat drone: a critical hit on Rook', by: 'Combat drone' })] as any, 'x')!;
+    expect(s1.short).toBe(true); expect(s1.strips[0].name).toBe('Combat drone'); expect(s1.strips[0].img).toMatch(/char-m813-scavenger-drone/);
+    expect(s1.strips[0].ink).toBe(inkOfChar(g.characters[a]).ink);
+    expect(s1.caption).toBe('Critical hit on Rook'); expect(s1.aria).toBe('Spotlight: Combat drone, critical hit on Rook.');
+    const s2 = cutInFromFx(g, [ev(2, { kind: 'crit', char: a, unit: 'cp-2', via: 'weapon', reason: 'x', by: 'Beast companion' })] as any, 'x')!;
+    expect(s2.strips[0].img).toBe(''); expect(s2.strips[0].badge).toBe('BE');
+    // A character's own crit (its unit is theirs) is their strip.
+    expect(cutInFromFx(g, [ev(3, { kind: 'crit', char: a, unit: 'pc-' + a, via: 'weapon', reason: 'x' })] as any, 'x')!.strips[0].key).toBe('c:' + a);
   });
   it('an interjection is labelled with the patron\'s bare name; an intervention keeps INTERVENTION', () => {
     const { g, a } = room();
