@@ -6,7 +6,8 @@ import json
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE = ROOT / 'art/portraits/patrons'
+BASE = ROOT / 'art/portraits/patrons'  # production: the eight 800 x 1000 PNGs only
+DELIVERY = ROOT / 'art/_archive/character-portraits/patrons/v1'  # the delivery record: manifest, package checksums, native renders
 EXPECTED = {'nerukhan', 'the_quartermaster', 'the_laughing_mask', 'the_toll_keeper',
             'mother_ember', 'old_overcast', 'the_matchmaker', 'the_counting_weaver'}
 
