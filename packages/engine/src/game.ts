@@ -224,7 +224,7 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; tactical?: boolean; hand?: 'main' | 'off' | 'both';
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; stroke?: string; feeling?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; tactical?: boolean; hand?: 'main' | 'off' | 'both';
     /** Rules 1.7: attempt: the approach's number as listed (1 = the first); ask: wants or objective. */ index?: number; what?: 'wants' | 'objective' }[];
   /** Place, move, update or remove people and enemies on the overworld map; rules 1.7: carry (id, charId) and drop
    * (id, charId, at) a creature in the story, and every person's face (kind, avatar) and talk (wants, knows, talk). */

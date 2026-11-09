@@ -372,6 +372,15 @@ function charOfUnit(cb: Combat, u: Unit): Character | null {
   const g = boundGame(); return (g?.characters?.[u.charId] as Character) || null;
 }
 
+/** What an Evoke teaches (spec 1.5 section 2.1): study and word uses, a newly Mastered word's inflection switched on,
+ * and the growth fx. The lines it returns ride on the Evoke's log line. Also used by a fused Evoke (perks/d.ts). */
+export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number, hitEnemy: boolean): string[] {
+  const c = charOfUnit(cb, u); if (!c) return [];
+  const was = new Set(masteredOf(c)), grew = noteEvoke(c, words, glyphs, hitEnemy);
+  const now = masteredOf(c).filter((w) => !was.has(w)); if (u.mg && now.length) u.mg.inflect = [...new Set([...(u.mg.inflect || []), ...now])];
+  if (grew.length) emitFx(cb, 'sigil_growth', { unit: u.id, at: u.pos, study: (c as any).sigilGrowth?.study || 0, mastered: now });
+  return grew;
+}
 /** The numbers a spell would put on one creature, after multipliers (spec: Grammar 6). */
 function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: number, roll: boolean, origin: string | null): Pick<Affected, 'dmg' | 'dmgAfterArmour' | 'heal' | 'shield' | 'roll' | 'saves'> {
   const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
@@ -944,11 +953,7 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
   if (u.hidden && sp.harmful) line += revealUnit(cb, u, 'cast a spell'); // MASK lasts until you attack
   // Rules 1.10 (Sigil 1.5): study and word use counts for the caster's character (not a fizzle; not an enemy or companion).
   // What it learns rides on the Evoke's own log line (one line an Evoke), after it.
-  let grew: string[] = [];
-  { const c = charOfUnit(cb, u); if (c) { const hitEnemy = struckIds.some((id) => cb.units.find((x) => x.id === id)?.side !== u.side), was = new Set(masteredOf(c));
-    grew = noteEvoke(c, p.words, p.glyphs.length, hitEnemy);
-    const now = masteredOf(c).filter((w) => !was.has(w)); if (u.mg && now.length) u.mg.inflect = [...new Set([...(u.mg.inflect || []), ...now])];
-    if (grew.length) emitFx(cb, 'sigil_growth', { unit: u.id, at: u.pos, study: (c as any).sigilGrowth?.study || 0, mastered: now }); } }
+  const grew = evokeGrowth(cb, u, p.words, p.glyphs.length, struckIds.some((id) => cb.units.find((x) => x.id === id)?.side !== u.side));
   const ruled = narratorInflections(sp).map((n) => 'Inflection, the Narrator rules it: ' + n + '.');
   cb.log.push(head + (line || ' · it strikes and finds no one') + '.' + [...ruled, ...grew].map((x) => ' ' + x).join(''));
   emit(cb, 'evoked', { u, pattern: p, spell: sp, plan: pv, targets: hitIds.map((id) => cb.units.find((x) => x.id === id)).filter(Boolean), impact: pv.impact, stay: sp.stay, zone: (cb.zones || [])[(cb.zones || []).length - 1], dealt, charge: pv.charge, ap: pv.ap, cb, rng });
@@ -1042,7 +1047,7 @@ function strike(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: S
     let failed = '';
     if (by && t.side !== by.side) { const sv = teleportSave(cb, rng, by, t); if (sv.held) { line += sv.line; continue; } failed = sv.line; }
     const from = t.pos; t.pos = st.to; emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed;
-    sigilEnter(cb, rng, t, st.to);
+    ENTER_HOOK(cb, rng, t, st.to); // magic.ts zoneEnter: fields and traps, and Outburst residue on entry (rules 1.8)
   }
   if (mp.veil.length) { addZone(cb, { kind: 'veil', tiles: mp.veil, words: ['veil'], by: by?.id || '', side, left: ((W('veil') as any)?.lasts_rounds ?? 2) + Math.floor(by?.mg?.durBonus || 0) + iv(sp, 'veil', 'lasts_rounds'), mult: 1, who: by?.name || '' }); emitFx(cb, 'veil', { at: mp.impact, tiles: mp.veil, side }); line += ' · smoke-bots fill ' + refOf(mp.impact); }
   if (mp.light.length) { addZone(cb, { kind: 'light', tiles: mp.light, words: ['light'], by: by?.id || '', side, left: 99, mult: 1, who: by?.name || '' }); emitFx(cb, 'light', { at: mp.impact, tiles: mp.light, side }); for (const v of cb.units) if (v.hidden && mp.light.includes(v.pos)) line += revealUnit(cb, v, 'LIGHT') && ' · LIGHT reveals ' + v.name; line += ' · light floods around ' + refOf(mp.impact); }
@@ -1198,6 +1203,10 @@ export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): strin
   if (hit) destroyPlaced(cb, z, u.name + ' hits it (d20 ' + r + ' → ' + tot + ' vs ' + def + ')'); else cb.log.push(u.name + ' misses the turret at ' + refOf(tile) + ' (d20 ' + r + ' → ' + tot + ' vs ' + def + ').');
   return null;
 }
+/** What entering a tile runs after a STEP: sigilEnter here, until magic.ts registers zoneEnter (which adds the
+ * Outburst residue on entry) at load. sigil.ts can't import magic.ts without a cycle. */
+let ENTER_HOOK: (cb: Combat, rng: Rng, u: Unit, k: string) => boolean = (cb, rng, u, k) => sigilEnter(cb, rng, u, k);
+export function setEnterHook(fn: (cb: Combat, rng: Rng, u: Unit, k: string) => boolean) { ENTER_HOOK = fn; }
 /** Moving onto a tile: fields bite, traps of the other side go off (spec: STAY, WAIT). Called on each step of a walk and
  * after a teleport. */
 export function sigilEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean {

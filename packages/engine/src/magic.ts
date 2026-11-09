@@ -443,6 +443,8 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
 export function magicRoundTick(cb: Combat) { sigilRoundTick(cb); }
 /** Moving onto a tile: fields bite and traps go off (sigil.ts sigilEnter). */
 export function zoneEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean { const stop = sigilEnter(cb, rng, u, k); if (!u.dead && u.pos === k) feelEnter(cb, rng, u, k); return stop || u.pos !== k; }
+// A STEP landing (sigil.ts) enters its tile the same way a walk does, residue included.
+setEnterHook(zoneEnter);
 /** Sight blockers and light from magic (VEIL smoke, LIGHT). */
 export const veilTiles = (cb: Combat) => (cb.zones || []).filter((z) => z.kind === 'veil').flatMap((z) => z.tiles);
 export const magicLit = (cb: Combat, k: string) => (cb.zones || []).some((z) => z.kind === 'light' && z.tiles.includes(k));
@@ -456,9 +458,9 @@ export {
   strikeTurret, destroyPlaced, sigilEnter, sigilTurnStart, sigilRoundTick, sigilSpot, migrateSigil, migrateStorySigil, migrateWords, startingWordsError,
   enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, freeTile, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
-  strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, fadePattern, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
+  evokeGrowth, strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, fadePattern, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
 } from './sigil';
-import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS } from './sigil';
+import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, setEnterHook } from './sigil';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */
 let FX_ELEMENT: string | null = null;
 /** Where a Sigil spell's damage comes from (the missile's origin: a Line glyph, SEEK's far glyph, a chain's last target,
@@ -1247,8 +1249,15 @@ function placeResidue(cb: Combat, u: Unit, feeling: string, tiles: string[]) {
   cb.log.push(f.name + ' lingers on ' + set.size + ' tile' + (set.size === 1 ? '' : 's') + ' (' + f.residue.text.replace(/\.$/, '') + ', ' + RESIDUE_ROUNDS + ' rounds).');
 }
 /** Practice (rules 1.8): kept on the character. fx 'practice' {unit, gain, total}. */
+let PRACTICE_HELD = 0;
+/** Run fn with practice held back (a fused Evoke releases once per creature it covers but practises once: perks/d.ts),
+ * then grant `after` practice once (0 for none). */
+export function practiceOnce<T>(cb: Combat, u: Unit, fn: () => T, after: () => number): T {
+  PRACTICE_HELD++; let r: T; try { r = fn(); } finally { PRACTICE_HELD--; }
+  gainPractice(cb, u, after()); return r;
+}
 function gainPractice(cb: Combat, u: Unit, n: number) {
-  if ((cb as any).dry) return; // the area map's dry run (game.ts): only the real release practises
+  if ((cb as any).dry || PRACTICE_HELD) return; // the area map's dry run (game.ts): only the real release practises
   const c = charOfUnit(u); if (!c || n <= 0 || u.companion) return;
   c.soulPractice = (c.soulPractice || 0) + n;
   emitFx(cb, 'practice', { unit: u.id, gain: n, total: c.soulPractice });

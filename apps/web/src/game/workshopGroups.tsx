@@ -13,7 +13,8 @@
 //  · Outburst 4.0 (rules 1.8, its spec section 8): on the sheet ('magic.soul') the designs, the one-click templates,
 //    the feelings and the modules by gate skill, each gate a group of its own ('magic.soul.modules'; the advanced
 //    classes' modules listed locked, never hidden); in the Proving Ground ('sb.soul') schools and tones, modules by
-//    gate skill, feelings, practice, and the sound and effects test.
+//    gate skill (each gate a group of its own, 'sb.soul.modules', through <GroupList>), feelings, practice, and the
+//    sound and effects test.
 //  · Add new group keys; don't rename the old ones, so each player's saved open/closed state still applies.
 import React from 'react';
 import { SIGIL } from '@engine';
@@ -75,19 +76,26 @@ export function sigilWordGroups<T>(items: T[], idOf: (t: T) => string): Group<T>
 
 // ---------- React (the Proving Ground) ----------
 function useOpenTick() { const [, set] = React.useState(0); React.useEffect(() => { const f = () => set((n) => n + 1); listeners.push(f); return () => { listeners = listeners.filter((x) => x !== f); }; }, []); }
-/** A collapsible section of collapsible groups. render draws one group's items. */
+/** A collapsible section of collapsible groups. render draws one group's items. The section header is drawn fully in
+ * the magic's ink, as headCss(ink, true) is in the template. */
 export function Groups<T>({ section, title, ink, groups, render, aria }: { section: string; title: string; ink: string; groups: Group<T>[]; render: (items: T[], g: Group<T>) => React.ReactNode; aria?: string }) {
   useOpenTick();
   const open = isOpen(section);
   return <section aria-label={aria || title} data-ws-section={section} style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-    <button type="button" aria-expanded={open} data-ws-head={section} onClick={() => setOpen(section, undefined, !open)} style={cssOf(headCss('#A3AEC2', true))}><span aria-hidden="true" style={{ color: ink }}>{open ? '▾' : '▸'}</span>{title}</button>
-    {open && groups.filter((g) => g.items.length > 0).map((g) => { const go = isOpen(section, g.key, g.dflt ?? true);
-      return <div key={g.key} role="group" aria-label={g.label} data-ws-group={g.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-        <button type="button" data-ws-toggle="1" aria-expanded={go} onClick={() => setOpen(section, g.key, !go)} style={cssOf(headCss(ink, false))}><span aria-hidden="true">{go ? '▾' : '▸'}</span>{g.label.toUpperCase()}<span style={{ marginLeft: 'auto', paddingLeft: 8, flex: 'none', whiteSpace: 'nowrap', color: '#7F8BA1' }}>{g.count ?? g.n ?? g.items.length}{g.locked ? ' · LOCKED' : ''}</span></button>
-        {go && g.note && <span style={{ fontSize: 11, color: '#A3AEC2' }}>{g.note}</span>}
-        {go && render(g.items, g)}
-      </div>; })}
+    <button type="button" aria-expanded={open} data-ws-head={section} onClick={() => setOpen(section, undefined, !open)} style={cssOf(headCss(ink, true))}><span aria-hidden="true">{open ? '▾' : '▸'}</span>{title}</button>
+    {open && <GroupList section={section} ink={ink} groups={groups} render={render} />}
   </section>;
+}
+/** The groups alone, no section header: for groups nested inside another group (the Proving Ground's modules by gate
+ * skill, 'sb.soul.modules', as the sheet's 'magic.soul.modules'). Each is collapsible and remembered under `section`. */
+export function GroupList<T>({ section, ink, groups, render }: { section: string; ink: string; groups: Group<T>[]; render: (items: T[], g: Group<T>) => React.ReactNode }) {
+  useOpenTick();
+  return <>{groups.filter((g) => g.items.length > 0).map((g) => { const go = isOpen(section, g.key, g.dflt ?? true);
+    return <div key={g.key} role="group" aria-label={g.label} data-ws-group={g.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+      <button type="button" data-ws-toggle="1" aria-expanded={go} onClick={() => setOpen(section, g.key, !go)} style={cssOf(headCss(ink, false))}><span aria-hidden="true">{go ? '▾' : '▸'}</span>{g.label.toUpperCase()}<span style={{ marginLeft: 'auto', paddingLeft: 8, flex: 'none', whiteSpace: 'nowrap', color: '#7F8BA1' }}>{g.count ?? g.n ?? g.items.length}{g.locked ? ' · LOCKED' : ''}</span></button>
+      {go && g.note && <span style={{ fontSize: 11, color: '#A3AEC2' }}>{g.note}</span>}
+      {go && render(g.items, g)}
+    </div>; })}</>;
 }
 /** A CSS string to a React style object (the template styles above, reused). */
 function cssOf(s: string): React.CSSProperties {

@@ -63,6 +63,8 @@ describe('the Narrator and faith', () => {
     const e = callEstimate(party(), 'claude-sonnet-5-5');
     // Outburst 4.0 (rules 1.8) and World Play 1.1 (rules 1.9: piles, ground[], drops) brought it to about 24.6k: cached, so
     // about $0.00005 more a warm turn.
-    expect(e.stable).toBeLessThan(25000);
+    // Sigil 1.5 / Outburst 4.0 in actions[] (a pump's feeling, a draw's stroke, revert; merge review, 9 Nov 2026) brought
+    // it to about 25.04k from 24.98k: the cap moves to 25.1k on purpose.
+    expect(e.stable).toBeLessThan(25100);
   });
 });

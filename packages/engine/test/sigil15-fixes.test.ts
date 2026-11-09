@@ -2,7 +2,7 @@
 // (item 903), a fused Line keeps its junction in the other stroke (item 919), and a Keystone cut before 1.10 joins the
 // strokes. Every draw, feed, fuse and Keystone here goes through the reducer (apply).
 import { describe, expect, it } from 'vitest';
-import { d20, findPattern, type Unit } from '../src';
+import { d20, findPattern, condOn, FEELINGS, type Unit } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { useRevision2Classes } from './helpers/legacy';
 useRevision2Classes(); // the Glyph Mason (an advanced class) for the Keystone test
@@ -73,5 +73,39 @@ describe('a Keystone cut before rules 1.10 (no stroke) joins the strokes (item 9
     expect(at(f, '4,5')!.strokeId).toBeTruthy();
     draw(f, 'seek', '3,5'); expect(at(f, '3,5')!.strokeId).toBe(at(f, '4,5')!.strokeId);
     expect([...(words(f, '4,5') as string[])].sort()).toEqual(['fire', 'seek']); // a Line of the two
+  });
+});
+
+describe('merge-review fixes: a fused Evoke practises once and studies; a STEP landing meets residue', () => {
+  it('fused into a Burst over 3 foes: practice once (1 + stage past 1 + feelings), study and a use for each word', () => {
+    const f = rig(['spark', 'seek', 'spread'], { twin_discipline: 'ultimate' });
+    // three foes around 8,5 (one rig foe plus two copies), all inside SPREAD's burst
+    const e0 = f.foe; e0.pos = '8,5';
+    const e1 = { ...e0, id: e0.id + 'b', name: 'Foe B', pos: '8,6', conds: {} } as Unit, e2 = { ...e0, id: e0.id + 'c', name: 'Foe C', pos: '8,4', conds: {} } as Unit;
+    f.cb.units.push(e1, e2);
+    const ch = () => f.g.characters[f.pc.charId!]; ch().soulPractice = 0;
+    me(f).mg!.feelings = FEELINGS.map((x) => x.id); me(f).mg!.strainLimit = 99;
+    draw(f, 'spark', '4,5'); draw(f, 'spread', '3,5'); draw(f, 'seek', '2,5');
+    me(f).pos = '2,5'; me(f).ap = 60;
+    f.act({ type: 'combat/outburst', unitId: f.pc.id, design: me(f).mg!.designs[0].id, hold: true } as any);
+    f.act({ type: 'combat/pump', unitId: f.pc.id } as any); f.act({ type: 'combat/pump', unitId: f.pc.id, feeling: 'rage' } as any);
+    const held = me(f).mg!.held!; const want = 1 + Math.max(0, held.stage - 1) + (held.felt || []).length;
+    const p0 = ch().soulPractice || 0, uses0 = { ...((ch() as any).sigilGrowth.uses || {}) }, st0 = (ch() as any).sigilGrowth.study;
+    me(f).ap = 60; f.g.rng.state = calm();
+    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'twin_discipline', actionId: 'fused', tile: '2,5', choice: '8,5' } as any);
+    expect(f.cb.log.filter((l) => /releases /.test(l)).length).toBeGreaterThanOrEqual(3); // one release per creature
+    expect((ch().soulPractice || 0) - p0).toBe(want);
+    expect(((f.cb.fx || []) as any[]).filter((e) => e.k === 'practice').length).toBe(1);
+    const g = (ch() as any).sigilGrowth; expect(g.study).toBeGreaterThan(st0);
+    for (const w of ['spark', 'seek', 'spread']) expect(g.uses[w] || 0).toBe((uses0[w] || 0) + 1);
+  });
+  it('STEP an enemy onto Fear residue: it is Shaken on a failed Heart save; onto Calm, an ally\'s Strain eases', () => {
+    const f = rig(['step', 'seek']);
+    f.foe.pos = '8,5';
+    f.cb.zones = [...(f.cb.zones || []), { id: 'rzT', kind: 'residue', tiles: ['9,7'], words: [], by: f.pc.id, side: f.pc.side, left: 2, mult: 1, who: f.pc.name, feeling: 'fear', residueKind: 'harms' } as any];
+    draw(f, 'step', '4,5'); draw(f, 'seek', '3,5'); me(f).pos = '3,5'; me(f).ap = 60; f.g.rng.state = calm();
+    f.act({ type: 'combat/evoke', unitId: f.pc.id, tile: '3,5', aim: '8,5', dest: '9,7' } as any);
+    expect(f.unit(f.foe.id).pos).toBe('9,7'); expect(condOn(f.unit(f.foe.id), 'shaken')).toBe(true);
+    expect(f.cb.log.some((l) => /Fear residue at/.test(l))).toBe(true);
   });
 });

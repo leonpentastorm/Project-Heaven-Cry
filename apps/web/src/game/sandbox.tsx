@@ -15,7 +15,7 @@ import React from 'react';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
 import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
 import { OPT_LABEL, optValue } from './actionPickers';
-import { Groups, sigilWordGroups } from './workshopGroups';
+import { Groups, GroupList, sigilWordGroups } from './workshopGroups';
 import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
 import { glyphKeyNav } from './glyphKeys';
@@ -574,12 +574,13 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
           {SCHOOLS.map((s) => <button key={s.id} type="button" title={s.text} disabled={k.schools.includes(s.id)} style={kb(k.schools.includes(s.id))} onClick={() => act({ type: 'sandbox/learn', charId: c.id, school: s.id })}>{s.name}</button>)}
           {toneChips(k.tones || []).filter((t) => t.id !== 'raw').map((t) => <button key={t.id} type="button" title={t.text} disabled={t.known} style={kb(t.known, t.ink)} onClick={() => act({ type: 'sandbox/learn', charId: c.id, tone: t.id })}>{t.name}</button>)}
         </div>
-        : g.key === 'modules' ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{moduleGroups(c).map((gr) => <div key={gr.key} role="group" aria-label={gr.label + ' modules'} data-module-group={gr.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: C.soul }}>{gr.label.toUpperCase()} · {gr.blurb}</span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {gr.modules.map((m) => <button key={m.id} type="button" data-module={m.id} title={m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : '')} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
-          </div>
-        </div>)}</div>
+        : g.key === 'modules' ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {/* Each gate skill its own collapsible, remembered group, as on the sheet ('magic.soul.modules'). */}
+          <GroupList section="sb.soul.modules" ink="#C9D3E3" groups={moduleGroups(c).map((gr) => ({ key: gr.key, label: gr.label + ' · ' + gr.blurb, items: gr.modules, count: gr.modules.filter((x) => x.known).length + ' / ' + gr.modules.length, dflt: false }))}
+            render={(ms, gr) => <div role="group" aria-label={gr.label + ' modules'} data-module-group={gr.key} style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {ms.map((m) => <button key={m.id} type="button" data-module={m.id} title={m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : '')} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
+          </div>} />
+        </div>
         : g.key === 'feelings' ? <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           <button type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => FEELINGS.forEach((f) => { if (!(c.feelings || []).includes(f.id)) act({ type: 'sandbox/learn', charId: c.id, feeling: f.id }); })}>Feel them all</button>
           {FEELINGS.map((f) => { const on = (c.feelings || []).includes(f.id), ink = feelingInk(f.id); return <button key={f.id} type="button" data-feeling={f.id} aria-pressed={on} title={f.name + ': ' + f.pour.text + ' · ' + f.trigger.text}
