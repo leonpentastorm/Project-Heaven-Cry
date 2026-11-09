@@ -100,17 +100,23 @@ export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
  *  confirm button if the skill already has a use button in its perspective action"). via: where it is used. */
 export interface PerkInfoEntry { id: string; itemId: string; kind: string; label: string; text: string; tab: 'perks' | 'class'; tier: string; via: string; uses: { per: UseScope; n: number; left: number; label: string } }
 const VIA: Record<string, string> = { 'combat/pump': 'Pump', 'combat/outburst': 'Begin', 'combat/release': 'Release', 'combat/attack': 'an attack', 'combat/move': 'a move', 'combat/evoke': 'Evoke', 'combat/pray': 'a prayer', 'combat/perk': 'a perk action', 'check/roll': 'a check', 'story/speak': 'speaking' };
-/** The read-only Perks-tab entries of a holder's items on this surface (see PerkInfoEntry). Pure. */
+/** The read-only Perks-tab entries of a holder's items on this surface (see PerkInfoEntry). Listed: an item with no
+ *  button here (none of its actions has this scope) that the data makes an action here, or whose toggles ride an
+ *  action here (Running Reload's "Reload on the move" on Move, Gambler's "Double or Nothing" on an attack). Pure. */
 export function perkInfoFor(x: Who, scope: ActionScope): PerkInfoEntry[] {
-  const out: PerkInfoEntry[] = [];
+  const out: PerkInfoEntry[] = [], here = scope + '/';
   for (const h of holdersOf(x)) {
-    const hd = handlerOf(h.key); if (!hd || actionDefs(h.info).length) continue; // it has buttons of its own (or no lane)
-    const defs = defaultActions(h.info).filter((d) => d.scope.includes(scope)); if (!defs.length) continue; // never an action here
-    const on = [...new Set((hd.toggles || []).flatMap((t) => t.on))], d = defs[0], per = d.uses?.per || 'at_will', n = d.uses?.n ?? 1;
-    const left = uses({ ...h, g: x.g ?? boundGame() }).left(per, n);
+    const hd = handlerOf(h.key); if (!hd) continue; // no lane: the data's default action is its button
+    if (actionDefs(h.info).some((d) => d.scope.includes(scope))) continue; // it has a button of its own here
+    const ts = (hd.toggles || []).filter((t) => t.on.some((o) => o.startsWith(here)));
+    const defs = defaultActions(h.info).filter((d) => d.scope.includes(scope)); if (!defs.length && !ts.length) continue; // never used here
+    const on = [...new Set((hd.toggles || []).flatMap((t) => t.on))], d = defs[0];
+    // Uses: the data action's, when it has one; a toggle-only item counts its own (at will unless a lane says so).
+    const per: UseScope = d?.uses?.per || 'at_will', n = d?.uses?.n ?? 1;
+    const left = d ? uses({ ...h, g: x.g ?? boundGame() }).left(per, n) : n;
     out.push({ id: h.key, itemId: h.itemId, kind: h.kind, label: h.info.name, text: h.info.text, tab: h.kind === 'class' ? 'class' : 'perks', tier: h.tier,
-      via: on.length ? 'Used from ' + on.map((o) => VIA[o] || o).join(' or ') : 'Automatic',
-      uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) } });
+      via: on.length ? 'Used from ' + [...new Set(on.map((o) => VIA[o] || o))].join(' or ') : 'Automatic',
+      uses: { per, n, left, label: d ? usesLabel(per, n, Math.min(n, left)) : '' } });
   }
   return out;
 }

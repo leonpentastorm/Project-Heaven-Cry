@@ -46,6 +46,9 @@ for (const [w, h, want] of [[1280, 720, 1], [1440, 900, 2], [1920, 1080, 3]]) {
     // the tools get the height: the first card starts in the upper part of the centre (the Practice card is one strip)
     const top = await p.evaluate(() => { const sc = document.querySelector('[data-phc-sb-centre]').getBoundingClientRect(), c = document.querySelector('main[aria-label="Story"] [data-pg-card]').getBoundingClientRect(); return (c.top - sc.top) / sc.height; });
     ok('at 1280×720 the first tool card starts in the upper 60% of the centre (' + Math.round(top * 100) + '%)', top < 0.6);
+    // the short-window rule hides the minimap only for the quest board's room; the Proving Ground has no board, and its
+    // loop is "click the map", so the minimap stays
+    ok('at 1280×720 the right column\'s minimap is on screen while gearing up', await p.locator('.phc-right-col .phc-mini-box').first().isVisible());
   }
 }
 ok('the bottom panel says it once: no engine welcome note and no "has no Narrator" line under the hint', (await dock.getByText(/^⚙ The Proving Ground\./).count()) === 0 && !(await p.getByText('The Proving Ground has no Narrator', { exact: false }).first().isVisible().catch(() => false)));
@@ -61,13 +64,14 @@ const search = centre.getByRole('searchbox', { name: 'Search the tools' });
 await search.fill('drifter'); await p.waitForTimeout(300);
 const give = centre.locator('section[aria-label="Give"]');
 ok('searching "drifter" finds it in the Give list', (await give.count()) >= 1 && (await give.first().getByText('Drifter revolver').count()) >= 1);
-ok('…and hides what doesn\'t match (no Magic kit card)', (await centre.locator('section[aria-label="Magic kit"]').count()) === 0);
+ok('…and hides what doesn\'t match (no Magic kit card)', (await centre.locator('section[aria-label="Magic kit"]:visible').count()) === 0);
 await give.first().locator('div', { hasText: /^Drifter revolver/ }).first().getByRole('button', { name: 'Give + equip' }).click().catch(async () => { await give.first().getByRole('button', { name: 'Give + equip' }).first().click(); });
 await p.waitForTimeout(400);
 ok('Give + equip from the search result: the revolver is in hand', (await G()).characters[cid].weapon === 'drifter_revolver');
 await search.fill('spawn'); await p.waitForTimeout(300);
 ok('searching "spawn" finds the Field tab\'s spawn card', (await centre.locator('[data-pg-card]', { hasText: /SPAWN/ }).count()) >= 1);
-ok('under a search a card head can\'t fold (nothing stored that the screen can\'t show)', (await centre.locator('button[data-pg-head]').count()) === 0);
+ok('under a search a card head can\'t fold (nothing stored that the screen can\'t show)', (await centre.locator('button[data-pg-head]:visible').count()) === 0);
+ok('under a search the character row is there too (pick whose tools; Recruit or Bring with none)', (await centre.locator('.phc-pg-results [role="group"][aria-label="Character"]').count()) === 1);
 await search.fill('twin pays'); await p.waitForTimeout(300);
 ok('searching a perk by name ("twin pays") finds the Perks card, with it picked in the menu', (await centre.locator('[data-pg-card]', { hasText: /^PERKS/ }).count()) >= 1 && (await centre.getByRole('combobox', { name: 'Perk' }).first().inputValue()) === 'the_twin_pays');
 await search.fill('fire'); await p.waitForTimeout(300);
@@ -85,11 +89,22 @@ ok('a card folds (Equipped: closed, its rows gone)', (await head.getAttribute('a
 await centre.getByRole('tab', { name: 'Squad' }).click(); await centre.getByRole('tab', { name: 'Gear' }).click(); await p.waitForTimeout(200);
 ok('…and stays folded when you come back to the tab', (await centre.locator('section[aria-label="Equipped"] button[data-pg-head]').getAttribute('aria-expanded')) === 'false');
 await centre.locator('section[aria-label="Equipped"] button[data-pg-head]').click();
+// a search keeps the tools' own state: an armed "Place by clicking the map" is still armed after the search is cleared
+await centre.getByRole('tab', { name: 'Field' }).click(); await p.waitForTimeout(200);
+const armBtn = centre.getByRole('button', { name: 'Place by clicking the map' });
+await armBtn.click(); await p.waitForTimeout(150);
+await search.fill('rifle'); await p.waitForTimeout(300); await centre.getByRole('button', { name: 'Clear' }).click(); await p.waitForTimeout(300);
+const stillArmed = centre.locator('button[aria-pressed="true"]', { hasText: 'Click tiles on the map' });
+ok('an armed spawn survives a search (typed and cleared): still armed', (await stillArmed.count()) === 1);
+if (await stillArmed.count()) await stillArmed.click();
+await centre.getByRole('tab', { name: 'Gear' }).click(); await p.waitForTimeout(200);
 // with the hint dismissed, the turn line (no Narrator here) is back in the bottom panel
 await dock.getByRole('button', { name: 'Hide the hint' }).click(); await p.waitForTimeout(200);
 ok('the hint dismissed: the bottom panel still says there is no Narrator (the turn line)', await p.getByText('The Proving Ground has no Narrator', { exact: false }).first().isVisible());
-// Close the tools: the story log; the side tab brings them back
-await centre.getByRole('button', { name: 'Close the tools' }).click(); await p.waitForTimeout(400);
+// Close the tools: the story log; the side tab brings them back. The button says what it does ("Story log ›", not a ✕).
+const logBtn = centre.getByRole('button', { name: 'Close the tools and show the story log' });
+ok('the Practice card\'s button reads "Story log ›" (no ✕ that reads as closing the log)', (await logBtn.textContent()).trim() === 'Story log ›');
+await logBtn.click(); await p.waitForTimeout(400);
 ok('Close the tools: the story log is back, the tools are gone', (await tools.count()) === 0 && await p.locator('main[aria-label="Story"] > .phc-story').isVisible());
 await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click(); await centre.waitFor({ timeout: 4000 });
 ok('the side tab brings the tools back to the centre', (await centre.count()) === 1);
@@ -115,6 +130,8 @@ await perkTab.click(); await p.waitForTimeout(300);
 const rows = await p.locator('[role="tabpanel"] button').allTextContents();
 const has = (re) => rows.some((t) => re.test(t.replace(/\s+/g, ' ')));
 ok('Overdraw, Pure Heart and The Twin Pays are listed to read (on Pump · automatic · on Begin)', has(/Overdraw.*on Pump/) && has(/Pure Heart.*automatic/) && has(/The Twin Pays.*on Begin/));
+{ const lab = await perkTab.getAttribute('aria-label'), m = /, (\d+) actions?, (\d+) to read/.exec(lab || ''), badge = (await perkTab.locator('span').last().textContent()).trim();
+  ok('the Perks tab counts actions apart from rows to read (' + lab + '; badge ' + badge + ')', !!m && +m[2] >= 3 && badge === m[1]); }
 await p.locator('[role="tabpanel"] button', { hasText: 'Overdraw' }).first().click(); await p.waitForTimeout(300);
 const conf = p.getByRole('button', { name: /^Confirm/ });
 ok('picking Overdraw: no Confirm (hidden), End turn stays', (await conf.count()) === 0 || !(await conf.first().isVisible()));
@@ -131,6 +148,7 @@ await p.waitForTimeout(500);
 await p.locator('button', { hasText: /Level up|Earn your class/ }).first().click();
 await p.locator('.phc-lu-core').first().waitFor({ timeout: 8000 });
 ok('the tree: three cores, nine attributes, twenty-seven skills', (await p.locator('.phc-lu-core').count()) === 3 && (await p.locator('.phc-lu-attrcol').count()) === 9 && (await p.locator('.phc-lu-skill').count()) === 27);
+ok('the floating ♪ / ◈ buttons step aside on level up (they sat over the tree\'s left column)', (await p.locator('[data-phc-float]:visible').count()) === 0);
 for (const [w, h] of [[1280, 720], [1440, 900], [1920, 1080]]) { await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(500); await snap('levelup-' + w); }
 await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(300);
 const u0 = (await G()).characters[cid].unspent;
@@ -155,7 +173,11 @@ await step.locator('button.phc-lu-choice').first().click(); await p.waitForTimeo
 const c2 = (await G()).characters[cid], took = c2.perks.length > perks0 ? c2.perks.at(-1).id : null;
 ok('a perk step taken from the skill\'s own card (' + sk + ': ' + took + ')', !!took);
 ok('…and that perk now reads as yours on the card', !!took && /✓ TIER/.test(await p.locator('.phc-lu-skill[data-skill="' + sk + '"] .phc-lu-perk[data-perk="' + took + '"]').textContent()));
+ok('…and what it does is on the card, not only on hover', await p.locator('.phc-lu-skill[data-skill="' + sk + '"] .phc-lu-perk[data-perk="' + took + '"] [data-perk-text]').isVisible());
+await p.locator('.phc-lu-skill[data-skill="' + sk + '"]').scrollIntoViewIfNeeded();
 await snap('levelup-after');
+await p.getByRole('button', { name: /Back to the story/ }).click().catch(() => {}); await p.waitForTimeout(600);
+ok('back on the story screen the ♪ button is there again', (await p.locator('[data-phc-float="music"]').count()) === 1 && await p.locator('[data-phc-float="music"]').isVisible());
 ok('no page errors', p.errors.length === 0);
 if (p.errors.length) console.log(p.errors);
 await browser.close();

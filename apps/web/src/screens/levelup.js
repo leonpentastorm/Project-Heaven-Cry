@@ -52,6 +52,10 @@ ensureStyle('phc-levelup', [
   '.phc-lu-raise:not(:disabled):hover{background:#FFFFFF!important;color:#0A0D13!important}',
   '.phc-lu-choice:hover{background:#FFFFFF!important;color:#0A0D13!important}',
   '.phc-lu-perk{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:30px}',
+  // The tree's first column runs down the left edge, where the floating ♪ and ◈ buttons sit (bottom left, every screen):
+  // at any scroll they covered a skill's portrait, its +1 or a Core's name. Level up is a short focused screen with its
+  // own way back, so they step aside while it is open (the music plays on; they are back on the story screen).
+  'html:has(.phc-lu-body) [data-phc-float]{display:none!important}',
 ].join(''));
 
 export class LevelUpLogic extends DCLogic {
@@ -97,7 +101,10 @@ export class LevelUpLogic extends DCLogic {
       const aria = ch ? label + ': ' + pk.name + ' (' + ((SKILL[x.skill] && SKILL[x.skill].name) || x.skill) + ')' : '';
       return { key: pk.id, name: pk.name, aria, icon: PERK_ICON[pk.id] || IMG['wick-mind-without-fog'], state, can: !!ch, label, chip, hasChip: !!chip,
         title: pk.name + (ch ? ' · ' + (ch.tier === 'I' ? 'Tier I' : 'Tier II') : h ? ' · Tier ' + (h.tier === 'II' ? 'II' : 'I') + ' (yours)' : ' · locked') + ': ' + t + ' (' + v.label + ')',
-        text: ch ? t.charAt(0).toUpperCase() + t.slice(1) : '', hasText: !!ch,
+        // What it does shows for a waiting step and for what you hold (readable on touch and by keyboard, not only on
+        // hover); a locked perk keeps it in the title and the skill's "?" EPCCG entry.
+        text: ch || h ? t.charAt(0).toUpperCase() + t.slice(1) : '', hasText: !!(ch || h),
+        textStyle: 'grid-column: 2 / -1; font-size: 11.5px; line-height: 1.4; color: ' + (ch ? '#C9D3E3' : '#A3AEC2'),
         pick: () => act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }),
         nameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (state === 'locked' ? LOCKED : '#E7EBF3'),
         iconStyle: 'width: 22px; height: 22px; object-fit: contain' + (state === 'locked' ? '; opacity: 0.4; filter: grayscale(1)' : ''),

@@ -1075,10 +1075,13 @@ export class CombatLogic extends DCLogic {
     }
     const klass = classOf(ch);
     const tabs = groups.map((gr, i) => {
-      const on = gr.id === S.tab, ink = gr.id === 'class' && klass ? klass.ink : TAB_INK[gr.id] || '#E7EBF3', n = gr.items.length, holds = !on && tabOf[S.action] === gr.id;
+      const on = gr.id === S.tab, ink = gr.id === 'class' && klass ? klass.ink : TAB_INK[gr.id] || '#E7EBF3', holds = !on && tabOf[S.action] === gr.id;
+      // The number is usable actions only: the Perks tab's read-only rows (pki:, used from another action's chip or
+      // automatic) are counted apart, so "PERKS 3" never means three Confirms.
+      const n = gr.items.filter((a) => !isPerkInfo(a.key)).length, rd = gr.items.length - n, acts = n + (n === 1 ? ' action' : ' actions') + (rd ? ', ' + rd + ' to read' : '');
       return { key: gr.id, id: 'phc-tab-' + gr.id, name: TAB_NAME[gr.id] || gr.name, icon: gr.id === 'class' && klass ? klass.icon : '', count: n, num: i < 6 ? String(i + 1) : '', selected: on ? 'true' : 'false', tabindex: on ? '0' : '-1',
-        label: (TAB_NAME[gr.id] || gr.name) + ', ' + n + (n === 1 ? ' action' : ' actions') + (holds ? ', holds your chosen action' : ''), keys: i < 6 ? String(i + 1) : undefined,
-        title: gr.name + ' · ' + n + (n === 1 ? ' action' : ' actions') + (i < 6 ? ' · key ' + (i + 1) : ''),
+        label: (TAB_NAME[gr.id] || gr.name) + ', ' + acts + (holds ? ', holds your chosen action' : ''), keys: i < 6 ? String(i + 1) : undefined,
+        title: gr.name + ' · ' + acts + (i < 6 ? ' · key ' + (i + 1) : ''),
         pick: () => this.setTab(gr.id), onKey: (e) => this.tabKey(e), holds,
         // Each tab wears its family's ink: full when open, a faint underline when not (with the word, never colour alone).
         style: 'position: relative; flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 38px; padding: 0 5px; border: 0; border-bottom: 2px solid ' + (on ? ink : ink + '55') + '; border-radius: 8px 8px 0 0; background: ' + (on ? '#1C2536' : 'transparent') + '; color: ' + (on ? ink : '#A3AEC2') + '; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; cursor: pointer',

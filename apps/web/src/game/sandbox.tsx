@@ -270,7 +270,7 @@ function Portal({ at, children }: { at: string; children: React.ReactNode }) {
 }
 /** The tabs, the character picker and the chosen tab's tools: the same in the centre (wide) and in the drawer. */
 function ToolBody({ game, meId, isHost, tab, setTab, cid, setCid, wide }: { game: GameState; meId: string; isHost: boolean; wide: boolean } & Shared) {
-  const sb = game.sandbox!, gearing = game.phase === 'story';
+  const sb = game.sandbox!;
   const chars = Object.values(game.characters).filter((c) => isHost || c.owner === meId);
   const c = game.characters[cid] && chars.some((x) => x.id === cid) ? game.characters[cid] : chars[0];
   const field = isHost || !!sb.spawnAll;
@@ -282,15 +282,22 @@ function ToolBody({ game, meId, isHost, tab, setTab, cid, setCid, wide }: { game
       {tabs.map(([id, name]) => <button key={id} type="button" role="tab" aria-selected={t === id} onClick={() => { setTab(id); sfx('tab'); }}
         style={{ ...btn, flex: wide ? '0 1 auto' : 1, minWidth: wide ? 72 : 0, minHeight: wide ? 38 : 34, border: '1px solid ' + (t === id ? C.text : C.line), background: t === id ? C.raised : 'transparent', color: t === id ? C.text : C.muted }}>{name}</button>)}
     </nav>
-    {t !== 'field' && t !== 'world' && <div role="group" aria-label="Character" style={{ ...row, padding: wide ? '0 0 0 16px' : '10px 16px 0', ...(wide ? { borderLeft: '1px solid ' + C.line } : {}) }}>
-      {chars.length ? chars.map((x) => <button key={x.id} type="button" aria-pressed={x.id === c?.id} onClick={() => setCid(x.id)} style={{ ...btn, border: '1px solid ' + (x.id === c?.id ? C.text : C.line), background: x.id === c?.id ? C.raised : 'transparent' }}>{x.name}</button>)
-        : <NoFighter gearing={gearing} />}
-    </div>}
+    {t !== 'field' && t !== 'world' && <CharRow game={game} meId={meId} isHost={isHost} cid={cid} setCid={setCid} style={{ padding: wide ? '0 0 0 16px' : '10px 16px 0', ...(wide ? { borderLeft: '1px solid ' + C.line } : {}) }} />}
     <WideCtx.Provider value={{ wide, q: '', tab: t }}>
       <div key={t} className={'phc-fade-in' + (wide ? ' phc-pg-cols' : '')} style={wide ? { flex: '1 1 100%', minWidth: 0 } : { flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <TabTools game={game} meId={meId} isHost={isHost} tab={t} c={c} field={field} />
       </div>
     </WideCtx.Provider>
+  </div>;
+}
+/** The character the tools work on (the host's or this player's own), or, with none, a Recruit or Bring. ToolBody shows it
+ *  above the Gear, Squad, Magic and Faith tools, and the centre's search shows it above the results too. */
+function CharRow({ game, meId, isHost, cid, setCid, style }: { game: GameState; meId: string; isHost: boolean; cid: string; setCid: (id: string) => void; style?: React.CSSProperties }) {
+  const chars = Object.values(game.characters).filter((c) => isHost || c.owner === meId);
+  const c = game.characters[cid] && chars.some((x) => x.id === cid) ? game.characters[cid] : chars[0];
+  return <div role="group" aria-label="Character" style={{ ...row, ...style }}>
+    {chars.length ? chars.map((x) => <button key={x.id} type="button" aria-pressed={x.id === c?.id} onClick={() => setCid(x.id)} style={{ ...btn, border: '1px solid ' + (x.id === c?.id ? C.text : C.line), background: x.id === c?.id ? C.raised : 'transparent' }}>{x.name}</button>)
+      : <NoFighter gearing={game.phase === 'story'} />}
   </div>;
 }
 /** One tab's tools for one character. */
@@ -354,7 +361,7 @@ function CentreView({ game, meId, isHost, close, ...shared }: { game: GameState;
           <span style={{ fontSize: 13, fontWeight: 700 }}>WAVE {sandboxNext(sb)} <span style={{ color: C.muted, fontWeight: 600 }}>· best {sb.best} · {status}</span></span>
           <span style={row}>
             <button type="button" style={{ ...btn, color: C.muted }} onClick={() => leaveProvingGround()} title={!isHost ? 'Leave the Proving Ground: your fighter goes, you go to the title' : sb.standalone ? 'Close the Proving Ground for everyone' : 'Back to the room, as it was before'}>Leave</button>
-            <button type="button" style={btn} onClick={close} aria-label="Close the tools" title="Hide the tools and show the story log (the tab on the right brings them back)">✕ Story log</button>
+            <button type="button" style={btn} onClick={close} aria-label="Close the tools and show the story log" title="Close the tools and show the story log (the tab on the right brings the tools back)">Story log ›</button>
           </span>
         </span>
       </figcaption>
@@ -365,14 +372,18 @@ function CentreView({ game, meId, isHost, close, ...shared }: { game: GameState;
         placeholder="Search every tool: a weapon, a perk, spawn, waves, mana…" style={{ ...field, flex: 1, minHeight: 40, fontSize: 14 }} />
       {q && <button type="button" style={btn} onClick={() => setQ('')}>Clear</button>}
     </div>
-    {q ? <div className="phc-pg-results" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+    {/* The search results sit above the tools, which stay mounted (hidden) under a search: an armed spawn or place, the
+        Give picker and the Sigil fields keep their state while you look something up. The character row comes too, so a
+        player with no fighter can still Recruit or Bring one, and the host can change whose tools the results are. */}
+    {q && <div className="phc-pg-results" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <CharRow game={game} meId={meId} isHost={isHost} cid={shared.cid} setCid={shared.setCid} />
       {all.map(([id, name]) => <div key={id} className="phc-pg-group" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <span style={{ ...label, color: C.text }}>{name.toUpperCase()}{id !== 'field' && id !== 'world' && c ? ' · ' + c.name.toUpperCase() : ''}</span>
         <WideCtx.Provider value={{ wide: true, q, tab: id }}><div className="phc-pg-cols"><TabTools game={game} meId={meId} isHost={isHost} tab={id} c={c} field={canField} /></div></WideCtx.Provider>
       </div>)}
       <span className="phc-pg-none" style={{ fontSize: 13, color: C.muted }}>Nothing matches "{q}". Try a weapon or item name, a tab (Gear, Squad, Magic, Faith, Field, World) or a word like spawn, perk, wave, mana.</span>
-    </div>
-    : <ToolBody game={game} meId={meId} isHost={isHost} wide {...shared} />}
+    </div>}
+    <div data-pg-tools="" style={{ display: q ? 'none' : 'contents' }}><ToolBody game={game} meId={meId} isHost={isHost} wide {...shared} /></div>
   </aside>;
 }
 
