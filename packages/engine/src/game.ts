@@ -12,7 +12,7 @@ import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharac
 import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
-import { spotlight, markAction, clearAction } from './spotlight';
+import { spotlight, markAction, clearAction, critMoment } from './spotlight';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
@@ -1398,6 +1398,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   emitHook(cb!, 'action_done', { u, a, cb: cb! });
   for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
+  critMoment(g); // decision 113: a party crit in this action cuts in (unless a bigger moment already did)
   noteDeaths(cb!, g.rng);
   checkOver(cb!);
   runEnemies(g);
@@ -1542,6 +1543,7 @@ function runEnemies(g: GameState) {
     if (puppeteerOf(g, cb, u)) break; // a Puppeted enemy's turn is run by its puppeteer's player (rules 1.3)
     markAction(cb); // spotlight.ts: an enemy's turn is its own action (an intervention in it slows its playback)
     if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
+    critMoment(g); // a party reaction's crit in the enemy's turn (decision 113)
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }

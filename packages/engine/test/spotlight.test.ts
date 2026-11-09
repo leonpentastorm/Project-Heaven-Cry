@@ -1,7 +1,7 @@
 // Spotlight cut-ins (docs/design/cutin-spec.md, decision 113): the engine's `spotlight` presentation event. Every test
 // goes through apply() (the path a player's click takes), except the direct calls that check the trigger API itself.
 import { describe, expect, it } from 'vitest';
-import { apply, d20, spotlight, SPOTLIGHT_FX, musicOf, viewFor, type Combat, type GameState } from '../src';
+import { apply, d20, spotlight, critMoment, SPOTLIGHT_FX, musicOf, viewFor, type Combat, type GameState } from '../src';
 import { applyDamage } from '../src/effects/damage';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -205,5 +205,83 @@ describe('spotlight: never from the area map\'s dry run', () => {
   it('the real run\'s does, exactly one', () => {
     expect(dryHit(false, 'story')).toEqual({ cb: 0, st: 1 });
     expect(dryHit(false, 'combat')).toEqual({ cb: 1, st: 0 });
+  });
+});
+
+// ---------- critical hits in a fight (Leon, 9 Nov 2026: "play it when a critical hit appear in combat too") ----------
+/** Seeds are tried (through apply(), on copies) until the action gives what `ok` wants. */
+function untilSeed(g0: GameState, a: any, ok: (g: GameState) => boolean, by = 'host'): GameState {
+  for (let s = 1; s < 3000; s++) { const g = clone(g0); g.rng = { state: s }; let g2: GameState; try { g2 = apply(g, a, by); } catch { continue; } if (ok(g2)) return g2; }
+  throw new Error('no seed');
+}
+const shotOf = (g: GameState, unit: string) => g.combat!.fx!.filter((x) => (x.k === 'shot' || x.k === 'melee') && x.unit === unit);
+describe('spotlight: a party crit in a fight (decision 113)', () => {
+  /** The first PC on its turn beside a sturdy soldier (the shot never kills it). */
+  function crit(tier: 'soldier' | 'boss' = 'soldier', hp = 999) {
+    const f = fightWith([{ name: 'Mallow' }, { name: 'Ana' }], [{ tier, at: 'C5', name: tier === 'boss' ? 'Warden' : 'Rook' }, { tier: 'soldier', at: 'L9' }]);
+    const me = f.turn(f.pc), t = f.foe; t.hp = t.maxHp = hp; t.armour = 0; t.conds = {};
+    return { f, me, t };
+  }
+  it('a weapon crit by a player character: one crit spotlight, from the shot, short (via weapon), the target named', () => {
+    const { f, me, t } = crit();
+    const before = (f.cb.fxSeq || 0);
+    const g = untilSeed(f.g, { type: 'combat/attack', unitId: me.id, targetId: t.id, mode: 'shot' }, (x) => shotOf(x, me.id).some((s) => s.crit && s.hit));
+    const cb = g.combat!, ss = spots(cb.fx), shot = shotOf(g, me.id)[0];
+    expect(ss).toHaveLength(1);
+    expect(ss[0]).toMatchObject({ kind: 'crit', via: 'weapon', char: me.charId, unit: me.id, target: t.id, song: false });
+    expect(ss[0].reason).toMatch(/^a critical hit on (Rook|an unseen hostile)$/);
+    expect(ss[0].from).toBe(before + 1); expect(ss[0].from).toBeLessThanOrEqual(shot.n); expect(ss[0].n).toBeGreaterThan(shot.n);
+    expect(ss[0].tn).toBeUndefined();
+    expect(cb.critNotes).toBeUndefined(); expect(cb.actFrom).toBeUndefined();
+  });
+  it('a plain hit is no spotlight; neither is a miss', () => {
+    const { f, me, t } = crit();
+    const g = untilSeed(f.g, { type: 'combat/attack', unitId: me.id, targetId: t.id, mode: 'shot' }, (x) => shotOf(x, me.id).some((s) => s.hit && !s.crit));
+    expect(spots(g.combat!.fx)).toHaveLength(0);
+  });
+  it('a crit that takes down a boss is one moment: the takedown, no crit event', () => {
+    const { f, me, t } = crit('boss', 1);
+    const g = untilSeed(f.g, { type: 'combat/attack', unitId: me.id, targetId: t.id, mode: 'shot' }, (x) => shotOf(x, me.id).some((s) => s.crit && s.hit));
+    const ss = spots(g.combat!.fx);
+    expect(ss.map((x) => x.kind)).toEqual(['takedown']);
+  });
+  it('an enemy\'s crit never cuts in', () => {
+    const f = fightWith([{ name: 'Mallow' }], [{ at: 'F6' }]);
+    const me = f.turn(f.pc); me.hp = me.maxHp = 999; me.armour = 0;
+    f.foe.pos = me.pos.split(',').map(Number).map((v, i) => (i === 0 ? v + 1 : v)).join(',');
+    const g = untilSeed(f.g, { type: 'combat/end-turn', unitId: me.id }, (x) => shotOf(x, f.foe.id).some((s) => s.crit && s.hit));
+    expect(spots(g.combat!.fx).filter((x) => x.kind === 'crit')).toHaveLength(0);
+  });
+  it('a companion\'s crit: its owner\'s strip, its name in the words', () => {
+    const { f, me, t } = crit();
+    const g0 = clone(f.g), cb = g0.combat!, u = cb.units.find((x) => x.id === me.id)!;
+    // The companion is a pc-side unit with no character of its own (ctrl: its owner).
+    delete (u as any).charId; (u as any).companion = 'rex'; (u as any).ctrl = me.charId; u.name = 'Rex';
+    const e = withGame(g0, () => { cb.actFrom = (cb.fxSeq || 0) + 1; (cb as any).critNotes = [{ unit: u.id, target: t.id, via: 'weapon', n: cb.fxSeq || 0 }]; return critMoment(g0); });
+    expect(e).toMatchObject({ kind: 'crit', char: me.charId, unit: u.id, by: 'Rex' }); expect(e!.reason).toMatch(/^Rex: a critical hit on /);
+  });
+  it('a Sigil spell that crits: one crit spotlight, via sigil', () => {
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul' } as any], [{ tier: 'minion' }] as any);
+    const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
+    f.pc.pos = '3,5'; f.foe.pos = '8,5';
+    for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 5000; x.armour = 0; x.hidden = false; x.conds = {}; }
+    const c = f.g.characters[f.pc.charId!]; c.sigils = ['fire', 'seek'];
+    const u = f.turn(f.pc); u.ap = 60;
+    Object.assign(u.mg!, { evoker: true, words: ['fire', 'seek'], charge: 999, cores: 5, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [] });
+    f.act({ type: 'combat/draw', unitId: u.id, word: 'fire', tile: '3,5' } as any);
+    f.unit(u.id).pos = '4,5'; f.unit(u.id).ap = 60;
+    f.act({ type: 'combat/draw', unitId: u.id, word: 'seek', tile: '4,5' } as any);
+    f.unit(u.id).pos = '2,5'; f.unit(u.id).ap = 60;
+    const g = untilSeed(f.g, { type: 'combat/evoke', unitId: u.id, tile: '3,5', aim: '8,5' }, (x) => x.combat!.log.some((l) => /CRITICAL/.test(l)));
+    const ss = spots(g.combat!.fx);
+    expect(ss).toHaveLength(1); expect(ss[0]).toMatchObject({ kind: 'crit', via: 'sigil', char: c.id, target: f.foe.id });
+  });
+  it('never from the area map\'s dry run, and a stale note from another action is dropped', () => {
+    const { f, me, t } = crit();
+    const g = clone(f.g), cb = g.combat!;
+    cb.actFrom = (cb.fxSeq || 0) + 10; (cb as any).critNotes = [{ unit: me.id, target: t.id, via: 'weapon', n: (cb.fxSeq || 0) }];
+    expect(withGame(g, () => critMoment(g))).toBeNull();
+    (cb as any).dry = true; cb.actFrom = (cb.fxSeq || 0) + 1; (cb as any).critNotes = [{ unit: me.id, target: t.id, via: 'weapon', n: (cb.fxSeq || 0) }];
+    expect(withGame(g, () => critMoment(g))).toBeNull();
   });
 });

@@ -180,6 +180,9 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** The first fx number of the action being resolved (spotlight.ts markAction): a spotlight moment's `from`, so the
    * client can slow that action's playback. Set and cleared by the reducer; never read by a rule. */
   actFrom?: number;
+  /** Party crits in the action being resolved (noteCrit; spotlight.ts critMoment turns the first into a 'crit' spotlight at
+   * the action's end, unless a bigger moment came in the same action). Presentation only; never read by a rule. */
+  critNotes?: { unit: string; target: string; via: 'weapon' | 'sigil' | 'outburst'; n: number }[];
   /** An off-turn window (On My Mark, Supreme Command): active(cb) is the queue's head while it is open (effects/actions.ts). */
   window?: { kind: string; queue: { unitId: string; ap?: number; limit?: number; done?: number }[]; saved: Record<string, number>; by?: string };
   /** The toggles the player set on the action being resolved (combat/attack mods…); set and cleared by the reducer. */
@@ -776,6 +779,14 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   return { base, terms: ctx.add ? [{ v: ctx.add, label: 'perks (flat)' }] : [], mults, vs, total, crit: critM, pierce, armour, src };
 }
 
+/** A party crit for the spotlight (decision 113; spotlight.ts critMoment): a player's character or a companion lands a
+ *  critical hit (a weapon attack, or a damaging Sigil or Outburst spell) on the other side. The first of an action is
+ *  kept, with the fx number it came at. Presentation only: no rule reads it. */
+export function noteCrit(cb: Combat, by: Unit | null | undefined, tgt: Unit | null | undefined, via: 'weapon' | 'sigil' | 'outburst') {
+  if (!by || !tgt || tgt.side === by.side || !(by.charId || by.companion)) return;
+  const notes = (cb.critNotes ||= []); if (notes.length >= 4) return;
+  notes.push({ unit: by.id, target: tgt.id, via, n: cb.fxSeq || 0 });
+}
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string }
 export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean } = {}): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
@@ -833,6 +844,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
     damage = r.amount; killed = r.killed;
     if (killed) { ev.dmg = damage; ev.killed = true; fxFell(cb, tgt); }
+    if (crit) noteCrit(cb, att, tgt, 'weapon'); // the spotlight's crit (decision 113): presentation only
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt, cb, att);
     if (crit && !tgt.dead && melee && hasMod(att.mods, 'mod_serrated') && !immune({ u: tgt }, 'bleed')) { tgt.bleed = 3; injury += ' · Bleeding'; }
     if (!tgt.dead && fx.op === 'on_hit') injury += onHit(cb, att, tgt, fx);

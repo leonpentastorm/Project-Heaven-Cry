@@ -35,6 +35,8 @@ export interface CutInSpec {
   scene?: string;
   /** Screen readers' one line. */
   aria?: string;
+  /** A crit in a fight (decision 113): the short cut-in (one strip, about 0.9 s). */
+  short?: boolean;
 }
 
 /** Where the eyes sit when a portrait has no eye line (an upload with no framing set). */
@@ -106,7 +108,10 @@ const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).trimEnd(
 /** One moment's caption (Spectral italic), from the engine's event. */
 export function captionOf(e: any, g?: GameState | null): string {
   switch (e.kind as CutInKind) {
-    case 'crit': { const sk = e.skill && SKILL[e.skill] ? ' on ' + SKILL[e.skill].name : ''; return 'Natural 20' + sk + ' · ' + (Number(e.tn) >= 20 ? 'Heroic' : 'Hard'); }
+    case 'crit': {
+      // A crit in a fight (decision 113): "Critical hit on Rook", the spell's kind beside it ("· Sigil", "· Outburst").
+      if (e.via) return cap(String(e.reason || 'a critical hit').replace(/(^|: )a critical/, '$1critical')) + (e.via === 'sigil' ? ' · Sigil' : e.via === 'outburst' ? ' · Outburst' : '');
+      const sk = e.skill && SKILL[e.skill] ? ' on ' + SKILL[e.skill].name : ''; return 'Natural 20' + sk + ' · ' + (Number(e.tn) >= 20 ? 'Heroic' : 'Hard'); }
     case 'takedown': return 'Took down ' + (e.targetName || 'an unseen hostile');
     case 'revive': return 'Brought ' + (e.targetName || (e.targetChar && g?.characters?.[e.targetChar]?.name) || 'an ally') + ' back';
     case 'ultimate': return 'An Ultimate, earned'; // never the perk's name: the secrecy rule (its own award screen names it)
@@ -137,18 +142,21 @@ export function cutInFromFx(g: GameState | null | undefined, events: FxEvent[], 
   for (const e of evs as any[]) add(stripForChar(g, e.targetChar));
   for (const e of evs as any[]) for (const id of e.group || []) add(stripForChar(g, id));
   if (!strips.length) return null;
-  const shown = strips.slice(0, 4), more = strips.length - shown.length;
+  // A crit in a fight leads only when nothing bigger came in its action: the short form, the lead's strip alone.
+  const short = lead.kind === 'crit' && !!lead.via;
+  const shown = strips.slice(0, short ? 1 : 4), more = short ? 0 : strips.length - shown.length;
   const leadChar = stripForChar(g, lead.char);
   const word = lead.kind === 'god' ? (patronData(lead.patron)?.name || 'a patron').toUpperCase() : (leadChar ? leadChar.word.toUpperCase() : '');
   // A god interjection (lead.interject: the patron speaks up, nothing intervenes) is labelled with the bare name.
-  const label = lead.kind === 'god' && lead.interject ? word : KIND_WORD[lead.kind as CutInKind] + (word ? ' · ' + word : '');
+  const kw = lead.kind === 'crit' && lead.via ? 'CRITICAL HIT' : KIND_WORD[lead.kind as CutInKind];
+  const label = lead.kind === 'god' && lead.interject ? word : kw + (word ? ' · ' + word : '');
   const caps = [captionOf(lead, g), ...evs.slice(1).filter((e: any) => e.kind !== lead.kind || e.reason !== lead.reason).map((e) => low(captionOf(e, g)))];
   const caption = [...new Set(caps)].join(' · ') + (more > 0 ? ' · +' + more + ' more' : '');
   const line = lead.kind === 'legend' ? (lead.line ? cut(String(lead.line), 90) : undefined) : lead.line ? cut(String(lead.line), 140) : undefined;
   const who = lead.kind === 'god' ? (patronData(lead.patron)?.name || 'A patron') + (leadChar ? ' for ' + leadChar.name : '') : leadChar?.name || shown[0].name;
   return {
     id: (stream || 'fx') + '|' + lead.n, seed: (stream || 'fx') + '|' + lead.n, kind: lead.kind, strips: shown, label, caption, ...(line ? { line } : {}),
-    ...(more > 0 ? { more } : {}), scene: lead.scene, aria: 'Spotlight: ' + who + ', ' + low(captionOf(lead, g)) + '.',
+    ...(more > 0 ? { more } : {}), ...(short ? { short: true } : {}), scene: lead.scene, aria: 'Spotlight: ' + who + ', ' + low(captionOf(lead, g)) + '.',
   };
 }
 

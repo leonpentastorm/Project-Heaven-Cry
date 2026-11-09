@@ -1037,7 +1037,7 @@ function schedule(run: () => void, t: number) {
  *  the rest plays from then, the gate's action slowed. Until then queueEnd and the turns' hold are estimates. */
 function closeGate(rest: FxEvent[], stream: string | undefined, t: number, gate: Gate, c: { spec: any; slow: boolean }, lastTurn: number, speed = 1) {
   held = { evs: rest, stream, speed };
-  const n = c.spec.strips.length, god = c.spec.strips.some((s: any) => s.god), cutMs = CUTIN_MS(n, god, !c.slow);
+  const n = c.spec.strips.length, god = c.spec.strips.some((s: any) => s.god), cutMs = CUTIN_MS(n, god, !c.slow, !!c.spec.short);
   const seg = c.slow ? { from: gate.from, to: gate.to } : null;
   // Estimates (a skip moves them earlier when the gate opens).
   const beats = rest.map(beatOf), times = timeline(rest, beats, t + cutMs, speed, seg);

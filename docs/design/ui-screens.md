@@ -95,8 +95,10 @@ patron's intervention, the god interjection trigger) blurs and dims the screen (
 god's in its accent), the label in Chakra Petch (`TAKEDOWN · AGILITY`), the name and caption in Spectral. A group stacks
 2–4 thinner strips from alternate sides, names at their torn-off ends, with a caption plate below. About 1.4 s (1.6 s at
 most, 1.0 s reduced); any click or key skips and the click is swallowed. In a fight the action it happened in then plays
-15% slower. Settings: Cut-ins All / Once per scene / Off. Character creation: an uploaded portrait gets a Cut-in framing
-slider with a preview of the strip.
+15% slower. A party crit in a fight gets the short form: one slimmer strip (22vh), `CRITICAL HIT · <ATTRIBUTE>`,
+"Critical hit on Rook", 0.9 s; a bigger moment in the same action shows instead. Faith 2.2's Miracle scene shares the
+stage: a strip never draws over it (it waits for the landing). Settings: Cut-ins All / Once per scene / Off. Character
+creation: an uploaded portrait gets a Cut-in framing slider with a preview of the strip.
 
 ## Ultimate perk award
 

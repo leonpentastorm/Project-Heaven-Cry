@@ -8,10 +8,12 @@ export const CUTIN_SKIP_MS = 150;
 /** Clicks and keys skip only after this (the click that made the action never skips its own cut-in). */
 export const CUTIN_ARM_MS = 150;
 /** The total length: 1400 ms for one strip, +70 ms a strip after the first, +100 for a god, capped at 1600; reduced
- *  motion 1000. */
-export function CUTIN_MS(n: number, god = false, rm = false): number {
+ *  motion 1000. short (a crit in a fight, decision 113: one strip, a beat): 900 ms, reduced motion 800. */
+export function CUTIN_MS(n: number, god = false, rm = false, short = false): number {
+  if (short) return rm ? 800 : 900;
   if (rm) return 1000;
   return Math.min(1600, 1400 + 70 * Math.max(0, Math.min(4, n) - 1) + (god ? 100 : 0));
 }
-/** When the strips hold until (the way out starts): the total less the 250 ms out and the blur's last 100. */
-export const holdUntil = (n: number, god = false, rm = false) => (rm ? 800 : CUTIN_MS(n, god, rm) - 350);
+/** When the strips hold until (the way out starts): the total less the 250 ms out and the blur's last 100 (a short one:
+ *  less 200 and 100). */
+export const holdUntil = (n: number, god = false, rm = false, short = false) => (short ? (rm ? 650 : 600) : rm ? 800 : CUTIN_MS(n, god, rm) - 350);

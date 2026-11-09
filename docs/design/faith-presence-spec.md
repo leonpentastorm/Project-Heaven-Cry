@@ -95,7 +95,13 @@ tints and the cut-in panels themselves are drawn in CSS/SVG.
 
 ## 3. Interventions on screen: the trigger for later (Leon: "leave a trigger here")
 
-**Not built now.** When the cut-in system above exists, an intervention should use a **small cut-in**:
+**Built, by the spotlight cut-ins** (decision 113, `docs/design/cutin-spec.md` section 12; Leon: "implement it to the
+god interjection moment too"). The intervention's cut-in is the spotlight's: `faith.ts` `intervene()` emits a
+`spotlight` event (kind `god`) beside the `intervention` fx, and the effects queue plays the patron's torn eye strip
+over the fighter's before the action, then the action 15% slower. `playIntervention` keeps the map effect below, at
+once, and draws no cut-in of its own; the small cut-in drafted here was not used. The text below is the original draft.
+
+**Not built now (draft).** When the cut-in system above exists, an intervention should use a **small cut-in**:
 
 - the patron's portrait slides in from the screen edge (a third of the screen, not over the map's centre), with the
   patron's `intervention` line below it and "<PATRON> INTERVENES" in the accent;

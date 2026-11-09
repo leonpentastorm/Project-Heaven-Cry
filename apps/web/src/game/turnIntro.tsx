@@ -138,7 +138,7 @@ function estMs(e: any): number {
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(2500, Number(e.dur) || 900);
     case 'explode': case 'evoke': case 'release': return 700;
     case 'outburst': return 600;
-    case 'spotlight': return 1400; // the cut-in (game/spotlight) plays before its action
+    case 'spotlight': return e.kind === 'crit' && e.via ? 900 : 1400; // the cut-in (game/spotlight) plays before its action (a crit in a fight: the short one)
     default: return 220;
   }
 }

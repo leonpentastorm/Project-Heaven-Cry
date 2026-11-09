@@ -79,7 +79,7 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
       </svg>
       {words === 'side' ? (
         <div style={{ position: 'absolute', top: 0, bottom: 0, ...textSide, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6, minWidth: 0, textAlign: windowLeft ? 'left' : 'right',
-          opacity: out ? 0 : 1, transition: 'opacity .15s', animation: rm ? 'none' : 'phcCiText .3s ease-out .22s both' }}>
+          opacity: out ? 0 : 1, transition: 'opacity .15s', animation: rm ? 'none' : spec.short ? 'phcCiText .2s ease-out .14s both' : 'phcCiText .3s ease-out .22s both' }}>
           <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '.22em', color: labelInk, textTransform: 'uppercase', overflowWrap: 'anywhere' }}>{spec.label}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: nameSize, lineHeight: 1.05, color: '#FFFFFF', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{s.name}</span>
           {spec.line && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.35, color: TEXT, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>“{spec.line}”</span>}
@@ -117,9 +117,9 @@ export function CutInView({ show }: { show: Showing }) {
   const { vw, vh } = size, n = spec.strips.length, single = n === 1, narrow = vw < NARROW_PX;
   // A narrow screen: the eye window runs nearly the strip's width and every word goes in the plate under the strips.
   const words: 'side' | 'chip' | 'none' = narrow ? 'none' : single ? 'side' : 'chip', frac = narrow ? 0.86 : single ? 0.62 : 0.76;
-  const lay = stackLayout(n, vw, vh, spec.strips.map((s) => !!s.god));
+  const lay = stackLayout(n, vw, vh, spec.strips.map((s) => !!s.god), !!spec.short);
   const w = vw * 1.2, seed = String(spec.seed ?? spec.id ?? 'cutin');
-  const outMs = skipped ? 150 : 250, lead = spec.strips[0];
+  const outMs = skipped ? 150 : spec.short ? 200 : 250, lead = spec.strips[0];
   const plate = words !== 'side', plateTop = lay[n - 1].top + lay[n - 1].h + vh * 0.025;
   return (
     <div data-phc-spotlight={spec.kind} data-phc-spotlight-id={show.id} style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>

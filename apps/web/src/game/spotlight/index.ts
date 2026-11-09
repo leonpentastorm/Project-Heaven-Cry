@@ -95,9 +95,9 @@ function sound(spec: CutInSpec) {
 function start(it: Item) {
   claimStage(); // one stage (game/stage.ts): a Miracle's box still up closes first
   const rm = reducedMotion(), n = it.spec.strips.length, god = it.spec.strips.some((s) => s.god);
-  const ms = CUTIN_MS(n, god, rm), id = it.spec.id || 'cutin-' + Math.random().toString(36).slice(2, 8);
+  const short = !!it.spec.short, ms = CUTIN_MS(n, god, rm, short), id = it.spec.id || 'cutin-' + Math.random().toString(36).slice(2, 8);
   const timers: ReturnType<typeof setTimeout>[] = [];
-  current = { spec: { ...it.spec, id }, id, t0: performance.now(), ms, hold: holdUntil(n, god, rm), rm, out: false, skipped: false, resolve: it.resolve, timers };
+  current = { spec: { ...it.spec, id }, id, t0: performance.now(), ms, hold: holdUntil(n, god, rm, short), rm, out: false, skipped: false, resolve: it.resolve, timers };
   LOG.push({ id, kind: it.spec.kind, at: Math.round(performance.now()), ms, slow: false, strips: it.spec.strips.map((s) => s.name), label: it.spec.label, caption: it.spec.caption, slowed: [], rm });
   if (LOG.length > 50) LOG.splice(0, LOG.length - 50);
   sound(it.spec);

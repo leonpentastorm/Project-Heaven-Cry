@@ -4,13 +4,21 @@
 //  (d) the guest, on the same fight, sees the same cut-in from the shared state;
 //  (e) the trigger API (window 'phc:cutin') with a patron shows that patron's torn strip; a click skips it;
 //  (b) in a story room (the scripted Narrator), a natural 20 on a Hard check on the area map plays a cut-in, no slow-mo;
-//  (c) a player in that room who set Cut-ins: Off on the title's Settings sees none of it.
-// Screens at deviceScaleFactor 1 in e2e/shots/cutins-*.png.
+//  (c) a player in that room who set Cut-ins: Off on the title's Settings sees none of it;
+//  (f) a crit in the Proving Ground (the host's dice set to a natural 20): the short crit cut-in, then the shot 15% slower,
+//      its casing thrown after the cut-in, in step; the guest sees it too;
+//  (g) a crit that takes down a boss: one cut-in, the takedown;
+//  (h) a patron intervention (Faith 2.2: the Quartermaster refunds a Witnessed reload): the patron's strip, once, and no
+//      second (Faith 2.2) cut-in;
+//  (i) a Miracle (Faith 2.2's scene) and the strips share one stage: a strip asked for while the Miracle is up waits
+//      until it lands.
+// Screens at deviceScaleFactor 1 in e2e/shots/cutins-*.png (DSF=2 SHOTS=<dir> for sharper copies in <dir>).
+const SHOTS = process.env.SHOTS;
 import { chromium, player, click, hostAs, BASE, OUT } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const snap = (p, n) => p.screenshot({ path: OUT + 'cutins-' + n + '.png' });
+const snap = (p, n) => p.screenshot({ path: (SHOTS ? SHOTS + '/' : OUT) + 'cutins-' + n + '.png' });
 const G = (p) => p.evaluate(() => window.__phc.getState().game);
 const act = (p, a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const until = (p, f, arg, t = 15000) => p.waitForFunction(f, arg, { timeout: t });
@@ -19,7 +27,9 @@ const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJ
 for (const p of [host, mai]) p.on('dialog', (d) => d.accept());
 // The engine's dice (packages/engine/src/rng.ts): a state whose next d20 is a natural 20.
 function next(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
-const nat20 = () => { for (let s = 1; s < 1e6; s++) { const r = { state: s }; if (1 + Math.floor(next(r) * 20) === 20) return s; } return 1; };
+/** A state whose next d20 is v (skip: the next one after that). */
+const dieSeed = (v, skip = 0) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(next(r) * 20) === v && skip-- <= 0) return s; } return 1; };
+const nat20 = (skip = 0) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(next(r) * 20) === 20 && skip-- <= 0) return s; } return 1; };
 
 // 1. The host opens the Proving Ground with friends; the guest joins by the code.
 await host.goto(BASE);
@@ -80,8 +90,10 @@ for (let tries = 0; tries < 12 && !killed; tries++) {
   // The Warden at 1 HP, no armour (a test hook on the host's own state: the next action carries it to everyone).
   const boss = await host.evaluate(() => { const cb = window.__phc.getState().game.combat; const b = cb.units.find((u) => u.name === 'Warden' && !u.dead); if (b) { b.hp = 1; b.armour = 0; } return b && b.id; });
   if (!boss) break;
+  // a sure hit that is no crit (an 18 on the die): the takedown alone, not the crit's moment
+  await host.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, dieSeed(18, tries));
   const err = await act(host, { type: 'combat/attack', unitId: me.id, targetId: boss, mode: 'shot' });
-  if (err) { await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
+  if (err) { console.log('note the shot at the Warden: ' + err); await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
   killed = await host.evaluate(() => window.__phc.getState().game.combat.units.some((u) => u.name === 'Warden' && u.dead));
   if (!killed) { await settle(host); const u = await cur(host); if (u && u.id === me.id && u.ap < 3) await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
   // While it shows: the blur behind, the strip, the input held.
@@ -130,6 +142,109 @@ await host.mouse.click(700, 500);
 await host.waitForTimeout(300);
 last = (await logs(host)).slice(n1)[0];
 ok('a click skips it (gone in ' + (last && last.end - last.at) + ' ms)', !!last && last.skipped === true && last.end - last.at < 800 && !(await host.locator('[data-phc-spotlight]').count()));
+
+// 4b. (f) A crit (Leon: "play it when a critical hit appear in combat too"): a sturdy trooper beside the host's fighter,
+// the host's dice set so the shot's d20 is a natural 20 (a test hook on the host's own state, as the Warden's HP above).
+const freeBeside = (p, pos) => p.evaluate((pos) => { const cb = window.__phc.getState().game.combat, m = cb.map, [x, y] = pos.split(',').map(Number);
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1], [2, 0], [-2, 0], [0, 2], [0, -2]]) {
+    const k = (x + dx) + ',' + (y + dy); if (x + dx < 0 || y + dy < 0 || x + dx >= m.w || y + dy >= m.h) continue;
+    if ((m.solid || []).includes(k) || cb.units.some((u) => !u.dead && u.pos === k) || (cb.objects || []).some((o) => o.pos === k)) continue; return k; } return null; }, pos);
+/** Shoot target (by name) with the next d20 a natural 20, until a shot crits; returns the new cut-ins. */
+async function critShot(name, prep) {
+  for (let tries = 0, k = 0; tries < 10; tries++) {
+    me = await hostsTurn(); if (!me) return null;
+    await settle(host);
+    const tid = await host.evaluate(([n, prep]) => { const cb = window.__phc.getState().game.combat; const b = cb.units.find((u) => u.name === n && !u.dead); if (!b) return null; if (prep === 'sturdy') { b.hp = b.maxHp = 999; } else { b.hp = 1; } b.armour = 0; return b.id; }, [name, prep]);
+    if (!tid) return null;
+    const nb = (await logs(host)).length, nbM = (await logs(mai)).length;
+    // casings already on the floor are marked, so the check below sees only this shot's
+    const seq = await host.evaluate((s) => { document.querySelectorAll('[data-fx-piece]').forEach((e) => e.setAttribute('data-old', ''));
+      // when this shot's first casing comes (a watcher, so a slow screenshot can't miss it)
+      window.__casingAt = 0; window.__casingObs?.disconnect();
+      window.__casingObs = new MutationObserver(() => { if (!window.__casingAt && document.querySelector('[data-fx-piece^="shell:"]:not([data-old])')) window.__casingAt = performance.now(); });
+      window.__casingObs.observe(document.body, { childList: true, subtree: true }); const g = window.__phc.getState().game; g.rng.state = s; return g.combat.fxSeq || 0; }, nat20(k++));
+    const err = await act(host, { type: 'combat/attack', unitId: me.id, targetId: tid, mode: 'shot' });
+    if (err) { await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
+    const shotCrit = await host.evaluate(([seq, uid]) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > seq && e.k === 'shot' && e.unit === uid && e.crit && e.hit), [seq, me.id]);
+    if (!shotCrit) { await settle(host); const u = await cur(host); if (u && u.id === me.id && u.ap < 3) await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
+    return { nb, nbM, seq };
+  }
+  return null;
+}
+await settle(host);
+{ const k = await freeBeside(host, (await cur(host)).pos); const e = k ? await act(host, { type: 'sandbox/spawn', tier: 'soldier', weapon: 'fists', at: ref(k), name: 'Rook' }) : 'no free tile'; ok('a sturdy trooper (Rook) beside the host\'s fighter (' + (e || ref(k)) + ')', !e); }
+const cr = await critShot('Rook', 'sturdy');
+ok('the host\'s shot is a critical hit (a natural 20)', !!cr);
+let critCut = null, critStrip = false, casingAt = 0;
+if (cr) {
+  // the short cut-in is 0.9 s: the screenshot is taken as soon as the strip is in (its slide-in ends at 280 ms)
+  await host.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-strip]').first().waitFor({ timeout: 3000 }).catch(() => {});
+  critStrip = await host.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-strip]').count() === 1;
+  await host.waitForTimeout(140); await snap(host, 'f-crit');
+  // the casing: thrown out behind the shooter when the slowed shot plays (after the cut-in), never before it
+  casingAt = await host.waitForFunction(() => window.__casingAt || 0, null, { timeout: 4000 }).then((h) => h.jsonValue(), () => 0);
+  await settle(host); await host.waitForTimeout(700);
+  critCut = (await logs(host)).slice(cr.nb).find((x) => x.kind === 'crit');
+}
+ok('the crit cut-in: one strip, "' + (critCut && critCut.label) + '", "' + (critCut && critCut.caption) + '"', critStrip && !!critCut && /^CRITICAL HIT · /.test(critCut.label) && /^Critical hit on (Rook|an unseen hostile)$/.test(critCut.caption) && critCut.strips.length === 1);
+ok('it is the short one (' + (critCut && critCut.end - critCut.at) + ' ms)', !!critCut && critCut.end - critCut.at >= 800 && critCut.end - critCut.at <= 1150);
+const csl = critCut ? critCut.slowed : [], cShot = csl.find((x) => x.k === 'shot');
+ok('then the shot plays 15% slower (tempo ' + (critCut && critCut.tempo) + '; ' + csl.map((x) => x.k + ' ' + x.beat).join(', ') + ')', !!critCut && critCut.slow && critCut.tempo === 0.85 && !!cShot && cShot.beat >= 465 && cShot.beat <= 476 && cShot.at >= critCut.end - 5);
+ok('its casing comes with the slowed shot, after the cut-in (' + Math.round(casingAt - (critCut ? critCut.end : 0)) + ' ms after it ended; cut-in ' + (critCut && critCut.at) + '–' + (critCut && critCut.end) + ', casing ' + Math.round(casingAt) + ')', !!critCut && casingAt >= critCut.end - 5);
+if (cr) { await mai.waitForTimeout(400); const mc = (await logs(mai)).slice(cr.nbM).find((x) => x.kind === 'crit'); ok('the guest sees the same crit cut-in (' + (mc && mc.caption) + ')', !!mc && !!critCut && mc.caption === critCut.caption && mc.label === critCut.label); }
+
+// 4c. (g) A crit that takes down a boss: one moment, the takedown (the crit gives way).
+await settle(host);
+{ const k = await freeBeside(host, (await cur(host)).pos); const e = k ? await act(host, { type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: ref(k), name: 'Titan' }) : 'no free tile'; ok('a boss (Titan) beside the host\'s fighter (' + (e || ref(k)) + ')', !e); }
+const cr2 = await critShot('Titan', 'one');
+let kd = [];
+if (cr2) { await host.waitForTimeout(400); await snap(host, 'g-crit-takedown'); await settle(host); await host.waitForTimeout(900); kd = (await logs(host)).slice(cr2.nb); }
+ok('a crit that takes down a boss plays ONE cut-in, the takedown (' + kd.map((x) => x.kind + ' "' + x.caption + '"').join(', ') + ')', !!cr2 && kd.length === 1 && kd[0].kind === 'takedown' && /Took down Titan/.test(kd[0].caption));
+
+// 4d. (h) A patron intervention (Faith 2.2): the Quartermaster refunds a Witnessed fighter's reload. The patron's strip
+// shows once (the engine's spotlight), the map effect plays, and Faith 2.2 draws no cut-in of its own.
+await settle(host);
+me = await hostsTurn(); await settle(host);
+const fe = await act(host, { type: 'sandbox/faith', charId: hostChar.id, belief: 'faithful', patron: 'the_quartermaster', faith: 7, devotion: 5, reset: true });
+ok('the host\'s fighter is the Quartermaster\'s (' + (fe || 'ok') + ')', !fe);
+const nh = (await logs(host)).length;
+await host.evaluate((uid) => { const cb = window.__phc.getState().game.combat, u = cb.units.find((x) => x.id === uid); u.conds = { ...(u.conds || {}), witnessed: 99 }; u.ammo = 0; delete (u.faith || {}).intervened; if (u.faith) u.faith.interventions = 0; u.ap = Math.max(u.ap, 4); }, me.id);
+const re = await act(host, { type: 'combat/reload', unitId: me.id });
+const god = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), nh, { timeout: 3000 }).then(() => true, () => false);
+let godStrip2 = false, faithCut = 0;
+if (god) { godStrip2 = (await host.locator('[data-phc-spotlight-strip="p:the_quartermaster"]').count()) === 1; faithCut = await host.locator('[data-phc-cut]').count(); await host.waitForTimeout(450); await snap(host, 'h-god'); }
+await settle(host); await host.waitForTimeout(600);
+const gl = (await logs(host)).slice(nh).filter((x) => x.kind === 'god');
+const qmLog = await host.evaluate(() => window.__phc.getState().game.combat.log.some((l) => /Quartermaster intervenes/.test(l)));
+ok('a Witnessed reload: the Quartermaster intervenes (' + (re || 'reloaded') + ')', !re && qmLog);
+ok('the patron\'s strip shows once: "' + (gl[0] && gl[0].label) + '" (' + gl.length + ' god cut-in' + (gl.length === 1 ? '' : 's') + ')', god && godStrip2 && gl.length === 1 && /^INTERVENTION · THE QUARTERMASTER$/.test(gl[0].label) && gl[0].strips[0] === 'The Quartermaster');
+ok('and Faith 2.2 draws no second cut-in for it', faithCut === 0);
+
+// 4e. (i) One stage: a Miracle (Faith 2.2's scene, Mother Ember at Devotion 10) and a strip asked for while it is up.
+await settle(host);
+me = await hostsTurn(); await settle(host);
+const fm = await act(host, { type: 'sandbox/faith', charId: hostChar.id, belief: 'faithful', patron: 'mother_ember', faith: 7, devotion: 10, reset: true });
+const ni = (await logs(host)).length;
+const pe = await act(host, { type: 'faith/pray', unitId: me.id, kind: 'miracle' });
+const mUp = await host.locator('[data-phc-cut="full"]').waitFor({ timeout: 4000 }).then(() => true, () => false);
+let overlap = false;
+if (mUp) {
+  await host.waitForTimeout(700); await snap(host, 'i-miracle');
+  await host.evaluate(() => window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'nerukhan', char: null, reason: 'speaks' } })));
+  // watch until the strip comes on (after the landing): never both at once; a screenshot of the strip once it is in
+  for (let i = 0; i < 90; i++) {
+    const st = await host.evaluate(() => ({ full: !!document.querySelector('[data-phc-cut="full"]'), strip: !!document.querySelector('[data-phc-spotlight-strip="p:nerukhan"]') }));
+    overlap ||= st.full && st.strip;
+    if (st.strip && !st.full) { await host.waitForTimeout(250); await snap(host, 'i-after-miracle'); break; }
+    await host.waitForTimeout(80);
+  }
+}
+const waited = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), ni, { timeout: 8000 }).then(() => true, () => false);
+await settle(host); await host.waitForTimeout(400);
+ok('a Miracle cuts in (' + (fm || pe || 'prayed') + ')', !fm && !pe && mUp);
+const after = (await logs(host)).slice(ni).find((x) => x.kind === 'god');
+ok('a strip asked for during it waits for the landing: never drawn over the Miracle, then shown in full (' + (after && (after.end - after.at) + ' ms' + (after.skipped ? ', skipped' : '')) + ')', !overlap && waited && !!after && !after.skipped && after.end - after.at >= 1300);
+if (await host.locator('[data-phc-cut-box] .c').count()) await host.locator('[data-phc-cut-box] .c').first().click().catch(() => {});
 
 // 5. (b) + (c) A story room (the scripted Narrator): a natural 20 on a Hard check on the area map plays a cut-in with
 // no slow-mo; a player who set Cut-ins: Off on the title's Settings sees none of it, nor the trigger API's.

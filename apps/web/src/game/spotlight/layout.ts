@@ -4,8 +4,10 @@ import { stripShape } from './tear';
 import type { CutInStrip } from './spec';
 
 /** A strip's size and place: one wide strip, or a stack of 2–4. Pure (tests). */
-export function stackLayout(n: number, vw: number, vh: number, god: boolean[] = []): { h: number; top: number; tilt: number; dx: number; fromLeft: boolean; windowLeft: boolean }[] {
-  if (n <= 1) { const h = Math.max(150, Math.min(290, vh * 0.29)); return [{ h, top: vh * 0.46 - h / 2, tilt: -4, dx: 0, fromLeft: true, windowLeft: true }]; }
+export function stackLayout(n: number, vw: number, vh: number, god: boolean[] = [], short = false): { h: number; top: number; tilt: number; dx: number; fromLeft: boolean; windowLeft: boolean }[] {
+  // One strip: 29vh (150–290 px). A short one (a crit in a fight, decision 113) is a slimmer cut, 22vh (120–220 px):
+  // the smaller moment reads smaller.
+  if (n <= 1) { const h = short ? Math.max(120, Math.min(220, vh * 0.22)) : Math.max(150, Math.min(290, vh * 0.29)); return [{ h, top: vh * 0.46 - h / 2, tilt: -4, dx: 0, fromLeft: true, windowLeft: true }]; }
   const gap = vh * 0.012, base = Math.max(90, Math.min(200, (vh * 0.64 - gap * (n - 1)) / n));
   const hs = Array.from({ length: n }, (_, i) => (god[i] ? Math.min(base * 1.3, 240) : base));
   const total = hs.reduce((a, b) => a + b, 0) + gap * (n - 1);

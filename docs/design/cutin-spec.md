@@ -2,7 +2,9 @@
 
 Status: **built** (decision 113; see section 11 for what the build changed or left out), open questions in section 10
 for Leon. Presentation only: no rule, no number the engine resolves, no dice changes. Built on branch
-`claude/awesome-babbage-8gngk8` from develop 0.5.0.
+`claude/awesome-babbage-8gngk8` from develop 0.5.0, merged with develop 0.8.0 (Faith 2.2 and the brass; section 12),
+then given the combat crits (section 1.4) and the god interjection's final path (section 12) on Leon's rulings of
+9 Nov 2026.
 
 Leon's request (9 Nov 2026): *"I want a cut in UI system that blurs the screen a bit when these moment happen, in
 combat it makes the attack you are about to perform 15% slower for visual flair. It's one of those JRPG system when the
@@ -43,7 +45,8 @@ song starts** (the song keeps its own once-per-scene rule; how often the cut-in 
 | `revive` | `songTriggers` (~1403) | A PC's action brings a Downed ally back | the actor, then the revived |
 | `ultimate` | `game.ts` `awardAutomatic` (~1107) | An Ultimate perk is granted | the holder |
 | `legend` | `game.ts` Narrator turn `deeds` (~1195) | A combo perk earned by a legendary deed | the doer |
-| `god` | `faith.ts` `intervene()` (~493), and the god interjection trigger (§4) | A patron intervenes for a Witnessed fighter | the patron, then the fighter |
+| `god` | `faith.ts` `intervene()` (~530), and the god interjection trigger (§4) | A patron intervenes for a Witnessed fighter | the patron, then the fighter |
+| `crit` (a fight's) | `spotlight.ts` `critMoment`, called at the end of each player action and each enemy turn | A player's character or companion lands a critical hit on the other side (§1.4) | the actor (one strip) |
 
 A takedown and a revive in the same action emit both events; the client merges them (§3.4).
 
@@ -60,12 +63,30 @@ A takedown and a revive in the same action emit both events; the client merges t
 - **Intervention** (once a fight per Witnessed fighter, Faith 5): **yes**, kind `god` (the patron's strip over the
   fighter's). This is the natural fit Leon described: a god breaking in. Faith 2.2's intervention hook
   (`playIntervention`) is the same moment: section 12 says how the two meet.
-- **Miracle** (once a session, Devotion 10): **no separate cut-in**. The Miracle already has its full-screen answer
-  (`miracleOverlay`, 2.3 s, Leon-approved). With cut-ins on, that overlay gains the patron's torn eye strip above the
-  mark, its eye window on the left so the painted eyes are never behind the mark (same seeded tear, the patron's accent,
-  opaque), so it is one moment, still under 2.5 s. With cut-ins off it stays as it is today. Faith 2.2 replaces this
-  overlay with its own large portrait cut-in (section 12).
+- **Miracle** (once a session, Devotion 10): **no spotlight strip**. Faith 2.2's own Miracle scene (`game/cutIn.ts`,
+  the patron at full size) is the moment; the strip this branch first folded into the old overlay was dropped at the
+  merge. The two share one stage (section 12): a strip never draws over the Miracle.
 - Witnessed, prayers, vows, Devotion: no (they are frequent or already have their own marks).
+
+### 1.4 Critical hits in a fight (Leon, 9 Nov 2026: "play it when a critical hit appear in combat too")
+
+- **Which crits:** the party's side only (a player's character, or a companion: its owner's strip, its name in the
+  caption), on the other side; enemies' crits never cut in. A weapon attack that crits (a natural 20, or 19–20 aimed or
+  from Hidden: the engine's own `crit`, after the items' hooks) and a damaging Sigil or Outburst spell whose hit roll is
+  a natural 20. `combat.ts` `noteCrit` records them during the action (presentation only, read by no rule); at the
+  action's end `critMoment` turns the first into one `spotlight` event of kind `crit` with `via` (`weapon`, `sigil`,
+  `outburst`), the target and its name as the squad saw it ("an unseen hostile" in the fog), and `from` (the action).
+- **One cut-in an action:** when a bigger moment already came in the same action (a takedown, a revive, a god's
+  intervention), the crit emits nothing; the client's merge (lead by priority god > takedown > revive > legend >
+  ultimate > crit > song) is the second guard. A crit that drops a boss shows the takedown.
+- **The short form:** one strip, slimmer (22vh, 120–220 px, against 29vh), label `CRITICAL HIT · <ATTRIBUTE>`, caption
+  "Critical hit on Rook" (a spell: "· Sigil", "· Outburst"; a companion: "Rex: critical hit on Rook"), 0.9 s in all
+  (way out from 600 ms; reduced motion 0.8 s). It follows All / Once per scene / Off like every cut-in.
+- **The slow-mo:** the crit's action plays 15% slower after it, like every combat moment, the brass included: the
+  casings, the pump's hull, the spent cores, the falling magazine and the archer's draw are drawn through `fx/dom.ts`
+  (`anim`, `after`), and `fx/brass.ts`'s own timers (the box round the portrait, the removals, the drop's dust, the
+  draw's clip at the apex) follow the tempo too, so nothing is cut short or comes early against the slowed shot.
+- **A check's crit** (out of a fight, §1.1's first row) keeps its full form ("CRITICAL SUCCESS", 1.4 s).
 
 ## 2. The event (engine)
 
@@ -86,6 +107,8 @@ export interface SpotlightFx {
   targetChar?: string | null;           // the revived/saved ally's character id (their strip)
   patron?: string | null;               // 'god': the patron id (data/patrons.json)
   tn?: number; skill?: string;          // 'crit': the check's TN and skill id
+  via?: 'weapon' | 'sigil' | 'outburst';// 'crit' in a fight (§1.4): how it landed (the short cut-in)
+  by?: string;                          // 'crit' by a companion: its name (the strip is its owner's)
   perk?: string;                        // 'ultimate' / 'legend': the perk id (the caption never names an Ultimate; §5.3)
   line?: string;                        // optional spoken line (a patron's words, a deed's text), shown in quotes
   group?: string[];                     // extra character ids to show as strips (a group trigger); max 4 strips in all
@@ -293,6 +316,7 @@ players should see.
 
 | Kind | Label (Chakra Petch) | Caption (Spectral italic) |
 |---|---|---|
+| crit (a fight's, §1.4) | `CRITICAL HIT · <ATTRIBUTE>` | "Critical hit on Rook" (· Sigil / · Outburst; a companion: "Rex: critical hit on Rook") |
 | crit | `CRITICAL SUCCESS · <ATTRIBUTE>` | "Natural 20 · Heroic" or "Natural 20 · Hard", with the skill: "Natural 20 on Composure · Heroic" |
 | takedown | `TAKEDOWN · <ATTRIBUTE>` | "Took down <targetName>" (an unseen target: "Took down an unseen hostile") |
 | revive | `REVIVE · <ATTRIBUTE>` | "Brought <name> back" |
@@ -328,6 +352,9 @@ under it (store.ts switches to `ultimate`), blurred, and is revealed as the cut-
 | Out (strips part up and down, fade) | 1050–1300 | … +250 | … +250 | 800–950 fade |
 | Blur clears | 1200–1400 | to ≤ 1600 | to ≤ 1600 | 900–1000 |
 | **Total** | **1400** | **1470–1610 → capped 1600** | **1500–1600** | **1000** |
+
+A fight's crit (§1.4) is the short form: one strip, caption in at 140 ms, the way out from 600 ms (200 ms), **900 ms**
+in all (reduced motion 800).
 
 Constants in `spotlight/timing.ts`: `CUTIN_MS(n, god, rm)`, `CUTIN_MAX_MS = 1700` (the safety cap, §6.3).
 
@@ -490,13 +517,12 @@ status, `docs/HANDOFF.md`.
 5. **Enemy moments:** only party moments cut in. A boss's own entrance or its big attack could use the same strip
    (red-inked) later. Want that?
 6. **Revive layout:** the reviver's strip and the revived one's, stacked. Or only the reviver?
-7. **Decision number:** this is decision 113 (develop's 0.6.0 took 110 for the mana forecast). Faith 2.2
-   (`feature/faith-presence`) also claims 110: it renumbers when it merges develop.
-8. **Interventions gate and slow (section 12):** an intervention is a spotlight moment here, so it holds the queue
-   (about 1.5 s, input held only while it shows) and slows the action it happened in. Faith 2.2's draft wanted a small
-   cut-in that never holds the queue. I chose one path, this one, because you asked for this UI at the god's moment.
-   If you'd rather the god's moment stayed small, the switch is one line in `faith.ts` `intervene()` (drop the
-   `spotlight` call) and the small cut-in in `playIntervention`.
+7. **Decision number:** settled: decision 113 (110 the mana forecast, 111 Faith 2.2, 112 the brass).
+8. **Interventions gate and slow (section 12):** answered (Leon, 9 Nov 2026: "implement it to the god interjection
+   moment too"): the god's moment is this cut-in, gating the queue and slowing its action; Faith 2.2's small cut-in is
+   not used.
+9. **Crit strips:** a fight's crit is a slimmer strip (22vh) than the big moments (29vh), so the smaller moment reads
+   smaller. Keep it, or the same height as the others?
 
 ## 11. Build notes (9 Nov 2026)
 
@@ -538,28 +564,43 @@ What the build did differently from the design above, and why:
    a boss kill (the music's old chain); the `interject` flag. Tests through `apply()` for the enemy-turn `from`, the
    dry run and the song chain.
 
-## 12. Meeting Faith 2.2 (`feature/faith-presence`)
+10. **Round 2 (the merge with develop 0.8.0 and Leon's two rulings):** the god's moment is this cut-in (section 12);
+   the combat crits (section 1.4: `noteCrit` and `critMoment` in the engine, the short form and the slimmer strip in the
+   client); the brass's own timers follow the tempo; one stage with the Miracle (`game/stage.ts`). Tests: the engine's
+   crit cases through `apply()` (a weapon crit, a plain hit, a crit that drops a boss, an enemy's crit, a companion's, a
+   Sigil crit, a stale note and the dry run), `spotlight/crit.test.ts` (the spec, the timing, the gate, the brass at
+   0.85) and `spotlight/merge.test.ts`; e2e `cutins.mjs` (f) a crit, (g) a crit that takes down a boss, (h) the
+   Quartermaster's intervention, (i) a Miracle and a strip asked for during it. Screens: `cutins-f-crit.png`,
+   `cutins-g-crit-takedown.png`, `cutins-h-god.png`, `cutins-i-miracle.png`, `cutins-i-after-miracle.png`.
 
-Faith 2.2 (the other implementer's branch, pushed 9 Nov 2026, based on develop 0.4.0) left the trigger Leon asked for:
-`playIntervention(e, kit)` in `apps/web/src/game/cutIn.ts`, called by `fx/faith.ts` for every `intervention` fx event.
-It is not merged into develop yet, and it predates Sigil 1.5 and the mana forecast, so this branch does not merge it
-(that would pull an unreviewed feature and its Sigil conflicts in here). Instead the two are made to meet cleanly:
+## 12. Meeting Faith 2.2 (`feature/faith-presence`): merged
 
-- **One path for an intervention's cut-in: the engine's `spotlight` event** (kind `god`, from `faith.ts` `intervene()`).
-  It is the only one that can gate the queue (the client knows about it before the action plays) and it already carries
-  the patron, the fighter, the patron's line and the target. When Faith 2.2 merges, `playIntervention` keeps the map
-  effect it plays today (the bell, the mark at the tile, "<PATRON> INTERVENES") and **does not draw a cut-in**: its
-  small-cut-in draft is not used for interventions. `faithBeat('intervention')` stays 650 ms (the gate is separate).
-- **Their `intervene()` rewrite:** keep it whole and add the one call after its `speak()`, as here:
+Faith 2.2 came in with develop 0.8.0 (with the brass). How the two meet, as built at the merge:
+
+- **One path for an intervention's cut-in: the engine's `spotlight` event** (kind `god`), from Faith 2.2's rewritten
+  `faith.ts` `intervene()`, kept whole with one call after its `speak()` (which now returns the line it said):
   `if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron, char, unit, reason, line, target, targetName, targetChar })`.
-  `speak()` returns the line (this branch's change). Faith 2.2 widens the triggers and allows a second intervention from
-  Devotion 7, so god cut-ins come more often; "Once per scene" is the player's brake.
-- **The Miracle:** Faith 2.2 replaces the Miracle overlay with its own large portrait cut-in (`miracleCutIn`), the
-  patron appearing at full size. At the merge, take theirs and drop this branch's strip from `miracleOverlay` (it
-  stays only as their wrapper). Whether their Miracle portrait gets the torn edges is Leon's call (open question 2).
+  It is the only path that can gate the queue (the client knows of it before the action plays) and it carries the
+  patron, the fighter, the patron's line and the target. Leon confirmed it ("implement it to the god interjection
+  moment too"). `playIntervention(e, K)` in `game/cutIn.ts` keeps its map effect at once (the bell, the patron's mark at
+  the tile, "<PATRON> INTERVENES") and **draws no cut-in**: the small cut-in drafted in Faith 2.2's spec section 3 is
+  not used (that section now says so). Faith 2.2 widened the triggers and allows a second intervention from Devotion 7,
+  so god cut-ins come more often; "Once per scene" is the player's brake.
+- **The Miracle:** Faith 2.2's scene (`showCutIn`, `miracleCutIn`: the patron at full size, about 6 s) replaces this
+  branch's Miracle strip; `miracleOverlay` is only their wrapper now.
+- **One stage** (`game/stage.ts`): the Miracle's scene and the strips never draw over each other. A Miracle that comes
+  on clears a strip on screen at once (no way out); a strip asked for while the Miracle's portrait is up waits in the
+  spotlight queue until it lands (a fight's gate still opens by its 1.7 s cap, so a gate that would wait longer shows
+  no cut-in and its action plays at normal speed); a strip that starts while the Miracle's "what it did" box is up
+  closes the box first. In the effects queue, a spotlight in the Miracle's own action (the Miracle drops a boss) is
+  decided at once: only the Miracle shows, no strip, no slowed action.
+- **The scheduler:** their `schedule()`/`hurryFx` (a skipped Miracle moves the queue up) run over this branch's gate:
+  `hurryFx` leaves a gate's cut-in on screen alone (its own end reschedules what waits behind it); a gate not reached
+  yet moves up with the rest, its estimates with it. A bow's draw keeps its full time in a sped-up backlog and is
+  slowed with the rest of a slowed segment. `clearFx` drops both systems' cut-ins (`dropCutIns`, `closeCutIns`).
+- **Patron ids:** the data's `toll_keeper` and `counting_weaver` against the art's `the_toll_keeper` and
+  `the_counting_weaver`: every lookup (accent, face box, portrait, mark, eye line, the strip) takes either form, and a
+  web test checks all eight patrons under both (`spotlight/merge.test.ts`). No gold fallback is left.
 - **Names:** this branch's module is `game/spotlight/` (`showSpotlight`, `cancelSpotlight`, `CutInLayer`); theirs is
-  `game/cutIn.ts` (`showCutIn`, `closeCutIns`). Their `clearFx` closing every cut-in and this branch's `dropCutIns()`
-  both stay in `fx/play.ts` `clearFx`; their `hurryFx` (a skipped Miracle moves the queue up) and this branch's gate
-  touch the same scheduler: a skipped spotlight already reschedules from its real end, so `hurryFx` only needs to
-  leave a closed gate alone (`if (held) return`).
-- **Decision numbers:** develop 110 (mana forecast), this 111, Faith 2.2 becomes 112.
+  `game/cutIn.ts` (`showCutIn`, `closeCutIns`).
+- **Decision numbers:** 110 the mana forecast, 111 Faith 2.2, 112 the brass, 113 the cut-ins.
