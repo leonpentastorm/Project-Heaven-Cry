@@ -103,3 +103,35 @@ export function joinUri(segs: JoinSeg[], o: { size: number; pad: number; anchor:
   const v = -o.pad, span = o.size + 2 * o.pad;
   return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${v} ${v} ${span} ${span}" fill="none">${lines}</svg>`);
 }
+
+/** Rules 1.9 word mastery: a five-point star, hollow for a Practised word, filled for a Mastered one (Intelligence ink;
+ * always shown with its word, PRACTISED or MASTERED). 'new' draws a faint dotted outline. */
+export function starUri(tier: 'new' | 'practised' | 'mastered', color = SIGIL_INK): string {
+  const pts: string[] = [];
+  for (let i = 0; i < 10; i++) { const r = i % 2 ? 4.2 : 10, a = -Math.PI / 2 + i * Math.PI / 5; pts.push((12 + r * Math.cos(a)).toFixed(2) + ',' + (12.6 + r * Math.sin(a)).toFixed(2)); }
+  const fill = tier === 'mastered' ? color : 'none', stroke = tier === 'new' ? '#3B475D' : color;
+  return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="1.6" stroke-linejoin="round"${tier === 'new' ? ' stroke-dasharray="2 2"' : ''}/></svg>`);
+}
+
+/** Rules 1.9 sigil marks: an old Sigil word cut into a wall, as a carved stone plate. The groove is drawn three times
+ * (a dark cut, a lit lower lip, the faint word ink inside), so it reads as carved, not painted. word: the glyph, or
+ * null for a word you can't read yet (unread scratches in the same carved style). age: fresh glows faintly cyan, old is
+ * plain stone, ancient is darker and weathered. damage: worn breaks the groove into dashes, broken adds a crack. */
+export function markSvg(word: string | null, o: { age?: string; damage?: string; size?: number } = {}): string {
+  const size = o.size || 48, age = o.age || 'old', dmg = o.damage || 'intact';
+  const d = word ? (GLYPH_PATHS[word] || 'M6 6 L18 18 M18 6 L6 18') : 'M7 8 L12 6 L10.5 12 L16 10.5 M8 16.5 L16.5 15.5 L14 19 M15.5 5.5 L18 9';
+  const plate = age === 'ancient' ? '#151A22' : '#1E2530', rim = age === 'ancient' ? '#2A313C' : '#3A4452', lit = age === 'ancient' ? '#4A5361' : '#6F7A8A';
+  const ink = age === 'fresh' ? SIGIL_INK : age === 'ancient' ? '#5F7F88' : '#9FB4BC';
+  const dash = dmg === 'worn' || dmg === 'broken' ? ' stroke-dasharray="3.2 1.6"' : '';
+  const glow = age === 'fresh' ? `<filter id="m"><feGaussianBlur stdDeviation="0.9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` : '';
+  const crack = dmg === 'broken' ? `<path d="M3.5 4 L8 9.5 L6.5 12.5 L11 16 L9.5 21" stroke="#05070B" stroke-width="1.3" fill="none"/><path d="M4 4.6 L8.5 10" stroke="${lit}" stroke-width="0.5" fill="none"/>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}">${glow}`
+    + `<path d="M2.5 3.2 L21.2 2.5 L21.6 21.4 L2.8 21.7 Z" fill="${plate}" stroke="${rim}" stroke-width="1"/>`
+    + `<path d="M3.6 20.6 L20.6 20.4 L20.4 3.6" fill="none" stroke="#0A0D13" stroke-width="0.8" stroke-opacity="0.8"/>`
+    + `<g transform="translate(2.4 2.4) scale(0.8)" fill="none" stroke-linecap="round" stroke-linejoin="round">`
+    + `<path d="${d}" stroke="${lit}" stroke-width="3.4" transform="translate(0.5 0.7)"${dash}/>`
+    + `<path d="${d}" stroke="#05070B" stroke-width="3"${dash}/>`
+    + `<path d="${d}" stroke="${ink}" stroke-width="1.1" stroke-opacity="${age === 'ancient' ? 0.6 : 0.9}"${dash}${glow ? ' filter="url(#m)"' : ''}/></g>`
+    + crack + `</svg>`;
+}
+export const markUri = (word: string | null, o: { age?: string; damage?: string } = {}) => 'data:image/svg+xml,' + encodeURIComponent(markSvg(word, o));

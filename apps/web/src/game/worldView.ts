@@ -7,7 +7,8 @@
 // its word and glyph, success green for a safe path, white for markers (still to do), neutrals for kind badges.
 import { type GameState, type Character, type TalkOption, type Marker, type HazardTile, type MapObject, type Npc,
   FAIL_HURT, HAZARD, SKILL, WORLD_AP, TALK_RANGE, condName, refOf, dist, positionsOf, npcsOf, isCache, carriedOf, carryable, carriedKg, carryLimit,
-  hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable } from '@engine';
+  hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable, SIGIL, MARK, markTn } from '@engine';
+import { markUri, SIGIL_INK } from './glyphs';
 
 // ---------- kinds: a robot looks like a robot ----------
 export const KIND_WORD: Record<string, string> = { human: 'HUMAN', robot: 'ROBOT', drone: 'DRONE', crawler: 'CRAWLER', beast: 'BEAST', machine: 'MACHINE' };
@@ -104,7 +105,7 @@ export const holdsText = (n: number, searched?: boolean) => (searched || !n ? 'S
 // ---------- approaches in plain words ----------
 export const SUCCESS_WORDS: Record<string, string> = {
   remove: 'clears it out of the way', open: 'opens it', reveal: 'shows what is hidden nearby', disarm: 'makes it safe (removes it)', loot: 'you take what it holds',
-  advance: 'the objective is done', ally: 'they come over to your side', inform: 'they tell you what they know (a marker on the map)', safe: 'marks a safe path for the squad', '': 'the Narrator says what happens',
+  advance: 'the objective is done', study: 'you copy the word for study; a critical teaches it outright', ally: 'they come over to your side', inform: 'they tell you what they know (a marker on the map)', safe: 'marks a safe path for the squad', '': 'the Narrator says what happens',
 };
 /** The raw approach behind an option (for failCondition, failItem, objective and stakes the option doesn't carry). */
 export function rawApproach(g: GameState, targetId: string, idx: number): any {
@@ -243,9 +244,45 @@ export function nearItems(g: GameState, charId: string | undefined, busy = ''): 
   return out;
 }
 
+// ---------- sigil marks (rules 1.9, 3a): a carved word on the map, and its Investigate panel ----------
+/** Can this character read the mark's word (they know it, or copied it already)? Others see unread scratches: the
+ * word is in the shared state, but the screen never names it before you have read it. */
+export function markReadable(g: GameState, o: MapObject, charId?: string): boolean {
+  const w = o.word, c = charId ? g.characters[charId] : undefined;
+  if (!w || !SIGIL[w] || !c) return false;
+  return (c.sigils || []).includes(w) || ((o as any).copiedBy || []).includes(c.id) || (((c as any).sigilGrowth?.toStudy || []) as string[]).includes(w);
+}
+const AGE_WORD: Record<string, string> = { fresh: 'FRESH', old: 'OLD', ancient: 'ANCIENT' }, DMG_WORD: Record<string, string> = { intact: 'INTACT', worn: 'WORN', broken: 'BROKEN' };
+/** The marker a sigil mark draws on its tile: the carved plate (its glyph once you've read it), with a white ring while
+ * it's still unread by you (something to do), as other points of interest are white. */
+export function markLook(g: GameState, o: MapObject, charId?: string, big = true): { src: string; style: string; title: string } {
+  const read = markReadable(g, o, charId), age = o.age || MARK.age, dmg = o.damage || MARK.damage;
+  return { src: markUri(read ? o.word! : null, { age, damage: dmg }),
+    style: 'position: absolute; inset: ' + (big ? '8%' : '4%') + '; z-index: 2; width: ' + (big ? '84%' : '92%') + '; height: ' + (big ? '84%' : '92%') + '; pointer-events: none; border-radius: 2px' + (read ? '' : '; box-shadow: 0 0 0 ' + (big ? 2 : 1) + 'px rgba(255, 255, 255, 0.85)'),
+    title: o.name + ' · a sigil mark · ' + (read ? SIGIL[o.word!].word : 'an unread word') + ' · ' + age + ', ' + dmg + ' · TN ' + markTn(age, dmg) };
+}
+export interface MarkVals { img: string; word: string; wordStyle: string; kicker: string; rule: string; outcome: string; hasOutcome: boolean; outcomeStyle: string }
+/** The sigil mark's part of the object panel: the plate big, what you can read of it, age, damage and TN, how
+ * Investigate works, and what your try came to. Numbers are the engine's (MARK, markTn). */
+export function markVals(g: GameState, o: MapObject, charId?: string): MarkVals | null {
+  if (o.kind !== 'sigil_mark') return null;
+  const c = charId ? g.characters[charId] : undefined, w = o.word && SIGIL[o.word] ? o.word : null, read = markReadable(g, o, charId);
+  const age = o.age || MARK.age, dmg = o.damage || MARK.damage, tn = markTn(age, dmg), name = w ? SIGIL[w].word : '';
+  const knows = !!(c && w && (c.sigils || []).includes(w)), copied = !!(c && w && !knows && read);
+  const inv = o.approaches.find((a) => a.success === 'study'), mine = c && inv ? inv.tries.filter((t) => t.charId === c.id) : [], failed = mine.length > 0 && !mine.some((t) => t.ok);
+  const outcome = !c ? '' : knows ? (mine.some((t) => t.ok) ? '✓ ' + name + ' is yours: you know the word.' : 'You know ' + name + ': there is nothing to learn here.')
+    : copied ? '✓ Copied: ' + name + ' is on your known-to-study list. A study pick can learn it (Magic tab).'
+    : failed ? '✕ You couldn\'t make it out. Each of you gets one try.' : '';
+  return { img: markUri(read ? w : null, { age, damage: dmg }), word: read && w ? name + ' · ' + (SIGIL[w].text || '') : 'An unread word. Investigate it to find out.',
+    wordStyle: 'font-size: 13px; line-height: 1.4; color: ' + (read ? SIGIL_INK : '#C9D3E3'),
+    kicker: 'SIGIL MARK · ' + (AGE_WORD[age] || age.toUpperCase()) + ' · ' + (DMG_WORD[dmg] || dmg.toUpperCase()) + ' · TN ' + tn,
+    rule: 'Investigate: roll the better of ' + MARK.skills.map((s) => SKILL[s]?.name || s).join(' or ') + ', 2 AP, on or next to it. A success copies the word (+' + MARK.study + ' study). A critical teaches it, if you have room for a word.',
+    outcome, hasOutcome: !!outcome, outcomeStyle: 'font-size: 12px; font-weight: 700; line-height: 1.4; color: ' + (knows || copied ? '#6FEA77' : '#A3AEC2') };
+}
+
 // ---------- the map's cells: everything World Play draws on one tile ----------
-export interface WorldCell { hz?: HazardCell; mark?: ReturnType<typeof markerCells> extends Map<string, infer V> ? V : never; cache?: ReturnType<typeof cacheLook> }
-export function worldLayer(g: GameState, big = true): { cells: Map<string, WorldCell>; legend: ReturnType<typeof hazardLegend>; tiles: HazardTile[]; marks: Marker[] } {
+export interface WorldCell { hz?: HazardCell; mark?: ReturnType<typeof markerCells> extends Map<string, infer V> ? V : never; cache?: ReturnType<typeof cacheLook>; sigil?: ReturnType<typeof markLook> }
+export function worldLayer(g: GameState, big = true, charId?: string): { cells: Map<string, WorldCell>; legend: ReturnType<typeof hazardLegend>; tiles: HazardTile[]; marks: Marker[] } {
   let tiles: HazardTile[] = [], marks: Marker[] = [];
   try { tiles = hazardTilesFor(g, 'pc'); } catch { /* */ }
   try { marks = markersFor(g, 'pc'); } catch { /* */ }
@@ -254,6 +291,7 @@ export function worldLayer(g: GameState, big = true): { cells: Map<string, World
   for (const [k, v] of markerCells(marks, big)) get(k).mark = v;
   const objs: MapObject[] = g.phase === 'combat' && g.combat ? g.combat.objects || [] : storyObjects(g);
   for (const o of objs) if (!o.hidden && isCacheV(o)) get(o.pos).cache = cacheLook(o, big);
+  for (const o of objs) if (!o.hidden && o.kind === 'sigil_mark') get(o.pos).sigil = markLook(g, o, charId, big);
   return { cells, legend: [...hazardLegend(tiles), ...markerLegend(marks)], tiles, marks };
 }
 export { refOf };
