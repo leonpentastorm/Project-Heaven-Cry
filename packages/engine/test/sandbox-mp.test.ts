@@ -216,6 +216,14 @@ describe('team fight', () => {
     const after = apply(turnB, { type: 'combat/end-turn', unitId: b.id } as Action, P2);
     expect(active(after.combat!)!.id).not.toBe(b.id);
   });
+  it('a Team B fighter changed mid-fight (Give + equip) stays on Team B', () => {
+    const g = apply(teams(), { type: 'sandbox/fight' }, HOST);
+    const b = g.combat!.units.find((u) => g.characters[u.charId!]?.owner === P2)!;
+    const after = apply(g, { type: 'sandbox/give', charId: b.charId!, item: 'hellraiser_lmg', equip: true } as Action, P2);
+    const b2 = after.combat!.units.find((u) => u.id === b.id)!;
+    expect(b2.side).toBe('foe'); expect(after.characters[b.charId!].weapon).toBe('hellraiser_lmg');
+    expect(viewFor(after, P2).combat!.units.find((u) => u.id === b.id)!.side).toBe('pc');
+  });
   it('a player who left mid-fight: the host may pass their unit\'s turn (and only end it); a guest may not', () => {
     const g = apply(teams(), { type: 'sandbox/fight' }, HOST);
     const b = g.combat!.units.find((u) => g.characters[u.charId!]?.owner === P2)!;

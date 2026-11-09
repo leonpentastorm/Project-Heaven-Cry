@@ -103,16 +103,37 @@ describe('level-up screen', () => {
     expect(el.querySelector('.phc-lu-class-chip img')).toBeTruthy();
     root.unmount();
   });
-  it('perk steps: one card per skill, both choices side by side, each with who runs it', async () => {
-    const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = Math.max(c.attrs.agility, 5); c.cores.body = Math.max(c.cores.body, 5); c.skills.dexterity = 5; c.perks = []; });
+  it('the tree (Leon, 9 Nov 2026): every skill under its attribute under its core, its perks attached and their states', async () => {
+    const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = Math.max(c.attrs.agility, 5); c.cores.body = Math.max(c.cores.body, 5); c.skills.dexterity = 5; c.perks = []; c.unspent = { skill: 1, attr: 1, core: 1 } as any; });
     const { el, root } = await mount();
-    const step = el.querySelector('.phc-lu-step[data-skill="dexterity"]')!;
-    expect(step).toBeTruthy();
-    const choices = step.querySelectorAll('.phc-lu-pair > button.phc-lu-choice');
-    expect(choices.length).toBe(2);
-    expect(choices[0].textContent).toMatch(/Engine runs it|Narrator rules it|Both/);
+    // three cores, three attributes each, three skills each
+    expect([...el.querySelectorAll('.phc-lu-core')].map((x) => x.getAttribute('data-core'))).toEqual(['body', 'mind', 'soul']);
+    expect(el.querySelectorAll('.phc-lu-core[data-core="body"] .phc-lu-attrcol').length).toBe(3);
+    expect(el.querySelectorAll('.phc-lu-attrcol[data-attr="agility"] .phc-lu-skill').length).toBe(3);
+    // Dexterity 5 with no perks: two steps waiting; each perk offers Tier I; the Mastered perk is locked at 10
+    const dex = el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!;
+    expect(dex.classList.contains('phc-lu-step')).toBe(true);
+    expect(dex.querySelector('.phc-lu-stepline')!.textContent).toMatch(/2 PERK STEPS TO TAKE/);
+    const choices = dex.querySelectorAll('.phc-lu-perk button.phc-lu-choice');
+    expect(choices.length).toBe(2); expect(choices[0].textContent).toBe('Take · Tier I');
+    expect(dex.querySelector('.phc-lu-mastered')!.textContent).toMatch(/AT 10 PTS/);
+    // the Mastery marks: M1 and M2 reached (filled), M3, M4 and ★ not
+    expect([...dex.querySelectorAll('[aria-label="Mastery"] > span')].map((x) => x.textContent)).toEqual(['M1', 'M2', 'M3', 'M4', '★']);
+    // a step taken: that perk now reads as yours, and the other offers its Tier I (one step left)
     await React.act(async () => { (choices[0] as HTMLButtonElement).click(); });
     expect(G.characters[c0.id].perks.length).toBe(1);
+    const dex2 = el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!, taken = G.characters[c0.id].perks[0].id;
+    expect(dex2.querySelector('.phc-lu-perk[data-perk="' + taken + '"]')!.getAttribute('data-state')).toBe('owned');
+    expect(dex2.querySelector('.phc-lu-perk[data-perk="' + taken + '"]')!.textContent).toMatch(/✓ TIER I/);
+    // points: the raise buttons spend through the engine (core, then attribute, then skill)
+    const raise = (sel: string) => el.querySelector(sel) as HTMLButtonElement;
+    await React.act(async () => { raise('.phc-lu-core[data-core="mind"] button[data-raise="core"]').click(); });
+    expect(G.characters[c0.id].unspent.core).toBe(0);
+    await React.act(async () => { raise('.phc-lu-attrcol[data-attr="perception"] button[data-raise="attr"]').click(); });
+    expect(G.characters[c0.id].unspent.attr).toBe(0);
+    const before = G.characters[c0.id].skills.vigilant || 0;
+    await React.act(async () => { raise('.phc-lu-skill[data-skill="vigilant"] button[data-raise="skill"]').click(); });
+    expect(G.characters[c0.id].skills.vigilant).toBe(before + 1);
     root.unmount();
   });
   it('advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing listed, nothing to learn', async () => {

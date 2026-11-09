@@ -3,7 +3,7 @@
 // moves the rank has unlocked.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, newCharacter, startCombat, MAPS, type Character } from '@engine';
-import { actionGroups, catalogue, pkId, classOf, pickChoice, wantsDetail, perkEntries } from './commands';
+import { actionGroups, catalogue, pkId, classOf, pickChoice, wantsDetail, perkEntries, PK, PKI } from './commands';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
 // Class Roster Revision 3 shelves advanced classes; this file's advanced-move UI tests turn them on (test-only switch).
@@ -67,6 +67,22 @@ describe('the Perks and Class tabs', () => {
     expect(cl[1].map((i: any) => i[1])).toEqual(expect.arrayContaining(['Six for Six', 'Called Shot']));
     expect(cl[1].map((i: any) => i[1])).not.toContain('The Draw'); // automatic at the fight's start: no dead button
     const k = classOf(c)!; expect(k.icon).toMatch(/^data:image\/svg\+xml/); expect(k.ink).toBe('#F2A54A');
+  });
+});
+
+describe('the Perks tab: items used from another action are read-only (Leon, 9 Nov 2026)', () => {
+  it('Overdraw, Pure Heart and The Twin Pays have no Confirm (no pk: action) but a row to read, and never become turn-card commands', () => {
+    const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' }] }), f = fight(c);
+    const gr = actionGroups(f.cb, f.u, c, { g: f.g }), rows = (gr.find((x) => x[3] === 'perks')?.[1] || []) as any[];
+    const keys = ['skill:will_power.3', 'skill:will_power.5', 'perk:the_twin_pays'];
+    // not one of them runs from the tab (a pk: id is a Confirm)
+    for (const k of keys) expect(rows.some((r) => r[0].startsWith(PK + k + '#'))).toBe(false);
+    const ro = rows.filter((r) => r[0].startsWith(PKI));
+    expect(ro.map((r) => r[0]).sort()).toEqual(keys.map((k) => PKI + k).sort());
+    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.3')).toMatchObject({ 1: 'Overdraw', 2: 'on Pump · 1/1 combat' });
+    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.5')![2]).toMatch(/^automatic/);
+    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![3]).toMatch(/^Used from Begin\. /);
+    expect(catalogue(f.cb, f.u, c, { g: f.g }).some((e) => e.action.startsWith(PKI))).toBe(false);
   });
 });
 

@@ -47,3 +47,4 @@ BASE=http://127.0.0.1:8797 node apps/web/e2e/ground.mjs   # HTTPS_PROXY may stay
 ```
 
 Screenshots land in `apps/web/e2e/shots/`. Playwright is loaded with `require('playwright')`.
+- `pg-levelup.mjs`: the UI pass for the Proving Ground, level up and the Perks tab (Leon, 9 Nov 2026). Gearing up, the whole centre column is the tools: the Practice card, Start the fight, the tool search (Give finds weapons; no match says so), cards folding and staying folded, one/two/three columns at 1280/1440/1920, the hint in the bottom panel, Close the tools and the side tab, and a fight that starts with the drawer back. The Perks tab: Overdraw, Pure Heart and The Twin Pays as rows to read with no Confirm. Level up as the character tree: 3 cores, 9 attributes, 27 skills; Core, Attribute and skill points spent with the +1 buttons; a capped Attribute's +1 disabled; a perk step taken from the skill's card and then read as yours. Shots: `shots/pgl-*.png`.

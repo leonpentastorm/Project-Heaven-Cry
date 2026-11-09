@@ -2002,8 +2002,9 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
   Warden's Ward move; rituals are Pray and Crystallise.
 - **Upper-realm beings** are enemies with `kind: upper_realm` (or the tag `upper_realm`) on the Narrator's start_fight
   enemies or the campaign's zone NPCs.
-- **Verse** is declared by the player: Say the line in the fight (free), then Begin with "In verse" (or "Release in
-  verse" for a held Outburst). The Narrator audits it after the fight, never per cast.
+- **Verse** is declared by the player: Say the line in the fight (free), then Begin with "In verse" (or Release a held
+  Outburst with the same "In verse" chip; on the area map, "Release in verse"). The Narrator audits it after the fight,
+  never per cast.
 - **The music traits' modifier** reaches every d20 that uses the skill: story checks, asks and stealth (music.ts), voice
   passives and initiative, and in a fight the weapon attack, Sigil and Soul strikes, prayer, shoves, spotting and the
   three saves. It never reaches derived stats. A shield of 30 or more you give starts your song, the same as a big heal.
@@ -3055,8 +3056,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - The pattern's Subject words don't fire (nor PULL, STEP or LEECH), and its glyphs fade (a Keystone stays).
     - A placed spell (STAY, WAIT, WATCH) can't be fused.
 171. *(D10)* **Verse of War** (plan 4.3). It applies only when the player has Said a line that round (on the area map, the
-    toggle alone). +1 range on Begin, and on Release through "Release in verse". ×1.1 on the Soul damage of that
-    release.
+    toggle alone). +1 range on Begin, and on Release through its "In verse" chip ("Release in verse" on the area map).
+    ×1.1 on the Soul damage of that release.
 172. *(D11)* **Fire Sermon** (PROVISIONAL). Enemies within 4 tiles. The Heart save is against 12 + your Heart debuff strength
     (Implication).
 173. *(D12)* **Litany.** You are included. It doesn't stack: the higher Litany stands. It ends at your next turn start.

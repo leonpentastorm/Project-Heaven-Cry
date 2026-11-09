@@ -4,7 +4,7 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry,
+import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, perkInfoFor, bindGame, type PerkActionEntry, type PerkInfoEntry,
   focusHand, NEEDS_EVOKER, NEEDS_EMANATOR, reloadBothAp, PILE, PICKUP_AP, dist } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
@@ -50,6 +50,19 @@ export function perkEntries(g: any, cb: any, u: any, ch: any, scope: 'combat' | 
   const was = bindGame(g || null);
   try { return perkActionsFor({ u, c, cb, g }, scope); } catch { return []; } finally { bindGame(was); }
 }
+/** A read-only row in the Perks tab: "pki:<item key>". The item is used from another action (a chip on Pump, Begin, an
+ *  attack) or by itself; the row shows what it does and its uses, with no Confirm (Leon, 9 Nov 2026). */
+export const PKI = 'pki:';
+export const isPerkInfo = (id: string | null | undefined) => !!id && id.startsWith(PKI);
+/** The unit's items to read in the Perks tab (engine perkInfoFor), with the game bound. */
+export function perkInfoEntries(g: any, cb: any, u: any, ch: any): PerkInfoEntry[] {
+  if (!u) return [];
+  const c = ch || (g && u.charId ? g.characters?.[u.charId] : null);
+  const was = bindGame(g || null);
+  try { return perkInfoFor({ u, c, cb, g }, 'combat'); } catch { return []; } finally { bindGame(was); }
+}
+/** "on Pump · 1/1 combat", "automatic · 1/1 combat": where a read-only item is used, and its uses. */
+export const perkInfoCost = (e: PerkInfoEntry) => (e.via === 'Automatic' ? 'automatic' : e.via.replace(/^Used from /, 'on ')) + (e.uses.label ? ' · ' + e.uses.label : '');
 /** A character's story-side perk, trait and class actions (the story panel's Perks strip). */
 export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
   if (!ch || !g) return [];
@@ -168,7 +181,9 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   const pk = perkEntries(opts.g, cb, cur, ch, 'combat');
   const pkItem = (e: PerkActionEntry): ActionItem => { const st = pkState(e); return [pkId(e), e.label + st.tag, pkCost(e), pkText(e), st.why]; };
   const perks = pk.filter((e) => e.tab === 'perks'), moves = pk.filter((e) => e.tab === 'class');
-  if (perks.length) ITEMS.push(['PERKS & TRAITS', perks.map(pkItem), null, 'perks']);
+  // Items used from another action, listed to read (no Confirm): "<via>. <text>".
+  const info = perkInfoEntries(opts.g, cb, cur, ch).filter((e) => e.tab === 'perks').map((e): ActionItem => [PKI + e.id, e.label, perkInfoCost(e), e.via + '. ' + e.text, null]);
+  if (perks.length || info.length) ITEMS.push(['PERKS & TRAITS', [...perks.map(pkItem), ...info], null, 'perks']);
   if (moves.length) { const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), moves[0].cls); ITEMS.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves.map(pkItem), k ? k.ink : null, 'class']); }
   // Magic, two groups that never mix: Sigils (Mind cyan) and Outbursts (Soul violet). Only for a unit that has magic.
   if (hasMagic) {
@@ -245,7 +260,8 @@ export function whyNot(u: any, action: string, cost: string): string | null {
 /** Every action the unit has, flat, with its tab and why it can't be used right now (null when it can). */
 export function catalogue(cb: any, u: any, ch: any, opts: ActionOpts = {}): CatEntry[] {
   if (!u) return [];
-  return actionGroups(cb, u, ch, opts).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text, why]) => ({ action, label, cost, text, tab, ink, why: u.downed ? 'Downed.' : why !== undefined ? why : whyNot(u, action, cost) })));
+  // Read-only perk rows are never commands (they have no action to run).
+  return actionGroups(cb, u, ch, opts).map(([n, items, ink, tab]) => [n, items.filter((it) => !isPerkInfo(it[0])), ink, tab] as ActionGroup).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text, why]) => ({ action, label, cost, text, tab, ink, why: u.downed ? 'Downed.' : why !== undefined ? why : whyNot(u, action, cost) })));
 }
 
 /** The smart default: an attack (or Clear jam), Move, Reload (or Shove), then the unit's signature move. */

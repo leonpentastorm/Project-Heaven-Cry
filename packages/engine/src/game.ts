@@ -2666,6 +2666,7 @@ function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
   const i = cb.units.findIndex((u) => u.charId === c.id); if (i < 0) return;
   const old = cb.units[i], u = unitFromCharacter(c, old.pos, { state: g.rng.state });
   u.init = old.init;
+  u.side = old.side; // a Team B fighter stays on Team B (a team fight's foe side) when it changes mid-fight
   if (mode === 'keep') {
     for (const k of SB_KEEP) if (old[k] !== undefined) (u as any)[k] = JSON.parse(JSON.stringify(old[k]));
     if (old.offWeapon && old.offWeapon === u.offWeapon) u.offAmmo = old.offAmmo;

@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   apply, emit, emitStory, applyCond, applyDamage, healUnit, grantShield, resolveAttack, previewOutburst, designCost, manaOf, passive, statQuery, skillRollMod,
-  d20, die, PATRONS, memoryOf, musicOf, unitSave, condOn, togglesFor, type Unit, type Combat, type GameState,
+  d20, die, PATRONS, memoryOf, musicOf, unitSave, condOn, togglesFor, perkActionsFor, perkInfoFor, type Unit, type Combat, type GameState,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { strokePool } from '../src/perks/d';
@@ -441,14 +441,18 @@ describe('Mirage (sound) and Verse of War (release)', () => {
     const ctx = withGame(f.g, () => emit(f.cb, 'enemy_action_start', { u: e, step: 0, skip: false, cb: f.cb, rng: f.g.rng }));
     expect(ctx.skip).toBe(true); expect(Math.abs(+e.pos.split(',')[1] - 1)).toBeLessThan(d0);
   });
-  it('Release in verse: a held Outburst with +1 tile of range, the line to the Narrator', () => {
+  it('Release in verse: in a fight the In verse chip on Release is its one button (no Perks-tab Confirm); +1 tile of range, the line to the Narrator', () => {
     const f = soulFight({ verse_of_war: 'achieved' }); f.foe.maxHp = f.foe.hp = 5000; const d = f.pc.mg!.designs[0];
     const r = withGame(f.g, () => previewOutburst(f.cb, f.pc, d.id, f.pc.pos).range);
     f.act({ type: 'combat/outburst', unitId: f.pc.id, design: d.id, hold: true });
     f.foe.pos = (2 + r + 1) + ',5';
     expect(() => f.act({ type: 'combat/release', unitId: f.pc.id, aim: f.foe.pos })).toThrow(/reach/);
     f.act({ type: 'combat/say', charId: f.pc.charId!, text: 'Here ends the line' } as any);
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'verse_of_war', actionId: 'release', tile: f.foe.pos } as any);
+    const who = { u: f.pc, c: f.g.characters[f.pc.charId!], cb: f.cb, g: f.g };
+    expect(withGame(f.g, () => perkActionsFor(who, 'combat')).map((e) => e.id)).not.toContain('perk:verse_of_war');
+    expect(withGame(f.g, () => perkInfoFor(who, 'combat')).find((e) => e.id === 'perk:verse_of_war')).toMatchObject({ via: 'Used from Begin or Release' });
+    expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'verse_of_war', actionId: 'release', tile: f.foe.pos } as any)).toThrow();
+    f.act({ type: 'combat/release', unitId: f.pc.id, aim: f.foe.pos, mods: ['verse'] } as any);
     expect(f.pc.mg!.held).toBeNull(); expect(f.cb.notes!.some((n) => /Here ends the line/.test(n) && /verse/.test(n))).toBe(true);
   });
 });

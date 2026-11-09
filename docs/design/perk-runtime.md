@@ -522,7 +522,9 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
    zone of yours appeared. An `evoked` hook after evoke (and a real `preview: false` on the cost) would be cleaner.
 4. **releaseOutburst has no cost hook before aimError.** So Verse of War's +1 range on a held release needs the Perks
    action "Release in verse", which bumps `m.soulRange` around releaseOutburst. A `release_cost {range}` emit in
-   releaseOutburst would let the "In verse" toggle ride `combat/release` too.
+   releaseOutburst would let the "In verse" toggle ride `combat/release` too. *(Done: `release_cost` exists and the
+   toggle rides Release; since 9 Nov 2026 "Release in verse" is an area-map action only, so a fight has one button for
+   it, the chip, and the Perks tab lists Verse of War to read.)*
 5. **Outburst-cost refusals.** previewOutburst can't take a refusal from items, so Heart Overload can't refuse a
    healing design. It neutralises the heal and shield (0) and logs why instead. Add `ctx.fail`.
 6. **No hook after the release effects.** Twin Souls' third school runs at `outburst_release`, before the first two
