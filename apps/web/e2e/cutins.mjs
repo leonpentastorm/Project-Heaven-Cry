@@ -262,6 +262,7 @@ await nora.waitForFunction(() => window.__phc.getState().game.story.entries.some
 const room2 = (await G(nora)).code;
 await zed.goto(BASE);
 await click(zed, 'SETTINGS', { timeout: 30000 });
+await zed.getByRole('tab', { name: 'Combat' }).click(); // the shared settings body (UI pass): cut-ins are on its Combat tab
 await zed.locator('[data-phc-cutins="off"]').click();
 const pref = await zed.evaluate(() => JSON.parse(localStorage.getItem('phc.ui') || '{}').cutins);
 ok('Settings: Cut-ins Off is saved (' + pref + ') and pressed', pref === 'off' && (await zed.locator('[data-phc-cutins="off"]').getAttribute('aria-pressed')) === 'true');

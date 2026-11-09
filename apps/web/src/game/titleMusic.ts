@@ -1,10 +1,10 @@
 // The title theme, "Heaven Cry" (spec: docs/design/title-screen.md §7). Plays on the title screen after the first key
 // press or tap, loops with fades baked into the file, and fades out when you leave the title. Its own volume in Settings.
-import { uiPrefs, onUiPrefs } from './sfx';
+import { musicLevel, onUiPrefs } from './sfx';
 
 const SRC = '/music/heaven-cry.mp3';
 let el: HTMLAudioElement | null = null, fade = 0, want = 0;
-const vol = () => { const p = uiPrefs(); return p.mute ? 0 : (p.music ?? 70) / 100 * 0.8; };
+const vol = () => musicLevel() * 0.8;
 function ramp(to: number, ms: number, then?: () => void) {
   if (!el) return; cancelAnimationFrame(fade);
   const from = el.volume, t0 = performance.now();

@@ -13,6 +13,7 @@ export interface ClientState {
   conn: 'offline' | 'connecting' | 'online' | 'host-away' | 'error'; connNote: string;
   library: (Sheet & { savedAt: number })[]; draft: Partial<Sheet> | null;
   screen: Screen; levelupChar: string | null; toast: { text: string; at: number; ok?: boolean } | null; savedAt?: number;
+  /** The room screen opens scrolled to this part (the Narrator chip's Change key). */ roomFocus?: 'narrator' | null;
   /** The host's AI Narrator settings. provider: which service; baseUrl: the address, for local and third-party sites. */
   narrator: { provider: ProviderId; key: string; model: string; baseUrl: string; effort: 'low' | 'medium' | 'high'; remember: boolean; scripted: boolean };
 }
@@ -244,7 +245,7 @@ export async function polishText(text: string, charName: string) {
 setTimeout(() => { const r = read(LS.room, null), invite = new URLSearchParams(location.search).get('room'); if (r?.code && S.me.name && (!invite || invite.toUpperCase() === r.code)) resumeRoom(); }, 0);
 
 /** Testing hook: lets the end-to-end test swap in the scripted Narrator. */
-(globalThis as any).__phc = { getState, act, setNarrator, toast };
+(globalThis as any).__phc = { getState, act, setNarrator, toast, go };
 
 // ---------- rerolls and edits (spec: Rerolls and edits) ----------
 // The host's copies of the state from just before each of the Narrator's latest turns, by the line the turn opened with.

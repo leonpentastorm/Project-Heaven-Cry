@@ -1,11 +1,11 @@
 // The combat OST in the Proving Ground with two players (host + guest): a plain wave plays Gunline, a boss plays Heaven
 // Falls, half the party Downed plays Last Rounds (both browsers show it), the squad is gearing up between fights with
 // no fight music, and leaving the Proving Ground puts both players back on the room screen (not the title).
-import { chromium, player, click, BASE, OUT, hostAs } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, hostAs, autoConfirm } from './lib.mjs';
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
-host.on('dialog', (d) => d.accept());
+await autoConfirm(host);
 const fetched = []; host.on('response', (r) => { if (/\/music\/[a-z-]+\.mp3/.test(r.url())) fetched.push(r.url().split('/').pop() + ' ' + r.status()); }); guest.on('dialog', (d) => d.accept());
 const act = (p, a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const G = (p) => p.evaluate(() => window.__phc.getState().game);

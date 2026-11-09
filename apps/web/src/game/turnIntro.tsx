@@ -29,7 +29,7 @@ import { type GameState, WEAPON, CLASS, FLUX_MAX, visibility } from '@engine';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
 import { bigPortrait } from './charfile';
-import { sfx, SFX_FILES, reducedMotion, uiPrefs, type Sfx } from './sfx';
+import { sfx, sfxGraph, SFX_FILES, reducedMotion, busLevel, type Sfx } from './sfx';
 import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, readCardSide, cardOnRight, type Command } from './commands';
@@ -47,14 +47,13 @@ const CUES: Record<Cue, [string, Sfx[], 'boom' | 'thump' | null]> = {
   banner_mine: ['turn_you', ['slide'], null], banner_ally: ['turn_ally', ['slide'], null], banner_foe: ['turn_foe', ['tab'], null],
   cutin: ['cutin', ['swish' as Sfx, 'start'], 'thump'], combat_in: ['combat_start', ['slide'], 'boom'], combat_out: ['combat_end', ['slide_back'], null], round: ['round', ['slide'], null],
 };
-let actx: AudioContext | null = null;
 function hit(kind: 'boom' | 'thump', delay: number) {
-  const p = uiPrefs(), vol = p.mute ? 0 : p.sfx / 100;
+  const vol = busLevel('combat');
   if (vol <= 0) return;
   try {
-    const AC = (window as any).AudioContext || (window as any).webkitAudioContext; if (!AC) return;
-    actx ||= new AC() as AudioContext; if (actx.state === 'suspended') actx.resume().catch(() => {});
-    const ac = actx, t = ac.currentTime + delay / 1000, out = ac.createGain(); out.gain.value = vol * (kind === 'boom' ? 0.55 : 0.35); out.connect(ac.destination);
+    // Through the effects' own graph, so the limiter catches it and a duck takes it down too.
+    const graph = sfxGraph(); if (!graph) return;
+    const ac = graph.ac, t = ac.currentTime + delay / 1000, out = ac.createGain(); out.gain.value = Math.min(1, vol * (kind === 'boom' ? 0.55 : 0.35)); out.connect(graph.out);
     // A low sine drop (the body) and a short filtered noise burst (the crack).
     const o = ac.createOscillator(), e = ac.createGain(); o.type = 'sine';
     o.frequency.setValueAtTime(kind === 'boom' ? 120 : 180, t); o.frequency.exponentialRampToValueAtTime(kind === 'boom' ? 32 : 60, t + (kind === 'boom' ? 0.7 : 0.25));

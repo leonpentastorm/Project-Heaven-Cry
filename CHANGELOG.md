@@ -8,6 +8,33 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.13.0 — 9 November 2026
+
+Branch `claude/awesome-babbage-8gngk8`: **UI pass, the shell** (Leon's playtest feedback; design `docs/design/ui-pass-shell.md`).
+
+- **One header for every screen:**
+  - Area map (key M) replaces the unused STORY | COMBAT toggle. During a fight, "Back to the fight ›" shows instead.
+  - A Narrator chip with a menu holds status, voice, cost and Retry.
+  - The room code takes you to the room.
+  - **Save** is one click.
+  - **⚙ Settings**, then Report.
+  - **Leave** asks first, and for the host it saves before leaving.
+  - On narrow windows the header wraps instead of pushing buttons off screen.
+- **The room's way back:** the greyed "In session" button is now **Return to the session ›**. Changing the API key shows "Saved", and a **Test key** button tells you whether it works.
+- **Echo has a home:** a labelled row on the character next to HP, with an explainer: what it does (reroll a d20), how you earn it, and where you spend it (story checks; not yet in a fight).
+- **Right column:** the mana forecast now shows outside fights too, then the minimap. Near you is capped with its own scrollbar. The **Quest board** is always open, grouped by area or by quest, and scrolls on its own. Pass / End turn are pinned at the bottom.
+- **⚙ Settings** has four tabs:
+  - **Audio:** separate combat and interface volumes. Combat sounds are loudness-normalised (guns about 5 dB louder) and a real limiter is added, so a gunshot now sits above a button click.
+  - **Voice:** moved out of the music panel, which is now music only.
+  - **Combat:** speed and cut-ins.
+  - **Display:** opacity and fading for the Music and Memory buttons, which are now small icons that no longer cover the combat log or End turn.
+- **In-game dialogs** replace every browser confirm, prompt and alert, which some antivirus software blocks. A test fails the build if one comes back.
+- **A guest who leaves mid-fight** no longer freezes it: the host gets "Pass <name>'s turn ›".
+- **Waiting on Leon:**
+  - should an away player's turns pass on their own after a delay;
+  - should the combat volume slider stop at 100% (above it guns barely get louder);
+  - Echo in a fight is not built yet (engine work).
+
 ## 0.12.0 — 9 November 2026
 
 Branch `feature/title-glyph-ward`: **a real Sigil on the title screen** (Leon: delete the made-up glyph, place one of our real Sigils, it's so dull you can't see anything; keep the original).

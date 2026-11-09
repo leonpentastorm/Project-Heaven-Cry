@@ -1,4 +1,6 @@
 // Credits for the sounds in SFX_FILES (game/sfx.ts): the interface, and combat and spells (public/sfx/cb). All CC0 (credit optional and given anyway) except Wisdom Magic, CC-BY 3.0, and the Miracle sting, CC-BY 4.0 (credit required).
+// UI pass (9 Nov 2026): every file was loudness-normalised by tools/normalize_sfx.py (a gain and a short limiter; report
+// in public/sfx/sfx-loudness.json); the CC BY entries say so, as their licences ask changes to be indicated.
 import type { Credit } from './credits';
 export const SFX_CREDITS: Credit[] = [
   { what: 'Interface Sounds (select, click, confirmation, back, maximize, minimize, error, toggle, pluck)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
@@ -41,7 +43,7 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'Sound Effects Pack: breath-male and gasp1 (Begin\'s breath in, the long breath out of a calming heart, Heart Overwatch\'s gasp), earthquake (the stone aura\'s rumble)', who: 'OwlishMedia', licence: 'CC0', url: 'https://opengameart.org/content/sound-effects-pack' },
   { what: 'Ghost Breath (Let go\'s violet sigh)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/ghost-breath' },
   // The author's attribution instructions: "Wisdom Magic Sounds by Iwan Gabovitch http://opengameart.org/users/qubodup".
-  { what: 'Wisdom Magic Sounds (the choir swell under a big release and a resonance)', who: 'Iwan Gabovitch, http://opengameart.org/users/qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
+  { what: 'Wisdom Magic Sounds (the choir swell under a big release and a resonance; trimmed, mono, loudness normalised)', who: 'Iwan Gabovitch, http://opengameart.org/users/qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
   { what: 'Deep Bone Crack/Break SFX (the heart cracking: Strain burning, a Mana Short)', who: 'Zane Little Music', licence: 'CC0', url: 'https://opengameart.org/content/deep-bone-crackbreak-sfx' },
   // Sigil 1.5 (rules 1.10): public/sfx/cb/sg_join, sg_inflect, sg_study (layered from the pack's files; mono, levelled).
   { what: 'Interface Sounds: glass and tick (a glyph joining a stroke), confirmation and a long glass ring (a word\'s inflection coming on), scratch and confirmation (a word copied or learned from a mark or a glyph)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
@@ -61,6 +63,6 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'Mystery Sting: a steel tongue drum\'s ring (the spotlight cut-in\'s low sting)', who: 'railkill', licence: 'CC0', url: 'https://opengameart.org/content/mystery-sting' },
   // Faith 2.2 (rules 1.6.3): the Miracle cut-in's sting (public/sfx/cb/miracle_sting.ogg). The author asks for nothing
   // beyond the licence's attribution; changes: trimmed to the first rising run (2.8 s), mono, levelled. Master in audio/sfx/.
-  { what: '8 Heals and Buffs SFX: 30_revive_03 (the Miracle cut-in\'s sting; trimmed, mono, levelled)', who: 'leohpaz', licence: 'CC-BY 4.0', url: 'https://opengameart.org/content/8-heals-and-buffs-sfx' },
+  { what: '8 Heals and Buffs SFX: 30_revive_03 (the Miracle cut-in\'s sting; trimmed, mono, levelled, loudness normalised)', who: 'leohpaz', licence: 'CC-BY 4.0', url: 'https://opengameart.org/content/8-heals-and-buffs-sfx' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
 ];

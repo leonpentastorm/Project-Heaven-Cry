@@ -3,7 +3,7 @@
 // tools, gear up between waves, cast a Sigil, lose on purpose and Retry, then leave back to the room (not the title),
 // and never call a Narrator (no provider host is contacted, the Narrator is never busy).
 // Screenshots land in e2e/shots/sandbox-*.png.
-import { chromium, player, click, pickAction, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, pickAction, BASE, OUT, autoConfirm } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -12,7 +12,7 @@ const G = () => p.evaluate(() => window.__phc.getState().game);
 const screen = () => p.evaluate(() => window.__phc.getState().screen);
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
-p.on('dialog', (d) => d.accept()); // Leave asks first
+await autoConfirm(p); // Leave asks first (in the game's own dialog)
 // No Narrator, ever: watch every request for an AI provider's host, and the Narrator's busy flag.
 const PROVIDERS = /api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com|openrouter\.ai|localhost:11434/;
 const calls = [];

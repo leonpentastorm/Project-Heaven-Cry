@@ -35,6 +35,9 @@ import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
 import { MissionLayer } from './game/missionBoard';
+import { DialogHost } from './game/dialog';
+import { SettingsHost } from './game/settings';
+import { leaveFlow } from './screens/shell';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
@@ -79,6 +82,16 @@ export function App() {
   const n = st.game?.story.entries.length || 0;
   const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
   const barP = usePresence(bar), toastP = usePresence(st.toast);
+  // The connection bar sits just under the screen's header, never over it: the header holds Leave, a guest's way out of
+  // a room whose host has gone (review of the UI pass).
+  const [barTop, setBarTop] = React.useState(0);
+  React.useLayoutEffect(() => {
+    if (!barP.shown) return;
+    const f = () => { const h = document.querySelector('header'); setBarTop(h ? Math.max(0, Math.round(h.getBoundingClientRect().bottom)) : 0); };
+    f(); window.addEventListener('resize', f); const t = setInterval(f, 800);
+    return () => { window.removeEventListener('resize', f); clearInterval(t); };
+  }, [!!barP.shown, st.screen]);
+  const guestAway = st.conn === 'host-away' && st.role === 'guest';
   return (
     <>
       {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
@@ -95,7 +108,7 @@ export function App() {
       {st.role && <Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role && <NarratorVoice game={st.game || null} />}
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side={st.game?.phase === 'combat' ? 'left' : 'right'} />}
+      {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side="left" compact />}
       {st.screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
       {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
       {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
@@ -105,7 +118,15 @@ export function App() {
       {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
       <PlaytestTools />
       <Tips />
-      {barP.shown && <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, padding: '8px 16px', background: '#1C2536', borderBottom: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>{barP.shown}</div>}
+      {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
+      <SettingsHost />
+      <DialogHost />
+      {barP.shown && <div data-phc-conn-bar="" style={{ position: 'fixed', top: barTop + 8, left: 0, right: 0, zIndex: 60, display: 'flex', justifyContent: 'center', padding: '0 12px', pointerEvents: 'none' }}>
+        <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>
+          <span>{barP.shown}</span>
+          {guestAway && <button type="button" data-phc-conn-leave="" onClick={() => { leaveFlow(); }} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Leave the room</button>}
+        </div>
+      </div>}
       {toastP.shown && <div style={{ position: 'fixed', bottom: 20, left: 0, right: 0, zIndex: 70, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div key={toastP.shown.at} role={toastP.shown.ok ? 'status' : 'alert'} className={presenceCls('phc-a-rise', toastP.closing)} style={{ pointerEvents: 'auto', maxWidth: 'min(640px, 92vw)', padding: '12px 18px', borderRadius: 10, background: '#10151F', border: '1px solid ' + (toastP.shown.ok ? '#6FEA77' : '#F65157'), color: '#E7EBF3', fontSize: 14, boxShadow: '0 8px 30px rgba(0,0,0,.5)' }}>{toastP.shown.ok ? '✓ ' : ''}{toastP.shown.text}</div>
       </div>}

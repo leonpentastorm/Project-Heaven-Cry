@@ -19,9 +19,13 @@ await click(host, 'Start session');
 await host.waitForSelector('.phc-story', { timeout: 15000 });
 await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
 
-// 1. The board: the header button counts the open objectives and opens the board.
-const mb = host.getByRole('button', { name: /^Mission board/ });
-ok('the header has MISSIONS · 5', (await mb.textContent()).trim() === 'MISSIONS · 5');
+// 1. The board: the quest board in the right column counts the open objectives (UI pass 3.3); Full board ⤢ opens the
+// whole board.
+const qb = host.locator('[data-quest-board]');
+const count = () => qb.locator('[data-qb-count]').textContent().then((t) => t.trim());
+const mb = { click: () => qb.getByRole('button', { name: 'Full board' }).click() };
+ok('the quest board counts 5 open', (await count()) === '· 5');
+ok('it lists the objectives without opening anything', /Report to Sergeant Nine-Nine/.test(await qb.textContent()));
 await mb.click();
 const board = host.getByRole('dialog', { name: 'Mission board' });
 await board.waitFor({ timeout: 4000 });
@@ -66,7 +70,8 @@ await say('I go to the sergeant and listen. done:reach_nine_nine');
 const toast = host.locator('[role="status"]', { hasText: '✓ OBJECTIVE' });
 await toast.first().waitFor({ timeout: 15000 });
 ok('the toast slides in: ' + (await toast.first().textContent()), /Report to Sergeant Nine-Nine/.test(await toast.first().textContent()));
-ok('the header counts one fewer', (await mb.textContent()).trim() === 'MISSIONS · 4');
+ok('the quest board counts one fewer', (await count()) === '· 4');
+ok('…and ticks it in its DONE group (folded until opened)', (await qb.locator('[data-qb-group="done"]').count()) === 1);
 await mb.click(); await board.waitFor({ timeout: 4000 });
 ok('the board ticks it', /✓Report to Sergeant Nine-Nine/.test(await board.textContent()));
 if (SHOTS) await host.screenshot({ path: SHOTS + '/missions-tick.png' });
@@ -75,7 +80,7 @@ await host.getByRole('button', { name: 'Close the mission board' }).click();
 // 4. The act ends: the rest of the tutorial, then the ramp. The MISSION COMPLETE card, then Continue.
 await say('We work the line, drive off the drones, choose, and carry them east. done:tend_the_line done:first_fight done:who_stays done:carry_east');
 await host.waitForFunction(() => window.__phc.getState().game.story.missions?.active[0] === 'the_ramp', null, { timeout: 15000 });
-ok('the next mission activates', /MISSIONS · [1-9]/.test((await mb.textContent()).trim()));
+ok('the next mission activates', /^· [1-9]/.test(await count()) && /THE RAMP|Get aboard|aboard/i.test(await qb.textContent()));
 await say('Everyone goes up the ramp. done:get_aboard');
 const card = host.getByRole('dialog', { name: 'Mission complete' });
 await card.waitFor({ timeout: 15000 });

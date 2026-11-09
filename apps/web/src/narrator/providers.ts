@@ -299,3 +299,43 @@ export async function listModels(c: NarratorConfig, fetchImpl?: typeof fetch): P
   return list.map((m) => String(m?.id || m?.name || '').replace(/^models\//, '')).filter(Boolean).sort();
 }
 
+
+/** Test key (the room, UI pass 2.2): ask the service something that spends no tokens. ok: the check passed.
+ *  "The key works" is said only where the check needs the key: Anthropic's models list; OpenRouter's /key (its models
+ *  list is public, so a garbage key passed it: review of the UI pass); OpenAI, DeepSeek and Gemini, whose models lists
+ *  refuse a bad key. A local or third-party site's models list may need no key, so there it says the address answered
+ *  and the key is checked on the Narrator's first turn. A site's address must be set (and http/https) before anything
+ *  is sent: an empty one made the request relative, to the game's own server, with the key in its headers. */
+export async function testKey(c: NarratorConfig, fetchImpl?: typeof fetch): Promise<{ ok: boolean; text: string }> {
+  const p = providerInfo(c.provider), short = p.label.replace(/ \(.*\)$/, ''), base = baseOf(c);
+  if (p.editableBase && !base) return { ok: false, text: 'Add the site\'s address first.' };
+  if (!/^https?:\/\//i.test(base)) return { ok: false, text: 'The API address must start with https://' };
+  if (p.needsKey && !c.key) return { ok: false, text: 'Add the key first.' };
+  const f = fetchImpl || fetch;
+  /** One GET that needs the key; ok when the service says yes. */
+  const ask = async (url: string, headers: Record<string, string>): Promise<{ ok: boolean; text: string; j: any }> => {
+    let res: Response;
+    try { res = await f(url, { headers }); } catch (e) { return { ok: false, text: unreachable(short, base, e), j: null }; }
+    const body = await res.text(); let j: any = null; try { j = JSON.parse(body); } catch { /* */ }
+    return res.ok ? { ok: true, text: '', j } : { ok: false, text: explainHttp(short, res.status, errDetail(j, body), base), j };
+  };
+  const count = (n: number) => (n ? ' (' + n + (n === 1 ? ' model)' : ' models)') : '');
+  try {
+    if (p.id === 'anthropic') {
+      const r = await ask(base + '/v1/models?limit=100', { 'x-api-key': c.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' });
+      if (!r.ok) return { ok: false, text: r.text };
+      return { ok: true, text: short + ' answered: the key works' + count(Array.isArray(r.j?.data) ? r.j.data.length : 0) + '.' };
+    }
+    if (p.id === 'openrouter') {
+      const r = await ask(base + '/key', { authorization: 'Bearer ' + c.key });
+      if (!r.ok) return { ok: false, text: r.text };
+      const d = r.j?.data || {}, left = typeof d.limit_remaining === 'number' ? ' ($' + d.limit_remaining.toFixed(2) + ' left on it)' : '';
+      return { ok: true, text: short + ' answered: the key works' + left + '.' };
+    }
+    const ids = await listModels(c, fetchImpl);
+    if (p.editableBase) return { ok: true, text: 'The address answered' + count(ids.length) + (p.needsKey ? '; the key itself is checked on the Narrator\'s first turn.' : '.') };
+    return { ok: true, text: short + ' answered: the key works' + count(ids.length) + '.' };
+  } catch (e) {
+    return { ok: false, text: String((e as Error)?.message || e) };
+  }
+}
