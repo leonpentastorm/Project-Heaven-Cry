@@ -30,4 +30,10 @@ node apps/web/e2e/two-players.mjs
 BASE=https://project-heaven-cry.leonpentastorm.workers.dev node apps/web/e2e/reconnect.mjs
 ```
 
+**Proxies:** with `BASE` and `HTTPS_PROXY` both set, `lib.mjs` sends Chromium through `HTTPS_PROXY` (an agent sandbox's only way to the live site), with loopback bypassed. A `BASE` on this machine (`127.0.0.1` or any `127.x`, `localhost`, `::1`) never goes through the proxy, so a local `wrangler dev` runs the same with `HTTPS_PROXY` set or not (such a proxy only takes CONNECT to the outside, and every local test used to stop at the title):
+
+```bash
+BASE=http://127.0.0.1:8797 node apps/web/e2e/ground.mjs   # HTTPS_PROXY may stay set
+```
+
 Screenshots land in `apps/web/e2e/shots/`. Playwright is loaded with `require('playwright')`.
