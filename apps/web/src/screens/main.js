@@ -50,7 +50,8 @@ ensureStyle('phc-play-pass', '@keyframes phcEchoGain{0%{transform:rotate(45deg) 
   + '@keyframes phcEchoRow{0%,100%{background:transparent}30%{background:rgba(255,255,255,.14)}}[data-phc-echo].phc-echo-row-flare{animation:phcEchoRow 1.1s ease-out}'
   + '@keyframes phcQNew{0%{background:rgba(255,255,255,.22)}100%{background:transparent}}.phc-q-new{animation:phcQNew 1.6s ease-out}'
   + '[data-phc-echo]:hover,[data-phc-echo]:focus-visible{background:rgba(255,255,255,.06)!important}'
-  + '@media (max-height:760px){.phc-right-col .phc-mini-box{display:none!important}}'
+  // Only while the quest board is there: the Proving Ground has none, and its loop is "click the map" (the minimap stays).
+  + '@media (max-height:760px){.phc-right-col:has([data-quest-board]) .phc-mini-box{display:none!important}}'
   + '@media (prefers-reduced-motion:reduce){.phc-echo-gain,.phc-echo-spend,.phc-q-new,[data-phc-echo].phc-echo-row-flare{animation:none}}');
 /** The quest board's fold (per group) and grouping, remembered on this computer. */
 const QFOLD = 'phc.questFold';

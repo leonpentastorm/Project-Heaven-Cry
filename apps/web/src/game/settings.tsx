@@ -173,7 +173,7 @@ export function SettingsHost() {
   if (!pres.shown) return null;
   return (
     <div role="dialog" aria-modal="true" aria-label="Settings" className={presenceCls('phc-a-fade', pres.closing)} onMouseDown={(e) => { if (e.target === e.currentTarget) closeSettings(); }}
-      style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(5, 7, 11, 0.78)', display: 'grid', placeItems: 'center', padding: 16, fontFamily: "'Chakra Petch', sans-serif" }}>
+      style={{ position: 'fixed', inset: 0, zIndex: 49, background: 'rgba(5, 7, 11, 0.78)', display: 'grid', placeItems: 'center', padding: 16, fontFamily: "'Chakra Petch', sans-serif" }}>
       {/* Keys inside the card stay inside it (a letter on a focused tab must not reach the screen's shortcuts). */}
       <div ref={card} onKeyDown={(e) => { if (e.key !== 'Tab') e.stopPropagation(); }} className={presenceCls('phc-a-pop', pres.closing)} style={{ width: 'min(800px, 100%)', maxHeight: '90vh', overflowY: 'auto', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 16, padding: '18px 22px 22px', borderRadius: 16, background: C.panel, border: '1px solid ' + C.edge, color: C.text, boxShadow: '0 18px 60px rgba(0,0,0,0.6)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>

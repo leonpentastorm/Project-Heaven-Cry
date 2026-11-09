@@ -94,6 +94,32 @@ export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
   for (const h of holdersOf(x)) { h.g = x.g ?? boundGame(); for (const d of actionDefs(h.info)) { const e = entryOf(h, d, scope); if (e) out.push(e); } }
   return out;
 }
+/** An item the data makes an action, but which is used another way: from another action (a chip on Pump, Begin, an
+ *  attack: its toggles) or by itself (a hook). The Perks tab lists these to read, with no button of their own (Leon,
+ *  9 Nov 2026: "keep these in the perk tab so you can read that you have the skill and what it does, but remove the
+ *  confirm button if the skill already has a use button in its perspective action"). via: where it is used. */
+export interface PerkInfoEntry { id: string; itemId: string; kind: string; label: string; text: string; tab: 'perks' | 'class'; tier: string; via: string; uses: { per: UseScope; n: number; left: number; label: string } }
+const VIA: Record<string, string> = { 'combat/pump': 'Pump', 'combat/outburst': 'Begin', 'combat/release': 'Release', 'combat/attack': 'an attack', 'combat/move': 'a move', 'combat/evoke': 'Evoke', 'combat/pray': 'a prayer', 'combat/perk': 'a perk action', 'check/roll': 'a check', 'story/speak': 'speaking' };
+/** The read-only Perks-tab entries of a holder's items on this surface (see PerkInfoEntry). Listed: an item with no
+ *  button here (none of its actions has this scope) that the data makes an action here, or whose toggles ride an
+ *  action here (Running Reload's "Reload on the move" on Move, Gambler's "Double or Nothing" on an attack). Pure. */
+export function perkInfoFor(x: Who, scope: ActionScope): PerkInfoEntry[] {
+  const out: PerkInfoEntry[] = [], here = scope + '/';
+  for (const h of holdersOf(x)) {
+    const hd = handlerOf(h.key); if (!hd) continue; // no lane: the data's default action is its button
+    if (actionDefs(h.info).some((d) => d.scope.includes(scope))) continue; // it has a button of its own here
+    const ts = (hd.toggles || []).filter((t) => t.on.some((o) => o.startsWith(here)));
+    const defs = defaultActions(h.info).filter((d) => d.scope.includes(scope)); if (!defs.length && !ts.length) continue; // never used here
+    const on = [...new Set((hd.toggles || []).flatMap((t) => t.on))], d = defs[0];
+    // Uses: the data action's, when it has one; a toggle-only item counts its own (at will unless a lane says so).
+    const per: UseScope = d?.uses?.per || 'at_will', n = d?.uses?.n ?? 1;
+    const left = d ? uses({ ...h, g: x.g ?? boundGame() }).left(per, n) : n;
+    out.push({ id: h.key, itemId: h.itemId, kind: h.kind, label: h.info.name, text: h.info.text, tab: h.kind === 'class' ? 'class' : 'perks', tier: h.tier,
+      via: on.length ? 'Used from ' + [...new Set(on.map((o) => VIA[o] || o))].join(' or ') : 'Automatic',
+      uses: { per, n, left, label: d ? usesLabel(per, n, Math.min(n, left)) : '' } });
+  }
+  return out;
+}
 /** Why a spent action can't be used, by its use window. */
 const USED_WHY: Partial<Record<UseScope, string>> = { per_rest: 'Used until the next rest.', per_scene: 'Used until the next scene.', per_session: 'Used until the next session.', per_combat: 'Used this fight.', per_turn: 'Used this turn.', per_round: 'Used this round.', reaction: 'Used this round.', per_campaign: 'Used for this campaign.' };
 function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry | null {

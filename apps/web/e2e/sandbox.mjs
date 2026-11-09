@@ -48,7 +48,11 @@ await drawer.waitFor({ timeout: 6000 }).catch(() => {});
 let g = await G();
 ok('gearing up: phase ' + g.phase + ', no fight, on the ' + (await screen()) + ' screen', g.phase === 'story' && !g.combat && (await screen()) === 'main' && g.sandbox.state === 'ready');
 ok('wave 1 stands idle on the map: ' + (g.story.npcs || []).map((n) => n.name + ' at ' + ref(n.pos)).join(', '), (g.story.npcs || []).length > 0 && (g.story.npcs || []).every((n) => n.side === 'hostile'));
-ok('the tools are open, with Start the fight and the hint', (await drawer.count()) > 0 && (await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).count()) > 0 && (await drawer.getByText('Gear up here, then click the map to start a fight.').count()) > 0);
+// Gearing up, the tools are the whole centre column; the hint and the wave lines are in the bottom panel (Leon, 9 Nov 2026).
+const dock = p.locator('[role="region"][aria-label="Proving Ground messages"]');
+ok('the tools are open in the centre column, with Start the fight; the hint is in the bottom panel', (await drawer.count()) > 0 && (await p.locator('main[aria-label="Story"] aside[aria-label="Proving Ground tools"]').count()) === 1
+  && (await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).count()) > 0 && (await dock.getByText('Gear up here, then click the map to start a fight.').count()) > 0);
+ok('the story column is hidden while the tools fill the centre', !(await p.locator('main[aria-label="Story"] > .phc-story').isVisible()));
 await p.waitForTimeout(300); await snap('01-gear-up');
 const me = Object.values(g.characters)[0];
 
@@ -130,7 +134,7 @@ await p.waitForTimeout(400); await snap('04-wave-cleared');
 await p.locator('div[aria-label="Wave cleared"] button', { hasText: 'Gear up first' }).click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 4000 }).catch(() => {});
 await drawer.waitFor({ timeout: 4000 }).catch(() => {});
-ok('Gear up first: the map with the tools open (' + (await screen()) + ')', (await screen()) === 'main' && (await drawer.count()) > 0 && (await drawer.getByText(/Wave 1 cleared/).count()) > 0);
+ok('Gear up first: the map with the tools open (' + (await screen()) + ')', (await screen()) === 'main' && (await drawer.count()) > 0 && (await dock.getByText(/Wave 1 cleared/).count()) > 0);
 await p.waitForTimeout(300); await snap('05-gear-up-again');
 
 // 5. Wave 2 from the Start button; cast a Sigil in it

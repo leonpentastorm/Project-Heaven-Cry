@@ -282,21 +282,23 @@ register({
 // heart can be held and swelled to stage 4 for nothing but the AP: once a fight (item 536, flagged).
 // =====================================================================================================================
 register({
-  id: 'the_twin_pays', claims: 'all', priority: 500,
+  // Used from Begin (the Twin Pays chip on an Outburst): no default button of its own (Leon, 9 Nov 2026: the Perks tab's
+  // Confirm spent a use and did nothing).
+  id: 'the_twin_pays', claims: 'all', priority: 500, noDefaultActions: true,
   toggles: [{
     id: 'twin', label: 'The Twin Pays', on: ['combat/outburst'],
-    available: (h) => (!h.u?.mg ? false : uses(h).left('per_combat', 1, h.key + '#twin') > 0 ? true : 'Used this fight.'),
+    available: (h) => (!h.u?.mg ? false : uses(h).left('per_combat', 1) > 0 ? true : 'Used this fight.'),
     preview: () => '0 MP, 0 Strain: your twin in the upper realm pays.',
   }],
   on: {
     outburst_cost: (ctx, h) => {
-      if (!me(h, ctx.u) || !modOn(h, 'twin') || uses(h).left('per_combat', 1, h.key + '#twin') <= 0) return;
+      if (!me(h, ctx.u) || !modOn(h, 'twin') || uses(h).left('per_combat', 1) <= 0) return;
       ctx.mp = 0; ctx.strain = 0; ctx.hp = 0;
     },
     outburst_begin: (ctx, h) => {
       if (!me(h, ctx.u)) return;
       // Any other Begin is an ordinary paid one: the free hold of an earlier, let-go twin cast ends here.
-      if (!modOn(h, 'twin') || !uses(h).take('per_combat', 1, h.key + '#twin')) { stateOf(h).free = null; return; }
+      if (!modOn(h, 'twin') || !uses(h).take('per_combat', 1)) { stateOf(h).free = null; return; }
       if (ctx.hold) stateOf(h).free = ctx.design.id;
       log(ctx.cb, 'Up there, someone with ' + h.u!.name + '\'s face flinches (The Twin Pays: no mana, no Strain).');
     },
@@ -454,9 +456,10 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
 // =====================================================================================================================
 // Verse of War (Achieved: Implication 5 + Will Power 5). An Outburst cast while you speak in verse: +1 tile of range,
 // ×1.1 Soul damage. Player-declared (plan 4.3: the Narrator is never called per cast): Say the line (free), then Begin
-// with the "In verse" toggle, or "Release in verse" from the Perks tab for a held one; the line goes to the fight notes
-// for the Narrator to audit after the fight. On the area map the same: the line is this round's Say (story/speak), and
-// the audit is a pending ruling.
+// or Release with the "In verse" toggle (in a fight that chip is its only button: Leon, 9 Nov 2026, no Confirm when the
+// move already has a use button); the line goes to the fight notes for the Narrator to audit after the fight. On the
+// area map, "Release in verse" (the Perks list there): the line is this round's Say (story/speak), and the audit is a
+// pending ruling.
 // =====================================================================================================================
 function verseNote(h: Holder) { const l = sayLine(h); note(h, 'cast an Outburst in verse' + (l ? ': "' + l.slice(0, 160) + '"' : ' (no line said)') + '. Audit whether it was verse (+1 range, ×1.1 damage given).'); }
 register({
@@ -471,7 +474,7 @@ register({
     preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
   }],
   actions: [{
-    id: 'release', label: 'Release in verse', scope: ['combat', 'world'], ap: 0, target: 'tile',
+    id: 'release', label: 'Release in verse', scope: ['world'], ap: 0, target: 'tile',
     text: 'Release your held Outburst while you speak in verse: +1 tile of range, ×1.1 damage (1 AP).',
     available: (h) => { const m = h.u?.mg; if (!m) return false; if (!m.held) return 'Hold an Outburst first.'; return sayLine(h) ? true : 'Say your verse first (Say).'; },
     run: (h, args, rng) => {
