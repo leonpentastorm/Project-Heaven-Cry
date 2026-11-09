@@ -1,6 +1,9 @@
 // Blessing 2.0 art (game/faithArt.ts): every patron, Whisper and vow has a placeholder; the painted art wins once built;
 // file names follow the art brief; colours follow the colour rules.
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { PATRON_IDS, WHISPER_IDS, VOW_IDS, PATRON_MARK_PATHS, WHISPER_PATHS, VOW_PATHS, PATRON_ACCENT, FAITH_INK, FAITH_GOLD, accentOf,
   patronMarkUri, patronMarkSvg, prayerFile, prayerIconUri, vowIconUri, witnessedUri, patronPortrait } from './faithArt';
 
@@ -43,5 +46,13 @@ describe('Blessing art placeholders', () => {
     for (const p of PATRON_IDS) expect(PATRON_ACCENT[p]).toMatch(/^#[0-9A-F]{6}$/i);
     expect(accentOf('mother_ember')).toBe(PATRON_ACCENT.mother_ember); expect(accentOf('mother_ember', '#123456')).toBe('#123456');
     expect(accentOf('nobody')).toBe(FAITH_GOLD); expect(accentOf('nerukhan', 'gold')).toBe(PATRON_ACCENT.nerukhan);
+  });
+  it('the --faith-light token: index.html defines it as FAITH_GOLD, and the faith templates use var(--faith-light), not the hex', () => {
+    const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+    const html = readFileSync(resolve(root, 'index.html'), 'utf8'), m = /:root\s*\{[^}]*--faith-light:\s*(#[0-9A-Fa-f]{6})/.exec(html);
+    expect(m && m[1].toUpperCase()).toBe(FAITH_GOLD);
+    const main = readFileSync(resolve(root, 'src/templates/main.template.html'), 'utf8');
+    const faithTab = main.slice(main.indexOf('{{tabFaith}}'), main.indexOf('aria-label="Rites"'));
+    expect(faithTab).toMatch(/var\(--faith-light\)/); expect(faithTab).not.toMatch(/#F2C46A/i);
   });
 });

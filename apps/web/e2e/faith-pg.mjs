@@ -107,11 +107,13 @@ if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn.png' });
 // An overreach: Gather the Clouds (Hymn III, gate 7) at Devotion 5: TN 16; the limits reset so the cooldown allows it.
 await act({ type: 'sandbox/faith', charId: cid, reset: true });
 await p.locator('[role="tabpanel"] [data-act="pr:hymn:old_overcast.gather_the_clouds"]').click(); await p.waitForTimeout(250);
-ok('Gather the Clouds is an overreach (TN 16, a miss costs Devotion)', /OVERREACH · TN 16/.test(await p.locator('aside').first().textContent()) && /a miss costs 1 Devotion/.test(await p.locator('aside').first().textContent()));
-const dv0 = (await G()).characters[cid].devotion, n2 = (await G()).combat.log.length;
+ok('Gather the Clouds is an overreach (TN 16, a miss costs 3 Devotion XP)', /OVERREACH · TN 16/.test(await p.locator('aside').first().textContent()) && /a miss costs 3 Devotion XP/.test(await p.locator('aside').first().textContent()));
+const c0 = (await G()).characters[cid], dv0 = c0.devotion, xp0 = c0.devotionXp, n2 = (await G()).combat.log.length;
+ok('the tools\' Devotion 5 is the level-5 threshold (' + xp0 + ' XP)', xp0 === 102);
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click(); await p.waitForTimeout(600);
-const dv1 = (await G()).characters[cid].devotion, lg2 = (await G()).combat.log.slice(n2).join(' | ');
-ok('the overreach rolls: answered, or missed for −1 Devotion (' + dv0 + ' → ' + dv1 + ')', (await G()).combat.log.length > n2 && (dv1 === dv0 || dv1 === dv0 - 1));
+const c1 = (await G()).characters[cid], dv1 = c1.devotion, xp1 = c1.devotionXp, lg2 = (await G()).combat.log.slice(n2).join(' | ');
+ok('the overreach rolls: answered, or missed for −3 Devotion XP (' + dv0 + ' · ' + xp0 + ' XP → ' + dv1 + ' · ' + xp1 + ' XP)', (await G()).combat.log.length > n2 && (xp1 === xp0 || (xp1 === xp0 - 3 && dv1 === dv0 - 1)));
+if (xp1 < xp0) ok('a miss below the threshold drops the level, and the log says so (' + lg2.slice(0, 120) + ')', /−3 Devotion XP \(a failed overreach\): DEVOTION 4/.test(lg2));
 // The intervention and the kept vow: shoot (and pray) until a foe dies; Old Overcast answers the kill once a fight.
 // The wave's units are far off: clear the field and set two minions beside us.
 await act({ type: 'sandbox/clear' });
@@ -129,7 +131,7 @@ for (let i = 0; i < 14 && !(await logHas(/Old Overcast intervenes/)); i++) {
   await p.waitForTimeout(400);
 }
 ok('a kill while Witnessed: Old Overcast intervenes (20 Storm to the nearest other enemy)', await logHas(/Old Overcast intervenes/));
-// Finish them: the fight ends with Mercy kept (+1 Devotion).
+// Finish them: the fight ends with Mercy kept (+3 Devotion XP).
 const dvK = (await G()).characters[cid].devotion;
 for (let i = 0; i < 14; i++) {
   const gg = await G(); if (!gg.combat || gg.combat.over || !gg.combat.units.some((x) => x.side === 'foe' && !x.dead && !x.downed)) break;
@@ -181,5 +183,29 @@ cc = (await G()).characters[cid];
 ok('a pact with a Jealous patron ends the others\' Hymns (' + (e2 || (cc.belief?.patron + ', Hymns ' + (cc.hymns || []).join(', '))) + ')', cc.belief?.patron === 'nerukhan' && !(cc.hymns || []).length);
 const pactLines = (await G()).story.entries.filter((e) => /^PACT/.test(e.head || '')).length;
 ok('the story says so (PACT entries: ' + pactLines + ')', pactLines >= 2);
+// ---------- leaving a patron (rules 1.6.1): a switch from a Jealous patron leaves a grudge; apostasy has the cooldown ----------
+const openFaithTab = async () => { await drawer.getByRole('button', { name: 'Close the tools' }).click({ timeout: 1500 }).catch(() => {}); await p.getByRole('tab', { name: 'FAITH', exact: true }).first().click(); const fp = p.locator('[data-phc-faith-panel]'); await fp.waitFor({ timeout: 5000 }); return fp; };
+const e3 = await act({ type: 'faith/pact', charId: cid, patron: 'mother_ember' }); await p.waitForTimeout(300);
+cc = (await G()).characters[cid];
+ok('leaving Nerukhan (Jealous) for Mother Ember: no cooldown, and his grudge (' + (e3 || JSON.stringify(cc.grudge || null).slice(0, 90)) + ')', cc.belief?.patron === 'mother_ember' && cc.grudge?.patron === 'nerukhan' && !cc.faithLeft);
+const fp = await openFaithTab(); await p.waitForTimeout(300);
+const gtxt = (await fp.locator('[data-faith-grudge]').textContent().catch(() => '')) || '';
+ok('the faith tab shows the grudge: who, what, how long (' + gtxt.slice(0, 140) + ')', /GRUDGE · HOLY FATHER NERUKHAN/.test(gtxt) && /Marked for 2 rounds at the start of every fight/.test(gtxt) && /cut by 50%/.test(gtxt) && /Ends after 3 more sessions/.test(gtxt));
+ok('the switch has no APOSTASY line', !(await G()).story.entries.some((e) => e.head === 'APOSTASY'));
+if (SHOTS) { await fp.locator('[data-faith-grudge]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-grudge.png' }); }
+const e4 = await act({ type: 'faith/apostasy', charId: cid }); await p.waitForTimeout(300);
+cc = (await G()).characters[cid];
+ok('apostasy: an Atheist, Devotion XP 0, the day recorded (' + (e4 || JSON.stringify(cc.faithLeft)) + ')', cc.belief?.kind === 'atheist' && !cc.devotionXp && !!cc.faithLeft);
+const ctxt = (await fp.locator('[data-faith-day]').textContent().catch(() => '')) || '';
+ok('the faith tab: the day and "Nobody answers yet: 90 days" (' + ctxt + ')', /DAY \d+/.test(ctxt) && /Nobody answers yet: 90 days/.test(ctxt));
+if (SHOTS) { await fp.locator('[data-faith-day]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-cooldown.png' }); }
+const e5 = await act({ type: 'faith/pact', charId: cid, patron: 'the_matchmaker' }); await p.waitForTimeout(200);
+ok('a pact during the cooldown is refused: still an Atheist' + (e5 ? ' (' + e5 + ')' : ''), (await G()).characters[cid].belief?.kind === 'atheist');
+// The Proving Ground has no Narrator (no days pass here: a room's long rests and the Narrator's days do that, faith.mjs and
+// the unit tests); its tools ignore the cooldown, as they say.
+await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'the_matchmaker' }); await p.waitForTimeout(300);
+cc = (await G()).characters[cid];
+const lbl = (await fp.locator('[data-devotion-label]').textContent().catch(() => '')) || '';
+ok('the tools swear a patron anyway: the cooldown is gone and the meter reads "' + lbl + '"', cc.belief?.patron === 'the_matchmaker' && (await fp.locator('[data-faith-cooldown]').count()) === 0 && lbl === 'DEVOTION 3 · 0/25 XP');
 console.log('errors', errors);
 await browser.close();

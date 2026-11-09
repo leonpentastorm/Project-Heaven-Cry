@@ -1,7 +1,7 @@
 // Faith in a fight (Blessing 2.0, rules 1.6): a prayer's targets picked on the grid with the engine's preview as the
 // verdict, the vow prompt at the start of a fight, and the patron's lines as cards beside the combat log. The rules are
 // the engine's (faithView, previewPrayer); this is screen glue for screens/combat.js.
-import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON } from '@engine';
+import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP } from '@engine';
 import { prayAction, pickerFor, oddsText, FAITH_INK } from '../game/faithView';
 import { accentOf, patronMarkUri, vowIconUri } from '../game/faithArt';
 import { patronOfLog } from './faithTab';
@@ -28,7 +28,7 @@ export function prayerView(g, cb, cur, sel, S, seen) {
     sel: {
       name: (sel.kind === 'miracle' ? '✦ MIRACLE · ' : sel.kind === 'hymn' ? 'HYMN · ' : 'WHISPER · ') + pv0.name + ' · ' + pv0.ap + ' AP · ' + oddsText(pv || pv0),
       text: why ? '✕ ' + why : (picked ? 'Target: ' + picked + '. ' : '') + (missing || pv0.effectText),
-      extra: pv0.mode === 'overreach' && pv0.overreach ? 'Overreach: you ask above your standing. TN ' + pv0.overreach.tn + '; a miss costs 1 Devotion.'
+      extra: pv0.mode === 'overreach' && pv0.overreach ? 'Overreach: you ask above your standing. TN ' + pv0.overreach.tn + '; a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP.'
         : pv0.mode === 'dice' && pv0.roll ? 'By dice: d20 ' + (pv0.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv0.roll.mod) + ' against TN ' + pv0.roll.tn + '.' : 'By standing: no roll.',
     },
     /** A grid click while this prayer is chosen: the state patch, or null to let the screen handle it. */
@@ -57,7 +57,7 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   return {
     show: true, key, shield, allies, hasAllies: allies.length > 0, noAllies: shield && !allies.length,
     head: 'SWEAR A VOW · ' + (v.patron ? v.patron.name.toUpperCase() : 'YOUR PATRON'),
-    sub: 'Kept to the end of the fight: +1 Devotion. Broken: −2, and your patron says so. Or fight unsworn.',
+    sub: 'Kept to the end of the fight: +' + DEVOTION_XP.vowKept + ' Devotion XP. Broken: −' + DEVOTION_XP.vowBroken + ', and your patron says so. Or fight unsworn.',
     vows: v.vows.map((x) => ({ key: x.id, icon: vowIconUri(x.id), name: x.name, words: x.words, title: 'Broken when: ' + x.brokenWhen, pressed: shield && x.id === 'shield' ? 'true' : 'false',
       pick: () => (x.needsAlly ? sc.setState({ vowShield: shield ? null : key }) : swear(x.id)),
       style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 1px 8px; align-items: center; text-align: left; min-height: 40px; padding: 5px 8px; border-radius: 8px; font-family: inherit; color: #E7EBF3; cursor: pointer; '

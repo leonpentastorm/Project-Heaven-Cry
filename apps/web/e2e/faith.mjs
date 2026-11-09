@@ -43,11 +43,14 @@ await p.waitForSelector('.phc-story', { timeout: 15000 });
 await p.getByRole('tab', { name: 'FAITH' }).click().catch(async () => { await p.getByRole('button', { name: 'FAITH', exact: true }).click(); });
 const panel = p.locator('[data-phc-faith-panel]'); await panel.waitFor({ timeout: 5000 });
 const txt = await panel.textContent();
-ok('the panel: Mother Ember, Devotion 3 / 10 with the gates', /Mother Ember/.test(txt) && /DEVOTION · 3 \/ 10/.test(txt) && /HYMN I/.test(txt) && /HYMN III · MIRACLE/.test(txt));
+ok('the panel: Mother Ember, Devotion 3 with its XP toward 4 (DEVOTION 3 · 0/25 XP) and the gates', /Mother Ember/.test(txt) && /DEVOTION 3 · 0\/25 XP/.test(txt) && /HYMN I/.test(txt) && /HYMN III · MIRACLE/.test(txt));
+ok('the panel shows the day (DAY 1), no cooldown and no grudge', /DAY 1/.test(await panel.locator('[data-faith-day]').textContent()) && (await panel.locator('[data-faith-cooldown]').count()) === 0 && (await panel.locator('[data-faith-grudge]').count()) === 0);
+ok('the meter says its words to a screen reader too', /DEVOTION 3 · 0\/25 XP/.test((await panel.locator('[role="meter"]').getAttribute('aria-valuetext')) || ''));
+ok('the gate marks are faith light (var(--faith-light) = #F2C46A)', await panel.evaluate((el) => { const s = [...el.querySelectorAll('[role="meter"] span')].find((x) => x.textContent === 'HYMN I'); return !!s && getComputedStyle(s).color === 'rgb(242, 196, 106)'; }));
 ok('likes and taboos, in words with their marks', /✓ HEAL/.test(txt) && /✕ BETRAY/.test(txt));
 ok('6 Whispers, 3 Hymns, the Miracle', (await panel.locator('[data-prayer^="whisper:"]').count()) === 6 && (await panel.locator('[data-prayer^="hymn:"]').count()) === 3 && (await panel.locator('[data-prayer^="miracle:"]').count()) === 1);
 ok('a Hymn shows AP, gate and odds', /3 AP · HYMN I · DEVOTION 3 · SURE/.test(await panel.locator('[data-prayer^="hymn:"]').first().textContent()));
-ok('an overreach shows its TN and the cost', /OVERREACH · TN \d+/.test(txt) && /a miss costs 1 Devotion/.test(txt));
+ok('an overreach shows its TN and the cost in Devotion XP', /OVERREACH · TN \d+/.test(txt) && /a miss costs 3 Devotion XP/.test(txt));
 ok('the Miracle is disabled with its reason', /✕ A Miracle needs Faith 7/.test(await panel.locator('[data-prayer^="miracle:"]').textContent()));
 // A targeted Whisper opens the party chips, then Pray (the reducer answers once implementer 1's rules land).
 const wBtns = panel.locator('[data-prayer^="whisper:"]');
@@ -67,6 +70,13 @@ if (await keep.count() && (await keep.getAttribute('aria-disabled')) !== 'true')
   await keep.click(); await p.waitForTimeout(500);
   ok('keeping a rite: the story says so and the card reads KEPT', /RITE ·/.test(await p.evaluate(() => window.__phc.getState().game.story.entries.map((e) => e.head || '').join(' '))) && /KEPT THIS SESSION/.test(await panel.textContent()));
 } else console.log('note no engine rite could be kept now: ' + ((await panel.locator('[data-rite]').first().textContent()) || '').slice(0, 120));
+const hereDay = p.locator('[data-here-day]').first();
+if (await hereDay.count()) ok('the HERE card shows the day (' + (await hereDay.textContent()) + ')', /^DAY \d+$/.test((await hereDay.textContent()) || ''));
+else console.log('note no HERE card in this scene (no objectives here), so no Day line to check there');
+// A day passes on a long rest: the faith tab and the HERE card follow.
+await p.evaluate(() => window.__phc.act({ type: 'narrator/turn', turn: { narration: 'They sleep by the fire.', rest: { kind: 'long' } } }));
+await p.waitForTimeout(400);
+ok('a long rest is a day: the faith tab reads DAY 2', /DAY 2/.test(await panel.locator('[data-faith-day]').textContent()));
 if (SHOTS) { await p.setViewportSize({ width: 1440, height: 1400 }); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-tab.png' }); await panel.evaluate((el) => el.scrollIntoView({ block: 'start' })); await p.locator('[data-phc-cutin]').count() && await p.keyboard.press('Escape'); await p.waitForTimeout(600); await panel.screenshot({ path: SHOTS + '/faith-panel-top.png', clip: undefined }); }
 
 // ---------- a fight ----------

@@ -7,7 +7,7 @@
 // its word and glyph, success green for a safe path, white for markers (still to do), neutrals for kind badges.
 import { type GameState, type Character, type TalkOption, type Marker, type HazardTile, type MapObject, type Npc,
   FAIL_HURT, HAZARD, SKILL, WORLD_AP, TALK_RANGE, condName, refOf, dist, positionsOf, npcsOf, isCache, carriedOf, carryable, carriedKg, carryLimit,
-  hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable } from '@engine';
+  hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable, dayOf } from '@engine';
 
 // ---------- kinds: a robot looks like a robot ----------
 export const KIND_WORD: Record<string, string> = { human: 'HUMAN', robot: 'ROBOT', drone: 'DRONE', crawler: 'CRAWLER', beast: 'BEAST', machine: 'MACHINE' };
@@ -183,14 +183,15 @@ export function hazardVals(g: GameState, id: string, charId: string | undefined,
 export const objectRows = (g: GameState, objId: string, charId: string | undefined, inkOf: (s: string) => string, busy = '') => approachRows(g, objId, approachOptions(g, objId, charId), inkOf, busy);
 
 // ---------- the HERE card ----------
-export interface HereVals { has: boolean; zone: string; rows: { key: string; text: string; tag: string; tagStyle: string; steps: { key: string; text: string }[]; hasSteps: boolean; where: string; hasWhere: boolean }[] }
+export interface HereVals { has: boolean; zone: string; /** The day counter (rules 1.6.1, item 709): "DAY 4". */ day: string; rows: { key: string; text: string; tag: string; tagStyle: string; steps: { key: string; text: string }[]; hasSteps: boolean; where: string; hasWhere: boolean }[] }
 export function hereVals(g: GameState): HereVals {
-  let card: ReturnType<typeof hereCard>; try { card = hereCard(g, 'pc'); } catch { return { has: false, zone: '', rows: [] }; }
+  const day = 'DAY ' + dayOf(g);
+  let card: ReturnType<typeof hereCard>; try { card = hereCard(g, 'pc'); } catch { return { has: false, zone: '', day, rows: [] }; }
   const rows = card.objectives.map((o) => ({ key: o.key, text: o.text, tag: o.here ? (o.optional ? 'OPTIONAL · HERE' : 'HERE') : 'ELSEWHERE',
     tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: ' + (o.here ? '#FFFFFF' : '#A3AEC2'),
     steps: o.steps.map((s, i) => ({ key: o.key + i, text: s })), hasSteps: o.steps.length > 0,
     where: !o.here && o.zoneName ? 'In ' + o.zoneName : o.markers.length ? '◆ ' + o.markers.map((m) => m.ref).join(', ') : '', hasWhere: (!o.here && !!o.zoneName) || o.markers.length > 0 }));
-  return { has: rows.length > 0, zone: 'HERE · ' + String(card.zoneName || card.zone || '').toUpperCase(), rows };
+  return { has: rows.length > 0, zone: 'HERE · ' + String(card.zoneName || card.zone || '').toUpperCase(), day, rows };
 }
 
 // ---------- carrying ----------

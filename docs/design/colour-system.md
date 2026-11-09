@@ -51,6 +51,13 @@ States always pair the colour with a word or a glyph, so colour-blind players lo
 | MP | `#5C9EFF` blue | | A hue no skill uses. |
 | Echo, still-to-do, selected tool, point of interest | `#FFFFFF` white | ◆ for Echo | Echo is not an attribute, so it takes no hue. White bold = "this still needs you"; green = done. |
 
+**Faith's light, `--faith-light` `#F2C46A` gold** (approved by Leon, 8 Nov 2026; rules 1.6). Light only: the glow of an
+answered prayer, the Miracle, the Devotion meter's XP fill, a patron's mark lit. It is never a text colour for meaning
+and never the only carrier of it: it always sits beside a word (the meter's "DEVOTION 4 · 12/32 XP", "✦ MIRACLE").
+Faith's words take Virtue ink `#D36A90`. The web app defines it once in `apps/web/index.html` (`:root`); templates use
+`var(--faith-light)`, code uses `FAITH_GOLD` (`apps/web/src/game/faithArt.ts`), the same value. It shares the Soul
+effects' warm gold (`SOUL_WARM`); Agility gold `#E3BF51` stays the attribute's.
+
 Retired tokens: `#6FD8A0` (success; too close to Perception), `#F0907F` / `#E8604F` (failure, HP), `#FFD27A` (Echo/critical; too close to Agility).
 
 ## 3b. Players (ownership only)

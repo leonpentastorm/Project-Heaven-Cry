@@ -880,7 +880,7 @@ export class MainLogic extends DCLogic {
         else if (x.kind === 'carry') act({ type: 'world/act', charId: c.id, act: 'carry', targetId: x.id });
         else if (x.kind === 'cache') act({ type: 'world/act', charId: c.id, act: 'search', objId: x.id }); } }));
     const nearAll = [...nearW, ...nearby.filter((n) => !nearW.some((w) => w.key === 's' + n.key)).map((n) => ({ ...n, sub: '', hasSub: false, off: false, title: n.label, style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid #FFFFFF; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer' }))];
-    const here = !inFight ? hereVals(g) : { has: false, zone: '', rows: [] };
+    const here = !inFight ? hereVals(g) : { has: false, zone: '', day: '', rows: [] };
     const carried = carriedRows(c, ART).map((r) => ({ ...r, noImg: !r.hasImg, cantPut: !!wBusy || inFight || (c && apLeft(g, c) < 1), putWhy: inFight ? 'After the fight.' : wBusy || (c && apLeft(g, c) < 1 ? 'Needs 1 AP.' : ''),
       put: () => this.setState({ putDown: r.id, area: true, wAct: 'move' }), putNear: () => { if (c) act({ type: 'world/act', charId: c.id, act: 'put_down', targetId: r.id }); } }));
     const LL = loadLine(c);

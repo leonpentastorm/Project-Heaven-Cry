@@ -3,7 +3,7 @@
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
 import { recentNarrationBlock, recentIds, lastTurnAudit } from './craft';
-import { beliefOf, devotionNow, FAITH_MIN, FAITH_PATRON } from '@engine';
+import { beliefOf, devotionNow, devotionXpOf, faithView, dayOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, NARRATOR_XP, PACT_COOLDOWN_DAYS } from '@engine';
 import { zoneHazards, zoneTriggers, carriedOf, type Approach } from '@engine';
 import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
@@ -144,7 +144,7 @@ CLASSES
 PERKS, TRAITS AND CLASS MOVES
 - Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".
 - Tag checks (tags) when perks or traits care what kind of check it is. Tags: ${[...TAG_VOCAB].join(', ')}. Answer every PENDING RULINGS line in perkRulings (accepted true or false); a story use you refuse is refunded. Never narrate a number the engine didn't report.
-- Optional fields (use only when they apply): perkLines (private lines an item owes its holder), conditions (an NPC Shaken for the scene; a character's condition for the scene, session or arc), traitState (what only you can set: a grudge, a cover, a rival), echo, karma (unlawful acts flagged), rest (short or long), identify, ${ADV_LIVE ? 'tutors (a tutor met for an advanced class), ' : ''}faith (see FAITH). Start-of-fight enemies can carry kind, tags, unaware, no_surrender, hidden; combat.fear marks a frightening place. In a fight the engine runs surrender, Hidden, prayer and throws; you rule what they mean after.
+- Optional fields (use only when they apply): perkLines (private lines an item owes its holder), conditions (an NPC Shaken for the scene; a character's condition for the scene, session or arc), traitState (what only you can set: a grudge, a cover, a rival), echo, karma (unlawful acts flagged), rest (short or long; a long rest is a day), days (days that pass, 1 to 3650: a journey, a time skip), identify, ${ADV_LIVE ? 'tutors (a tutor met for an advanced class), ' : ''}faith (see FAITH). Start-of-fight enemies can carry kind, tags, unaware, no_surrender, hidden; combat.fear marks a frightening place. In a fight the engine runs surrender, Hidden, prayer and throws; you rule what they mean after.
 ${PERK_GUIDANCE ? PERK_GUIDANCE + '\n' : ''}
 COMBO PERKS (deeds)
 - When a character with 5+ points in every listed skill actually does a perk's deed in the story, add deeds[] with that perkId. The list of combo perks is below. Never mention perks the party doesn't hold, and never mention Ultimate perks at all: they are a secret.
@@ -234,9 +234,9 @@ WORLD RULES THAT NEVER BREAK
 - Tone: NPCs are funny the way people are; Celestials are funny the way people are when nothing can hurt them. The tragedy belongs to the NPCs.
 - Keep traits that are deliberately ugly in clean in-world language.
 
-FAITH (rules 1.6)
-- The engine runs prayer, Devotion from a patron's liked and taboo tags, vows, Witnessed, interventions, Miracles and every patron line. Never write a patron's words; never set a TN or a number.
-- Your faith ops, only when the story earns them: pact (swear a character to a patron, or convert), piece (an NPC teacher with Faith above 5 teaches an Atheist one piece of their faith: name them in from), devotion (±1 or ±2 with a reason, for a deed the tags miss), rite_kept (a rite the Narrator marks), apostasy (they leave the pact).
+FAITH (rules 1.6.1)
+- The engine runs prayer, Devotion XP (liked and taboo tags, capped; vows; rites), Witnessed, interventions, Miracles, grudges and every patron line. Never write a patron's words; never set a TN.
+- Your faith ops, only when the story earns them: pact (swear to a patron, or convert; a switch from another patron: the engine rolls if the old one lets go), piece (an NPC teacher with Faith above 5 teaches an Atheist one piece of their faith: name them in from), devotion (Devotion XP, ${NARRATOR_XP.min} to +${NARRATOR_XP.max}, with a reason: a deed the tags miss +${DEVOTION_XP.deedMin} to +${DEVOTION_XP.deedMax}, bringing someone into the faith +${DEVOTION_XP.convert}, breaking character where the patron sees ${-DEVOTION_XP.breakCharacter}; your gains stop at +${NARRATOR_XP.sessionCap} a session per character), rite_kept (a rite the Narrator marks), apostasy (leaving for no one: no pact for ${PACT_COOLDOWN_DAYS} days).
 - Each character's belief, Devotion, vow and pieces are in THE PARTY. A patron's likes, taboos and rites: wiki_lookup patron:<id>.
 
 THE WIKI (wiki_lookup)
@@ -305,18 +305,22 @@ ${voices}`;
 }
 
 /** Blessing 2.0: belief, patron and Devotion, the vow, an Atheist's pieces and learned Hymns, in one short clause. */
-export function faithBrief(c: Character): string {
+export function faithBrief(c: Character, g?: GameState): string {
   const b = beliefOf(c), pieces = Object.entries((c as any).faithPieces || {}).filter(([, n]) => (n as number) > 0).map(([p, n]) => p + ' ' + n + '/3');
   const v: any = (c as any).vow, vow = v ? ', vow ' + v.id + ' ' + v.state : '';
-  if (b.kind === 'faithful') return 'faith: Faithful to ' + b.patron + ', Devotion ' + devotionNow(c) + '/10, Faith ' + (c.skills.faith || 0) + vow + (pieces.length ? ', pieces ' + pieces.join(', ') : '');
-  if (!pieces.length && (c.skills.faith || 0) < FAITH_MIN && !v) return '';
-  return 'faith: Atheist, Faith ' + (c.skills.faith || 0) + vow + (pieces.length ? ', pieces ' + pieces.join(', ') : '');
+  // With the game: the engine's view adds what limits your ops (your devotion gains used, a grudge, the pact cooldown).
+  const fv = g ? faithView(g, c.id) : null, used = fv?.narratorXp.session || 0;
+  const more = (used ? ', your devotion gains ' + used + '/' + NARRATOR_XP.sessionCap + ' this session' : '') + (fv?.grudge ? ', grudge of ' + fv.grudge.patron + ' (' + fv.grudge.sessionsLeft + ' more sessions)' : '')
+    + (fv?.pactCooldown ? ', no pact for ' + fv.pactCooldown.daysLeft + ' days' : '');
+  if (b.kind === 'faithful') return 'faith: Faithful to ' + b.patron + ', Devotion ' + devotionNow(c) + '/10 (' + devotionXpOf(c) + ' XP), Faith ' + (c.skills.faith || 0) + vow + (pieces.length ? ', pieces ' + pieces.join(', ') : '') + more;
+  if (!pieces.length && (c.skills.faith || 0) < FAITH_MIN && !v && !more) return '';
+  return 'faith: Atheist, Faith ' + (c.skills.faith || 0) + vow + (pieces.length ? ', pieces ' + pieces.join(', ') : '') + more;
 }
 /** Rules 1.3 standing: patron and Devotion, Karma, tutors, companions, story conditions, Narrator-set item state. One
  * short line, only what is set (nothing for most characters). */
 function standingBrief(g: GameState, c: Character): string {
   const bits: string[] = [];
-  const fb = faithBrief(c); if (fb) bits.push(fb);
+  const fb = faithBrief(c, g); if (fb) bits.push(fb);
   if (c.karma) bits.push('Karma ' + c.karma);
   if (c.tutors?.length) bits.push('tutors for ' + c.tutors.join(', '));
   if (c.companions?.length) bits.push('companions ' + c.companions.map((x) => x.name + ' (' + x.kind + (x.hp === 0 ? ', destroyed' : '') + ')').join(', '));
@@ -372,7 +376,7 @@ export function turnPrompt(g: GameState): string {
   const mission = missionBrief(g), opening = w.kind === 'epilogue' ? '' : actOpening(g);
   const ooc = (g.story.oocAsk || []).map((q) => `- ${Object.values(g.characters).filter((c) => c.owner === q.who).map((c) => c.name).join(' & ') || 'A spectator'}: ${q.text}`).join('\n');
   const redo = w.redo ? `\n\nREROLL: the players voted to redo your last answer to this moment. Their note: "${w.redo}". Answer the same moment again, differently, honouring the note where the rules and the story allow; the old answer never happened.` : '';
-  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${world}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'}\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}${craft ? '\n' + craft + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
+  return `RECENT SCENES (not yet in a chapter):\n${sceneMem}\n\nACTIVE MEMORY (picked for this moment; use recall for anything else):\n${active || 'nothing recorded yet'}${chapterJob}${moments ? '\n\nSTORY MOMENTS OPEN HERE (show one with moment when the story reaches it):\n  ' + moments : ''}\n\nPARTY CONDITION: ${hurt}${music}\n\nTHE MAP WHERE THE STORY IS NOW:\n${mapBrief(zoneMap(g))}\n\nWHERE EVERYONE STANDS (${zoneMap(g).name}): ${where || 'unknown'}${sneaking ? '\nSNEAKING: ' + sneaking : ''}\n\nPEOPLE AND ENEMIES ON THE MAP:\n  ${people || 'none'}\n\nOBJECTS ON THE MAP:\n  ${objText || 'none besides cover'}${world}${rulingsPrompt(g) ? '\n\n' + rulingsPrompt(g) : ''}${mission ? '\n\n' + mission : ''}\n\nCURRENT SCENE: ${g.story.scene.title || '(none yet)'} (day ${dayOf(g)})\n\nRECENT TRANSCRIPT (oldest first):\n${recent || '(the session is just starting)'}\n${choices ? '\nOVERREACH CHOICES:\n' + choices + '\n' : ''}${craft ? '\n' + craft + '\n' : ''}\nYOUR JOB NOW: ${job}${opening ? '\n' + opening : ''}${ooc ? '\n\nOUT-OF-CHARACTER QUESTIONS (answer them in ooc; the players asked them outside the story):\n' + ooc : ''}${redo}`;
 }
 
 /** Approaches as the Narrator reads them: number, label, skills, TN, effects, and every try. */
@@ -457,7 +461,7 @@ export const WIKI_TOOL = {
 /** A patron's rites for wiki_lookup (the glossary has the rest): which the engine runs and which are the Narrator's to mark. */
 function patronRites(id: string): string {
   const p: any = FAITH_PATRON[id]; if (!p || !(p.rites || []).length) return '';
-  return ' Rites (once a session, +Devotion): ' + p.rites.map((r: any) => r.id + ' "' + r.name + '" (' + (r.engine ? 'a player button' : 'yours: faith rite_kept') + '): ' + r.text).join(' ');
+  return ' Rites (once a session, +' + DEVOTION_XP.rite + ' Devotion XP): ' + p.rites.map((r: any) => r.id + ' "' + r.name + '" (' + (r.engine ? 'a player button' : 'yours: faith rite_kept') + '): ' + r.text).join(' ');
 }
 export function wikiAnswer(keys: string[]): string {
   return (Array.isArray(keys) ? keys : []).slice(0, 8).map((k) => {
@@ -538,13 +542,14 @@ export function submitTool(g: GameState) {
   schema.properties.traitState = opt({ charId: S, key: S, value: {} }, ['charId', 'key', 'value']);
   schema.properties.echo = opt({ charId: S, n: I, why: S }, ['charId', 'n']);
   schema.properties.karma = opt({ charId: S, amount: I, unlawful: B, why: S }, ['charId', 'amount']);
+  schema.properties.days = { type: 'integer', description: 'Days that pass (1 to 3650): a journey, a time skip; omit otherwise' };
   schema.properties.rest = { anyOf: [{ type: 'null' }, { type: 'object', properties: { kind: { type: 'string', description: 'short or long' }, settlement: B }, required: ['kind'] }] };
   schema.properties.identify = opt({ charId: S, what: S }, ['charId', 'what']);
   // Tutors only while some advanced class is active (Class Roster Revision 3 shelves them all: no tutors to place).
   if (ADV_LIVE) schema.properties.tutors = opt({ charId: S, classId: { type: 'string', description: 'advanced class id' } }, ['charId', 'classId']);
   // Blessing 2.0: the Narrator's faith ops (the engine's NarratorTurn.faith; it applies and logs them, and writes the patron lines).
   schema.properties.faith = opt({ charId: S, op: { type: 'string', description: 'pact, piece, devotion, rite_kept or apostasy' }, patron: { type: 'string', description: 'patron id (pact, piece; rite_kept if not their own)' },
-    from: { type: 'string', description: 'piece: the NPC teacher (Faith above 5)' }, delta: { type: 'integer', description: 'devotion: -2 to 2' }, reason: S, rite: { type: 'string', description: 'rite_kept: the rite id' } }, ['charId', 'op']);
+    from: { type: 'string', description: 'piece: the NPC teacher (Faith above 5)' }, delta: { type: 'integer', description: 'devotion: Devotion XP, ' + NARRATOR_XP.min + ' to ' + NARRATOR_XP.max }, reason: S, rite: { type: 'string', description: 'rite_kept: the rite id' } }, ['charId', 'op']);
   schema.properties.harm = opt({ charId: S, amount: I, type: { type: 'string', description: 'physical (default), fire, elemental, true' }, why: S }, ['charId', 'amount']);
   // OOC and missions: optional and enum-free like the fields above (the tool never changes, the cache holds).
   schema.properties.ooc = { type: 'string', description: 'A plain out-of-character answer to OUT-OF-CHARACTER QUESTIONS (at most about 80 words); empty when none' };
