@@ -308,9 +308,19 @@ function TabTools({ game, meId, isHost, tab, c, field }: { game: GameState; meId
 function Drawer({ game, meId, isHost, screen, closing, close, ...shared }: { game: GameState; meId: string; isHost: boolean; screen: string; closing: boolean; close: () => void } & Shared) {
   const sb = game.sandbox!, gearing = game.phase === 'story';
   React.useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[role="dialog"][aria-modal="true"]')) close(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, []);
+  // The drawer starts under the screen's header, so the shell's room cluster (Save, ⚙, ⚑, Leave) stays in reach in a fight.
+  const [top, setTop] = React.useState(0);
+  React.useLayoutEffect(() => {
+    const h = document.querySelector('header.phc-cb-head, header.phc-head') as HTMLElement | null;
+    if (!h) { setTop(0); return; }
+    const m = () => setTop(Math.max(0, Math.round(h.getBoundingClientRect().bottom)));
+    m(); window.addEventListener('resize', m);
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(m) : null; ro?.observe(h);
+    return () => { window.removeEventListener('resize', m); ro?.disconnect(); };
+  }, [screen]);
   const status = gearing ? (sb.state === 'cleared' ? 'wave ' + sb.wave + ' cleared · gearing up' : sb.state === 'fallen' ? 'fell on wave ' + sb.wave + ' · gearing up' : 'gearing up') : 'fighting';
   return <aside aria-label="Proving Ground tools" className={presenceCls('phc-a-right', closing) + ' phc-sb-drawer' + (screen === 'main' ? ' phc-sb-onmain' : '')}
-    style={{ position: 'fixed', top: 0, bottom: 0, zIndex: 47, width: 'min(400px, 94vw)', display: 'flex', flexDirection: 'column', background: C.panel, borderLeft: '1px solid ' + C.line, borderRight: screen === 'main' ? '1px solid ' + C.line : 0, boxShadow: '-12px 0 40px rgba(0,0,0,.55)', fontFamily: UI, color: C.text }}>
+    style={{ position: 'fixed', top, bottom: 0, zIndex: 47, width: 'min(400px, 94vw)', display: 'flex', flexDirection: 'column', background: C.panel, borderLeft: '1px solid ' + C.line, borderRight: screen === 'main' ? '1px solid ' + C.line : 0, boxShadow: '-12px 0 40px rgba(0,0,0,.55)', fontFamily: UI, color: C.text }}>
     <header style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 16px', borderBottom: '1px solid ' + C.line }}>
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
         <span style={label}>THE PROVING GROUND · {game.players.length} PLAYER{game.players.length === 1 ? '' : 'S'}{sb.mode === 'teams' ? ' · TEAM FIGHT' : ''}</span>
