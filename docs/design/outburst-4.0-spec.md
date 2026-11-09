@@ -241,6 +241,41 @@ The **Step** column is the multiplier step a feeling pump adds, instead of the p
 3. How many feeling buttons show at once before they collapse: 6 is the proposal.
 4. The pen-and-paper conversion (one module pick per level-up): later.
 
+## 11. Assets: what to find, what to commission, what to draw in code
+
+Part B **finds and wires** the sounds and effects. Leon's artist (`docs/design/handoffs/outburst-4.0-art-brief.md`)
+paints the icons. Nothing waits on the art: every icon slot has a code-drawn placeholder that a painted file replaces
+by name, with no code change, the way prayer icons work (`apps/web/src/game/faithArt.ts`).
+
+1. **Sound: Part B sources it.**
+   - **What's needed:**
+     - a heartbeat **pump** layer per feeling family, about 8 families (warm, cold, sharp, low, bright, hollow, wild,
+       holy), pitched up per stage, over the existing pump heartbeat;
+     - a **residue** loop or sting per family;
+     - the **unlock** sting ("you have felt X");
+     - **Revert** (a soft rewind);
+     - the **counter's shake tick**.
+   - **Only CC0** (or CC-BY with credits done exactly as the author asks). Sources the game already uses: Kenney,
+     OpenGameArt CC0 packs, The Free Firearm Sound Library. Never NC or "free for personal use".
+   - Process and trim them into `apps/web/public/sfx/`, add every one to `apps/web/src/game/sfxCredits.ts`, and keep
+     the files small.
+2. **Effects: drawn in code by Part B**, no art files.
+   - Each feeling's colour and particle motif (embers, rain, frost-breath, petals, sparks, ash, thread, light…);
+   - the multiplier counter's shake and colour shift;
+   - residue tiles (a tint plus the feeling's glyph, animated softly; fog respected; reduced motion respected).
+   - Reuse `apps/web/src/game/fx/` (the Soul family in `fx/soul.ts` and `fx/elements.ts`).
+3. **Feeling colours** are light and particles only, never body text (`docs/design/colour-system.md`). Each sits beside
+   its word, since 25 colours can't carry meaning alone. Part B proposes the 25 values and Leon approves them.
+4. **Icons: commissioned** (the art brief), with placeholders until then:
+   - **25 feeling glyphs**;
+   - **39 module icons** (16 existing, 13 new, 10 gated);
+   - **3 UI marks**: Revert, Practice, the unlock card.
+
+   Placeholders are simple white-stroke SVGs in code, like `glyphs.ts`. The painted files load by name from
+   `art/icons/feelings/` and `art/icons/modules/` through `npm run assets`.
+5. **Proving Ground:** a sound and effects test row for every feeling (pump, release, residue), so Leon can review them
+   without playing a fight.
+
 ## Build split (like Blessing 2.0)
 
 - **Part A: spec, data and engine.**
@@ -254,6 +289,7 @@ The **Step** column is the multiplier step a feeling pump adds, instead of the p
 - **Part B: web.**
   - The pump bar and multiplier counter with shake, colour and behaviour words.
   - Feeling buttons and revert.
-  - Residue on the map, effects and sound, the unlock cards.
+  - Residue on the map, effects and sound (section 11: sourcing and credits), the unlock cards, and icon placeholders
+    that the painted files replace by name.
   - The collapsible, grouped workshops for Sigil and Outburst, and the Proving Ground's grouped cheat menu.
   - e2e tests.
