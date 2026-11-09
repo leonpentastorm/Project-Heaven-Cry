@@ -346,6 +346,33 @@ if isinstance(sg, dict):
     for x in gr.get("retired", []) or []:
         if x.get("id") in smap:
             errors.append(f"sigils.grammar.retired: {x.get('id')} is still a word")
+    # rules 1.9 (Sigil 1.5): every word has a provisional inflection; study and word mastery numbers
+    INFL_STATS = {"cond_rounds", "save_tn", "to_hit", "damage_pct", "push_tiles", "shield_pct", "heal_pct", "charge", "flux",
+                  "lasts_rounds", "radius", "teleport_tiles", "barrier_hp_pct", "move_tiles", "range", "turret_def", "pull_tiles",
+                  "jump_radius", "leech", "mult", "radius_at_4", "cone_length", "spare_downed"}
+    for w in sw:
+        inf, where = w.get("inflection"), f"sigils:{w.get('id')}.inflection"
+        if not isinstance(inf, dict) or not inf.get("text") or not isinstance(inf.get("effects"), list) or not inf["effects"]:
+            errors.append(f"{where}: every word needs an inflection with text and effects (rules 1.9)")
+            continue
+        if inf.get("provisional") is not True:
+            errors.append(f"{where}: inflections are provisional (provisional: true)")
+        for e in inf["effects"]:
+            if e.get("op") != "inflection" or not isinstance(e.get("value"), (int, float)):
+                errors.append(f"{where}: an inflection effect is {{op: inflection, stat, value}}")
+            elif e.get("stat") not in INFL_STATS:
+                warns.append(f"{where}: stat {e.get('stat')} is not one the engine runs (the Narrator rules it)")
+    sd, wm = gr.get("study") or {}, gr.get("word_mastery") or {}
+    for k in ("per_evoke", "per_glyph_past_2", "hit_enemy", "first", "step", "copy", "trace_rounds", "mastery_study", "mastered_free_words"):
+        if not isinstance(sd.get(k), (int, float)):
+            errors.append(f"sigils.grammar.study: {k} must be a number (rules 1.9)")
+    if sd and sd.get("provisional") is not True:
+        errors.append("sigils.grammar.study: provisional (rules 1.9)")
+    for x in sd.get("mastery_skills") or []:
+        if x not in SKILLS:
+            errors.append(f"sigils.grammar.study.mastery_skills: unknown skill {x}")
+    if not (isinstance(wm.get("practised"), int) and isinstance(wm.get("mastered"), int) and 0 < wm["practised"] < wm["mastered"]):
+        errors.append("sigils.grammar.word_mastery: practised < mastered, whole numbers (rules 1.9)")
 
 # weapon mastery: families, levels, perks, and every weapon's family
 wm = data.get("weapon_mastery")

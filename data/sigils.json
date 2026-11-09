@@ -170,7 +170,37 @@
         "id": "stack",
         "why": "Two glyphs on one tile need the two-glyph hook."
       }
-    ]
+    ],
+    "study": {
+      "text": "Rules 1.9 (Sigil 1.5): every Evoke earns study (base, +1 per glyph past 2, +1 if it struck an enemy; a fizzle earns none). At the first threshold, then every step more, the character may learn a word of their choice within the cap; picks with no free slot are banked. Copying a glyph or a scuffed glyph's trace (Read, or Analyzing the enemy that drew it) gives copy study and puts the word on the known-to-study list, once per glyph per character. Each Mastery level of the mastery skills gives mastery_study once; Mastered gives one free word over the cap, once per skill.",
+      "per_evoke": 1,
+      "per_glyph_past_2": 1,
+      "hit_enemy": 1,
+      "first": 6,
+      "step": 8,
+      "copy": 2,
+      "trace_rounds": 2,
+      "mastery_skills": [
+        "brain_power",
+        "rumination",
+        "eloquence"
+      ],
+      "mastery_levels": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "mastery_study": 5,
+      "mastered_free_words": 1,
+      "provisional": true
+    },
+    "word_mastery": {
+      "text": "Rules 1.9: every Evoke that includes a word you know adds 1 to its use count (repeats once). Practised at practised uses; a Mastered word at mastered uses turns its inflection on for you.",
+      "practised": 10,
+      "mastered": 30,
+      "provisional": true
+    }
   },
   "elements": {
     "fire": {
@@ -290,7 +320,18 @@
       "grand": "Lava floor: 10 fire damage on entering or starting a turn inside; Burning on a failed Body save.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Burning lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cond_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "freeze",
@@ -312,7 +353,18 @@
       "grand": "Ice sheet: difficult ground; a Body save each move or fall Prone.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The Slowed it puts on lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cond_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "shock",
@@ -331,7 +383,18 @@
       "grand": "Storm field: 15 damage at turn start to anyone in Medium armour or heavier; robots Stunned.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+1 to hit.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "to_hit",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "stone",
@@ -349,7 +412,18 @@
       "grand": "Earthworks: up to 4 half-cover pillars rise where you choose.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+10% damage.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "damage_pct",
+            "value": 10
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "gale",
@@ -368,7 +442,18 @@
       "grand": "Cyclone: anyone entering is pushed 2 tiles outward; shots through it -5.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Pushes +1 tile.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "push_tiles",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "spark",
@@ -386,7 +471,18 @@
       "grand": "Static: attack rolls of 1-3 inside jam the weapon.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+10% damage.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "damage_pct",
+            "value": 10
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "acid",
@@ -410,7 +506,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Corroded lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cond_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "bind",
@@ -429,7 +536,18 @@
       "grand": "Tar: Pinned on entering (Body save).",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The Body save to escape being Pinned is 1 harder (TN +1).",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "save_tn",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "blind",
@@ -448,7 +566,18 @@
       "grand": "Fog: no one inside sees beyond 1 tile.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Blinded lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cond_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "slow",
@@ -467,7 +596,18 @@
       "grand": "Mire: Movement halved inside.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The Body save against it is 1 harder (TN +1).",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "save_tn",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "muddle",
@@ -486,7 +626,18 @@
       "grand": "Maze: Brain save at turn start or stagger 1 tile in a random direction.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The Left Brain Debuff lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cond_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "dread",
@@ -505,7 +656,18 @@
       "grand": "Haunting: enemies inside are Shaken (Heart save each turn).",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Shaken lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cond_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "silence",
@@ -525,7 +687,18 @@
       "grand": "Dead zone: no Sigils, Outbursts or prayers inside, yours included.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The Brain save against it is 1 harder (TN +1).",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "save_tn",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "command",
@@ -552,7 +725,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "A move order walks them +1 tile.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "move_tiles",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "ward",
@@ -568,7 +752,18 @@
       "grand": "Dome: allies inside +2 Defense and a 20 shield at each turn start (does not stack).",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Shield +10%.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "shield_pct",
+            "value": 10
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "mend",
@@ -584,7 +779,18 @@
       "grand": "Spring: allies starting a turn inside heal 10 x Healing multiplier.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Heals +10%.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "heal_pct",
+            "value": 10
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "quicken",
@@ -607,7 +813,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Costs 1 less charge to draw.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "charge",
+            "value": -1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "sharpen",
@@ -629,7 +846,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Costs 1 less charge to draw.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "charge",
+            "value": -1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "cleanse",
@@ -647,7 +875,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Costs 1 less charge to draw.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "charge",
+            "value": -1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "veil",
@@ -665,7 +904,18 @@
       "grand": "Smoke field: blocks all sight; everyone inside counts as Hidden.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The smoke lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "lasts_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "light",
@@ -682,7 +932,18 @@
       "grand": "Noon: Hidden revealed; enemies inside -2 to hit.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Radius +1.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "radius",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "step",
@@ -700,7 +961,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+1 tile.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "teleport_tiles",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "raise",
@@ -727,7 +999,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Walls +10% HP.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "barrier_hp_pct",
+            "value": 10
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "null",
@@ -757,7 +1040,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Costs 1 less charge to draw.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "charge",
+            "value": -1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "mask",
@@ -778,7 +1072,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Hidden lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cond_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "seek",
@@ -802,7 +1107,18 @@
       "grand": "Hunting ground: allies' attacks on enemies inside ignore half cover.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+1 range.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "range",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "arc",
@@ -827,7 +1143,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+1 range.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "range",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "sense",
@@ -852,7 +1179,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+1 range.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "range",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "relay",
@@ -878,7 +1216,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+1 range: an ally up to 1 tile further away.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "range",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "stay",
@@ -905,7 +1254,18 @@
       "grand": "Stasis: conditions inside do not tick down.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The field lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "lasts_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "twice",
@@ -926,7 +1286,18 @@
       "grand": "Echo field: the first spell your side lands inside each round rings again on the enemies it hit, at half its damage per target (5 at least).",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The glyph adds no extra Flux.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "flux",
+            "value": -1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "pull",
@@ -946,7 +1317,18 @@
       "grand": "Vortex: enemies within 4 tiles are pulled 1 tile toward the staff at their turn start.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Drags +1 tile.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "pull_tiles",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "wait",
@@ -971,7 +1353,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The trap lasts +1 round.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "lasts_rounds",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "watch",
@@ -1000,7 +1393,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The turret has Defense +1.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "turret_def",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "chain",
@@ -1023,7 +1427,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Jumps reach +1 tile further.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "jump_radius",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "leech",
@@ -1044,7 +1459,18 @@
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "You heal +10% more of the damage (half becomes 0.55).",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "leech",
+            "value": 0.05
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "condense",
@@ -1065,7 +1491,18 @@
       "grand": "Crush: enemies starting a turn inside next to another creature take 10 Sigil damage.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "x1.6 instead of x1.5.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "mult",
+            "value": 0.1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "spread",
@@ -1089,7 +1526,18 @@
       "grand": "Bloom: a spell your side lands inside also deals 10 Sigil damage to every enemy inside it didn't hit.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "+1 radius at 4 glyphs.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "radius_at_4",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "push",
@@ -1114,7 +1562,18 @@
       "grand": "Gust: enemies starting a turn inside are blown 1 tile outward, away from the staff.",
       "max_copies": null,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "The cone is +1 tile longer.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "cone_length",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     },
     {
       "id": "kin",
@@ -1131,7 +1590,18 @@
       "max_copies": 1,
       "new": true,
       "provisional": true,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "inflection": {
+        "text": "Also skips Downed enemies you mark: Downed and surrendered enemies are spared like your side.",
+        "effects": [
+          {
+            "op": "inflection",
+            "stat": "spare_downed",
+            "value": 1
+          }
+        ],
+        "provisional": true
+      }
     }
   ]
 }

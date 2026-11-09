@@ -3683,6 +3683,64 @@
         "range": 2,
         "mult": 0.5
       }
+    },
+    {
+      "id": "inflection",
+      "tier": "sigil",
+      "summary": "A Mastered word's inflection (rules 1.9, Sigil 1.5): one small upgrade of that word, always on for its caster. stat names the number it moves (cond_rounds, save_tn, to_hit, damage_pct, push_tiles, shield_pct, heal_pct, charge, flux, lasts_rounds, radius, teleport_tiles, barrier_hp_pct, move_tiles, range, turret_def, pull_tiles, jump_radius, leech, mult, radius_at_4, cone_length, spare_downed); a stat the engine does not run goes to the Narrator with the text.",
+      "count": 40,
+      "params": [
+        "stat",
+        "value"
+      ],
+      "used_by": [
+        "sigils:fire",
+        "sigils:freeze",
+        "sigils:shock",
+        "sigils:stone",
+        "sigils:gale",
+        "sigils:spark",
+        "sigils:acid",
+        "sigils:bind",
+        "sigils:blind",
+        "sigils:slow",
+        "sigils:muddle",
+        "sigils:dread",
+        "sigils:silence",
+        "sigils:command",
+        "sigils:ward",
+        "sigils:mend",
+        "sigils:quicken",
+        "sigils:sharpen",
+        "sigils:cleanse",
+        "sigils:veil",
+        "sigils:light",
+        "sigils:step",
+        "sigils:raise",
+        "sigils:null",
+        "sigils:mask",
+        "sigils:seek",
+        "sigils:arc",
+        "sigils:sense",
+        "sigils:relay",
+        "sigils:stay",
+        "sigils:twice",
+        "sigils:pull",
+        "sigils:wait",
+        "sigils:watch",
+        "sigils:chain",
+        "sigils:leech",
+        "sigils:condense",
+        "sigils:spread",
+        "sigils:push",
+        "sigils:kin"
+      ],
+      "example": {
+        "op": "inflection",
+        "stat": "cond_rounds",
+        "value": 1
+      },
+      "provisional": true
     }
   ]
 }

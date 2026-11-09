@@ -256,7 +256,11 @@ export function extinguish(cb: Combat, u: Unit, t: Unit): string | null {
   if (!condOn(t, 'burning')) return t === u ? 'You aren\'t burning.' : t.name + ' isn\'t burning.';
   if (dist(u.pos, t.pos) > 1) return 'Stand next to them.';
   const ap = actionAp({ u }, 'extinguish', 1).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  u.ap -= ap; endCond(t, 'burning', cb); cb.log.push(u.name + ' puts out the fire' + (t === u ? '' : ' on ' + t.name) + '.'); return null;
+  u.ap -= ap;
+  // FIRE's inflection (rules 1.9, Sigil 1.5): a Mastered FIRE's Burning lasts +1 round past being put out.
+  const linger = /^linger:(\d+)/.exec(String(t.condArg?.burning || ''));
+  if (linger) { t.conds!.burning = +linger[1]; delete t.condArg!.burning; if (cb.order?.[cb.turn] === t.id) (t.condFresh ||= []).push('burning'); cb.log.push(u.name + ' beats down the fire' + (t === u ? '' : ' on ' + t.name) + ', but it smoulders ' + linger[1] + ' more round' + (linger[1] === '1' ? '' : 's') + ' (a Mastered FIRE).'); return null; }
+  endCond(t, 'burning', cb); cb.log.push(u.name + ' puts out the fire' + (t === u ? '' : ' on ' + t.name) + '.'); return null;
 }
 /** Break a grapple (2 AP): d20 + the better of your Raw Power and Athletics modifiers against d20 + the grappler's. */
 export function escapeGrapple(cb: Combat, rng: Rng, u: Unit): string | null {

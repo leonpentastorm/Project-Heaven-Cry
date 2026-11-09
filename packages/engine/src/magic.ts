@@ -15,12 +15,17 @@ import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { canReact, useReaction } from './tactics';
 import { makeObject } from './objects';
 import { itemWords, wordCostMods, immune, actionAp } from './effects/core';
+import { masteredWords } from './sigilgrowth';
 
 type Fam = 'body' | 'brain' | 'heart';
 /** A glyph on a tile. v: the rules revision it was drawn under (14 = rules 1.4; a glyph without it is from 1.2). */
 /** A glyph on the ground. strokeId (rules 1.9, Sigil 1.5): the stroke it was drawn into (sigil.ts strokeRuns); a glyph
  * without one is an old 1.4 glyph, read by the touching-group rule until it fades. */
-export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string; v?: number; strokeId?: string }
+export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string; v?: number; strokeId?: string;
+  /** Rules 1.9: the characters who have copied this glyph's word (Read, or Analyzing its drawer): once each. */
+  copiedBy?: string[] }
+/** Rules 1.9: what a scuffed glyph leaves for a while (its word can still be read and copied); not a glyph. */
+export interface Trace { id: string; word: string; pos: string; side: 'pc' | 'foe'; by: string; who: string; left: number; copiedBy?: string[] }
 /** Placed magic and other standing zones. Sigil 1.4: 'field' (STAY), 'trap' (WAIT; hidden from the other side until
  * spotted), 'turret' (WATCH; hp, def), 'veil' (smoke), 'light'. 'wall' is a 1.2 standing wall (read as a field).
  * Class and gadget zones (scramble, seal, sanctuary, grand…) use the same shape. */
@@ -44,6 +49,8 @@ export interface MagicUnit {
   saves: Record<Fam, number>; debuff: Record<Fam, number>;
   /** Items' changes to a word's charge (word_cost), by word. */
   wordCost?: Record<string, number>;
+  /** Rules 1.9: the character's Mastered words (30 uses): their inflections are on in the spells this unit Evokes. */
+  inflect?: string[];
 }
 
 export const MANA_START = 15;
@@ -95,6 +102,8 @@ const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brai
 /** Conditions kept as unit flags rather than in u.conds (applyCond sets them). */
 const FLAG_CONDS = new Set(['dazed', 'prone', 'bleeding', 'hidden', 'injured']);
 export const condId = (id: string) => ALIAS[id] || id;
+/** A condition's own rounds (conditions data), for durations an item lengthens. */
+export const condRoundsOf = (id: string): number | undefined => CONDS[condId(id)]?.rounds;
 export const condName = (id: string) => CONDS[condId(id)]?.name || ({ dazed: 'Dazed', prone: 'Prone', bleeding: 'Bleeding', hidden: 'Hidden' } as Record<string, string>)[id] || id;
 export const condText = (id: string) => CONDS[condId(id)]?.text || '';
 /** Is this a condition the engine knows, and which save family it belongs to. */
@@ -137,6 +146,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
     debuff: { body: debuffStrength(c, 'body'), brain: debuffStrength(c, 'brain'), heart: debuffStrength(c, 'heart') },
     ...(() => { const wc = wordCostMods(c); return Object.keys(wc).length ? { wordCost: wc } : {}; })(),
+    ...(() => { const mw = masteredWords(c); return mw.length ? { inflect: mw } : {}; })(),
   };
 }
 /** Write a unit's magic back to its character (after a fight, or after an overworld action). */

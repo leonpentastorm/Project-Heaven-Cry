@@ -15,16 +15,18 @@ import {
 export * from './sigilwords';
 import {
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx,
-  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange,
+  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost,
 } from './combat';
 import { type Rng, d20 } from './rng';
-import { emit } from './effects/hooks';
+import { emit, boundGame } from './effects/hooks';
+import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
+import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER } from './character';
 import {
   type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitDebuff,
-  SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName,
+  SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
 } from './magic';
 import { makeObject, OBJ } from './objects';
 
@@ -54,7 +56,11 @@ export const glyphApOf = (u: Unit) => (u.mg?.glyphAp || 1) + (condOn(u, 'ldebuff
 /** A glyph's price for this unit: 'glyph_cost' {u, word, tile, ap, charge, flux, preview, fail} (mutable), after
  * word_cost items. fail = 'why' refuses the draw (hooks gap D2/K5). Flux is the word's (TWICE 2). */
 export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, tile?: string): { ap: number; charge: number; flux: number; fail?: string } {
-  const w = W(word), base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(tile || u.pos)) ? 1 : 0), charge: Math.max(0, (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0)), flux: w?.flux ?? 1, preview, tile: tile || u.pos, fail: '', cb };
+  // Rules 1.9: a Mastered word's charge or Flux inflection lowers what drawing it costs (never below 1 charge, 1 Flux).
+  const w = W(word), inf = (u.mg?.inflect || []).includes(word), ic = inf ? inflectionValue(word, 'charge') : 0, ifx = inf ? inflectionValue(word, 'flux') : 0;
+  const ch0 = (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0), fx0 = w?.flux ?? 1;
+  const w0 = { charge: ic ? Math.max(Math.min(1, ch0), ch0 + ic) : ch0, flux: ifx ? Math.max(Math.min(1, fx0), fx0 + ifx) : fx0 };
+  const base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(tile || u.pos)) ? 1 : 0), charge: Math.max(0, w0.charge), flux: w0.flux, preview, tile: tile || u.pos, fail: '', cb };
   const c: any = emit(cb, 'glyph_cost', base);
   if (u.edgeWord) c.ap = 0; // the Evoker blade's Edge Word (item 487): the glyph after a hit costs no AP
   return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux), ...(c.fail ? { fail: c.fail } : {}) };
@@ -297,10 +303,12 @@ export function sigilPower(mg: { sigilMult?: number; elemMult?: number } | null 
 }
 /** A spell's damaging Subjects, by damage type: the strongest glyph counts in full, every other damaging glyph (another
  * Element or a repeat) adds half. One spell, one main element. */
-export function sigilParts(subjects: string[]): { w: string; type: 'elemental' | 'sigil'; n: number }[] {
+export function sigilParts(subjects: string[], infl?: string[]): { w: string; type: 'elemental' | 'sigil'; n: number }[] {
   const glyphs = subjects.map((w) => ({ w, d: W(w) as any })).filter((x) => x.d?.damage).sort((a, b) => b.d.damage - a.d.damage);
   const parts: { w: string; type: 'elemental' | 'sigil'; n: number }[] = [];
-  glyphs.forEach((x, i) => { const type = x.d.damage_type === 'elemental' ? 'elemental' : 'sigil', n = i === 0 ? x.d.damage : x.d.damage / 2, p = parts.find((y) => y.type === type); if (p) p.n += n; else parts.push({ w: x.w, type, n }); });
+  // Rules 1.9: a Mastered word's damage inflection (STONE, SPARK: +10%) scales its own glyphs.
+  const up = (w: string, n: number) => (infl?.includes(w) ? n * (1 + inflectionValue(w, 'damage_pct') / 100) : n);
+  glyphs.forEach((x, i) => { const type = x.d.damage_type === 'elemental' ? 'elemental' : 'sigil', n = up(x.w, i === 0 ? x.d.damage : x.d.damage / 2), p = parts.find((y) => y.type === type); if (p) p.n += n; else parts.push({ w: x.w, type, n }); });
   return parts;
 }
 /** Scale the parts down together so their total stays under the ceiling. */
@@ -308,20 +316,56 @@ export function capParts(raws: number[], crit: boolean): number[] {
   const cap = crit ? SIGIL_CAP_CRIT : SIGIL_CAP, tot = raws.reduce((a, b) => a + b, 0);
   return tot <= cap ? raws : raws.map((r) => Math.floor((r * cap) / tot));
 }
+// ---------- inflections (rules 1.9, Sigil 1.5: a Mastered word's small upgrade, always on for its caster) ----------
+/** The inflection value of a stat for a word, when the word is one of the spell's inflected words (0 otherwise). */
+const iv = (sp: Spell, w: string, stat: string) => (sp.infl?.includes(w) ? inflectionValue(w, stat) : 0);
+const inflSum = (sp: Spell, stat: string) => (sp.infl || []).reduce((t, w) => t + inflectionValue(w, stat), 0);
+/** A condition's rounds with the word's cond_rounds inflection (undefined: the condition's own rounds). */
+const inflRounds = (sp: Spell, w: string, cond: string, rounds?: number) => { const add = iv(sp, w, 'cond_rounds'); return add ? (rounds ?? condRoundsOf(cond) ?? 1) + add : rounds; };
+/** Turn the caster's Mastered words' inflections on in a compiled spell (sp.infl), and move the numbers the spell
+ * carries (range, Burst sizes, Delivery numbers); the rest are read where the word resolves (iv). */
+export function applyInflections(sp: Spell, mastered?: string[] | null): Spell {
+  const on = [...new Set(sp.words)].filter((w) => (mastered || []).includes(w) && inflectionOf(w));
+  if (!on.length) return sp;
+  sp.infl = on;
+  if (sp.reach) sp.range += iv(sp, sp.reach, 'range');
+  if (sp.pull) sp.pull += iv(sp, 'pull', 'pull_tiles');
+  if (sp.chain) sp.chainRadius += iv(sp, 'chain', 'jump_radius');
+  if (sp.leech) sp.leech = Math.round((sp.leech + iv(sp, 'leech', 'leech')) * 1000) / 1000;
+  if (sp.condense) sp.coreMult = Math.round((sp.coreMult + iv(sp, 'condense', 'mult')) * 1000) / 1000;
+  if (sp.spread && sp.words.length >= 4) sp.radius += iv(sp, 'spread', 'radius_at_4');
+  if (sp.push) sp.coneLen += iv(sp, 'push', 'cone_length');
+  if (sp.stay) sp.fieldRounds += iv(sp, 'stay', 'lasts_rounds');
+  if (sp.wait) sp.trapRounds += iv(sp, 'wait', 'lasts_rounds');
+  if (sp.watch) sp.turretDef += iv(sp, 'watch', 'turret_def');
+  return sp;
+}
+/** The inflections the engine doesn't run (a stat it doesn't know): the Narrator rules them, with their text. */
+export function narratorInflections(sp: Spell): string[] {
+  return (sp.infl || []).filter((w) => (inflectionOf(w)?.effects || []).some((e) => e.op !== 'inflection' || !INFLECTION_STATS.has(String(e.stat)))).map((w) => w.toUpperCase() + ': ' + inflectionOf(w)!.text);
+}
+/** A placed spell's words compiled again (fields, traps, turrets), with the inflections its caster had. */
+const zoneSpell = (z: Zone, words: string[] = z.words) => { const sp = compileSpell(words), inf = (z as any).infl as string[] | undefined; if (inf?.length) applyInflections(sp, inf); return sp; };
+/** The character a unit is (a squad member, not a companion or an enemy), from the game bound for this action. */
+function charOfUnit(cb: Combat, u: Unit): Character | null {
+  if (!u.charId || u.companion || (cb as any).dry) return null;
+  const g = boundGame(); return (g?.characters?.[u.charId] as Character) || null;
+}
+
 /** The numbers a spell would put on one creature, after multipliers (spec: Grammar 6). */
 function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: number, roll: boolean, origin: string | null): Pick<Affected, 'dmg' | 'dmgAfterArmour' | 'heal' | 'shield' | 'roll' | 'saves'> {
   const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
   let el = 0, sg = 0, hl = 0, sh = 0;
-  for (const p of sigilParts(sp.subjects)) { if (p.type === 'elemental') el += p.n; else sg += p.n; }
-  for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; if (d.heal) hl += d.heal; if (d.shield) sh += d.shield; }
+  for (const p of sigilParts(sp.subjects, sp.infl)) { if (p.type === 'elemental') el += p.n; else sg += p.n; }
+  for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; if (d.heal) hl += d.heal * (1 + iv(sp, w, 'heal_pct') / 100); if (d.shield) sh += d.shield * (1 + iv(sp, w, 'shield_pct') / 100); }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
   const hook = (kind: string, v: number) => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1) * v;
   const [E, S] = capParts([Math.round(hook('damage', el * m * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * sigilPower(mg, 'sigil') * sharp))], false);
   const arm = (S ? Math.max(1, S - t.armour) : 0) + (E ? Math.max(1, E - Math.floor(t.armour / 2)) : 0);
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
-  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) : 0;
+  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') : 0;
   const saves: Affected['saves'] = [];
-  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + (caster ? unitDebuff(caster, SAVES[a.save]) : 0) }); }
+  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + (caster ? unitDebuff(caster, SAVES[a.save]) : 0) + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitDebuff(caster, 'body') });
   return { dmg: E + S, dmgAfterArmour: arm, heal: Math.round(hook('heal', hl * m * sm * hm)), shield: Math.round(hook('shield', sh * m * sm * hm)),
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
@@ -334,6 +378,7 @@ function affectedOn(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp: Spe
     const ally = t.side === side, self = !!caster && t === caster, m = Math.round(base * mult[t.pos] * 1000) / 1000;
     const a: Affected = { unit: t.id, name: t.name, at: t.pos, ally, enemy: !ally, self, mult: m, via, missile, ...numbersFor(cb, caster, sp, t, m, roll, origin) };
     if (sp.kin && ally) a.kinSpared = true;
+    else if (sp.kin && (t.downed || t.surrendered) && iv(sp, 'kin', 'spare_downed')) a.kinSpared = true; // KIN's inflection (rules 1.9)
     else if ((t.downed || t.surrendered) && sp.harmful && !sp.subjects.some(isBoonWord) && !sp.workings.length) a.skipped = t.downed ? 'downed' : 'surrendered';
     else if (self && sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken') a.skipped = 'quicken_self';
     else if (sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken' && t.quickRound === cb.round) a.skipped = 'quicken_round';
@@ -481,7 +526,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   if (p.side !== u.side && !p.words.every((w) => u.mg!.words.includes(w))) return no('You can\'t read all of those words.', { pattern: p });
   // 'spell_shape' {u, pattern, spell, opts, cb} (mutable spell: a fresh copy per plan): items that reshape the compiled spell
   // before it is aimed (the Mage's Payload). Additive hook (lane classes-i).
-  const sp = ((emit(cb, 'spell_shape', { u, pattern: p, spell: compileSpell(words), opts, cb }) as any).spell || compileSpell(words)) as Spell;
+  const sp = applyInflections(((emit(cb, 'spell_shape', { u, pattern: p, spell: compileSpell(words), opts, cb }) as any).spell || compileSpell(words)) as Spell, u.mg?.inflect);
   // Where you stand: within reach of a glyph, not on a middle glyph (the facing rule).
   const er: any = emit(cb, 'evoke_reach', { u, pattern: p, reach: 1, cb }), reach = Math.max(1, er.reach || 1);
   const near = p.tiles.some((k) => dist(u.pos, k) <= 1 || (dist(u.pos, k) <= reach && lineOfSight(cb, u.pos, k)));
@@ -596,7 +641,7 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   // Workings (spec: Workings; with a Burst they widen).
   const tiles = bt.tiles;
   if (sp.workings.includes('veil')) plan.veil = [...new Set([...around(c.impact, (W('veil') as any)?.blocks_sight_radius ?? 1), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
-  if (sp.workings.includes('light')) plan.light = [...new Set([...around(c.impact, (W('light') as any)?.reveals_hidden_radius ?? 4), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
+  if (sp.workings.includes('light')) plan.light = [...new Set([...around(c.impact, ((W('light') as any)?.reveals_hidden_radius ?? 4) + iv(sp, 'light', 'radius')), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
   if (sp.workings.includes('raise')) plan.raise = (sp.burst ? tiles : [c.impact]).filter((k) => emptyForRaise(cb, k));
   if (sp.workings.includes('null')) {
     const T = sp.burst ? tiles : [c.impact], n = nullCatch(cb, T), S = new Set(T); plan.nulls = n.glyphs.length + n.zones.length + n.walls.length;
@@ -604,7 +649,7 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
       ...n.walls.map((o: any) => ({ kind: 'raise', id: o.id, tiles: [o.pos], side: (o.side || 'pc') as 'pc' | 'foe' }))];
   }
   if (sp.uniqueSubjects.includes('command') && c.opts.order === 'move' && main && plan.mainTarget) {
-    const P = paths(cb, main.pos, main.id), max = (W('command') as any)?.move_tiles ?? 3;
+    const P = paths(cb, main.pos, main.id), max = ((W('command') as any)?.move_tiles ?? 3) + iv(sp, 'command', 'move_tiles');
     plan.orderTo = Object.keys(P.dist).filter((k) => k !== main.pos && P.dist[k] <= max);
     // The tile is checked here, before anything is spent (item 481): one they can't walk to in move_tiles is refused.
     const to = c.opts.orderTo;
@@ -614,7 +659,7 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   }
   if (sp.workings.includes('step')) {
     const movers = live.map((a) => cb.units.find((x) => x.id === a.unit)!).filter(Boolean);
-    const dest = c.opts.dest, max = (W('step') as any)?.teleport_tiles ?? 4;
+    const dest = c.opts.dest, max = ((W('step') as any)?.teleport_tiles ?? 4) + iv(sp, 'step', 'teleport_tiles');
     plan.stepTo = movers.length ? around(sp.burst ? c.impact : (main ? main.pos : c.impact), max).filter((k) => freeTile(cb, k, sp.burst ? undefined : main || undefined)) : [];
     if (!dest && movers.length) plan.why = 'Pick where STEP lands them: a free tile up to ' + max + ' away.';
     if (dest && movers.length) {
@@ -749,11 +794,55 @@ export function scuff(cb: Combat, u: Unit): string | null {
   if (!here.length && !tur.length) return (cb.glyphs || []).some((g) => g.pos === u.pos) ? 'A Keystone can\'t be scuffed.' : 'No glyphs under you.';
   if (u.ap < SPELL_AP.scuff) return 'Needs 1 AP.';
   u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos || (g as any).keystone);
+  // Rules 1.9: a scuffed glyph leaves a trace of its word for a while, which can be read (copied) like a glyph.
+  if (here.length) cb.traces = [...(cb.traces || []), ...here.map((g): Trace => ({ id: g.id, word: g.word, pos: g.pos, side: g.side, by: g.by, who: g.who, left: STUDY.traceRounds, ...((g as any).copiedBy?.length ? { copiedBy: [...(g as any).copiedBy] } : {}) }))];
   tidyStrokes(cb.glyphs); // a middle glyph scuffed splits its stroke in two (rules 1.9, Drawing 3.8)
   emitFx(cb, 'scuff', { unit: u.id, at: u.pos });
   for (const z of tur) destroyPlaced(cb, z, u.name + ' scuffs it out');
   cb.log.push(u.name + ' scuffs out ' + [...here.map((g) => g.word.toUpperCase()), ...tur.map(() => 'a turret')].join(' and ') + ' at ' + refOf(u.pos) + '.');
   return null;
+}
+
+// ---------- reading glyphs (rules 1.9, Sigil 1.5: copying words from the world) ----------
+/** What a character could copy on a tile: the other side's glyphs and any trace, with a word they don't know and haven't
+ * copied there. */
+export function readable(cb: Combat, u: Unit, tile: string): (Glyph | Trace)[] {
+  const c = charOfUnit(cb, u); if (!c) return [];
+  return [...(cb.glyphs || []).filter((g) => g.pos === tile && g.side !== u.side), ...(cb.traces || []).filter((t) => t.pos === tile)]
+    .filter((g) => !knowsWord(c, g.word) && !((g as any).copiedBy || []).includes(c.id));
+}
+/** Copy what is readable on a tile for a character (no AP): each glyph or trace once per character; a word already on
+ * the known-to-study list gives no more study (item 680). Returns the log lines. */
+function copyFrom(cb: Combat, u: Unit, list: (Glyph | Trace)[]): string[] {
+  const c = charOfUnit(cb, u)!, out: string[] = [], had = new Set(((c as any).sigilGrowth?.toStudy || []) as string[]);
+  for (const g of list) {
+    (g as any).copiedBy = [...((g as any).copiedBy || []), c.id];
+    if (had.has(g.word)) { out.push(c.name + ' reads ' + g.word.toUpperCase() + ' again: already on the known-to-study list.'); continue; }
+    had.add(g.word); out.push(...copyWord(c, g.word));
+  }
+  return out;
+}
+/** Read (the Analyze action aimed at a glyph or a trace; rules 1.9): the Analyze AP and range, line of sight, no roll. */
+export function readGlyph(cb: Combat, u: Unit, tile: string): string | null {
+  const c = charOfUnit(cb, u); if (!c) return 'Only a character can read a glyph.';
+  const any = [...(cb.glyphs || []).filter((g) => g.pos === tile), ...(cb.traces || []).filter((t) => t.pos === tile)];
+  if (!any.length) return 'No glyph or trace there to read.';
+  const list = readable(cb, u, tile);
+  if (!list.length) return any.every((g) => g.side === u.side && !(cb.traces || []).includes(g as Trace)) ? 'Your side\'s glyphs: ask the one who drew it to teach you.' : any.every((g) => knowsWord(c, g.word)) ? 'You know ' + (any.length === 1 ? 'that word' : 'those words') + ' already.' : 'You have copied that already.';
+  const cost = analyzeCost(u), range = 4 + (u.analysis || 0);
+  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  if (dist(u.pos, tile) > range) return 'Out of Analyze range (' + range + ' tiles).';
+  if (dist(u.pos, tile) > 1 && !lineOfSight(cb, u.pos, tile)) return 'No line of sight to it.';
+  u.ap -= cost; emitFx(cb, 'analyze', { unit: u.id, target: null, from: u.pos, to: tile, glyph: true });
+  cb.log.push(u.name + ' reads the ' + list.map((g) => g.word.toUpperCase() + ((cb.traces || []).includes(g as Trace) ? ' trace' : ' glyph')).join(' and ') + ' at ' + refOf(tile) + ' (' + cost + ' AP).', ...copyFrom(cb, u, list));
+  return null;
+}
+/** Analyze also reads the glyphs the analyzed enemy has drawn within the analyst's Analyze range (no extra AP). */
+export function readDrawnBy(cb: Combat, u: Unit, t: Unit): void {
+  if (!charOfUnit(cb, u)) return;
+  const range = 4 + (u.analysis || 0), tiles = [...new Set((cb.glyphs || []).filter((g) => glyphDrawer(g) === t.id && dist(u.pos, g.pos) <= range).map((g) => g.pos))];
+  const list = tiles.flatMap((k) => readable(cb, u, k).filter((g) => glyphDrawer(g as Glyph) === t.id));
+  if (list.length) cb.log.push(...copyFrom(cb, u, list));
 }
 
 // ---------- Evoke ----------
@@ -780,19 +869,27 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
     emit(cb, 'evoked', { u, pattern: p, spell: sp, plan: pv, targets: [], impact: pv.impact, fizzle: true, charge: pv.charge, ap: pv.ap, cb, rng });
     return null;
   }
-  let line = '', dealt = 0; const hitIds: string[] = [];
+  let line = '', dealt = 0; const hitIds: string[] = [], struckIds: string[] = [];
   for (const mp of pv.missiles) {
     if (pv.missiles.length > 1) line += ' · missile ' + (mp.i + 1) + ' at ' + refOf(mp.impact) + ':';
     if (mp.placed && mp.placed !== 'field') { line += place(cb, u, sp, mp); continue; }
     const r = strike(cb, rng, u, u.side, sp, mp, pv.affected.filter((a) => a.missile === mp.i), { roll: true, source: u.pos, opts });
-    line += r.line; dealt += r.dealt; hitIds.push(...r.hit);
+    line += r.line; dealt += r.dealt; hitIds.push(...r.hit); struckIds.push(...r.struck);
     if (mp.placed === 'field') line += place(cb, u, sp, mp, r.struck); // STAY (item 422): the strike, then the field
   }
   // LEECH (spec: Delivery): you heal a share of the spell's direct damage, in all (not × Healing given).
   if (sp.leech && dealt > 0 && !u.dead) { const n = Math.floor(dealt * sp.leech), r = healUnit(cb, u, n, u, 'leech'); emitFx(cb, 'leech', { unit: u.id, to: u.pos, from: pv.missiles.map((x) => x.impact), amount: r.restored, element: sp.element }); line += ' · ' + u.name + ' drinks ' + r.restored + ' HP (LEECH)'; }
   if (sp.damaging && condOn(u, 'sharpened')) endCond(u, 'sharpened', cb); // Sharpened is spent on the next attack
   if (u.hidden && sp.harmful) line += revealUnit(cb, u, 'cast a spell'); // MASK lasts until you attack
-  cb.log.push(head + (line || ' · it strikes and finds no one') + '.');
+  // Rules 1.9 (Sigil 1.5): study and word use counts for the caster's character (not a fizzle; not an enemy or companion).
+  // What it learns rides on the Evoke's own log line (one line an Evoke), after it.
+  let grew: string[] = [];
+  { const c = charOfUnit(cb, u); if (c) { const hitEnemy = struckIds.some((id) => cb.units.find((x) => x.id === id)?.side !== u.side), was = new Set(masteredOf(c));
+    grew = noteEvoke(c, p.words, p.glyphs.length, hitEnemy);
+    const now = masteredOf(c).filter((w) => !was.has(w)); if (u.mg && now.length) u.mg.inflect = [...new Set([...(u.mg.inflect || []), ...now])];
+    if (grew.length) emitFx(cb, 'sigil_growth', { unit: u.id, at: u.pos, study: (c as any).sigilGrowth?.study || 0, mastered: now }); } }
+  const ruled = narratorInflections(sp).map((n) => 'Inflection, the Narrator rules it: ' + n + '.');
+  cb.log.push(head + (line || ' · it strikes and finds no one') + '.' + [...ruled, ...grew].map((x) => ' ' + x).join(''));
   emit(cb, 'evoked', { u, pattern: p, spell: sp, plan: pv, targets: hitIds.map((id) => cb.units.find((x) => x.id === id)).filter(Boolean), impact: pv.impact, stay: sp.stay, zone: (cb.zones || [])[(cb.zones || []).length - 1], dealt, charge: pv.charge, ap: pv.ap, cb, rng });
   return null;
 }
@@ -808,7 +905,7 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
       if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
     }
     const hp0 = t.hp + (t.shield || 0), sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
-    const parts = sigilParts(sp.subjects);
+    const parts = sigilParts(sp.subjects, sp.infl);
     line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
     const raws = capParts(parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
       return Math.round(p.n * a.mult * sigilPower(by?.mg, p.type) * sharp * hk * (crit ? 2 : 1)); }), crit);
@@ -821,9 +918,10 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
     }
     dealt += Math.max(0, hp0 - (t.hp + (t.shield || 0)));
     if (!t.dead) {
-      if (crit && sp.uniqueSubjects.includes('fire')) line += applyCond(cb, rng, by, t, 'burning');
-      for (const w of sp.uniqueSubjects) { const d: any = W(w); if (!isElement(w) || !d?.applies) continue; line += withElement(w, () => applyCond(cb, rng, by, t, condKey(d.applies.condition), d.applies.rounds, (d.applies.save || undefined) as Fam | undefined, { skipSave: !d.applies.save })); }
-      if (sp.uniqueSubjects.includes('gale')) line += magicShove(cb, t, o.origin, (W('gale') as any)?.push_tiles || 2, by);
+      // FIRE's inflection (rules 1.9): its Burning lasts a round past being put out (tactics extinguish reads 'linger').
+      if (crit && sp.uniqueSubjects.includes('fire')) line += applyCond(cb, rng, by, t, 'burning', undefined, undefined, iv(sp, 'fire', 'cond_rounds') ? { arg: 'linger:' + iv(sp, 'fire', 'cond_rounds') } : {});
+      for (const w of sp.uniqueSubjects) { const d: any = W(w); if (!isElement(w) || !d?.applies) continue; line += withElement(w, () => applyCond(cb, rng, by, t, condKey(d.applies.condition), inflRounds(sp, w, condKey(d.applies.condition), d.applies.rounds), (d.applies.save || undefined) as Fam | undefined, { skipSave: !d.applies.save, tnAdd: iv(sp, w, 'save_tn') })); }
+      if (sp.uniqueSubjects.includes('gale')) line += magicShove(cb, t, o.origin, ((W('gale') as any)?.push_tiles || 2) + iv(sp, 'gale', 'push_tiles'), by);
     }
   }
   return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt };
@@ -839,11 +937,11 @@ function nonDamage(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp
       if (w === 'command') {
         const order = (o.opts.order && (d.orders || []).includes(o.opts.order) ? o.opts.order : 'halt');
         const arg = order === 'move' && o.opts.orderTo ? 'move:' + o.opts.orderTo : order === 'move' ? 'halt' : order;
-        const r = applyCond(cb, rng, by, t, 'commanded', 1, 'brain', { arg }); line += r;
+        const r = applyCond(cb, rng, by, t, 'commanded', 1, 'brain', { arg, tnAdd: iv(sp, w, 'save_tn') }); line += r;
         if (condOn(t, 'commanded')) emitFx(cb, 'command', { target: t.id, at: t.pos, order: arg.split(':')[0], to: arg.startsWith('move:') ? arg.slice(5) : null, by: by?.id });
         continue;
       }
-      line += applyCond(cb, rng, by, t, condKey(d.applies.condition), d.applies.rounds, (d.applies.save || undefined) as Fam | undefined);
+      line += applyCond(cb, rng, by, t, condKey(d.applies.condition), inflRounds(sp, w, condKey(d.applies.condition), d.applies.rounds), (d.applies.save || undefined) as Fam | undefined, { tnAdd: iv(sp, w, 'save_tn') });
       continue;
     }
     if (isBoonWord(w)) {
@@ -859,7 +957,7 @@ function nonDamage(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp
     }
     if (w === 'mask') {
       if (condOn(t, 'marked')) { line += ' · ' + t.name + ' is Marked: MASK fizzles on them'; continue; }
-      const r = hideUnit(cb, t, 'MASK'); t.maskLeft = (d.applies?.rounds ?? 2); t.maskFresh = active(cb) === t && !cb.overworld; emitFx(cb, 'mask', { target: t.id, at: t.pos }); line += r || ' · ' + t.name + ' is Hidden';
+      const r = hideUnit(cb, t, 'MASK'); t.maskLeft = (d.applies?.rounds ?? 2) + iv(sp, 'mask', 'cond_rounds'); t.maskFresh = active(cb) === t && !cb.overworld; emitFx(cb, 'mask', { target: t.id, at: t.pos }); line += r || ' · ' + t.name + ' is Hidden';
     }
   }
   return line;
@@ -885,9 +983,9 @@ function strike(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: S
     const from = t.pos; t.pos = st.to; emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed;
     sigilEnter(cb, rng, t, st.to);
   }
-  if (mp.veil.length) { addZone(cb, { kind: 'veil', tiles: mp.veil, words: ['veil'], by: by?.id || '', side, left: ((W('veil') as any)?.lasts_rounds ?? 2) + Math.floor(by?.mg?.durBonus || 0), mult: 1, who: by?.name || '' }); emitFx(cb, 'veil', { at: mp.impact, tiles: mp.veil, side }); line += ' · smoke-bots fill ' + refOf(mp.impact); }
+  if (mp.veil.length) { addZone(cb, { kind: 'veil', tiles: mp.veil, words: ['veil'], by: by?.id || '', side, left: ((W('veil') as any)?.lasts_rounds ?? 2) + Math.floor(by?.mg?.durBonus || 0) + iv(sp, 'veil', 'lasts_rounds'), mult: 1, who: by?.name || '' }); emitFx(cb, 'veil', { at: mp.impact, tiles: mp.veil, side }); line += ' · smoke-bots fill ' + refOf(mp.impact); }
   if (mp.light.length) { addZone(cb, { kind: 'light', tiles: mp.light, words: ['light'], by: by?.id || '', side, left: 99, mult: 1, who: by?.name || '' }); emitFx(cb, 'light', { at: mp.impact, tiles: mp.light, side }); for (const v of cb.units) if (v.hidden && mp.light.includes(v.pos)) line += revealUnit(cb, v, 'LIGHT') && ' · LIGHT reveals ' + v.name; line += ' · light floods around ' + refOf(mp.impact); }
-  if (mp.raise.length) line += raiseWalls(cb, by, side, mp.raise.filter((k) => emptyForRaise(cb, k)));
+  if (mp.raise.length) line += raiseWalls(cb, by, side, mp.raise.filter((k) => emptyForRaise(cb, k)), 1 + iv(sp, 'raise', 'barrier_hp_pct') / 100);
   if (sp.workings.includes('null')) line += nullWave(cb, sp.burst ? mp.burst.tiles : [mp.impact], mp.impact);
   return { line, dealt, hit, struck };
 }
@@ -909,14 +1007,14 @@ function place(cb: Combat, u: Unit, sp: Spell, mp: MissilePlan, struck: string[]
   const dur = Math.floor(u.mg?.durBonus || 0), el = sp.element;
   if (sp.watch) {
     const old = (cb.zones || []).filter((z) => z.kind === 'turret' && z.by === u.id); while (old.length >= LIM.turrets) destroyPlaced(cb, old.shift()!, 'a new turret takes its place');
-    const z = addZone(cb, { kind: 'turret', tiles: [mp.impact], words: sp.words, by: u.id, side: u.side, left: sp.turretRounds + dur, mult: sp.placedMult, who: u.name, hp: sp.turretHp, def: sp.turretDef, hidden: sp.wait, spotted: [], element: el, kin: sp.kin });
+    const z = addZone(cb, { kind: 'turret', tiles: [mp.impact], words: sp.words, by: u.id, side: u.side, left: sp.turretRounds + dur, mult: sp.placedMult, who: u.name, hp: sp.turretHp, def: sp.turretDef, hidden: sp.wait, spotted: [], element: el, kin: sp.kin, ...(sp.infl?.length ? { infl: [...sp.infl] } : {}) });
     emitFx(cb, 'turret_placed', { id: z.id, tile: mp.impact, side: u.side, by: u.id, words: sp.words, element: el, hidden: sp.wait, ...(sp.wait ? { only: u.side } : {}) });
     emit(cb, 'sigil_placed', { u, zone: z, cb });
     return ' · a ' + (sp.wait ? 'hidden ' : '') + 'turret stands at ' + refOf(mp.impact) + ' for ' + z.left + ' rounds';
   }
   if (sp.wait) {
     const old = (cb.zones || []).filter((z) => z.kind === 'trap' && z.by === u.id); while (old.length >= LIM.traps) destroyPlaced(cb, old.shift()!, 'a new trap takes its place');
-    const z = addZone(cb, { kind: 'trap', tiles: [mp.impact], words: sp.words, by: u.id, side: u.side, left: sp.trapRounds + dur, mult: 1, who: u.name, triggers: sp.triggers, hidden: true, spotted: [], element: el, dir: mp.dir, reachMult: sp.reachMult });
+    const z = addZone(cb, { kind: 'trap', tiles: [mp.impact], words: sp.words, by: u.id, side: u.side, left: sp.trapRounds + dur, mult: 1, who: u.name, triggers: sp.triggers, hidden: true, spotted: [], element: el, dir: mp.dir, reachMult: sp.reachMult, ...(sp.infl?.length ? { infl: [...sp.infl] } : {}) });
     emitFx(cb, 'trap_set', { id: z.id, tile: mp.impact, side: u.side, by: u.id, words: sp.words, element: el, only: u.side });
     emit(cb, 'sigil_placed', { u, zone: z, cb });
     return ' · a hidden trap waits at ' + refOf(mp.impact) + ' (' + z.left + ' rounds)';
@@ -929,13 +1027,13 @@ function place(cb: Combat, u: Unit, sp: Spell, mp: MissilePlan, struck: string[]
 function placeField(cb: Combat, by: string, who: string, side: 'pc' | 'foe', sp: Spell, bt: { tiles: string[]; mult: Record<string, number> }, f: Dir, dur: number, reachMult: number, struck: string[] = []): Zone {
   const hit: Record<string, number> = {}, ever: Record<string, boolean> = {};
   for (const id of struck) { hit[id] = cb.round; ever[id] = true; }
-  const z = addZone(cb, { kind: 'field', tiles: bt.tiles, tileMult: bt.mult, words: sp.words, by, side, left: (sp.fieldRounds || (W('stay') as any)?.lasts_rounds || 2) + dur, mult: (W('stay') as any)?.mult ?? 0.5, first: (W('stay') as any)?.first_mult ?? 1, who, hit, ever, element: sp.element, kin: sp.kin, dir: f, reachMult });
+  const z = addZone(cb, { kind: 'field', tiles: bt.tiles, tileMult: bt.mult, words: sp.words, by, side, left: (sp.fieldRounds || (W('stay') as any)?.lasts_rounds || 2) + dur, mult: (W('stay') as any)?.mult ?? 0.5, first: (W('stay') as any)?.first_mult ?? 1, who, hit, ever, element: sp.element, kin: sp.kin, dir: f, reachMult, ...(sp.infl?.length ? { infl: [...sp.infl] } : {}) });
   emitFx(cb, 'field', { id: z.id, tiles: z.tiles, words: sp.words, element: sp.element, side, by, rounds: z.left });
   return z;
 }
-function raiseWalls(cb: Combat, by: Unit | null, side: 'pc' | 'foe', tiles: string[]): string {
+function raiseWalls(cb: Combat, by: Unit | null, side: 'pc' | 'foe', tiles: string[], hpMult = 1): string {
   if (!tiles.length) return ' · RAISE finds no empty tile';
-  const b: any = (W('raise') as any)?.barrier || {}, left = (b.rounds ?? 3) + (b.duration_bonus ? Math.floor(by?.mg?.durBonus || 0) : 0);
+  const b0: any = (W('raise') as any)?.barrier || {}, b: any = { ...b0, hp: Math.round((b0.hp ?? 30) * hpMult) }, left = (b.rounds ?? 3) + (b.duration_bonus ? Math.floor(by?.mg?.durBonus || 0) : 0);
   const old = objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && (o as any).by === (by?.id || '')); // one RAISE working per caster
   if (old.length) { cb.objects = objectsOf(cb).filter((o) => !old.includes(o)); emitFx(cb, 'wall_crumbled', { tiles: old.map((o) => o.pos), why: 'replaced' }); }
   const objs = objectsOf(cb);
@@ -963,7 +1061,7 @@ const ownerOf = (cb: Combat, z: { by: string }) => cb.units.find((x) => x.id ===
  * 1.2 wall zones bite the same way. KIN fields spare their side. With PULL (a whirlpool) it drags them toward its owner. */
 function fieldBite(cb: Combat, rng: Rng, z: Zone, t: Unit) {
   const zz: any = z; if (t.dead || (zz.hit ||= {})[t.id] === cb.round) return;
-  const words = z.kind === 'wall' ? [...z.words, 'stay'] : z.words, sp = compileSpell(words);
+  const words = z.kind === 'wall' ? [...z.words, 'stay'] : z.words, sp = zoneSpell(z, words);
   if (sp.kin && t.side === z.side) return;
   if (sp.harmful && (t.downed || t.surrendered) && !sp.subjects.some(isBoonWord)) return;
   zz.hit[t.id] = cb.round;
@@ -979,7 +1077,7 @@ function fieldBite(cb: Combat, rng: Rng, z: Zone, t: Unit) {
 /** A trap goes off on someone of the other side (spec: WAIT): the spell resolves at its tile with the owner's numbers;
  * with STAY it then leaves a field there (the springing is the field's placing strike; item 422). */
 function springTrap(cb: Combat, rng: Rng, z: Zone, t: Unit) {
-  const zz: any = z, sp = compileSpell(z.words), by = ownerOf(cb, z);
+  const zz: any = z, sp = zoneSpell(z), by = ownerOf(cb, z);
   zz.triggers = (zz.triggers ?? 1) - 1; zz.hidden = false;
   emitFx(cb, 'trap_sprung', { id: z.id, tile: z.tiles[0], target: t.id, element: sp.element, side: z.side, words: z.words });
   emit(cb, 'sigil_trap_sprung', { u: t, trap: z, owner: by, cb, rng });
@@ -997,7 +1095,7 @@ function springTrap(cb: Combat, rng: Rng, z: Zone, t: Unit) {
 /** A turret casts at the start of each of its owner's turns at the nearest creature it can reach, ×0.5 (spec: WATCH; item
  * 423: ties the lowest HP, then the engine's order), for no charge, with the owner's numbers. */
 function turretFire(cb: Combat, rng: Rng, z: Zone) {
-  const zz: any = z, sp = compileSpell(z.words), by = ownerOf(cb, z); if (!by) return;
+  const zz: any = z, sp = zoneSpell(z), by = ownerOf(cb, z); if (!by) return;
   const at = z.tiles[0], pool = turretAim(cb, sp, at, z.side, by).targets.map((v) => ({ v }));
   if (!pool.length) return;
   if (zz.hidden) { zz.hidden = false; } // a hidden turret shows when it first fires
@@ -1072,6 +1170,7 @@ export function sigilRoundTick(cb: Combat) {
   const gone = (cb.glyphs || []).filter((g) => g.left <= 0);
   if (gone.length) { cb.log.push(gone.map((g) => g.word.toUpperCase()).join(', ') + ' fade' + (gone.length === 1 ? 's' : '') + ' at ' + [...new Set(gone.map((g) => refOf(g.pos)))].join(', ') + '.'); for (const g of gone) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'time' }); }
   cb.glyphs = (cb.glyphs || []).filter((g) => g.left > 0); tidyStrokes(cb.glyphs);
+  if (cb.traces?.length) { for (const t of cb.traces) t.left--; cb.traces = cb.traces.filter((t) => t.left > 0); }
   for (const z of cb.zones || []) z.left--;
   for (const z of (cb.zones || []).filter((x) => x.left <= 0)) emitFx(cb, x2fx(z.kind), { id: z.id, tile: z.tiles[0], tiles: z.tiles, side: z.side, why: 'time', ...(z.kind === 'trap' || (z.kind === 'turret' && (z as any).hidden) ? { only: z.side } : {}) });
   cb.zones = (cb.zones || []).filter((z) => z.left > 0);
@@ -1108,7 +1207,7 @@ export function placedMagic(cb: Combat, side: 'pc' | 'foe') {
     const secret = z.kind === 'trap' || (z.kind === 'turret' && zz.hidden);
     if (secret && z.side !== side && !(zz.spotted || []).includes(side)) continue;
     out.push({ id: z.id, kind: z.kind === 'wall' ? 'field' : z.kind, tiles: z.tiles, left: z.left, by: z.by, who: z.who, side: z.side, words: z.words, element: zz.element ?? (z.words.find(isElement) || null), mine: z.side === side, hidden: !!secret, ...(zz.hp != null ? { hp: zz.hp } : {}), ...(zz.triggers != null ? { triggers: zz.triggers } : {}),
-      ...(z.kind === 'turret' ? (() => { const ta = turretAim(cb, compileSpell(z.words), z.tiles[0], z.side, ownerOf(cb, z)); return { reach: ta.reach, range: ta.range, next: ta.targets.filter((t) => !(t.hidden && t.side !== side)).map((t) => t.id) }; })() : {}) });
+      ...(z.kind === 'turret' ? (() => { const ta = turretAim(cb, zoneSpell(z), z.tiles[0], z.side, ownerOf(cb, z)); return { reach: ta.reach, range: ta.range, next: ta.targets.filter((t) => !(t.hidden && t.side !== side)).map((t) => t.id) }; })() : {}) });
   }
   for (const o of objectsOf(cb)) if (o.kind === 'sigil_wall') { const oo: any = o; out.push({ id: o.id, kind: 'raise', tiles: [o.pos], left: oo.left ?? 0, by: oo.by || '', who: oo.who || '', side: oo.side || 'pc', words: ['raise'], element: null, mine: oo.side === side, hidden: false, hp: o.hp }); }
   return out;
