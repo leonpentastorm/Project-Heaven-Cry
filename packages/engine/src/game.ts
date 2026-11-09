@@ -297,10 +297,10 @@ export type Action =
   // Rules 1.7: the Talk panel's asks (1 AP) and approaches (2 AP; poi/try works too), and Search in a fight.
   | { type: 'talk/ask'; charId: string; npcId: string; what: 'wants' | 'objective' } | { type: 'talk/try'; charId: string; npcId: string; idx: number }
   | { type: 'combat/search'; unitId: string; objId: string }
-  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
+  | { type: 'world/act'; charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; stroke?: string; tile?: string; aim?: string; design?: string; hold?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; id?: string; actionId?: string; choice?: string; text?: string; npc?: string; mods?: string[]; unit?: string;
     /** Rules 1.7: attempt's approach number (1 = the first, as the Narrator lists them) or idx (0-based, the web's); ask's what. */ index?: number; idx?: number; what?: 'wants' | 'objective' }
   // Magic (spec: Mana, rules 1.2)
-  | { type: 'combat/draw'; unitId: string; word: string; tile: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
+  | { type: 'combat/draw'; unitId: string; word: string; tile: string; /** Rules 1.9: the stroke it extends (an id from previewDraw's strokes) or 'new'; none takes the default. */ stroke?: string } | { type: 'combat/evoke'; unitId: string; tile: string; aim?: string; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: 'spread' | 'push' } | { type: 'combat/strike-turret'; unitId: string; tile: string } | { type: 'combat/scuff'; unitId: string }
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean; watch?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   // Outburst 2.0 (rules 1.5): combat/outburst Begins and holds at stage 0; with an aim (and no hold: true) it is a snap
@@ -1232,7 +1232,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/clear': err = clearJam(cb!, u); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
-    case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile)); break;
+    case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile), a.stroke); break;
     case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined, evokeOptsOf(g, a)); break;
     case 'combat/strike-turret': err = strikeTurret(cb!, g.rng, u, tileKey(g, a.tile)); break;
     case 'combat/scuff': err = scuffGlyph(cb!, u); break;
@@ -1654,9 +1654,9 @@ function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: 
   return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
     ...(a.paint === 'spread' || a.paint === 'push' ? { paint: a.paint as 'spread' | 'push' } : {}) };
 }
-function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
+function performMagic(cb: Combat, rng: Rng, u: Combat['units'][number], a: { act: WorldAct; word?: string; stroke?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string }, tile?: string, aim?: string, g?: GameState): string | null {
   switch (a.act) {
-    case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos) : 'Pick a word.';
+    case 'draw': return a.word ? drawGlyph(cb, rng, u, a.word, tile || u.pos, a.stroke) : 'Pick a word.';
     case 'evoke': return tile ? evokeSpell(cb, rng, u, tile, aim, g ? evokeOptsOf(g, a) : {}) : 'Pick a glyph of the pattern.';
     case 'scuff': return scuffGlyph(cb, u);
     case 'vent': return ventFlux(cb, u);

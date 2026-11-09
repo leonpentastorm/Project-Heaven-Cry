@@ -18,7 +18,9 @@ import { itemWords, wordCostMods, immune, actionAp } from './effects/core';
 
 type Fam = 'body' | 'brain' | 'heart';
 /** A glyph on a tile. v: the rules revision it was drawn under (14 = rules 1.4; a glyph without it is from 1.2). */
-export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string; v?: number }
+/** A glyph on the ground. strokeId (rules 1.9, Sigil 1.5): the stroke it was drawn into (sigil.ts strokeRuns); a glyph
+ * without one is an old 1.4 glyph, read by the touching-group rule until it fades. */
+export interface Glyph { id: string; word: string; pos: string; by: string; side: 'pc' | 'foe'; left: number; who: string; v?: number; strokeId?: string }
 /** Placed magic and other standing zones. Sigil 1.4: 'field' (STAY), 'trap' (WAIT; hidden from the other side until
  * spotted), 'turret' (WATCH; hp, def), 'veil' (smoke), 'light'. 'wall' is a 1.2 standing wall (read as a field).
  * Class and gadget zones (scramble, seal, sanctuary, grand…) use the same shape. */
@@ -414,6 +416,7 @@ export {
   strikeTurret, destroyPlaced, sigilEnter, sigilTurnStart, sigilRoundTick, sigilSpot, migrateSigil, migrateStorySigil, migrateWords, startingWordsError,
   enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, freeTile, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
+  strokeRuns, strokeOf, strokeOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, glyphDrawer, type Stroke, type StrokeOption,
 } from './sigil';
 import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8 } from './sigil';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */

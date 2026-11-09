@@ -25,7 +25,7 @@ import {
   pumpOutburst, formOf, MAX_STAGE, SOUL_AP,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
-import { castAt, compileSpell, evokeMarks } from '../sigil';
+import { castAt, compileSpell, evokeMarks, strokePick } from '../sigil';
 import { d20, die } from '../rng';
 import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, changeDevotion, reveal } from '../tactics';
 import { GATE, OVERREACH, devotionNow, patronOf, shiftDevotion } from '../faith';
@@ -307,7 +307,8 @@ const isReachW = (w: string) => SIGIL[w]?.group === 'reach';
  * draw has (spec: Drawing; item 447): a second different Reach word, a second KIN, WATCH with STAY, past 4 glyphs or
  * past Max Sigil words. Pure: the glyph list is restored. */
 function joinCheck(cb: Combat, u: Unit, t: string, word: string, extra: Record<string, any> = {}): string | null {
-  const keep = cb.glyphs || [], fake = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV, ...extra } as any;
+  const sid = strokePick(cb, u, t).sid; // rules 1.9: the stroke it would go into by default
+  const keep = cb.glyphs || [], fake = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}), ...extra } as any;
   cb.glyphs = [...keep, fake]; let p: Pattern | string; try { p = findPattern(cb, t, u.pos); } finally { cb.glyphs = keep; }
   if (typeof p === 'string') return null;
   const c: Record<string, number> = {}; for (const w of p.words) c[w] = (c[w] || 0) + 1;
@@ -359,7 +360,8 @@ register({
       const u = h.u!, cb = h.cb!, m = u.mg!, t = aimOf(cb, a, 'tile') || u.pos, why = halfWhy(cb, u, t); if (why) return why;
       const pool = halfPool(cb, u, t), word = pool[die(rng as any, pool.length) - 1];
       m.charge -= 1;
-      const g: any = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, half: true, v: SIGIL_REV };
+      const sid = strokePick(cb, u, t).sid; // rules 1.9: a half-glyph goes into the default stroke, like any glyph
+      const g: any = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: t, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, half: true, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}) };
       cb.glyphs = [...(cb.glyphs || []), g]; (cb as any).sigilV = SIGIL_REV;
       const stacks = (cb.glyphs || []).filter((x) => x.pos === t).length > 1;
       emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: t, word, side: u.side, half: true, group: SIGIL[word]?.group, cls: SIGIL[word]?.class, element: SIGIL[word]?.class === 'subject_element' ? word : null, effect: stacks ? 'stacks' : 'starts' });
@@ -721,7 +723,9 @@ function ksRestore(h: Holder) {
   if (s.zone !== cb.map.id || (s.session ?? 1) !== (h.g?.sessionN ?? 1)) return;
   const left = 2 + Math.floor(u.mg?.durBonus || 0), g = ksOf(cb, u);
   if (g) { g.left = left; g.pos = s.pos; g.word = s.word; (g as any).v = SIGIL_REV; return; }
-  cb.glyphs = [...(cb.glyphs || []), { id: KS(u), word: s.word, pos: s.pos, by: 'ks:' + u.id, side: u.side, left, who: u.name, keystone: true, v: SIGIL_REV } as any];
+  // Rules 1.9: a Keystone is a stroke anchor: it goes into the default stroke where it is cut (or starts its own).
+  const pk = strokePick(cb, u, s.pos), sid = pk.sid === 'sgl' + ((cb.glyphSeq || 0) + 1) ? 's' + KS(u) : pk.sid;
+  cb.glyphs = [...(cb.glyphs || []), { id: KS(u), word: s.word, pos: s.pos, by: 'ks:' + u.id, side: u.side, left, who: u.name, keystone: true, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}) } as any];
 }
 function ksWhy(cb: Combat, u: Unit, t: string | null, w: string): string | null {
   if (!SIGIL[w] || !u.mg!.words.includes(w)) return 'Pick a word you know (choice).';

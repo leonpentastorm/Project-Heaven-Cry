@@ -5,6 +5,9 @@
 // Delivery, Burst and Filter words shape what it does. Every number comes from sigils.json; everything is
 // deterministic (rolls from the rng passed in). The planner (planEvoke) is pure and is shared by the preview, the
 // enemy AI and the real Evoke, so what the screen shows is what happens.
+// Rules revision 1.9 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
+// strokeRuns, strokePick); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the
+// 1.4 touching-group reading (groupAt) until they fade.
 import { WEAPON, type SigilDef } from './data';
 import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT,
@@ -75,14 +78,17 @@ export interface Pattern {
   axis?: Dir;
   /** Old fields kept for callers: the end nearer `from`, the far end, the direction near → far. */
   near?: string; far?: string; dir?: Dir; centre?: string;
+  /** The stroke it is (rules 1.9); absent for an old 1.4 group. */
+  strokeId?: string;
 }
 const add = (k: string, d: Dir, n = 1) => { const [x, y] = xy(k); return key(x + d[0] * n, y + d[1] * n); };
 const onMap = (cb: Combat, k: string) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; };
 const neg = (d: Dir): Dir => [d[0] ? -d[0] : 0, d[1] ? -d[1] : 0];
 const sgn = (n: number) => (n > 0 ? 1 : n < 0 ? -1 : 0);
-/** Group the glyphs of one side that touch (diagonals too) and read the shape (spec: Drawing, 3). */
-function groupAt(glyphs: Glyph[], tile: string, side: 'pc' | 'foe'): string[] {
-  const at = new Set(glyphs.filter((g) => g.side === side).map((g) => g.pos)), comp: string[] = [], todo = [tile];
+/** Old glyphs only (rules 1.9 item 674): the 1.4 reading, for glyphs with no strokeId. Group the old glyphs of one side
+ * that touch (diagonals too); a stroke's glyphs never join such a group. */
+function groupAt(glyphs: Glyph[], tile: string, side: string): string[] {
+  const at = new Set(glyphs.filter((g) => g.side === side && !g.strokeId).map((g) => g.pos)), comp: string[] = [], todo = [tile];
   while (todo.length) { const k = todo.pop()!; if (comp.includes(k) || !at.has(k)) continue; comp.push(k); for (const n of at) if (!comp.includes(n) && dist(n, k) === 1) todo.push(n); }
   return comp;
 }
@@ -97,27 +103,88 @@ function straight(tiles: string[]): { tiles: string[]; axis: Dir } | null {
   return null;
 }
 const glyphOrder = (a: Glyph, b: Glyph) => (+String(a.id).replace(/\D/g, '') || 0) - (+String(b.id).replace(/\D/g, '') || 0);
-function readShape(glyphs: Glyph[], comp: string[], side: 'pc' | 'foe', from?: string): Pattern | string {
-  const on = (k: string) => glyphs.filter((g) => g.pos === k && g.side === side).sort(glyphOrder);
+/** The unit a glyph is counted to (a Keystone's 'ks:' tag and a 1.3 save's '#pool' tag left out). */
+export const glyphDrawer = (g: Glyph) => String(g.by || '').replace(/^ks:/, '').replace(/#pool$/, '');
+
+// ---------- strokes (rules 1.9, Sigil 1.5: a Line is what you drew as one) ----------
+/** One stroke as it lies now: its glyphs (oldest first), its tiles in the order drawn (tiles[0] the end drawn first,
+ * end the last), its axis (null for a stroke of one tile), its words in tile order, who started it. */
+export interface Stroke { id: string; side: 'pc' | 'foe'; glyphs: Glyph[]; tiles: string[]; axis: Dir | null; end: string; words: string[]; owner: string; drawers: string[] }
+/** Every stroke on the ground, read purely from the glyphs (item 673): the glyphs of one strokeId that lie in one unbroken
+ * run; a stroke split by a removed middle glyph reads as two, the part with the stroke's oldest glyph keeping the id and
+ * every other part named after its own oldest glyph ('s' + its id), exactly as tidyStrokes writes them. */
+export function strokeRuns(glyphs: Glyph[]): Stroke[] {
+  const by = new Map<string, Glyph[]>();
+  for (const g of glyphs) if (g.strokeId) { const l = by.get(g.strokeId); if (l) l.push(g); else by.set(g.strokeId, [g]); }
+  const out: Stroke[] = [];
+  for (const [id, gs0] of by) {
+    const gs = [...gs0].sort(glyphOrder), tiles = [...new Set(gs.map((g) => g.pos))], parts: string[][] = [];
+    for (const t of tiles) {
+      if (parts.some((p) => p.includes(t))) continue;
+      const comp: string[] = [], todo = [t];
+      while (todo.length) { const k = todo.pop()!; if (comp.includes(k)) continue; comp.push(k); for (const n of tiles) if (!comp.includes(n) && dist(n, k) === 1) todo.push(n); }
+      parts.push(comp);
+    }
+    for (const comp of parts) {
+      const pg = gs.filter((g) => comp.includes(g.pos)), sid = comp.includes(gs[0].pos) ? id : 's' + pg[0].id;
+      const on = (k: string) => pg.filter((g) => g.pos === k);
+      let ts = comp, axis: Dir | null = null;
+      const st = straight(comp);
+      if (st) { ts = st.tiles; axis = st.axis; if (glyphOrder(on(ts[ts.length - 1])[0], on(ts[0])[0]) < 0) { ts = [...ts].reverse(); axis = neg(axis); } }
+      out.push({ id: sid, side: pg[0].side, glyphs: pg, tiles: ts, axis, end: ts[ts.length - 1], words: ts.flatMap(on).map((g) => g.word), owner: glyphDrawer(pg[0]), drawers: [...new Set(pg.map(glyphDrawer))] });
+    }
+  }
+  return out;
+}
+/** The stroke a glyph lies in (null for an old glyph with no strokeId). */
+export function strokeOfGlyph(glyphs: Glyph[], g: Glyph): Stroke | null {
+  if (!g.strokeId) return null;
+  return strokeRuns(glyphs.filter((x) => x.strokeId === g.strokeId)).find((s) => s.glyphs.includes(g)) || null;
+}
+/** The stroke under a tile or of a glyph id, in a fight (the screen's hover and the Narrator's reading). */
+export function strokeOf(cb: Combat, at: string): Stroke | null {
+  const gs = cb.glyphs || [], g = gs.find((x) => x.id === at) || gs.find((x) => x.pos === at);
+  return g ? strokeOfGlyph(gs, g) : null;
+}
+/** Every stroke of a side (both sides when none is given). */
+export function strokesAt(cb: Combat, side?: 'pc' | 'foe'): Stroke[] { return strokeRuns(cb.glyphs || []).filter((s) => !side || s.side === side); }
+/** Write the ids strokeRuns reads back onto the glyphs (after anything that removes glyphs: Scuff, a fade, NULL, an
+ * Evoke), so a split stroke's parts carry their own ids from then on. */
+export function tidyStrokes(glyphs: Glyph[] | undefined) {
+  if (!glyphs?.some((g) => g.strokeId)) return;
+  for (const s of strokeRuns(glyphs)) for (const g of s.glyphs) if (g.strokeId !== s.id) g.strokeId = s.id;
+}
+/** Read a pattern from its glyphs: a Stack (one tile, 2+ glyphs), a Line (2-4 tiles in one straight row) or why not. */
+function readShape(members: Glyph[], comp: string[], side: 'pc' | 'foe', from?: string, legacy = false, sid?: string): Pattern | string {
+  const on = (k: string) => members.filter((g) => g.pos === k).sort(glyphOrder);
   if (comp.length === 1) {
     const gs = on(comp[0]);
-    if (gs.length >= 2) return { shape: 'stack', tiles: comp, glyphs: gs, words: gs.map((g) => g.word), side };
+    if (gs.length >= 2) return { shape: 'stack', tiles: comp, glyphs: gs, words: gs.map((g) => g.word), side, ...(sid ? { strokeId: sid } : {}) };
     return 'One glyph alone is no spell: step to a tile next to it and draw a second, in a straight row.';
   }
-  if (comp.length > MAX_GLYPHS) return 'No shape: ' + comp.length + ' glyphs touch here, and a Line is 2 to ' + MAX_GLYPHS + '. Scuff one or let it fade.';
+  if (comp.length > MAX_GLYPHS) return 'No shape: ' + comp.length + ' glyphs ' + (legacy ? 'touch here' : 'in this stroke') + ', and a Line is 2 to ' + MAX_GLYPHS + '. Scuff one or let it fade.';
   const s = straight(comp); if (!s) return 'No shape: these glyphs bend or cluster. A Line is one straight row (across, down or diagonal).';
   // Read the Line from the end drawn first, so its words come in the order they were written.
   const first = (k: string) => on(k)[0];
   if (glyphOrder(first(s.tiles[s.tiles.length - 1]), first(s.tiles[0])) < 0) { s.tiles.reverse(); s.axis = neg(s.axis); }
   const gs = s.tiles.flatMap(on), A = s.tiles[0], Z = s.tiles[s.tiles.length - 1];
   const near = from && dist(from, Z) < dist(from, A) ? Z : A, far = near === A ? Z : A;
-  return { shape: 'line', tiles: s.tiles, glyphs: gs, words: gs.map((g) => g.word), side, axis: s.axis, near, far, dir: near === A ? s.axis : neg(s.axis) };
+  return { shape: 'line', tiles: s.tiles, glyphs: gs, words: gs.map((g) => g.word), side, axis: s.axis, near, far, dir: near === A ? s.axis : neg(s.axis), ...(sid ? { strokeId: sid } : {}) };
 }
-/** The pattern a glyph belongs to (spec: Drawing, 3): a Line of 2–4, or a Stack with the two-glyph hook. */
+/** The glyphs and tiles of the pattern a glyph belongs to: its stroke (rules 1.9), or for an old glyph the 1.4 touching
+ * group of old glyphs. */
+function membersOf(glyphs: Glyph[], start: Glyph): { glyphs: Glyph[]; tiles: string[]; legacy: boolean; stroke: Stroke | null } {
+  const st = strokeOfGlyph(glyphs, start);
+  if (st) return { glyphs: st.glyphs, tiles: st.tiles, legacy: false, stroke: st };
+  const comp = groupAt(glyphs, start.pos, start.side);
+  return { glyphs: glyphs.filter((g) => g.side === start.side && !g.strokeId && comp.includes(g.pos)), tiles: comp, legacy: true, stroke: null };
+}
+/** The pattern a glyph belongs to (spec: Drawing, 3): a stroke of 2–4 (a Line), or a Stack with the two-glyph hook. */
 export function findPattern(cb: Combat, tile: string, from?: string): Pattern | string {
   migrateSigil(cb);
-  const start = (cb.glyphs || []).find((g) => g.pos === tile); if (!start) return 'No glyph there.';
-  return readShape(cb.glyphs || [], groupAt(cb.glyphs || [], tile, start.side), start.side, from);
+  const all = cb.glyphs || [], start = all.find((g) => g.pos === tile); if (!start) return 'No glyph there.';
+  const m = membersOf(all, start);
+  return readShape(m.glyphs, m.tiles, start.side, from, m.legacy, m.stroke?.id);
 }
 
 // ---------- the facing rule ----------
@@ -561,59 +628,117 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
 }
 
 // ---------- drawing ----------
-export interface DrawPreview { ok: boolean; why?: string; tile: string; cost: { ap: number; charge: number; flux: number }; effect: 'starts' | 'extends' | 'breaks' | 'stacks' | null; words: string[]; fades: Glyph | null; overload: boolean; capLeft: number }
-/** Before drawing (spec: Mana, Sigils 9.1): the tile (yours), the cost, and whether the glyph starts a Line, extends one,
- * stacks on a tile (the two-glyph hook) or breaks a shape. Refusals cost nothing (item 447). */
-export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string): DrawPreview {
+/** One choice on the draw step's stroke picker (rules 1.9): a stroke the glyph could extend, or 'new'. */
+export interface StrokeOption {
+  id: string; label: string; words: string[]; tiles: string[];
+  /** Who started the stroke, and whether you have a glyph in it (only those can be the default; item 671). */
+  owner: string; ownerName: string; mine: boolean;
+  /** Whether the glyph may go into it (the draw's refusals read the stroke it extends). */
+  ok: boolean; why?: string; isDefault: boolean;
+}
+export interface DrawPreview {
+  ok: boolean; why?: string; tile: string; cost: { ap: number; charge: number; flux: number }; effect: 'starts' | 'extends' | 'breaks' | 'stacks' | null; words: string[]; fades: Glyph | null; overload: boolean; capLeft: number;
+  /** Rules 1.9: the stroke the glyph goes into ('new' starts one), the id it gets, the picker's choices (the strokes it
+   * could extend, then 'new'; none when it stacks or nothing is near), the default, and the tiles of the stroke it makes
+   * (the preview's joining line). */
+  stroke: string; strokeId: string; strokes: StrokeOption[]; defaultStroke: string; joins: string[];
+}
+const up = (w: string) => w.toUpperCase();
+/** The refusals a draw has for the stroke it would make (spec: Drawing; item 447): past 4 glyphs, past the Max Sigil
+ * words of its drawers, a second Reach word, a second KIN, WATCH with STAY. */
+function strokeRefusal(cb: Combat, u: Unit, ws: string[], tiles: number, drawers: string[]): string | null {
+  const cnt = count(ws), reaches = Object.keys(cnt).filter(isReach);
+  const caps = drawers.map((id) => cb.units.find((x) => x.id === id)?.mg?.maxWords || 0);
+  const cap4 = Math.min(MAX_GLYPHS, Math.max(u.mg!.maxWords, ...caps));
+  if (ws.length > MAX_GLYPHS || tiles > MAX_GLYPHS) return 'Past the cap: a spell holds at most ' + MAX_GLYPHS + ' glyphs.';
+  if (ws.length > cap4) return 'Past your cap: ' + ws.length + ' glyphs, and your Max Sigil words is ' + u.mg!.maxWords + '.';
+  if (reaches.length > 1) return 'A second Reach word is refused: one Reach word per spell (' + reaches.map(up).join(', ') + ').';
+  if ((cnt.kin || 0) > 1) return 'KIN takes one copy.';
+  if (cnt.watch && cnt.stay) return 'WATCH and STAY are refused together: a turret already lasts.';
+  return null;
+}
+/** The strokes of u's side a glyph on tile `at` could extend (rules 1.9, Drawing 3.1): next to the stroke's end glyph and
+ * on along its axis, or next to a stroke of one glyph; fewer than 4 tiles. Enemies' strokes never. */
+export function strokeCandidates(cb: Combat, u: Unit, at: string): Stroke[] {
+  return strokeRuns(cb.glyphs || []).filter((s) => s.side === u.side && s.tiles.length < MAX_GLYPHS && !s.tiles.includes(at)
+    && (s.tiles.length === 1 ? dist(s.tiles[0], at) === 1 : !!s.axis && add(s.end, s.axis) === at));
+}
+/** Which stroke a new glyph of u's on tile `at` goes into (rules 1.9; items 671–672): on a tile that already holds a glyph
+ * of its side, that glyph's stroke (a Stack; '' for an old 1.4 glyph: no stroke); else the pick, or by default the
+ * candidate holding u's most recent glyph, or a new stroke ('sgl' + the next glyph number). Pure. */
+export function strokePick(cb: Combat, u: Unit, at: string, stroke?: string): { cands: Stroke[]; def: string; pick: string; sid: string; effect: 'starts' | 'extends' | 'stacks'; error?: string } {
+  const all = cb.glyphs || [], newId = 'sgl' + ((cb.glyphSeq || 0) + 1), here = all.filter((g) => g.pos === at);
+  if (here.length) {
+    const h0 = here[0], st = h0.side === u.side ? strokeOfGlyph(all, h0) : null;
+    if (st) return { cands: [], def: st.id, pick: st.id, sid: st.glyphs[0].strokeId || st.id, effect: 'stacks' };
+    return { cands: [], def: 'new', pick: 'new', sid: h0.side === u.side && !h0.strokeId ? '' : newId, effect: 'stacks' };
+  }
+  const cands = strokeCandidates(cb, u, at), last = (s: Stroke) => Math.max(-1, ...s.glyphs.filter((g) => glyphDrawer(g) === u.id).map((g) => +String(g.id).replace(/\D/g, '') || 0));
+  const own = cands.filter((s) => last(s) >= 0).sort((a, b) => last(b) - last(a)), def = own.length ? own[0].id : 'new', pick = stroke ?? def;
+  if (pick === 'new') return { cands, def, pick, sid: newId, effect: 'starts' };
+  if (!cands.some((s) => s.id === pick)) return { cands, def, pick, sid: newId, effect: 'starts', error: 'That stroke can\'t take this glyph: draw next to its end glyph, on along its row (or start a new Line).' };
+  // The id the stroke's glyphs carry now (an untidied split part's canonical id differs; tidyStrokes settles it after).
+  return { cands, def, pick, sid: cands.find((s) => s.id === pick)!.glyphs[0].strokeId || pick, effect: 'extends' };
+}
+/** Before drawing (spec: Mana, Sigils 9.1): the tile (yours), the cost, the stroke it goes into (rules 1.9: the picker's
+ * choices and the default) and whether it starts a Line, extends one or stacks on a tile (the two-glyph hook). stroke:
+ * the pick (a stroke id or 'new'); none takes the default. Refusals cost nothing (item 447). */
+export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, stroke?: string): DrawPreview {
   migrateSigil(cb);
-  const at = tile || u.pos, m = u.mg;
-  const no = (why: string, extra: Partial<DrawPreview> = {}): DrawPreview => ({ ok: false, why, tile: at, cost: { ap: 0, charge: 0, flux: 0 }, effect: null, words: [], fades: null, overload: false, capLeft: 0, ...extra });
+  const at = tile || u.pos, m = u.mg, newId = 'sgl' + ((cb.glyphSeq || 0) + 1);
+  const no = (why: string, extra: Partial<DrawPreview> = {}): DrawPreview => ({ ok: false, why, tile: at, cost: { ap: 0, charge: 0, flux: 0 }, effect: null, words: [], fades: null, overload: false, capLeft: 0, stroke: 'new', strokeId: newId, strokes: [], defaultStroke: 'new', joins: [], ...extra });
   const e = sigilReady(cb, u); if (e) return no(e);
   const w = W(word); if (!w) return no('No such word.');
   if (!m!.words.includes(word)) return no('You don\'t know ' + w.word + '.');
   if (at !== u.pos) return no('Draw on your own tile: step onto the tile first.');
   if (!standable(cb.map, at)) return no('Nothing can be drawn there.');
   const here = (cb.glyphs || []).filter((g) => g.pos === at), cap = glyphsPerTile(cb, u, at);
-  if (here.length >= cap) return no(cap === 1 ? 'One glyph per tile: this tile already holds ' + here.map((g) => g.word.toUpperCase()).join(', ') + '.' : 'This tile holds ' + cap + ' glyphs at most.');
+  if (here.length >= cap) return no(cap === 1 ? 'One glyph per tile: this tile already holds ' + here.map((g) => up(g.word)).join(', ') + '.' : 'This tile holds ' + cap + ' glyphs at most.');
   const gc = glyphCost(cb, u, word, true, at);
   const cost = { ap: gc.ap, charge: gc.charge, flux: gc.flux };
   if (gc.fail) return no(gc.fail, { cost });
-  // The shape it would make with the glyphs of your side it touches.
-  const fake: Glyph = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: at, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV } as Glyph;
-  const all = [...(cb.glyphs || []), fake], comp = groupAt(all, at, u.side), s = readShape(all, comp, u.side, u.pos);
-  let effect: DrawPreview['effect'] = comp.length === 1 ? (here.length ? 'stacks' : 'starts') : typeof s === 'string' ? 'breaks' : 'extends';
-  const words = typeof s === 'string' ? comp.flatMap((k) => all.filter((g) => g.pos === k && g.side === u.side).map((g) => g.word)) : s.words;
-  const collinear = comp.length > 1 && !!straight(comp);
-  if (collinear || effect === 'stacks') {
-    const ws = typeof s === 'string' ? words : s.words, cnt = count(ws), reaches = Object.keys(cnt).filter(isReach);
-    const drawers = [...new Set((typeof s === 'string' ? [] : s.glyphs).map((g) => g.by))].map((id) => cb.units.find((x) => x.id === id)?.mg?.maxWords || 0);
-    const cap4 = Math.min(MAX_GLYPHS, Math.max(m!.maxWords, ...drawers));
-    if (ws.length > MAX_GLYPHS || comp.length > MAX_GLYPHS) return no('Past the cap: a spell holds at most ' + MAX_GLYPHS + ' glyphs.', { cost, effect, words: ws });
-    if (ws.length > cap4) return no('Past your cap: ' + ws.length + ' glyphs, and your Max Sigil words is ' + m!.maxWords + '.', { cost, effect, words: ws });
-    if (reaches.length > 1) return no('A second Reach word is refused: one Reach word per spell (' + reaches.map((r) => r.toUpperCase()).join(', ') + ').', { cost, effect, words: ws });
-    if ((cnt.kin || 0) > 1) return no('KIN takes one copy.', { cost, effect, words: ws });
-    if (cnt.watch && cnt.stay) return no('WATCH and STAY are refused together: a turret already lasts.', { cost, effect, words: ws });
-  } else if (comp.length > MAX_GLYPHS) effect = 'breaks';
-  if (u.ap < gc.ap) return no('Needs ' + gc.ap + ' AP.', { cost, effect, words });
-  if (m!.charge < gc.charge) return no('Not enough charge in the core (' + m!.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).', { cost, effect, words });
+  const all = cb.glyphs || [], nameOf = (id: string) => cb.units.find((x) => x.id === id)?.name || id;
+  // What the glyph would make in a stroke (or, stacked on an old glyph, the 1.4 group it joins).
+  const read = (sid: string | undefined) => {
+    const fake: Glyph = { id: 'gl' + ((cb.glyphSeq || 0) + 1), word, pos: at, by: u.id, side: u.side, left: 1, who: u.name, v: SIGIL_REV, ...(sid ? { strokeId: sid } : {}) } as Glyph;
+    const gs = [...all, fake], mm = membersOf(gs, fake), p = readShape(mm.glyphs, mm.tiles, u.side, u.pos, mm.legacy, mm.stroke?.id);
+    const ws = typeof p === 'string' ? mm.tiles.flatMap((k) => mm.glyphs.filter((g) => g.pos === k).sort(glyphOrder).map((g) => g.word)) : p.words;
+    return { p, ws, tiles: typeof p === 'string' ? mm.tiles : p.tiles, drawers: [...new Set(mm.glyphs.map(glyphDrawer))] };
+  };
+  const sp = strokePick(cb, u, at, stroke), def = sp.def, pick = sp.pick, sid = sp.sid;
+  let effect: DrawPreview['effect'] = sp.effect;
+  const strokes: StrokeOption[] = sp.cands.map((s) => { const r = read(s.glyphs[0].strokeId || s.id), why = strokeRefusal(cb, u, r.ws, r.tiles.length, r.drawers); return { id: s.id, label: 'extends ' + s.words.map(up).join('·'), words: r.ws, tiles: r.tiles, owner: s.owner, ownerName: nameOf(s.owner), mine: s.glyphs.some((g) => glyphDrawer(g) === u.id), ok: !why, ...(why ? { why } : {}), isDefault: s.id === def }; });
+  if (strokes.length) strokes.push({ id: 'new', label: 'new Line', words: [word], tiles: [at], owner: u.id, ownerName: u.name, mine: true, ok: true, isDefault: def === 'new' });
+  if (sp.error) return no(sp.error, { cost, strokes, defaultStroke: def });
+  const r = read(sid || undefined), words = r.ws;
+  if (typeof r.p === 'string' && r.tiles.length > 1) effect = 'breaks'; // an old 1.4 group only
+  const base = { cost, effect, words, stroke: pick, strokeId: sid, strokes, defaultStroke: def, joins: r.tiles.length > 1 ? r.tiles : [] };
+  if (effect !== 'starts' && effect !== 'breaks') {
+    const why = strokeRefusal(cb, u, words, r.tiles.length, r.drawers);
+    if (why) return no(why + (stroke === undefined && strokes.length ? ' Or pick new Line.' : ''), base);
+  }
+  if (u.ap < gc.ap) return no('Needs ' + gc.ap + ' AP.', base);
+  if (m!.charge < gc.charge) return no('Not enough charge in the core (' + m!.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).', base);
   const mine = myGlyphs(cb, u), capG = groundCap(u, cb), fades = mine.length + 1 > capG ? mine[0] : null;
-  return { ok: true, tile: at, cost, effect, words, fades, overload: m!.flux + gc.flux > FLUX_MAX, capLeft: Math.max(0, capG - mine.length - 1) };
+  return { ok: true, tile: at, ...base, fades, overload: m!.flux + gc.flux > FLUX_MAX, capLeft: Math.max(0, capG - mine.length - 1) };
 }
 /** Draw one glyph on your own tile (spec: Drawing): Glyph AP, the word's charge, its Flux. The oldest of yours fades past
- * your cap of glyphs on the ground. tile defaults to (and must be) your own. */
-export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: string): string | null {
-  const pv = previewDraw(cb, u, word, tile); if (!pv.ok) return pv.why || 'Can\'t draw that.';
+ * your cap of glyphs on the ground. tile defaults to (and must be) your own. stroke (rules 1.9): the stroke it extends
+ * ('new' starts one); none takes the picker's default. */
+export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: string, stroke?: string): string | null {
+  const pv = previewDraw(cb, u, word, tile, stroke); if (!pv.ok) return pv.why || 'Can\'t draw that.';
   const gc = glyphCost(cb, u, word, false, pv.tile); if (gc.fail) return gc.fail;
   const m = u.mg!, w = W(word)!;
   u.ap = Math.round((u.ap - gc.ap) * 10) / 10; m.charge -= gc.charge;
   const edge = !!u.edgeWord; delete u.edgeWord;
-  const g: Glyph = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: pv.tile, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, v: SIGIL_REV } as Glyph;
+  const g: Glyph = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: pv.tile, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, v: SIGIL_REV, ...(pv.strokeId ? { strokeId: pv.strokeId } : {}) } as Glyph;
   cb.glyphs = [...(cb.glyphs || []), g]; cb.sigilV = SIGIL_REV;
-  emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: pv.tile, word, side: u.side, group: w.group, cls: w.class, element: isElement(word) ? word : null, effect: pv.effect, words: pv.words });
+  emitFx(cb, 'draw', { unit: u.id, at: u.pos, tile: pv.tile, word, side: u.side, group: w.group, cls: w.class, element: isElement(word) ? word : null, effect: pv.effect, words: pv.words, stroke: g.strokeId || null, joins: pv.joins });
   let faded = '';
   const mine = myGlyphs(cb, u);
-  if (mine.length > groundCap(u, cb)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + old.word.toUpperCase() + ' at ' + refOf(old.pos) + ' fades: ' + groundCap(u, cb) + ' glyphs at most)'; }
-  cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(pv.tile) + ' (' + gc.charge + ' charge, ' + gc.ap + ' AP' + (pv.effect === 'extends' ? ', the Line reads ' + pv.words.map((x) => x.toUpperCase()).join(' · ') : pv.effect === 'breaks' ? ', no shape now' : '') + ')' + (edge ? ' (Edge Word: no AP)' : '') + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
+  if (mine.length > groundCap(u, cb)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + up(old.word) + ' at ' + refOf(old.pos) + ' fades: ' + groundCap(u, cb) + ' glyphs at most)'; }
+  tidyStrokes(cb.glyphs);
+  cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(pv.tile) + ' (' + gc.charge + ' charge, ' + gc.ap + ' AP' + (pv.effect === 'extends' || pv.effect === 'stacks' ? ', the Line reads ' + pv.words.map(up).join(' · ') : pv.effect === 'breaks' ? ', no shape now' : pv.strokes.length ? ', a new Line' : '') + ')' + (edge ? ' (Edge Word: no AP)' : '') + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
   emit(cb, 'glyph_drawn', { u, glyph: g, cb, rng });
   return null;
 }
@@ -624,6 +749,7 @@ export function scuff(cb: Combat, u: Unit): string | null {
   if (!here.length && !tur.length) return (cb.glyphs || []).some((g) => g.pos === u.pos) ? 'A Keystone can\'t be scuffed.' : 'No glyphs under you.';
   if (u.ap < SPELL_AP.scuff) return 'Needs 1 AP.';
   u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos || (g as any).keystone);
+  tidyStrokes(cb.glyphs); // a middle glyph scuffed splits its stroke in two (rules 1.9, Drawing 3.8)
   emitFx(cb, 'scuff', { unit: u.id, at: u.pos });
   for (const z of tur) destroyPlaced(cb, z, u.name + ' scuffs it out');
   cb.log.push(u.name + ' scuffs out ' + [...here.map((g) => g.word.toUpperCase()), ...tur.map(() => 'a turret')].join(' and ') + ' at ' + refOf(u.pos) + '.');
@@ -646,7 +772,7 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
     missiles: pv.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: x.placed })),
     stay: sp.stay, placed: pv.missiles[0]?.placed || null, fizzle: pv.fizzle });
   // The glyphs fade as the spell fires (a Keystone survives).
-  const used = new Set(p.glyphs.filter((g) => !(g as any).keystone).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id));
+  const used = new Set(p.glyphs.filter((g) => !(g as any).keystone).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id)); tidyStrokes(cb.glyphs);
   if (pv.fizzle) {
     emitFx(cb, 'fizzle', { unit: u.id, at: u.pos, tiles: pv.missiles.flatMap((x) => x.burst.tiles), words: p.words, element: sp.element });
     cb.log.push(head + ': nothing it may affect, and it fizzles (the charge, AP and Flux are spent).');
@@ -819,7 +945,7 @@ function raiseWalls(cb: Combat, by: Unit | null, side: 'pc' | 'foe', tiles: stri
 }
 function nullWave(cb: Combat, tiles: string[], at: string): string {
   const n = nullCatch(cb, tiles), T = new Set(tiles);
-  const gl = new Set(n.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !gl.has(g.id));
+  const gl = new Set(n.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !gl.has(g.id)); tidyStrokes(cb.glyphs);
   for (const z of n.zones) { const keep = z.kind === 'field' || z.kind === 'veil' || z.kind === 'light' || z.kind === 'wall' ? z.tiles.filter((k) => !T.has(k)) : []; if (keep.length) z.tiles = keep; else cb.zones = (cb.zones || []).filter((x) => x !== z); }
   if (n.walls.length) cb.objects = objectsOf(cb).filter((o) => !n.walls.includes(o));
   emitFx(cb, 'null_wave', { at, tiles, removed: n.glyphs.length + n.zones.length + n.walls.length, glyphs: n.glyphs.map((g) => g.pos), zones: n.zones.map((z) => z.id), walls: n.walls.map((o) => o.pos) });
@@ -945,7 +1071,7 @@ export function sigilRoundTick(cb: Combat) {
   for (const g of cb.glyphs || []) if (!(g as any).keystone) g.left--; // a Keystone never fades (Glyph Mason)
   const gone = (cb.glyphs || []).filter((g) => g.left <= 0);
   if (gone.length) { cb.log.push(gone.map((g) => g.word.toUpperCase()).join(', ') + ' fade' + (gone.length === 1 ? 's' : '') + ' at ' + [...new Set(gone.map((g) => refOf(g.pos)))].join(', ') + '.'); for (const g of gone) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'time' }); }
-  cb.glyphs = (cb.glyphs || []).filter((g) => g.left > 0);
+  cb.glyphs = (cb.glyphs || []).filter((g) => g.left > 0); tidyStrokes(cb.glyphs);
   for (const z of cb.zones || []) z.left--;
   for (const z of (cb.zones || []).filter((x) => x.left <= 0)) emitFx(cb, x2fx(z.kind), { id: z.id, tile: z.tiles[0], tiles: z.tiles, side: z.side, why: 'time', ...(z.kind === 'trap' || (z.kind === 'turret' && (z as any).hidden) ? { only: z.side } : {}) });
   cb.zones = (cb.zones || []).filter((z) => z.left > 0);
@@ -995,8 +1121,8 @@ export function patternAt(cb: Combat, tile: string, u?: Unit | null) {
   migrateSigil(cb);
   const p = findPattern(cb, tile, u?.pos), m = u?.mg;
   const start = (cb.glyphs || []).find((g) => g.pos === tile);
-  const comp = start ? groupAt(cb.glyphs || [], tile, start.side) : [];
-  const words = typeof p === 'string' ? comp.flatMap((k) => (cb.glyphs || []).filter((g) => g.pos === k && g.side === start!.side).map((g) => g.word)) : p.words;
+  const mm = start ? membersOf(cb.glyphs || [], start) : null, comp = mm ? mm.tiles : [];
+  const words = typeof p === 'string' ? comp.flatMap((k) => mm!.glyphs.filter((g) => g.pos === k).sort(glyphOrder).map((g) => g.word)) : p.words;
   const why = typeof p === 'string' ? p : grammarError(p.words, m?.maxWords ?? MAX_GLYPHS);
   const charge = typeof p === 'string' || !u ? 0 : evokeCharge(p, u);
   const mine = u ? myGlyphs(cb, u).length : 0;
@@ -1007,6 +1133,9 @@ export function patternAt(cb: Combat, tile: string, u?: Unit | null) {
     costNow: { charge: m?.charge ?? 0, ap: u?.ap ?? 0, flux: m?.flux ?? 0 }, costAfter: { charge: (m?.charge ?? 0) - charge, ap: (u?.ap ?? 0) - SPELL_AP.evoke, flux: m?.flux ?? 0, evokeCharge: charge },
     overloadWarning: !!m && m.flux >= FLUX_MAX ? 'Your Evoker is at ' + m.flux + ' Flux: the next glyph overloads it. Vent first (1 AP).' : null,
     spell: typeof p === 'string' || why ? null : compileSpell(p.words),
+    /** Rules 1.9: the stroke under the tile (its id, tiles in the order drawn, who started it); null for an old 1.4 glyph. */
+    strokeId: mm?.stroke?.id ?? null,
+    stroke: mm?.stroke ? { id: mm.stroke.id, tiles: mm.stroke.tiles, words: mm.stroke.words, owner: mm.stroke.owner, axis: mm.stroke.axis } : null,
   };
 }
 
@@ -1058,7 +1187,7 @@ function combos(words: string[], max: number): string[][] {
 function tryLine(cb: Combat, u: Unit, words: string[], tiles: string[], aim: string, opts: EvokeOpts = {}): EvokePreview | null {
   const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq, ap = u.ap, charge = u.mg!.charge;
   try {
-    cb.glyphs = [...(glyphs || []), ...tiles.map((k, i) => ({ id: 'gl' + ((seq || 0) + 1 + i), word: words[i], pos: k, by: u.id, side: u.side, left: 2, who: u.name, v: SIGIL_REV } as Glyph))];
+    cb.glyphs = [...(glyphs || []), ...tiles.map((k, i) => ({ id: 'gl' + ((seq || 0) + 1 + i), word: words[i], pos: k, by: u.id, side: u.side, left: 2, who: u.name, v: SIGIL_REV, strokeId: 'sgl' + ((seq || 0) + 1) } as Glyph))];
     u.pos = tiles[tiles.length - 1]; u.ap = 9; u.mg!.charge = 99;
     const pv = planEvoke(cb, u, tiles[0], aim, opts); return pv.ok ? pv : null;
   } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; u.ap = ap; u.mg!.charge = charge; }
@@ -1119,9 +1248,11 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
   if (!best.words.length) return !evoke(cb, rng, u, best.tiles[0], best.aim);
   if (best.pre === 'vent' && vent(cb, u)) return false;
   if (best.pre === 'core' && swapCore(cb, u)) return false;
+  let sid = 'new'; // rules 1.9: the first glyph starts a stroke, the rest extend it
   for (let i = 0; i < best.words.length; i++) {
     if (i) { if (moveUnit(cb, u, best.tiles[i], rng) || u.pos !== best.tiles[i] || u.dead || u.downed) return true; }
-    if (drawGlyph(cb, rng, u, best.words[i])) return i > 0;
+    if (drawGlyph(cb, rng, u, best.words[i], undefined, sid)) return i > 0;
+    if (!i) sid = (cb.glyphs || [])[(cb.glyphs || []).length - 1]?.strokeId || 'new';
   }
   const target = cb.units.find((x) => x.pos === best!.aim && !x.dead);
   evoke(cb, rng, u, best.tiles[0], target ? target.pos : best.aim);

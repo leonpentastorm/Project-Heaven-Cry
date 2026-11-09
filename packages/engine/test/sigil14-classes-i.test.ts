@@ -3,7 +3,7 @@
 // and Seal, the Scribe's Stored Spell and the Trickster's Rewrite, every one through the reducer (apply).
 import { describe, expect, it } from 'vitest';
 import {
-  CLASS, SIGIL_REV, d20, applyCond, condOn, previewAttack, attackDamage, objectsOf, positionsOf, npcsOf, standable, zoneMap, storyObjects, refOf, packOf, sigilCoreSaving, emit,
+  CLASS, SIGIL_REV, d20, applyCond, condOn, previewAttack, attackDamage, objectsOf, positionsOf, npcsOf, standable, zoneMap, storyObjects, refOf, packOf, sigilCoreSaving, emit, findPattern,
   type Unit, type Combat, type GameState,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -63,7 +63,10 @@ describe('Mage under 1.4', () => {
     act(f, u, { type: 'combat/perk', id: 'class:mage.overcharge', actionId: 'overcharge' });
     walk(f, u, ['spark', 'seek', 'condense', 'condense'], ['3,2', '4,2', '5,2', '6,2']);
     at(f, u, '7,2');
-    expect(() => act(f, u, { type: 'combat/draw', word: 'condense', tile: '7,2' })).toThrow(/at most 4/);
+    // Rules 1.9: a stroke of 4 is full; the next glyph starts a new Line and the Line of 4 stays 4.
+    act(f, u, { type: 'combat/draw', word: 'condense', tile: '7,2' });
+    const p = findPattern(f.cb, '3,2'); expect(typeof p === 'object' && p.words.length).toBe(4);
+    expect(findPattern(f.cb, '7,2')).toMatch(/One glyph alone/);
   });
 
   /** SPARK and a second word on a Line at 5,2 (drawn first) and 4,2; the Mage stands on 4,2, so it fires east, Touch:

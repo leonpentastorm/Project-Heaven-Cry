@@ -4,6 +4,8 @@
 >
 > **Revision 1.1 (2026-11-05), synced to the living Doc:** skill modifier = points − 1; skill Voices replace Inner Voice; Overreach is indulge-or-resist; creation is 10 skill points; new XP table; HP rescale; class rank thresholds 13/18 (superseded by Class Roster Revision 3: ranks II and III at the class's attribute 5 and 8, items 551–552; see Classes). Rationale: `docs/design/proposals/2026-11-gameplay-fixes.md`.
 
+> **Revision 1.9 (2026-11-09), Sigil 1.5:** a Line is a stroke (the glyphs drawn as one); touching glyphs of other strokes no longer poison a Line; Lines stay 2–4 glyphs. See Mana, Drawing a spell, rule 3, and items 671 on. Design: `docs/design/sigil-1.5-spec.md`.
+
 2026-11-03 · Leon PT
 
 ## How to use this spec
@@ -1082,12 +1084,22 @@ Every word answers one question:
 
 1. **You draw a glyph only on the tile you stand on**, with an Evoker in hand (Glyph AP, the word's charge, 1 Flux).
 2. **One glyph per tile.** A tile that holds any glyph (yours, an ally's or an enemy's) takes no other, unless a perk, trait or skill lets that caster put a second glyph there. None does yet: this is the hook for one (the **two-glyph hook**). With it, two glyphs on one tile on their own are a **Stack**; on a tile of a Line, both count as words of that Line. A spell still holds at most 4 glyphs.
-3. **The only shape is the Line:** 2 to 4 glyphs of your side (yours and your allies') on neighbouring tiles in one straight row, **horizontal, vertical or diagonal**. The glyphs that touch each other make one group; a group that isn't one straight row of 2–4 (a bend, an L, a cluster, a row of 5) is **no shape** and can't be Evoked until a glyph is scuffed or fades. An enemy's glyph never joins your group. **The Ring and the old Stack are gone.**
+3. **The only shape is the Line, and a Line is a stroke** (rules revision 1.9, Sigil 1.5). A **stroke** is a run of glyphs drawn as one Line; every glyph records the stroke it belongs to. A **Line** is a stroke of 2 to 4 glyphs in one straight row, **horizontal, vertical or diagonal**. **The Ring and the old Stack are gone.**
+   1. **Extending a stroke.** A new glyph **extends** a stroke when it is drawn next to that stroke's **end** glyph (the last one drawn) **and** continues its straight row (the same axis, the same direction), and the stroke has fewer than 4 glyphs. A stroke of one glyph can be extended in any of the 8 directions; the second glyph sets its axis.
+   2. **Otherwise the new glyph starts a new stroke**, even if it touches other glyphs.
+   3. **The stroke picker.** When a new glyph could extend more than one stroke, you pick which, or **new Line**, on the draw step. The default is the stroke you drew into last; a stroke you have no glyph in is never the default (item 671). The preview shows the result: "extends FIRE·SEEK" or "starts a new Line".
+   4. **Touching glyphs of other strokes don't matter:** they don't join, poison or block. Two Lines may run side by side, cross diagonally, or end next to each other.
+   5. **The draw's refusals read the stroke it extends:** a second Reach word, a second KIN, WATCH with STAY, past 4 glyphs or past the Max Sigil words of its drawers are refused before anything is spent; pick **new Line** to start a fresh stroke instead.
+   6. **Co-op:** an ally may extend **your** stroke by drawing at its end along its axis, picked on the same picker (rule 8). Allies' glyphs never join a stroke by accident. **Enemies** use strokes too; their glyphs never join yours, and yours never join theirs.
+   7. **The facing rule, Evoking and fizzling are unchanged:** they read the stroke's tiles exactly as they read a Line.
+   8. **Scuffing a middle glyph splits the stroke** in two. Each part still 2 or more long is a Line; a single glyph left alone is just a glyph (it can be extended again). The same holds when a middle glyph fades or is unmade (item 673).
+   9. **A Stack** (the two-glyph hook, rule 2): a second glyph on a tile joins the stroke of the glyph already there (item 672).
+   10. **Old saves:** glyphs drawn before rules 1.9 (no stroke recorded) keep the 1.4 reading until they fade: the ones of a side that touch each other make one group, and a group that isn't one straight row of 2–4 is no shape. They never join a stroke, and a stroke never joins them (item 674).
 4. **So you walk a spell:** draw, step, draw. A 4-word spell is a Line of 4 tiles: 3 steps, 4 glyphs, then Evoke. At Agility 1 and Expression 1 that's 3 + 4 + 1 = 8 AP, more than one turn's 6, so you finish it next turn. A Line can't cross a tile you can't stand on (walls, cover, deep water), and walking it can draw Overwatch.
 5. **Glyphs last** 2 rounds + your Sigil duration bonus (rounded down); out of combat, the same number of overworld rounds. They fade when the spell is Evoked (Keystones excepted).
 6. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
 7. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
-8. **Co-op.** Two Sigil users can build one Line together, each drawing their own glyphs. Whoever Evokes pays the firing charge, rolls, and needs Max Sigil words of at least the Line's length. **Enemy Sigil users** can Evoke any Line they can read, yours included, and the other way round.
+8. **Co-op.** Two Sigil users can build one Line together, each drawing their own glyphs: the second extends the first one's stroke by picking it on the draw step (rule 3.6). Whoever Evokes pays the firing charge, rolls, and needs Max Sigil words of at least the Line's length. **Enemy Sigil users** can Evoke any Line they can read, yours included, and the other way round.
 9. **Skill unlocks that change drawing and Evoking** (engine-run, items 482–485): **Brain Power · Overclock** (Mastery 1): your next glyph may make a spell one word longer than your Max Sigil words (never past 4), for 2 charge more. **Brain Power · Twin Draw** (Mastery 2): once per combat, the glyphs of two spells cost the Glyph AP of the longer spell only (steps still cost Movement). **Rumination · Proven Formula** (Mastery 2): a spell whose words, in order, match one you already Evoked this combat costs 1 AP less to Evoke. **Visualization · Paint the Field** (Mastery 2): once per Evoke, a spell with no Burst word gets a free SPREAD or PUSH (no glyph, no charge, not counted toward 4).
 
 #### 4. Evoking: the facing rule
@@ -1182,6 +1194,8 @@ Each element has one identity, used by every spell that carries it. Sigil magic 
 Non-element Subjects keep plain Sigil visuals (cyan, square) with a glyph per kind: Afflictions bind and cage, Boons rise, Workings build or unbuild the ground.
 
 ### Soul magic: Outbursts, the heart (Soul, through an Emanator)
+
+> **Rules revision 1.9: Sigil 1.5, strokes (accepted direction, Leon, 9 Nov 2026; design `docs/design/sigil-1.5-spec.md`).** A Line is what you drew as one: every glyph records its **stroke**, and glyphs of other strokes no longer join, poison or block a Line (Drawing, rule 3). Lines stay 2 to 4 glyphs for everyone (Leon, 9 Nov 2026: no Lines of 5). The facing rule, Evoking and fizzling are unchanged. Study, copying, word mastery and Junctions follow in the same revision. Every new number and reading is provisional (items 671 on).
 
 > **Rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; decision 99).** It replaces the 1.2 Soul rules (items 68–76 where they name 1.2 numbers): Begin, Pump and Release with stage multipliers, the swell, Strain that burns and shorts with no roll, calming the heart (no vent), a second school as a half-strength rider, tones (the Sigil 1.4 elements in the Soul style), shapes, and holding as gameplay (the aura, Heart Overwatch, Resonance, Feeding). Sigil magic owns space; Outburst owns time and the body. **Every number is provisional** (items 492–521) until the damage balance pass. The design is in `docs/design/outburst-2.0-proposal.md`; the data in `soul_modules.json` (`cycle`, `strain`, `tones`, shapes as `form` modules, `retired`).
 
@@ -4186,3 +4200,11 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 668. **The Proving Ground:** attempts and asks roll at once (no Narrator, AP always full); the tools place things only while gearing up; their objectives live in a "Drill" mission.
 669. **What the engine tells the Narrator:** up to 20 events (triggers fired, hazards hit, approaches tried with their effects, carrying, searches, talk, alarms) since its last turn, consumed by that turn; hazards hit in a fight are reported after it.
 670. **The Narrator's tool** stays the same all session: the new fields are optional, with fixed vocabularies only.
+
+**Rules revision 1.9: Sigil 1.5, strokes (9 Nov 2026; `docs/design/sigil-1.5-spec.md`). Readings where the design was silent. PROVISIONAL.**
+
+671. **The stroke picker's default:** the stroke among those the glyph could extend that holds your most recent glyph; if none holds a glyph of yours, **new Line**. So an ally's stroke is extended only when you pick it (or after you have drawn into it once), and a lone glyph of yours next to you is extended by default (pick **new Line** to keep them apart). An explicit pick the glyph can't extend is refused.
+672. **A Stack's second glyph** joins the stroke of the glyph already on the tile (no pick); the stroke's length counts tiles, its words count glyphs (a spell still holds at most 4 glyphs).
+673. **A split stroke's ids:** whatever removes a glyph from the middle of a stroke (Scuff, a fade, NULL, an Evoke that spares a Keystone) splits it; the part holding the stroke's oldest glyph keeps its id, every other part takes a fresh one named after its own oldest glyph. A Keystone left behind by an Evoke is a stroke of one glyph and can be extended again.
+674. **Old glyphs** (drawn before 1.9, with no stroke) never join a stroke and no stroke joins them; they keep the 1.4 touching-group reading among themselves until they fade. Saves are not migrated (no glyph is dropped).
+675. **Enemy casters** draw their Lines as strokes (the first glyph a new Line, then extending it), so a Line of theirs is no longer spoiled by a glyph of their side beside it.

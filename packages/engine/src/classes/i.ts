@@ -21,7 +21,7 @@ import {
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV } from '../data';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitDebuff, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
-  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil,
+  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph,
   formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP, planStrike,
   type EvokePreview, type Spell,
 } from '../magic';
@@ -776,8 +776,10 @@ register({
 // exception to the Line. "Lone" is the glyph alone on its tile with no glyph of its side touching it (else it belongs to
 // a Line); you drew it standing on it, so you Evoke it from a tile next to it (the rune needs its tile clear). The
 // runes are barricades, not Sigil spells: NULL doesn't take them (item 430).
+// Rules 1.9: a glyph of a stroke is lone when its stroke holds only it (touching glyphs of other strokes don't matter);
+// an old 1.4 glyph keeps the touching test.
 const isLoneStay = (cb: Combat, u: Unit, g: any) => g.by === u.id && g.word === 'stay' && (cb.glyphs || []).filter((x) => x.pos === g.pos).length === 1
-  && !(cb.glyphs || []).some((x) => x !== g && x.side === g.side && dist(x.pos, g.pos) === 1);
+  && (g.strokeId ? (strokeOfGlyph(cb.glyphs || [], g)?.glyphs.length ?? 1) === 1 : !(cb.glyphs || []).some((x) => x !== g && x.side === g.side && !x.strokeId && dist(x.pos, g.pos) === 1));
 function loneStay(cb: Combat, u: Unit): any | null {
   return (cb.glyphs || []).find((g) => dist(u.pos, g.pos) === 1 && isLoneStay(cb, u, g)) || null;
 }

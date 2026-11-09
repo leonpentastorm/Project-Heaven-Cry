@@ -117,13 +117,19 @@ describe('drawing (spec: Drawing a spell)', () => {
     draw(cb, rng, u, ['kin'], ['4,5']); u.pos = '5,5'; expect(drawGlyph(cb, rng, u, 'kin')).toMatch(/KIN takes one copy/);
     const g2 = setup(['fire', 'watch', 'stay']); draw(g2.cb, g2.rng, g2.u, ['fire', 'watch'], ['2,5', '3,5']); g2.u.pos = '4,5'; expect(drawGlyph(g2.cb, g2.rng, g2.u, 'stay')).toMatch(/WATCH and STAY/);
     const g3 = setup(['fire', 'seek', 'condense']); g3.u.mg!.maxWords = 2; draw(g3.cb, g3.rng, g3.u, ['fire', 'seek'], ['2,5', '3,5']); g3.u.pos = '4,5'; expect(drawGlyph(g3.cb, g3.rng, g3.u, 'condense')).toMatch(/Past your cap/);
-    const g4 = setup(['fire', 'seek', 'condense', 'spread']); draw(g4.cb, g4.rng, g4.u, ['fire', 'seek', 'condense', 'spread'], row(2, 5, 4)); g4.u.pos = '6,5'; expect(drawGlyph(g4.cb, g4.rng, g4.u, 'fire')).toMatch(/at most 4/);
+    // Rules 1.9: a full stroke of 4 can't be extended, so a fifth glyph beyond its end starts a new Line (no refusal,
+    // and the Line of 4 is untouched).
+    const g4 = setup(['fire', 'seek', 'condense', 'spread']); draw(g4.cb, g4.rng, g4.u, ['fire', 'seek', 'condense', 'spread'], row(2, 5, 4)); g4.u.pos = '6,5';
+    expect(previewDraw(g4.cb, g4.u, 'fire').effect).toBe('starts'); expect(previewDraw(g4.cb, g4.u, 'fire').strokes).toEqual([]);
+    expect(drawGlyph(g4.cb, g4.rng, g4.u, 'fire')).toBeNull(); // (the oldest, FIRE at 2,5, fades at the ground cap of 4)
+    const p4 = findPattern(g4.cb, '3,5'); expect(typeof p4 === 'object' && p4.words).toEqual(['seek', 'condense', 'spread']);
+    expect(findPattern(g4.cb, '6,5')).toMatch(/One glyph alone/);
   });
-  it('a bend is no shape (it draws, with a warning); an enemy glyph beside your Line never joins it', () => {
+  it('a bend no longer breaks a Line (rules 1.9: it starts a new stroke); an enemy glyph beside your Line never joins it', () => {
     const { cb, u, rng } = setup(['fire', 'seek', 'condense']);
     draw(cb, rng, u, ['fire', 'seek'], ['2,5', '3,5']); u.pos = '3,6';
-    expect(previewDraw(cb, u, 'condense').effect).toBe('breaks'); drawGlyph(cb, rng, u, 'condense');
-    expect(findPattern(cb, '2,5')).toMatch(/No shape/);
+    expect(previewDraw(cb, u, 'condense').effect).toBe('starts'); drawGlyph(cb, rng, u, 'condense');
+    const p0 = findPattern(cb, '2,5'); expect(typeof p0 === 'object' && p0.words).toEqual(['fire', 'seek']);
     const h = setup(['fire', 'seek']); draw(h.cb, h.rng, h.u, ['fire', 'seek'], ['2,5', '3,5']);
     h.cb.glyphs!.push({ id: 'gl99', word: 'spark', pos: '4,5', by: h.e.id, side: 'foe', left: 3, who: 'Foe', v: SIGIL_REV });
     const p = findPattern(h.cb, '2,5'); expect(typeof p === 'object' && p.words).toEqual(['fire', 'seek']);

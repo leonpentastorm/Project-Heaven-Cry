@@ -33,7 +33,7 @@ describe('glyphs', () => {
 });
 
 describe('before drawing (spec 9.1)', () => {
-  it('each word shows its cost on your tile and whether it starts, extends or breaks a Line', () => {
+  it('each word shows its cost on your tile and whether it starts or extends a Line (rules 1.9: a bend starts a new stroke)', () => {
     const { cb, u, rng } = setup(['fire', 'seek', 'condense', 'kin']);
     let s = drawStrip(cb, u);
     expect(s.tile).toBe('2,5');
@@ -47,7 +47,7 @@ describe('before drawing (spec 9.1)', () => {
     const seek = s.words.find((w) => w.id === 'seek')!;
     expect(seek.effect).toBe('extends'); expect(seek.effectText).toBe('extends the Line: FIRE · SEEK');
     u.pos = '3,6'; walk(cb, rng, u, ['seek'], ['3,5']); u.pos = '3,6';
-    expect(drawStrip(cb, u).words.find((w) => w.id === 'condense')!.effect).toBe('breaks'); // a bend
+    expect(drawStrip(cb, u).words.find((w) => w.id === 'condense')!.effect).toBe('starts'); // a bend no longer breaks the Line: it starts a new stroke
   });
 });
 

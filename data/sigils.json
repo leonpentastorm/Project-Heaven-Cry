@@ -43,7 +43,15 @@
         "diagonal"
       ],
       "bends": false,
-      "group": "glyphs of one side that touch (diagonals too); a group that isn't one straight row of 2-4 is no shape"
+      "group": "a stroke: the glyphs drawn as one Line (each glyph records its strokeId); glyphs of other strokes never join, poison or block it (rules 1.9). Old glyphs with no strokeId keep the 1.4 reading: glyphs of one side that touch (diagonals too); a group that isn't one straight row of 2-4 is no shape",
+      "stroke": {
+        "extends": "a new glyph extends a stroke when it is next to the stroke's end glyph and continues its axis (same direction), and the stroke has fewer than max glyphs; a 1-glyph stroke extends in any of the 8 directions",
+        "otherwise": "a new stroke, even if it touches other glyphs",
+        "picker_default": "the candidate stroke holding the drawer's most recent glyph; none: a new Line (an ally's stroke only by an explicit pick)",
+        "stack": "a second glyph on a tile joins the stroke of the glyph already there",
+        "split": "removing a middle glyph splits the stroke; the part with the oldest glyph keeps the id",
+        "provisional": true
+      }
     },
     "draw": {
       "where": "own_tile",
