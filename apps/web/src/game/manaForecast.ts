@@ -121,7 +121,9 @@ export function skyIcon(band: string, ink: string): string {
 
 // ---------- the panel's template values (screens/combat.js) ----------
 /** Everything the forecast panel's markup reads (templates/combat.template.html, PANEL:mana). */
-export function forecastVals(cb: any, open: boolean, toggle: () => void) {
+/** inSide: the panel sits in the action column (its details open in place and scroll there); in the map zone they open
+ *  as a dropdown over the map, so opening them never shrinks the map. */
+export function forecastVals(cb: any, open: boolean, toggle: () => void, inSide = false) {
   const f = manaForecast(cb, noteMana(cb));
   const tInk = f.trend.thisRound > 0 ? f.ink : f.trend.thisRound < 0 ? '#C9D3E3' : '#A3AEC2';
   return {
@@ -132,5 +134,6 @@ export function forecastVals(cb: any, open: boolean, toggle: () => void) {
     headStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; color: ' + f.ink,
     trendStyle: 'font-size: 11px; font-weight: 700; white-space: nowrap; color: ' + tInk,
     boxStyle: 'display: flex; flex-direction: column; padding: 8px 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + f.ink,
+    detailsStyle: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; padding: 8px 12px; border-top: 1px solid #232D3F' + (inSide ? '; margin-top: 6px' : '; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 7; border-radius: 12px; background: #10151F; border: 1px solid #2E3A50; border-left: 3px solid ' + f.ink + '; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55)'),
   };
 }

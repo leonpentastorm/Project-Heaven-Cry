@@ -1097,7 +1097,7 @@ export class CombatLogic extends DCLogic {
           return { key: o.id, label: 'Search ' + o.name + ' · 1 AP', sub: why || 'holds ' + n + (n === 1 ? ' thing' : ' things'), off: !!why, go: () => { if (!why) act({ type: 'combat/search', unitId: cur.id, objId: o.id }); } }; });
         return { cbSearch: cs, hasCbSearch: cs.length > 0 }; })(),
       // The mana forecast (game/manaForecast.ts): the air as weather, in its own movable panel (it left the header).
-      fc: forecastVals(cb, !!S.fcOpen, () => { this.setState({ fcOpen: !this.state.fcOpen }); if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => this.fitGrid()); }),
+      fc: forecastVals(cb, !!S.fcOpen, () => this.setState({ fcOpen: !this.state.fcOpen }), lay.manaSide),
       confirmSfx: isMagic ? 'none' : undefined, confirmText: T.confirmText,
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),

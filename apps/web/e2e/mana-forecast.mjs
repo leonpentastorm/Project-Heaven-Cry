@@ -32,7 +32,10 @@ await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(50
 const headline = async () => (await p.locator('[data-fc-headline]').first().textContent()).trim();
 const m0 = await p.evaluate(() => window.__phc.getState().game.combat.mana);
 ok('the headline reads the band and the meter: ' + await headline() + ' (mana ' + m0 + ')', new RegExp('AIR · ' + m0 + ' / 40').test(await headline()));
-await p.locator('[data-phc-panel="mana"] button[aria-expanded]').first().click(); await p.waitForTimeout(400);
+const pct0 = (await p.locator('.phc-mz-pct').first().textContent()).trim();
+await p.locator('[data-phc-panel="mana"] button[aria-expanded]').first().click(); await p.waitForTimeout(700);
+const pct1 = (await p.locator('.phc-mz-pct').first().textContent()).trim();
+ok('opening the details never shrinks the map (a dropdown over it): ' + pct0 + ' → ' + pct1, pct0 === pct1);
 const det = (await p.locator('[data-fc-details]').first().textContent().catch(() => '')).replace(/\s+/g, ' ');
 ok('More opens what the air does and what moves it: ' + det.slice(0, 120), /IN THIS AIR/.test(det) && /WHAT MOVES IT/.test(det) && /A person dies: \+5/.test(det));
 const r2 = await fits(1440, 900); ok('opened, the map still fits (grid bottom ' + r2.bottom + ')', r2.ok);
