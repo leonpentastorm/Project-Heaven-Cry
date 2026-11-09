@@ -80,7 +80,7 @@ source/2020/              original material; english/ holds the 2020 trait book 
 ## Lore essentials (canon decided with Leon)
 
 - The world is a **simulation**. NPCs are its people. **Nanobots are mana.** Players are a layer above even real Earth. (In docs, *real Earth* is the layer above; *Earth* alone is the in-world homeworld where Central City stands.)
-- **Celestials** are trapped Earth humans acting as gods, bound by treaties (the Celestial Accords). Creation ladder: players → real Earth → Celestials → NPCs → robots (a robot is an NPC made by NPCs).
+- **Celestials** are trapped Earth humans acting as gods, bound by treaties (the Celestial Accords). Creation ladder: players → real Earth → Celestials → NPCs → robots (a robot is an NPC made by NPCs). **The ladder** (canon, 9 Nov 2026): every layer was made by the one above it and then abandoned by it (real Earth cut off the Celestials, the Celestials treat NPCs as scenery, the NPCs told their robots to shut themselves down on M813). Everyone is crying up at a heaven that doesn't answer: the title's double meaning.
 - **The Knowing:** an NPC who learns the truth is killed or made a demigod.
 - **Evoker = Sigil magic. Emanator = Soul magic.** Locked; never swap them.
 - Kills spawn bots; Sigil users vent Flux, Soul users crystallise cores.

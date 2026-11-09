@@ -4,6 +4,8 @@
 >
 > **Updated 2026-11-05 and synced to the living Doc:** the Unspoken Name, the tone line, canon Accord clauses, the Veil exception, heroes as patches, Celestial politics, the worlds and Earth, scale, how campaigns start, the Crawlers, Anti-Heaven Operations Command and the Progenitors, Operation Daggerfall, the timeline. The faction web is a repo-only draft: `Factions.md`.
 >
+> **Repo ahead of the living Doc (9 Nov 2026):** the ladder is canon (Leon). Copy that line into the Doc at the next sync.
+>
 > **Naming in this document:** *real Earth* is the world of the players and the Celestials' bodies, the layer above. *Earth* with no qualifier, from this revision on, is the in-world homeworld where Central City stands. Older lines below that say "Earth" for the layer above mean real Earth.
 
 2026-11-03 · Leon PT
@@ -66,7 +68,7 @@ Any religion, brand or legend from the real world can appear in the setting, bec
 
 **The tone line (canon).** NPCs are funny the way people are: proud, petty, deadpan, absurd, and the EPCCG's field quotes are the model. Celestials are funny the way people are when nothing can hurt them: careless, and that carelessness is where their comedy turns cruel. The tragedy belongs to the NPCs. A scene can be both at once, and the best ones are.
 
-**Suggested: the ladder.** Every layer of this world was made by the layer above it, and then abandoned by it. Earth made the Celestials and cut them off. The Celestials made the NPCs and treat them as scenery. The NPCs made robots, and on M813 they told them to shut themselves down. MPAT's demand for equality is the whole setting in miniature. That's the double meaning of the title: everyone is crying up at a heaven that doesn't answer.
+**The ladder (canon, Leon 9 Nov 2026).** Every layer of this world was made by the layer above it, and then abandoned by it. Earth made the Celestials and cut them off. The Celestials made the NPCs and treat them as scenery. The NPCs made robots, and on M813 they told them to shut themselves down. MPAT's demand for equality is the whole setting in miniature. That's the double meaning of the title: everyone is crying up at a heaven that doesn't answer.
 
 ## The worlds and the war (canon)
 
