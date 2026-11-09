@@ -50,6 +50,8 @@ describe('the combat layout', () => {
     expect(keyMovePanel(key('ArrowDown'), 'map', DEFAULT_LAYOUT)!.mapZone).toEqual(['mana', 'legend', 'map', 'log']);
     expect(keyMovePanel(key('ArrowDown'), 'mana', DEFAULT_LAYOUT)!.mapZone).toEqual(['map', 'mana', 'legend', 'log']);
     expect(keyMovePanel(key('ArrowRight'), 'mana', DEFAULT_LAYOUT)!.sideZone).toEqual(['actions', 'mana']);
+    // a round trip right then left puts the forecast back at the top: the layout is the default again
+    expect(isDefault(keyMovePanel(key('ArrowLeft'), 'mana', keyMovePanel(key('ArrowRight'), 'mana', DEFAULT_LAYOUT)!)!)).toBe(true);
     expect(keyMovePanel(key('ArrowRight'), 'legend', DEFAULT_LAYOUT)!.sideZone).toEqual(['actions', 'legend']);
     expect(keyMovePanel(key('ArrowLeft'), 'actions', DEFAULT_LAYOUT)!.swap).toBe(true);
     expect(keyMovePanel(key('ArrowUp'), 'mana', DEFAULT_LAYOUT)).toBeNull();

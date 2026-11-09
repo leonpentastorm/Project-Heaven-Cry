@@ -15,6 +15,10 @@ describe('the mana forecast', () => {
     expect(f.gauge.map((g) => g.id)).toEqual(MANA_BANDS.map((b) => b.id)); expect(f.gauge.filter((g) => g.now).map((g) => g.id)).toEqual(['rich']);
     expect(manaForecast(fight(3)).band).toBe('thin'); expect(manaForecast(fight(35)).band).toBe('flooded'); expect(manaForecast(fight(99)).mana).toBe(40);
     expect(new Set(['thin', 'normal', 'rich', 'flooded'].map((b) => skyIcon(b, '#fff'))).size).toBe(4);
+    // the gauge covers all 41 values (Flooded 30–40 is 11 of them), and 40 sits inside the Flooded segment
+    const w = (st: string) => Number(/flex: 0 0 ([\d.]+)%/.exec(st)![1]);
+    expect(f.gauge.reduce((t, g) => t + w(g.style), 0)).toBeCloseTo(100, 1); expect(w(f.gauge[3].style)).toBeCloseTo(11 / 41 * 100, 1);
+    expect(Number(/left: calc\(([\d.]+)%/.exec(manaForecast(fight(40)).marker)![1])).toBeLessThan(100);
   });
   it('what the air does comes from its data row (cost, Syphon, healing, rider shift, Strain)', () => {
     expect(bandEffects('normal')).toEqual(['Outbursts cost their plain MP', 'Syphon draws 20 MP', 'Magical healing at full']);
@@ -34,6 +38,10 @@ describe('the mana forecast', () => {
     h = noteMana(fight(18, 2));
     expect(manaForecast(fight(12, 2), h).trend).toMatchObject({ thisRound: -6, lastRound: 3, arrow: '▼', text: '−6 this round · +3 last round' });
     const other = noteMana({ ...fight(30, 2), name: 'Another fight' }); expect(other[1]).toBeUndefined(); // another fight, its own memory
+    // a spawn or an extra turn changes the order mid-round: the same fight, the same memory
+    expect(noteMana({ ...fight(25, 2), order: ['a', 'b', 'c'] })[2]).toBe(18);
+    // the same fight started again (a retry): its round goes back, so the memory starts fresh
+    const again = noteMana(fight(15, 1)); expect(again).toEqual({ 1: 15 });
   });
   it('the panel values: the toggle, the lists and the styles', () => {
     let n = 0; const v = forecastVals(fight(31), false, () => { n++; });

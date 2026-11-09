@@ -194,7 +194,9 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   window.addEventListener(EV_CMDS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
   // The enemies' turns started playing: grey the action panel out now (Leon: no acting until it's really your turn).
   window.addEventListener('phc-fx-hold', () => { if (LIVE && onScreen()) LIVE.setState({}); });
-  window.addEventListener('resize', () => { if (LIVE && onScreen()) LIVE.fitGrid(); });
+  // Crossing the narrow (1000 px wide) or very short (620 px high) line changes where panels go: render again then.
+  let sizeClass = '';
+  window.addEventListener('resize', () => { if (!LIVE || !onScreen()) return; const c = (window.innerWidth < 1000 ? 'n' : 'w') + (window.innerHeight <= 620 ? 's' : 't'); if (c !== sizeClass) { sizeClass = c; LIVE.setState({}); } LIVE.fitGrid(); });
 }
 
 // The action tabs: names, family inks (Sigils Mind cyan, Outbursts Soul violet, Attack the damage red; the rest neutral)
@@ -434,7 +436,10 @@ export class CombatLogic extends DCLogic {
   }
   /** The bindings the layout's grips, splitter and Reset use (templates/combat.template.html). */
   layoutVals(hidden) {
-    const pl = placement(LAYOUT, hidden), o = pl.order;
+    // Very short windows (620 px or less): the action column has no room to spare, so any panel moved there (the mana
+    // forecast, the legend, the log) shows in the map zone instead, under the map; the stored layout is unchanged.
+    const W = typeof window !== 'undefined' ? window : null, narrow = !!W && W.innerWidth < 1000, short = !!W && W.innerHeight <= 620;
+    const pl0 = placement(LAYOUT, hidden), pl = short && !hidden ? { ...placement(LAYOUT, true), swap: pl0.swap, width: pl0.width } : pl0, o = pl.order;
     const panel = (n) => 'position: relative; order: ' + n + '; flex: none; min-width: 0';
     // In the action zone an extra gives up its height before the turn box does (a high shrink factor): down to 64 px, then
     // it scrolls inside, so the footer (Confirm, End turn) never spills under it on a short window.
@@ -448,6 +453,8 @@ export class CombatLogic extends DCLogic {
     return {
       swap: pl.swap, custom: !isDefault(LAYOUT), reset: () => this.setLayout(DEFAULT_LAYOUT),
       sideExtras: !hidden && (pl.manaIn === 'sideZone' || pl.legendIn === 'sideZone' || pl.logIn === 'sideZone'),
+      // The forecast's details drop down over the map only where that works: above the map, on a wide, tall-enough window.
+      manaDrop: pl.manaIn === 'mapZone' && o.mana < o.map && !narrow && !short,
       // In the action zone the legend and the log take what room they need up to a cap, then scroll, so the actions keep theirs.
       mapStyle: panel(o.map), legendStyle: panel(o.legend) + (pl.legendIn === 'sideZone' ? side : ''), logStyle: panel(o.log) + (pl.logIn === 'sideZone' ? side : ''),
       manaStyle: panel(o.mana) + (pl.manaIn === 'sideZone' ? side : ''), manaMap: pl.manaIn === 'mapZone', manaSide: pl.manaIn === 'sideZone',
@@ -1097,7 +1104,7 @@ export class CombatLogic extends DCLogic {
           return { key: o.id, label: 'Search ' + o.name + ' · 1 AP', sub: why || 'holds ' + n + (n === 1 ? ' thing' : ' things'), off: !!why, go: () => { if (!why) act({ type: 'combat/search', unitId: cur.id, objId: o.id }); } }; });
         return { cbSearch: cs, hasCbSearch: cs.length > 0 }; })(),
       // The mana forecast (game/manaForecast.ts): the air as weather, in its own movable panel (it left the header).
-      fc: forecastVals(cb, !!S.fcOpen, () => this.setState({ fcOpen: !this.state.fcOpen }), lay.manaSide),
+      fc: forecastVals(cb, !!S.fcOpen, () => this.setState({ fcOpen: !this.state.fcOpen }), lay.manaDrop),
       confirmSfx: isMagic ? 'none' : undefined, confirmText: T.confirmText,
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),

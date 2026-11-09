@@ -15,7 +15,7 @@ export const BAND_SKY: Record<string, string> = {
   thin: 'Clear and dry: little in the air. Outbursts cost more and heal less.',
   normal: 'Fair: the usual air. Magic at its plain price.',
   rich: 'Heavy and humid with bots: Outbursts come cheap and heal strong.',
-  flooded: 'Storm: the air is saturated. Outbursts are cheapest and strike a stage harder, but every heart strains more.',
+  flooded: 'Storm: the air is saturated. Outbursts are cheapest and their element riders hit a stage harder, but every heart strains more.',
 };
 const METER = (): any => RULES?.mana?.meter || { min: 0, max: 40, events: [] };
 const ev = (id: string): any => (METER().events || []).find((e: any) => e.event === id)?.delta;
@@ -24,17 +24,22 @@ const pct = (m: number) => Math.round((m - 1) * 100);
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
 
 // ---------- the client's memory of the meter, per fight ----------
-/** The meter at the start of each round seen, per fight (keyed by the fight's name and map). Kept in memory only. */
-const HISTORY = new Map<string, Record<number, number>>();
-const keyOf = (cb: any) => String(cb?.name || '') + '|' + String(cb?.map?.id || '') + '|' + String((cb?.order || []).length);
+/** The meter at the start of each round seen, per fight (keyed by the fight's name and map), kept in memory only. A
+ * fight that starts again under the same name (a retry, a new wave on the same map) is told by its round or its effects
+ * counter going back, and starts a fresh memory; the order's length is not part of the key (spawns and extra turns
+ * change it mid-round). */
+const HISTORY = new Map<string, { h: Record<number, number>; round: number; seq: number }>();
+const keyOf = (cb: any) => String(cb?.name || '') + '|' + String(cb?.map?.id || '');
 /** Note the meter now: the first reading of a round is that round's start. Returns the fight's readings. */
 export function noteMana(cb: any): Record<number, number> {
   if (!cb) return {};
-  const k = keyOf(cb), h = HISTORY.get(k) || {};
-  const r = Number(cb.round) || 1, m = cb.mana ?? MANA_START;
-  if (h[r] == null) h[r] = m;
-  HISTORY.set(k, h); if (HISTORY.size > 20) HISTORY.delete(HISTORY.keys().next().value as string);
-  return h;
+  const k = keyOf(cb), r = Number(cb.round) || 1, seq = Number(cb.fxSeq) || 0, m = cb.mana ?? MANA_START;
+  let e = HISTORY.get(k);
+  if (!e || r < e.round || seq < e.seq) e = { h: {}, round: r, seq };
+  e.round = r; e.seq = seq;
+  if (e.h[r] == null) e.h[r] = m;
+  HISTORY.delete(k); HISTORY.set(k, e); if (HISTORY.size > 20) HISTORY.delete(HISTORY.keys().next().value as string);
+  return e.h;
 }
 export const _resetManaHistory = () => HISTORY.clear();
 
@@ -58,7 +63,7 @@ export function movers(): string[] {
   out.push('An Outburst begins: − its MP ÷ 10 (rounded up); a heart let go: +1');
   if (d('syphon') != null) out.push('Syphon: ' + signed(d('syphon')));
   if (d('crystallise') != null) out.push('Crystallise: ' + signed(d('crystallise')));
-  if (d('prayer') != null) out.push('A prayer answered: ' + signed(d('prayer')));
+  if (d('prayer') != null) out.push('A prayer, answered or not: ' + signed(d('prayer')));
   return out;
 }
 /** What this band does to magic, from its data row. */
@@ -89,7 +94,8 @@ export function manaForecast(cb: any, history: Record<number, number> = {}): Man
   const thisRound = mana - start, lastRound = prev != null && history[r] != null ? history[r] - prev : null;
   const arrow = thisRound > 0 ? '▲' : thisRound < 0 ? '▼' : '▬';
   const trendText = (thisRound ? signed(thisRound) + ' this round' : 'steady this round') + (lastRound != null ? ' · ' + (lastRound ? signed(lastRound) : '±0') + ' last round' : '');
-  const gauge: Segment[] = MANA_BANDS.map((x) => { const w = ((Math.min(max, x.max + 1) - x.min) / (max + 1)) * 100, now = x.id === id, c = BAND_INK[x.id] || '#C9D3E3';
+  // Each band's width is its count of values (Flooded 30–40 is 11 of the 41), so the gauge fills and 40 sits inside it.
+  const gauge: Segment[] = MANA_BANDS.map((x) => { const w = ((Math.min(max, x.max) - x.min + 1) / (max + 1)) * 100, now = x.id === id, c = BAND_INK[x.id] || '#C9D3E3';
     return { id: x.id, name: BAND_WORD[x.id] || x.id, from: x.min, to: x.max, ink: c, now,
       style: 'flex: 0 0 ' + w.toFixed(2) + '%; height: 100%; background: ' + c + (now ? '' : '; opacity: 0.28') + '; border-right: 1px solid #0A0D13' }; });
   const outlook = outlookOf(mana), effects = bandEffects(id), mv = movers();
@@ -121,9 +127,10 @@ export function skyIcon(band: string, ink: string): string {
 
 // ---------- the panel's template values (screens/combat.js) ----------
 /** Everything the forecast panel's markup reads (templates/combat.template.html, PANEL:mana). */
-/** inSide: the panel sits in the action column (its details open in place and scroll there); in the map zone they open
- *  as a dropdown over the map, so opening them never shrinks the map. */
-export function forecastVals(cb: any, open: boolean, toggle: () => void, inSide = false) {
+/** drop: the panel sits above the map on a wide window, so its details open as a dropdown over the map (opening them
+ *  never shrinks the map); anywhere else (under the map, in the action column, a narrow or very short window) they open in
+ *  place, where the panel's own room shows them. */
+export function forecastVals(cb: any, open: boolean, toggle: () => void, drop = false) {
   const f = manaForecast(cb, noteMana(cb));
   const tInk = f.trend.thisRound > 0 ? f.ink : f.trend.thisRound < 0 ? '#C9D3E3' : '#A3AEC2';
   return {
@@ -131,9 +138,13 @@ export function forecastVals(cb: any, open: boolean, toggle: () => void, inSide 
     arrow: f.trend.arrow, trend: f.trend.text, outlook: f.outlookText,
     gauge: f.gauge.map((g) => ({ ...g, title: g.name + ' ' + g.from + '–' + g.to + (g.now ? ' (now)' : '') })),
     effects: f.effects.map((text, i) => ({ key: 'e' + i, text })), movers: f.movers.map((text, i) => ({ key: 'm' + i, text })),
-    headStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; color: ' + f.ink,
-    trendStyle: 'font-size: 11px; font-weight: 700; white-space: nowrap; color: ' + tInk,
+    headStyle: 'flex: none; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; color: ' + f.ink,
+    // One line each, cut with an ellipsis (the full text in the title), so the panel's height never changes with the
+    // numbers and the map never rescales mid-fight.
+    lineStyle: 'font-size: 12px; line-height: 1.35; color: #C9D3E3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
+    outlookStyle: 'font-size: 11px; line-height: 1.35; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
+    trendStyle: 'min-width: 0; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + tInk,
     boxStyle: 'display: flex; flex-direction: column; padding: 8px 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + f.ink,
-    detailsStyle: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; padding: 8px 12px; border-top: 1px solid #232D3F' + (inSide ? '; margin-top: 6px' : '; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 7; border-radius: 12px; background: #10151F; border: 1px solid #2E3A50; border-left: 3px solid ' + f.ink + '; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55)'),
+    detailsStyle: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; padding: 8px 12px; border-top: 1px solid #232D3F' + (!drop ? '; margin-top: 6px' : '; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 7; border-radius: 12px; background: #10151F; border: 1px solid #2E3A50; border-left: 3px solid ' + f.ink + '; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55)'),
   };
 }

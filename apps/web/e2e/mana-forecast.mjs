@@ -52,7 +52,31 @@ await p.screenshot({ path: OUT + 'fc-side.png' });
 await p.locator('[data-phc-panel="mana"] > .phc-grip').focus(); await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(600);
 ok('and the left arrow brings it back to the map zone', (await p.locator('[data-phc-zone="mapZone"] [data-phc-panel="mana"]').count()) === 1);
 const saved = await p.evaluate(() => localStorage.getItem('phc.combatLayout'));
-ok('the layout is a browser preference: ' + saved, saved && saved.includes('mana'));
+ok('right then left puts it back above the map: the default layout again (nothing stored): ' + saved, saved === null && (await p.locator('[data-phc-panel="mana"]').boundingBox()).y < (await p.locator('[data-phc-panel="map"]').boundingBox()).y);
+// Very short window (1093×526): the map still fits and Confirm and End turn stay on screen, whether the forecast is
+// in the map zone or was moved into the action column (there it shows under the map instead).
+const shortCheck = async (label) => {
+  await p.setViewportSize({ width: 1093, height: 526 }); await p.waitForTimeout(900);
+  const g = await p.locator('.phc-grid').boundingBox(), conf = await p.getByRole('button', { name: /^(Confirm|Click a tile)/ }).first().boundingBox().catch(() => null), endT = await p.getByRole('button', { name: 'End turn', exact: true }).first().boundingBox().catch(() => null);
+  const fcIn = await p.evaluate(() => document.querySelector('[data-phc-panel="mana"]')?.closest('[data-phc-zone]')?.dataset.phcZone || '');
+  ok(label + ': grid bottom ' + Math.round(g.y + g.height) + ', Confirm bottom ' + (conf && Math.round(conf.y + conf.height)) + ', End turn bottom ' + (endT && Math.round(endT.y + endT.height)) + ', forecast in ' + fcIn, g.y + g.height <= 527 && conf && conf.y + conf.height <= 526 && endT && endT.y + endT.height <= 526);
+  await p.screenshot({ path: OUT + 'fc-short-' + label.replace(/\W+/g, '-') + '.png' });
+};
+await shortCheck('1093x526 default');
+await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(600);
+await p.locator('[data-phc-panel="mana"] > .phc-grip').focus(); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(500);
+await shortCheck('1093x526 forecast in the action column');
+await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(600);
+await p.locator('[data-phc-panel="mana"] > .phc-grip').focus(); await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(500);
+// Narrow (900×800): the forecast sits under the map; its details open in place and are on screen when opened.
+await p.setViewportSize({ width: 900, height: 800 }); await p.waitForTimeout(900);
+const order = await p.evaluate(() => [...document.querySelectorAll('.phc-cb-left > [data-phc-panel]')].map((e) => ({ id: e.dataset.phcPanel, top: e.getBoundingClientRect().top })).sort((x, y) => x.top - y.top).map((x) => x.id));
+ok('narrow: the map first, the forecast right under it: ' + order.join(', '), order[0] === 'map' && order[1] === 'mana');
+await p.locator('[data-phc-panel="mana"] button[aria-expanded]').first().scrollIntoViewIfNeeded(); await p.locator('[data-phc-panel="mana"] button[aria-expanded]').first().click(); await p.waitForTimeout(500);
+const dpos = await p.evaluate(() => { const d = document.querySelector('[data-fc-details]'); return d ? getComputedStyle(d).position : 'none'; });
+ok('narrow: the details open in place (' + dpos + ')', dpos === 'static');
+await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(400);
+await p.evaluate(() => localStorage.removeItem('phc.combatLayout'));
 console.log('errors', JSON.stringify(p.errors));
 if (p.errors.length) process.exitCode = 1;
 await browser.close();

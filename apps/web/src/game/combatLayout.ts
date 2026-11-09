@@ -150,8 +150,11 @@ export function keyMovePanel(e: KeyboardEvent, panel: PanelId, layout: CombatLay
   if (e.key === 'ArrowUp' && i > 0) return movePanel(l, panel, zone, i - 1);
   if (e.key === 'ArrowDown' && i < l[zone].length - 1) return movePanel(l, panel, zone, i + 2);
   const leftZone: ZoneId = l.swap ? 'sideZone' : 'mapZone', rightZone: ZoneId = l.swap ? 'mapZone' : 'sideZone';
-  if (e.key === 'ArrowLeft' && zone !== leftZone) return movePanel(l, panel, leftZone, l[leftZone].length);
-  if (e.key === 'ArrowRight' && zone !== rightZone) return movePanel(l, panel, rightZone, l[rightZone].length);
+  // Into the other zone: at its end, but the mana forecast goes back to its home at the top of the map zone, so a
+  // round trip (right, then left) leaves the default layout as it was.
+  const at = (z: ZoneId) => (panel === 'mana' && z === 'mapZone' ? 0 : l[z].length);
+  if (e.key === 'ArrowLeft' && zone !== leftZone) return movePanel(l, panel, leftZone, at(leftZone));
+  if (e.key === 'ArrowRight' && zone !== rightZone) return movePanel(l, panel, rightZone, at(rightZone));
   return null;
 }
 
@@ -188,8 +191,9 @@ export const LAYOUT_CSS = [
   '.phc-cb-split:hover>span,.phc-cb-split:focus-visible>span,.phc-cb-split.phc-split-on>span{width:4px;background:#6FEA77}',
   '.phc-cb-split:focus-visible{box-shadow:0 0 0 2px #FFFFFF}',
   '@media (max-width:999px){.phc-cb-split,.phc-grip,.phc-cb-layout-reset{display:none!important}.phc-cb-row{flex-direction:row!important}.phc-cb-left{max-width:none!important}}',
-  // Narrow windows stack the screen and dock the actions at the bottom: the map comes first, the mana forecast under it.
-  '@media (max-width:999px){.phc-cb-left>[data-phc-panel="mana"]{order:50!important}}',
+  // Narrow windows (stacked, the actions docked at the bottom) and very short ones: the map comes first, the mana
+  // forecast right under it, then the legend and the log in their own order.
+  '@media (max-width:999px),(max-height:620px){.phc-cb-left>[data-phc-panel="map"]{order:-2!important}.phc-cb-left>[data-phc-panel="mana"]{order:-1!important}}',
   '.phc-reduce .phc-grip,.phc-reduce .phc-cb-split>span{transition:none}',
 ].join('');
 
