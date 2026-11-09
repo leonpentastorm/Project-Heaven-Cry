@@ -2309,9 +2309,15 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
   for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');
   if (!hidden) { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
-  att.ap = apNow; if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
+  // The opening strike is an action of the fight like any other (spotlight.ts): its fx start here, so a crit, a takedown,
+  // a revive or an intervention in it cuts in and slows its playback (decision 113).
+  const before = cbx.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
+  att.ap = apNow; markAction(cbx);
+  if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
+  if (hidden && silentTakedown(g, cbx, c, att, tgt)) return; // no fight opens: its moments are thrown away with it
+  songTriggers(g, att, c, before);
+  critMoment(g);
   if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
-  if (hidden && silentTakedown(g, cbx, c, att, tgt)) return;
   checkOver(cbx); runEnemies(g);
 }
 /** Silent Kill on the area map (the Shade, K1): a killing ambush from Sneak that leaves you Hidden, with no other

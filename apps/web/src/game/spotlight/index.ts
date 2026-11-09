@@ -35,14 +35,16 @@ function saveSeen(code: string, v: Record<string, string[]>) { try { sessionStor
 /**
  * Apply the setting to a spec: Off → null; Once per scene → only the strips not yet shown in its scene (and they are
  * marked shown); null when none are left. Pure apart from the sessionStorage memory.
+ * A fight's crit (the short form) is remembered apart ('crit:' + the strip's key): a routine crit only holds back later
+ * crits, never the same fighter's takedown or revive, the bigger moments the setting keeps (decision 113).
  */
 export function applyPref(spec: CutInSpec | null, code: string, pref = cutinPref()): CutInSpec | null {
   if (!spec || pref === 'off' || !spec.strips.length) return null;
   if (pref !== 'scene' || !spec.scene) return spec;
-  const all = seenOf(code), had = new Set(all[spec.scene] || []);
-  const strips = spec.strips.filter((s) => !had.has(s.key));
+  const all = seenOf(code), had = new Set(all[spec.scene] || []), key = (s: CutInStrip) => (spec.short ? 'crit:' : '') + s.key;
+  const strips = spec.strips.filter((s) => !had.has(key(s)));
   if (!strips.length) return null;
-  for (const s of strips) had.add(s.key);
+  for (const s of strips) had.add(key(s));
   // Only the current scene and the one before are kept.
   const keep = Object.keys(all).filter((k) => k !== spec.scene).slice(-1);
   saveSeen(code, { ...Object.fromEntries(keep.map((k) => [k, all[k]])), [spec.scene]: [...had] });

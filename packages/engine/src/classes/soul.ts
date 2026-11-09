@@ -3,7 +3,7 @@
 // Twin Discipline), and Resonance kept between two hearts that are one (the twin). The engine's own maths are in
 // magic.ts (outburstDamage, toneRiders, applyToneRiders, resonanceFor); nothing here invents a number of its own.
 import type { Combat, Unit } from '../combat';
-import { coverTileFor, emitFx } from '../combat';
+import { coverTileFor, emitFx, noteCrit } from '../combat';
 import type { OutburstDesign } from '../character';
 import { MODULE, TONE } from '../data';
 import {
@@ -34,6 +34,7 @@ export function soulStrike(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: 
   }
   const dmg = outburstDamage(m, d, sm) * f * (crit ? 2 : 1) + toneBonus(tone, rs);
   let out = head + withElement(el, () => harm(cb, rng, u, t, dmg, tone === 'raw' ? 'soul' : 'elemental', TONE[tone]?.damage_type, toneArmour(tone, rs)));
+  if (crit) noteCrit(cb, u, t, 'outburst'); // a rolled arc that crits cuts in like the primary strike (decision 113)
   if (tone !== 'raw' && t.side !== u.side && !t.dead) out += withElement(el, () => applyToneRiders(cb, rng, u, t, tone, rs, u.pos, SKIP));
   return out.replace(/^ · /, '');
 }

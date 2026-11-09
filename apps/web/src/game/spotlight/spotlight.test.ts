@@ -113,6 +113,16 @@ describe('the player\'s setting', () => {
     expect(applyPref({ ...spec(), scene: 'fight4' }, 'CUT1', 'scene')).not.toBeNull();
   });
   it('All shows every one', () => { expect(applyPref(spec(), 'CUT1', 'all')).not.toBeNull(); expect(applyPref(spec(), 'CUT1', 'all')).not.toBeNull(); });
+  it('Once per scene: a fighter\'s routine crit never uses up their strip for a bigger moment later in the fight', () => {
+    const g = room().g, a = Object.keys(g.characters)[0];
+    const crit = (n: number) => cutInFromFx(g, [ev(n, { kind: 'crit', via: 'weapon', char: a, unit: 'u1', target: 'e1', targetName: 'Rook', reason: 'a critical hit on Rook', scene: 'fight3', from: n - 1 })] as any)!;
+    expect(crit(5).short).toBe(true);
+    expect(applyPref(crit(5), 'CUT1', 'scene')).not.toBeNull();
+    expect(applyPref(crit(9), 'CUT1', 'scene')).toBeNull(); // a second crit by the same fighter: held back
+    const big = applyPref(spec(), 'CUT1', 'scene'); // the same fighter's boss takedown in the same fight
+    expect(big).not.toBeNull(); expect(big!.strips.map((s) => s.key)).toEqual(['c:' + a]);
+    expect(applyPref(spec(), 'CUT1', 'scene')).toBeNull(); // and it is once per scene in its own right
+  });
 });
 
 describe('geometry', () => {

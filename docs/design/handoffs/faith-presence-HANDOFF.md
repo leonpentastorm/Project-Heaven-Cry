@@ -76,6 +76,12 @@ A story Miracle on the area map and the reduced-motion run were checked by hand 
 
 ## The trigger for the intervention cut-in (spec section 3, not built: Leon's "leave a trigger here")
 
+> **Superseded by decision 113** (`docs/design/cutin-spec.md` section 12, the spotlight cut-ins): the intervention's
+> cut-in is the spotlight's god strip, which the engine emits as a `spotlight` {kind: 'god'} fx event from `faith.ts`
+> `intervene()`. `playIntervention` keeps only the map effect (the bell, the mark, the flash). **Do not build the small
+> cut-in below:** it would play a second cut-in beside the spotlight strip on every intervention. The draft stays here
+> as the record of what was planned.
+
 **Where:** `playIntervention(e, kit)` in `apps/web/src/game/cutIn.ts`. `fx/faith.ts` already routes every `intervention` fx
 event to it. Today it plays the old look plus words: a sharp bell, the patron's mark flashing at the trigger's tile, and
 "<PATRON> INTERVENES" floating there. The function's comment points back here.
@@ -157,7 +163,9 @@ event to it. Today it plays the old look plus words: a sharp bell, the patron's 
 
 ## Still open
 
-- **The intervention's small cut-in (section 3):** the trigger above; not built, as Leon asked.
+- ~~**The intervention's small cut-in (section 3):** the trigger above; not built, as Leon asked.~~ Superseded by decision
+  113 (`docs/design/cutin-spec.md` section 12): the spotlight's god strip is the intervention's cut-in (`faith.ts`
+  `intervene()` emits it); `playIntervention` keeps only the map effect. Do not build the small cut-in.
 - **No combat faith panel header existed before:** the fight's FAITH tab had only its prayer list; part 3 added the compact header there rather than a new panel.
 - **Docs:** `docs/HANDOFF.md`, `docs/ROADMAP.md` and `CHANGELOG.md` are not updated, and there is no version bump: whoever merges the branch does both.
 - **Face boxes by eye:** Old Overcast's face is the storm cloud itself, so its crop is wider (0.4) and reads as a face less clearly than the others at 26–32 px. If Leon wants a different crop for any patron, it is one line in `PORTRAIT_FACE`.

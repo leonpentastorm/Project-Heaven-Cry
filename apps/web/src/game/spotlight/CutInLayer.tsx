@@ -47,6 +47,10 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
   // The name on one line where it can be: its size from the column's width (Spectral 600 is about 0.52 em a letter).
   const colW = w - textSide.left - textSide.right, nameSize = Math.round(Math.max(24, Math.min(44, colW / Math.max(6, s.name.length * 0.52))));
   const labelInk = s.god ? GOD_WORD_INK : s.ink;
+  // The stack's name chip (in the torn-off end): one line at 14 px where it fits (Chakra Petch with .12em tracking is
+  // about 0.72 em a letter), down to 12 px, then two lines; never cut off ('THE COUNTING WEAVER' at 1280 px).
+  const chipSide = windowLeft ? { left: shape.edgeX + 22, right: over + 16 + Math.max(0, dx) } : { left: over + 16 + Math.max(0, -dx), right: w - shape.edgeX + 22 };
+  const chipW = Math.max(40, w - chipSide.left - chipSide.right), chipSize = Math.round(Math.max(12, Math.min(14, chipW / Math.max(4, s.name.length * 0.72))));
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
       <svg width={w} height={h} viewBox={'0 0 ' + w + ' ' + h} style={{ position: 'absolute', inset: 0, overflow: 'visible' }} aria-hidden="true">
@@ -87,8 +91,9 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
         </div>
       ) : words === 'none' ? null : (
         // The name sits in the torn-off end, inside what the screen shows of it (the strip is shifted by dx).
-        <div style={{ position: 'absolute', top: 0, bottom: 0, ...(windowLeft ? { left: shape.edgeX + 22, right: over + 16 + Math.max(0, dx) } : { left: over + 16 + Math.max(0, -dx), right: w - shape.edgeX + 22 }), display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: windowLeft ? 'flex-start' : 'flex-end', gap: 2, minWidth: 0 }}>
-          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: '.12em', color: s.ink, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{s.name}</span>
+        // A god's name is in Virtue ink like its other words (colour-system.md): the patron's accent is the lip's alone.
+        <div style={{ position: 'absolute', top: 0, bottom: 0, ...chipSide, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: windowLeft ? 'flex-start' : 'flex-end', gap: 2, minWidth: 0 }}>
+          <span data-phc-cut-chip={s.key} style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: chipSize, lineHeight: 1.15, fontWeight: 700, letterSpacing: '.12em', color: labelInk, textTransform: 'uppercase', textAlign: windowLeft ? 'left' : 'right', overflowWrap: 'break-word', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', maxWidth: '100%' }}>{s.name}</span>
           <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '.22em', color: s.god ? GOD_WORD_INK : '#A3AEC2', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{s.god ? 'PATRON' : s.word}</span>
         </div>
       )}
@@ -145,7 +150,7 @@ export function CutInView({ show }: { show: Showing }) {
           {narrow && !single && (
             // Who is in the moment: each name in its ink with its word (colour is never the only signal).
             <span data-phc-spotlight-names="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', fontFamily: "'Chakra Petch', sans-serif", fontSize: 13, fontWeight: 700, lineHeight: 1.3 }}>
-              {spec.strips.map((x) => <span key={x.key} style={{ whiteSpace: 'nowrap' }}><span style={{ color: x.ink }}>{x.name}</span> <span style={{ fontSize: 10, letterSpacing: '.16em', color: x.god ? GOD_WORD_INK : '#A3AEC2' }}>{x.god ? 'PATRON' : x.word.toUpperCase()}</span></span>)}
+              {spec.strips.map((x) => <span key={x.key} style={{ whiteSpace: 'nowrap' }}><span style={{ color: x.god ? GOD_WORD_INK : x.ink }}>{x.name}</span> <span style={{ fontSize: 10, letterSpacing: '.16em', color: x.god ? GOD_WORD_INK : '#A3AEC2' }}>{x.god ? 'PATRON' : x.word.toUpperCase()}</span></span>)}
             </span>
           )}
           {spec.line && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 19, lineHeight: 1.35, color: TEXT }}>“{spec.line}”</span>}

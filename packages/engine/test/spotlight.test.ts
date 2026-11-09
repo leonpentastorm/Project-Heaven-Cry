@@ -1,8 +1,9 @@
 // Spotlight cut-ins (docs/design/cutin-spec.md, decision 113): the engine's `spotlight` presentation event. Every test
 // goes through apply() (the path a player's click takes), except the direct calls that check the trigger API itself.
 import { describe, expect, it } from 'vitest';
-import { apply, d20, spotlight, critMoment, SPOTLIGHT_FX, musicOf, viewFor, type Combat, type GameState } from '../src';
+import { apply, d20, spotlight, critMoment, SPOTLIGHT_FX, musicOf, viewFor, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, type Combat, type GameState } from '../src';
 import { applyDamage } from '../src/effects/damage';
+import { soulStrike } from '../src/classes/soul';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
@@ -283,5 +284,70 @@ describe('spotlight: a party crit in a fight (decision 113)', () => {
     expect(withGame(g, () => critMoment(g))).toBeNull();
     (cb as any).dry = true; cb.actFrom = (cb.fxSeq || 0) + 1; (cb as any).critNotes = [{ unit: me.id, target: t.id, via: 'weapon', n: (cb.fxSeq || 0) }];
     expect(withGame(g, () => critMoment(g))).toBeNull();
+  });
+});
+
+// ---------- the strike that opens a fight from the area map (review: it never went through combatAction) ----------
+describe('spotlight: the strike that opens a fight from the area map (decision 113)', () => {
+  function freeNear(g: GameState, from: string, d: number): string {
+    const [x, y] = from.split(',').map(Number), map = zoneMap(g), taken = new Set([...Object.values(positionsOf(g)), ...npcsOf(g).map((n) => n.pos), ...storyObjects(g).map((o) => o.pos)]);
+    for (let i = -d; i <= d; i++) for (let j = -d; j <= d; j++) { if (Math.max(Math.abs(i), Math.abs(j)) !== d) continue; const k = (x + i) + ',' + (y + j); if (standable(map, k) && !taken.has(k)) return k; }
+    throw new Error('no free tile');
+  }
+  /** One character on the area map with a hostile one tile away (its back turned when hidden) and a second far off, so
+   *  the fight stays open; `hidden`: sneaking unseen (the ambush, where 19–20 crits). */
+  function opening(o: { hidden: boolean; tier?: string; hp?: number }) {
+    const s = storyWith([{ name: 'Mallow', weapon: 'combat_knife' }]); const c = s.chars[0], here = positionsOf(s.g)[c.id];
+    const put = (at: string, name: string, tier: string) => { s.act({ type: 'narrator/turn', turn: { narration: 'Someone.', npcs: [{ action: 'place', name, side: 'hostile', tier, weapon: 'service_pistol', at: refOf(at) }] } } as any); return npcsOf(s.g)[npcsOf(s.g).length - 1]; };
+    const n = put(freeNear(s.g, here, 1), 'Sentry', o.tier || 'soldier'), t = npcsOf(s.g).find((x) => x.id === n.id)!;
+    t.facing = [Math.sign(+t.pos.split(',')[0] - +here.split(',')[0]) || 1, Math.sign(+t.pos.split(',')[1] - +here.split(',')[1])] as any; (t as any).hp = o.hp ?? 999;
+    put(freeNear(s.g, here, 6), 'Watcher', 'minion');
+    if (o.hidden) { s.g.story.sneak = { [c.id]: true }; s.g.story.hidden = { [c.id]: true }; }
+    return { g0: s.g, c, n };
+  }
+  const melee = (g: GameState, unit: string) => (g.combat?.fx || []).filter((x) => (x.k === 'melee' || x.k === 'shot') && x.unit === unit);
+  for (const hidden of [false, true]) it((hidden ? 'an ambush from Hidden' : 'an attack in the open') + ': a crit on the opening strike is one crit spotlight whose from covers it', () => {
+    const { g0, c, n } = opening({ hidden });
+    const a = { type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'melee' };
+    const g = untilSeed(g0, a, (x) => x.phase === 'combat' && !!x.combat && melee(x, x.combat.units.find((u) => u.charId === c.id)!.id).some((e) => e.crit && e.hit));
+    const me = g.combat!.units.find((u) => u.charId === c.id)!, hit = melee(g, me.id).find((e) => e.crit && e.hit)!;
+    const ss = spots(g.combat!.fx).filter((x) => x.kind === 'crit');
+    expect(ss).toHaveLength(1);
+    expect(ss[0]).toMatchObject({ kind: 'crit', via: 'weapon', char: c.id, unit: me.id });
+    expect(ss[0].from).toBeLessThanOrEqual(hit.n); expect(ss[0].n).toBeGreaterThan(hit.n);
+  });
+  it('an ambush from Hidden crits on a 19 as well (the aimed / Hidden range)', () => {
+    const { g0, c, n } = opening({ hidden: true });
+    const a = { type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'melee' };
+    const g = untilSeed(g0, a, (x) => x.phase === 'combat' && /d20 19\b[^\n]*CRIT|CRIT[^\n]*d20 19\b/i.test((x.combat?.log || []).join('\n')) && melee(x, x.combat!.units.find((u) => u.charId === c.id)!.id).some((e) => e.crit && e.hit));
+    expect(spots(g.combat!.fx).filter((x) => x.kind === 'crit')).toHaveLength(1);
+  });
+  it('a boss downed by the opening ambush is a takedown spotlight (one moment, not a crit too)', () => {
+    const { g0, c, n } = opening({ hidden: true, tier: 'boss', hp: 1 });
+    const a = { type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'melee' };
+    const g = untilSeed(g0, a, (x) => x.phase === 'combat' && !!x.combat?.units.find((u) => u.npcId === n.id)?.dead);
+    const me = g.combat!.units.find((u) => u.charId === c.id)!, first = melee(g, me.id)[0];
+    const ss = spots(g.combat!.fx);
+    expect(ss.map((x) => x.kind)).toEqual(['takedown']);
+    expect(ss[0].from).toBeLessThanOrEqual(first.n);
+  });
+});
+
+describe('spotlight: Storm Front\'s rolled arcs (soulStrike) note their crit like the primary strike', () => {
+  it('a natural 20 on an arc notes an outburst crit, which the action\'s end turns into one crit spotlight', () => {
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul' } as any], [{ tier: 'soldier' }] as any);
+    const g = clone(f.g), cb = g.combat!, u = cb.units.find((x) => x.side === 'pc')!, t = cb.units.find((x) => x.side === 'foe')!;
+    t.hp = t.maxHp = 5000; t.armour = 0; t.def = 5; t.conds = {};
+    Object.assign(u.mg!, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, healMult: 1, will: 0 });
+    const d = { id: 'x1', name: 'Arc', school: 'damage', modules: [] } as any;
+    cb.actFrom = (cb.fxSeq || 0) + 1;
+    const line = withGame(g, () => soulStrike(cb, { state: rngFor(20) }, u, d, t, 1, 0, true));
+    expect(line).toMatch(/CRITICAL/);
+    expect(cb.critNotes).toEqual([expect.objectContaining({ unit: u.id, target: t.id, via: 'outburst' })]);
+    expect(withGame(g, () => critMoment(g))).toMatchObject({ kind: 'crit', via: 'outburst', char: u.charId, target: t.id });
+    // A plain hit notes nothing.
+    cb.actFrom = (cb.fxSeq || 0) + 1;
+    withGame(g, () => soulStrike(cb, { state: rngFor(15) }, u, d, t, 1, 0, true));
+    expect(cb.critNotes).toBeUndefined();
   });
 });

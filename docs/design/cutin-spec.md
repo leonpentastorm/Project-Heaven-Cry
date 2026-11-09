@@ -46,7 +46,7 @@ song starts** (the song keeps its own once-per-scene rule; how often the cut-in 
 | `ultimate` | `game.ts` `awardAutomatic` (~1107) | An Ultimate perk is granted | the holder |
 | `legend` | `game.ts` Narrator turn `deeds` (~1195) | A combo perk earned by a legendary deed | the doer |
 | `god` | `faith.ts` `intervene()` (~530), and the god interjection trigger (§4) | A patron intervenes for a Witnessed fighter | the patron, then the fighter |
-| `crit` (a fight's) | `spotlight.ts` `critMoment`, called at the end of each player action and each enemy turn | A player's character or companion lands a critical hit on the other side (§1.4) | the actor (one strip) |
+| `crit` (a fight's) | `spotlight.ts` `critMoment`, called at the end of each player action, each enemy turn and the strike that opens a fight from the area map | A player's character or companion lands a critical hit on the other side (§1.4) | the actor (one strip) |
 
 A takedown and a revive in the same action emit both events; the client merges them (§3.4).
 
@@ -76,12 +76,18 @@ A takedown and a revive in the same action emit both events; the client merges t
   a natural 20. `combat.ts` `noteCrit` records them during the action (presentation only, read by no rule); at the
   action's end `critMoment` turns the first into one `spotlight` event of kind `crit` with `via` (`weapon`, `sigil`,
   `outburst`), the target and its name as the squad saw it ("an unseen hostile" in the fog), and `from` (the action).
+  Storm Front's rolled arcs (`classes/soul.ts` `soulStrike`) note their crits like the primary strike.
+- **The strike that opens a fight from the area map** (`game.ts` `overworldAttack`: an attack, an evoke or a release on
+  a token) is an action of the new fight like any other: it is marked (`markAction`) before it resolves, and its
+  takedown, revive (`songTriggers`) and crit (`critMoment`) come after it, so an ambush crit from Hidden (19–20) cuts
+  in and an intervention in it is gated before the strike. A Shade's silent takedown opens no fight, so it has none.
 - **One cut-in an action:** when a bigger moment already came in the same action (a takedown, a revive, a god's
   intervention), the crit emits nothing; the client's merge (lead by priority god > takedown > revive > legend >
   ultimate > crit > song) is the second guard. A crit that drops a boss shows the takedown.
 - **The short form:** one strip, slimmer (22vh, 120–220 px, against 29vh), label `CRITICAL HIT · <ATTRIBUTE>`, caption
   "Critical hit on Rook" (a spell: "· Sigil", "· Outburst"; a companion: "Rex: critical hit on Rook"), 0.9 s in all
-  (way out from 600 ms; reduced motion 0.8 s). It follows All / Once per scene / Off like every cut-in.
+  (way out from 600 ms; reduced motion 0.8 s). It follows All / Once per scene / Off like every cut-in; under Once per
+  scene its memory is its own (§7), so a routine crit never spends the fighter's strip for a later takedown.
 - **The slow-mo:** the crit's action plays 15% slower after it, like every combat moment, the brass included: the
   casings, the pump's hull, the spent cores, the falling magazine and the archer's draw are drawn through `fx/dom.ts`
   (`anim`, `after`), and `fx/brass.ts`'s own timers (the box round the portrait, the removals, the drop's dust, the
@@ -220,7 +226,7 @@ caption.
 | Strip | Ink (lip, label, name chip) | Body | Text |
 |---|---|---|---|
 | A character | Ink of the **highest attribute** (`classView.ts` `ATTR_INK`); a tie goes to the class's attribute, else the tree order (Endurance … Virtue) | `#10151F` | white / `#E7EBF3` |
-| A god | The patron's accent (`accentOf(patron)`, §9.1 on patron ids) for the lip; words in `FAITH_INK` `#D36A90` (faith words are Virtue ink; the gold is light only) | `#0A0D13` | white / `#E7EBF3` |
+| A god | The patron's accent (`accentOf(patron)`, §9.1 on patron ids) for the lip only; words, the name chip and the phone plate's name included, in `FAITH_INK` `#D36A90` (faith words are Virtue ink; the gold is light only; the Laughing Mask's `#B83243` is 3.1:1 on the body, too dim for words) | `#0A0D13` | white / `#E7EBF3` |
 | An unknown or NPC portrait | Muted `#A3AEC2` | `#10151F` | white |
 
 The label always carries the word for the colour (`TAKEDOWN · AGILITY`, `INTERVENTION · THE TOLL-KEEPER`), so colour is
@@ -424,7 +430,9 @@ Echo reroll (the new verdict, shown at ~1.05 s, comes first); every other kind w
   Once per scene · Off** (three buttons, the chosen one pressed), under Reduce motion.
 - **Once per scene:** a strip shows at most once per character (or patron) per `scene` key (the event's, so every
   player counts the same scenes and fights). A stack drops the strips already shown; if none remain, nothing plays and
-  there is no slow-mo. Kept in sessionStorage per game code.
+  there is no slow-mo. Kept in sessionStorage per game code. A fight's crit (the short form) counts apart
+  (`'crit:' + key`): it holds back only later crits, never the same fighter's takedown, revive or god moment, the bigger
+  moments this setting keeps.
 - **Off:** nothing plays, no slow-mo, no blur. The Miracle keeps today's overlay.
 - **Reduced motion** (our toggle or the system's): strips fade in place (no slide, no shake, no light pass, static
   tilt), the blur stays, 1000 ms in all, and no slow-mo.
@@ -572,6 +580,13 @@ What the build did differently from the design above, and why:
    0.85) and `spotlight/merge.test.ts`; e2e `cutins.mjs` (f) a crit, (g) a crit that takes down a boss, (h) the
    Quartermaster's intervention, (i) a Miracle and a strip asked for during it. Screens: `cutins-f-crit.png`,
    `cutins-g-crit-takedown.png`, `cutins-h-god.png`, `cutins-i-miracle.png`, `cutins-i-after-miracle.png`.
+
+11. **Round 2 review fixes:** the strike that opens a fight from the area map is an action (§1.4: a crit, a takedown or
+   an intervention in it now cuts in and is gated); Storm Front's arcs note their crits; under Once per scene a crit
+   counts apart (§7); the stack's name chip wraps to two lines (12–14 px) instead of an ellipsis ("THE COUNTING WEAVER"
+   at 1280 px) and a god's name is in Virtue ink, not the accent (§3.3). Tests: `spotlight.test.ts` (engine) for the
+   area-map opener in the open, from Hidden (a 19 too) and a boss downed by it, and Storm Front's arc; `spotlight.test.ts`
+   (web) for a crit then a takedown by one fighter under Once per scene.
 
 ## 12. Meeting Faith 2.2 (`feature/faith-presence`): merged
 
