@@ -31,7 +31,7 @@ Branch `claude/awesome-babbage-8gngk8`: **Sigil 1.5, rules revision 1.10** (`doc
 - **Waiting on Leon:**
   - the 40 inflections;
   - copying gives +2 study per glyph read (or should it be once per word?);
-  - the Narrator gives a word once a scene, where the spec said once a long rest (item 923 area);
+  - the Narrator gives a word once a scene, where the Sigil 1.5 spec said once a long rest (item 914);
   - study thresholds and the 10 / 30 word-mastery counts;
   - the Junction gate.
 
