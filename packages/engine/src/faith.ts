@@ -24,6 +24,7 @@ import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing } from './tactics';
 import { d20, die, type Rng } from './rng';
+import { spotlight } from './spotlight';
 import { WEAPON, SKILL, ITEM } from './data';
 
 export type { Belief, Vow } from './character';
@@ -438,11 +439,12 @@ export function patronLine(rng: Rng, patron: any, bank: string): string | null {
   const lines: string[] = patron?.lines?.[bank] || []; if (!lines.length) return null;
   return lines[die(rng, lines.length) - 1];
 }
-function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, patron: any, bank: string) {
-  const text = patronLine(rng, patron, bank); if (!text) return;
+function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, patron: any, bank: string): string | null {
+  const text = patronLine(rng, patron, bank); if (!text) return null;
   const ev = { patron: patron.id, event: bank, text, char: c.id };
   if (cb) { emitFx(cb, FAITH_FX.patron_line, ev); cb.log.push(patron.name + ': "' + text + '"'); }
   else if (g) { storyFx(g, FAITH_FX.patron_line, ev); B?.push(g, { kind: 'system', head: patron.name.toUpperCase(), text: '"' + text + '"' }); }
+  return text;
 }
 const fs = (u: Unit): Record<string, any> => (u.faith ||= {});
 const unitChar = (u: Unit | null | undefined): Character | null => charOfUnit(u);
@@ -493,8 +495,14 @@ function intervening(cb: Combat, patronId: string): Unit[] {
 function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, run: () => string) {
   const c = unitChar(f)!, p = patronOf(c)!; fs(f).intervened = true;
   emitFx(cb, FAITH_FX.intervention, { patron: p.id, trigger, at: (target || f).pos, target: target?.id || null, unit: f.id });
-  cb.log.push(p.name + ' intervenes for ' + f.name + run() + '.');
-  speak(G(), cb, rngOf(), c, p, 'intervention');
+  const what = run();
+  cb.log.push(p.name + ' intervenes for ' + f.name + what + '.');
+  const line = speak(G(), cb, rngOf(), c, p, 'intervention');
+  // Decision 110: a god breaking in is a spotlight moment (the patron's torn strip, then the fighter's; the action it
+  // happened in plays back slower). Presentation only.
+  const g = G(), why = String(what || '').replace(/^[\s:·]+/, '').trim();
+  if (g) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
+    ...(target ? { target: target.id, targetName: target.name } : {}), ...(target?.charId && target.charId !== c.id && target.side === f.side ? { targetChar: target.charId } : {}) });
 }
 
 // ---------- shared hooks (registered once; run on every fight after the items) ----------

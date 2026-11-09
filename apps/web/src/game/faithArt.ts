@@ -32,7 +32,9 @@ export const PATRON_ACCENT: Record<string, string> = {
   the_counting_weaver: '#E6C25A', // thread gold
 };
 /** A patron's light: the data's accent when given, else the table above, else gold. */
-export const accentOf = (patron: string | null | undefined, dataAccent?: string | null) => (dataAccent && /^#[0-9a-f]{6}$/i.test(dataAccent) ? dataAccent : PATRON_ACCENT[String(patron || '')] || FAITH_GOLD);
+// The data says 'toll_keeper' and 'counting_weaver' where the art says 'the_toll_keeper' and 'the_counting_weaver': both
+// forms find the patron's light (before, those two fell back to gold).
+export const accentOf = (patron: string | null | undefined, dataAccent?: string | null) => { const p = String(patron || ''); return dataAccent && /^#[0-9a-f]{6}$/i.test(dataAccent) ? dataAccent : PATRON_ACCENT[p] || PATRON_ACCENT['the_' + p] || PATRON_ACCENT[p.replace(/^the_/, '')] || FAITH_GOLD; };
 
 // ---------- the drawings (24 × 24, line art; c() is a circle path) ----------
 const c = (x: number, y: number, r: number) => `M${x - r} ${y} a${r} ${r} 0 1 0 ${2 * r} 0 a${r} ${r} 0 1 0 ${-2 * r} 0`;

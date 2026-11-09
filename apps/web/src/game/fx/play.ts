@@ -11,7 +11,8 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
-import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
+import { cutInForFx, showCutIn, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_MAX_MS, CUTIN_TEMPO } from '../cutin';
+import { type Pt, after, bumpGen, withTempo, fxTempo, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
@@ -21,12 +22,14 @@ export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle', FX_HOLD = 'phc-fx-hol
 interface UnitInfo { pos: string; name: string; side: string; robot: boolean; dead?: boolean; charId?: string }
 let units = new Map<string, UnitInfo>();
 let seenTiles: Set<string> | null = null;
+/** The game on screen (the spotlight gate builds its cut-in from it). */
+let ctxGame: GameState | null = null;
 /** World Play 1.7 kinds that are machines (a robot bleeds sparks, not blood). */
 const MACHINE_KIND = new Set(['robot', 'drone', 'machine']);
 const ROBOT = /drone|robot|\bbot\b|turret|automaton|mech\b|android|construct|sentry/i;
 /** Called by FxLayer before playing a batch: where everyone is now, and (in a fight) what the squad can see. */
 export function setContext(g: GameState | null, screen: string) {
-  units = new Map(); seenTiles = null;
+  units = new Map(); seenTiles = null; ctxGame = g;
   if (!g) return;
   if (screen === 'combat' && g.combat) {
     for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name) || MACHINE_KIND.has((u as any).kind), dead: !!u.dead, charId: u.charId || undefined });
@@ -68,7 +71,12 @@ const visible = (k: string | null | undefined) => !k || !seenTiles || seenTiles.
 /** Where a unit's token is on screen now (it may have moved since the event). */
 const tokOf = (id: string | null | undefined, fallback?: string) => tokenEl(tileEl(unit(id)?.pos || fallback));
 const at = (k: string | null | undefined) => (visible(k) ? centre(k) : null);
-const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => sfx(s, { ...o, pan: panOf(p) });
+/** A one-shot combat sound at a point (panned). In an action slowed after a spotlight cut-in it plays at the tempo: its
+ *  rate × 0.85 and its delay ÷ 0.85. */
+const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => {
+  const tp = fxTempo();
+  sfx(s, { ...o, pan: panOf(p), ...(tp !== 1 ? { rate: (o.rate || 1) * tp, ...(o.delay ? { delay: o.delay / tp } : {}) } : {}) });
+};
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
 
 // ---------- weapons ----------
@@ -199,6 +207,7 @@ function explosion(k: string | undefined, radius = 1, kind: 'frag' | 'fire' | 's
 // ---------- event handlers ----------
 type Handler = (e: FxEvent) => void;
 const H: Record<string, Handler> = {
+  spotlight() { /* drawn by the cut-in layer (game/cutin); the queue's gate plays it before its action */ },
   turn(e) { const p = at(e.at); if (p) ring(p, e.side === 'pc' ? WHITE : HP, 520, { from: 0.45, to: 1.05, width: 4 }); },
   move(e) {
     const path: string[] = (e.path || [e.from, e.to]).filter(Boolean);
@@ -779,6 +788,7 @@ Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, 
 /** How long each kind holds the stage before the next event starts (ms). */
 function beatOf(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
+  if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
@@ -814,17 +824,30 @@ let timers: number[] = [];
 let queueEnd = 0, idleTimer = 0, turnsUntil = 0;
 /** The longest the screen may hold the player's input while other units' turns play (a stuck clock never locks play). */
 export const TURNS_HOLD_MAX = 8000;
+// ---------- the spotlight gate (docs/design/cutin-spec.md 6.2, decision 110) ----------
+// A fight's batch with a 'spotlight' moment stops at a gate just before the action it happened in (its `from`): the
+// cut-in plays, then that action plays slowed (tempo 0.85: every beat, duration and delay ÷ 0.85; one-shot sounds at
+// rate × 0.85), then everything after it at normal speed. Events behind a closed gate wait unscheduled and are scheduled
+// from the cut-in's actual end (a skip moves them earlier). The gate always opens by CUTIN_MAX_MS.
+/** The events waiting behind a gate (new batches join behind them, in order). */
+let held: { evs: FxEvent[]; stream?: string } | null = null;
+/** While a cut-in shows: its planned end (input is held only then). */
+let gateUntil = 0;
+/** Spotlight events already decided (shown, or not shown by this player's setting), by stream and n. */
+const decided = new Set<string>();
 /** Until when (performance.now() clock) other units' turns are still being shown: the engine runs the enemies' turns at
- *  once, so the state says "your turn" while their moves still play. The combat screen holds your actions until then. */
-export const turnsBusyUntil = () => Math.min(turnsUntil, performance.now() + TURNS_HOLD_MAX);
+ *  once, so the state says "your turn" while their moves still play. The combat screen holds your actions until then,
+ *  and while a spotlight cut-in shows. */
+export const turnsBusyUntil = () => Math.min(Math.max(turnsUntil, gateUntil), performance.now() + TURNS_HOLD_MAX);
 // For the e2e suites (they wait for the other turns to finish playing before they act, as a player must).
 if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 /** When the queued effects will have played (performance.now() clock): a turn banner can wait for the enemies' moves. */
 export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
-/** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). */
-export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string) {
+/** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). tempo: 0.85 for
+ *  an action slowed after a spotlight cut-in. */
+export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1) {
   const ev = { n: 0, ...e } as FxEvent;
-  try { if (mineOnly(ev)) H[ev.k]?.(ev); } catch (err) { console.warn('fx', ev.k, err); }
+  try { if (mineOnly(ev)) withTempo(tempo, () => H[ev.k]?.(ev)); } catch (err) { console.warn('fx', ev.k, err); }
   // The turn intro (turnIntro.tsx) times enemy-turn banners on this clock instead of estimating. stream names whose
   // numbering n belongs to (FxLayer's stream key: 'cb|…' for a fight, 'st|…' for the area map).
   if (ev.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: ev.n, stream: stream || '' } })); } catch { /* */ }
@@ -836,39 +859,109 @@ export const MAX_SPEEDUP = 1.35;
 /** Skip an effect: nothing drawn or heard, but its place in the stream is announced so turn banners keep their clock. */
 function skipFx(e: FxEvent, stream?: string) { if (e.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: e.n, stream: stream || '' } })); } catch { /* */ } }
 /** Which events of a batch play, and how fast: the newest that fit in the room at no more than MAX_SPEEDUP; keep (when
- *  given) plays only the last few (a decided fight). Pure (tests). */
-export function planQueue(beats: number[], room: number, keep?: number): { from: number; speed: number } {
+ *  given) plays only the last few (a decided fight). protect: never skip from this index on (a spotlight's action).
+ *  Pure (tests). */
+export function planQueue(beats: number[], room: number, keep?: number, protect = -1): { from: number; speed: number } {
   let from = keep != null ? Math.max(0, beats.length - keep) : 0;
   const sum = (i: number) => beats.slice(i).reduce((t, b) => t + b, 0);
   while (from < beats.length - 1 && sum(from) / MAX_SPEEDUP > room) from++;
+  if (protect >= 0 && from > protect) from = protect;
   const total = sum(from);
   return { from, speed: total > room ? Math.max(1 / MAX_SPEEDUP, room / total) : 1 };
 }
+export interface Gate { at: number; from: number; to: number; spots: FxEvent[] }
+/**
+ * The gates in a fight's batch: every spotlight not yet decided, grouped by its action (`from`; an event with no `from`
+ * gates itself). `at` is the index the gate stands before (the first event of the action still in the batch); the
+ * slowed segment is from ≤ n < to (the group's last spotlight). Pure (tests).
+ */
+export function gatesOf(evs: FxEvent[], isDecided: (e: FxEvent) => boolean = () => false): Gate[] {
+  const groups = new Map<number, FxEvent[]>();
+  for (const e of evs) if (e.k === 'spotlight' && !isDecided(e)) { const f = Number.isFinite(e.from) ? Number(e.from) : e.n; (groups.get(f) || groups.set(f, []).get(f)!).push(e); }
+  const out: Gate[] = [];
+  for (const [from, spots] of groups) {
+    const at = evs.findIndex((x) => x.n >= Math.min(from, spots[0].n));
+    out.push({ at: at < 0 ? 0 : at, from, to: Math.max(...spots.map((x) => x.n)), spots });
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+/** The slowed segment's events: those with from ≤ n < to, but never a turn banner. Pure (tests). */
+export const slowedIn = (e: FxEvent, seg: { from: number; to: number } | null) => !!seg && e.n >= seg.from && e.n < seg.to && e.k !== 'turn';
+/** The time each event starts at, from t0, with the slowed segment ÷ tempo (and the rest at speed). Pure (tests). */
+export function timeline(evs: FxEvent[], beats: number[], t0: number, speed = 1, seg: { from: number; to: number } | null = null, tempo = CUTIN_TEMPO): number[] {
+  let t = t0; return evs.map((e, i) => { const at = t; t += slowedIn(e, seg) ? beats[i] / tempo : beats[i] * speed; return at; });
+}
+const keyOf = (stream: string | undefined, e: FxEvent) => (stream || '') + '|' + e.n;
+const isFight = (stream?: string) => !!stream && stream.startsWith('cb|');
 /** Queue events to play in order, each after the previous one's beat. A long backlog plays a little faster, and past that
  *  its oldest effects are skipped, so play never lags far and never races. keep: play only the last few (the fight is
- *  decided: what happened after it matters, not a replay of every step). */
+ *  decided: what happened after it matters, not a replay of every step). A spotlight's action is never skipped. */
 export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number } = {}) {
   if (!evs.length) return;
+  if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
   const backlog = base - now, room = Math.max(1500, 7000 - backlog);
-  const plan = planQueue(evs.map(beatOf), room, opts.keep), speed = plan.speed;
+  const gates = isFight(stream) ? gatesOf(evs, (e) => decided.has(keyOf(stream, e))) : [];
+  const plan = planQueue(evs.map(beatOf), room, opts.keep, gates.length ? gates[0].at : -1);
   for (const e of evs.slice(0, plan.from)) skipFx(e, stream);
-  evs = evs.slice(plan.from);
-  let t = base, lastTurn = -1;
-  for (const e of evs) {
+  runQueue(evs.slice(plan.from), stream, base, plan.speed, null, null);
+}
+/** Schedule a batch from t; stop at the first gate whose cut-in this player will see (the rest wait behind it). */
+function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: number, seg: { from: number; to: number } | null, cutId: string | null) {
+  const now = performance.now();
+  const gates = isFight(stream) ? gatesOf(evs, (e) => decided.has(keyOf(stream, e))) : [];
+  let lastTurn = -1;
+  for (let i = 0; i < evs.length; i++) {
+    const e = evs[i], gate = gates.find((x) => x.at === i);
+    if (gate) {
+      for (const sp of gate.spots) decided.add(keyOf(stream, sp));
+      const c = document.hidden ? null : cutInForFx(ctxGame, gate.spots, stream);
+      if (c) { closeGate(evs.slice(i), stream, t, gate, c, lastTurn); return; }
+    }
+    const slowed = slowedIn(e, seg), tp = slowed ? CUTIN_TEMPO : 1, beat = beatOf(e);
     if (e.k === 'turn') lastTurn = t;
-    const wait = t - now;
-    if (wait <= 4) playFx(e, stream);
-    else { const id: number = window.setTimeout(() => { timers = timers.filter((x) => x !== id); playFx(e, stream); }, wait); timers.push(id); }
-    t += beatOf(e) * speed;
+    const wait = t - now, go = () => { if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); playFx(e, stream, tp); };
+    if (wait <= 4) go();
+    else { const id: number = window.setTimeout(() => { timers = timers.filter((x) => x !== id); go(); }, wait); timers.push(id); }
+    t += slowed ? beat / tp : beat * speed;
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
-  if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120); if (turnsUntil !== was) try { window.dispatchEvent(new CustomEvent(FX_HOLD)); } catch { /* */ } }
+  if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120); if (turnsUntil !== was) holdChanged(); }
   clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, t - now + 50);
 }
-/** Drop everything queued (the game changed, the tab was hidden). */
-export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; turnsUntil = 0; volley = null; bumpGen(); }
+const holdChanged = () => { try { window.dispatchEvent(new CustomEvent(FX_HOLD)); } catch { /* */ } };
+/** Close a gate at time t: the rest of the batch waits; the cut-in plays at t; when it ends (or is skipped, or the cap)
+ *  the rest plays from then, the gate's action slowed. Until then queueEnd and the turns' hold are estimates. */
+function closeGate(rest: FxEvent[], stream: string | undefined, t: number, gate: Gate, c: { spec: any; slow: boolean }, lastTurn: number) {
+  held = { evs: rest, stream };
+  const n = c.spec.strips.length, god = c.spec.strips.some((s: any) => s.god), cutMs = CUTIN_MS(n, god, !c.slow);
+  const seg = c.slow ? { from: gate.from, to: gate.to } : null;
+  // Estimates (a skip moves them earlier when the gate opens).
+  const beats = rest.map(beatOf), times = timeline(rest, beats, t + cutMs, 1, seg);
+  rest.forEach((e, i) => { if (e.k === 'turn') lastTurn = times[i]; });
+  const turnsWas = turnsUntil;
+  queueEnd = (times.length ? times[times.length - 1] + beats[beats.length - 1] / (slowedIn(rest[rest.length - 1], seg) ? CUTIN_TEMPO : 1) : t + cutMs);
+  if (lastTurn >= 0) turnsUntil = Math.max(turnsUntil, lastTurn + 120);
+  gateUntil = t + cutMs; holdChanged();
+  const id = c.spec.id;
+  let opened = false, cap = 0;
+  const open = (shown: boolean) => {
+    if (opened) return; opened = true; clearTimeout(cap);
+    const h = held; held = null; gateUntil = 0;
+    if (h) { turnsUntil = turnsWas; runQueue(h.evs, h.stream, performance.now(), 1, shown ? seg : null, shown ? id : null); }
+    holdChanged();
+  };
+  const go = () => {
+    gateUntil = performance.now() + cutMs; holdChanged();
+    cap = window.setTimeout(() => open(false), CUTIN_MAX_MS + 100);
+    showCutIn(c.spec, { prefApplied: true }).then((r) => open(r !== 'off')).catch(() => open(false));
+  };
+  const wait = t - performance.now();
+  if (wait <= 4) go(); else { const tid: number = window.setTimeout(() => { timers = timers.filter((x) => x !== tid); go(); }, wait); timers.push(tid); }
+}
+/** Drop everything queued (the game changed, the tab was hidden), a closed gate and its cut-in with it. */
+export function clearFx() { for (const id of timers) clearTimeout(id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; held = null; volley = null; bumpGen(); dropCutIns(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */

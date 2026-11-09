@@ -1,7 +1,8 @@
 # Spotlight cut-ins: torn eye strips (design, 9 Nov 2026)
 
-Status: **design for Leon's review** (decision 110). Presentation only: no rule, no number the engine resolves, no
-dice changes. Built on branch `claude/awesome-babbage-8gngk8` from develop 0.5.0.
+Status: **built** (decision 110; see section 11 for what the build changed or left out), open questions in section 10
+for Leon. Presentation only: no rule, no number the engine resolves, no dice changes. Built on branch
+`claude/awesome-babbage-8gngk8` from develop 0.5.0.
 
 Leon's request (9 Nov 2026): *"I want a cut in UI system that blurs the screen a bit when these moment happen, in
 combat it makes the attack you are about to perform 15% slower for visual flair. It's one of those JRPG system when the
@@ -469,3 +470,30 @@ status, `docs/HANDOFF.md`.
 6. **Revive layout:** the reviver's strip and the revived one's, stacked. Or only the reviver?
 7. **Decision number:** this is decision 110. If the god interjection branch also takes 110, whoever merges second
    renumbers.
+
+## 11. Build notes (9 Nov 2026)
+
+What the build did differently from the design above, and why:
+
+1. **Eye lines sit high.** Heavenprint portraits are tight busts with the eyes at 0.06–0.42 of the height (median about
+   0.2), not 0.38. The 153 values came from OpenCV's YuNet face detector and were checked on contact sheets with the line
+   drawn on each face; 24 were set by eye (the robots, the drone, the patrons' masks and apparitions, a few misses).
+   `validate_art.py`'s range is therefore 0.05 ≤ y ≤ 0.70 and 0.15 ≤ x ≤ 0.85. The default for an upload with no framing
+   stays 0.38 (a phone photo or a headshot); a patron with no line uses 0.18.
+2. **The crop** shows about 17% of the portrait's height in a strip (so the eyes fill it), never less than the window's
+   width (`cutin/layout.ts` `cropOf`).
+3. **accentOf** now finds a patron's light under both id forms (`toll_keeper` and `the_toll_keeper`), which fixes the
+   gold fallback for the Toll-Keeper and the Counting Weaver; it still prefers the art brief's table over the data's
+   accent, so no existing glow changes colour. The strips use the data's accent first (it matches the paintings).
+4. **The crit's wait:** the cut-in comes with the check's accept (the dice dialog closing) or an Echo reroll; it waits
+   350 ms after an accept and 1100 ms after a reroll (the new verdict shows first).
+5. **DOM hooks:** the overlay's attributes are `data-phc-spotlight*` (the your-turn card already owns `data-phc-cutin`).
+   Test hooks: `window.__phcCutins` (every cut-in: kind, label, caption, at, end, skipped, slow, tempo, and the slowed
+   events with their play times and beats) and `window.__phcCutin` (`count`, `last`, `showing`, `skip()`).
+6. **Sound:** `public/sfx/cb/spotlight_tear.ogg`, qubodup's "megaswosh1" (Wind, hit, time morph, CC0) over railkill's
+   steel tongue drum ring (Mystery Sting, CC0, pitched to 0.75), 0.95 s, mono, peak −0.9 dBFS; credited in `sfxCredits.ts`.
+7. **Not built:** the Proving Ground's "Cut-in" test button (the e2e and devtools use the `phc:cutin` event instead).
+   The other screens' own `setTimeout` calls (Soul, faith and class handlers) are not slowed; everything drawn through
+   `fx/dom.ts` (`after`, `anim`, `put`, bursts, particles, floating text, rings) and every `play()` one-shot sound is.
+8. **e2e:** `apps/web/e2e/cutins.mjs` (two browsers in the Proving Ground, then a story room with the scripted Narrator
+   and a third player set to Off).

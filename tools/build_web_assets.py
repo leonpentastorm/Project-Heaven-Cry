@@ -111,4 +111,14 @@ for seq, clip in WICK_CLIPS.items():
     if f.exists():
         emit("wick-" + seq, f, (256 * clip["count"], 256), None, 92)
 MAP.write_text(json.dumps(dict(sorted(assets.items())), indent=1) + "\n")
+# Spotlight cut-ins (docs/design/cutin-spec.md 9.1): where each portrait's eyes are, keyed by the asset names above, for
+# the torn eye strip's crop: {"char-<id>": [x, y], "patron-<id>": [x, y]}.
+EYES = {}
+for cid, a in C["characters"].items():
+    if a.get("eye_line"):
+        EYES["char-" + cid] = [a["eye_line"]["x"], a["eye_line"]["y"]]
+for pid, a in C.get("patrons", {}).items():
+    if a.get("eye_line"):
+        EYES["patron-" + pathlib.Path(a["path"]).stem] = [a["eye_line"]["x"], a["eye_line"]["y"]]
+(ROOT / "apps/web/src/game/eyelines.json").write_text(json.dumps(dict(sorted(EYES.items())), separators=(",", ":")) + "\n")
 print(f"{len(assets)} assets -> {OUT.relative_to(ROOT)}")

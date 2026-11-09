@@ -2536,6 +2536,8 @@ The game's own tracks loop seamlessly, crossfade (about 1.2 s) when the fight's 
 
 Each character gets one spotlight per scene, and one per fight. A song that is already playing is never cut off: a trigger while it plays does nothing.
 
+**The cut-in** (decision 110; presentation only, no rule and no number changes). Every spotlight moment also plays a cut-in for the whole room, whether or not the song starts: the screen behind blurs a little and dims, and torn strips show the eyes of whoever made the moment, inked in their highest attribute's colour. In a fight, the action the moment happened in (the shot that dropped the boss, the revive) then plays back 15% slower. Play my song cuts in when the song starts. A patron's intervention cuts in too, the patron's strip first. Each player chooses All, Once per scene or Off in Settings; reduced motion keeps the blur and drops the slide and the slow-down. The engine marks the moment with a `spotlight` event; how it looks is `docs/design/cutin-spec.md`.
+
 **The favourite song** is a YouTube link on the character's identity (Favourite Song), with its title, artist, start time and length. The link must allow embedding. What a player picks is up to the player.
 
 **Music traits** (Soundscape of the Soul, Headbanger, Underground Sound; see the traits) add to this. A character holds **only one music trait**: they exclude each other, at creation and on any later gain.

@@ -177,6 +177,9 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Presentation events (shots, hits, reloads, spells…) for the client's effects layer, newest last, capped at FX_CAP.
    * Numbered by fxSeq; they carry no rules and nothing reads them back (see FxEvent). */
   fx?: FxEvent[]; fxSeq?: number;
+  /** The first fx number of the action being resolved (spotlight.ts markAction): a spotlight moment's `from`, so the
+   * client can slow that action's playback. Set and cleared by the reducer; never read by a rule. */
+  actFrom?: number;
   /** An off-turn window (On My Mark, Supreme Command): active(cb) is the queue's head while it is open (effects/actions.ts). */
   window?: { kind: string; queue: { unitId: string; ap?: number; limit?: number; done?: number }[]; saved: Record<string, number>; by?: string };
   /** The toggles the player set on the action being resolved (combat/attack mods…); set and cleared by the reducer. */

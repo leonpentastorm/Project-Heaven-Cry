@@ -431,6 +431,7 @@ def validate():
     require(set(catalog['skills']) == set(palette['skills']), 'Skill list differs from palette')
     if any(a.get('collection') == 'archetypes' for a in catalog['characters'].values()):
         validate_archetype_cards(catalog)
+    validate_eye_lines(catalog)
     validate_ui_colours(catalog, palette)
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
@@ -448,6 +449,16 @@ def validate():
           f'{len(catalog.get("emblems", {}))} emblems; '
           f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
           f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
+
+def validate_eye_lines(catalog):
+    """Spotlight cut-ins (docs/design/cutin-spec.md 9.1): every character and patron portrait says where its eyes are, as
+    fractions of the 4:5 image (y from the top, x the point between the eyes), so the torn eye strip crops it."""
+    for family in ('characters', 'patrons'):
+        for asset_id, asset in catalog.get(family, {}).items():
+            e = asset.get('eye_line')
+            require(isinstance(e, dict) and set(e) == {'x', 'y'}, f'Missing or malformed eye_line: {family}/{asset_id}')
+            require(all(isinstance(e[k], (int, float)) for k in ('x', 'y')), f'eye_line not numbers: {family}/{asset_id}')
+            require(0.05 <= e['y'] <= 0.70 and 0.15 <= e['x'] <= 0.85, f'eye_line out of range: {family}/{asset_id}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)

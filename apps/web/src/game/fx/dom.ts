@@ -15,8 +15,18 @@ export const layerEl = () => layer;
  *  dropped when the queue is cleared meanwhile (the room was left, the tab hidden, a new game loaded). */
 let gen = 0;
 export const bumpGen = () => { gen++; };
-/** Run f after ms, unless the effects were cleared meanwhile. */
-export const after = (f: () => void, ms: number) => { const g0 = gen; setTimeout(() => { if (g0 === gen) f(); }, ms); };
+// ---------- tempo (the spotlight cut-in's slowed action, decision 110) ----------
+/** The playback tempo: 1 normally; 0.85 while an action after a spotlight cut-in plays (every duration and delay drawn
+ *  here is divided by it). Set around one event's handler by play.ts (withTempo); later steps keep the tempo they were
+ *  scheduled under. */
+let tempo = 1;
+export const fxTempo = () => tempo;
+/** Run f with this tempo (its own later steps, scheduled with after(), keep it). */
+export function withTempo<T>(tp: number, f: () => T): T { const was = tempo; tempo = tp > 0 ? tp : 1; try { return f(); } finally { tempo = was; } }
+/** ms at the current tempo. */
+export const slow = (ms: number) => (tempo === 1 ? ms : ms / tempo);
+/** Run f after ms, unless the effects were cleared meanwhile. The wait follows the tempo, and f runs under it. */
+export const after = (f: () => void, ms: number) => { const g0 = gen, tp = tempo; setTimeout(() => { if (g0 === gen) withTempo(tp, f); }, tp === 1 ? ms : ms / tp); };
 
 // ---------- finding tiles and tokens ----------
 /** The on-screen tile for a grid key ("x,y"): a button.phc-tok whose aria-label starts with its reference ("C7 · …" or
@@ -69,7 +79,7 @@ export function put(el: HTMLElement | SVGElement, p: { x: number; y: number }, w
   box.appendChild(el);
   if (!layer) return box;
   layer.appendChild(box);
-  setTimeout(() => box.remove(), ms + 60);
+  setTimeout(() => box.remove(), slow(ms) + 60);
   return box;
 }
 /** A sprite from public/fx. White sprites (.png) can take any colour through a mask; colour sprites (.webp) show as they are. */
@@ -83,6 +93,7 @@ export function sprite(name: string, color?: string): HTMLElement {
 }
 /** Animate a node; returns the animation (or null where the browser has none). Errors never escape. */
 export function anim(el: Element, frames: Keyframe[], opts: KeyframeAnimationOptions): Animation | null {
+  if (tempo !== 1) opts = { ...opts, ...(typeof opts.duration === 'number' ? { duration: opts.duration / tempo } : {}), ...(opts.delay ? { delay: opts.delay / tempo } : {}) };
   try { return (el as any).animate ? el.animate(frames, opts) : null; } catch { return null; }
 }
 /** A sprite burst at a point: scale from a to b and fade, rotated. */
@@ -93,7 +104,7 @@ export function burst(name: string, p: { x: number; y: number }, size: number, m
     const r = (o.rot || 0) + 'deg', from = o.from ?? 0.4, to = o.to ?? 1.2;
     anim(box, reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }] : [{ transform: 'rotate(' + r + ') scale(' + from + ')', opacity: 1 }, { transform: 'rotate(' + r + ') scale(' + to + ')', opacity: o.fade ?? 0 }], { duration: ms, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }
 /** The centre x of a box of width w kept inside lo..hi (it shifts inward near an edge; centred when it can't fit). */
 export function clampCentre(x: number, w: number, lo: number, hi: number): number {
@@ -117,7 +128,7 @@ export function floatText(text: string, p: { x: number; y: number; s: number }, 
       : [{ transform: 'translateY(6px) scale(' + (o.big ? 1.8 : 0.7) + ')', opacity: 0 }, { transform: 'translateY(-4px) scale(1)', opacity: 1, offset: 0.15 }, { transform: 'translateY(-' + p.s * 0.5 + 'px) scale(1)', opacity: 1, offset: 0.7 }, { transform: 'translateY(-' + p.s * 0.8 + 'px) scale(.95)', opacity: 0 }],
       { duration: ms, easing: 'ease-out', fill: 'forwards' });
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }
 
 /** One small particle at a point: a box of size px styled by css, animated through frames over ms (after delay). */
@@ -179,7 +190,7 @@ export function screenTint(kind: 'grey' | 'red' | 'white', ms = 500) {
   d.style.cssText = 'position:fixed;inset:0;pointer-events:none;' + (kind === 'grey' ? 'backdrop-filter:grayscale(1) brightness(.75);-webkit-backdrop-filter:grayscale(1) brightness(.75)' : kind === 'red' ? 'box-shadow:inset 0 0 80px 20px rgba(246,81,87,.75)' : 'background:rgba(255,255,255,.55)');
   layer.appendChild(d);
   anim(d, [{ opacity: 0 }, { opacity: 1, offset: 0.12 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
-  setTimeout(() => d.remove(), ms + 60);
+  setTimeout(() => d.remove(), slow(ms) + 60);
 }
 /** The screen's edge throbs in a colour (a heart at stage 4, Strain over the limit): an inset glow that beats twice.
  *  Under reduced motion it shows once, without the beat. */
@@ -189,7 +200,7 @@ export function edgePulse(color: string, ms = 800, strength = 1) {
   d.style.cssText = 'position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 ' + px + 'px ' + Math.round(px * 0.3) + 'px ' + color;
   layer.appendChild(d);
   anim(d, reducedMotion() ? [{ opacity: 0 }, { opacity: 0.6, offset: 0.3 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 0.9, offset: 0.12 }, { opacity: 0.25, offset: 0.3 }, { opacity: 0.75, offset: 0.45 }, { opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
-  setTimeout(() => d.remove(), ms + 60);
+  setTimeout(() => d.remove(), slow(ms) + 60);
 }
 /** A move: a copy of the token walks the path while the real one (already at the end) is hidden. */
 export function walk(path: string[], destTokenKey: string, msPerTile: number): number {
@@ -247,5 +258,5 @@ export function ring(p: Pt, color: string, ms = 600, o: { from?: number; to?: nu
     const box = put(s, p, p.s * 1.6, p.s * 1.6, ms);
     anim(box, [{ transform: 'scale(' + (o.from ?? 0.5) + ')', opacity: 0.95 }, { transform: 'scale(' + (o.to ?? 1.3) + ')', opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
   };
-  if (o.delay) setTimeout(run, o.delay); else run();
+  if (o.delay) after(run, o.delay); else run();
 }

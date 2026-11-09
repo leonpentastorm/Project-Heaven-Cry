@@ -19,6 +19,9 @@ import { FAITH_PATRON, type FxEvent } from '@engine';
 import { reducedMotion, type Sfx } from '../sfx';
 import { type Pt, anim, after, burst, floatText, put, ring } from './dom';
 import { FAITH_GOLD, FAITH_INK, accentOf, patronMarkUri, witnessedUri, vowIconUri, prayerIconUri } from '../faithArt';
+import { cutinPref } from '../cutin';
+import { stripForPatron } from '../cutin/spec';
+import { tornStripMarkup } from '../cutin/layout';
 
 export interface FaithKit {
   at: (k: string | null | undefined) => Pt | null;
@@ -167,7 +170,21 @@ export function miracleOverlay(o: { patron: string; name?: string; line?: string
   const col = document.createElement('div'); col.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:0 24px';
   const kick = document.createElement('div'); kick.textContent = 'MIRACLE' + (o.name ? ' · ' + o.name.toUpperCase() : '');
   kick.style.cssText = "font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.3em;color:" + FAITH_INK;
+  col.style.position = 'relative'; col.style.zIndex = '1';
   col.append(img, kick);
+  // Decision 110: with cut-ins on, the patron's torn eye strip lies across the screen behind the mark (one moment, still
+  // under 2.5 s; with them off the overlay is as it was).
+  if (cutinPref() !== 'off') {
+    const s = stripForPatron(o.patron);
+    if (s) {
+      const w = Math.round(innerWidth * 1.2), h = Math.round(Math.max(150, Math.min(260, innerHeight * 0.24)));
+      const band = document.createElement('div'); band.dataset.phcMiracleStrip = o.patron;
+      band.style.cssText = 'position:absolute;left:' + Math.round(-innerWidth * 0.1) + 'px;top:' + Math.round(innerHeight * 0.45 - h / 2) + 'px;width:' + w + 'px;height:' + h + 'px;transform:rotate(-4deg);opacity:.8;pointer-events:none';
+      band.innerHTML = tornStripMarkup(s, 'miracle|' + o.patron, w, h);
+      box.append(band);
+      if (!rm) anim(band, [{ transform: 'rotate(-4deg) translateX(-110%) scaleY(.4)', opacity: 0 }, { transform: 'rotate(-4deg) translateX(0) scaleY(1)', opacity: 0.8, offset: 0.12 }, { opacity: 0.8, offset: 0.85 }, { opacity: 0 }], { duration: total, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    }
+  }
   if (o.line) { const l = document.createElement('div'); l.textContent = '“' + o.line + '”'; l.style.cssText = "max-width:640px;font:italic 22px/1.5 'Spectral',serif;color:#E7EBF3"; col.append(l); }
   box.append(col);
   document.body.appendChild(box);

@@ -35,6 +35,7 @@ import { combatStreamKey } from './fx/FxLayer';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, readCardSide, cardOnRight, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
 import { resourcesOf, resRowView, type ResRow } from './resources';
+import { cutInActive, EV_CUTIN_END } from './cutin';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
 
@@ -137,6 +138,7 @@ function estMs(e: any): number {
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(2500, Number(e.dur) || 900);
     case 'explode': case 'evoke': case 'release': return 700;
     case 'outburst': return 600;
+    case 'spotlight': return 1400; // the cut-in (game/cutin) plays before its action
     default: return 220;
   }
 }
@@ -175,6 +177,8 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
 
   // ----- showing one beat -----
   const showCombatTurn = (unitId: string, round: number) => {
+    // A spotlight cut-in on screen: the banner waits for it to clear (decision 110).
+    if (cutInActive()) { const f = () => { removeEventListener(EV_CUTIN_END, f); later(() => showCombatTurn(unitId, round), 60); }; addEventListener(EV_CUTIN_END, f); later(() => removeEventListener(EV_CUTIN_END, f), 2500); return; }
     const { game: g, meId: me, screen: sc } = live.current, cb = g?.combat;
     if (!g || !cb || g.phase !== 'combat' || sc !== 'combat' || cb.over || document.hidden) return;
     const b = bannerFor(g, cb, unitId, me, round); if (!b) return;

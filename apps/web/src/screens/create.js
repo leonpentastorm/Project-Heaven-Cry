@@ -143,6 +143,13 @@ const STAND_IN = (() => {
   return out;
 })();
 const cardFor = (arch) => (arch && STAND_IN[arch.id]) || '';
+/** The spotlight cut-in's framing for an uploaded portrait (decision 110): the eye line's default, and the preview: the
+ *  upload drawn as the strip crops it (zoomed, the eye line on the strip's middle). */
+const EYE_DEFAULT = 0.38;
+const eyePreviewStyle = (img, y) => {
+  const W = 320, H = 64, iw = W * 1.6, ih = iw * 1.25, top = Math.min(0, Math.max(H - ih, H / 2 - y * ih));
+  return 'position: relative; width: 100%; max-width: ' + W + 'px; height: ' + H + 'px; border-radius: 4px; border-top: 3px solid #E7EBF3; border-bottom: 3px solid #E7EBF3; background: #10151F url("' + String(img || '').replace(/"/g, '%22') + '") no-repeat; background-size: ' + iw + 'px ' + ih + 'px; background-position: ' + (W / 2 - iw / 2) + 'px ' + top + 'px; overflow: hidden';
+};
 const pIdx = (id) => Math.max(0, D.portraits.findIndex((p) => p.id === id));
 
 // Starting magic (spec: The Magic panel and learning, rules 1.4): Brain Power 1+ or the Sigil student kit picks 2 Sigil
@@ -191,7 +198,7 @@ export class CreateLogic extends DCLogic {
     const d = getState().draft;
     if (d) {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
-      Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
+      Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, portraitEye: typeof d.portraitEye === 'number' ? d.portraitEye : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
         traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
         sigils: _draftSigils(d.sigils), belief: d.belief && (d.belief.kind === 'atheist' || d.belief.patron) ? { ...d.belief } : null,
         ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '', tone: d.outburst.tone || 'raw' } : { ...DEFAULT_OB } });
@@ -476,7 +483,11 @@ export class CreateLogic extends DCLogic {
       lockIn: () => this.lockIn(der), saveDraft: () => this.saveDraft(der), exit: () => go(getState().code ? 'room' : 'home', { draft: null }), exitLabel: getState().code ? 'Back to the room' : 'Home',
       lockLabel: S.stamp ? 'Approved ✓' : getState().code && getState().game?.phase === 'lobby' ? 'Lock in and bring to the room' : 'Lock in',
       generate: () => this.setState({ name: NAMES[Math.floor(Math.random() * NAMES.length)], origin: Math.floor(Math.random() * D.origins.length), portrait: Math.floor(Math.random() * D.portraits.length), upload: null }),
-      upload: () => uploadPortrait((url) => this.setState({ upload: url })),
+      upload: () => uploadPortrait((url) => this.setState({ upload: url, portraitEye: null })),
+      // Decision 110: where an uploaded portrait's eyes are, for the spotlight cut-in's torn strip (a live preview of the crop).
+      hasUpload: !!S.upload, eyePct: Math.round((S.portraitEye ?? EYE_DEFAULT) * 100),
+      onEye: (e) => this.setState({ portraitEye: Math.max(0.05, Math.min(0.7, Number(e.target.value) / 100)) }),
+      eyePreview: eyePreviewStyle(S.upload, S.portraitEye ?? EYE_DEFAULT),
       back: set({ step: STEPS[Math.max(0, stepIdx - 1)][0] }), next: set({ step: STEPS[Math.min(STEPS.length - 1, stepIdx + 1)][0] }), atStart: stepIdx === 0, atEnd: stepIdx === STEPS.length - 1,
     };
   }
@@ -510,7 +521,7 @@ export class CreateLogic extends DCLogic {
   }
   sheet() {
     const S = this.state, o = S.origin === null ? null : D.origins[S.origin];
-    return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits],
+    return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, ...(S.upload ? { portraitEye: Math.round((S.portraitEye ?? EYE_DEFAULT) * 100) / 100 } : {}), origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits],
       skills: { ...S.skills }, attrs: derive(S.skills, S.aSet, S.cSet).attr, cores: derive(S.skills, S.aSet, S.cSet).core, identity: { ...S.idv }, archetype: S.applied || null,
       // Blessing 2.0: Faithful (to a patron) or Atheist; not chosen reads as Atheist (the engine's rule for old saves).
       ...(S.belief ? { belief: { ...S.belief } } : {}),
