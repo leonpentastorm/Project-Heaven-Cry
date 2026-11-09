@@ -66,7 +66,7 @@ describe('Channeler: Heart Surge on a stage-4 heart and a snap (item 524)', () =
     A(g, g.unit(v.id), { type: 'combat/outburst', design: e, aim: '5,2', mods: ['class:channeler.heart_surge#surge'] });
     expect(lost(g.unit(g.foe.id))).toBe(Math.floor(20 * 1 * 0.5));
     expect(() => A(g, g.unit(v.id), { type: 'combat/outburst', design: e, aim: '5,2', mods: ['class:channeler.heart_surge#surge'] })).not.toThrow();
-    expect(lost(g.unit(g.foe.id))).toBe(Math.floor(20 * 0.5) + Math.floor(20 * 0.6 * 0.5)); // once a turn: the second snap is ×0.6
+    expect(lost(g.unit(g.foe.id))).toBe(Math.floor(20 * 0.5) + Math.floor(20 * 0.8 * 0.5)); // once a turn: the second snap is ×0.8 (rules 1.8)
   });
 });
 
@@ -209,7 +209,7 @@ describe('Twinbound: the twin\'s own heart (item 533)', () => {
     s.act({ type: 'combat/outburst', unitId: pc, design: d0.id, aim: '4,4' } as any);
     f.cb.turn = f.cb.order.indexOf(tw); f.unit(tw).ap = 4;
     s.act({ type: 'combat/perk', unitId: tw, id: 'twinbound.call', actionId: 'twin_cast', choice: 'tw1', tile: '4,4' } as any);
-    const rel = fxOf(f.cb, 'release').at(-1); expect(rel.unit).toBe(tw); expect(rel.mult).toBe(0.6);
+    const rel = fxOf(f.cb, 'release').at(-1); expect(rel.unit).toBe(tw); expect(rel.mult).toBe(0.8);
   });
 });
 
@@ -292,7 +292,7 @@ describe('Will Power: Overdraw (item 539) and Pure Heart (item 540)', () => {
     const f = fightWith([{ ...SOUL, skills: { will_power: 3 } }], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 9;
     const d = give(f.unit(u.id), {}); A(f, f.unit(u.id), { type: 'combat/outburst', design: d }); const s0 = f.pc.mg!.strain;
     A(f, f.unit(u.id), { type: 'combat/pump', mods: ['skill:will_power.3#overdraw'] });
-    expect(f.pc.mg!.held!.stage).toBe(2); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.strain).toBe(s0 + 1);
+    expect(f.pc.mg!.held!.stage).toBe(2); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.strain).toBe(s0 + 1); // rules 1.8: the fight's first Pump is free
     A(f, f.unit(u.id), { type: 'combat/pump', mods: ['skill:will_power.3#overdraw'] }); expect(f.pc.mg!.held!.stage).toBe(3);
   });
   it('Pure Heart: the first Strain that would short you this fight is refused; the Strain falls to the limit, no Stun', () => {
@@ -327,7 +327,7 @@ describe('Soul perks and traits under 1.5', () => {
     expect(() => A(f, f.unit(u.id), { type: 'combat/release', aim: '7,2' })).toThrow(/Out of reach/);
     (f.cb.notes ||= []).push(f.g.characters[f.pc.charId!].name + ' (round ' + f.cb.round + '): "Hear me sing the storm"');
     A(f, f.unit(u.id), { type: 'combat/release', aim: '7,2', mods: ['verse'] });
-    expect(lost(f.unit(f.foe.id))).toBe(Math.floor(Math.floor(20 * 0.6 * 0.5) * 1.1)); expect(f.cb.notes!.some((n) => /in verse/.test(n))).toBe(true);
+    expect(lost(f.unit(f.foe.id))).toBe(Math.floor(Math.floor(20 * 0.8 * 0.5) * 1.1)); expect(f.cb.notes!.some((n) => /in verse/.test(n))).toBe(true);
   });
   it('Twin Souls (item 537): the third school lands at half strength with no roll, on the 1.5 stage table', () => {
     const f = fightWith([{ ...SOUL, perks: { twin_souls: 'achieved' } }], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 9; place(f, u, '2,2'); place(f, f.foe, '4,2');

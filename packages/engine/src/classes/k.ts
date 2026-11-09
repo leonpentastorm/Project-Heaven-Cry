@@ -473,7 +473,7 @@ function parseDesign(text: string | undefined): Partial<OutburstDesign> | null {
 }
 /** The magic/design checks (rules 1.5, character.ts checkOutburstDesign) with a slot allowance: schools and modules
  * known, module slots + extra, a second school at Will Power 5 on the same side, one shape (Size needs one), a known
- * tone (the first free at Visualization 1), options checked; tone and option2 kept. Returns the clean design or an error. */
+ * tone (the first free at Lore Master 1, rules 1.8), options checked; tone and option2 kept. Returns the clean design or an error. */
 function checkDesign(c: Character, d: Partial<OutburstDesign> | null, extra: number, id: string): OutburstDesign | string {
   if (!d || !d.school || !SCHOOL[d.school]) return 'Name a school (and modules): "damage: burst, homing".';
   const r = checkOutburstDesign(c, d, baseSlots(c) + extra, id); if (typeof r === 'string') return r;

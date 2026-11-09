@@ -9,7 +9,7 @@
 import type { FxEvent } from '@engine';
 import { reducedMotion, type Sfx } from '../sfx';
 import { type Pt, after, anim, burst, floatText, particle, put, ring, shake, shakeScreen, screenTint, svg } from './dom';
-import { HAZARD_LOOK, SAFE_INK, hazardLook } from '../worldView';
+import { HAZARD_LOOK, SAFE_INK, hazardLook, PILE_ICON } from '../worldView';
 
 const WHITE = '#FFFFFF', MUTED = '#A3AEC2', HP = '#F65157', OK = '#6FEA77';
 
@@ -38,10 +38,20 @@ export function worldWord(e: Partial<FxEvent> & { k: string }): string {
     case 'approach': return x.ok ? 'SUCCESS' : 'FAILED';
     case 'talk': return x.what === 'objective' ? 'ASKED ABOUT THE OBJECTIVE' : 'ASKED WHAT THEY WANT';
     case 'marker': return 'MARKED';
+    // Rules 1.9: a pick-up names what was taken (the first thing, and how many more); a pile says why it grew.
+    case 'pickup': return pickupWords(x.items);
+    case 'pile': return x.why === 'death' ? 'DROPS' : x.why === 'take' ? '' : 'DROPPED';
     default: return '';
   }
 }
-const WORLD_KS = ['carry', 'put_down', 'drop', 'search', 'hazard', 'hazard_spotted', 'hazard_placed', 'hazard_gone', 'safe_path', 'trigger', 'alarm', 'approach', 'talk', 'marker'];
+/** "+ Rifle magazine 7/24", "+ Rifle magazine 7/24 · +2 more" (the engine's labels); "+ AMMO" from an old event with none. */
+export function pickupWords(items: unknown): string {
+  const list = Array.isArray(items) ? items.map(String).filter(Boolean) : [];
+  if (!list.length) return '+ AMMO';
+  const first = list[0].length > 30 ? list[0].slice(0, 29) + '…' : list[0];
+  return '+ ' + first + (list.length > 1 ? ' · +' + (list.length - 1) + ' more' : '');
+}
+const WORLD_KS = ['carry', 'put_down', 'drop', 'search', 'hazard', 'hazard_spotted', 'hazard_placed', 'hazard_gone', 'safe_path', 'trigger', 'alarm', 'approach', 'talk', 'marker', 'pickup', 'pile'];
 /** How long each holds the stage (ms); undefined: not a World Play event. */
 export function worldBeat(e: FxEvent): number | undefined {
   if (!WORLD_KS.includes(e.k)) return undefined;
@@ -51,6 +61,8 @@ export function worldBeat(e: FxEvent): number | undefined {
     case 'trigger': return x.then === 'fight' ? 900 : 600;
     case 'alarm': return 700;
     case 'carry': case 'put_down': case 'drop': return 360;
+    case 'pickup': return 420;
+    case 'pile': return x.why === 'take' ? 0 : 200;
     case 'search': case 'approach': return 420;
     case 'hazard_spotted': case 'safe_path': case 'hazard_gone': case 'marker': return 380;
     default: return 240;
@@ -115,6 +127,13 @@ export function worldHandlers(K: WorldKit): Record<string, (e: FxEvent) => void>
       burst('dust', p, p.s * 1.1, 500, { color: '#C9D3E3' });
       if (x.items) { for (let i = 0; i < Math.min(6, x.items + 2); i++) particle(p, Math.max(4, p.s * 0.12), 'border-radius:2px;background:' + WHITE + ';box-shadow:0 0 6px ' + WHITE, [{ transform: 'translate(0,0)', opacity: 1 }, { transform: 'translate(' + ((Math.random() - 0.5) * p.s) + 'px,-' + p.s * (0.5 + Math.random() * 0.5) + 'px)', opacity: 0 }], 600, 80 + i * 40); play('crystal', p, { rate: 1.6, gain: 0.4, delay: 200 }); }
       floatText(worldWord(e), p, x.items ? WHITE : MUTED, { small: true, delay: 150 }); },
+    // Rules 1.9: the pick-up floats what was taken from the pile's tile; a pile that grows pops its stack in.
+    pickup(e) { const x: any = e, p = at(x.at) || actorAt(x); play('mag_in', p, { rate: 0.85 }); if (p) floatText(worldWord(e), p, WHITE, { small: true }); },
+    pile(e) { const x: any = e; if (x.why === 'take') return; const p = at(x.at); if (!p) return;
+      const s = svg(16, 16, '<image href="' + PILE_ICON + '" width="16" height="16"/>'), box = put(s, p, p.s * 0.45, p.s * 0.45, 600);
+      anim(box, [{ transform: 'translateY(-40%) scale(0.6)', opacity: 0 }, { transform: 'translateY(0) scale(1.1)', opacity: 1, offset: 0.45 }, { transform: 'scale(1)', opacity: 1, offset: 0.7 }, { opacity: 0 }], { duration: reducedMotion() ? 1 : 600, fill: 'forwards' });
+      play('step', p, { rate: 1.6, gain: 0.35 });
+      if (x.why === 'death') floatText(worldWord(e), p, MUTED, { small: true, delay: 120 }); },
     hazard(e) {
       const x: any = e, p = at(x.at || posOf(x.target)), L = hazardLook(x.kind), tok = tokOf(x.target, x.at);
       if (x.immune) { if (p) { ring(p, MUTED, 400); floatText(worldWord(e), p, MUTED, { small: true }); } play('hit_metal', p, { rate: 1.4, gain: 0.4 }); return; }

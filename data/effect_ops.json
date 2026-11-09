@@ -3744,6 +3744,30 @@
         "to": "round_start",
         "scope": "allies"
       }
+    },
+    {
+      "id": "feeling_pour",
+      "tier": "bespoke",
+      "summary": "Rules 1.8: what a feeling does when it is poured into a held Outburst (engine: feelings.ts; numbers in feelings.json pour).",
+      "count": 25,
+      "params": [
+        "feeling"
+      ],
+      "used_by": [
+        "feelings:*"
+      ]
+    },
+    {
+      "id": "feeling_residue",
+      "tier": "bespoke",
+      "summary": "Rules 1.8: what a feeling's residue does to whoever stands on it (engine: feelings.ts; numbers in feelings.json residue).",
+      "count": 20,
+      "params": [
+        "feeling"
+      ],
+      "used_by": [
+        "feelings:*"
+      ]
     }
   ]
 }

@@ -9,6 +9,8 @@ import patronsJ from '../../../data/patrons.json';
 import classesJ from '../../../data/classes.json';
 import sigilsJ from '../../../data/sigils.json';
 import enemiesJ from '../../../data/enemies.json';
+import lootJ from '../../../data/loot_tables.json';
+import feelingsJ from '../../../data/feelings.json';
 import { verdictFor } from './effects/coverage';
 
 export interface WikiEntry { key: string; name: string; text: string }
@@ -70,7 +72,10 @@ function build(): WikiEntry[] {
   if (hearts.length) add('enemy:soul_casters', 'Enemy Soul casters', line('Enemy Soul casters (rules 1.5): a foe of the same tier may name one by caster; it fights with an Emanator and these ready designs, its heart glowing as it fills.',
     hearts.map((c) => c.name + ' (' + c.tier + '): ' + (c.designs || []).map((d: any) => d.name + ' (' + [d.tone && d.tone !== 'raw' ? d.tone : 'raw', d.school, ...(d.modules || [])].join(' ') + ')').join(', ') + '. ' + (c.text || '')).join(' ')));
   for (const s of SCHOOLS as any[]) add('school:' + s.id, s.name, line(s.name + ' (Soul school, ' + s.base_cost + ' MP base).', s.text));
-  for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', +' + m.cost + ' MP).', m.text));
+  for (const m of MODULES as any[]) add('module:' + m.id, m.name, line(m.name + ' (Soul module, ' + m.family + ', ' + (m.cost >= 0 ? '+' : '−') + Math.abs(m.cost) + ' MP' + (m.gate ? '; learned at ' + (SKILL[m.gate.skill]?.name || m.gate.skill) + ' ' + m.gate.points : '') + (m.locked ? '; only with its advanced class, shelved: not learnable yet' : '') + ').', m.text));
+  // Feelings (rules 1.8, Outburst 4.0): poured into a held Outburst with a Pump; the Narrator may grant one at a story moment
+  // (magic[] feeling), and the engine unlocks the rest when their trigger happens.
+  for (const f of (feelingsJ as any).items) add('feeling:' + f.id, f.name, line(f.name + ' (a feeling a Soul caster pours into an Outburst; rules 1.8).', 'Felt first when: ' + f.trigger.text, 'Poured in: ' + f.pour.text, f.residue.kind !== 'none' ? 'Residue (' + f.residue.kind + '): ' + f.residue.text : ''));
   // Soul 1.5 (Outburst 2.0): the heart cycle in one entry (soul:heart), each tone (tone:<id>) and each shape (form:<id>).
   const sr: any = SOUL_RULES || {}, cyc = sr.cycle || {}, mult = (cyc.stage_mult || []).map((x: number, i: number) => i + ' ×' + x).join(', ');
   add('soul:heart', 'The heart (Outbursts)', line('How an Outburst is cast (Soul magic, rules 1.5).',
@@ -80,6 +85,13 @@ function build(): WikiEntry[] {
     'Damage: 20 × the Soul multiplier × the stage × the shape. Raw Outbursts are Soul damage and ignore armour; a tone is Elemental (armour counts half) with a rider that grows with the stage. A Bolt and a Lance roll Will Power against Defense; a Wave, Burst and Aura hit everyone in the area (friendly fire, Buff only on allies). A second school (Will Power 5, on the same side as the first) rides at half strength where the first took effect. Describe the heart: violet heat, a heartbeat rising with every Pump, blooming into the tone\'s colour on release; a Short is the heartbeat stopping, then a crack. Never decide a number: the engine reports them. Tones: tone:<id>; shapes: form:<id>.'));
   for (const t of (TONES as any[])) add('tone:' + t.id, t.name, line(t.name + ' (Outburst tone' + (t.element ? ', the Sigil ' + t.element + ' element in the Soul style; +' + t.cost + ' MP' : '') + ').', t.text,
     Object.entries(t.stages || {}).map(([k, v]: [string, any]) => 'Stage ' + k + ': ' + v.text).join(' '), t.aura_look ? 'Held, it leaks as ' + t.aura_look + ' around the caster.' : ''));
+  // Rules 1.9 drop tables (data/loot_tables.json, loot.ts): what the fallen leave, rolled by the engine (items 691-700).
+  const lt: any = lootJ, nm = (id: string) => ITEM[id]?.name || (WEAPONS as any[]).find((w) => w.id === id)?.name || (id === 'personal' ? 'a personal effect' : id);
+  add('loot:rules', 'Drop tables', line('What the fallen leave (rules 1.9): the engine rolls it, seeded, once per death, into the pile on the tile where they died, and logs "X drops: …".',
+    'Always: the weapon they used, worn (' + Math.round(lt.worn_durability.min * 100) + '-' + Math.round(lt.worn_durability.max * 100) + '% durability), with its loaded rounds, and up to ' + lt.spare_mags_max + ' spare magazines with their real rounds. Fists and beasts\' bites drop nothing.',
+    'Rolled, by kind: people the person table, robots and drones machine, casters caster, beasts beast (empty); rolls by tier: ' + Object.entries(lt.rolls_by_tier).map(([k, v]) => k + ' ' + v).join(', ') + '. At most ' + Object.entries(lt.caps).map(([k, v]) => v + ' ' + k).join(', ') + ' rolled items a fight; a boss also always drops one notable thing.',
+    'Surrendered and subdued foes, companions and illusions drop nothing. Change it per enemy or person with drops {table, items: at most ' + lt.inline_max + ' (item, qty or [min, max], chance, rarity, name, text)}; the most specific layer wins (yours, then the campaign\'s, then these).'));
+  for (const t of lt.items as any[]) add('loot:' + t.id, t.name, line(t.name + ' (drop table).', t.text, t.entries.length ? 'Can drop: ' + t.entries.map((e: any) => nm(e.item) + (e.rarity ? ' (' + e.rarity + ')' : '')).join(', ') + '.' : 'Nothing by default.', t.none ? 'Often nothing.' : 'Always something.'));
   add('form:bolt', 'Bolt', line('Bolt (Outburst shape, the default): one target at the aim, 4 tiles (Far: 8) + the Soul range bonus, in sight; rolls Will Power against Defense; damage ×1.'));
   for (const m of (MODULES as any[]).filter((x) => x.form)) add('form:' + m.id, m.name, line(m.name + ' (Outburst shape; a module, +' + m.cost + ' MP).', m.text));
   return out;

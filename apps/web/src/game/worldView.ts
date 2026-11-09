@@ -7,7 +7,8 @@
 // its word and glyph, success green for a safe path, white for markers (still to do), neutrals for kind badges.
 import { type GameState, type Character, type TalkOption, type Marker, type HazardTile, type MapObject, type Npc,
   FAIL_HURT, HAZARD, SKILL, WORLD_AP, TALK_RANGE, condName, refOf, dist, positionsOf, npcsOf, isCache, carriedOf, carryable, carriedKg, carryLimit,
-  hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable, dayOf } from '@engine';
+  hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable, dayOf,
+  pileEntries, PICKUP_AP } from '@engine';
 
 // ---------- kinds: a robot looks like a robot ----------
 export const KIND_WORD: Record<string, string> = { human: 'HUMAN', robot: 'ROBOT', drone: 'DRONE', crawler: 'CRAWLER', beast: 'BEAST', machine: 'MACHINE' };
@@ -100,6 +101,92 @@ export function cacheLook(o: MapObject & { itemCount?: number }, big = true): { 
     chipStyle: 'position: absolute; right: 0; bottom: 0; z-index: 3; padding: 0 2px; border-radius: 3px; font-size: ' + (big ? 9 : 5) + 'px; font-weight: 700; line-height: ' + (big ? 12 : 7) + 'px; pointer-events: none; background: ' + (empty ? '#1C2536' : '#FFFFFF') + '; color: ' + (empty ? '#A3AEC2' : '#0A0D13') };
 }
 export const holdsText = (n: number, searched?: boolean) => (searched || !n ? 'Searched: nothing left.' : 'Holds ' + n + (n === 1 ? ' thing' : ' things') + '. Search to take them all into your pack.');
+
+// ---------- piles (rules 1.9): things on the ground ----------
+// A pile is open: whoever can see its tile sees what is in it (the engine's view drops piles out of the party's sight,
+// and hidden ones). It draws as a small drawn stack with its count in the tile's bottom-left corner, so it shows under a
+// token standing on it, and never looks like a cache's closed box (▣). Neutral ink: a pile isn't a hazard or a goal.
+export const isPileV = (o: MapObject) => o.kind === 'pile';
+const STACK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="#10151F" stroke="#E7EBF3" stroke-width="1.5" stroke-linejoin="round">'
+  + '<rect x="1.5" y="10.5" width="13" height="4" rx="1"/><rect x="3" y="6" width="10" height="4.5" rx="1"/><rect x="4.5" y="1.5" width="7" height="4.5" rx="1"/></g></svg>';
+/** The pile's drawn stack (three boxes, narrowing upward), as an image. */
+export const PILE_ICON = 'data:image/svg+xml,' + encodeURIComponent(STACK_SVG);
+/** How many entry lines a hover shows before "+N more". */
+export const PILE_TIP_LINES = 8;
+export interface PileLook { id: string; tile: string; n: number; lines: string[]; title: string; tip: string; style: string; iconStyle: string; count: string; countStyle: string; tipStyle: string }
+/** What a pile draws on a tile, and the lines its hover lists (one per entry, from the engine's pileEntries). */
+export function pileLook(o: MapObject, big = true): PileLook {
+  const lines = pileEntries(o).map((e) => e.label), n = lines.length, shown = lines.slice(0, PILE_TIP_LINES);
+  if (n > PILE_TIP_LINES) shown.push('+' + (n - PILE_TIP_LINES) + ' more');
+  const head = 'Pile at ' + refOf(o.pos) + ' · ' + n + (n === 1 ? ' thing' : ' things');
+  return { id: o.id, tile: o.pos, n, lines, title: head + ':\n' + shown.join('\n'), tip: [head.toUpperCase(), ...shown].join('\n'), count: String(n),
+    style: 'position: absolute; left: ' + (big ? 1 : 0) + 'px; bottom: ' + (big ? 6 : 0) + 'px; z-index: 5; display: flex; align-items: center; gap: ' + (big ? 2 : 0) + 'px; padding: ' + (big ? '1px 3px 1px 2px' : '0 1px 0 0') + '; border-radius: 3px; pointer-events: none; background: rgba(10, 13, 19, 0.85); box-shadow: 0 0 0 1px #3B475D',
+    iconStyle: 'display: block; width: ' + (big ? 12 : 5) + 'px; height: ' + (big ? 12 : 5) + 'px; background: url("' + PILE_ICON + '") center / contain no-repeat',
+    countStyle: 'font-size: ' + (big ? 10 : 5) + 'px; font-weight: 700; line-height: 1; color: #E7EBF3',
+    tipStyle: 'position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); z-index: 8; padding: 5px 8px; border-radius: 6px; white-space: pre; text-align: left; font-size: 11px; line-height: 1.4; font-weight: 600; pointer-events: none; background: #1C2536; border: 1px solid #3B475D; color: #E7EBF3; box-shadow: 0 4px 12px rgba(5, 7, 11, 0.6)' };
+}
+/** The hover's place by the tile, kept inside the map: below the tile on the top two rows, flush left on the first two
+ *  columns, flush right on the last two. */
+export function pileTipStyle(L: PileLook, x: number, y: number, w: number, occupied = false): string {
+  let st = L.tipStyle;
+  // Someone stands on it (review fix): the token's popover opens below and its action ring sits on the token, so the
+  // list goes to the side, clear of the ring, toward the middle of the map.
+  if (occupied) return st.replace('left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%)', (x >= w / 2 ? 'right: calc(100% + 8px)' : 'left: calc(100% + 8px)') + '; top: 0; transform: none').replace('z-index: 8', 'z-index: 9');
+  if (y <= 1) st = st.replace('bottom: calc(100% + 4px)', 'top: calc(100% + 4px)');
+  if (x <= 1) st = st.replace('left: 50%', 'left: 0').replace('transform: translateX(-50%)', 'transform: none');
+  else if (x >= w - 2) st = st.replace('left: 50%', 'right: 0').replace('transform: translateX(-50%)', 'transform: none');
+  return st;
+}
+/** The legend entry: the drawn stack and its words. */
+export const pileLegend = () => ({ key: 'pile', text: 'Pile: things on the ground', glyph: '', glyphStyle: '', swatch: 'width: 14px; height: 14px; background: url("' + PILE_ICON + '") center / contain no-repeat' });
+/** The piles a player's view holds, by tile (hidden ones and empty ones never show). */
+export function pilesIn(objs: MapObject[] | undefined | null): Map<string, MapObject> {
+  const out = new Map<string, MapObject>(); for (const o of objs || []) if (isPileV(o) && !o.hidden && (o.items || []).length && !out.has(o.pos)) out.set(o.pos, o);
+  return out;
+}
+/** The Pick up checklist: one row per entry, ticked unless the player unticked it (`untick`: keys, so a new entry
+ *  arrives ticked). */
+export interface PileRow { key: string; label: string; checked: boolean; kind: string }
+export function pileRows(o: MapObject | null | undefined, untick: string[] = []): PileRow[] {
+  if (!o) return []; const off = new Set(untick);
+  return pileEntries(o).map((e) => ({ key: e.key, label: e.label, checked: !off.has(e.key), kind: e.kind }));
+}
+/** What a pick-up sends: undefined for everything (all ticked), else the ticked keys ([] when nothing is ticked). */
+export function pileTake(o: MapObject | null | undefined, untick: string[] = []): string[] | undefined {
+  const rows = pileRows(o, untick); if (rows.every((r) => r.checked)) return undefined;
+  return rows.filter((r) => r.checked).map((r) => r.key);
+}
+/** Untick or tick one entry (the new untick list). */
+export const toggleUntick = (untick: string[] = [], key: string) => (untick.includes(key) ? untick.filter((k) => k !== key) : [...untick, key]);
+/** The Pick up button's words: how many of the pile's things, and the AP. */
+export function pickupLabel(o: MapObject | null | undefined, untick: string[] = []): string {
+  const rows = pileRows(o, untick), n = rows.filter((r) => r.checked).length;
+  return !rows.length ? 'Pick up' : n === rows.length ? 'Pick up everything · ' + PICKUP_AP + ' AP' : 'Pick up ' + n + ' of ' + rows.length + ' · ' + PICKUP_AP + ' AP';
+}
+/** Why a pick-up from this tile can't happen now (null: it can), as the engine would say it. */
+export function pickupWhy(from: string | null | undefined, o: MapObject | null | undefined, apNow: number, untick: string[] = []): string | null {
+  if (!o) return 'Nothing to pick up there.';
+  if (!from || dist(from, o.pos) > 1) return 'Stand on it or next to it.';
+  if (!pileRows(o, untick).some((r) => r.checked)) return 'Tick something to take.';
+  if (apNow < PICKUP_AP) return 'Needs ' + PICKUP_AP + ' AP.';
+  return null;
+}
+/** The host's line for what the loot cap held back this fight (rules 1.9, item 695): "HOST ONLY · Loot cap reached: …"
+ * (the latest entry, and how many more). The engine strips lootLog from every other player's view. */
+export function lootLogLine(log: string[] | null | undefined): string {
+  if (!log || !log.length) return '';
+  return 'HOST ONLY · ' + log[log.length - 1] + (log.length > 1 ? ' (' + (log.length - 1) + ' more held back earlier)' : '');
+}
+/** "Path crosses: minefield at C4, D4" from the engine's routeHazards crossings (empty when the path is clear). */
+export function crossesText(crosses: { ref: string; id: string; name: string }[] | null | undefined): string {
+  if (!crosses || !crosses.length) return '';
+  const by = new Map<string, { name: string; refs: string[] }>(); for (const c of crosses) { const e = by.get(c.id) || { name: c.name, refs: [] }; e.refs.push(c.ref); by.set(c.id, e); }
+  return 'Path crosses: ' + [...by.values()].map((e) => e.name.toLowerCase() + ' at ' + e.refs.join(', ')).join('; ') + '.';
+}
+/** The danger mark on a route tile that crosses a revealed hazard (red: danger, with the ! glyph). */
+export const CROSS_STYLE = 'position: absolute; inset: 1px; z-index: 6; pointer-events: none; box-sizing: border-box; border-radius: 3px; border: 2px solid #F65157; box-shadow: 0 0 8px rgba(246, 81, 87, 0.7)';
+/** The chip on a crossed hazard tile of the route: "!" in danger red. */
+export const CROSS_CHIP_STYLE = 'position: absolute; right: 1px; top: 0; z-index: 7; padding: 0 3px; border-radius: 3px; font-size: 9px; font-weight: 700; line-height: 12px; pointer-events: none; background: #F65157; color: #0A0D13';
 
 // ---------- approaches in plain words ----------
 export const SUCCESS_WORDS: Record<string, string> = {
@@ -224,7 +311,7 @@ export function putDownTiles(g: GameState, charId: string): string[] {
 }
 
 // ---------- near you: the button list ----------
-export interface NearItem { key: string; kind: 'npc' | 'carry' | 'cache' | 'hazard'; id: string; label: string; sub: string; off: boolean; why: string; style: string }
+export interface NearItem { key: string; kind: 'npc' | 'carry' | 'cache' | 'hazard' | 'pile'; id: string; label: string; sub: string; off: boolean; why: string; style: string }
 /** Everything a character can act on from where they stand, as buttons: people to talk to (within talk range), people to
  *  carry (adjacent), caches to search (adjacent), hazards in sight (their ways through). */
 export function nearItems(g: GameState, charId: string | undefined, busy = ''): NearItem[] {
@@ -239,6 +326,11 @@ export function nearItems(g: GameState, charId: string | undefined, busy = ''): 
   for (const o of storyObjects(g)) { if (o.hidden || !isCacheV(o) || dist(at, o.pos) > 1) continue; const n = (o as any).itemCount ?? (o.items || []).length;
     const why = o.searched || !n ? 'Nothing left.' : o.locked ? 'Locked: open it first.' : busy || (apL < WORLD_AP.search ? 'Needs ' + WORLD_AP.search + ' AP.' : '');
     out.push({ key: 's' + o.id, kind: 'cache', id: o.id, label: 'Search ' + o.name + ' · ' + WORLD_AP.search + ' AP', sub: (o.searched || !n ? 'searched, empty' : 'holds ' + n + (n === 1 ? ' thing' : ' things')) + (why && why !== 'Nothing left.' ? ' · ' + why : ''), off: !!why, why, style: btn('#FFFFFF') }); }
+  // Rules 1.9: a pile on your tile or next to it (the view holds only the piles the party can see).
+  for (const o of pilesIn(storyObjects(g)).values()) { const d = dist(at, o.pos); if (d > 1) continue;
+    const L = pileLook(o, true), why = busy || (apL < PICKUP_AP ? 'Needs ' + PICKUP_AP + ' AP.' : '');
+    out.push({ key: 'p' + o.id, kind: 'pile', id: o.id, label: 'Pick up from the pile' + (d ? ' at ' + refOf(o.pos) : ' here') + ' · ' + PICKUP_AP + ' AP',
+      sub: L.lines.slice(0, 3).join(', ') + (L.n > 3 ? ', +' + (L.n - 3) + ' more' : '') + (why ? ' · ' + why : ''), off: !!why, why, style: btn('#E7EBF3') }); }
   let tiles: HazardTile[] = []; try { tiles = hazardTilesFor(g, 'pc'); } catch { /* */ }
   const hz = new Map<string, { d: number; t: HazardTile }>(); for (const t of tiles) { const d = dist(at, t.tile); const was = hz.get(t.id); if (!was || d < was.d) hz.set(t.id, { d, t }); }
   for (const [id, { d, t }] of hz) { const L = hazardLook(t.kind);
@@ -247,7 +339,7 @@ export function nearItems(g: GameState, charId: string | undefined, busy = ''): 
 }
 
 // ---------- the map's cells: everything World Play draws on one tile ----------
-export interface WorldCell { hz?: HazardCell; mark?: ReturnType<typeof markerCells> extends Map<string, infer V> ? V : never; cache?: ReturnType<typeof cacheLook> }
+export interface WorldCell { hz?: HazardCell; mark?: ReturnType<typeof markerCells> extends Map<string, infer V> ? V : never; cache?: ReturnType<typeof cacheLook>; pile?: PileLook }
 export function worldLayer(g: GameState, big = true): { cells: Map<string, WorldCell>; legend: ReturnType<typeof hazardLegend>; tiles: HazardTile[]; marks: Marker[] } {
   let tiles: HazardTile[] = [], marks: Marker[] = [];
   try { tiles = hazardTilesFor(g, 'pc'); } catch { /* */ }
@@ -257,6 +349,7 @@ export function worldLayer(g: GameState, big = true): { cells: Map<string, World
   for (const [k, v] of markerCells(marks, big)) get(k).mark = v;
   const objs: MapObject[] = g.phase === 'combat' && g.combat ? g.combat.objects || [] : storyObjects(g);
   for (const o of objs) if (!o.hidden && isCacheV(o)) get(o.pos).cache = cacheLook(o, big);
-  return { cells, legend: [...hazardLegend(tiles), ...markerLegend(marks)], tiles, marks };
+  const piles = pilesIn(objs); for (const [k, o] of piles) get(k).pile = pileLook(o, big);
+  return { cells, legend: [...hazardLegend(tiles), ...markerLegend(marks), ...(piles.size ? [pileLegend()] : [])], tiles, marks };
 }
 export { refOf };

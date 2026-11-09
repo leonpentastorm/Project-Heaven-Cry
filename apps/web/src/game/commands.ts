@@ -5,13 +5,14 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry,
-  packOf, focusHand, twoHands, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, ITEM } from '@engine';
+  focusHand, NEEDS_EVOKER, NEEDS_EMANATOR, reloadBothAp, PILE, PICKUP_AP, dist } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
 import { faithView, beliefOf, FAITH_MIN } from '@engine';
 import { prayerButtons, FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 import { heldClassId, currentClassId } from './classView';
+import { pilesIn } from './worldView';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
@@ -78,6 +79,37 @@ export function classOf(ch: any, origin?: string | null): { id: string; name: st
   return { id, name: name || id, ink, icon: classIconUri(id, ink) };
 }
 
+// ---------- reloading: speed or tactical (rules 1.9) ----------
+/** The tactical reload's action ids (the speed reload keeps 'reload' and 'reload2'). */
+export const RELOAD_TAC = 'reload-tac', RELOAD2_TAC = 'reload2-tac';
+/** A gun's reload rows, at the engine's real costs (weaponActions): a magazine gun with tracked spares offers the speed
+ *  reload (the old magazine drops into the pile on your tile) and the tactical one (+1 AP, it goes back in your pack);
+ *  a gun loaded round by round has its one reload, by its own name. */
+export function reloadItems(u: any): ActionItem[] {
+  if (!u) return [];
+  const R: any = weaponActions(u).find((x: any) => x.id === 'reload'); if (!R) return [];
+  const w: any = (WEAPON as any)[u.weapon], unit = (w && w.reload_unit) || 'magazine', now = w && w.magazine != null ? ' ' + u.ammo + ' / ' + w.magazine + ' loaded now.' : '';
+  if (!R.tactical) return [['reload', R.label, R.ap + ' AP', R.text + now, R.why]];
+  return [
+    ['reload', (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (speed)', R.ap + ' AP · the ' + unit + ' drops', 'Swap in your fullest spare ' + unit + ' (' + (u.mags || []).length + ' left). The one in the gun drops into the pile on your tile with its rounds still in it: worth picking up, Load refills it.' + now, R.why],
+    [RELOAD_TAC, (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (tactical)', R.tactical.ap + ' AP · the ' + unit + ' goes in your pack', 'Swap in your fullest spare ' + unit + ' for ' + PILE.tactical_reload_extra_ap + ' AP more: the one in the gun goes back in your pack with its rounds still in it.' + now, R.tactical.why],
+  ];
+}
+/** Reload both guns (Two guns): speed at the engine's price, tactical +1 AP when both guns take magazines. */
+export function reloadBothItems(u: any): ActionItem[] {
+  const w: any = u ? (WEAPON as any)[u.weapon] : null, ow: any = u && u.offWeapon ? (WEAPON as any)[u.offWeapon] : null;
+  if (!w || !ow || w.magazine == null || ow.magazine == null) return [];
+  // The engine's refusals for a full gun (combat.ts reloadHands), before the AP check.
+  const mainFull = (u.ammo ?? 0) >= (w.magazine || 0) && w.reload === 'magazine', offFull = (u.offAmmo ?? 0) >= (ow.magazine || 0);
+  const full = mainFull && offFull ? 'Already full.' : offFull ? 'The off-hand gun is full: reload the main gun alone.' : mainFull ? 'The main gun is full: reload the off-hand gun alone.' : null;
+  const ap = reloadBothAp(u), tac = ap + PILE.tactical_reload_extra_ap, need = (n: number) => full || ((u.ap ?? 0) < n ? 'Needs ' + n + ' AP.' : null);
+  const out: ActionItem[] = [['reload2', 'Reload both guns' + (ow.reload !== 'loose' ? ' (speed)' : ''), ap + ' AP' + (ow.reload !== 'loose' ? ' · the magazines drop' : ''), 'Each gun takes its own spare; the old magazines drop into the pile on your tile.', need(ap)]];
+  if (ow.reload !== 'loose' && w.reload !== 'loose' && Array.isArray(u.mags)) out.push([RELOAD2_TAC, 'Reload both (tactical)', tac + ' AP · the magazines go in your pack', 'Each gun takes its own spare; the old magazines go back in your pack.', need(tac)]);
+  return out;
+}
+/** A visible pile on your tile or next to it (Pick up's reach), from the fight's objects in this player's view. */
+export const pileInReach = (cb: any, u: any) => { if (!cb || !u) return null; for (const o of pilesIn(cb.objects).values()) if (dist(u.pos, o.pos) <= 1) return o; return null; };
+
 /** Options for the action list. noNarrator: there is no Narrator to rule on anything (the Proving Ground), so actions
  *  only the Narrator can resolve (cost 'Narrator', e.g. a weapon skill the engine doesn't run) are left out. */
 export interface ActionOpts { noNarrator?: boolean; /** The game (perk actions read the live character and the use counters). */ g?: any }
@@ -116,11 +148,11 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
       ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
     ['UTILITY', [
-      ...(W('reload') ? [['reload', W('reload')!.label, W('reload')!.ap + ' AP', W('reload')!.text + (w && w.magazine != null ? ' ' + cur.ammo + ' / ' + w.magazine + ' loaded now.' : ''), W('reload')!.why] as ActionItem] : []),
+      ...reloadItems(cur),
       ...(W('load') ? [['load', W('load')!.label, loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : W('load')!.text, W('load')!.why] as ActionItem] : []),
       ...(W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : []),
       ...(W('repair') ? [['repair', 'Field Repair', W('repair')!.ap + ' AP', 'Proficiency 3+, one spare-parts charge (' + (cur && cur.parts || 0) + ' left): +10% durability, +5% per Proficiency above 3. Weapon ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.', W('repair')!.why] as ActionItem] : []),
-      ['pickup', 'Pick up', '1 AP', 'Take everything on your tile or one adjacent tile (marked ▪): dropped magazines, empty or not.'],
+      ['pickup', 'Pick up', PICKUP_AP + ' AP', 'Take what you tick from the pile on your tile or next to it (the stack with a count): magazines with their rounds, loose rounds, weapons, whatever was dropped. Everything is ticked to start.', cur && cur.side === 'pc' && !cur.charId ? 'Only a character picks things up.' : cb && cur && !pileInReach(cb, cur) ? 'Nothing on the ground next to you.' : undefined],
       ['door', 'Open or close a door', '1 AP', 'An adjacent door. Closed, it blocks movement and sight. Locked doors need a check after the fight, or enough damage.'],
       ['stim', 'Stim an ally', '1–2 AP', 'Adjacent ally: stabilise a Downed ally at 1 HP (1 AP for a Bard, 2 for others), or heal 30 × your Healing given. Stops Bleeding. Uses a stim' + (ch ? ' (' + ch.stims + ' left)' : '') + '.'],
       ...(ch && musicTraitOf(ch) && songOf(ch) ? [['song', 'Play my song', '2 AP', 'Your Musek Blestor: your favourite song takes over the room until the fight ends, and your music trait\'s bonus is on while it plays. It can replace another holder\'s kept-on song, never a spotlight.'] as ActionItem] : []),
@@ -128,8 +160,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(cur && cur.conds?.burning > 0 ? [['extinguish', 'Put out the fire', '1 AP', 'Burning: 10 damage at the start of each of your turns until someone spends 1 AP to put it out.'] as ActionItem] : []),
       ...(cur && cur.conds?.grappled > 0 ? [['escape', 'Break free', '2 AP', 'Grappled: d20 + the better of Raw Power and Athletics against the grappler\'s.'] as ActionItem] : []),
       ...(cur && (cur.conds?.disarmed > 0 || cur.conds?.lowered > 0) ? [['recover', cur.conds?.disarmed > 0 ? 'Recover your weapon' : 'Raise your weapon', cur.conds?.disarmed > 0 ? '2 AP' : '1 AP', 'Until then you attack with your fists.'] as ActionItem] : []),
-      ...focusItems(ch),
-      ...(offW && offW.magazine != null && w && w.magazine != null ? [['reload2', 'Reload both guns', '3 AP', 'Each gun takes its own spare.'] as ActionItem] : []),
+      ...reloadBothItems(cur),
       ...(cur && !cur.hidden && cur.side === 'pc' ? [['hide', 'Hide', '2 AP', 'Only out of every enemy\'s sight, and never while Marked. Hidden: enemies can\'t target you; your first attack from hiding is an ambush (crit on 19–20, × your Ambush multiplier). Enemies look for you at the end of their turns.', (cb && cb.units.some((v: any) => v.side !== cur.side && !v.dead && !v.downed && unitSees(cb, v, cur.pos))) ? 'An enemy can see you.' : cur.conds?.marked > 0 ? 'Marked.' : null] as ActionItem] : []),
       ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']], null, 'utility'],
   ];
@@ -180,19 +211,6 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
 export interface Command { action: string; label: string; sub: string; key: string; off?: boolean; custom?: boolean }
 export interface CatEntry { action: string; label: string; cost: string; text: string; tab: string; ink: string | null; why: string | null }
 
-/** A focus only in the pack (spec: Hands 2, item 630; item 633): take it into the off hand, 1 AP (combat/swap to 'off').
- *  Ids 'hold-evoker' / 'hold-emanator'; FOCUS_PACK_IDX finds its pack slot for the action. */
-export const FOCUS_ACTS: Record<string, 'evoker' | 'emanator'> = { 'hold-evoker': 'evoker', 'hold-emanator': 'emanator' };
-export const focusPackIdx = (ch: any, kind: 'evoker' | 'emanator') => (ch ? packOf(ch).findIndex((x: any) => x.qty > 0 && FOCUS_IDS[kind].includes(x.weapon || x.item || x.id)) : -1);
-function focusItems(ch: any): ActionItem[] {
-  if (!ch) return [];
-  return (['evoker', 'emanator'] as const).filter((k) => focusHand(ch, k) === 'pack').map((k) => {
-    const name = k === 'evoker' ? 'Evoker' : 'Emanator', off = ch.offHand ? ((WEAPON as any)[ch.offHand.id]?.name || (ITEM as any)[ch.offHand.id]?.name || ch.offHand.id) : '';
-    const why = twoHands(ch, ch.weapon) ? 'Your ' + ((WEAPON as any)[ch.weapon]?.name || 'weapon') + ' fills both hands.' : null;
-    return ['hold-' + k, 'Hold the ' + name + ' (off hand)', '1 AP', 'Take your ' + name + ' from the pack into the off hand' + (off ? ' (the ' + off + ' goes to the pack)' : '') + ': ' + (k === 'evoker' ? 'Sigils need an Evoker in hand.' : 'Outbursts spend MP, and Syphon works, only with an Emanator in hand.'), why] as ActionItem;
-  });
-}
-
 /** A quick "not now" for a command (a hint for the card; the engine still rules on the action itself). */
 export function whyNot(u: any, action: string, cost: string): string | null {
   if (!u) return 'No unit.';
@@ -205,7 +223,7 @@ export function whyNot(u: any, action: string, cost: string): string | null {
   }
   if (['move', 'sprint', 'disengage'].includes(action) && u.prone) return 'Prone: stand up first.';
   if (action === 'sprint' && u.noSprint) return 'Can\'t sprint in this load.';
-  if (action === 'reload') { if (!gun) return 'Nothing to reload.'; if ((u.ammo ?? 0) >= w.magazine) return 'Already full.'; if (u.jammed) return 'Jammed: clear it first.'; if (w.reload === 'loose' ? !(u.loose > 0) : Array.isArray(u.mags) && !u.mags.length) return 'Nothing left to load.'; }
+  if (action === 'reload' || action === RELOAD_TAC) { if (!gun) return 'Nothing to reload.'; if ((u.ammo ?? 0) >= w.magazine) return 'Already full.'; if (u.jammed) return 'Jammed: clear it first.'; if (w.reload === 'loose' ? !(u.loose > 0) : Array.isArray(u.mags) && !u.mags.length) return 'Nothing left to load.'; }
   if (action === 'clear' && !u.jammed) return 'Not jammed.';
   if (action.startsWith(PK) || action.startsWith(PR)) return null; // perk actions and prayers carry the engine's own reason (catalogue)
   if (action === 'skill') {
@@ -251,7 +269,7 @@ export function smartCommands(u: any): Command[] {
   else cmds.push({ action: 'shot', label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
   cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
   const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name
-  if (rl && !u.jammed) cmds.push({ action: 'reload', label: rl.label, sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
+  if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
   else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an adjacent enemy', key: '3' });
   else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
   if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });

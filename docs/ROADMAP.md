@@ -46,6 +46,32 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    moves to bring back are listed in `docs/design/move-pool.md`. The data already carries `kind`/`pair`/`batch`, so
    turning a batch on is mostly data.
 
+## Outburst 4.0 (built: rules 1.8, decision 109)
+
+- Built on `feature/outburst-4.0` from `docs/design/outburst-4.0-spec.md`; hand-off
+  `docs/design/handoffs/outburst-4.0-HANDOFF.md`. Waiting on Leon:
+  - the 25 feeling colours;
+  - the readings in spec items 801–818;
+  - the placeholder icons;
+  - the sounds, which nobody has listened to yet.
+- Still to do:
+  - the 10 class-gated modules' behaviours, when their classes return;
+  - a flee rule, for Contempt's "or flees";
+  - per-unit sight, for Dread's "can't see Hidden things";
+  - painted art for the COMING SOON slots the hand-off lists.
+- **Later:** the pen-and-paper conversion. Practice becomes one module pick per level-up for Soul casters.
+- **Trait idea, now that 4.0 is built:** Abandon goes off wild when you're already over the Strain limit (Leon: "sounds
+  more like a trait than a base mechanic").
+
+## Sigil 1.5 (accepted direction, 9 Nov 2026)
+
+- Spec: `docs/design/sigil-1.5-spec.md` (one file to hand over). It covers:
+  - **strokes**: a Line is what you drew as one, so touching glyphs no longer poison each other (playtest fix);
+  - guaranteed new words: study, copying enemy glyphs and investigating sigils drawn in the world, Mastery;
+  - word mastery and inflections;
+  - late-game Junctions (one glyph shared by two Lines; Lines of 5 were dropped);
+  - gated power for the advanced Mind classes.
+
 ## Classes
 
 - **Batch 2:** the ring of 9 hybrids (Blade Scribe, Storm Hand, Spellslinger, Banner Dancer, Adamantile Knight,
@@ -64,7 +90,14 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 ## World Play gaps (from `docs/design/handoffs/world-play-A-HANDOFF.md` and `-B-HANDOFF.md`)
 
-- Paths (players' clicks and enemies) don't avoid hazards.
+- Enemy paths don't avoid hazards, and neither do the Narrator's moves. Since rules 1.9, a player's click-path goes around a revealed hazard when the detour is at most 2 tiles (item 683), and the preview names what a path crosses.
+- World Play 1.1 (`docs/design/handoffs/world-play-1.1-HANDOFF.md`):
+  - an enemy killed on the area map drops nothing (item 697);
+  - enemy weapons have no rarity, so worn drops are always standard;
+  - the host-only loot-cap log isn't shown on screen;
+  - companions don't add to the party's sight of piles;
+  - the light-armour line is now 1.2 kg (item 685, provisional; the field helmet and field boots change in a fight, the ballistic helmet doesn't): Leon to confirm in playtest;
+  - no built-in campaign uses `loot_tables` or `drops` yet.
 - Allies and companions don't fight beside the party; companion hazard damage on the area map isn't saved.
 - Talk and hazard panels exist only on the area map, not in fights.
 - **Carry weight is very punishing** (item 638): a 40 kg robot overloads a starting character, and a 70 kg body
@@ -103,7 +136,6 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 ## Small engine oddities (Leon: not urgent)
 
-- Equipping a weapon into an empty main hand puts "Fists" into the pack.
 - A focus taken out of the off hand goes into the pack as kind `tool` instead of `focus`.
 
 ## Art

@@ -3,7 +3,9 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
-import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus } from '@engine';
+import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
+import { feelingInk, feelingIconSrc } from '../game/feelingsView';
+const FEELING_START = ['rage', 'love'];
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
 import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -169,8 +171,8 @@ const optId = (o) => o.replace(/^to_/, '').replace(/_\d+$/, '');
 const OPT_NAME = { hit: '+2 to hit', defense: '+2 Defense', heal: 'Heal 30', push: 'Push 3 tiles', pull: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed', fear: 'Fear', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff' };
 const ENGINE_OPT = { buff: 'heal', control: 'push', status: 'shaken' }; // what the engine uses when no option is set
 const obOf = (S) => { const o = S.ob || DEFAULT_OB, opts = (SCHOOL[o.school]?.options || []).map(optId);
-  // A tone (rules 1.5) only at Visualization 1; without it the design is Raw.
-  const tone = o.tone && o.tone !== 'raw' && TONE[o.tone] && (S.skills.visualization || 0) >= 1 ? o.tone : 'raw';
+  // A tone (rules 1.5) only at Lore Master 1 (rules 1.8); without it the design is Raw.
+  const tone = o.tone && o.tone !== 'raw' && TONE[o.tone] && (S.skills.lore_master || 0) >= 1 ? o.tone : 'raw';
   return { ...o, tone, modules: (o.modules || []).filter((m) => MODULE[m]).slice(0, 1), option: opts.length ? (opts.includes(o.option) ? o.option : ENGINE_OPT[o.school] || opts[0]) : '' }; };
 
 export class CreateLogic extends DCLogic {
@@ -382,11 +384,19 @@ export class CreateLogic extends DCLogic {
     const obInfo = designInfo({ costSave: soulCostSaving({ attrs: der.attr, skills: S.skills }), soulRange: soulRangeBonus({ attrs: der.attr, skills: S.skills }) }, obDraft, normal);
     const obParts = [SCHOOL[ob.school]?.name, ob.option ? OPT_NAME[ob.option] || ob.option : '', ...ob.modules.map((m) => MODULE[m]?.name), ob.tone !== 'raw' ? toneName(ob.tone) + ' tone' : ''].filter(Boolean).join(' · ');
     const obVerdict = obErr ? '◆ ' + obErr : '✓ ' + obName + ': ' + obParts + '. Costs ' + obCost + ' MP in Normal mana.';
-    // Tones (rules 1.5): Raw, or one element at Visualization 1 (learned with this design).
-    const visOk = (S.skills.visualization || 0) >= 1;
+    // Tones (rules 1.5): Raw, or one element at Lore Master 1 (rules 1.8) (learned with this design).
+    const visOk = (S.skills.lore_master || 0) >= 1;
     const obTones = toneChips([], visOk ? 1 : 0).map((t) => { const on = ob.tone === t.id, can = t.id === 'raw' || visOk;
-      return { key: t.id, name: t.name, title: t.text + (can ? '' : ' Needs Visualization 1.'), pick: can ? setOb({ tone: t.id }) : () => {}, pressed: on ? 'true' : 'false', locked: !can, style: btn(on, t.ink) + (can ? '' : '; opacity: 0.4; cursor: default') }; });
+      return { key: t.id, name: t.name, title: t.text + (can ? '' : ' Needs Lore Master 1.'), pick: can ? setOb({ tone: t.id }) : () => {}, pressed: on ? 'true' : 'false', locked: !can, style: btn(on, t.ink) + (can ? '' : '; opacity: 0.4; cursor: default') }; });
     const obVerdictStyle = 'font-size: 14px; line-height: 1.45; font-weight: 600; color: ' + (obErr ? '#FFFFFF' : '#6FEA77');
+    // Rules 1.8: two starting feelings (default Rage and Love); the rest are felt in play.
+    const feels = S.feelings && S.feelings.length ? S.feelings : FEELING_START;
+    const feelChips = FEELINGS.map((f) => { const on = feels.includes(f.id), ink = feelingInk(f.id);
+      return { key: f.id, name: f.name, icon: feelingIconSrc(f.id, on ? ink : '#7F8BA1'), pressed: on ? 'true' : 'false', title: f.name + ': ' + f.pour.text + ' Felt first when: ' + f.trigger.text,
+        // Always two: picking a third swaps out the older pick (a picked one stays until another replaces it).
+        pick: () => { if (on) return; const cur = this.state.feelings && this.state.feelings.length === 2 ? this.state.feelings : FEELING_START; this.setState({ feelings: [...cur, f.id].slice(-2) }); },
+        style: btn(on, ink) + '; display: inline-flex; align-items: center; gap: 6px' }; });
+    const feelHint = 'Pick 2: ' + feels.map((x) => FEELINGS.find((f) => f.id === x)?.name || x).join(' and ') + '. Pour one in while you pump; the others you will feel in play, the first time they happen to you.';
     const slotChip = 'ONE MODULE TO START · ' + slots + ' SLOT' + (slots === 1 ? '' : 'S') + ' FOR DESIGNS IN PLAY';
 
     // lock in
@@ -441,7 +451,7 @@ export class CreateLogic extends DCLogic {
       budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
       kitCards, hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
-      schoolCards, obOpts, hasOpts: obOpts.length > 0, obTones, obToneHint: visOk ? 'Raw ignores armour and has no rider; an element adds a rider that grows with the stage (armour counts half).' : 'An element tone needs Visualization 1; your Outburst is Raw (it ignores armour).',
+      schoolCards, obOpts, hasOpts: obOpts.length > 0, obTones, feelChips, feelHint, obToneHint: visOk ? 'Raw ignores armour and has no rider; an element adds a rider that grows with the stage (armour counts half).' : 'An element tone needs Lore Master 1; your Outburst is Raw (it ignores armour).',
       obShapeIcon: obInfo.icon, obShapeLine: obInfo.line, obShapeStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: ' + obInfo.ink, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
       onObName: (e) => this.setState({ ob: { ...obOf(this.state), name: e.target.value.slice(0, 40) } }), obVerdict, obVerdictStyle,
       resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetSigilsLabel: 'Back to ' + DEFAULT_SIGILS.map((w) => SIGIL[w]?.word || w).join(' + '), resetOb: set({ ob: { ...DEFAULT_OB } }),
@@ -506,6 +516,7 @@ export class CreateLogic extends DCLogic {
       ...(S.belief ? { belief: { ...S.belief } } : {}),
       // Starting magic goes on the sheet only for a build that can cast; the engine fills in the defaults otherwise.
       ...(canSigilOf(S) ? { sigils: [...(S.sigils || [])] } : {}),
+      ...(canSoulOf(S) ? { feelings: [...(S.feelings && S.feelings.length === 2 ? S.feelings : FEELING_START)] } : {}),
       ...(canSoulOf(S) ? { outburst: (() => { const ob = obOf(S); return { ...(ob.name.trim() ? { name: ob.name.trim() } : {}), school: ob.school, modules: [...ob.modules], ...(ob.option ? { option: ob.option } : {}), ...(ob.tone && ob.tone !== 'raw' ? { tone: ob.tone } : {}) }; })() } : {}) };
   }
   /** Lock in: validate, stamp the record, then file it (bring it to the room or save it to the library). A refused

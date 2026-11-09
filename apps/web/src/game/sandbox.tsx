@@ -13,23 +13,24 @@
 //    clicked tile, clear them, enemy AI, endless waves, place or fight any wave, the mana meter, leave).
 import React from 'react';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
+import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
 import { OPT_LABEL, optValue } from './actionPickers';
 import { wordRows } from './sigilView';
 import { glyphUri, SIGIL_INK } from './glyphs';
 import { glyphKeyNav } from './glyphKeys';
 import {
-  magicOf, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
+  magicOf, FEELINGS, practiceOf, nextPickAt, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
-import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, devotionWords, GATE } from '@engine';
+import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, devotionWords, GATE, moduleShelved } from '@engine';
 import { patronMarkUri, vowIconUri, FAITH_INK } from './faithArt';
 import { importCharacter } from './charfile';
 import { fxBusyUntil } from './fx/FxLayer';
 import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
-import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
+import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
 import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName } from '@engine';
 const ITEMS = Object.values(ITEM);
 import { ART } from '../screens/shared';
@@ -516,6 +517,20 @@ function FaithTab({ game, c }: { game: GameState; c: Character }) {
   </>;
 }
 
+const pgDet: React.CSSProperties = { borderTop: '1px solid ' + C.line, paddingTop: 4 };
+const pgSum: React.CSSProperties = { cursor: 'pointer', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: C.muted, padding: '4px 0' };
+/** Where a character's unit stands now (the fight's, else the area map's), for the effects test row. */
+function playerUnitPos(charId: string): string | null {
+  const g: any = getState().game; const u = g?.combat?.units?.find((x: any) => x.charId === charId); return u ? u.pos : g?.story?.positions?.[charId] || null;
+}
+/** Play one feeling's pump, release or residue look and sound on the spot (rules 1.8 section 11.5), no fight needed. */
+function testFeelingFx(feeling: string, family: string, what: 'pump' | 'release' | 'residue', at: string | null) {
+  const fx = (window as any).__phcFx; if (!fx || !at) return;
+  const [x, y] = at.split(',').map(Number), to = (x + 2) + ',' + y;
+  if (what === 'pump') fx.playFx({ k: 'pump', at, stage: 3, mult: 1.8, feeling, family, step: 0.4, does: null, tone: 'raw' });
+  else if (what === 'release') fx.playFx({ k: 'release', at, to, form: 'bolt', tone: 'raw', stage: 3, mult: 1.8, felt: [feeling], area: [to], targets: [] });
+  else fx.playFx({ k: 'residue', tiles: [to, (x + 2) + ',' + (y + 1), (x + 3) + ',' + y], feeling, family, kind: 'harms', rounds: 2 });
+}
 function MagicTab({ c }: { c: Character }) {
   const known = c.sigils || [], k: any = c.soulKnown || { schools: [], modules: [] };
   const [school, setSchool] = React.useState(SCHOOLS[0]?.id || ''), [mods, setMods] = React.useState<string[]>([]), [name, setName] = React.useState('');
@@ -549,16 +564,44 @@ function MagicTab({ c }: { c: Character }) {
         </div>)}
       </div>
     </Section>
-    <Section title="OUTBURST SCHOOLS, TONES AND MODULES">
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {SCHOOLS.map((s) => <button key={s.id} type="button" title={s.text} disabled={k.schools.includes(s.id)} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (k.schools.includes(s.id) ? C.soul : C.line), color: k.schools.includes(s.id) ? C.soul : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, school: s.id })}>{s.name}</button>)}
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {toneChips(k.tones || []).filter((t) => t.id !== 'raw').map((t) => <button key={t.id} type="button" title={t.text} disabled={t.known} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (t.known ? t.ink : C.line), color: t.known ? t.ink : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, tone: t.id })}>{t.name} tone</button>)}
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {MODULES.map((m) => <button key={m.id} type="button" title={m.text} disabled={k.modules.includes(m.id)} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (k.modules.includes(m.id) ? C.soul : C.line), color: k.modules.includes(m.id) ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}>{isShape(m.id) && <img src={formIconUri(m.id)} alt="" width={14} height={14} />}{m.name}</button>)}
-      </div>
+    {/* Rules 1.8: schools, tones, modules grouped by gate skill (the advanced classes' shown, learnable here: no gates in
+        the Proving Ground), feelings (grant or forget), practice, and a sound and effects test row for every feeling. */}
+    <Section title="OUTBURSTS: SCHOOLS, TONES, MODULES, FEELINGS">
+      <details data-pg-group="schools" open style={pgDet}><summary style={pgSum}>SCHOOLS AND TONES</summary>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
+          {SCHOOLS.map((s) => <button key={s.id} type="button" title={s.text} disabled={k.schools.includes(s.id)} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (k.schools.includes(s.id) ? C.soul : C.line), color: k.schools.includes(s.id) ? C.soul : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, school: s.id })}>{s.name}</button>)}
+          {toneChips(k.tones || []).filter((t) => t.id !== 'raw').map((t) => <button key={t.id} type="button" title={t.text} disabled={t.known} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (t.known ? t.ink : C.line), color: t.known ? t.ink : C.muted }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, tone: t.id })}>{t.name}</button>)}
+        </div>
+      </details>
+      <details data-pg-group="modules" style={pgDet}><summary style={pgSum}>MODULES BY GATE SKILL ({k.modules.length} KNOWN)</summary>
+        {moduleGroups(c).map((gr) => <div key={gr.key} role="group" aria-label={gr.label + ' modules'} data-module-group={gr.key} style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 6 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: C.soul }}>{gr.label.toUpperCase()} · {gr.blurb}</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {gr.modules.map((m) => <button key={m.id} type="button" data-module={m.id} title={m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : '')} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
+          </div>
+        </div>)}
+      </details>
+      <details data-pg-group="feelings" style={pgDet}><summary style={pgSum}>FEELINGS ({(c.feelings || []).length} / {FEELINGS.length} FELT)</summary>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
+          <button type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => FEELINGS.forEach((f) => { if (!(c.feelings || []).includes(f.id)) act({ type: 'sandbox/learn', charId: c.id, feeling: f.id }); })}>Feel them all</button>
+          {FEELINGS.map((f) => { const on = (c.feelings || []).includes(f.id), ink = feelingInk(f.id); return <button key={f.id} type="button" data-feeling={f.id} aria-pressed={on} title={f.name + ': ' + f.pour.text + ' · ' + f.trigger.text}
+            style={{ ...btn, minHeight: 28, fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted }}
+            onClick={() => act({ type: 'sandbox/learn', charId: c.id, feeling: f.id, ...(on ? { forget: true } : {}) })}><img src={feelingIconSrc(f.id, on ? ink : '#7F8BA1')} alt="" width={16} height={16} />{f.name}</button>; })}
+        </div>
+      </details>
+      <details data-pg-group="practice" style={pgDet}><summary style={pgSum}>PRACTICE ({practiceOf(c)}; NEXT PICK AT {nextPickAt(practiceOf(c))})</summary>
+        <div style={{ ...row, marginTop: 6 }}>
+          {[5, 15, -5].map((n) => <button key={n} type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => act({ type: 'sandbox/practice', charId: c.id, n })}>{n > 0 ? '+' + n : n} practice</button>)}
+        </div>
+      </details>
+      <details data-pg-group="fx" style={pgDet}><summary style={pgSum}>FEELINGS: SOUND AND EFFECTS TEST</summary>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 6 }}>
+          {FEELINGS.map((f) => { const ink = feelingInk(f.id), me = playerUnitPos(c.id); return <div key={f.id} data-fx-test={f.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+            <img src={feelingIconSrc(f.id, ink)} alt="" width={18} height={18} /><span style={{ width: 90, color: ink, fontWeight: 700 }}>{f.name}</span>
+            {(['pump', 'release', 'residue'] as const).map((w) => <button key={w} type="button" style={{ ...btn, minHeight: 26, fontSize: 11, padding: '0 8px' }} onClick={() => testFeelingFx(f.id, f.family, w, me)}>{w}</button>)}
+          </div>; })}
+        </div>
+      </details>
     </Section>
     <Section title={'DESIGNS (' + (c.outbursts || []).length + ')'}>
       {(c.outbursts || []).map((d) => { const i = designInfo(magicOf(c) || null, d); return <div key={d.id} style={{ ...row, fontSize: 13 }}><img src={i.icon} alt="" width={20} height={20} /><span style={{ flex: 1 }}><b>{d.name}</b> <span style={{ color: i.ink }}>{i.line}</span> <span style={{ color: C.muted }}>{i.schools}</span></span>
@@ -582,7 +625,7 @@ function MagicTab({ c }: { c: Character }) {
         {['', ...SHAPE_MODULES].map((f) => <button key={f || 'bolt'} type="button" aria-pressed={shape === f} style={chip(shape === f)} onClick={() => setShape(f)}><img src={formIconUri(f || 'bolt', toneInk(tone))} alt="" width={14} height={14} />{f ? (MODULE as any)[f]?.name : 'Bolt'}</button>)}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {others.map((m) => { const on = mods.includes(m.id), lock = m.id === 'size' && !shape; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} title={lock ? 'Size needs a shape.' : m.text} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
+        {others.map((m) => { const on = mods.includes(m.id), shelved = moduleShelved(m.id), lock = (m.id === 'size' && !shape) || !!shelved; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} data-locked={shelved ? '1' : undefined} title={shelved || (lock ? 'Size needs a shape.' : m.text)} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
           onClick={() => setMods(on ? mods.filter((x) => x !== m.id) : [...mods, m.id].slice(-3))}>{m.name}</button>; })}
       </div>
       {v && <div style={{ fontSize: 12, lineHeight: 1.4 }}><div style={{ color: C.soul, fontWeight: 700 }}>{v.line}</div><div>{v.effects}</div><div style={{ color: C.muted }}>{v.rider}</div></div>}
@@ -672,16 +715,18 @@ function ApproachEdit({ a, set, name }: { a: ApproachForm; set: (a: ApproachForm
     {a.fail === 'lose' && <input value={a.failItem} placeholder="item id it takes" aria-label={name + ' item lost'} onChange={(e) => set({ ...a, failItem: e.target.value })} style={field} />}
   </div>;
 }
-type Arm = { what: 'npc' | 'cache' | 'hazard' | 'trigger'; pts: string[] } | null;
+const PILE_CHOICES = pileChoices(), PILE_NAMES: Record<string, string> = Object.fromEntries(PILE_CHOICES.map((x) => [x.id, x.name]));
+type Arm = { what: 'npc' | 'cache' | 'pile' | 'hazard' | 'trigger'; pts: string[] } | null;
 function WorldTab({ game }: { game: GameState }) {
   const gearing = game.phase === 'story';
-  const [npc, setNpc] = React.useState(blankNpc()), [cache, setCache] = React.useState(blankCache()), [hz, setHz] = React.useState(blankHazard()), [tg, setTg] = React.useState(blankTrigger()), [ob, setOb] = React.useState(blankObjective());
+  const [npc, setNpc] = React.useState(blankNpc()), [cache, setCache] = React.useState(blankCache()), [pile, setPile] = React.useState(blankPile()), [pileAdd, setPileAdd] = React.useState('mag:service_pistol'), [hz, setHz] = React.useState(blankHazard()), [tg, setTg] = React.useState(blankTrigger()), [ob, setOb] = React.useState(blankObjective());
   const [arm, setArm] = React.useState<Arm>(null), [refs, setRefs] = React.useState<Record<string, string>>({}), [addItem, setAddItem] = React.useState('stim_injector'), [refPick, setRefPick] = React.useState('');
   const R = (k: string) => (refs[k] || '').trim().toUpperCase(), setR = (k: string, v: string) => setRefs({ ...refs, [k]: v.toUpperCase() });
   const two = (v: string): [string, string] => { const [a, b] = v.split(/[:\-–\s]+/).filter(Boolean); return [a || '', b || a || '']; };
   const fire = (what: NonNullable<Arm>['what'], pts: string[]) => {
     if (what === 'npc') act(npcAction(npc, pts[0]));
     if (what === 'cache') act(cacheAction(cache, pts[0]));
+    if (what === 'pile') act(pileAction(pile, pts[0]));
     if (what === 'hazard') act(hazardAction(hz, pts[0], pts[1]));
     if (what === 'trigger') act(triggerAction(tg, pts[0], pts[1]));
   };
@@ -717,7 +762,7 @@ function WorldTab({ game }: { game: GameState }) {
       {npc.talk.length < 4 && <button type="button" style={{ ...small, alignSelf: 'flex-start' }} onClick={() => setNpc({ ...npc, talk: [...npc.talk, { label: 'Lean on them', skill: 'intimidation', skill2: '', tn: 12, success: 'ally', fail: 'hostile', objective: '', failCondition: '', failItem: '', stakes: '' }] })}>+ Talk approach</button>}
       <div style={row}>{armBtn('npc', 'Place by clicking the map')}{placeBtn('npc', 'npc', 'or H6')}</div>
     </Section>
-    <Section title="A CACHE (LOOT ON THE GROUND)" aria="World: a cache">
+    <Section title="A CACHE (A CLOSED CONTAINER)" aria="World: a cache">
       <input value={cache.name} aria-label="Cache name" onChange={(e) => setCache({ ...cache, name: e.target.value })} style={field} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{cache.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 13 }}>{ITEM[x.item]?.name || WEAPON[x.item]?.name || x.item}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={1} max={20} set={(n) => setCache({ ...cache, items: cache.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Remove ' + x.item} onClick={() => setCache({ ...cache, items: cache.items.filter((_, j) => j !== i) })}>✕</button></div>)}</div>
@@ -726,6 +771,16 @@ function WorldTab({ game }: { game: GameState }) {
       <label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={cache.locked} onChange={(e) => setCache({ ...cache, locked: e.target.checked })} />Locked (needs its way in first)</label>
       {cache.locked && <ApproachEdit a={cache.way} name="Way in" set={(x) => setCache({ ...cache, way: x })} />}
       <div style={row}>{armBtn('cache', 'Place by clicking the map')}{placeBtn('cache', 'cache', 'or H6')}</div>
+    </Section>
+    <Section title="A PILE (ON THE GROUND)" aria="World: a pile">
+      <span style={{ fontSize: 12, color: C.muted }}>Things lying on a tile, in plain sight: anyone who can see the tile sees what is in it, and Pick up takes it (1 AP). Dropping onto a pile adds to it.</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{pile.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 13 }}>{PILE_NAMES[x.item] || x.item}{isAmmoId(x.item) ? ' · rounds' : ''}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={isAmmoId(x.item) ? 0 : 1} max={isAmmoId(x.item) ? 120 : 20} set={(n) => setPile({ ...pile, items: pile.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
+        <button type="button" style={{ ...small, color: C.muted }} aria-label={'Remove ' + x.item + ' from the pile'} onClick={() => setPile({ ...pile, items: pile.items.filter((_, j) => j !== i) })}>✕</button></div>)}</div>
+      <div style={row}><select value={pileAdd} aria-label="Thing to add to the pile" style={{ ...field, flex: 1 }} onChange={(e) => setPileAdd(e.target.value)}>{PILE_CHOICES.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>
+        <button type="button" style={small} disabled={pile.items.length >= 12} onClick={() => setPile({ ...pile, items: [...pile.items, { item: pileAdd, qty: pileAdd.startsWith('mag:') ? (WEAPON[pileAdd.slice(4)]?.magazine || 1) : pileAdd.startsWith('rounds:') ? 20 : 1 }] })}>+ Add</button></div>
+      <span style={{ fontSize: 12, color: C.muted }}>A magazine's number is its rounds (0: empty).</span>
+      <label style={{ fontSize: 12, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={pile.hidden} onChange={(e) => setPile({ ...pile, hidden: e.target.checked })} />Hidden (until spotted or searched)</label>
+      <div style={row}>{armBtn('pile', 'Place by clicking the map')}{placeBtn('pile', 'pile', 'or H6')}</div>
     </Section>
     <Section title="A HAZARD (AN AREA OF TILES)" aria="World: a hazard">
       <div style={row}><select value={hz.kind} aria-label="Hazard kind" style={field} onChange={(e) => setHz({ ...hz, kind: e.target.value })}>{HAZARD_KINDS.map((k) => <option key={k} value={k}>{HAZARD[k]?.name || k}</option>)}</select>
