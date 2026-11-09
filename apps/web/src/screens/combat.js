@@ -368,12 +368,31 @@ export class CombatLogic extends DCLogic {
   revealAction() {
     if (typeof requestAnimationFrame === 'undefined' || typeof document === 'undefined') return;
     requestAnimationFrame(() => requestAnimationFrame(() => {
+      // A HEART action (Pump, Steady, Let go, Feed, Overwatch, Release while holding): the HEART panel's top instead.
+      if ((HEART_ACTS.includes(this.state.action) || this.state.action === 'release') && this.heartScroll()) return;
       const b = document.querySelector('.phc-cb-tabpanel [data-act="' + this.state.action + '"]'), panel = b && b.closest('.phc-cb-tabpanel');
       if (!panel) return;
       const box = b.parentElement, top = box.offsetTop, bottom = top + box.offsetHeight, v0 = panel.scrollTop, v1 = v0 + panel.clientHeight;
       const to = top < v0 ? top - 4 : bottom > v1 ? Math.min(top - 4, bottom - panel.clientHeight + 4) : null;
       if (to != null && panel.scrollTo) panel.scrollTo({ top: Math.max(0, to), behavior: reducedMotion() ? 'auto' : 'smooth' });
     }));
+  }
+  /** The HEART panel's top (its stage bar and multiplier counter) into view in its tab: the panel is taller than the tab
+   * area on most screens, and a move made from its lower part (a feeling poured, Revert) would leave what changed
+   * scrolled away under the AP bar and the tabs. */
+  revealHeart() {
+    if (typeof requestAnimationFrame === 'undefined' || typeof document === 'undefined') return;
+    requestAnimationFrame(() => requestAnimationFrame(() => this.heartScroll()));
+  }
+  /** revealHeart's scroll, now; false when no HEART panel shows. */
+  heartScroll() {
+    const hp = document.querySelector('.phc-cb-tabpanel .phc-heart-panel'), panel = hp && hp.closest('.phc-cb-tabpanel');
+    if (!panel) return false;
+    // Measured from where it sits in the content (under the tab's name), not its own box: it is sticky.
+    const prev = hp.previousElementSibling, at = prev ? prev.getBoundingClientRect().bottom : hp.parentElement.getBoundingClientRect().top;
+    const to = Math.max(0, Math.round(at - panel.getBoundingClientRect().top + panel.scrollTop));
+    if (to < panel.scrollTop - 1 && panel.scrollTo) panel.scrollTo({ top: to, behavior: reducedMotion() ? 'auto' : 'smooth' });
+    return true;
   }
   /** The map's size: a step in or out (Manual from then on), back to Auto, or 100%. */
   zoomBy(what) {
@@ -760,12 +779,12 @@ export class CombatLogic extends DCLogic {
         const pl = hzPlan, aura = card && card.form === 'aura';
         sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×' + STAGE_MULT[0] : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
         sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×0.6). Pump it (1 AP a stage, to ×2.2) and Release it (1 AP). Confirm to begin.' : card.beginWhy)
-          : !S.aim && !aura ? (card.snapWhy || (hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').')) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
+          : !S.aim && !aura ? (card.snapWhy || (hz.aim && hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').' + (hz.summary.length ? ' ' + hz.summary.join(' ') : ''))) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
         sel.extra = card ? card.line + ' · ' + heart : heart;
       } else if (S.action === 'release') {
         const pl = hzPlan, aura = hp && hp.form === 'aura';
         sel.name = 'Release' + (heldD ? ' · ' + heldD.name : '') + (hp ? ' · stage ' + hp.stage + ' ×' + hp.mult : '') + ' · ' + (pl ? pl.ap : SPELL_AP.release) + ' AP';
-        sel.text = !held ? 'Nothing held.' : !S.aim && !aura ? (hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Hover to preview, click a tile to aim' + (hp ? ' (' + hp.shape + ')' : '') + '.') : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to release.' : (pl && pl.why) || 'Not now.';
+        sel.text = !held ? 'Nothing held.' : !S.aim && !aura ? (hz.aim && hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Hover to preview, click a tile to aim' + (hp ? ' (' + hp.shape + ')' : '') + '.' + (hz.summary.length ? ' ' + hz.summary.join(' ') : '')) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to release.' : (pl && pl.why) || 'Not now.';
         sel.extra = (hp && hp.rider ? hp.rider + ' · ' : '') + heart;
       } else if (HEART_ACTS.includes(S.action)) {
         const B = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn }[S.action] : null;
@@ -1031,6 +1050,7 @@ export class CombatLogic extends DCLogic {
     const cb = getState().game?.combat, cur = cb && active(cb); if (!cur || !cur.mg) return;
     if (id === 'heartwatch') return act({ type: 'combat/heartwatch', unitId: cur.id, on: !(cur.mg.held && cur.mg.held.watch) });
     // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump.
+    if (id.startsWith('pump:') || ['pump', 'steady', 'feed', 'revert'].includes(id)) this.revealHeart(); // what changed, in view
     if (id.startsWith('pump:')) return act({ type: 'combat/pump', unitId: cur.id, feeling: id.slice(5), ...(this._mods && this._mods.length ? { mods: this._mods } : {}) });
     if (id === 'revert') return act({ type: 'combat/revert', unitId: cur.id });
     if (['pump', 'steady', 'letgo', 'feed'].includes(id)) act({ type: 'combat/' + id, unitId: cur.id, ...(id === 'pump' && this._mods && this._mods.length ? { mods: this._mods } : {}) });

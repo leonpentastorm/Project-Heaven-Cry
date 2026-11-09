@@ -62,7 +62,7 @@ export function feelChar(g: any, c: Character | null | undefined, id: string, wh
 }
 /** Unlock for the character behind a unit (enemies and companions don't feel). */
 export function feelUnit(cb: Combat, u: Unit | null | undefined, id: string, why: string): boolean {
-  if (!u || u.companion || !u.charId) return false;
+  if (!u || u.companion || !u.charId || (cb as any)?.dry) return false; // not in the area map's dry run (game.ts)
   return feelChar(boundGame(), charOfUnit(u), id, why, cb);
 }
 

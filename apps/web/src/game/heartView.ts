@@ -278,7 +278,11 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
   // Two rows: three across, four when Feed shows (seven buttons).
   const cols = btns.length > 6 ? 4 : 3;
   return { show: true, name: p.name, icon: p.icon, kicker: 'HEART · ' + p.formName.toUpperCase() + ' · ' + p.toneName.toUpperCase(), shape: p.shape,
-    stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: '×' + r2(p.mult) + (p.does.length ? ' · ' + p.does.join(' · ') : '') + (p.resonance ? ' (Resonance +' + p.resonance + ')' : ''),
+    stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: '×' + r2(p.mult),
+    // What the feelings change ("now HEALS · now CHAINS") on its own wrapping line under the header, so the counter
+    // stays short at any stage and the words never run off the panel.
+    doesText: [...p.does, ...(p.resonance ? ['Resonance +' + p.resonance] : [])].join(' · '), hasDoes: p.does.length > 0 || !!p.resonance,
+    doesStyle: 'min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: 11.5px; line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; color: ' + (p.does.length ? doesInk : p.ink),
     multKey: 'm' + r2(p.mult) + '-' + p.felt.length, multCls: 'phc-mult-shake phc-mult-s' + Math.min(4, p.stage),
     stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
     feel: { ...fr, toggle: fo.toggle || (() => {}), onSearch: fo.search || (() => {}), query: fo.query || '', openStr: fr.open ? 'true' : 'false',
@@ -289,7 +293,7 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
     warn: p.warn, hasWarn: !!p.warn, warnStyle: S.warnStyle, swell: p.swell, rider: p.rider,
     btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,
     boxStyle: 'flex: none; position: sticky; top: 0; z-index: 3; display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; border-radius: 12px; background: #120E1E; border: 1px solid ' + p.ink + '; box-shadow: 0 0 14px ' + rgba(p.ink, 0.25),
-    multStyle: 'display: inline-block; font-size: ' + (17 + Math.min(4, p.stage) * 2) + 'px; line-height: 1; font-weight: 700; white-space: nowrap; color: ' + (p.does.length ? doesInk : p.ink) + (p.does.length ? '; text-shadow: 0 0 10px ' + rgba(doesInk, 0.7) : '') };
+    multStyle: 'flex: none; display: inline-block; font-size: ' + (17 + Math.min(4, p.stage) * 2) + 'px; line-height: 1; font-weight: 700; white-space: nowrap; color: ' + (p.does.length ? doesInk : p.ink) + (p.does.length ? '; text-shadow: 0 0 10px ' + rgba(doesInk, 0.7) : '') };
 }
 
 // ---------- tones a character can choose (workshop, creation) ----------
