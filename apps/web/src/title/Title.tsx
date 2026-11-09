@@ -100,8 +100,15 @@ export function Title() {
     window.addEventListener('keydown', begin, { once: true }); window.addEventListener('pointerdown', begin, { once: true });
     return () => { window.removeEventListener('keydown', begin); window.removeEventListener('pointerdown', begin); };
   }, [pressed]);
-  // The title theme: from the first key press (browsers allow sound only after one), out when the title goes.
-  React.useEffect(() => { if (!pressed) return; playTitleMusic(); const retry = () => playTitleMusic(); window.addEventListener('pointerup', retry, { once: true }); return () => window.removeEventListener('pointerup', retry); }, [pressed]);
+  // The title theme starts the moment the site loads (Leon, 9 Nov 2026), not at "press any key". Browsers may refuse
+  // sound before the page has had a click or a key (Chrome lets it through on sites you use often); if this first try
+  // is refused, the very first click, key or tap anywhere starts it. Out when the title goes.
+  React.useEffect(() => {
+    playTitleMusic();
+    const evs = ['pointerdown', 'keydown', 'touchstart', 'pointerup'] as const, retry = () => playTitleMusic();
+    evs.forEach((e) => window.addEventListener(e, retry, { capture: true }));
+    return () => evs.forEach((e) => window.removeEventListener(e, retry, { capture: true }));
+  }, []);
   React.useEffect(() => () => stopTitleMusic(), []);
   // A ?room= link opens straight on Join.
   React.useEffect(() => { if (pressed && roomParam && !panel && !inviteUsed) { inviteUsed = true; setPanel('join'); } }, [pressed]);

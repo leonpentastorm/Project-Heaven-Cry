@@ -3,6 +3,8 @@
  "title": "The Proving Ground",
  "short": "Proving Ground",
  "kicker": "PRACTICE · ENDLESS WAVES · NO NARRATOR",
+ "art": "ill-proving-ground-drill-yard",
+ "artNote": "The drill yard",
  "pitch": [
   "An Anti-Heaven drill yard: sand, sandbags, a blockhouse with two doors, fuel drums nobody should stand next to. Drill units come in waves until the squad drops, and then the yard resets.",
   "No story and no Narrator: only the engine. Spawn gear, change class, set the level, learn any word or school, and see what every rule does."
@@ -225,6 +227,9 @@
      "length": 164,
      "licence": "CC-BY · incompetech.com"
     }
+   },
+   "art": {
+    "banner": "ill-proving-ground-drill-yard"
    }
   }
  ],
