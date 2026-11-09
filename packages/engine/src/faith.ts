@@ -478,7 +478,7 @@ const actionKey = (cb: Combat) => (isOverworld(cb) ? 'w' : 'f') + String((G() as
 /** A Faithful fighter's action carried a tag: liked +1 XP (once per fight or scene, within the caps), taboo −3 (−6 while
  * Witnessed). On the area map (an overworld fight state) the tag counts toward the scene. */
 export function faithTag(cb: Combat, u: Unit | null | undefined, tag: string, ctx: { victimHelpless?: boolean } = {}) {
-  if (!u || !u.charId) return;
+  if (!u || !u.charId || ACTING.includes(u)) return; // the patron's own act pays nothing (item 747)
   const c = unitChar(u); if (!c) return; const p = patronOf(c); if (!p) return;
   if ((p.taboos || []).includes(tag) && p.taboo_notes?.[tag] && !ctx.victimHelpless) return; // the Toll-Keeper's and Matchmaker's "kill" is of the helpless (item 597)
   const g = G(), taboo = (p.taboos || []).includes(tag);
@@ -488,6 +488,7 @@ export function faithTag(cb: Combat, u: Unit | null | undefined, tag: string, ct
 const helpless = (t: Unit) => !!(t.downed || t.surrendered);
 /** Someone harmed a surrendered or Downed creature: judge marks them; the Mercy vow breaks; Nerukhan answers. */
 function harmedHelpless(cb: Combat, by: Unit, t: Unit) {
+  if (ACTING.includes(by)) return; // the patron's Storm, not the devoted's hand (item 747)
   fs(by).harmedHelpless = true;
   if (vowOn(by, 'mercy')) breakVow(cb, by, 'harmed ' + t.name + ', who ' + (t.surrendered ? 'had yielded' : 'was down'));
   for (const f of intervening(cb, 'nerukhan')) { if (f.side === by.side || by.dead) continue; const n = scaled(f); intervene(cb, f, 'enemy_harms_helpless', by, n, () => harmLine(cb, f, by, n, 'soul')); break; }
@@ -512,17 +513,23 @@ const interventionsUsed = (f: Unit): number => fs(f).interventions ?? (fs(f).int
  * twice from Devotion 7). */
 function intervening(cb: Combat, patronId: string): Unit[] {
   return cb.units.filter((f) => {
-    if (!f.charId || f.dead || !condOn(f, 'witnessed')) return false;
+    if (!f.charId || f.dead || !condOn(f, 'witnessed') || ACTING.includes(f)) return false;
     const c = unitChar(f); return !!c && patronOf(c)?.id === patronId && interventionsUsed(f) < interventionLimit(c);
   });
 }
 /** The Devotion-scaled number for this fighter's patron (item 741). */
 const scaled = (f: Unit): number => { const c = unitChar(f); return c ? interventionAmount(c, f.blessPower || blessingPower(c)) : 0; };
+/** Fighters whose patron is acting right now (item 747): while its effect runs, the same Witnessed can't set off another
+ * intervention (Old Overcast's Storm downing the next foe), and what the patron does is not the devoted's deed: no tag
+ * (no Devotion XP, no taboo) and no mark for harming the helpless. */
+const ACTING: Unit[] = [];
 /** The patron acts: the effect (run), the fx event, the log, its line; then Witnessed ends (item 739). */
 function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, amount: number | null, run: () => string) {
   const c = unitChar(f)!, p = patronOf(c)!; const st = fs(f); st.interventions = interventionsUsed(f) + 1; delete st.intervened;
   emitFx(cb, FAITH_FX.intervention, { unit: f.id, patron: p.id, trigger, target: target?.id || null, amount, at: (target || f).pos });
-  cb.log.push(p.name + ' intervenes for ' + f.name + run() + '.');
+  ACTING.push(f); let said: string;
+  try { said = run(); } finally { ACTING.splice(ACTING.lastIndexOf(f), 1); }
+  cb.log.push(p.name + ' intervenes for ' + f.name + said + '.');
   speak(G(), cb, rngOf(), c, p, 'intervention');
   if (condOn(f, 'witnessed')) { endCond(f, 'witnessed', cb); cb.log.push(f.name + ' is no longer Witnessed.'); }
 }

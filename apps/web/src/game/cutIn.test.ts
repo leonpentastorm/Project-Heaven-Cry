@@ -99,9 +99,42 @@ describe('the cut-in system', () => {
     const ev2 = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }); window.dispatchEvent(ev2); expect(ev2.defaultPrevented).toBe(false);
     vi.advanceTimersByTime(300);
     const box = document.querySelector('[data-phc-cut-box]') as HTMLElement; expect(box).toBeTruthy();
-    box.click(); vi.advanceTimersByTime(260);
+    (box.querySelector('button[aria-label="Close"]') as HTMLButtonElement).click(); vi.advanceTimersByTime(260);
     expect(document.querySelector('[data-phc-cut-box]')).toBeNull();
     document.removeEventListener('keydown', other);
+  });
+
+  it('a key typed into a text box goes through and skips nothing; nor does a lone Shift; another key still skips', () => {
+    grid(); const input = document.createElement('input'); input.type = 'text'; document.body.appendChild(input); input.focus();
+    const onSkip = vi.fn(), seen = vi.fn(); input.addEventListener('keydown', seen);
+    showCutIn({ ...miracleCutIn(MIRACLE), onSkip });
+    vi.advanceTimersByTime(400);
+    const typed = new KeyboardEvent('keydown', { key: 'h', bubbles: true, cancelable: true }); input.dispatchEvent(typed);
+    expect(typed.defaultPrevented).toBe(false); expect(seen).toHaveBeenCalledTimes(1); expect(onSkip).not.toHaveBeenCalled();
+    const ta = document.createElement('textarea'); document.body.appendChild(ta);
+    const t2 = new KeyboardEvent('keydown', { key: 'e', bubbles: true, cancelable: true }); ta.dispatchEvent(t2); expect(t2.defaultPrevented).toBe(false);
+    const shift = new KeyboardEvent('keydown', { key: 'Shift', bubbles: true, cancelable: true }); window.dispatchEvent(shift);
+    expect(shift.defaultPrevented).toBe(false); expect(onSkip).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-phc-cut="full"]')).toBeTruthy();
+    const esc = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }); window.dispatchEvent(esc);
+    expect(esc.defaultPrevented).toBe(true); expect(onSkip).toHaveBeenCalledTimes(1);
+  });
+
+  it('the box sits at the top of the map, lets clicks through to the controls (only its × takes one) and stays under the dialogs', () => {
+    grid(20, 12); // 800 × 480 at the top left
+    Object.defineProperty(window, 'innerWidth', { value: 1280, configurable: true }); Object.defineProperty(window, 'innerHeight', { value: 720, configurable: true });
+    showCutIn({ ...miracleCutIn(MIRACLE), focus: null }); vi.advanceTimersByTime(cutInTiming('full').boxAt + 10);
+    const box = document.querySelector('[data-phc-cut-box]') as HTMLElement; expect(box).toBeTruthy();
+    expect(box.style.left).toBe('400px'); expect(box.style.top).toBe('12px'); expect(box.style.width).toBe('560px');
+    const css = (document.getElementById('phc-cutin-css') as HTMLStyleElement).textContent || '';
+    const rule = /\[data-phc-cut-box\]\{[^}]*\}/.exec(css)![0];
+    expect(rule).toMatch(/pointer-events:none/); expect(Number(/z-index:(\d+)/.exec(rule)![1])).toBeLessThan(48); // the Wave-cleared modal is 48
+    expect(Number(/z-index:(\d+)/.exec(rule)![1])).toBeGreaterThan(45); // over the effects layer
+    expect(box.querySelector('button[aria-label="Close"]')).toBeTruthy();
+    // no map on screen: high in the middle, never at the bottom (the composer)
+    document.body.innerHTML = ''; closeCutIns();
+    showCutIn({ ...miracleCutIn(MIRACLE), focus: null }); vi.advanceTimersByTime(cutInTiming('full').boxAt + 10);
+    const b2 = document.querySelector('[data-phc-cut-box]') as HTMLElement; expect(b2.style.top).toBe('84px'); expect(b2.style.bottom).toBe('');
   });
 
   it('a click on the portrait skips it too', () => {

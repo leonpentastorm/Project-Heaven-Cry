@@ -841,14 +841,29 @@ export function planQueue(beats: number[], room: number, keep?: number): { from:
 /** Queue events to play in order, each after the previous one's beat. A long backlog plays a little faster, and past that
  *  its oldest effects are skipped, so play never lags far and never races. keep: play only the last few (the fight is
  *  decided: what happened after it matters, not a replay of every step). */
-export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number } = {}) {
+export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; from?: number } = {}) {
+  if (!evs.length) return;
+  // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
+  // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms
+  // to the map, then the miracle happens". What came before it plays first as usual (a decided fight skips it: the
+  // Miracle is what it shows); what follows is planned on its own, its room counted from the landing.
+  const mi = evs.findIndex((e) => e.k === 'miracle');
+  if (mi >= 0) {
+    const pre = evs.slice(0, mi), post = evs.slice(mi + 1);
+    if (opts.keep != null) for (const e of pre) skipFx(e, stream); else queuePlain(pre, stream, {});
+    queuePlain([evs[mi]], stream, { from: Math.max(performance.now(), queueEnd) }); // never skipped or sped up: it starts at the queue's end and holds its full beat
+    queueFx(post, stream, { from: Math.max(performance.now(), queueEnd) }); // a later Miracle in the batch: the same again
+    return;
+  }
+  queuePlain(evs, stream, opts);
+}
+/** queueFx for a batch with no Miracle in it. from: count the backlog from this time (after a Miracle's hold). */
+function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: number; from?: number }) {
   if (!evs.length) return;
   const now = performance.now(), base = Math.max(now, queueEnd);
-  const backlog = base - now, room = Math.max(1500, 7000 - backlog);
+  const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), room = Math.max(1500, 7000 - backlog);
   const plan = planQueue(evs.map(beatOf), room, opts.keep), speed = plan.speed;
-  // A Miracle's cut-in is never skipped (everyone in the room sees the god answer, even in a backlog or a decided fight);
-  // the rest of what was skipped stays skipped.
-  for (const e of evs.slice(0, plan.from)) if (e.k === 'miracle') playFx(e, stream); else skipFx(e, stream);
+  for (const e of evs.slice(0, plan.from)) skipFx(e, stream);
   evs = evs.slice(plan.from);
   let t = base, lastTurn = -1;
   for (const e of evs) {

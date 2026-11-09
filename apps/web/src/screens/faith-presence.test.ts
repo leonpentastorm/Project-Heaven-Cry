@@ -8,7 +8,8 @@ import { ARCHETYPES, apply, newGame, faithView, type Sheet } from '@engine';
 import { faithPanel } from '../game/faithView';
 import { faithTabVals, patronLineCard, faithEventOf, faithEventCard, FACE_BOX } from './faithTab';
 import { patronLogCard, faithHeadVals } from './faithCombat';
-import { witnessedWords } from './combat';
+import { witnessedWords, condChips } from './combat';
+import { setDevotionXp, devotionThreshold } from '@engine';
 
 const sheet = (name: string, belief: any): Sheet => { const a = ARCHETYPES[0]; return { name, portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, belief } as any; };
 function game(belief: any, faith = 5) {
@@ -86,5 +87,22 @@ describe('the patron on screen (Faith 2.2, spec 2.4-2.6)', () => {
     expect(witnessedWords(u, g)).toBe('UNTIL THE FIGHT ENDS OR OLD OVERCAST ACTS'); // the condition chip: no "· 99"
     const foe = g.combat!.units.find((x: any) => x.side === 'foe')!;
     expect(faithHeadVals(screen(), g, foe, zoomer).show).toBe(false); expect(witnessedWords(foe, g)).toBe('UNTIL THE FIGHT ENDS OR THE PATRON ACTS');
+  });
+  it('the Witnessed chip: the faith light and the eye (a boon, not a harm), short, its how-long in the title; gone once the fight is over', () => {
+    let { g, c } = game({ kind: 'faithful', patron: 'old_overcast' });
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Raiders.', combat: { name: 'Crates', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists' }] } } } as any, 'h');
+    const u: any = g.combat!.units.find((x: any) => x.charId === c.id)!; u.conds = { witnessed: 99, shaken: 2 };
+    const chips = condChips(u, g), w = chips.find((x: any) => x.key === 'c-witnessed')!, sh = chips.find((x: any) => x.key === 'c-shaken')!;
+    expect(w.k).toBe('◉ WITNESSED'); expect(w.t).toBe('Witnessed: until the fight ends or Old Overcast acts.');
+    expect(w.style).toMatch(/var\(--faith-light/); expect(w.style).not.toMatch(/#F65157/); expect(w.style).toMatch(/white-space: nowrap/);
+    expect(sh.style).toMatch(/#F65157/); expect(sh.k).toMatch(/· 2$/); // a harmful one keeps the complication red and its rounds
+    (g.combat as any).over = true;
+    expect(condChips(u, g).some((x: any) => x.key === 'c-witnessed')).toBe(false);
+  });
+  it('Devotion 10: the header says FULL once (the Devotion line), not again at the bar\'s end', () => {
+    const { g, c } = game({ kind: 'faithful', patron: 'nerukhan' }); setDevotionXp(c, devotionThreshold(10)); c.devotion = 10;
+    const P = faithPanel(faithView(g, c.id))!;
+    expect(P.devotionText).toMatch(/FULL$/); expect(P.xpNextText).toBe('');
+    expect(((P.devotionText + ' ' + P.xpNextText).match(/FULL/g) || []).length).toBe(1);
   });
 });

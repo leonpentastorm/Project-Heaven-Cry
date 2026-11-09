@@ -31,6 +31,7 @@ import { lootLogLine } from '../game/worldView';
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { prayerView, vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
+import { FAITH_GOLD } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
@@ -254,11 +255,20 @@ function pickerVals(self, cb, P, V, whyOpt) {
 const chipWhy = (t) => { const s = String(t || '').split(/[:.]/)[0].trim(); return s.length > 34 ? s.slice(0, 32) + '…' : s; };
 const typingIn = (el) => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '') || !!el.isContentEditable);
 
-/** Witnessed lasts until the fight ends or the patron intervenes (rules 1.6.3), not for a count of rounds: its chip says so
- *  (Faith 2.2: "WITNESSED · UNTIL THE FIGHT ENDS OR <PATRON> ACTS"). */
-export const witnessedWords = (u, g) => { const c = g && u.charId ? g.characters[u.charId] : null, p = c && c.patron ? FAITH_PATRON[c.patron] : null; return 'UNTIL THE FIGHT ENDS OR ' + (p ? String(p.name).toUpperCase() : 'THE PATRON') + ' ACTS'; };
-const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([, n]) => n > 0).map(([id, n]) => ({ key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + (id === 'witnessed' ? witnessedWords(u, g) : n), t: condName(id) + ': ' + (id === 'witnessed' ? witnessedWords(u, g).charAt(0) + witnessedWords(u, g).slice(1).toLowerCase() + '.' : n + (n === 1 ? ' round' : ' rounds') + ' left.'),
-  style: 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (BOONS.includes(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') })),
+/** Witnessed lasts until the fight ends or the patron intervenes (rules 1.6.3), not for a count of rounds: its chip's
+ *  title says so ("Witnessed: until the fight ends or <patron> acts"), as the FAITH tab's header does. */
+const patronNameOf = (u, g) => { const c = g && u.charId ? g.characters[u.charId] : null, p = c && c.patron ? FAITH_PATRON[c.patron] : null; return p ? String(p.name) : ''; };
+export const witnessedWords = (u, g) => 'UNTIL THE FIGHT ENDS OR ' + (patronNameOf(u, g).toUpperCase() || 'THE PATRON') + ' ACTS';
+/** The chip's title: "Witnessed: until the fight ends or Old Overcast acts." */
+const witnessedTitle = (u, g) => 'Witnessed: until the fight ends or ' + (patronNameOf(u, g) || 'the patron') + ' acts.';
+const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; ';
+/** Witnessed is your patron watching (a boon), not a harm: the faith light and the eye, a short label (the how-long is in
+ *  its title and the FAITH tab's header), and gone once the fight is over (it never outlives the fight). */
+const WITNESSED_CHIP = COND_CHIP + 'white-space: nowrap; border: 1px solid var(--faith-light, ' + FAITH_GOLD + '); color: var(--faith-light, ' + FAITH_GOLD + ')';
+export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id, n]) => n > 0 && !(id === 'witnessed' && g && g.combat && g.combat.over)).map(([id, n]) => id === 'witnessed'
+  ? { key: 'c-' + id, k: '◉ WITNESSED', t: witnessedTitle(u, g), style: WITNESSED_CHIP }
+  : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + n, t: condName(id) + ': ' + n + (n === 1 ? ' round' : ' rounds') + ' left.',
+    style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
   ...(u.shield > 0 ? [{ key: 'shield', k: '+' + u.shield + ' SHIELD', t: 'A shield of ' + u.shield + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
 
 export class CombatLogic extends DCLogic {

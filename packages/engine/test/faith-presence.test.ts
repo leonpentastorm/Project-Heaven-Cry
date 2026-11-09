@@ -250,3 +250,49 @@ describe('old fights in saves (items 738, 740)', () => {
     expect((hi.me as any).faith.intervened).toBeUndefined();
   });
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+describe('the patron\'s own act (item 747)', () => {
+  /** Old Overcast at Devotion 7, Witnessed, three foes: the Priest downs the first; the Storm hits the next nearest. */
+  function storm(nextHp: number) {
+    const f = fightWith([{ name: 'Priest', skills: { faith: 7 } }], [{ at: 'F6' }, { at: 'G6' }, { at: 'H6' }]);
+    const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'old_overcast' }; c.patron = 'old_overcast'; setDevotionXp(c, devotionThreshold(7)); c.devotion = 7;
+    const me = f.turn(f.pc), [a, b, d] = f.foes; me.conds = { witnessed: 99 } as any;
+    a.pos = '5,5'; b.pos = '6,5'; d.pos = '9,9'; b.maxHp = 100; b.hp = nextHp; d.maxHp = d.hp = 2000;
+    const n0 = fx(f.cb, FAITH_FX.devotion).length;
+    withGame(f.g, () => applyDamage(f.cb, a, 9999, { by: me, type: 'physical', credit: 'hp' } as any));
+    return { f, me, b, d, xp: fx(f.cb, FAITH_FX.devotion).slice(n0) };
+  }
+  it('Old Overcast\'s Storm that downs the next foe sets off no second intervention: one Witnessed, one intervention', () => {
+    const { f, me, b, d } = storm(5);
+    expect(b.dead || b.downed).toBe(true); expect(d.hp).toBe(2000); // no chained Storm on the third foe
+    const ev = fx(f.cb, FAITH_FX.intervention); expect(ev.length).toBe(1); expect(ev[0]).toMatchObject({ trigger: 'you_kill', target: b.id });
+    expect((me as any).faith.interventions).toBe(1); expect(condOn(me, 'witnessed')).toBe(false);
+    // the log: the intervention, then "no longer Witnessed", once
+    const i = f.cb.log.findIndex((l) => /Old Overcast intervenes for Priest/.test(l)), w = f.cb.log.findIndex((l) => /Priest is no longer Witnessed/.test(l));
+    expect(i).toBeGreaterThanOrEqual(0); expect(w).toBeGreaterThan(i);
+    expect(f.cb.log.filter((l) => /intervenes for/.test(l)).length).toBe(1); expect(f.cb.log.filter((l) => /no longer Witnessed/.test(l)).length).toBe(1);
+  });
+  it('the second intervention at Devotion 7 still needs another Hymn', () => {
+    const { f, me, d } = storm(5);
+    withGame(f.g, () => applyDamage(f.cb, d, 9999, { by: me, type: 'physical', credit: 'hp' } as any)); // a kill, not Witnessed
+    expect(fx(f.cb, FAITH_FX.intervention).length).toBe(1);
+  });
+  it('the Storm\'s damage and kill pay the devoted no Devotion XP; the Priest\'s own kill still does', () => {
+    const { xp } = storm(5);
+    expect(xp.filter((e) => e.tag === 'storm').length).toBe(0);
+    expect(xp.filter((e) => e.tag === 'kill').length).toBe(1); // the Priest's own blow
+  });
+  it('Mother Ember\'s healing intervention pays no Heal XP', () => {
+    const m = holy({ patron: 'mother_ember', devotion: 3 }); m.me.conds = { witnessed: 99 } as any;
+    m.ally.maxHp = 1000; m.ally.hp = 1000; const n0 = fx(m.cb, FAITH_FX.devotion).length;
+    m.bound(() => applyDamage(m.cb, m.ally, 800, { by: m.foe, type: 'physical' } as any));
+    expect(fx(m.cb, FAITH_FX.intervention).length).toBe(1); expect(m.ally.hp).toBeGreaterThan(200);
+    expect(fx(m.cb, FAITH_FX.devotion).slice(n0).filter((e) => e.tag === 'heal').length).toBe(0);
+  });
+  it('the Matchmaker\'s share is still a protect (item 600): the devoted takes the hit in the ally\'s place', () => {
+    const m = holy({ patron: 'the_matchmaker' }); m.me.conds = { witnessed: 99 } as any; const n0 = fx(m.cb, FAITH_FX.devotion).length;
+    m.bound(() => applyDamage(m.cb, m.ally, 20, { by: m.foe, type: 'physical' } as any));
+    expect(fx(m.cb, FAITH_FX.devotion).slice(n0).filter((e) => e.tag === 'protect').length).toBe(1);
+  });
+});

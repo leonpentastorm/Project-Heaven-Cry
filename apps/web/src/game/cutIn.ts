@@ -140,7 +140,11 @@ function ensureCss() {
   const s = document.createElement('style'); s.id = 'phc-cutin-css';
   s.textContent = [
     '[data-phc-cut] *{box-sizing:border-box}',
-    '[data-phc-cut-box]{position:fixed;left:50%;transform:translateX(-50%);z-index:62;width:min(560px,92vw);padding:14px 18px 14px 20px;background:#10151F;border:1px solid #2E3A50;border-left-width:4px;box-shadow:0 18px 50px rgba(0,0,0,.7);font-family:\'Chakra Petch\',sans-serif;color:#E7EBF3;cursor:pointer;pointer-events:auto}',
+    // The box: over the map, never over the action column or the composer; clicks go through it (only its × takes one);
+    // under the dialogs (the Wave-cleared modal is 48) and over the effects layer (45).
+    '[data-phc-cut-box]{position:fixed;left:50%;transform:translateX(-50%);z-index:46;width:min(560px,92vw);padding:14px 34px 14px 20px;background:rgba(16,21,31,.96);border:1px solid #2E3A50;border-left-width:4px;box-shadow:0 18px 50px rgba(0,0,0,.7);font-family:\'Chakra Petch\',sans-serif;color:#E7EBF3;pointer-events:none}',
+    '[data-phc-cut-box] .c{position:absolute;top:4px;right:4px;width:26px;height:26px;display:grid;place-items:center;border:0;background:transparent;color:#A3AEC2;font:700 16px/1 \'Chakra Petch\',sans-serif;cursor:pointer;pointer-events:auto}',
+    '[data-phc-cut-box] .c:hover,[data-phc-cut-box] .c:focus-visible{color:#FFFFFF;outline:1px solid #2E3A50}',
     '[data-phc-cut-box] .k{font-size:11px;font-weight:700;letter-spacing:.28em;color:' + FAITH_INK + '}',
     '[data-phc-cut-box] .t{font-family:\'Spectral\',serif;font-size:24px;font-weight:600;line-height:1.15;color:#FFFFFF;margin-top:2px}',
     '[data-phc-cut-box] .x{font-size:13px;line-height:1.45;color:#A3AEC2;margin-top:6px}',
@@ -157,6 +161,15 @@ function tex(name: string, color: string, css: string): HTMLDivElement {
 }
 const el = (tag: string, css: string, text?: string) => { const d = document.createElement(tag); d.style.cssText = css; if (text != null) d.textContent = text; return d; };
 
+const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'Meta', 'AltGraph', 'CapsLock', 'Fn', 'OS']);
+/** Is this an element that takes typing (a text input, textarea, select, or editable content)? */
+export function editable(t: EventTarget | null): boolean {
+  const e = t as HTMLElement | null; if (!e || typeof e !== 'object' || !('tagName' in e)) return false;
+  const tag = String(e.tagName || '').toUpperCase();
+  if (tag === 'TEXTAREA' || tag === 'SELECT') return true;
+  if (tag === 'INPUT') return !['button', 'submit', 'reset', 'checkbox', 'radio', 'range', 'color', 'file', 'image'].includes(String((e as HTMLInputElement).type || 'text').toLowerCase());
+  return !!e.isContentEditable;
+}
 /** Where a focus lands on screen, and the map element to punch in on (the grid that holds the tile, else the biggest). */
 function focusOf(focus: string | null | undefined): { p: Pt; grid: HTMLElement | null } | null {
   if (!focus || typeof document === 'undefined') return null;
@@ -168,6 +181,17 @@ function focusOf(focus: string | null | undefined): { p: Pt; grid: HTMLElement |
   if (!any) return null;
   const r = any.getBoundingClientRect();
   return { p: { x: r.left + r.width / 2, y: r.top + r.height / 2, s: Math.max(40, Math.min(r.width, r.height) / 6) }, grid: any };
+}
+
+/** Where the effect box goes: centred at the top of the map's visible part (the grid, or the area map), so it never
+ *  covers the action column, the FAITH tab or the story composer; with no map on screen, high in the middle. */
+export function boxPlace(focus: string | null | undefined): string {
+  const f = focusOf(focus) || focusOf('map'), r = f?.grid?.getBoundingClientRect();
+  if (r) {
+    const L = Math.max(0, r.left), R = Math.min(innerWidth, r.right), T = Math.max(0, r.top), B = Math.min(innerHeight, r.bottom);
+    if (R - L >= 300 && B - T >= 160) return 'left:' + Math.round((L + R) / 2) + 'px;top:' + Math.round(T + 12) + 'px;width:' + Math.round(Math.min(560, R - L - 24)) + 'px;';
+  }
+  return 'top:84px;';
 }
 
 let current: CutInHandle | null = null;
@@ -201,8 +225,9 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
     if (!o.box) return;
     at(() => {
       if (closed) return;
-      const b = el('div', size === 'small' ? 'top:84px;border-left-color:' + o.accent : 'bottom:max(96px,14vh);border-left-color:' + o.accent);
-      b.dataset.phcCutBox = o.id || ''; b.setAttribute('role', 'status'); b.setAttribute('aria-live', 'polite'); b.title = 'Click to close';
+      const b = el('div', boxPlace(o.focus) + 'border-left-color:' + o.accent);
+      b.dataset.phcCutBox = o.id || ''; b.setAttribute('role', 'status'); b.setAttribute('aria-live', 'polite');
+      const x = el('button', '', '×') as HTMLButtonElement; x.type = 'button'; x.className = 'c'; x.setAttribute('aria-label', 'Close'); x.title = 'Close'; b.appendChild(x);
       if (o.box!.kicker) b.appendChild(el('div', '', o.box!.kicker)).className = 'k';
       b.appendChild(el('div', '', o.box!.title)).className = 't';
       if (o.box!.text) b.appendChild(el('div', '', o.box!.text)).className = 'x';
@@ -211,7 +236,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
       anim(b, rm ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(14px)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0)' }], { duration: rm ? 150 : 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
       let gone = false;
       const shut = () => { if (gone) return; gone = true; live.delete(shut); anim(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' }); window.setTimeout(() => b.remove(), 230); };
-      live.add(shut); b.addEventListener('click', shut); at(shut, o.box ? T.boxMs : 0);
+      live.add(shut); x.addEventListener('click', shut); at(shut, o.box ? T.boxMs : 0);
     }, delay);
   };
 
@@ -313,7 +338,13 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
   anim(words, rm ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'none' }], { duration: rm ? T.inMs : 420, delay: rm ? 0 : 280, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
 
   // ---- the input: a click or a key skips; nothing is held once the portrait has gone ----
-  const onKey = (ev: KeyboardEvent) => { if (!ev.ctrlKey && !ev.metaKey) { ev.preventDefault(); ev.stopPropagation(); } skip(); };
+  // A key typed into a text box goes through and skips nothing (a co-op partner or a human Narrator typing when someone
+  // else's Miracle arrives keeps the keystroke and sees the cut-in); a lone modifier (Shift for a capital) skips nothing.
+  const onKey = (ev: KeyboardEvent) => {
+    if (editable(ev.target) || MODIFIER_KEYS.has(ev.key)) return;
+    if (!ev.ctrlKey && !ev.metaKey) { ev.preventDefault(); ev.stopPropagation(); }
+    skip();
+  };
   const unhook = () => { window.removeEventListener('keydown', onKey, true); root.style.pointerEvents = 'none'; root.style.cursor = ''; };
   root.addEventListener('pointerdown', (ev) => { ev.preventDefault(); ev.stopPropagation(); skip(); });
   window.addEventListener('keydown', onKey, true);

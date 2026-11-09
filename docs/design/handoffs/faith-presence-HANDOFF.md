@@ -40,7 +40,7 @@ spec, `docs/rules/PHC-Core-Rules-v1.0.md` wins.
 | 1850 | The tile is scrolled into view under the portrait (`phc:focus-tile`, `mine: false`) |
 | 2300 [2000] | The pull-away: the portrait shrinks into the tile where the Miracle lands, an iris (a radial-gradient dark) closes on the tile and opens, the map grid punches in on it (scale 1.16 and back). The overlay stops taking input here [a fade, no zoom] |
 | 3000 [2250] | It lands: the overlay is gone, the gong, a ring and rays on the area; the fx queue plays the Miracle's own effects (heals, damage, shields) |
-| 3500 [2450] | The box: `MIRACLE · <PATRON>`, the Miracle's name, its text, and WHAT IT DID (the engine's summary; "The Narrator rules the rest." when part is the Narrator's). It closes itself after 2.4 s [3 s] or on a click |
+| 3500 [2450] | The box: `MIRACLE · <PATRON>`, the Miracle's name, its text, and WHAT IT DID (the engine's summary; "The Narrator rules the rest." when part is the Narrator's), at the top of the map's visible part (never over the action column, the FAITH tab or the story composer; high in the middle with no map on screen), under the dialogs (z-index 46: the Wave-cleared modal is 48). Clicks go through it; it closes itself after 2.4 s [3 s] or on its × |
 | ~5.9 s [~5.5 s] | All gone |
 
 - **Focus:** the Miracle's `at` when the viewer can see it (fog: `at()` is null), else the devoted's token (a story Miracle
@@ -48,6 +48,11 @@ spec, `docs/rules/PHC-Core-Rules-v1.0.md` wins.
   screen.
 - **Skip:** a click on the overlay or any key (Ctrl and Cmd shortcuts still reach the browser). It lands at once, the box
   still follows, and the fx queue moves up by the time saved (`hurryFx`). The key is swallowed so it doesn't also act.
+  A key typed into a text box (a co-op partner or a human Narrator typing when someone else's Miracle arrives) goes
+  through and skips nothing, and a lone modifier (Shift) skips nothing.
+- **The queue:** a Miracle is a fixed hold in `queueFx`: never sped up or skipped, and what follows it in the batch (its
+  effects) is planned on its own from the landing, so a Miracle on a crowd or one that ends the fight never plays its hits
+  under the portrait; in a decided fight (`keep`) what came before it is skipped and its own effects all play.
 - **Never blocked:** the overlay takes clicks only until the pull-away; every node has a timer that removes it; a new
   game, a left room or a hidden tab (`clearFx`) closes everything.
 - **Everyone sees it:** it is the `miracle` fx event, played by every screen's FxLayer like any other effect.
@@ -128,6 +133,27 @@ event to it. Today it plays the old look plus words: a sharp bell, the patron's 
 **No new assets.** The crops are of the shipped portraits (`patron-<id>.webp`, 320 × 400; the lightbox uses the `-lg` one); the glow is the shipped Kenney Particle Pack sprite. Reduced motion: the face and the icon fade in and out without moving or scaling; a miss still greys.
 
 **Checks run (part 3):** `npm test -w @phc/engine`, `npm test -w @phc/web`, `npm run typecheck`, `python3 tools/validate.py data` (0 errors); e2e `faith-pg.mjs`, `faith.mjs`, `heart.mjs`, `two-players.mjs`, all green.
+
+## Review fixes (9 Nov 2026)
+
+1. **Old Overcast's chain** (engine): at Devotion 7 its Storm downing the next foe set off the second intervention off the
+   same Witnessed. While an intervention's effect runs, that fighter can't be intervened for again; the log reads the
+   intervention, then "no longer Witnessed", once. Spec item 747.
+2. **The patron's act paid the devoted** (engine): Mother Ember's heal gave Heal XP, Old Overcast's Storm gave Storm and
+   Kill XP. The patron's own act now pays no tag, no taboo, and marks no one for harming the helpless (item 747). The
+   Matchmaker's share stays a protect (item 600: the devoted takes the hit).
+3. **Under the Eye and Witnessed's +2 over a whole fight:** built as ruled, pinned by a test, and put to Leon as a question
+   in item 747 (a separate, shorter timer for the riders if he wants one).
+4. **Item 714** says eleven banks now.
+5. **A Miracle's effects under its portrait** (web): `queueFx` holds for the Miracle (above).
+6. **Typing lost to someone else's Miracle** (web): keys in a text box go through (above).
+7. **The box over live controls** (web): it moved to the top of the map, takes no clicks (its × does) and sits under the
+   dialogs (above).
+8. **The Witnessed chip** (web): the faith light and the eye (`◉ WITNESSED`), not the harm red; the how-long in its title
+   ("Witnessed: until the fight ends or Old Overcast acts."); hidden once the fight is over.
+9. **FULL twice at Devotion 10** (web): the XP bar's word is empty at the top; the Devotion line says FULL.
+10. **Licence links** (web): the credits page links each licence name to its deed (`LICENCE_URL` in `game/credits.ts`), as
+    CC BY asks; this covers the new CC BY sting and the older music credits.
 
 ## Still open
 

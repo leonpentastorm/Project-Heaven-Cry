@@ -124,8 +124,12 @@ ok('Reset the limits clears the Miracle\'s session mark', c.miracleSession == nu
   await cut.waitFor({ state: 'detached', timeout: 1500 }).catch(() => {});
   ok('a key skips it (' + (Date.now() - k0) + ' ms)', (await cut.count()) === 0 && Date.now() - k0 < 1000);
   ok('and the box still follows', await box.waitFor({ timeout: 1500 }).then(() => true, () => false));
-  await box.click().catch(() => {}); await p.waitForTimeout(400);
-  ok('a click closes the box', (await box.count()) === 0);
+  const bx = await box.boundingBox(), grid = await p.locator('.phc-grid').boundingBox(), panel = await p.locator('[role="tabpanel"]').boundingBox();
+  const overlaps = (a, b) => !!a && !!b && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  ok('the box sits over the map, not over the FAITH tab (' + JSON.stringify(bx && { x: Math.round(bx.x), y: Math.round(bx.y), w: Math.round(bx.width) }) + ')', !!bx && !!grid && bx.y >= grid.y - 1 && !overlaps(bx, panel));
+  ok('and clicks go through it (only its × takes one)', (await box.evaluate((el) => getComputedStyle(el).pointerEvents)) === 'none');
+  await box.getByRole('button', { name: 'Close' }).click().catch(() => {}); await p.waitForTimeout(400);
+  ok('its × closes the box', (await box.count()) === 0);
   if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
   await drawer.getByRole('tab', { name: 'Faith' }).click();
 }
@@ -189,7 +193,9 @@ await p.waitForTimeout(300);
 ok('Thunderclap is prayed by standing: 3 AP, in the log', (await G()).combat.log.length > n1 && (await myU()).ap <= 3);
 ok('Faith 7 and your patron\'s Hymn: Witnessed', !!(await myU()).conds?.witnessed);
 ok('the resource rows say WITNESSED', /WITNESSED/.test(await p.locator('aside').first().textContent()));
-ok('the Witnessed chip says how long: until the fight ends or the patron acts (no "· 99")', /WITNESSED · UNTIL THE FIGHT ENDS OR OLD OVERCAST ACTS/.test(await p.locator('aside').first().textContent()) && !/WITNESSED · 99/.test(await p.locator('body').textContent()));
+{ const chip = p.locator('aside').first().locator('[title^="Witnessed:"]').first();
+  const ct = (await chip.count()) ? { text: (await chip.textContent()) || '', title: (await chip.getAttribute('title')) || '', color: await chip.evaluate((el) => getComputedStyle(el).color) } : null;
+  ok('the Witnessed chip: short, in the faith light (not the harm red), its title says how long (' + JSON.stringify(ct) + ')', !!ct && /◉ WITNESSED/.test(ct.text) && /until the fight ends or Old Overcast acts/.test(ct.title) && ct.color !== 'rgb(246, 81, 87)' && !/WITNESSED · 99/.test(await p.locator('body').textContent())); }
 ok('the FAITH tab\'s header says so too', /WITNESSED · UNTIL THE FIGHT ENDS OR OLD OVERCAST ACTS/.test((await p.locator('[role="tabpanel"] [data-faith-head="old_overcast"]').textContent().catch(() => '')) || ''));
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn.png' });
 // An overreach: Gather the Clouds (Hymn III, gate 7) at Devotion 5: TN 16; the limits reset so the cooldown allows it.
@@ -362,5 +368,33 @@ await p.waitForTimeout(300);
   const lgE = (await G()).combat.log.slice(nE).join(' | ');
   ok('the repeat runs free (' + lgE.slice(0, 120) + ')', /Encore: .* repeats Attack \(shot\), free/.test(lgE) && (await myU()).ap === uE.ap); }
 await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await p.waitForTimeout(300);
+// Review fix (Faith 2.2): a Miracle with many effects (Nerukhan's Judgement on a crowd) plays them after its cut-in lands,
+// never under the portrait, and none of the first kills is skipped.
+{
+  await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'nerukhan', faith: 7, devotion: 10, reset: true });
+  await act({ type: 'sandbox/fight' });
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+  await myTurn(); await calm(); await p.waitForTimeout(1200);
+  const gN = await G(), mN = gN.combat.units.find((x) => x.charId), [nx, ny] = mN.pos.split(',').map(Number), M = gN.combat.map;
+  let spawned = 0;
+  for (const [dx, dy] of [[2, 0], [3, 0], [2, 1], [3, 1], [2, -1], [3, -1], [4, 0], [-2, 0], [-2, 1], [-2, -1]]) {
+    const x = nx + dx, y = ny + dy; if (x < 0 || y < 0 || x >= M.w || y >= M.h || M.solid.includes(x + ',' + y)) continue;
+    if (!(await act({ type: 'sandbox/spawn', tier: 'minion', weapon: 'fists', at: String.fromCharCode(65 + x) + (y + 1) }))) spawned++;
+  }
+  await p.waitForTimeout(900);
+  await p.evaluate(() => {
+    const w = window; w.__mlog = []; const t0 = performance.now(), L = document.querySelector('.phc-fx-layer');
+    new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) { const t = (n.textContent || '').trim(); if (/^[−-]\d|^DEAD|^DOWN/.test(t)) w.__mlog.push(['hit', performance.now() - t0, t.slice(0, 12)]); } }).observe(L, { childList: true });
+    new MutationObserver(() => { const c = !!document.querySelector('[data-phc-cut="full"]'); if (c !== w.__mc) { w.__mc = c; w.__mlog.push(['cut', performance.now() - t0, c]); } }).observe(document.body, { childList: true });
+  });
+  const errN = await act({ type: 'faith/pray', unitId: mN.id, kind: 'miracle' });
+  await p.waitForTimeout(9000);
+  const log = await p.evaluate(() => window.__mlog), cutOff = log.find((e) => e[0] === 'cut' && e[2] === false), hits = log.filter((e) => e[0] === 'hit');
+  const early = hits.filter((h) => !cutOff || h[1] < cutOff[1] - 60);
+  const foesNow = (await G()).combat.units.filter((u) => u.side === 'foe').length;
+  ok('Nerukhan\'s Miracle on a crowd (' + spawned + ' minions spawned, ' + (errN || 'prayed') + '): ' + hits.length + ' damage floats, none before the cut-in lands (' + (cutOff ? Math.round(cutOff[1]) + ' ms' : 'never') + '; first hit ' + (hits[0] ? Math.round(hits[0][1]) + ' ms' : '-') + ')',
+    !errN && spawned >= 6 && !!cutOff && hits.length >= Math.min(spawned, foesNow) && early.length === 0);
+  await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await p.waitForTimeout(300);
+}
 console.log('errors', errors);
 await browser.close();

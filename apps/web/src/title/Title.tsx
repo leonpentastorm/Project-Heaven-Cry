@@ -13,7 +13,7 @@ import { sfx, uiPrefs, setUiPrefs, onUiPrefs, reducedMotion } from '../game/sfx'
 import { voicePrefs, onVoice, loadVoice, detectInstalled } from '../game/voice';
 import { VoiceSettings } from '../game/voiceSettings';
 import { resetTips } from '../game/tips';
-import { CREDITS } from '../game/credits';
+import { CREDITS, licenceUrl } from '../game/credits';
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
 import { LAYERS, clamp, layerShift, titleGeometry } from './geometry';
 
@@ -523,7 +523,7 @@ function CreditsPanel() {
     {CREDITS.map((g) => (
       <div key={g.group} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <span style={lab}>{g.group.toUpperCase()}</span>
-        {g.items.map((c, i) => <span key={i} style={{ fontSize: 14, lineHeight: 1.5 }}>{c.what} · <span style={{ color: ink.muted }}>{c.who}{c.licence ? ' · ' + c.licence : ''}</span>{c.url && <> · <a href={c.url} target="_blank" rel="noreferrer" style={{ color: '#8BDEEE' }}>source</a></>}</span>)}
+        {g.items.map((c, i) => <span key={i} style={{ fontSize: 14, lineHeight: 1.5 }}>{c.what} · <span style={{ color: ink.muted }}>{c.who}{c.licence ? ' · ' : ''}{c.licence && (licenceUrl(c.licence) ? <a href={licenceUrl(c.licence)} target="_blank" rel="noreferrer license" style={{ color: '#8BDEEE' }}>{c.licence}</a> : c.licence)}</span>{c.url && <> · <a href={c.url} target="_blank" rel="noreferrer" style={{ color: '#8BDEEE' }}>source</a></>}</span>)}
       </div>
     ))}
   </>;
