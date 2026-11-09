@@ -58,9 +58,9 @@
       "top40_max_alpha": 1
     },
     "front": {
-      "transparent_pixels": 8237444,
-      "partial_alpha_pixels": 65804,
-      "opaque_pixels": 1133936,
+      "transparent_pixels": 8237946,
+      "partial_alpha_pixels": 65367,
+      "opaque_pixels": 1133871,
       "left38_max_alpha": 1,
       "top40_max_alpha": 1
     }
@@ -115,7 +115,7 @@
     "glyph": {
       "word": "ward",
       "source": "apps/web/src/game/glyphs.ts (GLYPH_PATHS.ward and its class frame), SIGIL_INK #8BDEEE, SIGIL_GLOW #4FC8DF",
-      "edit": "The generated render's made-up teal ring above the mage's hand (centre 1277.5, 548.5 in the native render, radius 20, and its stem) was cleared, and the WARD glyph drawn in its place: a white core line, the Sigil ink and glow, a soft halo; 46 px box in the native render, centred 3 px above the old ring.",
+      "edit": "The generated render's made-up teal ring above the mage's hand (centre 1277.5, 548.5 in the native render, radius 20, and its stem) was cleared, the stem's foot on the fingertips softened (row 563 cleared, row 564 a soft edge in the skin colour below), and the WARD glyph drawn in its place: a white core line, the Sigil ink and glow, a soft halo, the class frame dimmer and thinner as in the game (55%), and a tapered thread of light from the fingertips to the shield's point, with a faint cyan rim on the fingertips; 46 px box in the native render, centred 3 px above the old ring.",
       "original": "../../_archive/ui/title-screen/history/2026-11-09-r6-original-glyph/title-front-native.png",
       "render": "../../_archive/ui/title-screen/source-renders/glyph-ward-600.png"
     }

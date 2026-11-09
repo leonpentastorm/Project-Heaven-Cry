@@ -43,14 +43,14 @@
     },
     {
       "path": "art/ui/title-screen/foreground-placement.json",
-      "size_bytes": 1868,
-      "sha256": "31a4a566d168cc35f3d59f6235ed39c53a9720f4f9b3296642127f6216e023ed",
+      "size_bytes": 2147,
+      "sha256": "1881b15d80f6da4b114ff7a0484fcf45c7a641c089023bbeece3730096aca377",
       "role": "foreground production provenance"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/alpha-edge-review.jpg",
-      "size_bytes": 276967,
-      "sha256": "d7ff60b2950b46008ca6ce47c2b9faccc3dfd34edf12535639def8288c7968f4",
+      "size_bytes": 276847,
+      "sha256": "70cb0fe10307e205e78d99c840466fbc2a2f4706f161ecd192afd5b9b981f0e7",
       "role": "review preview"
     },
     {
@@ -67,38 +67,38 @@
     },
     {
       "path": "art/_archive/ui/title-screen/previews/composite-1920.jpg",
-      "size_bytes": 680274,
-      "sha256": "e2a0a945f129752c67ae1aa28fd74deacd179b3103b657d6430bf6b4d0504110",
+      "size_bytes": 680346,
+      "sha256": "03873ba6a5e35e0b7d79f7299e8b4e15c81ccf9a2482fff0f34b884a7925581b",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/menu-readability-72px.jpg",
-      "size_bytes": 687190,
-      "sha256": "6990fc09a76fc4d93f5fb8242ad6bdb5c688135eb158c250a6e2462726e71ed5",
+      "size_bytes": 687187,
+      "sha256": "daa71caf102c3017820f98105cd1ef75fa3b4b79b7c39c2acca9028920c8f6e9",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/parallax-extremes.jpg",
-      "size_bytes": 714917,
-      "sha256": "cb08fceb3ce029ab8795fea6f5fcf0474392ddd0a39c955d9c12ecdb6598797b",
+      "size_bytes": 714825,
+      "sha256": "fb6422450c1848c73a3c64af2872e48b093b399a269a9dd5ff29fb78255dd5e6",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/phone-crop.jpg",
-      "size_bytes": 226834,
-      "sha256": "5276f9b8d8bceecf5e5aa747f893bf052f4db4c6dcafa2d6fe1115ac17faf066",
+      "size_bytes": 226825,
+      "sha256": "d9b3cc431b9319a40ee2c13043a8e213e6c15fe03ff96095dde5fe4edbfe412a",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/safe-zones.jpg",
-      "size_bytes": 624423,
-      "sha256": "977c9ccf3413432eace4a41df0a4da6ba689f0cd3c2d5a5581471a7c0b9a5833",
+      "size_bytes": 624401,
+      "sha256": "fdd7c36efe3c8a23a0d6c78c6c90875df52a8941edd04ee5a7909a6b92613462",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/screen-crop-1920.jpg",
-      "size_bytes": 655223,
-      "sha256": "ea0bc8cf281b348eacfd378afc8289d9d2765c0c3323b168dd4d33697694a849",
+      "size_bytes": 655235,
+      "sha256": "7b2febbc68d730d90d170ed25240c0066c76961dbbddeb1f4b3595be514196a9",
       "role": "review preview"
     },
     {
@@ -125,8 +125,8 @@
     },
     {
       "path": "art/_archive/ui/title-screen/source-renders/title-front-native.png",
-      "size_bytes": 461708,
-      "sha256": "5889019fa8c1adbfd8fa99a0de7f2874e5881913217dd44f3f0fb46ea3afca4e",
+      "size_bytes": 461654,
+      "sha256": "0e2bf5319cf4a3236811c008052ce53a066d29e9fd59873e974a15ab6a17f105",
       "role": "native generated source render",
       "width": 1774,
       "height": 887,
@@ -145,8 +145,8 @@
     },
     {
       "path": "art/ui/title-screen/technical-review.json",
-      "size_bytes": 3334,
-      "sha256": "601e1944aa9364405207175c22fa0fc1112c9fcdd4459f9c79b0347cd3dd0882",
+      "size_bytes": 3613,
+      "sha256": "175f09f48ed28d8b01fd27a1d1d9f41e8390454588ddcde3109f919ec61af36c",
       "role": "technical review evidence"
     },
     {
@@ -161,8 +161,8 @@
     },
     {
       "path": "art/ui/title-screen/title-front.png",
-      "size_bytes": 1781432,
-      "sha256": "e36545c1220fd308eb681984e7401e434497c29e86b29d85feed5800de75c3b8",
+      "size_bytes": 1780599,
+      "sha256": "37a5a51e01e49c88689257f97739af833cd37ef0c92c470d5d978c34f528f033",
       "role": "straight-alpha hero ridge layer",
       "width": 4096,
       "height": 2304,
@@ -181,8 +181,8 @@
     },
     {
       "path": "art/ui/title-screen/title-screen.psd",
-      "size_bytes": 9150404,
-      "sha256": "d495422fb0db4737e651853b4355d0b314680201586787f45858370142fbbbf7",
+      "size_bytes": 9150024,
+      "sha256": "db27e0309aa0d98503c8a461c09ea1ecf1bfae303dd4f5f039c82fb5fb28b217",
       "role": "three-layer raster source"
     },
     {
@@ -265,8 +265,8 @@
     },
     {
       "path": "art/_archive/ui/title-screen/source-renders/glyph-ward-600.png",
-      "size_bytes": 311583,
-      "sha256": "1710db54abc4bbfd91dad6205a15a595a819580694f714b82ef8101a38e70317",
+      "size_bytes": 261335,
+      "sha256": "9da32fd088b5c8a615f729b3b1e978fad0064308db1352e0cdb48c3a312340ea",
       "role": "the WARD glyph render placed on the mage"
     }
   ],
