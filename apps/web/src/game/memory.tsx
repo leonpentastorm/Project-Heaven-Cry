@@ -56,7 +56,8 @@ function Record({ head, sub, body, fields, values, onSave, onRemove }: {
 let openFromAfar: (() => void) | null = null;
 export const openMemory = () => openFromAfar?.();
 
-/** compact: in a fight the button is its icon only, beside the ♪ button, so it keeps off the combat log. */
+/** compact: the button is its icon only, beside the ♪ button (every screen since the UI pass review), so it keeps off
+ *  the combat log and the sheet; its name shows on hover. */
 export function MemoryPanel({ game, isHost, side, compact = false }: { game: GameState | null; isHost: boolean; side: 'left' | 'right'; compact?: boolean }) {
   const btnRef = React.useRef<HTMLButtonElement>(null), [hover, setHover] = React.useState(false);
   const [open, setOpen] = React.useState(false), [tab, setTab] = React.useState<Tab>('story'), [q, setQ] = React.useState(''), [adding, setAdding] = React.useState('');

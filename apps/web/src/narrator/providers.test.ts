@@ -224,8 +224,29 @@ describe('Test key (the room, UI pass)', () => {
     const r = await testKey(cfg({ key: '' }), fake(200, {}));
     expect(r).toEqual({ ok: false, text: 'Add the key first.' }); expect(seen.length).toBe(0);
   });
-  it('other services: their models list', async () => {
-    const r = await testKey(cfg({ provider: 'openrouter', key: 'sk-or-x', model: 'x/y' }), fake(200, { data: [{ id: 'm1' }] }));
-    expect(r.ok).toBe(true); expect(r.text).toMatch(/answered: the key works \(1 model\)/);
+  it('services whose models list needs the key: that list', async () => {
+    const r = await testKey(cfg({ provider: 'openai', key: 'sk-x', model: 'x' }), fake(200, { data: [{ id: 'm1' }] }));
+    expect(r.ok).toBe(true); expect(r.text).toMatch(/OpenAI answered: the key works \(1 model\)/);
+    expect(seen[0].url).toBe('https://api.openai.com/v1/models');
+  });
+  it('OpenRouter: its /key, not the public models list; a garbage key fails', async () => {
+    const bad = await testKey(cfg({ provider: 'openrouter', key: 'sk-or-v1-garbage', model: 'x/y' }), fake(401, { error: { message: 'User not found.', code: 401 } }));
+    expect(bad.ok).toBe(false); expect(bad.text).toMatch(/OpenRouter/); expect(bad.text).toMatch(/User not found/);
+    expect(seen[0].url).toBe('https://openrouter.ai/api/v1/key'); expect(seen[0].init.headers.authorization).toBe('Bearer sk-or-v1-garbage');
+    const good = await testKey(cfg({ provider: 'openrouter', key: 'sk-or-v1-good', model: 'x/y' }), fake(200, { data: { label: 'k', limit_remaining: 4.5 } }));
+    expect(good).toEqual({ ok: true, text: 'OpenRouter answered: the key works ($4.50 left on it).' });
+  });
+  it('a site with its own address: says the address answered, never that the key works', async () => {
+    const r = await testKey(cfg({ provider: 'custom', key: 'k', model: 'm', baseUrl: 'https://llm.example.com/v1' }), fake(200, { data: [{ id: 'm1' }, { id: 'm2' }] }));
+    expect(r).toEqual({ ok: true, text: 'The address answered (2 models); the key itself is checked on the Narrator\'s first turn.' });
+  });
+  it('a site with no address yet: nothing is sent (the key never goes to the game\'s own server)', async () => {
+    for (const provider of ['custom', 'custom-anthropic'] as const) {
+      const r = await testKey(cfg({ provider, key: FAKE, model: 'm', baseUrl: '' }), fake(200, {}));
+      expect(r).toEqual({ ok: false, text: 'Add the site\'s address first.' });
+    }
+    const rel = await testKey(cfg({ provider: 'custom', key: FAKE, model: 'm', baseUrl: 'llm.example.com/v1' }), fake(200, {}));
+    expect(rel.ok).toBe(false);
+    expect(seen.length).toBe(0);
   });
 });

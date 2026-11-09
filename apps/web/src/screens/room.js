@@ -5,7 +5,7 @@ import { D, IMG, lightboxVals, zoomer, closeAnim } from './shared';
 import { ART, ART_BIG } from './shared';
 import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
-import { PROVIDERS, providerInfo, keyMismatch, notReadyReason, isPriced, listModels, testKey } from '../narrator/providers';
+import { PROVIDERS, providerInfo, keyMismatch, notReadyReason, isPriced, listModels, testKey, baseOf } from '../narrator/providers';
 import { act, getState, go, retryNarrator, setNarrator, toast } from '../game/store';
 import { shellVals } from './shell';
 import { openReport } from '../game/report';
@@ -60,7 +60,7 @@ export class RoomLogic extends DCLogic {
       keySavedShow: !!S.keySaved && S.keyChanged,
       keySavedText: '✓ Saved for this session' + (inSession ? ' · the Narrator uses it from its next turn.' : ' · used when the session starts.'),
       rememberNote: !!n.key && !n.remember ? 'Not remembered in this browser: tick "Remember the key" to keep it after you close the tab.' : '',
-      testKey: () => this.testKey(), testOff: S.testing || (providerInfo(n.provider).needsKey && !n.key), testLabel: S.testing ? 'Testing…' : 'Test key',
+      testKey: () => this.testKey(), testOff: S.testing || (providerInfo(n.provider).needsKey && !n.key) || (providerInfo(n.provider).editableBase && !baseOf(n)), testLabel: S.testing ? 'Testing…' : 'Test key',
       testShow: !!T || S.testing, testText: S.testing ? 'Asking ' + providerInfo(n.provider).label.replace(/ \(.*\)$/, '') + '…' : T ? (T.ok ? '✓ ' : '✗ ') + T.text : '',
       testStyle: 'font-size: 13px; line-height: 1.45; color: ' + (S.testing ? '#A3AEC2' : T && T.ok ? '#6FEA77' : '#F65157'),
       retryNow: isHost && inSession && !!(g.narrator && g.narrator.error) && S.keyChanged,
@@ -141,7 +141,8 @@ export class RoomLogic extends DCLogic {
         f.text().then((t) => { let c; try { c = JSON.parse(t); } catch { return toast('That file is not JSON.'); } act({ type: 'campaign/load', campaign: c }); e.target.value = ''; }); },
       // The header's cluster (UI pass, screens/shell.js): Back to the session, Save, ⚙, ⚑, Leave (it asks, and the
       // host's saves first; in the Proving Ground it ends it).
-      ...shellVals(this, 'room'),
+      // The header's Back to the session › goes the same way as the big button (with the "settings updated" toast).
+      ...((sv) => { sv.sh.toSession = () => this.backToSession(g); return sv; })(shellVals(this, 'room')),
       inSession: g.phase !== 'lobby', backToSession: () => this.backToSession(g),
       players, squad, starts, start, modes, isAI: S.mode === 'ai', isHuman: S.mode === 'human', hostAI: S.mode === 'ai' && isHost, guestAI: S.mode === 'ai' && !isHost, hostName: host?.name || 'The host', tones,
       create: () => go('create', { draft: null }), cantAdd: g.phase !== 'lobby' || mine.length >= 2,

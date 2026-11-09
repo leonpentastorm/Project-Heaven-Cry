@@ -9,12 +9,19 @@ This tool measures each file's *loudest moment* the way an ear hears a short sou
 the loudest 100 ms window, in LUFS-like dB; momentary EBU R128 needs 400 ms and reads nothing for a 50 ms click), then
 brings it to its family's target with a gain and a look-ahead limiter (true peak at most -1 dBFS):
 
-    combat impacts  (guns, bursts, explosions, hits, melee, bodies)          -13
-    magic           (sigils, elements, Soul, feelings, spotlight, miracle)    -16
-    utility         (reloads, mags, doors, stims, steps, loops, dry click)    -19
-    interface       (public/sfx/*.ogg: clicks, hovers, tabs, chimes)          -20
+    combat impacts  (guns, bursts, explosions, hits, melee, bodies)          -13   only up
+    magic           (sigils, elements, Soul, feelings, spotlight, miracle)    -14   only up
+    utility         (reloads, mags, racks, jams, rounds, doors, stims)        -15   only up
+    ambient         (steps, whizzes, the dry click, the field loops)          -19   up or down
+    interface       (public/sfx/*.ogg: clicks, hovers, tabs, chimes)          -20   up or down
 
+The three combat families only ever go up (review of the first pass: a target below where a loud file already sat cut
+the reloads by about 7 dB, the opposite of what Leon asked for); a file already louder than its target is left alone.
+The ambient beds and the interface sounds are levelled both ways (they were the ones too loud next to the guns).
 A gain is capped at +14 dB (more and the limiter would flatten a shot into noise) and at -18 dB.
+
+Always run --write on the ORIGINAL files (git checkout origin/develop's copies first if they were processed before):
+re-encoding processed Vorbis again compounds the generation loss.
 
 Usage:
     python3 tools/normalize_sfx.py            measure only: prints the table, writes nothing
@@ -33,8 +40,10 @@ ROOT = Path(__file__).resolve().parent.parent
 SFX = ROOT / 'apps' / 'web' / 'public' / 'sfx'
 REPORT = SFX / 'sfx-loudness.json'
 RATE = 48000
-TARGET = {'impact': -13.0, 'magic': -16.0, 'utility': -19.0, 'interface': -20.0}
+TARGET = {'impact': -13.0, 'magic': -14.0, 'utility': -15.0, 'ambient': -19.0, 'interface': -20.0}
 MAX_UP, MAX_DOWN, TOL = 14.0, -18.0, 0.75
+#: The families that are only ever raised (a combat sound never ends quieter than its source).
+UP_ONLY = {'impact', 'magic', 'utility'}
 
 
 def family(path: Path) -> str:
@@ -43,7 +52,9 @@ def family(path: Path) -> str:
     n = path.stem
     if n.startswith(('shot_', 'burst_', 'auto_', 'explosion', 'hit_', 'body_fall', 'slice', 'chop', 'swish')):
         return 'impact'
-    if n.startswith(('reload', 'rack', 'jam_', 'round_in', 'mag_in', 'dry_click', 'door_', 'stim', 'step', 'whiz')) or n.endswith('_loop'):
+    if n.startswith(('step', 'whiz', 'dry_click')) or n.endswith('_loop'):
+        return 'ambient'
+    if n.startswith(('reload', 'rack', 'jam_', 'round_in', 'mag_in', 'door_', 'stim')):
         return 'utility'
     return 'magic'
 
@@ -103,19 +114,21 @@ def main() -> int:
     write = '--write' in sys.argv
     files = sorted(SFX.glob('*.ogg')) + sorted((SFX / 'cb').glob('*.ogg'))
     files = [f for f in files if not f.name.endswith('.tmp.ogg')]
-    report = {'note': 'Loudest-100 ms K-weighted level (dB, LUFS-like) per file, before and after tools/normalize_sfx.py. Targets: ' + json.dumps(TARGET), 'files': {}}
+    report = {'note': 'Loudest-100 ms K-weighted level (dB, LUFS-like) per file, before and after tools/normalize_sfx.py. Targets: ' + json.dumps(TARGET)
+              + '; only raised: ' + ', '.join(sorted(UP_ONLY)), 'files': {}}
     rows = []
     passes = 2 if write else 1
     for f in files:
         fam = family(f)
         b = measure(f)
         want = TARGET[fam]
-        gain = max(MAX_DOWN, min(MAX_UP, want - b['loud']))
+        lo = 0.0 if fam in UP_ONLY else MAX_DOWN
+        gain = max(lo, min(MAX_UP, want - b['loud']))
         after = b
         if write and abs(gain) > TOL:
             apply(f, gain)
             after = measure(f)
-            more = max(MAX_DOWN, min(MAX_UP - gain, want - after['loud'])) if gain > 0 else 0
+            more = max(0.0, min(MAX_UP - gain, want - after['loud'])) if gain > 0 else 0
             if passes > 1 and more > TOL:
                 apply(f, more)
                 again = measure(f)

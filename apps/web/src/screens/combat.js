@@ -21,6 +21,7 @@ const act = (a) => {
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { forecastVals } from '../game/manaForecast';
+import { echoView } from '../game/echoView';
 import { castFight } from '../game/cast';
 import { worldLayer, kindBadge, pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { openReport } from '../game/report';
@@ -384,6 +385,8 @@ export class CombatLogic extends DCLogic {
   /** The backpack (rules 1.9, Gear in a fight): B opens and closes it, Escape closes it. */
   packKey(e) {
     if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat) return;
+    // Another dialog over the fight (Settings, an in-game question): its keys are its own (the backpack is a dialog too).
+    if (document.querySelector('[aria-modal="true"]:not([data-bp-panel])')) return;
     if (e.key === 'Escape' && this.state.bp) { e.preventDefault(); this.setState({ bp: false }); return; }
     if (!(e.key === 'b' || e.key === 'B') || typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin]')) return;
     if (!getState().game?.combat) return;
@@ -940,7 +943,7 @@ export class CombatLogic extends DCLogic {
       if (hh && hh.held) t += ' · Holding ' + hh.held.name + ' (stage ' + hh.held.stage + ')';
       return t + (cs.length && (u.side === 'pc' || u.analyzedBy) ? ' · ' + cs.map((c) => c.k).join(' · ') : ''); };
     const who = cur ? { name: cur.name, img: cur.img || IMG['wick-welcome'], title: cb.over ? 'The fight is over' : cur.side === 'foe' ? cur.name + ' acts' : mineTurn ? 'Your turn: ' + cur.name : cur.name + '\'s turn' + (curOwner ? ' (' + curOwner.name + ')' : ''),
-      line: 'HP ' + cur.hp + ' / ' + cur.maxHp + ' · AP ' + cur.ap + (w && w.magazine ? ' · Ammo ' + cur.ammo + '/' + w.magazine : '') + (cur.heat ? ' · Heat ' + cur.heat : '') + (cur.jammed ? ' · JAMMED' : '') + (ch ? ' · Stims ' + ch.stims + ' · Echo ' + ch.echo : '') + magicLine(cur),
+      line: 'HP ' + cur.hp + ' / ' + cur.maxHp + ' · AP ' + cur.ap + (w && w.magazine ? ' · Ammo ' + cur.ammo + '/' + w.magazine : '') + (cur.heat ? ' · Heat ' + cur.heat : '') + (cur.jammed ? ' · JAMMED' : '') + (ch ? ' · Stims ' + ch.stims : '') + magicLine(cur),
       imgStyle: 'width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid ' + ring(cur) } : {};
     const anyMagic = (cb.glyphs || []).length > 0 || (cb.zones || []).length > 0 || cb.units.some((u) => u.mg);
     const magicLegend = !anyMagic ? [] : [
@@ -960,7 +963,9 @@ export class CombatLogic extends DCLogic {
       // Everything you spend, below the HP bar (game/resources.ts): ammo, Heat, Evoker charge, cores, Flux, MP, Strain, the
       // held Outburst, class resources, companions. The line under HP keeps AP, Movement, Stims and Echo.
       res: resView(resourcesOf(myU, mc, g)),
-      line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims + ' · Echo ' + mc.echo,
+      line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims,
+      // Echo has its own row under HP, as on the story sheet (UI pass 4.1): the diamonds, the count, and (?) for what it is.
+      echo: { ...echoView(mc.echo), open: !!S.echoOpen, expanded: S.echoOpen ? 'true' : 'false', glyph: S.echoOpen ? '×' : '?', toggle: () => this.setState({ echoOpen: !this.state.echoOpen }) },
       // The one-line summary that stands in for the card on short windows (the bar at the top of the column); the most
       // urgent resources sit in their own row under it (me.res.urgent).
       miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (effectsOf(myU).length || condChips(myU, g).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU, g).map((c) => c.k)].join(' · ') : ''),
@@ -1043,6 +1048,10 @@ export class CombatLogic extends DCLogic {
       imgStyle: 'width: 48px; height: 48px; object-fit: cover; background: #000; flex: none; ' + (cur && cur.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + curInk : 'border-radius: 6px; border: 2px solid ' + curInk),
       badgeStyle: 'display: grid; place-items: center; width: 48px; height: 48px; flex: none; font-size: 14px; font-weight: 700; border-radius: ' + (cur && cur.side === 'pc' ? '50%' : '6px') + '; border: 2px dashed ' + curInk + '; color: ' + curInk,
       style: 'display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 4px solid ' + curInk };
+    // A player who left (or dropped) mid-fight: the host passes their unit's turn so the fight doesn't stall.
+    wait.skip = !cb.over && !!cur && getState().role === 'host' && !!curOwner && curOwner.id !== me && curOwner.online === false;
+    wait.skipLabel = 'Pass ' + (curOwner ? curOwner.name : 'their') + '’s turn';
+    wait.doSkip = () => { if (cur) act({ type: 'combat/end-turn', unitId: cur.id }); };
     // ---------- the action tabs (Move · Attack · Utility · Sigils · Outbursts): one family at a time, each scrolling on its
     // own inside the pinned column, so the grid (and every effect on it) stays in view whatever you pick ----------
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));

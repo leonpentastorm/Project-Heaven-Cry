@@ -35,14 +35,33 @@ function usePrefs(): UiPrefs {
   return uiPrefs();
 }
 
-/** One volume row: a label, what it covers, the slider and its value, and an optional test button. */
+/** Narrow (a phone, a small window, the title's side panel): the tabs go on top and a volume row stacks. */
+const NarrowCtx = React.createContext(false);
+const NARROW_Q = '(max-width: 700px)';
+function useNarrowWindow(): boolean {
+  const q = typeof matchMedia === 'function' ? matchMedia(NARROW_Q) : null;
+  const [n, setN] = React.useState(!!q?.matches);
+  React.useEffect(() => { if (!q) return; const f = () => setN(q.matches); q.addEventListener?.('change', f); return () => q.removeEventListener?.('change', f); }, []);
+  return n;
+}
+
+/** One volume row: a label, what it covers, the slider and its value, and an optional test button. Narrow: the label
+ *  and the value on one line, the slider full width under them, then the test button and what it covers. */
 function Volume({ name, what, value, max = 100, onChange, test, testLabel, id }: { name: string; what?: string; value: number; max?: number; onChange: (v: number) => void; test?: () => void; testLabel?: string; id: string }) {
+  const narrow = React.useContext(NarrowCtx);
+  const label = <label htmlFor={id} style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', color: C.text, minWidth: 0 }}>{name}</label>;
+  const slider = <input id={id} data-phc-vol={id} type="range" min={0} max={max} step={5} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={name + ' volume'} style={{ width: '100%', minWidth: 0, margin: 0, accentColor: C.white, ...(narrow ? { gridColumn: '1 / -1' } : {}) }} />;
+  const val = <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textAlign: 'right' }}>{value}%</span>;
+  const tb = test ? <button type="button" data-sfx="none" onClick={test} style={{ ...btn(), minHeight: 30, fontSize: 12, whiteSpace: 'nowrap', ...(narrow ? { justifySelf: 'start' } : {}) }}>▶ {testLabel || 'Test'}</button> : null;
+  if (narrow) return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', alignItems: 'center', gap: '6px 12px' }}>
+      {label}{val}{slider}
+      {(tb || what) && <div style={{ gridColumn: '1 / -1', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 10px' }}>{tb}{what && <span style={note}>{what}</span>}</div>}
+    </div>
+  );
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr 48px 92px', alignItems: 'center', gap: '4px 12px' }}>
-      <label htmlFor={id} style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', color: C.text }}>{name}</label>
-      <input id={id} data-phc-vol={id} type="range" min={0} max={max} step={5} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={name + ' volume'} style={{ width: '100%', accentColor: C.white }} />
-      <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textAlign: 'right' }}>{value}%</span>
-      {test ? <button type="button" data-sfx="none" onClick={test} style={{ ...btn(), minHeight: 30, fontSize: 12 }}>▶ {testLabel || 'Test'}</button> : <span />}
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(90px, 150px) minmax(80px, 1fr) 44px 92px', alignItems: 'center', gap: '4px 12px' }}>
+      {label}{slider}{val}{tb || <span />}
       {what && <span style={{ ...note, gridColumn: '2 / 5', marginTop: -2 }}>{what}</span>}
     </div>
   );
@@ -66,9 +85,10 @@ function AudioTab() {
 }
 
 function Choice<T extends string>({ label, value, options, onPick, attr }: { label: string; value: T; options: [T, string][]; onPick: (v: T) => void; attr: string }) {
+  const narrow = React.useContext(NarrowCtx);
   return (
     <div role="group" aria-label={label} style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-      <span style={{ minWidth: 150, fontSize: 13, fontWeight: 700, letterSpacing: '0.08em' }}>{label.toUpperCase()}</span>
+      <span style={{ minWidth: narrow ? '100%' : 150, fontSize: 13, fontWeight: 700, letterSpacing: '0.08em' }}>{label.toUpperCase()}</span>
       {options.map(([v, l]) => <button key={v} type="button" {...{ [attr]: v }} aria-pressed={value === v} onClick={() => onPick(v)} style={btn(value === v)}>{value === v ? '● ' : ''}{l}</button>)}
     </div>
   );
@@ -101,12 +121,14 @@ function DisplayTab() {
 }
 
 /** The settings themselves, with their tabs (the cog's dialog and the title's Settings panel). */
-export function SettingsBody({ tab: initial = 'audio', compact = false }: { tab?: SettingsTab; compact?: boolean }) {
+export function SettingsBody({ tab: initial = 'audio', compact: compactProp = false }: { tab?: SettingsTab; compact?: boolean }) {
+  const narrowWin = useNarrowWindow(), compact = compactProp || narrowWin;
   const [tab, setTab] = React.useState<SettingsTab>(initial);
   React.useEffect(() => setTab(initial), [initial]);
   const tabBtn = (on: boolean): React.CSSProperties => ({ textAlign: 'left', minHeight: 38, padding: '0 14px', borderRadius: 8, border: 0, borderLeft: '3px solid ' + (on ? C.white : 'transparent'), background: on ? C.raised : 'transparent', color: on ? C.white : C.muted, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, letterSpacing: '0.06em', cursor: 'pointer' });
   return (
-    <div data-phc-settings="" style={{ display: 'flex', flexDirection: compact ? 'column' : 'row', gap: compact ? 12 : 20, minHeight: 0 }}>
+    <NarrowCtx.Provider value={narrowWin}>
+    <div data-phc-settings="" style={{ display: 'flex', flexDirection: compact ? 'column' : 'row', gap: compact ? 12 : 20, minHeight: 0, minWidth: 0 }}>
       <div role="tablist" aria-label="Settings" aria-orientation={compact ? 'horizontal' : 'vertical'} style={{ display: 'flex', flexDirection: compact ? 'row' : 'column', gap: 4, flex: 'none', width: compact ? 'auto' : 140, flexWrap: 'wrap' }}>
         {SETTINGS_TABS.map(([id, label]) => <button key={id} type="button" role="tab" id={'phc-set-' + id} aria-selected={tab === id} aria-controls={'phc-set-panel-' + id} onClick={() => setTab(id)} style={tabBtn(tab === id)}>{label}</button>)}
       </div>
@@ -117,6 +139,7 @@ export function SettingsBody({ tab: initial = 'audio', compact = false }: { tab?
         {tab === 'display' && <DisplayTab />}
       </div>
     </div>
+    </NarrowCtx.Provider>
   );
 }
 
@@ -125,17 +148,35 @@ export function SettingsHost() {
   const [, force] = React.useReducer((x: number) => x + 1, 0);
   React.useEffect(() => { subs.add(force); return () => { subs.delete(force); }; }, []);
   const pres = usePresence(open);
+  const card = React.useRef<HTMLDivElement>(null);
+  // Focus (as the in-game dialog does): into the card on open (the open tab), trapped there, given back on close.
   React.useEffect(() => {
     if (!open) return;
-    const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('[data-phc-dialog]')) { e.stopPropagation(); closeSettings(); } };
-    window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k);
+    const before = document.activeElement as HTMLElement | null;
+    const t = setTimeout(() => { (card.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]') || card.current?.querySelector<HTMLElement>('button'))?.focus(); }, 0);
+    // Keys in the capture phase, so the screen underneath (the M key, the combat keys) never sees them; an in-game
+    // question asked over Settings has the keys while it is up.
+    const k = (e: KeyboardEvent) => {
+      if (document.querySelector('[data-phc-dialog]')) return;
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeSettings(); return; }
+      if (e.key === 'Tab') {
+        const els = [...(card.current?.querySelectorAll<HTMLElement>('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])') || [])].filter((x) => !(x as HTMLButtonElement).disabled && x.offsetParent !== null);
+        if (!els.length) return;
+        const i = els.indexOf(document.activeElement as HTMLElement), n = e.shiftKey ? (i <= 0 ? els.length - 1 : i - 1) : (i < 0 || i === els.length - 1 ? 0 : i + 1);
+        e.preventDefault(); e.stopPropagation(); els[n].focus(); return;
+      }
+      if (!card.current?.contains(e.target as Node)) { e.preventDefault(); e.stopPropagation(); }
+    };
+    window.addEventListener('keydown', k, true);
+    return () => { clearTimeout(t); window.removeEventListener('keydown', k, true); if (before && typeof before.focus === 'function' && document.contains(before)) before.focus({ preventScroll: true }); };
   }, [!!open]);
   if (!pres.shown) return null;
   return (
     <div role="dialog" aria-modal="true" aria-label="Settings" className={presenceCls('phc-a-fade', pres.closing)} onMouseDown={(e) => { if (e.target === e.currentTarget) closeSettings(); }}
       style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(5, 7, 11, 0.78)', display: 'grid', placeItems: 'center', padding: 16, fontFamily: "'Chakra Petch', sans-serif" }}>
-      <div className={presenceCls('phc-a-pop', pres.closing)} style={{ width: 'min(800px, 100%)', maxHeight: '90vh', overflowY: 'auto', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 16, padding: '18px 22px 22px', borderRadius: 16, background: C.panel, border: '1px solid ' + C.edge, color: C.text, boxShadow: '0 18px 60px rgba(0,0,0,0.6)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      {/* Keys inside the card stay inside it (a letter on a focused tab must not reach the screen's shortcuts). */}
+      <div ref={card} onKeyDown={(e) => { if (e.key !== 'Tab') e.stopPropagation(); }} className={presenceCls('phc-a-pop', pres.closing)} style={{ width: 'min(800px, 100%)', maxHeight: '90vh', overflowY: 'auto', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 16, padding: '18px 22px 22px', borderRadius: 16, background: C.panel, border: '1px solid ' + C.edge, color: C.text, boxShadow: '0 18px 60px rgba(0,0,0,0.6)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span aria-hidden style={{ fontSize: 20 }}>⚙</span>
           <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '0.14em' }}>SETTINGS</span>
           <span style={{ ...note, marginLeft: 8 }}>Yours only, kept in this browser.</span>

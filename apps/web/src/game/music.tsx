@@ -199,9 +199,10 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   const floatStyle = useFloatStyle(btnRef, open);
   if (!game || game.phase === 'lobby') return null;
   const track = want?.track || null;
-  // Bottom left on every screen (on the right it covered End turn); in a fight it shrinks to its icon, the title in
-  // its tooltip and on hover, so it keeps off the combat log.
-  const side = 'left', iconOnly = game.phase === 'combat' && !blocked && !hover && !open;
+  // Bottom left on every screen (on the right it covered End turn), as its icon only: the title in its tooltip and on
+  // hover, so it keeps off the combat log, the sheet's skill rows and the room's text (review of the UI pass). Only a
+  // blocked start keeps its words: it is the one time the button asks for a click.
+  const side = 'left', iconOnly = !blocked && !hover && !open;
   const btnText = blocked ? 'Click to start the music' : p.paused ? 'Music paused' : track ? track.title : 'No music';
   const mine = Object.values(game.characters).filter((c) => c.owner === meId && !c.dead && musicTraitOf(c) && songOf(c));
   const btn: React.CSSProperties = { minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid #2E3A50', background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer' };

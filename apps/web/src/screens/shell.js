@@ -31,7 +31,7 @@ export async function leaveFlow() {
   const host = st.role === 'host', fight = !!g && g.phase === 'combat', code = st.code || (g && g.code) || '';
   const ok = await askConfirm(host
     ? { title: 'Leave the room?', body: 'The game saves first, here and on the room server. Resume it from Saved sessions on the title screen; your friends stay in the room until you come back.' + (fight ? '\nThe fight is saved where it is.' : ''), confirm: 'Save and leave', cancel: 'Stay' }
-    : { title: 'Leave the room?', body: 'Your character stays in the squad; rejoin any time with code ' + code + '.' + (fight ? '\nThe fight goes on without you until you come back.' : ''), confirm: 'Leave', cancel: 'Stay' });
+    : { title: 'Leave the room?', body: 'Your character stays in the squad; rejoin any time with code ' + code + '.' + (fight ? '\nIn the fight, the host passes your character\'s turns while you are away.' : ''), confirm: 'Leave', cancel: 'Stay' });
   if (!ok) return;
   if (host) {
     try { saveNow(); } catch (e) {
@@ -71,13 +71,15 @@ export function narratorVals(self, g, opts) {
   const word = SB ? 'PROVING GROUND · ' + g.players.length + (g.players.length === 1 ? ' PLAYER' : ' PLAYERS')
     : err ? 'NARRATOR STUCK' : busy ? 'NARRATOR · THINKING…' : VS.speaking ? 'NARRATOR · SPEAKING' : loadingVoice ? 'NARRATOR · LOADING VOICE'
     : 'NARRATOR · ' + (isHost ? 'YOUR KEY' : (host.name || '').toUpperCase() + '’S KEY');
+  // Below 1100 px the chip shrinks to its dot and this word (main.tsx's .phc-nw-short; review of the UI pass).
+  const short = err ? 'STUCK' : busy ? 'THINKING…' : VS.speaking ? 'SPEAKING' : loadingVoice ? 'VOICE…' : 'NARRATOR';
   const dot = err ? '▲' : '●', live = busy || VS.speaking || loadingVoice;
   const ink = err ? '#F65157' : live ? '#FFFFFF' : '#E7EBF3';
   const close = () => self.setState({ shNarr: false });
   const inFight = g.phase === 'combat';
   return {
     nc: {
-      word, dot, sandbox: SB, notSandbox: !SB, open, expanded: open ? 'true' : 'false', headZ: open ? 46 : 'auto', // closed: under the area map and the other dialogs (z 10 and up)
+      word, short, dot, sandbox: SB, notSandbox: !SB, open, expanded: open ? 'true' : 'false', headZ: open ? 46 : 'auto', // closed: under the area map and the other dialogs (z 10 and up)
       toggle: () => (SB ? null : self.setState({ shNarr: !self.state.shNarr })), close,
       style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 34px; max-width: 300px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; white-space: nowrap; ' +
         'border: 1px solid ' + (err ? '#F65157' : open ? '#E7EBF3' : '#2E3A50') + '; background: ' + (err ? 'rgba(246, 81, 87, 0.08)' : '#10151F') + '; color: ' + ink + (SB ? '; cursor: default' : '; cursor: pointer'),

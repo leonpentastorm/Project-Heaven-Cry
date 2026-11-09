@@ -1301,7 +1301,11 @@ function combatAction(g: GameState, a: Action, by: string) {
   // Who gives this unit its orders: its character's player; a companion's owner; a Puppeted enemy's puppeteer (rules 1.3).
   const pup = u.side === 'foe' ? puppeteerOf(g, cb!, u) : null;
   const c = u.charId ? g.characters[u.charId] : u.ctrl ? g.characters[u.ctrl] : pup;
-  if (!c || c.owner !== by) fail('Not your unit.');
+  // The host may end the turn of a unit whose player is offline (they left or dropped), so the fight never stalls on
+  // an empty chair (UI pass review: a guest who pressed Leave mid-fight froze everyone at their turn).
+  const hostSkip = !!c && c.owner !== by && a.type === 'combat/end-turn' && isHost(g, by) && !g.players.find((p) => p.id === c.owner)?.online;
+  if (!c || (c.owner !== by && !hostSkip)) fail('Not your unit.');
+  if (hostSkip) cb!.log.push((g.players.find((p) => p.id === by)?.name || 'The host') + ' passes ' + u.name + '\'s turn: ' + (g.players.find((p) => p.id === c!.owner)?.name || 'their player') + ' is away.');
   if ((u.companion || pup) && !COMPANION_ACTS.has(a.type)) fail((u.companion ? 'A companion' : 'A puppet') + ' can move, attack, hold Overwatch and end its turn.');
   // A unit with a fixed action list (the drone: move and a plain shot; spec §14 item 370) refuses everything else.
   if (u.allowedActions && a.type !== 'combat/end-turn' && a.type !== 'combat/decline') {

@@ -36,6 +36,21 @@ for (const w of [1280, 1440, 1920]) {
   const h = await host.locator('header').first().evaluate((e) => e.getBoundingClientRect().height);
   ok('the header is one row at ' + w + ' wide (' + h + ' px)', h <= 64);
 }
+// 1b. Narrower (review of the UI pass): the header wraps instead of spilling off the page; the Narrator chip shrinks to its
+// dot and word and never sits on ROOM; every button of the cluster is on screen and clickable.
+for (const w of [1024, 768, 390]) {
+  await host.setViewportSize({ width: w, height: 844 }); await host.waitForTimeout(300);
+  const m = await host.evaluate(() => {
+    const h = document.querySelector('header'), chip = h.querySelector('[data-phc-narr-chip]').getBoundingClientRect(), room = h.querySelector('[data-phc-room]').getBoundingClientRect();
+    const hit = (sel) => { const b = h.querySelector(sel); const r = b.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return r.right <= innerWidth + 0.5 && r.left >= 0 && !!el && b.contains(el); };
+    const overlap = !(chip.right <= room.left || room.right <= chip.left || chip.bottom <= room.top || room.bottom <= chip.top);
+    return { hs: h.scrollWidth, hc: h.clientWidth, ds: document.documentElement.scrollWidth, iw: innerWidth, overlap, hits: ['[data-phc-room]', '[data-phc-save]', '[data-phc-cog]', '[data-phc-report]', '[data-phc-leave]', '[data-phc-narr-chip]', '[data-phc-areamap]'].filter((x) => !hit(x)) };
+  });
+  ok('at ' + w + ' wide the header fits (' + m.hs + ' / ' + m.hc + ', page ' + m.ds + ')', m.hs <= m.hc + 1 && m.ds <= m.iw + 1);
+  ok('…the Narrator chip is clear of ROOM', !m.overlap);
+  ok('…and every header button is on screen and clickable' + (m.hits.length ? ' (not: ' + m.hits.join(' ') + ')' : ''), m.hits.length === 0);
+  if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-header-' + w + '.png', clip: { x: 0, y: 0, width: w, height: 160 } });
+}
 await host.setViewportSize({ width: 1440, height: 900 }); await host.waitForTimeout(250);
 const head = host.locator('header').first();
 ok('no STORY | COMBAT toggle', (await head.getByRole('button', { name: 'STORY', exact: true }).count()) === 0 && (await head.getByRole('button', { name: 'COMBAT', exact: true }).count()) === 0);
@@ -90,7 +105,22 @@ await set.getByRole('tab', { name: 'Display' }).click();
 await set.locator('input[data-phc-vol="float"]').fill('40');
 await set.getByRole('tab', { name: 'Voice' }).click();
 ok('the Voice tab holds the voice settings', (await set.locator('[data-phc-voice-settings]').count()) === 1);
+// Focus goes into the dialog and stays there; the screen's keys don't reach under it.
+ok('Settings takes the focus (' + (await host.evaluate(() => document.activeElement?.textContent || '')) + ')', await host.evaluate(() => !!document.activeElement?.closest('[aria-label="Settings"]')));
+for (let i = 0; i < 25; i++) await host.keyboard.press('Tab');
+ok('…and Tab stays inside it', await host.evaluate(() => !!document.activeElement?.closest('[aria-label="Settings"]')));
+await host.keyboard.press('m'); await host.waitForTimeout(300);
+ok('…and M does not open the area map under it', (await host.locator('div[role="dialog"][aria-label="Area map"]').count()) === 0);
 await set.getByRole('button', { name: 'Done' }).click(); await host.waitForTimeout(300);
+ok('closing gives the focus back to the cog', await host.evaluate(() => document.activeElement?.hasAttribute('data-phc-cog')));
+// At phone width: the tabs on top, the sliders full width, nothing cut off.
+await host.setViewportSize({ width: 390, height: 844 }); await host.waitForTimeout(300);
+await host.locator('header [data-phc-cog]').click(); await set.waitFor({ timeout: 3000 });
+const nar = await set.evaluate((d) => { const b = d.querySelector('[data-phc-settings]'), r = d.querySelector('input[data-phc-vol="combat"]').getBoundingClientRect(); return { sw: b.scrollWidth, cw: b.clientWidth, slider: Math.round(r.width) }; });
+ok('Settings at 390 wide: the combat slider is ' + nar.slider + ' px wide, nothing cut off (' + nar.sw + ' / ' + nar.cw + ')', nar.slider >= 200 && nar.sw <= nar.cw + 1);
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-settings-390.png' });
+await host.keyboard.press('Escape'); await host.waitForTimeout(300);
+await host.setViewportSize({ width: 1440, height: 900 }); await host.waitForTimeout(300);
 const saved = await host.evaluate(() => JSON.parse(localStorage.getItem('phc.ui') || '{}'));
 ok('the volumes and opacity are saved (combat ' + saved.combat + ', interface ' + saved.ui + ', opacity ' + saved.float + ')', saved.combat === 130 && saved.ui === 20 && saved.float === 40);
 const music = host.locator('button[aria-label^="Music:"]');
@@ -108,6 +138,8 @@ ok('…and still there after a reload', (await host.evaluate(() => JSON.parse(lo
 await host.mouse.move(720, 300); await host.waitForTimeout(400);
 const fl = await host.evaluate(() => [...document.querySelectorAll('[data-phc-float]')].map((b) => { const r = b.getBoundingClientRect(); return { k: b.getAttribute('data-phc-float'), x: r.left, o: getComputedStyle(b).opacity }; }));
 ok('the Music and Memory buttons sit bottom left at the chosen opacity (' + fl.map((f) => f.k + ' ' + f.o).join(', ') + ')', fl.length === 2 && fl.every((f) => f.x < 200 && Math.abs(Number(f.o) - 0.4) < 0.02));
+const flw = await host.evaluate(() => [...document.querySelectorAll('[data-phc-float]')].map((b) => Math.round(b.getBoundingClientRect().width)));
+ok('outside a fight too they are icons (' + flw.join(', ') + ' px wide)', flw.every((w) => w <= 44));
 const box = await music.boundingBox(); await host.mouse.move(box.x + box.width / 2, box.y - 60); await host.waitForTimeout(400);
 ok('they come up to full when the pointer is near', Number(await music.evaluate((b) => getComputedStyle(b).opacity)) === 1);
 const endTurn = host.getByRole('button', { name: 'End turn', exact: true });
@@ -210,6 +242,15 @@ ok('the room has no Save and leave any more', (await host.getByRole('button', { 
 await start.click(); await host.waitForTimeout(500);
 ok('…and it works', (await host.evaluate(() => window.__phc.getState().screen)) === 'main');
 await host.waitForSelector('text=Narrator settings updated', { timeout: 3000 }).then(() => ok('returning says the Narrator settings were updated', true), () => ok('returning says the Narrator settings were updated', false));
+// The header's Back to the session › says so too (review of the UI pass: only the big button did).
+await host.waitForSelector('text=Narrator settings updated', { state: 'detached', timeout: 9000 }).catch(() => {});
+await head.getByRole('button', { name: new RegExp('^Room ' + code) }).click();
+await host.waitForSelector('input[data-narrator-key]', { timeout: 5000 });
+await host.locator('input[data-narrator-key]').fill('sk-' + 'ant-api03-another-fake-key');
+await host.waitForSelector('[data-phc-key-saved]', { timeout: 3000 });
+await host.locator('header [data-phc-back-session]').click(); await host.waitForTimeout(300);
+ok('the header\'s Back to the session › lands on the story', (await host.evaluate(() => window.__phc.getState().screen)) === 'main');
+await host.waitForSelector('text=Narrator settings updated', { timeout: 3000 }).then(() => ok('…and says the Narrator settings were updated', true), () => ok('…and says the Narrator settings were updated', false));
 await host.evaluate(() => window.__phc.setNarrator({ key: '', scripted: true }));
 await host.unroute('https://api.anthropic.com/v1/models**');
 
@@ -226,6 +267,14 @@ if (fought) {
   ok('the combat header has the room, Save, Settings, Report and Leave', (await ch.locator('[data-phc-room]').count()) === 1 && (await ch.locator('[data-phc-save]').count()) === 1 && (await ch.locator('[data-phc-cog]').count()) === 1 && (await ch.locator('[data-phc-report]').count()) === 1 && (await ch.getByRole('button', { name: 'Leave the room' }).count()) === 1);
   ok('…and no STORY tab', (await ch.getByRole('button', { name: 'STORY', exact: true }).count()) === 0);
   ok('the combat header is one row', (await ch.evaluate((e) => e.getBoundingClientRect().height)) <= 64);
+  // Echo in a fight (review of the UI pass): its own row under HP in the You card, with the (?) explainer; the small
+  // line no longer carries it.
+  const ce = host.locator('.phc-me-full [data-phc-echo]');
+  ok('the You card has the Echo row: ' + ((await ce.textContent().catch(() => '')) || '').replace(/\s+/g, ' ').trim(), (await ce.count()) === 1 && /ECHO/.test(await ce.textContent()) && /\/ 3/.test(await ce.textContent()));
+  await ce.click(); await host.waitForTimeout(250);
+  ok('…which explains itself', /A second chance/.test(await host.locator('.phc-me-full [data-phc-echo-help]').textContent().catch(() => '')));
+  await ce.click();
+  ok('…and the small lines no longer say "Echo n"', !/· Echo \d/.test(await host.locator('.phc-me-full').textContent()));
   const icons = await host.evaluate(() => [...document.querySelectorAll('[data-phc-float]')].map((b) => Math.round(b.getBoundingClientRect().width)));
   ok('in a fight the floating buttons are icons (' + icons.join(', ') + ' px wide)', icons.length === 2 && icons.every((w) => w <= 44));
   if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-combat-1440.png' });

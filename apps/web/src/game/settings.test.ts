@@ -5,7 +5,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { busOf, busLevel, musicLevel, parseUiPrefs, DEFAULT_UI_PREFS, SFX_FILES, type Sfx } from './sfx';
+import { busOf, busLevel, musicLevel, parseUiPrefs, DEFAULT_UI_PREFS, SFX_FILES, LIMIT, CEIL, type Sfx } from './sfx';
 import { getCombatSpeed, setCombatSpeed, COMBAT_SPEED_EVENT } from './combatSpeed';
 import { floatOpacity, distToRect } from './floaters';
 
@@ -32,15 +32,38 @@ describe('the two effect buses', () => {
     expect(d).toEqual(DEFAULT_UI_PREFS);
     expect(busLevel('combat', d) / busLevel('ui', d)).toBeGreaterThan(2.5);
   });
-  it('an old save (one effects slider) moves onto the new mix and keeps the rest', () => {
+  it('an old save (one effects slider) moves onto the new mix and keeps the rest (design 6.2)', () => {
     const p = parseUiPrefs(JSON.stringify({ sfx: 60, music: 40, mute: false, reduceMotion: true, cutins: 'scene' }));
     expect(p).toMatchObject({ combat: 100, ui: 35, master: 100, music: 40, reduceMotion: true, cutins: 'scene', float: 55, floatFade: true });
     expect((p as any).sfx).toBeUndefined();
+  });
+  it('an old save with the effects silenced stays silent; a low one stays low', () => {
+    expect(parseUiPrefs(JSON.stringify({ sfx: 0 }))).toMatchObject({ combat: 0, ui: 0 });
+    expect(parseUiPrefs(JSON.stringify({ sfx: 30 }))).toMatchObject({ combat: 50, ui: 30 });
+    expect(parseUiPrefs(JSON.stringify({ sfx: 100 }))).toMatchObject({ combat: 150, ui: 35 });
+    // A save already on the new mix ignores a stray old key.
+    expect(parseUiPrefs(JSON.stringify({ sfx: 0, combat: 80, ui: 20 }))).toMatchObject({ combat: 80, ui: 20 });
   });
   it('bad values are clamped or replaced', () => {
     const p = parseUiPrefs(JSON.stringify({ combat: 900, ui: -5, master: 'loud', float: 3, cutins: 'sometimes' }));
     expect(p).toMatchObject({ combat: 150, ui: 0, master: 100, float: 20, cutins: 'all' });
     expect(parseUiPrefs('{not json')).toEqual(DEFAULT_UI_PREFS);
+  });
+});
+
+describe('the loudness pass (tools/normalize_sfx.py)', () => {
+  const report = JSON.parse(readFileSync(join(__dirname, '../../public/sfx/sfx-loudness.json'), 'utf8')) as { files: Record<string, { family: string; before: number; after: number }> };
+  it('no combat, magic or utility sound ends quieter than its source (only the ambient beds and the clicks go down)', () => {
+    const rows = Object.entries(report.files);
+    expect(rows.length).toBeGreaterThan(130);
+    for (const [f, r] of rows) if (['impact', 'magic', 'utility'].includes(r.family)) expect(r.after, f).toBeGreaterThanOrEqual(r.before - 0.5);
+  });
+  it('reloads and the Sigil evoke sit well above the music\'s loud moments (about -22)', () => {
+    for (const f of ['cb/reload_mag.ogg', 'cb/reload_pistol.ogg', 'cb/reload_rifle.ogg', 'cb/sigil_evoke.ogg', 'cb/rack.ogg']) expect(report.files[f].after, f).toBeGreaterThanOrEqual(-16);
+  });
+  it('the effects stage limits: a hard knee, and a sound is never sent past the ceiling', () => {
+    expect(LIMIT.knee).toBe(0); expect(LIMIT.threshold).toBeLessThanOrEqual(-6); expect(LIMIT.trim).toBeLessThan(1);
+    expect(CEIL).toBeLessThanOrEqual(1.2);
   });
 });
 

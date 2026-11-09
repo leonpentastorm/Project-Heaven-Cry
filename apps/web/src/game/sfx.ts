@@ -141,13 +141,19 @@ export type CutinPref = 'all' | 'scene' | 'off';
 export interface UiPrefs { master: number; combat: number; ui: number; music: number; mute: boolean; reduceMotion: boolean; cutins: CutinPref; float: number; floatFade: boolean }
 export const DEFAULT_UI_PREFS: UiPrefs = { master: 100, combat: 100, ui: 35, music: 70, mute: false, reduceMotion: false, cutins: 'all', float: 55, floatFade: true };
 const clampN = (v: unknown, lo: number, hi: number, d: number) => { const n = Number(v); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, Math.round(n))) : d; };
-/** Saved settings, cleaned up. Before the UI pass there was one effects volume (sfx) for clicks and gunshots alike,
- *  and the clicks drowned the guns: an old save starts on the new mix (combat 100, interface 35). */
+/** Saved settings, cleaned up. Before the UI pass there was one effects volume (sfx, default 60) for clicks and
+ *  gunshots alike. An old save moves it over (docs/design/ui-pass-shell.md 6.2): combat takes it scaled so the old
+ *  default lands on the new one (60 → 100), and interface keeps the new 35 unless the old value was lower; a player who
+ *  had silenced effects (sfx 0) keeps both silent. */
 export function parseUiPrefs(raw: string | null | undefined): UiPrefs {
   let o: any = {}; try { o = JSON.parse(raw || '{}') || {}; } catch { o = {}; }
   const D = DEFAULT_UI_PREFS;
+  const old = o.combat == null && o.ui == null && o.sfx != null && Number.isFinite(Number(o.sfx)) ? clampN(o.sfx, 0, 100, 60) : null;
   return {
-    master: clampN(o.master, 0, 100, D.master), combat: clampN(o.combat, 0, 150, D.combat), ui: clampN(o.ui, 0, 100, D.ui), music: clampN(o.music, 0, 100, D.music),
+    master: clampN(o.master, 0, 100, D.master),
+    combat: old != null ? clampN(old * 100 / 60, 0, 150, D.combat) : clampN(o.combat, 0, 150, D.combat),
+    ui: old != null ? Math.min(D.ui, old) : clampN(o.ui, 0, 100, D.ui),
+    music: clampN(o.music, 0, 100, D.music),
     mute: typeof o.mute === 'boolean' ? o.mute : D.mute, reduceMotion: typeof o.reduceMotion === 'boolean' ? o.reduceMotion : D.reduceMotion,
     cutins: o.cutins === 'scene' || o.cutins === 'off' ? o.cutins : 'all', float: clampN(o.float, 20, 100, D.float), floatFade: typeof o.floatFade === 'boolean' ? o.floatFade : D.floatFade,
   };
@@ -170,6 +176,8 @@ export const musicLevel = (p: UiPrefs = prefs) => (p.mute ? 0 : (p.master / 100)
 export const reducedMotion = () => prefs.reduceMotion || (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 // ---------- playback ----------
+/** The effects' master stage (exported for the mix test and tools): a hard limiter, then a trim under the music. */
+export const LIMIT = { threshold: -6, knee: 0, ratio: 20, attack: 0.002, release: 0.15, trim: 0.8 } as const;
 let ctx: AudioContext | null = null, out: GainNode | null = null, unlocked = false, noAudio = false;
 const buffers = new Map<string, AudioBuffer | null>();
 /** The audio context, or null where the browser has none (then the game is silent, never broken). */
@@ -179,14 +187,25 @@ function audio(): AudioContext | null {
       const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
       if (!AC) { noAudio = true; return null; }
       ctx = new AC() as AudioContext; out = ctx.createGain();
-      // A limiter, so overlapping sounds at full volume never clip.
-      // A soft knee and a slower release, so a burst of shots stays a burst instead of pumping (UI pass 6.2).
-      const lim = ctx.createDynamicsCompressor(); lim.threshold.value = -3; lim.knee.value = 6; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.15;
-      out.connect(lim); lim.connect(ctx.destination);
+      // A limiter, so overlapping sounds at full volume never clip, then a trim that leaves room for the music (it
+      // plays in its own context, ost.ts, and sums after this). Review of the UI pass, measured in Chromium: a soft
+      // knee sits ABOVE the threshold there and adds makeup gain, so it stopped limiting (a full-auto burst peaked at
+      // +0.4 dBFS, +0.7 with the music). A hard knee at -6 and a 0.8 trim peak at about -1.7 dBFS with the music.
+      // The slower release (0.15 s) keeps a burst of shots a burst instead of pumping.
+      const lim = ctx.createDynamicsCompressor(); lim.threshold.value = LIMIT.threshold; lim.knee.value = LIMIT.knee; lim.ratio.value = LIMIT.ratio; lim.attack.value = LIMIT.attack; lim.release.value = LIMIT.release;
+      const trim = ctx.createGain(); trim.gain.value = LIMIT.trim;
+      out.connect(lim); lim.connect(trim); trim.connect(ctx.destination);
     } catch { noAudio = true; ctx = null; return null; }
   }
   if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
   return ctx;
+}
+/** The shared effects graph (the context and the node before the limiter), for sounds synthesised elsewhere
+ *  (turnIntro's boom and thump) so they go through the same limiter and duck with everything else. Null before the
+ *  first gesture or where the browser has no audio. */
+export function sfxGraph(): { ac: AudioContext; out: AudioNode } | null {
+  if (!unlocked) return null;
+  const ac = audio(); return ac && out ? { ac, out } : null;
 }
 /** Call from a user gesture: sound is allowed from then on. */
 export function unlockSfx() { unlocked = true; if (!audio()) return; for (const s of Object.keys(SFX_FILES) as Sfx[]) for (const f of files(s)) if (!isCombatFile(f) || combatWanted) load(f); }
@@ -203,8 +222,9 @@ async function load(url: string) {
 }
 /** A sound's level: its bus, ducked under the Narrator's voice. */
 const level = (name: Sfx) => busLevel(busOf(name)) * (voiceState().speaking ? 0.4 : 1);
-/** The loudest a single sound may be sent (the combat bus goes past 100% for headroom; the limiter catches the rest). */
-const CEIL = 1.6;
+/** The loudest a single sound may be sent. The combat bus goes to 150%, but past 1.2 a sound only buys clipping
+ *  (measured: a burst at 150% was 1.1 dB louder and had 306 samples over full scale with a 1.6 ceiling). */
+export const CEIL = 1.2;
 let lastHover = 0;
 
 /** Options for one sound: rate (pitch and speed, 1 = as recorded), gain (× its mix), delay in ms (scheduled on the

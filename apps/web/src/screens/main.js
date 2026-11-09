@@ -26,7 +26,7 @@ import { glyphKeyNav } from '../game/glyphKeys';
 import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer, wordMasteryChips, readableAt, traceMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
 import { questGroups } from '../game/missionView';
-import { echoView } from '../game/echoView';
+import { echoView, echoMax } from '../game/echoView';
 import { storyForecastVals } from '../game/manaForecast';
 import { askConfirm, askText } from '../game/dialog';
 import { shellVals, narratorVals } from './shell';
@@ -55,7 +55,9 @@ ensureStyle('phc-play-pass', '@keyframes phcEchoGain{0%{transform:rotate(45deg) 
 /** The quest board's fold (per group) and grouping, remembered on this computer. */
 const QFOLD = 'phc.questFold';
 const readFold = () => { try { return JSON.parse(localStorage.getItem(QFOLD) || '{}') || {}; } catch { return {}; } };
-const QSEEN = new Set(); let qSeeded = false; // quest rows seen this visit: a new one flashes white once
+// Quest rows seen, per room and grouping (a new one flashes white once; the first render of a room, or of a grouping,
+// only learns what is there, so entering a second room never flashes its whole board).
+const QSEEN = new Map();
 ensureStyle('phc-main-motion', '.phc-dice-verdict{animation:phcMRise .3s ease-out .75s both}'
   + '@keyframes phcPlanPulse{0%,100%{opacity:.75}50%{opacity:1}}.phc-plan-target{animation:phcPlanPulse 1.4s ease-in-out infinite}'
   + '.phc-rm .phc-die{animation:phcMFadeIn .2s ease-out both!important}.phc-rm .phc-dice-verdict{animation:phcMFadeIn .15s ease-out .2s both}.phc-rm .phc-plan-target{animation:none}');
@@ -316,13 +318,21 @@ export class MainLogic extends DCLogic {
     // ---------- the sheet ----------
     const echo = c ? c.echo : 0;
     // Echo's row (UI pass 4): a change flares the diamond for a moment, and a gain says where it came from.
+    // Only a real change counts: every one of your characters is tracked each render (switching the sheet to another
+    // character is not a gain), a rewind (a reroll vote: the story got shorter) is not a gain, and the reason is read
+    // only from story entries that arrived since the last render (review of the UI pass).
     const eKey = c ? c.id : '', was = (this._echoWas || {})[eKey];
-    if (c && was != null && was !== echo) {
+    const ents = g.story.entries || [], lastSeenId = this._entLast, rewound = this._entN != null && ents.length < this._entN;
+    if (c && was != null && was !== echo && !rewound) {
       this._echoFx = { id: eKey, dir: echo > was ? 'up' : 'down', at: Date.now() };
-      if (echo > was) { const why = g.story.entries.slice(-8).reverse().find((e) => e.charId === c.id && /\+1 ECHO/.test(e.head || '')), sk = why ? why.head.split(' · ')[0].toLowerCase().replace(/^./, (x) => x.toUpperCase()) : '';
-        setTimeout(() => toast('◆ +' + (echo - was) + ' ECHO · ' + (sk ? 'you indulged ' + sk : c.name + ' now holds ' + echo + ' / 3'), true), 0); }
+      if (echo > was) {
+        const at = lastSeenId ? ents.findIndex((e) => e.id === lastSeenId) : -1, from = at >= 0 ? at + 1 : Math.max(0, ents.length - 1);
+        const why = ents.slice(from).reverse().find((e) => e.charId === c.id && /\+1 ECHO/.test(e.head || '')), sk = why ? why.head.split(' · ')[0].toLowerCase().replace(/^./, (x) => x.toUpperCase()) : '';
+        setTimeout(() => toast('◆ +' + (echo - was) + ' ECHO · ' + (sk ? 'you indulged ' + sk : c.name + ' now holds ' + echo + ' / ' + echoMax()), true), 0);
+      }
     }
-    this._echoWas = { ...(this._echoWas || {}), [eKey]: echo };
+    this._echoWas = Object.fromEntries(Object.values(g.characters).filter((x) => x.owner === me).map((x) => [x.id, x.echo]));
+    this._entN = ents.length; this._entLast = ents.length ? ents[ents.length - 1].id : null;
     const eFx = this._echoFx && this._echoFx.id === eKey && Date.now() - this._echoFx.at < 1400 ? this._echoFx.dir : '';
     const echoV = c ? { ...echoView(echo, eFx), open: !!S.echoOpen, expanded: S.echoOpen ? 'true' : 'false', glyph: S.echoOpen ? '×' : '?', cls: eFx ? 'phc-echo-row-flare' : '',
       toggle: () => this.setState({ echoOpen: !this.state.echoOpen }) } : { has: false, pips: [], sections: [] };
@@ -1317,12 +1327,12 @@ export class MainLogic extends DCLogic {
         const Q = questGroups(g, by), fold = { ...readFold(), ...(S.qFold || {}) };
         const setBy = (v) => { savePref('questGroup', v); this.setState({ qGroup: v }); };
         const tog = (on) => 'min-height: 24px; padding: 0 7px; border: 0; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; ' + (on ? 'background: #E7EBF3; color: #0A0D13' : 'background: transparent; color: #A3AEC2');
-        const fresh = !qSeeded; qSeeded = true;
+        const qk = (g.code || '') + '|' + by, fresh = !QSEEN.has(qk); if (fresh) QSEEN.set(qk, new Set()); const seen = QSEEN.get(qk);
         const groups = Q.groups.map((gr) => { const f = fold[by + ':' + gr.key] ?? gr.folded;
           return { key: gr.key, title: gr.title, label: gr.title + ' · ' + gr.count, sub: gr.sub, hasSub: !!gr.sub && !f, count: gr.count, open: !f, expanded: f ? 'false' : 'true', glyph: f ? '▸' : '▾',
             ink: gr.key === 'here' ? '#FFFFFF' : gr.key === 'failed' ? '#F65157' : gr.key === 'done' || gr.key === 'past' ? '#A3AEC2' : '#E7EBF3',
             toggle: () => { const nf = { ...readFold(), [by + ':' + gr.key]: !f }; try { localStorage.setItem(QFOLD, JSON.stringify(nf)); } catch { /* */ } this.setState({ qFold: nf }); },
-            rows: gr.rows.map((r) => { const isNew = !fresh && !QSEEN.has(r.key) && r.status === 'open'; QSEEN.add(r.key);
+            rows: gr.rows.map((r) => { const isNew = !fresh && !seen.has(r.key) && r.status === 'open'; seen.add(r.key);
               return { ...r, cls: isNew ? 'phc-q-new' : '', hasMission: !!r.mission, hereTag: by === 'quest' && r.here, hasDetail: !!r.detail && r.status === 'open',
                 hasWhere: !!r.where, whereText: r.markers.length ? (r.here ? '' : r.where.replace(/◆.*$/, '')) : r.where,
                 markers: r.markers.map((m) => ({ ref: m.ref, go: () => this.setState({ area: true, hoverTile: m.tile }) })),

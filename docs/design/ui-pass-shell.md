@@ -699,3 +699,61 @@ Built on this branch: sections 3, 4 and 5. Where the build differs from the text
    (it never pushes the board down).
 6. **A stage A fix:** the header's z-index was 12 when its Narrator menu was closed, which put it over the area map
    (z 10) and hid the map's Close button (world-play.mjs). Closed it is `auto` now; open it is still 46.
+
+## 13. Review fixes, 9 Nov 2026
+
+The review of stages A and B found 19 issues (some twice); all confirmed and fixed here. Numbers are from headless
+Chromium unless noted.
+
+1. **Story header below 1100 px** (`main.tsx` CSS): the header wraps (`.phc-head` gets `flex-wrap: wrap` and the
+   cluster `margin-left: auto`), the Narrator chip shrinks to its dot and one word (`nc.short`: NARRATOR, STUCK,
+   THINKING…, SPEAKING, VOICE…), and under 600 px the padding tightens. At 1024, 768 and 390 nothing spills off the
+   page and every header button is clickable (ui-shell.mjs 1b).
+2. **A guest who leaves mid-fight** no longer stalls the fight: the engine lets the host end the turn of a unit whose
+   player is offline (`combat/end-turn` only; logged *Leon passes Ninety-Two's turn: Mai is away.*), and the waiting
+   card shows the host **Pass Mai's turn ›**. The guest's Leave dialog now says *the host passes your character's turns
+   while you are away*. (shell-guest.mjs; engine test in sandbox-mp.test.ts.)
+3. **Test key** (`testKey()` in `narrator/providers.ts`): OpenRouter is checked with its `/key` (its models list is
+   public: a garbage key passed); a site with its own address says *The address answered (N models); the key itself is
+   checked on the Narrator's first turn*, never "the key works"; and nothing is sent until a site's address is set and
+   starts with http(s) (an empty one made the request relative, to the game's own server, with the key). The room's
+   Test key is greyed until the address is there.
+4. **The host-offline bar** sits under the header (measured from the header's bottom), as a pill, so Leave stays
+   clickable; for a guest it has its own *Leave the room*.
+5. **Settings at phone width:** under 700 px the tabs go on top and a volume row stacks (label and value, the slider
+   full width, then the test button and what it covers): the combat slider is 275 px wide at 390. **Focus** moves into
+   the dialog (the open tab), Tab is trapped in it, keys never reach the screen under it (M, B, Escape), and the focus
+   goes back to the cog on close.
+6. **Echo in a fight:** the combat You card has the same Echo row under HP (diamonds, count, the (?) explainer);
+   *· Echo n* is gone from the small lines (the You card's and the turn card's).
+7. **The room header's Back to the session ›** goes through `backToSession()`, so it says *Narrator settings updated*
+   like the big button.
+8. **Music and Memory are icons on every screen** (♪ and ◈, 40 px), the title on hover and in the tooltip; only a
+   blocked music start keeps its words (*Click to start the music*), since that is the one time it asks for a click.
+9. **B and Escape in a fight** do nothing to the backpack while another dialog (Settings, a question) is up.
+10. **Quest rows' "new" flash** is remembered per room and grouping, so a second room (or the first switch to Quest)
+    only learns what is there.
+11. **The Echo toast** fires only on a real gain: every one of your characters is tracked each render (switching the
+    sheet is not a gain), a rewind (the story got shorter) is not a gain, and the reason is read only from entries that
+    arrived since the last render.
+12. **Clipping** (`sfx.ts`): Chrome puts a soft knee *above* the threshold and adds makeup gain, so the 6 dB knee had
+    stopped limiting. The master stage is now a hard knee at -6 dBFS, release 0.15 s, then a 0.8 trim that leaves room
+    for the music (it plays in its own context and sums after). A single sound is sent at most 1.2 (was 1.6). turnIntro's
+    boom and thump now go through the same graph (`sfxGraph()`), so they are limited and duck with the rest. Measured
+    with the real files (sounds after 1 s of silence, the music from 60 s into *Gunline*), peak dBFS / samples over full
+    scale, before this pass → stage A → now:
+    - full-auto volley + three hits + a body, music at 0.42: -2.7 / 0 → +1.2 / 24 → **-1.6 / 0**
+    - heavy auto, music 0.42: -1.7 / 0 → +1.2 / 75 → **-1.7 / 0**
+    - explosion + boom, music 0.42: -1.0 / 0 → +1.1 / 90 → **-2.2 / 0**
+    - combat at 150 and the music at its maximum (0.7): **-0.3 / 0** for the burst (the worst case).
+13. **Old saved effects volume** moves over (design 6.2): combat = old × 100/60 (60 → 100), interface = min(35, old);
+    a player who had silenced effects (0) stays silent.
+14. **Loudness, second pass** (`tools/normalize_sfx.py`, re-run on the ORIGINAL files from develop, so no double
+    re-encode): the combat families only go **up** (impact -13, magic -14, utility -15); a file already louder than its
+    target is left as it was. Steps, whizzes, the dry click and the field loops are a new **ambient** family (-19, up or
+    down, as before), and the interface sounds stay at -20. No impact, magic or utility file ends quieter than its
+    source (settings.test.ts reads `sfx-loudness.json` and checks it). Loudest 100 ms through the new master stage,
+    default settings, before this pass → now: rifle shot -21.7 → -16.7, Sigil evoke -17.4 → -13.5, magazine reload
+    -14.1 → -13.3, full-auto burst -13.0 → -12.0, explosion -9.6 → -10.4 (the limiter and the trim take back about 1 dB
+    on the very loudest; everything else is louder than before, against a music bed of about -22). `MIX` is unchanged:
+    with only-up gains its values still mean the same thing within a family.
