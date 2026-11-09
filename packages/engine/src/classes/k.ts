@@ -17,7 +17,7 @@ import {
   checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
-import { mod, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign } from '../character';
+import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
@@ -27,8 +27,8 @@ import {
 } from '../magic';
 import { castAt, compileSpell, evokeMarks } from '../sigil';
 import { d20, die } from '../rng';
-import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, changeDevotion, reveal } from '../tactics';
-import { GATE, OVERREACH, devotionNow, patronOf, shiftDevotion } from '../faith';
+import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, reveal } from '../tactics';
+import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
 
@@ -204,11 +204,11 @@ register({
     available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < 3 ? 'Prayer needs Faith 3.' : true),
     run: (h, a, rng) => {
       const c = h.c!, p = PATRON[c.patron!], bl = (p.blessings || []).find((b: any) => b.id === a.choice) || (p.blessings || [])[0];
-      // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −1).
+      // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −3 XP, item 716).
       const gate = (GATE as any)[bl.tier || 1] ?? 3, dv = devotionNow(c), m = mod(c.skills.faith || 0);
       const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), r = tn ? d20(rng as any) : 0, ok = !tn || r === 20 || (r !== 1 && r + m >= tn);
       if (!ok) shiftDevotion(h.g || null, null, c, OVERREACH.miss, 'a failed overreach');
-      const line = c.name + ' prays over a shell to ' + p.name + (tn ? ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −1 Devotion.');
+      const line = c.name + ' prays over a shell to ' + p.name + (tn ? ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
       if (ok) charState(c).blessedShell = { id: bl.id, scene: sceneOf(h), power: blessPower(null, c) };
       postStory(h, line); if (h.g) pendRuling(h.g, c, h.key, line + ' Describe how the patron answers (or doesn\'t).');
       return null;
@@ -268,14 +268,14 @@ function eyeNote(ctx: any, h: Holder) {
 
 // Judgement (K6, PROVISIONAL, audit 1-5): 4 AP all told, once per fight: spend 1 Devotion (not 3: the 3 drained
 // prayer and made it a once-in-3-sessions move) for one melee or shotgun attack whose damage is × (1 + Blessing power).
-// The Devotion is spent hit or miss.
+// The Devotion is spent hit or miss. Rules 1.6.1 (item 706): "1 Devotion" is 10 Devotion XP, through the choke point.
 const shotgun = (u: Unit) => W(u)?.category === 'shotgun' || /scattergun|censer/.test(u.weapon);
 register({
   id: 'lumeri_templar.judgement', claims: 'all',
   actions: [{
     id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 4, uses: { per: 'per_combat', n: 1 },
-    text: 'Spend 1 Devotion: one melee or scattergun attack, damage × (1 + your Blessing power).',
-    available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionOf(h.c) < 1 ? 'Needs 1 Devotion.' : !(isMelee(W(h.u)) || shotgun(h.u)) ? 'Needs a melee weapon or a scattergun.' : true),
+    text: 'Spend 1 Devotion (' + DEVOTION_XP.judgement + ' Devotion XP): one melee or scattergun attack, damage × (1 + your Blessing power).',
+    available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionXpOf(h.c) < DEVOTION_XP.judgement ? 'Needs ' + DEVOTION_XP.judgement + ' Devotion XP.' : !(isMelee(W(h.u)) || shotgun(h.u)) ? 'Needs a melee weapon or a scattergun.' : true),
     preview: (h, a) => {
       const t = unitById(h.cb!, a.targetId); if (!t) return {};
       const pv = previewAttack(h.cb!, h.u!, t, isMelee(W(h.u!)) ? 'melee' : 'shot', { free: true });
@@ -283,8 +283,8 @@ register({
     },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, m = 1 + blessPower(u, h.c);
-      changeDevotion(h.c!, -1);
-      say(cb, u.name + ' passes Judgement on ' + t.name + ' (1 Devotion, ' + devotionOf(h.c!) + ' left).');
+      shiftDevotion(h.g || null, cb, h.c!, -DEVOTION_XP.judgement, 'Judgement');
+      say(cb, u.name + ' passes Judgement on ' + t.name + ' (' + DEVOTION_XP.judgement + ' Devotion XP; Devotion ' + devotionOf(h.c!) + ' left).');
       withMult(u, m, 'Judgement', () => resolveAttack(cb, rng, u, t, isMelee(W(u)) ? 'melee' : 'shot', null, { free: true }));
       note(h, 'Judgement by ' + u.name + ' on ' + t.name + ': does it keep or break a taboo of ' + (PATRON[h.c!.patron!]?.name || 'the patron') + '?');
       checkOver(cb); return null;

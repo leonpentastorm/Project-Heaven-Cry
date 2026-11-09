@@ -930,7 +930,7 @@ export class MainLogic extends DCLogic {
         else if (x.kind === 'cache') act({ type: 'world/act', charId: c.id, act: 'search', objId: x.id });
         else if (x.kind === 'pile') { const o = (objs || []).find((y) => y.id === x.id); this.setState({ area: true, wAct: 'pickup', wTile: o ? o.pos : null, wTarget: null, wAim: null, wEvc: null }); } } }));
     const nearAll = [...nearW, ...nearby.filter((n) => !nearW.some((w) => w.key === 's' + n.key)).map((n) => ({ ...n, sub: '', hasSub: false, off: false, title: n.label, style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid #FFFFFF; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer' }))];
-    const here = !inFight ? hereVals(g) : { has: false, zone: '', rows: [] };
+    const here = !inFight ? hereVals(g) : { has: false, zone: '', day: '', rows: [] };
     const carried = carriedRows(c, ART).map((r) => ({ ...r, noImg: !r.hasImg, cantPut: !!wBusy || inFight || (c && apLeft(g, c) < 1), putWhy: inFight ? 'After the fight.' : wBusy || (c && apLeft(g, c) < 1 ? 'Needs 1 AP.' : ''),
       put: () => this.setState({ putDown: r.id, area: true, wAct: 'move' }), putNear: () => { if (c) act({ type: 'world/act', charId: c.id, act: 'put_down', targetId: r.id }); } }));
     const LL = loadLine(c);
@@ -1147,10 +1147,13 @@ export class MainLogic extends DCLogic {
     const wPanelV = wPkE && !ON_MAP.includes(wPkE.target) ? pkView({ e: wPkE, how: 'world' }, 'area') : null, wPanel = wPanelV && wPanelV.needs ? wPanelV : null;
     // ---------- rest (spec: Rest): the host calls it, a player asks for it (the Narrator can grant one too) ----------
     const restWhy = g.phase === 'lobby' ? 'The session hasn\'t started.' : g.phase !== 'story' ? 'No resting in a fight: win it, or get out of it, first.' : !isHost && g.story.await !== 'players' ? 'Wait for the round to open.' : !isHost && !c ? 'You have no character to ask with.' : '';
-    const restVals = { restLabel: isHost ? 'Rest…' : 'Ask for a rest…', restOff: !!restWhy, restTitle: restWhy || (isHost ? 'Call a short or a long rest for the party' : 'Ask the Narrator for a rest: your request goes in the story'),
+    const restVals = { restLabel: isHost ? 'Rest…' : 'Ask for a rest…', restOff: !!restWhy, restTitle: restWhy || (isHost ? 'Call a short or a long rest for the party, or start the next session' : 'Ask the Narrator for a rest: your request goes in the story'),
       restOpen: !!S.restOpen && !restWhy, toggleRest: () => this.setState({ restOpen: !S.restOpen }), restPressed: S.restOpen ? 'true' : 'false',
       restOpts: ['short', 'long'].map((k) => ({ key: k, label: (isHost ? '' : 'Ask for a ') + (k === 'short' ? (isHost ? 'Short rest' : 'short rest') : (isHost ? 'Long rest' : 'long rest')), text: REST_INFO[k] + '.',
-        pick: () => { if (isHost) act({ type: 'rest', kind: k }); else act({ type: 'story/ask-rest', charId: c.id, kind: k }); this.setState({ restOpen: false }); } })) };
+        pick: () => { if (isHost) act({ type: 'rest', kind: k }); else act({ type: 'story/ask-rest', charId: c.id, kind: k }); this.setState({ restOpen: false }); } }))
+        // Rules 1.6.1 (item 721): the host ends the session here and the next one starts in the same room.
+        .concat(isHost && !g.sandbox ? [{ key: 'session', label: 'Next session', text: 'End session ' + (g.sessionN || 1) + ' and start session ' + ((g.sessionN || 1) + 1) + ': everyone recovers as after a long rest (not a day), Echo is back to 1, and once-a-session things start over (rites, the Miracle, the faith caps, grudges).',
+          pick: () => { act({ type: 'session/next' }); this.setState({ restOpen: false }); } }] : []) };
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
     return {

@@ -79,6 +79,10 @@ export interface Character extends Sheet {
    * by dice, "<patronId>.<hymnId>" (an Atheist's, or kept from another patron under an Open rule); the vow of the
    * current fight (also on the unit); the session each rite was last kept in; the faith rules revision (16). */
   faithPieces?: Record<string, number>; hymns?: string[]; vow?: Vow | null; ritesKept?: Record<string, number>; faithRev?: number;
+  /** Rules 1.6.1 (Faith 2.1): Devotion XP, the total (devotion is the level it reaches, kept in step; devotionXpOf);
+   * the tag and Narrator caps this session, scene and fight (faith.ts FaithTally); the pact left, for the 90-day
+   * cooldown (day = g.day when they left); a patron's grudge after a switch (faith.ts Grudge). */
+  devotionXp?: number; faithTally?: any; faithLeft?: { patron: string; day: number } | null; grudge?: any;
   /** Karma −100 (Chaotic) to +100 (Lawful) (spec: Karma); 0 for old saves. */
   karma?: number;
   /** Companions who fight beside the character (a drone, a beast): their kind, name and HP between fights. */
@@ -135,6 +139,36 @@ export interface PackItem {
 
 /** Skill modifier (spec: Core resolution): −2 at 0 points, otherwise points − 1. */
 export const mod = (p: number) => (p <= 0 ? -2 : p - 1);
+
+// ---------- Devotion XP (rules 1.6.1, Faith 2.1; spec items 701-702) ----------
+/** The faith rules revision a character was written under (17: Devotion XP). */
+export const FAITH_REV = 17;
+/** Total Devotion XP to reach each level 0-10 (patrons.json devotion.xp.curve; PROVISIONAL). */
+export const DEVOTION_CURVE: number[] = (patronsJ as any).devotion?.xp?.curve || [0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450];
+export const DEVOTION_MAX_LEVEL = DEVOTION_CURVE.length - 1;
+export const DEVOTION_MAX_XP = DEVOTION_CURVE[DEVOTION_MAX_LEVEL];
+const lvClamp = (n: number) => Math.max(0, Math.min(DEVOTION_MAX_LEVEL, Math.round(Number(n) || 0)));
+/** The XP a level starts at. */
+export const devotionThreshold = (level: number) => DEVOTION_CURVE[lvClamp(level)];
+/** The level a total of XP reaches. */
+export function devotionLevelOf(xp: number): number { let lv = 0; for (let i = 0; i < DEVOTION_CURVE.length; i++) if (xp >= DEVOTION_CURVE[i]) lv = i; return lv; }
+/** A character's Devotion XP. The level (c.devotion) is kept in step; a level written on its own (an old save, an old
+ * writer) reads as that level's threshold (item 701). */
+export function devotionXpOf(c: Character): number {
+  const lv = lvClamp(c.devotion ?? (patronsJ as any).devotion?.start ?? 3), xp = c.devotionXp;
+  if (typeof xp === 'number' && Number.isFinite(xp) && devotionLevelOf(xp) === lv) return Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(xp)));
+  return devotionThreshold(lv);
+}
+/** Set the XP (0 to the curve's top) and the level with it. Returns the level. */
+export function setDevotionXp(c: Character, xp: number): number {
+  c.devotionXp = Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(Number(xp) || 0))); c.devotion = devotionLevelOf(c.devotionXp); return c.devotion;
+}
+/** Devotion XP in words, the one format every meter and log line uses (rules 1.6.1): the level, then the XP into it out
+ * of the step to the next ("Devotion 3 · 4/25 XP"); at full standing the total ("Devotion 10 · 450 XP · full"). */
+export function devotionWords(xp: number): string {
+  const total = Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(Number(xp) || 0))), lv = devotionLevelOf(total), at = devotionThreshold(lv);
+  return 'Devotion ' + lv + (lv < DEVOTION_MAX_LEVEL ? ' · ' + (total - at) + '/' + (devotionThreshold(lv + 1) - at) + ' XP' : ' · ' + total + ' XP · full');
+}
 export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 
 // ---------- creation (spec: Creation budget) ----------
@@ -370,8 +404,8 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   { const cap = armourCap(c); if (cap != null && c.armourClass > cap) { (c.state ||= {}).armourDropped = c.armourClass; c.armourClass = cap; } }
   c.hp = maxHp(c);
   // Belief (rules 1.6): a Faithful character is sworn at creation, Devotion 3; an Atheist has no patron.
-  if (s.belief?.kind === 'faithful') { c.patron = s.belief.patron; c.devotion = (patronsJ as any).devotion?.start ?? 3; } else if (s.belief) c.patron = null;
-  if (s.belief) c.faithRev = 16;
+  if (s.belief?.kind === 'faithful') { c.patron = s.belief.patron; setDevotionXp(c, devotionThreshold((patronsJ as any).devotion?.start ?? 3)); } else if (s.belief) c.patron = null;
+  if (s.belief) c.faithRev = FAITH_REV;
   startingMagic(c);
   grantStartItems(c);
   startCollection(c);

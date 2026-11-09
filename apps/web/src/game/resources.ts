@@ -370,18 +370,22 @@ export function resView(rows: ResRow[], urgent = 3) {
 export function faithRows(u: any | null, c: any | null): ResRow[] {
   if (!c) return [];
   const rows: ResRow[] = [], b = (E as any).beliefOf ? (E as any).beliefOf(c) : null; if (!b) return rows;
-  const P: Record<string, any> = (E as any).FAITH_PATRON || {}, G: any = (E as any).GATE || { 1: 3, 2: 5, 3: 7, miracle: 7 };
+  const P: Record<string, any> = (E as any).FAITH_PATRON || {}, G: any = (E as any).GATE || { 1: 3, 2: 5, 3: 7, miracle: 10 };
   if (b.kind === 'faithful') {
     const p = P[b.patron], dv = (E as any).devotionNow ? (E as any).devotionNow(c) : c.devotion ?? 3;
-    const next = dv < G[1] ? 'Hymn I at ' + G[1] : dv < G[2] ? 'Hymn II at ' + G[2] : dv < G[3] ? 'Hymn III and the Miracle at ' + G[3] : 'every Hymn open';
-    rows.push({ key: 'devotion', label: 'Devotion', value: dv + ' / 10', now: dv, max: 10, kind: 'pips', colour: RES_INK.faith, sub: (p?.name || b.patron) + ' · ' + next,
-      ...(dv >= G[3] ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
-      hint: 'Your standing with ' + (p?.name || 'your patron') + ': Hymn I at ' + G[1] + ', II at ' + G[2] + ', III at ' + G[3] + '; the Miracle needs Faith 7 and Devotion ' + G.miracle + ' and spends it all. What they like raises it; their taboos lower it.' });
+    // Rules 1.6.2: Hymn III at 7, the Miracle at 10 (with Faith 7).
+    const next = dv < G[1] ? 'Hymn I at ' + G[1] : dv < G[2] ? 'Hymn II at ' + G[2] : dv < G[3] ? 'Hymn III at ' + G[3] : dv < G.miracle ? 'the Miracle at ' + G.miracle : 'the Miracle open';
+    // Rules 1.6.1: Devotion is a level made of XP; the row shows the level and the XP toward the next ("4 · 12/32 XP").
+    const X: any = E as any, total = X.devotionXpOf ? X.devotionXpOf(c) : 0, lv = X.devotionLevelOf ? X.devotionLevelOf(total) : dv;
+    const at = X.devotionThreshold ? X.devotionThreshold(lv) : 0, nx = lv < (X.DEVOTION_MAX_LEVEL ?? 10) && X.devotionThreshold ? X.devotionThreshold(lv + 1) : null;
+    rows.push({ key: 'devotion', label: 'Devotion', value: dv + (nx != null ? ' · ' + (total - at) + '/' + (nx - at) + ' XP' : ' · ' + total + ' XP'), now: dv, max: 10, kind: 'pips', colour: RES_INK.faith, sub: (p?.name || b.patron) + ' · ' + next,
+      ...(dv >= G.miracle ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
+      hint: 'Your standing with ' + (p?.name || 'your patron') + ': Hymn I at ' + G[1] + ', II at ' + G[2] + ', III at ' + G[3] + '; the Miracle needs Faith ' + ((E as any).MIRACLE_FAITH ?? 7) + ' and Devotion ' + G.miracle + ', and lowers Devotion by ' + ((E as any).MIRACLE_COST_LEVELS ?? 5) + ' levels. Each level takes Devotion XP: what they like gives some (capped each fight, scene and session), vows and rites more; their taboos take it away.' });
     const wit = !!u && !!(u.conds && u.conds.witnessed);
     if (wit) rows.push({ key: 'witnessed', label: 'Witnessed', value: 'WATCHED', kind: 'text', colour: RES_INK.faith, level: 'ready', sub: p?.name, hint: (p?.name || 'Your patron') + ' is watching until your next turn: what they like gets +2, taboos cost double.' });
     const vow = (u && u.vow) || c.vow;
     if (vow) { const vd = ((E as any).VOW || {})[vow.id]; rows.push({ key: 'vow', label: 'Vow', value: vow.state.toUpperCase(), kind: 'text', colour: vow.state === 'broken' ? RES_INK.muted : RES_INK.faith, sub: vd?.words || vow.id,
-      ...(vow.state === 'broken' ? { warn: 'BROKEN' as ResWarn, level: 'alert' as const } : {}), hint: (vd?.words || 'Your vow') + ' Kept at the end of the fight: +1 Devotion. Broken: −2.' }); }
+      ...(vow.state === 'broken' ? { warn: 'BROKEN' as ResWarn, level: 'alert' as const } : {}), hint: (vd?.words || 'Your vow') + ' Kept at the end of the fight: +' + ((E as any).DEVOTION_XP?.vowKept ?? 3) + ' Devotion XP. Broken: −' + ((E as any).DEVOTION_XP?.vowBroken ?? 5) + '.' }); }
   } else {
     for (const [id, n] of Object.entries(c.faithPieces || {}) as [string, number][]) if (n > 0) rows.push({ key: 'piece-' + id, label: P[id]?.name || id, value: Math.min(3, n) + ' / 3', now: Math.min(3, n), max: 3, kind: 'pips', colour: RES_INK.faith, sub: 'Pieces (Atheist)',
       hint: 'Knowledge pieces of ' + (P[id]?.name || id) + ': each unlocks their next Hymn, prayed by dice (TN 14 / 16 / 18).' });

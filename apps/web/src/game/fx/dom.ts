@@ -95,6 +95,11 @@ export function burst(name: string, p: { x: number; y: number }, size: number, m
   };
   if (o.delay) setTimeout(run, o.delay); else run();
 }
+/** The centre x of a box of width w kept inside lo..hi (it shifts inward near an edge; centred when it can't fit). */
+export function clampCentre(x: number, w: number, lo: number, hi: number): number {
+  if (hi - lo <= w) return (lo + hi) / 2;
+  return Math.max(lo + w / 2, Math.min(hi - w / 2, x));
+}
 /** Floating text over a point: damage numbers, MISS, a condition. */
 export function floatText(text: string, p: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean } = {}) {
   const run = () => {
@@ -104,6 +109,10 @@ export function floatText(text: string, p: { x: number; y: number; s: number }, 
       ';text-shadow:0 0 3px #000,0 2px 0 #000,0 0 10px rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;width:100%;height:100%';
     const ms = o.ms || (o.big ? 1300 : 1000), box = put(t, { x: p.x, y: p.y - p.s * 0.35 }, p.s * 3, fs * 1.4, ms);
     box.style.zIndex = '3';
+    // A long float near an edge of the layer shifts inward, so its words are never cut off (the text is measured once
+    // it is on the layer; the box widens to fit it).
+    const room = layer?.clientWidth || (typeof innerWidth === 'number' ? innerWidth : 0), need = Math.max(p.s * 3, (t.scrollWidth || 0) + 8);
+    if (room > 0) { box.style.width = need + 'px'; box.style.left = (clampCentre(p.x, need, 4, room - 4) - need / 2) + 'px'; }
     anim(box, reducedMotion() ? [{ opacity: 0 }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }]
       : [{ transform: 'translateY(6px) scale(' + (o.big ? 1.8 : 0.7) + ')', opacity: 0 }, { transform: 'translateY(-4px) scale(1)', opacity: 1, offset: 0.15 }, { transform: 'translateY(-' + p.s * 0.5 + 'px) scale(1)', opacity: 1, offset: 0.7 }, { transform: 'translateY(-' + p.s * 0.8 + 'px) scale(.95)', opacity: 0 }],
       { duration: ms, easing: 'ease-out', fill: 'forwards' });

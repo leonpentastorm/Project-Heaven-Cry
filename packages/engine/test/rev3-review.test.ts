@@ -94,7 +94,7 @@ describe('Judgement (spec item 340): 1 Devotion, once per fight, in the data too
   it('classes.json matches the engine', () => {
     const m: any = ADVANCED.lumeri_templar.moves.find((x: any) => x.id === 'judgement');
     expect(m.uses).toBe('per_combat');
-    expect(m.effects.find((e: any) => e.op === 'resource')).toMatchObject({ resource: 'devotion', value: -1 });
+    expect(m.effects.find((e: any) => e.op === 'resource')).toMatchObject({ resource: 'devotion', value: -10, unit: 'xp' }); // rules 1.6.1: 1 Devotion is 10 XP (item 706)
     expect(m.text).toMatch(/1 Devotion/); expect(m.text).not.toMatch(/3 Devotion|scene/);
   });
 });

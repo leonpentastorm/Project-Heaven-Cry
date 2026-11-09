@@ -1,9 +1,10 @@
 // The Proving Ground's FAITH tools (rules 1.6; sandbox/faith): make the fighter Faithful to Mother Ember with Faith 7
-// and Devotion 7, start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
+// and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
 // reset the limits; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
 // a Hymn at its gate, an overreach, an intervention (a kill brings 20 Storm on the next enemy), a vow kept to the end
-// of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one.
-import { chromium, click, BASE } from './lib.mjs';
+// of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one;
+// leaving a patron; then the Laughing Mask's Encore offered free in the action panel (items 729, 737).
+import { chromium, click, BASE, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
@@ -27,7 +28,7 @@ await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-belief="faithful"]').click(); await p.waitForTimeout(200);
 await drawer.locator('[data-sb-patron="mother_ember"]').click(); await p.waitForTimeout(200);
 for (let i = 0; i < 7; i++) { const r = drawer.getByRole('button', { name: 'Raise Faith' }); if (await r.isEnabled()) await r.click(); await p.waitForTimeout(60); }
-await drawer.getByRole('button', { name: '10', exact: true }).click(); await p.waitForTimeout(200);
+await drawer.locator('[data-sb-faith-miracle]').click(); await p.waitForTimeout(200);
 let c = await me();
 ok('the tools make a Faithful of Mother Ember, Faith ' + (c.skills.faith || 0) + ', Devotion ' + c.devotion, c.belief?.kind === 'faithful' && c.belief.patron === 'mother_ember' && (c.skills.faith || 0) >= 7 && c.devotion === 10);
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-pg-tools.png' });
@@ -54,7 +55,8 @@ if (shown && SHOTS) { await p.waitForTimeout(900); await p.screenshot({ path: SH
 await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 4000 }).catch(() => {});
 ok('and clears within 2.5 s (' + (Date.now() - t0) + ' ms)', Date.now() - t0 < 3200 && (await p.locator('[data-phc-miracle]').count()) === 0);
 c = await me();
-ok('the Miracle spends the Devotion and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')) || (c.devotion ?? 10) < 10);
+ok('the Miracle lowers Devotion by 5 levels (10 → 5, 102 XP: rules 1.6.2; now ' + c.devotion + ' · ' + c.devotionXp + ' XP)', c.devotion === 5 && c.devotionXp === 102);
+ok('and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')));
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
 await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-faith-reset]').click(); await p.waitForTimeout(300);
@@ -107,11 +109,13 @@ if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn.png' });
 // An overreach: Gather the Clouds (Hymn III, gate 7) at Devotion 5: TN 16; the limits reset so the cooldown allows it.
 await act({ type: 'sandbox/faith', charId: cid, reset: true });
 await p.locator('[role="tabpanel"] [data-act="pr:hymn:old_overcast.gather_the_clouds"]').click(); await p.waitForTimeout(250);
-ok('Gather the Clouds is an overreach (TN 16, a miss costs Devotion)', /OVERREACH · TN 16/.test(await p.locator('aside').first().textContent()) && /a miss costs 1 Devotion/.test(await p.locator('aside').first().textContent()));
-const dv0 = (await G()).characters[cid].devotion, n2 = (await G()).combat.log.length;
+ok('Gather the Clouds is an overreach (TN 16, a miss costs 3 Devotion XP)', /OVERREACH · TN 16/.test(await p.locator('aside').first().textContent()) && /a miss costs 3 Devotion XP/.test(await p.locator('aside').first().textContent()));
+const c0 = (await G()).characters[cid], dv0 = c0.devotion, xp0 = c0.devotionXp, n2 = (await G()).combat.log.length;
+ok('the tools\' Devotion 5 is the level-5 threshold (' + xp0 + ' XP)', xp0 === 102);
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click(); await p.waitForTimeout(600);
-const dv1 = (await G()).characters[cid].devotion, lg2 = (await G()).combat.log.slice(n2).join(' | ');
-ok('the overreach rolls: answered, or missed for −1 Devotion (' + dv0 + ' → ' + dv1 + ')', (await G()).combat.log.length > n2 && (dv1 === dv0 || dv1 === dv0 - 1));
+const c1 = (await G()).characters[cid], dv1 = c1.devotion, xp1 = c1.devotionXp, lg2 = (await G()).combat.log.slice(n2).join(' | ');
+ok('the overreach rolls: answered, or missed for −3 Devotion XP (' + dv0 + ' · ' + xp0 + ' XP → ' + dv1 + ' · ' + xp1 + ' XP)', (await G()).combat.log.length > n2 && (xp1 === xp0 || (xp1 === xp0 - 3 && dv1 === dv0 - 1)));
+if (xp1 < xp0) ok('a miss below the threshold drops the level, and the log says so (' + lg2.slice(0, 120) + ')', /−3 Devotion XP \(a failed overreach\): DEVOTION 4/.test(lg2));
 // The intervention and the kept vow: shoot (and pray) until a foe dies; Old Overcast answers the kill once a fight.
 // The wave's units are far off: clear the field and set two minions beside us.
 await act({ type: 'sandbox/clear' });
@@ -129,7 +133,7 @@ for (let i = 0; i < 14 && !(await logHas(/Old Overcast intervenes/)); i++) {
   await p.waitForTimeout(400);
 }
 ok('a kill while Witnessed: Old Overcast intervenes (20 Storm to the nearest other enemy)', await logHas(/Old Overcast intervenes/));
-// Finish them: the fight ends with Mercy kept (+1 Devotion).
+// Finish them: the fight ends with Mercy kept (+3 Devotion XP).
 const dvK = (await G()).characters[cid].devotion;
 for (let i = 0; i < 14; i++) {
   const gg = await G(); if (!gg.combat || gg.combat.over || !gg.combat.units.some((x) => x.side === 'foe' && !x.dead && !x.downed)) break;
@@ -181,5 +185,61 @@ cc = (await G()).characters[cid];
 ok('a pact with a Jealous patron ends the others\' Hymns (' + (e2 || (cc.belief?.patron + ', Hymns ' + (cc.hymns || []).join(', '))) + ')', cc.belief?.patron === 'nerukhan' && !(cc.hymns || []).length);
 const pactLines = (await G()).story.entries.filter((e) => /^PACT/.test(e.head || '')).length;
 ok('the story says so (PACT entries: ' + pactLines + ')', pactLines >= 2);
+// ---------- leaving a patron (rules 1.6.1): a switch from a Jealous patron leaves a grudge; apostasy has the cooldown ----------
+const openFaithTab = async () => { await drawer.getByRole('button', { name: 'Close the tools' }).click({ timeout: 1500 }).catch(() => {}); await p.getByRole('tab', { name: 'FAITH', exact: true }).first().click(); const fp = p.locator('[data-phc-faith-panel]'); await fp.waitFor({ timeout: 5000 }); return fp; };
+const e3 = await act({ type: 'faith/pact', charId: cid, patron: 'mother_ember' }); await p.waitForTimeout(300);
+cc = (await G()).characters[cid];
+ok('leaving Nerukhan (Jealous) for Mother Ember: no cooldown, and his grudge (' + (e3 || JSON.stringify(cc.grudge || null).slice(0, 90)) + ')', cc.belief?.patron === 'mother_ember' && cc.grudge?.patron === 'nerukhan' && !cc.faithLeft);
+const fp = await openFaithTab(); await p.waitForTimeout(300);
+const gtxt = (await fp.locator('[data-faith-grudge]').textContent().catch(() => '')) || '';
+ok('the faith tab shows the grudge: who, what, how long (' + gtxt.slice(0, 140) + ')', /GRUDGE · HOLY FATHER NERUKHAN/.test(gtxt) && /Marked for 2 rounds at the start of every fight/.test(gtxt) && /cut by 50%/.test(gtxt) && /Ends after 3 more sessions/.test(gtxt));
+ok('the switch has no APOSTASY line', !(await G()).story.entries.some((e) => e.head === 'APOSTASY'));
+const tc = (await fp.locator('[data-faith-tagcaps]').textContent().catch(() => '')) || '';
+ok('the tag caps on the faith tab, with no session part in the Proving Ground (' + tc + ')', /^LIKED TAGS · \d\/2 THIS (SCENE|FIGHT)/.test(tc) && !/SESSION/.test(tc));
+if (SHOTS) { await fp.locator('[data-faith-grudge]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-grudge.png' }); }
+const e4 = await act({ type: 'faith/apostasy', charId: cid }); await p.waitForTimeout(300);
+cc = (await G()).characters[cid];
+ok('apostasy: an Atheist, Devotion XP 0, the day recorded (' + (e4 || JSON.stringify(cc.faithLeft)) + ')', cc.belief?.kind === 'atheist' && !cc.devotionXp && !!cc.faithLeft);
+const ctxt = (await fp.locator('[data-faith-day]').textContent().catch(() => '')) || '';
+ok('the faith tab: the day and "Nobody answers yet: 90 days" (' + ctxt + ')', /DAY \d+/.test(ctxt) && /Nobody answers yet: 90 days/.test(ctxt));
+ok('apostasy ends the grudge (item 720): no grudge card, nothing on the character', !cc.grudge && (await fp.locator('[data-faith-grudge]').count()) === 0);
+if (SHOTS) { await fp.locator('[data-faith-day]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-cooldown.png' }); }
+const e5 = await act({ type: 'faith/pact', charId: cid, patron: 'the_matchmaker' }); await p.waitForTimeout(200);
+ok('a pact during the cooldown is refused: still an Atheist' + (e5 ? ' (' + e5 + ')' : ''), (await G()).characters[cid].belief?.kind === 'atheist');
+// The Proving Ground has no Narrator (no days pass here: a room's long rests and the Narrator's days do that, faith.mjs and
+// the unit tests); its tools ignore the cooldown, as they say.
+await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'the_matchmaker' }); await p.waitForTimeout(300);
+cc = (await G()).characters[cid];
+const lbl = (await fp.locator('[data-devotion-label]').textContent().catch(() => '')) || '';
+ok('the tools swear a patron anyway: the cooldown is gone and the meter reads "' + lbl + '"', cc.belief?.patron === 'the_matchmaker' && (await fp.locator('[data-faith-cooldown]').count()) === 0 && lbl === 'DEVOTION 3 · 0/25 XP');
+// ---------- Encore (items 729, 737): the one who prays is offered its repeat, marked free, even short of AP ----------
+await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'the_laughing_mask', faith: 7, devotion: 10, reset: true }); await p.waitForTimeout(200);
+await act({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true });
+await act({ type: 'sandbox/fight' });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+await myTurn(); await calm();
+await act({ type: 'sandbox/clear' });
+{ const gq = await G(), mu = gq.combat.units.find((x) => x.charId), [qx, qy] = mu.pos.split(',').map(Number), M = gq.combat.map;
+  const at = [[2, 0], [0, 2], [-2, 0], [0, -2], [1, 0], [0, 1]].map(([dx, dy]) => [qx + dx, qy + dy])
+    .find(([x, y]) => x >= 0 && y >= 0 && x < M.w && y < M.h && !M.solid.includes(x + ',' + y) && !(M.cover || []).includes(x + ',' + y) && !(M.full || []).includes(x + ',' + y));
+  console.log('note Encore target at ' + String.fromCharCode(65 + at[0]) + (at[1] + 1) + ': ' + (await act({ type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: String.fromCharCode(65 + at[0]) + (at[1] + 1) }) || 'ok')); }
+await p.waitForTimeout(300);
+{ const gE = await G(), mE = gE.combat.units.find((x) => x.charId), fE = gE.combat.units.find((x) => x.side === 'foe' && !x.dead);
+  const ap0 = mE.ap, eA = await act({ type: 'combat/attack', unitId: mE.id, targetId: fE.id, mode: 'shot' });
+  const eP = await act({ type: 'faith/pray', unitId: mE.id, kind: 'miracle', id: 'encore' });
+  await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {}); await calm();
+  const uE = await myU(), en = uE.faith?.encore;
+  ok('a shot, then Encore: the repeat is lent ' + (en?.ap ?? '?') + ' AP with ' + uE.ap + ' AP left (' + (eA || eP || 'prayed') + ')', !eA && !eP && en?.key === 'combat/attack:shot' && en.ap === ap0 - 3 - uE.ap);
+  await pickAction(p, /^Shot/); await p.waitForTimeout(150);
+  const mapW = gE.combat.map.w, [fx, fy] = fE.pos.split(',').map(Number);
+  await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click(); await p.waitForTimeout(250);
+  const asideT = await p.locator('aside').first().textContent(), conf = p.getByRole('button', { name: 'Confirm', exact: true }).first();
+  ok('the action panel marks the repeat FREE · ENCORE', /FREE · ENCORE/.test(asideT));
+  await p.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Confirm' && !b.disabled), null, { timeout: 3000 }).catch(() => {});
+  ok('and Confirm is enabled even with ' + uE.ap + ' AP (the shot costs ' + en?.ap + ')', await conf.isEnabled());
+  const nE = (await G()).combat.log.length; await conf.click(); await p.waitForTimeout(600);
+  const lgE = (await G()).combat.log.slice(nE).join(' | ');
+  ok('the repeat runs free (' + lgE.slice(0, 120) + ')', /Encore: .* repeats Attack \(shot\), free/.test(lgE) && (await myU()).ap === uE.ap); }
+await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await p.waitForTimeout(300);
 console.log('errors', errors);
 await browser.close();

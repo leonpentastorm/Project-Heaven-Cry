@@ -1202,51 +1202,8 @@
       }
     },
     "prayer": {
-      "requires": {
-        "patron": true
-      },
-      "devotion": {
-        "min": 0,
-        "max": 10,
-        "start": 3,
-        "gain": {
-          "session_rites_kept": 1,
-          "convert_someone": 1
-        },
-        "loss": {
-          "broken_rite": 1,
-          "break_character_seen": 2
-        }
-      },
-      "tiers": [
-        {
-          "id": "pray",
-          "faith_min": 3,
-          "ap": 3,
-          "roll": "d20 + mod(faith) + floor(devotion/2)",
-          "tn": "patron mood (default 12, narrator moves it)",
-          "success": "one blessing from patron list x blessing_power",
-          "nat1": "-1 devotion",
-          "meter_delta": -5,
-          "cooldown": "prayer_cooldown_turns"
-        },
-        {
-          "id": "witnessed",
-          "faith_min": 5,
-          "trigger": "after a successful prayer, until your next turn",
-          "on_theme_bonus": 2,
-          "off_theme_cost_devotion": 1,
-          "theme_judged_by": "narrator"
-        },
-        {
-          "id": "miracle",
-          "faith_min": 7,
-          "uses": "once per session",
-          "cost": "all devotion",
-          "devotion_min": 5,
-          "effect": "blessing at triple power, or a story-sized intervention the narrator designs"
-        }
-      ],
+      "revision": "1.6.1",
+      "note": "Prayer, Devotion and its XP are in patrons.json (rules 1.6 and 1.6.1: Devotion XP, the tag caps, Whisper / Hymn / Miracle, overreach, Witnessed, vows, rites, leaving a patron). The rules 1.0 numbers once kept here (a level a rite, the patron's mood as a TN) are retired.",
       "data": "patrons.json"
     }
   },

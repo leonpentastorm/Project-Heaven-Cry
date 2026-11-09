@@ -273,13 +273,20 @@
 </div>
 </section>
 <sc-if value="{{fa.hasClosed}}"><span role="note" style="font-size: 12px; font-weight: 700; line-height: 1.4; color: #F65157">✕ {{fa.closed}}</span></sc-if>
+<div data-faith-day style="display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2"><span>{{fa.dayText}}</span><sc-if value="{{fa.hasCooldown}}"><span data-faith-cooldown role="note" style="letter-spacing: 0.04em; color: #E7EBF3">✕ {{fa.cooldown}}</span></sc-if></div>
+<sc-if value="{{fa.hasGrudge}}"><section aria-label="Grudge" data-faith-grudge style="display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid #F65157">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #F65157">✕ {{fa.grudge.head}}</span>
+<span style="font-size: 12px; line-height: 1.4; color: #E7EBF3">{{fa.grudge.what}} {{fa.grudge.left}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 14px; font-style: italic; line-height: 1.45; color: #C9D3E3">{{fa.grudge.text}}</span>
+</section></sc-if>
 
 <sc-if value="{{fa.faithful}}">
 <section aria-label="Devotion" style="display: flex; flex-direction: column; gap: 6px">
-<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #D36A90">DEVOTION · {{fa.devotion}} / 10</span>
-<div role="meter" aria-label="Devotion" aria-valuemin="0" aria-valuemax="10" aria-valuenow="{{fa.devotion}}" style="display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px">
-<sc-for list="{{fa.meter}}" as="m"><div style="display: flex; flex-direction: column; gap: 3px; align-items: stretch"><div style="{{m.style}}"></div><span style="font-size: 9px; font-weight: 700; letter-spacing: 0.04em; line-height: 1.2; text-align: center; color: #F2C46A; min-height: 11px">{{m.gate}}</span></div></sc-for>
+<span data-devotion-label style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #D36A90">{{fa.devotionText}}</span>
+<div role="meter" aria-label="Devotion" aria-valuemin="0" aria-valuemax="10" aria-valuenow="{{fa.devotion}}" aria-valuetext="{{fa.devotionText}}" style="display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{fa.meter}}" as="m"><div style="display: flex; flex-direction: column; gap: 3px; align-items: stretch"><div style="{{m.style}}"></div><span style="font-size: 9px; font-weight: 700; letter-spacing: 0.04em; line-height: 1.2; text-align: center; color: var(--faith-light); min-height: 11px">{{m.gate}}</span></div></sc-for>
 </div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center"><div aria-hidden="true" style="height: 4px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{fa.xpFillStyle}}"></div></div><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2">{{fa.xpNextText}}</span></div>
 <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
 <span title="{{fa.witnessedTitle}}" style="{{fa.witnessedStyle}}"><img src="{{fa.witnessed.icon}}" alt="" style="width: 14px; height: 14px">{{fa.witnessed.word}}</span>
 <sc-if value="{{fa.hasVow}}"><span data-vow-state="{{fa.vow.state}}" style="display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; border: 1px solid #D36A90; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #FFFFFF"><img src="{{fa.vow.icon}}" alt="" style="width: 14px; height: 14px">VOW · {{fa.vow.label}}</span></sc-if>
@@ -287,6 +294,7 @@
 </section>
 <sc-if value="{{fa.hasLikes}}"><div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2; margin-right: 4px">LIKES</span><sc-for list="{{fa.likes}}" as="t"><span style="padding: 1px 8px; border-radius: 999px; border: 1px solid #6FEA77; font-size: 10.5px; font-weight: 700; color: #6FEA77">✓ {{t.t}}</span></sc-for></div></sc-if>
 <sc-if value="{{fa.hasTaboos}}"><div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2; margin-right: 4px">TABOOS</span><sc-for list="{{fa.taboos}}" as="t"><span style="padding: 1px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 10.5px; font-weight: 700; color: #F65157">✕ {{t.t}}</span></sc-for></div></sc-if>
+<sc-if value="{{fa.hasTagCaps}}"><span data-faith-tagcaps role="note" title="Liked tags give Devotion XP up to 2 a fight, 2 a scene out of fights and 6 a session; once a cap is reached they give nothing until it resets." style="{{fa.tagCapsStyle}}">{{fa.tagCaps}}</span></sc-if>
 </sc-if>
 
 <sc-if value="{{fa.atheist}}">
@@ -316,21 +324,21 @@
 <img src="{{b.icon}}" alt="" style="grid-row: span 4; width: 32px; height: 32px">
 <span style="display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700">{{b.name}}</span><span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #A3AEC2">{{b.meta}}</span></span>
 <span style="font-size: 12px; line-height: 1.4; color: #C9D3E3">{{b.text}}</span>
-<sc-if value="{{b.hasWarn}}"><span style="font-size: 11.5px; font-weight: 700; color: #F2C46A">⚠ {{b.warn}}</span></sc-if>
+<sc-if value="{{b.hasWarn}}"><span style="font-size: 11.5px; font-weight: 700; color: var(--faith-light)">⚠ {{b.warn}}</span></sc-if>
 <sc-if value="{{b.hasWhy}}"><span style="font-size: 11.5px; font-weight: 700; color: #A3AEC2">✕ {{b.why}}</span></sc-if>
 </button>
 <sc-if value="{{b.open}}"><div role="group" aria-label="Choose the target" style="display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; margin-left: 42px; border-left: 2px solid #D36A90"><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{b.opts}}" as="o"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></div><span style="{{b.verdictStyle}}">{{b.verdict}}</span><div style="display: flex; gap: 6px"><button type="button" data-prayer-confirm onClick="{{b.confirm}}" aria-disabled="{{b.cantConfirm}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #FFFFFF; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Pray</button><button type="button" onClick="{{b.cancel}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Cancel</button></div></div></sc-if>
 </sc-for>
 </sc-if>
 <sc-if value="{{fa.hasMiracle}}">
-<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #F2C46A; padding-top: 6px">✦ MIRACLE · ONCE A SESSION</span>
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: var(--faith-light); padding-top: 6px">{{fa.miracleHead}}</span>
 <button type="button" data-prayer="{{fa.miracle.key}}" onClick="{{fa.miracle.click}}" aria-pressed="{{fa.miracle.pressed}}" aria-label="{{fa.miracle.aria}}" title="{{fa.miracle.why}}" style="{{fa.miracle.style}}">
 <img src="{{fa.miracle.icon}}" alt="" style="grid-row: span 3; width: 32px; height: 32px">
 <span style="display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700">{{fa.miracle.name}}</span><span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #A3AEC2">{{fa.miracle.meta}}</span></span>
 <span style="font-size: 12px; line-height: 1.4; color: #C9D3E3">{{fa.miracle.text}}</span>
 <sc-if value="{{fa.miracle.hasWhy}}"><span style="font-size: 11.5px; font-weight: 700; color: #A3AEC2">✕ {{fa.miracle.why}}</span></sc-if>
 </button>
-<sc-if value="{{fa.miracle.open}}"><div role="group" aria-label="Choose the target" style="display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; margin-left: 42px; border-left: 2px solid #F2C46A"><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{fa.miracle.opts}}" as="o"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></div><span style="{{fa.miracle.verdictStyle}}">{{fa.miracle.verdict}}</span><div style="display: flex; gap: 6px"><button type="button" data-prayer-confirm onClick="{{fa.miracle.confirm}}" aria-disabled="{{fa.miracle.cantConfirm}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #FFFFFF; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Pray</button><button type="button" onClick="{{fa.miracle.cancel}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Cancel</button></div></div></sc-if>
+<sc-if value="{{fa.miracle.open}}"><div role="group" aria-label="Choose the target" style="display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; margin-left: 42px; border-left: 2px solid var(--faith-light)"><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{fa.miracle.opts}}" as="o"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></div><span style="{{fa.miracle.verdictStyle}}">{{fa.miracle.verdict}}</span><div style="display: flex; gap: 6px"><button type="button" data-prayer-confirm onClick="{{fa.miracle.confirm}}" aria-disabled="{{fa.miracle.cantConfirm}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #FFFFFF; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Pray</button><button type="button" onClick="{{fa.miracle.cancel}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Cancel</button></div></div></sc-if>
 </sc-if>
 </section>
 
@@ -422,7 +430,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 
 <aside aria-label="Map and speaking order" class="phc-col-scroll" style="flex: 1 1 300px; max-width: 360px; min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 18px 18px 120px; border-left: 1px solid #232D3F">
 <sc-if value="{{hasHere}}" hint-placeholder-val="{{false}}"><section aria-label="Here" data-here="1" style="display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px; background: #0D1119; border: 1px solid #3B475D; border-left: 3px solid #FFFFFF">
-<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #FFFFFF">{{here.zone}}</span>
+<span style="display: flex; gap: 8px; align-items: baseline; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #FFFFFF"><span style="flex: 1">{{here.zone}}</span><span data-here-day style="letter-spacing: 0.14em; color: #A3AEC2">{{here.day}}</span></span>
 <sc-for list="{{here.rows}}" as="h"><div style="display: flex; flex-direction: column; gap: 3px"><span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 13px; font-weight: 700; line-height: 1.35; flex: 1">◆ {{h.text}}</span><span style="{{h.tagStyle}}">{{h.tag}}</span></span><sc-if value="{{h.hasWhere}}"><span style="font-size: 11px; color: #C9D3E3">{{h.where}}</span></sc-if><sc-for list="{{h.steps}}" as="st"><span style="font-size: 12px; line-height: 1.35; color: #A3AEC2">› {{st.text}}</span></sc-for></div></sc-for>
 </section></sc-if>
 <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{zoneLabel}}</span>
@@ -486,7 +494,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <sc-if value="{{noAreaLog}}"><span style="font-size: 12px; color: #7F8BA1">Nothing yet this round.</span></sc-if>
 <sc-for list="{{areaLog}}" as="l"><span style="{{l.style}}">{{l.text}}</span></sc-for>
 </div>
-<sc-if value="{{hasHere}}"><section aria-label="Here (area map)" style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 10px; background: #0D1119; border: 1px solid #3B475D; border-left: 3px solid #FFFFFF"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em">{{here.zone}}</span><sc-for list="{{here.rows}}" as="h"><span style="font-size: 13px; font-weight: 700">◆ {{h.text}} <span style="{{h.tagStyle}}">{{h.tag}}</span></span><sc-if value="{{h.hasWhere}}"><span style="font-size: 11px; color: #C9D3E3">{{h.where}}</span></sc-if><sc-for list="{{h.steps}}" as="st"><span style="font-size: 12px; color: #A3AEC2">› {{st.text}}</span></sc-for></sc-for></section></sc-if>
+<sc-if value="{{hasHere}}"><section aria-label="Here (area map)" style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 10px; background: #0D1119; border: 1px solid #3B475D; border-left: 3px solid #FFFFFF"><span style="display: flex; gap: 8px; align-items: baseline; font-size: 11px; font-weight: 700; letter-spacing: 0.18em"><span style="flex: 1">{{here.zone}}</span><span data-here-day style="letter-spacing: 0.14em; color: #A3AEC2">{{here.day}}</span></span><sc-for list="{{here.rows}}" as="h"><span style="font-size: 13px; font-weight: 700">◆ {{h.text}} <span style="{{h.tagStyle}}">{{h.tag}}</span></span><sc-if value="{{h.hasWhere}}"><span style="font-size: 11px; color: #C9D3E3">{{h.where}}</span></sc-if><sc-for list="{{h.steps}}" as="st"><span style="font-size: 12px; color: #A3AEC2">› {{st.text}}</span></sc-for></sc-for></section></sc-if>
 </div>
 <aside aria-label="Your turn" style="flex: 0 0 280px; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F">
 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.12em">{{wHead}}</span>

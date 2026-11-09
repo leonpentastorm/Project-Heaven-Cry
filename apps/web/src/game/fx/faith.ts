@@ -6,7 +6,10 @@
 //   prayer_fail  {unit, kind, id, patron, at}                  silence, the mark fading
 //   witnessed    {unit, patron, at}                            an eye opening above the caster
 //   intervention {patron, trigger, at, target}                 a sharp bell, the mark flashing at the trigger
-//   devotion     {char, delta, reason, tag?, at?}              "+1 DEVOTION · <tag>" in Virtue ink with a gold mark
+//   devotion     {char, delta, xp, reason, tag?, now, was, level?, at?}  "+1 DEVOTION XP · <tag>" in Virtue ink with a gold
+//                mark (delta is XP, rules 1.6.1); a level change (level set) adds "DEVOTION 5", the mark lit
+//   leave        {char, patron, to, letGo, roll?}              leaving a patron for another: "LET GO · <patron>" or "HELD · <patron>"
+//   grudge       {char, patron, sessions, condition, at?, unit?}  "GRUDGE · <patron>" in complication red, the old mark dim
 //   vow          {unit, id, state: sworn|kept|broken, at}       a seal stamped (sworn), lit (kept) or cracked (broken)
 //   patron_line  {patron, event, text}                         a card in the log (the screens draw it); a glint here
 //   miracle      {patron, id, at, area, name?, line?}          the full-screen answer (under 2.5 s, skippable), then the area
@@ -51,10 +54,17 @@ function rays(p: Pt, color: string, n: number, ms: number, delay = 0) {
   }
 }
 
+/** A Devotion event's float (rules 1.6.1: the delta is XP): "+1 DEVOTION XP · HEAL", "−3 DEVOTION XP". */
+export function devotionWord(e: { delta?: number; tag?: string }): string {
+  const d = Number(e.delta) || 0;
+  return (d > 0 ? '+' : '−') + Math.abs(d) + ' DEVOTION XP' + (e.tag ? ' · ' + String(e.tag).toUpperCase() : '');
+}
+
 export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void> {
   const { at, posOf, play } = K;
   const where = (e: any) => at(e.at || posOf(e.unit) || posOf(e.target));
   const targetAt = (e: any) => at(e.targetAt || posOf(e.target) || e.at);
+  const charAt = (e: any) => at(e.at || (K.posOfChar ? K.posOfChar(e.char) : null));
   return {
     // Whisper: a soft chime and a small gold ray. Hymn: a choir swell, the patron's mark as a halo over the target,
     // rays in the patron's accent.
@@ -94,12 +104,32 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       mark(patronMarkUri(e.patron), p, p.s * 1.1, 700, { glow: acc, from: 1.6, to: 1.1 });
       if (!reducedMotion()) burst('flash_star', p, p.s * 1.6, 360, { color: '#FFFFFF', from: 0.4, to: 1.3 });
     },
-    // Devotion: a float in Virtue ink, with a small gold mark.
+    // Devotion (rules 1.6.1): the XP as a float in Virtue ink, with a small gold mark; a level change says the new level.
     devotion(e: any) {
-      const p = at(e.at || (K.posOfChar ? K.posOfChar(e.char) : null)); if (!p) return;
-      const d = Number(e.delta) || 0, word = (d > 0 ? '+' : '−') + Math.abs(d) + ' DEVOTION' + (e.tag ? ' · ' + String(e.tag).toUpperCase() : '');
-      floatText(word, { ...p, y: p.y + p.s * 0.45 }, FAITH_INK, { small: true, delay: 250 }); // below and after Witnessed's word, which often comes with it
+      const p = charAt(e); if (!p) return;
+      const d = Number(e.delta) || 0, word = devotionWord(e);
+      // A pact names the patron; the XP float only when the XP moved (a switch can keep it, or take some: item 719).
+      if (e.pact) floatText('PACT · ' + String(FAITH_PATRON[e.pact]?.name || e.pact).toUpperCase(), { ...p, y: p.y + p.s * 0.45 }, FAITH_INK, { small: true, delay: 250 });
+      if (d) floatText(word, { ...p, y: p.y + p.s * (e.pact ? 0.9 : 0.45) }, FAITH_INK, { small: true, delay: 250 }); // below and after Witnessed's word, which often comes with it
       mark(patronMarkUri(e.patron || ''), { x: p.x - p.s * 0.55, y: p.y - p.s * 0.55, s: p.s }, p.s * 0.35, 1100, { glow: FAITH_GOLD, opacity: d > 0 ? 1 : 0.5 });
+      if (e.level != null) {
+        floatText('DEVOTION ' + e.level, { ...p, y: p.y - p.s * 0.2 }, FAITH_INK, { delay: 650 });
+        if (Number(e.level) > Number(e.was ?? -1) && !reducedMotion()) burst('glow', p, p.s * 1.3, 700, { color: FAITH_GOLD, blend: 'screen' });
+      }
+    },
+    // Leaving a patron for another (item 712): the old patron's mark, lit if they let you go, dim if they don't.
+    leave(e: any) {
+      const p = charAt(e); play('crystal', p, { rate: e.letGo ? 0.8 : 0.55, gain: 0.35 }); if (!p) return;
+      const name = String(FAITH_PATRON[e.patron]?.name || e.patron || 'your patron').toUpperCase();
+      mark(patronMarkUri(e.patron || ''), { ...p, y: p.y - p.s * 0.8 }, p.s * 0.7, 1100, e.letGo ? { glow: accentOf(e.patron, e.accent), from: 1, to: 1.3 } : { opacity: 0.45, from: 1, to: 0.8 });
+      floatText((e.letGo ? 'LET GO · ' : 'HELD · ') + name, p, e.letGo ? FAITH_INK : '#A3AEC2', { small: true, delay: 150 });
+    },
+    // A grudge (item 713): set on a switch, and at each fight's start on the unit. A low bell and the word in red.
+    grudge(e: any) {
+      const p = at(e.at || posOf(e.unit) || (K.posOfChar ? K.posOfChar(e.char) : null)); play('hit_metal', p, { rate: 0.6, gain: 0.4 }); if (!p) return;
+      const name = String(FAITH_PATRON[e.patron]?.name || e.patron || 'a patron').toUpperCase();
+      mark(patronMarkUri(e.patron || ''), { ...p, y: p.y - p.s * 0.8 }, p.s * 0.6, 1000, { opacity: 0.5, from: 1.2, to: 0.9 });
+      floatText('GRUDGE · ' + name, { ...p, y: p.y - p.s * 0.6 }, '#F65157', { small: true, delay: 150 }); // above the condition's own float, which lands on the same tile
     },
     // A vow: sworn (a seal stamped), kept (it lights), broken (it cracks and falls).
     vow(e: any) {
@@ -157,7 +187,9 @@ export function faithBeat(e: FxEvent): number | undefined {
     case 'miracle': return reducedMotion() ? 1200 : 2400;
     case 'prayer_fail': return 600;
     case 'witnessed': case 'intervention': return 650;
-    case 'devotion': case 'vow': return 450;
+    case 'devotion': return x.level != null ? 800 : 450;
+    case 'vow': return 450;
+    case 'leave': case 'grudge': return 600;
     case 'patron_line': return 200;
     default: return undefined;
   }

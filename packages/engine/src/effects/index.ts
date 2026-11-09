@@ -18,7 +18,7 @@ import { keyOf } from './collect';
 export * from './types';
 export { register, emit, emitStory, anyOn, holdersOf, holderOf, statQuery, checkQuery, genericEffects, bindGame, boundGame, handlerOf, registered, ownerOf, heldOfChar, heldOfUnit, charOfUnit, setRankRule, _unregisterAll, _snapshotRegistry, _restoreRegistry, type Owner, type GenericOp, registerGeneric, genericOf } from './hooks';
 export { itemInfo, itemsOf, effectsOfHeld, allItems, perkEffects, keyOf as itemKey, splitKey, classMove, classMoveKeys, ADVANCED, BASE_CLASS, advancedActive, _setAdvancedLive, _setRevision2Classes, revision2Classes, REV2_CLASSES, SKILL_ITEMS, skillItemsOf, type Held } from './collect';
-export { uses, scopeOf, stampOf, usesLabel, sessionN, restN } from './uses';
+export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf } from './uses';
 export { turnAp, grantPerkAp, bankAp, apDebt, pushAp, refusedGift, AP_BASE, AP_MAX, AP_MIN, PERK_AP_CAP, AP_DEBT_CAP, type ApLine } from './ap';
 export { applyDamage, healUnit, grantShield, hostileSrc, type DamageSrc, type DamageResult } from './damage';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';

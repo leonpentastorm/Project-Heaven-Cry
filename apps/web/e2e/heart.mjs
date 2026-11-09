@@ -225,6 +225,9 @@ for (let i = 0; i < 14 && !shortFx; i++) {
   s = await st(); const m = s.u.mg;
   if (s.u.ap < 2 || (m.strain + 2 < m.strainLimit + 3 && s.u.ap < 3)) { await newRound(); continue; }
   if (m.held) { await must({ type: 'combat/letgo', unitId: s.u.id }); await p.waitForTimeout(200); }
+  // The snaps can kill the boss before the Strain gets there (the dice decide): a dead target ends the fight, so bring
+  // a fresh one in first.
+  if (!s.cb.units.some((x) => x.side === 'foe' && !x.dead && !x.surrendered)) { await spawn('boss', foeAt); await p.waitForTimeout(300); }
   await must({ type: 'sandbox/mana', value: 40 }); // every Begin draws the meter down: keep the air Flooded (+2 Strain)
   n0 = await seq();
   const into = m.strain + 2 >= m.strainLimit + 3;

@@ -1,7 +1,7 @@
 // The sheet's FAITH tab (Blessing 2.0, rules 1.6): the Faith panel, the story's prayer buttons with their targets, the
 // engine's rites, and the patron's line cards in the story stream. Everything comes from game/faithView.ts (the engine's
 // faithView and previewPrayer); this file is screen glue: state, words and styles. Buttons only, never a typed field.
-import { faithView, previewPrayer, FAITH_PATRON } from '@engine';
+import { faithView, previewPrayer, FAITH_PATRON, GATE, MIRACLE_COST_LEVELS } from '@engine';
 import { faithPanel, prayerButtons, prayAction, pickerFor, FAITH_INK, FAITH_GOLD } from '../game/faithView';
 import { accentOf, patronMarkUri } from '../game/faithArt';
 import { act, toast } from '../game/store';
@@ -58,13 +58,20 @@ export function faithTabVals(sc, g, c) {
   return {
     has: true, ...P, faithful: P.faithful, atheist: !P.faithful, hasVow: !!P.vow, vow: P.vow || {}, hasRule: !!P.rule, hasLikes: P.likes.length > 0, hasTaboos: P.taboos.length > 0,
     likes: P.likes.map((t) => ({ key: t, t })), taboos: P.taboos.map((t) => ({ key: t, t })),
-    meter, devotionLine: P.faithful ? 'DEVOTION ' + P.devotion + ' / 10' : '', faithLine: 'FAITH ' + v.faith,
+    meter, devotionLine: P.faithful ? P.devotionText : '', faithLine: 'FAITH ' + v.faith,
+    // Rules 1.6.1: the XP toward the next level (its fill is faith light, always beside the words), the day, the cooldown, a grudge.
+    devotionText: P.devotionText, xpFillStyle: 'height: 100%; border-radius: 99px; width: ' + Math.round(P.xpFill * 100) + '%; background: var(--faith-light, ' + FAITH_GOLD + ')',
+    xpNextText: P.xpNextText, dayText: P.dayText, hasCooldown: !!P.cooldown, cooldown: P.cooldown || '', hasGrudge: !!P.grudge, grudge: P.grudge || {},
+    // Items 703 and 722: liked tags against their caps, so a capped tag's silence has a reason on screen.
+    hasTagCaps: !!P.tagCaps, tagCaps: P.tagCaps?.text || '', tagCapsStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (P.tagCaps?.capped ? '#E7EBF3' : '#A3AEC2'),
     headStyle: 'display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F; border-top: 3px solid ' + P.accent,
     witnessedStyle: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; ' + (P.witnessed.on ? 'border: 1px solid ' + FAITH_GOLD + '; color: #FFFFFF' : 'border: 1px dashed #2E3A50; color: #7F8BA1'),
     witnessedTitle: P.witnessed.can ? 'Witnessed: your patron is watching this fight (Faith 5 and up).' : 'Being Witnessed needs a patron and Faith 5.',
     hasClosed: !!P.closed, rites, hasRites: rites.length > 0, hasPieces: P.pieces.length > 0, hasLearned: P.learned.length > 0,
     learned: P.learned.map((h) => ({ key: h.name, text: h.name + ' · ' + h.patronName + (h.tn ? ' · TN ' + h.tn : '') })),
     whispers: B.whispers.map(view), hymns: B.hymns.map(view), hasHymns: B.hymns.length > 0, miracle: B.miracle ? view(B.miracle) : {}, hasMiracle: !!B.miracle,
+    // Rules 1.6.2: the gate and the price in the heading, beside the words (the gold is light only).
+    miracleHead: '✦ MIRACLE · AT DEVOTION ' + GATE.miracle + ' · ONCE A SESSION · COSTS ' + MIRACLE_COST_LEVELS + ' LEVELS',
     prayHead: story ? 'PRAY · THE STORY' : 'PRAY', anyOpen: all.some((b) => S.faOpen === b.key),
   };
 }
