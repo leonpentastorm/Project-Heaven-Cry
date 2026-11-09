@@ -1,6 +1,7 @@
 // The Proving Ground's FAITH tools (rules 1.6; sandbox/faith): make the fighter Faithful to Mother Ember with Faith 7
-// and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
-// reset the limits; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
+// and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (Faith 2.2's
+// cut-in: the portrait, the name, the grant line, the zoom, the box; SHOTS=dir saves screenshots), then reset the limits and
+// skip a second one with a key; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
 // a Hymn at its gate, an overreach, an intervention (a kill brings 20 + 4 × Devotion Storm on the next enemy), a vow kept to the end
 // of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one;
 // leaving a patron; then the Laughing Mask's Encore offered free in the action panel (items 729, 737).
@@ -49,11 +50,41 @@ ok('the Miracle is in the FAITH tab and ready', (await mir.count()) === 1);
 await mir.click(); await p.waitForTimeout(300);
 const t0 = Date.now();
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
-const shown = await p.locator('[data-phc-miracle]').waitFor({ timeout: 3000 }).then(() => true, () => false);
-ok('the Miracle answers on the whole screen', shown);
-if (shown && SHOTS) { await p.waitForTimeout(900); await p.screenshot({ path: SHOTS + '/faith-miracle.png' }); }
-await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 4000 }).catch(() => {});
-ok('and clears within 2.5 s (' + (Date.now() - t0) + ' ms)', Date.now() - t0 < 3200 && (await p.locator('[data-phc-miracle]').count()) === 0);
+// Faith 2.2 (spec 2.3): the cut-in. The portrait over the whole screen, the god calling the devoted by name with the
+// grant line, then the pull-away and the zoom to where it lands, the effect, and a box of what it did.
+const cut = p.locator('[data-phc-cut="full"][data-phc-miracle="mother_ember"]');
+const shown = await cut.waitFor({ timeout: 3000 }).then(() => true, () => false);
+const tCut = Date.now(); // the cut-in's own clock (it comes up once the fx event plays)
+ok('the Miracle cuts in over the whole screen', shown);
+if (shown) {
+  const portrait = await cut.locator('[data-phc-cut-portrait]').getAttribute('src');
+  ok('with Mother Ember\'s portrait (' + portrait + ')', /patron-mother_ember/.test(portrait || ''));
+  const big = await cut.locator('[data-phc-cut-portrait]').boundingBox(), map = await p.locator('.phc-grid').boundingBox();
+  ok('larger than the combat map (' + Math.round(big?.height || 0) + ' px tall vs the map\'s ' + Math.round(map?.height || 0) + ')', !!big && !!map && big.height > map.height && big.width * big.height > map.width * map.height);
+  const z = await cut.evaluate((el) => Number(getComputedStyle(el).zIndex));
+  ok('above everything (z-index ' + z + ')', z >= 90);
+  const name = (await cut.locator('[data-phc-cut-name]').first().textContent()) || '', line = (await cut.locator('[data-phc-cut-line]').textContent()) || '';
+  const nameCol = await cut.locator('[data-phc-cut-name]').first().evaluate((el) => getComputedStyle(el).color);
+  const who = String((await me()).name || '').toUpperCase();
+  ok('the god calls the devoted by name (' + name + ', in the faith light ' + nameCol + ')', !!who && name === who && nameCol === 'rgb(242, 196, 106)');
+  ok('with a grant line (' + line + ')', line.includes(who) && line.length > who.length + 8);
+  const font = await cut.locator('[data-phc-cut-line]').evaluate((el) => getComputedStyle(el).fontFamily + ' ' + getComputedStyle(el).fontSize);
+  ok('in large Spectral (' + font + ')', /Spectral/.test(font) && parseFloat(font.split(' ').pop()) >= 26);
+  if (SHOTS) { await p.waitForTimeout(700); await p.screenshot({ path: SHOTS + '/faith-miracle-cutin.png' }); }
+}
+// The pull-away (from 2.3 s): the screen opens on the spot and the map punches in.
+if (SHOTS) { await p.waitForTimeout(Math.max(0, 2420 - (Date.now() - tCut))); await p.screenshot({ path: SHOTS + '/faith-miracle-zoom.png' });
+  await p.waitForTimeout(Math.max(0, 2900 - (Date.now() - tCut))); await p.screenshot({ path: SHOTS + '/faith-miracle-land.png' }); }
+await cut.waitFor({ state: 'detached', timeout: 4500 }).catch(() => {});
+const landed = Date.now() - tCut;
+ok('it lands in about 3 s and lets go of the screen (' + landed + ' ms after it came up)', landed < 3600 && (await cut.count()) === 0);
+const box = p.locator('[data-phc-cut-box]');
+const boxShown = await box.waitFor({ timeout: 2500 }).then(() => true, () => false);
+const boxText = boxShown ? (await box.textContent()) || '' : '';
+ok('then a box says what happened (' + boxText.slice(0, 120) + ')', boxShown && /MIRACLE · MOTHER EMBER/.test(boxText) && /WHAT IT DID/.test(boxText));
+if (boxShown && SHOTS) await p.screenshot({ path: SHOTS + '/faith-miracle-box.png' });
+await box.waitFor({ state: 'detached', timeout: 4000 }).catch(() => {});
+ok('and closes itself; all in about 6 s (' + (Date.now() - tCut) + ' ms)', (await box.count()) === 0 && Date.now() - tCut < 7000);
 c = await me();
 ok('the Miracle lowers Devotion by 5 levels (10 → 5, 102 XP: rules 1.6.2; now ' + c.devotion + ' · ' + c.devotionXp + ' XP)', c.devotion === 5 && c.devotionXp === 102);
 ok('and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')));
@@ -62,6 +93,23 @@ await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-faith-reset]').click(); await p.waitForTimeout(300);
 c = await me();
 ok('Reset the limits clears the Miracle\'s session mark', c.miracleSession == null);
+// A second Miracle, skipped with a key: it lands at once and the box still follows; the key does nothing else.
+{
+  await act({ type: 'sandbox/faith', charId: c.id, devotion: 10, reset: true });
+  await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {});
+  const uu = await p.evaluate(() => window.__phc.getState().game.combat.units.find((x) => x.charId));
+  const err = await act({ type: 'faith/pray', unitId: uu.id, kind: 'miracle' });
+  const up = await cut.waitFor({ timeout: 3000 }).then(() => true, () => false);
+  ok('a second Miracle cuts in (' + (err || 'prayed') + ')', !err && up);
+  await p.waitForTimeout(500); const k0 = Date.now(); await p.keyboard.press('x');
+  await cut.waitFor({ state: 'detached', timeout: 1500 }).catch(() => {});
+  ok('a key skips it (' + (Date.now() - k0) + ' ms)', (await cut.count()) === 0 && Date.now() - k0 < 1000);
+  ok('and the box still follows', await box.waitFor({ timeout: 1500 }).then(() => true, () => false));
+  await box.click().catch(() => {}); await p.waitForTimeout(400);
+  ok('a click closes the box', (await box.count()) === 0);
+  if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
+  await drawer.getByRole('tab', { name: 'Faith' }).click();
+}
 // An Atheist with two pieces of Mother Ember: her first two Hymns, by dice.
 await drawer.locator('[data-sb-belief="atheist"]').click(); await p.waitForTimeout(200);
 await drawer.getByRole('button', { name: 'Raise Mother Ember pieces' }).click(); await p.waitForTimeout(150);
