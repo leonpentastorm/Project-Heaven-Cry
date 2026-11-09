@@ -75,7 +75,8 @@ export function sigilWordGroups<T>(items: T[], idOf: (t: T) => string): Group<T>
 }
 
 // ---------- React (the Proving Ground) ----------
-function useOpenTick() { const [, set] = React.useState(0); React.useEffect(() => { const f = () => set((n) => n + 1); listeners.push(f); return () => { listeners = listeners.filter((x) => x !== f); }; }, []); }
+/** Re-render when any section or group is opened or closed (the Proving Ground's collapsible cards use it too). */
+export function useOpenTick() { const [, set] = React.useState(0); React.useEffect(() => { const f = () => set((n) => n + 1); listeners.push(f); return () => { listeners = listeners.filter((x) => x !== f); }; }, []); }
 /** A collapsible section of collapsible groups. render draws one group's items. The section header is drawn fully in
  * the magic's ink, as headCss(ink, true) is in the template. */
 export function Groups<T>({ section, title, ink, groups, render, aria }: { section: string; title: string; ink: string; groups: Group<T>[]; render: (items: T[], g: Group<T>) => React.ReactNode; aria?: string }) {
