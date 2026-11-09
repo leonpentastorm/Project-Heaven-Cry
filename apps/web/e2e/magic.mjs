@@ -205,7 +205,7 @@ const grid = host.locator('button.phc-tok');
 const ctile = (k) => host.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
 const groups = await host.locator('[role="tablist"][aria-label="Actions"] [role="tab"][data-tab$="s"]').evaluateAll((ts) => ts.map((t) => t.getAttribute('data-tab')).filter((x) => x === 'sigils' || x === 'outbursts'));
 ok('combat shows both magic tabs: ' + groups.join(', '), groups.length === 2);
-ok('the header shows the mana', await host.locator('text=/MANA \\d+ · /').count() > 0);
+ok('the mana forecast shows the air (it left the header)', await host.locator('[data-phc-panel="mana"] [data-fc-headline]').count() > 0 && /AIR · \d+ \/ 40/.test(await host.locator('[data-fc-headline]').first().textContent()));
 await snap('07-combat-start');
 
 /** Pick a word on the glyph keyboard (a second press would put it down). */

@@ -4,7 +4,6 @@
 <span style="flex: none; font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap">PROJECT HEAVEN CRY</span>
 <nav aria-label="Mode" style="flex: none; display: flex; gap: 4px; padding: 3px; border-radius: 10px; border: 1px solid #232D3F"><button type="button" onClick="{{toStory}}" style="padding: 8px 16px; border-radius: 7px; border: 0; background: transparent; color: #A3AEC2; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px; cursor: pointer">STORY</button><button type="button" aria-current="page" style="padding: 8px 16px; border-radius: 7px; border: 0; background: #3A1E1E; color: #F65157; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">COMBAT</button></nav>
 <span title="{{roundText}}" style="flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">{{roundText}}</span>
-<sc-if value="{{showMana}}"><span role="status" aria-label="{{manaText}}" title="{{manaTitle}}" style="flex: none; white-space: nowrap; {{manaStyle}}">{{manaText}}</span></sc-if>
 <div style="flex: none; margin-left: auto; display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{report}}" title="Something broke? Download a report to send to Leon." style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">⚑ Report</button><span style="{{turnChipStyle}}">{{turnChip}}</span></div>
 </header>
 
@@ -20,6 +19,21 @@
 
 <div class="phc-cb-row" style="{{rowStyle}}">
 <section aria-label="Tactical grid" data-phc-zone="mapZone" class="phc-cb-left phc-col-scroll" style="{{leftStyle}}">
+<sc-if value="{{lay.manaMap}}" hint-placeholder-val="{{true}}"><!--PANEL:mana--><div data-phc-panel="mana" style="{{lay.manaStyle}}"><button type="button" class="phc-grip" onPointerDown="{{lay.grip.mana}}" onKeyDown="{{lay.gripKey.mana}}" aria-label="Move the mana forecast: drag, or use the arrow keys" title="Drag to move the mana forecast (arrow keys too)">⠿</button>
+<section aria-label="Mana forecast" class="phc-mana-fc" data-band="{{fc.band}}" title="{{fc.title}}" style="{{fc.boxStyle}}">
+<div style="display: flex; align-items: center; gap: 10px; padding-right: 30px">
+<img src="{{fc.icon}}" alt="{{fc.bandName}} air" style="width: 30px; height: 30px; flex: none">
+<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1">
+<div role="status" aria-live="polite" style="display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden"><span style="flex: none; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">MANA FORECAST</span><span data-fc-headline="1" title="{{fc.headline}}" style="{{fc.headStyle}}">{{fc.headline}}</span></div>
+<div style="display: flex; align-items: center; gap: 10px; min-width: 0"><div aria-hidden="true" style="position: relative; flex: 1 1 auto; min-width: 60px; display: flex; height: 6px; border-radius: 99px; background: #1C2536"><sc-for list="{{fc.gauge}}" as="gs"><span title="{{gs.title}}" style="{{gs.style}}"></span></sc-for><span style="{{fc.marker}}"></span></div><span data-fc-trend="1" title="{{fc.trend}}" style="{{fc.trendStyle}}">{{fc.arrow}} {{fc.trend}}</span></div>
+<span title="{{fc.sky}}" style="{{fc.lineStyle}}">{{fc.sky}}</span>
+<span data-fc-outlook="1" title="{{fc.outlook}}" style="{{fc.outlookStyle}}">{{fc.outlook}}</span>
+</div>
+<button type="button" class="phc-cb-act" data-sfx="toggle" onClick="{{fc.toggle}}" aria-expanded="{{fc.openStr}}" title="What this air does, and what moves it" style="flex: none; align-self: flex-start; min-height: 26px; padding: 0 10px; border-radius: 99px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer">{{fc.toggleLabel}}</button>
+</div>
+<sc-if value="{{fc.open}}"><div data-fc-details="1" style="{{fc.detailsStyle}}"><div style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: {{fc.ink}}">IN THIS AIR</span><sc-for list="{{fc.effects}}" as="fe"><span style="font-size: 12px; line-height: 1.35; color: #E7EBF3">· {{fe.text}}</span></sc-for></div><div style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">WHAT MOVES IT</span><sc-for list="{{fc.movers}}" as="fm"><span style="font-size: 12px; line-height: 1.35; color: #C9D3E3">· {{fm.text}}</span></sc-for></div></div></sc-if>
+</section>
+</div><!--/PANEL:mana--></sc-if>
 <div data-phc-panel="map" style="{{lay.mapStyle}}"><button type="button" class="phc-grip" style="top: 2px; right: -31px" onPointerDown="{{lay.grip.map}}" onKeyDown="{{lay.gripKey.map}}" aria-label="Move the map: drag, or use the arrow keys" title="Drag to move the map (arrow keys too)">⠿</button>
 <div class="phc-mapzoom" role="group" aria-label="Map size"><span>MAP</span><button type="button" onClick="{{mz.out}}" disabled="{{mz.cantOut}}" aria-label="Smaller map" aria-keyshortcuts="-" title="Smaller (−, or Ctrl + wheel)">−</button><button type="button" class="phc-mz-pct" onClick="{{mz.reset}}" aria-pressed="{{mz.manual}}" title="{{mz.pctTitle}}" aria-label="Map size {{mz.label}}: set 100%">{{mz.label}}</button><button type="button" onClick="{{mz.in}}" disabled="{{mz.cantIn}}" aria-label="Bigger map" aria-keyshortcuts="+" title="Bigger (+, or Ctrl + wheel)">+</button><button type="button" onClick="{{mz.toAuto}}" aria-pressed="{{mz.auto}}" title="{{mz.autoTitle}}">⤢ Auto</button></div>
 <div class="phc-grid-scroll" style="flex: none; overflow-x: auto"><div class="phc-grid" style="{{gridStyle}}" onMouseLeave="{{gridLeave}}">
@@ -285,6 +299,7 @@
 </div>
 </sc-for>
 </div>
+<sc-if value="{{lay.manaSide}}" hint-placeholder-val="{{false}}"><!--SLOT:mana--></sc-if>
 <sc-if value="{{lay.legendSide}}" hint-placeholder-val="{{false}}"><!--SLOT:legend--></sc-if>
 <sc-if value="{{lay.logSide}}" hint-placeholder-val="{{false}}"><!--SLOT:log--></sc-if>
 </aside>
