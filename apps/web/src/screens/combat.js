@@ -3,6 +3,7 @@
 import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss } from './shared';
 import { reducedMotion, sfx } from '../game/sfx';
+import { fightPace } from '../game/combatSpeed';
 import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
@@ -123,6 +124,11 @@ const COMBAT_CSS = [
   // A False Image's shimmer (game/classMarks.ts sets it inline on the decoy; still under reduced motion).
   '@keyframes phcDecoy{0%,100%{opacity:.42;filter:saturate(.4) brightness(1.05) drop-shadow(0 0 3px rgba(79,200,223,.6))}50%{opacity:.66;filter:saturate(.5) brightness(1.25) drop-shadow(0 0 7px rgba(79,200,223,.9))}}',
   '.phc-reduce .phc-plan{animation:none!important}@media (prefers-reduced-motion: reduce){.phc-plan{animation:none!important}}',
+  // The shared in-and-out pairs (main.tsx: .phc-a-right … .phc-closing) inside the combat screen: the TARGET card, the
+  // Sigil and Heart pads, the turn panels' swap. Only their durations change, × the combat speed (review, 9 Nov 2026:
+  // these are the pop-ups a player sees most in a fight). Reduce motion's !important fades still win.
+  '.phc-cb-root .phc-a-right,.phc-cb-root .phc-a-left,.phc-cb-root .phc-a-drop,.phc-cb-root .phc-a-rise{animation-duration:calc(.3s * var(--phc-k, 1))}.phc-cb-root .phc-a-pop{animation-duration:calc(.32s * var(--phc-k, 1))}.phc-cb-root .phc-a-fade{animation-duration:calc(.22s * var(--phc-k, 1))}',
+  '.phc-cb-root .phc-a-right.phc-closing,.phc-cb-root .phc-a-left.phc-closing,.phc-cb-root .phc-a-drop.phc-closing,.phc-cb-root .phc-a-rise.phc-closing,.phc-cb-root .phc-a-pop.phc-closing,.phc-cb-root .phc-a-fade.phc-closing{animation-duration:calc(.2s * var(--phc-k, 1))}',
   '.phc-hp-fill{transition:width calc(.16s * var(--phc-k, 1)) ease-out}.phc-hp-chip{transition:width calc(.55s * var(--phc-k, 1)) cubic-bezier(.4,0,.2,1) calc(.4s * var(--phc-k, 1))}',
   '@keyframes phcPipDrain{0%{background:#FFFFFF;transform:scaleY(1.7);box-shadow:0 0 12px rgba(255,255,255,.9)}35%{background:#FFFFFF;transform:scaleY(1.2)}100%{transform:none;box-shadow:none}}.phc-pips>span.phc-pip-drain{animation:phcPipDrain calc(.55s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both;animation-delay:0s}',
   '@keyframes phcWaitDot{0%,80%,100%{opacity:.25}40%{opacity:1}}.phc-wait-dots>span{animation:phcWaitDot 1.2s ease-in-out infinite}.phc-wait-dots>span:nth-child(2){animation-delay:.2s}.phc-wait-dots>span:nth-child(3){animation-delay:.4s}',
@@ -156,7 +162,7 @@ const COMBAT_CSS = [
   '.phc-cb-mini{right:12px!important;bottom:12px!important}',
   // The dock scrolls inside itself when its content is taller than it may be (a landscape phone), and the Confirm row
   // sticks to its bottom edge, so it never sits below the screen.
-  '.phc-cb-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:64vh;max-height:64dvh;overflow-y:auto;overscroll-behavior:contain;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0A0D13;border-top:1px solid #232D3F;box-shadow:0 -10px 30px rgba(0,0,0,.55)}.phc-cb-dock .phc-cb-tabpanel{max-height:26vh;min-height:64px!important}.phc-cb-confirm{position:sticky;bottom:0;z-index:1;background:#0A0D13;box-shadow:0 -8px 12px #0A0D13}.phc-cb-turn.phc-a-right{animation:phcFadeIn .22s ease-out both!important}.phc-cb-turn.phc-a-left{animation:phcFadeOut .2s ease-in both!important}.phc-cb-spacer{display:block!important;height:calc(26vh + 290px)}}',
+  '.phc-cb-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:64vh;max-height:64dvh;overflow-y:auto;overscroll-behavior:contain;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#0A0D13;border-top:1px solid #232D3F;box-shadow:0 -10px 30px rgba(0,0,0,.55)}.phc-cb-dock .phc-cb-tabpanel{max-height:26vh;min-height:64px!important}.phc-cb-confirm{position:sticky;bottom:0;z-index:1;background:#0A0D13;box-shadow:0 -8px 12px #0A0D13}.phc-cb-turn.phc-a-right{animation:phcFadeIn calc(.22s * var(--phc-k, 1)) ease-out both!important}.phc-cb-turn.phc-a-left{animation:phcFadeOut calc(.2s * var(--phc-k, 1)) ease-in both!important}.phc-cb-spacer{display:block!important;height:calc(26vh + 290px)}}',
   '@media (prefers-reduced-motion: reduce){.phc-yt,.phc-plan,.phc-pips>span.phc-pip-drain,.phc-cur-ring,.phc-tgt-ring,.phc-wait-dots>span{animation:none}.phc-yt::after{display:none}.phc-hp-chip,.phc-hp-fill,.phc-cb-act{transition:none}}',
 ].join('');
 ensureMotionCss();
@@ -288,7 +294,7 @@ export class CombatLogic extends DCLogic {
     const P = this._pres || (this._pres = {}), cur = P[name];
     if (val) { if (cur && cur.timer) clearTimeout(cur.timer); P[name] = { val }; return { show: true, cls: '', val }; }
     if (!cur) return { show: false, cls: '', val: null };
-    if (!cur.timer) cur.timer = setTimeout(() => { if (P[name] === cur) { delete P[name]; this.setState({}); } }, reducedMotion() ? 150 : ms);
+    if (!cur.timer) cur.timer = setTimeout(() => { if (P[name] === cur) { delete P[name]; this.setState({}); } }, reducedMotion() ? 150 : ms * fightPace()); // the out animation runs × the combat speed
     return { show: true, cls: ' phc-closing', val: cur.val };
   }
 
@@ -297,7 +303,7 @@ export class CombatLogic extends DCLogic {
     const P = this._panels || (this._panels = { cur: null, old: [] });
     if (P.cur && P.cur.key !== key) {
       const gone = P.cur; P.old = [gone, ...P.old.filter((o) => o.key !== gone.key)].slice(0, 2);
-      setTimeout(() => { if (P.old.includes(gone)) { P.old = P.old.filter((o) => o !== gone); this.setState({}); } }, reducedMotion() ? 150 : 230);
+      setTimeout(() => { if (P.old.includes(gone)) { P.old = P.old.filter((o) => o !== gone); this.setState({}); } }, reducedMotion() ? 150 : 230 * fightPace());
     }
     P.old = P.old.filter((o) => o.key !== key);
     P.cur = { key, vals };

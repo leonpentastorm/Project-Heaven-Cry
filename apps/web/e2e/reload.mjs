@@ -43,7 +43,7 @@ const settle = () => p.waitForFunction(() => !document.querySelector('[data-fx="
  *  and title, the count, the old magazine's centre, the pack and pile glyphs, and (once, at probeAt ms) what is on top
  *  at the card's centre and at its old magazine's. */
 const watch = (start, ms = 2200, step = 30, probeAt = 260) => p.evaluate(async ({ start, ms, step, probeAt }) => {
-  const seen = [], t0 = performance.now(); let probe = null;
+  const seen = [], t0 = performance.now(); let probe = null, countProbe = null;
   if (start.act) window.__phc.act(start.act); else window.__phcFx.playFx(start.fx);
   const rc = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, l: r.left, t: r.top, r: r.right, b: r.bottom }; };
   while (performance.now() - t0 < ms) {
@@ -55,7 +55,21 @@ const watch = (start, ms = 2200, step = 30, probeAt = 260) => p.evaluate(async (
         guns: [...card.querySelectorAll('[data-reload-gun]')].map((c) => c.getAttribute('data-reload-gun')),
         old: old ? { ...rc(old), op: Number(getComputedStyle(old).opacity), out: old.getAttribute('data-reload-old') } : null,
         pack: rc(card.querySelector('[data-reload-pack]')), drop: rc(card.querySelector('[data-reload-drop]')), badge: card.querySelector('[data-reload-badge]')?.textContent || '',
-        rounds: card.querySelectorAll('[data-reload-piece^="round"]').length, pieces: card.querySelectorAll('[data-reload-piece]').length });
+        rounds: card.querySelectorAll('[data-reload-piece^="round"]').length, pieces: card.querySelectorAll('[data-reload-piece]').length,
+        badgeOp: (() => { const b = card.querySelector('[data-reload-badge]'); return b ? Number(getComputedStyle(b).opacity) : -1; })(),
+        chip: card.querySelector('[data-reload-chip]')?.getAttribute('data-reload-chip'), chipBg: card.querySelector('[data-reload-chip]') ? getComputedStyle(card.querySelector('[data-reload-chip]')).backgroundColor : '',
+        frame: card.querySelector('[data-reload-frame]') ? getComputedStyle(card.querySelector('[data-reload-frame]')).borderTopColor : '', ap: card.querySelector('[data-reload-ap]')?.textContent || '',
+        // the brass magazine under the portrait (fx/brass.ts dropMag): a speed reload's; a tactical one has none
+        brassMags: [...document.querySelectorAll('[data-fx-piece^="mag:"]')].filter((m) => Number(getComputedStyle(m).opacity) > 0.05).length });
+      // when the falling old magazine crosses the count: the count is still what is on top at its centre
+      const oc = card.querySelector('[data-reload-old]'), cc = card.querySelector('[data-reload-count]');
+      if (!countProbe && oc && cc && Number(getComputedStyle(oc).opacity) > 0.3) {
+        const a = oc.getBoundingClientRect(), b = cc.getBoundingClientRect();
+        if (a.bottom > b.top + 2 && a.top < b.bottom - 2 && a.right > b.left && a.left < b.right) {
+          card.style.pointerEvents = 'auto'; const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); card.style.pointerEvents = 'none';
+          countProbe = { t, onTop: !!hit && cc.contains(hit) };
+        }
+      }
       if (!probe && t >= probeAt) {
         // the layer takes no clicks; for the probe the card does, so elementFromPoint can say what is on top
         card.style.pointerEvents = 'auto';
@@ -68,7 +82,7 @@ const watch = (start, ms = 2200, step = 30, probeAt = 260) => p.evaluate(async (
     }
     await new Promise((res) => setTimeout(res, step));
   }
-  return { seen, probe };
+  return { seen, probe, countProbe };
 }, { start, ms, step, probeAt });
 const pileGlyph = async () => p.evaluate((R) => { const b = [...document.querySelectorAll('.phc-grid button.phc-tok[aria-label]')].find((el) => { const l = el.getAttribute('aria-label') || ''; return l.startsWith(R) && !/[0-9A-Za-z]/.test(l.charAt(R.length)); });
   const pg = b && b.querySelector('[data-pile]'); if (!pg) return null; const r = pg.getBoundingClientRect(), t = b.getBoundingClientRect(); return { t: r.top, b: r.bottom, l: r.left, r: r.right, n: pg.getAttribute('data-pile'), tile: { x: t.left + t.width / 2, y: t.top + t.height / 2, s: t.width } }; }, R);
@@ -99,6 +113,11 @@ ok('the speed card marks the pile, not the pack (drop glyph ' + !!s[0].drop + ',
 const cs = s.map((x) => x.counts[0]); const lastCount = s.filter((x) => x.done).at(-1)?.counts[0] || '';
 ok('the count shows what was left, empties, then runs up to what the gun holds: ' + [...new Set(cs)].join(' ') + ' (the gun: ' + mine(g).ammo + ')', cs[0] !== '0/24' && cs.includes('0/24') && lastCount.startsWith(mine(g).ammo + '/') && new Set(cs).size >= 5);
 ok('the pile on the tile now holds the dropped magazine too (' + pileCount(g) + ')', pileCount(g) === 2);
+ok('the old magazine falls behind the count: the count stays readable where it crosses (' + JSON.stringify(w.countProbe) + ')', !w.countProbe || w.countProbe.onTop);
+const bIn = s.find((x) => x.badgeOp > 0.5)?.t;
+ok('the card\'s PILE +1 shows as the old one leaves, in step with the tile\'s pile count (first seen at ' + bIn + ' ms)', bIn != null && bIn < 420);
+ok('a speed reload drops its magazine under the portrait, to the pile (' + Math.max(...s.map((x) => x.brassMags)) + ')', s.some((x) => x.brassMags > 0));
+const spLook = s.at(-1);
 await p.waitForTimeout(100);
 await act({ type: 'combat/end-turn', unitId: me.id }); await settle(); await myTurn();
 ok('a round spent', await burn()); await p.waitForTimeout(1200);
@@ -118,6 +137,10 @@ const lastT = s.filter((x) => x.done).at(-1)?.counts[0] || '';
 ok('the count ends at what the gun holds (' + lastT + ', the gun ' + mine(g).ammo + ')', lastT.startsWith(mine(g).ammo + '/'));
 ok('nothing went into the pile (still ' + pileCount(g) + ')', pileCount(g) === 2);
 ok('speed and tactical draw different cards (titles, glyphs, where the old one goes)', s[0].title !== 'SPEED RELOAD' && !!pk);
+ok('a tactical reload drops nothing under the portrait: the one magazine goes to the pack on the card (most seen: ' + Math.max(...s.map((x) => x.brassMags)) + ')', s.every((x) => x.brassMags === 0));
+const tcLook = s.at(-1);
+ok('…and they read apart to the end: frame ' + spLook.frame + ' vs ' + tcLook.frame + ', chip ' + spLook.chip + ' (' + spLook.chipBg + ') vs ' + tcLook.chip + ' (' + tcLook.chipBg + '), the extra cost "' + tcLook.ap + '"',
+  spLook.frame !== tcLook.frame && tcLook.chipBg === 'rgb(255, 255, 255)' && spLook.chipBg !== tcLook.chipBg && tcLook.ap === '+1 AP' && !spLook.ap);
 await settle();
 
 // 4. The pictures for Leon: each caught mid-way and at the end, at deviceScaleFactor 2.

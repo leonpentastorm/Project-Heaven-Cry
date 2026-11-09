@@ -85,7 +85,8 @@ A takedown and a revive in the same action emit both events; the client merges t
   intervention), the crit emits nothing; the client's merge (lead by priority god > takedown > revive > legend >
   ultimate > crit > song) is the second guard. A crit that drops a boss shows the takedown.
 - **The short form:** one strip, slimmer (22vh, 120–220 px, against 29vh), label `CRITICAL HIT · <ATTRIBUTE>`, caption
-  "Critical hit on Rook" (a spell: "· Sigil", "· Outburst"; a companion: "Rex: critical hit on Rook"), its words held
+  "Critical hit on Rook" (a spell: "· Sigil", "· Outburst"; a companion's crit leads with the companion's own strip and
+  the same plain caption, item 12), its words held
   1.6 s to read, 2.24 s in all at Fast (way out from 1940 ms; reduced motion 2.02 s; Leon, 9 Nov 2026: the 0.9 s one
   "barely shows long enough for me to even read the text"). It follows All / Once per scene / Off like every cut-in; under Once per
   scene its memory is its own (§7), so a routine crit never spends the fighter's strip for a later takedown.
@@ -323,7 +324,7 @@ players should see.
 
 | Kind | Label (Chakra Petch) | Caption (Spectral italic) |
 |---|---|---|
-| crit (a fight's, §1.4) | `CRITICAL HIT · <ATTRIBUTE>` | "Critical hit on Rook" (· Sigil / · Outburst; a companion: "Rex: critical hit on Rook") |
+| crit (a fight's, §1.4) | `CRITICAL HIT · <ATTRIBUTE>` | "Critical hit on Rook" (· Sigil / · Outburst; a companion's crit: its own strip leads, the same plain caption, §11 item 12) |
 | crit | `CRITICAL SUCCESS · <ATTRIBUTE>` | "Natural 20 · Heroic" or "Natural 20 · Hard", with the skill: "Natural 20 on Composure · Heroic" |
 | takedown | `TAKEDOWN · <ATTRIBUTE>` | "Took down <targetName>" (an unseen target: "Took down an unseen hostile") |
 | revive | `REVIVE · <ATTRIBUTE>` | "Brought <name> back" |
@@ -366,9 +367,15 @@ ms to read (provisional), the way out from 1940 ms (200 ms), **2240 ms** in all 
 **The combat speed** (`game/combatSpeed.ts`, Leon 9 Nov 2026): every length in this section is Fast's. In a fight the
 player's speed multiplies them all: Normal (the default) × 1/0.85 ≈ 1.176, Fast × 1 (the overlay's own animations
 follow it too). The slowed action's tempo (§6.2) stacks on top. Outside a fight the speed never applies.
+Inside the combat screen the shared pop-ups (the TARGET card, the Sigil and Heart pads, the turn panels' swap,
+`.phc-a-*` and `.phc-closing` under `.phc-cb-root`) follow it too, and so does the A NEW FEELING card. **Not yet
+scaled** (other owners; for the hand-off): the Proving Ground's wave banners (`sandbox.tsx`), the screen transition
+into a fight (`COMBAT_IN_MS`, `App.tsx` and the music's wait on it), the shared pop-ups outside the combat screen's
+root, and standing ambient loops (field looks).
 
-Constants in `spotlight/timing.ts`: `CUTIN_MS(n, god, rm, short)`, `CRIT_READ_MS`, `CUTIN_MAX_MS = 2400` (the safety cap,
-§6.3; × the combat speed).
+Constants in `spotlight/timing.ts`: `CUTIN_MS(n, god, rm, short)`, `CRIT_READ_MS`, `cutInCap(short)` (the safety cap,
+§6.3; × the combat speed): 1700 ms as before for every cut-in, 2400 for a crit's short one, which holds its words to
+be read (`CUTIN_MAX_MS = 2400` is the largest).
 
 **Skip:** any pointer down or key (armed 150 ms after the cut-in starts, so the click that made the action never
 skips it) goes straight to Out (150 ms) and clears the blur with it. The skipping click is consumed (capture phase,
@@ -416,7 +423,7 @@ n=40 shot (from=40) · 41 hurt · 42 down(Warden) · 43 spotlight{takedown, from
 - Events behind a closed gate are kept unscheduled. When the gate opens (end, skip or cap), they are queued with real
   times and `queueEnd` and `turnsUntil` are recomputed from that moment (they may move earlier after a skip), and
   `FX_HOLD` is dispatched. New batches arriving while the gate is closed join behind it, in order.
-- **Safety:** the gate opens after `CUTIN_MAX_MS` (2400, × the combat speed) whatever happens (an overlay that failed to mount, a thrown
+- **Safety:** the gate opens after its cap (`cutInCap`: 1700, or 2400 for a crit's short one; × the combat speed) whatever happens (an overlay that failed to mount, a thrown
   error, a hidden tab), so playback can never stall; `clearFx()` drops the gate and the overlay.
 - `window.__phcHold` keeps working unchanged for the e2e suites. For tests: `window.__phcCutin = { count, last, skip() }`.
 - TurnIntro: while a cut-in shows, no turn banner or your-turn card comes up; it waits for `phc:cutin-end`. Its

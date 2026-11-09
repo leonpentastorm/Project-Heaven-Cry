@@ -123,6 +123,12 @@ await snap('target-card-panel');
   const mini = await p.locator('[data-backpack]:visible').evaluateAll((els) => els.map((b) => b.getAttribute('data-backpack')));
   ok('a short window: the Backpack button rides in the one-line bar (' + mini.join(', ') + ')', mini.length === 1 && mini[0] === 'mini');
   const bar = await p.locator('.phc-cb-bar').first().boundingBox(); if (bar) await snap('backpack-button-short', { x: bar.x - 8, y: bar.y - 6, width: bar.width + 16, height: bar.height + 12 });
+  // (review: the name and the AP were cut to 'Rec…' and 'A…' while 80 px stood empty; the bar now grows into it)
+  for (const [w, h] of [[1440, 780], [1366, 768], [1280, 720]]) {
+    await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(350);
+    const cut = await p.evaluate(() => [...document.querySelectorAll('.phc-me-mini > span')].filter((s) => /\S/.test(s.textContent || '') && s.scrollWidth > s.clientWidth + 1).map((s) => (s.textContent || '').trim()));
+    ok(w + '×' + h + ': the one-line bar shows your name and AP whole (cut: ' + JSON.stringify(cut) + ')', cut.length === 0);
+  }
   await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(400);
 }
 

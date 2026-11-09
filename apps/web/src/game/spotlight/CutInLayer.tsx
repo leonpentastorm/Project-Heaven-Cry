@@ -9,7 +9,7 @@ import React from 'react';
 import type { FxEvent, GameState } from '@engine';
 import { bigPortrait } from '../charfile';
 import { reducedMotion } from '../sfx';
-import { stripShape } from './tear';
+import { stripShape, topDepth, wholeFit } from './tear';
 import { stackLayout, cropOf, NARROW_PX } from './layout';
 export { stackLayout, cropOf, tornStripMarkup, NARROW_PX } from './layout';
 import { type CutInSpec, type CutInStrip, type Showing, GOD_WORD_INK, cutInNow, onCutIn, skipCutIn, cutInForFx, showSpotlight, stripForChar, stripForPatron } from './index';
@@ -39,9 +39,10 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
   // A capped crop (a small source, an upload's room copy, on a wide screen) can't fill the window: the window narrows to
   // the image (its torn side 24 px inside the image's end) and the strip's body and its words take the rest.
   const first = cropFor(windowLeft ? w * frac : w * (1 - frac));
-  // A whole avatar (a small square face: Wick's placeholder robot) is drawn whole at 1.3 × the strip's height, in a
-  // window fitted to it with room either side (where the same picture, blurred and dimmed, fills in).
-  const side = Math.round(h * 1.3);
+  // A whole avatar (a small square face: Wick's placeholder robot) is drawn whole at about 1.15 × the strip's height, its
+  // top below the torn top edge (tear.ts wholeFit), in a window fitted to it with room either side (where the same
+  // picture, blurred, greyed and darkened to a backdrop, fills in).
+  const side = Math.round(h * 1.15);
   const fitWhole = Math.min(frac, Math.max(0.3, (over + side + 2 * Math.max(60, h * 0.45)) / w));
   const fit = s.whole ? fitWhole : first.capped ? Math.min(frac, Math.max(0.3, windowLeft ? (first.x + first.w - 24) / w : 1 - (first.x + 24) / w)) : frac;
   const shape = React.useMemo(() => stripShape(seed + '|' + i + '|' + s.key, w, h, { windowFrac: fit, windowLeft }), [seed, i, s.key, w, h, fit, windowLeft]);
@@ -69,7 +70,7 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
           <linearGradient id={id + 'l'} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><stop offset=".5" stopColor="#FFFFFF" stopOpacity=".28" /><stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
           </linearGradient>
-          <filter id={id + 'f'} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation={Math.max(8, h * 0.06)} /></filter>
+          <filter id={id + 'f'} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation={Math.max(8, h * 0.06)} /><feColorMatrix type="saturate" values=".12" /></filter>
           <linearGradient id={id + 'e'} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><stop offset=".14" stopColor="#FFFFFF" stopOpacity="1" /><stop offset=".86" stopColor="#FFFFFF" stopOpacity="1" /><stop offset="1" stopColor="#FFFFFF" stopOpacity="0" /></linearGradient>
           <mask id={id + 'm'} maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill={'url(#' + id + 'e)'} /></mask>
           <linearGradient id={id + 'v'} x1="0" y1="0" x2="0" y2="1">
@@ -85,10 +86,11 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
             {img && s.whole && (() => {
               // Centred in what the screen shows of the window; the eyes on the strip's middle line where the picture allows.
               const vx0 = windowLeft ? winX0 - Math.min(0, dx) : winX0, vx1 = windowLeft ? winX1 : Math.min(winX1, w - over - dx);
-              const cx = (vx0 + vx1) / 2, y = Math.min(h * 0.12, Math.max(h - side, h / 2 - s.eye.y * side)); // the eyes on the middle line, the whole head in
+              const cx = (vx0 + vx1) / 2, fitW = wholeFit(h, s.eye.y, topDepth(shape.top, cx - side / 2, cx + side / 2)), y = fitW.y; // the whole head under the tear
               return <>
-                <image href={img} x={winX0 - 40} y={-h} width={winX1 - winX0 + 80} height={h * 3} preserveAspectRatio="xMidYMid slice" filter={'url(#' + id + 'f)'} opacity=".5" />
-                <image data-phc-spotlight-face="whole" href={img} x={cx - side / 2} y={y} width={side} height={side} preserveAspectRatio="xMidYMid meet" mask={'url(#' + id + 'm)'} />
+                <image href={img} x={winX0 - 40} y={-h} width={winX1 - winX0 + 80} height={h * 3} preserveAspectRatio="xMidYMid slice" filter={'url(#' + id + 'f)'} opacity=".55" data-phc-spotlight-backdrop="" />
+                <rect x="0" y="0" width={w} height={h} fill={GROUND} opacity=".45" />
+                <image data-phc-spotlight-face="whole" data-y={Math.round(y)} href={img} x={cx - fitW.side / 2} y={y} width={fitW.side} height={fitW.side} preserveAspectRatio="xMidYMid meet" mask={'url(#' + id + 'm)'} />
               </>;
             })()}
             {!img && s.badge && <text x={(winX0 + winX1) / 2} y={h / 2} textAnchor="middle" dominantBaseline="central" data-phc-spotlight-face="badge"

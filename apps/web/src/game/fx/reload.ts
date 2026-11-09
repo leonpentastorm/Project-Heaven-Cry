@@ -7,7 +7,10 @@
 //     from under the portrait, to the ground: fx/brass.ts dropMag, the magazine the pile on the tile now holds), the
 //     fresh one slides in, clicks home, and the count runs up to what it holds;
 //   * a TACTICAL reload (rules 1.9: the old one goes back in the pack): the old magazine slides into the pack glyph on the
-//     card's right, which bumps with a "+1"; the rest as a speed reload;
+//     card's right, which bumps with a "+1"; the rest as a speed reload. Nothing falls under the portrait (fx/play.ts);
+//   * the two read apart at a glance, to the end (review, 9 Nov 2026): a speed card has a muted grey frame and an
+//     outlined title chip; a tactical card a white frame, a solid white title chip and its extra cost ("+1 AP") on a tab
+//     at its top right; the fresh magazine is lit (a light rim), the old one muted;
 //   * rounds loaded one by one (a pump gun, a lever or bolt gun, a launcher; a break-action's two shells): a row of
 //     rounds, each fed into its slot with the count ticking; a revolver's cylinder, its chambers filling as it turns (a
 //     speedloader fills them at once); a bow's arrows slid into the quiver; a flamer's canister and its gauge;
@@ -15,7 +18,7 @@
 // Pure SVG and CSS. Every duration and delay goes through fx/dom.ts (anim, after, slow), so the card follows the combat
 // speed (game/combatSpeed.ts) and a spotlight's slow-mo. Under reduced motion the card is still: it shows the end state
 // (the fresh magazine, the count, where the old one went) and fades. Pure presentation: nothing here changes the game.
-import { WEAPON, type FxEvent } from '@engine';
+import { PILE, WEAPON, type FxEvent } from '@engine';
 import { reducedMotion } from '../sfx';
 import { type Mag, type Shell, arrowPicture, brassOf, magPicture, roundPicture } from './brass';
 import { anim, after, centre, clampCentre, layerEl, slow, tileEl, tokenEl } from './dom';
@@ -86,22 +89,32 @@ export function reloadCard(e: Partial<FxEvent>, key: string, ms: number): HTMLEl
   const was = e.unit ? live.get(e.unit) : null; if (was) was.remove();
   // ---- the size: one column a gun (a row of rounds may need a wider one) ----
   const cols = plan.guns.map((g) => colWidth(g, u));
-  const pad = 10 * u, gap = 8 * u, W = Math.max(132 * u, cols.reduce((a, b) => a + b, 0) + gap * (cols.length - 1) + pad * 2), tail = 8 * u;
+  const pad = 10 * u, gap = 8 * u, W = Math.max((plan.mode === 'load' ? 132 : 150) * u, cols.reduce((a, b) => a + b, 0) + gap * (cols.length - 1) + pad * 2), tail = 8 * u;
   const labelled = plan.guns.length > 1 || plan.guns[0].hand === 'off';
   const H = (labelled ? 128 : 118) * u;
   const box = div('position:absolute;left:0;top:0;width:' + W + 'px;height:' + (H + tail) + 'px;pointer-events:none;z-index:4;will-change:transform,opacity;transform-origin:50% 100%',
     { 'data-fx': 'reload', 'data-reload-mode': plan.mode, 'data-reload-unit': String(e.unit || '') });
   // the card itself (moved down by the pointer's height when it is flipped under the unit)
   const card = div('position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px');
-  card.appendChild(div('position:absolute;inset:0;box-sizing:border-box;border-radius:' + 8 * u + 'px;background:rgba(16,21,31,.95);border:1px solid ' + LINE
-    + ';box-shadow:0 ' + 6 * u + 'px ' + 18 * u + 'px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.5)'));
+  // the frame says which reload it is: white for a tactical one, muted grey for a speed one (the line for a load)
+  const frame = plan.mode === 'tactical' ? 'border:' + Math.max(1.5, 1.6 * u) + 'px solid #FFFFFF' : plan.mode === 'speed' ? 'border:' + Math.max(1, 1.2 * u) + 'px solid ' + MUTED : 'border:1px solid ' + LINE;
+  card.appendChild(div('position:absolute;inset:0;box-sizing:border-box;border-radius:' + 8 * u + 'px;background:rgba(16,21,31,.95);' + frame
+    + ';box-shadow:0 ' + 6 * u + 'px ' + 18 * u + 'px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.5)', { 'data-reload-frame': plan.mode }));
   // the pointer to the unit (under the card, or above it when the card is flipped under the unit)
   const ptr = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   ptr.setAttribute('viewBox', '0 0 20 10'); ptr.style.cssText = 'position:absolute;left:' + (W / 2 - 10 * u) + 'px;top:' + (H - 1) + 'px;width:' + 20 * u + 'px;height:' + tail + 'px;overflow:visible';
   ptr.innerHTML = '<path d="M0 0 L10 10 L20 0" fill="rgba(16,21,31,.95)" stroke="' + LINE + '" stroke-width="1"/><path d="M0.6 0 H19.4" stroke="rgba(16,21,31,1)" stroke-width="2"/>';
   box.appendChild(ptr); box.appendChild(card);
-  const title = div(TXT + 'position:absolute;left:0;right:0;top:' + 8 * u + 'px;text-align:center;font-size:' + 11 * u + 'px;letter-spacing:.14em;color:#FFFFFF;text-shadow:0 1px 0 #000', { 'data-reload-title': '' });
+  // the title: a solid white chip (tactical), an outlined grey one (speed), plain words (a load)
+  const chip = plan.mode === 'tactical' ? 'background:#FFFFFF;color:#0A0D13;' : plan.mode === 'speed' ? 'background:#1C2536;color:' + INK + ';box-shadow:inset 0 0 0 1px ' + MUTED + ';' : 'color:#FFFFFF;text-shadow:0 1px 0 #000;';
+  const title = div(TXT + 'position:absolute;left:0;right:0;margin:0 auto;width:fit-content;top:' + (plan.mode === 'load' ? 8 : 6) * u + 'px;padding:' + (plan.mode === 'load' ? 0 : 2.5 * u) + 'px ' + (plan.mode === 'load' ? 0 : 6 * u) + 'px;border-radius:' + 4 * u + 'px;text-align:center;font-size:' + (plan.mode === 'load' ? 11 : 10) * u + 'px;letter-spacing:.14em;' + chip,
+    { 'data-reload-title': '', 'data-reload-chip': plan.mode });
   title.textContent = plan.title; card.appendChild(title);
+  // a tactical reload's extra cost (rules 1.9) on a tab at the card's top right
+  if (plan.mode === 'tactical') {
+    const ap = div(TXT + 'position:absolute;top:' + -10 * u + 'px;right:' + -6 * u + 'px;padding:' + 2.5 * u + 'px ' + 5 * u + 'px;border-radius:' + 6 * u + 'px;background:#FFFFFF;color:#0A0D13;font-size:' + 10 * u + 'px;letter-spacing:.06em;box-shadow:0 1px 4px rgba(0,0,0,.7)', { 'data-reload-ap': '' });
+    ap.textContent = '+' + (PILE.tactical_reload_extra_ap || 1) + ' AP'; card.appendChild(ap);
+  }
   // ---- on the layer, over the unit (flipped under it near the top of the screen), following the tile ----
   L.appendChild(box);
   let flip = false;
@@ -155,10 +168,11 @@ function colWidth(g: ReloadGun, u: number): number {
  *  its count is full (ms from now, at Fast). */
 function drawGun(col: HTMLElement, g: ReloadGun, cw: number, top: number, H: number, u: number, ms: number, offset: number, still: boolean, fall: number): number {
   // the count and its bar, at the foot of the column
-  const barY = H - 30 * u, bar = div('position:absolute;z-index:2;left:' + 6 * u + 'px;right:' + 6 * u + 'px;top:' + barY + 'px;height:' + 5 * u + 'px;border-radius:' + 3 * u + 'px;background:' + LINE + ';overflow:hidden');
+  // (the bar and the count sit over a falling old magazine: it passes behind them, the count stays readable)
+  const barY = H - 30 * u, bar = div('position:absolute;z-index:4;left:' + 6 * u + 'px;right:' + 6 * u + 'px;top:' + barY + 'px;height:' + 5 * u + 'px;border-radius:' + 3 * u + 'px;background:' + LINE + ';overflow:hidden');
   const fill = div('height:100%;width:0;background:#FFFFFF;border-radius:inherit;transition:width 90ms linear');
   bar.appendChild(fill); col.appendChild(bar);
-  const count = div(TXT + 'position:absolute;z-index:2;left:0;right:0;top:' + (barY + 9 * u) + 'px;text-align:center;font-size:' + 14 * u + 'px;letter-spacing:.04em;color:' + INK + ';font-variant-numeric:tabular-nums;text-shadow:0 1px 0 #000', { 'data-reload-count': '' });
+  const count = div(TXT + 'position:absolute;z-index:4;left:0;right:0;margin:0 auto;width:fit-content;top:' + (barY + 7 * u) + 'px;padding:' + 2 * u + 'px ' + 4 * u + 'px;border-radius:' + 4 * u + 'px;background:rgba(16,21,31,.97);text-align:center;font-size:' + 14 * u + 'px;letter-spacing:.04em;color:' + INK + ';font-variant-numeric:tabular-nums;text-shadow:0 1px 0 #000', { 'data-reload-count': '' });
   col.appendChild(count);
   const show = (n: number, done = false) => {
     count.innerHTML = '';
@@ -169,16 +183,16 @@ function drawGun(col: HTMLElement, g: ReloadGun, cw: number, top: number, H: num
   };
   const t = (f: number) => ms * Math.min(1, f + offset);
   // ---- where the old magazine goes: the pack glyph (tactical) or the drop arrow (speed), right of the well ----
-  const wellS = 54 * u, wx = g.out ? cw / 2 - 12 * u : cw / 2, wy = top + 4 * u;
+  const wellS = 54 * u, GS = 24 * u, wx = g.out ? cw / 2 - 14 * u : cw / 2, wy = top + 4 * u;
   let dest: HTMLElement | null = null;
   if (g.out) {
-    dest = div('position:absolute;left:' + (cw - 22 * u) + 'px;top:' + (wy + wellS / 2 - 15 * u) + 'px;width:' + 18 * u + 'px;height:' + 18 * u + 'px', g.out === 'pack' ? { 'data-reload-pack': '' } : { 'data-reload-drop': '' });
+    dest = div('position:absolute;left:' + (cw - GS - 2 * u) + 'px;top:' + (wy + wellS / 2 - GS + 2 * u) + 'px;width:' + GS + 'px;height:' + GS + 'px', g.out === 'pack' ? { 'data-reload-pack': '' } : { 'data-reload-drop': '' });
     dest.innerHTML = g.out === 'pack' ? PACK_SVG : DROP_SVG;
-    const cap = div(TXT + 'position:absolute;left:' + (cw - 31 * u) + 'px;width:' + 36 * u + 'px;top:' + (wy + wellS / 2 + 6 * u) + 'px;text-align:center;font-size:' + 7.5 * u + 'px;letter-spacing:.12em;color:' + (g.out === 'pack' ? '#FFFFFF' : MUTED));
+    const cap = div(TXT + 'position:absolute;left:' + (cw - GS / 2 - 2 * u - 18 * u) + 'px;width:' + 36 * u + 'px;top:' + (wy + wellS / 2 + 5 * u) + 'px;text-align:center;font-size:' + 9 * u + 'px;letter-spacing:.12em;color:' + (g.out === 'pack' ? '#FFFFFF' : MUTED));
     cap.textContent = g.out === 'pack' ? 'PACK' : 'PILE';
     col.appendChild(dest); col.appendChild(cap);
     // once the old one is there: the glyph bumps and keeps a +1 (white for the pack, grey for the pile)
-    const badge = div(TXT + 'position:absolute;z-index:3;left:' + (cw - 11 * u) + 'px;top:' + (wy + wellS / 2 - 26 * u) + 'px;padding:' + 2 * u + 'px ' + 3.5 * u + 'px;border-radius:' + 7 * u + 'px;font-size:' + 10 * u + 'px;box-shadow:0 1px 3px rgba(0,0,0,.6);'
+    const badge = div(TXT + 'position:absolute;z-index:3;left:' + (cw - 12 * u) + 'px;top:' + (wy + wellS / 2 - GS - 6 * u) + 'px;padding:' + 2 * u + 'px ' + 3.5 * u + 'px;border-radius:' + 7 * u + 'px;font-size:' + 10 * u + 'px;box-shadow:0 1px 3px rgba(0,0,0,.6);'
       + (g.out === 'pack' ? 'background:#FFFFFF;color:#0A0D13' : 'background:#1C2536;color:' + INK + ';border:1px solid ' + LINE), { 'data-reload-badge': g.out });
     badge.textContent = '+1'; col.appendChild(badge);
     if (!still) {
@@ -187,19 +201,21 @@ function drawGun(col: HTMLElement, g: ReloadGun, cw: number, top: number, H: num
       after(() => {
         anim(d, [{ transform: 'scale(1)' }, { transform: 'scale(1.4)', offset: 0.35 }, { transform: 'scale(1)' }], { duration: 280 });
         anim(badge, [{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1.25)', offset: 0.5 }, { opacity: 1, transform: 'scale(1)' }], { duration: 240, fill: 'forwards' });
-      }, t(0.34));
+      }, g.out === 'pile' ? t(0.12) : t(0.34)); // the pile's +1 as the old one leaves (the tile's pile count already shows it)
     }
   }
   // ---- the well: a dashed slot the magazine (or the cylinder, or the rounds) sits in ----
   if (g.look === 'rounds') return drawRounds(col, g, cw, wy, u, ms, t, still, show);
-  const well = div('position:absolute;left:' + (wx - wellS / 2) + 'px;top:' + wy + 'px;width:' + wellS + 'px;height:' + wellS + 'px;box-sizing:border-box;border-radius:' + 5 * u + 'px;border:1px dashed rgba(231,235,243,.22);background:radial-gradient(circle at 50% 45%,rgba(163,174,194,.26),rgba(28,37,54,.5) 55%,rgba(10,13,19,.6) 100%)');
+  const well = div('position:absolute;left:' + (wx - wellS / 2) + 'px;top:' + wy + 'px;width:' + wellS + 'px;height:' + wellS + 'px;box-sizing:border-box;border-radius:' + 5 * u + 'px;border:1px dashed rgba(231,235,243,.22);background:radial-gradient(circle at 50% 45%,rgba(163,174,194,.42),rgba(54,66,88,.6) 55%,rgba(28,37,54,.7) 100%)');
   col.appendChild(well);
   if (g.look === 'cylinder') return drawCylinder(well, g, wellS, u, ms, t, still, show);
   if (g.look === 'arrows') return drawArrows(well, g, wellS, u, ms, t, still, show);
   if (g.look === 'count') { if (still) { show(g.to, true); return 0; } show(g.from); tick(g.from, g.to, t(0.3), t(0.75), show); return t(0.75); }
   // a magazine (or a canister): the old one out, the fresh one in, the count up
   const P = magPicture(g.mag!), fit = Math.min((wellS - 6 * u) / P.h, (wellS - 6 * u) / P.w), mw = P.w * fit, mh = P.h * fit;
-  const mag = (tag: string) => { const d = div('position:absolute;left:' + (wellS / 2 - mw / 2 - 1) + 'px;top:' + (wellS / 2 - mh / 2 - 1) + 'px;width:' + mw + 'px;height:' + mh + 'px;will-change:transform,opacity;filter:drop-shadow(0 ' + 2 * u + 'px ' + 2 * u + 'px rgba(0,0,0,.7))' + (P.glow ? ' drop-shadow(0 0 ' + 3 * u + 'px ' + P.glow + ')' : ''), { 'data-reload-piece': tag }); d.appendChild(P.el()); well.appendChild(d); return d; };
+  // the fresh one lit (brighter steel and a light rim, so it reads against the card); the old one muted
+  const LIT = 'brightness(1.6) contrast(1.05) drop-shadow(0 0 ' + 0.9 * u + 'px rgba(231,235,243,.95)) ', DIM = 'saturate(.4) brightness(.7) ';
+  const mag = (tag: string, lit = true) => { const d = div('position:absolute;left:' + (wellS / 2 - mw / 2 - 1) + 'px;top:' + (wellS / 2 - mh / 2 - 1) + 'px;width:' + mw + 'px;height:' + mh + 'px;will-change:transform,opacity;filter:' + (lit ? LIT : DIM) + 'drop-shadow(0 ' + 2 * u + 'px ' + 2 * u + 'px rgba(0,0,0,.7))' + (P.glow ? ' drop-shadow(0 0 ' + 3 * u + 'px ' + P.glow + ')' : ''), { 'data-reload-piece': tag, 'data-reload-lit': lit ? '1' : '0' }); d.appendChild(P.el()); well.appendChild(d); return d; };
   if (still) { mag('new'); show(g.to, true); return 0; }
   if (g.look === 'fuel') {
     const n = mag('new'); n.style.opacity = '0';
@@ -207,18 +223,18 @@ function drawGun(col: HTMLElement, g: ReloadGun, cw: number, top: number, H: num
     show(g.from); tick(g.from, g.to, t(0.45), t(0.85), show); return t(0.85);
   }
   // the old one, with what was left in it
-  const old = mag('old:' + (g.out || 'none')); old.setAttribute('data-reload-old', g.out || ''); old.style.filter += ' saturate(.5) brightness(.8)';
+  const old = mag('old:' + (g.out || 'none'), false); old.setAttribute('data-reload-old', g.out || '');
   show(g.left ?? 0);
   if (g.out === 'pack' && dest) {
     // slides right into the pack, shrinking (the pack bumps and keeps a +1, above)
-    const dx = (cw - 22 * u + 9 * u) - wx, dy = (wy + wellS / 2 - 15 * u + 9 * u) - (wy + wellS / 2);
+    const dx = (cw - GS / 2 - 2 * u) - wx, dy = (wy + wellS / 2 - GS / 2 + 2 * u) - (wy + wellS / 2);
     anim(old, [{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: 'translate(' + dx * 0.15 + 'px,' + (-4 * u) + 'px) scale(.95) rotate(6deg)', opacity: 1, offset: 0.25 },
       { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.32) rotate(18deg)', opacity: 0.9, offset: 0.88 }, { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.2) rotate(18deg)', opacity: 0 }],
     { duration: t(0.36) - t(0.1), delay: t(0.1), easing: 'cubic-bezier(.5,0,.4,1)', fill: 'forwards' });
   } else {
     // drops out of the bottom of the card, toward the unit and the ground under it (fx/brass.ts dropMag takes it from
     // under the portrait to the floor, where the pile is)
-    old.style.zIndex = '3'; // in front of the count as it falls past it
+    old.style.zIndex = '3'; // over the card, but behind the bar and the count (z 4) as it falls past them
     anim(old, [{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: 'translate(0,' + 6 * u + 'px) rotate(2deg)', opacity: 1, offset: 0.18 },
       { transform: 'translate(' + 3 * u + 'px,' + fall * 0.75 + 'px) rotate(12deg)', opacity: 1, offset: 0.78 }, { transform: 'translate(' + 4 * u + 'px,' + fall + 'px) rotate(16deg) scale(.7)', opacity: 0 }],
     { duration: t(0.34) - t(0.1), delay: t(0.1), easing: 'cubic-bezier(.55,0,.9,.6)', fill: 'forwards' });

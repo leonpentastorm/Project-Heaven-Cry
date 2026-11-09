@@ -3,7 +3,7 @@
 // engine's events, merging, the player's setting, the geometry, and the effects queue's gate and slowed segment.
 import { describe, expect, it, beforeEach } from 'vitest';
 import { newGame, apply, ARCHETYPES, SANDBOX_PORTRAIT, type GameState, type Sheet } from '@engine';
-import { hashSeed, mulberry32, stripShape, tornEdge } from './tear';
+import { hashSeed, mulberry32, stripShape, tornEdge, topDepth, wholeFit } from './tear';
 import { cutInFromFx, inkOfChar, stripForPatron, stripForChar, eyeFor, assetName, DEFAULT_EYE, captionOf, FRAMES } from './spec';
 import { applyPref, showSpotlight, skipCutIn, cutInActive, cutInNow, cancelSpotlight, specFromTrigger } from './index';
 import { stackLayout, cropOf, tornStripMarkup, MAX_MAGNIFY } from './layout';
@@ -35,6 +35,16 @@ describe('the tear', () => {
     expect(stripShape('cb|x|40', 1200, 240).body).not.toEqual(stripShape('cb|x|41', 1200, 240).body);
     expect(hashSeed('a')).toBe(hashSeed('a'));
     const r1 = mulberry32(7), r2 = mulberry32(7); expect([r1(), r1()]).toEqual([r2(), r2()]);
+  });
+  it('a whole avatar (the recruit\'s robot) sits under the torn top edge over its window: its whole head shows (review, 9 Nov 2026)', () => {
+    expect(topDepth([[0, 12], [100, 30], [200, 8]], 0, 200)).toBe(30);
+    expect(topDepth([[0, 12], [100, 30], [200, 8]], 150, 200)).toBeCloseTo(19, 5); // read between the points at x 150
+    for (const seed of ['cb|a|1', 'cb|b|2', 'cb|c|3', 'cb|d|4']) for (const h of [120, 158, 220]) {
+      const sh = stripShape(seed, 1536, h, { windowFrac: 0.3, windowLeft: true }), f = wholeFit(h, 0.33, topDepth(sh.top, 120, 120 + h * 1.15));
+      expect(f.side).toBe(Math.round(h * 1.15));
+      for (const [x, y] of sh.top) if (x >= 120 && x <= 120 + f.side) expect(f.y).toBeGreaterThan(y); // the picture's top below every tooth
+      expect(f.y + 0.33 * f.side).toBeLessThan(h * 0.75); // the eyes still well inside the strip
+    }
   });
   it('tears inward 3–22 px, about one point every 28 px', () => {
     const e = tornEdge(mulberry32(3), 0, 1400, 10, 1);

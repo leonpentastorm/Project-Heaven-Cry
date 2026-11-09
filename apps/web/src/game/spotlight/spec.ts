@@ -39,7 +39,8 @@ export interface CutInSpec {
   scene?: string;
   /** Screen readers' one line. */
   aria?: string;
-  /** A crit in a fight (decision 113): the short cut-in (one strip, about 0.9 s). */
+  /** A crit in a fight (decision 113): the short cut-in (one strip, about 2.24 s at Fast, × the combat speed; its words
+   *  held timing.ts CRIT_READ_MS to be read). */
   short?: boolean;
 }
 

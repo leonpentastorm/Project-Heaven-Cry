@@ -1,6 +1,7 @@
 // How long a spotlight cut-in lasts (docs/design/cutin-spec.md 6.1). Pure (tests).
 /** The safety cap: the effects gate always opens by then, whatever happens (an overlay that failed, a hidden tab). At
- *  Fast; in a fight it is × the combat speed's multiplier (game/combatSpeed.ts), like every length here. */
+ *  Fast; in a fight it is × the combat speed's multiplier (game/combatSpeed.ts), like every length here. Per cut-in:
+ *  cutInCap (1700 as before, 2400 for a crit's short one, which holds its words CRIT_READ_MS); this is the largest. */
 export const CUTIN_MAX_MS = 2400;
 /** The slowed action's tempo after a cut-in in a fight: 15% slower. */
 export const CUTIN_TEMPO = 0.85;
@@ -27,3 +28,6 @@ export function CUTIN_MS(n: number, god = false, rm = false, short = false): num
 /** When the strips hold until (the way out starts): the total less the 250 ms out and the blur's last 100 (a short one:
  *  its words' fade-in and the reading time). At Fast. */
 export const holdUntil = (n: number, god = false, rm = false, short = false) => (short ? CRIT_TEXT_IN(rm) + CRIT_READ_MS : rm ? 800 : CUTIN_MS(n, god, rm) - 350);
+/** The safety cap for one cut-in (at Fast): 1700 ms as it always was, or for a crit's short one (which holds its words
+ *  to be read) its own length + 160 (2400 ms). A stall at Fast is no longer than before for every other cut-in. */
+export const cutInCap = (short = false) => (short ? CUTIN_MS(1, false, false, true) + 160 : 1700);

@@ -98,6 +98,32 @@ describe('the card on the layer', () => {
     vi.advanceTimersByTime(3000);
     expect(layer.querySelector('[data-fx="reload"]')).toBeNull();
   });
+  it('speed and tactical read apart to the end: frame, title chip, the extra AP; the fresh magazine lit, the old one dim; the count over a falling one', () => {
+    vi.useFakeTimers();
+    const layer = grid();
+    const look = () => { const c = layer.querySelector('[data-fx="reload"]') as HTMLElement; return {
+      frame: c.querySelector('[data-reload-frame]')!.getAttribute('style') || '', chip: c.querySelector('[data-reload-chip]')!.getAttribute('data-reload-chip'),
+      chipStyle: c.querySelector('[data-reload-chip]')!.getAttribute('style') || '', ap: c.querySelector('[data-reload-ap]')?.textContent || '',
+      fresh: c.querySelector('[data-reload-piece="new"]')?.getAttribute('data-reload-lit'), old: c.querySelector('[data-reload-old]')?.getAttribute('data-reload-lit'),
+      oldZ: (c.querySelector('[data-reload-old]') as HTMLElement | null)?.style.zIndex, countZ: (c.querySelector('[data-reload-count]') as HTMLElement).style.zIndex } };
+    playFx(ev({ unit: 'a', weapon: 'hellraiser_service_rifle', cat: 'rifle', how: 'mag', left: 7, ammo: 24, cap: 24 }) as any);
+    const sp = look(); vi.advanceTimersByTime(4000);
+    playFx(ev({ unit: 'b', weapon: 'hellraiser_service_rifle', cat: 'rifle', how: 'mag', left: 7, ammo: 24, cap: 24, tactical: true }) as any);
+    const tc = look(); vi.advanceTimersByTime(4000);
+    expect(sp.chip).toBe('speed'); expect(tc.chip).toBe('tactical');
+    expect(sp.frame).toMatch(/solid (#A3AEC2|rgb\(163, 174, 194\))/i); expect(tc.frame).toMatch(/solid (#FFFFFF|rgb\(255, 255, 255\))/i);
+    expect(tc.chipStyle).toMatch(/background: ?(#FFFFFF|rgb\(255, 255, 255\))/i); expect(sp.chipStyle).not.toMatch(/background: ?(#FFFFFF|rgb\(255, 255, 255\))/i);
+    expect(tc.ap).toBe('+1 AP'); expect(sp.ap).toBe('');
+    expect(sp.fresh).toBe('1'); expect(sp.old).toBe('0'); expect(tc.fresh).toBe('1');
+    expect(Number(sp.countZ)).toBeGreaterThan(Number(sp.oldZ)); // the falling old magazine passes behind the count
+  });
+  it('a tactical reload drops nothing under the portrait (its magazine goes to the pack on the card); a speed one does', () => {
+    vi.useFakeTimers();
+    const layer = grid(), mags = () => [...layer.querySelectorAll('[data-fx-piece]')].map((p) => p.getAttribute('data-fx-piece') || '').filter((t) => t.startsWith('mag:'));
+    const seen = (e: any) => { const all = new Set<string>(); playFx(e); for (let t = 0; t < 1500; t += 50) { vi.advanceTimersByTime(50); for (const m of mags()) all.add(m); } vi.advanceTimersByTime(4000); return [...all]; };
+    expect(seen(ev({ unit: 'a', weapon: 'hellraiser_service_rifle', cat: 'rifle', how: 'mag', left: 7, ammo: 24, cap: 24, tactical: true }))).toEqual([]);
+    expect(seen(ev({ unit: 'b', weapon: 'hellraiser_service_rifle', cat: 'rifle', how: 'mag', left: 7, ammo: 24, cap: 24 })).length).toBeGreaterThan(0);
+  });
   it("a unit's new reload replaces its card; reduced motion shows a still card with the end count at once", () => {
     vi.useFakeTimers();
     const layer = grid();

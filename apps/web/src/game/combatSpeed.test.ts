@@ -4,8 +4,10 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { COMBAT_SPEED_KEY, EV_COMBAT_SPEED, NORMAL_RATE, battlePace, combatTempo, fightPace, getCombatSpeed, inBattle, setCombatSpeed, setInBattle } from './combatSpeed';
 import { fxScale, slow, withTempo, after, anim, setLayer } from './fx/dom';
-import { combatTempoInfo, clearFx, setContext } from './fx/play';
-import { CUTIN_MS, CUTIN_TEMPO, cutInNow, showSpotlight, skipCutIn, holdUntil } from './spotlight';
+import { combatTempoInfo, clearFx, setContext, playFx } from './fx/play';
+import { feltCard } from './fx/feelings';
+import * as sfxMod from './sfx';
+import { CUTIN_MS, CUTIN_TEMPO, cutInCap, cutInNow, showSpotlight, skipCutIn, holdUntil } from './spotlight';
 import { resetStage } from './stage';
 
 const fight = { code: 'X', characters: {}, story: { positions: {}, npcs: [] }, combat: { units: [] } } as any;
@@ -104,5 +106,36 @@ describe('the cut-ins follow it (game/spotlight)', () => {
     setCombatSpeed('normal'); setInBattle(false);
     showSpotlight({ ...crit, id: 'c' }, { prefApplied: true });
     expect(cutInNow()!.ms).toBe(2240); expect(cutInNow()!.pace).toBe(1);
+  });
+});
+
+describe('review fixes (9 Nov 2026): what still ran at the old speed', () => {
+  beforeEach(() => { localStorage.clear(); clearFx(); setCombatSpeed('normal'); setInBattle(true); vi.useFakeTimers(); });
+  afterEach(() => { clearFx(); setInBattle(false); vi.useRealTimers(); });
+  it('a volley\'s silent window follows the pace: at Normal a chained shot 2.7 s in is still silent (it was 2.5 s flat)', () => {
+    const spy = vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
+    playFx({ k: 'volley', unit: 'u', from: '1,1', to: '5,1', cat: 'smg', mode: 'auto' } as any);
+    const auto = spy.mock.calls.length; expect(auto).toBeGreaterThan(0);
+    vi.advanceTimersByTime(2700);
+    playFx({ k: 'shot', unit: 'u', target: 't', from: '1,1', to: '5,1', weapon: 'decrkm_smg', cat: 'smg', hit: true, dmg: 4, chain: true } as any);
+    expect(spy.mock.calls.length).toBe(auto); // silent: inside 2500 / 0.85 ≈ 2941 ms
+    vi.advanceTimersByTime(400);
+    playFx({ k: 'shot', unit: 'u', target: 't', from: '1,1', to: '5,1', weapon: 'decrkm_smg', cat: 'smg', hit: true, dmg: 4, chain: true } as any);
+    expect(spy.mock.calls.length).toBeGreaterThan(auto); // past the window: its own sound
+    spy.mockRestore();
+  });
+  it('the A NEW FEELING card holds and fades at the pace (removed at (3200 + 420) / 0.85, not 3620)', () => {
+    (Element.prototype as any).animate = () => ({ cancel() {}, finished: Promise.resolve() });
+    feltCard('anger');
+    vi.advanceTimersByTime(3700); expect(document.querySelector('[data-felt-card]')).not.toBeNull();
+    vi.advanceTimersByTime(600); expect(document.querySelector('[data-felt-card]')).toBeNull();
+    setCombatSpeed('fast'); feltCard('anger');
+    vi.advanceTimersByTime(3610); expect(document.querySelector('[data-felt-card]')).not.toBeNull();
+    vi.advanceTimersByTime(20); expect(document.querySelector('[data-felt-card]')).toBeNull();
+    delete (Element.prototype as any).animate;
+  });
+  it('the safety cap is per cut-in: 1700 ms as before, 2400 only for a crit\'s short one (which holds its words)', () => {
+    expect(cutInCap(false)).toBe(1700); expect(cutInCap(true)).toBe(2400);
+    expect(cutInCap(false)).toBeGreaterThan(CUTIN_MS(4, true)); expect(cutInCap(true)).toBeGreaterThan(CUTIN_MS(1, false, false, true));
   });
 });

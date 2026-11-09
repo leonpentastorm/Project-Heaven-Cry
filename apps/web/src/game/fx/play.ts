@@ -11,7 +11,7 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
-import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_MAX_MS, CUTIN_TEMPO } from '../spotlight';
+import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
@@ -221,9 +221,10 @@ function explosion(k: string | undefined, radius = 1, kind: 'frag' | 'fire' | 's
 }
 
 /** What a reload throws off, from behind the portrait: a revolver's or break-action's spent brass, the magazine (or
- *  canister, or bolt box) dropping to the floor (a tactical reload puts it back in the pack), a bow's arrows slid into
- *  the quiver, a crossbow's bolt drawn from behind and set. An off-hand gun's reload does the same for that gun; a
- *  reload of both guns (e.off) throws off both. */
+ *  canister, or bolt box) dropping to the floor, a bow's arrows slid into the quiver, a crossbow's bolt drawn from behind
+ *  and set. A tactical reload drops nothing: its old magazine goes into the pack on the reload card (fx/reload.ts), and
+ *  one falling under the portrait would read as a speed reload (review, 9 Nov 2026). An off-hand gun's reload does the
+ *  same for that gun; a reload of both guns (e.off) throws off both. */
 function reloadPieces(e: FxEvent, p: Pt, ms: number) {
   const who = whoOf(tokOf(e.unit, e.at));
   if (!who) return;
@@ -235,7 +236,7 @@ function reloadPieces(e: FxEvent, p: Pt, ms: number) {
     if (br.load) loadRounds(who, br, rounds || size, aim, ms, { delay: delay + ms * 0.06, spent: size });
     // a speed reload's magazine leaves the reload card falling toward the unit (fx/reload.ts) and reaches it about a
     // third of the way in: from there it drops out from under the portrait to the ground, where the pile is
-    if (how === 'mag' || br.mag === 'fuel_can') dropMag(who, br.mag, { delay: delay + ms * (tactical || br.mag === 'fuel_can' ? 0.12 : 0.3), tactical });
+    if (!tactical && (how === 'mag' || br.mag === 'fuel_can')) dropMag(who, br.mag, { delay: delay + ms * (br.mag === 'fuel_can' ? 0.12 : 0.3) });
   };
   one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, e.rounds, 0);
   if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, e.off.rounds, 160);
@@ -330,7 +331,7 @@ const H: Record<string, Handler> = {
   },
   volley(e) {
     const vs = volleySound(e.cat || '', e.mode), p = at(e.from) || centre(e.to);
-    volley = { unit: e.unit, silent: !!vs, until: performance.now() + 2500 };
+    volley = { unit: e.unit, silent: !!vs, until: performance.now() + slow(2500) }; // the shots it covers are spaced at the pace
     if (vs) play(vs.s, p, { rate: vs.rate });
     if (e.mode === 'skill' && e.name) { const q = centre(e.from); if (q && visible(e.from)) floatText(String(e.name).toUpperCase(), q, WHITE, { small: true, ms: 1100 }); }
     if (e.mode === 'auto' && p && e.to) {
@@ -896,7 +897,7 @@ export const TURNS_HOLD_MAX = 8000;
 // A fight's batch with a 'spotlight' moment stops at a gate just before the action it happened in (its `from`): the
 // cut-in plays, then that action plays slowed (tempo 0.85: every beat, duration and delay ÷ 0.85; one-shot sounds at
 // rate × 0.85), then everything after it at normal speed. Events behind a closed gate wait unscheduled and are scheduled
-// from the cut-in's actual end (a skip moves them earlier). The gate always opens by CUTIN_MAX_MS.
+// from the cut-in's actual end (a skip moves them earlier). The gate always opens by its cap (spotlight/timing.ts cutInCap).
 /** The events waiting behind a gate (new batches join behind them, in order). */
 let held: { evs: FxEvent[]; stream?: string; speed: number } | null = null;
 /** While a cut-in shows: its planned end (input is held only then). */
@@ -1067,7 +1068,7 @@ function closeGate(rest: FxEvent[], stream: string | undefined, t: number, gate:
   };
   const go = () => {
     gateShowing = true; gateUntil = performance.now() + cutMs; holdChanged();
-    cap = window.setTimeout(() => open(false), (CUTIN_MAX_MS + 100) * k);
+    cap = window.setTimeout(() => open(false), (cutInCap(!!c.spec.short) + 100) * k);
     // preempt: a cut-in already on screen (a story one, a client-door preview) gives way at once, so this one plays
     // before its action, never after it.
     showSpotlight(c.spec, { prefApplied: true, preempt: true }).then((r) => open(r !== 'off')).catch(() => open(false));

@@ -18,7 +18,7 @@ import type { FxEvent, GameState } from '@engine';
 import { uiPrefs, reducedMotion, sfx, SFX_FILES, type Sfx } from '../sfx';
 import { getState } from '../store';
 import { type CutInSpec, type CutInStrip, cutInFromFx, stripForChar, stripForPatron, patronData } from './spec';
-import { CUTIN_MS, CUTIN_MAX_MS, CUTIN_SKIP_MS, holdUntil } from './timing';
+import { CUTIN_MS, CUTIN_SKIP_MS, cutInCap, holdUntil } from './timing';
 import { stageBusy, claimStage, onStage } from '../stage';
 import { battlePace } from '../combatSpeed';
 
@@ -121,7 +121,7 @@ function start(it: Item) {
   fire(EV_CUTIN_START, { id, kind: it.spec.kind });
   timers.push(setTimeout(() => { if (current?.id === id) { current.out = true; notify(); } }, current.hold));
   timers.push(setTimeout(() => finish(id, 'shown'), ms));
-  timers.push(setTimeout(() => finish(id, 'shown'), CUTIN_MAX_MS * k)); // the cap, whatever happens
+  timers.push(setTimeout(() => finish(id, 'shown'), cutInCap(short) * k)); // the cap, whatever happens
   notify();
 }
 function finish(id: string, r: CutInResult) {
