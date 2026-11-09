@@ -1,7 +1,7 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, visibility } from '@engine';
+import { type FxEvent, type GameState, SIGIL, WEAPON, visibility } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
@@ -12,6 +12,7 @@ import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { closeCutIns } from '../cutIn';
+import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
 import { type Pt, after, bumpGen, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl, walk } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
@@ -74,6 +75,13 @@ const tokOf = (id: string | null | undefined, fallback?: string) => tokenEl(tile
 const at = (k: string | null | undefined) => (visible(k) ? centre(k) : null);
 const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => sfx(s, { ...o, pan: panOf(p) });
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
+/** Which way each unit last aimed (radians on screen, 0 = right), from its last shot or Evoke: behind it (the opposite
+ *  way) is where a casing flies, a break-action kicks its hulls and an Evoker throws its spent core. Before any, a
+ *  random way (an Evoker's core) or, for a reload, away from the other side's half of the map. */
+const aims = new Map<string, number>();
+const aimFor = (id: string | null | undefined, guess?: number) => (id && aims.has(id) ? aims.get(id)! : guess ?? (unit(id)?.side === 'pc' ? 0 : Math.PI));
+/** Does this shot wait for the archer's draw (a bow, not a crossbow: its bolt is already on)? */
+const drawsArrow = (e: FxEvent) => !e.ricochet && !reducedMotion() && brassOf(e.weapon || '', e.cat || '').bow === 'bow';
 
 // ---------- weapons ----------
 type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam';
@@ -200,6 +208,25 @@ function explosion(k: string | undefined, radius = 1, kind: 'frag' | 'fire' | 's
   play('explosion', p, { gain: point ? 0.7 : 1 }); play('explosion_boom', p, { gain: point ? 0.5 : 0.8 });
 }
 
+/** What a reload throws off, from behind the portrait: a revolver's or break-action's spent brass, the magazine (or
+ *  canister, or bolt box) dropping to the floor (a tactical reload puts it back in the pack), a bow's arrows slid into
+ *  the quiver, a crossbow's bolt drawn from behind and set. An off-hand gun's reload does the same for that gun; a
+ *  reload of both guns (e.off) throws off both. */
+function reloadPieces(e: FxEvent, p: Pt, ms: number) {
+  const who = whoOf(tokOf(e.unit, e.at));
+  if (!who) return;
+  const aim = aimFor(e.unit);
+  const one = (weapon: string, cat: string, how: string, tactical: boolean, rounds: number | undefined, delay: number) => {
+    const br = brassOf(weapon, cat), size = Math.max(1, Math.min(6, Number((WEAPON as any)[weapon]?.magazine) || 6));
+    if (br.bow === 'bow') { stowArrows(who, how === 'loose' ? Math.min(3, Math.max(1, rounds || 2)) : 1, aim, ms * 0.8); return; }
+    if (br.bow === 'crossbow' && how !== 'mag') { after(() => drawArrow(who, aim, { ms: ms * 0.6, bolt: true }), delay + ms * 0.15); return; }
+    if (br.load) loadRounds(who, br, rounds || size, aim, ms, { delay: delay + ms * 0.06, spent: size });
+    if (how === 'mag' || br.mag === 'fuel_can') dropMag(who, br.mag, { delay: delay + ms * 0.12, tactical });
+  };
+  one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, e.rounds, 0);
+  if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, e.off.rounds, 160);
+}
+
 // ---------- event handlers ----------
 type Handler = (e: FxEvent) => void;
 const H: Record<string, Handler> = {
@@ -215,41 +242,56 @@ const H: Record<string, Handler> = {
     for (let i = 0; i < steps; i++) play('step', centre(path[i + 1]), { delay: i * per + 40, rate: jitter(0.1) * (e.how === 'sprint' ? 1.1 : 1), gain: 0.8 });
   },
   shot(e) {
-    const g = gunOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
+    const g = gunOf(e.weapon || '', e.cat || ''), br = brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
     const silent = !!(volley && volley.unit === e.unit && volley.silent && e.chain && performance.now() < volley.until);
-    if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
-    if (!toP) return;
+    // A bow's shot waits for the draw: the arrow comes from the quiver behind the portrait to the front, then flies.
+    const draw = drawsArrow(e) ? DRAW_MS : 0;
+    if (!toP) { if (!silent && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jitter(0.04), delay: draw }); return; }
     const shooterTok = shooterSeen ? tokOf(e.unit, e.from) : null;
     if (e.killed && e.target) tokOrGhost(e.target, e.to, true);
-    let mp: { x: number; y: number } | null = null;
-    if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow') mp = muzzle(from, toP, g.color);
-    if (from && shooterTok) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
-    const start = mp || (from ? { x: from.x, y: from.y } : null);
-    const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
-    const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' ? 1.1 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
-    const ft = start ? Math.max(60, Math.min(g.look === 'lob' ? 650 : 320, dist / speed)) : 0;
-    const coverP = e.cover ? centre(e.cover) : null;
-    const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
-    if (start) {
-      if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
-      else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
-      else projectile(start, end, ft, g.look, toP.s, g.color);
-    }
-    after(() => {
-      if (e.object) { burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
-      // A charge that misses still goes off where it lands (a smaller blast, no scorch: the engine hurt nobody there);
-      // a flamer's miss is a gout of fire on the floor, not a blast.
-      const wide = !e.hit && !coverP;
-      if (g.blast && !(wide && g.look === 'flame')) explosion(e.hit ? e.to : undefined, e.hit ? 1 : 0.6, g.blast, e.hit ? undefined : { x: end.x, y: end.y, s: toP.s });
-      if (e.hit) impact(e, toP, e.target, { crit: e.crit, dmg: e.dmg, color: g.look === 'bolt' ? SIGIL_INK : undefined, sound: g.look === 'arrow' ? 'hit_flesh' : undefined });
-      else if (coverP) { burst('spark_burst', coverP, coverP.s * 0.7, 260, { color: '#FFD27A' }); dust(coverP, coverP.s); play('hit_metal', coverP, { rate: jitter() }); floatText('COVER', toP, MUTED, { small: true }); }
-      else {
-        if (g.look === 'flame') { burst('flame', end, toP.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 }); play('vent', toP, { rate: 0.6, gain: 0.8 }); }
-        else if (!g.blast) play(g.look === 'arrow' ? 'hit_wood' : g.look === 'lob' || g.look === 'rocket' ? 'hit_heavy' : 'whiz', toP, { rate: g.look === 'lob' ? 0.7 : jitter(0.15), delay: 0 });
-        dust(end, toP.s); floatText(e.fumble ? 'FUMBLE' : e.image ? 'DECOY' : 'MISS', toP, e.image ? SIGIL_INK : MUTED); // through a False Image (it scatters: image_gone)
+    // a Trick Shot ricochet flies on from the first target: no draw, no casing, no recoil, and the shooter's aim stays
+    const rico = !!e.ricochet, aim = from && !rico ? angle(from, toP) : aimFor(e.unit);
+    if (e.unit && !rico) aims.set(e.unit, aim);
+    if (draw) {
+      if (from && shooterTok) { drawArrow(whoOf(shooterTok), aim, { ms: draw }); play('swish', from, { rate: 1.7 * jitter(), gain: 0.35 }); }
+      after(() => fire(), draw);
+    } else fire();
+    function fire() {
+      if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
+      if (!toP) return;
+      let mp: { x: number; y: number } | null = null;
+      if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow') mp = muzzle(from, toP, g.color);
+      if (from && shooterTok && !rico) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
+      // the casing: thrown out behind the shooter (away from the target), with a wisp of smoke; a pump, a lever or a
+      // bolt is worked first, so its casing comes a beat later
+      if (from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
+      const start = mp || (from ? { x: from.x, y: from.y } : null);
+      const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
+      const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' ? 1.1 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
+      const ft = start ? Math.max(60, Math.min(g.look === 'lob' ? 650 : 320, dist / speed)) : 0;
+      const coverP = e.cover ? centre(e.cover) : null;
+      const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
+      if (start) {
+        if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
+        else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
+        else projectile(start, end, ft, g.look, toP.s, g.color);
       }
-      if (e.jam || (e.fumble && !/melee|unarmed/.test(e.cat || ''))) { const fp = from || toP; floatText('JAMMED', fp, HP, { small: true, delay: 120 }); play('dry_click', fp, { delay: 160 }); }
-    }, ft);
+      after(() => {
+        if (e.object) { burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
+        // A charge that misses still goes off where it lands (a smaller blast, no scorch: the engine hurt nobody there);
+        // a flamer's miss is a gout of fire on the floor, not a blast.
+        const wide = !e.hit && !coverP;
+        if (g.blast && !(wide && g.look === 'flame')) explosion(e.hit ? e.to : undefined, e.hit ? 1 : 0.6, g.blast, e.hit ? undefined : { x: end.x, y: end.y, s: toP.s });
+        if (e.hit) impact(e, toP, e.target, { crit: e.crit, dmg: e.dmg, color: g.look === 'bolt' ? SIGIL_INK : undefined, sound: g.look === 'arrow' ? 'hit_flesh' : undefined });
+        else if (coverP) { burst('spark_burst', coverP, coverP.s * 0.7, 260, { color: '#FFD27A' }); dust(coverP, coverP.s); play('hit_metal', coverP, { rate: jitter() }); floatText('COVER', toP, MUTED, { small: true }); }
+        else {
+          if (g.look === 'flame') { burst('flame', end, toP.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 }); play('vent', toP, { rate: 0.6, gain: 0.8 }); }
+          else if (!g.blast) play(g.look === 'arrow' ? 'hit_wood' : g.look === 'lob' || g.look === 'rocket' ? 'hit_heavy' : 'whiz', toP, { rate: g.look === 'lob' ? 0.7 : jitter(0.15), delay: 0 });
+          dust(end, toP.s); floatText(e.fumble ? 'FUMBLE' : e.image ? 'DECOY' : 'MISS', toP, e.image ? SIGIL_INK : MUTED); // through a False Image (it scatters: image_gone)
+        }
+        if (e.jam || (e.fumble && !/melee|unarmed/.test(e.cat || ''))) { const fp = from || toP; floatText('JAMMED', fp, HP, { small: true, delay: 120 }); play('dry_click', fp, { delay: 160 }); }
+      }, ft);
+    }
   },
   melee(e) {
     const from = at(e.from), toP = centre(e.to), cat = e.cat || 'unarmed';
@@ -279,7 +321,8 @@ const H: Record<string, Handler> = {
     if (e.mode === 'auto' && p && e.to) {
       // The spray: extra tracers fanning around the line (the engine rolls one shot per enemy near it).
       const toP = centre(e.to); if (!toP || !visible(e.from)) return;
-      for (let i = 0; i < 7; i++) after(() => { const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, 'bullet', toP.s); }, i * 85);
+      const br = brassOf(e.weapon || '', e.cat || ''), who = br.when === 'shot' ? whoOf(tokOf(e.unit, e.from)) : null, aim = angle(p, toP);
+      for (let i = 0; i < 7; i++) after(() => { const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, 'bullet', toP.s); if (who) ejectShell(who, br.shell, aim); }, i * 85);
     }
   },
   reload(e) {
@@ -297,6 +340,7 @@ const H: Record<string, Handler> = {
     else if (e.how === 'loose') { for (let i = 0; i < n; i++) play('round_in', p, { delay: each(i, n), rate: jitter() }); play('mag_in', p, { delay: ms * 0.85 }); }
     else play(cat === 'rifle' || cat === 'heavy' || cat === 'smg' ? 'reload_rifle' : cat === 'pistol' || cat === 'revolver' ? 'reload_pistol' : 'reload_mag', p, { rate: Math.max(0.85, Math.min(1.3, 1250 / ms)) });
     if (p) timerRing(e.at, ms, WHITE, kind === 'fuel' ? 'REFUEL' : 'RELOAD');
+    if (p) reloadPieces(e, p, ms);
   },
   load(e) {
     const p = at(e.at), ms = e.dur || 1400, n = Math.max(2, Math.min(8, Math.ceil((e.rounds || 5) / 2)));
@@ -313,7 +357,15 @@ const H: Record<string, Handler> = {
     for (let i = 0; i < 3; i++) play('hit_metal', p, { delay: 150 + i * ms * 0.28, rate: jitter(0.15) });
     if (p) { timerRing(e.at, ms, WHITE, 'REPAIR'); for (let i = 0; i < 3; i++) burst('spark_burst', p, p.s * 0.5, 220, { color: '#FFD27A', delay: 150 + i * ms * 0.28 }); }
   },
-  core(e) { const p = at(e.at), ms = e.dur || 1000; play('sigil_core', p); if (p) { timerRing(e.at, ms, SIGIL_INK, 'CORE'); squares(p, SIGIL_INK, 8, 0.6, ms * 0.6); } },
+  core(e) {
+    const p = at(e.at), ms = e.dur || 1000; play('sigil_core', p);
+    if (p) {
+      // the spent core is thrown out of the Evoker like a casing; the fresh one's light settles in
+      ejectCore(whoOf(tokOf(e.unit, e.at)), coreOf(e.focus), aimFor(e.unit, Math.random() * Math.PI * 2));
+      play('dry_click', p, { rate: 1.6, gain: 0.5 });
+      timerRing(e.at, ms, SIGIL_INK, 'CORE'); squares(p, SIGIL_INK, 8, 0.6, ms * 0.6, ms * 0.3);
+    }
+  },
   crystallise(e) {
     const p = at(e.at), ms = e.dur || 1400; play('soul_hold', p, { rate: 1.2 }); play('crystal', p, { delay: ms * 0.9 });
     if (p) { timerRing(e.at, ms, SOUL_INK, 'CRYSTAL'); motes(p, SOUL_INK, 10, true, ms * 0.8); burst('magic_star', p, p.s * 0.8, 500, { color: SOUL_WARM, delay: ms * 0.9 }); }
@@ -406,6 +458,8 @@ const H: Record<string, Handler> = {
   glyph_fade(e) { const p = at(e.tile); if (!p) return; fallingSquares(p, MUTED, 5, 500); floatText((e.word || '').toUpperCase() + ' FADES', p, MUTED, { small: true }); },
   scuff(e) { const p = at(e.at); if (p) { dust(p, p.s); squares(p, MUTED, 6, 0.4, 400); } play('step', p, { rate: 0.7 }); },
   evoke(e) {
+    // the way the spell went: behind it is where the Evoker throws its spent core at the next core change
+    if (e.unit) { const d = e.dir || [0, 0], a = centre(e.at), b = centre(e.impact || e.src); if (d[0] || d[1]) aims.set(e.unit, Math.atan2(d[1], d[0])); else if (a && b && (a.x !== b.x || a.y !== b.y)) aims.set(e.unit, angle(a, b)); }
     // The Grand Sigilist plants the staff (fx/grand.ts draws the standing form): a flash on the staff, a ring wave out
     // across the radius in the word's tint, the tiles lighting up from the centre, the word's name.
     if (e.shape === 'grand') {
@@ -793,7 +847,7 @@ function beatOf(e: FxEvent): number {
   switch (e.k) {
     case 'turn': return 140;
     case 'move': return Math.min(1100, Math.max(160, ((e.path?.length || 2) - 1) * (e.how === 'sprint' ? 75 : 115)));
-    case 'shot': return e.chain ? 170 : e.object ? 150 : 400;
+    case 'shot': return (e.chain ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
     case 'melee': return e.chain ? 240 : 420;
     case 'volley': return e.mode === 'auto' ? 260 : 90;
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(1200, (e.dur || 1000) * 0.85);
@@ -882,7 +936,9 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
     const wait = t - now;
     if (wait <= 4) playFx(e, stream);
     else schedule(e, stream, t);
-    t += beatOf(e) * speed;
+    // a bow's draw holds its full time even when a backlog plays faster (the arrow can't fly before it is loosed)
+    const held = drawsArrow(e) && mineOnly(e) ? DRAW_MS : 0;
+    t += (beatOf(e) - held) * speed + held;
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.

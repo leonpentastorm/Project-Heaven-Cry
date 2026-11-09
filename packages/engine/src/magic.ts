@@ -2,7 +2,7 @@
 // the facing rule, Reach, Delivery, Burst, KIN), fired with Evoke. Outbursts are held in the heart, grow each turn and are released when
 // the caster chooses. The ambient mana meter, conditions with saves, shields and standing wall zones live here too.
 // Everything is deterministic: rolls come from the rng passed in.
-import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, type SigilDef, type ToneRider } from './data';
+import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
 import {
   type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
@@ -500,7 +500,9 @@ export function swapCore(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
   const ap = coreAp(u);
   if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (m.cores < 1) return 'No spare cores.';
-  u.ap -= ap; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000 }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
+  // focus: which Evoker throws out the spent core (an Evoker blade, a grand staff, else the off-hand Evoker), for the picture
+  const focus = [u.weapon, u.offWeapon].find((id) => id && ((WEAPON as any)[id]?.properties || []).includes('counts_as_evoker')) || 'evoker';
+  u.ap -= ap; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
   return null;
 }
 /** Enemies scuff a glyph of the other side they stand on (spec: Sigils, Drawing 7). */

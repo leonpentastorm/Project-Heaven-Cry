@@ -282,3 +282,18 @@ describe('the Proving Ground\'s off-hand gun comes loaded (review fix)', () => {
     expect(g.characters[c.id].offHand).toMatchObject({ id: 'magistrate_pistol', loaded: 7 });
   });
 });
+
+describe('an off-hand gun\'s reload has its picture too (fx only)', () => {
+  it('the off hand alone: its own reload event; both guns: the main reload event carries the off hand\'s part', () => {
+    let g = set(start(), (x) => { const c = rook(x); c.weapon = 'service_pistol'; c.weaponState = {}; c.loaded = 3; c.offHand = { id: 'decrkm_smg', loaded: 0 }; c.pack = [magsOf('service_pistol', 2), magsOf('decrkm_smg', 2)]; });
+    g = fight(g);
+    const cb = g.combat!, u = me(g), seq = cb.fxSeq || 0;
+    expect(reloadHands(cb, u, 'off')).toBeNull();
+    const off = (cb.fx || []).filter((e) => e.n > seq && e.k === 'reload');
+    expect(off).toHaveLength(1); expect(off[0]).toMatchObject({ unit: u.id, weapon: 'decrkm_smg', cat: 'smg', how: 'mag', hand: 'off' });
+    u.ap = 9; u.offAmmo = 2; const seq2 = cb.fxSeq || 0;
+    expect(reloadHands(cb, u, 'both', true)).toBeNull();
+    const both = (cb.fx || []).filter((e) => e.n > seq2 && e.k === 'reload');
+    expect(both).toHaveLength(1); expect(both[0]).toMatchObject({ weapon: 'service_pistol', tactical: true, off: { weapon: 'decrkm_smg', how: 'mag', tactical: true } });
+  });
+});

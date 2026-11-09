@@ -383,7 +383,7 @@ register({
       const cb = h.cb; if (ctx.att !== h.u || ctx.melee || !cb || !modOn(h, 'ricochet') || !uses(h).take('per_turn')) return;
       const t2 = ricochetTarget(cb, ctx.att, ctx.tgt); if (!t2) { say(cb, '(Ricochet: nobody within 2 tiles of ' + ctx.tgt.name + '.)'); return; }
       const n = Math.max(1, Math.floor((ctx.dmg || 0) / 2)), r = applyDamage(cb, t2, n, { by: ctx.att, type: 'weapon', ranged: true, shield: true, credit: 'all', weapon: ctx.att.weapon });
-      emitFx(cb, 'shot', { unit: ctx.att.id, target: t2.id, from: ctx.tgt.pos, to: t2.pos, weapon: ctx.att.weapon, cat: WEAPON[ctx.att.weapon]?.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: r.amount, killed: r.killed, chain: true });
+      emitFx(cb, 'shot', { unit: ctx.att.id, target: t2.id, from: ctx.tgt.pos, to: t2.pos, weapon: ctx.att.weapon, cat: WEAPON[ctx.att.weapon]?.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: r.amount, killed: r.killed, chain: true, ricochet: true });
       say(cb, 'The round ricochets into ' + t2.name + ' (Trick Shot): ' + r.amount + ' damage' + (r.killed ? (t2.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
       checkOver(cb);
     },

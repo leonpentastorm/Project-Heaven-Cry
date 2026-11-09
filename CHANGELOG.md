@@ -8,6 +8,22 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.8.0 — 9 November 2026
+
+Branch `feature/shell-casings`: **brass, what weapons throw off, drawn in SVG** (decision 112; Leon: casings behind the portrait on every shot with faint smoke, an Evoker ejecting its mana core like a casing, a shell for every weapon type, the Evokers and the enchanted guns, the archer's draw, a magazine dropping to the ground on a reload; "behind" is the opposite of the shot's direction).
+
+- **Casings:** every shot throws its casing out from behind the shooter's portrait, away from the target, in an arc with a ground shadow, then a hop; it lies there a moment and fades. A faint wisp of smoke comes off it. Each gun has its own: pistol and rifle brass, the .700's big case, belt links on the machine guns, red shotgun hulls, a 40 mm case.
+- **The enchanted guns:** the spellslinger pistol's casing is sigil-etched and glows; the censer gun's hull is blessed ivory and gold, with a violet incense wisp; the core rifle throws a spent core charge whose light goes out.
+- **Evoker cores:** taking a fresh core, an Evoker throws out the spent one, opposite its last Evoke (or a random way before the first). Each Evoker has its own: the Evoker's hexagonal core, the Evoker blade's shard, the grand staff's orb in a brass cage. Its light fades and a cold mist leaks out.
+- **Bows:** the shot waits for the draw: an arrow is pulled from the quiver behind the archer, swung over to point at the target and loosed. A crossbow's bolt is already on; its reload sets one from behind.
+- **Reloads:**
+  - A magazine drops straight down and is gone the moment it lands; each gun has its own (pistol, stick, curved, box, drum, belt box, shotgun box, sigil-etched, bolt box, fuel can). A tactical reload drops it into view and takes it back up into the pack.
+  - Revolvers keep their brass and drop it all straight out of the cylinder, then fresh rounds go in.
+  - A double barrel (and the parlour pistol) breaks open, kicks both hulls out behind and takes two fresh ones.
+  - A pump gun throws its hull a beat after the shot (the pump), and lever and bolt rifles a beat after theirs; at the reload, shells and rounds are fed in one by one.
+- **Engine (pictures only):** the core event names the Evoker. An off-hand gun's reload now has its own event (with both guns, the main event carries the off hand's part). A Trick Shot ricochet's shot is marked, so it throws no second casing.
+- Tests: `fx/brass.test.ts`, engine tests in `focus.test.ts` and `world-play-11-review.test.ts`, the new e2e `apps/web/e2e/brass.mjs`.
+
 ## 0.7.0 — 9 November 2026
 
 Branch `feature/faith-presence`: **Faith 2.2, rules revision 1.6.3: the god shows up** (decision 111; `docs/design/faith-presence-spec.md`; spec items 738–747, all provisional; hand-off `docs/design/handoffs/faith-presence-HANDOFF.md`). The patrons' portraits only appeared at character creation, and interventions almost never fired.
