@@ -28,6 +28,7 @@ import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing } from './tactics';
 import { d20, die, type Rng } from './rng';
+import { spotlight } from './spotlight';
 import { WEAPON, SKILL, ITEM } from './data';
 
 export type { Belief, Vow } from './character';
@@ -458,11 +459,13 @@ export function patronLine(rng: Rng, patron: any, bank: string): string | null {
 export function grantLine(rng: Rng, patron: any, name: string): string | null {
   const t = patronLine(rng, patron, 'grant'); return t ? t.split('{name}').join(String(name || '').toUpperCase()) : null;
 }
-function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, patron: any, bank: string, said?: string | null) {
-  const text = said ?? patronLine(rng, patron, bank); if (!text) return;
+/** The patron speaks: the line goes on the stream and the log; returns the line it said (the spotlight's caption). */
+function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, patron: any, bank: string, said?: string | null): string | null {
+  const text = said ?? patronLine(rng, patron, bank); if (!text) return null;
   const ev = { patron: patron.id, event: bank, text, char: c.id };
   if (cb) { emitFx(cb, FAITH_FX.patron_line, ev); cb.log.push(patron.name + ': "' + text + '"'); }
   else if (g) { storyFx(g, FAITH_FX.patron_line, ev); B?.push(g, { kind: 'system', head: patron.name.toUpperCase(), text: '"' + text + '"' }); }
+  return text;
 }
 const fs = (u: Unit): Record<string, any> => (u.faith ||= {});
 const unitChar = (u: Unit | null | undefined): Character | null => charOfUnit(u);
@@ -530,7 +533,13 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, am
   ACTING.push(f); let said: string;
   try { said = run(); } finally { ACTING.splice(ACTING.lastIndexOf(f), 1); }
   cb.log.push(p.name + ' intervenes for ' + f.name + said + '.');
-  speak(G(), cb, rngOf(), c, p, 'intervention');
+  const line = speak(G(), cb, rngOf(), c, p, 'intervention');
+  // Decision 113: a god breaking in is a spotlight moment (the patron's torn strip, then the fighter's; the action it
+  // happened in plays back slower). Presentation only. Never from the area map's dry run (game.ts: a throwaway copy of
+  // the map, marked dry): only the real run's intervention happened.
+  const g = G(), why = String(said || '').replace(/^[\s:·]+/, '').trim();
+  if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
+    ...(target ? { target: target.id, targetName: target.name } : {}), ...(target?.charId && target.charId !== c.id && target.side === f.side ? { targetChar: target.charId } : {}) });
   if (condOn(f, 'witnessed')) { endCond(f, 'witnessed', cb); cb.log.push(f.name + ' is no longer Witnessed.'); }
 }
 /** The Quartermaster (item 742): a reload of yours that cost AP gives it all back. game.ts calls this after a

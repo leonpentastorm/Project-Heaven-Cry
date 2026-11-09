@@ -342,7 +342,8 @@
       "historical_skill_id": "durability",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.43, "y": 0.21 }
     },
     "ivara-drenn": {
       "label": "Ivara Drenn",
@@ -354,7 +355,8 @@
       "historical_skill_id": "pain-threshold",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.5, "y": 0.22 }
     },
     "nemi-sol": {
       "label": "Nemi Sol",
@@ -366,7 +368,8 @@
       "historical_skill_id": "sensory",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.52, "y": 0.12 }
     },
     "basko-rell": {
       "label": "Basko Rell",
@@ -378,7 +381,8 @@
       "historical_skill_id": "raw-power",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.69, "y": 0.08 }
     },
     "tessa-rook": {
       "label": "Tessa Rook",
@@ -390,7 +394,8 @@
       "historical_skill_id": "guts",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.45, "y": 0.2 }
     },
     "veyra-salt": {
       "label": "Veyra Salt",
@@ -402,7 +407,8 @@
       "historical_skill_id": "intimidation",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.62, "y": 0.09 }
     },
     "ketta-flint": {
       "label": "Ketta Flint",
@@ -414,7 +420,8 @@
       "historical_skill_id": "athletics",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.37, "y": 0.22 }
     },
     "sera-venn": {
       "label": "Sera Venn",
@@ -426,7 +433,8 @@
       "historical_skill_id": "dexterity",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.48, "y": 0.16 }
     },
     "milo-quill": {
       "label": "Milo Quill",
@@ -438,7 +446,8 @@
       "historical_skill_id": "reaction-speed",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.48, "y": 0.29 }
     },
     "pell-morrow": {
       "label": "Pell Morrow",
@@ -450,7 +459,8 @@
       "historical_skill_id": "ingenuity",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.72, "y": 0.18 }
     },
     "drava-keel": {
       "label": "Drava Keel",
@@ -462,7 +472,8 @@
       "historical_skill_id": "proficiency",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.54, "y": 0.19 }
     },
     "asher-fen": {
       "label": "Asher Fen",
@@ -474,7 +485,8 @@
       "historical_skill_id": "vigilant",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.45, "y": 0.18 }
     },
     "ilyen-taal": {
       "label": "Ilyen Taal",
@@ -486,7 +498,8 @@
       "historical_skill_id": "brain-power",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.56, "y": 0.26 }
     },
     "marden-silt": {
       "label": "Marden Silt",
@@ -498,7 +511,8 @@
       "historical_skill_id": "rumination",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.52, "y": 0.22 }
     },
     "yara-voss": {
       "label": "Yara Voss",
@@ -510,7 +524,8 @@
       "historical_skill_id": "eloquence",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.49, "y": 0.19 }
     },
     "osa-reed": {
       "label": "Osa Reed",
@@ -522,7 +537,8 @@
       "historical_skill_id": "visualization",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.35, "y": 0.24 }
     },
     "inspectant-latch-7": {
       "label": "Inspectant Latch-7",
@@ -534,7 +550,8 @@
       "historical_skill_id": "analysis",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.39, "y": 0.27 }
     },
     "juniper-vale": {
       "label": "Juniper Vale",
@@ -546,7 +563,8 @@
       "historical_skill_id": "charisma",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.53, "y": 0.21 }
     },
     "mallow-3": {
       "label": "Mallow-3",
@@ -558,7 +576,8 @@
       "historical_skill_id": "empathy",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.59, "y": 0.26 }
     },
     "dema-brin": {
       "label": "Dema Brin",
@@ -570,7 +589,8 @@
       "historical_skill_id": "camaraderie",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.53, "y": 0.18 }
     },
     "selka-noon": {
       "label": "Selka Noon",
@@ -582,7 +602,8 @@
       "historical_skill_id": "implication",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.51, "y": 0.24 }
     },
     "ruen-ash": {
       "label": "Ruen Ash",
@@ -594,7 +615,8 @@
       "historical_skill_id": "will-power",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.49, "y": 0.16 }
     },
     "anka-moss": {
       "label": "Anka Moss",
@@ -606,7 +628,8 @@
       "historical_skill_id": "lore-master",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.39, "y": 0.26 }
     },
     "tal-ren": {
       "label": "Tal Ren",
@@ -618,7 +641,8 @@
       "historical_skill_id": "composure",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.5, "y": 0.16 }
     },
     "brother-halden": {
       "label": "Brother Halden",
@@ -630,7 +654,8 @@
       "historical_skill_id": "faith",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.56, "y": 0.19 }
     },
     "eris-ward": {
       "label": "Eris Ward",
@@ -642,7 +667,8 @@
       "historical_skill_id": "conscience",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.51, "y": 0.2 }
     },
     "captain-nara-dusk": {
       "label": "Captain Nara Dusk",
@@ -654,7 +680,8 @@
       "historical_skill_id": "authority",
       "usage": "character portrait",
       "collection": "new-faces",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.53, "y": 0.16 }
     },
     "original-heavenprint--durability": {
       "label": "Durability",
@@ -666,7 +693,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "durability",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.52, "y": 0.24 }
     },
     "original-heavenprint--pain-threshold": {
       "label": "Pain Threshold",
@@ -678,7 +706,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "pain-threshold",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.49, "y": 0.11 }
     },
     "original-heavenprint--sensory": {
       "label": "Sensory",
@@ -690,7 +719,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "sensory",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.47, "y": 0.18 }
     },
     "original-heavenprint--raw-power": {
       "label": "Raw Power",
@@ -702,7 +732,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "raw-power",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.56, "y": 0.14 }
     },
     "original-heavenprint--guts": {
       "label": "Guts",
@@ -714,7 +745,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "guts",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.52, "y": 0.26 }
     },
     "original-heavenprint--intimidation": {
       "label": "Intimidation",
@@ -726,7 +758,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "intimidation",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.48, "y": 0.22 }
     },
     "original-heavenprint--athletics": {
       "label": "Athletics",
@@ -738,7 +771,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "athletics",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.66, "y": 0.12 }
     },
     "original-heavenprint--dexterity": {
       "label": "Dexterity",
@@ -750,7 +784,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "dexterity",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.53, "y": 0.17 }
     },
     "original-heavenprint--reaction-speed": {
       "label": "Reaction Speed",
@@ -762,7 +797,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "reaction-speed",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.47, "y": 0.24 }
     },
     "original-heavenprint--ingenuity": {
       "label": "Ingenuity",
@@ -774,7 +810,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "ingenuity",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.61, "y": 0.18 }
     },
     "original-heavenprint--proficiency": {
       "label": "Proficiency",
@@ -786,7 +823,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "proficiency",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.44, "y": 0.15 }
     },
     "original-heavenprint--vigilant": {
       "label": "Vigilant",
@@ -798,7 +836,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "vigilant",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.56, "y": 0.19 }
     },
     "original-heavenprint--brain-power": {
       "label": "Brain Power",
@@ -810,7 +849,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "brain-power",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.5, "y": 0.24 }
     },
     "original-heavenprint--rumination": {
       "label": "Rumination",
@@ -822,7 +862,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "rumination",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.52, "y": 0.18 }
     },
     "original-heavenprint--eloquence": {
       "label": "Eloquence",
@@ -834,7 +875,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "eloquence",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.49, "y": 0.13 }
     },
     "original-heavenprint--visualization": {
       "label": "Visualization",
@@ -846,7 +888,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "visualization",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.48, "y": 0.12 }
     },
     "original-heavenprint--analysis": {
       "label": "Analysis",
@@ -858,7 +901,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "analysis",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.47, "y": 0.24 }
     },
     "original-heavenprint--charisma": {
       "label": "Charisma",
@@ -870,7 +914,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "charisma",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.44, "y": 0.18 }
     },
     "original-heavenprint--empathy": {
       "label": "Empathy",
@@ -882,7 +927,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "empathy",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.34, "y": 0.21 }
     },
     "original-heavenprint--camaraderie": {
       "label": "Camaraderie",
@@ -894,7 +940,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "camaraderie",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.52, "y": 0.17 }
     },
     "original-heavenprint--implication": {
       "label": "Implication",
@@ -906,7 +953,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "implication",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.37, "y": 0.2 }
     },
     "original-heavenprint--will-power": {
       "label": "Will Power",
@@ -918,7 +966,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "will-power",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.5, "y": 0.11 }
     },
     "original-heavenprint--lore-master": {
       "label": "Lore Master",
@@ -930,7 +979,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "lore-master",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.46, "y": 0.29 }
     },
     "original-heavenprint--composure": {
       "label": "Composure",
@@ -942,7 +992,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "composure",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.5, "y": 0.19 }
     },
     "original-heavenprint--faith": {
       "label": "Faith",
@@ -954,7 +1005,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "faith",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.45, "y": 0.11 }
     },
     "original-heavenprint--conscience": {
       "label": "Conscience",
@@ -966,7 +1018,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "conscience",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.46, "y": 0.13 }
     },
     "original-heavenprint--authority": {
       "label": "Authority",
@@ -978,7 +1031,8 @@
       "background": "opaque painted scene",
       "historical_skill_id": "authority",
       "usage": "character portrait",
-      "pool": "world-npc"
+      "pool": "world-npc",
+      "eye_line": { "x": 0.53, "y": 0.1 }
     },
     "first-patch-revival--durability": {
       "label": "Sanchez",
@@ -993,7 +1047,8 @@
       "epccg_entry": 1,
       "epccg_skill": "Durability",
       "faction": "of the Burning Bridge",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.56, "y": 0.09 }
     },
     "first-patch-revival--pain-threshold": {
       "label": "Knight Jiren",
@@ -1009,7 +1064,8 @@
       "epccg_skill": "Pain Threshold",
       "epccg_quoted_by": "Sazmin",
       "faction": "Adamantile Brigade",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.47, "y": 0.09 }
     },
     "first-patch-revival--sensory": {
       "label": "Grandma Marry",
@@ -1025,7 +1081,8 @@
       "epccg_skill": "Sensory",
       "epccg_quoted_by": "Sister March",
       "faction": "Lumeri Church",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.48, "y": 0.15 }
     },
     "first-patch-revival--raw-power": {
       "label": "Knight Andre Giant Fist",
@@ -1040,7 +1097,8 @@
       "epccg_entry": 4,
       "epccg_skill": "Raw Power",
       "faction": "Adamantile Brigade",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.68, "y": 0.09 }
     },
     "first-patch-revival--guts": {
       "label": "Ragoul the Keeper",
@@ -1054,7 +1112,8 @@
       "usage": "character portrait",
       "epccg_entry": 5,
       "epccg_skill": "Guts",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.5, "y": 0.17 }
     },
     "first-patch-revival--intimidation": {
       "label": "Tommy Avencio",
@@ -1069,7 +1128,8 @@
       "epccg_entry": 6,
       "epccg_skill": "Intimidation",
       "faction": "Smetanita Conjunction",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.46, "y": 0.13 }
     },
     "first-patch-revival--athletics": {
       "label": "Dominik Edelgard",
@@ -1084,7 +1144,8 @@
       "epccg_entry": 7,
       "epccg_skill": "Athletics",
       "faction": "237th Hellraiser Division",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.38, "y": 0.24 }
     },
     "first-patch-revival--dexterity": {
       "label": "Ambrosius Costeau",
@@ -1098,7 +1159,8 @@
       "usage": "character portrait",
       "epccg_entry": 8,
       "epccg_skill": "Dexterity",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.43, "y": 0.16 }
     },
     "first-patch-revival--reaction-speed": {
       "label": "Yukimura",
@@ -1113,7 +1175,8 @@
       "epccg_entry": 9,
       "epccg_skill": "Reaction Speed",
       "faction": "Black Scavengers",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.66, "y": 0.32 }
     },
     "first-patch-revival--ingenuity": {
       "label": "Lin Shin Long",
@@ -1127,7 +1190,8 @@
       "usage": "character portrait",
       "epccg_entry": 10,
       "epccg_skill": "Ingenuity",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.5, "y": 0.25 }
     },
     "first-patch-revival--proficiency": {
       "label": "Demitri Kortev",
@@ -1142,7 +1206,8 @@
       "epccg_entry": 11,
       "epccg_skill": "Proficiency",
       "faction": "Kortev Utility Shack",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.56, "y": 0.28 }
     },
     "first-patch-revival--vigilant": {
       "label": "Vermilion Jasmine",
@@ -1157,7 +1222,8 @@
       "epccg_entry": 12,
       "epccg_skill": "Vigilant",
       "faction": "Rigaz Trade Company",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.59, "y": 0.17 }
     },
     "first-patch-revival--brain-power": {
       "label": "Professor Avdol",
@@ -1172,7 +1238,8 @@
       "epccg_entry": 13,
       "epccg_skill": "Brain Power",
       "faction": "Science Team",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.53, "y": 0.25 }
     },
     "first-patch-revival--rumination": {
       "label": "Thalatûl the Librarian",
@@ -1186,7 +1253,8 @@
       "usage": "character portrait",
       "epccg_entry": 14,
       "epccg_skill": "Rumination",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.44, "y": 0.16 }
     },
     "first-patch-revival--eloquence": {
       "label": "Xander Badman",
@@ -1201,7 +1269,8 @@
       "epccg_entry": 15,
       "epccg_skill": "Eloquence",
       "faction": "Monsieur Saul's Law Firm",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.58, "y": 0.14 }
     },
     "first-patch-revival--visualization": {
       "label": "Master Sakamoto",
@@ -1216,7 +1285,8 @@
       "epccg_entry": 16,
       "epccg_skill": "Visualization",
       "epccg_quoted_by": "Rémy Étienne",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.61, "y": 0.27 }
     },
     "first-patch-revival--analysis": {
       "label": "D12.9.6",
@@ -1233,7 +1303,8 @@
       "faction": "CCEC (Central City Espionage Commission)",
       "pool": "epccg-cast",
       "revision": 3,
-      "previous_path": "art/_archive/character-portraits/first-patch-revival/mind/expression/analysis.png"
+      "previous_path": "art/_archive/character-portraits/first-patch-revival/mind/expression/analysis.png",
+      "eye_line": { "x": 0.47, "y": 0.23 }
     },
     "first-patch-revival--charisma": {
       "label": "Damian Nox",
@@ -1248,7 +1319,8 @@
       "epccg_entry": 18,
       "epccg_skill": "Charisma",
       "faction": "Sibugar Entertainment",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.44, "y": 0.2 }
     },
     "first-patch-revival--empathy": {
       "label": "Paul Remarque",
@@ -1264,7 +1336,8 @@
       "epccg_skill": "Empathy",
       "pool": "epccg-cast",
       "revision": 3,
-      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/insight/empathy.png"
+      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/insight/empathy.png",
+      "eye_line": { "x": 0.56, "y": 0.13 }
     },
     "first-patch-revival--camaraderie": {
       "label": "Souji",
@@ -1282,7 +1355,8 @@
       "faction": "Kemizuchi Military Academy",
       "pool": "epccg-cast",
       "revision": 3,
-      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/insight/camaraderie.png"
+      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/insight/camaraderie.png",
+      "eye_line": { "x": 0.45, "y": 0.18 }
     },
     "first-patch-revival--implication": {
       "label": "Aleksandr Donovik Artem",
@@ -1297,7 +1371,8 @@
       "epccg_entry": 21,
       "epccg_skill": "Implication",
       "faction": "Rigaz Trade Company ADCorp",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.68, "y": 0.2 }
     },
     "first-patch-revival--will-power": {
       "label": "Nora the Witch",
@@ -1312,7 +1387,8 @@
       "epccg_entry": 22,
       "epccg_skill": "Will Power",
       "faction": "Arkvelton",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.44, "y": 0.23 }
     },
     "first-patch-revival--lore-master": {
       "label": "Andrade Lovelace",
@@ -1329,7 +1405,8 @@
       "faction": "Institute of Forgotten Knowledge",
       "pool": "epccg-cast",
       "revision": 3,
-      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/determination/lore-master.png"
+      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/determination/lore-master.png",
+      "eye_line": { "x": 0.51, "y": 0.16 }
     },
     "first-patch-revival--composure": {
       "label": "Kaizer Meyer Reinch Wolf",
@@ -1344,7 +1421,8 @@
       "epccg_entry": 24,
       "epccg_skill": "Composure",
       "faction": "Central Command Center",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.52, "y": 0.19 }
     },
     "first-patch-revival--faith": {
       "label": "Sister October",
@@ -1359,7 +1437,8 @@
       "epccg_entry": 25,
       "epccg_skill": "Faith",
       "faction": "Lumeri Church",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.43, "y": 0.13 }
     },
     "first-patch-revival--conscience": {
       "label": "The Azure Blood Holder",
@@ -1375,7 +1454,8 @@
       "epccg_skill": "Conscience",
       "pool": "epccg-cast",
       "revision": 3,
-      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/virtue/conscience.png"
+      "previous_path": "art/_archive/character-portraits/first-patch-revival/soul/virtue/conscience.png",
+      "eye_line": { "x": 0.64, "y": 0.18 }
     },
     "first-patch-revival--authority": {
       "label": "Hank Ladan",
@@ -1391,7 +1471,8 @@
       "epccg_skill": "Authority",
       "epccg_quoted_by": "Brengan Springfield",
       "faction": "101st Hellraiser Division",
-      "pool": "epccg-cast"
+      "pool": "epccg-cast",
+      "eye_line": { "x": 0.48, "y": 0.1 }
     },
     "mpat": {
       "label": "MPAT — M1.4 8R4-D83-RRY",
@@ -1406,7 +1487,8 @@
       "status": "review-candidate",
       "spoiler": false,
       "pool": "m813-cast",
-      "visibility": "opening-safe"
+      "visibility": "opening-safe",
+      "eye_line": { "x": 0.55, "y": 0.24 }
     },
     "mpat-comrade": {
       "label": "MPAT's unnamed comrade",
@@ -1421,7 +1503,8 @@
       "status": "review-candidate",
       "spoiler": false,
       "pool": "m813-cast",
-      "visibility": "opening-safe"
+      "visibility": "opening-safe",
+      "eye_line": { "x": 0.5, "y": 0.42 }
     },
     "m813-nine-nine": {
       "id": "m813-nine-nine",
@@ -1464,7 +1547,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.38, "y": 0.2 }
     },
     "m813-seven-seven": {
       "id": "m813-seven-seven",
@@ -1507,7 +1591,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.46, "y": 0.15 }
     },
     "m813-hum": {
       "id": "m813-hum",
@@ -1550,7 +1635,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.5, "y": 0.25 }
     },
     "m813-lantern": {
       "id": "m813-lantern",
@@ -1593,7 +1679,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.55, "y": 0.29 }
     },
     "m813-soft-hands": {
       "id": "m813-soft-hands",
@@ -1636,7 +1723,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.48, "y": 0.29 }
     },
     "m813-rook": {
       "id": "m813-rook",
@@ -1682,7 +1770,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.5, "y": 0.28 }
     },
     "m813-penny": {
       "id": "m813-penny",
@@ -1725,7 +1814,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.5, "y": 0.16 }
     },
     "m813-keel": {
       "id": "m813-keel",
@@ -1768,7 +1858,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.51, "y": 0.17 }
     },
     "m813-ilse-varga": {
       "id": "m813-ilse-varga",
@@ -1811,7 +1902,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.49, "y": 0.18 }
     },
     "m813-engineer-a": {
       "id": "m813-engineer-a",
@@ -1854,7 +1946,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.49, "y": 0.18 }
     },
     "m813-engineer-b": {
       "id": "m813-engineer-b",
@@ -1897,7 +1990,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.6, "y": 0.17 }
     },
     "m813-novikov": {
       "id": "m813-novikov",
@@ -1943,7 +2037,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.48, "y": 0.15 }
     },
     "m813-security-guard": {
       "id": "m813-security-guard",
@@ -1989,7 +2084,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.48, "y": 0.18 }
     },
     "m813-guard-captain": {
       "id": "m813-guard-captain",
@@ -2032,7 +2128,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.54, "y": 0.14 }
     },
     "m813-scavenger-drone": {
       "id": "m813-scavenger-drone",
@@ -2075,7 +2172,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.45, "y": 0.24 }
     },
     "m813-rearguard": {
       "id": "m813-rearguard",
@@ -2118,7 +2216,8 @@
         "map-token"
       ],
       "pool": "m813-cast",
-      "version": 2
+      "version": 2,
+      "eye_line": { "x": 0.55, "y": 0.26 }
     },
     "arch-bulwark": {
       "label": "Bulwark",
@@ -2140,7 +2239,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.48, "y": 0.1 }
     },
     "arch-bodyguard": {
       "label": "Bodyguard",
@@ -2162,7 +2262,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.63, "y": 0.11 }
     },
     "arch-brawler": {
       "label": "Brawler",
@@ -2184,7 +2285,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.45, "y": 0.12 }
     },
     "arch-berserker": {
       "label": "Berserker",
@@ -2206,7 +2308,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.57, "y": 0.11 }
     },
     "arch-fencer": {
       "label": "Fencer",
@@ -2228,7 +2331,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.47, "y": 0.11 }
     },
     "arch-monk": {
       "label": "Monk",
@@ -2250,7 +2354,8 @@
         "old"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.51, "y": 0.14 }
     },
     "arch-sharpshooter": {
       "label": "Sharpshooter",
@@ -2272,7 +2377,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.53, "y": 0.32 }
     },
     "arch-heavy_gunner": {
       "label": "Heavy Gunner",
@@ -2294,7 +2400,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.55, "y": 0.09 }
     },
     "arch-ranger": {
       "label": "Ranger",
@@ -2316,7 +2423,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.56, "y": 0.17 }
     },
     "arch-grenadier": {
       "label": "Grenadier",
@@ -2338,7 +2446,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.52, "y": 0.19 }
     },
     "arch-infiltrator": {
       "label": "Infiltrator",
@@ -2360,7 +2469,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.36, "y": 0.41 }
     },
     "arch-stalker": {
       "label": "Stalker",
@@ -2382,7 +2492,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.54, "y": 0.16 }
     },
     "arch-thief": {
       "label": "Thief",
@@ -2404,7 +2515,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.45, "y": 0.1 }
     },
     "arch-spy": {
       "label": "Spy",
@@ -2426,7 +2538,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.52, "y": 0.13 }
     },
     "arch-sigilist": {
       "label": "Sigilist",
@@ -2448,7 +2561,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.53, "y": 0.16 }
     },
     "arch-sentinel": {
       "label": "Sentinel",
@@ -2470,7 +2584,8 @@
         "old"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.54, "y": 0.13 }
     },
     "arch-enchanter": {
       "label": "Enchanter",
@@ -2492,7 +2607,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.61, "y": 0.23 }
     },
     "arch-jinx": {
       "label": "Jinx",
@@ -2514,7 +2630,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.45, "y": 0.14 }
     },
     "arch-detective": {
       "label": "Detective",
@@ -2536,7 +2653,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.47, "y": 0.19 }
     },
     "arch-engineer": {
       "label": "Engineer",
@@ -2558,7 +2676,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.49, "y": 0.17 }
     },
     "arch-scholar": {
       "label": "Scholar",
@@ -2580,7 +2699,8 @@
         "old"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.3, "y": 0.19 }
     },
     "arch-stormcaller": {
       "label": "Stormcaller",
@@ -2602,7 +2722,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.52, "y": 0.13 }
     },
     "arch-mender": {
       "label": "Mender",
@@ -2624,7 +2745,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.6, "y": 0.14 }
     },
     "arch-confessor": {
       "label": "Confessor",
@@ -2646,7 +2768,8 @@
         "old"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.52, "y": 0.12 }
     },
     "arch-zealot": {
       "label": "Zealot",
@@ -2668,7 +2791,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.49, "y": 0.12 }
     },
     "arch-witch": {
       "label": "Witch",
@@ -2690,7 +2814,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.64, "y": 0.14 }
     },
     "arch-harbinger": {
       "label": "Harbinger",
@@ -2712,7 +2837,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.45, "y": 0.17 }
     },
     "arch-silver_tongue": {
       "label": "Silver Tongue",
@@ -2734,7 +2860,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.54, "y": 0.14 }
     },
     "arch-troubadour": {
       "label": "Troubadour",
@@ -2756,7 +2883,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.55, "y": 0.09 }
     },
     "arch-captain": {
       "label": "Captain",
@@ -2778,7 +2906,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.49, "y": 0.1 }
     },
     "arch-enforcer": {
       "label": "Enforcer",
@@ -2800,7 +2929,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.57, "y": 0.12 }
     },
     "arch-spellblade": {
       "label": "Spellblade",
@@ -2822,7 +2952,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.53, "y": 0.11 }
     },
     "arch-crusader": {
       "label": "Crusader",
@@ -2844,7 +2975,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.59, "y": 0.22 }
     },
     "arch-witch_hunter": {
       "label": "Witch Hunter",
@@ -2866,7 +2998,8 @@
         "old"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.48, "y": 0.18 }
     },
     "arch-field_medic": {
       "label": "Field Medic",
@@ -2888,7 +3021,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.63, "y": 0.14 }
     },
     "arch-survivor": {
       "label": "Survivor",
@@ -2910,7 +3044,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.58, "y": 0.19 }
     },
     "arch-drifter": {
       "label": "Drifter",
@@ -2932,7 +3067,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.5, "y": 0.17 }
     },
     "arch-living_wall": {
       "label": "Living Wall",
@@ -2954,7 +3090,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.52, "y": 0.1 }
     },
     "arch-wrecking_ball": {
       "label": "Wrecking Ball",
@@ -2976,7 +3113,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.48, "y": 0.22 }
     },
     "arch-deadeye": {
       "label": "Deadeye",
@@ -2998,7 +3136,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.27, "y": 0.14 }
     },
     "arch-phantom": {
       "label": "Phantom",
@@ -3020,7 +3159,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.57, "y": 0.16 }
     },
     "arch-savant": {
       "label": "Savant",
@@ -3042,7 +3182,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.54, "y": 0.15 }
     },
     "arch-illusionist": {
       "label": "Illusionist",
@@ -3064,7 +3205,8 @@
         "adult"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.4, "y": 0.13 }
     },
     "arch-heartreader": {
       "label": "Heartreader",
@@ -3086,7 +3228,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.45, "y": 0.15 }
     },
     "arch-unbroken": {
       "label": "Unbroken",
@@ -3108,7 +3251,8 @@
         "old"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.52, "y": 0.16 }
     },
     "arch-prophet": {
       "label": "Prophet",
@@ -3130,7 +3274,8 @@
         "young"
       ],
       "status": "review-candidate",
-      "production_approved": false
+      "production_approved": false,
+      "eye_line": { "x": 0.62, "y": 0.15 }
     }
   },
   "traits": {
@@ -9462,7 +9607,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.5, "y": 0.14 }
     },
     "the_quartermaster": {
       "name": "The Quartermaster",
@@ -9475,7 +9621,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.5, "y": 0.12 }
     },
     "the_laughing_mask": {
       "name": "The Laughing Mask",
@@ -9488,7 +9635,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.32, "y": 0.17 }
     },
     "the_toll_keeper": {
       "name": "The Toll-Keeper",
@@ -9501,7 +9649,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.6, "y": 0.16 }
     },
     "mother_ember": {
       "name": "Mother Ember",
@@ -9514,7 +9663,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.6, "y": 0.18 }
     },
     "old_overcast": {
       "name": "Old Overcast",
@@ -9527,7 +9677,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.5, "y": 0.2 }
     },
     "the_matchmaker": {
       "name": "The Matchmaker",
@@ -9540,7 +9691,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.48, "y": 0.17 }
     },
     "the_counting_weaver": {
       "name": "The Counting Weaver",
@@ -9553,7 +9705,8 @@
       "status": "review-candidate",
       "collection": "patrons-v1",
       "usage": "divine patron portrait",
-      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json"
+      "manifest": "art/_archive/character-portraits/patrons/v1/manifest.json",
+      "eye_line": { "x": 0.5, "y": 0.19 }
     }
   },
   "patron_marks": {

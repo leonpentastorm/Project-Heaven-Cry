@@ -87,6 +87,19 @@ Shown at each level-up. The prototype shows level 3 at the end of session 1:
 - **Skill point:** every skill, with its cap shown. After creation a skill can't pass its Attribute; capped skills explain what unlocks them (an attribute point at the next even level).
 - **Cores:** the Disco Elysium-style big rows (descriptor word, value, diamonds). Attribute and Core points are spent here when the level grants them.
 
+## Spotlight cut-ins (decision 113; `docs/design/cutin-spec.md`)
+
+Over every in-room screen, z-index 64 (`apps/web/src/game/spotlight/`). A spotlight moment (the music's list, Play my song, a
+patron's intervention, the god interjection trigger) blurs and dims the screen (3 px) and tears one wide strip across it
+(−4°): the portrait's eyes in a torn window, the ink lip along both rips in the character's highest-attribute ink (a
+god's in its accent), the label in Chakra Petch (`TAKEDOWN · AGILITY`), the name and caption in Spectral. A group stacks
+2–4 thinner strips from alternate sides, names at their torn-off ends, with a caption plate below. About 1.4 s (1.6 s at
+most, 1.0 s reduced); any click or key skips and the click is swallowed. In a fight the action it happened in then plays
+15% slower. A party crit in a fight gets the short form: one slimmer strip (22vh), `CRITICAL HIT · <ATTRIBUTE>`,
+"Critical hit on Rook", 0.9 s; a bigger moment in the same action shows instead. Faith 2.2's Miracle scene shares the
+stage: a strip never draws over it (it waits for the landing). Settings: Cut-ins All / Once per scene / Off. Character
+creation: an uploaded portrait gets a Cut-in framing slider with a preview of the strip.
+
 ## Ultimate perk award
 
 Ultimate perks are secret: no screen lists them, hints at them or tracks progress toward them, and the "?" entries never mention them. The one place they appear is the award, shown the moment the engine grants one (both named combo perks held). Board: `UltimateAward.dc.html`.

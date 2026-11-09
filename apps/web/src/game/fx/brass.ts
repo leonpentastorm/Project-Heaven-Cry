@@ -7,7 +7,7 @@
 // portrait covers it, so it comes out from behind. Pure presentation: nothing here reads or changes the game.
 import { reducedMotion } from '../sfx';
 import { SIGIL_INK, SOUL_WARM } from '../glyphs';
-import { layerEl, anim, after } from './dom';
+import { layerEl, anim, after, slow, fxTempo, withTempo } from './dom';
 
 // ---------- what each weapon throws off ----------
 /** The casing a weapon ejects: one per shot, or (revolvers, break-actions) all of them at the reload. */
@@ -272,6 +272,9 @@ const SHARED = new Map<string, { box: HTMLElement; until: number }>();
 function behind(who: Who, ms: number, hidden = true, share = true): HTMLElement | null {
   const L = layerEl(); if (!L) return null;
   const key = share ? (hidden ? 'h' : 'o') + Math.round(who.x) + ',' + Math.round(who.y) + ',' + Math.round(who.w) : '';
+  // In an action slowed after a spotlight cut-in (decision 113) every piece's animation runs at the tempo (dom.ts anim),
+  // so every timer here does too: the box, the removals, the drop's dust and the draw's clip all stay in step.
+  ms = slow(ms);
   const now = Date.now();
   if (key) {
     const had = SHARED.get(key);
@@ -307,7 +310,7 @@ function piece(parent: HTMLElement, el: Element, x: number, y: number, w: number
     + (glow ? ';filter:drop-shadow(0 0 ' + Math.max(1.5, w * 0.12).toFixed(1) + 'px ' + glow + ')' : ';filter:drop-shadow(0 1px 0.6px rgba(0,0,0,.65))');
   if (tag) d.setAttribute('data-fx-piece', tag);
   d.appendChild(el); parent.appendChild(d);
-  setTimeout(() => d.remove(), 6000); // a shared box outlives its pieces: none of them stays
+  setTimeout(() => d.remove(), slow(6000)); // a shared box outlives its pieces: none of them stays
   return d;
 }
 
@@ -323,7 +326,7 @@ function wisp(parent: HTMLElement, x: number, y: number, size: number, tint: str
     const dx = o.drift ?? 0, dy = o.dy ?? 0, rise = o.rise ?? size * 1.2;
     anim(d, [{ transform: 'translate(0,0) scale(.35)', opacity: 0 }, { transform: 'translate(' + dx * 0.3 + 'px,' + (dy * 0.3 - rise * 0.25) + 'px) scale(.8)', opacity: 1, offset: 0.18 },
       { transform: 'translate(' + dx + 'px,' + (dy - rise) + 'px) scale(1.7)', opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.6,.35,1)', fill: 'forwards' });
-    setTimeout(() => d.remove(), ms + 40);
+    setTimeout(() => d.remove(), slow(ms) + 40);
   };
   if (o.delay) after(run, o.delay); else run();
 }
@@ -376,7 +379,7 @@ function toss(who: Who, P: Pic, len: number, t: Arc, o: { delay?: number; smoke?
     // the shadow (on the ground, also behind the portrait until it clears it), then the piece
     const sh = document.createElement('div'), bo = org(box);
     sh.style.cssText = 'position:absolute;left:' + (ox - bo.x - w * 0.45) + 'px;top:' + (oy - bo.y + h * 0.2) + 'px;width:' + w * 0.9 + 'px;height:' + h * 0.6 + 'px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.75),rgba(0,0,0,0));will-change:transform,opacity';
-    box.appendChild(sh); anim(sh, f.shadow, { duration: f.total, easing: 'linear', fill: 'forwards' }); setTimeout(() => sh.remove(), f.total + 60);
+    box.appendChild(sh); anim(sh, f.shadow, { duration: f.total, easing: 'linear', fill: 'forwards' }); setTimeout(() => sh.remove(), slow(f.total) + 60);
     const el = piece(box, P.el(), ox, oy, w, h, P.glow, o.tag);
     anim(el, f.piece, { duration: f.total, easing: 'linear', fill: 'forwards' });
     const ember = el.querySelector('.phc-ember'); if (ember) anim(ember, [{ opacity: 1 }, { opacity: 0.12 }], { duration: Math.max(300, f.total * 0.7), easing: 'ease-out', fill: 'forwards' });
@@ -387,7 +390,7 @@ function toss(who: Who, P: Pic, len: number, t: Arc, o: { delay?: number; smoke?
       wisp(air, rx + cx * 4 * u, ry + cy * 4 * u - 2 * u, 13 * u, P.smoke, { drift: cx * 11 * u, dy: cy * 11 * u, rise: 26 * u, ms: 1400, delay: 90, alpha: 0.36 });
       wisp(air, ox + f.end.x, oy + f.end.y, 9 * u, P.smoke, { rise: 12 * u, ms: 900, delay: f.landAt, alpha: 0.3 });
     }
-    setTimeout(() => { live = Math.max(0, live - 1); }, f.total + 60);
+    setTimeout(() => { live = Math.max(0, live - 1); }, slow(f.total) + 60);
   };
   if (o.delay) after(run, o.delay); else run();
 }
@@ -411,10 +414,11 @@ function drop(who: Who, P: Pic, w: number, h: number, o: { x?: number; y0?: numb
       frames.push({ offset: 1, transform: 'translate(' + (spin > 0 ? 5 : -5) * u + 'px,' + d.toFixed(1) + 'px) rotate(' + (Math.round(spin / 90) * 90 + 90).toFixed(0) + 'deg)', opacity: 0 });
     }
     anim(el, frames, { duration: ms, easing: 'linear', fill: 'forwards' });
-    setTimeout(() => {
+    const tp = fxTempo();
+    setTimeout(() => withTempo(tp, () => {
       if (!o.bounce) { const air = behind(who, 600, false) || box; for (let i = 0; i < 2; i++) wisp(air, x + (i ? 1 : -1) * w * 0.4, ground - 1, 10 * u, 'rgba(163,174,194,', { drift: (i ? 1 : -1) * 7 * u, rise: 5 * u, ms: 520, alpha: 0.45 }); }
       live = Math.max(0, live - 1);
-    }, fall);
+    }), slow(fall));
   };
   if (o.delay) after(run, o.delay); else run();
 }
@@ -425,7 +429,7 @@ function feed(who: Who, P: Pic, len: number, side: number, o: { delay?: number; 
     if (live >= CAP) return;
     const u = who.w / 38, w = len * u, h = (len * P.h / P.w) * u, ms = 380;
     const box = behind(who, ms); if (!box) return;
-    live++; setTimeout(() => { live = Math.max(0, live - 1); }, ms);
+    live++; setTimeout(() => { live = Math.max(0, live - 1); }, slow(ms));
     const x0 = who.x + side * who.w * 0.52, y0 = who.y + who.h * 0.5;
     const el = piece(box, P.el(), x0, y0, w, h, P.glow, o.tag);
     const r0 = side > 0 ? -60 : -120;
@@ -526,7 +530,7 @@ export function drawArrow(who: Who | null, aim: number, o: { ms?: number; bolt?:
     { transform: T(pull.x, pull.y, to), opacity: 0, offset: 1 },
   ], { duration: ms, easing: 'linear', fill: 'forwards' });
   // over the top it comes in front of the portrait (the timing is linear, so 0.5 is the apex)
-  setTimeout(() => { box.style.clipPath = 'none'; }, ms * 0.5);
+  setTimeout(() => { box.style.clipPath = 'none'; }, slow(ms * 0.5));
 }
 /** A bow's reload: arrows slid down into the quiver behind the archer (n of them, one after another). */
 export function stowArrows(who: Who | null, n: number, aim: number, ms: number) {

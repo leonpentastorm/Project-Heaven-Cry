@@ -55,6 +55,10 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'Bell dings/chimes (the holy pump layer\'s bell)', who: 'PWL', licence: 'CC0', url: 'https://opengameart.org/content/bell-dingschimes' },
   // The author's attribution notice: "Produced by Julie Damsgaard/Spring Spring/Spring Enterprises @ https://spring-enterprises.neocities.org".
   { what: 'Magic Words + Healing Sound Effect: the healing harp ("You have felt…", a feeling unlocked)', who: 'Produced by Julie Damsgaard/Spring Spring/Spring Enterprises, https://spring-enterprises.neocities.org', licence: 'CC0', url: 'https://opengameart.org/content/magic-words-healing-sound-effect' },
+  // Spotlight cut-ins (decision 113): public/sfx/cb/spotlight_tear.ogg, the swoosh layered over the drum's ring (pitched
+  // down to 0.75, its lead-in trimmed); mono, trimmed to 0.95 s, peak about -1 dBFS. Both CC0.
+  { what: 'Wind, hit, time morph: megaswosh1 (the spotlight cut-in\'s tear)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/wind-hit-time-morph' },
+  { what: 'Mystery Sting: a steel tongue drum\'s ring (the spotlight cut-in\'s low sting)', who: 'railkill', licence: 'CC0', url: 'https://opengameart.org/content/mystery-sting' },
   // Faith 2.2 (rules 1.6.3): the Miracle cut-in's sting (public/sfx/cb/miracle_sting.ogg). The author asks for nothing
   // beyond the licence's attribution; changes: trimmed to the first rising run (2.8 s), mono, levelled. Master in audio/sfx/.
   { what: '8 Heals and Buffs SFX: 30_revive_03 (the Miracle cut-in\'s sting; trimmed, mono, levelled)', who: 'leohpaz', licence: 'CC-BY 4.0', url: 'https://opengameart.org/content/8-heals-and-buffs-sfx' },

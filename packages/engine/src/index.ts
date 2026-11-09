@@ -6,6 +6,7 @@ export * from './game';
 export * from './objects';
 export * from './campaign';
 export * from './music';
+export * from './spotlight';
 export * from './glossary';
 export * from './memory';
 export * from './magic';

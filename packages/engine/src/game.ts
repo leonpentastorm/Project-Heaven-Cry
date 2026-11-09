@@ -12,6 +12,7 @@ import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharac
 import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
+import { spotlight, markAction, clearAction, critMoment } from './spotlight';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
@@ -588,7 +589,11 @@ function reduce(g: GameState, a: Action, by: string) {
       // Echo (spec: Echo): spend 1 to reroll a d20, at most 1 per roll. The reroll stands.
       if (a.type === 'check/reroll') { if (ck!.roll!.rerolled) fail('One Echo per roll.'); if (c.echo < 1) fail('No Echo left.'); c.echo--; if (g.story.rulings) g.story.rulings = g.story.rulings.filter((r) => r.fromCheck !== ck!.id); rollCheck(g, ck!, c, true); }
       ck!.done = true;
-      if (ck!.roll!.crit && ck!.roll!.ok && ck!.tn >= 16) startSong(g, c, 'a critical success on a ' + (ck!.tn >= 20 ? 'Heroic' : 'Hard') + ' check', 'spotlight', (t) => push(g, { kind: 'system', text: t }));
+      if (ck!.roll!.crit && ck!.roll!.ok && ck!.tn >= 16) {
+        const why = 'a critical success on a ' + (ck!.tn >= 20 ? 'Heroic' : 'Hard') + ' check';
+        const song = startSong(g, c, why, 'spotlight', (t) => push(g, { kind: 'system', text: t }));
+        spotlight(g, { kind: 'crit', char: c.id, reason: why, tn: ck!.tn, skill: ck!.skills[0], song, ...(a.type === 'check/reroll' ? { echo: true } : {}) }); // decision 113: the cut-in
+      }
       if (ck!.poi) approachResult(g, ck!);
       afterPending(g);
       return;
@@ -712,7 +717,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const m = musicOf(g), k = 'play' + g.story.scene.n;
       if (m.used['play:' + c.id] === k) fail('Once per scene outside a fight.');
       if (!startSong(g, c, 'on the Musek Blestor', 'manual', (t) => push(g, { kind: 'system', text: t }))) fail(m.now?.charId === c.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
-      m.used['play:' + c.id] = k; return;
+      m.used['play:' + c.id] = k; spotlight(g, { kind: 'song', char: c.id, reason: 'plays their song', song: true }); return;
     }
     case 'music/pin': case 'music/unpin': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
@@ -1104,7 +1109,7 @@ const itemName = (key: string) => { const full = String(itemKey(String(key || ''
 function awardAutomatic(g: GameState, c: Character) {
   for (const pid of grantAutomaticPerks(c)) {
     const p = PERK[pid];
-    if (p.tier === 'ultimate') { g.awards.push({ charId: c.id, perkId: pid }); startSong(g, c, 'an Ultimate', 'spotlight', (x) => push(g, { kind: 'system', text: x })); }
+    if (p.tier === 'ultimate') { g.awards.push({ charId: c.id, perkId: pid }); const song = startSong(g, c, 'an Ultimate', 'spotlight', (x) => push(g, { kind: 'system', text: x })); spotlight(g, { kind: 'ultimate', char: c.id, unit: unitOfChar(g, c.id), reason: 'an Ultimate', perk: pid, song }); }
     else push(g, { kind: 'system', text: c.name + ' gains the Mastered perk ' + p.name + '.' });
   }
 }
@@ -1192,7 +1197,8 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     c.perks.push({ id: d.perkId, tier: 'achieved' }); c.deeds.push(d.deed);
     push(g, { kind: 'system', text: c.name + ' earns the combo perk ' + PERK[d.perkId].name + ': ' + d.deed });
     canon(g, c.name + ' earned ' + PERK[d.perkId].name + ' by a deed: ' + d.deed, [c.name], 4);
-    startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
+    const song = startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
+    spotlight(g, { kind: 'legend', char: c.id, unit: unitOfChar(g, c.id), reason: 'a legendary deed', perk: d.perkId, line: String(d.deed || '').slice(0, 200), song });
     awardAutomatic(g, c);
   }
   for (const x of t.treat || []) {
@@ -1310,6 +1316,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   const inWindow = !!cb!.window;
   // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
   const encore = inWindow ? null : encoreBefore(cb!, u, a);
+  markAction(cb!); // spotlight.ts: this action's fx start here (a spotlight in it slows its playback on the client)
   (cb as any).acting = true; // encoreCredit: previews inside the action don't lend Encore's AP again
   try {
   switch (a.type) {
@@ -1378,7 +1385,7 @@ function combatAction(g: GameState, a: Action, by: string) {
       if (!musicTraitOf(c)) fail('Only a music trait plays its song on demand.');
       if (u.ap < SONG_AP) fail('Needs ' + SONG_AP + ' AP.');
       if (!startSong(g, c!, 'on the Musek Blestor', 'manual', (t) => cb!.log.push(t))) fail(musicOf(g).now?.charId === c!.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
-      u.ap -= SONG_AP; emitFx(cb!, 'song', { unit: u.id, at: u.pos }); break;
+      u.ap -= SONG_AP; emitFx(cb!, 'song', { unit: u.id, at: u.pos }); spotlight(g, { kind: 'song', char: c!.id, unit: u.id, reason: 'plays their song', song: true }); break;
     }
     default: fail('Unknown action.');
   }
@@ -1391,11 +1398,14 @@ function combatAction(g: GameState, a: Action, by: string) {
   emitHook(cb!, 'action_done', { u, a, cb: cb! });
   for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
+  critMoment(g); // decision 113: a party crit in this action cuts in (unless a bigger moment already did)
   noteDeaths(cb!, g.rng);
   checkOver(cb!);
   runEnemies(g);
 }
 
+/** A character's own unit in the fight on now (not a companion), for a spotlight event. */
+const unitOfChar = (g: GameState, charId: string) => (g.phase === 'combat' ? g.combat?.units.find((x) => x.charId === charId && !x.companion)?.id ?? null : null);
 /** Spotlight moments in a fight (spec: Music): an elite or boss taken down, an ally revived; for the music traits also any kill and any big heal. */
 function songTriggers(g: GameState, u: Combat['units'][number], c: Character, before: { id: string; dead: boolean; downed: boolean; hp: number }[]) {
   const cb = g.combat!, log = (t: string) => cb.log.push(t), was = Object.fromEntries(before.map((b) => [b.id, b]));
@@ -1403,10 +1413,13 @@ function songTriggers(g: GameState, u: Combat['units'][number], c: Character, be
   const big = killed.find((x) => x.tier === 'elite' || x.tier === 'boss');
   const revived = cb.units.find((x) => x.side === 'pc' && was[x.id]?.downed && !x.downed && !x.dead);
   const healed = cb.units.find((x) => x.side === 'pc' && was[x.id] && !was[x.id].downed && x.hp - was[x.id].hp >= 30);
-  if (big) startSong(g, c, 'took down ' + big.name, 'spotlight', log);
-  else if (revived) startSong(g, c, 'brought ' + revived.name + ' back', 'spotlight', log);
-  else if (killed.length) startSong(g, c, 'a kill', 'trait', log);
-  else if (healed) startSong(g, c, 'a big heal', 'trait', log);
+  const song1 = big ? startSong(g, c, 'took down ' + big.name, 'spotlight', log) : false;
+  const song2 = !big && revived ? startSong(g, c, 'brought ' + revived.name + ' back', 'spotlight', log) : false;
+  if (big) spotlight(g, { kind: 'takedown', char: c.id, unit: u.id, reason: 'took down ' + big.name, target: big.id, targetName: (cb.sighted || []).includes(big.id) ? big.name : 'an unseen hostile', song: song1 });
+  if (revived) spotlight(g, { kind: 'revive', char: c.id, unit: u.id, reason: 'brought ' + revived.name + ' back', target: revived.id, targetName: revived.name, targetChar: revived.charId || null, song: song2 });
+  // The music traits' own triggers only when no spotlight moment happened (the chain the music always had: a boss's kill
+  // never falls through to "a kill").
+  if (!big && !revived) { if (killed.length) startSong(g, c, 'a kill', 'trait', log); else if (healed) startSong(g, c, 'a big heal', 'trait', log); }
   if (revived && musicOf(g).now?.charId !== c.id) startSong(g, c, 'brought ' + revived.name + ' back', 'trait', log);
   syncSong(g);
 }
@@ -1528,10 +1541,13 @@ function runEnemies(g: GameState) {
     if (u.side !== 'foe') break;
     if (u.charId) break; // a player's fighter on the foe side (the Proving Ground's team fight): its player acts
     if (puppeteerOf(g, cb, u)) break; // a Puppeted enemy's turn is run by its puppeteer's player (rules 1.3)
+    markAction(cb); // spotlight.ts: an enemy's turn is its own action (an intervention in it slows its playback)
     if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
+    critMoment(g); // a party reaction's crit in the enemy's turn (decision 113)
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
+  clearAction(cb);
   if (cb.over) { if (g.sandbox) sandboxOver(g); else finishCombat(g); }
 }
 
@@ -2293,9 +2309,15 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
   for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');
   if (!hidden) { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
-  att.ap = apNow; if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
+  // The opening strike is an action of the fight like any other (spotlight.ts): its fx start here, so a crit, a takedown,
+  // a revive or an intervention in it cuts in and slows its playback (decision 113).
+  const before = cbx.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
+  att.ap = apNow; markAction(cbx);
+  if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
+  if (hidden && silentTakedown(g, cbx, c, att, tgt)) return; // no fight opens: its moments are thrown away with it
+  songTriggers(g, att, c, before);
+  critMoment(g);
   if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
-  if (hidden && silentTakedown(g, cbx, c, att, tgt)) return;
   checkOver(cbx); runEnemies(g);
 }
 /** Silent Kill on the area map (the Shade, K1): a killing ambush from Sneak that leaves you Hidden, with no other

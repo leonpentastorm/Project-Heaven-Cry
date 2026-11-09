@@ -10,6 +10,9 @@ import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from '.
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
+  /** An uploaded portrait's eye line for the spotlight cut-in's torn strip (y from the top, 0.05–0.70; decision 113).
+   * Presentation only; the art library's portraits carry their own (art/catalog.json eye_line). */
+  portraitEye?: number;
   /** Death-save failures while Downed outside a fight (spec: Anyone is a target). */
   downedFails?: number;
   skills: Record<string, number>; attrs: Record<string, number>; cores: Record<CoreId, number>;
@@ -403,6 +406,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   // heavier plate isn't carried; PROVISIONAL, spec 14).
   { const cap = armourCap(c); if (cap != null && c.armourClass > cap) { (c.state ||= {}).armourDropped = c.armourClass; c.armourClass = cap; } }
   c.hp = maxHp(c);
+  if (c.portraitEye != null) { const y = Number(c.portraitEye); if (Number.isFinite(y)) c.portraitEye = Math.round(Math.min(0.7, Math.max(0.05, y)) * 100) / 100; else delete c.portraitEye; }
   // Belief (rules 1.6): a Faithful character is sworn at creation, Devotion 3; an Atheist has no patron.
   if (s.belief?.kind === 'faithful') { c.patron = s.belief.patron; setDevotionXp(c, devotionThreshold((patronsJ as any).devotion?.start ?? 3)); } else if (s.belief) c.patron = null;
   if (s.belief) c.faithRev = FAITH_REV;

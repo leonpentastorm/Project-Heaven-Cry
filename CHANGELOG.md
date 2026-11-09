@@ -8,6 +8,36 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.10.0 — 9 November 2026
+
+Branch `claude/awesome-babbage-8gngk8`: **spotlight cut-ins** (decision 113; `docs/design/cutin-spec.md`).
+
+- **The look:** when a big moment lands, the screen blurs a little and dims. Torn strips slide across showing the characters' eyes from their painted portraits. The tear is inked in the character's highest-attribute colour; a god's strip uses the patron's accent. Captions are in Spectral, with a small label in Chakra Petch. Several characters in one moment stack their strips.
+- **What fires it:**
+  - a natural 20 on a Hard or Heroic check;
+  - taking down an elite or boss;
+  - a revive;
+  - an Ultimate;
+  - a legendary deed;
+  - Play my song;
+  - **a patron's intervention:** the god's strip over the fighter's, with the patron's line and what it did;
+  - **your side's critical hits** in a fight: a short, slimmer strip, about 0.9 s.
+
+  One action shows one cut-in, the biggest moment in it.
+- **In a fight** the cut-in plays before the action, then that action plays back 15% slower. The casings, magazines and the bow's draw slow with it.
+- **The Miracle** keeps Faith 2.2's full scene. Strips and the Miracle share one queue and never overlap.
+- **Settings:** Cut-ins All / Once per scene / Off. Reduced motion means no slide and no slow-mo. Any click or key skips.
+- **Framing:** every portrait has an eye line (`eye_line` in `art/catalog.json`). Uploaded portraits get a Cut-in framing slider in character creation.
+- **Co-op:** every player in the room sees the cut-in.
+- **Known:** the `title` e2e suite fails at "the press" step on develop too, since 0.9.0's title front layer. It is not caused by this branch.
+- **Waiting on Leon:** cutin-spec.md section 10:
+  - trait songs;
+  - the Ultimate caption;
+  - a revive's two strips;
+  - a god's slow-mo;
+  - enemy cut-ins;
+  - reduced motion;
+  - the slimmer crit strip.
 ## 0.9.1 — 9 November 2026
 
 Straight to `develop` (an art brief fix): **the title heroes look at the god, as a fixed rule**. Leon: Revision 5's squad "still looks at nothing". Close up, their faces turn left, only 10–20° above level, while the god's face is almost straight above them. The title-screen brief (`art/briefs/title-screen.md`) now fixes the target: the god's face at screen x 69%, y 5%, 65–90° above level from the outcrop. It adds a guide image (`art/briefs/title-screen/gaze-guide.jpg`: the scene, the squad's place, the face and each hero's sightline) and a sightline check before any front layer ships. The front layer itself waits for the corrected painting.

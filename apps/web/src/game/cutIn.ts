@@ -18,6 +18,7 @@ import { FAITH_PATRON, type FxEvent } from '@engine';
 import { sfx, reducedMotion, type Sfx } from './sfx';
 import { anim, centre, floatText, burst, tileEl, type Pt } from './fx/dom';
 import { FAITH_GOLD, FAITH_INK, accentOf, patronMarkUri, patronPortrait } from './faithArt';
+import { takeStage, stageBox } from './stage';
 
 export type CutInSize = 'full' | 'small';
 /** The box that says what happened (name, text, what it did). */
@@ -111,19 +112,17 @@ export interface InterventionKit {
   /** The patron's mark flashing at a point (fx/faith.ts mark()). */
   mark?: (src: string, p: Pt, size: number, ms: number, o?: Record<string, any>) => void;
 }
-/** An intervention {unit, patron, trigger, target, amount, at} (rules 1.6.3, item 744), routed here by fx/faith.ts.
+/** An intervention {unit, patron, trigger, target, amount, at} (rules 1.6.3, item 744), routed here by fx/faith.ts: the
+ *  map effect, at once: a sharp bell, the patron's mark flashing at the trigger, and the words "<PATRON> INTERVENES"
+ *  floating there (the combat log has the full line).
  *
- *  TODAY this only plays the existing look: a sharp bell, the patron's mark flashing at the trigger, and the words
- *  "<PATRON> INTERVENES" floating there (the combat log has the full line).
- *
- *  THE TRIGGER FOR LATER (docs/design/faith-presence-spec.md, section 3; the draft in
- *  docs/design/handoffs/faith-presence-HANDOFF.md, "The trigger for the intervention cut-in"): build the small cut-in
- *  here. Call showCutIn({ size: 'small', portrait: patronPortrait(e.patron, true), accent, kicker: '<PATRON> INTERVENES',
- *  line: the patron's intervention line (the 'intervention' bank's patron_line that follows this event), focus: null (no
- *  zoom), box: { title: one line, e.g. "Old Overcast intervenes: 48 Storm to the drill sergeant" } }) — the portrait
- *  slides in from the screen edge (a third of the screen, never over the map's centre), about 1.5 s, never blocking
- *  input, one at a time (showCutIn queues small cut-ins). Keep the map effect below, at once. Add an e2e check like the
- *  Miracle's (apps/web/e2e/faith-pg.mjs). */
+ *  THE CUT-IN (decision 113; docs/design/cutin-spec.md section 12, docs/design/faith-presence-spec.md section 3): the
+ *  intervention's cut-in is the spotlight's, not drawn here. faith.ts intervene() emits a `spotlight` event (kind 'god':
+ *  the patron, the fighter, the patron's line, the target) next to this one, and the effects queue (fx/play.ts) plays
+ *  it at a gate before the action it happened in: the patron's torn eye strip over the fighter's, then the action 15%
+ *  slower. That is the only path that can show it before the action plays, for every player in the room, under each
+ *  player's All / Once per scene / Off setting. So this draws no second cut-in (the small cut-in drafted in the spec is
+ *  not used for interventions). */
 export function playIntervention(e: any, K: InterventionKit): void {
   const p = K.at(e.at || K.posOf(e.target)); K.play('hit_metal', p, { rate: 1.7, gain: 0.5 }); if (!p) return;
   const acc = accentOf(e.patron, e.accent);
@@ -214,7 +213,10 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
   const at = (f: () => void, ms: number) => { timers.push(window.setTimeout(f, Math.max(0, ms))); };
   const nodes: HTMLElement[] = [];
   let landed = false, pulled = false, closed = false;
-  const land = () => { if (landed) return; landed = true; try { o.onLand?.(); } catch (err) { console.warn('cut-in land', err); } };
+  // One stage (game/stage.ts, decision 113): a full cut-in clears a spotlight strip on screen and holds the next ones
+  // until it lands; a small one never takes the stage.
+  const freeStage = size === 'full' ? takeStage() : () => {};
+  const land = () => { freeStage(); if (landed) return; landed = true; try { o.onLand?.(); } catch (err) { console.warn('cut-in land', err); } };
 
   // ---- the sound sting ----
   const snd = Array.isArray(o.sound) ? o.sound : o.sound ? [o.sound] : [];
@@ -234,9 +236,10 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
       if (o.box!.did) { const d = el('div', ''); d.className = 'd'; d.appendChild(el('b', '', 'WHAT IT DID')); d.appendChild(document.createTextNode(o.box!.did)); b.appendChild(d); }
       document.body.appendChild(b); nodes.push(b);
       anim(b, rm ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(14px)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0)' }], { duration: rm ? 150 : 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
-      let gone = false;
-      const shut = () => { if (gone) return; gone = true; live.delete(shut); anim(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' }); window.setTimeout(() => b.remove(), 230); };
-      live.add(shut); x.addEventListener('click', shut); at(shut, o.box ? T.boxMs : 0);
+      let gone = false, unstage = () => {};
+      const shut = () => { if (gone) return; gone = true; live.delete(shut); unstage(); anim(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' }); window.setTimeout(() => b.remove(), 230); };
+      live.add(shut); unstage = stageBox(shut); // a spotlight cut-in that starts while the box is up closes it first
+      x.addEventListener('click', shut); at(shut, o.box ? T.boxMs : 0);
     }, delay);
   };
 
@@ -391,7 +394,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
     }
   };
   const close = () => {
-    if (closed) return; closed = true; live.delete(close); timers.forEach(clearTimeout); unhook();
+    if (closed) return; closed = true; live.delete(close); timers.forEach(clearTimeout); unhook(); freeStage();
     for (const n of nodes) n.remove();
     if (current === handle) current = null;
   };
