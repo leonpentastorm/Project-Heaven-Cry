@@ -23,7 +23,7 @@ import {
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
-import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, GATE } from '@engine';
+import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, GATE, moduleShelved } from '@engine';
 import { patronMarkUri, vowIconUri, FAITH_INK } from './faithArt';
 import { importCharacter } from './charfile';
 import { fxBusyUntil } from './fx/FxLayer';
@@ -624,7 +624,7 @@ function MagicTab({ c }: { c: Character }) {
         {['', ...SHAPE_MODULES].map((f) => <button key={f || 'bolt'} type="button" aria-pressed={shape === f} style={chip(shape === f)} onClick={() => setShape(f)}><img src={formIconUri(f || 'bolt', toneInk(tone))} alt="" width={14} height={14} />{f ? (MODULE as any)[f]?.name : 'Bolt'}</button>)}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {others.map((m) => { const on = mods.includes(m.id), lock = m.id === 'size' && !shape; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} title={lock ? 'Size needs a shape.' : m.text} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
+        {others.map((m) => { const on = mods.includes(m.id), shelved = moduleShelved(m.id), lock = (m.id === 'size' && !shape) || !!shelved; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} data-locked={shelved ? '1' : undefined} title={shelved || (lock ? 'Size needs a shape.' : m.text)} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
           onClick={() => setMods(on ? mods.filter((x) => x !== m.id) : [...mods, m.id].slice(-3))}>{m.name}</button>; })}
       </div>
       {v && <div style={{ fontSize: 12, lineHeight: 1.4 }}><div style={{ color: C.soul, fontWeight: 700 }}>{v.line}</div><div>{v.effects}</div><div style={{ color: C.muted }}>{v.rider}</div></div>}

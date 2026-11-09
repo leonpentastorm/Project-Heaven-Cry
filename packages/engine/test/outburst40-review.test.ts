@@ -1,7 +1,7 @@
 // Outburst 4.0 (rules 1.8) review fixes, through apply(): Revert after a Feed, a Fuse's release hook and items' multipliers,
 // the shelved advanced-class modules, the area map's dry run and practice, and fuses that outlive the fight.
 import { describe, expect, it } from 'vitest';
-import { d20, FEELINGS, CLASS, positionsOf, zoneMap, npcsOf, storyObjects, refOf, checkOutburstDesign, apply, newGame, ARCHETYPES, type Unit, type OutburstDesign, type GameState } from '../src';
+import { d20, FEELINGS, CLASS, positionsOf, zoneMap, npcsOf, storyObjects, refOf, checkOutburstDesign, startingMagicError, apply, newGame, ARCHETYPES, type Unit, type OutburstDesign, type GameState } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { fightWith, storyWith } from './helpers/perkfight';
 
@@ -78,6 +78,15 @@ describe('the shelved advanced-class modules (rules 1.8 section 4)', () => {
     g = apply(g, { type: 'sandbox/start' }, 'h1'); const id = Object.keys(g.characters)[0];
     expect(() => apply(g, { type: 'sandbox/learn', charId: id, module: 'halo' } as any, 'h1')).toThrow(/Saint/);
     g = apply(g, { type: 'sandbox/learn', charId: id, module: 'fuse' } as any, 'h1'); expect(g.characters[id].soulKnown!.modules).toContain('fuse');
+  });
+  it('can\'t come in through a Proving Ground design or a starting Outburst either', () => {
+    let g = newGame('PROVE3', { id: 'h1', name: 'Host' }, 'seed-proving'); const a = ARCHETYPES.find((x) => x.id === 'stormcaller')!;
+    g = apply(g, { type: 'char/add', sheet: { name: 'Vel', portrait: '', origin: 'x', kit: 'soul', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as any }, 'h1');
+    g = apply(g, { type: 'sandbox/start' }, 'h1'); const id = Object.keys(g.characters)[0];
+    expect(() => apply(g, { type: 'sandbox/design', charId: id, design: { id: '', name: 'X', school: 'damage', modules: ['echo'] } } as any, 'h1')).toThrow(/Heartfed/);
+    expect(g.characters[id].soulKnown?.modules || []).not.toContain('echo');
+    expect(startingMagicError({ outburst: { school: 'damage', modules: ['echo'] }, skills: {} } as any)).toMatch(/Heartfed/);
+    expect(startingMagicError({ outburst: { school: 'damage', modules: ['split'] }, skills: {} } as any)).toBeNull();
   });
 });
 

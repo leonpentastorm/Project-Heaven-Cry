@@ -2968,7 +2968,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const c = mine(a.charId), d = a.design;
       if (!d || !SCHOOL[d.school] || (d.school2 && !SCHOOL[d.school2])) fail('Pick a school.');
       const mods = migrateDesign({ id: '', name: '', school: d.school, modules: [...new Set(d.modules || [])] }).modules.filter((x) => MODULE[x]).slice(0, 4);
-      { const why = designShapeError(mods) || (d.school2 ? pairingError(d.school, d.school2, mods) : null); if (why) fail(why); }
+      { const why = mods.map(moduleShelved).find(Boolean) || designShapeError(mods) || (d.school2 ? pairingError(d.school, d.school2, mods) : null); if (why) fail(why); }
       if (d.id && cb?.units.find((x) => x.charId === c.id)?.mg?.held?.design === d.id) fail('That Outburst is being held: release it first.');
       const tone = d.tone && d.tone !== 'raw' && TONE[d.tone] ? d.tone : undefined;
       sbChange(g, c, () => {

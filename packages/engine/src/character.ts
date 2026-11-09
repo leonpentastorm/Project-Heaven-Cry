@@ -203,6 +203,7 @@ export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skill
   if (s.outburst) {
     if (!SCHOOL[s.outburst.school]) return 'Pick an Outburst school.';
     if ((s.outburst.modules || []).some((m) => !MODULE[m])) return 'Unknown Outburst module.';
+    { const sh = (s.outburst.modules || []).map(moduleShelved).find(Boolean); if (sh) return sh; }
     if (s.outburst.tone && s.outburst.tone !== 'raw') { if (!TONE[s.outburst.tone]) return 'Unknown Outburst tone.'; if (!((s.skills || {}) as any).lore_master) return 'A tone needs Lore Master 1.'; }
     // One school and exactly one module; the Will Power module slots are for designs made in play.
     if ((s.outburst.modules || []).length !== 1) return 'Your starting Outburst takes one school and exactly one module (more module slots are for designs made in play).';
