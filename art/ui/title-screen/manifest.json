@@ -23,11 +23,11 @@
       941
     ],
     "front": [
-      1774,
-      887
+      1672,
+      941
     ]
   },
-  "resampling": "Back/mid enlarged from native; foreground rendered tightly at 1774x887, placed at 2000x1000 in 4096x2304 canvas. Not native 4K.",
+  "resampling": "Back/mid enlarged from native 1672x941. Foreground (Revision 5): a full 16:9 frame rendered at 1672x941, placed 1:1 on the central safe rect at 3584x2016 (256,144), the rock mirrored into the overscan. Not native 4K.",
   "alpha": "straight/unpremultiplied",
   "stack_order": [
     "title-back.png",
@@ -37,20 +37,20 @@
   "files": [
     {
       "path": "art/ui/title-screen/README.md",
-      "size_bytes": 4249,
-      "sha256": "5aaec3d9487a31f58032cfd1d771da793a1ff7d87bdf843188c18948b7d00163",
+      "size_bytes": 5219,
+      "sha256": "41c29b272eabf00fc20fd9d516f40e4a244dd0c679a7711112542d44747c80ec",
       "role": "implementation notes"
     },
     {
       "path": "art/ui/title-screen/foreground-placement.json",
-      "size_bytes": 450,
-      "sha256": "0f6b9facd81bcd39eec0bc0f91f4f3d5e44d865cb19c4f4d7a75278b9b8a072b",
+      "size_bytes": 810,
+      "sha256": "52d0e3bf37f636c92107bb64eb04c9b1bad5e3f2fa48bfbff0a0532cb1cb0b6d",
       "role": "foreground production provenance"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/alpha-edge-review.jpg",
-      "size_bytes": 335971,
-      "sha256": "cf35339690e2890e380f57e8cbc3f00807feff47ff730cea72bc8a394ed5b9fb",
+      "size_bytes": 308986,
+      "sha256": "4108473861a6e464ce5ce65a9680ba421bbf11d20de9bbde0933f6ab33da442b",
       "role": "review preview"
     },
     {
@@ -67,38 +67,38 @@
     },
     {
       "path": "art/_archive/ui/title-screen/previews/composite-1920.jpg",
-      "size_bytes": 762882,
-      "sha256": "0791eeb90d2e128f638630a4106bff03ad8a92d0ab9b0c9df087ec6bbb5ba23b",
+      "size_bytes": 682240,
+      "sha256": "9c556177ca95b060916814cf5e1f207d2d90913c2b78e40bc841dfa19ae8d4eb",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/menu-readability-72px.jpg",
-      "size_bytes": 762815,
-      "sha256": "850430982494f65ff75f5462aa397a65fd8e0404f025879cb7c5cb69b5c81723",
+      "size_bytes": 691206,
+      "sha256": "1b91f86e4f5769838199d924610d8688febdfa5a93c35882a8c6c74f902cb6d7",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/parallax-extremes.jpg",
-      "size_bytes": 767627,
-      "sha256": "8b6c8d50fe3654afd849666ccf1821c61c102cd55be25a809374afd63afb87f9",
+      "size_bytes": 724349,
+      "sha256": "ee5c54d2ddfe01f892ad8f1ef317e2be74d34141ea6b206b575ed2c2587a3ccc",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/phone-crop.jpg",
-      "size_bytes": 261718,
-      "sha256": "adc9d06b3f3eebff2943b99551e2f58c9dd16fb3f0bdfd2d147a4ec378fba640",
+      "size_bytes": 235169,
+      "sha256": "fb878cee4ed9258e6415de43fb46650faa777e2a1a7354b40dc03bac4ef1c9ef",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/safe-zones.jpg",
-      "size_bytes": 695027,
-      "sha256": "da7f89e68b4cadc1052720c95340e0499744d03e6dcd5e23812fb20d1de4dff0",
+      "size_bytes": 626429,
+      "sha256": "2ebcb838f6740d8a48b8764c398b1db291fcb28d2aa6e4309c3b122b862e3728",
       "role": "review preview"
     },
     {
       "path": "art/_archive/ui/title-screen/previews/screen-crop-1920.jpg",
-      "size_bytes": 730823,
-      "sha256": "b84642769671b054c1cee716cce33c16fd51ed376b9a632696250a278bd8ba98",
+      "size_bytes": 659371,
+      "sha256": "6048f6370ac24bf2f7db6f2fad42ec0096bc00bf1aebd0006cd6513974f27cc6",
       "role": "review preview"
     },
     {
@@ -125,8 +125,8 @@
     },
     {
       "path": "art/_archive/ui/title-screen/source-renders/title-front-native.png",
-      "size_bytes": 2953965,
-      "sha256": "e402ac5756d27cee84001e4c1095021821cfdbb484c5c376ce66d3b42b3d73c5",
+      "size_bytes": 678991,
+      "sha256": "c4bb08d16666649edffcd2ae51d239ea87c5023d094db56c0750bb9d1b465450",
       "role": "native generated source render",
       "width": 1774,
       "height": 887,
@@ -146,7 +146,7 @@
     {
       "path": "art/ui/title-screen/technical-review.json",
       "size_bytes": 2233,
-      "sha256": "73bcb953e7eab53560e687056e0f2ffba498913fb4c114a358833ad0b0bb14a0",
+      "sha256": "170be8ed039782c49320aaca79e8237d8f4567229f489d63635a68147e2e71e4",
       "role": "technical review evidence"
     },
     {
@@ -161,8 +161,8 @@
     },
     {
       "path": "art/ui/title-screen/title-front.png",
-      "size_bytes": 3517556,
-      "sha256": "0fa883df18369e8e4b7758031b5cf7c99751ceb70b5a5155fcc9e94b910ee8c4",
+      "size_bytes": 2598896,
+      "sha256": "f21ce3bf5b39fa0aaa828496e2d67a5ed64dcb91144efb77954b073fec3f7a1d",
       "role": "straight-alpha hero ridge layer",
       "width": 4096,
       "height": 2304,
@@ -181,9 +181,39 @@
     },
     {
       "path": "art/ui/title-screen/title-screen.psd",
-      "size_bytes": 9539318,
-      "sha256": "49528c4211d77bb4e0afd389f0e142d461433ecdcb0948d52d9310ac9ac20f04",
+      "size_bytes": 9376413,
+      "sha256": "3248784da7263d8a9f74d6e2afac44ff614d1d8be1fa4ef0767b405ee62d69b0",
       "role": "three-layer raster source"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/history/2026-11-09-pre-v5/README.md",
+      "size_bytes": 595,
+      "sha256": "bb3c3b991b4fdc974a475b61ebbb728634a104b5604740e87de4ebc3b01aaa46",
+      "role": "archived revision notes"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/history/2026-11-09-pre-v5/title-front.png",
+      "size_bytes": 3517556,
+      "sha256": "0fa883df18369e8e4b7758031b5cf7c99751ceb70b5a5155fcc9e94b910ee8c4",
+      "role": "archived foreground (Revision 4)"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/history/2026-11-09-pre-v5/title-front-native.png",
+      "size_bytes": 2953965,
+      "sha256": "e402ac5756d27cee84001e4c1095021821cfdbb484c5c376ce66d3b42b3d73c5",
+      "role": "archived foreground native render (Revision 4)"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/history/2026-11-09-pre-v5/foreground-placement.json",
+      "size_bytes": 450,
+      "sha256": "0f6b9facd81bcd39eec0bc0f91f4f3d5e44d865cb19c4f4d7a75278b9b8a072b",
+      "role": "archived foreground placement (Revision 4)"
+    },
+    {
+      "path": "art/_archive/ui/title-screen/source-renders/foreground-v5-prompt.txt",
+      "size_bytes": 1657,
+      "sha256": "b4b18b2abb29711ea32aee72a034aecadc339811b3bf3056584fb09c0b40d3d6",
+      "role": "foreground Revision 5 prompt"
     }
   ],
   "layered_source_canvas": [
@@ -191,7 +221,7 @@
     941
   ],
   "source_note": "Repository PSD at original render resolution due 16MiB upload request limit; all PNG layers remain 4096x2304. Full-size PSD retained in downloadable Revision 2 package.",
-  "revision": 4,
+  "revision": 5,
   "foreground_placement": {
     "revision": 4,
     "source": "../../_archive/ui/title-screen/source-renders/title-front-native.png",
