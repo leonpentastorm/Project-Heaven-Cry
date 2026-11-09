@@ -116,6 +116,8 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
     if (st.role === 'host') saveWithFeedback(self); else toast('The host\'s browser keeps the save for everyone.');
     return;
   }
-  if ((e.key === 'm' || e.key === 'M') && !e.ctrlKey && !e.metaKey && !e.altKey && !typing(e.target) && LIVE.screen === 'main' && typeof self.toggleArea === 'function'
-) { e.preventDefault(); self.toggleArea(); }
+  // M: the area map (toggleArea never opens it over another dialog).
+  if ((e.key === 'm' || e.key === 'M') && !e.ctrlKey && !e.metaKey && !e.altKey && !typing(e.target) && LIVE.screen === 'main' && typeof self.toggleArea === 'function') {
+    e.preventDefault(); self.toggleArea();
+  }
 });

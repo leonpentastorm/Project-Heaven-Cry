@@ -36,7 +36,9 @@ await host.waitForSelector('text=CLICK TO ROLL', { timeout: 15000 });
 console.log('host resumed and the round closed: check called');
 // the EPCCG "?" and the lightbox
 // the guest watches the host's roll by default (spec: Overworld rounds); close it to read the sheet
-await guest.getByRole('button', { name: 'Close and wait for the story' }).click({ timeout: 5000 });
+// (Since the playtest fixes the table opens only for the roller until they throw: close it if it is up.)
+const watchClose = guest.getByRole('button', { name: 'Close and wait for the story' });
+if (await watchClose.waitFor({ timeout: 3000 }).then(() => true, () => false)) await watchClose.click();
 await guest.getByRole('button', { name: /What is Durability\?/ }).first().click();
 await guest.waitForSelector('text=EPCCG · ARTICLE 5');
 await shot(guest, '30-epccg');

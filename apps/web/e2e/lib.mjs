@@ -71,7 +71,7 @@ export async function autoConfirm(page) {
   const f = () => {
     if (window.__phcAutoConfirm) return; window.__phcAutoConfirm = true;
     const go = () => { const d = document.querySelector('[data-phc-dialog] [role="alertdialog"]'); if (d && !d.__auto) { d.__auto = true; setTimeout(() => { const b = d.querySelectorAll('button'); if (b.length) b[b.length - 1].click(); }, 60); } };
-    new MutationObserver(go).observe(document.documentElement, { childList: true, subtree: true }); go();
+    new MutationObserver(go).observe(document, { childList: true, subtree: true }); go();
   };
   await page.addInitScript(f); await page.evaluate(f).catch(() => {});
 }

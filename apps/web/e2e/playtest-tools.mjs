@@ -94,7 +94,10 @@ ok('report never holds the key', !/SECRETSECRET/.test(rj) && r.narrator.hasKey =
 await host.evaluate(() => window.__phc.setNarrator({ key: '' }));
 
 // 6. The spend meter
-await host.locator('button', { hasText: /Narrator turns?|no Narrator turns yet/ }).first().click();
+// The spend lives in the Narrator chip's menu (UI pass): This session: $… · n Narrator turns [Spend…].
+await host.locator('[data-phc-narr-chip]').click();
+ok('the Narrator menu shows the spend', /This session: (\$[\d.]+ · \d+ Narrator turns?|no Narrator turns yet)/.test(await host.locator('[data-phc-narr-menu]').textContent()));
+await host.locator('[data-phc-narr-menu]').getByRole('button', { name: 'Spend…' }).click();
 await host.waitForSelector('text=NARRATOR SPEND');
 ok('spend meter opens', true);
 if (process.env.SHOTS) await host.screenshot({ path: process.env.SHOTS + '/spend.png' });
