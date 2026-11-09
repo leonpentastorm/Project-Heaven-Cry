@@ -8,10 +8,10 @@ import { D, ATTR, SK, IMG, mod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { startOf } from '../game/starts';
 import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '../game/voice';
-import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange } from '@engine';
+import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange, routeHazards, PICKUP_AP } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
-import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice } from '../game/commands';
+import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
 import { previewPerkAction, bindGame } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
@@ -28,7 +28,8 @@ import { missionsButton } from '../game/missionView';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard } from './faithTab';
-import { NOT_PERSON, faceOf, kindBadge, worldLayer, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach } from '../game/worldView';
+import { NOT_PERSON, faceOf, kindBadge, worldLayer, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
+  pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { approachOptions } from '@engine';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
@@ -557,7 +558,7 @@ export class MainLogic extends DCLogic {
     if (!inFight) for (const x of Object.values(g.characters)) for (const k of x.companions || []) { const id = 'cp-' + x.id + '-' + k.id; if ((k.kind === 'drone' || k.kind === 'beast' || k.kind === 'twin') && pos[id] && !x.dead) { const mx = k.kind === 'twin' ? (k.maxHp || k.hp || 1) : (COMPANION_KINDS[k.kind]?.hp ?? 30); units.push({ id, side: 'pc', companion: k.kind, ctrl: x.id, name: k.kind === 'twin' ? 'The twin' : k.name || (k.kind === 'beast' ? 'Beast' : 'Drone'), short: k.kind === 'twin' ? 'TW' : k.kind === 'beast' ? 'BE' : 'DR', img: k.kind === 'twin' ? (k.img || '') : '', pos: pos[id], hp: k.hp ?? mx, maxHp: mx, ap: 0, injuries: [], downed: false, dead: false }); } }
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
     const objs = (inFight && cb ? cb.objects : g.story.objects) || defaultObjects(map), objAt = {};
-    objs.forEach((o) => { if (!objAt[o.pos] || kindOf(o).blocks_move) objAt[o.pos] = o; });
+    objs.forEach((o) => { if (o.kind !== 'pile' && (!objAt[o.pos] || kindOf(o).blocks_move)) objAt[o.pos] = o; }); // a pile draws as its own layer (worldLayer)
     const cov = {}; objs.forEach((o) => { const k = coverKind(o); if (k) cov[o.pos] = { kind: k }; });
     const solid = new Set(map.solid), diff = new Set([...map.difficult, ...objs.filter(isDifficult).map((o) => o.pos)]);
     const interesting = (o) => o && (o.approaches.length || isCacheV(o) || ['poi', 'door', 'barricade', 'container', 'terminal', 'exit', 'trap', 'hole'].includes(o.kind));
@@ -697,7 +698,8 @@ export class MainLogic extends DCLogic {
     // Shot, Aimed shot and Melee show the weapon's reach as a red grid around you: targets in it are outlined in red, the
     // rest dimmed, and hovering one shows the engine's hit chance and AP. All of it comes from the engine (paths,
     // apForTiles, previewAttack, lineOfSight) on the story map as a throwaway fight; nothing here is a rule of its own.
-    const plan = { reach: new Set(), route: {}, hv: null, cost: '', red: new Map(), tgt: {}, info: '', isMove: false, isAtk: false };
+    const plan = { reach: new Set(), route: {}, hv: null, cost: '', red: new Map(), tgt: {}, info: '', isMove: false, isAtk: false, cross: new Set(), pile: null };
+    const arrowsOf = (rr, from) => { rr.forEach((k, i) => { const p = i ? rr[i - 1] : from, [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); plan.route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; }); };
     const planOn = !!(S.area && mover && mover.hp > 0 && myAt && g.story.await === 'players' && !(g.story.ended || {})[mover.id]);
     if (planOn && (['move', 'sprint', 'sneak', 'drone', 'beast', 'twin'].includes(W) || ['shot', 'aimed', 'melee'].includes(W))) {
       const cbx = scb(), u = W === 'drone' ? myDrone() : W === 'beast' ? myBeast() : W === 'twin' ? myTwin() : sU(cbx);
@@ -708,9 +710,14 @@ export class MainLogic extends DCLogic {
           const costOf = (k) => (W === 'sprint' ? 2 : apForTiles(P.dist[k], 0, mvv) + (W === 'sneak' ? P.dist[k] : 0));
           for (const k of Object.keys(P.dist)) { if (k === u.pos || (W === 'sprint' && (u.noSprint || P.dist[k] > Math.floor(3 * mvv)))) continue; if (costOf(k) <= u.ap) plan.reach.add(k); }
           const hv = S.hoverTile && plan.reach.has(S.hoverTile) ? S.hoverTile : null;
-          if (hv) { plan.hv = hv; plan.cost = '−' + costOf(hv) + ' AP · ' + P.dist[hv] + (P.dist[hv] === 1 ? ' tile' : ' tiles');
-            plan.info = (W === 'sprint' ? 'Sprint' : W === 'sneak' ? 'Sneak' : W === 'drone' ? 'The drone flies' : W === 'beast' ? 'The beast pads' : W === 'twin' ? 'The twin steps' : 'Move') + ' to ' + refOf(hv) + ': ' + P.dist[hv] + (P.dist[hv] === 1 ? ' tile' : ' tiles') + ', ' + costOf(hv) + ' AP (' + u.ap + ' left).';
-            for (let k = hv, n = 0; P.prev[k] && k !== u.pos && n < 400; n++) { const p = P.prev[k], [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); plan.route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } }
+          // Rules 1.8 (item 683): the route the click takes goes around revealed hazards when it can (movePaths); the
+          // preview marks every revealed hazard tile it still crosses, and says so.
+          if (hv) { const rh = routeHazards(cbx, u, hv), tl = rh ? rh.tiles : P.dist[hv], cst = W === 'sprint' ? 2 : apForTiles(tl, 0, mvv) + (W === 'sneak' ? tl : 0), ct = crossesText(rh && rh.crosses);
+            plan.hv = hv; plan.cost = '−' + cst + ' AP · ' + tl + (tl === 1 ? ' tile' : ' tiles') + (ct ? ' · ⚠ HAZARD' : '');
+            plan.info = (W === 'sprint' ? 'Sprint' : W === 'sneak' ? 'Sneak' : W === 'drone' ? 'The drone flies' : W === 'beast' ? 'The beast pads' : W === 'twin' ? 'The twin steps' : 'Move') + ' to ' + refOf(hv) + ': ' + tl + (tl === 1 ? ' tile' : ' tiles') + ', ' + cst + ' AP (' + u.ap + ' left).'
+              + (ct ? ' ' + ct : rh && tl > P.dist[hv] ? ' The path goes around the revealed hazards (' + (tl - P.dist[hv]) + (tl - P.dist[hv] === 1 ? ' tile' : ' tiles') + ' longer).' : '');
+            if (rh) { arrowsOf(rh.route, u.pos); for (const x of rh.crosses) plan.cross.add(x.tile); }
+            else for (let k = hv, n = 0; P.prev[k] && k !== u.pos && n < 400; n++) { const p = P.prev[k], [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); plan.route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } }
         }
       } else if (cbx && u) {
         plan.isAtk = true;
@@ -737,6 +744,13 @@ export class MainLogic extends DCLogic {
         plan.reachText = (melee ? 'Melee reach' : (useW.name || 'Weapon') + ' reach') + ': ' + (melee ? (plan.red.size ? 'the tiles next to you' : 'none') : 'up to ' + Math.round(effectiveRange(useW) * (3 + ((u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0))) + ' tiles in sight (−2 to hit per range band past ' + effectiveRange(useW) + ')') + '.';
       }
     }
+    // Rules 1.8: Pick up on the area map. The clicked pile (or the one in reach, your own tile first) opens its checklist; a
+    // pile out of reach shows the way there and the revealed hazards it crosses. The view holds only piles the party sees.
+    const pilesW = !inFight ? pilesIn(objs) : new Map(), pileNear = myAt ? [...pilesW.values()].filter((o) => dist(myAt, o.pos) <= 1).sort((a, b) => dist(myAt, a.pos) - dist(myAt, b.pos)) : [];
+    const wPick = W === 'pickup' && mover ? (S.wTile && pilesW.get(S.wTile)) || pileNear[0] || null : null;
+    const wUntick = wPick && S.wUntick && S.wUntick.tile === wPick.pos ? S.wUntick.keys : [];
+    const wPickWhy = wPick ? pickupWhy(myAt, wPick, c ? apLeft(g, c) : 0, wUntick) : 'Nothing on the ground next to you.';
+    if (wPick && planOn && dist(myAt, wPick.pos) > 1) { const cbx = scb(), u = sU(cbx), rh = cbx && u ? routeHazards(cbx, u, wPick.pos) : null; if (rh) { arrowsOf(rh.route, u.pos); for (const x of rh.crosses) plan.cross.add(x.tile); plan.pile = rh; } }
     // World Play 1.7 on the map (game/worldView.ts): hazards per tile (no hidden ones: the view drops them), safe-path tiles,
     // objective and hint markers, caches with their count, and the free tiles for a Put down being placed.
     const WLs = { big: worldLayer(g, true), small: worldLayer(g, false) };
@@ -752,7 +766,7 @@ export class MainLogic extends DCLogic {
           const what = solid.has(k) ? 'blocked' : o && o.kind !== 'crate' && o.kind !== 'pillar' ? o.name + (o.hp != null ? ' (' + o.hp + '/' + o.max + ' HP)' : '') + (o.locked ? ', locked' : o.open ? ', open' : '') + (o.approaches.length ? ', ' + o.approaches.length + ' approaches' : '') : cov[k] ? cov[k].kind + ' cover' : diff.has(k) ? 'slow ground' : 'open';
           const spr = o ? spriteOf(g, o) : '';
           const wc = (labels ? WLs.big : WLs.small).cells.get(k) || {}, kb = u && u.npc ? kindBadge(u.kind, labels) : null, pdHere = labels && pdSet.has(k);
-          const wWhat = (wc.hz ? ' · ' + wc.hz.title : '') + (wc.mark ? ' · ' + wc.mark.title.replace(/\n/g, ' · ') : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (u && u.npc ? ' · ' + (kb && kb.title ? kb.title.toLowerCase() : 'person') + ' · click to talk' : '') + (pdHere ? ' · put them down here' : '');
+          const wWhat = (wc.hz ? ' · ' + wc.hz.title : '') + (wc.mark ? ' · ' + wc.mark.title.replace(/\n/g, ' · ') : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (labels && plan.cross.has(k) ? ' · your path crosses this hazard' : '') + (u && u.npc ? ' · ' + (kb && kb.title ? kb.title.toLowerCase() : 'person') + ' · click to talk' : '') + (pdHere ? ' · put them down here' : '');
           const gl = glAt[k] || [], held = u ? heldOf(u) : null, sgT = sgTiles[k];
           const sgDim = labels && evW && evW.area.size > 0 && evW.stage !== 'stand' && !evW.area.has(k) && !evW.pickable.has(k) && !evW.stepTo.has(k) && !evW.orderTo.has(k) && k !== myAt;
           const sgLayer = [sgT && sgT.layer, sgDim ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
@@ -762,7 +776,7 @@ export class MainLogic extends DCLogic {
           const hzU = labels && u && mHz.on ? mHz.marks.get(u.id) : null, hzL = labels && mHz.on ? overlayTileStyle(mHz, k) : '';
           // The planning layer (area map only): reachable tiles and the path; an attack's red reach and its targets.
           const pT = labels && plan.isAtk ? plan.tgt[k] : null, inRed = labels && plan.isAtk && plan.red.has(k), canGo = labels && plan.isMove && plan.reach.has(k) && !u;
-          const planStyle = !labels ? '' : plan.hv === k && plan.isMove ? 'border: 2px solid #FFFFFF; background: rgba(255, 255, 255, 0.28)'
+          const planStyle = !labels ? '' : wPick && wPick.pos === k ? 'border: 2px solid #FFFFFF; background: rgba(255, 255, 255, 0.2)' : W === 'pickup' && pileNear.some((o) => o.pos === k) ? 'border: 1px dashed rgba(231, 235, 243, 0.8); background: rgba(231, 235, 243, 0.1)' : plan.hv === k && plan.isMove ? 'border: 2px solid #FFFFFF; background: rgba(255, 255, 255, 0.28)'
             : plan.route[k] && k !== myAt ? 'border: 1px dashed rgba(231, 235, 243, 0.8); background: rgba(255, 255, 255, 0.2)'
             : canGo ? 'border: 1px dashed rgba(231, 235, 243, 0.55); background: rgba(231, 235, 243, 0.08)'
             : inRed ? 'border: 1px dashed ' + epRgba(RANGE_RED, [0.9, 0.55, 0.35, 0.25][Math.min(3, plan.red.get(k) || 0)]) + '; background: ' + epRgba(RANGE_RED, plan.hv === k ? 0.3 : [0.2, 0.11, 0.06, 0.04][Math.min(3, plan.red.get(k) || 0)]) : '';
@@ -772,6 +786,9 @@ export class MainLogic extends DCLogic {
             hasMk: !!wc.mark, mkText: wc.mark ? wc.mark.text : '', mkStyle: wc.mark ? wc.mark.style : '', hasMkChip: labels && !!wc.mark && !u, mkChip: wc.mark ? wc.mark.chip : '', mkChipStyle: wc.mark ? wc.mark.chipStyle : '',
             hasCache: !!wc.cache && !u, hasCacheGlyph: !!wc.cache && !u && !spr, cacheGlyph: wc.cache ? wc.cache.glyph : '', cacheStyle: wc.cache ? wc.cache.style : '', cacheChip: wc.cache ? wc.cache.chip : '', cacheChipStyle: wc.cache ? wc.cache.chipStyle : '',
             hasKind: !!(kb && kb.has), kindText: kb ? kb.text : '', kindStyle: kb ? kb.style : '', kindTitle: kb ? kb.title : '',
+            hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
+            hasPileTip: labels && !!wc.pile && S.hoverTile === k, pileTip: wc.pile ? wc.pile.tip : '', pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, map.w) : '',
+            hasCross: labels && plan.cross.has(k), crossStyle: CROSS_STYLE, crossChipStyle: CROSS_CHIP_STYLE,
             hasPd: pdHere, pdStyle: 'position: absolute; inset: 1px; z-index: 6; pointer-events: none; box-sizing: border-box; border-radius: 2px; border: 2px dashed #FFFFFF; background: rgba(255, 255, 255, 0.16)',
             hasHzL: !!hzL || !!hzU, hzLayer: hzU ? 'position: absolute; inset: 0; z-index: 2; border-radius: 2px; pointer-events: none; box-sizing: border-box; border: 3px solid ' + hzU.ink + '; box-shadow: 0 0 8px ' + hzU.ink : hzL,
             hasHz: !!hzU, hzText: hzU ? markChipText(hzU) : '', hzStyle: hzU ? markChipStyle(hzU) : '', hzTitle: hzU ? hzU.title : '',
@@ -878,7 +895,8 @@ export class MainLogic extends DCLogic {
       open: () => { if (x.off) return toast(x.why); if (!c) return;
         if (x.kind === 'npc') openTalk(x.id); else if (x.kind === 'hazard') openHazard(x.id);
         else if (x.kind === 'carry') act({ type: 'world/act', charId: c.id, act: 'carry', targetId: x.id });
-        else if (x.kind === 'cache') act({ type: 'world/act', charId: c.id, act: 'search', objId: x.id }); } }));
+        else if (x.kind === 'cache') act({ type: 'world/act', charId: c.id, act: 'search', objId: x.id });
+        else if (x.kind === 'pile') { const o = (objs || []).find((y) => y.id === x.id); this.setState({ area: true, wAct: 'pickup', wTile: o ? o.pos : null, wTarget: null, wAim: null, wEvc: null }); } } }));
     const nearAll = [...nearW, ...nearby.filter((n) => !nearW.some((w) => w.key === 's' + n.key)).map((n) => ({ ...n, sub: '', hasSub: false, off: false, title: n.label, style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid #FFFFFF; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer' }))];
     const here = !inFight ? hereVals(g) : { has: false, zone: '', rows: [] };
     const carried = carriedRows(c, ART).map((r) => ({ ...r, noImg: !r.hasImg, cantPut: !!wBusy || inFight || (c && apLeft(g, c) < 1), putWhy: inFight ? 'After the fight.' : wBusy || (c && apLeft(g, c) < 1 ? 'Needs 1 AP.' : ''),
@@ -894,6 +912,7 @@ export class MainLogic extends DCLogic {
       if (isMagicW) return magicClick(k);
       if (pkTargeted) { if (!u || u.charId === mover.id) return toast('Click someone else.'); if (wPkE.target === 'ally' && u.side !== 'pc') return toast('Click an ally.'); return this.setState({ wTarget: u.id }); }
       if (pkTile) return this.setState({ wTile: k });
+      if (W === 'pickup') { if (!pilesW.has(k)) return toast('Click a pile: the stack with a count.'); return this.setState({ wTile: k }); }
       if (pkObj) { const o = objAt[k]; if (!o || o.hidden) return toast('Click an object on the map.'); return this.setState({ wTarget: 'obj:' + o.id }); }
       if (TARGETED.includes(W)) {
         // Anyone and anything is a target (spec: Anyone is a target): people, allies, points of interest, objects.
@@ -954,12 +973,14 @@ export class MainLogic extends DCLogic {
     const wWa = wu ? weaponActions(wu) : null, wWA = (id) => (wWa ? wWa.find((x) => x.id === id) : null);
     const wPk = wu ? perkEntries(g, scb(), wu, c, 'world') : [], wPkSel = parsePk(W), wPkE = wPkSel ? wPk.find((e) => e.id === wPkSel.id && e.actionId === wPkSel.actionId) || null : null;
     const wKlass = classOf(c);
-    const W_UTIL = wWa ? ['reload', 'load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']) : [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP']];
+    // Rules 1.8: a magazine gun's two reloads (speed: the magazine drops into the pile here; tactical: it goes in the pack) at the engine's costs.
+    const W_UTIL = wWa ? [...reloadItems(wu), ...['load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']), ...reloadBothItems(wu)].map((a) => [a[0], a[1], String(a[2]).replace(/ · the \w+ drops?$/, ' · drops').replace(/ · the \w+ goe?s? in your pack$/, ' · to your pack')]) // the narrow panel: short words (the hint says the rest)
+      : [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP']];
     const W_ITEMS = [
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile'],
         ...(myDrone() ? [['drone', 'Move the drone', myDrone().ap + ' AP left']] : []), ...(myBeast() ? [['beast', 'Move the beast', myBeast().ap + ' AP left']] : []), ...(myTwin() ? [['twin', 'Move the twin', myTwin().ap + ' AP left']] : [])]],
       ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : 'Melee (fists)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
-      ['UTILITY', [...W_UTIL, ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
+      ['UTILITY', [...W_UTIL, ['pickup', 'Pick up', PICKUP_AP + ' AP'], ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
       ...(wPk.some((e) => e.tab === 'perks') ? [['PERKS & TRAITS', wPk.filter((e) => e.tab === 'perks').map((e) => [pkId(e), e.label, pkCost(e)])]] : []),
       ...(wPk.some((e) => e.tab === 'class') ? [['CLASS · ' + (wKlass ? wKlass.name.toUpperCase() : 'MOVES'), wPk.filter((e) => e.tab === 'class').map((e) => [pkId(e), e.label, pkCost(e)]), wKlass ? wKlass.ink : null]] : []),
       // Magic, only for those who have it: Sigils in cyan, Outbursts in violet (never mixed).
@@ -976,7 +997,7 @@ export class MainLogic extends DCLogic {
     const pkTargeted = !!wPkE && ['unit', 'enemy', 'ally', 'npc'].includes(wPkE.target);
     const pkTile = !!wPkE && wPkE.target === 'tile', pkObj = !!wPkE && wPkE.target === 'object';
     const wDet = wPkE && S.wDetailFor === W ? String(S.wDetail || '').trim() : '';
-    const isAttack = ['shot', 'aimed', 'melee'].includes(W), instant = ['reload', 'load', 'clear', 'repair', 'prone'].includes(W) || (!!wPkE && !pkTargeted && !pkTile && !pkObj && !wPkE.why);
+    const isAttack = ['shot', 'aimed', 'melee'].includes(W), instant = ['reload', RELOAD_TAC, 'reload2', RELOAD2_TAC, 'load', 'clear', 'repair', 'prone'].includes(W) || (!!wPkE && !pkTargeted && !pkTile && !pkObj && !wPkE.why);
     const wHint = wPkE && mover && canAct ? (wPkE.why ? wPkE.why : (pkTargeted ? (tgt ? 'Target: ' + tgt.name + '. ' : wPkE.target === 'ally' ? 'Click an ally. ' : 'Click someone on the map. ') : pkTile ? (S.wTile ? 'Tile ' + refOf(S.wTile) + '. ' : 'Click a tile. ') : pkObj ? (tgt && tgt.obj ? 'Target: ' + tgt.name + '. ' : 'Click an object. ') : '') + pkText(wPkE) + ' Confirm to use it.') : !mover ? 'You have no character to act with.' : mover.hp <= 0 ? mover.name + ' is Downed: an ally\'s stim' + (SB ? '' : ', or the Narrator,') + ' gets them up. End turn when ready.' : !canAct ? (g.story.await !== 'players' ? 'Wait for the round to open.' : 'Your turn is over this round.')
       : W === 'drone' ? 'Click an open tile: the drone flies there on its own AP (3 a round). The Narrator says what it sees.'
       : W === 'beast' ? 'Click an open tile: the beast goes there on its own AP (4 a round). Other orders out of a fight are Empathy checks the Narrator calls.'
@@ -984,7 +1005,10 @@ export class MainLogic extends DCLogic {
       : ['move', 'sprint', 'sneak'].includes(W) ? 'Click an open tile.' + (W === 'sneak' ? ' Sneaking hides you until a hostile notices you (Ingenuity to stay hidden).' : '')
       : isMagicW ? mHint
       : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack ' + (tgt.person ? tgt.name + ': a person; this starts a fight.' : 'the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
-      : 'Confirm to ' + ({ reload: 'reload', load: 'load loose rounds into a magazine', clear: 'clear a jam', repair: 'repair your weapon', prone: (c && c.prone ? 'stand up' : 'drop prone') }[W]) + '.';
+      : W === 'pickup' ? (!wPick ? (pilesW.size ? 'Nothing on the ground next to you. Click a pile (the stack with a count) to see the way there.' : 'Nothing on the ground in sight.')
+        : dist(myAt, wPick.pos) > 1 ? 'The pile at ' + refOf(wPick.pos) + ' is ' + dist(myAt, wPick.pos) + ' tiles away: walk next to it first. ' + (crossesText(plan.pile && plan.pile.crosses) || 'The way there crosses no known hazard.')
+        : wPickWhy || pickupLabel(wPick, wUntick) + ' from ' + (wPick.pos === myAt ? 'your tile' : refOf(wPick.pos)) + '. Untick what to leave on the ground.')
+      : 'Confirm to ' + ({ reload: wWA('reload') && wWA('reload').tactical ? 'speed-reload: the magazine in the gun drops into the pile here' : 'reload', [RELOAD_TAC]: 'reload tactically: the magazine in the gun goes back in your pack', reload2: 'reload both guns', [RELOAD2_TAC]: 'reload both guns tactically', load: 'load loose rounds into a magazine', clear: 'clear a jam', repair: 'repair your weapon', prone: (c && c.prone ? 'stand up' : 'drop prone') }[W]) + '.';
     // The area map's pick for an on-map perk action (Called Shot's head / arm / leg, a Keystone's word): chips from the
     // engine's options, never typed. An off-map action picked here opens its own panel (wPanel, below).
     const wDetailVals = (() => {
@@ -997,11 +1021,21 @@ export class MainLogic extends DCLogic {
     })();
     const tgtPos = tgt ? (tgt.obj ? tgt.obj.pos : tgt.pos) : null, tgtOdds = isAttack && tgtPos && plan.selText ? plan.selText(tgtPos) : '';
     const wHintFull = wHint + (tgtOdds ? ' ' + tgtOdds : '');
+    // The Pick up checklist (rules 1.8): every entry ticked to start; untick what to leave.
+    const wPileVals = (() => {
+      if (!wPick || !canAct) return { has: false, rows: [] };
+      const rows = pileRows(wPick, wUntick), tile = wPick.pos, far = dist(myAt, tile) > 1, setKeys = (keys) => this.setState({ wUntick: { tile, keys } });
+      return { has: true, head: 'THE PILE AT ' + refOf(tile) + ' · ' + rows.length + (rows.length === 1 ? ' THING' : ' THINGS') + (far ? ' · OUT OF REACH' : ''),
+        rows: rows.map((r) => ({ ...r, off: far, toggle: () => setKeys(toggleUntick(wUntick, r.key)) })), all: () => setKeys([]), none: () => setKeys(rows.map((r) => r.key)) };
+    })();
     const wConfirm = () => { if (!c) return; if (isMagicW) return magicConfirm();
       if (wPkE && wPanel) return wPanel.confirm();
       if (wPkE) { if (pkTargeted && !tgt) return; if (pkTile && !S.wTile) return toast('Click a tile first.'); if (pkObj && !(tgt && tgt.obj)) return toast('Click an object first.');
         act({ type: 'world/act', charId: c.id, act: 'perk', id: wPkE.id, actionId: wPkE.actionId, ...(pkTargeted && tgt ? { targetId: tgt.npc ? tgt.id : tgt.charId || tgt.id } : {}), ...(pkTile ? { tile: S.wTile } : {}), ...(pkObj && tgt && tgt.obj ? { objId: tgt.obj.id } : {}), ...(wDet ? { choice: pickChoice(wPkE, wDet) } : {}) });
-        if (wDet) this.setState({ wDetail: '' }); return; } if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
+        if (wDet) this.setState({ wDetail: '' }); return; }
+      if (W === 'pickup') { if (!wPick || wPickWhy) return; const take = pileTake(wPick, wUntick); act({ type: 'world/act', charId: c.id, act: 'pickup', tile: wPick.pos, ...(take ? { take } : {}) }); return this.setState({ wUntick: null, wTile: null }); }
+      if (W === RELOAD_TAC || W === 'reload2' || W === RELOAD2_TAC) return act({ type: 'world/act', charId: c.id, act: 'reload', ...(W === RELOAD_TAC || W === RELOAD2_TAC ? { tactical: true } : {}), ...(W === 'reload2' || W === RELOAD2_TAC ? { hand: 'both' } : {}) });
+      if (TARGETED.includes(W)) { if (!tgt) return; const fight = isAttack && tgt.side !== 'pc' && (!tgt.obj || tgt.person);
         act({ type: 'world/act', charId: c.id, act: isAttack ? 'attack' : W, mode: isAttack ? W : undefined, ...(tgt.obj ? { objId: tgt.obj.id } : { targetId: tgt.npc ? tgt.id : tgt.charId }) }); this.setState({ wTarget: null, ...(fight ? { area: false } : {}) }); if (fight && getState().game.phase === 'combat') go('combat'); return; } if (instant) act({ type: 'world/act', charId: c.id, act: W }); };
     const regions = [];
     const storyPk = g.phase === 'story' && c && !c.dead ? storyPerkEntries(g, c) : [];
@@ -1166,7 +1200,7 @@ export class MainLogic extends DCLogic {
         ...(GLY.some((x) => x.side === 'pc') ? [{ key: 'g', img: glyphUri('fire', SIGIL_INK), swatch: '', text: 'Squad glyph' }] : []), ...(GLY.some((x) => x.side !== 'pc') ? [{ key: 'f', img: scratchUri('#F65157'), swatch: '', text: 'Enemy glyph' }] : []),
         ...placedLegend((placedW && placedW.kinds) || new Set(), false).map((l) => ({ key: l.key, img: l.img || '', swatch: l.box || '', text: l.name })),
         ...(Object.values(g.story.magic || {}).some((x) => x && x.held) ? [{ key: 'h', img: heartUri(2), swatch: '', text: 'Holding an Outburst' }] : [])] },
-      wGroups, wHint: wHintFull, ...wDetailVals, wPanelOpen: !!wPanel && !wPkE.why, wPanel: wPanel || { fields: [], opts: [] }, wHasConfirm: !wPanel && canAct && (isMagicW ? mReady : instant || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wConfirmLabel: isMagicW ? mLabel : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
+      wGroups, wHint: wHintFull, ...wDetailVals, wPanelOpen: !!wPanel && !wPkE.why, wPanel: wPanel || { fields: [], opts: [] }, wHasConfirm: !wPanel && canAct && (isMagicW ? mReady : instant || (W === 'pickup' && !!wPick && !wPickWhy) || (pkTile && !!S.wTile && !wPkE.why) || ((TARGETED.includes(W) || pkTargeted || pkObj) && !!tgt && !(wPkE && wPkE.why))), wConfirm, wMagic, wPile: wPileVals, wConfirmLabel: isMagicW ? mLabel : W === 'pickup' && wPick ? pickupLabel(wPick, wUntick) : isAttack ? (tgt && tgt.side === 'pc' ? 'Attack ' + tgt.name + ' (friendly fire)' : tgt && tgt.obj && !tgt.person ? 'Attack it' : 'Attack · starts the fight') : 'Confirm',
       wHead: c ? c.name.toUpperCase() : '', /* AP shows once: the AP bar in the status box */ wStatus: sneaking ? (hiddenNow ? 'Sneaking · hidden' : 'Sneaking · seen') : 'In the open',
       wStatusStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: ' + (hiddenNow ? '#6FEA77' : sneaking ? '#F65157' : '#A3AEC2'),
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';

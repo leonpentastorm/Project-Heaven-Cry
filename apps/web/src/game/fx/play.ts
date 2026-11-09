@@ -371,7 +371,7 @@ const H: Record<string, Handler> = {
     anim(box, [{ transform: 'scale(1.8)', opacity: 0 }, { transform: 'scale(1)', opacity: 1, offset: 0.4 }, { opacity: 0.2, offset: 0.6 }, { opacity: 1, offset: 0.8 }, { opacity: 0 }], { duration: 700, fill: 'forwards' });
     play('sigil_draw', p, { rate: 1.8, gain: 0.5 }); floatText('ANALYZED', p, WHITE, { small: true, delay: 300 });
   },
-  pickup(e) { const p = at(e.at); play('mag_in', p, { rate: 0.85 }); if (p) floatText('+ AMMO', p, WHITE, { small: true }); },
+  // pickup and pile: fx/world.ts (rules 1.8, the pick-up names what was taken).
   cover() { /* folded into the shot */ },
   // ---------- Sigils (rules 1.4): cyan, square, snapping; each element in its own way (fx/elements.ts) ----------
   draw(e) {

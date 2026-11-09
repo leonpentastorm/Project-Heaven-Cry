@@ -187,11 +187,12 @@ await endTurn();
 await world();
 g = await G();
 const at2 = g.story.positions[me.id], [bx, by] = at2.split(',').map(Number);
-// A column of mines two tiles to one side, three tall, and the target tile beyond it.
-const dir = bx > 6 ? -1 : 1, mcol = bx + 2 * dir;
+// A column of mines two tiles to one side, wall to wall (rules 1.8: a click-path goes around revealed hazards when it
+// can, so a short column would be walked round), and the target tile beyond it.
+const dir = bx > 6 ? -1 : 1, mcol = bx + 2 * dir, zh = (g.campaign?.zones || []).find((z) => z.id === g.story.zone)?.h || 12;
 const sh = drawer.locator('section[aria-label="World: a hazard"]');
 await sh.getByLabel('Hazard kind', { exact: true }).selectOption('minefield');
-await sh.getByLabel('Tile for hazard', { exact: true }).fill(ref(key(mcol, by - 1)) + ':' + ref(key(mcol, by + 1)));
+await sh.getByLabel('Tile for hazard', { exact: true }).fill(ref(key(mcol, 0)) + ':' + ref(key(mcol, zh - 1)));
 await sh.locator('button[data-world-place="hazard"]').click();
 await p.waitForTimeout(300);
 g = await G();
@@ -205,6 +206,8 @@ const hpA = (await G()).characters[me.id].hp;
 const fxN0 = ((await G()).story.fx || []).filter((e) => e.k === 'hazard').length;
 const dest = key(bx + 3 * dir, by);
 await area.getByRole('button', { name: /^Sprint/ }).first().click().catch(() => {});
+await tile(area, ref(dest)).hover(); await p.waitForTimeout(250);
+ok('the preview marks the mine the path crosses and says so', (await area.locator('[data-cross]').count()) === 1 && /Path crosses: minefield at/.test((await area.locator('span[aria-live="polite"]').allTextContents()).join(' ')));
 await tile(area, ref(dest)).click();
 await p.waitForTimeout(900);
 g = await G();

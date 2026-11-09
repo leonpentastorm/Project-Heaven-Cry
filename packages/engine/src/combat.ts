@@ -1317,12 +1317,14 @@ export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: bool
 }
 /** Reload the off-hand gun (2 AP), or both guns at once (3 AP; spec: Weapons v2, Two guns); tactical +1 (item 679).
  * Each gun takes its own spares (the same pack entry when both hands hold the same model). */
+/** Reload both guns' speed price (Two guns: 3 AP, items may change it); the tactical one is this + 1. */
+export const reloadBothAp = (u: Unit) => actionAp({ u }, 'reload_both', 3).ap;
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical = false): string | null {
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
   if (tactical && ow.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   // The off-hand gun is priced as a reload, but it isn't the main hand's: Speed Loader leaves it alone (spec item 564).
-  const ap = (hand === 'both' ? actionAp({ u }, 'reload_both', 3).ap : actionAp({ u }, 'reload', ow.reload_ap ?? 2, { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
+  const ap = (hand === 'both' ? reloadBothAp(u) : actionAp({ u }, 'reload', ow.reload_ap ?? 2, { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
   if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const pool = ow.id === u.weapon ? u.mags : u.offMags;
   const takeOne = (): number | null => { if (!pool) return ow.magazine; if (!pool.length) return null; const i = pool.indexOf(Math.max(...pool)); const n = pool[i]; if (n <= 0) return null; pool.splice(i, 1); return n; };

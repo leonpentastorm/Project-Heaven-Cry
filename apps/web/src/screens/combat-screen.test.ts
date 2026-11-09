@@ -253,9 +253,9 @@ describe('combat screen', () => {
     await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
     const dlgR = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
     const slotNames = () => [1, 2, 3, 4].map((i) => (dlgR.querySelector('[data-slot="' + i + '"]')!.textContent || '').replace(/^\d/, ''));
-    expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Swap magazine', 'Overwatch']);
+    expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Reload (speed)', 'Overwatch']);
     await React.act(async () => { (dlgR.querySelector('[data-cmd="reload"]') as HTMLElement).click(); });
-    expect(slotNames().map((t) => t.replace(/Not now.*$/, ''))).toEqual(['Swap magazineYOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
+    expect(slotNames().map((t) => t.replace(/Not now.*$/, ''))).toEqual(['Reload (speed)YOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
     await React.act(async () => { Array.from(dlgR.querySelectorAll('button')).find((b) => b.textContent === 'Cancel')!.click(); });
     expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
     // Escape closes without saving.
@@ -278,6 +278,45 @@ describe('combat screen', () => {
     expect(r.err).toBeNull();
     expect(cb.fx).toEqual([{ n: 1, k: 'turn' }]);
     expect(cb.fxSeq).toBe(1);
+  });
+  it('rules 1.8 on the grid: a speed reload drops a pile (stack, count, hover, legend); the two reloads; Pick up\'s checklist sends the ticked', () => {
+    fight('panel', 'service_pistol');
+    const L = new CombatLogic({}) as any, u = active(G.combat!)!;
+    expect(u.side).toBe('pc');
+    G.combat!.units.find((x) => x.id === u.id)!.ammo = 5; G.combat!.units.find((x) => x.id === u.id)!.mags = [12, 9]; snap = view();
+    let r = L.renderVals();
+    const util = r.turnPanels[0].groups.find((gr: any) => gr.id === 'utility').items;
+    expect(util.slice(0, 2).map((i: any) => [i.key, i.name, i.cost])).toEqual([['reload', 'Reload (speed)', '2 AP · the magazine drops'], ['reload-tac', 'Reload (tactical)', '3 AP · the magazine goes in your pack']]);
+    L.setState({ action: 'reload-tac' }); r = L.renderVals();
+    expect(r.turnPanels[0].sel.text).toMatch(/tactical reload, 3 AP\. The magazine in the gun \(5 rounds\) goes back in your pack/);
+    expect(r.turnPanels[0].apText).toMatch(/^3 \/ 6 after this/);
+    // No pile yet: Pick up says why; no legend entry.
+    expect(util.find((i: any) => i.key === 'pickup').why).toBe('Nothing on the ground next to you.');
+    expect(r.worldLegend.some((l: any) => l.key === 'pile')).toBe(false);
+    L.setState({ action: 'reload' }); r = L.renderVals();
+    expect(r.turnPanels[0].sel.text).toMatch(/speed reload, 2 AP\. The magazine in the gun \(5 rounds\) drops into the pile on your tile/);
+    doAct({ type: 'combat/reload', unitId: u.id });
+    r = L.renderVals();
+    const t = r.tiles.find((x: any) => x.key === u.pos);
+    expect(t).toMatchObject({ hasPile: true, pileCount: '1', hasPileTip: false });
+    expect(t.label).toContain('Pile at ');
+    expect(t.label).toContain('Service pistol magazine 5/12');
+    expect(r.worldLegend.find((l: any) => l.key === 'pile').text).toBe('Pile: things on the ground');
+    L.setState({ hover: u.pos }); r = L.renderVals();
+    expect(r.tiles.find((x: any) => x.key === u.pos)).toMatchObject({ hasPileTip: true, pileTip: expect.stringContaining('Service pistol magazine 5/12') });
+    // Pick up: the pile in reach opens its checklist, everything ticked; untick one and the button and the action follow.
+    const drop2 = G.combat!.objects!.find((o) => o.kind === 'pile')!; drop2.items!.push({ item: 'stim_injector', qty: 1, name: 'Stim injector', key: 'ex', pack: { id: 'stim_injector', item: 'stim_injector', name: 'Stim injector', qty: 1, kind: 'med' } } as any); snap = view();
+    L.setState({ action: 'pickup', hover: null }); r = L.renderVals();
+    const sel = r.turnPanels[0].sel;
+    expect(sel.hasPile).toBe(true); expect(sel.pileRows.map((x: any) => [x.label, x.checked])).toEqual([['Service pistol magazine 5/12', true], ['Stim injector', true]]);
+    expect(r.turnPanels[0].confirmText).toBe('Pick up everything · 1 AP'); expect(r.turnPanels[0].cantConfirm).toBe(false);
+    sel.pileRows[1].toggle(); r = L.renderVals();
+    expect(r.turnPanels[0].confirmText).toBe('Pick up 1 of 2 · 1 AP');
+    const mags0 = active(G.combat!)!.mags!.length;
+    L.confirm();
+    expect(active(G.combat!)!.mags!.length).toBe(mags0 + 1);
+    expect(G.combat!.objects!.find((o) => o.kind === 'pile')!.items!.map((e) => e.name)).toEqual(['Stim injector']);
+    expect(G.combat!.log.at(-1)).toMatch(/picks up Service pistol magazine 5\/12/);
   });
 });
 
