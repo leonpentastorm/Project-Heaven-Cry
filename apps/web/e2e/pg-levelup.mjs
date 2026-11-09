@@ -42,6 +42,18 @@ for (const [w, h, want] of [[1280, 720, 1], [1440, 900, 2], [1920, 1080, 3]]) {
   await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(500);
   const n = await columns(); ok('at ' + w + '×' + h + ' the cards sit in ' + n + ' column' + (n === 1 ? '' : 's') + ' (want ' + want + ')', n === want);
   await snap('gear-' + w);
+  if (w === 1280) {
+    // the tools get the height: the first card starts in the upper part of the centre (the Practice card is one strip)
+    const top = await p.evaluate(() => { const sc = document.querySelector('[data-phc-sb-centre]').getBoundingClientRect(), c = document.querySelector('main[aria-label="Story"] [data-pg-card]').getBoundingClientRect(); return (c.top - sc.top) / sc.height; });
+    ok('at 1280×720 the first tool card starts in the upper 60% of the centre (' + Math.round(top * 100) + '%)', top < 0.6);
+  }
+}
+ok('the bottom panel says it once: no engine welcome note and no "has no Narrator" line under the hint', (await dock.getByText(/^⚙ The Proving Ground\./).count()) === 0 && !(await p.getByText('The Proving Ground has no Narrator', { exact: false }).first().isVisible().catch(() => false)));
+ok('the centre and the story column carry the state on themselves (a screen change\'s copy keeps it)', await p.evaluate(() => !!document.querySelector('[data-phc-sb-centre][data-sb-on]') && !!document.querySelector('main[aria-label="Story"]>.phc-story[data-sb-off]') && !!document.querySelector('[data-phc-sb-dock][data-sb-on]')));
+for (const w of [1100, 420]) {
+  await p.setViewportSize({ width: w, height: 900 }); await p.waitForTimeout(400);
+  const clip = await p.evaluate(() => { const f = document.querySelector('.phc-pg-fig'), c = f.querySelector('figcaption'); return Math.round(c.getBoundingClientRect().top - f.getBoundingClientRect().top); });
+  ok('at ' + w + ' px the Practice card holds its whole caption (kicker and title not clipped)', clip >= 0);
 }
 await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(400);
 // the search: a weapon by name shows in the Give list; other sections hide
@@ -55,6 +67,11 @@ await p.waitForTimeout(400);
 ok('Give + equip from the search result: the revolver is in hand', (await G()).characters[cid].weapon === 'drifter_revolver');
 await search.fill('spawn'); await p.waitForTimeout(300);
 ok('searching "spawn" finds the Field tab\'s spawn card', (await centre.locator('[data-pg-card]', { hasText: /SPAWN/ }).count()) >= 1);
+ok('under a search a card head can\'t fold (nothing stored that the screen can\'t show)', (await centre.locator('button[data-pg-head]').count()) === 0);
+await search.fill('twin pays'); await p.waitForTimeout(300);
+ok('searching a perk by name ("twin pays") finds the Perks card, with it picked in the menu', (await centre.locator('[data-pg-card]', { hasText: /^PERKS/ }).count()) >= 1 && (await centre.getByRole('combobox', { name: 'Perk' }).first().inputValue()) === 'the_twin_pays');
+await search.fill('fire'); await p.waitForTimeout(300);
+ok('searching a Sigil word ("fire") finds the Sigil words', (await centre.locator('[data-pg-hit]', { hasText: /SIGIL WORDS/ }).count()) >= 1);
 await search.fill('zzqq'); await p.waitForTimeout(300);
 ok('a search with no match says so', await centre.locator('.phc-pg-none').isVisible());
 await centre.getByRole('button', { name: 'Clear' }).click(); await p.waitForTimeout(300);
@@ -123,6 +140,10 @@ await p.locator('.phc-lu-skill[data-skill="brain_power"] button[data-raise="skil
 ok('a skill point spent with Brain Power\'s +1', ((await G()).characters[cid].skills.brain_power || 0) === bpBefore + 1);
 const step = p.locator('.phc-lu-skill.phc-lu-step').first();
 ok('a skill with a perk step waiting is marked on its card', (await step.count()) === 1);
+const choiceAria = await p.locator('button.phc-lu-choice').evaluateAll((bs) => bs.map((b) => b.getAttribute('aria-label') || ''));
+ok('every Take / Upgrade button names its perk and skill (' + choiceAria[0] + ')', choiceAria.length > 0 && choiceAria.every((a) => /^(Take|Upgrade) .+ \(.+\), Tier (I|II)$/.test(a)) && new Set(choiceAria).size === choiceAria.length);
+await p.locator('.phc-lu-jump').first().click(); await p.waitForTimeout(400);
+ok('a perk-step jump puts the keyboard on that skill\'s Take button', await p.evaluate(() => !!document.activeElement && document.activeElement.classList.contains('phc-lu-choice')));
 const sk = await step.getAttribute('data-skill'), perks0 = (await G()).characters[cid].perks.length;
 await step.locator('button.phc-lu-choice').first().click(); await p.waitForTimeout(300);
 const c2 = (await G()).characters[cid], took = c2.perks.length > perks0 ? c2.perks.at(-1).id : null;

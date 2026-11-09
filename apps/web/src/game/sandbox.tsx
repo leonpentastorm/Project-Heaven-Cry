@@ -99,9 +99,14 @@ const CSS = `
 html.phc-sandbox div[role="dialog"][aria-label="The fight is over"]{display:none!important}
 .phc-sb-drawer{right:0}
 @media (min-width:1280px){.phc-sb-drawer.phc-sb-onmain{right:360px}}
-html.phc-sb-centre-on .phc-sb-centre{display:flex!important;flex:1;min-height:0;overflow-y:auto;flex-direction:column}
-html.phc-sb-centre-on main[aria-label="Story"]>.phc-story{display:none!important}
-html.phc-sb-gearing .phc-sb-dock{display:flex!important;flex-direction:column;gap:6px}
+html.phc-sb-centre-on .phc-sb-centre,.phc-sb-centre[data-sb-on]{display:flex!important;flex:1;min-height:0;overflow-y:auto;flex-direction:column}
+html.phc-sb-centre-on main[aria-label="Story"]>.phc-story,main[aria-label="Story"]>.phc-story[data-sb-off]{display:none!important}
+html.phc-sb-gearing .phc-sb-dock,.phc-sb-dock[data-sb-on]{display:flex!important;flex-direction:column;gap:6px}
+.phc-input>.phc-sb-dock[data-sb-on]~.phc-turn-line{display:none}
+.phc-pg-fig{display:grid;margin:0;border-radius:14px;overflow:hidden}
+.phc-pg-fig>*{grid-area:1/1}
+.phc-pg-fig>figcaption{align-self:end}
+@media (max-height:800px){.phc-pg-fig>.phc-pg-grid{display:none}.phc-pg-fig>figcaption{padding:12px 18px!important}.phc-pg-centre{gap:12px!important;padding-top:16px!important}}
 .phc-pg-cols{column-width:330px;column-gap:14px}
 .phc-pg-cols>*{break-inside:avoid;margin:0 0 14px}
 .phc-pg-cols>.phc-pg-span{column-span:all}
@@ -110,7 +115,7 @@ html.phc-sb-gearing .phc-sb-dock{display:flex!important;flex-direction:column;ga
 .phc-pg-results .phc-pg-none{display:none}
 .phc-pg-results:not(:has([data-pg-hit])) .phc-pg-none{display:block}
 .phc-pg-head:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
-@media (max-width:999px){html.phc-sb-centre-on .phc-sb-centre{overflow:visible}}
+@media (max-width:999px){html.phc-sb-centre-on .phc-sb-centre,.phc-sb-centre[data-sb-on]{overflow:visible}}
 `;
 function useCss() { React.useEffect(() => { if (document.getElementById('phc-sandbox-css')) return; const s = document.createElement('style'); s.id = 'phc-sandbox-css'; s.textContent = CSS; document.head.appendChild(s); }, []); }
 
@@ -128,6 +133,15 @@ export function SandboxPanel({ game, meId, isHost, screen }: { game: GameState |
   // Gearing up on the story screen, the tools are the whole centre column (open), not a drawer.
   const centreOn = gearing && screen === 'main' && open;
   React.useEffect(() => { document.documentElement.classList.toggle('phc-sb-centre-on', centreOn); return () => document.documentElement.classList.remove('phc-sb-centre-on'); }, [centreOn]);
+  // The same state on the nodes themselves: the screen change copies the old screen into a shadow root, where the
+  // <html> classes above can't reach, so the copy (a fight starting) would otherwise show the story log for a moment.
+  const docked = gearing && screen === 'main';
+  React.useLayoutEffect(() => {
+    const story = document.querySelector('main[aria-label="Story"]>.phc-story'), centre = document.querySelector('[data-phc-sb-centre]'), dock = document.querySelector('[data-phc-sb-dock]');
+    if (centreOn) { story?.setAttribute('data-sb-off', '1'); centre?.setAttribute('data-sb-on', '1'); }
+    if (docked) dock?.setAttribute('data-sb-on', '1');
+    return () => { story?.removeAttribute('data-sb-off'); centre?.removeAttribute('data-sb-on'); dock?.removeAttribute('data-sb-on'); };
+  });
   // The combat screen's own end-of-fight card (Back to the story) has no place here: the wave card replaces it.
   React.useEffect(() => { document.documentElement.classList.toggle('phc-sandbox', !!sb); return () => document.documentElement.classList.remove('phc-sandbox'); }, [!!sb]);
   React.useEffect(() => { document.documentElement.classList.toggle('phc-sb-gearing', gearing && screen === 'main'); return () => document.documentElement.classList.remove('phc-sb-gearing'); }, [gearing, screen]);
@@ -261,21 +275,22 @@ function ToolBody({ game, meId, isHost, tab, setTab, cid, setCid, wide }: { game
   const field = isHost || !!sb.spawnAll;
   const tabs: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ['faith', 'Faith'], ...(field ? [['field', 'Field'] as [Tab, string], ['world', 'World'] as [Tab, string]] : [])];
   const t = tabs.some(([id]) => id === tab) ? tab : 'gear';
-  return <>
+  // In the centre the tabs and the character share one row (the tools need the height).
+  return <div style={wide ? { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px 16px' } : { display: 'contents' }}>
     <nav role="tablist" aria-label="Tools" style={{ display: 'flex', gap: 4, padding: wide ? 0 : '8px 12px', borderBottom: wide ? 0 : '1px solid ' + C.line, flexWrap: 'wrap' }}>
       {tabs.map(([id, name]) => <button key={id} type="button" role="tab" aria-selected={t === id} onClick={() => { setTab(id); sfx('tab'); }}
-        style={{ ...btn, flex: wide ? '0 1 auto' : 1, minWidth: wide ? 92 : 0, minHeight: wide ? 38 : 34, border: '1px solid ' + (t === id ? C.text : C.line), background: t === id ? C.raised : 'transparent', color: t === id ? C.text : C.muted }}>{name}</button>)}
+        style={{ ...btn, flex: wide ? '0 1 auto' : 1, minWidth: wide ? 72 : 0, minHeight: wide ? 38 : 34, border: '1px solid ' + (t === id ? C.text : C.line), background: t === id ? C.raised : 'transparent', color: t === id ? C.text : C.muted }}>{name}</button>)}
     </nav>
-    {t !== 'field' && t !== 'world' && <div role="group" aria-label="Character" style={{ ...row, padding: wide ? 0 : '10px 16px 0' }}>
+    {t !== 'field' && t !== 'world' && <div role="group" aria-label="Character" style={{ ...row, padding: wide ? '0 0 0 16px' : '10px 16px 0', ...(wide ? { borderLeft: '1px solid ' + C.line } : {}) }}>
       {chars.length ? chars.map((x) => <button key={x.id} type="button" aria-pressed={x.id === c?.id} onClick={() => setCid(x.id)} style={{ ...btn, border: '1px solid ' + (x.id === c?.id ? C.text : C.line), background: x.id === c?.id ? C.raised : 'transparent' }}>{x.name}</button>)
         : <NoFighter gearing={gearing} />}
     </div>}
     <WideCtx.Provider value={{ wide, q: '', tab: t }}>
-      <div key={t} className={'phc-fade-in' + (wide ? ' phc-pg-cols' : '')} style={wide ? {} : { flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div key={t} className={'phc-fade-in' + (wide ? ' phc-pg-cols' : '')} style={wide ? { flex: '1 1 100%', minWidth: 0 } : { flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <TabTools game={game} meId={meId} isHost={isHost} tab={t} c={c} field={field} />
       </div>
     </WideCtx.Provider>
-  </>;
+  </div>;
 }
 /** One tab's tools for one character. */
 function TabTools({ game, meId, isHost, tab, c, field }: { game: GameState; meId: string; isHost: boolean; tab: Tab; c: Character | undefined; field: boolean }) {
@@ -315,11 +330,11 @@ function CentreView({ game, meId, isHost, close, ...shared }: { game: GameState;
   const c = game.characters[shared.cid] && chars.some((x) => x.id === shared.cid) ? game.characters[shared.cid] : chars[0];
   const canField = isHost || !!sb.spawnAll, status = sb.state === 'cleared' ? 'wave ' + sb.wave + ' cleared' : sb.state === 'fallen' ? 'fell on wave ' + sb.wave : 'gearing up';
   const all: [Tab, string][] = [['gear', 'Gear'], ['squad', 'Squad'], ['magic', 'Magic'], ['faith', 'Faith'], ...(canField ? [['field', 'Field'] as [Tab, string], ['world', 'World'] as [Tab, string]] : [])];
-  return <aside aria-label="Proving Ground tools" className="phc-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 32px 32px', width: '100%', maxWidth: 1240, boxSizing: 'border-box', margin: '0 auto', fontFamily: UI, color: C.text }}>
+  return <aside aria-label="Proving Ground tools" className="phc-fade-in phc-pg-centre" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 32px 32px', width: '100%', maxWidth: 1240, boxSizing: 'border-box', margin: '0 auto', fontFamily: UI, color: C.text }}>
     {/* The Practice card, as the story column had it (kept by Leon's brief). */}
-    <figure style={{ margin: 0, position: 'relative', borderRadius: 14, overflow: 'hidden', border: '1px solid ' + C.line }}>
-      <div aria-hidden="true" style={{ height: 96, backgroundColor: '#0D1119', backgroundImage: 'linear-gradient(#161D2B 1px, transparent 1px), linear-gradient(90deg, #161D2B 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-      <figcaption style={{ position: 'absolute', inset: 'auto 0 0 0', padding: '16px 22px', background: 'rgba(10, 13, 19, 0.82)', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
+    <figure className="phc-pg-fig" style={{ border: '1px solid ' + C.line }}>
+      <div aria-hidden="true" className="phc-pg-grid" style={{ minHeight: 96, backgroundColor: '#0D1119', backgroundImage: 'linear-gradient(#161D2B 1px, transparent 1px), linear-gradient(90deg, #161D2B 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+      <figcaption style={{ padding: '16px 22px', background: 'rgba(10, 13, 19, 0.82)', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: '1 1 260px', minWidth: 0 }}>
           <span style={{ fontSize: 12, letterSpacing: '0.24em', color: C.muted }}>THE PROVING GROUND · {game.players.length} PLAYER{game.players.length === 1 ? '' : 'S'}{sb.mode === 'teams' ? ' · TEAM FIGHT' : ''}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(22px, 2.1vw, 30px)', fontWeight: 600, lineHeight: 1.15 }}>Practice fights · no Narrator</span>
@@ -369,14 +384,17 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
       {mine && <ReadyButton on={meReady} />}
       <span aria-label="Ready count" style={{ fontSize: 13, fontWeight: 700, color: r.ready === r.of && r.of ? C.ok : C.muted }}>{r.ready === r.of && r.of ? '✓ ' : '○ '}{r.ready} / {r.of} ready</span>
     </div>}
-    <button type="button" data-sfx="start" disabled={!canStart} title={canStart ? '' : 'The host starts the fight (or anyone, once everyone is ready)'} style={{ ...primary, minHeight: 48, fontSize: 15, background: canStart ? C.white : C.raised, color: canStart ? C.ground : C.muted, cursor: canStart ? 'pointer' : 'default' }} onClick={() => act({ type: 'sandbox/fight' })}>
+    {/* In the centre the wave buttons sit beside Start (the tools need the height); in the drawer, under it. */}
+    <div style={wide ? { ...row, flexWrap: 'wrap', alignItems: 'stretch' } : { display: 'contents' }}>
+    <button type="button" data-sfx="start" disabled={!canStart} title={canStart ? '' : 'The host starts the fight (or anyone, once everyone is ready)'} style={{ ...primary, minHeight: 48, fontSize: 15, ...(wide ? { flex: '1 1 320px' } : {}), background: canStart ? C.white : C.raised, color: canStart ? C.ground : C.muted, cursor: canStart ? 'pointer' : 'default' }} onClick={() => act({ type: 'sandbox/fight' })}>
       ⚔ {canStart ? (teams ? 'Start the team fight' : 'Start the fight') : 'Waiting for the host'} · {teams ? 'Team A vs Team B' : onMap ? onMap + ' on the map' : 'wave ' + n}{multi ? ' · ' + r.ready + ' / ' + r.of + ' ready' : ''}
     </button>
-    {teams ? (!wide && <TeamLine />) : <div style={row}>
+    {teams ? (!wide && <TeamLine />) : <div style={wide ? { ...row, flex: '0 1 auto' } : row}>
       {!onMap && !wide && <EmptyLine game={game} />}
       {(isHost || sb.spawnAll) && <button type="button" style={small} onClick={() => act({ type: 'sandbox/stage', wave: n })}>{onMap ? 'Reset to wave ' + n : 'Place wave ' + n + ' on the map'}</button>}
       {(isHost || (sb.state === 'fallen' && sb.guestRetry !== false)) && sb.wave > 1 && <button type="button" style={small} onClick={() => act({ type: 'sandbox/retry', restart: true })}>Restart from wave 1</button>}
     </div>}
+    </div>
   </div>;
 }
 
@@ -403,7 +421,7 @@ function Dock({ game, isHost }: { game: GameState; isHost: boolean }) {
   const sb = game.sandbox!, teams = sb.mode === 'teams', onMap = (game.story.npcs || []).filter((x) => x.side === 'hostile').length;
   const [hint, setHint] = React.useState(() => { try { return localStorage.getItem(HINT) !== '1'; } catch { return true; } });
   const hide = () => { setHint(false); try { localStorage.setItem(HINT, '1'); } catch { /* */ } };
-  const notes = (game.story.entries || []).filter((e: any) => e.kind === 'system' && typeof e.text === 'string' && e.text.startsWith('⚙')).slice(-2);
+  const notes = (game.story.entries || []).filter((e: any) => e.kind === 'system' && typeof e.text === 'string' && e.text.startsWith('⚙') && !e.text.startsWith('⚙ The Proving Ground.')).slice(-2);
   void isHost;
   return <div role="region" aria-label="Proving Ground messages" style={{ display: 'flex', flexDirection: 'column', gap: 6, fontFamily: UI }}>
     <WaveLines game={game} />
@@ -421,9 +439,20 @@ const WideCtx = React.createContext<{ wide: boolean; q: string; tab: string }>({
 const words = (q: string) => q.toLowerCase().split(/\s+/).filter(Boolean);
 const matches = (q: string, hay: string) => { const h = hay.toLowerCase(); return words(q).every((w) => h.includes(w)); };
 const cardKey = (title: string, aria?: string) => (aria || title.replace(/\s*[(·…].*$/, '')).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+/** What a card holds that its title doesn't say, for the tool search: every perk, trait, skill, class, patron, word,
+ *  school, module, feeling and enemy by name (only weapons and items were found before, through Give). */
+const names = (xs: readonly any[], f: (x: any) => string = (x) => x.name) => xs.map(f).join(' ');
+const FIND = {
+  cls: 'class rank ' + names(CLASSES), skills: 'skill points max mastered ' + names(SKILLS), perks: 'perk perks tier ' + names(PERKS), traits: 'trait traits ' + names(TRAITS),
+  belief: 'belief faithful atheist patron god ' + names(FAITH_PATRONS), sigils: 'sigil words glyphs learn forget subject reach delivery burst filter ' + names(SIGILS, (w) => w.word),
+  soul: 'outbursts outburst lessons schools tones modules feelings practice sound effects test soul ' + names(SCHOOLS) + ' ' + names(MODULES) + ' ' + names(FEELINGS),
+  spawn: 'spawn enemy enemies foe drill unit caster ' + names(ENEMIES) + ' ' + names(CASTERS),
+};
 const cardStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 10, padding: 14, borderRadius: 12, background: C.panel, border: '1px solid ' + C.line, minWidth: 0 };
 /** The head of a card: its title and a ▾/▸ to fold it (open state per browser, workshopGroups.tsx). */
-function CardHead({ title, open, toggle, ink }: { title: string; open: boolean; toggle: () => void; ink?: string }) {
+function CardHead({ title, open, toggle, ink, fixed }: { title: string; open: boolean; toggle: () => void; ink?: string; fixed?: boolean }) {
+  // fixed: a search shows every matching card open, so the head can't fold it (a fold there would only be stored, unseen).
+  if (fixed) return <span className="phc-pg-head" data-pg-head="1" style={{ ...label, display: 'flex', fontFamily: UI, color: ink || C.muted }}>{title}</span>;
   return <button type="button" className="phc-pg-head" data-pg-head="1" aria-expanded={open} onClick={toggle}
     style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 0, border: 0, background: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: UI, color: ink || C.muted }}>
     <span style={{ ...label, color: 'inherit', flex: 1 }}>{title}</span><span aria-hidden="true" style={{ fontSize: 12 }}>{open ? '▾' : '▸'}</span>
@@ -435,7 +464,7 @@ const Section = ({ title, children, aria, keys, span }: { title: string; childre
   if (w.q && !matches(w.q, title + ' ' + (aria || '') + ' ' + (keys || '') + ' ' + w.tab)) return null;
   const key = cardKey(title, aria), open = !!w.q || isOpen('pg.' + w.tab, key);
   return <section aria-label={aria} data-pg-card={key} data-pg-hit={w.q ? '1' : undefined} className={span ? 'phc-pg-span' : undefined} style={cardStyle}>
-    <CardHead title={title} open={open} toggle={() => setGroupOpen('pg.' + w.tab, key, !open)} />
+    <CardHead title={title} open={open} fixed={!!w.q} toggle={() => setGroupOpen('pg.' + w.tab, key, !open)} />
     {open && children}
   </section>;
 };
@@ -467,6 +496,13 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
   const [skill, setSkill] = React.useState(SKILLS[0].id);
   const [perk, setPerk] = React.useState(PERKS[0].id);
   const [trait, setTrait] = React.useState(TRAITS[0].id);
+  // A tool search that names a skill, perk or trait picks it in its menu (the card it finds is ready to use).
+  const q = React.useContext(WideCtx).q;
+  React.useEffect(() => {
+    if (!q) return;
+    const s = SKILLS.find((x) => matches(q, x.name)), p = PERKS.find((x) => matches(q, x.name)), t = (TRAITS as any[]).find((x) => matches(q, x.name));
+    if (s) setSkill(s.id); if (p) setPerk(p.id); if (t) setTrait(t.id);
+  }, [q]);
   const clsVal = c.classId || '';
   return <>
     <Section title="FIGHTER" aria="Fighter" keys="refill hp ap ammo">
@@ -491,7 +527,7 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       <span style={{ fontSize: 12, color: C.muted }}>{game.phase !== 'story' ? 'No resting in a fight: stop the fight (or clear the wave) first.' : 'Short: ' + REST_INFO.short + '. Long: ' + REST_INFO.long + '.'}</span>
     </Section>}
     <Section title="LEVEL (HP RECOMPUTED, FULL)"><Stepper name="level" value={c.level} min={1} max={20} set={(n) => act({ type: 'sandbox/level', charId: c.id, level: n })} /><span style={{ fontSize: 12, color: C.muted }}>{maxHp(c)} HP at this level. Unspent points from levels go to Level up.</span></Section>
-    <Section title="CLASS">
+    <Section title="CLASS" keys={FIND.cls}>
       <select value={clsVal} style={field} aria-label="Class" onChange={(e) => { const v = e.target.value; act({ type: 'sandbox/class', charId: c.id, classId: v || null, rank: 1 }); }}>
         <option value="">Classless</option>
         {/* Class Roster Revision 3: the nine base classes, one per attribute; advanced classes are shelved (being rebuilt). */}
@@ -500,7 +536,7 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       {c.classId && <div style={row}><span style={{ fontSize: 13, color: C.muted }}>Rank</span>{[1, 2, 3].map((r) => <button key={r} type="button" aria-pressed={classRank(c) === r} style={{ ...btn, border: '1px solid ' + (classRank(c) === r ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/class', charId: c.id, classId: c.classId, rank: r })}>{['', 'I', 'II', 'III'][r]}</button>)}</div>}
       <span style={{ fontSize: 12, color: C.muted }}>{sandboxClassHelp(c)}</span>
     </Section>
-    <Section title="SKILL POINTS (ATTRIBUTE AND CORE FOLLOW)">
+    <Section title="SKILL POINTS (ATTRIBUTE AND CORE FOLLOW)" keys={FIND.skills}>
       <div style={row}>
         <select value={skill} onChange={(e) => setSkill(e.target.value)} style={{ ...field, flex: 1 }} aria-label="Skill">{SKILLS.map((s) => <option key={s.id} value={s.id}>{s.name} ({c.skills[s.id] || 0})</option>)}</select>
         <Stepper name={SKILL[skill]?.name || 'skill'} value={c.skills[skill] || 0} min={0} max={10} set={(n) => act({ type: 'sandbox/skill', charId: c.id, skill, points: n })} />
@@ -520,7 +556,7 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
           </div>; })}
       </div>
     </Section>
-    <Section title="PERKS (ANY TIER, NO POINTS NEEDED)">
+    <Section title="PERKS (ANY TIER, NO POINTS NEEDED)" keys={FIND.perks}>
       <div style={row}>
         <select value={perk} onChange={(e) => setPerk(e.target.value)} style={{ ...field, flex: 1 }} aria-label="Perk">
           {(['acquired', 'mastered', 'achieved', 'ultimate'] as const).map((t) => <optgroup key={t} label={t[0].toUpperCase() + t.slice(1)}>{PERKS.filter((p) => p.tier === t).map((p) => <option key={p.id} value={p.id}>{p.name}{p.tier === 'acquired' ? ' (' + p.skills.map((k: string) => SKILL[k]?.name || k).join(', ') + ')' : ''}</option>)}</optgroup>)}
@@ -531,7 +567,7 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       </div>
       {!!c.perks.length && <div style={row}>{c.perks.map((x) => <button key={x.id} type="button" title="Take it away" style={btn} onClick={() => act({ type: 'sandbox/perk', charId: c.id, perk: x.id, tier: null })}>{PERK[x.id]?.name || x.id}{x.tier === 'I' || x.tier === 'II' ? ' ' + x.tier : ''} ✕</button>)}</div>}
     </Section>
-    <Section title="TRAITS (NO LIMIT OF 2 HERE)">
+    <Section title="TRAITS (NO LIMIT OF 2 HERE)" keys={FIND.traits}>
       <div style={row}>
         <select value={trait} onChange={(e) => setTrait(e.target.value)} style={{ ...field, flex: 1 }} aria-label="Trait">{TRAITS.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
         <button type="button" data-sb-trait="give" style={btn} onClick={() => act({ type: 'sandbox/trait', charId: c.id, trait })}>Give</button>
@@ -640,7 +676,7 @@ function FaithTab({ game, c }: { game: GameState; c: Character }) {
   const [shield, setShield] = React.useState(false);
   const on = (yes: boolean, ink = C.text): React.CSSProperties => ({ ...small, border: '1px solid ' + (yes ? ink : C.line), background: yes ? C.raised : 'transparent', color: yes ? C.text : C.muted });
   return <>
-    <Section title={'BELIEF · ' + (own ? 'FAITHFUL · ' + (FAITH_PATRON[own]?.name || own).toUpperCase() : 'ATHEIST · PILGRIM')} aria="Belief">
+    <Section title={'BELIEF · ' + (own ? 'FAITHFUL · ' + (FAITH_PATRON[own]?.name || own).toUpperCase() : 'ATHEIST · PILGRIM')} aria="Belief" keys={FIND.belief}>
       <div style={row} role="radiogroup" aria-label="Belief">
         <button type="button" role="radio" aria-checked={b.kind === 'faithful'} data-sb-belief="faithful" style={on(b.kind === 'faithful', FAITH_INK)} onClick={() => F({ belief: 'faithful' })}>Faithful</button>
         <button type="button" role="radio" aria-checked={b.kind === 'atheist'} data-sb-belief="atheist" style={on(b.kind === 'atheist', FAITH_INK)} onClick={() => F({ belief: 'atheist' })}>Atheist</button>
@@ -708,7 +744,7 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
       </div>
     </Section>
     {/* The five Sigil word groups, collapsible (the same component and open state model as the Magic tab). */}
-    <Box keys="sigil words glyphs learn forget subject reach delivery burst filter"><div data-glyph-keyboard="1" style={{ minWidth: 0 }}><Groups section="sb.sigil" title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'} ink={C.mind} aria="Sigil words"
+    <Box keys={FIND.sigils}><div data-glyph-keyboard="1" style={{ minWidth: 0 }}><Groups section="sb.sigil" title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'} ink={C.mind} aria="Sigil words"
       groups={sigilWordGroups(SIGILS, (w) => w.id)} render={(items, g) => <div data-word-row={g.key} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
         {items.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" data-word={w.id} title={w.word + ' · ' + w.text} aria-pressed={on} onKeyDown={glyphKeyNav}
           style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
@@ -718,7 +754,7 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
     {/* Rules 1.8 (Outburst 4.0): schools, tones, modules grouped by gate skill (the advanced classes' shown, learnable here:
         no gates in the Proving Ground), feelings (grant or forget), practice, and a sound and effects test row for every
         feeling; in the shared workshop groups (workshopGroups.tsx), like the Sigil words above. */}
-    <Box keys="outbursts outburst lessons schools tones modules feelings practice sound effects test soul"><Groups<{ key: string }> section="sb.soul" title="OUTBURSTS: SCHOOLS, TONES, MODULES, FEELINGS" ink={C.soul} aria="Outburst lessons"
+    <Box keys={FIND.soul}><Groups<{ key: string }> section="sb.soul" title="OUTBURSTS: SCHOOLS, TONES, MODULES, FEELINGS" ink={C.soul} aria="Outburst lessons"
       groups={[
         { key: 'schools', label: 'Schools and tones', n: SCHOOLS.length + toneChips(k.tones || []).filter((t) => t.id !== 'raw').length, items: [{ key: 'schools' }] },
         { key: 'modules', label: 'Modules by gate skill', count: k.modules.length + ' KNOWN', dflt: false, items: [{ key: 'modules' }] },
@@ -857,7 +893,7 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   const mana = cb?.mana ?? game.story.mana ?? 15, band = MANA_BANDS.find((b) => mana >= b.min && mana <= b.max);
   const foes = gearing ? (game.story.npcs || []).filter((n) => n.side === 'hostile').length : (cb?.units || []).filter((u) => u.side === 'foe' && !u.dead).length;
   return <>
-    <Section title={gearing ? 'SPAWN A DRILL UNIT ON THE MAP (IDLE UNTIL THE FIGHT)' : 'SPAWN AN ENEMY INTO THE FIGHT'}>
+    <Section title={gearing ? 'SPAWN A DRILL UNIT ON THE MAP (IDLE UNTIL THE FIGHT)' : 'SPAWN AN ENEMY INTO THE FIGHT'} keys={FIND.spawn}>
       <div style={row}>
         <select value={tier} onChange={(e) => { setTier(e.target.value); if (CASTER[caster] && CASTER[caster].tier !== e.target.value) setCaster(''); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.hp} HP</option>)}</select>
         <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Enemy weapon" style={{ ...field, flex: 1 }}>{WEAPONS.filter((w) => w.category !== 'thrown').map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>

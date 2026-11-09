@@ -93,11 +93,12 @@ export class LevelUpLogic extends DCLogic {
       const state = h ? 'owned' : ch ? 'available' : 'locked';
       const label = ch ? (ch.tier === 'I' ? 'Take · Tier I' : 'Upgrade · Tier II') : '';
       const chip = h ? '✓ TIER ' + (h.tier === 'II' ? 'II' : 'I') : ch ? '' : nextAt ? 'LOCKED · ' + nextAt + ' PTS' : 'NO STEP LEFT';
-      return { key: pk.id, name: pk.name, icon: PERK_ICON[pk.id] || IMG['wick-mind-without-fog'], state, can: !!ch, label, chip, hasChip: !!chip,
+      const aria = ch ? (ch.tier === 'I' ? 'Take ' : 'Upgrade ') + pk.name + ' (' + ((SKILL[x.skill] && SKILL[x.skill].name) || x.skill) + '), Tier ' + ch.tier : '';
+      return { key: pk.id, name: pk.name, aria, icon: PERK_ICON[pk.id] || IMG['wick-mind-without-fog'], state, can: !!ch, label, chip, hasChip: !!chip,
         title: pk.name + (ch ? ' · ' + (ch.tier === 'I' ? 'Tier I' : 'Tier II') : h ? ' · Tier ' + (h.tier === 'II' ? 'II' : 'I') + ' (yours)' : ' · locked') + ': ' + t + ' (' + v.label + ')',
         text: ch ? t.charAt(0).toUpperCase() + t.slice(1) : '', hasText: !!ch,
         pick: () => act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }),
-        nameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ' + (state === 'locked' ? LOCKED : '#E7EBF3'),
+        nameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (state === 'locked' ? LOCKED : '#E7EBF3'),
         iconStyle: 'width: 22px; height: 22px; object-fit: contain' + (state === 'locked' ? '; opacity: 0.4; filter: grayscale(1)' : ''),
         chipStyle: state === 'owned' ? chipStyle(OWNED, true) : chipStyle(LOCKED, false),
         btnStyle: 'flex: none; padding: 3px 10px; border-radius: 999px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' };
@@ -116,7 +117,7 @@ export class LevelUpLogic extends DCLogic {
         perks: (ACQUIRED[s.id] || []).map((pk) => perkRow(pk, x, p)),
         hasMastered: !!m, mName: m ? m.name : '', mIcon: m ? PERK_ICON[m.id] || IMG['wick-mind-without-fog'] : '', mHeld: !!mh, mLabel: mh ? '✓ MASTERED' : 'AT 10 PTS',
         mTitle: m ? m.name + ' · Mastered' + (mh ? ' (yours)' : ' · at 10 points') + ': ' + (m.text || m.flavour || '') : '',
-        mNameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ' + (mh ? '#F2C46A' : LOCKED),
+        mNameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (mh ? '#F2C46A' : LOCKED),
         mIconStyle: 'width: 22px; height: 22px; object-fit: contain' + (mh ? '' : '; opacity: 0.4; filter: grayscale(1)'), mChipStyle: mh ? chipStyle('#F2C46A', true) : chipStyle(LOCKED, false),
         nameStyle: 'font-size: 14px; font-weight: 700; line-height: 1.15; color: ' + ink,
         style: 'display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (free ? '#FFFFFF' : '#232D3F') + '; border-left: 3px solid ' + ink + (free ? '; box-shadow: 0 0 0 1px rgba(255,255,255,0.25)' : '') };
@@ -135,7 +136,8 @@ export class LevelUpLogic extends DCLogic {
     });
     // ---------- the perk steps waiting (the skill cards hold them; these jump there) ----------
     const steps = pendingPerkSteps(c).map((x) => ({ key: x.skill, name: SKILL[x.skill].name, n: x.free || 1,
-      go: () => { const el = document.querySelector('.phc-lu-skill[data-skill="' + x.skill + '"]'); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); },
+      go: () => { const el = document.querySelector('.phc-lu-skill[data-skill="' + x.skill + '"]'); if (!el) return; if (el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const b = el.querySelector('button.phc-lu-choice'); if (b) b.focus({ preventScroll: true }); },
       style: 'padding: 3px 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; border: 1px solid ' + ATTR[SK[x.skill].attr].ink + '; color: ' + ATTR[SK[x.skill].attr].ink }));
     // ---------- the class panel (the held class, or while picking a preview of the selected one) ----------
     const id = c.classId || sel, preview = !c.classId && !!sel, k = id ? CLASS[id] : null;
