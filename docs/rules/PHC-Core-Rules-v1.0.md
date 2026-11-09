@@ -1417,6 +1417,11 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 > someone is watching. Sigils own space, Outbursts own time and the body, Blessings own a relationship and are paid for
 > with obedience (vows, rites, taboos). Every number here is PROVISIONAL (section 14, items 592–629). The patron's mood
 > (the old prayer TN) is retired. The data is `patrons.json` (version 2); the engine is `faith.ts`.
+>
+> **Rules revision 1.6.1 (Faith 2.1, 9 Nov 2026; design `docs/design/faith-2.1-spec.md`, decision 107; Leon's rulings
+> of 8–9 Nov).** Devotion is earned as **Devotion XP**, the caps on tags live on the character (the area map can't farm
+> them), the Narrator moves XP within a session cap, leaving a pact has a 90-day cooldown on a new **day counter**, and
+> the patron you leave for another may hold a **grudge**. Every number is PROVISIONAL (section 14, items 701–718).
 
 **Belief** (a step in character creation). Every character is **Faithful** (sworn to one patron of their Sector; all eight
 below for the Earth Sector; Devotion starts at 3) or an **Atheist** (no patron, no Devotion; prays by dice: the pilgrim).
@@ -1424,18 +1429,34 @@ Belief is chosen at Faith 0; **praying at all needs Faith 3**. Old saves: a char
 patron with their current Devotion; one without becomes an Atheist.
 
 **Devotion** (Faithful only) runs 0–10: your **standing**. You don't spend it to ask; asking is limited by cooldowns.
+Each level needs **Devotion XP** (rules 1.6.1): the character keeps the total, the level is what the total reaches, and
+events give or take XP, not levels. A loss can drop you a level, never below 0. The Faithful start at Devotion 3 (45 XP).
 
-| Rises | | Falls | |
+| Level | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Total XP | 0 | 10 | 25 | **45** | 70 | **102** | 147 | **200** | 270 | 350 | 450 |
+| Step | | 10 | 15 | 20 | 25 | 32 | 45 | 53 | 70 | 80 | 100 |
+
+The pace this aims at (checked by a simulation, item 717): Hymn I at creation, Hymn II (5) around sessions 3–4, Hymn III
+and the Miracle (7) around sessions 8–10, full standing (10) after 20 sessions.
+
+| Rises | XP | Falls | XP |
 |---|---|---|---|
-| An action in a fight carries a tag your patron likes | +1, at most +2 a fight | An action carries a taboo tag | −1, −2 while Witnessed |
-| A vow kept | +1 | A vow broken | −2 |
-| A rite kept (once per rite per session) | +1 | A failed overreach | −1 |
-| Bringing someone into the faith (Narrator) | +1 | Breaking character where your patron can see (Narrator) | −2 |
-| Each knowledge piece of a new patron, on conversion | +1 | A Miracle | all of it |
+| An action carries a tag your patron likes | +1 (capped, below) | An action carries a taboo tag | −3, −6 while Witnessed |
+| A vow kept | +3 | A vow broken | −5 |
+| A rite kept (once per rite per session) | +4 | A failed overreach | −3 |
+| Bringing someone into the faith (Narrator) | +4 | Breaking character where your patron can see (Narrator) | −6 |
+| A deed the Narrator marks | +2 to +5 | Judgement (the Guardian's move) | −10 |
+| Each knowledge piece of a new patron, on conversion | +1 level (XP to that level's threshold) | A Miracle | all of it: XP 0, Devotion 0 |
+
+**The caps on tags.** Each liked tag counts **once per fight and once per scene** (a story scene: a new scene title starts
+a new one). Liked tags give at most **2 XP a fight**, at most **2 XP a scene** out of fights (the area map counts as the
+scene) and at most **6 XP a session** in all. Taboos aren't capped; every tag still counts once per action. Vows, rites
+and the Narrator's moves don't count toward the tag caps. The caps are kept on the character, not on the fight's unit.
 
 **What standing allows:** a Whisper at any Devotion; Hymn I at 3, II at 5, III at 7; a Miracle at Faith 7 and Devotion 7,
 once a session, spending all Devotion. **Overreach:** a Faithful may ask for their own patron's Hymn above their Devotion:
-d20 + Faith modifier against 12 + 2 × (the gate − your Devotion). A miss: nothing happens, the AP is spent, Devotion −1.
+d20 + Faith modifier against 12 + 2 × (the gate − your Devotion). A miss: nothing happens, the AP is spent, −3 Devotion XP.
 Within your standing a Hymn needs no roll. There is no overreach for a Miracle.
 
 **The three sizes of prayer.** Every prayer drops the mana meter by 5. Silenced characters can't pray. Any prayer works in a
@@ -1455,7 +1476,7 @@ in sight: +2 on the next roll), **Health** (heals 15 × Blessing power), **Prote
 (the table below). Effects are × Blessing power.
 
 **Witnessed** (Faith 5, the Faithful only): after a successful Hymn or Miracle, until your next turn, your attack rolls
-that would carry a tag your patron likes get +2, and taboo actions cost double Devotion.
+that would carry a tag your patron likes get +2, and taboo actions cost double Devotion XP (−6).
 
 **Atheists and pilgrims.** An Atheist prays by dice: a Whisper is d20 + Faith modifier against 12; a learned Hymn I, II or
 III against 14, 16 or 18. A miss: nothing happens and the AP is spent. **Knowledge pieces:** an NPC with Faith above 5 can
@@ -1464,7 +1485,7 @@ Hymn in order (I, then II, then III). Pieces from several patrons give a mixed k
 never Witnessed.
 
 **Vows.** At the start of a fight, before you first act, any Faithful character may swear one vow (free). The engine
-tracks it: broken, −2 Devotion at once; kept to the end of the fight, +1. The patron speaks a line either way.
+tracks it: broken, −5 Devotion XP at once; kept to the end of the fight, +3. The patron speaks a line either way.
 
 | Vow | Broken when |
 |---|---|
@@ -1475,8 +1496,8 @@ tracks it: broken, −2 Devotion at once; kept to the end of the fight, +1. The 
 | **No Magic but Theirs** "No magic but theirs." | you draw, Evoke or Begin (Sigil or Outburst) |
 | **Nobody Left Behind** "Nobody left behind." | an ally is still Downed when the fight ends |
 
-**Tags: what your patron sees.** The engine tags actions in a fight; a tag counts once per action. Each patron likes 3 tags
-and holds 2 as taboo.
+**Tags: what your patron sees.** The engine tags actions in a fight and on the area map; a tag counts once per action
+(and a liked tag once per fight and once per scene, within the caps above). Each patron likes 3 tags and holds 2 as taboo.
 
 | Tag | When you… | Tag | When you… |
 |---|---|---|---|
@@ -1489,20 +1510,48 @@ and holds 2 as taboo.
 | storm | deal Storm (lightning) damage | trick | hide, a Trickster move, a False Image, a feint or a swap |
 
 **Conversion and the patron's rule about other gods.** The Narrator makes a pact (an Atheist converts): the new patron's
-knowledge pieces turn into Devotion, +1 each on top of the starting 3 (at most 10), and those Hymns are prayed by
-standing. Every patron is **Open** (you keep Hymns learned from other patrons and pray them by dice; you may keep learning)
-or **Jealous** (on the pact every other patron's Hymn and piece is gone, and you can't learn from other patrons).
-**Apostasy** (leaving a pact; a Narrator event): Devotion 0, you become an Atheist, and the old patron's Hymns stay as
-pieces, as many as the Hymn gates your Devotion had reached (at least 1). PROVISIONAL (item 606).
+knowledge pieces turn into Devotion, +1 level each on top of the starting 3 (at most 10; the XP is set to that level's
+threshold), and those Hymns are prayed by standing. Every patron is **Open** (you keep Hymns learned from other patrons
+and pray them by dice; you may keep learning) or **Jealous** (on the pact every other patron's Hymn and piece is gone, and
+you can't learn from other patrons).
+
+**Leaving a patron** (rules 1.6.1; Narrator events). There are two ways out.
+
+- **Apostasy** (walking away without joining anyone): Devotion XP 0, Devotion 0, you become an Atheist, and the old
+  patron's Hymns stay as pieces, as many as the Hymn gates your Devotion had reached (at least 1). The patron says
+  farewell. Then **nobody answers for 90 days**: a pact with any patron is refused until the day counter reaches the day
+  you left + 90 ("Nobody answers yet: N days").
+- **Leaving one patron for another** (a pact while Faithful) is not apostasy: no cooldown. The old patron's Hymns stay as
+  pieces (counted the same way) unless the new patron is Jealous (then they are gone). The patron you leave decides how
+  it takes it, from its data: an **Open** patron rolls d20 + your Faith modifier against its leave TN (10–12): on a
+  success it lets you go; on a miss it holds a **light grudge** (1 session). A **Jealous** patron never lets go: always a
+  **harder grudge** (2–3 sessions). Either way it says farewell.
+- **A grudge:** at the start of each fight you begin with the old patron's chosen condition for its rounds (no save), and
+  your **new** patron's Devotion XP gains are multiplied by 0.5 (the old patron lobbies against you). It lasts the rest of
+  the session it began in and the grudge's sessions after it; going back to that patron ends it.
+
+| Patron left | Lets go | Grudge: condition at each fight's start | Sessions |
+|---|---|---|---|
+| Holy Father Nerukhan | never | Marked, 2 rounds (the saints point you out) | 3 |
+| The Quartermaster | d20 + Faith vs 11 | Nausea, 1 round (your rations were docked) | 1 |
+| The Laughing Mask | d20 + Faith vs 12 | Prone (something slippery at every curtain-up) | 1 |
+| The Toll-Keeper | never | Slowed, 2 rounds (the river drags at your legs) | 2 |
+| Mother Ember | d20 + Faith vs 10 | Shaken, 2 rounds (not angry, only disappointed) | 1 |
+| Old Overcast | never | Dazed (thunder at your every entrance) | 3 |
+| The Matchmaker | d20 + Faith vs 11 | Weakened, 1 round (no heart for it) | 1 |
+| The Counting Weaver | d20 + Faith vs 12 | Pinned, 1 round (she keeps a knot of your thread) | 1 |
+
+**The day counter** (rules 1.6.1). The game counts days from day 1: each **long rest** is a day, and the Narrator can
+move time on with **days** (1 to 3650: travel, a time skip, years passing). Old saves start at day 1.
 
 **Interventions.** Once a fight, while you are Witnessed, your patron acts unasked when its trigger happens.
 
 **Rites.** Each patron has two: an **engine rite** (a story button: a confession or a challenge at any time out of a
 fight, a vigil or a count after a rest, a ration given up) and a **Narrator rite** (marked kept by the Narrator). Each is
-kept once a session for +1 Devotion.
+kept once a session for +4 Devotion XP.
 
 **Voice lines.** Each patron has 3 lines for each event (answered, refused, taboo, vow kept, vow broken, Witnessed,
-intervention, Miracle, conversion), in its costume's voice. The engine picks one with the game's dice; the Narrator never
+intervention, Miracle, conversion, farewell), in its costume's voice. The engine picks one with the game's dice; the Narrator never
 writes them.
 
 **The eight launch patrons.** Each is a Celestial LARPing a god archetype; no real god is named, and none is a central
@@ -1519,12 +1568,14 @@ figure of a living religion.
 | **The Matchmaker** (love goddess) | protect, mercy, heal | betray, kill (of the surrendered or Downed) | Open | Red Thread: two allies are linked for 2 rounds; damage to either is split between them | Sweet Nothings: an enemy makes a Heart save or is Smitten (can't attack you or your linked allies) next turn | Together: two adjacent allies get +2 to hit and +2 Defense until your next turn | Love Conquers: every enemy in sight that can surrender makes a Heart save or surrenders | an ally next to you is hit: half the damage moves to you |
 | **The Counting Weaver** (fate-spinner) | hold, trick, judge | flee, betray | Open | Foreknowing: the next attack against an ally misses | Unravel: every boon, shield and helpful state on an enemy ends | Cut Short: an enemy makes a Heart save or loses its next turn (bosses lose 2 AP) | Rewoven: every ally acts once more, right after this turn, in initiative order | an enemy crits you: it becomes a normal hit |
 
-**What the Narrator owns:** pacts and conversions, knowledge pieces, Narrator rites kept, Devotion moves of at most ±2 a
-call with a reason (breaking character, bringing in a believer), holy ground (objects tagged holy), and what a prayer means
-in the story. **The engine owns** every number, the tags, vows, Witnessed, interventions and the dice.
+**What the Narrator owns:** pacts and conversions, apostasy, knowledge pieces, Narrator rites kept, Devotion XP moves of
+−6 to +5 a call with a reason (a deed, bringing in a believer, breaking character; its gains at most +10 XP a session per
+character, losses uncapped), days passing, holy ground (objects tagged holy), and what a prayer means in the story. **The
+engine owns** every number, the XP, the caps, the tags, vows, Witnessed, interventions, the leave roll, grudges, the day
+counter and the dice.
 
 **Still working as before:** the Guardian's Blessed Shells (they seal a Hymn), Under the Eye, and Judgement (which spends 1
-Devotion: the only spend besides a Miracle; item 619); Blessing power and the Faith perks; Rite in the Field (it cuts a
+Devotion, now 10 Devotion XP: the only spend besides a Miracle; item 706); Blessing power and the Faith perks; Rite in the Field (it cuts a
 Hymn's or Miracle's AP); the prayer traits; and the Factory Made and The Old Blood hooks on a Blessing landing
 (`blessing_in`).
 
@@ -2023,7 +2074,7 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 | Short | 1 hour | 25% of max HP; Heat, Flux and Strain reset |
 | Long | 8 hours | all HP; MP to full if the air is Normal or richer; Supplies and toxins restocked from carried stock; a Bard can treat injuries (item 581) |
 
-The Narrator calls a rest (or the host does, with Rest… in the story; any player can ask for one, and the request goes to the Narrator). No rest in a fight. In the Proving Ground the host rests from the tools while gearing up. The start of a session counts as a long rest. Each rest starts a new window for once-per-rest uses (rules 1.3).
+The Narrator calls a rest (or the host does, with Rest… in the story; any player can ask for one, and the request goes to the Narrator). No rest in a fight. In the Proving Ground the host rests from the tools while gearing up. The start of a session counts as a long rest. Each rest starts a new window for once-per-rest uses (rules 1.3). A long rest is also a **day** on the day counter (rules 1.6.1, item 709; the start of a session isn't); the Narrator moves time on with days.
 
 **The Narrator's job.** The AI Dungeon Master and a human one follow the same brief:
 
@@ -3607,6 +3658,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     censer gun, coach gun, sawn-off, brigade auto). Damage × (1 + Blessing power), Blessing power = 1 + 0.1 × Faith.
     Spent hit or miss. A fight note asks the Narrator about taboos. Rename the move or Nerukhan's Blessing (both
     `judgement`). Data (done): `resource devotion -1`, `uses: per_combat`, text "Once per fight, spend 1 Devotion". PROVISIONAL.
+    *Rules 1.6.1: 1 Devotion is 10 Devotion XP (item 706); the data is now `resource devotion -10, unit xp`.*
 341. *(K7)* **Half-Sigil** (audit 1-5, GAMEBREAKING). A half-glyph costs **1 charge** (never free; the word's charge is
     skipped), +1 Flux, Glyph-limit and 2-per-tile rules as normal, an Evoker needed. Half-glyphs pair as a Stack: the
     second on a tile is drawn from the words that complete the grammar (a Subject with a Form/Motion word you know, and
@@ -4111,7 +4163,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 **Rules revision 1.6: Blessing 2.0 (8 Nov 2026; decision 102; `docs/design/blessing-2.0-spec.md`). Readings where the design was silent or open. PROVISIONAL.**
 
 592. **Blessing 2.0 numbers.** Every Hymn, Miracle, Whisper and intervention number (patrons.json v2, from the design spec) still needs a pass against `docs/design/balance-targets.md` (design open item 4).
-593. **The liked-tag cap:** +2 Devotion a fight from liked tags; vows, rites and the Narrator's moves don't count toward it, and taboo losses have no cap (design open item 2).
+593. ~~The liked-tag cap.~~ *Superseded in rules 1.6.1 (Faith 2.1): items 702–704 (XP; 2 a fight, 2 a scene, 6 a session; on the character).*
 594. **No roll within standing.** A Faithful character's Whisper, and a Hymn of their own patron at or under their Devotion, need no roll; only an overreach, an Atheist's prayer and a kept Hymn of another patron roll.
 595. **Witnessed's +2** goes on attack rolls that would carry a tag the patron likes: an attack on an enemy when the patron likes kill (or judge, when that enemy harmed the helpless), fire damage when it likes burn, lightning when it likes storm. Other rolls get nothing; the tag is judged before the roll.
 596. **A tag counts once per action** (one reducer action; what happens during an enemy's turn because of you, such as an Interpose, is its own action). Liked and taboo tags of one action all count.
@@ -4124,8 +4176,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 603. **Interventions** are once a fight per Faithful fighter, while that fighter is Witnessed; two Witnessed Faithful each get their patron's.
 604. **Prayers in the story** cost AP from the overworld round when rounds are running; the Hymn cooldown counts story rounds; a Whisper is once a story round. They go at the squad (characters); what they would do to anyone else goes to the Narrator. Story prayers don't make you Witnessed.
 605. **Engine rites** check one of three things: `story` (any time out of a fight), `after_rest` (a rest has been taken this session) or `tithe_item` (you give up one item of a category, such as a ration). Each rite is kept once a session for +1.
-606. **Apostasy** (design open item 1): Devotion 0, Atheist; the old patron's Hymns stay as pieces, one for each Hymn gate the Devotion had reached (3, 5, 7), at least 1, and never fewer than the pieces already held.
-607. **Changing patrons** (a pact while Faithful) is apostasy from the old patron, then the pact; the new patron's Jealous rule applies to everything kept.
+606. ~~Apostasy.~~ *Superseded in rules 1.6.1: items 707–710 and 714 (the pieces are counted as before; Devotion XP 0; a 90-day cooldown; the farewell).*
+607. ~~Changing patrons is apostasy, then the pact.~~ *Superseded in rules 1.6.1: items 711–714 (a direct switch, no cooldown; the leave roll and grudges).*
 608. **The Miracle** takes no roll and doesn't wait on the Hymn cooldown; it makes you Witnessed (Faith 5) like a Hymn. Whispers never make you Witnessed.
 609. **Luck and Lucky Break** act on attack rolls in a fight and on checks in the story. Luck: +2 on the next one. Lucky Break: in a fight the next failed attack roll is rerolled at +5; in the story it is +5 on the next check (a story check has no reroll step the engine can hook). Saves aren't touched.
 610. **Guidance** reveals Hidden enemies within 6 tiles and hidden traps there; the +2 goes on the character's next spotting roll in the fight, or next notice check in the story.
@@ -4137,15 +4189,15 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 616. **Foreknowing** lasts until the ally is next attacked or the fight ends. **Unravel** ends every boon condition, the shield, Braced, Overwatch and Hidden. **Cut Short** is Stunned 1 round (Heart save); a boss instead loses 2 AP on its next turn.
 617. **Last Crossing** kills outright on a failed save (no Downed state); **Turned Back at the Shore** brings an ally who died this fight back standing at 1 HP. **Love Conquers** uses the surrender rules: bosses, machines and the no_surrender never yield.
 618. **Enemy faithful:** one enemy type that prays (a Whisper and a Hymn) is deferred; enemies don't pray yet.
-619. **Judgement (Guardian)** still spends 1 Devotion, the only spend besides a Miracle (design open item 3); Blessed Shells' story prayer now uses the rules 1.6 roll (by standing, overreach or dice) instead of the patron's mood.
+619. ~~Judgement (Guardian) spends 1 Devotion.~~ *Superseded in rules 1.6.1: item 706 (10 Devotion XP). Blessed Shells' story prayer still uses the rules 1.6 roll (by standing, overreach or dice) instead of the patron's mood; its miss is item 716.*
 620. **Interventions scale with Blessing power** like Hymns: Nerukhan's 20 Soul, Mother Ember's 15 heal and Old Overcast's 20 lightning are × the praying character's Blessing power.
-621. **The Miracle spends Devotion after its effect:** tags its own effect carries (a heal for Mother Ember) give nothing back; Devotion is 0 when it ends.
+621. ~~The Miracle spends Devotion after its effect.~~ *Superseded in rules 1.6.1: item 707 (still after its effect: XP 0, Devotion 0).*
 622. **Harming the helpless** (judge, the Mercy vow, Nerukhan's intervention) counts any hostile hit on a Downed creature, even though a Downed creature takes the hit as a failed death save rather than HP, and any HP damage to a surrendered one. Killing a Downed creature (its third failed save) or a surrendered one is the "kill of the helpless" taboo.
 623. **Mercy at the fight's end** is one tag per fighter (not one per spared enemy), given when a surrendered enemy is alive and that fighter never harmed the helpless this fight. **Flee** on Extraction is one tag per fighter still standing.
 624. **Story prayers that need a tile or an enemy** (Thunderclap, Covering Fire, Judgement, Love Conquers…) and Whispers with no story meaning (Protection, Safe Passage) are paid and rolled as usual; what they do goes to the Narrator as a pending ruling. A story Hymn or Miracle also fires the items' `story_blessing` hook (Upper-Touched's d6). The old `story/pray` is a Hymn I of your patron through `faith/pray` (it now costs 3 AP while rounds run).
 625. **Knowledge pieces of your own patron** are refused (standing is what counts); a Faithful of a Jealous patron is refused pieces of other patrons; a fourth piece of a patron is refused.
 626. **Rites:** an engine rite is kept only from its button (the Narrator can't mark it), a Narrator rite only by the Narrator; a tithe takes one matching item (an item whose kind or id is the category, such as food).
-627. **The Narrator's Devotion move** is refused above ±2 and without a reason when the host sends `faith/devotion`; in the Narrator's turn (`patrons`, `faith`) it is clamped to ±2 instead. The turn's `patronMood` is no longer applied.
+627. ~~The Narrator's Devotion move (±2).~~ *Superseded in rules 1.6.1: item 705 (−6 to +5 XP, refused out of range when sent directly, clamped in a turn; +10 a session). The turn's `patronMood` is still not applied.*
 628. **Heretic's Stolen Fire** prays a stolen Hymn as an Atheist prays a learned one (d20 + Will Power against 14, 16 or 18; no Witnessed), with the Hymn's own target, second unit or tile. In the story it is d20 + Will Power against the same TN, and the Narrator rules the answer.
 629. **Old-shape patrons** (a patron added at run time with `blessings` and no `hymns`) still work: their Blessings are Hymns (tier 1 unless given), aimed at you or an ally, and run their data effects.
 
@@ -4186,3 +4238,24 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 668. **The Proving Ground:** attempts and asks roll at once (no Narrator, AP always full); the tools place things only while gearing up; their objectives live in a "Drill" mission.
 669. **What the engine tells the Narrator:** up to 20 events (triggers fired, hazards hit, approaches tried with their effects, carrying, searches, talk, alarms) since its last turn, consumed by that turn; hazards hit in a fight are reported after it.
 670. **The Narrator's tool** stays the same all session: the new fields are optional, with fixed vocabularies only.
+
+**Rules revision 1.6.1: Faith 2.1 (9 Nov 2026; decision 107; `docs/design/faith-2.1-spec.md`). Numbers and readings where the design was silent. PROVISIONAL.**
+
+701. **Devotion XP and the curve.** The total XP for levels 0–10 is 0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450 (the design's 152, 212, 277, 347 and 432 for levels 6–10 were tuned by the pace simulation, item 717). XP stops at 450. The level stays in `devotion` for old readers; a level written on its own (an old save, an old writer, the Proving Ground's stepper) reads as that level's threshold. *Data: `patrons.json` devotion.xp.curve.*
+702. **The sources in XP:** a liked tag +1, a vow kept +3, a rite kept +4, bringing someone into the faith +4 and a deed +2 to +5 (both the Narrator's), a taboo −3 (−6 while Witnessed), a vow broken −5, a failed overreach −3, breaking character where the patron can see −6 (the Narrator's), Judgement −10, a Miracle all of it. *Data: devotion.gain and devotion.loss (losses written as positive numbers).*
+703. **The tag caps:** 2 XP a fight, 2 XP a scene out of fights, 6 XP a session from tags in all; each liked tag once per fight and once per scene. A fight and the scene it happens in are separate (a fight's tags don't use up the scene's 2); the session's 6 covers both. Caps count the XP before a grudge's multiplier. *Data: devotion.tag_caps.*
+704. **Where the caps live:** on the character (`faithTally`: the session, the scene with its XP and liked tags, the fight's id with its XP and liked tags, the last action's tags), reset by a new session and (the scene part) a new scene (`story.scene.n`). A fight's id is set when it starts. A tag counts once per action, keyed by the reducer step, the round and the turn and kept on the character, so the area map's rebuilt units can't reset it. The area map counts toward the scene. The Proving Ground's reset clears the tally.
+705. **The Narrator's devotion op:** −6 to +5 XP a call, with a reason. Sent directly (`faith/devotion`) outside that range it is refused; in a turn (`faith`, and the legacy `patrons`) it is clamped. Gains are capped at +10 XP a session per character: a gain over the cap is cut to what is left, and refused once nothing is left; losses aren't capped. The cap counts the XP asked for, before a grudge's multiplier. A refusal in a turn is logged out of character. *Data: devotion.narrator.*
+706. **Judgement** spends 10 Devotion XP (its "1 Devotion") and needs 10 XP; it can drop a level. *Data: classes.json, the move's resource effect −10 (unit xp).*
+707. **The Miracle** sets Devotion XP 0 and Devotion 0, after its effect (its own tags give nothing back). Climbing back to 7 takes 200 XP, about 10 sessions at the target pace: the Miracle's real price now (for Leon at review).
+708. **Conversion:** Devotion 3 + 1 level for each piece of the new patron (at most 10), the XP set to that level's threshold. A pact clears a sworn vow.
+709. **The day counter:** `g.day`, from 1 (old saves: 1). A long rest adds a day; the start of a session doesn't (it counts as a long rest only for recovery). The Narrator's turn field `days` adds 1 to 3650 days: rounded, clamped to 3650, ignored under 1. A turn's rest and days come after its faith ops.
+710. **The cooldown after apostasy:** no pact with any patron (the one left included) until the day counter reaches the day they left + 90; the refusal names the days left. The Proving Ground's tools ignore it. *Data: devotion.apostasy.cooldown_days.*
+711. **A direct switch** (a pact while Faithful to another patron) is not apostasy: no cooldown, no APOSTASY line. The old patron's Hymns stay as pieces counted as apostasy counts them (one per Hymn gate reached, at least 1, never fewer than already held), unless the new patron is Jealous (then all are gone).
+712. **The leave roll:** an Open patron rolls d20 + Faith modifier against its leave TN, a natural 20 always letting go and a natural 1 never: Mother Ember 10, the Quartermaster 11, the Matchmaker 11, the Laughing Mask 12, the Counting Weaver 12. Jealous patrons never let go (no roll). A patron with no leave data (one added at run time) lets go. *Data: each patron's leave block.*
+713. **Grudges:** Nerukhan Marked 2 rounds, 3 sessions; the Quartermaster Nausea 1 round, 1 session; the Laughing Mask Prone, 1; the Toll-Keeper Slowed 2 rounds, 2; Mother Ember Shaken 2 rounds, 1; Old Overcast Dazed (the first turn), 3; the Matchmaker Weakened 1 round, 1; the Counting Weaver Pinned 1 round, 1; every grudge ×0.5 XP. The condition lands on the character (not a companion) at each fight's start with no save. The multiplier applies to every gain (tags, vows, rites, the Narrator's), the fraction carried to the next gain. It lasts the rest of the session it began in and its sessions after that, and is announced over when the next session starts. One grudge at a time (a newer one replaces it); going back to that patron ends it. *Data: leave.grudge.*
+714. **Farewell:** the patron left speaks a line from its farewell bank on apostasy and on a switch (let go or not), before any grudge. Ten line banks of 3 lines per patron.
+715. **Old saves:** faith rules revision 17. Devotion XP is set to the saved level's threshold (Devotion 6: 147 XP); no tally, no cooldown, no grudge; day 1.
+716. **A failed overreach** costs 3 XP everywhere: in a fight, in the story and in Blessed Shells' story prayer.
+717. **The pace simulation** (`packages/engine/test/faith-pace.test.ts`), the typical session: 2–4 fights and 2–4 scenes out of fights (about 3 each); a vow sworn in 80% of fights and kept 85% of the time; each of the patron's 3 liked tags comes up in 60% of fights and 30% of scenes; a taboo in 10% of fights and 5% of scenes; the engine rite every session and the Narrator rite in half (1–2 rites); one Narrator deed of 2–5. That is about 18 XP a session. Over 40 seeds Devotion 5 lands at session 3.6 on average (3–5), 7 at 9.0 (8–11), 10 at 23 (20–28). With the design's curve 7 landed at 9.7 (up to 12) and 10 as early as session 19, so levels 6–7 came down (152 → 147, 212 → 200) and the top went up (432 → 450).
+718. **Heretic's Stolen Fire** puts back the Devotion XP, the tag tally, the pact cooldown and the grudge along with the rest of the faith it borrows.

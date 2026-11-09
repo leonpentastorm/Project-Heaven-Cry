@@ -1,7 +1,7 @@
 {
   "$schema_version": "2.0",
   "kind": "patrons",
-  "source": "PHC Core Rules v1.0, rules 1.6 (Blessing 2.0, docs/design/blessing-2.0-spec.md) + Narrator's World Bible",
+  "source": "PHC Core Rules v1.0, rules 1.6 (Blessing 2.0, docs/design/blessing-2.0-spec.md) and 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md; section 14 items 701-730) + Narrator's World Bible",
   "devotion": {
     "min": 0,
     "max": 10,
@@ -13,22 +13,51 @@
       "hymn_3": 7,
       "miracle": 7
     },
+    "xp": {
+      "curve": [
+        0,
+        10,
+        25,
+        45,
+        70,
+        102,
+        147,
+        200,
+        270,
+        350,
+        450
+      ]
+    },
     "gain": {
       "liked_tag": 1,
-      "liked_tag_fight_cap": 2,
-      "vow_kept": 1,
-      "rite_kept": 1,
-      "convert_someone": 1,
+      "vow_kept": 3,
+      "rite_kept": 4,
+      "convert_someone": 4,
+      "deed_min": 2,
+      "deed_max": 5,
       "piece_on_conversion": 1
     },
     "loss": {
-      "taboo_tag": 1,
-      "taboo_tag_witnessed": 2,
-      "vow_broken": 2,
-      "overreach_miss": 1,
-      "break_character_seen": 2
+      "taboo_tag": 3,
+      "taboo_tag_witnessed": 6,
+      "vow_broken": 5,
+      "overreach_miss": 3,
+      "break_character_seen": 6,
+      "judgement": 10
     },
-    "narrator_delta_max": 2,
+    "tag_caps": {
+      "fight": 2,
+      "scene": 2,
+      "session": 6
+    },
+    "narrator": {
+      "min": -6,
+      "max": 5,
+      "session_gain_cap": 10
+    },
+    "apostasy": {
+      "cooldown_days": 90
+    },
     "provisional": true
   },
   "prayer": {
@@ -51,8 +80,7 @@
     },
     "overreach": {
       "tn_base": 12,
-      "tn_per_step": 2,
-      "miss_devotion": -1
+      "tn_per_step": 2
     },
     "atheist_tn": {
       "whisper": 12,
@@ -292,7 +320,8 @@
     "witnessed",
     "intervention",
     "miracle",
-    "conversion"
+    "conversion",
+    "farewell"
   ],
   "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator.",
   "items": [
@@ -315,6 +344,17 @@
         "desecrate"
       ],
       "rule": "jealous",
+      "leave": {
+        "lets_go": "never",
+        "grudge": {
+          "sessions": 3,
+          "condition": "marked",
+          "rounds": 2,
+          "xp_mult": 0.5,
+          "text": "Nerukhan names you before the saints: you start every fight Marked, and every other patron hears of it."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Pacts first: answers only those sworn to the Lumeri faith",
         "Keep the costume: never speaks as anything but the Holy Father",
@@ -488,6 +528,11 @@
           "Welcome to the Lumeri faith. Confession is before every battle.",
           "Another soul for the saints. Mind the candles.",
           "Kneel. Rise faithful."
+        ],
+        "farewell": [
+          "Go, then. The saints keep a list.",
+          "You knelt here once, child. Remember it.",
+          "I release no one. I only let them walk."
         ]
       },
       "source_note": "Named in the 2020 material; reading as a Celestial in a pact is from the World Bible. Tenets, rites and blessings are new."
@@ -511,6 +556,18 @@
         "desecrate"
       ],
       "rule": "open",
+      "leave": {
+        "lets_go": "roll",
+        "tn": 11,
+        "grudge": {
+          "sessions": 1,
+          "condition": "nausea",
+          "rounds": 1,
+          "xp_mult": 0.5,
+          "text": "Your rations were docked on the way out: you start every fight with Nausea (−1 AP)."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Pacts first",
         "Keep the costume",
@@ -692,6 +749,11 @@
           "Welcome to the supply corps. Here is your locker key.",
           "Another name for the roster.",
           "Sign here, here, and here."
+        ],
+        "farewell": [
+          "Return your locker key on the way out.",
+          "Discharge papers, stamped. Don't lose them.",
+          "Transfer approved. Reluctantly."
         ]
       }
     },
@@ -714,6 +776,18 @@
         "mercy"
       ],
       "rule": "open",
+      "leave": {
+        "lets_go": "roll",
+        "tn": 12,
+        "grudge": {
+          "sessions": 1,
+          "condition": "prone",
+          "rounds": 1,
+          "xp_mult": 0.5,
+          "text": "The Mask leaves something slippery at every curtain-up: you start every fight Prone."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Pacts first",
         "Keep the costume: never removes the mask",
@@ -875,6 +949,11 @@
           "Welcome to the troupe!",
           "Another clown for the circus.",
           "Smile. That's the only rule."
+        ],
+        "farewell": [
+          "Leaving mid-show? Bold.",
+          "Exit, stage left! Mind the trapdoor.",
+          "Fine. Everyone gets one walk-off."
         ]
       }
     },
@@ -900,6 +979,17 @@
         "kill": "only the kill of a surrendered or Downed creature"
       },
       "rule": "jealous",
+      "leave": {
+        "lets_go": "never",
+        "grudge": {
+          "sessions": 2,
+          "condition": "slowed",
+          "rounds": 2,
+          "xp_mult": 0.5,
+          "text": "The river drags at your legs: you start every fight Slowed."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Answers at dusk, or when someone is dying",
         "Never ferries the living",
@@ -1058,6 +1148,11 @@
           "You have a seat on the boat now. Not today.",
           "Welcome. Keep your coin.",
           "The river knows your name now."
+        ],
+        "farewell": [
+          "The river remembers who crossed it.",
+          "Keep your coin. You will need it later.",
+          "Go. The water is patient."
         ]
       }
     },
@@ -1080,6 +1175,18 @@
         "cower"
       ],
       "rule": "open",
+      "leave": {
+        "lets_go": "roll",
+        "tn": 10,
+        "grudge": {
+          "sessions": 1,
+          "condition": "shaken",
+          "rounds": 2,
+          "xp_mult": 0.5,
+          "text": "Mother Ember isn't angry, only disappointed: you start every fight Shaken."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Answers anyone who is cold or hungry",
         "Never refuses a guest",
@@ -1250,6 +1357,11 @@
           "Welcome home, love.",
           "Pull up a chair.",
           "There's always room at the table."
+        ],
+        "farewell": [
+          "Wrap up warm, love. Wherever you're going.",
+          "There'll always be a plate for you. Always.",
+          "Go on, then. Write."
         ]
       }
     },
@@ -1272,6 +1384,17 @@
         "cower"
       ],
       "rule": "jealous",
+      "leave": {
+        "lets_go": "never",
+        "grudge": {
+          "sessions": 3,
+          "condition": "dazed",
+          "rounds": 1,
+          "xp_mult": 0.5,
+          "text": "Old Overcast thunders at your every entrance: you start every fight Dazed."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Answers loudly or not at all",
         "Never shares a storm",
@@ -1450,6 +1573,11 @@
           "You are under my sky now.",
           "Welcome. Speak up, always.",
           "My rival will hate this. Excellent."
+        ],
+        "farewell": [
+          "LEAVE, THEN! THE SKY HAS OTHER FAVOURITES!",
+          "You'll hear from me. Everyone hears from me.",
+          "Go to my rival, then. I DARE you."
         ]
       }
     },
@@ -1475,6 +1603,18 @@
         "kill": "only the kill of a surrendered or Downed creature"
       },
       "rule": "open",
+      "leave": {
+        "lets_go": "roll",
+        "tn": 11,
+        "grudge": {
+          "sessions": 1,
+          "condition": "weakened",
+          "rounds": 1,
+          "xp_mult": 0.5,
+          "text": "The Matchmaker tells everyone about the break-up: you start every fight Weakened, with no heart for it."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Answers anyone in love, or anyone who should be",
         "Never breaks a bond she tied",
@@ -1635,6 +1775,11 @@
           "Welcome to the wedding party!",
           "A new name on my guest list.",
           "You'll never walk alone now."
+        ],
+        "farewell": [
+          "It's not you, darling. It's definitely you.",
+          "I'll keep your seat warm. For a while.",
+          "Fine. But I'm keeping the gifts."
         ]
       }
     },
@@ -1657,6 +1802,18 @@
         "betray"
       ],
       "rule": "open",
+      "leave": {
+        "lets_go": "roll",
+        "tn": 12,
+        "grudge": {
+          "sessions": 1,
+          "condition": "pinned",
+          "rounds": 1,
+          "xp_mult": 0.5,
+          "text": "The Weaver keeps a knot of your thread: you start every fight Pinned."
+        },
+        "provisional": true
+      },
       "accord_terms": [
         "Answers anyone who keeps an honest count",
         "Never alters a thread already woven",
@@ -1814,6 +1971,11 @@
           "Your thread is in my loom now.",
           "Account opened.",
           "Welcome to the ledger."
+        ],
+        "farewell": [
+          "Account closed.",
+          "Your thread is cut loose. The knot stays.",
+          "Balance settled. Mostly."
         ]
       }
     }

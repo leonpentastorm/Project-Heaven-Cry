@@ -114,11 +114,11 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
     h.g.rng.state = rngFor(20); h.pray('hymn', 'judgement', { targetId: h.foe.id });
     expect(h.foe.hp).toBeLessThan(hp); expect(logHas(h.cb, /overreach/)).toBe(true); expect(h.c.devotion).toBe(3);
   });
-  it('an overreach that misses: nothing happens, the AP is spent, Devotion −1, the patron refuses', () => {
+  it('an overreach that misses: nothing happens, the AP is spent, −3 Devotion XP (45 → 42: Devotion 2), the patron refuses', () => {
     const h = holy({ devotion: 3 }); const hp = h.foe.hp;
     h.g.rng.state = rngFor(1); h.pray('hymn', 'judgement', { targetId: h.foe.id });
-    expect(h.foe.hp).toBe(hp); expect(h.me.ap).toBe(3); expect(h.c.devotion).toBe(2);
-    expect(fx(h.cb, FAITH_FX.prayer_fail)[0].why).toBe('overreach'); expect(fx(h.cb, FAITH_FX.devotion)[0].delta).toBe(-1);
+    expect(h.foe.hp).toBe(hp); expect(h.me.ap).toBe(3); expect(h.c.devotion).toBe(2); expect(h.c.devotionXp).toBe(42);
+    expect(fx(h.cb, FAITH_FX.prayer_fail)[0].why).toBe('overreach'); expect(fx(h.cb, FAITH_FX.devotion)[0]).toMatchObject({ delta: -3, xp: 42, now: 2, was: 3, level: 2 });
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'refused')).toBe(true);
   });
   it('an Atheist prays by dice: a miss costs only the AP (no Devotion); a hit lands', () => {
@@ -291,17 +291,17 @@ describe('interventions (once a fight, while Witnessed)', () => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('tags: what your patron sees', () => {
-  it('a liked tag: +1 Devotion, at most +2 a fight', () => {
+  it('a liked tag: +1 Devotion XP, and each liked tag once a fight (rules 1.6.1)', () => {
     const h = holy({ patron: 'mother_ember', devotion: 3 });
     for (let i = 0; i < 3; i++) { h.cb.round = 1 + i; h.f.turn(h.me); h.ally.hp = 50; h.pray('whisper', 'health', { targetId: h.ally.id }); }
-    expect(h.c.devotion).toBe(5); expect(h.me.faith?.liked).toBe(2); expect(faithView(h.g, h.c.id)!.likedThisFight).toBe(2);
-    expect(fx(h.cb, FAITH_FX.devotion).filter((e) => e.tag === 'heal').length).toBe(2);
+    expect(h.c.devotion).toBe(3); expect(h.c.devotionXp).toBe(46); expect(faithView(h.g, h.c.id)!.likedThisFight).toBe(1);
+    expect(fx(h.cb, FAITH_FX.devotion).filter((e) => e.tag === 'heal').length).toBe(1);
   });
-  it('a taboo: −1, −2 while Witnessed (betray: Nerukhan)', () => {
+  it('a taboo: −3 XP, −6 while Witnessed (betray: Nerukhan)', () => {
     const h = holy({ patron: 'nerukhan', devotion: 5 });
-    h.bound(() => applyDamage(h.cb, h.ally, 5, { by: h.me, type: 'physical' } as any)); expect(h.c.devotion).toBe(4);
+    h.bound(() => applyDamage(h.cb, h.ally, 5, { by: h.me, type: 'physical' } as any)); expect(h.c.devotionXp).toBe(99); expect(h.c.devotion).toBe(4);
     h.act({ type: 'combat/end-turn', unitId: h.me.id }); h.f.turn(h.me); h.me.conds = { witnessed: 2 } as any;
-    h.bound(() => applyDamage(h.cb, h.ally, 5, { by: h.me, type: 'physical' } as any)); expect(h.c.devotion).toBe(2);
+    h.bound(() => applyDamage(h.cb, h.ally, 5, { by: h.me, type: 'physical' } as any)); expect(h.c.devotionXp).toBe(93); expect(h.c.devotion).toBe(4);
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'taboo')).toBe(true);
   });
   it('kill as a taboo is only of the helpless (the Toll-Keeper)', () => {
@@ -336,11 +336,11 @@ describe('vows', () => {
     const late = holy(); late.pray('whisper', 'luck'); expect(() => late.act({ type: 'faith/vow', unitId: late.me.id, id: 'mercy' })).toThrow(/before you act/);
     expect(VOWS.length).toBe(6);
   });
-  it('Mercy breaks when you damage a Downed enemy: −2 and the patron speaks', () => {
+  it('Mercy breaks when you damage a Downed enemy: −5 XP and the patron speaks', () => {
     const h = holy({ devotion: 5 }); h.act({ type: 'faith/vow', unitId: h.me.id, id: 'mercy' });
     Object.assign(h.foe, { hp: 0, downed: true }); h.foe.dead = false;
     h.bound(() => applyDamage(h.cb, h.foe, 5, { by: h.me, type: 'physical' } as any));
-    expect(h.me.vow!.state).toBe('broken'); expect(h.c.devotion).toBe(3);
+    expect(h.me.vow!.state).toBe('broken'); expect(h.c.devotionXp).toBe(97); expect(h.c.devotion).toBe(4);
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'vow_broken')).toBe(true);
   });
   it('Shield breaks when the named ally is Downed', () => {
@@ -351,15 +351,15 @@ describe('vows', () => {
     const h = holy({ devotion: 5 }); h.act({ type: 'faith/vow', unitId: h.me.id, id: 'bare' });
     h.act({ type: 'combat/attack', unitId: h.me.id, targetId: h.foe.id, mode: 'shot' }); expect(h.me.vow!.state).toBe('broken');
   });
-  it('a vow kept to the end of the fight: +1 and the line; Nobody Left Behind breaks if an ally is still Downed', () => {
+  it('a vow kept to the end of the fight: +3 XP and the line; Nobody Left Behind breaks (−5) if an ally is still Downed', () => {
     const h = holy({ devotion: 5 }); h.act({ type: 'faith/vow', unitId: h.me.id, id: 'mercy' });
     for (const u of h.f.foes) Object.assign(u, { hp: 0, dead: true });
     h.act({ type: 'combat/end-turn', unitId: h.me.id });
-    expect(h.g.phase).toBe('story'); expect(h.c.devotion).toBe(6); expect(h.c.vow ?? null).toBeNull();
+    expect(h.g.phase).toBe('story'); expect(h.c.devotionXp).toBe(105); expect(h.c.devotion).toBe(5); expect(h.c.vow ?? null).toBeNull();
     expect(fx(h.g.combat!, FAITH_FX.vow).some((e) => e.state === 'kept')).toBe(true);
     const n = holy({ devotion: 5 }); n.act({ type: 'faith/vow', unitId: n.me.id, id: 'no_one_behind' });
     Object.assign(n.ally, { hp: 0, downed: true, saves: { ok: 0, fail: 0 } }); for (const u of n.f.foes) Object.assign(u, { hp: 0, dead: true });
-    n.act({ type: 'combat/end-turn', unitId: n.me.id }); expect(n.c.devotion).toBe(3);
+    n.act({ type: 'combat/end-turn', unitId: n.me.id }); expect(n.c.devotionXp).toBe(97); expect(n.c.devotion).toBe(4);
   });
 });
 
@@ -388,7 +388,7 @@ describe('knowledge pieces, conversion, apostasy, the Narrator\'s Devotion (Narr
   it('conversion: the new patron\'s pieces become Devotion (+1 each on 3); Jealous wipes the rest, Open keeps it', () => {
     const s = story(); const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'atheist' }; c.patron = null; c.faithPieces = { mother_ember: 2, the_quartermaster: 1 };
     s.act({ type: 'faith/pact', charId: c.id, patron: 'mother_ember' });
-    let x = s.g.characters[c.id]; expect(x.patron).toBe('mother_ember'); expect(x.devotion).toBe(5); expect(x.faithPieces).toEqual({ the_quartermaster: 1 });
+    let x = s.g.characters[c.id]; expect(x.patron).toBe('mother_ember'); expect(x.devotion).toBe(5); expect(x.devotionXp).toBe(102); expect(x.faithPieces).toEqual({ the_quartermaster: 1 });
     expect(said(s.g, /makes a pact with Mother Ember/)).toBe(true); expect(storyFx(s.g, FAITH_FX.patron_line).some((e) => e.event === 'conversion')).toBe(true);
     const j = story(); const d = j.g.characters[j.chars[0].id]; d.belief = { kind: 'atheist' }; d.patron = null; d.faithPieces = { the_quartermaster: 2 }; d.hymns = ['the_quartermaster.resupply'];
     j.act({ type: 'faith/pact', charId: d.id, patron: 'nerukhan' });
@@ -396,52 +396,56 @@ describe('knowledge pieces, conversion, apostasy, the Narrator\'s Devotion (Narr
     expect(() => j.act({ type: 'faith/pact', charId: d.id, patron: 'nerukhan' })).toThrow(/already sworn/);
     expect(() => j.act({ type: 'faith/pact', charId: d.id, patron: 'mother_ember' }, 'p2')).toThrow(/Only the Narrator/);
   });
-  it('apostasy: Devotion 0, an Atheist; one piece per gate reached (at least 1)', () => {
+  it('apostasy: Devotion XP 0, an Atheist; one piece per gate reached (at least 1); the farewell; a 90-day cooldown', () => {
     const s = story(); const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 6;
     s.act({ type: 'faith/apostasy', charId: c.id });
-    const x = s.g.characters[c.id]; expect(beliefOf(x).kind).toBe('atheist'); expect(x.devotion).toBe(0); expect(x.faithPieces).toEqual({ nerukhan: 2 });
+    const x = s.g.characters[c.id]; expect(beliefOf(x).kind).toBe('atheist'); expect(x.devotion).toBe(0); expect(x.devotionXp).toBe(0); expect(x.faithPieces).toEqual({ nerukhan: 2 });
+    expect(x.faithLeft).toEqual({ patron: 'nerukhan', day: 1 }); expect(said(s.g, /APOSTASY.*90 days \(until day 91\)/)).toBe(true);
+    expect(storyFx(s.g, FAITH_FX.patron_line).some((e) => e.event === 'farewell' && FAITH_PATRON.nerukhan.lines.farewell.includes(e.text))).toBe(true);
     expect(diceHymns(x).sort()).toEqual(['nerukhan.judgement', 'nerukhan.saints_shield']);
     expect(() => s.act({ type: 'faith/apostasy', charId: c.id })).toThrow(/no pact/);
     const t = story(); const d = t.g.characters[t.chars[0].id]; d.belief = { kind: 'faithful', patron: 'nerukhan' }; d.patron = 'nerukhan'; d.devotion = 1;
     t.act({ type: 'faith/apostasy', charId: d.id }); expect(t.g.characters[d.id].faithPieces).toEqual({ nerukhan: 1 });
   });
-  it('changing patrons is apostasy, then the pact (an Open patron keeps the old Hymns as pieces)', () => {
+  it('changing patrons is not apostasy (rules 1.6.1): no cooldown, an Open patron keeps the old Hymns as pieces', () => {
     const s = story(); const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 7;
     s.act({ type: 'faith/pact', charId: c.id, patron: 'counting_weaver' });
-    const x = s.g.characters[c.id]; expect(x.patron).toBe('counting_weaver'); expect(x.devotion).toBe(3); expect(x.faithPieces).toEqual({ nerukhan: 3 });
+    const x = s.g.characters[c.id]; expect(x.patron).toBe('counting_weaver'); expect(x.devotion).toBe(3); expect(x.devotionXp).toBe(45); expect(x.faithPieces).toEqual({ nerukhan: 3 });
+    expect(x.faithLeft ?? null).toBeNull(); expect(said(s.g, /APOSTASY/)).toBe(false); expect(said(s.g, /LEAVING · HOLY FATHER NERUKHAN/)).toBe(true);
   });
-  it('the Narrator moves Devotion ±2 at most, with a reason; never an Atheist\'s', () => {
+  it('the Narrator moves Devotion XP −6 to +5 a call, with a reason; never an Atheist\'s', () => {
     const s = story(); const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 3;
-    expect(() => s.act({ type: 'faith/devotion', charId: c.id, delta: 3, reason: 'x' })).toThrow(/2 at most/);
+    expect(() => s.act({ type: 'faith/devotion', charId: c.id, delta: 6, reason: 'x' })).toThrow(/from -6 to \+5/);
+    expect(() => s.act({ type: 'faith/devotion', charId: c.id, delta: -7, reason: 'x' })).toThrow(/from -6 to \+5/);
     expect(() => s.act({ type: 'faith/devotion', charId: c.id, delta: 1, reason: '' })).toThrow(/reason/);
     expect(() => s.act({ type: 'faith/devotion', charId: c.id, delta: 1, reason: 'kind' }, 'p2')).toThrow(/Only the Narrator/);
-    s.act({ type: 'faith/devotion', charId: c.id, delta: -2, reason: 'broke character before the altar' }); expect(s.g.characters[c.id].devotion).toBe(1);
+    s.act({ type: 'faith/devotion', charId: c.id, delta: -6, reason: 'broke character before the altar' }); expect(s.g.characters[c.id].devotionXp).toBe(39); expect(s.g.characters[c.id].devotion).toBe(2);
     const a = story(); const d = a.g.characters[a.chars[0].id]; d.belief = { kind: 'atheist' }; d.patron = null;
     expect(() => a.act({ type: 'faith/devotion', charId: d.id, delta: 1, reason: 'x' })).toThrow(/Atheist/);
   });
-  it('the Narrator\'s turn: patrons (a pact, Devotion clamped to ±2) and faith ops; the patron\'s mood is not applied', () => {
+  it('the Narrator\'s turn: patrons (a pact, Devotion XP clamped to +5) and faith ops; the patron\'s mood is not applied', () => {
     const s = story(); const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'atheist' }; c.patron = null;
-    s.act({ type: 'narrator/turn', turn: { narration: 'A voice answers.', patrons: [{ charId: c.id, patron: 'mother_ember', devotion: 5 }], patronMood: [{ patron: 'mother_ember', tn: 18 }], faith: [{ charId: c.id, op: 'piece', patron: 'the_matchmaker' }] } } as any);
-    const x = s.g.characters[c.id]; expect(x.patron).toBe('mother_ember'); expect(x.devotion).toBe(5); expect(x.faithPieces).toEqual({ the_matchmaker: 1 });
+    s.act({ type: 'narrator/turn', turn: { narration: 'A voice answers.', patrons: [{ charId: c.id, patron: 'mother_ember', devotion: 9 }], patronMood: [{ patron: 'mother_ember', tn: 18 }], faith: [{ charId: c.id, op: 'piece', patron: 'the_matchmaker' }] } } as any);
+    const x = s.g.characters[c.id]; expect(x.patron).toBe('mother_ember'); expect(x.devotionXp).toBe(50); expect(x.devotion).toBe(3); expect(x.faithPieces).toEqual({ the_matchmaker: 1 });
     expect(s.g.story.patronMood?.mother_ember).toBeUndefined();
   });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('rites', () => {
-  it('an engine rite (story): +1, once a session; the Narrator can\'t press it', () => {
+  it('an engine rite (story): +4 XP, once a session; the Narrator can\'t press it', () => {
     const s = storyWith([{ skills: { faith: 4 } }]); const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 3;
     s.act({ type: 'faith/rite', charId: c.id, id: 'confession' });
-    expect(s.g.characters[c.id].devotion).toBe(4); expect(s.g.characters[c.id].ritesKept?.['nerukhan.confession']).toBe(sessionN(s.g));
+    expect(s.g.characters[c.id].devotionXp).toBe(49); expect(s.g.characters[c.id].ritesKept?.['nerukhan.confession']).toBe(sessionN(s.g));
     expect(() => s.act({ type: 'faith/rite', charId: c.id, id: 'confession' })).toThrow(/Kept this session/);
     expect(() => s.act({ type: 'faith/rite_kept', charId: c.id, rite: 'confession' })).toThrow(/rite button/);
-    s.act({ type: 'faith/rite_kept', charId: c.id, rite: 'shrine_tithe' }); expect(s.g.characters[c.id].devotion).toBe(5);
+    s.act({ type: 'faith/rite_kept', charId: c.id, rite: 'shrine_tithe' }); expect(s.g.characters[c.id].devotionXp).toBe(53);
     expect(() => s.act({ type: 'faith/rite_kept', charId: c.id, rite: 'shrine_tithe' })).toThrow(/Already kept/);
   });
   it('an after-rest rite waits for a rest; a tithe rite takes the item', () => {
     const s = storyWith([{ skills: { faith: 4 } }]); const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron: 'the_quartermaster' }; c.patron = 'the_quartermaster';
     expect(() => s.act({ type: 'faith/rite', charId: c.id, id: 'inventory' })).toThrow(/After a rest/);
-    (s.g as any).restN = 1; s.act({ type: 'faith/rite', charId: c.id, id: 'inventory' }); expect(s.g.characters[c.id].devotion).toBe(4);
+    (s.g as any).restN = 1; s.act({ type: 'faith/rite', charId: c.id, id: 'inventory' }); expect(s.g.characters[c.id].devotionXp).toBe(49);
     const t = storyWith([{ skills: { faith: 4 } }]); const d = t.g.characters[t.chars[0].id]; d.belief = { kind: 'faithful', patron: 'mother_ember' }; d.patron = 'mother_ember';
     const r = FAITH_PATRON.mother_ember.rites.find((x: any) => x.engine);
     d.pack = (d.pack || []).filter((x: any) => !tithable(x, r.check));
@@ -491,8 +495,8 @@ describe('determinism and voice lines', () => {
     const run = () => { const h = holy({ devotion: 3, faith: 6 }); h.pray('hymn', 'judgement', { targetId: h.foe.id }); return JSON.stringify([h.cb.log.slice(-4), fx(h.cb, FAITH_FX.patron_line), h.c.devotion]); };
     expect(run()).toBe(run());
   });
-  it('patronLine picks one of the bank\'s three with the given dice; every patron has 9 banks of 3', () => {
-    for (const p of FAITH_PATRONS) { expect(Object.keys(p.lines).length).toBe(9); for (const b of Object.keys(p.lines)) expect(p.lines[b].length).toBe(3); }
+  it('patronLine picks one of the bank\'s three with the given dice; every patron has 10 banks of 3 (farewell: rules 1.6.1)', () => {
+    for (const p of FAITH_PATRONS) { expect(Object.keys(p.lines).length).toBe(10); expect(p.lines.farewell.length).toBe(3); for (const b of Object.keys(p.lines)) expect(p.lines[b].length).toBe(3); }
     const a = patronLine({ state: 42 }, FAITH_PATRON.nerukhan, 'answered'), b = patronLine({ state: 42 }, FAITH_PATRON.nerukhan, 'answered');
     expect(a).toBe(b); expect(FAITH_PATRON.nerukhan.lines.answered).toContain(a);
   });

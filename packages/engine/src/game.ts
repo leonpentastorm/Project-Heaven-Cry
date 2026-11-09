@@ -8,7 +8,7 @@ import {
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
+import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -21,11 +21,11 @@ import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, isCache } from './world';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
-import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition } from './magic';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
-import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, FAITH_PATRON, VOW } from './faith';
+import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, FAITH_PATRON, VOW } from './faith';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
@@ -155,6 +155,9 @@ export interface GameState {
   /** Sessions started in this room, and rests taken this session: the stamps of per-session and per-rest item uses
    * (effects/uses.ts). Old saves: session 1, no rests. */
   sessionN?: number; restN?: number;
+  /** Rules 1.6.1 (item 709): the day counter, from 1 (old saves: 1; dayOf). A long rest is a day; the Narrator's turn
+   * field days adds more (travel, time skips). The pact cooldown after leaving a patron counts it. */
+  day?: number;
 }
 
 export const PLAYER_COLOURS = ['#7FD4FF', '#FF9EC7', '#B8E986', '#FFB86B'];
@@ -193,13 +196,17 @@ export type NarratorTurn = {
   karma?: { charId: string; amount: number; unlawful?: boolean; why?: string }[];
   /** The party rests (spec: Rest): short (1 hour) or long (8 hours); settlement: somewhere safe and supplied. */
   rest?: { kind: 'short' | 'long'; settlement?: boolean } | null;
+  /** Rules 1.6.1 (item 709): days that pass (travel, a time skip), a whole number from 1 to 3650; a long rest is a day already. */
+  days?: number;
   /** Things a character now understands (Lab Coat's identified rules, an item's nature): by name. */
   identify?: { charId: string; what: string }[];
   /** A tutor met (spec: Classes, advanced classes): the advanced class id it can teach. */
   tutors?: { charId: string; classId: string }[];
-  /** Patron pacts and Devotion (spec: Patrons and prayer): make a pact (patron id), or change Devotion by delta. */
+  /** Patron pacts and Devotion (spec: Patrons and prayer): make a pact (patron id), or move Devotion XP by devotion (the
+   * legacy path: the same −6..+5 and session cap as faith devotion). */
   patrons?: { charId: string; patron?: string; devotion?: number; reason?: string }[];
-  /** Rules 1.6: the Narrator's faith events (faith.ts): a pact, a knowledge piece, Devotion ±2 with a reason, a Narrator rite kept, apostasy. */
+  /** Rules 1.6.1: the Narrator's faith events (faith.ts): a pact, a knowledge piece, Devotion XP −6..+5 with a reason
+   * (gains capped at +10 a session per character), a Narrator rite kept, apostasy. */
   faith?: { charId: string; op: 'pact' | 'piece' | 'devotion' | 'rite_kept' | 'apostasy'; patron?: string; from?: string; delta?: number; reason?: string; rite?: string }[];
   /** The patron's mood: the TN of prayers to it (12 by default). */
   patronMood?: { patron: string; tn: number }[];
@@ -386,7 +393,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
-    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630)
+    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     if (c.classId !== cls0) refreshClassUnits(g, c); // migrated mid-fight: its units' held class and resources follow
     if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n });
   }
@@ -936,6 +943,7 @@ export const REST_INFO: Record<'short' | 'long', string> = {
  * uses. 'rest' {g, kind, chars} lets items change it (Insomniac, Old Timer…). */
 export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?: boolean } = {}) {
   g.restN = (g.restN || 0) + 1;
+  if (kind === 'long') g.day = dayOf(g) + 1; // rules 1.6.1 (item 709): a long rest is a day
   const chars = Object.values(g.characters).filter((c) => !c.dead);
   // ctx.mult[charId] = {hp, mp}: a fraction of what this character gets back (Insomniac's half rest: hooks gap H1).
   const ctx: any = emitStory(g, 'rest', { g, kind, chars, settlement: !!o.settlement, hpMult: 1, mult: {} as Record<string, { hp?: number; mp?: number }> });
@@ -948,7 +956,15 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
     const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
     if (kind === 'long') { if (carriesEmanator(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
   }
-  push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
+  push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full. Day ' + dayOf(g) + '.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
+}
+/** Days pass (rules 1.6.1, item 709): the Narrator's turn field days, a whole number from 1 to 3650 (clamped; rounded;
+ * anything under 1 is ignored). */
+export const DAYS_MAX = 3650;
+export function advanceDays(g: GameState, n: number): number {
+  const d = Math.min(DAYS_MAX, Math.round(Number(n))); if (!Number.isFinite(d) || d < 1) return 0;
+  g.day = dayOf(g) + d; push(g, { kind: 'system', text: (d === 1 ? 'A day passes' : d + ' days pass') + ': Day ' + g.day + '.' });
+  return d;
 }
 /** The optional rules-1.3 fields of a Narrator turn (each ignored when absent or invalid). */
 function storyFields(g: GameState, t: NarratorTurn) {
@@ -976,18 +992,22 @@ function storyFields(g: GameState, t: NarratorTurn) {
   // Tutors (rules 1.3) only for advanced classes that are active again (Class Roster Revision 3 shelves them all).
   for (const x of (t.tutors || []).slice(0, 4)) { const c = g.characters[x.charId], adv = ADVANCED_CLASSES.find((a) => a.id === x.classId); if (!c || !adv || !advancedActive(adv.id)) continue; const l = (c.tutors ||= []); if (!l.includes(adv.id)) { l.push(adv.id); push(g, { kind: 'system', text: c.name + ' has found a tutor for the ' + adv.name + '.' }); } }
   // Rules 1.6: a pact (conversion), Devotion moves of at most ±2 with a reason; the patron's mood (a TN) is retired.
+  // Rules 1.6.1: Devotion XP from −6 to +5 a move (clamped here, item 627), gains at most +10 a session per character.
   for (const x of (t.patrons || []).slice(0, 4)) {
     const c = g.characters[x.charId]; if (!c) continue;
-    if (x.patron && FAITH_PATRON[x.patron] && patronOf(c)?.id !== x.patron) makePact(g, c, x.patron);
-    if (Number.isFinite(x.devotion) && x.devotion && beliefOf(c).kind === 'faithful') narratorDevotion(g, c, Math.max(-2, Math.min(2, Math.round(x.devotion!))), x.reason || 'the Narrator');
+    const errs: string[] = [];
+    if (x.patron && FAITH_PATRON[x.patron] && patronOf(c)?.id !== x.patron) { const e = makePact(g, c, x.patron); if (e) errs.push(e); }
+    if (Number.isFinite(x.devotion) && x.devotion && beliefOf(c).kind === 'faithful') { const e = narratorDevotion(g, c, Number(x.devotion), x.reason || 'the Narrator', { clamp: true }); if (e) errs.push(e); }
+    for (const e of errs) push(g, { kind: 'system', text: 'Faith (' + c.name + '): ' + e, ooc: true });
   }
   for (const x of (t.faith || []).slice(0, 8)) {
     const c = g.characters[x.charId]; if (!c) continue;
-    const err = x.op === 'pact' ? makePact(g, c, x.patron || '') : x.op === 'piece' ? grantPiece(g, c, x.patron || '', x.from) : x.op === 'devotion' ? narratorDevotion(g, c, Math.max(-2, Math.min(2, Math.round(Number(x.delta) || 0))), x.reason || 'the Narrator')
+    const err = x.op === 'pact' ? makePact(g, c, x.patron || '') : x.op === 'piece' ? grantPiece(g, c, x.patron || '', x.from) : x.op === 'devotion' ? narratorDevotion(g, c, Number(x.delta) || 0, x.reason || 'the Narrator', { clamp: true })
       : x.op === 'rite_kept' ? narratorRite(g, c, x.rite || '', x.patron) : x.op === 'apostasy' ? apostasy(g, c) : 'Unknown faith op.';
     if (err) push(g, { kind: 'system', text: 'Faith (' + c.name + '): ' + err, ooc: true });
   }
   if (t.rest && (t.rest.kind === 'short' || t.rest.kind === 'long')) applyRest(g, t.rest.kind, { settlement: !!t.rest.settlement });
+  if (t.days != null) advanceDays(g, t.days);
 }
 
 function afterPending(g: GameState) {
@@ -2738,15 +2758,16 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       if (a.vow && !VOW[a.vow]) fail('No such vow.');
       sbChange(g, c, () => {
         if (a.faith != null) sbSetSkill(c, 'faith', a.faith);
-        if (a.belief === 'atheist') { c.belief = { kind: 'atheist' }; c.patron = null; c.devotion = 0; }
-        else if (a.belief === 'faithful' || a.patron) { const pid = a.patron || patronOf(c)?.id || Object.keys(FAITH_PATRON)[0]; if (patronOf(c)?.id !== pid) c.devotion = 3; c.belief = { kind: 'faithful', patron: pid }; c.patron = pid; }
-        if (a.devotion != null && beliefOf(c).kind === 'faithful') c.devotion = Math.max(0, Math.min(10, Math.round(a.devotion)));
+        // Rules 1.6.1: the stepper sets the level (the XP at its threshold, item 701); the tools ignore the pact cooldown.
+        if (a.belief === 'atheist') { c.belief = { kind: 'atheist' }; c.patron = null; setDevotionXp(c, 0); }
+        else if (a.belief === 'faithful' || a.patron) { const pid = a.patron || patronOf(c)?.id || Object.keys(FAITH_PATRON)[0]; if (patronOf(c)?.id !== pid) setDevotionXp(c, devotionThreshold(3)); c.belief = { kind: 'faithful', patron: pid }; c.patron = pid; c.faithLeft = null; }
+        if (a.devotion != null && beliefOf(c).kind === 'faithful') setDevotionXp(c, devotionThreshold(a.devotion));
         if (a.pieces) {
           const own = patronOf(c)?.id, pc: Record<string, number> = {};
           for (const [pid, n] of Object.entries(a.pieces)) if (FAITH_PATRON[pid] && pid !== own && n > 0) pc[pid] = Math.min(3, Math.round(n));
           c.faithPieces = pc; c.hymns = Object.entries(pc).flatMap(([pid, n]) => (FAITH_PATRON[pid].hymns || []).slice(0, n).map((h: any) => pid + '.' + h.id));
         }
-        if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; const st: any = c.state; if (st?.faith) st.faith = {}; }
+        if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; delete c.faithTally; const st: any = c.state; if (st?.faith) st.faith = {}; }
       });
       const u = cb?.units.find((x) => x.charId === c.id);
       if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.intervened; u.faith.liked = 0; } }

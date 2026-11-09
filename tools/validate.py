@@ -597,8 +597,30 @@ pat = data.get("patrons") or {}
 if isinstance(pat, dict) and pat.get("tags"):
     tag_ids = {t.get("id") for t in pat.get("tags") or []}
     banks = pat.get("line_banks") or []
-    if len(banks) != 9:
-        errors.append(f"patrons: line_banks should list 9 banks, has {len(banks)}")
+    if len(banks) != 10:
+        errors.append(f"patrons: line_banks should list 10 banks, has {len(banks)}")
+    # rules 1.6.1 (Faith 2.1): Devotion XP, the curve rising from 0 to its 10 levels; the sources, tag caps and the
+    # Narrator's range; the day cooldown after leaving a pact
+    dv = pat.get("devotion") or {}
+    curve = (dv.get("xp") or {}).get("curve") or []
+    if len(curve) != 11 or curve[0] != 0 or any(not isinstance(x, int) or x < 0 for x in curve) or any(b <= a for a, b in zip(curve, curve[1:])):
+        errors.append("patrons: devotion.xp.curve needs 11 rising whole numbers from 0 (levels 0-10)")
+    if not (isinstance(dv.get("start"), int) and 0 <= dv["start"] <= 10):
+        errors.append("patrons: devotion.start must be a level from 0 to 10")
+    for grp, keys in (("gain", ("liked_tag", "vow_kept", "rite_kept", "convert_someone", "deed_min", "deed_max", "piece_on_conversion")),
+                      ("loss", ("taboo_tag", "taboo_tag_witnessed", "vow_broken", "overreach_miss", "break_character_seen", "judgement")),
+                      ("tag_caps", ("fight", "scene", "session")), ("narrator", ("min", "max", "session_gain_cap")), ("apostasy", ("cooldown_days",))):
+        for k in keys:
+            v = (dv.get(grp) or {}).get(k)
+            if not isinstance(v, int) or (grp != "narrator" and v < 0):
+                errors.append(f"patrons: devotion.{grp}.{k} must be a whole number" + ("" if grp == "narrator" else " (0 or more; losses are written as positive numbers)"))
+    nar = dv.get("narrator") or {}
+    if isinstance(nar.get("min"), int) and isinstance(nar.get("max"), int) and not (nar["min"] < 0 < nar["max"]):
+        errors.append("patrons: devotion.narrator needs min below 0 and max above 0")
+    for k in ("liked_tag_fight_cap", "narrator_delta_max"):
+        if k in (dv.get("gain") or {}) or k in dv:
+            errors.append(f"patrons: devotion.{k} is retired (Faith 2.1: tag_caps, narrator)")
+    cond_kinds = {c.get("id"): c.get("adjudication") for c in items("conditions")}
     if len(pat.get("whispers") or []) != 6:
         errors.append("patrons: there should be 6 Whispers")
     for w in pat.get("whispers") or []:
@@ -638,6 +660,28 @@ if isinstance(pat, dict) and pat.get("tags"):
                 errors.append(f"patrons:{pid}: engine rite {r.get('id')} needs check.kind story, after_rest or tithe_item")
         if not (p.get("intervention") or {}).get("trigger"):
             errors.append(f"patrons:{pid}: the intervention needs a trigger")
+        # leaving this patron (rules 1.6.1): Open patrons roll d20 + Faith vs their tn, Jealous ones never let go; the
+        # grudge's condition must be one the engine runs (conditions.json, adjudication engine)
+        lv = p.get("leave") or {}
+        if lv.get("lets_go") not in ("roll", "never"):
+            errors.append(f"patrons:{pid}: leave.lets_go must be roll or never")
+        if (lv.get("lets_go") == "roll") != (p.get("rule") == "open"):
+            errors.append(f"patrons:{pid}: an Open patron rolls to let you go (lets_go roll), a Jealous one never does")
+        if lv.get("lets_go") == "roll" and not (isinstance(lv.get("tn"), int) and 2 <= lv["tn"] <= 20):
+            errors.append(f"patrons:{pid}: leave.tn must be a TN from 2 to 20")
+        gr = lv.get("grudge") or {}
+        if not (isinstance(gr.get("sessions"), int) and gr["sessions"] >= 1):
+            errors.append(f"patrons:{pid}: leave.grudge.sessions must be 1 or more")
+        elif p.get("rule") == "jealous" and gr["sessions"] < 2:
+            errors.append(f"patrons:{pid}: a Jealous patron's grudge lasts 2 sessions or more")
+        if not (isinstance(gr.get("rounds"), int) and gr["rounds"] >= 1):
+            errors.append(f"patrons:{pid}: leave.grudge.rounds must be 1 or more")
+        if not (isinstance(gr.get("xp_mult"), (int, float)) and 0 <= gr["xp_mult"] <= 1):
+            errors.append(f"patrons:{pid}: leave.grudge.xp_mult must be from 0 to 1")
+        if cond_kinds.get(gr.get("condition")) != "engine":
+            errors.append(f"patrons:{pid}: leave.grudge.condition '{gr.get('condition')}' must be a condition the engine runs")
+        if not gr.get("text"):
+            errors.append(f"patrons:{pid}: leave.grudge needs its text")
         lines = p.get("lines") or {}
         for b in banks:
             if len(lines.get(b) or []) != 3:
