@@ -23,7 +23,7 @@ import {
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
-import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, GATE } from '@engine';
+import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, GATE, moduleShelved } from '@engine';
 import { patronMarkUri, vowIconUri, FAITH_INK } from './faithArt';
 import { importCharacter } from './charfile';
 import { fxBusyUntil } from './fx/FxLayer';
@@ -576,7 +576,7 @@ function MagicTab({ c }: { c: Character }) {
         {moduleGroups(c).map((gr) => <div key={gr.key} role="group" aria-label={gr.label + ' modules'} data-module-group={gr.key} style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 6 }}>
           <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: C.soul }}>{gr.label.toUpperCase()} · {gr.blurb}</span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {gr.modules.map((m) => <button key={m.id} type="button" data-module={m.id} title={m.name + ': ' + m.text + (m.locked ? ' (normally only with ' + (m.cls || 'its class') + ')' : m.gate ? ' (normally ' + m.gate + ')' : '')} disabled={m.known} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
+            {gr.modules.map((m) => <button key={m.id} type="button" data-module={m.id} title={m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : '')} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
           </div>
         </div>)}
       </details>
@@ -624,7 +624,7 @@ function MagicTab({ c }: { c: Character }) {
         {['', ...SHAPE_MODULES].map((f) => <button key={f || 'bolt'} type="button" aria-pressed={shape === f} style={chip(shape === f)} onClick={() => setShape(f)}><img src={formIconUri(f || 'bolt', toneInk(tone))} alt="" width={14} height={14} />{f ? (MODULE as any)[f]?.name : 'Bolt'}</button>)}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {others.map((m) => { const on = mods.includes(m.id), lock = m.id === 'size' && !shape; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} title={lock ? 'Size needs a shape.' : m.text} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
+        {others.map((m) => { const on = mods.includes(m.id), shelved = moduleShelved(m.id), lock = (m.id === 'size' && !shape) || !!shelved; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} data-locked={shelved ? '1' : undefined} title={shelved || (lock ? 'Size needs a shape.' : m.text)} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
           onClick={() => setMods(on ? mods.filter((x) => x !== m.id) : [...mods, m.id].slice(-3))}>{m.name}</button>; })}
       </div>
       {v && <div style={{ fontSize: 12, lineHeight: 1.4 }}><div style={{ color: C.soul, fontWeight: 700 }}>{v.line}</div><div>{v.effects}</div><div style={{ color: C.muted }}>{v.rider}</div></div>}

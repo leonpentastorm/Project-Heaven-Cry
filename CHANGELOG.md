@@ -8,6 +8,21 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.2.1 — 9 November 2026
+
+Branch `hotfix/outburst-4.0-review`: **fixes from the Outburst 4.0 review**, before it went live. Each fix has a regression test.
+
+- **Crash fixed:** Release after pouring Love, Joy or Calm, before picking a tile, no longer breaks the combat screen.
+- **Revert Pump** takes back only the last pump. A Feed's stage, AP and glyph now stay.
+- **Fuse:** the release hook fires once. Heart Surge and Fusion now reach the delayed blast. A Fuse still waiting when the fight ends fizzles out ("A fuse fizzles out.") instead of going off later on the area map.
+- **The 10 advanced-class modules** can no longer be learned or designed while their classes are shelved: not from the Narrator, a plate, a Proving Ground design or a starting Outburst. The Proving Ground shows them locked.
+- **Practice** from a release on the area map is counted once (it was counted twice).
+- **HEART panel:** while pumping, the stage bar and counter stay in view. "now HEALS"-style lines wrap on their own line, in combat and on the area map.
+- **Test fix:** the `feel` e2e suite equips an Evoker in hand, as the focus-in-hand rule (decision 103) requires.
+- **Waiting on Leon:**
+  - The HEART panel needs one short scroll to reach its second button row (Let go, Overwatch) at 1440×1000. The `heart` e2e check was relaxed to match. Make the panel more compact if both rows must show at once.
+  - A Fuse's release effects (Heart Surge's Strain, faith tags) now happen on the cast turn; its damage comes when it goes off.
+
 ## 0.2.0 — 9 November 2026
 
 Branch `feature/outburst-4.0`: **Outburst 4.0, Soul magic rules 1.8** (decision 109; `docs/design/outburst-4.0-spec.md`; spec "Soul magic" section 12, items 801–818; hand-off `docs/design/handoffs/outburst-4.0-HANDOFF.md`).

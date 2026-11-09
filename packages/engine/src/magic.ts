@@ -51,7 +51,7 @@ export interface MagicUnit {
 
 /** One pump this turn, for Revert Pump (rules 1.8, item 808): the stage before, the AP paid, the free Pump it used, the
  * feeling poured in and the Strain it added. */
-export interface PumpRec { design: string; stage0: number; ap: number; free: 'first' | 'empathy' | 'item' | null; feeling?: string; strain: number; felt0: number }
+export interface PumpRec { design: string; stage0: number; ap: number; free: 'first' | 'empathy' | 'item' | null; feeling?: string; strain: number; felt0: number; /** the stages this pump added (Revert takes back only these, not a Feed's after it) */ added?: number }
 export const MANA_START = 15;
 export const FLUX_MAX = 6;
 export const CORE_CHARGE = 10;
@@ -809,6 +809,7 @@ export function pumpOutburst(cb: Combat, rng: Rng, u: Unit, feeling?: string | n
   h.stage = Math.min(MAX_STAGE, h.stage + 1);
   if (feeling) { (h.felt ||= []).push(feeling); (h.feltAt ||= []).push(h.stage); }
   emit(cb, 'outburst_pump', { u, design: d, stage: h.stage, ap: pv.ap, free: pv.free, fail: '', preview: false, feeling: feeling || null, cb, rng });
+  rec.added = h.stage - rec.stage0;
   const f = feeling ? FEELING[feeling] : null, mult = heldMult(cb, u, h);
   emitFx(cb, 'pump', { unit: u.id, at: u.pos, stage: h.stage, mult, free: pv.free, max: h.stage >= MAX_STAGE, tone: h.tone || 'raw', ...(f ? { feeling: f.id, family: f.family, step: pv.step, does: feelingWord(d, f.id) } : {}) });
   cb.log.push(u.name + ' pumps the heart' + (f ? ' with ' + f.name : '') + ': ' + d.name + ' at stage ' + h.stage + ' (×' + mult + ')' + (pv.freeKind === 'first' ? ', the fight\'s free first Pump' : pv.freeKind === 'empathy' ? ', a free Pump (Empathy)' : pv.free ? ', a free Pump' : '') + '.');
@@ -830,7 +831,7 @@ export function revertPump(cb: Combat, u: Unit): string | null {
   if (!onTurn(cb, u)) return 'On your own turn.';
   const r = (m.pumps || []).at(-1); if (!r || r.design !== m.held.design) return 'No pump to undo this turn.';
   m.pumps!.pop();
-  const h = m.held; h.stage = r.stage0; if (h.felt) h.felt = h.felt.slice(0, r.felt0); if (h.feltAt) h.feltAt = h.feltAt.slice(0, r.felt0);
+  const h = m.held; h.stage = r.added != null ? Math.max(0, h.stage - r.added) : r.stage0; if (h.felt) h.felt = h.felt.slice(0, r.felt0); if (h.feltAt) h.feltAt = h.feltAt.slice(0, r.felt0);
   u.ap += r.ap;
   if (r.free === 'first') m.firstUsed = false; else if (r.free === 'empathy') m.freePumps = Math.min(m.freePumpsMax || 0, (m.freePumps || 0) + 1);
   if (r.strain > 0) { const back = easeStrain(cb, u, r.strain, 'revert'); h.strainIn = Math.max(0, (h.strainIn || 0) - back); }
@@ -1071,7 +1072,10 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   const m = heart(u)!, stage = m.held?.stage ?? 0, tone = toneOf(d), form = formOf(d), has = (x: string) => d.modules.includes(x);
   const felt = [...(m.held?.felt || [])], F = new Set(felt), FP = (id: string): any => FEELING[id]?.pour || {};
   // 'outburst_release' {u, design, stage, aim, wild, mult, form, tone, reaction, felt} (mult multiplies the stage multiplier).
-  const orl: any = emit(cb, 'outburst_release', { u, design: d, stage, aim, wild, mult: 1, form, tone, reaction, felt, cb, rng });
+  // A Fuse going off doesn't fire it again: it fired when the Fuse was set (the player's action, where items such as
+  // Heart Surge and Fusion add to it), and the multiplier it gave then is kept on the fuse.
+  const fz = (d as any).__fused;
+  const orl: any = fz ? { mult: (d as any).__fuseMult ?? 1 } : emit(cb, 'outburst_release', { u, design: d, stage, aim, wild, mult: 1, form, tone, reaction, felt, cb, rng });
   const res = wild ? { bonus: 0, with: [] as string[] } : resonanceFor(cb, u);
   // Rules 1.8 (item 804): the table's step, plus (step − 0.4) for each feeling pump; Quiet ×0.8. Spite reads per target.
   const quiet = has('quiet') ? (MODULE.quiet as any)?.damage_mult ?? 0.8 : 1;
@@ -1081,9 +1085,9 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   m.held = null; m.pumps = [];
   if (has('random') && !wild) { const pool = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= heartReach(m, d)); if (pool.length) aim = pool[die(rng, pool.length) - 1].pos; }
   // Fuse (rules 1.8): it lands and waits, going off at your next turn start or when a creature steps into its area.
-  if (has('fuse') && !wild && !(d as any).__fused) {
+  if (has('fuse') && !wild && !fz) {
     const tiles = outburstArea(cb, u, d, aim, stage);
-    (cb.zones ||= []).push({ id: 'fz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'fuse' as any, tiles, words: [], by: u.id, side: u.side, left: 99, mult: 1, who: u.name, fuse: { design: d.id, held: heldWas, aim } } as any);
+    (cb.zones ||= []).push({ id: 'fz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'fuse' as any, tiles, words: [], by: u.id, side: u.side, left: 99, mult: 1, who: u.name, fuse: { design: d.id, held: heldWas, aim, mult: orl.mult || 1 } } as any);
     emitFx(cb, 'fuse', { unit: u.id, at: u.pos, to: aim, tiles, tone, element: toneElement(tone), stage });
     cb.log.push(u.name + ' sets ' + d.name + ' to wait at ' + refOf(aim) + ' (Fuse): it goes off at ' + u.name + "'s next turn, or when someone steps in.");
     return;
@@ -1222,6 +1226,7 @@ function placeResidue(cb: Combat, u: Unit, feeling: string, tiles: string[]) {
 }
 /** Practice (rules 1.8): kept on the character. fx 'practice' {unit, gain, total}. */
 function gainPractice(cb: Combat, u: Unit, n: number) {
+  if ((cb as any).dry) return; // the area map's dry run (game.ts): only the real release practises
   const c = charOfUnit(u); if (!c || n <= 0 || u.companion) return;
   c.soulPractice = (c.soulPractice || 0) + n;
   emitFx(cb, 'practice', { unit: u.id, gain: n, total: c.soulPractice });
@@ -1249,7 +1254,7 @@ function fuseGo(cb: Combat, rng: Rng, z: any, why: string) {
   const m = heart(u)!, d = findDesign(m, z.fuse.design); if (!d) return;
   const keep = m.held; m.held = z.fuse.held ? { ...z.fuse.held } : null;
   cb.log.push(u.name + "'s fused " + d.name + ' goes off (' + why + ').');
-  const dd: any = { ...d, __fused: true };
+  const dd: any = { ...d, __fused: true, __fuseMult: z.fuse.mult ?? 1 };
   try { releaseAt(cb, rng, u, dd, z.fuse.aim, false); } finally { m.held = keep; }
 }
 /** Rules 1.8 at a turn start: residue underfoot, a caster's fuses, Linger fields. Every unit. */

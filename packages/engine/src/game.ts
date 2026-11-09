@@ -25,7 +25,7 @@ import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, hold
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError } from './character';
+import { soulPickError, moduleGateError, moduleShelved } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -1730,7 +1730,11 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
   if (!cb.overworld) hazardEvents(g, cb);
   // A Grand form (and the smoke, light and ramparts its staff raised) ends with the fight: never carried to the story
   // map after one (on the area map itself, where it can be planted too, it stays).
-  g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = afterFight ? (cb.zones || []).filter((z: any) => z.kind !== 'grand' && !z.grandOf) : cb.zones || []; g.story.glyphMap = cb.map.id;
+  // A Fuse (rules 1.8) waits for its caster's next turn in the fight: the fight over, it fizzles (never going off later
+  // on the area map). Linger fields and residue run down their rounds as zones do.
+  const fuses = afterFight ? (cb.zones || []).filter((z: any) => z.kind === 'fuse').length : 0;
+  g.story.mana = manaOf(cb); g.story.glyphs = cb.glyphs || []; g.story.zones = afterFight ? (cb.zones || []).filter((z: any) => z.kind !== 'grand' && !z.grandOf && z.kind !== 'fuse') : cb.zones || []; g.story.glyphMap = cb.map.id;
+  if (fuses) push(g, { kind: 'system', text: fuses === 1 ? 'A fuse fizzles out.' : fuses + ' fuses fizzle out.' });
   g.story.glyphSeq = Math.max(g.story.glyphSeq || 0, cb.glyphSeq || 0);
   const m = (g.story.magic ||= {});
   for (const u of cb.units) if (u.charId) {
@@ -1772,7 +1776,7 @@ export function plateLesson(note?: string): string { return String(note || '').t
 function teachCheck(c: Character, m: { word?: string; school?: string; module?: string; tone?: string }): string {
   if (m.word) { const w = m.word.trim().toLowerCase(); if (!SIGIL[w]) return 'No such word.'; if ((c.sigils || []).includes(w)) return c.name + ' already knows ' + SIGIL[w].word + '.'; if ((c.sigils || []).length >= wordsKnownCap(c)) return c.name + ' knows ' + (c.sigils || []).length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').'; return ''; }
   if (m.school) return SCHOOL[m.school] ? '' : 'No such school.';
-  if (m.module) return MODULE[m.module] ? '' : 'No such module.';
+  if (m.module) return MODULE[m.module] ? moduleShelved(m.module) || '' : 'No such module.';
   if (m.tone) return TONE[m.tone] && m.tone !== 'raw' ? '' : 'No such tone.';
   return 'Nothing to learn.';
 }
@@ -1786,7 +1790,7 @@ function teach(g: GameState, c: Character, m: { word?: string; school?: string; 
   }
   const k = (c.soulKnown ||= { schools: [], modules: [] });
   if (m.school) { if (!SCHOOL[m.school]) return 'No such school.'; if (!k.schools.includes(m.school)) { k.schools.push(m.school); push(g, { kind: 'system', text: c.name + ' learns the ' + SCHOOL[m.school].name + ' school of Outbursts (' + why + ').' }); } return ''; }
-  if (m.module) { if (!MODULE[m.module]) return 'No such module.'; if (!k.modules.includes(m.module)) { k.modules.push(m.module); push(g, { kind: 'system', text: c.name + ' learns the Outburst module ' + MODULE[m.module].name + ' (' + why + ').' }); } return ''; }
+  if (m.module) { if (!MODULE[m.module]) return 'No such module.'; { const sh = moduleShelved(m.module); if (sh) return sh; } if (!k.modules.includes(m.module)) { k.modules.push(m.module); push(g, { kind: 'system', text: c.name + ' learns the Outburst module ' + MODULE[m.module].name + ' (' + why + ').' }); } return ''; }
   if (m.tone) { if (!TONE[m.tone] || m.tone === 'raw') return 'No such tone.'; const kt = (k.tones ||= []); if (!kt.includes(m.tone)) { kt.push(m.tone); push(g, { kind: 'system', text: c.name + ' learns the ' + TONE[m.tone].name + ' tone of Outbursts (' + why + ').' }); } return ''; }
   return 'Nothing to learn.';
 }
@@ -1969,7 +1973,8 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     // A spell that would touch a person on the map starts a fight, as an attack does (spec: Overworld rounds).
     if (a.act === 'evoke' || a.act === 'release' || (a.act === 'outburst' && !(a.hold ?? !a.aim))) {
       // Check it would work at all (on a copy, without touching the dice), then see whether it aims at anyone on the map.
-      const dry: Combat = JSON.parse(JSON.stringify(cb)), e0 = run(dry, dry.units.find((x) => x.id === u.id)!, { state: g.rng.state }); if (e0) fail(e0);
+      // The copy is marked dry: what a release keeps on the character itself (practice, feelings felt) waits for the real one.
+      const dry: Combat = JSON.parse(JSON.stringify(cb)); (dry as any).dry = true; const e0 = run(dry, dry.units.find((x) => x.id === u.id)!, { state: g.rng.state }); if (e0) fail(e0);
       const npc = (a.act === 'evoke' && tile ? evokeTargets(cb, u, tile, aim, evokeOptsOf(g, a)) : spellTargets(cb, u, a.act, tile, aim, a.design)).map((id) => cb.units.find((x) => x.id === id)!).find((x) => x && x.side === 'foe');
       if (npc) { overworldAttack(g, cb, c!, u, npc, 'shot', (cbx, att) => run(cbx, att, g.rng)); return; }
     }
@@ -2934,7 +2939,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     }
     case 'sandbox/learn': {
       const c = mine(a.charId);
-      if (a.word && !SIGIL[a.word]) fail('No such word.'); if (a.school && !SCHOOL[a.school]) fail('No such school.'); if (a.module && !MODULE[a.module]) fail('No such module.'); if (a.tone && (!TONE[a.tone] || a.tone === 'raw')) fail('No such tone.');
+      if (a.word && !SIGIL[a.word]) fail('No such word.'); if (a.school && !SCHOOL[a.school]) fail('No such school.'); if (a.module && !MODULE[a.module]) fail('No such module.'); if (a.module && !a.forget) { const sh = moduleShelved(a.module); if (sh) fail(sh); } if (a.tone && (!TONE[a.tone] || a.tone === 'raw')) fail('No such tone.');
       if (a.feeling && !FEELING[a.feeling]) fail('No such feeling.');
       if (!a.word && !a.school && !a.module && !a.tone && !a.feeling) fail('Pick a word, a school, a module, a tone or a feeling.');
       // Rules 1.8: grant (or take back) a feeling; the Proving Ground ignores gates and the "who feels" rule.
@@ -2963,7 +2968,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const c = mine(a.charId), d = a.design;
       if (!d || !SCHOOL[d.school] || (d.school2 && !SCHOOL[d.school2])) fail('Pick a school.');
       const mods = migrateDesign({ id: '', name: '', school: d.school, modules: [...new Set(d.modules || [])] }).modules.filter((x) => MODULE[x]).slice(0, 4);
-      { const why = designShapeError(mods) || (d.school2 ? pairingError(d.school, d.school2, mods) : null); if (why) fail(why); }
+      { const why = mods.map(moduleShelved).find(Boolean) || designShapeError(mods) || (d.school2 ? pairingError(d.school, d.school2, mods) : null); if (why) fail(why); }
       if (d.id && cb?.units.find((x) => x.charId === c.id)?.mg?.held?.design === d.id) fail('That Outburst is being held: release it first.');
       const tone = d.tone && d.tone !== 'raw' && TONE[d.tone] ? d.tone : undefined;
       sbChange(g, c, () => {

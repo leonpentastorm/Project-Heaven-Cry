@@ -2,7 +2,8 @@
 // step needs a foe to act). Part A, solo, an Emanator + Evoker ('both' kit) with a Fire Burst and a Storm Lance:
 //   1. the Outbursts tab's design cards (shape icon and line); Begin and Snap in the tab footer (never scrolled away);
 //   2. Begin from the footer, Pump ×3 from the HEART panel (the FX layer draws each Pump; the heart over the token);
-//      the panel is compact: every button (Let go and Overwatch included) visible without scrolling, at 1440×1000;
+//      the panel is compact (two rows of buttons) and each Pump keeps its top in view: the stage bar, the multiplier
+//      counter and the first row (Pump, Release, Steady), at 1440×1000 (the second row is a short scroll below);
 //   3. Steady (the next turn's swell doesn't come);
 //   4. the Release preview of the Burst over two drill units, and the release; a Storm Lance snap preview;
 //   5. Let go; Feed a glyph (a FIRE glyph on your own tile: +1 stage);
@@ -131,12 +132,14 @@ for (let i = 1; i <= 3; i++) {
   await p.waitForTimeout(500);
 }
 s = await st(); ok('pumped to stage 3: ' + JSON.stringify(s.u.mg?.held) + ' AP ' + s.u.ap, (s.u.mg?.held?.stage || 0) >= 3);
-// The compact panel: every button in view inside the tab panel (no scrolling for Let go or Overwatch).
+// The compact panel: two rows of buttons; after a Pump its top stays in view inside the tab panel (the stage bar and the
+// multiplier counter, not hidden under the AP bar and the tabs) with the first row of buttons.
 const tp = await p.locator('[role="tabpanel"]').boundingBox();
 const hbs = p.locator('.phc-heart-panel button[data-hact]'); const hn = await hbs.count(); let vis = 0;
-for (let i = 0; i < hn; i++) if (await inView(hbs.nth(i), tp)) vis++;
 const tops = await hbs.evaluateAll((ns) => ns.map((n) => Math.round(n.getBoundingClientRect().top))); const rows = tops.filter((t, i) => !tops.slice(0, i).some((u) => Math.abs(u - t) < 8)).length;
-ok('the HEART panel is compact: ' + vis + ' / ' + hn + ' buttons in view, in ' + rows + ' rows (tops ' + tops.join(',') + ')', hn >= 5 && vis === hn && rows === 2);
+for (let i = 0; i < hn; i++) if (Math.abs(tops[i] - tops[0]) < 8 && await inView(hbs.nth(i), tp)) vis++;
+const topSeen = await inView(p.locator('.phc-heart-panel [data-stage="0"]'), tp) && await inView(p.locator('.phc-heart-panel [data-heart-mult]'), tp);
+ok('the HEART panel is compact: ' + rows + ' rows (tops ' + tops.join(',') + '); its stage bar and counter in view: ' + topSeen + '; the first row in view: ' + vis, hn >= 5 && rows === 2 && topSeen && vis === 3);
 await snap('2-heart');
 
 // ---------- 3. Steady: the next turn holds the stage ----------

@@ -111,7 +111,7 @@ let n0 = await seq();
 await p.locator('.phc-heart-panel [data-feel="rage"]').click(); await p.waitForTimeout(400);
 s = await st(); let ev = (await fxSince(n0)).find((e) => e.k === 'pump');
 ok('Rage poured in: stage ' + s.u.mg.held.stage + ', felt ' + JSON.stringify(s.u.mg.held.felt) + ', fx ' + JSON.stringify(ev && { feeling: ev.feeling, mult: ev.mult }), s.u.mg.held.felt?.[0] === 'rage' && ev?.feeling === 'rage' && ev.mult === 1.1);
-const mult = async () => (await p.locator('.phc-heart-panel [data-heart-mult]').textContent().catch(() => '')).trim();
+const mult = async () => ((await p.locator('.phc-heart-panel [data-heart-mult]').textContent().catch(() => '')) + ' ' + ((await p.locator('.phc-heart-panel [data-heart-does]').count()) ? await p.locator('.phc-heart-panel [data-heart-does]').textContent() : '')).trim();
 ok('the counter reads ×1.1: ' + await mult(), /×1\.1/.test(await mult()));
 ok('the stage-1 segment shows the feeling\'s glyph', await p.locator('.phc-heart-panel [data-stage="1"] img').count() === 1);
 await snap('1-rage');
@@ -126,6 +126,41 @@ await p.locator('.phc-heart-panel button[data-hact="revert"]').click(); await p.
 s = await st();
 const back = s.u.ap > ap0 ? 'AP' : (s.u.mg.freePumps || 0) > fr0 ? 'an Empathy free Pump' : first0 && !s.u.mg.firstUsed ? 'the first free Pump' : 'nothing';
 ok('Revert takes Love back: stage ' + s.u.mg.held.stage + ', felt ' + JSON.stringify(s.u.mg.held.felt) + ', and ' + back + ' back', s.u.mg.held.stage === 1 && JSON.stringify(s.u.mg.held.felt) === '["rage"]' && back !== 'nothing');
+
+// ---------- 2b. stage 4 with feelings poured: the HEART panel's layout, and Release with Love and Joy held ----------
+for (const f of ['joy', 'love', 'calm']) {
+  if (!(await p.locator('.phc-heart-panel input[aria-label="Search feelings"]').count()) && await tog.count()) { await tog.click(); await p.waitForTimeout(250); }
+  await p.locator('.phc-heart-panel input[aria-label="Search feelings"]').fill(f); await p.locator('.phc-heart-panel input[aria-label="Search feelings"]').press('Tab'); await p.waitForTimeout(200);
+  await p.locator('.phc-heart-panel [data-feel="' + f + '"]').click(); await p.waitForTimeout(450);
+}
+s = await st();
+ok('stage 4 with Rage, Joy, Love and Calm: ' + s.u.mg.held.stage + ' ' + JSON.stringify(s.u.mg.held.felt), s.u.mg.held.stage === 4 && s.u.mg.held.felt.length === 4);
+// Each pour (the button low in the panel, scrolled to) brings the panel's top back into view: the stage bar and counter.
+await p.waitForTimeout(900);
+const lay = await p.evaluate(() => {
+  const hp = document.querySelector('.phc-heart-panel'), m = hp && hp.querySelector('[data-heart-mult]'), dz = hp && hp.querySelector('[data-heart-does]'), seg = hp && hp.querySelector('[data-stage="4"]');
+  const panel = hp && hp.closest('.phc-cb-tabpanel'), r = (e) => e && e.getBoundingClientRect();
+  const hit = (e) => { if (!e) return false; const b = e.getBoundingClientRect(), el = document.elementFromPoint(b.left + Math.min(8, b.width / 2), b.top + b.height / 2); return !!el && (e === el || e.contains(el) || hp.contains(el)); };
+  return { hp: r(hp), m: r(m), dz: r(dz), panel: r(panel), segSeen: hit(seg), multSeen: hit(m), does: dz ? dz.textContent : '' };
+});
+const inside = (a, b) => !!a && !!b && a.left >= b.left - 1 && a.right <= b.right + 1;
+ok('the counter stays inside the HEART panel at stage 4: ' + JSON.stringify(lay.m && { l: Math.round(lay.m.left), r: Math.round(lay.m.right) }) + ' in ' + JSON.stringify(lay.hp && { l: Math.round(lay.hp.left), r: Math.round(lay.hp.right) }), inside(lay.m, lay.hp));
+ok('what the feelings do wraps on its own line inside the panel: ' + lay.does, inside(lay.dz, lay.hp) && /now HEALS/.test(lay.does) && /now CHAINS/.test(lay.does));
+ok('the stage bar and the counter are on top (not under the AP bar or the tabs)', lay.segSeen && lay.multSeen);
+await snap('2b-stage4');
+await p.locator('.phc-heart-panel').screenshot({ path: OUT + 'feel40-2b-heart-panel.png' }).catch(() => {});
+const err0 = p.errors.length;
+await p.locator('.phc-heart-panel button[data-hact="release"]').click(); await p.waitForTimeout(600);
+const crashErr = () => p.errors.slice(err0).filter((e) => /pageerror|TypeError|is not|Cannot read/.test(e));
+ok('Release with Love and Joy held: the screen stays up, no error ' + JSON.stringify(crashErr()), !crashErr().length && await p.locator('.phc-heart-panel').count() === 1 && /Hover to preview/.test(await p.locator('.phc-cb-foot').textContent().catch(() => '')));
+if (!crashErr().length) { await tileOf(foeAt).hover({ timeout: 5000 }).catch(() => {}); await p.waitForTimeout(400); }
+ok('hovering the aim previews it (the feelings in the line): ' + crashErr().length, !crashErr().length && /Preview at .*Feelings: /.test(await p.locator('.phc-cb-foot').textContent({ timeout: 3000 }).catch(() => '')));
+await p.mouse.move(1430, 990); await p.waitForTimeout(300);
+if (crashErr().length) { console.log('stopping: the combat screen crashed'); await browser.close(); process.exit(1); }
+await snap('2b-release');
+for (let i = 0; i < 3; i++) { await p.locator('.phc-heart-panel button[data-hact="revert"]').click(); await p.waitForTimeout(350); }
+s = await st();
+ok('three Reverts back to Rage at stage 1: ' + s.u.mg.held.stage + ' ' + JSON.stringify(s.u.mg.held.felt), s.u.mg.held.stage === 1 && JSON.stringify(s.u.mg.held.felt) === '["rage"]');
 
 // ---------- 3. Release: residue ----------
 await p.locator('.phc-heart-panel button[data-hact="release"]').click(); await p.waitForTimeout(300);
@@ -154,6 +189,8 @@ if (groups.includes('modules')) {
   await p.locator('[data-pg-group="modules"] > summary').click(); await p.waitForTimeout(200);
   const mg = await p.locator('[data-pg-group="modules"] [data-module-group]').evaluateAll((ns) => ns.map((n) => n.getAttribute('data-module-group')));
   ok('modules by gate skill, the advanced classes\' last: ' + JSON.stringify(mg), mg[0] === 'lore_master' && mg.at(-1) === 'advanced');
+  const lockedN = await p.locator('[data-module-group="advanced"] button[data-locked="true"]:disabled').count();
+  ok('the shelved advanced classes\' modules show locked (can\'t be granted): ' + lockedN, lockedN === 10);
   await p.locator('[data-pg-group="fx"] > summary').click(); await p.waitForTimeout(200);
   ok('a test row for every feeling: ' + await p.locator('[data-fx-test]').count(), await p.locator('[data-fx-test]').count() === 25);
   await snap('5-tools');

@@ -203,6 +203,7 @@ export function startingMagicError(s: Pick<Sheet, 'sigils' | 'outburst' | 'skill
   if (s.outburst) {
     if (!SCHOOL[s.outburst.school]) return 'Pick an Outburst school.';
     if ((s.outburst.modules || []).some((m) => !MODULE[m])) return 'Unknown Outburst module.';
+    { const sh = (s.outburst.modules || []).map(moduleShelved).find(Boolean); if (sh) return sh; }
     if (s.outburst.tone && s.outburst.tone !== 'raw') { if (!TONE[s.outburst.tone]) return 'Unknown Outburst tone.'; if (!((s.skills || {}) as any).lore_master) return 'A tone needs Lore Master 1.'; }
     // One school and exactly one module; the Will Power module slots are for designs made in play.
     if ((s.outburst.modules || []).length !== 1) return 'Your starting Outburst takes one school and exactly one module (more module slots are for designs made in play).';
@@ -301,6 +302,7 @@ export function checkOutburstDesign(c: Character, d: Partial<OutburstDesign> | n
     const pe = pairingError(d.school, d.school2, mods); if (pe) return pe;
   }
   if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) return 'Use only modules you know.';
+  { const sh = mods.map(moduleShelved).find(Boolean); if (sh) return sh; }
   if (mods.length > slots) return 'At most ' + slots + ' module' + (slots === 1 ? '' : 's') + ' (Will Power).';
   { const why = designShapeError(mods); if (why) return why; }
   const tone = d.tone && d.tone !== 'raw' ? d.tone : undefined; let learnTone: string | undefined;
@@ -546,10 +548,18 @@ const GATES = (): any => (SOUL_RULES as any).gates || {};
 export const moduleGate = (id: string): { skill: string; points: number } | null => (MODULE[id] as any)?.gate || null;
 /** A module only an advanced class teaches (rules 1.8), and that class. */
 export const moduleClass = (id: string): string | null => ((MODULE[id] as any)?.locked ? (MODULE[id] as any).class || null : null);
+/** Why a module can't be learned or used at all yet: an advanced class's own module while that class is shelved (rules
+ * 1.8 section 4: they unlock when the class's batch goes live), or null. Every way of learning (the Proving Ground too)
+ * and every design checks it. */
+export function moduleShelved(id: string): string | null {
+  const m: any = MODULE[id]; if (!m || !m.locked || advancedActive(m.class)) return null;
+  const cls = (ADVANCED as any)[m.class]?.name || String(m.class || '').split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return m.name + ' comes with the ' + cls + ' class (not learnable yet).';
+}
 /** Why this character can't learn a module through a gated way (practice, a Mastered pick, a plate, a tutor), or null. */
 export function moduleGateError(c: Character, id: string): string | null {
   const m: any = MODULE[id]; if (!m) return 'No such module.';
-  if (m.locked && !advancedActive(m.class)) return m.name + ' comes with the ' + (ADVANCED as any)[m.class]?.name + ' class' + ' (not learnable yet).';
+  { const sh = moduleShelved(id); if (sh) return sh; }
   const g = moduleGate(id); if (!g) return null;
   if ((c.skills[g.skill] || 0) < g.points) return m.name + ' needs ' + (SKILL[g.skill]?.name || g.skill) + ' ' + g.points + '.';
   return null;

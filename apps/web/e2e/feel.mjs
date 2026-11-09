@@ -144,7 +144,9 @@ ok('a fuel drum goes up with an explosion', boom);
 
 // 6. Magic: a Sigil evoke and an Outburst release
 await newRound();
-for (const a of [{ item: 'evoker' }, { item: 'emanator' }, { item: 'standard_core', qty: 4 }]) { const e = await act({ type: 'sandbox/give', charId: cid, ...a }); if (e) console.log('  give', a.item, e); }
+// A focus counts only in a hand (spec: Hands 2, item 630): the rifle fills both, so a one-handed revolver goes in the main
+// hand and the Evoker in the off hand (the Emanator stays in the pack: the Outburst draws on the air).
+for (const a of [{ item: 'drifter_revolver', equip: true }, { item: 'evoker', equip: true }, { item: 'emanator' }, { item: 'standard_core', qty: 4 }]) { const e = await act({ type: 'sandbox/give', charId: cid, ...a }); if (e) console.log('  give', a.item, e); }
 for (const w of ['fire', 'seek']) await act({ type: 'sandbox/learn', charId: cid, word: w });
 await act({ type: 'sandbox/learn', charId: cid, school: 'damage' });
 const designErr = await act({ type: 'sandbox/design', charId: cid, design: { id: '', name: 'Red Hand', school: 'damage', modules: [] } });
