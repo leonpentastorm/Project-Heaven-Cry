@@ -38,7 +38,7 @@ function usePrefs(): UiPrefs {
 /** One volume row: a label, what it covers, the slider and its value, and an optional test button. */
 function Volume({ name, what, value, max = 100, onChange, test, testLabel, id }: { name: string; what?: string; value: number; max?: number; onChange: (v: number) => void; test?: () => void; testLabel?: string; id: string }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr 48px auto', alignItems: 'center', gap: '4px 12px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr 48px 92px', alignItems: 'center', gap: '4px 12px' }}>
       <label htmlFor={id} style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', color: C.text }}>{name}</label>
       <input id={id} data-phc-vol={id} type="range" min={0} max={max} step={5} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={name + ' volume'} style={{ width: '100%', accentColor: C.white }} />
       <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textAlign: 'right' }}>{value}%</span>
@@ -95,7 +95,7 @@ function DisplayTab() {
     <Volume id="float" name="OPACITY" what="How solid the floating buttons are at rest. They come up to full when the pointer is near or their panel is open." value={p.float} onChange={(x) => setUiPrefs({ float: Math.max(20, x) })} />
     <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" data-phc-float-fade="" checked={p.floatFade} onChange={(e) => setUiPrefs({ floatFade: e.target.checked })} /> Fade them when the pointer is away (off: they stay at the opacity above)</label>
     <span style={lab}>COMFORT</span>
-    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running, plain fades)</label>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
     <div><button type="button" onClick={() => { resetTips(); setTips(true); }} style={btn(tips)}>{tips ? 'Tips will show again ✓' : 'Show tips again'}</button></div>
   </>;
 }

@@ -1,5 +1,6 @@
 // Combat, ported from design/canvas-build/combat.logic.js onto the engine's fight: real initiative, the grid,
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
+import { shellVals } from './shell';
 import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss } from './shared';
 import { reducedMotion, sfx } from '../game/sfx';
@@ -528,7 +529,7 @@ export class CombatLogic extends DCLogic {
     const newTurn = curId !== this._curId;
     if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, evc: null, sgToast: '', obMode: 'begin', word: null, stroke: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
     const S = this.state;
-    if (!cb) return { ...lightboxVals(this), lay: this.layoutVals(PANEL_HIDDEN), mz: this.zoomVals(), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', gridLeave: () => {}, confirmText: 'Confirm', pad: {}, magicLegend: [] };
+    if (!cb) return { ...lightboxVals(this), ...shellVals(this, 'combat'), lay: this.layoutVals(PANEL_HIDDEN), mz: this.zoomVals(), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', gridLeave: () => {}, confirmText: 'Confirm', pad: {}, magicLegend: [] };
     const cur = active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
     const ring = (u) => (u.side === 'pc' ? playerOf(owner(u))?.color || '#7FD4FF' : '#F65157');
     const mineTurn = !cb.over && cur && cur.side === 'pc' && owner(cur) === me && !cur.downed;
@@ -1153,6 +1154,8 @@ export class CombatLogic extends DCLogic {
       // The mana forecast (game/manaForecast.ts): the air as weather, in its own movable panel (it left the header).
       fc: forecastVals(cb, !!S.fcOpen, () => this.setState({ fcOpen: !this.state.fcOpen }), lay.manaDrop),
       confirmSfx: isMagic ? 'none' : undefined, confirmText: T.confirmText,
+      // The header's right cluster (UI pass, screens/shell.js): room, Save, ⚙, ⚑, Leave.
+      ...shellVals(this, 'combat'),
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
       initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},

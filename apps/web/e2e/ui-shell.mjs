@@ -1,0 +1,185 @@
+// The shell (UI pass, docs/design/ui-pass-shell.md): the header in one row at every width, Save in one click, Leave
+// that asks in the game's own dialog (Stay keeps you; Save and leave lands on the title with the room saved), the
+// room's big button that takes you back (never a greyed "In session"), the key's Saved / Test key feedback, the Area
+// map button and its M key, the settings cog (tabs, volumes that persist), the Music panel being music only, the
+// floating buttons never covering End turn, and the fight's header with the same cluster. Throughout, the browser's
+// own confirm(), prompt() and alert() are stubbed to throw: none of them may ever be called.
+import { chromium, player, click, hostAs } from './lib.mjs';
+const browser = await chromium.launch();
+const host = await player(browser, 'host');
+const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
+const SHOTS = process.env.SHOTS;
+await host.context().addInitScript(() => {
+  window.__browserDialogs = [];
+  for (const n of ['confirm', 'prompt', 'alert']) window[n] = (...a) => { window.__browserDialogs.push(n + ': ' + a.join(' ')); throw new Error('browser ' + n + '() called'); };
+});
+const noBrowserDialogs = async (where) => ok('no browser confirm/prompt/alert (' + where + ')', (await host.evaluate(() => window.__browserDialogs.length)) === 0);
+await host.setViewportSize({ width: 1440, height: 900 });
+
+await hostAs(host, 'Leon');
+await click(host, 'Create a character');
+await host.getByPlaceholder('What the squad calls you').fill('MPAT');
+await host.locator('main button[aria-pressed]').first().click();
+await click(host, 'Next ›'); await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
+await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›'); await host.locator('button', { hasText: 'Line soldier' }).first().click();
+await click(host, 'Next ›'); await click(host, 'Lock in and bring to the room');
+await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
+await click(host, 'Start session');
+await host.waitForSelector('.phc-story', { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
+await host.waitForTimeout(600);
+const code = await host.evaluate(() => window.__phc.getState().code);
+
+// 1. The header: one row at 1280, 1440 and 1920; no STORY | COMBAT; Area map, Narrator chip, room, Save, ⚙, ⚑, Leave.
+for (const w of [1280, 1440, 1920]) {
+  await host.setViewportSize({ width: w, height: 900 }); await host.waitForTimeout(250);
+  const h = await host.locator('header').first().evaluate((e) => e.getBoundingClientRect().height);
+  ok('the header is one row at ' + w + ' wide (' + h + ' px)', h <= 64);
+}
+await host.setViewportSize({ width: 1440, height: 900 }); await host.waitForTimeout(250);
+const head = host.locator('header').first();
+ok('no STORY | COMBAT toggle', (await head.getByRole('button', { name: 'STORY', exact: true }).count()) === 0 && (await head.getByRole('button', { name: 'COMBAT', exact: true }).count()) === 0);
+ok('the header has Area map, the Narrator, ROOM ' + code + ' ›, Save, Settings, Report and Leave',
+  (await head.locator('[data-phc-areamap]').count()) === 1 && (await head.locator('[data-phc-narr-chip]').count()) === 1 && (await head.getByRole('button', { name: new RegExp('^Room ' + code) }).count()) === 1
+  && (await head.getByRole('button', { name: 'Save', exact: true }).count()) === 1 && (await head.getByRole('button', { name: 'Settings', exact: true }).count()) === 1
+  && (await head.getByRole('button', { name: /Report a problem/ }).count()) === 1 && (await head.getByRole('button', { name: 'Leave the room', exact: true }).count()) === 1);
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-header.png', clip: { x: 0, y: 0, width: 1440, height: 64 } });
+
+// 2. Save: one click, the button says so.
+await head.getByRole('button', { name: 'Save', exact: true }).click(); await host.waitForTimeout(250);
+ok('Save → Saved ✓ on the button', (await head.locator('[data-phc-save]').textContent()).trim() === 'Saved ✓');
+await host.keyboard.press('Control+s'); await host.waitForTimeout(150);
+ok('Ctrl+S saves too (no page save)', await host.evaluate(() => Date.now() - (window.__phc.getState().savedAt || 0) < 2000));
+
+// 3. The Narrator chip's menu: state, spend, voice line, Voice settings, Change key, Memory; Escape closes it.
+await head.locator('[data-phc-narr-chip]').click();
+const menu = host.locator('[data-phc-narr-menu]');
+ok('the Narrator menu opens with the spend, the voice and Change key', (await menu.count()) === 1 && /This session:/.test(await menu.textContent()) && (await menu.getByRole('button', { name: 'Voice settings ⚙' }).count()) === 1 && (await menu.getByRole('button', { name: 'Change key or model ›' }).count()) === 1);
+ok('the voice line keeps its hook for the voice tests', (await host.locator('[data-phc-voice-chip]').count()) >= 1);
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-narrator-menu.png', clip: { x: 0, y: 0, width: 900, height: 340 } });
+await host.keyboard.press('Escape'); await host.waitForTimeout(200);
+ok('Escape closes it', (await menu.count()) === 0);
+
+// 4. The Area map: the header button, and M (not while typing).
+await head.locator('[data-phc-areamap]').click(); await host.waitForTimeout(500);
+const area = host.locator('div[role="dialog"][aria-label="Area map"]');
+ok('Area map opens the area map', (await area.count()) === 1);
+await host.keyboard.press('m'); await host.waitForTimeout(500);
+ok('M closes it', (await area.count()) === 0);
+await host.keyboard.press('m'); await host.waitForTimeout(500);
+ok('M opens it', (await area.count()) === 1);
+await host.keyboard.press('m'); await host.waitForTimeout(500);
+await host.getByLabel('What do you do?').fill('m'); await host.waitForTimeout(200);
+ok('typing an m in the Say box does not open it', (await area.count()) === 0);
+await host.getByLabel('What do you do?').fill('');
+
+// 5. The settings cog: four tabs; volumes persist; the Music panel is music only and links here.
+await head.getByRole('button', { name: 'Settings', exact: true }).click();
+const set = host.locator('div[role="dialog"][aria-label="Settings"]');
+await set.waitFor({ timeout: 3000 });
+ok('the cog opens Settings with Audio, Voice, Combat and Display', (await set.getByRole('tab').allTextContents()).join(',') === 'Audio,Voice,Combat,Display');
+ok('the default mix: combat 100%, interface 35%', (await set.locator('input[data-phc-vol="combat"]').inputValue()) === '100' && (await set.locator('input[data-phc-vol="ui"]').inputValue()) === '35');
+await set.locator('input[data-phc-vol="combat"]').fill('130');
+await set.locator('input[data-phc-vol="ui"]').fill('20');
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-settings-audio.png' });
+await set.getByRole('tab', { name: 'Combat' }).click();
+await set.locator('button[data-phc-speed="fast"]').click();
+ok('Combat speed: Fast is stored for the combat track', (await host.evaluate(() => localStorage.getItem('phc.combatSpeed'))) === 'fast');
+await set.locator('button[data-phc-speed="normal"]').click();
+await set.getByRole('tab', { name: 'Display' }).click();
+await set.locator('input[data-phc-vol="float"]').fill('40');
+await set.getByRole('tab', { name: 'Voice' }).click();
+ok('the Voice tab holds the voice settings', (await set.locator('[data-phc-voice-settings]').count()) === 1);
+await set.getByRole('button', { name: 'Done' }).click(); await host.waitForTimeout(300);
+const saved = await host.evaluate(() => JSON.parse(localStorage.getItem('phc.ui') || '{}'));
+ok('the volumes and opacity are saved (combat ' + saved.combat + ', interface ' + saved.ui + ', opacity ' + saved.float + ')', saved.combat === 130 && saved.ui === 20 && saved.float === 40);
+const music = host.locator('button[aria-label^="Music:"]');
+await music.click(); await host.waitForTimeout(400);
+const mpanel = host.locator('div[role="dialog"][aria-label="Music"]');
+ok('the Music panel is music only (no voice settings in it)', (await mpanel.locator('[data-phc-voice-settings]').count()) === 0);
+await mpanel.getByRole('button', { name: 'Voice settings ⚙' }).click(); await host.waitForTimeout(400);
+ok('its Voice settings link opens Settings on the Voice tab', (await set.count()) === 1 && (await set.getByRole('tab', { name: 'Voice' }).getAttribute('aria-selected')) === 'true');
+await host.keyboard.press('Escape'); await host.waitForTimeout(300);
+await host.setViewportSize({ width: 1440, height: 900 }); await host.reload();
+await host.waitForSelector('.phc-story', { timeout: 15000 }); await host.waitForTimeout(500);
+ok('…and still there after a reload', (await host.evaluate(() => JSON.parse(localStorage.getItem('phc.ui') || '{}').combat)) === 130);
+
+// 6. The floating buttons: bottom left, see-through at rest, never over End turn.
+await host.mouse.move(720, 300); await host.waitForTimeout(400);
+const fl = await host.evaluate(() => [...document.querySelectorAll('[data-phc-float]')].map((b) => { const r = b.getBoundingClientRect(); return { k: b.getAttribute('data-phc-float'), x: r.left, o: getComputedStyle(b).opacity }; }));
+ok('the Music and Memory buttons sit bottom left at the chosen opacity (' + fl.map((f) => f.k + ' ' + f.o).join(', ') + ')', fl.length === 2 && fl.every((f) => f.x < 200 && Math.abs(Number(f.o) - 0.4) < 0.02));
+const box = await music.boundingBox(); await host.mouse.move(box.x + box.width / 2, box.y - 60); await host.waitForTimeout(400);
+ok('they come up to full when the pointer is near', Number(await music.evaluate((b) => getComputedStyle(b).opacity)) === 1);
+const endTurn = host.getByRole('button', { name: 'End turn', exact: true });
+const eb = await endTurn.boundingBox();
+ok('nothing covers End turn at 1440×900', await host.evaluate(([x, y]) => { const el = document.elementFromPoint(x, y); return !!el && /End turn/.test(el.closest('button')?.textContent || ''); }, [eb.x + eb.width / 2, eb.y + eb.height / 2]));
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-story-1440.png' });
+
+// 7. Leave: Stay keeps you here.
+await head.getByRole('button', { name: 'Leave the room', exact: true }).click();
+const dlg = host.locator('[role="alertdialog"]');
+await dlg.waitFor({ timeout: 3000 });
+ok('Leave asks in the game\'s own dialog: Save and leave or Stay', /Leave the room\?/.test(await dlg.textContent()) && (await dlg.getByRole('button', { name: 'Save and leave' }).count()) === 1);
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-leave-dialog.png' });
+await dlg.getByRole('button', { name: 'Stay' }).click(); await host.waitForTimeout(300);
+ok('Stay: still in the session', (await dlg.count()) === 0 && (await host.evaluate(() => window.__phc.getState().screen)) === 'main');
+
+// 8. The room in session: the key says it saved, Test key reports, the big button takes you back.
+await head.getByRole('button', { name: new RegExp('^Room ' + code) }).click();
+await host.waitForSelector('input[data-narrator-key]', { timeout: 5000 });
+await host.route('https://api.anthropic.com/v1/models**', (r) => r.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }) }));
+await host.locator('input[data-narrator-key]').fill('sk-' + 'ant-api03-not-a-real-key') // fake, split so the repo's key check stays clean;
+await host.waitForSelector('[data-phc-key-saved]', { timeout: 3000 });
+ok('typing a key says: Saved for this session, used from the next turn', /Saved for this session · the Narrator uses it from its next turn/.test(await host.locator('[data-phc-key-saved]').textContent()));
+await host.locator('[data-phc-key-test]').click();
+await host.waitForSelector('[data-phc-key-test-result]:has-text("✗")', { timeout: 5000 });
+ok('Test key with a refused key says why, in red with ✗', /✗ Anthropic rejected the API key/.test(await host.locator('[data-phc-key-test-result]').textContent()));
+await host.route('https://api.anthropic.com/v1/models**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [{ id: 'claude-opus-5-5' }, { id: 'claude-sonnet-5' }] }) }));
+await host.locator('[data-phc-key-test]').click();
+await host.waitForSelector('[data-phc-key-test-result]:has-text("✓")', { timeout: 5000 });
+ok('…and a good one: ✓ the key works', /✓ Anthropic answered: the key works \(2 models\)/.test(await host.locator('[data-phc-key-test-result]').textContent()));
+const start = host.locator('[data-phc-start]');
+await start.scrollIntoViewIfNeeded();
+ok('the big button reads Return to the session ›, enabled', (await start.textContent()).trim() === 'Return to the session ›' && !(await start.isDisabled()));
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-room-insession.png', fullPage: true });
+ok('the room has no Save and leave any more', (await host.getByRole('button', { name: 'Save and leave' }).count()) === 0);
+await start.click(); await host.waitForTimeout(500);
+ok('…and it works', (await host.evaluate(() => window.__phc.getState().screen)) === 'main');
+await host.waitForSelector('text=Narrator settings updated', { timeout: 3000 }).then(() => ok('returning says the Narrator settings were updated', true), () => ok('returning says the Narrator settings were updated', false));
+await host.evaluate(() => window.__phc.setNarrator({ key: '', scripted: true }));
+await host.unroute('https://api.anthropic.com/v1/models**');
+
+// 9. The fight: the same cluster in the combat header; the story screen offers the way back.
+await host.getByLabel('What do you do?').fill('I walk up the ramp with 4-Ten on my shoulders.'); await click(host, 'Send', { exact: true }); await click(host, 'End turn', { exact: true });
+await host.waitForSelector('text=CLICK TO ROLL', { timeout: 20000 }).catch(() => {});
+if (!(await host.locator('div[aria-label="Dice table"]').count())) await host.locator('button', { hasText: /CLICK TO ROLL/ }).first().click().catch(() => {});
+await click(host, /Throw/).catch(() => {});
+await click(host, 'Continue', { exact: true }).catch(() => {});
+const fought = await host.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 }).then(() => true, () => false);
+if (fought) {
+  await host.waitForTimeout(2500);
+  const ch = host.locator('header.phc-cb-head');
+  ok('the combat header has the room, Save, Settings, Report and Leave', (await ch.locator('[data-phc-room]').count()) === 1 && (await ch.locator('[data-phc-save]').count()) === 1 && (await ch.locator('[data-phc-cog]').count()) === 1 && (await ch.locator('[data-phc-report]').count()) === 1 && (await ch.getByRole('button', { name: 'Leave the room' }).count()) === 1);
+  ok('…and no STORY tab', (await ch.getByRole('button', { name: 'STORY', exact: true }).count()) === 0);
+  ok('the combat header is one row', (await ch.evaluate((e) => e.getBoundingClientRect().height)) <= 64);
+  const icons = await host.evaluate(() => [...document.querySelectorAll('[data-phc-float]')].map((b) => Math.round(b.getBoundingClientRect().width)));
+  ok('in a fight the floating buttons are icons (' + icons.join(', ') + ' px wide)', icons.length === 2 && icons.every((w) => w <= 44));
+  if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-combat-1440.png' });
+  await host.evaluate(() => window.__phc.go('main')); await host.waitForTimeout(600);
+  ok('on the story screen during a fight: Back to the fight ›', (await host.locator('header [data-phc-tofight]').count()) === 1 && (await host.locator('header [data-phc-areamap]').count()) === 0);
+  await host.locator('header [data-phc-tofight]').click(); await host.waitForTimeout(600);
+  ok('…which goes back to the fight', (await host.evaluate(() => window.__phc.getState().screen)) === 'combat');
+} else ok('the fight started (scripted Narrator)', false);
+
+// 10. Save and leave: the title, with the room under Saved sessions.
+await host.locator('[data-phc-leave]').first().click();
+await dlg.waitFor({ timeout: 3000 });
+ok('in a fight the dialog says the fight is saved where it is', /The fight is saved where it is/.test(await dlg.textContent()));
+await dlg.getByRole('button', { name: 'Save and leave' }).click();
+await host.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 5000 });
+ok('Save and leave lands on the title', true);
+ok('…with the room saved', await host.evaluate((c) => JSON.parse(localStorage.getItem('phc.sessions') || '[]').some((s) => s.code === c), code));
+await noBrowserDialogs('the whole walk');
+ok('no page errors', host.errors.filter((e) => !/status of 40[01]/.test(e)).length === 0);
+if (host.errors.length) console.log(host.errors.slice(0, 5).join('\n'));
+await browser.close();

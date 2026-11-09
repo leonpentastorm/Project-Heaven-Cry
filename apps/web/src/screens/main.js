@@ -27,6 +27,7 @@ import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick
 import { openMissionBoard } from '../game/missionBoard';
 import { missionsButton } from '../game/missionView';
 import { askConfirm, askText } from '../game/dialog';
+import { shellVals, narratorVals } from './shell';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
@@ -280,6 +281,13 @@ export class MainLogic extends DCLogic {
     this.state = { tab: 'skills', core: 'body', sel: null, draft: '', rawDraft: '', polished: false, polishing: false, pickRoll: false, dice: null, custom: false, area: false, table: pref('table', 'felt'), skin: pref('skin', 'ivory') };
   }
 
+  /** The area map: open it (the header's Area map button, the M key), or close it if it is open. A key press never
+   *  opens it over another dialog. */
+  toggleArea(fromButton) {
+    if (this.state.area) { if (!fromButton) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); return; }
+    if (!fromButton && typeof document !== 'undefined' && document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+    this.setState({ area: true, shNarr: false });
+  }
   renderVals() {
     const S = this.state, st = getState(), g = st.game, me = st.me.id, isHost = st.role === 'host';
     if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], echoPips: [], pc: {} };
@@ -1229,15 +1237,12 @@ export class MainLogic extends DCLogic {
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
     return {
-      ...epccgVals(this), ...lightboxVals(this), code: g.code, roomText: 'ROOM ' + g.code + (SB ? '' : ' · '), withNarrator: !SB, report: openReport, spend: openSpend, costText: (u.calls ? '$' + u.costUsd.toFixed(2) + ' · ' + u.calls + ' Narrator turn' + (u.calls === 1 ? '' : 's') : 'no Narrator turns yet'),
-      toRoom: () => go('room'), isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save', toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
-      // The voice chip: who reads the Narrator here (spec: The Narrator's voice), always in words.
-      ...(() => { const VS2 = voiceState(), txt = voiceChip(VS2, voicePrefs()), live = /Loading|Installing/.test(txt), kok = /Kokoro/.test(txt);
-        return { voiceChip: txt, voiceChipTitle: VS2.status === 'ready' ? 'Kokoro on ' + (VS2.device === 'webgpu' ? 'WebGPU · ' + VS2.gpu : 'the CPU' + (VS2.fellBack ? ' (WebGPU failed: ' + VS2.fellBack + ')' : '')) + ' · ' + VS2.dtype : VS2.status === 'failed' ? 'Kokoro failed: ' + VS2.error : 'Settings › Voice: install Kokoro, or pick a voice',
-          voiceChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; white-space: nowrap; border: 1px ' + (live ? 'dashed #FFFFFF; color: #FFFFFF' : kok ? 'solid #2E3A50; color: #E7EBF3' : 'solid #232D3F; color: #A3AEC2') }; })(),
-      narrChip: SB ? 'PROVING GROUND · ' + g.players.length + (g.players.length === 1 ? ' PLAYER' : ' PLAYERS') : 'AI NARRATOR · ' + (busy ? 'THINKING…' : err ? 'STUCK' : isHost ? 'YOUR KEY' : host.name.toUpperCase() + '’S KEY'),
-      narrChipStyle: 'padding: 6px 12px; border-radius: 999px; border: 1px solid ' + (err ? '#F65157' : '#232D3F') + '; font-size: 12px; color: ' + (err ? '#F65157' : busy ? '#FFFFFF' : '#A3AEC2'),
-      narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'), retry: () => (isHost ? retryNarrator() : toast('Only the host can retry the Narrator.')), retryLabel: isHost ? 'Retry' : 'Host retries',
+      ...epccgVals(this), ...lightboxVals(this), code: g.code, withNarrator: !SB, report: openReport,
+      // The header (UI pass): the shell's cluster (room, Save, ⚙, ⚑, Leave), the Narrator chip and its menu, and the
+      // Area map / Back to the fight button (screens/shell.js).
+      ...shellVals(this, 'main'), ...narratorVals(this, g, { openArea: () => this.toggleArea(true) }),
+      isHost, toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
+      narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'),
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
       echoPips, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
@@ -1281,7 +1286,7 @@ export class MainLogic extends DCLogic {
       inputHolder: S.ooc ? 'Ask the Narrator out of character (doesn\'t use your turn)…' : cantSpeak ? why : 'Say or do something… (' + (c ? c.name : '') + ')',
       // The mission board (missionBoard.tsx): the header button, with the count of open objectives.
       ...(() => { const mb = missionsButton(g); return { hasMissions: !!mb, missionsLabel: mb ? mb.label : '', missionsTitle: mb ? mb.title : '', openMissions: () => openMissionBoard(),
-        missionsStyle: 'min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid ' + (mb && mb.count ? '#FFFFFF' : '#2E3A50') + '; background: transparent; color: ' + (mb && mb.count ? '#FFFFFF' : '#A3AEC2') + '; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer' }; })(),
+        missionsStyle: 'flex: none; white-space: nowrap; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid ' + (mb && mb.count ? '#FFFFFF' : '#2E3A50') + '; background: transparent; color: ' + (mb && mb.count ? '#FFFFFF' : '#A3AEC2') + '; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; cursor: pointer' }; })(),
       // The Perks strip (plan 3): story uses of perks, traits and class moves. Every input is a button: an action that
       // needs a pick (chips, a squadmate, someone on the map, a design) or words opens its own panel under the strip.
       // Never the Say box, never a shared detail field. The Proving Ground runs these as area-map actions.

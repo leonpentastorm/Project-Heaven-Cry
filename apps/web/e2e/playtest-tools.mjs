@@ -1,7 +1,7 @@
 // Character files, portrait upload, the Report button, the spend meter and first-time tips, in two browsers.
 import { createRequire } from 'module';
 import { readFileSync } from 'fs';
-import { chromium, player, click, BASE } from './lib.mjs';
+import { chromium, player, click, BASE, answerAsk } from './lib.mjs';
 const require = createRequire(import.meta.url);
 const { unzipSync, strFromU8 } = require('fflate');
 
@@ -43,8 +43,8 @@ ok('file is named ' + dl.suggestedFilename(), dl.suggestedFilename() === 'Upload
 ok('file holds the sheet and a full-size portrait (' + Math.round(files['portrait.jpg']?.length / 1024) + ' KB)', json.format === 'phc-character' && json.sheet.name === 'Upload Test' && json.sheet.portrait === 'portrait.jpg' && files['portrait.jpg']?.length > 10000);
 
 // 3. A friend imports it in their room
-host.on('dialog', (d) => d.accept());
 await host.getByRole('button', { name: 'Delete Upload Test' }).click();
+await answerAsk(host); // the game's own dialog: Delete
 await click(host, '‹ Back');
 await click(host, 'NEW GAME', { exact: true });
 await host.getByPlaceholder('Leon').fill('Leon');

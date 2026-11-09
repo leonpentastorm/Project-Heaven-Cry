@@ -1,10 +1,11 @@
 <div class="phc-cb-root" style="height: 100vh; height: 100dvh; overflow: hidden; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
 
-<header class="phc-cb-head" style="flex: none; display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #232D3F">
+<header class="phc-cb-head" style="flex: none; display: flex; align-items: center; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #232D3F">
 <span style="flex: none; font-family: 'Spectral', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap">PROJECT HEAVEN CRY</span>
-<nav aria-label="Mode" style="flex: none; display: flex; gap: 4px; padding: 3px; border-radius: 10px; border: 1px solid #232D3F"><button type="button" onClick="{{toStory}}" style="padding: 8px 16px; border-radius: 7px; border: 0; background: transparent; color: #A3AEC2; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px; cursor: pointer">STORY</button><button type="button" aria-current="page" style="padding: 8px 16px; border-radius: 7px; border: 0; background: #3A1E1E; color: #F65157; font-family: inherit; font-weight: 600; letter-spacing: 0.08em; font-size: 13px">COMBAT</button></nav>
 <span title="{{roundText}}" style="flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; letter-spacing: 0.14em; color: #A3AEC2">{{roundText}}</span>
-<div style="flex: none; margin-left: auto; display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{report}}" title="Something broke? Download a report to send to Leon." style="min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">⚑ Report</button><span style="{{turnChipStyle}}">{{turnChip}}</span></div>
+<span aria-hidden="true" style="flex: 1 1 0; min-width: 0"></span>
+<!--SHELL-->
+<span style="flex: none; {{turnChipStyle}}">{{turnChip}}</span>
 </header>
 
 <div aria-label="Initiative order" class="phc-init" style="flex: none; display: flex; gap: 10px; padding: 10px 24px; border-bottom: 1px solid #232D3F; overflow-x: auto">

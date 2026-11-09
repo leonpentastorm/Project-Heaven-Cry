@@ -49,10 +49,10 @@ const p = await ctx.newPage();
 const errors = []; p.on('pageerror', (e) => errors.push(e.message));
 const logs = []; p.on('console', (m) => { if (/\[voice\]/.test(m.text())) logs.push(m.text()); });
 await p.goto(BASE);
-await click(p, 'SETTINGS', { exact: true, timeout: 60000 });
+await click(p, 'SETTINGS', { exact: true, timeout: 60000 }); await p.getByRole('tab', { name: 'Voice', exact: true }).click(); // the shared settings body (UI pass): Voice tab
 const sec = p.locator('[data-phc-voice-settings]');
 await sec.waitFor();
-ok('Settings has a VOICE section', (await p.getByText('VOICE', { exact: true }).count()) > 0 && (await sec.count()) === 1);
+ok('Settings has a Voice tab with the voice settings', (await p.getByRole('tab', { name: 'Voice', exact: true }).count()) > 0 && (await sec.count()) === 1);
 await p.waitForFunction(() => /about \d+ MB/.test(document.querySelector('[data-voice-install]')?.textContent || ''), null, { timeout: 5000 }).catch(() => {});
 ok('Kokoro: not installed, with the Install button sized for this device (' + await sec.locator('[data-voice-install]').textContent() + ')', /not installed/.test(await sec.textContent()) && /Install the Narrator's voice \(about 326 MB\)/.test(await sec.locator('[data-voice-install]').textContent()) && /your GPU \(WebGPU: Test GPU/.test(await sec.textContent()));
 // Render by GPU | Render by CPU (Leon, 9 Nov 2026): before the install it changes what the install downloads.
@@ -153,7 +153,7 @@ await ctx2.addInitScript(init, { edge: false });
 const q = await ctx2.newPage();
 const logs2 = []; q.on('console', (m) => { if (/\[voice\]/.test(m.text())) logs2.push(m.text()); });
 await q.goto(BASE);
-await click(q, 'SETTINGS', { exact: true, timeout: 60000 });
+await click(q, 'SETTINGS', { exact: true, timeout: 60000 }); await q.getByRole('tab', { name: 'Voice', exact: true }).click(); // the shared settings body (UI pass): Voice tab
 const sec2 = q.locator('[data-phc-voice-settings]'); await sec2.waitFor();
 const g2 = await sec2.locator('[data-voice-select="Narrator voice"] optgroup').evaluateAll((gs) => gs.map((g) => g.label));
 ok('elsewhere: no Edge group (' + g2.join(', ') + ') and the note: "' + await sec2.locator('[data-voice-edge-note]').textContent() + '"', !g2.includes('Edge natural voices') && (await sec2.locator('[data-voice-edge-note]').textContent()) === 'Open the game in Edge to use Microsoft\'s natural voices.');
@@ -179,7 +179,7 @@ ok('and the Kokoro audio followed (' + (logs2.find((l) => /first audio in \d+ ms
 // Back to not installed, for the WebGPU failure below.
 await q.evaluate(() => { localStorage.setItem('phc.voice', JSON.stringify({ ...JSON.parse(localStorage.getItem('phc.voice') || '{}'), install: false, ready: false })); });
 await q.reload();
-await click(q, 'SETTINGS', { exact: true, timeout: 60000 });
+await click(q, 'SETTINGS', { exact: true, timeout: 60000 }); await q.getByRole('tab', { name: 'Voice', exact: true }).click(); // the shared settings body (UI pass): Voice tab
 await sec2.waitFor();
 
 // A real WebGPU error: Kokoro falls back to the CPU and says so (Settings and the chip).

@@ -50,6 +50,8 @@ ok('credits list the music', true);
 await page.keyboard.press('Escape');
 // reduce motion: no running
 await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+// Settings is the shared body (game/settings.tsx, UI pass): Reduce motion is on its Display tab.
+await page.getByRole('tab', { name: 'Display' }).click();
 await page.getByLabel('Reduce motion (no parallax, no running)').check();
 await page.keyboard.press('Escape');
 await page.waitForTimeout(300);

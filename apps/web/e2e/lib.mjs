@@ -65,3 +65,20 @@ const useProxy = !!(process.env.BASE && process.env.HTTPS_PROXY && !isLoopback(p
 const launch = chromium.launch.bind(chromium);
 chromium.launch = (o = {}) => launch({ ...o, ...(useProxy ? { proxy: { server: process.env.HTTPS_PROXY, bypass: '<-loopback>' } } : {}) });
 export { chromium };
+/** The game asks in its own dialog (game/dialog.tsx, never the browser's confirm): answer every ask on this page with
+ *  its primary button, as page.on('dialog', d => d.accept()) did for the browser's. */
+export async function autoConfirm(page) {
+  const f = () => {
+    if (window.__phcAutoConfirm) return; window.__phcAutoConfirm = true;
+    const go = () => { const d = document.querySelector('[data-phc-dialog] [role="alertdialog"]'); if (d && !d.__auto) { d.__auto = true; setTimeout(() => { const b = d.querySelectorAll('button'); if (b.length) b[b.length - 1].click(); }, 60); } };
+    new MutationObserver(go).observe(document.documentElement, { childList: true, subtree: true }); go();
+  };
+  await page.addInitScript(f); await page.evaluate(f).catch(() => {});
+}
+/** Answer the game's own dialog now on screen: type the text (an askText), then press its primary button. */
+export async function answerAsk(page, text) {
+  const d = page.locator('[data-phc-dialog] [role="alertdialog"]');
+  await d.waitFor({ timeout: 5000 });
+  if (text != null) await d.locator('textarea, input').first().fill(text);
+  await d.locator('button').last().click();
+}

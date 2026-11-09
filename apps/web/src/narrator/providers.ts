@@ -299,3 +299,26 @@ export async function listModels(c: NarratorConfig, fetchImpl?: typeof fetch): P
   return list.map((m) => String(m?.id || m?.name || '').replace(/^models\//, '')).filter(Boolean).sort();
 }
 
+
+/** Test key (the room, UI pass 2.2): ask the service which models this key may use, which spends no tokens.
+ *  Anthropic is asked directly (listModels answers from the built-in list there). ok: the service answered. */
+export async function testKey(c: NarratorConfig, fetchImpl?: typeof fetch): Promise<{ ok: boolean; text: string }> {
+  const p = providerInfo(c.provider), short = p.label.replace(/ \(.*\)$/, '');
+  if (p.needsKey && !c.key) return { ok: false, text: 'Add the key first.' };
+  try {
+    if (p.id === 'anthropic') {
+      const f = fetchImpl || fetch, base = baseOf(c);
+      let res: Response;
+      try { res = await f(base + '/v1/models?limit=100', { headers: { 'x-api-key': c.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' } }); }
+      catch (e) { return { ok: false, text: unreachable(short, base, e) }; }
+      const body = await res.text(); let j: any = null; try { j = JSON.parse(body); } catch { /* */ }
+      if (!res.ok) return { ok: false, text: explainHttp(short, res.status, errDetail(j, body), base) };
+      const n = Array.isArray(j?.data) ? j.data.length : 0;
+      return { ok: true, text: short + ' answered: the key works' + (n ? ' (' + n + (n === 1 ? ' model)' : ' models)') : '') + '.' };
+    }
+    const ids = await listModels(c, fetchImpl);
+    return { ok: true, text: short + ' answered: the key works' + (ids.length ? ' (' + ids.length + (ids.length === 1 ? ' model)' : ' models)') : '') + '.' };
+  } catch (e) {
+    return { ok: false, text: String((e as Error)?.message || e) };
+  }
+}

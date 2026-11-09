@@ -639,3 +639,30 @@ Leave is labelled "Leave the Proving Ground" in that mode (their panel's *Leave*
    doesn't save (it isn't theirs to save).
 6. **Floaters:** besides the opacity slider, they move to the bottom left in story mode (they cover End turn at 1440
    today) and shrink to icons in a fight. Tell me if you want them in the header instead.
+
+---
+
+## 11. As built: stage A (the shell), 9 Nov 2026
+
+Built on this branch: sections 1, 2, 6, 7 and 8 (the right column, the quest board, Echo's home and the forecast outside
+fights are stage B). Where the build differs from the text above, and why:
+
+1. **Header:** one row at 1280, 1440 and 1920 (59 px). The cluster is `templates/shell.template.html`, put in at
+   `<!--SHELL-->` by `expand()`, fed by `shellVals(self, screen)` in `screens/shell.js`; the Narrator chip and its menu
+   are `narratorVals()` there too. Until stage B the **MISSIONS** button and the **ECHO** pips stay in the story header
+   (between the Narrator chip and the cluster), so nothing is unreachable in between. The Proving Ground's chip is a
+   plain label (no menu). On the room screen *Copy invite link* sits left of the cluster.
+2. **Keys:** M toggles the area map (never while typing, never over another dialog); Ctrl/⌘+S saves (the host) and
+   holds back the browser's save-page; Escape closes the Narrator menu.
+3. **The key, in session:** *Test key* asks Anthropic's models list directly (`testKey()` in `narrator/providers.ts`;
+   `listModels` answers Anthropic from the built-in list, which tests nothing); other services use their list. No
+   tokens are spent either way. `setNarrator` already retries a stuck Narrator as soon as the settings are ready, so
+   *Retry the Narrator now ›* only shows while it is still stuck after a change.
+4. **Mix:** master defaults to **100%** (80% would have turned everyone's music down 2 dB on the update); master
+   multiplies the effects and the music, not the Narrator's voice (that slider is the voice's own volume). The
+   interface target is **-20** (not -24): at -24 under a 35% bus a click was near inaudible. Measured after the tool
+   (loudest 100 ms, K-weighted): shots -14 to -16, explosions -13 to -14, the confirm chime -20 (was -8.7). With the
+   default buses a rifle now plays about 14 dB over the chime (it was 12 dB under). A 40 ms limiter release held a
+   shot's whole body down and gained nothing; the tool uses a 3 ms release and two passes.
+5. **Floaters:** both bottom left on every screen; in a fight Memory sits beside Music (both 40 px icons) instead of
+   above it, so the pair is one row high. The title's Settings panel shows the same body with its tabs on top.

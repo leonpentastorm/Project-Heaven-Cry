@@ -5,18 +5,44 @@ import { D, IMG, lightboxVals, zoomer, closeAnim } from './shared';
 import { ART, ART_BIG } from './shared';
 import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
-import { PROVIDERS, providerInfo, keyMismatch, notReadyReason, isPriced, listModels } from '../narrator/providers';
-import { act, getState, go, leaveRoom, saveNow, setNarrator, toast } from '../game/store';
+import { PROVIDERS, providerInfo, keyMismatch, notReadyReason, isPriced, listModels, testKey } from '../narrator/providers';
+import { act, getState, go, retryNarrator, setNarrator, toast } from '../game/store';
+import { shellVals } from './shell';
 import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
 import { validateSheet, CLASS } from '@engine';
-import { openProvingGround, leaveProvingGround } from '../game/sandbox';
+import { openProvingGround } from '../game/sandbox';
 import { classOf } from '../game/commands';
 
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
 
 export class RoomLogic extends DCLogic {
-  constructor(props) { super(props); this.state = { bring: false, copied: false, loaded: null, loading: false, loadNote: '' }; }
+  constructor(props) {
+    super(props); this.state = { bring: false, copied: false, loaded: null, loading: false, loadNote: '', keySaved: false, keyChanged: false, testing: false, test: null };
+    // Arriving from the Narrator chip's "Change key": scroll to the Narrator box and put the cursor in the key.
+    if (getState().roomFocus === 'narrator') setTimeout(() => {
+      go('room', { roomFocus: null });
+      const box = document.querySelector('aside[aria-label="Narrator"]'), key = document.querySelector('input[data-narrator-key]');
+      if (box && box.scrollIntoView) box.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      if (key) key.focus({ preventScroll: true });
+    }, 120);
+  }
+  /** A Narrator setting changed (UI pass 2.2): say so once the typing stops, and forget an old test result. */
+  noteChange() {
+    clearTimeout(this._keyT); this.setState({ keySaved: false, keyChanged: true, test: null });
+    this._keyT = setTimeout(() => this.setState({ keySaved: true }), 400);
+  }
+  /** Test key: the service's models list (no tokens spent). */
+  testKey() {
+    const n = getState().narrator, at = n.provider + '|' + n.key + '|' + n.baseUrl;
+    this.setState({ testing: true, test: null });
+    testKey(n).then((r) => { const m = getState().narrator; if (m.provider + '|' + m.key + '|' + m.baseUrl !== at) return this.setState({ testing: false }); this.setState({ testing: false, test: r }); });
+  }
+  /** Back to the session (the big button and the header's): say so when the Narrator's settings changed here. */
+  backToSession(g) {
+    if (this.state.keyChanged && getState().role === 'host' && g.settings.mode === 'ai') toast('Narrator settings updated: used from its next turn.', true);
+    go(g.phase === 'combat' ? 'combat' : 'main');
+  }
   /** "Load models": ask the picked service which models this key can use. */
   loadModels() {
     const n = getState().narrator, p = providerInfo(n.provider), at = p.id + '|' + n.baseUrl;
@@ -27,6 +53,20 @@ export class RoomLogic extends DCLogic {
       if (ids.length && !getState().narrator.model) setNarrator({ model: ids[0] });
     }, (e) => this.setState({ loading: false, loadNote: String((e && e.message) || e) }));
   }
+  /** Under the key (UI pass 2.2): that it is saved and when it is used, Test key, and Retry now when stuck. */
+  keyVals(g, isHost) {
+    const st = getState(), n = st.narrator, S = this.state, inSession = g.phase !== 'lobby', T = S.test;
+    return {
+      keySavedShow: !!S.keySaved && S.keyChanged,
+      keySavedText: '✓ Saved for this session' + (inSession ? ' · the Narrator uses it from its next turn.' : ' · used when the session starts.'),
+      rememberNote: !!n.key && !n.remember ? 'Not remembered in this browser: tick "Remember the key" to keep it after you close the tab.' : '',
+      testKey: () => this.testKey(), testOff: S.testing || (providerInfo(n.provider).needsKey && !n.key), testLabel: S.testing ? 'Testing…' : 'Test key',
+      testShow: !!T || S.testing, testText: S.testing ? 'Asking ' + providerInfo(n.provider).label.replace(/ \(.*\)$/, '') + '…' : T ? (T.ok ? '✓ ' : '✗ ') + T.text : '',
+      testStyle: 'font-size: 13px; line-height: 1.45; color: ' + (S.testing ? '#A3AEC2' : T && T.ok ? '#6FEA77' : '#F65157'),
+      retryNow: isHost && inSession && !!(g.narrator && g.narrator.error) && S.keyChanged,
+      retryNarr: () => { retryNarrator(); this.backToSession(g); },
+    };
+  }
   /** The Narrator settings (host, AI mode): which service, its address, the key, the model. */
   narratorVals() {
     const n = getState().narrator, p = providerInfo(n.provider), anth = p.id === 'anthropic';
@@ -34,14 +74,14 @@ export class RoomLogic extends DCLogic {
     const model = MODELS.find((m) => m.id === n.model) || MODELS[0];
     return {
       provider: p.id, providers: PROVIDERS.map((x) => ({ id: x.id, label: x.label })),
-      onProvider: (e) => { this.setState({ loaded: null, loadNote: '' }); setNarrator({ provider: e.target.value }); },
+      onProvider: (e) => { this.setState({ loaded: null, loadNote: '' }); setNarrator({ provider: e.target.value }); this.noteChange(); },
       editableBase: p.editableBase, baseUrl: n.baseUrl, basePlaceholder: p.baseUrl || 'https://… (from the site, usually ending in /v1)',
-      onBase: (e) => { this.setState({ loaded: null, loadNote: '' }); setNarrator({ baseUrl: e.target.value.trim() }); },
+      onBase: (e) => { this.setState({ loaded: null, loadNote: '' }); setNarrator({ baseUrl: e.target.value.trim() }); this.noteChange(); },
       keyLabel: p.needsKey ? 'API KEY' : 'API KEY (OPTIONAL)', keyPlaceholder: p.keyPlaceholder,
       keyHint: mis ? mis.text + ' Switch to ' + providerInfo(mis.to).label + '?' : '', switchLabel: mis ? 'Use ' + providerInfo(mis.to).label : '',
       switchToGuess: () => { if (mis) { this.setState({ loaded: null, loadNote: '' }); setNarrator({ provider: mis.to, key: n.key }); } },
       modelPick: anth, modelFree: !anth, models: MODELS.map((m) => ({ id: m.id, label: m.label + ' · $' + m.input + ' / $' + m.output + ' per M tokens' })), model: n.model,
-      onModel: (e) => setNarrator({ model: e.target.value }), onModelText: (e) => setNarrator({ model: e.target.value.trim() }),
+      onModel: (e) => { setNarrator({ model: e.target.value }); this.noteChange(); }, onModelText: (e) => { setNarrator({ model: e.target.value.trim() }); this.noteChange(); },
       modelPlaceholder: p.modelPlaceholder, modelSuggest: (loaded || p.suggest).map((id) => ({ key: id, id })),
       loadModels: () => this.loadModels(), loadDisabled: this.state.loading || (p.needsKey && !n.key) || (p.editableBase && !n.baseUrl && !p.baseUrl),
       loadLabel: this.state.loading ? 'Loading…' : 'Load models', loadNote: this.state.loadNote || (p.needsKey && !n.key ? 'Add the key first, then load the models it can use.' : ''),
@@ -54,7 +94,7 @@ export class RoomLogic extends DCLogic {
   }
   renderVals() {
     const st = getState(), g = st.game, isHost = st.role === 'host';
-    if (!g) return { ...lightboxVals(this), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 12px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', leave: () => leaveRoom(), create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
+    if (!g) return { ...lightboxVals(this), ...shellVals(this, 'room'), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 12px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
     const S = g.settings, me = st.me.id, host = g.players.find((p) => p.id === g.hostId);
     const mine = Object.values(g.characters).filter((c) => c.owner === me);
     const players = [...g.players, ...Array(Math.max(0, 4 - g.players.length)).fill(null)].map((p) => {
@@ -87,8 +127,8 @@ export class RoomLogic extends DCLogic {
     const offline = g.players.filter((p) => p.online && !Object.values(g.characters).some((c) => c.owner === p.id) && p.id !== g.hostId);
     // A finished campaign (spec: OOC, missions and end states): the save is complete; the room says so.
     const why = g.story && g.story.complete ? 'Campaign complete ✓ · ' + ((g.campaign && g.campaign.title) || 'the story') + ' is finished'
-      : !isHost ? 'Waiting for ' + (host?.name || 'the host') + ' to start'
-      : g.phase !== 'lobby' ? 'In session' : !squad.length ? 'Lock in a character to start'
+      : g.phase !== 'lobby' ? null : !isHost ? 'Waiting for ' + (host?.name || 'the host') + ' to start'
+      : g.phase !== 'lobby' ? null : !squad.length ? 'Lock in a character to start'
       : S.mode === 'ai' && !st.narrator.scripted ? notReadyReason(st.narrator) : null;
     const notReady = !!why;
     const lib = st.library.filter((c) => !c.draft && !validateSheet(c));
@@ -99,22 +139,24 @@ export class RoomLogic extends DCLogic {
       copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url, true)); },
       canLoad: isHost && g.phase === 'lobby', loadCampaign: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return;
         f.text().then((t) => { let c; try { c = JSON.parse(t); } catch { return toast('That file is not JSON.'); } act({ type: 'campaign/load', campaign: c }); e.target.value = ''; }); },
-      // In the Proving Ground the host's Leave ends it and keeps the room (Leon: leaving it landed on the title screen).
-      leave: () => (g.sandbox ? leaveProvingGround(false) : leaveRoom()), leaveLabel: g.sandbox ? 'Leave the Proving Ground' : isHost ? 'Save and leave' : 'Leave',
-      leaveTitle: g.sandbox && isHost ? 'Back to this room, as it was before the Proving Ground.' : 'Back to the title screen. Resume this room any time from Saved sessions.',
-      isHost, save: () => saveNow(), saveLabel: st.savedAt && Date.now() - st.savedAt < 4000 ? 'Saved ✓' : 'Save',
-      saveTitle: 'The game also saves itself after every action, in this browser and on the room server.',
-      inSession: g.phase !== 'lobby', backToSession: () => go(g.phase === 'combat' ? 'combat' : 'main'),
+      // The header's cluster (UI pass, screens/shell.js): Back to the session, Save, ⚙, ⚑, Leave (it asks, and the
+      // host's saves first; in the Proving Ground it ends it).
+      ...shellVals(this, 'room'),
+      inSession: g.phase !== 'lobby', backToSession: () => this.backToSession(g),
       players, squad, starts, start, modes, isAI: S.mode === 'ai', isHuman: S.mode === 'human', hostAI: S.mode === 'ai' && isHost, guestAI: S.mode === 'ai' && !isHost, hostName: host?.name || 'The host', tones,
       create: () => go('create', { draft: null }), cantAdd: g.phase !== 'lobby' || mine.length >= 2,
       report: openReport, importChar: () => importCharacter().then((c) => { if (c && !c.draft) { const { savedAt, draft, ...sheet } = c; act({ type: 'char/add', sheet }); this.setState({ bring: false }); } }),
       toggleBring: () => (this.state.bring ? closeAnim(this, 'bring', () => this.setState({ bring: false })) : this.setState({ bring: true })), bringOpen: this.state.bring,
       bringCls: 'phc-a-drop' + ((this.state.closing || {}).bring ? ' phc-closing' : ''), noSaved: !lib.length,
       saved: lib.map((c) => ({ key: c.name, name: c.name, img: c.portrait, line: c.origin, bring: () => { const { savedAt, draft, ...sheet } = c; act({ type: 'char/add', sheet }); this.setState({ bring: false }); } })),
-      key: st.narrator.key, onKey: (e) => setNarrator({ key: e.target.value.trim() }), remember: st.narrator.remember, onRemember: (e) => setNarrator({ remember: e.target.checked }),
+      key: st.narrator.key, onKey: (e) => { setNarrator({ key: e.target.value.trim() }); this.noteChange(); },
+      ...this.keyVals(g, isHost), remember: st.narrator.remember, onRemember: (e) => setNarrator({ remember: e.target.checked }),
       ...this.narratorVals(),
-      notReady, startLabel: why || (g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
-      startSession: () => act({ type: 'session/start' }),
+      // In session the big button is the way back (UI pass 2.1), never a greyed "In session".
+      notReady, startLabel: why || (g.phase !== 'lobby' ? 'Return to the session ›' : g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
+      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : act({ type: 'session/start' })),
+      startNote: g.phase !== 'lobby' && !(g.story && g.story.complete) ? (isHost ? 'Changes here apply from the Narrator\'s next turn.' : 'The session is on: this only takes you back.') : '',
+      returnStory: !!(g.story && g.story.complete), toStory: () => this.backToSession(g),
       // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.
       proveCan: isHost && g.phase === 'lobby', proveGuest: !isHost && g.phase === 'lobby', openProve: () => openProvingGround(mine.length ? undefined : 'sharpshooter'),
       proveLabel: '⚔ Proving Ground' + (mine.length ? '' : ' · with a test character'),
