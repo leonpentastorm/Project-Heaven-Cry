@@ -77,7 +77,7 @@ export function narratorVals(self, g, opts) {
   const inFight = g.phase === 'combat';
   return {
     nc: {
-      word, dot, sandbox: SB, notSandbox: !SB, open, expanded: open ? 'true' : 'false', headZ: open ? 46 : 12,
+      word, dot, sandbox: SB, notSandbox: !SB, open, expanded: open ? 'true' : 'false', headZ: open ? 46 : 'auto', // closed: under the area map and the other dialogs (z 10 and up)
       toggle: () => (SB ? null : self.setState({ shNarr: !self.state.shNarr })), close,
       style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 34px; max-width: 300px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; white-space: nowrap; ' +
         'border: 1px solid ' + (err ? '#F65157' : open ? '#E7EBF3' : '#2E3A50') + '; background: ' + (err ? 'rgba(246, 81, 87, 0.08)' : '#10151F') + '; color: ' + ink + (SB ? '; cursor: default' : '; cursor: pointer'),

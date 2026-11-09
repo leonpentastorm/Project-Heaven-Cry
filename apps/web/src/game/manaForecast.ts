@@ -148,3 +148,19 @@ export function forecastVals(cb: any, open: boolean, toggle: () => void, drop = 
     detailsStyle: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; padding: 8px 12px; border-top: 1px solid #232D3F' + (!drop ? '; margin-top: 6px' : '; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 7; border-radius: 12px; background: #10151F; border: 1px solid #2E3A50; border-left: 3px solid ' + f.ink + '; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55)'),
   };
 }
+
+// ---------- outside fights (UI pass, docs/design/ui-pass-shell.md 5): the same forecast on the story screen ----------
+/** A stand-in for a fight built from the story: the meter between fights (g.story.mana), the story round and the zone,
+ *  so the trend reads per story round in this zone. No rule changes: g.story.mana is the meter the next fight starts at. */
+export function storyForecastCb(g: any): { mana: number; round: number; name: string; map: { id: string } } | null {
+  if (!g?.story) return null;
+  return { mana: g.story.mana ?? MANA_START, round: Number(g.story.round) || 1, name: 'story', map: { id: String(g.story.zone || '') } };
+}
+/** The story column's compact forecast (templates/main.template.html, the right column): forecastVals, plus a short
+ *  trend for the one-line head. has is false before a session starts. */
+export function storyForecastVals(g: any, open: boolean, toggle: () => void) {
+  const cb = storyForecastCb(g);
+  if (!cb) return { has: false, gauge: [], effects: [], movers: [] } as any;
+  const v = forecastVals(cb, open, toggle, false), t = v.trend as unknown as string;
+  return { ...v, has: true, headShort: v.bandName.toUpperCase() + ' AIR', meter: v.mana + '/' + v.max, trendShort: /^steady/.test(t) ? 'steady' : t.replace(/ this round.*$/, '') };
+}

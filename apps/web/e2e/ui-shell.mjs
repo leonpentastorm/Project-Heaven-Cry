@@ -115,6 +115,70 @@ const eb = await endTurn.boundingBox();
 ok('nothing covers End turn at 1440×900', await host.evaluate(([x, y]) => { const el = document.elementFromPoint(x, y); return !!el && /End turn/.test(el.closest('button')?.textContent || ''); }, [eb.x + eb.width / 2, eb.y + eb.height / 2]));
 if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-story-1440.png' });
 
+// 6b. The right column (UI pass 3): the mana forecast outside fights, NEAR YOU capped with its own scrollbar, the quest
+// board always open, grouped, its own scrollbar with a town's worth of quests; the header has no MISSIONS or ECHO.
+ok('the header no longer has MISSIONS or the ECHO pips', (await head.getByRole('button', { name: /^Mission board/ }).count()) === 0 && (await head.locator('[data-phc-echo-head]').count()) === 0);
+const col = host.locator('aside[aria-label="Map and speaking order"]');
+const sfc = col.locator('[data-story-forecast]');
+ok('the mana forecast is on the story screen: ' + ((await sfc.textContent().catch(() => '')) || '').replace(/\s+/g, ' ').slice(0, 60), (await sfc.count()) === 1 && /NORMAL AIR/.test(await sfc.textContent()) && /15\/40/.test(await sfc.textContent()));
+await sfc.getByRole('button', { name: 'More ▸' }).click(); await host.waitForTimeout(250);
+ok('More ▸ opens what this air does and what moves it, over the column', /IN THIS AIR/.test(await sfc.textContent()) && /WHAT MOVES IT/.test(await sfc.textContent()));
+await sfc.getByRole('button', { name: 'Less ▾' }).click();
+await host.keyboard.press('m'); await host.waitForTimeout(500);
+ok('the area map keeps its mana line', /MANA 15/.test(await host.locator('div[role="dialog"][aria-label="Area map"]').textContent()));
+await host.keyboard.press('m'); await host.waitForTimeout(500);
+const qb = col.locator('[data-quest-board]');
+ok('the quest board is open in the right column with its count (' + (await qb.locator('[data-qb-count]').textContent()) + ')', (await qb.count()) === 1 && /· 5/.test(await qb.locator('[data-qb-count]').textContent()));
+await host.evaluate(() => { const jobs = (from) => Array.from({ length: 12 }, (_, i) => ({ id: 'job' + (from + i), title: 'Job ' + (from + i) + ': fetch the thing from the market', text: 'The baker asked.' }));
+  window.__phc.act({ type: 'narrator/turn', turn: { narration: 'The town is full of work.', side: jobs(0), missions: [{ mission: 'the_shield_line', objective: 'carry_east', status: 'revealed', where: { zone: 'rear_pad' } }] } });
+  window.__phc.act({ type: 'narrator/turn', turn: { narration: 'More work.', side: jobs(12) } }); });
+await host.waitForTimeout(800);
+ok('29 open quests counted', /· 29/.test(await qb.locator('[data-qb-count]').textContent()));
+const groups = await qb.locator('[data-qb-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-qb-group')));
+ok('grouped by Area: ' + groups.join(', '), groups.join(',') === 'z:rear_pad,somewhere,side');
+ok('every quest is listed (' + (await qb.locator('[data-qb-row]').count()) + ' rows)', (await qb.locator('[data-qb-row]').count()) === 29);
+const scr = qb.locator('[data-qb-scroll]');
+const sc = await scr.evaluate((e) => ({ sh: e.scrollHeight, ch: e.clientHeight, oy: getComputedStyle(e).overflowY }));
+ok('the board scrolls inside itself (' + sc.ch + ' of ' + sc.sh + ' px shown)', sc.oy === 'auto' && sc.sh > sc.ch + 200);
+const colScroll = await col.evaluate((e) => e.scrollHeight - e.clientHeight);
+await scr.evaluate((e) => { e.scrollTop = e.scrollHeight; }); await host.waitForTimeout(200);
+ok('…and the column around it does not move (' + colScroll + ' px of column overflow)', colScroll <= 2 && (await col.evaluate((e) => e.scrollTop)) === 0);
+ok('the last side job is reachable by scrolling', await qb.locator('[data-qb-row="side/job23"]').isVisible());
+const eb2 = await host.getByRole('button', { name: 'End turn', exact: true }).boundingBox();
+ok('End turn stays on screen under the board', eb2 && eb2.y + eb2.height <= 900);
+await qb.locator('[data-qb-group="side"] > button').first().click(); await host.waitForTimeout(200);
+ok('a group folds (and the fold is remembered)', (await qb.locator('[data-qb-row="side/job0"]').count()) === 0 && /"area:side":true/.test(await host.evaluate(() => localStorage.getItem('phc.questFold') || '')));
+await qb.locator('[data-qb-group="side"] > button').first().click();
+await qb.getByRole('button', { name: 'Quest', exact: true }).click(); await host.waitForTimeout(200);
+ok('by Quest: the mission, then the side jobs', (await qb.locator('[data-qb-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-qb-group')))).join(',') === 'm:the_shield_line,side');
+await qb.getByRole('button', { name: 'Area', exact: true }).click();
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-story-quests-1440.png' });
+await host.setViewportSize({ width: 1280, height: 720 }); await host.waitForTimeout(300);
+const eb3 = await host.getByRole('button', { name: 'End turn', exact: true }).boundingBox();
+const qh = await scr.evaluate((e) => e.clientHeight);
+ok('at 1280×720 the board still shows ' + qh + ' px of quests and End turn is on screen', qh >= 120 && eb3 && eb3.y + eb3.height <= 720);
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-story-quests-1280.png' });
+await host.setViewportSize({ width: 1440, height: 900 }); await host.waitForTimeout(300);
+await qb.getByRole('button', { name: 'Full board' }).click();
+ok('Full board ⤢ opens the whole mission board', await host.getByRole('dialog', { name: 'Mission board' }).waitFor({ timeout: 3000 }).then(() => true, () => false));
+await host.getByRole('button', { name: 'Close the mission board' }).click(); await host.waitForTimeout(300);
+const near = col.locator('[data-near-list] .phc-near-scroll');
+ok('NEAR YOU is capped at 132 px with its own scrollbar', (await near.evaluate((e) => getComputedStyle(e).maxHeight + ' ' + getComputedStyle(e).overflowY)) === '132px auto');
+
+// 6c. Echo's home: a row on the sheet next to HP and MP; it explains itself.
+const er = host.locator('[data-phc-echo]');
+ok('the Echo row sits with HP, MP and XP: ' + (await er.textContent()).replace(/\s+/g, ' ').trim(), /ECHO/.test(await er.textContent()) && /1 \/ 3/.test(await er.textContent()) && /reroll a d20/.test(await er.textContent()));
+await er.click(); await host.waitForTimeout(250);
+const eh = host.locator('[data-phc-echo-help]');
+const et = await eh.textContent();
+ok('it explains itself: what it does, how you get it, how much you hold, where you spend it', /A second chance/.test(et) && /GET IT/.test(et) && /HOLD/.test(et) && /SPEND IT/.test(et) && /indulge an Overreach/.test(et) && /in a fight: not yet/.test(et));
+if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-echo.png', clip: { x: 0, y: 60, width: 360, height: 600 } });
+await er.click();
+await host.evaluate(() => { const g = window.__phc.getState().game; window.__phc.act({ type: 'narrator/turn', turn: { narration: 'A good moment.', echo: [{ charId: Object.keys(g.characters)[0], n: 1, why: 'a fine call' }] } }); });
+await host.waitForTimeout(250);
+ok('a gain flares the new diamond and says so', (await host.locator('[data-phc-echo] .phc-echo-gain').count()) === 1 && /2 \/ 3/.test(await er.textContent()));
+await host.waitForSelector('text=+1 ECHO', { timeout: 3000 }).then(() => ok('…with a toast', true), () => ok('…with a toast', false));
+
 // 7. Leave: Stay keeps you here.
 await head.getByRole('button', { name: 'Leave the room', exact: true }).click();
 const dlg = host.locator('[role="alertdialog"]');

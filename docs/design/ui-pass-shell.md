@@ -666,3 +666,36 @@ fights are stage B). Where the build differs from the text above, and why:
    shot's whole body down and gained nothing; the tool uses a 3 ms release and two passes.
 5. **Floaters:** both bottom left on every screen; in a fight Memory sits beside Music (both 40 px icons) instead of
    above it, so the pair is one row high. The title's Settings panel shows the same body with its tabs on top.
+
+## 12. As built: stage B (the play screen), 9 Nov 2026
+
+Built on this branch: sections 3, 4 and 5. Where the build differs from the text above, and why:
+
+1. **Area map.** STORY | COMBAT went in stage A; the header's Area map button (M) and the red *Back to the fight ›* are
+   the way to the map and back. Fights still switch to the combat screen by themselves and back after. The story stream
+   stays the centre view (10.1 still waits on Leon).
+2. **Right column** (`templates/main.template.html`, values in `screens/main.js`): mana forecast, zone + day + Area map,
+   the minimap, NEAR YOU (`max-height: 132px`, own scrollbar), the Quest board (`flex: 1 1 auto`, min 150 px, own
+   scrollbar, group headers stick to its top), then the speaking order as a strip of avatars with Pass / End turn / Skip
+   the rest and the AP line pinned at the bottom (`position: sticky`). The column itself only scrolls if a very short
+   window can't hold the minimums, and the turn controls stay on screen even then. Under 760 px tall the minimap hides
+   (the Area map button and M are one click away), so at 1280×720 the board still shows about 250 px of quests. The
+   column is `clamp(300px, 22vw, 420px)` wide, so it grows on a 1920 screen. The HERE card is gone: its zone and day
+   head the minimap, its objectives are the board's HERE group (`data-here` and `data-here-day` kept for the tests).
+3. **Quest board:** `questGroups(g, by)` in `game/missionView.ts` (pure, tested). By Area: HERE · zone (only when
+   something is here), IN <zone> per other zone, SOMEWHERE, SIDE JOBS, DONE and FAILED (folded). By Quest: one group per
+   current mission with its goal, SIDE JOBS, PAST (folded). Fold per group and the grouping are remembered
+   (`phc.questFold`, `phc.questGroup`). Markers (◆ H5) open the area map on that tile. A new open row flashes white once.
+   *Full board ⤢* is an icon button in the board's header (the footer cost a row). The header's MISSIONS button is gone;
+   `missionsButton` stays for its tests and the old board.
+4. **Echo** (`game/echoView.ts`, tested): a row between MP and XP on the sheet (three diamonds, *1 / 3 · reroll a d20*,
+   a ? button); the explainer opens in place under it. Every number is read from `rules.json` `resolution.echo` and
+   `resolution.overreach`. A gain flares the new diamond and toasts (*◆ +1 ECHO · you indulged Durability* when an
+   Overreach gave it); a spend flares the emptied one. The header's ECHO pips are gone. **Not done here:** the combat You
+   card's Echo row (implementer 1 owns the You card; it goes in at the merge) and the dice table's pulse.
+5. **Forecast outside fights:** `storyForecastVals(g, open, toggle)` in `game/manaForecast.ts`: the fight's forecast fed
+   `{ mana: g.story.mana, round: g.story.round, name: 'story', map: { id: g.story.zone } }`. Compact: *MANA · NORMAL AIR*,
+   the gauge, *15/40*, the trend; *More ▸* drops the sky, the outlook, what the air does and what moves it over the column
+   (it never pushes the board down).
+6. **A stage A fix:** the header's z-index was 12 when its Narrator menu was closed, which put it over the area map
+   (z 10) and hid the map's Close button (world-play.mjs). Closed it is `auto` now; open it is still 46.

@@ -53,3 +53,17 @@ describe('the mana forecast', () => {
     expect(forecastVals(fight(31), true, () => {}).toggleLabel).toBe('Less ▾');
   });
 });
+
+describe('the forecast outside fights (UI pass 5)', () => {
+  it('reads the story meter, the story round and the zone; the trend per story round', async () => {
+    const { storyForecastVals, storyForecastCb } = await import('./manaForecast');
+    _resetManaHistory();
+    const g: any = { story: { mana: 15, round: 1, zone: 'shield_line' } };
+    expect(storyForecastCb(g)).toEqual({ mana: 15, round: 1, name: 'story', map: { id: 'shield_line' } });
+    let v = storyForecastVals(g, false, () => {});
+    expect(v.has).toBe(true); expect(v.headline).toBe('NORMAL AIR · 15 / 40'); expect(v.trendShort).toBe('steady');
+    g.story.mana = 20; v = storyForecastVals(g, true, () => {});
+    expect(v.trendShort).toBe('+5'); expect(v.toggleLabel).toBe('Less ▾');
+    expect(storyForecastVals(null, false, () => {}).has).toBe(false);
+  });
+});
