@@ -1276,12 +1276,13 @@ export function placedMagic(cb: Combat, side: 'pc' | 'foe') {
 /** Is this zone hidden from a side (for views: a trap or hidden turret of the other side, not spotted)? */
 export const secretFrom = (z: any, side: 'pc' | 'foe') => (z.kind === 'trap' || (z.kind === 'turret' && z.hidden)) && z.side !== side && !(z.spotted || []).includes(side);
 
-/** The pattern under a glyph as the screen shows it while building (spec: Mana, Sigils 9.2). */
-export function patternAt(cb: Combat, tile: string, u?: Unit | null) {
+/** The pattern under a glyph as the screen shows it while building (spec: Mana, Sigils 9.2). stroke (rules 1.9
+ * Junctions): on a junction's tile, which of its strokes to read. */
+export function patternAt(cb: Combat, tile: string, u?: Unit | null, stroke?: string) {
   migrateSigil(cb);
-  const p = findPattern(cb, tile, u?.pos), m = u?.mg;
+  const p = findPattern(cb, tile, u?.pos, stroke), m = u?.mg;
   const start = (cb.glyphs || []).find((g) => g.pos === tile);
-  const mm = start ? membersOf(cb.glyphs || [], start) : null, comp = mm ? mm.tiles : [];
+  const mm = start ? membersOf(cb.glyphs || [], start, stroke) : null, comp = mm ? mm.tiles : [];
   const words = typeof p === 'string' ? comp.flatMap((k) => mm!.glyphs.filter((g) => g.pos === k).sort(glyphOrder).map((g) => g.word)) : p.words;
   const why = typeof p === 'string' ? p : grammarError(p.words, m?.maxWords ?? MAX_GLYPHS);
   const charge = typeof p === 'string' || !u ? 0 : evokeCharge(p, u);

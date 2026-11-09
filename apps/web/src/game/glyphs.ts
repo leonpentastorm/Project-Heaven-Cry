@@ -84,3 +84,22 @@ export function heartUri(stage = 1): string {
   const c = ['#AE9BFF', '#C59BE8', '#DDB0A8', '#F2C46A'][Math.max(0, Math.min(3, stage - 1))];
   return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20 C5 15 3 11 3 8 A4.5 4.5 0 0 1 12 6 A4.5 4.5 0 0 1 21 8 C21 11 19 15 12 20 Z" fill="${c}" fill-opacity="0.85" stroke="#FFFFFF" stroke-width="1"/></svg>`);
 }
+
+/** Rules 1.9 strokes: the join marks one tile draws toward its stroke neighbours. d is the direction (dx, dy) to the
+ * neighbour; kind: 'line' (your side, faint), 'hot' (the hovered stroke), 'foe' (a hostile stroke you can see), 'preview'
+ * (the draw step's joining line, dashed white). Solid, opaque inks: two halves that overlap in the gap never darken. */
+export interface JoinSeg { d: [number, number]; kind: 'line' | 'hot' | 'foe' | 'preview' }
+const JOIN_INK: Record<JoinSeg['kind'], string> = { line: '#2E8496', hot: '#8BDEEE', foe: '#8E3A40', preview: '#FFFFFF' };
+/** One tile's join marks as an SVG data URI. The image box is the tile padded by `pad` on every side (in viewBox units,
+ * the tile being `size` units), the line runs from the glyph's anchor to just past half the tile pitch, so the
+ * neighbour's half meets it. Combat tiles: size 44, anchor 9 (the glyph icon's centre), pitch 48. */
+export function joinUri(segs: JoinSeg[], o: { size: number; pad: number; anchor: [number, number]; pitch: number }): string {
+  const half = o.pitch / 2 + 1, [ax, ay] = o.anchor, w = (k: JoinSeg['kind']) => (k === 'hot' ? 3.2 : k === 'preview' ? 2.4 : 2) * o.size / 44;
+  const order: JoinSeg['kind'][] = ['foe', 'line', 'hot', 'preview'];
+  const lines = [...segs].sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind)).map((s) => {
+    const x2 = ax + s.d[0] * half, y2 = ay + s.d[1] * half;
+    return `<line x1="${ax}" y1="${ay}" x2="${x2}" y2="${y2}" stroke="${JOIN_INK[s.kind]}" stroke-width="${w(s.kind)}" stroke-linecap="${s.kind === 'preview' ? 'butt' : 'round'}"${s.kind === 'preview' ? ` stroke-dasharray="${3 * o.size / 44} ${2.5 * o.size / 44}"` : ''}/>`;
+  }).join('');
+  const v = -o.pad, span = o.size + 2 * o.pad;
+  return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${v} ${v} ${span} ${span}" fill="none">${lines}</svg>`);
+}
