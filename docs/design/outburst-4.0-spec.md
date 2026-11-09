@@ -255,11 +255,13 @@ by name, with no code change, the way prayer icons work (`apps/web/src/game/fait
      - the **unlock** sting ("you have felt X");
      - **Revert** (a soft rewind);
      - the **counter's shake tick**.
-   - **Only CC0** (or CC-BY with credits done exactly as the author asks). Sources the game already uses: Kenney,
+   - **CC BY 4.0 or CC0 only**, credited in the game's credits exactly as the author asks. Sources the game already uses: Kenney,
      OpenGameArt CC0 packs, The Free Firearm Sound Library. Never NC or "free for personal use".
    - Process and trim them into `apps/web/public/sfx/`, add every one to `apps/web/src/game/sfxCredits.ts`, and keep
      the files small.
-2. **Effects: drawn in code by Part B**, no art files.
+2. **Effects: sourced first, code second** (Leon's rule in CLAUDE.md). Textured effects (embers, rain, petals, sparks,
+   smoke, burst sheets) come from **CC BY 4.0 or CC0 VFX sprite and particle sheets**, credited in the game's credits.
+   Only the parts that look good as pure SVG or CSS are drawn in code: rings, lines, glyph strokes, tints and the counter's shake.
    - Each feeling's colour and particle motif (embers, rain, frost-breath, petals, sparks, ash, thread, light…);
    - the multiplier counter's shake and colour shift;
    - residue tiles (a tint plus the feeling's glyph, animated softly; fog respected; reduced motion respected).
