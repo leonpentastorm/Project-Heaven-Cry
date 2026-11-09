@@ -121,7 +121,10 @@ describe('the panels', () => {
     const L = worldLayer(V(g)), crate = (g.story.objects || []).find((o) => o.kind === 'cache')!;
     expect(L.cells.get(crate.pos)!.mark!.chip).toBe('HINT');
     const here = hereVals(V(g));
-    expect(here.has).toBe(true); expect(here.rows[0].text).toBe('Find the core');
+    expect(here.has).toBe(true); expect(here.rows[0].text).toBe('Find the core'); expect(here.day).toBe('DAY 1');
+    expect(hereVals(V({ ...g, day: 12 } as any)).day).toBe('DAY 12');
+    // No objectives: the card still shows the zone and the day (item 709: the day is always on the HERE card).
+    const bare = hereVals(V(pg())); expect(bare.has).toBe(true); expect(bare.rows).toEqual([]); expect(bare.zone).toMatch(/^HERE · \S/); expect(bare.day).toBe('DAY 1');
     expect(here.rows[0].steps.map((s) => s.text).join(' ')).toMatch(/Hum: "In the crate\."/);
     // busy overrides: a reason on every row.
     expect(talkVals(V(g), n.id, me(g).id, art, ink, 'Wait for the round to open.')!.rows.every((r) => r.off && r.why === 'Wait for the round to open.')).toBe(true);

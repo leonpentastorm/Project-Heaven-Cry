@@ -17,6 +17,8 @@ export function scopeOf(uses: string | null | undefined): UseScope {
 
 /** The game's session and rest counters (old saves: session 1, rest 0). */
 export const sessionN = (g: any) => (g?.sessionN ?? 1);
+/** The day counter (rules 1.6.1, item 709): g.day, from 1; a long rest is a day, the Narrator's turn field days adds more. Old saves: day 1. */
+export const dayOf = (g: any): number => (Number.isFinite(g?.day) ? g.day : 1);
 export const restN = (g: any) => (g?.restN ?? 0);
 const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 

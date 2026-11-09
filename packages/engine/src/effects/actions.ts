@@ -105,7 +105,10 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   if (!why && left <= 0) why = USED_WHY[per] || 'Used (' + usesLabel(per, n, 0) + ').';
   if (!why && per === 'out_of_combat' && h.cb && !overworld(h.cb)) why = 'Out of combat only.';
   if (!why && h.u && (h.u.downed || h.u.dead)) why = 'Downed.';
-  if (!why && scope !== 'story' && h.u && h.u.ap < ap) why = 'Needs ' + ap + ' AP.';
+  // Encore (items 729, 737): repeating the perk the Laughing Mask's Miracle named is lent its AP (encoreCredit's rule,
+  // inlined: this module sits under combat.ts); not inside the reducer's own action, which lent it already.
+  const en = h.u?.faith?.encore, lend = en && !(h.cb as any)?.acting && en.key === 'combat/perk:' + h.key ? en.ap || 0 : 0;
+  if (!why && scope !== 'story' && h.u && h.u.ap + lend < ap) why = 'Needs ' + ap + ' AP.';
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
     target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: h.kind === 'class' ? 'class' : 'perks', cls: h.info.classId,

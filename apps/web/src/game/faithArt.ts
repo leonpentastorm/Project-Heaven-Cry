@@ -16,8 +16,9 @@ export const VOW_IDS = ['shield', 'mercy', 'stand', 'bare', 'unarmed_faith', 'no
 // ---------- colour (proposal for Leon: docs/design/handoffs/blessing-ui-HANDOFF.md) ----------
 /** Faith's words take Virtue ink (the Faith skill's attribute). */
 export const FAITH_INK = '#D36A90';
-/** The light of an answered prayer: gold. No gold token exists in colour-system.md; this proposes #F2C46A, the gold the
- *  Soul effects already use (glyphs.ts SOUL_WARM). Light and particles only, never text. */
+/** The light of an answered prayer: gold, the token --faith-light (approved by Leon, 8 Nov 2026; defined in index.html's
+ *  :root and recorded in docs/design/colour-system.md). Templates use var(--faith-light); code uses this constant. Light
+ *  only (glows, the Miracle, the Devotion meter's fill, a patron's mark lit), always beside a word. */
 export const FAITH_GOLD = '#F2C46A';
 /** Each patron's light (effects only), from the art brief's accent words, until data/patrons.json v2 gives its own. */
 export const PATRON_ACCENT: Record<string, string> = {

@@ -8,6 +8,41 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.4.0 — 9 November 2026
+
+Branch `feature/faith-2.1`: **Faith 2.1, rules revisions 1.6.1 and 1.6.2** (decision 107; `docs/design/faith-2.1-spec.md`; spec section 14 items 701–737, all provisional; hand-off `docs/design/handoffs/faith-2.1-HANDOFF.md`). Playtest: a character reached Devotion 10 on the area map by turn 3. The +2-a-fight cap lived on the fight unit, and the area map rebuilds units on every action, so every action was a fresh +1.
+
+- **Devotion XP:** Devotion is still the 0–10 standing with the same Hymn gates, but each level now needs XP.
+  - The curve: 45 / 102 / 200 / 450 XP to reach 3 / 5 / 7 / 10. Faithful characters still start at 3.
+  - Sources: a liked tag +1, a vow kept +3, a rite +4, a Narrator deed +2 to +5 (its gains capped at +10 a session); a taboo −3 (−6 while Witnessed), a broken vow −5, a failed overreach −3. Judgement spends 10 XP.
+  - A seeded 30-session simulation checks the pace: Devotion 5 around sessions 3–4, 7 around 8–10, 10 after 20.
+- **Tag caps on the character:** each liked tag counts once a fight and once a scene; at most 2 XP a fight, 2 a scene and 6 a session from tags. The area map can't farm them any more.
+- **Leaving a patron** (Leon's rulings):
+  - **Apostasy:** Devotion 0 and no pact for **90 days**.
+  - **A new day counter:** a long rest is a day, and the Narrator's `days` field covers travel and time skips. Shown as "Day N" on the HERE card and the faith tab.
+  - **Switching** straight to another patron: no cooldown. Open patrons roll to let you go; Jealous ones never do. A **grudge** gives a condition at the start of each fight and halves your new patron's Devotion XP for 1–3 sessions.
+  - A new `farewell` line bank (3 lines a patron).
+  - A host **Next session** action (Rest… → Next session).
+- **Miracle 2.1** (Leon: "deserve the title"): a Miracle needs **Faith 7 and Devotion 10** and lowers Devotion by **5 levels**. The first comes around session 22, then about every 19 sessions. All eight are stronger:
+  - Saints' Verdict: 100 Soul and Stunned to every enemy in sight; double for those who harmed the helpless.
+  - Requisition Approved: a full restock, 2 cores each, every weapon repaired, +3 AP.
+  - Encore: free repeats, and enemies Confused.
+  - Turned Back: every fallen ally stands at half HP.
+  - Everyone Home: full heal, cleansed, a 40 shield each.
+  - The Sky Answers: 5×5, 150 Storm, enemies only.
+  - Love Conquers: non-bosses surrender with no save.
+  - Rewoven: HP rewound to the round's start, then another turn.
+- **The faith gold** `--faith-light` `#F2C46A`: light only, always beside a word (`apps/web/index.html`, colour system, palette).
+- **Art direction written down:** patrons are painted as a god appears to an NPC (apparitions, effigies, masks); the delivered set is right. It is now in the style guide, the art brief and the Blessing spec.
+- **On screen:** "DEVOTION 4 · 12/32 XP" meters, XP and level floats, the cooldown, the grudge and the tag caps on the faith tab, and the Miracle at 10 with its price. Encore marks a free repeat "FREE · ENCORE".
+- **Old saves:** Devotion levels become their threshold XP; day 1.
+- **e2e:** `heart.mjs`'s Mana Short step brings in a fresh boss if the snaps kill it first. Known flake, older than this branch: `faith-pg.mjs`'s "Old Overcast intervenes" step depends on the dice and sometimes needs a rerun.
+- **Waiting on Leon:**
+  - the tuned curve and every XP number;
+  - the grudges' conditions and lengths;
+  - whether a session start should count as a day;
+  - the Miracle numbers. They are × Blessing power: the old ×3 was never applied, and at ×3 they would be far beyond the balance targets.
+
 ## 0.3.0 — 9 November 2026
 
 Branch `feature/world-play-1.1`: **World Play 1.1, rules revision 1.9** (decision 106; `docs/design/world-play-1.1-spec.md`; spec section 14 items 671–700, all provisional; hand-off `docs/design/handoffs/world-play-1.1-HANDOFF.md`). Playtest: rangers ran out of ammo all the time. Dropped magazines were a 10 px mark nobody saw, the fight's floor vanished when the fight ended, an area-map reload deleted the magazine, and enemies dropped nothing.

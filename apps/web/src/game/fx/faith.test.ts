@@ -4,9 +4,9 @@
 // screen for under 2.5 s and a click skips it; reduced motion keeps it short.
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf } from '@engine';
-import { setLayer } from './dom';
+import { setLayer, clampCentre } from './dom';
 import { playFx, setContext, clearFx } from './play';
-import { faithBeat, miracleOverlay } from './faith';
+import { faithBeat, miracleOverlay, devotionWord } from './faith';
 import * as sfxMod from '../sfx';
 
 function grid(w = 14, h = 10) {
@@ -28,8 +28,13 @@ export const FAITH_EVENTS: any[] = [
   { k: 'prayer_fail', unit: 'u', kind: 'hymn', id: 'hearthlight', patron: 'mother_ember', at: '2,5', overreach: true },
   { k: 'witnessed', unit: 'u', patron: 'mother_ember', at: '2,5' },
   { k: 'intervention', patron: 'mother_ember', trigger: 'ally_low', at: '2,7', target: 'a' },
-  { k: 'devotion', char: 'c1', delta: 1, reason: 'tag', tag: 'heal', patron: 'mother_ember' },
-  { k: 'devotion', char: 'c1', delta: -2, reason: 'vow', patron: 'mother_ember', at: '2,5' },
+  { k: 'devotion', char: 'c1', delta: 1, xp: 46, reason: 'tag', tag: 'heal', patron: 'mother_ember', now: 3, was: 3 },
+  { k: 'devotion', char: 'c1', delta: -5, xp: 40, reason: 'vow', patron: 'mother_ember', at: '2,5', now: 2, was: 3, level: 2 },
+  { k: 'devotion', char: 'c1', delta: 4, xp: 102, reason: 'a rite', patron: 'mother_ember', now: 5, was: 4, level: 5 },
+  { k: 'leave', char: 'c1', patron: 'mother_ember', to: 'nerukhan', letGo: true, roll: { die: 14, mod: 3, total: 17, tn: 10 } },
+  { k: 'leave', char: 'c1', patron: 'old_overcast', to: 'mother_ember', letGo: false },
+  { k: 'grudge', char: 'c1', patron: 'old_overcast', sessions: 3, condition: 'dazed', at: '2,5', unit: 'u' },
+  { k: 'grudge', char: 'c1', patron: 'nerukhan', sessions: 3, condition: 'marked' },
   { k: 'vow', unit: 'u', id: 'shield', state: 'sworn', at: '2,5' }, { k: 'vow', unit: 'u', id: 'shield', state: 'kept', at: '2,5' }, { k: 'vow', unit: 'u', id: 'stand', state: 'broken', at: '2,5' },
   { k: 'patron_line', patron: 'mother_ember', event: 'answered', text: 'There you are, love.', unit: 'u' },
 ];
@@ -51,6 +56,36 @@ describe('the faith effects (Blessing 2.0)', () => {
     vi.advanceTimersByTime(3000);
     expect(warn).not.toHaveBeenCalled();
     expect(layer.childElementCount).toBe(0);
+  });
+  it('Devotion floats its XP ("+1 DEVOTION XP · HEAL") and a level change says the level ("DEVOTION 5")', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    expect(devotionWord({ delta: 1, tag: 'heal' })).toBe('+1 DEVOTION XP · HEAL'); expect(devotionWord({ delta: -3 })).toBe('−3 DEVOTION XP');
+    playFx(FAITH_EVENTS[7]); vi.advanceTimersByTime(900);
+    expect(layer.textContent).toMatch(/\+4 DEVOTION XP/); expect(layer.textContent).toMatch(/DEVOTION 5/);
+    expect(faithBeat(FAITH_EVENTS[7])).toBeGreaterThan(faithBeat(FAITH_EVENTS[5])!);
+  });
+  it('a pact says so and floats only the XP that moved: no "+45" and no level-up glow on a switch that keeps or loses XP (item 719)', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx({ k: 'devotion', char: 'c1', delta: 0, xp: 45, reason: 'a pact', now: 3, was: 3, pact: 'counting_weaver', at: '2,5' } as any); vi.advanceTimersByTime(900);
+    expect(layer.textContent).toMatch(/PACT · THE COUNTING WEAVER/); expect(layer.textContent).not.toMatch(/DEVOTION XP|DEVOTION 3/);
+    clearFx(); vi.advanceTimersByTime(3000);
+    playFx({ k: 'devotion', char: 'c1', delta: -225, xp: 45, reason: 'a pact', now: 3, was: 8, level: 3, pact: 'counting_weaver', at: '2,5' } as any); vi.advanceTimersByTime(900);
+    expect(layer.textContent).toMatch(/−225 DEVOTION XP/); expect(layer.textContent).toMatch(/DEVOTION 3/); expect(layer.innerHTML).not.toMatch(/glow\.png/);
+  });
+  it('a long float near the edge shifts inward; the grudge float sits above the condition\'s', () => {
+    expect(clampCentre(10, 120, 4, 1000)).toBe(64); expect(clampCentre(990, 120, 4, 1000)).toBe(940); expect(clampCentre(500, 120, 4, 1000)).toBe(500); expect(clampCentre(5, 300, 0, 200)).toBe(100);
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx({ k: 'grudge', char: 'c1', patron: 'nerukhan', sessions: 3, condition: 'marked', at: '0,5', unit: 'u' } as any); vi.advanceTimersByTime(400);
+    const box = [...layer.children].find((b) => /GRUDGE/.test(b.textContent || '')) as HTMLElement;
+    expect(parseFloat(box.style.left)).toBeGreaterThanOrEqual(4);
+    expect(parseFloat(box.style.top) + parseFloat(box.style.height) / 2).toBeLessThan(5 * 40 + 20 - 40 * 0.35); // centred higher than a plain float on that tile
+  });
+  it('leaving a patron and a grudge: the words, and a sound even with no tile to draw on', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement, names = () => spy.mock.calls.map((c: any[]) => c[0]);
+    playFx(FAITH_EVENTS[8]); playFx(FAITH_EVENTS[10]); vi.advanceTimersByTime(400);
+    expect(layer.textContent).toMatch(/LET GO · MOTHER EMBER/); expect(layer.textContent).toMatch(/GRUDGE · OLD OVERCAST/);
+    const n0 = spy.mock.calls.length; playFx(FAITH_EVENTS[11]); expect(spy.mock.calls.length).toBeGreaterThan(n0);
+    expect(names()).toEqual(expect.arrayContaining(['crystal', 'hit_metal']));
   });
   it('a Hymn sings, a Whisper chimes, an intervention rings', () => {
     ctx(); const names = () => spy.mock.calls.map((c: any[]) => c[0]);
