@@ -158,6 +158,12 @@ export function devotionXpOf(c: Character): number {
 export function setDevotionXp(c: Character, xp: number): number {
   c.devotionXp = Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(Number(xp) || 0))); c.devotion = devotionLevelOf(c.devotionXp); return c.devotion;
 }
+/** Devotion XP in words, the one format every meter and log line uses (rules 1.6.1): the level, then the XP into it out
+ * of the step to the next ("Devotion 3 · 4/25 XP"); at full standing the total ("Devotion 10 · 450 XP · full"). */
+export function devotionWords(xp: number): string {
+  const total = Math.max(0, Math.min(DEVOTION_MAX_XP, Math.round(Number(xp) || 0))), lv = devotionLevelOf(total), at = devotionThreshold(lv);
+  return 'Devotion ' + lv + (lv < DEVOTION_MAX_LEVEL ? ' · ' + (total - at) + '/' + (devotionThreshold(lv + 1) - at) + ' XP' : ' · ' + total + ' XP · full');
+}
 export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 
 // ---------- creation (spec: Creation budget) ----------

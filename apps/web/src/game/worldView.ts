@@ -191,7 +191,9 @@ export function hereVals(g: GameState): HereVals {
     tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: ' + (o.here ? '#FFFFFF' : '#A3AEC2'),
     steps: o.steps.map((s, i) => ({ key: o.key + i, text: s })), hasSteps: o.steps.length > 0,
     where: !o.here && o.zoneName ? 'In ' + o.zoneName : o.markers.length ? '◆ ' + o.markers.map((m) => m.ref).join(', ') : '', hasWhere: (!o.here && !!o.zoneName) || o.markers.length > 0 }));
-  return { has: rows.length > 0, zone: 'HERE · ' + String(card.zoneName || card.zone || '').toUpperCase(), day, rows };
+  // The card shows whenever the zone is known (item 709: the day is always on it), objectives or not.
+  const zone = String(card.zoneName || card.zone || '');
+  return { has: rows.length > 0 || !!zone, zone: 'HERE · ' + zone.toUpperCase(), day, rows };
 }
 
 // ---------- carrying ----------

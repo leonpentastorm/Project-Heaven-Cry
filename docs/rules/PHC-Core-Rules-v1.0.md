@@ -1421,7 +1421,7 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 > **Rules revision 1.6.1 (Faith 2.1, 9 Nov 2026; design `docs/design/faith-2.1-spec.md`, decision 107; Leon's rulings
 > of 8–9 Nov).** Devotion is earned as **Devotion XP**, the caps on tags live on the character (the area map can't farm
 > them), the Narrator moves XP within a session cap, leaving a pact has a 90-day cooldown on a new **day counter**, and
-> the patron you leave for another may hold a **grudge**. Every number is PROVISIONAL (section 14, items 701–718).
+> the patron you leave for another may hold a **grudge**. Every number is PROVISIONAL (section 14, items 701–723).
 
 **Belief** (a step in character creation). Every character is **Faithful** (sworn to one patron of their Sector; all eight
 below for the Earth Sector; Devotion starts at 3) or an **Atheist** (no patron, no Devotion; prays by dice: the pilgrim).
@@ -1525,10 +1525,14 @@ you can't learn from other patrons).
   pieces (counted the same way) unless the new patron is Jealous (then they are gone). The patron you leave decides how
   it takes it, from its data: an **Open** patron rolls d20 + your Faith modifier against its leave TN (10–12): on a
   success it lets you go; on a miss it holds a **light grudge** (1 session). A **Jealous** patron never lets go: always a
-  **harder grudge** (2–3 sessions). Either way it says farewell.
+  **harder grudge** (2–3 sessions). Either way it says farewell. **A switch never raises Devotion:** the new pact starts at
+  the lower of the Devotion XP you had and what a conversion would give (item 719), so a pact can't undo a Miracle's
+  reset, a taboo or a Judgement.
 - **A grudge:** at the start of each fight you begin with the old patron's chosen condition for its rounds (no save), and
   your **new** patron's Devotion XP gains are multiplied by 0.5 (the old patron lobbies against you). It lasts the rest of
-  the session it began in and the grudge's sessions after it; going back to that patron ends it.
+  the session it began in and the grudge's sessions after it; going back to that patron ends it, and so does apostasy
+  (with no patron left there is nothing to lobby against; item 720). The condition lasts its rounds of your own turns
+  whatever the initiative, and ends with the fight: it is never carried into the story (item 723).
 
 | Patron left | Lets go | Grudge: condition at each fight's start | Sessions |
 |---|---|---|---|
@@ -1542,7 +1546,14 @@ you can't learn from other patrons).
 | The Counting Weaver | d20 + Faith vs 12 | Pinned, 1 round (she keeps a knot of your thread) | 1 |
 
 **The day counter** (rules 1.6.1). The game counts days from day 1: each **long rest** is a day, and the Narrator can
-move time on with **days** (1 to 3650: travel, a time skip, years passing). Old saves start at day 1.
+move time on with **days** (1 to 3650: travel, a time skip, years passing). A turn's rest and days come before its faith
+events, so "three months later she swears to the Matchmaker" is one turn. Old saves start at day 1.
+
+**Sessions** (rules 1.6.1, item 721). A room plays session after session: the host ends one with **Next session** (in
+Rest… in the story, out of a fight) and the next begins at once. It counts as a long rest for recovery (not a day), Echo
+goes back to 1, and everything once a session starts over: rites, the Miracle, the tag and Narrator caps, a grudge's
+count. The Proving Ground has no sessions (its tools reset the limits); there the session's tag cap doesn't apply,
+the fight's and the scene's do (item 722).
 
 **Interventions.** Once a fight, while you are Witnessed, your patron acts unasked when its trigger happens.
 
@@ -2074,7 +2085,7 @@ Threats, arguments and seduction that aim to break someone rather than persuade 
 | Short | 1 hour | 25% of max HP; Heat, Flux and Strain reset |
 | Long | 8 hours | all HP; MP to full if the air is Normal or richer; Supplies and toxins restocked from carried stock; a Bard can treat injuries (item 581) |
 
-The Narrator calls a rest (or the host does, with Rest… in the story; any player can ask for one, and the request goes to the Narrator). No rest in a fight. In the Proving Ground the host rests from the tools while gearing up. The start of a session counts as a long rest. Each rest starts a new window for once-per-rest uses (rules 1.3). A long rest is also a **day** on the day counter (rules 1.6.1, item 709; the start of a session isn't); the Narrator moves time on with days.
+The Narrator calls a rest (or the host does, with Rest… in the story; any player can ask for one, and the request goes to the Narrator). No rest in a fight. In the Proving Ground the host rests from the tools while gearing up. The start of a session counts as a long rest (the host starts the next session from the same menu: rules 1.6.1, item 721). Each rest starts a new window for once-per-rest uses (rules 1.3). A long rest is also a **day** on the day counter (rules 1.6.1, item 709; the start of a session isn't); the Narrator moves time on with days.
 
 **The Narrator's job.** The AI Dungeon Master and a human one follow the same brief:
 
@@ -4172,10 +4183,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 599. **Mercy** fires when an enemy surrenders to you (Parley or a non-lethal blow), and at the end of a fight for each surrendered enemy still alive that you never damaged after it yielded.
 600. **Protect** fires on a shield you give an ally, an Interpose, a Brace, or a hit you take in an ally's place (the Matchmaker's share, Red Thread); **heal** on a heal or stabilise given to someone else; **supply** on a stim given, an item handed over, an ally's reload, or cover placed.
 601. **Hold** is checked at the end of your turn (Braced, Anchored, or holding Overwatch); **cower** at the end of your turn (Hidden while an ally is Downed); **flee** on a Disengage that ends farther from the nearest enemy, or leaving the fight (Extraction).
-602. **Vows** are sworn in round 1 before the character first acts, one per fight. Bare Hands breaks on an attack with a gun or a thrown weapon, or any Sigil or Soul strike; Stand compares the distance to the nearest living enemy at the start and the end of each of your turns; Nobody Left Behind is checked at the fight's end (an ally still Downed breaks it then, −2).
+602. **Vows** are sworn in round 1 before the character first acts, one per fight. Bare Hands breaks on an attack with a gun or a thrown weapon, or any Sigil or Soul strike; Stand compares the distance to the nearest living enemy at the start and the end of each of your turns; Nobody Left Behind is checked at the fight's end (an ally still Downed breaks it then, −2). *Rules 1.6.1: a broken vow is −5 Devotion XP (item 702).*
 603. **Interventions** are once a fight per Faithful fighter, while that fighter is Witnessed; two Witnessed Faithful each get their patron's.
 604. **Prayers in the story** cost AP from the overworld round when rounds are running; the Hymn cooldown counts story rounds; a Whisper is once a story round. They go at the squad (characters); what they would do to anyone else goes to the Narrator. Story prayers don't make you Witnessed.
-605. **Engine rites** check one of three things: `story` (any time out of a fight), `after_rest` (a rest has been taken this session) or `tithe_item` (you give up one item of a category, such as a ration). Each rite is kept once a session for +1.
+605. **Engine rites** check one of three things: `story` (any time out of a fight), `after_rest` (a rest has been taken this session) or `tithe_item` (you give up one item of a category, such as a ration). Each rite is kept once a session for +1. *Rules 1.6.1: +4 Devotion XP (item 702); the rite texts say so.*
 606. ~~Apostasy.~~ *Superseded in rules 1.6.1: items 707–710 and 714 (the pieces are counted as before; Devotion XP 0; a 90-day cooldown; the farewell).*
 607. ~~Changing patrons is apostasy, then the pact.~~ *Superseded in rules 1.6.1: items 711–714 (a direct switch, no cooldown; the leave roll and grudges).*
 608. **The Miracle** takes no roll and doesn't wait on the Hymn cooldown; it makes you Witnessed (Faith 5) like a Hymn. Whispers never make you Witnessed.
@@ -4249,13 +4260,18 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 706. **Judgement** spends 10 Devotion XP (its "1 Devotion") and needs 10 XP; it can drop a level. *Data: classes.json, the move's resource effect −10 (unit xp).*
 707. **The Miracle** sets Devotion XP 0 and Devotion 0, after its effect (its own tags give nothing back). Climbing back to 7 takes 200 XP, about 10 sessions at the target pace: the Miracle's real price now (for Leon at review).
 708. **Conversion:** Devotion 3 + 1 level for each piece of the new patron (at most 10), the XP set to that level's threshold. A pact clears a sworn vow.
-709. **The day counter:** `g.day`, from 1 (old saves: 1). A long rest adds a day; the start of a session doesn't (it counts as a long rest only for recovery). The Narrator's turn field `days` adds 1 to 3650 days: rounded, clamped to 3650, ignored under 1. A turn's rest and days come after its faith ops.
+709. **The day counter:** `g.day`, from 1 (old saves: 1). A long rest adds a day; the start of a session doesn't (it counts as a long rest only for recovery). The Narrator's turn field `days` adds 1 to 3650 days: rounded, clamped to 3650, ignored under 1. A turn's rest and days come before its faith ops (review fix, 9 Nov 2026: a time skip and a pact in one turn work; they used to come after, and the pact was refused).
 710. **The cooldown after apostasy:** no pact with any patron (the one left included) until the day counter reaches the day they left + 90; the refusal names the days left. The Proving Ground's tools ignore it. *Data: devotion.apostasy.cooldown_days.*
 711. **A direct switch** (a pact while Faithful to another patron) is not apostasy: no cooldown, no APOSTASY line. The old patron's Hymns stay as pieces counted as apostasy counts them (one per Hymn gate reached, at least 1, never fewer than already held), unless the new patron is Jealous (then all are gone).
 712. **The leave roll:** an Open patron rolls d20 + Faith modifier against its leave TN, a natural 20 always letting go and a natural 1 never: Mother Ember 10, the Quartermaster 11, the Matchmaker 11, the Laughing Mask 12, the Counting Weaver 12. Jealous patrons never let go (no roll). A patron with no leave data (one added at run time) lets go. *Data: each patron's leave block.*
-713. **Grudges:** Nerukhan Marked 2 rounds, 3 sessions; the Quartermaster Nausea 1 round, 1 session; the Laughing Mask Prone, 1; the Toll-Keeper Slowed 2 rounds, 2; Mother Ember Shaken 2 rounds, 1; Old Overcast Dazed (the first turn), 3; the Matchmaker Weakened 1 round, 1; the Counting Weaver Pinned 1 round, 1; every grudge ×0.5 XP. The condition lands on the character (not a companion) at each fight's start with no save. The multiplier applies to every gain (tags, vows, rites, the Narrator's), the fraction carried to the next gain. It lasts the rest of the session it began in and its sessions after that, and is announced over when the next session starts. One grudge at a time (a newer one replaces it); going back to that patron ends it. *Data: leave.grudge.*
+713. **Grudges:** Nerukhan Marked 2 rounds, 3 sessions; the Quartermaster Nausea 1 round, 1 session; the Laughing Mask Prone, 1; the Toll-Keeper Slowed 2 rounds, 2; Mother Ember Shaken 2 rounds, 1; Old Overcast Dazed (the first turn), 3; the Matchmaker Weakened 1 round, 1; the Counting Weaver Pinned 1 round, 1; every grudge ×0.5 XP. The condition lands on the character (not a companion) at each fight's start with no save. The multiplier applies to every gain (tags, vows, rites, the Narrator's), the fraction carried to the next gain. It lasts the rest of the session it began in and its sessions after that (so a light grudge is never shorter than one full session, whenever in a session you switch; the design's "1 session" read that way), and is announced over when the next session starts (item 721); apostasy ends it too (item 720). One grudge at a time (a newer one replaces it); going back to that patron ends it. *Data: leave.grudge.*
 714. **Farewell:** the patron left speaks a line from its farewell bank on apostasy and on a switch (let go or not), before any grudge. Ten line banks of 3 lines per patron.
 715. **Old saves:** faith rules revision 17. Devotion XP is set to the saved level's threshold (Devotion 6: 147 XP); no tally, no cooldown, no grudge; day 1.
 716. **A failed overreach** costs 3 XP everywhere: in a fight, in the story and in Blessed Shells' story prayer.
 717. **The pace simulation** (`packages/engine/test/faith-pace.test.ts`), the typical session: 2–4 fights and 2–4 scenes out of fights (about 3 each); a vow sworn in 80% of fights and kept 85% of the time; each of the patron's 3 liked tags comes up in 60% of fights and 30% of scenes; a taboo in 10% of fights and 5% of scenes; the engine rite every session and the Narrator rite in half (1–2 rites); one Narrator deed of 2–5. That is about 18 XP a session. Over 40 seeds Devotion 5 lands at session 3.6 on average (3–5), 7 at 9.0 (8–11), 10 at 23 (20–28). With the design's curve 7 landed at 9.7 (up to 12) and 10 as early as session 19, so levels 6–7 came down (152 → 147, 212 → 200) and the top went up (432 → 450).
 718. **Heretic's Stolen Fire** puts back the Devotion XP, the tag tally, the pact cooldown and the grudge along with the rest of the faith it borrows.
+719. **A switch never raises Devotion.** A pact while Faithful to another patron starts the new pact at the lower of the Devotion XP held and the conversion's (Devotion 3 + 1 level a piece, at that level's threshold): Devotion 8 becomes 3 (45 XP), Devotion 0 after a Miracle stays 0, 1 stays 1 (its XP kept). An Atheist's conversion is unchanged (item 708). Without this, two pacts in a turn took a character from a Miracle's 0 back to Devotion 4 in the same session, and a switch was a cheaper way out than apostasy's 90 days. The pact's log and fx give the real change (from the old XP and level). *Review fix, 9 Nov 2026; for Leon with item 707.*
+720. **Apostasy ends a grudge.** A grudge lobbies against the new patron's Devotion (spec rules 1.6.1); an Atheist has neither, so leaving the pact ends it, with a line. (A later pact starts clean.) *Review fix.*
+721. **Next session.** A room's session counter moves on only when the host ends a session: `session/next` (Rest… → Next session; host only, in the story, out of a fight, not in the Proving Ground). It runs what a session's start runs (recovery as a long rest, Echo 1, `session_start`: rites, the Miracle, the tag and Narrator caps and grudges count from the new number) and is not a day (item 709). Before it, `session/start` ran only from the lobby and nothing returned a room there, so a grudge never ended and the session caps lasted the room's life. *Review fix; the product's first session boundary.*
+722. **The Proving Ground's tag caps:** it has no sessions, so the session's 6 XP doesn't apply there; the fight's 2 and the scene's 2 do, and the tools' reset still clears the tally. The faith tab shows the caps ("LIKED TAGS · 1/2 THIS FIGHT · 4/6 THIS SESSION", "CAPPED" once one is reached; no session part in the Proving Ground). *Review fix.*
+723. **A grudge's condition in the fight:** it lasts its rounds of the bearer's own turns whatever the initiative (landing before the first turn doesn't count as "on your own turn"), and it ends with the fight: Mother Ember's Shaken is not carried into the story as a scene's Shaken (and so not into later fights). The same condition put on again by something else in the fight is a real one and carries as usual. A story condition carried into the fight merges with it (the longer stays). *Review fix.*

@@ -45,7 +45,7 @@ Every character is either **Faithful** or **Atheist**. The choice is a new step 
 ## 2. Devotion: the one meter (Faithful only)
 
 > **Superseded in part by Faith 2.1** (rules 1.6.1, 9 Nov 2026; `docs/design/faith-2.1-spec.md`, decision 107, spec
-> items 701–718). Devotion is still the 0–10 standing with the same gates, but events now move **Devotion XP** toward
+> items 701–723). Devotion is still the 0–10 standing with the same gates, but events now move **Devotion XP** toward
 > the next level (a curve from 0 to 450 XP), not levels: the +1 / −1 / −2 values below are replaced by XP values, the
 > "+2 a fight" cap by tag caps kept on the character (2 XP a fight, 2 a scene, 6 a session), the Narrator's ±2 by −6 to
 > +5 XP with +10 a session, and a failed overreach costs 3 XP. The tables below are the 1.6 rules, kept for the record.

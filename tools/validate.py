@@ -620,6 +620,24 @@ if isinstance(pat, dict) and pat.get("tags"):
     for k in ("liked_tag_fight_cap", "narrator_delta_max"):
         if k in (dv.get("gain") or {}) or k in dv:
             errors.append(f"patrons: devotion.{k} is retired (Faith 2.1: tag_caps, narrator)")
+    if "miss_devotion" in ((pat.get("prayer") or {}).get("overreach") or {}):
+        errors.append("patrons: prayer.overreach.miss_devotion is retired (Faith 2.1: devotion.loss.overreach_miss, in XP)")
+    if "devotion" in (((data.get("rules") or {}).get("mana") or {}).get("prayer") or {}):
+        errors.append("rules: prayer.devotion is retired (rules 1.6.1: Devotion lives in patrons.json devotion, in XP)")
+    # Devotion is moved in XP (rules 1.6.1): a text giving an amount of Devotion must say XP ("+4 Devotion XP"), never a
+    # bare level ("+1 Devotion"); "spend 1 Devotion" style costs name their XP too
+    def faith_texts(x, path):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                yield from faith_texts(v, f"{path}.{k}")
+        elif isinstance(x, list):
+            for i, v in enumerate(x):
+                yield from faith_texts(v, f"{path}[{i}]")
+        elif isinstance(x, str):
+            yield path, x
+    for path, t in faith_texts(pat, "patrons"):
+        for m in re.finditer(r"[+\-−]\s?\d+ Devotion(?! XP)", t):
+            errors.append(f"{path}: '{m.group(0)}' gives Devotion in levels; rules 1.6.1 moves Devotion XP ('{m.group(0)} XP')")
     cond_kinds = {c.get("id"): c.get("adjudication") for c in items("conditions")}
     if len(pat.get("whispers") or []) != 6:
         errors.append("patrons: there should be 6 Whispers")
@@ -672,8 +690,10 @@ if isinstance(pat, dict) and pat.get("tags"):
         gr = lv.get("grudge") or {}
         if not (isinstance(gr.get("sessions"), int) and gr["sessions"] >= 1):
             errors.append(f"patrons:{pid}: leave.grudge.sessions must be 1 or more")
-        elif p.get("rule") == "jealous" and gr["sessions"] < 2:
-            errors.append(f"patrons:{pid}: a Jealous patron's grudge lasts 2 sessions or more")
+        elif p.get("rule") == "jealous" and not 2 <= gr["sessions"] <= 3:
+            errors.append(f"patrons:{pid}: a Jealous patron's grudge is the harder one, 2 to 3 sessions")
+        elif p.get("rule") == "open" and gr["sessions"] != 1:
+            errors.append(f"patrons:{pid}: an Open patron's grudge is the light one, 1 session")
         if not (isinstance(gr.get("rounds"), int) and gr["rounds"] >= 1):
             errors.append(f"patrons:{pid}: leave.grudge.rounds must be 1 or more")
         if not (isinstance(gr.get("xp_mult"), (int, float)) and 0 <= gr["xp_mult"] <= 1):

@@ -102,7 +102,8 @@ Notes:
 
 **Leaving one patron to join another** (a `faith/pact` while Faithful to someone else):
 
-- **No cooldown.** It is no longer "apostasy, then the pact" (item 607 changes): no APOSTASY line, the old patron's
+- **No cooldown.** (As built, item 719: a switch never raises Devotion; the new pact starts at the lower of the XP you
+  had and the conversion's.) It is no longer "apostasy, then the pact" (item 607 changes): no APOSTASY line, the old patron's
   pieces are handled as the conversion rules say (Jealous new patron: pieces gone; Open: kept).
 - **The patron you leave may punish you**, as its data says:
   - each patron gets a **`leave`** block in `data/patrons.json`:
@@ -114,6 +115,10 @@ Notes:
   - **A grudge** (PROVISIONAL): while it lasts, at the start of each fight you begin with the patron's chosen condition
     (from `data/conditions.json`) for `rounds` rounds, and your **new** patron's Devotion XP gains are multiplied by
     `xp_mult` (the old patron lobbies against you: Celestial politics). It ends after `sessions` sessions.
+    *As built (spec item 713): "`sessions` sessions" counts full sessions after the one you switch in, so the rest of
+    the current session is extra (a light grudge is never shorter than one full session, whenever you switch). Rooms
+    move sessions on with the host's Next session (item 721). Apostasy ends a grudge (item 720); its condition lasts
+    its rounds of your own turns and ends with the fight (item 723).*
   - Each patron picks its own condition and words, in character (Nerukhan judges, the Laughing Mask plays a trick, Old
     Overcast storms…); conditions must be ones the engine runs.
 - **A new line bank `farewell`** (3 lines per patron) is spoken when you leave, either way. The validator's bank count

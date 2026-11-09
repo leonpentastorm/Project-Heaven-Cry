@@ -293,6 +293,7 @@
 </section>
 <sc-if value="{{fa.hasLikes}}"><div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2; margin-right: 4px">LIKES</span><sc-for list="{{fa.likes}}" as="t"><span style="padding: 1px 8px; border-radius: 999px; border: 1px solid #6FEA77; font-size: 10.5px; font-weight: 700; color: #6FEA77">✓ {{t.t}}</span></sc-for></div></sc-if>
 <sc-if value="{{fa.hasTaboos}}"><div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2; margin-right: 4px">TABOOS</span><sc-for list="{{fa.taboos}}" as="t"><span style="padding: 1px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 10.5px; font-weight: 700; color: #F65157">✕ {{t.t}}</span></sc-for></div></sc-if>
+<sc-if value="{{fa.hasTagCaps}}"><span data-faith-tagcaps role="note" title="Liked tags give Devotion XP up to 2 a fight, 2 a scene out of fights and 6 a session; once a cap is reached they give nothing until it resets." style="{{fa.tagCapsStyle}}">{{fa.tagCaps}}</span></sc-if>
 </sc-if>
 
 <sc-if value="{{fa.atheist}}">

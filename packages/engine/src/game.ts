@@ -274,6 +274,8 @@ export type Action =
   | { type: 'settings'; patch: Partial<GameState['settings']> }
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
+  /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
+  | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
   | { type: 'narrator/begin' } | { type: 'narrator/turn'; turn: NarratorTurn } | { type: 'narrator/error'; message: string }
   | { type: 'narrator/usage'; input: number; output: number; cacheRead: number; costUsd: number; kind?: 'turn' | 'rewrite' } | { type: 'narrator/retry' }
@@ -462,17 +464,23 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase !== 'lobby') { c.echo = 1; if (!g.sandbox) emitStory(g, 'session_start', { g, n: g.sessionN, late: true }, [c]); }
       return;
     }
+    case 'session/next': {
+      // Rules 1.6.1 (item 721): a room plays many sessions. The host ends this one and the next begins: recovery as at a
+      // session's start, Echo 1, and every once-a-session thing starts over (rites, the Miracle, the faith caps, grudges).
+      if (!isHost(g, by)) fail('Only the host starts the next session.');
+      if (g.sandbox) fail('The Proving Ground has no sessions: reset the limits from the tools instead.');
+      if (g.phase === 'lobby') fail('The session hasn\'t started.');
+      if (g.phase !== 'story') fail('A session ends in the story: win the fight, or get out of it, first.');
+      beginSession(g);
+      push(g, { kind: 'system', head: 'SESSION ' + g.sessionN, text: 'Session ' + g.sessionN + ' begins (Day ' + dayOf(g) + '): everyone recovers as after a long rest, Echo is back to 1, and once-a-session things start over.' });
+      return;
+    }
     case 'char/remove': { const c = g.characters[a.charId]; if (!c) return; if (c.owner !== by && !isHost(g, by)) fail('Not your character.'); if (g.phase !== 'lobby') fail('Characters stay once the session starts.'); delete g.characters[a.charId]; return; }
     case 'session/start': {
       if (!isHost(g, by)) fail('Only the host starts the session.');
       if (g.phase !== 'lobby') fail('Already started.');
       if (!Object.keys(g.characters).length) fail('Lock in at least one character.');
-      g.phase = 'story'; g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
-      // Session start counts as a long rest. 'session_heal' {g, mult}: an item may give a character only part of it
-      // (Insomniac's Wired: half of what it would restore; perk-runtime H gap 2).
-      { const sh: any = emitStory(g, 'session_heal', { g, mult: {} as Record<string, { hp?: number; mp?: number }> });
-        for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); } }
-      emitStory(g, 'session_start', { g, n: g.sessionN }); // 'session_start' {g, n}: start items, Echo, faction starts (lanes)
+      g.phase = 'story'; beginSession(g);
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
@@ -958,6 +966,16 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
   }
   push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full. Day ' + dayOf(g) + '.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
 }
+/** A session begins (session/start, session/next): the counter moves on and it counts as a long rest for recovery, not a
+ * day (item 709). 'session_heal' {g, mult}: an item may give a character only part of it (Insomniac's Wired: half of
+ * what it would restore; perk-runtime H gap 2). 'session_start' {g, n}: start items, Echo, faction starts (lanes), an
+ * expired grudge. */
+function beginSession(g: GameState) {
+  g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
+  const sh: any = emitStory(g, 'session_heal', { g, mult: {} as Record<string, { hp?: number; mp?: number }> });
+  for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); }
+  emitStory(g, 'session_start', { g, n: g.sessionN });
+}
 /** Days pass (rules 1.6.1, item 709): the Narrator's turn field days, a whole number from 1 to 3650 (clamped; rounded;
  * anything under 1 is ignored). */
 export const DAYS_MAX = 3650;
@@ -991,6 +1009,10 @@ function storyFields(g: GameState, t: NarratorTurn) {
   for (const x of (t.identify || []).slice(0, 8)) { const c = g.characters[x.charId]; if (c && x.what) { const st = (c.state ||= {}), l: string[] = (st.identified ||= []); if (!l.includes(x.what)) l.push(String(x.what).slice(0, 60)); } }
   // Tutors (rules 1.3) only for advanced classes that are active again (Class Roster Revision 3 shelves them all).
   for (const x of (t.tutors || []).slice(0, 4)) { const c = g.characters[x.charId], adv = ADVANCED_CLASSES.find((a) => a.id === x.classId); if (!c || !adv || !advancedActive(adv.id)) continue; const l = (c.tutors ||= []); if (!l.includes(adv.id)) { l.push(adv.id); push(g, { kind: 'system', text: c.name + ' has found a tutor for the ' + adv.name + '.' }); } }
+  // Time first (item 709): the turn's rest and days pass before its faith events, so "months later she swears to Mother
+  // Ember" is one turn (the 90-day cooldown counts the days this turn moved on).
+  if (t.rest && (t.rest.kind === 'short' || t.rest.kind === 'long')) applyRest(g, t.rest.kind, { settlement: !!t.rest.settlement });
+  if (t.days != null) advanceDays(g, t.days);
   // Rules 1.6: a pact (conversion), Devotion moves of at most ±2 with a reason; the patron's mood (a TN) is retired.
   // Rules 1.6.1: Devotion XP from −6 to +5 a move (clamped here, item 627), gains at most +10 a session per character.
   for (const x of (t.patrons || []).slice(0, 4)) {
@@ -1006,8 +1028,6 @@ function storyFields(g: GameState, t: NarratorTurn) {
       : x.op === 'rite_kept' ? narratorRite(g, c, x.rite || '', x.patron) : x.op === 'apostasy' ? apostasy(g, c) : 'Unknown faith op.';
     if (err) push(g, { kind: 'system', text: 'Faith (' + c.name + '): ' + err, ooc: true });
   }
-  if (t.rest && (t.rest.kind === 'short' || t.rest.kind === 'long')) applyRest(g, t.rest.kind, { settlement: !!t.rest.settlement });
-  if (t.days != null) advanceDays(g, t.days);
 }
 
 function afterPending(g: GameState) {
@@ -1710,7 +1730,8 @@ function magicIn(g: GameState, cb: Combat) {
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held ? migrateHeld(s.held, u.mg.designs.find((d) => d.id === s.held!.design)) : null; u.mg.cast = !!s.cast;
       if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; }
     if (s.condBy) u.condBy = { ...s.condBy };
-    if (s.conds && Object.keys(s.conds).length) { u.conds = { ...s.conds }; if (u.conds.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded) u.def += 2; }
+    // Merged with what the fight's start put on (a grudge's condition, item 723): the longer of the two stays.
+    if (s.conds && Object.keys(s.conds).length) { const at0 = u.conds || {}; u.conds = { ...s.conds }; for (const [k, n] of Object.entries(at0)) u.conds[k] = Math.max(u.conds[k] || 0, n as number); if (u.conds.slowed && !at0.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded && !at0.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded && !at0.guarded) u.def += 2; }
     if (s.shield) u.shield = s.shield;
   }
   // Story conditions (the scene's, the session's, the arc's) come into a fight in their combat form, with no save
@@ -1741,7 +1762,8 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
       ...(!afterFight && u.mg && u.mg.freePumps != null ? { freePumps: u.mg.freePumps } : {}), ...(!afterFight && u.mg?.calmFight ? { calmFight: true } : {}), ...(!afterFight && u.mg?.calmTend ? { calmTend: true } : {}),
       ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}) };
     // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
-    if (afterFight && (u.conds?.shaken ?? 0) > 0) { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
+    // A grudge's Shaken (item 723) is the fight's only: it isn't carried.
+    if (afterFight && (u.conds?.shaken ?? 0) > 0 && u.faith?.grudgeCond !== 'shaken') { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
   }
 }
 /** A new overworld round is a turn for magic: glyphs and zones run down, held Outbursts grow, Strain eases, Burning

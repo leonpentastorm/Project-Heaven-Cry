@@ -22,7 +22,7 @@ import {
   ENEMIES, MANA_BANDS, SANDBOX_TIERS, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
-import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, GATE } from '@engine';
+import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, devotionWords, GATE } from '@engine';
 import { patronMarkUri, vowIconUri, FAITH_INK } from './faithArt';
 import { importCharacter } from './charfile';
 import { fxBusyUntil } from './fx/FxLayer';
@@ -493,7 +493,7 @@ function FaithTab({ game, c }: { game: GameState; c: Character }) {
     <Section title="FAITH (THE SKILL)" aria="Faith skill">
       <div style={row}><Stepper name="Faith" value={faith} min={0} max={10} set={(n) => F({ faith: n })} /><span style={{ fontSize: 12, color: C.muted }}>Prayer at 3 · Witnessed at 5 · Miracle at 7.</span></div>
     </Section>
-    {own && <Section title={'DEVOTION · ' + dv + ' / 10 · ' + devotionXpOf(c) + ' XP'} aria="Devotion">
+    {own && <Section title={devotionWords(devotionXpOf(c)).toUpperCase()} aria="Devotion">
       <div style={row}><Stepper name="Devotion" value={dv} min={0} max={10} set={(n) => F({ devotion: n })} />
         {[GATE[1], GATE[2], GATE[3]].map((n, i) => <button key={n} type="button" style={on(dv === n, FAITH_INK)} onClick={() => F({ devotion: n })}>{'Hymn ' + ['I', 'II', 'III'][i] + ' · ' + n}</button>)}
         <button type="button" style={on(dv === 10, FAITH_INK)} onClick={() => F({ devotion: 10 })}>10</button></div>

@@ -3,14 +3,14 @@
 // patron's Open or Jealous rule, Witnessed, tags (what the patron sees), vows, interventions, rites and the patrons'
 // voice lines. Design: docs/design/blessing-2.0-spec.md; spec: "Patrons and prayer" (rules 1.6). Every number is
 // provisional (spec section 14). Deterministic: every die and every voice line comes from the game's rng.
-// Rules 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md, items 701-718): Devotion is earned as XP through one choke
+// Rules 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md, items 701-723): Devotion is earned as XP through one choke
 // point (shiftDevotion); the tag caps live on the character (tallyOf); the Narrator's XP has a session cap; leaving a
 // pact has a 90-day cooldown on the day counter; a direct switch rolls the old patron's leave and may leave a grudge.
 //
 // Like missions.ts, this file imports only types from game.ts; game.ts binds the few helpers it needs (bindFaith).
 import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
-import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
+import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload } from './combat';
 import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitDebuff, condSource, condIsBoon, condName as condNameOf, MANA_START } from './magic';
@@ -269,7 +269,7 @@ export interface FaithView {
    * (null at 10): "DEVOTION 4 · 12/32 XP". */
   devotionXp: { total: number; level: number; into: number; step: number | null; next: number | null } | null;
   /** Tag XP so far against its caps (item 703), and the Narrator's gains this session against its cap (item 705). */
-  tagXp: { fight: number; scene: number; session: number; caps: { fight: number; scene: number; session: number } };
+  tagXp: { fight: number; scene: number; session: number; caps: { fight: number; scene: number; session: number | null }; /** Where tags count now: the fight, or the scene out of fights. */ where: 'fight' | 'scene' };
   narratorXp: { session: number; cap: number };
   /** The day counter (item 709) and the cooldown after leaving a pact (item 710): days left, the day it ends. */
   day: number;
@@ -302,7 +302,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: cb && u ? u.faith?.whisperTurn === turnKey(cb) : sf.whisperRound === g.story.round, miracleUsed: c.miracleSession === sessionN(g) },
     likedThisFight: tv.fight,
     devotionXp: belief.kind === 'faithful' ? (() => { const total = devotionXpOf(c), lv = devotionLevelOf(total), at = devotionThreshold(lv), next = lv < DEVOTION_MAX_LEVEL ? devotionThreshold(lv + 1) : null; return { total, level: lv, into: total - at, step: next != null ? next - at : null, next }; })() : null,
-    tagXp: { fight: tv.fight, scene: tv.scene, session: tv.session, caps: { ...TAG_CAPS } }, narratorXp: { session: tv.narr, cap: NARRATOR_XP.sessionCap },
+    tagXp: { fight: tv.fight, scene: tv.scene, session: tv.session, caps: { ...TAG_CAPS, session: (g as any).sandbox ? null : TAG_CAPS.session }, where: cb && !isOverworld(cb) ? 'fight' : 'scene' }, narratorXp: { session: tv.narr, cap: NARRATOR_XP.sessionCap },
     day: dayOf(g),
     pactCooldown: cdl > 0 && c.faithLeft ? { daysLeft: cdl, until: c.faithLeft.day + PACT_COOLDOWN_DAYS, patron: c.faithLeft.patron, patronName: patronById(c.faithLeft.patron)?.name || c.faithLeft.patron } : null,
     grudge: gr ? { patron: gr.patron, patronName: patronById(gr.patron)?.name || gr.patron, condition: gr.condition, conditionName: condNameOf(gr.condition), rounds: gr.rounds, xpMult: gr.xp_mult, sessionsLeft: Math.max(0, gr.until - sessionN(g)), text: gr.text } : null,
@@ -350,8 +350,8 @@ export function shiftDevotion(g: GameState | null, cb: Combat | null, c: Charact
   const now = Math.max(0, Math.min(DEVOTION_MAX_XP, was + n)), lv = setDevotionXp(c, now), d = now - was;
   if (!d && delta > 0) { if (note) logFaith(g, cb, c.name + ': +0 Devotion XP (' + reason + ')' + note + '.'); return 0; }
   const ev = { char: c.id, delta: d || n, xp: now, reason, ...(tag ? { tag } : {}), now: lv, was: lvWas, ...(lv !== lvWas ? { level: lv } : {}) };
-  const next = lv < DEVOTION_MAX_LEVEL ? devotionThreshold(lv + 1) : null;
-  const text = c.name + ': ' + ((d || n) > 0 ? '+' : '−') + Math.abs(d || n) + ' Devotion XP (' + reason + ')' + note + (lv !== lvWas ? ': DEVOTION ' + lv : ', Devotion ' + lv) + ' · ' + now + (next != null ? '/' + next : '') + ' XP.';
+  // The same words as the meter (level, then the XP into it out of its step), upper case when the level changed.
+  const text = c.name + ': ' + ((d || n) > 0 ? '+' : '−') + Math.abs(d || n) + ' Devotion XP (' + reason + ')' + note + (lv !== lvWas ? ': ' + devotionWords(now).toUpperCase() : ', ' + devotionWords(now)) + '.';
   if (cb) emitFx(cb, FAITH_FX.devotion, ev); else if (g) storyFx(g, FAITH_FX.devotion, ev);
   logFaith(g, cb, text);
   return d;
@@ -396,7 +396,9 @@ export function tagDevotion(g: GameState | null, cb: Combat | null, c: Character
   const f = where.fight ? (t.fight?.id === where.fight ? t.fight : (t.fight = { id: where.fight, xp: 0, tags: [] })) : null;
   const tags = f ? f.tags : t.sceneTags, have = f ? f.xp : t.sceneXp, cap = f ? TAG_CAPS.fight : TAG_CAPS.scene;
   if (tags.includes(tag)) return null;
-  const n = Math.min(DEVOTION_XP.liked, cap - have, TAG_CAPS.session - t.sessionXp); if (n <= 0) return null;
+  // The Proving Ground has no sessions (item 722): its fights and scenes keep their caps, the session's doesn't apply.
+  const sessionLeft = (g as any)?.sandbox ? Infinity : TAG_CAPS.session - t.sessionXp;
+  const n = Math.min(DEVOTION_XP.liked, cap - have, sessionLeft); if (n <= 0) return null;
   tags.push(tag); if (f) f.xp += n; else t.sceneXp += n; t.sessionXp += n;
   return shiftDevotion(g, cb, c, n, name, tag);
 }
@@ -543,7 +545,10 @@ export function registerFaithHooks() {
   onHook('on_surrender', (ctx, cb) => { if (ctx.by) faithTag(cb, ctx.by, 'mercy'); });
   onHook('hide', (ctx, cb) => faithTag(cb, ctx.u, 'trick'));
   onHook('gift', (ctx, cb) => { const by: Unit | null = ctx.by || ctx.from || ctx.u; if (by) faithTag(cb, by, 'supply'); });
-  onHook('cond_landed', (ctx, cb) => { if (ctx.id === 'burning' && ctx.by) faithTag(cb, ctx.by, 'burn'); });
+  onHook('cond_landed', (ctx, cb) => {
+    if (ctx.id === 'burning' && ctx.by) faithTag(cb, ctx.by, 'burn');
+    if (ctx.t?.faith?.grudgeCond === ctx.id) delete ctx.t.faith.grudgeCond; // the same condition again, from something else: that one is real
+  });
   onHook('object_destroyed', (ctx, cb) => { const o: any = ctx.obj; if (ctx.by && (o?.holy || (o?.tags || []).includes('holy'))) faithTag(cb, ctx.by, 'desecrate'); });
   onHook('moved', (ctx, cb) => {
     const u: Unit = ctx.u; const st = u.faith;
@@ -575,6 +580,10 @@ export function registerFaithHooks() {
       if (!u.charId || u.companion || u.dead) continue; const c = unitChar(u); if (!c) continue;
       const gr = grudgeOf(g, c); if (!gr) continue; const p = patronById(gr.patron);
       const r = applyCond(cb, rng, null, u, gr.condition, gr.rounds, undefined, { skipSave: true });
+      // Item 723: it lasts its rounds of the bearer's own turns whatever the initiative (landing before the first turn
+      // isn't "on your own turn"), and it ends with the fight (marked: never carried into the story).
+      if (u.condFresh) { u.condFresh = u.condFresh.filter((x) => x !== gr.condition); if (!u.condFresh.length) delete u.condFresh; }
+      if (r && !/resists|untouched/.test(r)) fs(u).grudgeCond = gr.condition;
       emitFx(cb, FAITH_FX.grudge, { char: c.id, patron: gr.patron, sessions: Math.max(0, gr.until - sessionN(g)), condition: gr.condition, at: u.pos, unit: u.id });
       cb.log.push('Grudge (' + (p?.name || gr.patron) + '): ' + u.name + ' starts the fight ' + condNameOf(gr.condition) + (r ? ' (' + r.replace(/^ · /, '') + ')' : '') + '.');
     }
@@ -927,17 +936,24 @@ export function makePact(g: GameState, c: Character, patronId: string): string |
   }
   let pieces: Record<string, number> = { ...(c.faithPieces || {}) }, hymns = [...(c.hymns || [])];
   const old = b.kind === 'faithful' ? patronById(b.patron) : null;
+  const wasXp = old ? devotionXpOf(c) : 0, wasLv = old ? devotionNow(c) : 0;
   if (old) { const n = keptPieces(c, old, devotionNow(c)); pieces[old.id] = n; hymns = [...new Set([...hymns, ...hymnsOf(old).slice(0, n).map((h: any) => old.id + '.' + h.id)])]; }
   const own = Math.max(0, Math.min(3, pieces[p.id] || 0)); delete pieces[p.id];
   hymns = hymns.filter((k) => !k.startsWith(p.id + '.'));
   if (p.rule === 'jealous') { pieces = {}; hymns = []; }
   if (old) leavePatron(g, c, old, p);
   const gain = DEVOTION_XP.piece * own, lv = Math.min(DEVOTION_MAX_LEVEL, START_DEVOTION() + gain);
-  c.belief = { kind: 'faithful', patron: p.id }; c.patron = p.id; setDevotionXp(c, devotionThreshold(lv)); c.vow = null; c.faithLeft = null;
+  // Item 719: a switch never raises Devotion. The new pact starts at the lower of the XP you had and what a conversion
+  // gives, so a pact can't wipe a loss (the Miracle's reset, a taboo, Judgement); an Atheist converts as before.
+  const conv = devotionThreshold(lv), xp = old ? Math.min(wasXp, conv) : conv;
+  c.belief = { kind: 'faithful', patron: p.id }; c.patron = p.id; setDevotionXp(c, xp); c.vow = null; c.faithLeft = null;
   if ((c.grudge as Grudge | undefined)?.patron === p.id) { delete c.grudge; B!.push(g, { kind: 'system', charId: c.id, text: p.name + ' takes ' + c.name + ' back: the grudge is over.' } as any); }
   c.faithPieces = pieces; c.hymns = hymns; c.faithRev = FAITH_REV;
-  B!.push(g, { kind: 'system', charId: c.id, head: 'PACT · ' + String(p.name).toUpperCase(), text: c.name + ' makes a pact with ' + p.name + ' (Devotion ' + c.devotion + (gain ? ': ' + START_DEVOTION() + ' + ' + gain + ' for what they already knew' : '') + ').' + (p.rule === 'jealous' ? ' ' + p.name + ' is Jealous: every other patron\'s Hymn is gone.' : '') } as any);
-  storyFx(g, FAITH_FX.devotion, { char: c.id, delta: c.devotionXp, xp: c.devotionXp, reason: 'a pact', now: c.devotion, was: 0, level: c.devotion });
+  const kept = old && xp < conv;
+  B!.push(g, { kind: 'system', charId: c.id, head: 'PACT · ' + String(p.name).toUpperCase(), text: c.name + ' makes a pact with ' + p.name + ' (' + devotionWords(c.devotionXp!) + (kept ? ': a new pact never raises Devotion' : gain ? ': ' + START_DEVOTION() + ' + ' + gain + ' for what they already knew' : '') + ').' + (p.rule === 'jealous' ? ' ' + p.name + ' is Jealous: every other patron\'s Hymn is gone.' : '') } as any);
+  // The fx says what changed: from the old pact's XP and level on a switch, from nothing for an Atheist's conversion.
+  const dXp = c.devotionXp! - wasXp;
+  storyFx(g, FAITH_FX.devotion, { char: c.id, delta: dXp, xp: c.devotionXp, reason: 'a pact', now: c.devotion, was: wasLv, ...(c.devotion !== wasLv || !old ? { level: c.devotion } : {}), pact: p.id });
   speak(g, null, g.rng as Rng, c, p, 'conversion');
   return null;
 }
@@ -1011,11 +1027,14 @@ export function apostasy(g: GameState, c: Character): string | null {
   const n = keptPieces(c, p, dv), day = dayOf(g);
   c.belief = { kind: 'atheist' }; c.patron = null; setDevotionXp(c, 0); c.vow = null; c.faithRev = FAITH_REV;
   c.faithLeft = { patron: p.id, day };
+  // Item 720: a grudge lobbies against the new patron; with no patron at all there is nothing to lobby against.
+  const gr = c.grudge as Grudge | undefined; if (gr) delete c.grudge;
   c.faithPieces = { ...(c.faithPieces || {}), [p.id]: n };
   c.hymns = [...new Set([...(c.hymns || []), ...hymnsOf(p).slice(0, n).map((h: any) => p.id + '.' + h.id)])];
   B!.push(g, { kind: 'system', charId: c.id, head: 'APOSTASY', text: c.name + ' leaves the pact with ' + p.name + ': Devotion 0, an Atheist now; ' + n + ' of its Hymns stay with them, prayed by dice. No patron answers a new pact for ' + PACT_COOLDOWN_DAYS + ' days (until day ' + (day + PACT_COOLDOWN_DAYS) + ').' } as any);
   storyFx(g, FAITH_FX.devotion, { char: c.id, delta: -xp, xp: 0, reason: 'apostasy', now: 0, was: dv, ...(dv ? { level: 0 } : {}) });
   speak(g, null, g.rng as Rng, c, p, 'farewell');
+  if (gr) B!.push(g, { kind: 'system', charId: c.id, text: (patronById(gr.patron)?.name || 'The old patron') + '\'s grudge ends: ' + c.name + ' has no patron left to lobby against.' } as any);
   return null;
 }
 

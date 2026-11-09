@@ -192,12 +192,15 @@ const fp = await openFaithTab(); await p.waitForTimeout(300);
 const gtxt = (await fp.locator('[data-faith-grudge]').textContent().catch(() => '')) || '';
 ok('the faith tab shows the grudge: who, what, how long (' + gtxt.slice(0, 140) + ')', /GRUDGE · HOLY FATHER NERUKHAN/.test(gtxt) && /Marked for 2 rounds at the start of every fight/.test(gtxt) && /cut by 50%/.test(gtxt) && /Ends after 3 more sessions/.test(gtxt));
 ok('the switch has no APOSTASY line', !(await G()).story.entries.some((e) => e.head === 'APOSTASY'));
+const tc = (await fp.locator('[data-faith-tagcaps]').textContent().catch(() => '')) || '';
+ok('the tag caps on the faith tab, with no session part in the Proving Ground (' + tc + ')', /^LIKED TAGS · \d\/2 THIS (SCENE|FIGHT)/.test(tc) && !/SESSION/.test(tc));
 if (SHOTS) { await fp.locator('[data-faith-grudge]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-grudge.png' }); }
 const e4 = await act({ type: 'faith/apostasy', charId: cid }); await p.waitForTimeout(300);
 cc = (await G()).characters[cid];
 ok('apostasy: an Atheist, Devotion XP 0, the day recorded (' + (e4 || JSON.stringify(cc.faithLeft)) + ')', cc.belief?.kind === 'atheist' && !cc.devotionXp && !!cc.faithLeft);
 const ctxt = (await fp.locator('[data-faith-day]').textContent().catch(() => '')) || '';
 ok('the faith tab: the day and "Nobody answers yet: 90 days" (' + ctxt + ')', /DAY \d+/.test(ctxt) && /Nobody answers yet: 90 days/.test(ctxt));
+ok('apostasy ends the grudge (item 720): no grudge card, nothing on the character', !cc.grudge && (await fp.locator('[data-faith-grudge]').count()) === 0);
 if (SHOTS) { await fp.locator('[data-faith-day]').scrollIntoViewIfNeeded().catch(() => {}); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-pg-cooldown.png' }); }
 const e5 = await act({ type: 'faith/pact', charId: cid, patron: 'the_matchmaker' }); await p.waitForTimeout(200);
 ok('a pact during the cooldown is refused: still an Atheist' + (e5 ? ' (' + e5 + ')' : ''), (await G()).characters[cid].belief?.kind === 'atheist');

@@ -4,7 +4,7 @@
 // screen for under 2.5 s and a click skips it; reduced motion keeps it short.
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf } from '@engine';
-import { setLayer } from './dom';
+import { setLayer, clampCentre } from './dom';
 import { playFx, setContext, clearFx } from './play';
 import { faithBeat, miracleOverlay, devotionWord } from './faith';
 import * as sfxMod from '../sfx';
@@ -63,6 +63,22 @@ describe('the faith effects (Blessing 2.0)', () => {
     playFx(FAITH_EVENTS[7]); vi.advanceTimersByTime(900);
     expect(layer.textContent).toMatch(/\+4 DEVOTION XP/); expect(layer.textContent).toMatch(/DEVOTION 5/);
     expect(faithBeat(FAITH_EVENTS[7])).toBeGreaterThan(faithBeat(FAITH_EVENTS[5])!);
+  });
+  it('a pact says so and floats only the XP that moved: no "+45" and no level-up glow on a switch that keeps or loses XP (item 719)', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx({ k: 'devotion', char: 'c1', delta: 0, xp: 45, reason: 'a pact', now: 3, was: 3, pact: 'counting_weaver', at: '2,5' } as any); vi.advanceTimersByTime(900);
+    expect(layer.textContent).toMatch(/PACT · THE COUNTING WEAVER/); expect(layer.textContent).not.toMatch(/DEVOTION XP|DEVOTION 3/);
+    clearFx(); vi.advanceTimersByTime(3000);
+    playFx({ k: 'devotion', char: 'c1', delta: -225, xp: 45, reason: 'a pact', now: 3, was: 8, level: 3, pact: 'counting_weaver', at: '2,5' } as any); vi.advanceTimersByTime(900);
+    expect(layer.textContent).toMatch(/−225 DEVOTION XP/); expect(layer.textContent).toMatch(/DEVOTION 3/); expect(layer.innerHTML).not.toMatch(/glow\.png/);
+  });
+  it('a long float near the edge shifts inward; the grudge float sits above the condition\'s', () => {
+    expect(clampCentre(10, 120, 4, 1000)).toBe(64); expect(clampCentre(990, 120, 4, 1000)).toBe(940); expect(clampCentre(500, 120, 4, 1000)).toBe(500); expect(clampCentre(5, 300, 0, 200)).toBe(100);
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx({ k: 'grudge', char: 'c1', patron: 'nerukhan', sessions: 3, condition: 'marked', at: '0,5', unit: 'u' } as any); vi.advanceTimersByTime(400);
+    const box = [...layer.children].find((b) => /GRUDGE/.test(b.textContent || '')) as HTMLElement;
+    expect(parseFloat(box.style.left)).toBeGreaterThanOrEqual(4);
+    expect(parseFloat(box.style.top) + parseFloat(box.style.height) / 2).toBeLessThan(5 * 40 + 20 - 40 * 0.35); // centred higher than a plain float on that tile
   });
   it('leaving a patron and a grudge: the words, and a sound even with no tile to draw on', () => {
     ctx(); const layer = document.body.lastElementChild as HTMLElement, names = () => spy.mock.calls.map((c: any[]) => c[0]);

@@ -2,7 +2,7 @@
 // the combat FAITH tab, the story's prayer buttons, the resource rows under the HP bar and the turn card. Everything
 // comes from the engine's faithView() and previewPrayer() (packages/engine/src/faith.ts): this file computes no rule,
 // only words, odds, icons and the reason a button is disabled.
-import { faithView, previewPrayer, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
+import { faithView, previewPrayer, devotionWords, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
 import { FAITH_INK, FAITH_GOLD, accentOf, patronMarkUri, prayerIconUri, vowIconUri, witnessedUri } from './faithArt';
 
 export type PrayerKindUI = 'whisper' | 'hymn' | 'miracle';
@@ -11,7 +11,15 @@ const ROMAN = ['', 'I', 'II', 'III'];
  *  at the top, "DEVOTION 10 · 450 XP · FULL". */
 export function devotionLabel(x: FaithView['devotionXp'] | null | undefined, level?: number): string {
   if (!x) return 'DEVOTION ' + (level ?? 0);
-  return 'DEVOTION ' + x.level + (x.step != null ? ' · ' + x.into + '/' + x.step + ' XP' : ' · ' + x.total + ' XP · FULL');
+  return devotionWords(x.total).toUpperCase(); // the engine's words, the same as its log lines
+}
+/** The tag caps (items 703, 722) in words: "LIKED TAGS · 1/2 THIS FIGHT · 4/6 THIS SESSION" (a scene out of fights;
+ *  no session part in the Proving Ground), and whether a cap is reached (liked tags give nothing until it resets). */
+export function tagCapsText(t: FaithView['tagXp']): { text: string; capped: boolean } {
+  const here = t.where === 'fight' ? { n: t.fight, cap: t.caps.fight, w: 'THIS FIGHT' } : { n: t.scene, cap: t.caps.scene, w: 'THIS SCENE' };
+  const sess = t.caps.session != null ? ' · ' + t.session + '/' + t.caps.session + ' THIS SESSION' : '';
+  const capped = here.n >= here.cap || (t.caps.session != null && t.session >= t.caps.session);
+  return { text: 'LIKED TAGS · ' + here.n + '/' + here.cap + ' ' + here.w + sess + (capped ? ' · CAPPED' : ''), capped };
 }
 /** The pact cooldown after leaving one (item 710), in the patrons' silence: "Nobody answers yet: 88 days". */
 export const cooldownText = (days: number) => 'Nobody answers yet: ' + days + (days === 1 ? ' day' : ' days');
@@ -92,6 +100,7 @@ export interface FaithPanel {
   devotionText: string; xpFill: number; xp: FaithView['devotionXp']; /** The word beside the XP fill: "TO DEVOTION 5", or "FULL". */ xpNextText: string;
   /** The day counter (item 709), the cooldown after leaving a pact (item 710) and a grudge (item 713), in words. */
   day: number; dayText: string; cooldown: string | null; grudge: { head: string; what: string; left: string; text: string } | null;
+  /** The liked-tag caps (items 703, 722): what tags have given against the caps, and whether one is reached. Faithful only. */ tagCaps: { text: string; capped: boolean } | null;
   witnessed: { on: boolean; icon: string; word: string; can: boolean };
   vow: { icon: string; label: string; state: 'sworn' | 'kept' | 'broken' } | null;
   rites: { id: string; name: string; text: string; kept: boolean; engine: boolean; available: boolean; why?: string }[];
@@ -116,6 +125,7 @@ export function faithPanel(v: FaithView | null): FaithPanel | null {
     xpNextText: v.devotionXp ? (v.devotionXp.step ? 'TO DEVOTION ' + (v.devotionXp.level + 1) : 'FULL') : '',
     day: v.day, dayText: 'DAY ' + v.day, cooldown: v.pactCooldown ? cooldownText(v.pactCooldown.daysLeft) : null,
     grudge: v.grudge ? { ...grudgeText(v.grudge), text: v.grudge.text } : null,
+    tagCaps: faithful && v.tagXp ? tagCapsText(v.tagXp) : null,
     witnessed: { on: v.witnessed, icon: witnessedUri(), word: v.witnessed ? 'WITNESSED' : 'NOT WITNESSED', can: v.canBeWitnessed },
     vow: v.vow ? { icon: vowIconUri(v.vow.id), label: vowLabel(v.vow, v.vows), state: v.vow.state } : null,
     rites: v.rites.map((r) => ({ id: r.id, name: r.name, text: r.text, kept: r.keptThisSession, engine: r.engine, available: r.available, why: r.why })),

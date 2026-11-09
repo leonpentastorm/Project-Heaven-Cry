@@ -1,4 +1,4 @@
-// Faith 2.1 (rules 1.6.1; design docs/design/faith-2.1-spec.md; spec section 14 items 701-730): Devotion XP and its
+// Faith 2.1 (rules 1.6.1; design docs/design/faith-2.1-spec.md; spec section 14 items 701-723): Devotion XP and its
 // curve, every source, the caps on tags (fight, scene, session; on the character, so the area map can't farm them),
 // the Narrator's XP and its session cap, the Miracle's reset, Judgement, conversion pieces, the day counter and the
 // 90-day cooldown after apostasy, the direct switch (no cooldown) with the patron's leave roll or grudge, the grudge's
@@ -27,9 +27,9 @@ function faithful(patron = 'mother_ember', level = 3, faith = 5) {
   const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron }; c.patron = patron; setDevotionXp(c, devotionThreshold(level));
   return { s, c: (): Character => s.g.characters[c.id], ally: (): Character => s.g.characters[s.chars[1].id], act: (a: any, by = 'host') => s.act(a as Action, by) };
 }
-/** End the session and start the next (the web goes back to the lobby between sessions). */
+/** End the session and start the next: the host's Next session (session/next, item 721). */
 function nextSession(s: { g: GameState; act: (a: Action, by?: string) => GameState }) {
-  s.g.phase = 'lobby'; s.act({ type: 'session/start' } as Action);
+  s.act({ type: 'session/next' } as Action);
   s.act({ type: 'narrator/turn', turn: { narration: 'Later.', sceneTitle: 'Another day ' + s.g.sessionN } } as any);
 }
 
@@ -58,7 +58,10 @@ describe('gains and losses move XP, crossing levels both ways (items 701-702)', 
     expect(c().devotionXp).toBe(101); expect(c().devotion).toBe(4);
     withGame(s.g, () => shiftDevotion(s.g, null, c(), 1, 'a test'));
     expect(c().devotion).toBe(5); expect(storyFx(s.g, FAITH_FX.devotion).pop()).toMatchObject({ delta: 1, xp: 102, now: 5, was: 4, level: 5 });
-    expect(said(s.g, /\+1 Devotion XP \(a test\): DEVOTION 5 · 102\/147 XP/)).toBe(true);
+    expect(said(s.g, /\+1 Devotion XP \(a test\): DEVOTION 5 · 0\/45 XP\./)).toBe(true); // the meter's words (level, into/step)
+    withGame(s.g, () => shiftDevotion(s.g, null, c(), 4, 'a rite'));
+    expect(said(s.g, /\+4 Devotion XP \(a rite\), Devotion 5 · 4\/45 XP\./)).toBe(true);
+    withGame(s.g, () => shiftDevotion(s.g, null, c(), -4, 'a rite undone'));
     withGame(s.g, () => shiftDevotion(s.g, null, c(), -3, 'a taboo'));
     expect(c().devotion).toBe(4); expect(c().devotionXp).toBe(99);
     withGame(s.g, () => shiftDevotion(s.g, null, c(), -500, 'everything'));
@@ -97,7 +100,7 @@ describe('the caps on tags (items 703-704)', () => {
     act({ type: 'narrator/turn', turn: { narration: 'On.', sceneTitle: 'Scene three' } });
     expect(t('heal')).toBeNull(); expect(t('protect', 'FY')).toBeNull();
     expect(c().devotionXp).toBe(45 + 6);
-    expect(faithView(s.g, c().id)!.tagXp).toEqual({ fight: 0, scene: 0, session: 6, caps: { fight: 2, scene: 2, session: 6 } });
+    expect(faithView(s.g, c().id)!.tagXp).toEqual({ fight: 0, scene: 0, session: 6, caps: { fight: 2, scene: 2, session: 6 }, where: 'scene' });
     nextSession(s); expect(t('heal')).toBe(1); // a new session
   });
   it('vows, rites and the Narrator don\'t count toward the tag caps', () => {
@@ -192,10 +195,10 @@ describe('the day counter and the 90-day cooldown after apostasy (items 709-710)
     expect(faithView(s.g, c().id)!.pactCooldown).toMatchObject({ daysLeft: 90, until: 100, patron: 'the_quartermaster' });
     act({ type: 'narrator/turn', turn: { narration: 'Sleep.', rest: { kind: 'long' } } });
     expect(() => act({ type: 'faith/pact', charId: c().id, patron: 'the_quartermaster' })).toThrow(/Nobody answers yet: 89 days/);
-    act({ type: 'narrator/turn', turn: { narration: 'Months.', days: 88, patrons: [{ charId: c().id, patron: 'mother_ember' }] } });
-    expect(beliefOf(c()).kind).toBe('atheist'); expect(said(s.g, /Faith \(Saint\): Nobody answers yet: 89 days/)).toBe(true); // a turn's days pass after its faith ops
-    act({ type: 'narrator/turn', turn: { narration: 'A day.', days: 1 } }); // day 100
-    act({ type: 'faith/pact', charId: c().id, patron: 'mother_ember' });
+    act({ type: 'narrator/turn', turn: { narration: 'Months.', days: 87, patrons: [{ charId: c().id, patron: 'mother_ember' }] } }); // day 98
+    expect(beliefOf(c()).kind).toBe('atheist'); expect(said(s.g, /Faith \(Saint\): Nobody answers yet: 2 days/)).toBe(true); // the turn's days count first: 89 − 87
+    // A time skip and the pact in one turn: the days pass first, then the pact is answered (item 709).
+    act({ type: 'narrator/turn', turn: { narration: 'Two days later she kneels.', days: 2, faith: [{ charId: c().id, op: 'pact', patron: 'mother_ember' }] } }); // day 100
     expect(c().patron).toBe('mother_ember'); expect(c().faithLeft ?? null).toBeNull(); expect(c().devotion).toBe(3);
   });
 });

@@ -71,12 +71,20 @@ if (await keep.count() && (await keep.getAttribute('aria-disabled')) !== 'true')
   ok('keeping a rite: the story says so and the card reads KEPT', /RITE ·/.test(await p.evaluate(() => window.__phc.getState().game.story.entries.map((e) => e.head || '').join(' '))) && /KEPT THIS SESSION/.test(await panel.textContent()));
 } else console.log('note no engine rite could be kept now: ' + ((await panel.locator('[data-rite]').first().textContent()) || '').slice(0, 120));
 const hereDay = p.locator('[data-here-day]').first();
-if (await hereDay.count()) ok('the HERE card shows the day (' + (await hereDay.textContent()) + ')', /^DAY \d+$/.test((await hereDay.textContent()) || ''));
-else console.log('note no HERE card in this scene (no objectives here), so no Day line to check there');
+ok('the HERE card shows the day even with no objectives (' + ((await hereDay.count()) ? await hereDay.textContent() : 'no card') + ')', (await hereDay.count()) > 0 && /^DAY \d+$/.test((await hereDay.textContent()) || ''));
+ok('the liked-tag caps are on the faith tab (' + ((await panel.locator('[data-faith-tagcaps]').textContent()) || '') + ')', /^LIKED TAGS · \d\/2 THIS SCENE · \d\/6 THIS SESSION/.test((await panel.locator('[data-faith-tagcaps]').textContent()) || ''));
 // A day passes on a long rest: the faith tab and the HERE card follow.
 await p.evaluate(() => window.__phc.act({ type: 'narrator/turn', turn: { narration: 'They sleep by the fire.', rest: { kind: 'long' } } }));
 await p.waitForTimeout(400);
 ok('a long rest is a day: the faith tab reads DAY 2', /DAY 2/.test(await panel.locator('[data-faith-day]').textContent()));
+ok('and the HERE card follows (DAY 2)', /^DAY 2$/.test((await p.locator('[data-here-day]').first().textContent()) || ''));
+// The host's Next session (item 721): from Rest…, the session counter moves on in the same room.
+await p.locator('.phc-rest').first().click(); await p.waitForTimeout(200);
+const nextOpt = p.locator('.phc-rest-opt', { hasText: 'Next session' });
+ok('Rest… offers the host Next session', (await nextOpt.count()) === 1);
+if (await nextOpt.count()) { await nextOpt.click(); await p.waitForTimeout(500);
+  const sn = await p.evaluate(() => window.__phc.getState().game.sessionN);
+  ok('Next session: session 2 begins in the room (sessionN ' + sn + '), not a day (still DAY 2)', sn === 2 && /SESSION 2/.test(await p.evaluate(() => window.__phc.getState().game.story.entries.map((e) => e.head || '').join(' '))) && /DAY 2/.test(await panel.locator('[data-faith-day]').textContent())); }
 if (SHOTS) { await p.setViewportSize({ width: 1440, height: 1400 }); await p.waitForTimeout(300); await p.screenshot({ path: SHOTS + '/faith-tab.png' }); await panel.evaluate((el) => el.scrollIntoView({ block: 'start' })); await p.locator('[data-phc-cutin]').count() && await p.keyboard.press('Escape'); await p.waitForTimeout(600); await panel.screenshot({ path: SHOTS + '/faith-panel-top.png', clip: undefined }); }
 
 // ---------- a fight ----------

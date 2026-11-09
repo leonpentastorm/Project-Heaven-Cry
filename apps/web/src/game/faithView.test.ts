@@ -2,7 +2,7 @@
 // pickers, the payload, the Belief step's patron cards; read from a real game through the engine's faithView.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, apply, newGame, faithView, FAITH_PATRONS, type Sheet } from '@engine';
-import { oddsOf, oddsText, prayerButtons, prayAction, pickerFor, faithPanel, patronCards, BELIEF_TEXT, devotionLabel, cooldownText, grudgeText } from './faithView';
+import { oddsOf, oddsText, prayerButtons, prayAction, pickerFor, faithPanel, patronCards, BELIEF_TEXT, devotionLabel, cooldownText, grudgeText, tagCapsText } from './faithView';
 
 const sheet = (name: string, belief: any): Sheet => { const a = ARCHETYPES[0]; return { name, portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, belief } as any; };
 function game(belief: any, faith = 5) {
@@ -43,6 +43,16 @@ describe('faith views', () => {
     g.characters[c.id].devotionXp = 82; g.characters[c.id].devotion = 4;
     const p = faithPanel(faithView(g, c.id))!;
     expect(p.devotionText).toBe('DEVOTION 4 · 12/32 XP'); expect(p.xpFill).toBeCloseTo(12 / 32); expect(p.meter.filter((m) => m.on).length).toBe(4);
+  });
+  it('the liked-tag caps in words: the fight or the scene, the session (none in the Proving Ground), CAPPED once one is reached', () => {
+    const caps = { fight: 2, scene: 2, session: 6 };
+    expect(tagCapsText({ fight: 1, scene: 0, session: 4, caps, where: 'fight' })).toEqual({ text: 'LIKED TAGS · 1/2 THIS FIGHT · 4/6 THIS SESSION', capped: false });
+    expect(tagCapsText({ fight: 0, scene: 2, session: 2, caps, where: 'scene' })).toEqual({ text: 'LIKED TAGS · 2/2 THIS SCENE · 2/6 THIS SESSION · CAPPED', capped: true });
+    expect(tagCapsText({ fight: 1, scene: 0, session: 6, caps, where: 'fight' }).capped).toBe(true);
+    expect(tagCapsText({ fight: 1, scene: 0, session: 9, caps: { ...caps, session: null }, where: 'fight' })).toEqual({ text: 'LIKED TAGS · 1/2 THIS FIGHT', capped: false });
+    const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' });
+    expect(faithPanel(faithView(g, c.id))!.tagCaps!.text).toBe('LIKED TAGS · 0/2 THIS SCENE · 0/6 THIS SESSION');
+    const at = game({ kind: 'atheist' }); expect(faithPanel(faithView(at.g, at.c.id))!.tagCaps).toBeNull(); // no patron, no caps to show
   });
   it('leaving: the pact cooldown on the day counter ("Nobody answers yet: N days"), then a grudge on a switch (who, what, how long)', () => {
     let { g, c } = game({ kind: 'faithful', patron: 'mother_ember' });

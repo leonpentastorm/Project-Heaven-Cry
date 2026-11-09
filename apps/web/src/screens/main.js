@@ -1081,10 +1081,13 @@ export class MainLogic extends DCLogic {
     const wPanelV = wPkE && !ON_MAP.includes(wPkE.target) ? pkView({ e: wPkE, how: 'world' }, 'area') : null, wPanel = wPanelV && wPanelV.needs ? wPanelV : null;
     // ---------- rest (spec: Rest): the host calls it, a player asks for it (the Narrator can grant one too) ----------
     const restWhy = g.phase === 'lobby' ? 'The session hasn\'t started.' : g.phase !== 'story' ? 'No resting in a fight: win it, or get out of it, first.' : !isHost && g.story.await !== 'players' ? 'Wait for the round to open.' : !isHost && !c ? 'You have no character to ask with.' : '';
-    const restVals = { restLabel: isHost ? 'Rest…' : 'Ask for a rest…', restOff: !!restWhy, restTitle: restWhy || (isHost ? 'Call a short or a long rest for the party' : 'Ask the Narrator for a rest: your request goes in the story'),
+    const restVals = { restLabel: isHost ? 'Rest…' : 'Ask for a rest…', restOff: !!restWhy, restTitle: restWhy || (isHost ? 'Call a short or a long rest for the party, or start the next session' : 'Ask the Narrator for a rest: your request goes in the story'),
       restOpen: !!S.restOpen && !restWhy, toggleRest: () => this.setState({ restOpen: !S.restOpen }), restPressed: S.restOpen ? 'true' : 'false',
       restOpts: ['short', 'long'].map((k) => ({ key: k, label: (isHost ? '' : 'Ask for a ') + (k === 'short' ? (isHost ? 'Short rest' : 'short rest') : (isHost ? 'Long rest' : 'long rest')), text: REST_INFO[k] + '.',
-        pick: () => { if (isHost) act({ type: 'rest', kind: k }); else act({ type: 'story/ask-rest', charId: c.id, kind: k }); this.setState({ restOpen: false }); } })) };
+        pick: () => { if (isHost) act({ type: 'rest', kind: k }); else act({ type: 'story/ask-rest', charId: c.id, kind: k }); this.setState({ restOpen: false }); } }))
+        // Rules 1.6.1 (item 721): the host ends the session here and the next one starts in the same room.
+        .concat(isHost && !g.sandbox ? [{ key: 'session', label: 'Next session', text: 'End session ' + (g.sessionN || 1) + ' and start session ' + ((g.sessionN || 1) + 1) + ': everyone recovers as after a long rest (not a day), Echo is back to 1, and once-a-session things start over (rites, the Miracle, the faith caps, grudges).',
+          pick: () => { act({ type: 'session/next' }); this.setState({ restOpen: false }); } }] : []) };
     const u = g.narrator.usage, host = playerOf(g.hostId);
 
     return {

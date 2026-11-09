@@ -108,7 +108,9 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     devotion(e: any) {
       const p = charAt(e); if (!p) return;
       const d = Number(e.delta) || 0, word = devotionWord(e);
-      floatText(word, { ...p, y: p.y + p.s * 0.45 }, FAITH_INK, { small: true, delay: 250 }); // below and after Witnessed's word, which often comes with it
+      // A pact names the patron; the XP float only when the XP moved (a switch can keep it, or take some: item 719).
+      if (e.pact) floatText('PACT · ' + String(FAITH_PATRON[e.pact]?.name || e.pact).toUpperCase(), { ...p, y: p.y + p.s * 0.45 }, FAITH_INK, { small: true, delay: 250 });
+      if (d) floatText(word, { ...p, y: p.y + p.s * (e.pact ? 0.9 : 0.45) }, FAITH_INK, { small: true, delay: 250 }); // below and after Witnessed's word, which often comes with it
       mark(patronMarkUri(e.patron || ''), { x: p.x - p.s * 0.55, y: p.y - p.s * 0.55, s: p.s }, p.s * 0.35, 1100, { glow: FAITH_GOLD, opacity: d > 0 ? 1 : 0.5 });
       if (e.level != null) {
         floatText('DEVOTION ' + e.level, { ...p, y: p.y - p.s * 0.2 }, FAITH_INK, { delay: 650 });
@@ -127,7 +129,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       const p = at(e.at || posOf(e.unit) || (K.posOfChar ? K.posOfChar(e.char) : null)); play('hit_metal', p, { rate: 0.6, gain: 0.4 }); if (!p) return;
       const name = String(FAITH_PATRON[e.patron]?.name || e.patron || 'a patron').toUpperCase();
       mark(patronMarkUri(e.patron || ''), { ...p, y: p.y - p.s * 0.8 }, p.s * 0.6, 1000, { opacity: 0.5, from: 1.2, to: 0.9 });
-      floatText('GRUDGE · ' + name, p, '#F65157', { small: true, delay: 150 });
+      floatText('GRUDGE · ' + name, { ...p, y: p.y - p.s * 0.6 }, '#F65157', { small: true, delay: 150 }); // above the condition's own float, which lands on the same tile
     },
     // A vow: sworn (a seal stamped), kept (it lights), broken (it cracks and falls).
     vow(e: any) {

@@ -97,7 +97,8 @@ describe('story uses on the sheet cards, and rest', () => {
     // The Perks strip shows it too (with chips when open).
     expect(L.renderVals().storyPerks.some((p: any) => /Gauntlet Infusion/.test(p.label))).toBe(true);
     const r = L.renderVals(); expect(r.restLabel).toBe('Rest…'); r.toggleRest(); await tick();
-    const opts = L.renderVals().restOpts; expect(opts.map((o: any) => o.label)).toEqual(['Short rest', 'Long rest']); expect(opts[1].text).toMatch(/all HP/);
+    const opts = L.renderVals().restOpts; expect(opts.map((o: any) => o.label)).toEqual(['Short rest', 'Long rest', 'Next session']); expect(opts[1].text).toMatch(/all HP/); // the host's Next session too (item 721)
+    expect(opts[2].text).toMatch(/End session 1 and start session 2/);
     opts[1].pick(); await tick();
     expect(card().acts[0]).toMatchObject({ off: false });
   });

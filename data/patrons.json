@@ -1,7 +1,7 @@
 {
   "$schema_version": "2.0",
   "kind": "patrons",
-  "source": "PHC Core Rules v1.0, rules 1.6 (Blessing 2.0, docs/design/blessing-2.0-spec.md) and 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md; section 14 items 701-730) + Narrator's World Bible",
+  "source": "PHC Core Rules v1.0, rules 1.6 (Blessing 2.0, docs/design/blessing-2.0-spec.md) and 1.6.1 (Faith 2.1, docs/design/faith-2.1-spec.md; section 14 items 701-723) + Narrator's World Bible",
   "devotion": {
     "min": 0,
     "max": 10,
@@ -373,7 +373,7 @@
           "check": {
             "kind": "story"
           },
-          "text": "Confess before the saints, out of a fight (a story button). Once a session: +1 Devotion."
+          "text": "Confess before the saints, out of a fight (a story button). Once a session: +4 Devotion XP."
         },
         {
           "id": "shrine_tithe",
@@ -586,7 +586,7 @@
           "check": {
             "kind": "after_rest"
           },
-          "text": "Count and log every round you carry after a rest (a story button, once a rest has been taken this session). Once a session: +1 Devotion."
+          "text": "Count and log every round you carry after a rest (a story button, once a rest has been taken this session). Once a session: +4 Devotion XP."
         },
         {
           "id": "requisition_form",
@@ -806,7 +806,7 @@
           "check": {
             "kind": "story"
           },
-          "text": "Tell a joke to the room, out of a fight (a story button). Once a session: +1 Devotion."
+          "text": "Tell a joke to the room, out of a fight (a story button). Once a session: +4 Devotion XP."
         },
         {
           "id": "a_good_prank",
@@ -1008,7 +1008,7 @@
           "check": {
             "kind": "after_rest"
           },
-          "text": "Keep a vigil for the dead at a rest (a story button, once a rest has been taken this session). Once a session: +1 Devotion."
+          "text": "Keep a vigil for the dead at a rest (a story button, once a rest has been taken this session). Once a session: +4 Devotion XP."
         },
         {
           "id": "pay_the_toll",
@@ -1206,7 +1206,7 @@
             "kind": "tithe_item",
             "category": "food"
           },
-          "text": "Give a ration to the squad's table (a story button: one food item from your pack). Once a session: +1 Devotion."
+          "text": "Give a ration to the squad's table (a story button: one food item from your pack). Once a session: +4 Devotion XP."
         },
         {
           "id": "keep_the_fire",
@@ -1413,7 +1413,7 @@
           "check": {
             "kind": "story"
           },
-          "text": "Bellow a challenge at the sky, out of a fight (a story button). Once a session: +1 Devotion."
+          "text": "Bellow a challenge at the sky, out of a fight (a story button). Once a session: +4 Devotion XP."
         },
         {
           "id": "best_the_rival",
@@ -1633,7 +1633,7 @@
           "check": {
             "kind": "story"
           },
-          "text": "Tie a red thread on a friend's wrist, out of a fight (a story button). Once a session: +1 Devotion."
+          "text": "Tie a red thread on a friend's wrist, out of a fight (a story button). Once a session: +4 Devotion XP."
         },
         {
           "id": "bring_two_together",
@@ -1832,7 +1832,7 @@
           "check": {
             "kind": "after_rest"
           },
-          "text": "Read out every debt you owe after a rest (a story button, once a rest has been taken this session). Once a session: +1 Devotion."
+          "text": "Read out every debt you owe after a rest (a story button, once a rest has been taken this session). Once a session: +4 Devotion XP."
         },
         {
           "id": "repay_a_debt",

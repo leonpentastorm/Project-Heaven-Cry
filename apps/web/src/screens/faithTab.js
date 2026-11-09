@@ -62,6 +62,8 @@ export function faithTabVals(sc, g, c) {
     // Rules 1.6.1: the XP toward the next level (its fill is faith light, always beside the words), the day, the cooldown, a grudge.
     devotionText: P.devotionText, xpFillStyle: 'height: 100%; border-radius: 99px; width: ' + Math.round(P.xpFill * 100) + '%; background: var(--faith-light, ' + FAITH_GOLD + ')',
     xpNextText: P.xpNextText, dayText: P.dayText, hasCooldown: !!P.cooldown, cooldown: P.cooldown || '', hasGrudge: !!P.grudge, grudge: P.grudge || {},
+    // Items 703 and 722: liked tags against their caps, so a capped tag's silence has a reason on screen.
+    hasTagCaps: !!P.tagCaps, tagCaps: P.tagCaps?.text || '', tagCapsStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (P.tagCaps?.capped ? '#E7EBF3' : '#A3AEC2'),
     headStyle: 'display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: #0D1119; border: 1px solid #232D3F; border-top: 3px solid ' + P.accent,
     witnessedStyle: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; ' + (P.witnessed.on ? 'border: 1px solid ' + FAITH_GOLD + '; color: #FFFFFF' : 'border: 1px dashed #2E3A50; color: #7F8BA1'),
     witnessedTitle: P.witnessed.can ? 'Witnessed: your patron is watching this fight (Faith 5 and up).' : 'Being Witnessed needs a patron and Faith 5.',
