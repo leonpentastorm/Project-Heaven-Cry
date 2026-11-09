@@ -43,6 +43,19 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    moves to bring back are listed in `docs/design/move-pool.md`. The data already carries `kind`/`pair`/`batch`, so
    turning a batch on is mostly data.
 
+## Outburst 4.0 (accepted direction, 9 Nov 2026)
+
+- Spec: `docs/design/outburst-4.0-spec.md`. It covers:
+  - feelings poured in live (25), with residue, Revert pump and the multiplier counter;
+  - 23 new modules: 13 for everyone, 10 gated to Soul advanced classes;
+  - guaranteed unlocks: practice, plus a module pick at each Mastery level;
+  - Visualization removed from Soul magic;
+  - fixes for low-level play.
+- **Task (Leon):** make the Magic tab's Sigil and Outburst workshops collapsible, with grouped sections, and group the
+  Proving Ground's cheat menu the same way (Sigil words by group; Outburst modules by gate skill, gated ones shown
+  locked).
+- **Later:** the pen-and-paper conversion. Practice becomes one module pick per level-up for Soul casters.
+
 ## Classes
 
 - **Batch 2:** the ring of 9 hybrids (Blade Scribe, Storm Hand, Spellslinger, Banner Dancer, Adamantile Knight,
