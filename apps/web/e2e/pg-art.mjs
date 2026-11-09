@@ -40,7 +40,8 @@ await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunc
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
 await p.waitForTimeout(1500);
-const img = await p.evaluate(() => { const i = [...document.querySelectorAll('img')].find((x) => /ill-proving-ground-drill-yard/.test(x.src)); return i ? { src: i.src, w: i.naturalWidth, h: i.getBoundingClientRect().height } : null; });
+// the tools centre's banner (the story column's copy is hidden under it)
+const img = await p.evaluate(() => { const all = [...document.querySelectorAll('img')].filter((x) => /ill-proving-ground-drill-yard/.test(x.src)), i = all.find((x) => x.getBoundingClientRect().height > 0) || all[0]; return i ? { src: i.src, w: i.naturalWidth, h: i.getBoundingClientRect().height } : null; });
 ok('the Proving Ground shows its drill-yard banner (' + JSON.stringify(img) + ')', !!img && img.w > 0 && img.h > 100);
 await p.screenshot({ path: OUT + 'pg-art/pg-banner.png' });
 await b.close();

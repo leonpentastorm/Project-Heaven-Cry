@@ -77,6 +77,24 @@ const dN2 = await durations(); await p.waitForTimeout(1500);
 ok('a hurt float\'s animations at Fast: ' + dF.map(Math.round).join(', ') + ' ms', dF.length > 0 && dF[0] >= 900);
 ok('at Normal each one is × 1.176: ' + dN.map(Math.round).join(', ') + ' ms (ratio ' + (dN[0] / dF[0]).toFixed(4) + ')', dN.length === dF.length && dN.every((d, i) => near(d / dF[i], MULT, 0.002)));
 ok('and again after the event switch (ratio ' + (dN2[0] / dF[0]).toFixed(4) + ')', dN2.length === dF.length && near(dN2[0] / dF[0], MULT, 0.002));
+// The settings cog in the header (game/settings.tsx, Combat tab) drives the same tempo, live, mid-fight.
+{
+  const cssK = () => p.evaluate(() => Number(getComputedStyle(document.documentElement).getPropertyValue('--phc-k')));
+  await p.locator('header').first().getByRole('button', { name: 'Settings', exact: true }).click();
+  const set = p.locator('div[role="dialog"][aria-label="Settings"]'); await set.waitFor({ timeout: 3000 });
+  await set.getByRole('tab', { name: 'Combat' }).click();
+  await set.locator('button[data-phc-speed="fast"]').click();
+  t = await tempo(); const kF = await cssK();
+  ok('the cog\'s Combat speed → Fast plays the fight at once at pace ' + t.pace + ' (--phc-k ' + kF + '), pressed: ' + await set.locator('button[data-phc-speed="fast"]').getAttribute('aria-pressed'),
+    t.speed === 'fast' && t.pace === 1 && kF === 1 && (await set.locator('button[data-phc-speed="fast"]').getAttribute('aria-pressed')) === 'true');
+  const dC = await durations(); await p.waitForTimeout(1500);
+  ok('a hurt float after the cog\'s Fast: ' + dC.map(Math.round).join(', ') + ' ms (= Fast)', dC.length === dF.length && near(dC[0], dF[0], 2));
+  await set.locator('button[data-phc-speed="normal"]').click();
+  t = await tempo();
+  ok('the cog\'s Normal brings it back (pace ' + t.pace.toFixed(4) + ', --phc-k ' + await cssK() + ')', t.speed === 'normal' && near(t.pace, MULT, 1e-6) && near(await cssK(), MULT, 1e-3));
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok('Escape closes Settings', (await set.count()) === 0);
+}
 ok('the queue\'s beat for a shot: ' + bF.beat + ' ms at Fast, ' + bN.beat + ' at Normal (gap measured ' + bF.gap + ' / ' + bN.gap + ' ms)', bF.beat === 400 && near(bN.beat, 400 * MULT, 1) && bN.gap >= 455 && bF.gap >= 385 && bN.gap > bF.gap + 40);
 
 // 3. A real crit at each speed: the cut-in's words on screen long enough to read.
