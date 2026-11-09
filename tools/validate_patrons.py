@@ -15,7 +15,7 @@ def check(condition, message):
         raise ValueError(message)
 
 def validate():
-    manifest = json.loads((BASE / 'manifest.json').read_text())
+    manifest = json.loads((DELIVERY / 'manifest.json').read_text())
     catalog = json.loads((ROOT / 'art/catalog.json').read_text())['patrons']
     portraits = manifest['portraits']
     check(manifest['status'] == 'review-candidate' and manifest['production_approved'] is False,
@@ -38,7 +38,7 @@ def validate():
         for field in ['path', 'width', 'height', 'sha256', 'colour_anchor']:
             check(entry[field] == p[field], f'Catalog mismatch: {p["id"]}/{field}')
         check(entry['status'] == 'review-candidate', 'Catalog approval mismatch')
-    package_lines = (BASE / 'checksums.sha256').read_text().splitlines()
+    package_lines = (DELIVERY / 'checksums.sha256').read_text().splitlines()
     recorded = set()
     global_hashes = dict((line.split('  ', 1)[1], line.split('  ', 1)[0])
                          for line in (ROOT / 'art/checksums.sha256').read_text().splitlines() if line)
@@ -47,8 +47,12 @@ def validate():
         check(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == expected, f'Checksum: {relative}')
         check(global_hashes.get(relative) == expected, f'Global checksum: {relative}')
         recorded.add(relative)
-    actual = {str(f.relative_to(ROOT)) for f in BASE.rglob('*') if f.is_file() and f.name != 'checksums.sha256'}
-    check(recorded == actual, 'Incomplete package checksums')
+    delivery = {str(f.relative_to(ROOT)) for f in DELIVERY.rglob('*') if f.is_file() and f.name != 'checksums.sha256'}
+    production = {str(f.relative_to(ROOT)) for f in BASE.rglob('*') if f.is_file()}
+    check(production == {p['path'] for p in portraits}, 'Production folder must hold exactly the eight portraits')
+    natives = {p['native_source'] for p in portraits}
+    check(recorded == delivery | production, 'Incomplete package checksums')
+    check(natives <= delivery, 'Native sources must stay with the delivery record')
     print('PASS: 8 portraits, 8 native sources, dimensions, distinct palettes, catalog bindings and package/global hashes.')
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@
 
 Review candidates. Image generation painted the source atlases; mechanical cell cropping, alpha cleanup and resizing produced the individual assets. No letters or numbers are inside the icons.
 
-Source atlases are preserved in `source-atlases/`../../../../icons/prayers White ink and alpha are validated in the master files.
+Source atlases are preserved in `source-atlases/`. White ink and alpha are validated in the master files.
 
 ## Files
 

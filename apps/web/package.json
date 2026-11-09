@@ -2,7 +2,7 @@
   "name": "@phc/web",
   "private": true,
   "type": "module",
-  "tools": {
+  "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

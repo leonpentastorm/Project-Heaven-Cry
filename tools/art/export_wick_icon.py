@@ -13,7 +13,7 @@ from pathlib import Path
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 SIZES = (256, 128, 64, 56, 48, 44, 40)
 PROGRESS = ROOT / 'art/_archive/traits/wick/production-progress.json'
 

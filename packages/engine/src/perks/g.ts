@@ -270,7 +270,7 @@ register({
 // Story: a check tagged ancient_script (or applies old_tongue) is an automatic success for the holder: they read it.
 // II: 'Speak the Old Tongue' (story, and in a fight against an upper-realm being): once per being, it parleys. In a
 // fight (PROVISIONAL) it holds its next turn's attacks while it listens; the words go to the Narrator. It gives parley
-// when met, never summons a Celestial (the Accords), and what tools reveal stays inside the Veil.
+// when met, never summons a Celestial (the Accords), and what scripts reveal stays inside the Veil.
 const parleyed = (h: Holder): string[] => (sro(h).beings || []);
 register({
   id: 'old_tongue',

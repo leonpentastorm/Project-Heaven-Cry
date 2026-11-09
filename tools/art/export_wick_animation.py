@@ -36,7 +36,7 @@ def refresh_checksums():
     entries = {line.split('  ', 1)[1]: line.split('  ', 1)[0]
                for line in path.read_text().splitlines()}
     for name in ['export_wick_animation.py', 'validate_wick_animation.py', 'validate_art.py']:
-        file = ROOT / 'tools' / name
+        file = ROOT / 'scripts' / name
         entries[relative(file)] = sha(file)
     path.write_text(''.join(f'{entries[p]}  {p}\n' for p in sorted(entries)))
 

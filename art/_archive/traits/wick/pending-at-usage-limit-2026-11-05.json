@@ -449,7 +449,7 @@
       "screen": "Gritted-teeth grin",
       "prop": "Tossed crutch",
       "mastered_mark": "small four-pointed star, upper left, same size and place on all 27",
-      "rules_text": "Injuries never cost you AP or Movement. Below half your max HP, you get +1 AP at the start of each turn (the AP ceiling still applies)../../../icons/traits",
+      "rules_text": "Injuries never cost you AP or Movement. Below half your max HP, you get +1 AP at the start of each turn (the AP ceiling still applies).",
       "flavour": "Hurt is information. You've read it all before."
     },
     {
@@ -611,7 +611,7 @@
       "screen": "Delighted",
       "prop": "Rebuilt rifle",
       "mastered_mark": "small four-pointed star, upper left, same size and place on all 27",
-      "rules_text": "Field Repair costs 1 AP and restores twice as much. At a long rest, give one weapon or device a permanent extra mod slot (once per item)../../../icons/traits",
+      "rules_text": "Field Repair costs 1 AP and restores twice as much. At a long rest, give one weapon or device a permanent extra mod slot (once per item).",
       "flavour": "It left the factory good. It leaves your bench better."
     },
     {
@@ -769,7 +769,7 @@
       "tier": "mastered",
       "skill": "Camaraderie",
       "mood": "Heroic, Tender",
-      "action": "Seen from above: Wick in a team huddle, its mitten at the bottom of a pile of hands stacked from every side of the frame (all partials)../../../icons/traits",
+      "action": "Seen from above: Wick in a team huddle, its mitten at the bottom of a pile of hands stacked from every side of the frame (all partials).",
       "screen": "Determined smile",
       "prop": "Pile of hands",
       "mastered_mark": "small four-pointed star, upper left, same size and place on all 27",

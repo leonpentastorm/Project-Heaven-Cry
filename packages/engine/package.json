@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "main": "src/index.ts",
-  "tools": {
+  "scripts": {
     "test": "vitest run"
   },
   "devDependencies": {

@@ -9,11 +9,11 @@ Two new Heavenprint review candidates, 1600 × 900 RGB PNGs. Individual assets r
 
 The [opening-safe overview](previews/opening-safe.png) contains MPAT, the comrade and the landing pad. It deliberately excludes the ending.
 
-The landing-pad image was revised to make the brief's 23 damaged infantry and four medic robots countable: six grey infantry in the nearest row, eight in the middle row and nine in the far row, plus four ivory caped medics. It includes the empty scorch ring, sealed hatch, platinum crates, broken 093 sign and B813 overhead. Canon remains in [MPAT and M813](../../../../../docs/lore/MPAT-and-M813.md)../../../../illustrations/m813
+The landing-pad image was revised to make the brief's 23 damaged infantry and four medic robots countable: six grey infantry in the nearest row, eight in the middle row and nine in the far row, plus four ivory caped medics. It includes the empty scorch ring, sealed hatch, platinum crates, broken 093 sign and B813 overhead. Canon remains in [MPAT and M813](../../../../../docs/lore/MPAT-and-M813.md).
 
-The ending image shows MPAT closing the comrade's chest panel while the repair-bay doors close behind them. Their attention remains on one another. The black hole glimpsed beyond the doors is **not identified as B813**../../../../illustrations/m813
+The ending image shows MPAT closing the comrade's chest panel while the repair-bay doors close behind them. Their attention remains on one another. The black hole glimpsed beyond the doors is **not identified as B813**.
 
-All images used the approved Original, New Faces, pilot and First-Patch Revival references. The MPAT portrait provided robot continuity. [Manifest](manifest.json) records source hashes and spoiler flags; shell construction and incidental details remain proposals from [the brief](../../../../briefs/m813-mpat.md)../../../../illustrations/m813
+All images used the approved Original, New Faces, pilot and First-Patch Revival references. The MPAT portrait provided robot continuity. [Manifest](manifest.json) records source hashes and spoiler flags; shell construction and incidental details remain proposals from [the brief](../../../../briefs/m813-mpat.md).
 
 ## Integration
 

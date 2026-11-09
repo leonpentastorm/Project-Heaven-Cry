@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import struct, json, hashlib, itertools, zlib
 
-ROOT=Path(__file__).resolve().parents[1]
+ROOT=Path(__file__).resolve().parents[2]
 ART=ROOT/'art/ui/title-screen'; PRE=ART/'previews'
 PRE.mkdir(parents=True,exist_ok=True)
 W,H=4096,2304; SAFE=(256,144,3840,2160)

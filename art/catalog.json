@@ -4966,7 +4966,7 @@
       "status": "review-candidate"
     }
   },
-  "character_collections_note": "All three sets were first painted as skill icons (one character per skill). Playtesters found it made no sense for skills to be people in the world, so skills became the abstract figures in art/icons/skills All three sets are now character portraits. historical_skill_id records which skill each was painted to embody.",
+  "character_collections_note": "All three sets were first painted as skill icons (one character per skill). Playtesters found it made no sense for skills to be people in the world, so skills became the abstract figures in art/icons/skills/. All three sets are now character portraits. historical_skill_id records which skill each was painted to embody.",
   "perks": {
     "field-surgeon": {
       "label": "Wick — Field Surgeon",

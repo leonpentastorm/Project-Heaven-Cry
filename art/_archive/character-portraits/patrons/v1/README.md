@@ -2,7 +2,7 @@
 
 Review candidates; awaiting Leon’s visual approval. No unresolved production question blocks review.
 
-This delivery covers the eight patron portraits (Part A)../../../../portraits/patrons Patron marks and prayer icons are separate work.
+This delivery covers the eight patron portraits (Part A). Patron marks and prayer icons are separate work.
 
 ## Direction and overrides
 

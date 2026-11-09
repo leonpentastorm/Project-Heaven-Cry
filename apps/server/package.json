@@ -2,7 +2,7 @@
   "name": "@phc/server",
   "private": true,
   "type": "module",
-  "tools": {
+  "scripts": {
     "dev": "wrangler dev -c wrangler.dev.jsonc",
     "deploy": "python3 ../../tools/deploy_site.py && wrangler deploy"
   },

@@ -138,15 +138,15 @@ def validate_production_icons(catalog):
         require(len(ids) == len(catalog[family]), f'Duplicate rules-data bindings: {family}')
         if COMPLETE_ICONS:
             require(ids == rules[family], f'Incomplete {family} icon coverage: {sorted(rules[family] - ids)}')
+    # Delivery manifests are history (art/_archive/); the files they deliver are selected into art/icons/<family>/.
     folders = ['art/_archive/traits/wick/test-set-1/revisions',
-               'art/icons/traits', 'art/icons/perks']
+               'art/_archive/traits/wick/production-v1', 'art/_archive/perks/wick/production-v1']
     revisions_root = ROOT / 'art/_archive/traits/wick/test-set-1/revisions'
     if revisions_root.exists():
         folders += [str(p.parent.relative_to(ROOT)) for p in revisions_root.glob('round-*/manifest.json')]
     for folder in folders:
         manifest_path = ROOT / folder / 'manifest.json'
-        if not manifest_path.exists():
-            continue
+        require(manifest_path.exists(), f'Missing delivery manifest: {folder}')
         manifest = json.loads(manifest_path.read_text())
         require(manifest['production_approved'] is False and manifest['status'] == 'review-candidate',
                 f'Production candidates require review: {folder}')
@@ -159,7 +159,7 @@ def validate_production_icons(catalog):
                 continue
             require(item['data_id'] in rules[family] and item['data_id'] == asset['data_id'],
                     f'Bad production rules binding: {item["id"]}')
-            require(item['path'] == asset['path'] and item['path'].startswith(folder + '/'),
+            require(item['path'] == asset['path'] and item['path'] == f'art/icons/{family}/{item["id"]}.png',
                     f'Production path mismatch: {item["id"]}')
             require((asset['width'], asset['height']) == (1024, 1024), f'Production dimensions: {item["id"]}')
             require(item['exports'] == asset['exports'] and set(asset['exports']) == {'40','44','48','56','64','128','256'},
@@ -233,7 +233,8 @@ def validate_campaign_art(catalog):
             continue
         delivered.append(job['id'])
         require((asset['path'] == job['path'] or
-                 (asset.get('previous_path') == job['path'] and '/revisions/' in asset['path']))
+                 (asset.get('previous_path') == job['path'] and asset.get('revision')
+                  and job['path'].startswith('art/_archive/')))
                 and [asset['width'], asset['height']] == job['dimensions'],
                 f'M813 delivery path/dimensions: {job["id"]}')
         require(asset['status'] == 'review-candidate' and asset['production_approved'] is False,
@@ -322,7 +323,7 @@ def validate_archetype_cards(catalog):
     for key, a in cards.items():
         rule = rules[a['archetype']]
         require(key == 'arch-' + a['archetype'], f'Archetype ID mismatch: {key}')
-        require(a['path'] == f"art/portraits/archetypes/{rule['family']}/{rule['id']}.png", f'Archetype path mismatch: {key}')
+        require(a['path'] == f"art/portraits/archetypes/{rule['id'].replace('_', '-')}.png", f'Archetype path mismatch: {key}')
         require(a['path'] not in paths, f'Duplicate archetype path: {key}')
         paths.add(a['path'])
         require(a['pool'] == 'player-card' and a['usage'] == 'character portrait', f'Archetype pool mismatch: {key}')
@@ -349,6 +350,7 @@ def validate_archetype_cards(catalog):
 def validate_title_screen():
     """Validate the delivered layered title art without weakening older checks."""
     root = 'art/ui/title-screen/'
+    archive = 'art/_archive/ui/title-screen/'  # review previews and native source renders
     manifest = json.loads(local(root + 'manifest.json').read_text())
     require(manifest['scope'] == 'Part A only', 'Unexpected title-screen scope')
     require(manifest['canvas'] == [4096, 2304], 'Wrong title canvas')
@@ -358,7 +360,7 @@ def validate_title_screen():
     checksums = {line.split('  ', 1)[1]: line.split('  ', 1)[0]
                  for line in local('art/checksums.sha256').read_text().splitlines() if line}
     for path, asset in entries.items():
-        require(path.startswith(root) and '..' not in Path(path).parts, 'Unsafe title path')
+        require(path.startswith((root, archive)) and '..' not in Path(path).parts, 'Unsafe title path')
         data = local(path).read_bytes()
         require(len(data) == asset['size_bytes'], f'Title size mismatch: {path}')
         require(hashlib.sha256(data).hexdigest() == asset['sha256'], f'Title hash mismatch: {path}')
@@ -377,7 +379,7 @@ def validate_title_screen():
     pos += 8
     require(abs(struct.unpack('>h', psd[pos:pos + 2])[0]) == 3, 'Title PSD must contain three layers')
     for name in ['composite-1920.jpg', 'phone-crop.jpg', 'safe-zones.jpg', 'parallax-extremes.jpg', 'alpha-edge-review.jpg', 'menu-readability-72px.jpg']:
-        require(root + 'previews/' + name in entries, f'Missing title review: {name}')
+        require(archive + 'previews/' + name in entries, f'Missing title review: {name}')
     report = json.loads(local(root + 'technical-review.json').read_text())
     require(report['parallax_crop_min_alphas'] == [255] * 8, 'Title parallax coverage failure')
     require(report['alpha']['front']['left38_max_alpha'] <= 1, 'Title foreground intrudes into menu zone')
@@ -413,9 +415,9 @@ def validate():
             path = asset['path']
             require(path not in paths, f'Duplicate primary asset path: {path}')
             paths.add(path)
-            folder = {'characters': 'character-portraits', 'perks': 'traits'}.get(family, family)
-            require(path.startswith(f'art/{folder}/') or (family == 'perks' and path.startswith('art/icons/perks/')),
-                    f'Wrong family for {asset_id}')
+            folder = {'characters': 'portraits', 'skills': 'icons/skills', 'traits': 'icons/traits', 'perks': 'icons/perks'}.get(family, family)
+            require(path.startswith(f'art/{folder}/'), f'Wrong family for {asset_id}')
+            require(path == path.lower() and ' ' not in path, f'Production file names are lower-case kebab: {path}')
             data = local(path).read_bytes()
             require(hashlib.sha256(data).hexdigest() == asset['sha256'], f'Checksum mismatch: {path}')
             require(data[:8] == b'\x89PNG\r\n\x1a\n' and data[12:16] == b'IHDR', f'Not a PNG: {path}')

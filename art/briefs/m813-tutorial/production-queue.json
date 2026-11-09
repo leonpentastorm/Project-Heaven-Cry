@@ -32,7 +32,7 @@
         900
       ],
       "mode": "RGB",
-      "brief_row": "| A2 | `m813-rear-pad-loading` · `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after)../../_archive/briefs/m813-tutorial The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |",
+      "brief_row": "| A2 | `m813-rear-pad-loading` · `.../v2/rear-pad-loading.png` | The rear pad **before** the ship leaves (the existing `outpost813` is after). The last ship, ramp down, the crane lowering a pallet of platinum crates. Chief Engineer Keel at the foot of the ramp with a manifest and a pistol on his hip, engineers behind him. In the foreground, the medics' column arriving: robots carrying robots. | B813 overhead; the ship's floodlights hard and white on the ramp. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -154,7 +154,7 @@
         1000
       ],
       "mode": "RGB",
-      "brief_row": "| B5 | `m813-soft-hands` | **Soft-Hands**, medic robot of the 258th (MPAT's design language)../../_archive/briefs/m813-tutorial Slender, delicate manipulators, a cloak patched with bandage cloth. | Mid-repair on someone's arm off-frame; gentle, tired. |",
+      "brief_row": "| B5 | `m813-soft-hands` | **Soft-Hands**, medic robot of the 258th (MPAT's design language). Slender, delicate manipulators, a cloak patched with bandage cloth. | Mid-repair on someone's arm off-frame; gentle, tired. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true
@@ -341,7 +341,7 @@
         1000
       ],
       "mode": "RGB",
-      "brief_row": "| B16 | `m813-rearguard` | **Enemy rearguard trooper**: masked, hooded, mismatched armour, a rifle, no faction marks (*proposal*: the enemy stays unknowable)../../_archive/briefs/m813-tutorial | Turning to leave, then seeing you. |",
+      "brief_row": "| B16 | `m813-rearguard` | **Enemy rearguard trooper**: masked, hooded, mismatched armour, a rifle, no faction marks (*proposal*: the enemy stays unknowable). | Turning to leave, then seeing you. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true
@@ -396,7 +396,7 @@
         1100
       ],
       "mode": "RGB",
-      "brief_row": "| C3 | `map-m813-outpost` · `.../outpost.png` | Outpost-813 | Interior floor plan from above: barracks bunks (A1–E4), infirmary tiles (G1–J4), comms room (L1–P4), corridor (row 6), hangar deck with oil stains and tie-down rings (rows 8–11)../../_archive/briefs/m813-tutorial Walls as thick ceramic-concrete. |",
+      "brief_row": "| C3 | `map-m813-outpost` · `.../outpost.png` | Outpost-813 | Interior floor plan from above: barracks bunks (A1–E4), infirmary tiles (G1–J4), comms room (L1–P4), corridor (row 6), hangar deck with oil stains and tie-down rings (rows 8–11). Walls as thick ceramic-concrete. |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -880,7 +880,7 @@
         512
       ],
       "mode": "RGBA",
-      "brief_row": "| E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI)../../_archive/briefs/m813-tutorial **May overflow its tile**: 512 × 512, centred on H9 | Outpost H9 |",
+      "brief_row": "| E22 | `obj-escape-craft` | Wrecked short-hop escape craft from above (POI). **May overflow its tile**: 512 × 512, centred on H9 | Outpost H9 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,
@@ -898,7 +898,7 @@
         256
       ],
       "mode": "RGBA",
-      "brief_row": "| E23 | `obj-repair-cradles` | Two repair cradles side by side (POI)../../_archive/briefs/m813-tutorial 512 × 256, two tiles | Outpost K10, Outpost-1 L9 |",
+      "brief_row": "| E23 | `obj-repair-cradles` | Two repair cradles side by side (POI). 512 × 256, two tiles | Outpost K10, Outpost-1 L9 |",
       "spoiler": false,
       "visibility": "opening-safe",
       "proposal": true,

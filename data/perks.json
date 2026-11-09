@@ -3759,7 +3759,7 @@
           "effects": [
             {
               "op": "narrator",
-              "note": "The player can read and speak upper-realm tools; any upper-realm being will parley with them once."
+              "note": "The player can read and speak upper-realm scripts; any upper-realm being will parley with them once."
             }
           ],
           "replaces_tier_I": true,

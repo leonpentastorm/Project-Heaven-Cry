@@ -37,13 +37,13 @@
   "files": [
     {
       "path": "art/ui/title-screen/README.md",
-      "size_bytes": 4163,
+      "size_bytes": 4249,
       "sha256": "5aaec3d9487a31f58032cfd1d771da793a1ff7d87bdf843188c18948b7d00163",
       "role": "implementation notes"
     },
     {
       "path": "art/ui/title-screen/foreground-placement.json",
-      "size_bytes": 419,
+      "size_bytes": 450,
       "sha256": "0f6b9facd81bcd39eec0bc0f91f4f3d5e44d865cb19c4f4d7a75278b9b8a072b",
       "role": "foreground production provenance"
     },
@@ -145,7 +145,7 @@
     },
     {
       "path": "art/ui/title-screen/technical-review.json",
-      "size_bytes": 2202,
+      "size_bytes": 2233,
       "sha256": "73bcb953e7eab53560e687056e0f2ffba498913fb4c114a358833ad0b0bb14a0",
       "role": "technical review evidence"
     },
