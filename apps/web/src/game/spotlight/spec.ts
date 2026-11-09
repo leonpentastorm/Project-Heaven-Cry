@@ -69,9 +69,11 @@ export const assetName = (p: string | null | undefined): string => { const m = S
 /** Faces that are not Heavenprint paintings (no eye line in the art catalog), framed by hand: Wick's placeholder robot (the
  *  Proving Ground recruit's face; its screen-eyes about a third of the way down) and Wick's welcome pose (the face of a
  *  character with no portrait at all, as the HUD shows it). `whole`: a small square avatar, shown whole (centred in a
- *  window fitted to it), never blown up into a blurred close-up of its eyes. */
-export const FRAMES: Record<string, Eye & { whole?: boolean }> = {
-  'wick-narrator-placeholder': { x: 0.5, y: 0.33, whole: true },
+ *  window fitted to it), never blown up into a blurred close-up of its eyes. `small`: use the small copy, the one the HUD
+ *  shows; the large copy is a different picture (wick-narrator-placeholder-lg is Wick's model-study sheet, the Narrator's
+ *  zoom, built by tools/build_web_assets.py from art/style-guide/references/wick-model-study.png). */
+export const FRAMES: Record<string, Eye & { whole?: boolean; small?: boolean }> = {
+  'wick-narrator-placeholder': { x: 0.5, y: 0.33, whole: true, small: true },
   'wick-welcome': { x: 0.5, y: 0.34, whole: true },
 };
 /** A face as the token and the HUD resolve it (the art library's name or a URL, an upload), in the large copy where there
@@ -79,8 +81,8 @@ export const FRAMES: Record<string, Eye & { whole?: boolean }> = {
  *  With nothing that resolves (no portrait, an archived id), Wick's welcome pose: what the HUD shows. Never someone else's. */
 export function faceFor(p: string | null | undefined, ownEye?: number | null): { img: string; eye: Eye; whole: boolean; asset: string } {
   const v = String(p || ''), name = assetName(v), ok = !!(ART(v) || ART(name));
-  const asset = ok ? name : 'wick-welcome', src = ok ? (ASSET_BIG(name) || ART(v)) : (ART_BIG('wick-welcome') || IMG['wick-welcome'] || '');
-  const fr = FRAMES[asset];
+  const asset = ok ? name : 'wick-welcome', fr = FRAMES[asset];
+  const src = ok ? ((fr?.small ? ART(name) : ASSET_BIG(name)) || ART(v)) : (ART_BIG('wick-welcome') || IMG['wick-welcome'] || '');
   const eye = eyeFor(asset) || (fr ? { x: fr.x, y: fr.y } : null) || (ok && typeof ownEye === 'number' ? { x: 0.5, y: ownEye } : null) || DEFAULT_EYE;
   return { img: src, eye, whole: !!fr?.whole, asset };
 }

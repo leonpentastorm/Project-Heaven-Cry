@@ -37,6 +37,25 @@ describe('what the reload card shows', () => {
     // a partly spent spare goes in: the count ends at what it holds
     expect(reloadPlan(ev({ weapon: 'service_pistol', cat: 'pistol', how: 'mag', left: 0, ammo: 9, cap: 12 })).guns[0]).toMatchObject({ to: 9, cap: 12 });
   });
+  it("a reload with unlimited spares (a companion's, a twin's: the event's noDrop): a speed swap with no pile, no +1, nothing under the portrait", () => {
+    const s = reloadPlan(ev({ weapon: 'service_pistol', cat: 'pistol', how: 'mag', left: 0, ammo: 12, cap: 12, noDrop: true }));
+    expect(s).toMatchObject({ mode: 'speed', title: 'SPEED RELOAD' });
+    expect(s.guns[0]).toMatchObject({ look: 'mag', swap: true, out: null, left: 0, to: 12 });
+    // a revolver's speedloader the same; an off-hand gun with no pool of its own (reloadHands' noDrop) too
+    expect(reloadPlan(ev({ weapon: 'drifter_revolver', cat: 'revolver', how: 'mag', left: 1, ammo: 6, cap: 6, noDrop: true })).guns[0]).toMatchObject({ look: 'cylinder', swap: true, out: null });
+    expect(reloadPlan(ev({ weapon: 'service_pistol', cat: 'pistol', how: 'mag', hand: 'off', left: 3, ammo: 12, cap: 12, noDrop: true })).guns[0]).toMatchObject({ hand: 'off', out: null });
+    vi.useFakeTimers();
+    const layer = grid();
+    playFx(ev({ unit: 'e1', weapon: 'service_pistol', cat: 'pistol', how: 'mag', left: 0, ammo: 12, cap: 12, noDrop: true }) as any);
+    const seen = new Set<string>();
+    for (let t = 0; t < 1500; t += 50) { vi.advanceTimersByTime(50); for (const p of layer.querySelectorAll('[data-fx-piece]')) seen.add(p.getAttribute('data-fx-piece') || ''); }
+    const card = layer.querySelector('[data-fx="reload"]')!;
+    expect(card).toBeTruthy(); expect(card.getAttribute('data-reload-mode')).toBe('speed');
+    expect(card.querySelector('[data-reload-drop]')).toBeNull(); expect(card.querySelector('[data-reload-badge]')).toBeNull();
+    expect(card.textContent).not.toMatch(/PILE/);
+    expect([...seen].filter((t) => t.startsWith('mag:'))).toEqual([]);
+    vi.advanceTimersByTime(4000);
+  });
   it('without the counts (an older event, a class move) it falls back to the data: a full gun, nothing left', () => {
     expect(reloadPlan(ev({ weapon: 'service_pistol', cat: 'pistol', how: 'mag' })).guns[0]).toMatchObject({ to: 12, cap: 12, left: 0, out: 'pile' });
     expect(reloadPlan(ev({ weapon: 'lumeri_scattergun', cat: 'shotgun', how: 'loose', rounds: 2 })).guns[0]).toMatchObject({ look: 'rounds', from: 4, to: 6, cap: 6, out: null });

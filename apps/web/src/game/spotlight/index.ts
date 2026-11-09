@@ -63,7 +63,9 @@ export function cutInForFx(g: GameState | null | undefined, events: FxEvent[], s
 /** pace: the combat speed's multiplier when it came on in a fight (game/combatSpeed.ts; 1 elsewhere): ms and hold are
  *  already × pace, and the overlay's own animations follow it. */
 export interface Showing { spec: CutInSpec; id: string; t0: number; ms: number; hold: number; rm: boolean; out: boolean; skipped: boolean; pace?: number }
-interface Item { spec: CutInSpec; resolve: (r: CutInResult) => void }
+/** pace: the combat speed the caller planned it at (the effects gate: the same k for its cap and the cut-in), else read
+ *  when it starts. */
+interface Item { spec: CutInSpec; resolve: (r: CutInResult) => void; pace?: number }
 let current: (Showing & { resolve: (r: CutInResult) => void; timers: ReturnType<typeof setTimeout>[] }) | null = null;
 const queue: Item[] = [];
 const subs = new Set<() => void>();
@@ -112,7 +114,7 @@ function start(it: Item) {
   claimStage(); // one stage (game/stage.ts): a Miracle's box still up closes first
   const rm = reducedMotion(), n = it.spec.strips.length, god = it.spec.strips.some((s) => s.god);
   // In a fight every length follows the combat speed (Normal ≈ 15% slower than Fast).
-  const k = battlePace(), short = !!it.spec.short, ms = CUTIN_MS(n, god, rm, short) * k, id = it.spec.id || 'cutin-' + Math.random().toString(36).slice(2, 8);
+  const k = it.pace ?? battlePace(), short = !!it.spec.short, ms = CUTIN_MS(n, god, rm, short) * k, id = it.spec.id || 'cutin-' + Math.random().toString(36).slice(2, 8);
   const timers: ReturnType<typeof setTimeout>[] = [], hold = holdUntil(n, god, rm, short) * k;
   current = { spec: { ...it.spec, id }, id, t0: performance.now(), ms, hold, rm, out: false, skipped: false, resolve: it.resolve, timers, pace: k };
   LOG.push({ id, kind: it.spec.kind, at: Math.round(performance.now()), ms: Math.round(ms), textIn: Math.round(textInOf(n, rm, short) * k), outAt: Math.round(hold), pace: k, slow: false, strips: it.spec.strips.map((s) => s.name), label: it.spec.label, caption: it.spec.caption, slowed: [], rm });
@@ -162,11 +164,11 @@ export function dropCutIns() {
 /** Show a cut-in in this browser. Honours Settings (Off resolves 'off' at once; Once per scene drops strips already
  *  shown in spec.scene) and a hidden tab. Queued behind one already on screen; preempt (a fight's gate): goes to the
  *  front of the queue and the one on screen is skipped (its 150 ms way out), so this one plays before its action. */
-export function showSpotlight(spec: CutInSpec, o: { code?: string; prefApplied?: boolean; preempt?: boolean } = {}): Promise<CutInResult> {
+export function showSpotlight(spec: CutInSpec, o: { code?: string; prefApplied?: boolean; preempt?: boolean; pace?: number } = {}): Promise<CutInResult> {
   const s = o.prefApplied ? spec : applyPref(spec, o.code ?? (getState().game?.code || ''));
   if (!s || !s.strips?.length || (typeof document !== 'undefined' && document.hidden)) return Promise.resolve('off');
   return new Promise((resolve) => {
-    const it = { spec: s, resolve };
+    const it: Item = { spec: s, resolve, ...(typeof o.pace === 'number' && o.pace > 0 ? { pace: o.pace } : {}) };
     if (!current && !stageBusy()) start(it);
     else if (o.preempt) { queue.unshift(it); skipCutIn(); }
     else queue.push(it);

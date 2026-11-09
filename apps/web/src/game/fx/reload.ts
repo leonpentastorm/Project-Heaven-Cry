@@ -33,15 +33,18 @@ export interface ReloadGun {
   from: number; to: number; cap: number;
   /** What was in the gun before (a swapped magazine's rounds; a cylinder's), or null when nothing comes out. */
   left: number | null;
-  /** Where the old magazine (or speedloader) goes: the pile on the tile (speed), the pack (tactical), or nowhere. */
+  /** Where the old magazine (or speedloader) goes: the pile on the tile (speed), the pack (tactical), or nowhere (no
+   *  swap; or a swap that drops nothing: unlimited spares (a companion's, a twin's), the event's noDrop). */
   out: 'pile' | 'pack' | null;
+  /** A magazine (or speedloader) is swapped: the old one comes out, the fresh one goes into an empty gun. */
+  swap: boolean;
   /** A speedloader or a magazine fills at once; loose rounds go in one by one. */
   each: boolean;
 }
 export interface ReloadPlan { mode: 'speed' | 'tactical' | 'load'; title: string; guns: ReloadGun[] }
 const int = (v: unknown, d: number) => { const n = Number(v); return Number.isFinite(n) ? Math.max(0, Math.round(n)) : d; };
 /** One gun's part of a reload event (the main gun's fields, or e.off). */
-function gunOf(f: { weapon?: string; cat?: string; how?: string; tactical?: boolean; rounds?: number; ammo?: number; cap?: number; left?: number }, hand: 'main' | 'off'): ReloadGun {
+function gunOf(f: { weapon?: string; cat?: string; how?: string; tactical?: boolean; noDrop?: boolean; rounds?: number; ammo?: number; cap?: number; left?: number }, hand: 'main' | 'off'): ReloadGun {
   const weapon = f.weapon || '', br = brassOf(weapon, f.cat || ''), w: any = (WEAPON as any)[weapon];
   const cap = Math.max(1, int(f.cap, int(w?.magazine, 1))), loose = f.how === 'loose';
   const to = Math.min(cap, int(f.ammo, cap));
@@ -52,13 +55,13 @@ function gunOf(f: { weapon?: string; cat?: string; how?: string; tactical?: bool
   const from = loose ? Math.max(0, to - int(f.rounds, to)) : 0;
   const swap = !loose && (look === 'mag' || look === 'cylinder');
   const left = swap ? Math.min(cap, int(f.left, 0)) : look === 'cylinder' && loose ? from : null;
-  return { hand, weapon, look, mag: br.mag, shell: br.shell, from, to, cap, left, out: swap ? (f.tactical ? 'pack' : 'pile') : null, each: loose || look === 'rounds' || look === 'arrows' };
+  return { hand, weapon, look, mag: br.mag, shell: br.shell, from, to, cap, left, out: swap ? (f.tactical ? 'pack' : f.noDrop ? null : 'pile') : null, swap, each: loose || look === 'rounds' || look === 'arrows' };
 }
-/** The card for a reload event (FxEvent 'reload': weapon, cat, how, tactical, rounds, ammo, cap, left, off, hand). Pure. */
+/** The card for a reload event (FxEvent 'reload': weapon, cat, how, tactical, noDrop, rounds, ammo, cap, left, off, hand). Pure. */
 export function reloadPlan(e: Partial<FxEvent>): ReloadPlan {
   const first = gunOf(e as any, e.hand === 'off' ? 'off' : 'main');
   const guns = [first, ...(e.off ? [gunOf(e.off, 'off')] : [])];
-  const tactical = guns.some((g) => g.out === 'pack'), swap = guns.some((g) => g.out);
+  const tactical = guns.some((g) => g.out === 'pack'), swap = guns.some((g) => g.swap);
   const mode: ReloadPlan['mode'] = tactical ? 'tactical' : swap ? 'speed' : 'load';
   const title = mode === 'tactical' ? 'TACTICAL RELOAD' : mode === 'speed' ? 'SPEED RELOAD' : guns.every((g) => g.look === 'fuel') ? 'REFUEL' : 'LOADING';
   return { mode, title, guns };
@@ -231,6 +234,11 @@ function drawGun(col: HTMLElement, g: ReloadGun, cw: number, top: number, H: num
     anim(old, [{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: 'translate(' + dx * 0.15 + 'px,' + (-4 * u) + 'px) scale(.95) rotate(6deg)', opacity: 1, offset: 0.25 },
       { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.32) rotate(18deg)', opacity: 0.9, offset: 0.88 }, { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.2) rotate(18deg)', opacity: 0 }],
     { duration: t(0.36) - t(0.1), delay: t(0.1), easing: 'cubic-bezier(.5,0,.4,1)', fill: 'forwards' });
+  } else if (!g.out) {
+    // a swap that drops nothing (unlimited spares: a companion's, a twin's): the old one slips out of the well and is
+    // gone, no fall toward the unit (nothing lands in the pile)
+    anim(old, [{ transform: 'translate(0,0)', opacity: 1 }, { transform: 'translate(0,' + 10 * u + 'px) scale(.9)', opacity: 0 }],
+      { duration: t(0.3) - t(0.1), delay: t(0.1), easing: 'ease-in', fill: 'forwards' });
   } else {
     // drops out of the bottom of the card, toward the unit and the ground under it (fx/brass.ts dropMag takes it from
     // under the portrait to the floor, where the pile is)
@@ -306,8 +314,8 @@ function drawCylinder(well: HTMLElement, g: ReloadGun, S: number, u: number, ms:
   if (still) { set(g.to); show(g.to, true); return 0; }
   // what was in it shows first (a swap: the spent brass dumped out at once, as fx/brass.ts drops it)
   const before = g.left ?? g.from; set(before); show(before);
-  if (g.left != null && g.out) after(() => { set(0); show(0); }, t(0.14));
-  const k = Math.max(1, g.to - g.from), each = g.each, t0 = g.out ? 0.36 : 0.14, span = each ? 0.66 : 0.24;
+  if (g.left != null && g.swap) after(() => { set(0); show(0); }, t(0.14));
+  const k = Math.max(1, g.to - g.from), each = g.each, t0 = g.swap ? 0.36 : 0.14, span = each ? 0.66 : 0.24;
   for (let j = 1; j <= k; j++) {
     const cnt = g.from + j, at = t(t0 + (span * (j - 1)) / k);
     after(() => { set(cnt); show(cnt, cnt >= g.to); }, at);

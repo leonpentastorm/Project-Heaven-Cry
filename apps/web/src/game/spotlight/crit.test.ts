@@ -131,3 +131,29 @@ describe('the crit strip reads smaller', () => {
     expect(stackLayout(1, 1440, 700, [], true)[0].h).toBe(154);
   });
 });
+
+describe('the gate and its cut-in keep one pace (review fix: a Fast -> Normal change while the gate waited cut the crit short)', () => {
+  beforeEach(() => { clearFx(); resetStage(); setUiPrefs({ cutins: 'all', reduceMotion: false } as any); });
+  it('the speed changed behind a backlog: the cut-in plays its whole Normal length and is not cancelled by the cap', async () => {
+    const { setCombatSpeed, setInBattle, combatTempo, battlePace } = await import('../combatSpeed');
+    const { cutInUntil } = await import('./index');
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance', 'Date'] });
+    try {
+      setCombatSpeed('fast');
+      const { g, a } = room(); setContext({ ...g, combat: { units: [] } } as any, 'combat'); expect(battlePace()).toBe(1);
+      // a backlog: a run of hits already queued, so the crit's gate closes later than now
+      queueFx(Array.from({ length: 6 }, (_, i) => ({ n: 1 + i, k: 'hurt', unit: 'e1', amount: 3 })) as any, 'cb|crit');
+      queueFx([{ n: 10, k: 'shot', unit: 'u1', target: 'e1', from: '1,1', to: '5,1', weapon: 'service_pistol', cat: 'pistol', hit: true, crit: true, dmg: 30 }, crit(12, a, { from: 10 })] as any, 'cb|crit');
+      expect(cutInActive()).toBe(false);
+      setCombatSpeed('normal'); // the cog, while the gate waits
+      let t = 0; while (!cutInActive() && t < 20000) { vi.advanceTimersByTime(20); t += 20; }
+      expect(cutInActive()).toBe(true);
+      const ms = cutInNow()!.ms, log = (window as any).__phcCutins as any[], id = cutInNow()!.id;
+      expect(ms).toBeCloseTo(2240 * combatTempo('normal'), 0);
+      // still on just before its own end (the old cap, 2500 × the Fast pace, would have cleared it)
+      vi.advanceTimersByTime(ms - 60); expect(cutInActive()).toBe(true); expect(cutInUntil()).toBeGreaterThan(0);
+      vi.advanceTimersByTime(200); expect(cutInActive()).toBe(false);
+      const l = [...log].reverse().find((x) => x.id === id); expect(l.skipped).toBe(false); expect(l.end - l.at).toBeGreaterThanOrEqual(ms - 20);
+    } finally { clearFx(); setInBattle(false); setCombatSpeed('fast'); vi.useRealTimers(); }
+  });
+});

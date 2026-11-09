@@ -29,6 +29,18 @@ describe('presentation events', () => {
     expect(rl).toMatchObject({ unit: u.id, at: u.pos, how: 'mag' }); expect(rl.dur).toBeGreaterThan(500);
     // the counts the reload card draws (fx/reload.ts): what was in the gun, what is in it now, its size
     expect(rl).toMatchObject({ left: 0, ammo: 7 }); expect(rl.cap).toBeGreaterThanOrEqual(7);
+    expect(rl.noDrop).toBeUndefined(); // a speed reload with spares of its own: the old one lands in the pile
+    // an enemy carries its tier's spares and speed-reloads: its old magazine lands in the pile too
+    n0 = cb.fxSeq!; e.ammo = 0; e.ap = 9; expect(e.mags?.length).toBeGreaterThan(0);
+    expect(reload(cb, e)).toBeNull();
+    let er = after(cb, n0);
+    expect(er.find((x) => x.k === 'reload')!.noDrop).toBeUndefined(); expect(er.some((x) => x.k === 'pile')).toBe(true);
+    // unlimited spares (a companion, a twin: no mags) drop nothing in the pile: the event says so (the card shows no drop)
+    n0 = cb.fxSeq!; e.mags = undefined; e.ammo = 0; e.ap = 9;
+    expect(reload(cb, e)).toBeNull();
+    er = after(cb, n0);
+    expect(er.find((x) => x.k === 'reload')).toMatchObject({ unit: e.id, how: 'mag', left: 0, noDrop: true });
+    expect(er.some((x) => x.k === 'pile')).toBe(false);
     n0 = cb.fxSeq!; u.jammed = true; u.ap = 9; expect(clearJam(cb, u)).toBeNull();
     expect(after(cb, n0).map((x) => x.k)).toEqual(['clear']);
   });

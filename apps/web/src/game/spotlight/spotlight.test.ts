@@ -256,9 +256,10 @@ describe('review fixes (decision 113)', () => {
     const { g, a } = room(), c: any = g.characters[a];
     // The recruit's placeholder robot (SANDBOX_PORTRAIT): its own picture, framed whole (a small square avatar).
     c.portrait = SANDBOX_PORTRAIT; let s = stripForChar(g, a)!;
-    expect(s.img).toMatch(/wick-narrator-placeholder(-lg)?\.webp$/); expect(s.whole).toBe(true); expect(s.eye).toEqual({ x: FRAMES['wick-narrator-placeholder'].x, y: FRAMES['wick-narrator-placeholder'].y });
+    // The small copy, the one the HUD shows: its -lg is a different picture (Wick's model-study sheet, the Narrator's zoom).
+    expect(s.img).toMatch(/wick-narrator-placeholder\.webp$/); expect(s.img).not.toMatch(/-lg\.webp$/); expect(s.whole).toBe(true); expect(s.eye).toEqual({ x: FRAMES['wick-narrator-placeholder'].x, y: FRAMES['wick-narrator-placeholder'].y });
     // The same by its art library name; a painting keeps its eye line and its close crop.
-    c.portrait = 'wick-narrator-placeholder'; expect(stripForChar(g, a)!.img).toMatch(/wick-narrator-placeholder/);
+    c.portrait = 'wick-narrator-placeholder'; expect(stripForChar(g, a)!.img).toMatch(/wick-narrator-placeholder\.webp$/);
     c.portrait = 'char-m813-keel'; s = stripForChar(g, a)!; expect(s.img).toMatch(/char-m813-keel-lg\.webp$/); expect(s.whole).toBeUndefined(); expect(s.eye).toEqual(eyeFor('char-m813-keel'));
     c.portrait = '/assets/char-arch-bulwark.webp'; expect(stripForChar(g, a)!.img).toMatch(/char-arch-bulwark/);
     // Nothing that resolves (no portrait, an archived id): Wick's welcome pose, as the HUD shows it.

@@ -11,7 +11,7 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
-import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, cutInCap } from '../spotlight';
+import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
@@ -229,17 +229,18 @@ function reloadPieces(e: FxEvent, p: Pt, ms: number) {
   const who = whoOf(tokOf(e.unit, e.at));
   if (!who) return;
   const aim = aimFor(e.unit);
-  const one = (weapon: string, cat: string, how: string, tactical: boolean, rounds: number | undefined, delay: number) => {
+  const one = (weapon: string, cat: string, how: string, tactical: boolean, rounds: number | undefined, delay: number, noDrop = false) => {
     const br = brassOf(weapon, cat), size = Math.max(1, Math.min(6, Number((WEAPON as any)[weapon]?.magazine) || 6));
     if (br.bow === 'bow') { stowArrows(who, how === 'loose' ? Math.min(3, Math.max(1, rounds || 2)) : 1, aim, ms * 0.8); return; }
     if (br.bow === 'crossbow' && how !== 'mag') { after(() => drawArrow(who, aim, { ms: ms * 0.6, bolt: true }), delay + ms * 0.15); return; }
     if (br.load) loadRounds(who, br, rounds || size, aim, ms, { delay: delay + ms * 0.06, spent: size });
     // a speed reload's magazine leaves the reload card falling toward the unit (fx/reload.ts) and reaches it about a
     // third of the way in: from there it drops out from under the portrait to the ground, where the pile is
-    if (!tactical && (how === 'mag' || br.mag === 'fuel_can')) dropMag(who, br.mag, { delay: delay + ms * (br.mag === 'fuel_can' ? 0.12 : 0.3) });
+    // (nothing falls when nothing lands: unlimited spares, a companion's or a twin's, e.noDrop)
+    if (!tactical && !noDrop && (how === 'mag' || br.mag === 'fuel_can')) dropMag(who, br.mag, { delay: delay + ms * (br.mag === 'fuel_can' ? 0.12 : 0.3) });
   };
-  one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, e.rounds, 0);
-  if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, e.off.rounds, 160);
+  one(e.weapon || '', e.cat || '', e.how || 'mag', !!e.tactical, e.rounds, 0, !!e.noDrop);
+  if (e.off) one(e.off.weapon || '', e.off.cat || '', e.off.how || 'mag', !!e.off.tactical, e.off.rounds, 160, !!e.off.noDrop);
 }
 
 // ---------- event handlers ----------
@@ -1067,11 +1068,15 @@ function closeGate(rest: FxEvent[], stream: string | undefined, t: number, gate:
     holdChanged();
   };
   const go = () => {
-    gateShowing = true; gateUntil = performance.now() + cutMs; holdChanged();
-    cap = window.setTimeout(() => open(false), (cutInCap(!!c.spec.short) + 100) * k);
+    // The pace now, not when the gate closed (review fix: a Fast -> Normal change while it waited behind a backlog gave
+    // a cap shorter than the cut-in, which then cut the crit short): the cut-in plays at this same pace (opts.pace), and
+    // the cap allows for a story cut-in's skip (preempt) before it.
+    const k2 = fxPace(), ms2 = CUTIN_MS(n, god, !c.slow, !!c.spec.short) * k2;
+    gateShowing = true; gateUntil = performance.now() + ms2; holdChanged();
+    cap = window.setTimeout(() => open(false), (cutInCap(!!c.spec.short) + 100 + CUTIN_SKIP_MS) * k2);
     // preempt: a cut-in already on screen (a story one, a client-door preview) gives way at once, so this one plays
     // before its action, never after it.
-    showSpotlight(c.spec, { prefApplied: true, preempt: true }).then((r) => open(r !== 'off')).catch(() => open(false));
+    showSpotlight(c.spec, { prefApplied: true, preempt: true, pace: k2 }).then((r) => open(r !== 'off')).catch(() => open(false));
   };
   if (t - performance.now() <= 4) go(); else schedule(go, t);
 }

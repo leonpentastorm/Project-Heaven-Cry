@@ -19,7 +19,6 @@ const snap = (n, clip) => p.screenshot({ path: DIR + n + (Number(process.env.DSF
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const settle = async () => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 15000 }).catch(() => {}); await p.waitForTimeout(150); };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
-const big = (u) => String(u || '').replace(/-lg\.webp$/, '.webp');
 function next(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
 const nat20 = (skip = 0) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(next(r) * 20) === 20 && skip-- <= 0) return s; } return 1; };
 
@@ -105,6 +104,13 @@ for (const s of spawned) {
 }
 ok('every enemy kind targeted (' + results.length + ' of ' + spawned.length + ')', results.length === spawned.length && spawned.length === SPAWN.length);
 await snap('target-card-panel');
+// The initiative bar keeps an unseen hostile's face and initials to itself, as the turn card does (review fix).
+{
+  const unseen = await p.locator('[data-init]').evaluateAll((els) => els.filter((el) => /Unseen hostile/.test(el.textContent || '')).map((el) => ({ img: el.querySelector('img')?.getAttribute('src') || null, text: (el.textContent || '').replace(/\s+/g, ' ').trim() })));
+  if (unseen.length) ok('the initiative bar shows no face for an unseen hostile, only "?": ' + JSON.stringify(unseen.slice(0, 3)), unseen.every((x) => !x.img && /^\?/.test(x.text)));
+  else console.log('note: no unseen hostile in the initiative bar this run');
+  const bar = await p.locator('[aria-label="Initiative order"]').first().boundingBox(); if (bar) await snap('initiative-unseen', { x: bar.x, y: bar.y, width: Math.min(bar.width, 1440 - bar.x), height: bar.height });
+}
 
 // ---------- 2. the Backpack button ----------
 {
@@ -160,7 +166,7 @@ async function critBy(test, target) {
 await settle();
 const rc = await critBy((u) => u.charId === meChar);
 if (rc) await snap('cutin-crit-recruit');
-ok('a crit by the recruit cuts in with the recruit\'s own picture, whole: ' + (rc && rc.face.kind + ' ' + rc.face.href) + ' (HUD ' + hudSrc + ')', !!rc && rc.face.kind === 'whole' && big(rc.face.href) === hudSrc);
+ok('a crit by the recruit cuts in with the recruit\'s own picture, whole: ' + (rc && rc.face.kind + ' ' + rc.face.href) + ' (HUD ' + hudSrc + ')', !!rc && rc.face.kind === 'whole' && rc.face.href === hudSrc);
 ok('and its words name the recruit: "' + (rc && rc.words) + '"', !!rc && /Recruit/.test(rc.words) && !/char-arch/.test(rc.face.href));
 await settle(); await p.waitForTimeout(600);
 const dc = await critBy((u) => u.companion === 'drone');
