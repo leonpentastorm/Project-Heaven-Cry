@@ -1,7 +1,7 @@
 // The Proving Ground's FAITH tools (rules 1.6; sandbox/faith): make the fighter Faithful to Mother Ember with Faith 7
 // and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
 // reset the limits; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
-// a Hymn at its gate, an overreach, an intervention (a kill brings 20 Storm on the next enemy), a vow kept to the end
+// a Hymn at its gate, an overreach, an intervention (a kill brings 20 + 4 × Devotion Storm on the next enemy), a vow kept to the end
 // of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one;
 // leaving a patron; then the Laughing Mask's Encore offered free in the action panel (items 729, 737).
 import { chromium, click, BASE, pickAction } from './lib.mjs';
@@ -132,7 +132,7 @@ for (let i = 0; i < 14 && !(await logHas(/Old Overcast intervenes/)); i++) {
   const g3 = await G(); if (g3.combat && !g3.combat.over && g3.combat.order[g3.combat.turn] === me2.id) await act({ type: 'combat/end-turn', unitId: me2.id });
   await p.waitForTimeout(400);
 }
-ok('a kill while Witnessed: Old Overcast intervenes (20 Storm to the nearest other enemy)', await logHas(/Old Overcast intervenes/));
+ok('a kill while Witnessed: Old Overcast intervenes (20 + 4 × Devotion Storm to the nearest other enemy)', await logHas(/Old Overcast intervenes/));
 // Finish them: the fight ends with Mercy kept (+3 Devotion XP).
 const dvK = (await G()).characters[cid].devotion;
 for (let i = 0; i < 14; i++) {

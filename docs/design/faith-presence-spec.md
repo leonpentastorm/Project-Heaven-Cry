@@ -37,7 +37,7 @@ spec there wins.
 | Patron | Trigger (rules 1.6.3) | What happens |
 |---|---|---|
 | Nerukhan | An enemy damages a Downed or surrendered creature | That enemy takes (20 + 4 × Devotion) Soul |
-| The Quartermaster | **You reload** (any reload) | **The reload is free** (its AP comes back) |
+| The Quartermaster | **You reload** (any reload), **your Evoker's core runs dry** (its charge hits 0), or **your MP runs out** (it hits 0) (Leon, 9 Nov 2026) | A reload: **it is free** (its AP comes back). A dry core: **a fresh core from the Quartermaster slots into the Evoker**, free (no AP, your spare cores untouched). Out of MP: **you get 25% of your max MP back** (rounded down) |
 | The Laughing Mask | **An enemy misses you** | It falls Prone |
 | The Toll-Keeper | An ally would drop to 0 HP | They stay at 1 HP |
 | Mother Ember | An ally drops below a quarter of their HP | They heal (20 + 4 × Devotion) |

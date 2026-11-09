@@ -244,9 +244,9 @@ describe('every patron\'s Hymns and Miracle', () => {
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
-describe('interventions (once a fight, while Witnessed)', () => {
+describe('interventions (while Witnessed; rules 1.6.3: each ends Witnessed, the numbers scale with Devotion)', () => {
   const witnessed = (h: H) => { h.me.conds = { ...(h.me.conds || {}), witnessed: 2 } as any; };
-  it('Nerukhan: an enemy damages a Downed ally, it takes 20 Soul; not twice; not without Witnessed', () => {
+  it('Nerukhan: an enemy damages a Downed ally, it takes 20 + 4 × Devotion Soul; not twice; not without Witnessed', () => {
     const h = holy({ patron: 'nerukhan' }); witnessed(h); Object.assign(h.ally, { hp: 0, downed: true, saves: { ok: 0, fail: 0 } });
     const hp = h.foe.hp; h.bound(() => applyDamage(h.cb, h.ally, 5, { by: h.foe, type: 'physical' } as any));
     expect(h.foe.hp).toBeLessThan(hp); expect(fx(h.cb, FAITH_FX.intervention)[0].trigger).toBe('enemy_harms_helpless');
@@ -254,27 +254,28 @@ describe('interventions (once a fight, while Witnessed)', () => {
     const n = holy({ patron: 'nerukhan' }); Object.assign(n.ally, { hp: 0, downed: true, saves: { ok: 0, fail: 0 } }); const hp3 = n.foe.hp;
     n.bound(() => applyDamage(n.cb, n.ally, 5, { by: n.foe, type: 'physical' } as any)); expect(n.foe.hp).toBe(hp3);
   });
-  it('The Quartermaster: your gun runs dry, it reloads free', () => {
-    const h = holy({ patron: 'the_quartermaster' }); witnessed(h); h.me.ammo = 1;
-    h.act({ type: 'combat/attack', unitId: h.me.id, targetId: h.foe.id, mode: 'shot' });
-    expect(h.me.ammo).toBeGreaterThan(0); expect(fx(h.cb, FAITH_FX.intervention)[0].trigger).toBe('ammo_dry');
+  it('The Quartermaster (rules 1.6.3): you reload, the reload is free (its AP comes back)', () => {
+    const h = holy({ patron: 'the_quartermaster' }); witnessed(h); h.me.ammo = 1; const ap = h.me.ap;
+    h.act({ type: 'combat/reload', unitId: h.me.id });
+    expect(h.me.ammo).toBeGreaterThan(1); expect(h.me.ap).toBe(ap);
+    expect(fx(h.cb, FAITH_FX.intervention)[0]).toMatchObject({ trigger: 'you_reload', unit: h.me.id, patron: 'the_quartermaster', amount: 2 });
   });
-  it('The Laughing Mask: an enemy rolls a natural 1 against you, it falls Prone', () => {
-    const h = holy({ patron: 'the_laughing_mask' }); witnessed(h);
-    h.g.rng.state = rngFor(1); h.bound(() => resolveAttack(h.cb, h.g.rng, h.foe, h.me, 'shot', null, { free: true, noAp: true }));
-    expect(condOn(h.foe, 'prone') || !!h.foe.prone).toBe(true); expect(fx(h.cb, FAITH_FX.intervention)[0].trigger).toBe('enemy_nat1');
+  it('The Laughing Mask (rules 1.6.3): an enemy misses you (no natural 1 needed), it falls Prone', () => {
+    const h = holy({ patron: 'the_laughing_mask' }); witnessed(h); h.me.def = 99;
+    h.g.rng.state = rngFor(10); h.bound(() => resolveAttack(h.cb, h.g.rng, h.foe, h.me, 'shot', null, { free: true, noAp: true }));
+    expect(condOn(h.foe, 'prone') || !!h.foe.prone).toBe(true); expect(fx(h.cb, FAITH_FX.intervention)[0].trigger).toBe('enemy_misses_you');
   });
   it('The Toll-Keeper: an ally would drop to 0 HP, they stay at 1', () => {
     const h = holy({ patron: 'toll_keeper' }); witnessed(h);
     h.bound(() => applyDamage(h.cb, h.ally, 9999, { by: h.foe, type: 'physical' } as any)); expect(h.ally.hp).toBe(1);
     h.bound(() => applyDamage(h.cb, h.ally, 9999, { by: h.foe, type: 'physical' } as any)); expect(h.ally.hp).toBe(0);
   });
-  it('Mother Ember: an ally drops below a quarter HP, they heal 15', () => {
+  it('Mother Ember: an ally drops below a quarter HP, they heal 20 + 4 × Devotion (32 at Devotion 3)', () => {
     const h = holy({ patron: 'mother_ember' }); witnessed(h); const m = h.ally.maxHp;
     h.bound(() => applyDamage(h.cb, h.ally, m - 10, { by: h.foe, type: 'physical' } as any));
-    expect(h.ally.hp).toBe(10 + Math.round(15 * h.me.blessPower!));
+    expect(h.ally.hp).toBe(10 + Math.round(32 * h.me.blessPower!));
   });
-  it('Old Overcast: you kill an enemy, 20 lightning goes to the nearest other enemy', () => {
+  it('Old Overcast: you kill an enemy, 20 + 4 × Devotion Storm goes to the nearest other enemy', () => {
     const h = holy({ patron: 'old_overcast' }); witnessed(h); const hp2 = h.foe2.hp;
     h.bound(() => applyDamage(h.cb, h.foe, 9999, { by: h.me, type: 'physical', credit: 'hp' } as any));
     expect(h.foe2.hp).toBeLessThan(hp2); expect(fx(h.cb, FAITH_FX.intervention)[0].trigger).toBe('you_kill');
@@ -497,8 +498,8 @@ describe('determinism and voice lines', () => {
     const run = () => { const h = holy({ devotion: 3, faith: 6 }); h.pray('hymn', 'judgement', { targetId: h.foe.id }); return JSON.stringify([h.cb.log.slice(-4), fx(h.cb, FAITH_FX.patron_line), h.c.devotion]); };
     expect(run()).toBe(run());
   });
-  it('patronLine picks one of the bank\'s three with the given dice; every patron has 10 banks of 3 (farewell: rules 1.6.1)', () => {
-    for (const p of FAITH_PATRONS) { expect(Object.keys(p.lines).length).toBe(10); expect(p.lines.farewell.length).toBe(3); for (const b of Object.keys(p.lines)) expect(p.lines[b].length).toBe(3); }
+  it('patronLine picks one of the bank\'s three with the given dice; every patron has 11 banks of 3 (farewell: rules 1.6.1; grant: 1.6.3)', () => {
+    for (const p of FAITH_PATRONS) { expect(Object.keys(p.lines).length).toBe(11); expect(p.lines.grant.length).toBe(3); expect(p.lines.farewell.length).toBe(3); for (const b of Object.keys(p.lines)) expect(p.lines[b].length).toBe(3); }
     const a = patronLine({ state: 42 }, FAITH_PATRON.nerukhan, 'answered'), b = patronLine({ state: 42 }, FAITH_PATRON.nerukhan, 'answered');
     expect(a).toBe(b); expect(FAITH_PATRON.nerukhan.lines.answered).toContain(a);
   });

@@ -689,12 +689,25 @@ if isinstance(fe, dict) and fe.get("items"):
 
 # patrons (rules 1.6, Blessing 2.0): tags exist, 3 Hymns at tiers 1-3, a Miracle, an Open or Jealous rule, two rites
 # (one an engine button), an intervention, every voice-line bank with 3 lines; Whispers and vows complete.
+# Rules 1.6.3 (Faith 2.2): 11 banks (grant: each line calls the devoted by {name}); the intervention's trigger is one
+# the engine runs; per-fight limits and the Devotion scaling in prayer.intervention, which scaled interventions match.
+INTERVENTION_TRIGGERS = {"enemy_harms_helpless", "you_reload", "core_dry", "mp_out", "enemy_misses_you", "ally_would_die",
+                         "ally_below_quarter", "you_kill", "ally_hit_adjacent", "enemy_crits_you"}
 pat = data.get("patrons") or {}
 if isinstance(pat, dict) and pat.get("tags"):
     tag_ids = {t.get("id") for t in pat.get("tags") or []}
     banks = pat.get("line_banks") or []
-    if len(banks) != 10:
-        errors.append(f"patrons: line_banks should list 10 banks, has {len(banks)}")
+    if len(banks) != 11 or "grant" not in banks:
+        errors.append(f"patrons: line_banks should list 11 banks, grant among them (rules 1.6.3), has {len(banks)}")
+    piv = (pat.get("prayer") or {}).get("intervention") or {}
+    pf, pfh, hfd = piv.get("per_fight"), piv.get("per_fight_high"), piv.get("high_from_devotion")
+    if not (isinstance(pf, int) and pf >= 1 and isinstance(pfh, int) and pfh >= pf and isinstance(hfd, int) and 1 <= hfd <= 10):
+        errors.append("patrons: prayer.intervention needs per_fight (1 or more), per_fight_high (at least per_fight) and high_from_devotion (a level 1-10)")
+    amt = piv.get("amount") or {}
+    if not (isinstance(amt.get("base"), int) and amt["base"] > 0 and isinstance(amt.get("per_devotion"), int) and amt["per_devotion"] >= 0):
+        errors.append("patrons: prayer.intervention.amount needs a whole base above 0 and a whole per_devotion (0 or more)")
+    if ((pat.get("prayer") or {}).get("witnessed") or {}).get("until") != ["fight_end", "intervention"]:
+        errors.append("patrons: prayer.witnessed.until must be [fight_end, intervention] (rules 1.6.3)")
     # rules 1.6.1 (Faith 2.1): Devotion XP, the curve rising from 0 to its 10 levels; the sources, tag caps and the
     # Narrator's range; the day cooldown after leaving a pact
     dv = pat.get("devotion") or {}
@@ -785,8 +798,35 @@ if isinstance(pat, dict) and pat.get("tags"):
         for r in rites:
             if r.get("engine") and (r.get("check") or {}).get("kind") not in ("story", "after_rest", "tithe_item"):
                 errors.append(f"patrons:{pid}: engine rite {r.get('id')} needs check.kind story, after_rest or tithe_item")
-        if not (p.get("intervention") or {}).get("trigger"):
+        iv = p.get("intervention") or {}
+        if not iv.get("trigger"):
             errors.append(f"patrons:{pid}: the intervention needs a trigger")
+        else:
+            # several triggers (the Quartermaster's reload, dry core and empty MP): triggers lists them, trigger is the
+            # first, and an effect's when names the one it answers
+            trig = iv.get("triggers") or [iv["trigger"]]
+            if iv["trigger"] != trig[0]:
+                errors.append(f"patrons:{pid}: intervention.trigger must be the first of intervention.triggers")
+            for t in trig:
+                if t not in INTERVENTION_TRIGGERS:
+                    errors.append(f"patrons:{pid}: intervention trigger '{t}' is not one the engine runs ({', '.join(sorted(INTERVENTION_TRIGGERS))})")
+            for e in iv.get("effects") or []:
+                if "when" in e and e["when"] not in trig:
+                    errors.append(f"patrons:{pid}: intervention effect when '{e['when']}' is not one of its triggers")
+            if len(trig) > 1 and any("when" not in e for e in iv.get("effects") or []):
+                errors.append(f"patrons:{pid}: with several triggers every intervention effect names its trigger (when)")
+        if iv.get("scale") not in (None, "devotion"):
+            errors.append(f"patrons:{pid}: intervention.scale must be devotion (or absent)")
+        if iv.get("scale") == "devotion":
+            nums = [e for e in iv.get("effects") or [] if isinstance(e.get("value"), int) and "per_devotion" in e]
+            if not nums:
+                errors.append(f"patrons:{pid}: a Devotion-scaled intervention needs an effect with a value and per_devotion")
+            for e in nums:
+                sign = -1 if e["value"] < 0 else 1
+                if abs(e["value"]) != amt.get("base") or e["per_devotion"] != sign * (amt.get("per_devotion") or 0):
+                    errors.append(f"patrons:{pid}: intervention effect {e.get('op')} must be {amt.get('base')} + {amt.get('per_devotion')} × Devotion (prayer.intervention.amount)")
+            if "Devotion" not in str(iv.get("text") or ""):
+                errors.append(f"patrons:{pid}: a Devotion-scaled intervention's text must say so")
         # leaving this patron (rules 1.6.1): Open patrons roll d20 + Faith vs their tn, Jealous ones never let go; the
         # grudge's condition must be one the engine runs (conditions.json, adjudication engine)
         lv = p.get("leave") or {}
@@ -815,6 +855,9 @@ if isinstance(pat, dict) and pat.get("tags"):
         for b in banks:
             if len(lines.get(b) or []) != 3:
                 errors.append(f"patrons:{pid}: line bank {b} needs 3 lines")
+        for ln in lines.get("grant") or []:
+            if "{name}" not in ln:
+                errors.append(f"patrons:{pid}: grant line '{ln}' must call the devoted by {{name}}")
 
 # Rules 1.9 drop tables (World Play 1.1, spec 14 items 691-700): data/loot_tables.json
 lt = data.get("loot_tables")

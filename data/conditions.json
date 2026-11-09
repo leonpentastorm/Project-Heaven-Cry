@@ -532,7 +532,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your patron is watching (rules 1.6): actions with a tag your patron likes get +2; taboo actions cost double Devotion.",
+      "text": "Your patron is watching (rules 1.6.3) until the fight ends or your patron intervenes: attack rolls with a tag your patron likes get +2; taboo actions cost double Devotion XP. A successful Hymn of your own patron, or a Miracle, gives it (Faith 5); your patron's intervention ends it.",
       "effects": [
         {
           "op": "attack_mod",
@@ -547,10 +547,11 @@
         }
       ],
       "duration": {
-        "until": "your next turn"
+        "until": "the end of the fight, or your patron's intervention"
       },
       "ends_on": [
-        "your next turn"
+        "fight_end",
+        "intervention"
       ],
       "stacks": false,
       "adjudication": "engine"

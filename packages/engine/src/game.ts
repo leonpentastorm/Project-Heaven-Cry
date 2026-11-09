@@ -30,7 +30,7 @@ import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, 
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
 import { soulPickError, moduleGateError, moduleShelved } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
-import { type FaithAction, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
+import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
@@ -1317,7 +1317,11 @@ function combatAction(g: GameState, a: Action, by: string) {
       const pv = previewAttack(cb!, u, t!, a.mode); if (!pv.ok) fail(pv.why!);
       resolveAttack(cb!, g.rng, u, t!, a.mode, who); break;
     }
-    case 'combat/reload': err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical }); break;
+    case 'combat/reload': {
+      const ap0 = u.ap; err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical });
+      if (!err) faithReloaded(cb!, u, ap0 - u.ap); // the Quartermaster's intervention (rules 1.6.3, item 742)
+      break;
+    }
     case 'combat/throw': err = throwItem(cb!, g.rng, u, a.item, tileKey(g, a.tile)); break;
     case 'combat/swap': err = swapWeapon(g, cb!, u, c!, a); break;
     case 'combat/equip': err = gearInFight(g, cb!, u, c!, a.to === 'worn' ? { op: 'wear', item: a.item } : { op: 'draw', item: a.item, to: a.to === 'off' ? 'off' : 'main' }); break;
@@ -2960,7 +2964,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; delete c.faithTally; const st: any = c.state; if (st?.faith) st.faith = {}; }
       });
       const u = cb?.units.find((x) => x.charId === c.id);
-      if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.intervened; u.faith.liked = 0; } }
+      if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.intervened; delete u.faith.interventions; u.faith.liked = 0; } }
       if (a.vow !== undefined) {
         const v = a.vow ? VOW[a.vow] : null, al = v?.needs_ally ? cb?.units.find((x) => (x.id === a.allyId || x.charId === a.allyId) && x.side === u?.side && x !== u) : null;
         if (v?.needs_ally && u && !al) fail('Name the ally to shield.');

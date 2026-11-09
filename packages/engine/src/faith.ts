@@ -8,6 +8,10 @@
 // pact has a 90-day cooldown on the day counter; a direct switch rolls the old patron's leave and may leave a grudge.
 // Rules 1.6.2 (Miracle 2.1, items 724-736): a Miracle needs Devotion 10 and lowers it by 5 levels after its effect
 // (miracleCost); the eight Miracles are the stronger ones Leon approved (runEntry; Encore's repeat: encoreBefore/After).
+// Rules 1.6.3 (Faith 2.2, docs/design/faith-presence-spec.md, items 738-746): Witnessed lasts until the fight ends or
+// the intervention fires (which ends it); interventions are once a fight (twice from Devotion 7), scale with Devotion
+// (interventionAmount), and the Quartermaster's and the Laughing Mask's triggers are wider; the grant bank names the
+// devoted when a Miracle is answered, and the Miracle's and intervention's fx carry what the web shows.
 //
 // Like missions.ts, this file imports only types from game.ts; game.ts binds the few helpers it needs (bindFaith).
 import patronsJ from '../../../data/patrons.json';
@@ -15,7 +19,7 @@ import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
-import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitDebuff, condSource, condIsBoon, condName as condNameOf, MANA_START } from './magic';
+import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitDebuff, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
@@ -38,7 +42,7 @@ export const WHISPERS: any[] = PJ.whispers || [];
 export const WHISPER: Record<string, any> = Object.fromEntries(WHISPERS.map((w) => [w.id, w]));
 export const VOWS: any[] = PJ.vows || [];
 export const VOW: Record<string, any> = Object.fromEntries(VOWS.map((v) => [v.id, v]));
-export const LINE_BANKS: string[] = PJ.line_banks || ['answered', 'refused', 'taboo', 'vow_kept', 'vow_broken', 'witnessed', 'intervention', 'miracle', 'conversion'];
+export const LINE_BANKS: string[] = PJ.line_banks || ['answered', 'refused', 'taboo', 'vow_kept', 'vow_broken', 'witnessed', 'intervention', 'miracle', 'conversion', 'farewell', 'grant'];
 /** The patrons (rules 1.6 shape; tactics.ts PATRON is the same list with the old `blessings` alias = hymns). */
 export const FAITH_PATRONS: any[] = PJ.items || [];
 export const FAITH_PATRON: Record<string, any> = Object.fromEntries(FAITH_PATRONS.map((p) => [p.id, p]));
@@ -73,19 +77,28 @@ export const PACT_COOLDOWN_DAYS: number = DV.apostasy?.cooldown_days ?? 90;
 /** The old name of the fight's tag cap (now TAG_CAPS.fight, in XP). */
 export const LIKE_CAP = TAG_CAPS.fight;
 export const PRAYER_MANA = PR.mana_delta ?? -5;
+/** Interventions (rules 1.6.3, items 740-741): per fight (twice from Devotion 7), and the Devotion-scaled number. */
+export const INTERVENTION = {
+  perFight: PR.intervention?.per_fight ?? 1, perFightHigh: PR.intervention?.per_fight_high ?? 2, highFrom: PR.intervention?.high_from_devotion ?? 7,
+  base: PR.intervention?.amount?.base ?? 20, perDevotion: PR.intervention?.amount?.per_devotion ?? 4,
+};
+/** How many interventions this character's patron may make in a fight now (item 740). */
+export const interventionLimit = (c: Character) => (devotionNow(c) >= INTERVENTION.highFrom ? INTERVENTION.perFightHigh : INTERVENTION.perFight);
+/** A Devotion-scaled intervention's number: (20 + 4 × Devotion) × Blessing power, rounded (item 741). */
+export const interventionAmount = (c: Character, power = 1) => Math.round((INTERVENTION.base + INTERVENTION.perDevotion * devotionNow(c)) * power);
 
 /** FX events (emitFx kinds) the faith rules put on a fight's or the story's fx list, with their payloads. */
 export const FAITH_FX = {
   prayer: 'prayer', // {unit, kind, id, patron, at, target, ok}
   prayer_fail: 'prayer_fail', // {unit, kind, id, patron, at, why: 'overreach' | 'dice'}
   witnessed: 'witnessed', // {unit, patron, at}
-  intervention: 'intervention', // {patron, trigger, at, target, unit}
+  intervention: 'intervention', // {unit, patron, trigger, target, amount, at} (rules 1.6.3, item 744)
   devotion: 'devotion', // {char, delta (XP), xp (the total), reason, tag?, now (the level), was (the level before), level? (when it changed)}
   leave: 'leave', // {char, patron, to, letGo, roll?: {die, mod, total, tn}}
   grudge: 'grudge', // {char, patron, sessions, condition, at?, unit?} (set on a switch; at a fight's start, on the unit)
   vow: 'vow', // {unit, char, id, state: 'sworn' | 'kept' | 'broken', allyId?}
   patron_line: 'patron_line', // {patron, event, text, char}
-  miracle: 'miracle', // {patron, id, at, area, unit}
+  miracle: 'miracle', // {patron, id, at, area, unit, char, name, text, line, summary} (rules 1.6.3, item 746)
 } as const;
 
 // ---------- actions (the reducer's faith/* actions) ----------
@@ -429,17 +442,24 @@ export function grudgeOf(g: GameState | null, c: Character): Grudge | null {
 /** Days before a pact can be made again after leaving one (0: none). */
 export function pactCooldownLeft(g: GameState | null, c: Character): number { const l = c.faithLeft; return l ? Math.max(0, l.day + PACT_COOLDOWN_DAYS - dayOf(g)) : 0; }
 /** An fx event on the story's list (out of a fight). */
-function storyFx(g: GameState, k: string, data: Record<string, any>) {
-  const st: any = g.story; const n = (st.fxSeq = (st.fxSeq || 0) + 1), list = (st.fx ||= []); list.push({ n, k, ...data });
+function storyFx(g: GameState, k: string, data: Record<string, any>): Record<string, any> {
+  const st: any = g.story; const n = (st.fxSeq = (st.fxSeq || 0) + 1), list = (st.fx ||= []), ev = { n, k, ...data }; list.push(ev);
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
+  return ev;
 }
+/** An effect line (" · a · b") as a sentence for the Miracle's box (item 746). */
+const summaryOf = (did: string): string => { const t = String(did || '').replace(/^\s*·\s*/, '').replace(/\s+·\s+/g, '; ').trim(); return t ? t.charAt(0).toUpperCase() + t.slice(1) + '.' : ''; };
 /** A patron speaks: a line from its bank, picked with the game's dice (deterministic). */
 export function patronLine(rng: Rng, patron: any, bank: string): string | null {
   const lines: string[] = patron?.lines?.[bank] || []; if (!lines.length) return null;
   return lines[die(rng, lines.length) - 1];
 }
-function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, patron: any, bank: string) {
-  const text = patronLine(rng, patron, bank); if (!text) return;
+/** The god grants a Miracle (rules 1.6.3, item 745): a grant line with {name} as the character's name in capitals. */
+export function grantLine(rng: Rng, patron: any, name: string): string | null {
+  const t = patronLine(rng, patron, 'grant'); return t ? t.split('{name}').join(String(name || '').toUpperCase()) : null;
+}
+function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, patron: any, bank: string, said?: string | null) {
+  const text = said ?? patronLine(rng, patron, bank); if (!text) return;
   const ev = { patron: patron.id, event: bank, text, char: c.id };
   if (cb) { emitFx(cb, FAITH_FX.patron_line, ev); cb.log.push(patron.name + ': "' + text + '"'); }
   else if (g) { storyFx(g, FAITH_FX.patron_line, ev); B?.push(g, { kind: 'system', head: patron.name.toUpperCase(), text: '"' + text + '"' }); }
@@ -470,7 +490,7 @@ const helpless = (t: Unit) => !!(t.downed || t.surrendered);
 function harmedHelpless(cb: Combat, by: Unit, t: Unit) {
   fs(by).harmedHelpless = true;
   if (vowOn(by, 'mercy')) breakVow(cb, by, 'harmed ' + t.name + ', who ' + (t.surrendered ? 'had yielded' : 'was down'));
-  for (const f of intervening(cb, 'nerukhan')) { if (f.side === by.side || by.dead) continue; intervene(cb, f, 'enemy_harms_helpless', by, () => harmLine(cb, f, by, 20 * (f.blessPower || 1), 'soul')); break; }
+  for (const f of intervening(cb, 'nerukhan')) { if (f.side === by.side || by.dead) continue; const n = scaled(f); intervene(cb, f, 'enemy_harms_helpless', by, n, () => harmLine(cb, f, by, n, 'soul')); break; }
 }
 const nearestEnemy = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v)).reduce((m, v) => Math.min(m, dist(v.pos, u.pos)), 99);
 
@@ -485,16 +505,52 @@ function breakVow(cb: Combat, u: Unit, why: string) {
 }
 const vowOn = (u: Unit | null | undefined, id: string) => !!u?.vow && u.vow.state === 'sworn' && u.vow.id === id;
 
-// ---------- interventions (spec 1.6 §8; item 603) ----------
-/** Faithful fighters on this fight whose patron may still intervene (Witnessed, not yet this fight). */
+// ---------- interventions (spec 1.6 §8; item 603; rules 1.6.3, items 739-744) ----------
+/** Interventions this fighter's patron made this fight (an old save's flag counts as one; item 740). */
+const interventionsUsed = (f: Unit): number => fs(f).interventions ?? (fs(f).intervened ? 1 : 0);
+/** Faithful fighters on this fight whose patron may still intervene: Witnessed, and under the fight's limit (once, or
+ * twice from Devotion 7). */
 function intervening(cb: Combat, patronId: string): Unit[] {
-  return cb.units.filter((f) => f.charId && !f.dead && condOn(f, 'witnessed') && !fs(f).intervened && patronOf(unitChar(f) || ({} as Character))?.id === patronId);
+  return cb.units.filter((f) => {
+    if (!f.charId || f.dead || !condOn(f, 'witnessed')) return false;
+    const c = unitChar(f); return !!c && patronOf(c)?.id === patronId && interventionsUsed(f) < interventionLimit(c);
+  });
 }
-function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, run: () => string) {
-  const c = unitChar(f)!, p = patronOf(c)!; fs(f).intervened = true;
-  emitFx(cb, FAITH_FX.intervention, { patron: p.id, trigger, at: (target || f).pos, target: target?.id || null, unit: f.id });
+/** The Devotion-scaled number for this fighter's patron (item 741). */
+const scaled = (f: Unit): number => { const c = unitChar(f); return c ? interventionAmount(c, f.blessPower || blessingPower(c)) : 0; };
+/** The patron acts: the effect (run), the fx event, the log, its line; then Witnessed ends (item 739). */
+function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, amount: number | null, run: () => string) {
+  const c = unitChar(f)!, p = patronOf(c)!; const st = fs(f); st.interventions = interventionsUsed(f) + 1; delete st.intervened;
+  emitFx(cb, FAITH_FX.intervention, { unit: f.id, patron: p.id, trigger, target: target?.id || null, amount, at: (target || f).pos });
   cb.log.push(p.name + ' intervenes for ' + f.name + run() + '.');
   speak(G(), cb, rngOf(), c, p, 'intervention');
+  if (condOn(f, 'witnessed')) { endCond(f, 'witnessed', cb); cb.log.push(f.name + ' is no longer Witnessed.'); }
+}
+/** The Quartermaster (item 742): a reload of yours that cost AP gives it all back. game.ts calls this after a
+ * combat/reload action that succeeded, with the AP it took. */
+export function faithReloaded(cb: Combat, u: Unit, spent: number) {
+  if (!(spent > 0)) return;
+  for (const f of intervening(cb, 'the_quartermaster')) { if (f !== u) continue; intervene(cb, f, 'you_reload', f, spent, () => { u.ap += spent; return ': the reload is free (' + spent + ' AP back)'; }); break; }
+}
+/** The Quartermaster's MP share when your MP runs out (item 742; patrons.json, the mp_out effect): 25% of max. */
+const QM_MP_SHARE: number = (FAITH_PATRON.the_quartermaster?.intervention?.effects || []).find((e: any) => e.when === 'mp_out')?.value ?? 0.25;
+/** The Quartermaster (item 742, Leon 9 Nov 2026): your Evoker's charge or your MP hits 0. Each fighter's charge and MP
+ * are remembered after every action and at every turn's start; one that was above 0 and is now 0 is a hit, while
+ * Witnessed: a fresh core slots into the Evoker (free; the spare cores untouched), or 25% of max MP comes back. */
+function quartermasterDry(cb: Combat) {
+  if (isOverworld(cb)) return;
+  for (const u of cb.units) {
+    const m = u.mg; if (!u.charId || !m) continue; const st = fs(u);
+    const charge = m.evoker ? Math.round(m.charge) : null, mp = m.emanator && m.mpMax > 0 ? Math.round(m.mp) : null;
+    const coreHit = charge != null && st.seenCharge > 0 && charge <= 0, mpHit = mp != null && st.seenMp > 0 && mp <= 0;
+    for (const hit of [coreHit && 'core_dry', mpHit && 'mp_out'] as const) {
+      if (!hit || u.dead) continue;
+      const f = intervening(cb, 'the_quartermaster').find((x) => x === u); if (!f) break;
+      if (hit === 'core_dry') intervene(cb, f, 'core_dry', f, CORE_CHARGE, () => { m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: f.id, at: f.pos, dur: 1000 }); return ': a fresh core slots into the Evoker (' + CORE_CHARGE + ' charge; the spare cores untouched)'; });
+      else { const gain = Math.floor(m.mpMax * QM_MP_SHARE); intervene(cb, f, 'mp_out', f, gain, () => { m.mp = Math.max(0, m.mp) + gain; return ': ' + gain + ' MP back (' + Math.round(m.mp) + '/' + m.mpMax + ')'; }); }
+    }
+    st.seenCharge = m.evoker ? Math.round(m.charge) : undefined; st.seenMp = m.emanator ? Math.round(m.mp) : undefined;
+  }
 }
 
 // ---------- shared hooks (registered once; run on every fight after the items) ----------
@@ -519,14 +575,14 @@ export function registerFaithHooks() {
           if (f === t || f.side !== t.side || dist(f.pos, t.pos) > 1 || !alive(f)) continue;
           const half = Math.floor(ctx.dmg / 2); if (half <= 0) break;
           ctx.dmg -= half;
-          intervene(cb, f, 'ally_hit_adjacent', t, () => { applyDamage(cb, f, half, { ...src, faithShare: true } as any); return ': ' + f.name + ' takes ' + half + ' of the hit on ' + t.name; });
+          intervene(cb, f, 'ally_hit_adjacent', t, half, () => { applyDamage(cb, f, half, { ...src, faithShare: true } as any); return ': ' + f.name + ' takes ' + half + ' of the hit on ' + t.name; });
           faithTag(cb, f, 'protect'); break;
         }
       }
     }
     if (ctx.phase === 'would_drop_to_0' && ctx.floor == null && !ctx.self) {
       if ((cb as any).faithGates?.some((gt: any) => gt.side === t.side && gt.ids.includes(t.id))) { ctx.floor = 1; cb.log.push('Hold the Gate: ' + t.name + ' stays at 1 HP.'); return; }
-      for (const f of intervening(cb, 'toll_keeper')) { if (f.side !== t.side || t.companion) continue; ctx.floor = 1; intervene(cb, f, 'ally_would_die', t, () => ': ' + t.name + ' stays at 1 HP'); break; }
+      for (const f of intervening(cb, 'toll_keeper')) { if (f.side !== t.side || t.companion) continue; ctx.floor = 1; intervene(cb, f, 'ally_would_die', t, 1, () => ': ' + t.name + ' stays at 1 HP'); break; }
     }
     if (ctx.phase === 'after' && ctx.dealt > 0 && by) {
       if (ctx.faithHelpless && !ctx.faithHelplessDone && by.side !== t.side) harmedHelpless(cb, by, t);
@@ -537,7 +593,7 @@ export function registerFaithHooks() {
   });
   onHook('on_damaged', (ctx, cb) => { // Mother Ember: an ally drops below a quarter HP
     const t: Unit = ctx.t; if (t.dead || t.hp <= 0 || ctx.prevHp < t.maxHp / 4 || t.hp >= t.maxHp / 4) return;
-    for (const f of intervening(cb, 'mother_ember')) { if (f.side !== t.side) continue; intervene(cb, f, 'ally_below_quarter', t, () => ': ' + t.name + healLine(cb, f, t, 15 * (f.blessPower || 1))); break; }
+    for (const f of intervening(cb, 'mother_ember')) { if (f.side !== t.side) continue; const n = scaled(f); intervene(cb, f, 'ally_below_quarter', t, n, () => ': ' + t.name + healLine(cb, f, t, n)); break; }
   });
   onHook('on_downed', (ctx, cb) => {
     const v: Unit = ctx.victim, by: Unit | null = ctx.by;
@@ -551,7 +607,7 @@ export function registerFaithHooks() {
     for (const f of intervening(cb, 'old_overcast')) {
       if (f !== by) continue;
       const n = cb.units.filter((x) => x.side !== f.side && alive(x) && x !== v).sort((a, b) => dist(a.pos, v.pos) - dist(b.pos, v.pos))[0]; if (!n) break;
-      intervene(cb, f, 'you_kill', n, () => harmLine(cb, f, n, 20 * (f.blessPower || 1), 'elemental', 'lightning')); break;
+      const amt = scaled(f); intervene(cb, f, 'you_kill', n, amt, () => harmLine(cb, f, n, amt, 'elemental', 'lightning')); break;
     }
   });
   onHook('heal_given', (ctx, cb) => { const by: Unit | null = ctx.by, t: Unit = ctx.t; if (by && t !== by && t.side === by.side && (ctx.n > 0 || ctx.revived)) { faithTag(cb, by, 'heal'); if (ctx.kind === 'stim') faithTag(cb, by, 'supply'); } });
@@ -576,6 +632,7 @@ export function registerFaithHooks() {
     const u: Unit = ctx.u;
     if (u.vow?.state === 'sworn' && u.vow.id === 'stand') fs(u).standFrom = nearestEnemy(cb, u);
     fs(u).apMark = u.ap; // Encore: the AP of the last action
+    quartermasterDry(cb); // anything that drained a core or MP off its own actions (item 742)
     if (u.faith?.encore) u.faith.encore.started = true; // Encore (item 729): it lasts to the end of this turn
     // Expiring "until your next turn" effects cast by this unit.
     const x: any = cb; if (x.faithGates) x.faithGates = x.faithGates.filter((gt: any) => gt.by !== u.id);
@@ -597,6 +654,7 @@ export function registerFaithHooks() {
     snapRoundHp(cb); // Rewoven (item 734): round 1's HP (round_start fires from round 2)
     // Requisition Approved (item 728): what each character brought into the fight (its restock tops up to at least this).
     for (const u of cb.units) if (u.charId && !u.companion) fs(u).stock = { weapon: u.weapon, mags: u.mags?.length || 0, loose: u.loose || 0, throwables: { ...(u.throwables || {}) } };
+    quartermasterDry(cb); // the charge and MP each fighter brings in (item 742): a fight begun at 0 is no "runs dry"
     for (const u of cb.units) {
       if (!u.charId || u.companion || u.dead) continue; const c = unitChar(u); if (!c) continue;
       const gr = grudgeOf(g, c); if (!gr) continue; const p = patronById(gr.patron);
@@ -614,6 +672,7 @@ export function registerFaithHooks() {
     if (x.faithOrderRestore) { const keep = x.faithOrderRestore as string[]; x.faithOrderRestore = null; const extra = [...new Set(cb.order)].filter((id) => !keep.includes(id)); cb.order = [...keep, ...extra]; } // Rewoven ends
     if (x.faithZones) x.faithZones = x.faithZones.filter((z: any) => z.until >= cb.round);
   });
+  onHook('action_done', (_ctx, cb) => quartermasterDry(cb)); // the Quartermaster: a core or the MP hit 0 (item 742)
   onHook('action_done', (ctx, cb) => { // Encore: the AP the last action took
     const u: Unit = ctx.u; if (!u) return; const st = fs(u);
     // Only an action that can be repeated and cost AP counts (item 729): ending the turn, declining a window, a prayer or
@@ -642,14 +701,14 @@ export function registerFaithHooks() {
       if (fails) { delete att.faith.luckyBreak; const r = d20(rc.rng || rngOf()); rc.die = r; rc.hit = r !== 1 && (r >= rc.critMin || r + rc.toHit + 5 >= rc.need); cb.log.push('Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
     }
     if (!tgt || att.side === tgt.side) return;
-    for (const f of intervening(cb, 'the_laughing_mask')) { if (f !== tgt || rc.die !== 1) continue; intervene(cb, f, 'enemy_nat1', att, () => applyCond(cb, rc.rng || rngOf(), f, att, 'prone', undefined, undefined, { skipSave: true })); break; }
-    for (const f of intervening(cb, 'counting_weaver')) { if (f !== tgt || !(rc.die === 20 || rc.die >= rc.critMin)) continue; intervene(cb, f, 'enemy_crits_you', att, () => ': the critical becomes a normal hit'); rc.die = 19; rc.critMin = 21; rc.hit = true; break; }
+    for (const f of intervening(cb, 'counting_weaver')) { if (f !== tgt || !(rc.die === 20 || rc.die >= rc.critMin)) continue; intervene(cb, f, 'enemy_crits_you', att, null, () => ': the critical becomes a normal hit'); rc.die = 19; rc.critMin = 21; rc.hit = true; break; }
   });
-  const dry = (ctx: any, cb: Combat) => { // the Quartermaster: your gun runs dry, it reloads free
-    const u: Unit = ctx.att; const w = WEAPON[u?.weapon]; if (!u || !w || w.magazine == null || u.ammo > 0) return;
-    for (const f of intervening(cb, 'the_quartermaster')) { if (f !== u) continue; intervene(cb, f, 'ammo_dry', f, () => freeReload(cb, f)); break; }
-  };
-  onHook('on_hit', dry); onHook('on_miss', dry);
+  // The Laughing Mask (item 743): an enemy's attack at you misses (a fumble too; a shot cover stops is no miss): it
+  // falls Prone, no save. In a volley the first missed shot fires it.
+  onHook('on_miss', (ctx, cb) => {
+    const att: Unit = ctx.att, tgt: Unit = ctx.tgt; if (!att || !tgt || att.side === tgt.side || ctx.stopped) return;
+    for (const f of intervening(cb, 'the_laughing_mask')) { if (f !== tgt) continue; intervene(cb, f, 'enemy_misses_you', att, null, () => applyCond(cb, ctx.rng || rngOf(), f, att, 'prone', undefined, undefined, { skipSave: true })); break; }
+  });
   onHook('glyph_drawn', (ctx, cb) => { if (vowOn(ctx.u, 'unarmed_faith')) breakVow(cb, ctx.u, 'drew a glyph'); });
   onHook('evoked', (ctx, cb) => { if (vowOn(ctx.u, 'unarmed_faith')) breakVow(cb, ctx.u, 'Evoked a spell'); if (vowOn(ctx.u, 'bare')) breakVow(cb, ctx.u, 'attacked with a spell'); });
   onHook('outburst_begin', (ctx, cb) => { if (vowOn(ctx.u, 'unarmed_faith')) breakVow(cb, ctx.u, 'Began an Outburst'); });
@@ -699,7 +758,7 @@ function harmLine(cb: Combat, by: Unit, t: Unit, n: number, type: 'soul' | 'elem
 function healLine(cb: Combat, by: Unit | null, t: Unit, n: number): string {
   const r = healUnit(cb, t, Math.round(n), by, 'blessing'); return r.revived ? ' stands again at ' + t.hp + ' HP' : ' heals ' + r.restored;
 }
-/** Reload a fighter's weapon at no AP (the Quartermaster: its intervention, Resupply). */
+/** Reload a fighter's weapon at no AP (Resupply). */
 function freeReload(cb: Combat, u: Unit): string {
   const w = WEAPON[u.weapon]; if (!w || w.magazine == null) return ': nothing to reload';
   const was = u.ap; u.ap = 99; const err = reload(cb, u); u.ap = was;
@@ -736,16 +795,22 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   }
   const power = u.blessPower || blessingPower(c);
   emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, target: typeof t === 'object' && t && 'id' in t ? (t as any).id : a.tile || null, ok: true });
-  if (kind === 'miracle') emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? areaOf(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id });
-  line += runEntry(cb, rng, u, kind, pe, t, a, power);
+  // The Miracle's fx (item 746) goes on the list before its effects (the cut-in plays first); once they have run it is
+  // given the grant line (item 745: picked after them, so the line never moves the Miracle's own dice) and the summary
+  // of what they did: the web needs no engine call.
+  const mfx = kind === 'miracle' ? emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? areaOf(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id, char: c.id, name: pe.entry.name || id, text: pe.entry.text || '', line: null as string | null, summary: '' }) : null;
+  const did = runEntry(cb, rng, u, kind, pe, t, a, power);
+  line += did;
   cb.log.push(line + '.');
+  if (mfx) { const grant = grantLine(rng, patron, c.name); mfx.line = grant; mfx.summary = summaryOf(did); if (grant) speak(g, cb, rng, c, patron, 'grant', grant); }
   // The price after the effect, and after its line in the log (item 621's order; items 725, 737): its own tags give
   // nothing back; Devotion −5 levels.
   if (kind === 'miracle') miracleCost(g, cb, c);
   if (patron && kind !== 'whisper') speak(g, cb, rng, c, patron, kind === 'miracle' ? 'miracle' : 'answered');
-  // Witnessed (Faith 5): after your own patron's Hymn or a Miracle (item 604).
+  // Witnessed (Faith 5): after your own patron's Hymn or a Miracle (item 604), until the fight ends or the patron
+  // intervenes (rules 1.6.3, item 738: the condition doesn't tick).
   if (kind !== 'whisper' && beliefOf(c).kind === 'faithful' && patron?.id === patronOf(c)?.id && faithOf(c) >= WITNESS_FAITH) {
-    applyCond(cb, rng, u, u, 'witnessed', 1, undefined, { skipSave: true });
+    applyCond(cb, rng, u, u, 'witnessed', undefined, undefined, { skipSave: true });
     emitFx(cb, FAITH_FX.witnessed, { unit: u.id, patron: patron.id, at: u.pos });
     speak(g, cb, rng, c, patron, 'witnessed');
   }
@@ -1239,9 +1304,15 @@ function storyPray(g: GameState, c: Character, a: Extract<FaithAction, { type: '
     B!.push(g, { kind: 'check', charId: c.id, ok: true, head: head + dice + ' · ✓ ANSWERED', text: said } as any);
   } else B!.push(g, { kind: 'check', charId: c.id, ok: true, head: head + ' · BY STANDING · ✓ ANSWERED', text: said } as any);
   storyFx(g, FAITH_FX.prayer, { unit: c.id, kind, id, patron: patron?.id || null, at: null, target: t.id, ok: true });
-  if (kind === 'miracle') storyFx(g, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: null, area: null, unit: c.id });
+  const mfx = kind === 'miracle' ? storyFx(g, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: null, area: null, unit: c.id, char: c.id, name: pe.entry.name || id, text: pe.entry.text || '', line: null as string | null, summary: '' }) : null;
   const power = blessingPower(c), eff = storyEffect(g, c, t, kind, pe.entry.id, power), done = typeof eff === 'object' && eff ? eff.done : eff;
   if (done) B!.push(g, { kind: 'system', charId: c.id, text: done.replace(/^ · /, '') + '.' } as any);
+  // Item 746: what the engine applied, and what is left to the Narrator; item 745: the god names the devoted.
+  if (mfx) {
+    const grant = grantLine(rng, patron, c.name); mfx.line = grant;
+    mfx.summary = [summaryOf(done || ''), done === null || (typeof eff === 'object' && eff?.partial) ? 'The Narrator rules the rest.' : ''].filter(Boolean).join(' ');
+    if (grant) speak(g, null, rng, c, patron, 'grant', grant);
+  }
   if (kind === 'miracle') miracleCost(g, null, c); // after its effect, as in a fight (items 621, 725)
   // 'story_blessing' {g, c, lines}: items roll what a story Blessing on the character does besides (Upper-Touched's d6).
   const sb: any = kind !== 'whisper' ? emitStory(g, 'story_blessing', { g, c, lines: [] as string[] }, [c]) : { lines: [] };
