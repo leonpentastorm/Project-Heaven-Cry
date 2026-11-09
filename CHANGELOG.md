@@ -8,6 +8,13 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.11.1 — 9 November 2026
+
+Straight to `develop` (a deploy fix): **replaced title art shows at once**. Deploying 0.11.0, the live title still showed the old front layer. Its URL never changed, and the Worker's edge cache keeps an asset for a day.
+
+- **New addresses for new art:** the title layers' URLs now carry a content hash (`?v=<hash>`, written by `tools/build_web_assets.py`), and the Worker keys its cache on it. A replaced picture gets a new address; an unchanged one keeps its cache, now as immutable.
+- **Only the title layers:** other assets are unchanged, since portrait URLs are parsed and saved elsewhere.
+
 ## 0.11.0 — 9 November 2026
 
 Branch `feature/title-front-r6`: **the title screen's front layer, Revision 6** (Leon: "first good one we got").

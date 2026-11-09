@@ -3,6 +3,7 @@
 Writes apps/web/public/assets/<name>.webp (screen size) and <name>-lg.webp (click-to-enlarge size), and
 apps/web/src/game/assets.json mapping each name to its URL. Idempotent: skips files that are already up to date.
 """
+import hashlib
 import json, pathlib, sys
 from PIL import Image
 
@@ -83,7 +84,9 @@ TITLE = ROOT / "art/ui/title-screen"
 # The title shows a layer as soon as it is in assets.json.
 TITLE_HELD: set = set()  # every layer the artist has delivered is used
 
-def emit_widths(name, src, widths, quality, alpha):
+def emit_widths(name, src, widths, quality, alpha, versioned=False):
+    """versioned: the URL carries ?v=<content hash> (art replaced under the same name, like the title layers, gets a
+    new address, so no browser or edge cache keeps showing the old picture; the Worker keys its cache on v)."""
     src = pathlib.Path(src)
     for suffix, w in zip(("", "-lg", "-xl"), widths):
         dst = OUT / f"{name}{suffix}.webp"
@@ -96,12 +99,15 @@ def emit_widths(name, src, widths, quality, alpha):
             im = im.convert("RGBA") if alpha else im.convert("RGB")
             im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
             im.save(dst, "WEBP", quality=quality, method=6, **({"alpha_quality": 90} if alpha else {}))
-        assets[name + suffix] = f"/assets/{name}{suffix}.webp"
+        url = f"/assets/{name}{suffix}.webp"
+        if versioned:
+            url += "?v=" + hashlib.sha256(dst.read_bytes()).hexdigest()[:10]
+        assets[name + suffix] = url
 
 for layer in ("back", "mid", "front", "fx"):
     f = TITLE / f"title-{layer}.png"
     if f.exists() and layer not in TITLE_HELD:
-        emit_widths("title-" + layer, f, (1600, 2560, 3840), 80 if layer == "back" else 84, layer != "back")
+        emit_widths("title-" + layer, f, (1600, 2560, 3840), 80 if layer == "back" else 84, layer != "back", versioned=True)
 # Wick's menu animations (art/mascot/wick-anim, manifest.json): five clips, each a horizontal strip of 256 x 256
 # frames. We use the presentation strips (the hello's jump is baked in), never the root-motion track as well.
 WICK = ROOT / "art/mascot/wick-anim"
