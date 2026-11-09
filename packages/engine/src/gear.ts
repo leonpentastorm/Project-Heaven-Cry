@@ -1,7 +1,7 @@
 // Gear in a fight (rules revision 1.8, World Play 1.1; docs/design/world-play-1.1-spec.md section 3; spec section 14
 // items 684–690). One rule: changing what a hand holds costs 1 AP a hand. Draw into one hand 1, a two-handed weapon 2,
 // swap main and off hand 1, put away 1 a hand (2 for a two-handed weapon), drop 0 (into the pile on your tile); a light
-// armour piece (1 kg or less) on or off 1 AP each; heavier armour isn't changed in a fight. This module only plans: it
+// armour piece (1.2 kg or less; provisional) on or off 1 AP each; heavier armour isn't changed in a fight. This module only plans: it
 // says what a change costs and why it can't be made, without changing anything (the reducer in game.ts runs it through
 // the fight's checks, Hot-Swap, the write-back and the rebuild). The numbers are `data/world_play.json` `gear`.
 import wpJ from '../../../data/world_play.json';
@@ -34,7 +34,7 @@ export function packRef(c: Character, ref: number | string | null | undefined): 
 const nameOf = (id: string) => WEAPON[id]?.name || ITEM[id]?.name || id;
 /** A slot armour piece's weight. */
 export const armourKg = (id: string) => Number((ITEM[id] as any)?.weight_kg ?? 0);
-/** Light armour: 1 kg or less (item 685). */
+/** Light armour: 1.2 kg or less (item 685, provisional), so the field helmet and field boots change in a fight. */
 export const isLightArmour = (id: string) => armourKg(id) <= GEAR.light_armour_max_kg;
 export const HEAVY_WHY = 'Heavy armour (over ' + GEAR.light_armour_max_kg + ' kg) isn\'t changed in a fight.';
 /** Disarmed (item 687): the weapon is on the ground. */

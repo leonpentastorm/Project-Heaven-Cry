@@ -132,8 +132,8 @@ request; the 2 falls out for two-handed things.
 | Swap main hand ↔ off hand | 1 AP (as now) |
 | Put away what a hand holds into the backpack | 1 AP per hand (2 for a 2H weapon) |
 | **Drop** what a hand holds | **0 AP**: it lands in the pile on your tile (section 1) |
-| **Light armour** piece (1 kg or less: helmets, gloves, goggles, belts, undershirts…) on or off | 1 AP each |
-| Heavier armour (plate, greaves, heavy boots, anything over 1 kg) | **not in a fight** |
+| **Light armour** piece (1.2 kg or less: helmets, gloves, goggles, belts, undershirts…) on or off | 1 AP each |
+| Heavier armour (plate, greaves, heavy boots, anything over 1.2 kg) | **not in a fight** |
 
 - Hot-Swap still makes a swap free (once a turn, twice at Tier II): it applies to the draw/put-away/swap rows, not to
   armour.

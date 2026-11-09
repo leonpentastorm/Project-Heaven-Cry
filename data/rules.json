@@ -558,8 +558,8 @@
       {
         "id": "light_armour",
         "ap": 1,
-        "max_kg": 1,
-        "text": "put on or take off a light armour piece (1 kg or less), each; heavier armour isn't changed in a fight (rules 1.8, item 685)",
+        "max_kg": 1.2,
+        "text": "put on or take off a light armour piece (1.2 kg or less), each; heavier armour isn't changed in a fight (rules 1.8, item 685)",
         "provisional": true
       },
       {

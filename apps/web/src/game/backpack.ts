@@ -6,7 +6,7 @@
 //
 // In a fight the ammo lives on the unit (u.mags, u.loose, u.offMags, u.extra, u.throwables, u.parts): c.pack is only
 // written back at the end of the fight or on a gear change, so those numbers are read from the unit.
-import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, calName, type GearOp, FOCUS_IDS, bindGame } from '@engine';
+import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, bindGame } from '@engine';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
 export interface BpRow { key: string; tag: string; name: string; sub: string; acts: BpAct[]; note: string }
@@ -109,7 +109,7 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
   if ((c.stims ?? 0) > 0) ammo.push({ key: 'stims', tag: 'STIMS', name: c.stims + ' stim ' + (c.stims === 1 ? 'injector' : 'injectors'), sub: 'Stim an ally from the Utility tab.', note: '', acts: [] });
   return { who: c.name, ap: u.ap ?? 0, reason, sections: [
     { key: 'hands', title: 'HANDS', rows: [main, off], empty: '' },
-    { key: 'armour', title: 'ARMOUR', rows: armour, empty: 'Nothing worn. A light piece (1 kg or less) goes on for 1 AP.' },
+    { key: 'armour', title: 'ARMOUR', rows: armour, empty: 'Nothing worn. A light piece (' + GEAR.light_armour_max_kg + ' kg or less) goes on for 1 AP.' },
     { key: 'pack', title: 'BACKPACK', rows, empty: 'Nothing else in the pack.' },
     { key: 'ammo', title: 'AMMO AND THROWABLES', rows: ammo, empty: 'No spare ammo.' }] };
 }

@@ -17,7 +17,7 @@ function fight(perks?: Record<string, string>) {
   const s = storyWith([{ name: 'Rook', kit: 'soldier', ...(perks ? { perks } : {}) }, { name: 'Ash', kit: 'medic' }]);
   const c0 = s.g.characters[s.chars[0].id];
   c0.weapon = 'service_pistol'; c0.weaponState = {}; c0.loaded = 12; c0.offHand = null; c0.worn = { head_accessory: 'night_goggles' };
-  c0.pack = [magsOf('service_pistol', 2), gun('drifter_revolver', { loaded: 4 }), gun('hellraiser_service_rifle', { loaded: 20 }), piece('evoker'), piece('field_helmet'), piece('combat_gloves'), piece('mod_red_dot')];
+  c0.pack = [magsOf('service_pistol', 2), gun('drifter_revolver', { loaded: 4 }), gun('hellraiser_service_rifle', { loaded: 20 }), piece('evoker'), piece('field_helmet'), piece('ballistic_helmet'), piece('combat_gloves'), piece('mod_red_dot')];
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Gear', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists', at: '' }] } } } as any);
   const api = {
     get g(): GameState { return s.g; },
@@ -44,8 +44,9 @@ describe('the backpack in a fight (rules 1.8)', () => {
     expect(row(b, 'pack', /Drifter revolver/).acts.map(txt)).toEqual(['Draw · 1 AP', 'Off hand · 1 AP']);
     expect(row(b, 'pack', /service rifle/i).acts.map(txt)).toEqual(['Draw · 2 AP · both hands']);
     expect(row(b, 'pack', /Combat gloves/).acts.map(txt)).toEqual(['Put on · 1 AP']);
-    expect(row(b, 'pack', /Field helmet/).acts.map(txt)).toEqual([HEAVY_ROW]); // 1.2 kg: over the 1 kg line (item 685)
-    expect(row(b, 'pack', /Field helmet/).acts[0].off).toBe(true);
+    expect(row(b, 'pack', /Field helmet/).acts.map(txt)).toEqual(['Put on · 1 AP']); // 1.2 kg: on the 1.2 kg line (item 685)
+    expect(row(b, 'pack', /Ballistic helmet/).acts.map(txt)).toEqual([HEAVY_ROW]); // 2 kg: over it
+    expect(row(b, 'pack', /Ballistic helmet/).acts[0].off).toBe(true);
     expect(row(b, 'armour', /Night/).acts.map(txt)).toEqual(['Take off · 1 AP']);
     expect(row(b, 'pack', /red dot/i).acts.map(txt)).toEqual(['Fit · 1 AP']);
     // A focus in the pack says it counts only in a hand, and draws into the off hand.

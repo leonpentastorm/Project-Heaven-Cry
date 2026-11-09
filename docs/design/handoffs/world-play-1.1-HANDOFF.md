@@ -28,7 +28,7 @@ when reloading, let gear change in a fight from a backpack, and let fights drop 
 - `data/world_play.json`:
   - `ap.pickup` 1;
   - `pile { max_entries 24, narrator_entries_per_turn 6, narrator_items_per_pile 12, rounds_max 120, route_slack_tiles 2, tactical_reload_extra_ap 1 }`;
-  - `gear { hand_ap 1, two_handed_draw_ap 2, swap_hands_ap 1, put_away_ap_per_hand 1, drop_ap 0, light_armour_ap 1, light_armour_max_kg 1 }`.
+  - `gear { hand_ap 1, two_handed_draw_ap 2, swap_hands_ap 1, put_away_ap_per_hand 1, drop_ap 0, light_armour_ap 1, light_armour_max_kg 1.2 }` (provisional).
 - `data/loot_tables.json`: the caps, the worn range, the rolls by tier, kind→table, five tables and 20 personal effects.
 - `data/rules.json` actions:
   - `reload_tactical`, `pickup`;
@@ -119,7 +119,7 @@ when reloading, let gear change in a fight from a backpack, and let fights drop 
 4. ~~The host-only `combat.lootLog` isn't shown~~ Fixed in review: the host sees its latest line in the combat log and in the end-of-fight summary.
 5. **Companions on the area map** don't add to the party's sight of piles.
 6. **Gear changes on the area map** stay free (unchanged by this branch).
-7. **The 1 kg light-armour line** (item 685) makes every helmet heavy: the field helmet weighs 1.2 kg. Leon may raise the line or lighten the helmet.
+7. ~~**The 1 kg light-armour line** (item 685) makes every helmet heavy~~ Decided: the line is now **1.2 kg** (provisional), so the field helmet (1.2 kg) and the field boots (1.2 kg) change in a fight and the ballistic helmet (2 kg) stays out. Leon to confirm in playtest.
 8. **No built-in campaign uses `loot_tables` or `drops` yet.** M813's encounters could get some when Leon wants them.
 9. **The canvas** (`design/canvas/`) is paused until v1.0 and doesn't show any of this.
 

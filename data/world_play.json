@@ -289,8 +289,8 @@
     "put_away_ap_per_hand": 1,
     "drop_ap": 0,
     "light_armour_ap": 1,
-    "light_armour_max_kg": 1,
+    "light_armour_max_kg": 1.2,
     "provisional": true,
-    "text": "Rules 1.8 (World Play 1.1, items 684-690): in a fight, changing what a hand holds costs 1 AP a hand: a draw into one hand 1, a two-handed draw 2, swapping main and off hand 1, putting away 1 a hand (2 for a two-handed weapon), dropping 0 (into the pile on your tile); a light armour piece (1 kg or less) on or off 1 AP each; heavier armour isn't changed in a fight. Hot-Swap covers the hand rows, not armour."
+    "text": "Rules 1.8 (World Play 1.1, items 684-690): in a fight, changing what a hand holds costs 1 AP a hand: a draw into one hand 1, a two-handed draw 2, swapping main and off hand 1, putting away 1 a hand (2 for a two-handed weapon), dropping 0 (into the pile on your tile); a light armour piece (1.2 kg or less, provisional) on or off 1 AP each; heavier armour isn't changed in a fight. Hot-Swap covers the hand rows, not armour."
   }
 }

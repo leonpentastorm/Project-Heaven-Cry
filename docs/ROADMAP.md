@@ -67,7 +67,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
   - enemy weapons have no rarity, so worn drops are always standard;
   - the host-only loot-cap log isn't shown on screen;
   - companions don't add to the party's sight of piles;
-  - every helmet is over the 1 kg light-armour line (item 685): Leon to raise the line or lighten the helmet;
+  - the light-armour line is now 1.2 kg (item 685, provisional; the field helmet and field boots change in a fight, the ballistic helmet doesn't): Leon to confirm in playtest;
   - no built-in campaign uses `loot_tables` or `drops` yet.
 - Allies and companions don't fight beside the party; companion hazard damage on the area map isn't saved.
 - Talk and hazard panels exist only on the area map, not in fights.
