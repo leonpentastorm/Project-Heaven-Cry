@@ -43,5 +43,7 @@ export const SFX_CREDITS: Credit[] = [
   // The author's attribution instructions: "Wisdom Magic Sounds by Iwan Gabovitch http://opengameart.org/users/qubodup".
   { what: 'Wisdom Magic Sounds (the choir swell under a big release and a resonance)', who: 'Iwan Gabovitch, http://opengameart.org/users/qubodup', licence: 'CC-BY 3.0', url: 'https://opengameart.org/content/wisdom-magic' },
   { what: 'Deep Bone Crack/Break SFX (the heart cracking: Strain burning, a Mana Short)', who: 'Zane Little Music', licence: 'CC0', url: 'https://opengameart.org/content/deep-bone-crackbreak-sfx' },
+  // Sigil 1.5 (rules 1.9): public/sfx/cb/sg_join, sg_inflect, sg_study (layered from the pack's files; mono, levelled).
+  { what: 'Interface Sounds: glass and tick (a glyph joining a stroke), confirmation and a long glass ring (a word\'s inflection coming on), scratch and confirmation (a word copied or learned from a mark or a glyph)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
 ];

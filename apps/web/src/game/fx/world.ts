@@ -149,7 +149,9 @@ export function worldHandlers(K: WorldKit): Record<string, (e: FxEvent) => void>
       say(worldLine(e));
       if (p) { banner(p, worldWord(e), HP); for (let i = 0; i < 3; i++) ring(p, HP, 700, { from: 0.5, to: 3 + i, width: 3, delay: i * 180 }); }
       (x.revealed || []).slice(0, 8).forEach((id: string, i: number) => { const k = posOf(id); entrance(tokOf(id, k), at(k), HP, 250 + i * 80); }); },
-    approach(e) { const x: any = e, p = at(x.at) || actorAt(x); play(x.ok ? 'crystal' : 'miss', p, x.ok ? { rate: 1.3, gain: 0.5 } : { gain: 0.6 });
+    approach(e) { const x: any = e, p = at(x.at) || actorAt(x), read = x.ok && /^(copied|learned) /.test(String(x.effect || ''));
+      // Rules 1.9: Investigating a sigil mark copied (or a critical taught) its word: a scratch and a chime of its own.
+      play(read ? 'sg_study' : x.ok ? 'crystal' : 'miss', p, read ? {} : x.ok ? { rate: 1.3, gain: 0.5 } : { gain: 0.6 });
       if (p) { ring(p, x.ok ? OK : MUTED, 500); floatText(worldWord(e) + (x.label ? ' · ' + String(x.label).toUpperCase().slice(0, 28) : ''), p, x.ok ? OK : MUTED, { small: true }); } },
     talk(e) { const x: any = e, p = at(posOf(x.target)); play('click', p, { gain: 0.4 }); if (!p) return;
       const s = svg(40, 30, '<path d="M4 4 H36 V20 H16 L8 27 V20 H4 Z" fill="#10151F" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/><circle cx="13" cy="12" r="2" fill="#FFFFFF"/><circle cx="20" cy="12" r="2" fill="#FFFFFF"/><circle cx="27" cy="12" r="2" fill="#FFFFFF"/>');
