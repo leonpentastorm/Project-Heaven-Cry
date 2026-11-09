@@ -115,3 +115,35 @@ export function prayerIconUri(kind: 'whisper' | 'hymn' | 'miracle', id: string, 
 }
 export const vowIconUri = (id: string, color = '#FFFFFF') => assetFor('prayer-vow-' + id.replace(/_/g, '-')) || uri(lineSvg(VOW_PATHS[id] || GENERIC_MARK, color));
 export const witnessedUri = (color = '#FFFFFF') => assetFor('prayer-witnessed') || uri(lineSvg(WITNESSED_PATHS, color));
+
+// ---------- the portrait's face (Faith 2.2, spec 2.2, 2.5, 2.6) ----------
+/** Where each patron's face (or mask) sits in its 4:5 portrait (art/portraits/patrons, 800 × 1000), picked by eye from
+ *  the eight paintings: x and y are the face's centre as fractions of the width and the height, s the square's side as a
+ *  fraction of the width. The Hymn's square crop over the head, the round crops on the voice-line cards and the log
+ *  cards' small portraits all cut from here. A patron not listed (a new painting) takes the top centre. */
+export const PORTRAIT_FACE: Record<string, { x: number; y: number; s: number }> = {
+  nerukhan: { x: 0.53, y: 0.17, s: 0.36 }, // the upturned face inside the saints' halos
+  the_quartermaster: { x: 0.48, y: 0.17, s: 0.36 }, // the face under the brim of the cap
+  the_laughing_mask: { x: 0.32, y: 0.19, s: 0.36 }, // the mask and its tear
+  the_toll_keeper: { x: 0.67, y: 0.18, s: 0.36 }, // the hooded face beside the lantern
+  mother_ember: { x: 0.56, y: 0.19, s: 0.36 }, // the smiling face in the ring of fire
+  old_overcast: { x: 0.53, y: 0.22, s: 0.4 }, // the face in the storm cloud (a wider cut: it is the cloud)
+  the_matchmaker: { x: 0.53, y: 0.18, s: 0.36 }, // the upturned face under the knot
+  the_counting_weaver: { x: 0.56, y: 0.2, s: 0.36 }, // the face with the spectacles
+};
+const FACE_DEFAULT = { x: 0.5, y: 0.2, s: 0.4 };
+/** A patron's face box (either spelling of the two with an article). */
+export const faceOf = (patron: string | null | undefined) => { const id = String(patron || ''); return PORTRAIT_FACE[id] || PORTRAIT_FACE['the_' + id] || PORTRAIT_FACE[id.replace(/^the_/, '')] || FACE_DEFAULT; };
+/** The CSS that places a 4:5 portrait <img> inside a square box (position: relative; overflow: hidden) so the box shows
+ *  the face: the image is 1/s of the box wide, shifted so the face's centre sits in the box's centre. */
+export function faceImgStyle(patron: string | null | undefined): string {
+  const f = faceOf(patron), w = 100 / f.s, left = (0.5 - f.x / f.s) * 100, top = (0.5 - (1.25 * f.y) / f.s) * 100;
+  const r = (n: number) => Math.round(n * 100) / 100;
+  return 'position: absolute; display: block; max-width: none; width: ' + r(w) + '%; height: auto; left: ' + r(left) + '%; top: ' + r(top) + '%';
+}
+/** A face crop: the portrait and the style that frames its face; the mark (whole, centred) when there is no painting. */
+export function patronFace(patron: string | null | undefined, large = false): { src: string; imgStyle: string; painted: boolean } {
+  const id = String(patron || ''), src = id ? patronPortrait(id, large) : null;
+  if (src) return { src, imgStyle: faceImgStyle(id), painted: true };
+  return { src: patronMarkUri(id), imgStyle: 'position: absolute; display: block; inset: 12%; width: 76%; height: 76%', painted: false };
+}

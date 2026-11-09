@@ -100,16 +100,38 @@ event to it. Today it plays the old look plus words: a sharp bell, the patron's 
    portrait and "OLD OVERCAST INTERVENES", that it is gone within 2 s, and that a click on the map still works while it
    is up. Take a screenshot and look at it.
 
-## Not done yet (the rest of section 2, for the next part)
+## Part 3: the web, the rest of section 2 (done)
 
-- **2.1 A Whisper:** the Whisper's prayer icon over the praying character's head (fx/faith.ts `prayer`, kind
-  `whisper`: today it draws the icon over the target).
-- **2.2 A Hymn:** a square crop of the patron's portrait over the head, framed in the accent, ~1.5 s; greyed on a miss.
-- **2.4 The faith tab header:** the portrait beside the Devotion meter, the lightbox on a click.
-- **2.5 Pact, switch, farewell and grudge cards:** a small portrait; a grudge's banner greyed.
-- **2.6 Voice-line cards:** a small round crop of the portrait instead of the mark.
-- **Seen in the screenshots, not fixed here:** after a Hymn, the combat card's condition chip reads "WITNESSED · 99"
-  (the until-the-fight-ends duration shown as a number); the spec wants "WITNESSED · UNTIL THE FIGHT ENDS OR <PATRON>
-  ACTS". The fix belongs with the condition's display (part 1's `ends_on`), in the next part.
-- **Docs:** `docs/HANDOFF.md`, `docs/ROADMAP.md` and `CHANGELOG.md` are not updated, and there is no version bump:
-  whoever merges the branch does both.
+**Files**
+
+| File | What |
+|---|---|
+| `apps/web/src/game/faithArt.ts` | `PORTRAIT_FACE` (each painting's face or mask: centre and side as fractions, picked by eye from the eight 800 × 1000 paintings), `faceOf`, `faceImgStyle(patron)` (places the 4:5 `<img>` in a square box so the face is centred), `patronFace(patron, large?)` (`{src, imgStyle, painted}`; the mark, whole, where there is no painting) |
+| `apps/web/src/game/fx/faith.ts` | `whisperOverHead(id, p)` (2.1) and `faceOverHead(patron, p, {accent, miss})` (2.2), used by `prayer` and `prayer_fail`; story prayers resolve the character's token on the area map (`posOfChar`); Witnessed's eye waits for the face over the same head; the REFUSED / UNANSWERED word rises from below the token |
+| `apps/web/src/game/faithView.ts` | The Faith panel model carries `patronId`, `portrait`, `portraitLarge`, and the grudge's `patron` and `face` |
+| `apps/web/src/screens/faithTab.js` | The story faith tab's header portrait (the `patron` lightbox); `faithEventOf` / `faithEventCard` (the pact, switch, grudge and apostasy cards, from the engine's heads); `FACE_BOX`; the voice-line card's round crop; the meter's gate words on one line |
+| `apps/web/src/screens/faithCombat.js` | `faithHeadVals` (the fight's FAITH tab header: portrait, Devotion words and XP, Witnessed in words); the combat log card's round crop |
+| `apps/web/src/screens/combat.js` | The FAITH tab header wired in; `witnessedWords`: the condition chip reads "WITNESSED · UNTIL THE FIGHT ENDS OR <PATRON> ACTS" (it read "WITNESSED · 99") |
+| `apps/web/src/screens/main.js`, `templates/main.template.html`, `templates/combat.template.html` | The faith event cards in the story stream; the header (a grid: the portrait beside the name, the Devotion words, the XP bar and the Witnessed / vow chips; the meter's ten cells and gates under both, full width); the greyed face on the grudge banner; the crops on the voice-line cards |
+| Tests | `fx/faith.test.ts` (+5: the Whisper's icon over the praying unit, not the target, no portrait; the Hymn's square face in the accent, over the head, ~1.5 s; the miss greyed, REFUSED by the payload's `why`; a story prayer on the area map; the eye waits), `faithArt.test.ts` (+1: every face box lies inside its painting; the placement math; the fallback), `screens/faith-presence.test.ts` (7: the header and its lightbox, an Atheist's mark, the grudge banner's face, the round crops, the event cards and the greyed grudge, the fight's header and the Witnessed words) |
+| e2e | `faith-pg.mjs`: the fight's FAITH header and its lightbox, the Hymn's face (square, over the head, in the accent, gone in ~1.5 s), the missed overreach greyed, the Witnessed chip's words, the round crops in the combat log, the Whisper's icon over the head, the story header and grudge banner, the pact / switch / grudge / apostasy cards. `faith.mjs`: the story header (4:5, the gate words inside it, the lightbox) and the story Whisper's icon over the token on the area map |
+
+**What it looks like** (checked in screenshots at 1600 × 1000, deviceScaleFactor 1)
+
+- **A Whisper:** the Whisper's own icon, lit gold, rises from the head of the one who prays (a tile above the token) with the chime and the small gold rays; a soft gold glow where it lands when that's someone else. A miss: the icon grey, rising a little and sinking back. No portrait.
+- **A Hymn:** a square crop of the patron's face (1.25 × the tile, 40–88 px), a 2 px border and a glow in the patron's accent, a soft accent glow behind it, over the head for 1.5 s; the rays and the ring still land on the target. A miss (dice or a refused overreach): the same face greys and dims over 1.1 s, and the word rises from below the token.
+- **The faith tab header** (the story sheet): the 76 × 95 portrait (the patron's accent edge) beside the name, the faith line, `DEVOTION 3 · 0/25 XP` with its XP bar and the Witnessed / vow chips; the ten cells with HYMN I / II / III and MIRACLE run under both. A click opens the 800 × 1000 painting in the lightbox (kind "PATRON · CELESTIAL PORTRAIT"). Atheists keep the eye.
+- **The fight's FAITH tab:** a compact header above the prayers: the 44 × 55 portrait (the lightbox on a click), the name, the Devotion words and XP, and "WITNESSED · UNTIL THE FIGHT ENDS OR OLD OVERCAST ACTS" (or "NOT WITNESSED · A HYMN ANSWERED MAKES YOU").
+- **Cards in the story:** PACT, LEAVING (a switch), GRUDGE and APOSTASY entries become cards with a 40 px square face crop, edged in the patron's accent; a grudge's face is greyed and the card edged in complication red; a switch that leaves a grudge reads red but its face isn't greyed (the grudge's own card is).
+- **Voice-line cards:** a round face crop (32 px in the story, 26 px in the combat log) instead of the mark; the mark only for a patron with no painting.
+
+**No new assets.** The crops are of the shipped portraits (`patron-<id>.webp`, 320 × 400; the lightbox uses the `-lg` one); the glow is the shipped Kenney Particle Pack sprite. Reduced motion: the face and the icon fade in and out without moving or scaling; a miss still greys.
+
+**Checks run (part 3):** `npm test -w @phc/engine`, `npm test -w @phc/web`, `npm run typecheck`, `python3 tools/validate.py data` (0 errors); e2e `faith-pg.mjs`, `faith.mjs`, `heart.mjs`, `two-players.mjs`, all green.
+
+## Still open
+
+- **The intervention's small cut-in (section 3):** the trigger above; not built, as Leon asked.
+- **No combat faith panel header existed before:** the fight's FAITH tab had only its prayer list; part 3 added the compact header there rather than a new panel.
+- **Docs:** `docs/HANDOFF.md`, `docs/ROADMAP.md` and `CHANGELOG.md` are not updated, and there is no version bump: whoever merges the branch does both.
+- **Face boxes by eye:** Old Overcast's face is the storm cloud itself, so its crop is wider (0.4) and reads as a face less clearly than the others at 26–32 px. If Leon wants a different crop for any patron, it is one line in `PORTRAIT_FACE`.

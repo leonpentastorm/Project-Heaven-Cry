@@ -6,7 +6,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf } from '@engine';
 import { setLayer, clampCentre } from './dom';
 import { playFx, setContext, clearFx } from './play';
-import { faithBeat, miracleOverlay, devotionWord } from './faith';
+import { faithBeat, miracleOverlay, devotionWord, FACE_MS } from './faith';
 import * as sfxMod from '../sfx';
 
 function grid(w = 14, h = 10) {
@@ -91,6 +91,65 @@ describe('the faith effects (Blessing 2.0)', () => {
     ctx(); const names = () => spy.mock.calls.map((c: any[]) => c[0]);
     playFx(FAITH_EVENTS[1]); playFx(FAITH_EVENTS[0]); playFx(FAITH_EVENTS[4]);
     expect(names()).toEqual(expect.arrayContaining(['soul_choir', 'crystal', 'hit_metal']));
+  });
+  // Faith 2.2 (spec 2.1, 2.2): the Whisper's icon and the Hymn's face over the head of the one who prays.
+  const boxOf = (el: Element | null) => { let b = el as HTMLElement | null; while (b && !(b.style && b.style.position === 'absolute' && b.style.left)) b = b.parentElement; return b!; };
+  const centreY = (b: HTMLElement) => parseFloat(b.style.top) + parseFloat(b.style.height) / 2;
+  const centreX = (b: HTMLElement) => parseFloat(b.style.left) + parseFloat(b.style.width) / 2;
+  it('a Whisper: its own prayer icon rises over the head of the one who prays (not the target), no portrait', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx(FAITH_EVENTS[0]); vi.advanceTimersByTime(50);
+    const icon = layer.querySelector('[data-phc-faith-whisper="luck"]') as HTMLImageElement;
+    expect(icon).toBeTruthy(); expect(icon.getAttribute('data-phc-faith-miss')).toBeNull();
+    expect(layer.querySelector('[data-phc-faith-face]')).toBeNull(); // a Whisper has no portrait
+    const b = boxOf(icon); expect(centreX(b)).toBe(2 * 40 + 20); expect(centreY(b)).toBeLessThan(5 * 40); // over the praying unit at 2,5, above its tile
+    vi.advanceTimersByTime(1400); expect(layer.querySelector('[data-phc-faith-whisper]')).toBeNull();
+  });
+  it('a Hymn: a square crop of the patron\'s portrait over the head, framed in the accent, about 1.5 s', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx(FAITH_EVENTS[1]); vi.advanceTimersByTime(50);
+    const face = layer.querySelector('[data-phc-faith-face="mother_ember"]') as HTMLElement;
+    expect(face).toBeTruthy(); expect(face.getAttribute('data-phc-faith-miss')).toBeNull();
+    const img = face.querySelector('img') as HTMLImageElement;
+    expect(img.getAttribute('src')).toMatch(/patron-mother_ember/); // the painting, not the mark
+    expect(img.style.width).toBe('277.78%'); // the face box: a side of 0.36 of the width
+    expect(face.style.overflow).toBe('hidden'); expect(face.style.border).toMatch(/2px solid/);
+    const b = boxOf(face); expect(parseFloat(b.style.width)).toBe(parseFloat(b.style.height)); // square
+    expect(centreX(b)).toBe(2 * 40 + 20); expect(centreY(b) + parseFloat(b.style.height) / 2).toBeLessThanOrEqual(5 * 40); // over the head, not on the token
+    expect(FACE_MS).toBe(1500);
+    vi.advanceTimersByTime(1400); expect(layer.querySelector('[data-phc-faith-face]')).toBeTruthy();
+    vi.advanceTimersByTime(300); expect(layer.querySelector('[data-phc-faith-face]')).toBeNull();
+  });
+  it('a missed Hymn: the face greys and fades; a missed Whisper\'s icon sinks back grey', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement, frames: any[] = [];
+    const orig = (Element.prototype as any).animate; (Element.prototype as any).animate = function (f: any) { frames.push(f); return { cancel() {}, finished: Promise.resolve() }; };
+    try {
+      playFx(FAITH_EVENTS[2]); vi.advanceTimersByTime(250);
+      const face = layer.querySelector('[data-phc-faith-face="mother_ember"]') as HTMLElement;
+      expect(face.getAttribute('data-phc-faith-miss')).toBe('1');
+      expect(JSON.stringify(frames)).toMatch(/grayscale\(1\)/);
+      expect(layer.textContent).toMatch(/REFUSED/); // the engine's payload says why: 'overreach'
+      playFx({ k: 'prayer_fail', unit: 'u', kind: 'whisper', id: 'luck', patron: null, at: '2,5', why: 'dice' } as any); vi.advanceTimersByTime(250);
+      expect(layer.querySelector('[data-phc-faith-whisper="luck"][data-phc-faith-miss="1"]')).toBeTruthy();
+      playFx({ k: 'prayer_fail', unit: 'u', kind: 'hymn', id: 'x', patron: 'nerukhan', at: '2,5', why: 'dice' } as any); vi.advanceTimersByTime(250);
+      expect([...layer.querySelectorAll('div')].some((d) => d.textContent === 'UNANSWERED')).toBe(true);
+    } finally { (Element.prototype as any).animate = orig; }
+  });
+  it('the area map: a story prayer (no tile, the character named) goes over the character\'s token', () => {
+    setContext({ code: 'X', characters: { c1: { id: 'c1', name: 'Wren' } }, story: { positions: { c1: '6,3' }, npcs: [] } } as any, 'main');
+    const layer = document.body.lastElementChild as HTMLElement;
+    playFx({ k: 'prayer', unit: 'c1', kind: 'hymn', id: 'h', patron: 'old_overcast', at: null, target: 'c1', ok: true } as any); vi.advanceTimersByTime(50);
+    const face = layer.querySelector('[data-phc-faith-face="old_overcast"]') as HTMLElement; expect(face).toBeTruthy();
+    expect(centreX(boxOf(face))).toBe(6 * 40 + 20);
+    playFx({ k: 'prayer', unit: 'c1', kind: 'whisper', id: 'courage', patron: null, at: null, target: 'c1', ok: true } as any); vi.advanceTimersByTime(50);
+    expect(centreX(boxOf(layer.querySelector('[data-phc-faith-whisper="courage"]')))).toBe(6 * 40 + 20);
+  });
+  it('Witnessed\'s eye waits for the Hymn\'s face over the same head', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx(FAITH_EVENTS[1]); vi.advanceTimersByTime(900); playFx(FAITH_EVENTS[3]); vi.advanceTimersByTime(50);
+    const eye = () => [...layer.querySelectorAll('img')].find((i) => /prayer-witnessed|%3Cpath/.test(i.getAttribute('src') || '') && !i.closest('[data-phc-faith-face]'));
+    expect(eye()).toBeFalsy();
+    vi.advanceTimersByTime(600); expect(eye()).toBeTruthy();
   });
   it('fog: nothing is drawn on a tile the viewer cannot see', () => {
     ctx(); setContext({ code: 'X', characters: {}, story: { positions: {}, npcs: [] }, combat: { units: [{ id: 'u', pos: '2,5', name: 'Wren', side: 'foe' }], fog: true } } as any, 'combat');

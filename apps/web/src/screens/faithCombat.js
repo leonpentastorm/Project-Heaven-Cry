@@ -2,9 +2,9 @@
 // verdict, the vow prompt at the start of a fight, and the patron's lines as cards beside the combat log. The rules are
 // the engine's (faithView, previewPrayer); this is screen glue for screens/combat.js.
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, MIRACLE_COST_LEVELS } from '@engine';
-import { prayAction, pickerFor, oddsText, FAITH_INK } from '../game/faithView';
-import { accentOf, patronMarkUri, vowIconUri } from '../game/faithArt';
-import { patronOfLog } from './faithTab';
+import { prayAction, pickerFor, oddsText, faithPanel, FAITH_INK, FAITH_GOLD } from '../game/faithView';
+import { accentOf, patronFace, patronMarkUri, vowIconUri } from '../game/faithArt';
+import { patronOfLog, FACE_BOX } from './faithTab';
 
 const NEED = { unit: 'Click who it goes to.', two: 'Click two on the grid.', tile: 'Click a tile in sight.' };
 const SIDE = { ally: 'an ally', enemy: 'an enemy', any: 'anyone' };
@@ -73,6 +73,30 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
 /** A combat log line as a patron's card when it is one ('Mother Ember: "…"', faith.ts), else null. */
 export function patronLogCard(line) {
   const x = patronOfLog(line); if (!x) return null;
-  return { isPatron: true, mark: patronMarkUri(x.patron), text: x.text, head: (FAITH_PATRON[x.patron]?.name || x.patron).toUpperCase(),
-    style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 1px 8px; align-items: start; padding: 6px 8px; border-radius: 8px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + accentOf(x.patron) };
+  // Faith 2.2 (spec 2.6): a small round crop of the patron's face (the mark where there is no painting).
+  const f = patronFace(x.patron);
+  return { isPatron: true, patron: x.patron, mark: patronMarkUri(x.patron), face: f.src, faceStyle: f.imgStyle, faceBox: FACE_BOX(26, accentOf(x.patron), true), text: x.text, head: (FAITH_PATRON[x.patron]?.name || x.patron).toUpperCase(),
+    style: 'display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 1px 8px; align-items: start; padding: 6px 8px; border-radius: 8px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + accentOf(x.patron) };
+}
+
+// ---------- the FAITH tab's header in a fight (Faith 2.2, spec 2.4) ----------
+/** Your patron's portrait beside the Devotion meter (its words and the XP toward the next level) and whether you are
+ *  Witnessed; a click on the portrait opens it large (the lightbox). Faithful characters only. */
+export function faithHeadVals(sc, g, cur, zoomer) {
+  const no = { show: false };
+  if (!g || !cur || !cur.charId) return no;
+  const P = faithPanel(faithView(g, cur.charId));
+  if (!P || !P.faithful || !P.patronId) return no;
+  const name = P.title, NAME = String(name).toUpperCase();
+  return {
+    show: true, patron: P.patronId, name, hasPortrait: !!P.portrait, noPortrait: !P.portrait, img: P.portrait || P.mark,
+    zoom: zoomer(sc, P.portraitLarge || P.portrait || P.mark, name, 'patron'), label: 'View ' + name + ' large',
+    devotion: P.devotion, devotionText: P.devotionText, xpNext: P.xpNextText,
+    xpFillStyle: 'height: 100%; border-radius: 99px; width: ' + Math.round(P.xpFill * 100) + '%; background: var(--faith-light, ' + FAITH_GOLD + ')',
+    witnessed: P.witnessed.on, witnessedText: P.witnessed.on ? 'WITNESSED · UNTIL THE FIGHT ENDS OR ' + NAME + ' ACTS' : P.witnessed.can ? 'NOT WITNESSED · A HYMN ANSWERED MAKES YOU' : 'NOT WITNESSED',
+    witnessedIcon: P.witnessed.icon,
+    witnessedStyle: 'display: inline-flex; align-items: center; gap: 5px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; line-height: 1.3; color: ' + (P.witnessed.on ? '#FFFFFF' : '#7F8BA1'),
+    btnStyle: 'display: block; flex: none; width: 44px; height: 55px; padding: 0; border-radius: 6px; overflow: hidden; background: #05070B; cursor: zoom-in; border: 1px solid ' + P.accent,
+    style: 'display: flex; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 10px; background: #0D1119; border: 1px solid #232D3F; border-left: 3px solid ' + P.accent,
+  };
 }
