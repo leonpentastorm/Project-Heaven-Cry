@@ -714,7 +714,7 @@ export class MainLogic extends DCLogic {
           const hv = S.hoverTile && plan.reach.has(S.hoverTile) ? S.hoverTile : null;
           // Rules 1.8 (item 683): the route the click takes goes around revealed hazards when it can (movePaths); the
           // preview marks every revealed hazard tile it still crosses, and says so.
-          if (hv) { const rh = routeHazards(cbx, u, hv), tl = rh ? rh.tiles : P.dist[hv], cst = W === 'sprint' ? 2 : apForTiles(tl, 0, mvv) + (W === 'sneak' ? tl : 0), ct = crossesText(rh && rh.crosses);
+          if (hv) { const rh = routeHazards(cbx, u, hv, W === 'sprint' ? 'sprint' : W === 'sneak' ? 'sneak' : 'move'), tl = rh ? rh.tiles : P.dist[hv], cst = W === 'sprint' ? 2 : apForTiles(tl, 0, mvv) + (W === 'sneak' ? tl : 0), ct = crossesText(rh && rh.crosses);
             plan.hv = hv; plan.cost = '−' + cst + ' AP · ' + tl + (tl === 1 ? ' tile' : ' tiles') + (ct ? ' · ⚠ HAZARD' : '');
             plan.info = (W === 'sprint' ? 'Sprint' : W === 'sneak' ? 'Sneak' : W === 'drone' ? 'The drone flies' : W === 'beast' ? 'The beast pads' : W === 'twin' ? 'The twin steps' : 'Move') + ' to ' + refOf(hv) + ': ' + tl + (tl === 1 ? ' tile' : ' tiles') + ', ' + cst + ' AP (' + u.ap + ' left).'
               + (ct ? ' ' + ct : rh && tl > P.dist[hv] ? ' The path goes around the revealed hazards (' + (tl - P.dist[hv]) + (tl - P.dist[hv] === 1 ? ' tile' : ' tiles') + ' longer).' : '');

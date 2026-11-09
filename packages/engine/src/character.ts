@@ -49,7 +49,7 @@ export interface Character extends Sheet {
   weaponState?: GearState;
   /** What the off hand holds: a one-handed weapon, a shield, a light or a focus (spec: Hands). `loaded`: the rounds in
    * an off-hand gun (rules 1.8, item 688; missing means full, old saves). */
-  offHand?: ({ id: string; loaded?: number } & GearState) | null;
+  offHand?: ({ id: string; loaded?: number; ammoType?: string | null } & GearState) | null;
   /** Slot armour worn, by slot (head, head_accessory, inner_torso, lower_torso, legs, hands, footwear). */
   worn?: Record<string, string>;
   /** Magic (spec: Mana, rules 1.2): Sigil words known; Outburst designs ready and the schools and modules learned;
@@ -738,12 +738,16 @@ const equipBanWhy = (c: Character, ctx: any): string => {
   if ((c.traits || []).includes('old_school')) return ctx.mod === 'mod_red_dot' || (ctx.mods || []).includes('mod_red_dot') ? 'Old School: no red dot on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';
   return 'A trait won\'t let you.';
 };
+/** A pack entry that is ammunition (a magazine stack, loose rounds), never a thing for a hand (review fix). */
+export const isAmmoEntry = (it: PackItem) => !!(it.mags || it.calibre || it.kind === 'ammo' && !ITEM[it.item || it.id]);
+export const AMMO_WHY = 'That is ammunition, not a weapon.';
 export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
   if (isPlotItem(it)) return 'A plot item can\'t be equipped.';
+  if (isAmmoEntry(it)) return AMMO_WHY;
   const wid = it.weapon && WEAPON[it.weapon] ? it.weapon : null, item = ITEM[it.item || it.id] as any;
   const take = () => { if (it.qty > 1) it.qty--; else pack.splice(idx, 1); };
-  const putBack = (id: string, st: (GearState & { loaded?: number; id?: string }) | undefined, loaded?: number) => { const e = gearEntry(id, st, loaded ?? st?.loaded); if (e) pack.push(e); };
+  const putBack = (id: string, st: (GearState & { loaded?: number; id?: string; ammoType?: string | null }) | undefined, loaded?: number, ammoType?: string | null) => { const e = gearEntry(id, st, loaded ?? st?.loaded, ammoType); if (e) pack.push(e); };
   // Items may refuse what is equipped or fitted (stat 'equip_ban' {weapon, mod}: Old School won't carry an electronic or
   // Evoker-linked gun or a red dot; Forlorn Hope's armour cap is armourCap) — perk-runtime still-open item 6.
   const ban = (ctx: any) => statQuery({ c }, 'equip_ban', ctx).add > 0 ? equipBanWhy(c, ctx) : null;
@@ -751,17 +755,17 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (!wid) return 'Only weapons go in the main hand.';
     const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
-    take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined); // a stowed gun keeps the rounds in it (rules 1.3)
+    take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType); // a stowed gun keeps the rounds in it (rules 1.3), and their type
     if (twoHands(c, wid) && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
     c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = it.loaded ?? 0;
-    c.loadedType = null; // the drawn gun holds standard rounds (its pack entry keeps no type)
+    c.loadedType = it.loaded && it.ammoType ? it.ammoType : null; // the drawn gun holds the rounds its entry kept, of their type (review fix)
   } else if (to === 'off') {
     if (twoHands(c, c.weapon)) return 'Your main-hand weapon needs both hands.';
     if (wid) { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
     // An off-hand gun holds what its pack entry held, as the main hand does (rules 1.8, item 688).
-    c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0 } : {}) };
+    c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };
   } else {
     const slot = item?.slot; if (!slot || slot === 'off_hand' || item.category !== 'armour') return 'That isn\'t slot armour.';
     take(); const worn = { ...(c.worn || {}) }; if (worn[slot]) putBack(worn[slot], undefined); worn[slot] = it.item || it.id; c.worn = worn;
@@ -770,17 +774,18 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
 }
 /** The pack entry for a weapon or item taken out of a hand: a weapon keeps its rarity, wear, mods, name and the rounds
  * in it (a stowed gun keeps its rounds, rules 1.3); anything else is a tool (a focus a focus). Fists are nothing. */
-export function gearEntry(id: string, st?: (GearState & { loaded?: number; id?: string }) | null, loaded?: number): PackItem | null {
+export function gearEntry(id: string, st?: (GearState & { loaded?: number; id?: string; ammoType?: string | null }) | null, loaded?: number, ammoType?: string | null): PackItem | null {
   if (!id || id === 'fists') return null;
-  const { loaded: _l, id: _i, ...g } = (st || {}) as any; void _l; void _i;
-  const keep = Object.fromEntries(Object.entries(g).filter(([, v]) => v != null));
-  if (WEAPON[id]) return { id, name: g.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...keep, ...(loaded ? { loaded } : {}) } as PackItem;
+  const { loaded: _l, id: _i, ammoType: _t, ...g } = (st || {}) as any; void _l; void _i;
+  const keep = Object.fromEntries(Object.entries(g).filter(([, v]) => v != null)), type = ammoType === undefined ? _t : ammoType;
+  // The rounds in a stowed gun keep their type (review fix: incendiary rounds stayed incendiary only in the hand).
+  if (WEAPON[id]) return { id, name: g.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...keep, ...(loaded ? { loaded } : {}), ...(loaded && type ? { ammoType: type } : {}) } as PackItem;
   if (ITEM[id]) return { id, item: id, name: ITEM[id].name, qty: 1, kind: (ITEM[id] as any).category === 'focus' ? 'focus' : 'tool', ...keep } as PackItem;
   return { id, item: id, name: id, qty: 1, kind: 'tool' };
 }
 /** What a hand holds, as the pack entry it would become (rules 1.8: put away or dropped), or null for an empty hand. */
 export function handEntry(c: Character, hand: 'main' | 'off'): PackItem | null {
-  if (hand === 'main') return gearEntry(c.weapon, c.weaponState, c.loaded ?? undefined);
+  if (hand === 'main') return gearEntry(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType ?? null);
   return c.offHand && !twoHands(c, c.weapon) ? gearEntry(c.offHand.id, c.offHand, c.offHand.loaded) : null;
 }
 /** Empty a hand without putting anything in the pack (the item is dropped or handed on). The main hand becomes fists. */

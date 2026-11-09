@@ -6,7 +6,7 @@
 // the fight's checks, Hot-Swap, the write-back and the rebuild). The numbers are `data/world_play.json` `gear`.
 import wpJ from '../../../data/world_play.json';
 import { WEAPON, ITEM } from './data';
-import { type Character, packOf, twoHands, isPlotItem } from './character';
+import { type Character, packOf, twoHands, isPlotItem, isAmmoEntry, AMMO_WHY } from './character';
 import type { Combat, Unit } from './combat';
 import { holderOf, uses } from './effects';
 
@@ -64,6 +64,7 @@ export function gearPlan(c: Character, op: GearOp, o: { disarmed?: boolean } = {
       const idx = packRef(c, op.item), it = packOf(c)[idx];
       if (!it) return no('Nothing there in your pack.', op.op !== 'wear');
       if (isPlotItem(it)) return no('A plot item can\'t be equipped.', op.op !== 'wear');
+      if (isAmmoEntry(it)) return no(AMMO_WHY, op.op !== 'wear'); // review fix: a magazine stack drew a fresh empty gun
       if (op.op === 'mod') return ok(GEAR.hand_ap, 'fits the ' + nameOf(it.item || it.id), true, idx);
       if (op.op === 'wear') {
         const def: any = ITEM[it.item || it.id];

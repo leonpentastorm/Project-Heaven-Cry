@@ -971,13 +971,16 @@
     "calibres_provisional": true,
     "reloading": {
       "cost_ap": 2,
-      "magazine": "swap in the fullest spare magazine; the one in the gun drops on the floor with any rounds left in it",
+      "magazine": "speed reload (cost_ap): swap in the fullest spare magazine; the one in the gun drops into the pile on your tile, empty or with its rounds and ammo type (spec items 679, 680)",
+      "tactical": "tactical reload: the speed reload's cost + world_play.json pile.tactical_reload_extra_ap (1); the old magazine goes back to the spares in the pack with its rounds and type; not for a gun loaded round by round (spec item 679)",
+      "full": "a magazine gun that is full isn't reloaded (Already full.)",
+      "off_hand": "a character's off-hand gun reloads only from its own spares (or, loaded round by round, its loose rounds); an enemy's never runs out until stat blocks list it",
       "loose": "top up from loose rounds; nothing drops",
-      "enemies": "carry unlimited spares (until stat blocks list ammo)",
+      "enemies": "carry the spare magazines their tier lists (Enemy stat blocks) and always speed-reload, so their magazines feed the piles (spec item 679)",
       "provisional": true,
       "only_loaded": true,
       "pickup_ap": 1,
-      "pickup": "everything on your tile or one adjacent tile",
+      "pickup": "a selection of the entries in the pile on your tile or one adjacent tile, everything by default (world_play.json ap.pickup; spec items 674, 675)",
       "load_rounds_per_ap": 5,
       "load_out_of_combat_ap": 0
     }

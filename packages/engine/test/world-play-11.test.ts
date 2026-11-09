@@ -98,7 +98,7 @@ describe('speed and tactical reloads (items 679, 680)', () => {
     const { cb, u } = medic(); u.ammo = 4; u.ammoType = 'hollow_point';
     expect(reload(cb, u)).toBeNull(); expect(u.ap).toBe(4); expect(u.ammoType).toBeNull();
     const p = pileOn(cb.objects, u.pos)!; expect(labels(p)).toEqual(['Service pistol magazine 4/12 (hollow-point)']); expect(p.items![0].pack!.magTypes).toEqual(['hollow_point']);
-    expect(cb.log.at(-1)).toMatch(/reloads and drops the magazine with 4 rounds still in it at/);
+    expect(cb.log.at(-1)).toMatch(/reloads and drops the magazine with 4 rounds still in it \(/); // no tile: the pile shows it, under fog
     expect(cb.fx!.some((e) => e.k === 'pile' && e.why === 'drop')).toBe(true);
   });
   it('a tactical reload is +1 AP and puts the old magazine back with the spares, empty or not', () => {
@@ -234,7 +234,7 @@ describe('fog and hidden piles (items 676, 677)', () => {
     let g = turn(start(), { ground: [{ at: 'D2', items: [{ item: 'rounds:rifle', qty: 30 }] }, { at: 'L2', items: [{ item: 'mag:service_pistol' }] }], objects: [{ action: 'place', id: '', kind: 'cache', at: 'E5', name: 'Crate', text: 'A crate.', approaches: [], items: [{ item: 'stim', qty: 1 }] }] });
     expect(storyObjects(g).filter(isPile).length).toBe(2);
     const v = viewFor(g, P2), seen = (v.story.objects || []).filter(isPile);
-    expect(seen.map((o) => o.pos)).toEqual([K('D2')]); expect(labels(seen[0])).toEqual(['30 × Rifle']); // open: its contents show
+    expect(seen.map((o) => o.pos)).toEqual([K('D2')]); expect(labels(seen[0])).toEqual(['30 × Rifle rounds']); // open: its contents show
     expect((v.story.objects || []).find((o) => o.kind === 'cache')!.items).toEqual([]); // a cache stays closed
     // Standing past the wall, L2 is in sight.
     const v2 = viewFor(set(g, (x) => { positionsOf(x)[rook(x).id] = K('K2'); }), P2);
@@ -271,7 +271,7 @@ describe('the Narrator: ground[], objects[] piles and loot[] ammo (items 681, 68
     g = turn(start(), { ground: [{ at: 'H3', items: [{ item: 'stim' }] }, { at: 'Z99', items: [{ item: 'stim' }] }, { at: 'C9', items: Array.from({ length: 20 }, (_, i) => ({ item: 'plot', name: 'Note ' + i })) }] });
     expect(storyObjects(g).filter(isPile).map((o) => o.pos)).toEqual([K('C9')]); expect(pileOn(storyObjects(g), K('C9'))!.items!.length).toBe(PILE.narrator_items_per_pile);
     g = turn(start(), { objects: [{ action: 'place', id: '', kind: 'pile', at: 'C8', name: 'Pile', text: '', approaches: [], items: [{ item: 'rounds:rifle', qty: 15 }] }] });
-    expect(labels(pileOn(storyObjects(g), K('C8')))).toEqual(['15 × Rifle']);
+    expect(labels(pileOn(storyObjects(g), K('C8')))).toEqual(['15 × Rifle rounds']);
   });
   it('loot[] gives magazines and rounds by id', () => {
     const g = turn(start(), { loot: [{ charId: rook(start()).id, item: 'mag:hellraiser_service_rifle', qty: 10 }, { charId: rook(start()).id, item: 'rounds:rifle', qty: 30 }, { charId: rook(start()).id, item: 'mag:service_pistol', qty: 1 }] });

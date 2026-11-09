@@ -55,6 +55,10 @@ describe('the World Play fields in submit_turn', () => {
     expect(s.properties.missions.items.properties.where).toBeTruthy(); expect(s.properties.missions.items.required).toEqual(['mission']);
     for (const a of ['carry', 'put_down', 'search', 'attempt', 'ask']) expect(s.properties.actions.items.properties.act.enum).toContain(a);
     expect(s.properties.actions.items.properties.index).toBeTruthy();
+    // Rules 1.8 (review fix): a typed "tactical reload" or "reload my off-hand gun" maps to world/act reload {tactical, hand}.
+    expect(s.properties.actions.items.properties.tactical).toEqual({ type: 'boolean' }); expect(s.properties.actions.items.properties.hand.enum).toEqual(['main', 'off', 'both']);
+    expect(RULES_PROMPT).toMatch(/reload \(tactical: the magazine to the pack, \+1 AP; hand\)/);
+    expect(RULES_PROMPT).toMatch(/what the dead carry is the engine's \(piles\)/); expect(RULES_PROMPT).not.toMatch(/a body searched/);
     // A turn full of world play, hazards placed and fired, changes nothing in the tool.
     g = apply(ask(g), { type: 'narrator/turn', turn: worldTurn(g) }, 'host');
     expect(JSON.stringify(submitTool(g))).toBe(before);
@@ -86,7 +90,7 @@ describe('the World Play fields in submit_turn', () => {
 describe('the World Play rules for the Narrator', () => {
   it('the map checklist gains section 10\'s lines; PACING the plain-objectives and no-typing-past-checks rules; CRAFT stays', () => {
     expect(MAP_TRUTH).toMatch(/placed, with a face/); expect(MAP_TRUTH).toMatch(/Carried people ride in the inventory/i);
-    expect(MAP_TRUTH).toMatch(/Loot sits in caches; dangers are hazards; ambushes are triggers/); expect(MAP_TRUTH).toMatch(/has wants \(and talk when they matter\); every objective you open has where/);
+    expect(MAP_TRUTH).toMatch(/Loot sits in caches and piles; dangers are hazards; ambushes are triggers/); expect(MAP_TRUTH).toMatch(/has wants \(and talk when they matter\); every objective you open has where/);
     expect(PACING).toMatch(/say what, where and why, plainly/); expect(PACING).toMatch(/Typing can't skip a check/);
     expect(RULES_PROMPT).toContain(CRAFT); expect(RULES_PROMPT).toContain(PACING); expect(RULES_PROMPT).toContain(MAP_TRUTH);
     expect(RULES_PROMPT).toMatch(/hazards\[\]: kind minefield, fire, radiation, gas or collapse/); expect(RULES_PROMPT).toMatch(/triggers\[\]: when enter/);

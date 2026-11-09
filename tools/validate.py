@@ -734,6 +734,8 @@ if lt is not None:
                 errors.append(f"{where}: unknown rarity {e['rarity']}")
             if "chance" in e:
                 errors.append(f"{where}: a table entry is weighted; chance belongs to drops.items lists")
+            if "note" in e and (not isinstance(e["note"], str) or not e["note"].strip() or len(e["note"]) > 40):
+                errors.append(f"{where}: note must be a short text (a plate's lesson, item 692)")
     if "personal" in str([e.get("item") for t in tables.values() for e in t.get("entries", [])]):
         pi = lt.get("personal_items") or []
         if not pi or not all(isinstance(x, dict) and x.get("name") and x.get("text") for x in pi):

@@ -213,7 +213,7 @@ export type NarratorTurn = {
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
    * player's own actions when the next round opens, from their fresh AP, with every normal rule (spec: Overworld rounds). */
-  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string;
+  actions?: { charId: string; act: WorldAct; to?: string; how?: 'move' | 'sprint' | 'sneak'; targetId?: string; mode?: AttackMode; objId?: string; word?: string; tile?: string; aim?: string; design?: string; hold?: boolean; watch?: boolean; on?: boolean; aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; tactical?: boolean; hand?: 'main' | 'off' | 'both';
     /** Rules 1.7: attempt: the approach's number as listed (1 = the first); ask: wants or objective. */ index?: number; what?: 'wants' | 'objective' }[];
   /** Place, move, update or remove people and enemies on the overworld map; rules 1.7: carry (id, charId) and drop
    * (id, charId, at) a creature in the story, and every person's face (kind, avatar) and talk (wants, knows, talk). */
@@ -851,6 +851,7 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   let given = '';
   let guns: string[] = [];
   if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) { pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); guns.push(id); } if (rarity !== 'standard') given += ' (' + rarity + ')'; }
+  else if (id === 'stim_injector' || id === 'essence_of_experience') { if (id === 'stim_injector') c.stims += n; else c.essence += n; given = ITEM[id].name; }
   else if (ITEM[id]) { const note = String(l.note || '').trim().slice(0, 40); given = (label || ITEM[id].name).slice(0, 60) + (note ? ' (' + note.toUpperCase() + ')' : ''); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given && (x.note || '') === note); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool', ...(note ? { note } : {}) }); }
   else {
     const name = label || pack.find((x) => x.kind === 'plot' && x.id === id)?.name || id.replace(/^plot:/, '').replace(/_/g, ' ').trim(); if (!name) return;
@@ -1150,8 +1151,10 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     canon(g, 'The party travelled to ' + zoneMap(g).name + ' (scene ' + g.story.scene.n + ').', [], 2);
     musicOnTravel(g);
   }
-  for (const op of t.objects || []) applyObjectOp(g, op);
-  for (const op of (Array.isArray(t.ground) ? t.ground : []).slice(0, PILE.narrator_entries_per_turn)) applyGroundOp(g, op); // rules 1.8
+  // Rules 1.8 (item 681): a pile entry in objects[] counts with ground[] against the entries a turn (review fix).
+  let pileBudget = PILE.narrator_entries_per_turn;
+  for (const op of t.objects || []) { if (pileObjectOp(g, op)) { if (pileBudget <= 0) continue; pileBudget--; } applyObjectOp(g, op); }
+  for (const op of (Array.isArray(t.ground) ? t.ground : []).slice(0, Math.max(0, pileBudget))) applyGroundOp(g, op); // rules 1.8
   for (const op of t.npcs || []) applyNpcOp(g, op);
   // Rules 1.7: hazards and triggers (world.ts); the events this call saw are consumed.
   for (const op of (t.hazards || []).slice(0, 12)) applyHazardOp(g, op);
@@ -1360,7 +1363,7 @@ function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'ge
 }
 /** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
  * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
-const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'unarmedBonus',
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
   'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'stealth', 'injResist'] as const;
 /** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
@@ -1403,10 +1406,10 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
     case 'mod': err = fitMod(c, idx); break;
     case 'swap': {
       if (disarmed) leaveDowned();
-      const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined } : null;
+      const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
       c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods, ...(off.name ? { name: off.name } : {}) };
-      c.loaded = off.loaded ?? (WEAPON[off.id].magazine ?? 0); c.loadedType = null;
-      c.offHand = main ? { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods, ...(main.name ? { name: main.name } : {}), ...(WEAPON[main.id].magazine != null ? { loaded: main.loaded ?? 0 } : {}) } : null;
+      c.loaded = off.loaded ?? (WEAPON[off.id].magazine ?? 0); c.loadedType = c.loaded && off.ammoType ? off.ammoType : null; // each gun keeps its rounds' type
+      c.offHand = main ? { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods, ...(main.name ? { name: main.name } : {}), ...(WEAPON[main.id].magazine != null ? { loaded: main.loaded ?? 0, ...(main.loaded && main.ammoType ? { ammoType: main.ammoType } : {}) } : {}) } : null;
       break;
     }
     case 'stow': err = unequip(c, op.slot); break;
@@ -1416,7 +1419,9 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   if (toPile.length) dropToPile(cb, u.pos, toPile, 'drop');
   refitUnit(g, u, c, base);
   if (rearm) endCond(u, 'disarmed', cb);
-  if (c.weapon !== wasMain) { u.heat = 0; u.jammed = false; u.braced = false; }
+  // Heat stays with the fighter (design section 3: the rebuild keeps heat; review fix: two swaps no longer cool a gun);
+  // a jam and a brace belong to the gun that left the hand.
+  if (c.weapon !== wasMain) { u.jammed = false; u.braced = false; }
   u.ap -= ap;
   const where = toPile.length ? (op.op === 'drop' ? ': it lands in the pile at ' : ', leaving the weapon on the ground in the pile at ') + refOf(u.pos) : '';
   cb.log.push(c.name + ' ' + plan.label + ' (' + ap + ' AP)' + where + (op.op !== 'mod' && u.mg ? focusLine(c) : '') + '.');
@@ -1533,13 +1538,20 @@ function arrive(g: GameState, c: Character, k: string) {
   }
   spotTraps(storyObjects(g), k, c.skills.vigilant || 0, c.name, (l) => push(g, { kind: 'system', text: l }));
 }
+/** An objects[] entry that is a pile op (rules 1.8): kind 'pile', or the id of a pile. */
+function pileObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[number]): boolean {
+  if (!op || typeof op !== 'object') return false;
+  if (op.kind === 'pile') return true;
+  const o = op.id ? storyObjects(g).find((x) => x.id === op.id) : undefined; return !!o && isPile(o);
+}
 function applyObjectOp(g: GameState, op: NonNullable<NarratorTurn['objects']>[number]) {
   const map = zoneMap(g), objs = storyObjects(g);
   const approaches = cleanApproaches(op.approaches); // rules 1.7: success and failure effects (world.ts)
-  const existing = objs.find((o) => o.id === op.id) || (op.at ? objs.find((o) => o.pos === keyOf(op.at, map) && (!op.kind || o.kind === op.kind)) : undefined);
+  // A pile is matched only by its id or by kind 'pile' (review fix: an op with no kind on a pile's tile became a pile op).
+  const existing = objs.find((o) => o.id === op.id) || (op.at ? objs.find((o) => o.pos === keyOf(op.at, map) && (!op.kind ? !isPile(o) : o.kind === op.kind)) : undefined);
   if (op.action === 'remove') { if (existing) g.story.objects = objs.filter((o) => o !== existing); return; }
   // Rules 1.8: a pile is placed (or added to) as a ground[] entry; an update may reveal it or add to it.
-  if (op.kind === 'pile' || (existing && isPile(existing))) {
+  if (pileObjectOp(g, op)) {
     if (op.action === 'update' && existing) { if (op.hidden === false) existing.hidden = false; if (Array.isArray(op.items) && op.items.length) applyGroundOp(g, { at: refOf(existing.pos), items: op.items as any, hidden: op.hidden }); return; }
     if (op.action !== 'update') applyGroundOp(g, { at: op.at, items: (op.items || []) as any, hidden: op.hidden });
     return;
@@ -1642,7 +1654,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
     // Ammo carried out of the fight (spec: Reloading); the off-hand gun's rounds too (rules 1.8, item 688).
     c.loaded = u.ammo;
-    if (c.offHand && u.offWeapon && u.offWeapon === c.offHand.id && WEAPON[c.offHand.id]?.magazine != null) c.offHand = { ...c.offHand, loaded: Math.max(0, u.offAmmo ?? 0) };
+    if (c.offHand && u.offWeapon && u.offWeapon === c.offHand.id && WEAPON[c.offHand.id]?.magazine != null) { const { ammoType: _t, ...oh } = c.offHand; void _t; c.offHand = { ...oh, loaded: Math.max(0, u.offAmmo ?? 0), ...(u.offAmmo && u.offAmmoType ? { ammoType: u.offAmmoType } : {}) }; }
     magicToCharacter(c, u);
     if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur };
     { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
@@ -1661,7 +1673,11 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     }
     // Rules 1.3: the off-hand gun's spares, thrown items used, special ammo, persisting class resources. The off hand's
     // spares are written before u.extra (rules 1.8 fix: they used to overwrite magazines u.extra had just added).
-    if (u.offMags && c.offHand && c.offHand.id !== c.weapon) { let oi = pack.findIndex((it) => it.weapon === c.offHand!.id && it.mags); if (oi < 0 && u.offMags.length) { pack.push({ ...magsOf(c.offHand.id, 0), mags: [] }); oi = pack.length - 1; } if (oi >= 0) { pack[oi].mags = [...u.offMags]; pack[oi].qty = u.offMags.length; } }
+    if (u.offMags && c.offHand && c.offHand.id !== c.weapon) { let oi = pack.findIndex((it) => it.weapon === c.offHand!.id && it.mags); if (oi < 0 && u.offMags.length) { pack.push({ ...magsOf(c.offHand.id, 0), mags: [] }); oi = pack.length - 1; } if (oi >= 0) { pack[oi].mags = [...u.offMags]; pack[oi].qty = u.offMags.length;
+      // Each off-hand magazine keeps its type, in line with the magazines (review fix: picked-up types were lost).
+      if (u.offMagTypes || pack[oi].magTypes) { const t = Array.from({ length: u.offMags.length }, (_, i) => (u.offMagTypes ? u.offMagTypes[i] ?? null : pack[oi].magTypes?.[i] ?? null)); if (t.some(Boolean)) pack[oi].magTypes = t; else delete pack[oi].magTypes; } } }
+    // An off-hand gun loaded round by round, of another calibre: the rounds it used come off that calibre's stacks.
+    if (u.offLoose != null && c.offHand && WEAPON[c.offHand.id]?.ammo) { const cal = WEAPON[c.offHand.id].ammo; let left = u.offLoose; for (const it of pack) if (it.calibre === cal && !it.mags) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
     for (const x of u.extra || []) packAdd(pack, magItem(x.weapon, x.rounds, x.type || null));
     delete u.extra; // written back once (rules 1.8 fix: a mid-fight swap wrote them twice)
     if (u.throwables) for (const [item, left] of Object.entries(u.throwables)) { let have = pack.filter((it) => (it.weapon || it.id) === item && !it.mags).reduce((t, it) => t + it.qty, 0), drop = have - left;
@@ -1983,14 +1999,14 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   if (a.act === 'move') {
     const map = zoneMap(g), k = a.to ? (/,/.test(a.to) ? a.to : keyOf(a.to, map)) : null;
     if (!k || !standable(map, k)) fail('Nobody can stand there.');
-    const P = movePaths(cb, u, k!), tiles = P.dist[k!]; // rules 1.8: the click-path goes around revealed hazards (item 683)
+    const P = movePaths(cb, u, k!, a.how === 'sprint' ? 'sprint' : a.how === 'sneak' ? 'sneak' : 'move'), tiles = P.dist[k!]; // rules 1.8: the click-path goes around revealed hazards (item 683)
     if (tiles === undefined) fail('There\'s no way through to there: a wall, a closed door or someone is in the way.');
     // 'world_move_cost' {c, u, tiles, how, extra}: sneaking costs 1 AP a tile on top (an item may change that).
     const wm: any = emitStory(g, 'world_move_cost', { c, u, tiles, how: a.how || 'move', extra: a.how === 'sneak' ? tiles : 0, g });
     // The move is priced by moveUnit through 'move_cost' (Charge!, Into the Dark, Shadow Step discount it: hooks gap B9);
     // the sneak's extra comes after. A failure throws, and apply() keeps the state from before the action.
     const extra = Math.max(0, wm.extra), ap0 = u.ap;
-    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move'); if (err) fail(err.replace(/^Needs (\d+(?:\.\d+)?) AP\.$/, (_m, n) => 'Needs ' + (+n + extra) + ' AP (' + ap0 + ' left).'));
+    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move', { via: P }); if (err) fail(err.replace(/^Needs (\d+(?:\.\d+)?) AP\.$/, (_m, n) => 'Needs ' + (+n + extra) + ' AP (' + ap0 + ' left).'));
     if (u.ap < extra && a.how !== 'sprint') fail('Needs ' + (Math.round((ap0 - u.ap + extra) * 10) / 10) + ' AP (' + ap0 + ' left).');
     u.ap -= extra;
     const route = routeTo(P, from, k!);
@@ -2177,6 +2193,11 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
   if (!holdersOf({ c }).some((h) => h.key === 'class:shade.silent_kill')) return false;
   const others = cbx.units.filter((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered);
   if (!others.length || others.some((v) => unitSees(cbx, v, att.pos))) return false;
+  // Rules 1.8 (item 699): the death sweep still runs, so the body's drops lie in the pile on its tile on the area map
+  // (searching the body is picking up that pile).
+  noteDeaths(cbx, g.rng);
+  { const p = objectsOf(cbx).find((o) => isPile(o) && o.pos === tgt.pos);
+    if (p) { const objs = storyObjects(g), i = objs.findIndex((o) => isPile(o) && o.pos === tgt.pos), copy = JSON.parse(JSON.stringify(p)); if (i >= 0) objs[i] = copy; else objs.push(copy); } }
   for (const x of cbx.units) if (x.charId) unitToCharacter(g, x, false, true);
   magicOut(g, cbx, false);
   const back = others.map((u) => { const was = npcsOf(g).find((n) => n.id === u.npcId); return { ...(was || {}), id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos, portrait: u.img || undefined, ...(u.hp < u.maxHp ? { hp: u.hp } : {}) } as Npc; });
@@ -2575,7 +2596,9 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
 function sbEquip(c: Character, idx: number, to: 'main' | 'off' | 'worn' | 'mod'): string | null {
   const it = packOf(c)[idx]; if (!it) return 'Nothing there.';
   const err = to === 'mod' ? fitMod(c, idx) : equip(c, idx, to); if (err) return err;
-  if (to === 'main') c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
+  if (to === 'main') { c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0; c.loadedType = null; }
+  // The off hand's gun comes loaded too, as the tools say (review fix: item 688 left it empty here).
+  if (to === 'off' && c.offHand && WEAPON[c.offHand.id]?.magazine != null) { const { ammoType: _t, ...oh } = c.offHand; void _t; c.offHand = { ...oh, loaded: magazineSize(c.offHand.id, c.offHand.mods) ?? 0 }; }
   return null;
 }
 /** Take something off: the main hand too (the weapon goes to the pack with its rounds and the hands are empty: fists). */

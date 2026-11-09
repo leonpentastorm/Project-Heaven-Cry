@@ -4,7 +4,7 @@
 // Three layers, the most specific winning: the engine's defaults (data/loot_tables.json), a campaign's own tables and
 // `drops` on its zone people and encounter enemies, and the Narrator's `drops` on combat.enemies[] and npcs[].
 import ltJ from '../../../data/loot_tables.json';
-import { WEAPON, ITEM, CALIBRE_NAME } from './data';
+import { WEAPON, ITEM, CALIBRE_NAME, SIGIL, TONE, SCHOOL, MODULE } from './data';
 import { type PackItem, type Rarity, maxDurOf, plotItem, roundsOf } from './character';
 import { lootToPack, magItem, itemLabel } from './containers';
 import { type Combat, type Unit, dropToPile } from './combat';
@@ -13,7 +13,7 @@ import { type Rng, next, die } from './rng';
 /** One thing a drop list or a table can give: an id in the loot shape (a weapon, an item, `mag:<weapon>`,
  * `rounds:<calibre>`, `personal` for a personal effect, anything else a plot item), a qty or a [min, max] range, a
  * chance (drops lists only; absent: certain) or a weight (tables only). */
-export interface DropEntry { item: string; qty?: number | [number, number]; chance?: number; weight?: number; rarity?: string; name?: string; text?: string }
+export interface DropEntry { item: string; qty?: number | [number, number]; chance?: number; weight?: number; rarity?: string; name?: string; text?: string; note?: string }
 /** What one enemy drops beyond its weapon and magazines: a table to roll, and a list of its own. */
 export interface Drops { table?: string; items?: DropEntry[] }
 /** A weighted table (`none`: the weight of nothing). */
@@ -58,6 +58,7 @@ function cleanEntry(e: any, weighted: boolean): DropEntry | null {
   if (RARITIES.includes(e.rarity)) out.rarity = e.rarity;
   if (typeof e.name === 'string' && e.name.trim()) out.name = e.name.trim().slice(0, 60);
   if (typeof e.text === 'string' && e.text.trim()) out.text = e.text.trim().slice(0, 200);
+  if (typeof e.note === 'string' && e.note.trim()) out.note = e.note.trim().slice(0, 40);
   return out;
 }
 /** A campaign's tables, cleaned (entries with a bad weight or no id are left out). */
@@ -92,11 +93,27 @@ function rollTable(rng: Rng, t: LootTable | undefined): DropEntry | null {
   for (const e of t.entries) { r -= e.weight || 0; if (r < 0) return e; }
   return t.entries[t.entries.length - 1] || null;
 }
-/** An entry as pack items, its qty rolled (a personal effect is one of the data's list, evenly). */
+/** What a dropped plate teaches when its entry names nothing (item 692): a Sigil plate one Sigil word, a Heart plate
+ * one tone (not Raw), school or module, evenly, on the fight's dice. A plate always drops readable. */
+export function rollPlateNote(rng: Rng, item: string): string {
+  const pick = (l: string[]) => (l.length ? l[die(rng, l.length) - 1] : '');
+  if (item === 'sigil_plate') return pick(Object.keys(SIGIL).sort());
+  if (item === 'heart_plate') {
+    const l = [...Object.keys(TONE).filter((t) => t !== 'raw').sort().map((t) => 'tone: ' + t), ...Object.keys(SCHOOL).sort().map((t) => 'school: ' + t), ...Object.keys(MODULE).sort().map((t) => 'module: ' + t)];
+    return pick(l);
+  }
+  return '';
+}
+/** An entry as pack items, its qty rolled (a personal effect is one of the data's list, evenly; a plate with no note
+ * rolls its lesson, one a plate). */
 function entryPacks(rng: Rng, e: DropEntry): PackItem[] {
   const qty = rollQty(rng, e.qty);
   if (e.item === 'personal') { const list = LOOT.personal_items; if (!list.length) return []; const p = list[die(rng, list.length) - 1]; return [plotItem(e.name || p.name, e.text || p.text, 1)]; }
-  return lootToPack({ item: e.item, qty: qty ?? undefined, rarity: e.rarity, name: e.name, text: e.text });
+  if ((e.item === 'sigil_plate' || e.item === 'heart_plate') && !e.note) {
+    const n = Math.max(1, Math.min(20, Math.round(Number(qty) || 1)));
+    return Array.from({ length: n }, () => lootToPack({ item: e.item, qty: 1, name: e.name, text: e.text, note: rollPlateNote(rng, e.item) })).flat();
+  }
+  return lootToPack({ item: e.item, qty: qty ?? undefined, rarity: e.rarity, name: e.name, text: e.text, note: e.note });
 }
 /** Who drops anything (item 697): an enemy that died as an enemy; never a surrendered or subdued one, a companion, a
  * player's own fighter or a Twin. */
@@ -151,6 +168,10 @@ export function rollDeathDrops(cb: Combat, rng: Rng, u: Unit): PackItem[] {
   const list = [...always, ...given, ...extra, ...(notable ? entryPacks(rng, notable) : [])].filter((x) => x && (x.qty > 0 || x.mags?.length));
   if (!list.length) return [];
   dropToPile(cb, u.pos, list, 'death');
-  cb.log.push(u.name + ' drops: ' + list.map((x, i) => dropLabel(x, i < always.length)).join(', ') + '.');
+  const line = u.name + ' drops: ' + list.map((x, i) => dropLabel(x, i < always.length)).join(', ') + '.';
+  cb.log.push(line);
+  // Players' views keep the contents only while the tile is in sight (world.ts pileFog; review fix: the log told what
+  // lay on a fogged tile). The host's state and the end-of-fight report keep the full line.
+  (cb.dropLines ||= []).push({ line, at: u.pos, name: u.name }); if (cb.dropLines.length > 40) cb.dropLines.splice(0, cb.dropLines.length - 40);
   return list;
 }

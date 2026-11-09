@@ -113,12 +113,16 @@ when reloading, let gear change in a fight from a backpack, and let fights drop 
 
 ## Known gaps
 
-1. **Enemy paths don't avoid hazards** (ROADMAP). Neither does the Narrator's `walkStory`. Only a player's click-path goes around a revealed hazard, and only when the detour is at most 2 tiles.
-2. **An enemy killed on the area map drops nothing** (item 697). Drops come only from real fights, because the story's throwaway fight isn't persisted and would roll again on every action.
+1. **Enemy paths don't avoid hazards** (ROADMAP). Neither does the Narrator's `walkStory`. Only a player's click-path goes around a revealed hazard, and only when the detour is at most 2 tiles and the unit can pay for it (review fix).
+2. **An enemy killed on the area map drops nothing** (item 697). Drops come only from real fights, because the story's throwaway fight isn't persisted and would roll again on every action. The one exception is a Shade's silent takedown, which runs the sweep (review fix, item 699).
 3. **Enemy weapons carry no rarity yet**, so a worn drop is always standard.
-4. **The host-only `combat.lootLog`** (what the cap held back) isn't shown anywhere on screen.
+4. ~~The host-only `combat.lootLog` isn't shown~~ Fixed in review: the host sees its latest line in the combat log and in the end-of-fight summary.
 5. **Companions on the area map** don't add to the party's sight of piles.
 6. **Gear changes on the area map** stay free (unchanged by this branch).
 7. **The 1 kg light-armour line** (item 685) makes every helmet heavy: the field helmet weighs 1.2 kg. Leon may raise the line or lighten the helmet.
 8. **No built-in campaign uses `loot_tables` or `drops` yet.** M813's encounters could get some when Leon wants them.
 9. **The canvas** (`design/canvas/`) is paused until v1.0 and doesn't show any of this.
+
+## Review fixes (9 Nov 2026)
+
+A review of parts A1–A5 found one blocker (the `pile` fx's `n` overwrote the fx sequence number, so the client replayed the last 24 effects after every reload or pick-up), and a set of majors and minors, fixed in one commit: see decisions.md entry 106, "Review fixes", and the "Review fix" sentences in section 14 items 674, 676, 679–681, 683, 689, 692, 699 and 700. Tests: `packages/engine/test/world-play-11-review.test.ts`, the silent-takedown pile in `completeness-d.test.ts`, and new cases in the web's `backpack.test.ts`, `ground.test.ts`, `sandboxPile.test.ts` and `narrator/world-play-context.test.ts`.

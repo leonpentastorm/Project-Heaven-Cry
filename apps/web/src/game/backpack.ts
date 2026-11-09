@@ -6,7 +6,7 @@
 //
 // In a fight the ammo lives on the unit (u.mags, u.loose, u.offMags, u.extra, u.throwables, u.parts): c.pack is only
 // written back at the end of the fight or on a gear change, so those numbers are read from the unit.
-import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, type GearOp, FOCUS_IDS, bindGame } from '@engine';
+import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, calName, type GearOp, FOCUS_IDS, bindGame } from '@engine';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
 export interface BpRow { key: string; tag: string; name: string; sub: string; acts: BpAct[]; note: string }
@@ -20,19 +20,23 @@ export const HEAVY_ROW = 'Heavy armour: not in a fight';
 const TYPE: Record<string, string> = { armor_piercing: 'AP', hollow_point: 'HP', incendiary: 'incendiary', enhanced: 'Enhanced' };
 const typed = (n: number, cap: number, t?: string | null) => n + '/' + cap + (t ? ' ' + (TYPE[t] || t.replace(/_/g, ' ')) : '');
 
-/** The backpack panel for a fighter: `mine` (it is this player's unit's turn) decides whether anything can be pressed. */
-export function backpackView(g: any, cb: any, u: any, mine: boolean): Backpack | null {
+/** The backpack panel for a fighter: `mine` (it is this player's unit's turn) decides whether anything can be pressed;
+ * `hold` is why a turn that is yours can't act yet (the other turns still playing out on screen), shown as the reason. */
+export function backpackView(g: any, cb: any, u: any, mine: boolean, hold = ''): Backpack | null {
   if (!g || !cb || !u || !u.charId || u.companion) return null;
   const c = g.characters?.[u.charId]; if (!c) return null;
   const was = bindGame(g);
-  try { return build(g, cb, u, c, mine); } finally { bindGame(was); }
+  try { return build(g, cb, u, c, mine, hold); } finally { bindGame(was); }
 }
 
-function build(g: any, cb: any, u: any, c: any, mine: boolean): Backpack {
-  const reason = cb.over ? 'The fight is over.' : !mine ? 'Not your turn.' : u.downed ? 'Downed.' : '';
+function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Backpack {
+  const reason = cb.over ? 'The fight is over.' : !mine ? 'Not your turn.' : hold ? hold : u.downed ? 'Downed.' : '';
+  // A row's own refusal is written on it, not only in the tooltip (a tooltip never shows on touch): the plan's reason
+  // in place of the cost, or the cost and "Needs N AP." when AP is short. The panel-wide reason sits above the rows.
   const act = (key: string, verb: string, op: GearOp, action: any, extra = ''): BpAct => {
-    const p = gearCost(cb, u, c, op), why = reason || p.why || '';
-    const cost = p.why && !reason && !/^Needs \d+ AP\.$/.test(p.why) ? '' : p.ap + ' AP' + (p.free ? ' · Hot-Swap' : '') + extra;
+    const p = gearCost(cb, u, c, op), why = reason || p.why || '', short = !!p.why && /^Needs \d+ AP\.$/.test(p.why);
+    const price = p.ap + ' AP' + (p.free ? ' · Hot-Swap' : '') + extra;
+    const cost = !p.why || reason ? price : short ? price + ' · ' + p.why : p.why;
     return { key, label: verb, cost, off: !!why, why, action };
   };
   const uid = u.id, w: any = (WEAPON as any)[u.weapon] || (WEAPON as any)[c.weapon], two = twoHands(c, c.weapon);
@@ -87,8 +91,18 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean): Backpack {
   const unit = (w && w.reload_unit) || 'magazine';
   if (w && w.magazine != null && w.reload !== 'loose' && Array.isArray(u.mags)) ammo.push({ key: 'mags', tag: (unit + 's').toUpperCase(), name: u.mags.length + ' spare ' + unit + (u.mags.length === 1 ? '' : 's') + ' · ' + w.name, sub: u.mags.length ? u.mags.map((n: number, k: number) => typed(n, cap, u.magTypes?.[k])).join(' · ') : 'None left.', note: '', acts: [] });
   if ((u.loose ?? 0) > 0 || (w && w.reload === 'loose')) ammo.push({ key: 'loose', tag: 'ROUNDS', name: (u.loose ?? 0) + ' loose rounds', sub: w && w.reload === 'loose' ? 'Loaded round by round.' : 'Load them into a ' + unit + ' (Utility).', note: '', acts: [] });
-  if (ow && ow.magazine != null && Array.isArray(u.offMags)) ammo.push({ key: 'offmags', tag: 'OFF-HAND MAGAZINES', name: u.offMags.length + ' · ' + ow.name, sub: u.offMags.map((n: number) => n + '/' + ow.magazine).join(' · ') || 'None left.', note: '', acts: [] });
+  if (ow && ow.magazine != null && Array.isArray(u.offMags)) ammo.push({ key: 'offmags', tag: 'OFF-HAND MAGAZINES', name: u.offMags.length + ' · ' + ow.name, sub: u.offMags.map((n: number, k: number) => typed(n, ow.magazine, u.offMagTypes?.[k])).join(' · ') || 'None left.', note: '', acts: [] });
   for (const [k, x] of (u.extra || []).entries()) { const xw: any = (WEAPON as any)[x.weapon]; ammo.push({ key: 'extra-' + k, tag: 'MAGAZINE', name: (xw ? xw.name : x.weapon) + ' magazine', sub: typed(x.rounds, xw?.magazine || 0, x.type) + ' · goes to the pack after the fight', note: '', acts: [] }); }
+  // Ammo for guns not in hand (or in hand but tracked elsewhere) is in the pack: read-only, by gun or calibre (review fix:
+  // a stowed rifle's magazines vanished from the panel).
+  const offCal = u.offLoose != null && ow ? ow.ammo : null;
+  packOf(c).forEach((it: any, i: number) => {
+    if (it.mags && it.weapon && it.weapon !== u.weapon && it.weapon !== u.offWeapon && it.mags.length) { const xw: any = (WEAPON as any)[it.weapon];
+      ammo.push({ key: 'pmags-' + i, tag: ((xw?.reload_unit || 'magazine') + 's').toUpperCase(), name: it.mags.length + ' × ' + (xw ? xw.name : it.weapon), sub: it.mags.map((n: number, k: number) => typed(n, xw?.magazine || 0, it.magTypes?.[k])).join(' · ') + ' · in the pack', note: '', acts: [] }); }
+    else if (it.calibre && !it.mags && it.qty > 0 && it.calibre !== (w && w.ammo) && it.calibre !== offCal)
+      ammo.push({ key: 'prounds-' + i, tag: 'ROUNDS', name: it.qty + ' × ' + calName(it.calibre) + (it.ammoType ? ' ' + (TYPE[it.ammoType] || it.ammoType) : ''), sub: 'In the pack.', note: '', acts: [] });
+  });
+  if (offCal) ammo.push({ key: 'offloose', tag: 'OFF-HAND ROUNDS', name: (u.offLoose ?? 0) + ' × ' + calName(offCal), sub: 'Loaded round by round into the off-hand gun.', note: '', acts: [] });
   for (const [id, n] of Object.entries(u.throwables || {})) if ((n as number) > 0) ammo.push({ key: 'thr-' + id, tag: 'THROWABLE', name: n + ' × ' + nameOf(id), sub: 'Throw it from the Attack tab.', note: '', acts: [] });
   if ((u.parts ?? 0) > 0) ammo.push({ key: 'parts', tag: 'PARTS', name: u.parts + ' spare parts', sub: 'Field Repair uses one.', note: '', acts: [] });
   if (u.mg && (u.mg.cores ?? 0) > 0) ammo.push({ key: 'cores', tag: 'CORES', name: u.mg.cores + ' mana ' + (u.mg.cores === 1 ? 'core' : 'cores'), sub: 'Swap a core from the Sigils tab.', note: '', acts: [] });

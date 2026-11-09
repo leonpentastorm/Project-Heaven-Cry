@@ -2,7 +2,7 @@
 // sandbox/objective; rules 1.8's sandbox/pile). Pure: each form becomes one engine action; the engine checks and places it. The panel lives in
 // sandbox.tsx (WorldTab); the forms' defaults are a robot that wants something, a cache with a stim and rations, a light
 // minefield, an ambush on entering tiles, and a drill objective.
-import { AVATAR_POOLS, HAZARD_KINDS, KIND_DEFS, SKILLS, ITEM, WEAPON, WEAPONS, TN_LADDER, type Action } from '@engine';
+import { AVATAR_POOLS, HAZARD_KINDS, KIND_DEFS, SKILLS, ITEM, WEAPON, WEAPONS, TN_LADDER, calName, type Action } from '@engine';
 
 export const WORLD_KIND_IDS: string[] = KIND_DEFS.map((k) => k.id);
 /** The avatars a kind can wear in the picker (its pool; beasts have none: badge only). */
@@ -46,7 +46,7 @@ export const blankPile = (): PileForm => ({ items: [{ item: 'mag:service_pistol'
 /** The ids a pile entry may name, for the form's picker: magazines and loose rounds first (the point of a pile). */
 export function pileChoices(): { id: string; name: string }[] {
   const mags = WEAPONS.filter((w: any) => w.magazine != null && w.reload !== 'loose').map((w: any) => ({ id: 'mag:' + w.id, name: w.name + ' magazine' }));
-  const cals = [...new Set(WEAPONS.map((w: any) => w.ammo).filter(Boolean))].map((c: any) => ({ id: 'rounds:' + c, name: 'Loose rounds: ' + c }));
+  const cals = [...new Set(WEAPONS.map((w: any) => w.ammo).filter(Boolean))].map((c: any) => ({ id: 'rounds:' + c, name: 'Loose rounds: ' + calName(c) })); // the engine's own name (review fix: ".32 decrkm")
   return [...mags, ...cals, ...WEAPONS.map((w: any) => ({ id: w.id, name: w.name + ' (weapon)' })), ...Object.values(ITEM).map((x: any) => ({ id: x.id, name: x.name }))];
 }
 export const isAmmoId = (id: string) => /^(mag|rounds):/.test(id);

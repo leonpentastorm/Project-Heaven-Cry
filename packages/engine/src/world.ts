@@ -403,6 +403,12 @@ export function pileFog(g: GameState, v: GameState, side: 'pc' | 'foe') {
   const any = (l?: MapObject[]) => !!l && l.some(isPile);
   if (v.combat && g.combat && any(v.combat.objects)) { const cb = g.combat; v.combat = { ...v.combat, objects: v.combat.objects!.filter((o) => !isPile(o) || partySees(cb, side, o.pos)) }; }
   if (any(v.story.objects)) { const cb = storySight(g); v.story = { ...v.story, objects: v.story.objects!.filter((o) => !isPile(o) || partySees(cb, 'pc', o.pos)) }; }
+  // A pile's fx (a drop, a death's drops, a pick-up's change) goes only to eyes that see its tile now, as the pile does
+  // (review fix: an unseen enemy's reload gave its tile away).
+  if (v.combat && g.combat && v.combat.fx?.some((e) => e.k === 'pile')) { const cb = g.combat; v.combat = { ...v.combat, fx: v.combat.fx.filter((e) => e.k !== 'pile' || partySees(cb, side, e.at)) }; }
+  if (v.combat && g.combat?.dropLines?.length) { const cb = g.combat, hide = new Map(g.combat.dropLines.filter((d) => !partySees(cb, side, d.at)).map((d) => [d.line, d.name + ' falls; whatever it carried lies where it fell.']));
+    v.combat = { ...v.combat, ...(hide.size ? { log: v.combat.log.map((l) => hide.get(l) ?? l) } : {}) }; delete (v.combat as any).dropLines; }
+  if (v.story.fx?.some((e: any) => e.k === 'pile')) { const cb = storySight(g); v.story = { ...v.story, fx: v.story.fx!.filter((e: any) => e.k !== 'pile' || partySees(cb, 'pc', e.at)) }; }
   if (v.story.zoneObjects && Object.values(v.story.zoneObjects).some((l) => any(l))) v.story = { ...v.story, zoneObjects: Object.fromEntries(Object.entries(v.story.zoneObjects).map(([z, l]) => [z, l.filter((o) => !isPile(o))])) };
 }
 
@@ -737,7 +743,8 @@ export function worldView(v: GameState) {
   if (s.zoneObjects) s.zoneObjects = Object.fromEntries(Object.entries(s.zoneObjects).map(([k, l]: any) => [k, l.filter((o: MapObject) => !o.hidden).map(cache)]));
   if (v.combat) { v.combat = { ...v.combat, ...(v.combat.hazards ? { hazards: v.combat.hazards.filter((h) => !h.hidden) } : {}), ...(v.combat.objects ? { objects: v.combat.objects.map(cache) } : {}) }; delete (v.combat as any).worldRng;
     // Rules 1.8: the drop tables a fight rolls on, and what each enemy will drop, are never in a player's view (item 691).
-    delete v.combat.lootTables; if (v.combat.units.some((u) => u.drops)) v.combat.units = v.combat.units.map((u) => { if (!u.drops) return u; const x = { ...u }; delete x.drops; return x; }); }
+    delete v.combat.lootTables; if (v.combat.dropped?.length) v.combat.dropped = v.combat.dropped.map((d) => ({ ...d, npc: stripNpc(d.npc) })); // review fix: a carried person's drops
+    if (v.combat.units.some((u) => u.drops)) v.combat.units = v.combat.units.map((u) => { if (!u.drops) return u; const x = { ...u }; delete x.drops; return x; }); }
   v.characters = Object.fromEntries(Object.entries(v.characters).map(([id, c]) => [id, c.carried ? { ...c, carried: c.carried.map((x) => ({ ...x, npc: stripNpc(x.npc) })) } : c]));
 }
 function stripNpc(n: Npc): Npc {

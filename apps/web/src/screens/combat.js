@@ -27,6 +27,7 @@ import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
+import { lootLogLine } from '../game/worldView';
 import { actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { prayerView, vowPromptVals, patronLogCard } from './faithCombat';
@@ -491,7 +492,7 @@ export class CombatLogic extends DCLogic {
     // Rules 1.8 (item 683): the route a click takes goes around revealed hazards when it can (the engine's movePaths), and
     // the preview marks every revealed hazard tile it still crosses ("Path crosses: …").
     const arrowsOf = (rr, from) => { rr.forEach((k, i) => { const p = i ? rr[i - 1] : from, [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; }); };
-    const hvRoute = hv && mineTurn ? routeHazards(cb, cur, hv) : null, hvTiles = hvRoute ? hvRoute.tiles : hv ? P.dist[hv] : 0;
+    const hvRoute = hv && mineTurn ? routeHazards(cb, cur, hv, S.action) : null, hvTiles = hvRoute ? hvRoute.tiles : hv ? P.dist[hv] : 0;
     let crossing = hvRoute ? hvRoute.crosses : [];
     if (hv) { moveAp = S.action === 'sprint' || S.action === 'disengage' ? moveCost(hv) : apForTiles(hvTiles, cur.bank, cur.movement); if (hvRoute) arrowsOf(hvRoute.route, cur.pos); else { let k = hv; while (P.prev[k]) { const p = P.prev[k]; const [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } } }
     const foes = cb.units.filter((u) => u.side === 'foe' && !u.dead);
@@ -696,7 +697,7 @@ export class CombatLogic extends DCLogic {
         key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.downed ? ' · Downed' : '') : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
-        hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, cb.map.w) : '',
+        hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, cb.map.w, !!u) : '',
         hasCross: crossAt.has(k), crossStyle: CROSS_STYLE, crossChipStyle: CROSS_CHIP_STYLE,
         unseen: !vis.tiles.has(k), sensed: !!sensedAt[k], dark: !!cb.map.dark && !litAt(cb, k),
         hasHzd: !!wc.hz, hzdLayer: wc.hz ? wc.hz.layer : '', hzdGlyph: wc.hz ? wc.hz.glyph : '', hzdGlyphStyle: wc.hz ? wc.hz.glyphStyle : '', hzdKind: wc.hz ? wc.hz.kind + (wc.hz.safe ? ' safe' : '') : '',
@@ -936,7 +937,10 @@ export class CombatLogic extends DCLogic {
     const hasTarget = !!target && ([...ATTACKS, 'shove', 'analyze', 'paired'].includes(S.action) || (S.action === 'skill' && skFx.op === 'multi_shot'));
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
-    const cantConfirm = !mineTurn || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && (!pickSel || !!pickWhy)) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
+    // A reload row the engine refuses (already full, no spare, AP short) can be read but not confirmed (review fix: a
+    // full magazine was dropped for 2 AP, or put back for 3).
+    const reloadWhy = ['reload', RELOAD_TAC, 'reload2', RELOAD2_TAC].includes(S.action) ? ((ITEMS.flatMap((gr) => gr[1]).find((it) => it[0] === S.action) || [])[4] || '') : '';
+    const cantConfirm = !!reloadWhy || !mineTurn || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && (!pickSel || !!pickWhy)) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
     const apNow = mineTurn ? (ap - cost < 0 ? 'needs ' + cost + ' · ' + ap + ' left' : Math.round((ap - cost) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur && seenFoe(cur), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
     const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
@@ -991,7 +995,7 @@ export class CombatLogic extends DCLogic {
     // The backpack (rules 1.8, World Play: Gear in a fight): hands, light armour, the pack and the unit's ammo, each row
     // with its action and the engine's cost (game/backpack.ts); greyed with the engine's reason off-turn or AP short.
     const canPack = !!myU && !!myU.charId && !myU.companion && !cb.over;
-    const bpV = canPack && S.bp ? backpackView(g, cb, myU, mineTurn && cur && myU.id === cur.id && !holding) : null;
+    const bpV = canPack && S.bp ? backpackView(g, cb, myU, !!(mineTurn && cur && myU.id === cur.id), holding ? lockMsg : '') : null;
     const bpBtn = 'display: inline-flex; align-items: center; gap: 6px; min-height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid ' + (bpV ? '#FFFFFF' : '#2E3A50') + '; background: ' + (bpV ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; cursor: pointer';
     const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: bpV ? 'true' : 'false', btnStyle: bpBtn,
       show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '', reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
@@ -1054,10 +1058,13 @@ export class CombatLogic extends DCLogic {
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
       initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
-      log: cb.log.slice(-6).map((text, i) => { const pl = patronLogCard(text); return { key: cb.log.length - 6 + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {} }; }),
+      log: [...cb.log.slice(-6).map((text, i) => { const pl = patronLogCard(text); return { key: cb.log.length - 6 + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {} }; }),
+        // Rules 1.8 (item 695): what the loot cap held back, for the host's eyes only (the engine strips lootLog from
+        // everyone else's view).
+        ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])],
       cantConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
       toStory: () => go('main'), report: openReport, over: !!cb.over, overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
-      overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox ? '' : ' The Narrator picks up the story.'),
+      overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox ? '' : ' The Narrator picks up the story.') + (me === g.hostId && cb.lootLog && cb.lootLog.length ? ' ' + lootLogLine(cb.lootLog) : ''),
     };
   }
 

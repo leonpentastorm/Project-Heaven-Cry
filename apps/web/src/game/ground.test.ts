@@ -107,6 +107,11 @@ describe('reloads and pick-up in the action lists (combat and the area map)', ()
     const two = { ...u, offWeapon: 'service_pistol', offAmmo: 3, ap: 6 };
     expect(reloadBothItems(two).map((r) => [r[0], r[2]])).toEqual([['reload2', '3 AP · the magazines drop'], [RELOAD2_TAC, '4 AP · the magazines go in your pack']]);
     expect(reloadBothItems(u)).toEqual([]);
+    // Review fix: a full gun is refused as the engine refuses it (and the confirm stays grey).
+    const cap = (WEAPON as any)[u.weapon].magazine;
+    expect(reloadBothItems({ ...two, ammo: cap, offAmmo: 12 })[0][4]).toBe('Already full.');
+    expect(reloadBothItems({ ...two, ammo: 1, offAmmo: 12 })[0][4]).toMatch(/off-hand gun is full/);
+    expect(reloadItems({ ...u, ammo: cap, ap: 6 }).map((r) => r[4])).toEqual(['Already full.', 'Already full.']);
   });
   it('the area map\'s tactical reload keeps the magazine: back in the pack, nothing on the ground', () => {
     let g = start();

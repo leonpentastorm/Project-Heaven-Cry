@@ -6,7 +6,7 @@
 // callers pass the live object list and the character's pack; nothing here rolls dice.
 import wpJ from '../../../data/world_play.json';
 import { WEAPON, ITEM, CALIBRE_NAME } from './data';
-import { type PackItem, magsOf, roundsOf, plotItem } from './character';
+import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf } from './character';
 import { type MapObject, type CacheItem, makeObject } from './objects';
 
 const WP: any = wpJ;
@@ -26,7 +26,9 @@ export const pileAt = (objs: MapObject[], tile: string) => objs.find((o) => isPi
 // ---------- labels ----------
 const TYPE_NAME: Record<string, string> = { armor_piercing: 'armour-piercing', hollow_point: 'hollow-point', incendiary: 'incendiary', enhanced: 'Enhanced' };
 const typeName = (t?: string | null) => (t ? ' (' + (TYPE_NAME[t] || t.replace(/_/g, ' ')) + ')' : '');
-const calName = (cal: string) => CALIBRE_NAME[cal] || cal;
+/** A calibre's name as loose rounds read: ".32 Decrkm", "Rifle rounds", "Shell" (a name that is only a gun's kind gets
+ * "rounds"; review fix: "30 × Rifle"). */
+export const calName = (cal: string) => { const n = CALIBRE_NAME[cal] || cal; return /^[.\d]/.test(n) || /(shell|arrow|bolt|rocket|grenade|canister|charge)$/i.test(n) ? n : n + ' rounds'; };
 /** One line for a pack item on the ground: "Rifle magazine 7/24", "38 × .32 Decrkm", "Service pistol (fine)". */
 export function itemLabel(it: PackItem): string {
   if (it.mags && it.weapon) {
@@ -35,8 +37,12 @@ export function itemLabel(it: PackItem): string {
     return it.mags.length + ' × ' + base + ' (' + it.mags.map((n) => n + '/' + cap).join(', ') + ')';
   }
   if (it.calibre && !it.mags) return it.qty + ' × ' + calName(it.calibre) + typeName(it.ammoType);
-  const extra = [it.rarity && it.rarity !== 'standard' ? it.rarity : '', it.note ? it.note.toUpperCase() : ''].filter(Boolean).join(', ');
-  return (it.qty > 1 ? it.qty + ' × ' : '') + it.name + (extra ? ' (' + extra + ')' : '');
+  // A weapon says the rounds in it and its wear (review fix: a dead enemy's gun read only its name).
+  const w = it.kind === 'weapon' && !isThrown(it) ? WEAPON[it.weapon || it.id] : null, max = w ? maxDurOf(w.id, (it.rarity || 'standard') as any) : 0;
+  const loaded = w && w.magazine != null && w.category !== 'thrown' ? (it.loaded ?? 0) + '/' + w.magazine + ' loaded' + (it.loaded && it.ammoType ? typeName(it.ammoType).replace(/^ \((.*)\)$/, ' $1') : '') : '';
+  const wear = w && it.dur != null && max > 0 && it.dur < max ? 'worn ' + Math.round((100 * it.dur) / max) + '%' : '';
+  const extra = [it.rarity && it.rarity !== 'standard' ? it.rarity : '', it.note ? it.note.toUpperCase() : ''].filter(Boolean).join(', '), state = [loaded, wear].filter(Boolean).join(' · ');
+  return (it.qty > 1 ? it.qty + ' × ' : '') + it.name + (extra ? ' (' + extra + ')' : '') + (state ? ' · ' + state : '');
 }
 
 // ---------- merging ----------
@@ -125,6 +131,15 @@ export function pileEntries(o: MapObject): { key: string; label: string; item: s
 
 // ---------- the loot shape as pack items ----------
 const calibreId = (s: string) => Object.keys(CALIBRE_NAME).find((k) => k.toLowerCase() === s.toLowerCase() || CALIBRE_NAME[k].toLowerCase() === s.toLowerCase());
+/** Things the character keeps as counts, not pack entries (rules 1.8 review fix): a stim injector joins c.stims (what
+ * combat/stim spends) and an Essence of Experience joins c.essence. True when it was counted. */
+export function intoCounts(c: Character, it: PackItem): boolean {
+  if (it.kind === 'plot' || it.mags) return false;
+  const id = it.item || it.id;
+  if (id === 'stim_injector') { c.stims = (c.stims || 0) + it.qty; return true; }
+  if (id === 'essence_of_experience') { c.essence = (c.essence || 0) + it.qty; return true; }
+  return false;
+}
 /** One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3),
  * an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an empty one; a weapon
  * loaded round by round gives its rounds loose), `rounds:<calibre>` (at most 120), and anything else a plot item. */

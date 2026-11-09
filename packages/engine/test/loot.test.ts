@@ -40,7 +40,7 @@ describe('always-drops (item 694)', () => {
     const u = foes[0]; u.ammo = 9; u.mags = [12, 0, 5, 7]; u.magTypes = [null, null, null, 'hollow_point'];
     kill(cb, u, rng);
     const p = pileOn(cb.objects, u.pos)!;
-    expect(labels(p)).toEqual(['Service pistol (.32 Decrkm)', 'Service pistol magazine 12/12', 'Service pistol magazine 7/12 (hollow-point)']);
+    expect(labels(p)).toEqual([expect.stringMatching(/^Service pistol \(\.32 Decrkm\) · \d+\/12 loaded · worn \d+%$/), 'Service pistol magazine 12/12', 'Service pistol magazine 7/12 (hollow-point)']);
     const gun = p.items![0].pack!, max = maxDurOf('service_pistol');
     expect(gun.loaded).toBe(9); expect(gun.dur!).toBeGreaterThanOrEqual(Math.round(max * 0.4)); expect(gun.dur!).toBeLessThanOrEqual(Math.round(max * 0.8));
     expect(cb.log.at(-1)).toBe('Gunner drops: Service pistol (worn), magazine 12/12, magazine 7/12.');
@@ -78,7 +78,7 @@ describe('rolling: determinism, the cap, the boss (items 692, 695, 696, 699)', (
     expect(cb.lootLog!.length).toBe(2); expect(cb.lootLog![0]).toMatch(/^Loot cap reached \(2 a easy fight\): Raider 3's Ration pack not dropped\./);
     // A certain item is given, not rolled.
     const x = bare([{ name: 'Courier', tier: 'minion', weapon: 'service_pistol', drops: { items: [{ item: 'city_id' }] } }], 'easy'); x.cb.lootRolled = 99;
-    kill(x.cb, x.foes[0], x.rng); expect(labels(pileOn(x.cb.objects, x.foes[0].pos))).toEqual(['Service pistol (.32 Decrkm)', 'Service pistol magazine 12/12', 'Central City ID']);
+    kill(x.cb, x.foes[0], x.rng); expect(labels(pileOn(x.cb.objects, x.foes[0].pos))).toEqual([expect.stringMatching(/^Service pistol \(\.32 Decrkm\) · \d+\/12 loaded · worn \d+%$/), 'Service pistol magazine 12/12', 'Central City ID']);
   });
   it('a boss always drops one notable thing, outside the cap and whatever its drops say', () => {
     const { cb, rng, foes } = bare([{ name: 'The Warden', tier: 'boss', weapon: 'fists', drops: {} }], 'boss'); cb.lootRolled = 99;
@@ -195,7 +195,7 @@ describe('three layers, the most specific winning (item 691)', () => {
     for (const u of [vey, guard]) { u.dead = true; u.hp = 0; }
     for (let i = 0; i < 10 && g.phase === 'combat'; i++) { const u = active(g.combat!)!; g = ap(g, { type: 'combat/end-turn', unitId: u.id }); }
     expect(g.phase).toBe('story');
-    expect(labels(pileOn(storyObjects(g), at))).toEqual(['Service pistol (.32 Decrkm)', 'Service pistol magazine 12/12', 'Service pistol magazine 12/12', 'Flare']);
+    expect(labels(pileOn(storyObjects(g), at))).toEqual([expect.stringMatching(/^Service pistol \(\.32 Decrkm\) · \d+\/12 loaded · worn \d+%$/), 'Service pistol magazine 12/12', 'Service pistol magazine 12/12', 'Flare']);
     expect(combatReport(g.combat!)).toMatch(/Gate guard drops: Service pistol \(worn\), magazine 12\/12, magazine 12\/12, Flare\./);
   });
 });
@@ -230,7 +230,7 @@ describe('the Proving Ground: a wave drops ammo a ranger can pick up', () => {
     while (g.phase === 'combat' && active(g.combat!)!.charId !== c.id) g = ap(g, { type: 'combat/end-turn', unitId: active(g.combat!)!.id });
     if (g.phase === 'combat') g = ap(g, { type: 'combat/end-turn', unitId: me.id });
     expect(g.phase).toBe('story'); expect(g.sandbox!.state).toBe('cleared');
-    const pile = pileOn(storyObjects(g), near)!; expect(labels(pile)).toEqual(expect.arrayContaining([WEAPON[gun].name, ...Array(2).fill(expect.stringMatching(new RegExp('magazine ' + cap + '/' + cap)))]));
+    const pile = pileOn(storyObjects(g), near)!; expect(labels(pile)).toEqual(expect.arrayContaining([expect.stringMatching(new RegExp('^' + WEAPON[gun].name + ' · ')), ...Array(2).fill(expect.stringMatching(new RegExp('magazine ' + cap + '/' + cap)))]));
     const before = spares().length;
     g = ap(g, { type: 'world/act', charId: c.id, act: 'pickup', tile: refOf(near) });
     expect(spares().length).toBe(before + 2); expect(spares().filter((n) => n === cap).length).toBeGreaterThanOrEqual(2);

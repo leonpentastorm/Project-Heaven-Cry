@@ -84,6 +84,23 @@ describe('Shade: a silent takedown on the area map', () => {
     const plain = run({});
     expect(plain.g.phase).toBe('combat');
   });
+  it('rules 1.8 (review fix): the silent victim still drops what it carried, in the pile on its tile on the area map', () => {
+    const s = storyWith([{ ...adv('shade'), weapon: 'combat_knife' }]); const c = s.chars[0], here = positionsOf(s.g)[c.id];
+    s.act({ type: 'narrator/turn', turn: { narration: 'A guard.', npcs: [{ action: 'place', name: 'Lone guard', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: refOf(freeNear(s.g, here, 1)) }] } } as any);
+    const n = npcsOf(s.g)[0], at = n.pos; n.facing = [Math.sign(+n.pos.split(',')[0] - +here.split(',')[0]) || 1, Math.sign(+n.pos.split(',')[1] - +here.split(',')[1])] as any; (n as any).hp = 1;
+    const cheb = (k: string) => Math.max(Math.abs(+k.split(',')[0] - +here.split(',')[0]), Math.abs(+k.split(',')[1] - +here.split(',')[1]));
+    const far = [...Array(zoneMap(s.g).w).keys()].flatMap((x) => [...Array(zoneMap(s.g).h).keys()].map((y) => x + ',' + y)).filter((k) => standable(zoneMap(s.g), k) && !npcsOf(s.g).some((m) => m.pos === k)).sort((a, b) => cheb(b) - cheb(a)).find((k) => !lineOfSight({ map: zoneMap(s.g), objects: storyObjects(s.g), units: [] } as any, k, here))!;
+    s.act({ type: 'narrator/turn', turn: { narration: 'Another.', npcs: [{ action: 'place', name: 'Far guard', side: 'hostile', tier: 'minion', weapon: 'fists', at: refOf(far) }] } } as any);
+    s.g.story.sneak = { [c.id]: true }; s.g.story.hidden = { [c.id]: true }; s.g.characters[c.id].skills.ingenuity = 10;
+    s.g.rng.state = rngFor(19, 19, 19, 19);
+    s.act({ type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'melee' } as any);
+    expect(s.g.phase).toBe('story'); expect(storyHas(s.g, /Silent Kill/)).toBe(true);
+    const pile = storyObjects(s.g).find((o) => o.kind === 'pile' && o.pos === at)!;
+    expect(pile).toBeTruthy();
+    const names = (pile.items || []).map((e) => e.name || '');
+    expect(names[0]).toMatch(/^Service pistol/); expect(names.filter((x) => /magazine \d+\/12/.test(x)).length).toBeGreaterThan(0);
+    expect(storyHas(s.g, /Lone guard drops: Service pistol \(worn\)/)).toBe(true);
+  });
 });
 
 describe('Mage Payload and Warden Raise Cover on the area map', () => {

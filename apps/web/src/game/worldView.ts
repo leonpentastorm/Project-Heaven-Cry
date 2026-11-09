@@ -127,8 +127,11 @@ export function pileLook(o: MapObject, big = true): PileLook {
 }
 /** The hover's place by the tile, kept inside the map: below the tile on the top two rows, flush left on the first two
  *  columns, flush right on the last two. */
-export function pileTipStyle(L: PileLook, x: number, y: number, w: number): string {
+export function pileTipStyle(L: PileLook, x: number, y: number, w: number, occupied = false): string {
   let st = L.tipStyle;
+  // Someone stands on it (review fix): the token's popover opens below and its action ring sits on the token, so the
+  // list goes to the side, clear of the ring, toward the middle of the map.
+  if (occupied) return st.replace('left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%)', (x >= w / 2 ? 'right: calc(100% + 8px)' : 'left: calc(100% + 8px)') + '; top: 0; transform: none').replace('z-index: 8', 'z-index: 9');
   if (y <= 1) st = st.replace('bottom: calc(100% + 4px)', 'top: calc(100% + 4px)');
   if (x <= 1) st = st.replace('left: 50%', 'left: 0').replace('transform: translateX(-50%)', 'transform: none');
   else if (x >= w - 2) st = st.replace('left: 50%', 'right: 0').replace('transform: translateX(-50%)', 'transform: none');
@@ -167,6 +170,12 @@ export function pickupWhy(from: string | null | undefined, o: MapObject | null |
   if (!pileRows(o, untick).some((r) => r.checked)) return 'Tick something to take.';
   if (apNow < PICKUP_AP) return 'Needs ' + PICKUP_AP + ' AP.';
   return null;
+}
+/** The host's line for what the loot cap held back this fight (rules 1.8, item 695): "HOST ONLY · Loot cap reached: …"
+ * (the latest entry, and how many more). The engine strips lootLog from every other player's view. */
+export function lootLogLine(log: string[] | null | undefined): string {
+  if (!log || !log.length) return '';
+  return 'HOST ONLY · ' + log[log.length - 1] + (log.length > 1 ? ' (' + (log.length - 1) + ' more held back earlier)' : '');
 }
 /** "Path crosses: minefield at C4, D4" from the engine's routeHazards crossings (empty when the path is clear). */
 export function crossesText(crosses: { ref: string; id: string; name: string }[] | null | undefined): string {

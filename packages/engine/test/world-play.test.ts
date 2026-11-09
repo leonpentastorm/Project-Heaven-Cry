@@ -448,8 +448,9 @@ describe('the Proving Ground tools (rules 1.7)', () => {
     expect(hereCard(g).objectives[0]).toMatchObject({ key: 'drill/arm', here: true }); expect(markersFor(g)[0].tile).toBe(npc(g, 'Mallow').pos);
     g = ap(g, { type: 'talk/try', charId: c.id, npcId: npc(g, 'Mallow').id, idx: 0 });
     expect(g.checks).toEqual([]); expect(npc(g, 'Mallow').talk![0].tries.length).toBe(1); expect(g.story.await).toBe('players');
+    const stims0 = g.characters[c.id].stims;
     g = ap(g, { type: 'world/act', charId: c.id, act: 'search', objId: storyObjects(g).find((o) => o.name === 'Locker')!.id });
-    expect(packOf(g.characters[c.id]).some((p) => p.item === 'stim_injector')).toBe(true);
+    expect(g.characters[c.id].stims).toBe(stims0 + 1); // a stim found joins the usable stims (rules 1.8 review fix)
     g = ap(g, { type: 'sandbox/objective', id: 'arm', status: 'done' }); expect(hereCard(g).objectives).toEqual([]);
   });
 });

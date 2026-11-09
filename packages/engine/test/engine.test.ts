@@ -862,12 +862,13 @@ describe('rerolls and edits by unanimous vote (spec: Rerolls and edits)', () => 
   });
   it('a passed reroll undoes the turn and everything after it, and asks the Narrator again', () => {
     let { g, before, line } = room();
-    const id = Object.keys(g.characters)[0], packed = JSON.stringify(before.characters[id].pack);
-    expect(JSON.stringify(g.characters[id].pack)).not.toBe(packed);
+    // loot[] stims join the character's stims (rules 1.8 review fix: a stim in the pack could never be used).
+    const id = Object.keys(g.characters)[0], packed = JSON.stringify(before.characters[id].pack), stims = before.characters[id].stims;
+    expect(g.characters[id].stims).toBe(stims + 2);
     g = apply(g, { type: 'vote/start', kind: 'reroll', entryId: line.id, note: 'Keel talks instead.' }, 'host');
     g = apply(g, { type: 'vote/cast', yes: true }, 'p2');
     const r = rerollFrom(g, before, 'Keel talks instead.');
-    expect(JSON.stringify(r.characters[id].pack)).toBe(packed); expect(r.v).toBe(g.v + 1);
+    expect(JSON.stringify(r.characters[id].pack)).toBe(packed); expect(r.characters[id].stims).toBe(stims); expect(r.v).toBe(g.v + 1);
     expect(r.story.work).toMatchObject({ kind: 'opening', redo: 'Keel talks instead.' }); expect(r.narrator.busy).toBe(false);
     expect(r.story.entries.find((e) => e.rerolled)!.text).toBe('Keel shoots first.');
     expect(votesOf(r).open).toBeNull();

@@ -49,3 +49,17 @@ describe('A PILE (ON THE GROUND) in the WORLD tools', () => {
     expect(() => ap(g, pileAction({ items: [], hidden: false }, off(g, dxOf(g), 0)))).toThrow(/Nothing can go there/);
   });
 });
+
+describe('review fixes: names and the host\'s loot log', () => {
+  it('the pile picker names loose rounds as the engine does; the host\'s loot-cap line; a pile\'s list clears a token on its tile', async () => {
+    const names = pileChoices().filter((c) => c.id.startsWith('rounds:')).map((c) => c.name);
+    expect(names).toContain('Loose rounds: .32 Decrkm'); expect(names).toContain('Loose rounds: Rifle rounds');
+    const { lootLogLine, pileTipStyle } = await import('./worldView');
+    expect(lootLogLine([])).toBe('');
+    expect(lootLogLine(['Loot cap reached (2 a easy fight): A\'s Flare not dropped.', 'Loot cap reached (2 a easy fight): B\'s Flare not dropped.'])).toBe('HOST ONLY · Loot cap reached (2 a easy fight): B\'s Flare not dropped. (1 more held back earlier)');
+    const L: any = { tipStyle: 'position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); z-index: 8; padding: 5px 8px' };
+    expect(pileTipStyle(L, 3, 5, 16, true)).toMatch(/left: calc\(100% \+ 8px\); top: 0; transform: none; z-index: 9/);
+    expect(pileTipStyle(L, 12, 5, 16, true)).toMatch(/right: calc\(100% \+ 8px\)/);
+    expect(pileTipStyle(L, 3, 5, 16)).toMatch(/bottom: calc\(100% \+ 4px\)/);
+  });
+});

@@ -64,8 +64,20 @@ describe('the backpack in a fight (rules 1.8)', () => {
     expect(off.sections.flatMap((s) => s.rows.flatMap((r) => r.acts)).every((a) => a.off && a.why)).toBe(true);
     f.u.ap = 1;
     const rifle = actOf(row(f.view(), 'pack', /service rifle/i), /Draw/);
-    expect(rifle.off).toBe(true); expect(rifle.why).toBe('Needs 2 AP.'); expect(rifle.cost).toBe('2 AP · both hands');
+    expect(rifle.off).toBe(true); expect(rifle.why).toBe('Needs 2 AP.'); expect(rifle.cost).toBe('2 AP · both hands · Needs 2 AP.'); // the reason is on the row, not only in a tooltip
     expect(actOf(row(f.view(), 'hands', /Service pistol/), /Drop/).off).toBe(false); // a drop is 0 AP
+  });
+  it('review fixes: a refusal reads on the row; a held turn says why; ammo for guns not in hand is listed from the pack', () => {
+    const f = fight();
+    f.act(actOf(row(f.view(), 'pack', /service rifle/i), /Draw/).action);
+    const knifeLess = row(f.view(), 'pack', /Drifter revolver/i), offH = actOf(knifeLess, /Off hand/);
+    expect(offH.off).toBe(true); expect(offH.cost).toBe('Your main-hand weapon needs both hands.');
+    const held = backpackView(f.g, f.g.combat, f.u, true, 'The other turns are still playing out…')!;
+    expect(held.reason).toBe('The other turns are still playing out…'); expect(actOf(row(held, 'hands', /rifle/i), /Drop/).why).toBe('The other turns are still playing out…');
+    // The pistol's spare magazines and a stack of rifle rounds now sit in the pack, not in a hand.
+    f.c.pack = [...f.c.pack!, { id: 'rounds:.700', name: '.700 rounds', qty: 9, kind: 'ammo', calibre: '.700' } as any];
+    const ammo = f.view().sections.find((x) => x.key === 'ammo')!.rows.map((r) => r.name);
+    expect(ammo).toContain('2 × ' + WEAPON.service_pistol.name); expect(ammo).toContain('9 × .700 Blackpoint');
   });
   it('a row\'s action does what it says through the engine: draw the rifle (2 AP), drop it (0 AP, into the pile)', () => {
     const f = fight();

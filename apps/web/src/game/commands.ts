@@ -99,7 +99,10 @@ export function reloadItems(u: any): ActionItem[] {
 export function reloadBothItems(u: any): ActionItem[] {
   const w: any = u ? (WEAPON as any)[u.weapon] : null, ow: any = u && u.offWeapon ? (WEAPON as any)[u.offWeapon] : null;
   if (!w || !ow || w.magazine == null || ow.magazine == null) return [];
-  const ap = reloadBothAp(u), tac = ap + PILE.tactical_reload_extra_ap, need = (n: number) => ((u.ap ?? 0) < n ? 'Needs ' + n + ' AP.' : null);
+  // The engine's refusals for a full gun (combat.ts reloadHands), before the AP check.
+  const mainFull = (u.ammo ?? 0) >= (w.magazine || 0) && w.reload === 'magazine', offFull = (u.offAmmo ?? 0) >= (ow.magazine || 0);
+  const full = mainFull && offFull ? 'Already full.' : offFull ? 'The off-hand gun is full: reload the main gun alone.' : mainFull ? 'The main gun is full: reload the off-hand gun alone.' : null;
+  const ap = reloadBothAp(u), tac = ap + PILE.tactical_reload_extra_ap, need = (n: number) => full || ((u.ap ?? 0) < n ? 'Needs ' + n + ' AP.' : null);
   const out: ActionItem[] = [['reload2', 'Reload both guns' + (ow.reload !== 'loose' ? ' (speed)' : ''), ap + ' AP' + (ow.reload !== 'loose' ? ' · the magazines drop' : ''), 'Each gun takes its own spare; the old magazines drop into the pile on your tile.', need(ap)]];
   if (ow.reload !== 'loose' && w.reload !== 'loose' && Array.isArray(u.mags)) out.push([RELOAD2_TAC, 'Reload both (tactical)', tac + ' AP · the magazines go in your pack', 'Each gun takes its own spare; the old magazines go back in your pack.', need(tac)]);
   return out;
