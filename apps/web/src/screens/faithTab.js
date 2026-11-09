@@ -1,7 +1,7 @@
 // The sheet's FAITH tab (Blessing 2.0, rules 1.6): the Faith panel, the story's prayer buttons with their targets, the
 // engine's rites, and the patron's line cards in the story stream. Everything comes from game/faithView.ts (the engine's
 // faithView and previewPrayer); this file is screen glue: state, words and styles. Buttons only, never a typed field.
-import { faithView, previewPrayer, FAITH_PATRON } from '@engine';
+import { faithView, previewPrayer, FAITH_PATRON, GATE, MIRACLE_COST_LEVELS } from '@engine';
 import { faithPanel, prayerButtons, prayAction, pickerFor, FAITH_INK, FAITH_GOLD } from '../game/faithView';
 import { accentOf, patronMarkUri } from '../game/faithArt';
 import { act, toast } from '../game/store';
@@ -70,6 +70,8 @@ export function faithTabVals(sc, g, c) {
     hasClosed: !!P.closed, rites, hasRites: rites.length > 0, hasPieces: P.pieces.length > 0, hasLearned: P.learned.length > 0,
     learned: P.learned.map((h) => ({ key: h.name, text: h.name + ' · ' + h.patronName + (h.tn ? ' · TN ' + h.tn : '') })),
     whispers: B.whispers.map(view), hymns: B.hymns.map(view), hasHymns: B.hymns.length > 0, miracle: B.miracle ? view(B.miracle) : {}, hasMiracle: !!B.miracle,
+    // Rules 1.6.2: the gate and the price in the heading, beside the words (the gold is light only).
+    miracleHead: '✦ MIRACLE · AT DEVOTION ' + GATE.miracle + ' · ONCE A SESSION · COSTS ' + MIRACLE_COST_LEVELS + ' LEVELS',
     prayHead: story ? 'PRAY · THE STORY' : 'PRAY', anyOpen: all.some((b) => S.faOpen === b.key),
   };
 }

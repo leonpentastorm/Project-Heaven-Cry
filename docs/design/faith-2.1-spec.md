@@ -1,6 +1,7 @@
 # Faith 2.1: Leon's rulings and Devotion XP (design spec, 9 Nov 2026)
 
-Status: **accepted direction (Leon, 8–9 Nov 2026), numbers provisional.** Rules revision **1.6.1** (Blessing 2.1). This
+Status: **accepted direction (Leon, 8–9 Nov 2026), numbers provisional.** Rules revision **1.6.1** (Blessing 2.1), and
+**1.6.2** (Miracle 2.1, section 7; Leon, 9 Nov 2026; spec items 724–736). This
 file is the shared source for the build on `feature/faith-2.1`; once written into `docs/rules/PHC-Core-Rules-v1.0.md`
 ("Patrons and prayer" and section 14 **from item 701**: World Play 1.1, built in parallel, takes 671–700; decision
 **107**), the spec there wins.
@@ -18,26 +19,26 @@ So XP alone wouldn't fix it: any curve gets farmed the same way. Faith 2.1 adds 
 
 ## 1. Devotion XP
 
-Devotion stays the **0–10 standing**; the gates are unchanged (Hymn I 3, Hymn II 5, Hymn III 7, Miracle 7 with Faith
-7). What changes is how you get there: **each level needs XP**, and events give XP, not levels.
+Devotion stays the **0–10 standing**; the gates are Hymn I 3, Hymn II 5, Hymn III 7 and, since Miracle 2.1 (section 7),
+the Miracle at **10** (with Faith 7; it was 7). What changes is how you get there: **each level needs XP**, and events
+give XP, not levels.
 
 - The character stores **`devotionXp`**, the total. The level is derived from the table below; `c.devotion` is kept in
   sync as the level for old readers.
 - **Gains and losses both move XP.** A loss can drop you a level (standing falls), never below 0.
 - **Faithful characters still start at Devotion 3** (Leon, 9 Nov 2026): XP 45, the level-3 threshold.
 
-**The curve** (PROVISIONAL; total XP to reach each level):
+**The curve** (PROVISIONAL; total XP to reach each level), **as built** (spec items 701 and 717; `patrons.json`
+devotion.xp.curve):
 
 | Level | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Total XP | 0 | 10 | 25 | **45** | 70 | **102** | 152 | **212** | 277 | 347 | 432 |
-| Step | | 10 | 15 | 20 | 25 | 32 | 50 | 60 | 65 | 70 | 85 |
-| **Built (tuned)** | 0 | 10 | 25 | 45 | 70 | 102 | **147** | **200** | **270** | **350** | **450** |
+| Total XP | 0 | 10 | 25 | **45** | 70 | **102** | **147** | **200** | **270** | **350** | **450** |
+| Step | | 10 | 15 | 20 | 25 | 32 | 45 | 53 | 70 | 80 | 100 |
 
-**As built** (spec items 701 and 717): the pace simulation tuned levels 6–10 to 147 / 200 / 270 / 350 / 450 (steps 10,
-15, 20, 25, 32, 45, 53, 70, 80, 100). With the numbers above, Devotion 7 averaged session 9.7 (up to 12) and 10 came as
-early as session 19; tuned, 5 lands at session 3.6 on average, 7 at 9.0 and 10 at 23 (40 seeds). The table above is
-the design as accepted, kept for the record; the spec wins.
+The pace simulation tuned levels 6–10 from the design's first draft (152 / 212 / 277 / 347 / 432, steps 50, 60, 65, 70,
+85): with those, Devotion 7 averaged session 9.7 (up to 12) and 10 came as early as session 19; tuned, 5 lands at session
+3.6 on average, 7 at 9.0 and 10 at 23 (40 seeds). The spec wins.
 
 Target pace (Leon's table), checked by a simulation test (section 6):
 
@@ -45,8 +46,8 @@ Target pace (Leon's table), checked by a simulation test (section 6):
 |---|---|---|
 | 3 | Hymn I | at creation (start) |
 | 5 | Hymn II | around sessions 3–4 |
-| 7 | Hymn III and the Miracle (with Faith 7) | around sessions 8–10 |
-| 10 | full standing | 20+ sessions |
+| 7 | Hymn III | around sessions 8–10 |
+| 10 | full standing and the Miracle (with Faith 7; section 7) | 20+ sessions |
 
 **Sources** (PROVISIONAL):
 
@@ -62,14 +63,14 @@ Target pace (Leon's table), checked by a simulation test (section 6):
 | A failed overreach | **−3** |
 | Breaking character where your patron can see (Narrator) | **−6** |
 | The Guardian's Judgement ("spends 1 Devotion") | **−10** |
-| A Miracle | spends it all: **XP 0, Devotion 0** |
+| A Miracle | ~~spends it all: XP 0, Devotion 0~~ **5 levels: 10 → 5 (XP to 102)** (section 7) |
 | Each knowledge piece of your new patron, on conversion | **+1 level** (XP set to that level's threshold) |
 
 Notes:
 
-- **A Miracle resets you to 0**: getting back to 7 takes about 212 XP (200 as built), roughly 11 sessions (10 as
-  built) at the target pace. That is
-  the Miracle's real price now. (Flag for Leon at review.)
+- ~~**A Miracle resets you to 0**: getting back to 7 takes about 212 XP (200 as built), roughly 11 sessions (10 as
+  built) at the target pace. That is the Miracle's real price now. (Flag for Leon at review.)~~ **Decided by Leon,
+  9 Nov 2026 (section 7):** the Miracle is at Devotion 10 and costs 5 levels.
 - **The Narrator's `faith` op `devotion`** now moves **XP**: `delta` from −6 to +5 with a reason ("a deed", "broke
   character"), and the Narrator's gains are capped at **+10 XP a session** per character (losses aren't capped). The old
   ±2 levels per op is gone. The legacy `patrons[]` path follows the same rule.
@@ -147,7 +148,7 @@ the costume, never a real person. **The delivered set is right**; the documents 
 
 - Engine tests for every row above: the curve, gains and losses crossing levels, the caps (fight, scene, session, and
   the area-map farm that broke the playtest: 20 story actions with heal/supply tags must not give more than the caps),
-  vows, rites, the Narrator's XP and its session cap, the Miracle reset, Judgement, conversion pieces, apostasy's
+  vows, rites, the Narrator's XP and its session cap, the Miracle's price (section 7), Judgement, conversion pieces, apostasy's
   cooldown on the day counter (long rests and `days`), the direct switch with no cooldown, Open's roll and Jealous's
   grudge (the fight-start condition and the XP multiplier, ending after its sessions), save migration (old `devotion`
   level → `devotionXp` threshold), Stolen Fire, determinism.
@@ -158,3 +159,53 @@ the costume, never a real person. **The delivered set is right**; the documents 
 - Web: the meter shows the level and the XP toward the next ("DEVOTION 4 · 12/32 XP"), the fx float says "+1 DEVOTION
   XP · HEAL" and a level change says "DEVOTION 5"; the cooldown and grudge show on the faith tab; the Narrator's FAITH
   block and schema describe XP and the caps; the prompt cost tests still pass.
+
+## 7. Miracle 2.1 (rules 1.6.2; Leon, 9 Nov 2026)
+
+Leon's ruling: **"Buff all miracles to deserve the title, miracle only at 10 and it reduces your devotion by 5."** It
+answers the open question of section 1 (the Miracle's price). Spec "Patrons and prayer" and section 14 items **724–736**;
+decision 107. Every number PROVISIONAL.
+
+**The gate and the price.**
+
+- A Miracle needs **Devotion 10** and Faith 7 (Atheists never; once a session; no overreach). Devotion 7 now opens
+  Hymn III only. *Data: `devotion.gates.miracle` 10 = `prayer.miracle.devotion_min`.*
+- It **lowers Devotion by 5 levels**, after its effect: XP set to the threshold of (level − 5), so 450 → 102 (Devotion
+  5); the XP into the level goes too. *Data: `prayer.miracle.devotion_cost_levels` 5* (replaces `spends: all devotion`).
+- **The pace** (the item 717 session, 80 sessions, 12 seeds): the first Miracle at session **22.6** on average (21–25),
+  then one every **19.3** sessions (17–22): 5 → 10 is 348 XP at about 18 XP a session. Three or four Miracles in 80
+  sessions. (The brief expected about every 17–19; the run lands at the top of that, because the Miracle comes in the
+  first fight after 10 is reached.)
+
+**The eight Miracles**, as approved, engine-run, × Blessing power for damage, heals and shields (item 727: the old "×3" of
+item 97 is not applied):
+
+| Patron | Miracle | What the engine does |
+|---|---|---|
+| Holy Father Nerukhan | The Saints' Verdict | every enemy in sight: 100 Soul and Stunned 1 round; those that harmed the helpless this fight: 200 and Stunned 2 |
+| The Quartermaster | Requisition Approved | the whole squad: magazines full (and spares back), loose rounds, throwables and Supplies back, 2 standard cores each, every weapon repaired to full, jams and heat cleared, **+3 AP next turn** |
+| The Laughing Mask | Encore | every ally may repeat its last action this round for free (until the end of its next turn); every enemy in sight Confused 1 round |
+| The Toll-Keeper | Turned Back at the Shore | every ally who died or fell (Downed) this fight stands at half HP |
+| Mother Ember | Everyone Home | the squad heals to full, the Downed stand, every harmful condition ends, a 40 shield each |
+| Old Overcast | The Sky Answers | a 5×5 in sight, enemies only (the sky picks): 150 Storm, Stunned 1 round and Shaken |
+| The Matchmaker | Love Conquers | every non-boss enemy in sight surrenders, no save; a boss (or a machine, or no_surrender) makes a Heart save or is **Commanded to hold** 1 round |
+| The Counting Weaver | Rewoven | every ally's HP back to the round's start if that was higher (the Downed stand); then the squad takes another full turn now |
+
+**Readings** (items 728–735):
+
+- **+3 AP next turn** is banked AP (`bankAp`): it counts toward the turn's +3 perk-AP cap and the ceiling of 9, so the
+  turn is 6 + 3 = 9 and any other perk AP that turn is lost to the cap; Stunned and Dazed still come off.
+- **"Commanded" on a boss:** the engine's Commanded (engine-run for enemies) with the order **hold**: no attacks on its
+  next turn. A patron's order needs no Sigil word, and hold is the order a love goddess gives. Who can't yield (machines,
+  no_surrender) is treated like a boss.
+- **Encore's "free":** the engine keeps the key of each unit's last action (its type and kind, not its target); the
+  reducer lends the AP that action cost when the same action comes again and settles it after (more cost now is paid).
+- **Rewoven's snapshot:** the fight keeps every unit's HP at its start and at each round's start (`faithRoundHp`).
+- **In the story** (item 735): Everyone Home and most of Requisition Approved apply to the squad; the rest goes to the
+  Narrator as a pending ruling with the text (item 624). The price is always paid after the effect.
+- **New bespoke ops** in `effect_ops.json`: `repair_gear`, `clear_jam`, `rewind_hp`; the rest use core ops (`stat_mod`,
+  `condition`, `resource`, `heal`, `cleanse`, `shield`, `state`, `damage_mult`, `free_action`).
+
+**Checks:** `packages/engine/test/miracle-2.1.test.ts` (the gate, the price, each Miracle, the +3 AP and the cap, Encore's
+repeat and its end, the story path), the pace in `faith-pace.test.ts`, the validator's gate/cost keys; the web shows
+"MIRACLE" at 10 on the meter and "✦ MIRACLE · AT DEVOTION 10 · ONCE A SESSION · COSTS 5 LEVELS" on the faith tab.

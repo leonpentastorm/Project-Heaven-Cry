@@ -49,6 +49,10 @@ Every character is either **Faithful** or **Atheist**. The choice is a new step 
 > the next level (a curve from 0 to 450 XP), not levels: the +1 / −1 / −2 values below are replaced by XP values, the
 > "+2 a fight" cap by tag caps kept on the character (2 XP a fight, 2 a scene, 6 a session), the Narrator's ±2 by −6 to
 > +5 XP with +10 a session, and a failed overreach costs 3 XP. The tables below are the 1.6 rules, kept for the record.
+>
+> **Superseded in part by Miracle 2.1** (rules 1.6.2, Leon, 9 Nov 2026; `docs/design/faith-2.1-spec.md` section 7, spec
+> items 724–736): the Miracle needs **Devotion 10** (Faith 7 as before), costs **5 levels** (10 → 5) instead of all
+> Devotion, and all eight Miracles in section 8 are stronger.
 
 Devotion runs 0–10 and is your **standing** with your patron. You do **not** spend it to ask for things; asking is
 limited by cooldowns.
@@ -72,7 +76,7 @@ limited by cooldowns.
 | A failed overreach (asking above your standing) | −1 |
 | Breaking character where your patron can see (Narrator) | −2 |
 
-**A Miracle is the one thing that spends Devotion:** all of it.
+**A Miracle is the one thing that spends Devotion:** all of it. *(Rules 1.6.2: 5 levels, 10 → 5.)*
 
 **Standing gates what you may ask for:**
 
@@ -82,7 +86,7 @@ limited by cooldowns.
 | Hymn I | Devotion 3 |
 | Hymn II | Devotion 5 |
 | Hymn III | Devotion 7 |
-| Miracle | Faith 7, Devotion 7, once a session; spends all Devotion |
+| Miracle | Faith 7, Devotion 7, once a session; spends all Devotion *(rules 1.6.2: Devotion 10; costs 5 levels)* |
 
 **Overreach: asking above your standing.**
 
@@ -105,7 +109,7 @@ Shared rules:
 |---|---|---|---|
 | **Whisper** | 1 | once per turn | anyone with Faith 3 |
 | **Hymn** | 3 | the prayer cooldown (derived stat, rounds) | Faithful: their patron's Hymns. Atheist: the Hymns they have learned (section 4) |
-| **Miracle** | 3 | once per session | Faithful only, Faith 7 (**atheists never**) |
+| **Miracle** | 3 | once per session | Faithful only, Faith 7 (**atheists never**); rules 1.6.2: Devotion 10 |
 
 ### Whispers: the same six for every patron
 
@@ -249,6 +253,9 @@ Each patron has the following:
 ### Hymns and Miracles
 
 Effects use existing engine conditions and ops where possible. All numbers are × Blessing power and provisional.
+
+> **Miracles superseded by Miracle 2.1** (rules 1.6.2): the Miracle column below is the 1.6 design, kept for the record.
+> The eight Miracles as built are in `docs/design/faith-2.1-spec.md` section 7 and the spec's patron table (items 727–734).
 
 | Patron | Hymn I (Devotion 3) | Hymn II (Devotion 5) | Hymn III (Devotion 7) | Miracle |
 |---|---|---|---|---|

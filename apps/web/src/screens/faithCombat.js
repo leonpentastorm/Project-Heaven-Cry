@@ -1,7 +1,7 @@
 // Faith in a fight (Blessing 2.0, rules 1.6): a prayer's targets picked on the grid with the engine's preview as the
 // verdict, the vow prompt at the start of a fight, and the patron's lines as cards beside the combat log. The rules are
 // the engine's (faithView, previewPrayer); this is screen glue for screens/combat.js.
-import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP } from '@engine';
+import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, MIRACLE_COST_LEVELS } from '@engine';
 import { prayAction, pickerFor, oddsText, FAITH_INK } from '../game/faithView';
 import { accentOf, patronMarkUri, vowIconUri } from '../game/faithArt';
 import { patronOfLog } from './faithTab';
@@ -29,7 +29,8 @@ export function prayerView(g, cb, cur, sel, S, seen) {
       name: (sel.kind === 'miracle' ? '✦ MIRACLE · ' : sel.kind === 'hymn' ? 'HYMN · ' : 'WHISPER · ') + pv0.name + ' · ' + pv0.ap + ' AP · ' + oddsText(pv || pv0),
       text: why ? '✕ ' + why : (picked ? 'Target: ' + picked + '. ' : '') + (missing || pv0.effectText),
       extra: pv0.mode === 'overreach' && pv0.overreach ? 'Overreach: you ask above your standing. TN ' + pv0.overreach.tn + '; a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP.'
-        : pv0.mode === 'dice' && pv0.roll ? 'By dice: d20 ' + (pv0.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv0.roll.mod) + ' against TN ' + pv0.roll.tn + '.' : 'By standing: no roll.',
+        : pv0.mode === 'dice' && pv0.roll ? 'By dice: d20 ' + (pv0.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv0.roll.mod) + ' against TN ' + pv0.roll.tn + '.'
+        : sel.kind === 'miracle' ? 'By standing: no roll. After it lands, your Devotion falls ' + MIRACLE_COST_LEVELS + ' levels.' : 'By standing: no roll.',
     },
     /** A grid click while this prayer is chosen: the state patch, or null to let the screen handle it. */
     click(u, k) {

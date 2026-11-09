@@ -23,7 +23,7 @@ describe('faith views', () => {
     const v = faithView(g, c.id)!, p = faithPanel(v)!;
     expect(p.faithful).toBe(true); expect(p.title).toBe(FAITH_PATRONS.find((x: any) => x.id === 'mother_ember').name);
     expect(p.meter.length).toBe(11); expect(p.meter.filter((m) => m.on).length).toBe(v.devotion);
-    expect(p.meter.filter((m) => m.gate).map((m) => m.n + ' ' + m.gate)).toEqual(['3 HYMN I', '5 HYMN II', '7 HYMN III · MIRACLE']);
+    expect(p.meter.filter((m) => m.gate).map((m) => m.n + ' ' + m.gate)).toEqual(['3 HYMN I', '5 HYMN II', '7 HYMN III', '10 MIRACLE']);
     expect(p.likes.length).toBe(3); expect(p.taboos.length).toBe(2); expect(p.rule).toMatch(/^OPEN/);
     // Rules 1.6.1: the level and the XP toward the next; a new character starts at the level-3 threshold.
     expect(p.devotionText).toBe('DEVOTION 3 · 0/25 XP'); expect(p.xpFill).toBe(0); expect(p.xpNextText).toBe('TO DEVOTION 4'); expect(p.dayText).toBe('DAY 1'); expect(p.cooldown).toBeNull(); expect(p.grudge).toBeNull();
@@ -32,7 +32,7 @@ describe('faith views', () => {
     expect(b.whispers[0]).toMatchObject({ ap: '1 AP', gate: 'ANYONE' });
     expect(b.hymns.map((x) => x.gate)).toEqual(['HYMN I · DEVOTION 3', 'HYMN II · DEVOTION 5', 'HYMN III · DEVOTION 7']);
     expect(b.hymns[1].odds).toMatch(/^OVERREACH · TN \d+/); expect(b.hymns[1].warn).toMatch(/a miss costs 3 Devotion XP/);
-    expect(b.miracle!.ok).toBe(false); expect(b.miracle!.why).toMatch(/Faith 7|Devotion 7/);
+    expect(b.miracle!.ok).toBe(false); expect(b.miracle!.why).toMatch(/Faith 7|Devotion 10/); expect(b.miracle!.gate).toBe('FAITH 7 · DEVOTION 10'); // rules 1.6.2
     for (const x of [...b.whispers, ...b.hymns, b.miracle!]) { expect(x.icon).toMatch(/^data:image\/svg|^\/assets\//); if (!x.ok) expect(x.why).toBeTruthy(); }
   });
   it('the meter\'s words: "DEVOTION 4 · 12/32 XP"; at the top, FULL; no XP for an Atheist', () => {

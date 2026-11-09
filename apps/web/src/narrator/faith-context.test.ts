@@ -23,6 +23,8 @@ describe('the Narrator and faith', () => {
     expect(RULES_PROMPT).toMatch(/a switch from another patron/); expect(RULES_PROMPT).toMatch(/no pact for 90 days/);
     expect(RULES_PROMPT).toMatch(/days \(days that pass, 1 to 3650/); expect(RULES_PROMPT).not.toMatch(/±1 or ±2/);
     expect(RULES_PROMPT).toMatch(/Never write a patron's words/);
+    // Rules 1.6.2: the Miracle's gate and price, in one clause.
+    expect(RULES_PROMPT).toMatch(/Miracles \(Faith 7 and Devotion 10, once a session; each lowers Devotion by 5 levels\)/);
     expect(RULES_PROMPT).not.toMatch(/patronMood/);
   });
   it('each character carries a faith clause: belief, Devotion, Faith (and an Atheist with Faith)', () => {

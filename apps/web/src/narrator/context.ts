@@ -3,7 +3,7 @@
 // then, uncached: memory, the recent transcript, and this turn's job.
 import { PERK_GUIDANCE } from './perk-guidance';
 import { recentNarrationBlock, recentIds, lastTurnAudit } from './craft';
-import { beliefOf, devotionNow, devotionXpOf, faithView, dayOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, NARRATOR_XP, PACT_COOLDOWN_DAYS } from '@engine';
+import { beliefOf, devotionNow, devotionXpOf, faithView, dayOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, NARRATOR_XP, PACT_COOLDOWN_DAYS, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS } from '@engine';
 import { zoneHazards, zoneTriggers, carriedOf, type Approach } from '@engine';
 import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
@@ -235,7 +235,7 @@ WORLD RULES THAT NEVER BREAK
 - Keep traits that are deliberately ugly in clean in-world language.
 
 FAITH (rules 1.6.1)
-- The engine runs prayer, Devotion XP (liked and taboo tags, capped; vows; rites), Witnessed, interventions, Miracles, grudges and every patron line. Never write a patron's words; never set a TN.
+- The engine runs prayer, Devotion XP (liked and taboo tags, capped; vows; rites), Witnessed, interventions, Miracles (Faith ${MIRACLE_FAITH} and Devotion ${GATE.miracle}, once a session; each lowers Devotion by ${MIRACLE_COST_LEVELS} levels), grudges and every patron line. Never write a patron's words; never set a TN.
 - Your faith ops, only when the story earns them: pact (swear to a patron, or convert; a switch from another patron: the engine rolls if the old one lets go), piece (an NPC teacher with Faith above 5 teaches an Atheist one piece of their faith: name them in from), devotion (Devotion XP, ${NARRATOR_XP.min} to +${NARRATOR_XP.max}, with a reason: a deed the tags miss +${DEVOTION_XP.deedMin} to +${DEVOTION_XP.deedMax}, bringing someone into the faith +${DEVOTION_XP.convert}, breaking character where the patron sees ${-DEVOTION_XP.breakCharacter}; your gains stop at +${NARRATOR_XP.sessionCap} a session per character), rite_kept (a rite the Narrator marks), apostasy (leaving for no one: no pact for ${PACT_COOLDOWN_DAYS} days).
 - Each character's belief, Devotion, vow and pieces are in THE PARTY. A patron's likes, taboos and rites: wiki_lookup patron:<id>.
 

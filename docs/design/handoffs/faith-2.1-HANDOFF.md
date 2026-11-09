@@ -3,7 +3,8 @@
 Branch: `feature/faith-2.1` (from `develop`, 9 Nov 2026). **Not merged, not pushed, not deployed**: Leon and his Claude
 do the final check and the merge (the merge bumps the version and writes the `CHANGELOG.md` entry). Design:
 [`docs/design/faith-2.1-spec.md`](../faith-2.1-spec.md) (Leon's accepted direction); rules: spec "Patrons and prayer"
-(rules 1.6.1) and section 14 items **701–723**; decision **107**. World Play 1.1 was built in parallel on another branch
+(rules 1.6.1) and section 14 items **701–723**; decision **107**. **Miracle 2.1** (rules 1.6.2, items **724–736**,
+Leon's ruling of 9 Nov 2026) is built on the same branch: see its section below. World Play 1.1 was built in parallel on another branch
 and holds items 671–700 and decision 106.
 
 Built in three parts, one commit each (plus the design spec):
@@ -14,7 +15,8 @@ Built in three parts, one commit each (plus the design spec):
 | B1, engine | `97f886c` | spec, data, validator, engine and its tests |
 | B2, web | `763d4b8` | the screens, the fx, the Narrator's context, `--faith-light` in the app |
 | B3, docs | `c6671c3` | colour token in `palette.json`, art direction text, decision 107, the roadmap and hand-off notes |
-| Review fixes | this section's commit | items 719–723, the rite texts, the session boundary; see "Review fixes" below |
+| Review fixes | `422d132` | items 719–723, the rite texts, the session boundary; see "Review fixes" below |
+| Miracle 2.1 | this section's commit | items 724–736: the Miracle at Devotion 10, −5 levels, eight stronger Miracles; see "Miracle 2.1" below |
 
 ## Why
 
@@ -28,7 +30,8 @@ of levels, and keeps the caps **on the character**.
 - **Curve** (701): total XP for levels 0–10: 0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450. Faithful start at 45
   (Devotion 3). The design's 152/212/277/347/432 for levels 6–10 were tuned by the pace simulation (717).
 - **Sources** (702): liked tag +1, vow kept +3, rite +4, bringing someone in +4, deed +2 to +5; taboo −3 (−6
-  Witnessed), vow broken −5, failed overreach −3 (716), breaking character −6, Judgement −10 (706), Miracle all (707).
+  Witnessed), vow broken −5, failed overreach −3 (716), breaking character −6, Judgement −10 (706), Miracle 5 levels
+  (725; it was all of it, 707).
 - **Tag caps** (703–704): each liked tag once a fight and once a scene; 2 XP a fight, 2 a scene, 6 a session; kept in
   `c.faithTally`, once per action keyed on the character.
 - **The Narrator** (705): the devotion op moves −6 to +5 XP; gains capped at +10 a session per character.
@@ -76,10 +79,10 @@ of levels, and keeps the caps **on the character**.
 
 ## Known gaps and notes
 
-1. **For Leon: the Miracle's price.** A Miracle resets Devotion XP to 0; back to 7 takes 200 XP, about 10 sessions at
-   the target pace (item 707).
-2. **The Narrator's stable prompt** is at 24306 of its 24400 limit (`faith-context.test.ts`): 94 tokens left. The next
-   rule added to the FAITH block will need something cut.
+1. ~~**For Leon: the Miracle's price.** A Miracle resets Devotion XP to 0; back to 7 takes 200 XP, about 10 sessions at
+   the target pace (item 707).~~ **Decided** (Leon, 9 Nov 2026) and built: Miracle 2.1 below.
+2. **The Narrator's stable prompt** is at 24328 of its 24400 limit (`faith-context.test.ts`; Miracle 2.1 added 22): 72
+   tokens left. The next rule added to the FAITH block will need something cut.
 3. **The Proving Ground can't advance days** (the sandbox refuses Narrator turns, where `days` lives), and its tools
    ignore the pact cooldown by design.
 4. ~~The HERE card shows the day only when the scene has objectives.~~ Fixed in the review: the card shows whenever the
@@ -126,3 +129,43 @@ proxy), or the title screen never loads.
 Last run (review fixes, 9 Nov 2026): engine 63 files, **1521 passed**, 1 skipped (new: `test/faith-review.test.ts`, 12
 tests); web 47 files (1 skipped), **368 passed**, 2 skipped; `npm run typecheck` clean; `validate.py` 0 errors, 0
 warnings; e2e `faith.mjs` (38 ok), `faith-pg.mjs` (36 ok) and `two-players.mjs` pass with no page errors.
+
+## Miracle 2.1 (rules 1.6.2, 9 Nov 2026)
+
+Leon's ruling: "Buff all miracles to deserve the title, miracle only at 10 and it reduces your devotion by 5." Design:
+[`faith-2.1-spec.md`](../faith-2.1-spec.md) section 7; spec "Patrons and prayer" (the revision note, the gates, the
+patron table) and section 14 items **724–736** (707, 614, 617 and 621 struck through with pointers; notes on 97, 702,
+717 and 719); decision 107 (a Miracle 2.1 bullet).
+
+- **Gate** (724): Faith 7 and Devotion 10; Hymn III alone at 7. `devotion.gates.miracle` = `prayer.miracle.devotion_min`
+  = 10; `tools/validate.py` checks they agree and sit above Hymn III.
+- **Price** (725): −5 levels after the effect (`miracleCost` in `faith.ts`: XP to the threshold of the level 5 below;
+  450 → 102). `prayer.miracle.devotion_cost_levels` 5; the validator refuses the retired `spends`. The story path now
+  pays it after the effect too (it paid before).
+- **Pace** (726; `faith-pace.test.ts`, 80 sessions × 12 seeds): first Miracle at session 22.6 (21–25), then every 19.3
+  sessions (17–22).
+- **The eight Miracles** (727–734) in `runEntry` (`faith.ts`), each with a test in `test/miracle-2.1.test.ts`:
+  Verdict (100/200 Soul, Stunned 1/2), Requisition (`restock`: mags, loose, throwables, Supplies, 2 cores, repair, jams
+  and heat; +3 AP banked), Encore (`encoreKey` kept on `u.faith.lastKey`; `encoreBefore`/`encoreAfter` in the reducer
+  lend and settle the AP; Confused), Turned Back (half HP), Everyone Home (`cleanseHarmful`, full HP, 40 shield), The
+  Sky Answers (5×5, enemies only, 150 Storm, Stunned, Shaken), Love Conquers (`canYield`; Commanded with the order
+  hold for bosses), Rewoven (`faithRoundHp` kept at the fight's and each round's start). Numbers × Blessing power;
+  item 97's old ×3 is not applied (item 727).
+- **The story** (735): `storyEffect` applies Everyone Home and most of Requisition (`storyRestock`); the rest is a
+  pending ruling.
+- **Data:** `data/patrons.json` miracle texts and effects; `data/effect_ops.json` gains the bespoke ops `repair_gear`,
+  `clear_jam` and `rewind_hp` (and the Miracles as users of `free_action`, `cleanse`, `damage_mult`).
+- **Web:** the meter marks HYMN III at 7 and MIRACLE at 10; the faith tab's heading "✦ MIRACLE · AT DEVOTION 10 · ONCE
+  A SESSION · COSTS 5 LEVELS"; the button's gate "FAITH 7 · DEVOTION 10" and its price; the combat prayer card says the
+  price; the resource row's next gate; the Proving Ground's "Miracle · 10" preset (`data-sb-faith-miracle`, replacing
+  the bare "10"); the Narrator's FAITH block names the gate and the price, and `wiki_lookup patron:<id>` gives the
+  Miracle's text.
+- **For Leon:** (a) the brief expected a Miracle about every 17–19 sessions; the run gives 19.3, because the Miracle
+  comes in the first fight after 10 is reached; (b) Love Conquers treats machines and no_surrender enemies like bosses
+  (a Heart save or Commanded to hold), since the surrender rules say they never yield; (c) Encore's "free" repeat is
+  the same action type and kind on any target, until the end of the ally's next turn.
+
+Last run (Miracle 2.1, 9 Nov 2026): engine 64 files, **1542 passed**, 1 skipped (new: `test/miracle-2.1.test.ts`);
+web 47 files (1 skipped), **368 passed**, 2 skipped; `npm run typecheck` clean; `validate.py` 0 errors, 0 warnings;
+e2e `faith.mjs` and `faith-pg.mjs` pass with no page errors.
+

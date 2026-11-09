@@ -1,5 +1,5 @@
 // The Proving Ground's FAITH tools (rules 1.6; sandbox/faith): make the fighter Faithful to Mother Ember with Faith 7
-// and Devotion 7, start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
+// and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
 // reset the limits; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
 // a Hymn at its gate, an overreach, an intervention (a kill brings 20 Storm on the next enemy), a vow kept to the end
 // of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one.
@@ -27,7 +27,7 @@ await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-belief="faithful"]').click(); await p.waitForTimeout(200);
 await drawer.locator('[data-sb-patron="mother_ember"]').click(); await p.waitForTimeout(200);
 for (let i = 0; i < 7; i++) { const r = drawer.getByRole('button', { name: 'Raise Faith' }); if (await r.isEnabled()) await r.click(); await p.waitForTimeout(60); }
-await drawer.getByRole('button', { name: '10', exact: true }).click(); await p.waitForTimeout(200);
+await drawer.locator('[data-sb-faith-miracle]').click(); await p.waitForTimeout(200);
 let c = await me();
 ok('the tools make a Faithful of Mother Ember, Faith ' + (c.skills.faith || 0) + ', Devotion ' + c.devotion, c.belief?.kind === 'faithful' && c.belief.patron === 'mother_ember' && (c.skills.faith || 0) >= 7 && c.devotion === 10);
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-pg-tools.png' });
@@ -54,7 +54,8 @@ if (shown && SHOTS) { await p.waitForTimeout(900); await p.screenshot({ path: SH
 await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 4000 }).catch(() => {});
 ok('and clears within 2.5 s (' + (Date.now() - t0) + ' ms)', Date.now() - t0 < 3200 && (await p.locator('[data-phc-miracle]').count()) === 0);
 c = await me();
-ok('the Miracle spends the Devotion and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')) || (c.devotion ?? 10) < 10);
+ok('the Miracle lowers Devotion by 5 levels (10 → 5, 102 XP: rules 1.6.2; now ' + c.devotion + ' · ' + c.devotionXp + ' XP)', c.devotion === 5 && c.devotionXp === 102);
+ok('and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')));
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
 await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-faith-reset]').click(); await p.waitForTimeout(300);

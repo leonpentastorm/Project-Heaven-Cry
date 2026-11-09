@@ -2,7 +2,7 @@
 // the combat FAITH tab, the story's prayer buttons, the resource rows under the HP bar and the turn card. Everything
 // comes from the engine's faithView() and previewPrayer() (packages/engine/src/faith.ts): this file computes no rule,
 // only words, odds, icons and the reason a button is disabled.
-import { faithView, previewPrayer, devotionWords, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
+import { faithView, previewPrayer, devotionWords, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
 import { FAITH_INK, FAITH_GOLD, accentOf, patronMarkUri, prayerIconUri, vowIconUri, witnessedUri } from './faithArt';
 
 export type PrayerKindUI = 'whisper' | 'hymn' | 'miracle';
@@ -47,8 +47,8 @@ export function oddsText(p: PrayerPreview): string {
 export interface PrayerButton {
   key: string; kind: PrayerKindUI; id: string; name: string; text: string; icon: string;
   /** "1 AP", "3 AP". */ ap: string;
-  /** The gate or the dice: "ANYONE", "HYMN I · DEVOTION 3", "BY DICE · TN 14", "FAITH 7 · DEVOTION 7". */ gate: string;
-  odds: string; /** An overreach: its TN, and what a miss costs in Devotion XP. */ warn?: string;
+  /** The gate or the dice: "ANYONE", "HYMN I · DEVOTION 3", "BY DICE · TN 14", "FAITH 7 · DEVOTION 10". */ gate: string;
+  odds: string; /** An overreach: its TN, and what a miss costs in Devotion XP; the Miracle: its price (rules 1.6.2). */ warn?: string;
   ok: boolean; why?: string; /** What the player must pick: none, a unit (ally, enemy…), a tile, or two units. */ target: string;
   patron: string | null; tier: number; source?: 'patron' | 'kept' | 'learned';
 }
@@ -58,7 +58,8 @@ function button(kind: PrayerKindUI, id: string, name: string, text: string, p: P
     : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ROMAN[tier] + ' · DEVOTION ' + (p.gate ?? '?');
   return {
     key: kind + ':' + id, kind, id, name, text, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
-    odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP' : undefined,
+    odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
+      : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : undefined,
     ok: !!p.ok, why: p.ok ? undefined : p.why || 'Not now.', target: p.target || 'none', patron: p.patron, tier, source,
   };
 }
@@ -95,7 +96,7 @@ export function pickerFor(target: string): { kind: 'none' | 'unit' | 'tile' | 't
 export interface MeterCell { n: number; on: boolean; gate?: string }
 export interface FaithPanel {
   faithful: boolean; title: string; sub: string; mark: string; accent: string;
-  /** Devotion 0–10 with the gate marks (3 Hymn I, 5 Hymn II, 7 Hymn III and Miracle). */ meter: MeterCell[]; devotion: number;
+  /** Devotion 0–10 with the gate marks (3 Hymn I, 5 Hymn II, 7 Hymn III, 10 the Miracle: rules 1.6.2). */ meter: MeterCell[]; devotion: number;
   /** Rules 1.6.1: the level and the XP toward the next ("DEVOTION 4 · 12/32 XP"), and the fill of that step (0–1). */
   devotionText: string; xpFill: number; xp: FaithView['devotionXp']; /** The word beside the XP fill: "TO DEVOTION 5", or "FULL". */ xpNextText: string;
   /** The day counter (item 709), the cooldown after leaving a pact (item 710) and a grudge (item 713), in words. */
@@ -115,7 +116,7 @@ export function faithPanel(v: FaithView | null): FaithPanel | null {
   if (!v) return null;
   const faithful = v.belief.kind === 'faithful', p = v.patron;
   const meter: MeterCell[] = Array.from({ length: 11 }, (_, n) => ({ n, on: faithful && n > 0 && n <= v.devotion,
-    gate: n === GATE[1] ? 'HYMN I' : n === GATE[2] ? 'HYMN II' : n === GATE[3] ? 'HYMN III · MIRACLE' : undefined }));
+    gate: [n === GATE[1] && 'HYMN I', n === GATE[2] && 'HYMN II', n === GATE[3] && 'HYMN III', n === GATE.miracle && 'MIRACLE'].filter(Boolean).join(' · ') || undefined }));
   const pieces = Object.entries(v.pieces || {}).filter(([, n]) => n > 0).map(([id, n]) => ({ patron: id, name: FAITH_PATRON[id]?.name || id, text: (FAITH_PATRON[id]?.name || id) + ' ' + Math.min(3, n) + '/3', mark: patronMarkUri(id) }));
   return {
     faithful, title: faithful && p ? p.name : 'ATHEIST · PILGRIM', sub: faithful && p ? p.archetype || '' : 'Prays by dice; teachers of the faiths unlock their Hymns',

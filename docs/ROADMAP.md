@@ -21,8 +21,9 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - the art direction (patrons painted as a god appears to an NPC; the delivered set is right) is in the style guide,
      the Blessing art brief and the Blessing 2.0 spec section 8.
 
-   **Still open for Leon:** the Miracle's price. It now resets Devotion XP to 0, so climbing back to 7 takes 200 XP,
-   about 10 sessions at the target pace (item 707). Every number in items 701–723 is provisional for playtests.
+   ~~**Still open for Leon:** the Miracle's price.~~ **Decided** (Leon, 9 Nov 2026) and built as **Miracle 2.1**, rules
+   1.6.2 (items 724–736): the Miracle needs Devotion 10 and lowers Devotion by 5 levels; all eight Miracles are
+   stronger and engine-run. Every number in items 701–736 is provisional for playtests.
 3. **Rewrite M813 for World Play.** Every area gets:
    - an objective with a `where`;
    - a hazard or obstacle with approaches and real failure costs;
@@ -85,11 +86,11 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
     same voices as Edge, e.g. en-US-ChristopherNeural, from any browser).
   - Confirm Kokoro on Leon's 9070 XT reads "Kokoro · WebGPU".
 
-## Faith, beyond the rulings (`docs/design/blessing-2.0-spec.md` section 11, spec items 592–629; Faith 2.1 items 701–723)
+## Faith, beyond the rulings (`docs/design/blessing-2.0-spec.md` section 11, spec items 592–629; Faith 2.1 items 701–723; Miracle 2.1 items 724–736)
 
 - More patrons: the rival Thunder-Father, and the "many masks" pantheon (one Celestial playing several patrons).
 - Witnessed doesn't exist in the story (engine item 604); vow and Witnessed icons are code-drawn placeholders.
-- The Guardian's Judgement still spends Devotion (10 Devotion XP since Faith 2.1, item 706), the only spend besides a Miracle.
+- The Guardian's Judgement still spends Devotion (10 Devotion XP since Faith 2.1, item 706), the only spend besides a Miracle's 5 levels (rules 1.6.2).
 
 ## Magic
 
