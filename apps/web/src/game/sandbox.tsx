@@ -21,7 +21,7 @@ import { createPortal } from 'react-dom';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
 import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
 import { OPT_LABEL, optValue } from './actionPickers';
-import { Groups, GroupList, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
+import { Groups, GroupList, GroupSearch, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
 import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
 import { glyphKeyNav } from './glyphKeys';
@@ -102,7 +102,7 @@ html.phc-sandbox div[role="dialog"][aria-label="The fight is over"]{display:none
 html.phc-sb-centre-on .phc-sb-centre,.phc-sb-centre[data-sb-on]{display:flex!important;flex:1;min-height:0;overflow-y:auto;flex-direction:column}
 html.phc-sb-centre-on main[aria-label="Story"]>.phc-story,main[aria-label="Story"]>.phc-story[data-sb-off]{display:none!important}
 html.phc-sb-gearing .phc-sb-dock,.phc-sb-dock[data-sb-on]{display:flex!important;flex-direction:column;gap:6px}
-.phc-input>.phc-sb-dock[data-sb-on]~.phc-turn-line{display:none}
+.phc-input>.phc-sb-dock[data-sb-on]:has([data-sb-hint])~.phc-turn-line{display:none}
 .phc-pg-fig{display:grid;margin:0;border-radius:14px;overflow:hidden}
 .phc-pg-fig>*{grid-area:1/1}
 .phc-pg-fig>figcaption{align-self:end}
@@ -406,7 +406,7 @@ function WaveLines({ game }: { game: GameState }) {
     {sb.state === 'fallen' && <span style={{ fontSize: 13, fontWeight: 700, color: C.red }}>✕ The squad fell on wave {sb.wave}. Everyone is back up and refilled.</span>}
   </>;
 }
-const HintNote = ({ hide, compact }: { hide: () => void; compact?: boolean }) => <div role="note" style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: compact ? '6px 10px' : '10px 12px', borderRadius: 10, border: '1px solid ' + C.white, background: '#0D1119' }}>
+const HintNote = ({ hide, compact }: { hide: () => void; compact?: boolean }) => <div role="note" data-sb-hint="1" style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: compact ? '6px 10px' : '10px 12px', borderRadius: 10, border: '1px solid ' + C.white, background: '#0D1119' }}>
   <span style={{ flex: 1, fontSize: compact ? 12 : 13, lineHeight: 1.4 }}><b>Gear up here, then click the map to start a fight.</b> <span style={{ color: '#C9D3E3' }}>Click a drill unit on the map, attack one from the Area map, or press Start the fight. Gear is the first tab; the Magic kit gives you everything to cast at once.</span></span>
   <button type="button" style={{ ...small, minHeight: 26 }} aria-label="Hide the hint" onClick={hide}>✕</button>
 </div>;
@@ -469,12 +469,17 @@ const Section = ({ title, children, aria, keys, span }: { title: string; childre
   </section>;
 };
 /** Something that isn't a Section (a workshop group, a note) as a card in the centre; as it is in the drawer. */
-function Box({ keys, children, span }: { keys: string; children: React.ReactNode; span?: boolean }) {
+function Box({ keys, children, span, inner }: { keys: string; children: React.ReactNode; span?: boolean; inner?: Record<string, string> }) {
   const w = React.useContext(WideCtx);
   if (!w.wide) return <>{children}</>;
   if (w.q && !matches(w.q, keys + ' ' + w.tab)) return null;
-  return <div data-pg-hit={w.q ? '1' : undefined} className={span ? 'phc-pg-span' : undefined} style={{ ...cardStyle, padding: 12 }}>{children}</div>;
+  // Under a search its workshop groups open on what the search names (a word, a module, a feeling), not as stored.
+  // inner: what a group holds that its items don't name (the Outbursts groups draw their lists themselves).
+  const find = w.q ? (g: any) => matches(w.q, g.label + ' ' + (inner?.[g.key] || '') + ' ' + g.items.map((x: any) => x?.name || x?.word || '').join(' ')) : null;
+  return <div data-pg-hit={w.q ? '1' : undefined} className={span ? 'phc-pg-span' : undefined} style={{ ...cardStyle, padding: 12 }}><GroupSearch.Provider value={find}>{children}</GroupSearch.Provider></div>;
 }
+/** What the Outbursts groups hold, by group key (for the search). */
+const SOUL_INNER = { schools: 'school tone ' + names(SCHOOLS), modules: 'module ' + names(MODULES), feelings: 'feeling ' + names(FEELINGS) };
 const Stepper = ({ value, min, max, set, name }: { value: number; min: number; max: number; set: (n: number) => void; name: string }) => <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
   <button type="button" style={{ ...btn, padding: '0 10px' }} aria-label={'Lower ' + name} disabled={value <= min} onClick={() => set(value - 1)}>‹</button>
   <span style={{ minWidth: 34, textAlign: 'center', fontSize: 18, fontWeight: 700 }}>{value}</span>
@@ -754,7 +759,7 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
     {/* Rules 1.8 (Outburst 4.0): schools, tones, modules grouped by gate skill (the advanced classes' shown, learnable here:
         no gates in the Proving Ground), feelings (grant or forget), practice, and a sound and effects test row for every
         feeling; in the shared workshop groups (workshopGroups.tsx), like the Sigil words above. */}
-    <Box keys={FIND.soul}><Groups<{ key: string }> section="sb.soul" title="OUTBURSTS: SCHOOLS, TONES, MODULES, FEELINGS" ink={C.soul} aria="Outburst lessons"
+    <Box keys={FIND.soul} inner={SOUL_INNER}><Groups<{ key: string }> section="sb.soul" title="OUTBURSTS: SCHOOLS, TONES, MODULES, FEELINGS" ink={C.soul} aria="Outburst lessons"
       groups={[
         { key: 'schools', label: 'Schools and tones', n: SCHOOLS.length + toneChips(k.tones || []).filter((t) => t.id !== 'raw').length, items: [{ key: 'schools' }] },
         { key: 'modules', label: 'Modules by gate skill', count: k.modules.length + ' KNOWN', dflt: false, items: [{ key: 'modules' }] },
@@ -888,6 +893,13 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   const sb = game.sandbox!, gearing = game.phase === 'story', cb = gearing ? null : game.combat;
   const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb)), [caster, setCaster] = React.useState('');
   const spawn = (at: string) => act({ type: 'sandbox/spawn', tier, weapon, at, ...(caster ? { caster } : {}) } as any);
+  // A tool search that names an enemy tier or a Sigil caster picks it (as the Squad tab's menus do).
+  const q = React.useContext(WideCtx).q;
+  React.useEffect(() => {
+    if (!q) return;
+    const k = CASTERS.find((x) => matches(q, x.name)), e = ENEMIES.find((x) => matches(q, x.name));
+    if (k) { setCaster(k.id); setTier(k.tier); setWeapon(k.weapon); } else if (e) { setTier(e.id); setCaster(''); setWeapon(SANDBOX_TIERS[e.id]?.weapons[0] || weapon); }
+  }, [q]);
   useTilePick(armed, (r) => spawn(r));
   React.useEffect(() => { if (!armed) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setArmed(false); } }; window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true); }, [armed]);
   const mana = cb?.mana ?? game.story.mana ?? 15, band = MANA_BANDS.find((b) => mana >= b.min && mana <= b.max);

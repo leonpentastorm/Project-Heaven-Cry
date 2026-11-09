@@ -71,7 +71,10 @@ ok('under a search a card head can\'t fold (nothing stored that the screen can\'
 await search.fill('twin pays'); await p.waitForTimeout(300);
 ok('searching a perk by name ("twin pays") finds the Perks card, with it picked in the menu', (await centre.locator('[data-pg-card]', { hasText: /^PERKS/ }).count()) >= 1 && (await centre.getByRole('combobox', { name: 'Perk' }).first().inputValue()) === 'the_twin_pays');
 await search.fill('fire'); await p.waitForTimeout(300);
-ok('searching a Sigil word ("fire") finds the Sigil words', (await centre.locator('[data-pg-hit]', { hasText: /SIGIL WORDS/ }).count()) >= 1);
+ok('searching a Sigil word ("fire") shows the word itself (its group opens)', await centre.locator('[data-word="fire"]').first().isVisible());
+await search.fill('homing'); await p.waitForTimeout(300);
+ok('searching a module ("homing") shows it, two folded levels down on a fresh browser', await centre.locator('[data-module="homing"]').first().isVisible());
+
 await search.fill('zzqq'); await p.waitForTimeout(300);
 ok('a search with no match says so', await centre.locator('.phc-pg-none').isVisible());
 await centre.getByRole('button', { name: 'Clear' }).click(); await p.waitForTimeout(300);
@@ -82,6 +85,9 @@ ok('a card folds (Equipped: closed, its rows gone)', (await head.getAttribute('a
 await centre.getByRole('tab', { name: 'Squad' }).click(); await centre.getByRole('tab', { name: 'Gear' }).click(); await p.waitForTimeout(200);
 ok('…and stays folded when you come back to the tab', (await centre.locator('section[aria-label="Equipped"] button[data-pg-head]').getAttribute('aria-expanded')) === 'false');
 await centre.locator('section[aria-label="Equipped"] button[data-pg-head]').click();
+// with the hint dismissed, the turn line (no Narrator here) is back in the bottom panel
+await dock.getByRole('button', { name: 'Hide the hint' }).click(); await p.waitForTimeout(200);
+ok('the hint dismissed: the bottom panel still says there is no Narrator (the turn line)', await p.getByText('The Proving Ground has no Narrator', { exact: false }).first().isVisible());
 // Close the tools: the story log; the side tab brings them back
 await centre.getByRole('button', { name: 'Close the tools' }).click(); await p.waitForTimeout(400);
 ok('Close the tools: the story log is back, the tools are gone', (await tools.count()) === 0 && await p.locator('main[aria-label="Story"] > .phc-story').isVisible());
@@ -141,7 +147,7 @@ ok('a skill point spent with Brain Power\'s +1', ((await G()).characters[cid].sk
 const step = p.locator('.phc-lu-skill.phc-lu-step').first();
 ok('a skill with a perk step waiting is marked on its card', (await step.count()) === 1);
 const choiceAria = await p.locator('button.phc-lu-choice').evaluateAll((bs) => bs.map((b) => b.getAttribute('aria-label') || ''));
-ok('every Take / Upgrade button names its perk and skill (' + choiceAria[0] + ')', choiceAria.length > 0 && choiceAria.every((a) => /^(Take|Upgrade) .+ \(.+\), Tier (I|II)$/.test(a)) && new Set(choiceAria).size === choiceAria.length);
+ok('every Take / Upgrade button names its perk and skill, its visible words first (' + choiceAria[0] + ')', choiceAria.length > 0 && choiceAria.every((a) => /^(Take · Tier I|Upgrade · Tier II): .+ \(.+\)$/.test(a)) && new Set(choiceAria).size === choiceAria.length);
 await p.locator('.phc-lu-jump').first().click(); await p.waitForTimeout(400);
 ok('a perk-step jump puts the keyboard on that skill\'s Take button', await p.evaluate(() => !!document.activeElement && document.activeElement.classList.contains('phc-lu-choice')));
 const sk = await step.getAttribute('data-skill'), perks0 = (await G()).characters[cid].perks.length;

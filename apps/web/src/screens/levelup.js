@@ -93,7 +93,8 @@ export class LevelUpLogic extends DCLogic {
       const state = h ? 'owned' : ch ? 'available' : 'locked';
       const label = ch ? (ch.tier === 'I' ? 'Take · Tier I' : 'Upgrade · Tier II') : '';
       const chip = h ? '✓ TIER ' + (h.tier === 'II' ? 'II' : 'I') : ch ? '' : nextAt ? 'LOCKED · ' + nextAt + ' PTS' : 'NO STEP LEFT';
-      const aria = ch ? (ch.tier === 'I' ? 'Take ' : 'Upgrade ') + pk.name + ' (' + ((SKILL[x.skill] && SKILL[x.skill].name) || x.skill) + '), Tier ' + ch.tier : '';
+      // The visible words first (speech input says what it sees), then which perk of which skill.
+      const aria = ch ? label + ': ' + pk.name + ' (' + ((SKILL[x.skill] && SKILL[x.skill].name) || x.skill) + ')' : '';
       return { key: pk.id, name: pk.name, aria, icon: PERK_ICON[pk.id] || IMG['wick-mind-without-fog'], state, can: !!ch, label, chip, hasChip: !!chip,
         title: pk.name + (ch ? ' · ' + (ch.tier === 'I' ? 'Tier I' : 'Tier II') : h ? ' · Tier ' + (h.tier === 'II' ? 'II' : 'I') + ' (yours)' : ' · locked') + ': ' + t + ' (' + v.label + ')',
         text: ch ? t.charAt(0).toUpperCase() + t.slice(1) : '', hasText: !!ch,
