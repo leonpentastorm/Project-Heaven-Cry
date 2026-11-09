@@ -82,14 +82,14 @@ describe('the pace of Devotion (a seeded 30-session simulation, item 717)', () =
 });
 
 // Miracle 2.1 (rules 1.6.2, item 726): a Miracle needs Devotion 10 and costs 5 levels, so the first one comes with full
-// standing (after session 20) and the next ones about every 17-19 sessions (Devotion 5 → 10 is 348 XP at about 18-20 XP
-// a session). Asserted loosely; the numbers are printed for the spec.
+// standing (after session 20) and the next ones about every 19 sessions, 17-22 (Devotion 5 → 10 is 348 XP at about
+// 18 XP a session; item 737 writes the measured figure). Asserted loosely; the numbers are printed for the spec.
 describe('the pace of Miracles (rules 1.6.2: Devotion 10, then −5 levels; item 726)', () => {
   const seeds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const runs = seeds.map((sd) => { const prayed: number[] = []; simulate(sd, 'nerukhan', { sessions: 80, miracles: true, prayed }); return { sd, prayed }; });
   const firsts = runs.map((r) => r.prayed[0]), gaps = runs.flatMap((r) => r.prayed.slice(1).map((x, i) => x - r.prayed[i]));
   const avg = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
-  it('the first Miracle comes after session 20; then one about every 17-19 sessions', () => {
+  it('the first Miracle comes after session 20; then one about every 19 sessions (17-22)', () => {
     (globalThis as any).console.log('[miracle pace] first: ' + firsts.join(' ') + ' (avg ' + avg(firsts).toFixed(1) + '); gaps: ' + gaps.join(' ') + ' (avg ' + avg(gaps).toFixed(1) + ', ' + Math.min(...gaps) + '-' + Math.max(...gaps) + '); Miracles in 80 sessions: ' + runs.map((r) => r.prayed.length).join(' '));
     for (const { sd, prayed } of runs) {
       expect(prayed.length, 'seed ' + sd).toBeGreaterThanOrEqual(2);
@@ -98,7 +98,7 @@ describe('the pace of Miracles (rules 1.6.2: Devotion 10, then −5 levels; item
     }
     expect(avg(firsts)).toBeGreaterThan(20); expect(avg(firsts)).toBeLessThan(28);
     expect(Math.min(...gaps)).toBeGreaterThanOrEqual(12); expect(Math.max(...gaps)).toBeLessThanOrEqual(26);
-    expect(avg(gaps)).toBeGreaterThanOrEqual(15); expect(avg(gaps)).toBeLessThanOrEqual(21);
+    expect(avg(gaps)).toBeGreaterThanOrEqual(17); expect(avg(gaps)).toBeLessThanOrEqual(21);
   });
   it('the Miracle never comes before Devotion 10 (the 30-session runs above never pray one by session 19)', () => {
     for (const sd of [1, 2, 3, 4]) { const prayed: number[] = []; simulate(sd, 'nerukhan', { sessions: 19, miracles: true, prayed }); expect(prayed).toEqual([]); }

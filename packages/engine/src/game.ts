@@ -1235,6 +1235,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   const inWindow = !!cb!.window;
   // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
   const encore = inWindow ? null : encoreBefore(cb!, u, a);
+  (cb as any).acting = true; // encoreCredit: previews inside the action don't lend Encore's AP again
   try {
   switch (a.type) {
     case 'combat/perk': err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat'); break;
@@ -1297,7 +1298,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     }
     default: fail('Unknown action.');
   }
-  } finally { delete cb!.mods; }
+  } finally { delete cb!.mods; delete (cb as any).acting; }
   if (err) fail(err);
   encoreAfter(cb!, u, encore);
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).

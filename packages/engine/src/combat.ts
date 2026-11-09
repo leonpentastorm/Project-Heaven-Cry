@@ -582,6 +582,20 @@ export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
 export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? 3 : (w.ap_cost.single ?? 2));
 export const effectiveRange = (w: WeaponDef) => (typeof w.range_tiles === 'number' ? w.range_tiles : 8);
 
+/** Encore's key for an action: its type and what it is (a perk's id, an attack's mode, a move's kind…), never its
+ * target. Prayers, ending the turn and declining a window can't be repeated (null). */
+export function encoreKey(a: any): string | null {
+  const t = String(a?.type || ''); if (!t.startsWith('combat/') || ['combat/pray', 'combat/end-turn', 'combat/decline'].includes(t)) return null;
+  const what = t === 'combat/attack' ? a.mode || 'shot' : t === 'combat/move' ? a.how || 'move' : a.id ?? a.word ?? a.design ?? a.item ?? a.kind ?? a.hand ?? '';
+  return t + (what ? ':' + what : '');
+}
+/** Encore's lend for an action not yet taken (item 729; item 737): the AP the unit may count on top of its own when
+ * this action repeats its Encore (0 otherwise). The previews (attacks here, moves and perks in the client) add it, so a
+ * repeat with too little AP isn't shown as "Needs N AP". Never inside the reducer's own action (cb.acting): there
+ * encoreBefore has already lent it, and a perk's inner attack mustn't borrow it. */
+export function encoreCredit(u: Unit | null | undefined, a: any, cb?: Combat | null): number {
+  const en = u?.faith?.encore; if (!en || (cb as any)?.acting || encoreKey(a) !== en.key) return 0; return en.ap || 0;
+}
 /** One term of a to-hit sum or a damage chain, for the transparent breakdown (spec: dice are transparent). */
 export interface Term { v: number; label: string }
 export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: number; need: number; pct: number; cover: number; coverTile?: string | null; rangePenalty: number;
@@ -609,7 +623,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   { const ts = condSource(att, 'taunted'), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && useW !== WEAPON.fists && !isMelee(useW)) return fail(condOn(att, 'disarmed') ? 'Disarmed: recover your weapon (2 AP), or strike with your fists.' : 'Your weapon is lowered: raise it (1 AP).');
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && isMelee(useW) && useW !== WEAPON.fists && mode !== 'melee') return fail('Disarmed: recover your weapon first.');
-  if (att.ap < ap) return fail('Needs ' + ap + ' AP.');
+  if (att.ap + encoreCredit(att, { type: 'combat/attack', mode }, cb) < ap) return fail('Needs ' + ap + ' AP.'); // Encore lends it (item 737)
   if ((mode === 'burst' || mode === 'auto') && !(w.modes || []).includes(mode)) return fail('This weapon has no ' + (mode === 'auto' ? 'full auto' : 'burst') + '.');
   // An ally (friendly fire) needs this unit's own sight; the squad's shared sight covers the other side.
   if (tgt.side === att.side ? !(unitSees(cb, att, tgt.pos) || (sightHooked(cb) && seesHook(cb, att.side, tgt, att, false, false).seen)) : !sideSees(cb, att.side, tgt, att)) return fail('You can\'t see it.');

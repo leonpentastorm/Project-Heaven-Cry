@@ -14,7 +14,7 @@ import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
-import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor } from './combat';
+import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
 import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitDebuff, condSource, condIsBoon, condName as condNameOf, MANA_START } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
@@ -208,6 +208,7 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
     if (faith < MIRACLE_FAITH) return no('A Miracle needs Faith ' + MIRACLE_FAITH + '.', out);
     if (devotionNow(c) < GATE.miracle) return no('A Miracle needs Devotion ' + GATE.miracle + ' (you have ' + devotionNow(c) + ').', out);
     if (c.miracleSession === sessionN(g)) return no('One Miracle a session.', out);
+    if (cb && u) { const none = miracleFindsNobody(cb, u, pe.entry.id); if (none) return no(none, out); }
   }
   if (kind === 'hymn' && mode === 'dice' && !diceHymns(c).includes(pe.key)) return no(belief.kind === 'atheist' ? 'You haven\'t learned that Hymn (a knowledge piece unlocks it).' : 'That Hymn isn\'t yours to pray.', out);
   // Silenced, AP, the limits.
@@ -403,6 +404,9 @@ export function tagDevotion(g: GameState | null, cb: Combat | null, c: Character
   const t = tallyOf(g, c);
   if (where.act != null) { if (t.act?.k !== where.act) t.act = { k: where.act, tags: [] }; if (t.act.tags.includes(tag)) return null; t.act.tags.push(tag); }
   const name = FAITH_TAG[tag]?.name || tag;
+  // A liked tag at the curve's top gives nothing, so it uses none of the caps either (item 737: a Miracle's own tags,
+  // landing while Devotion is at 450, used to eat the fight's cap and part of the session's).
+  if (liked && !taboo && devotionXpOf(c) >= DEVOTION_MAX_XP) return null;
   if (taboo) return shiftDevotion(g, cb, c, -(where.witnessed ? DEVOTION_XP.tabooWitnessed : DEVOTION_XP.taboo), name + (where.witnessed ? ', while Witnessed' : ''), tag);
   const f = where.fight ? (t.fight?.id === where.fight ? t.fight : (t.fight = { id: where.fight, xp: 0, tags: [] })) : null;
   const tags = f ? f.tags : t.sceneTags, have = f ? f.xp : t.sceneXp, cap = f ? TAG_CAPS.fight : TAG_CAPS.scene;
@@ -612,7 +616,10 @@ export function registerFaithHooks() {
   });
   onHook('action_done', (ctx, cb) => { // Encore: the AP the last action took
     const u: Unit = ctx.u; if (!u) return; const st = fs(u);
-    if (st.apMark != null) { st.lastSpent = Math.max(0, st.apMark - u.ap); st.lastRound = cb.round; st.lastKey = encoreKey(ctx.a); } st.apMark = u.ap;
+    // Only an action that can be repeated and cost AP counts (item 729): ending the turn, declining a window, a prayer or
+    // a free action never overwrites it (review fix, item 737: an ally's end-turn used to wipe its Encore).
+    const key = encoreKey(ctx.a), spent = st.apMark != null ? Math.max(0, st.apMark - u.ap) : 0;
+    if (key && spent > 0) { st.lastSpent = spent; st.lastRound = cb.round; st.lastKey = key; } st.apMark = u.ap;
     st.acted = true;
     if (u.charId && /^combat\/(perk|move)$/.test(ctx.a?.type || '') && /trick|illusion|false_image|feint|swap|sleight/.test(String(ctx.a?.id || ctx.a?.key || ''))) faithTag(cb, u, 'trick');
   });
@@ -662,6 +669,20 @@ export function registerFaithHooks() {
     if (st.guidance && (ck?.skills || []).some((k: string) => SKILL[k]?.attribute === 'perception')) out.push({ add: 2, label: 'Guidance' });
     return out;
   });
+}
+/** Turned Back's allies (item 730): dead or Downed this fight, not surrendered, not a companion (a destroyed companion
+ * is repaired or healed in the story first; item 737). */
+function fallenAllies(cb: Combat, u: Unit): Unit[] { return cb.units.filter((x) => x.side === u.side && (x.dead || x.downed) && !x.surrendered && !x.companion); }
+/** Would this Miracle find nobody in this fight (item 737)? The reason, or null. A Miracle that would land on no one
+ * isn't spent: the once a session and the 5 levels stay. */
+function miracleFindsNobody(cb: Combat, u: Unit, id: string): string | null {
+  if (id === 'turned_back') return fallenAllies(cb, u).length ? null : 'Nobody has fallen this fight.';
+  if (id === 'saints_verdict' || id === 'love_conquers') return enemiesInSight(cb, u).length ? null : 'No enemy in sight.';
+  if (id === 'encore') {
+    const any = cb.units.some((v) => v.side === u.side && !v.dead && !v.companion && v.faith?.lastRound === cb.round && v.faith.lastKey && v.faith.lastSpent > 0);
+    return any || enemiesInSight(cb, u).length ? null : 'Nobody has acted this round and no enemy is in sight.';
+  }
+  return null;
 }
 /** Each unit's HP as a round starts (Rewoven, item 734), on the fight. */
 function snapRoundHp(cb: Combat) { (cb as any).faithRoundHp = Object.fromEntries(cb.units.filter((v) => !v.dead).map((v) => [v.id, v.hp])); }
@@ -717,8 +738,10 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, target: typeof t === 'object' && t && 'id' in t ? (t as any).id : a.tile || null, ok: true });
   if (kind === 'miracle') emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? areaOf(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id });
   line += runEntry(cb, rng, u, kind, pe, t, a, power);
-  if (kind === 'miracle') miracleCost(g, cb, c); // after the effect (item 621's order): its own tags give nothing back; Devotion −5 levels (item 725)
   cb.log.push(line + '.');
+  // The price after the effect, and after its line in the log (item 621's order; items 725, 737): its own tags give
+  // nothing back; Devotion −5 levels.
+  if (kind === 'miracle') miracleCost(g, cb, c);
   if (patron && kind !== 'whisper') speak(g, cb, rng, c, patron, kind === 'miracle' ? 'miracle' : 'answered');
   // Witnessed (Faith 5): after your own patron's Hymn or a Miracle (item 604).
   if (kind !== 'whisper' && beliefOf(c).kind === 'faithful' && patron?.id === patronOf(c)?.id && faithOf(c) >= WITNESS_FAITH) {
@@ -814,13 +837,6 @@ function restock(cb: Combat, v: Unit): string {
 }
 /** An action's words for the log (Encore): "Shot", "Move", "Perk: x"… */
 function actionWords(key: string): string { const [t, what] = key.split(':'); const n = t.replace('combat/', ''); return (n.charAt(0).toUpperCase() + n.slice(1)).replace('-', ' ') + (what ? ' (' + what + ')' : ''); }
-/** Encore's key for an action: its type and what it is (a perk's id, an attack's mode, a move's kind…), never its
- * target. Prayers, ending the turn and declining a window can't be repeated (null). */
-export function encoreKey(a: any): string | null {
-  const t = String(a?.type || ''); if (!t.startsWith('combat/') || ['combat/pray', 'combat/end-turn', 'combat/decline'].includes(t)) return null;
-  const what = t === 'combat/attack' ? a.mode || 'shot' : t === 'combat/move' ? a.how || 'move' : a.id ?? a.word ?? a.design ?? a.item ?? a.kind ?? a.hand ?? '';
-  return t + (what ? ':' + what : '');
-}
 /** Encore (item 729), before a combat action: when it repeats the unit's Encore action, lend the AP it cost (it can be
  * taken with too little AP). Returns what to settle after, or null. */
 export function encoreBefore(cb: Combat, u: Unit, a: any): { credit: number; before: number } | null {
@@ -904,7 +920,7 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
     }
     case 'turned_back': { // rules 1.6.2 (item 730): every ally who died or fell this fight stands at half HP
       let out = '';
-      for (const v of cb.units.filter((x) => x.side === u.side && (x.dead || x.downed) && !x.surrendered)) {
+      for (const v of fallenAllies(cb, u)) {
         const was = v.dead ? 'crossed' : 'fell', half = Math.ceil(v.maxHp / 2);
         v.dead = false; v.downed = false; v.hp = half; v.saves = { ok: 0, fail: 0 }; v.stunnedNext = 0;
         const ch = unitChar(v); if (ch) ch.dead = false;
@@ -957,7 +973,9 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
         const up = v.downed; if (up) { v.downed = false; v.saves = { ok: 0, fail: 0 }; } v.hp = Math.min(v.maxHp, was);
         emitFx(cb, 'heal', { target: v.id, at: v.pos, amount: v.hp }); out += ' · ' + v.name + ' is rewoven to ' + v.hp + ' HP' + (up ? ' (stands)' : ''); }
       if (!x.faithOrderRestore) x.faithOrderRestore = [...cb.order];
-      const ids = cb.order.filter((id) => allies.some((v) => v.id === id && alive(v)));
+      // From the round's own initiative, once each (item 737: a second Rewoven in the round used to copy the first one's
+      // extra turns too).
+      const ids = [...new Set(x.faithOrderRestore as string[])].filter((id) => allies.some((v) => v.id === id && alive(v)));
       cb.order.splice(cb.turn + 1, 0, ...ids); return out + ' · ' + ids.length + ' allies take another full turn, right after this one';
     }
   }

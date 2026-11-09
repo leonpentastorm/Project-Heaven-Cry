@@ -1,7 +1,7 @@
 # Faith 2.1: Leon's rulings and Devotion XP (design spec, 9 Nov 2026)
 
 Status: **accepted direction (Leon, 8–9 Nov 2026), numbers provisional.** Rules revision **1.6.1** (Blessing 2.1), and
-**1.6.2** (Miracle 2.1, section 7; Leon, 9 Nov 2026; spec items 724–736). This
+**1.6.2** (Miracle 2.1, section 7; Leon, 9 Nov 2026; spec items 724–737). This
 file is the shared source for the build on `feature/faith-2.1`; once written into `docs/rules/PHC-Core-Rules-v1.0.md`
 ("Patrons and prayer" and section 14 **from item 701**: World Play 1.1, built in parallel, takes 671–700; decision
 **107**), the spec there wins.
@@ -163,7 +163,7 @@ the costume, never a real person. **The delivered set is right**; the documents 
 ## 7. Miracle 2.1 (rules 1.6.2; Leon, 9 Nov 2026)
 
 Leon's ruling: **"Buff all miracles to deserve the title, miracle only at 10 and it reduces your devotion by 5."** It
-answers the open question of section 1 (the Miracle's price). Spec "Patrons and prayer" and section 14 items **724–736**;
+answers the open question of section 1 (the Miracle's price). Spec "Patrons and prayer" and section 14 items **724–737**;
 decision 107. Every number PROVISIONAL.
 
 **The gate and the price.**
@@ -174,8 +174,8 @@ decision 107. Every number PROVISIONAL.
   5); the XP into the level goes too. *Data: `prayer.miracle.devotion_cost_levels` 5* (replaces `spends: all devotion`).
 - **The pace** (the item 717 session, 80 sessions, 12 seeds): the first Miracle at session **22.6** on average (21–25),
   then one every **19.3** sessions (17–22): 5 → 10 is 348 XP at about 18 XP a session. Three or four Miracles in 80
-  sessions. (The brief expected about every 17–19; the run lands at the top of that, because the Miracle comes in the
-  first fight after 10 is reached.)
+  sessions. The rules text says **about every 19 sessions (17–22)**, as measured (item 737); the brief expected about
+  every 17–19, and the run lands at the top of that, because the Miracle comes in the first fight after 10 is reached.
 
 **The eight Miracles**, as approved, engine-run, × Blessing power for damage, heals and shields (item 727: the old "×3" of
 item 97 is not applied):
@@ -205,6 +205,21 @@ item 97 is not applied):
   Narrator as a pending ruling with the text (item 624). The price is always paid after the effect.
 - **New bespoke ops** in `effect_ops.json`: `repair_gear`, `clear_jam`, `rewind_hp`; the rest use core ops (`stat_mod`,
   `condition`, `resource`, `heal`, `cleanse`, `shield`, `state`, `damage_mult`, `free_action`).
+
+**Review fixes** (item 737, 9 Nov 2026):
+
+1. Encore keeps each unit's last action that can be repeated *and cost AP* this round; end-turn, decline, prayers and
+   free actions don't replace it (an ally's end-turn used to wipe its repeat, so only the priest ever got one).
+2. The previews count Encore's lend (`encoreCredit`: the attack preview, the perk list, the move range), so the priest
+   who prayed with little AP left is offered its repeat; the action panel reads "FREE · ENCORE" and the AP left counts
+   the lend. Never twice inside the reducer's own action (`cb.acting`).
+3. A Miracle that would find nobody is refused (not spent): Turned Back with nobody fallen, The Saints' Verdict or Love
+   Conquers with no enemy in sight, Encore with nobody to repeat and no enemy in sight.
+4. Turned Back skips companions (a destroyed companion is repaired or healed in the story first).
+5. Rewoven's extra turns come from the round's own initiative, once each (two Rewovens: two extra turns each).
+6. The log reads the Miracle, then its price.
+7. A liked tag at 450 XP gives nothing and uses none of the tag caps (the Miracle's own tags used to eat them).
+8. The pace is written as measured: about every 19 sessions (17–22).
 
 **Checks:** `packages/engine/test/miracle-2.1.test.ts` (the gate, the price, each Miracle, the +3 AP and the cap, Encore's
 repeat and its end, the story path), the pace in `faith-pace.test.ts`, the validator's gate/cost keys; the web shows

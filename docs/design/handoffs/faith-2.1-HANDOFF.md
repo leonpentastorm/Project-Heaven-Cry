@@ -3,7 +3,7 @@
 Branch: `feature/faith-2.1` (from `develop`, 9 Nov 2026). **Not merged, not pushed, not deployed**: Leon and his Claude
 do the final check and the merge (the merge bumps the version and writes the `CHANGELOG.md` entry). Design:
 [`docs/design/faith-2.1-spec.md`](../faith-2.1-spec.md) (Leon's accepted direction); rules: spec "Patrons and prayer"
-(rules 1.6.1) and section 14 items **701–723**; decision **107**. **Miracle 2.1** (rules 1.6.2, items **724–736**,
+(rules 1.6.1) and section 14 items **701–723**; decision **107**. **Miracle 2.1** (rules 1.6.2, items **724–737**,
 Leon's ruling of 9 Nov 2026) is built on the same branch: see its section below. World Play 1.1 was built in parallel on another branch
 and holds items 671–700 and decision 106.
 
@@ -16,7 +16,7 @@ Built in three parts, one commit each (plus the design spec):
 | B2, web | `763d4b8` | the screens, the fx, the Narrator's context, `--faith-light` in the app |
 | B3, docs | `c6671c3` | colour token in `palette.json`, art direction text, decision 107, the roadmap and hand-off notes |
 | Review fixes | `422d132` | items 719–723, the rite texts, the session boundary; see "Review fixes" below |
-| Miracle 2.1 | this section's commit | items 724–736: the Miracle at Devotion 10, −5 levels, eight stronger Miracles; see "Miracle 2.1" below |
+| Miracle 2.1 | 0bb4d30, 710e6d0; review fixes: the next commit on this branch | items 724–737: the Miracle at Devotion 10, −5 levels, eight stronger Miracles; see "Miracle 2.1" below |
 
 ## Why
 
@@ -89,7 +89,9 @@ of levels, and keeps the caps **on the character**.
    zone is known.
 5. **Not written:** the Narrator's wiki (`packages/engine/src/glossary.ts`) has no Devotion XP or leave/grudge entry
    (the FAITH block covers what the Narrator needs); `CLAUDE.md`'s Blessings line still describes Devotion as levels
-   and should gain "Devotion XP, leaving a patron (rules 1.6.1)" at the merge.
+   and should gain "Devotion XP, leaving a patron (rules 1.6.1)" at the merge; its "Miracle at Faith 7 + Devotion 7,
+   once a session, spends it all" should become "Miracle at Faith 7 + Devotion 10, once a session, lowers Devotion by
+   5 levels (rules 1.6.2)" in the same merge commit (CLAUDE.md is the merger's to edit).
 6. **Seen, not ours:** the Atheist's Whisper meta reads "TN 12" twice ("BY DICE · TN 12 · TN 12 · 75%"); the e2e step
    "Miracle clears within 2.5 s" measured 2755 ms against its 3200 ms margin.
 
@@ -134,7 +136,7 @@ warnings; e2e `faith.mjs` (38 ok), `faith-pg.mjs` (36 ok) and `two-players.mjs` 
 
 Leon's ruling: "Buff all miracles to deserve the title, miracle only at 10 and it reduces your devotion by 5." Design:
 [`faith-2.1-spec.md`](../faith-2.1-spec.md) section 7; spec "Patrons and prayer" (the revision note, the gates, the
-patron table) and section 14 items **724–736** (707, 614, 617 and 621 struck through with pointers; notes on 97, 702,
+patron table) and section 14 items **724–737** (707, 614, 617 and 621 struck through with pointers; notes on 97, 702,
 717 and 719); decision 107 (a Miracle 2.1 bullet).
 
 - **Gate** (724): Faith 7 and Devotion 10; Hymn III alone at 7. `devotion.gates.miracle` = `prayer.miracle.devotion_min`
@@ -160,12 +162,18 @@ patron table) and section 14 items **724–736** (707, 614, 617 and 621 struck t
   price; the resource row's next gate; the Proving Ground's "Miracle · 10" preset (`data-sb-faith-miracle`, replacing
   the bare "10"); the Narrator's FAITH block names the gate and the price, and `wiki_lookup patron:<id>` gives the
   Miracle's text.
+- **Review fixes (item 737):** Encore survives an ally's end-turn and is offered in the previews ("FREE · ENCORE");
+  a Miracle that would find nobody is refused, not spent; Turned Back skips companions; two Rewovens don't double;
+  the log shows the Miracle before its price; liked tags at 450 XP use no tag caps; the pace reads "about every 19
+  sessions (17–22)".
 - **For Leon:** (a) the brief expected a Miracle about every 17–19 sessions; the run gives 19.3, because the Miracle
-  comes in the first fight after 10 is reached; (b) Love Conquers treats machines and no_surrender enemies like bosses
+  comes in the first fight after 10 is reached, and the spec now says "about every 19 (17–22)"; (b) Love Conquers treats machines and no_surrender enemies like bosses
   (a Heart save or Commanded to hold), since the surrender rules say they never yield; (c) Encore's "free" repeat is
   the same action type and kind on any target, until the end of the ally's next turn.
 
-Last run (Miracle 2.1, 9 Nov 2026): engine 64 files, **1542 passed**, 1 skipped (new: `test/miracle-2.1.test.ts`);
-web 47 files (1 skipped), **368 passed**, 2 skipped; `npm run typecheck` clean; `validate.py` 0 errors, 0 warnings;
-e2e `faith.mjs` and `faith-pg.mjs` pass with no page errors.
+Last run (Miracle 2.1 review fixes, item 737, 9 Nov 2026): engine 64 files, **1550 passed**, 1 skipped
+(`test/miracle-2.1.test.ts` now 27 tests, the review ones driven through `combat/end-turn`); web 47 files (1 skipped),
+**368 passed**, 2 skipped; `npm run typecheck` clean; `validate.py` 0 errors, 0 warnings; e2e `faith.mjs` (39 ok) and
+`faith-pg.mjs` (42 ok, new: Encore offered "FREE · ENCORE" with 1 AP left and the repeat run free) pass with no page
+errors.
 

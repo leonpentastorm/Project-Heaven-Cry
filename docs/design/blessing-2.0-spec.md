@@ -51,7 +51,7 @@ Every character is either **Faithful** or **Atheist**. The choice is a new step 
 > +5 XP with +10 a session, and a failed overreach costs 3 XP. The tables below are the 1.6 rules, kept for the record.
 >
 > **Superseded in part by Miracle 2.1** (rules 1.6.2, Leon, 9 Nov 2026; `docs/design/faith-2.1-spec.md` section 7, spec
-> items 724–736): the Miracle needs **Devotion 10** (Faith 7 as before), costs **5 levels** (10 → 5) instead of all
+> items 724–737): the Miracle needs **Devotion 10** (Faith 7 as before), costs **5 levels** (10 → 5) instead of all
 > Devotion, and all eight Miracles in section 8 are stronger.
 
 Devotion runs 0–10 and is your **standing** with your patron. You do **not** spend it to ask for things; asking is

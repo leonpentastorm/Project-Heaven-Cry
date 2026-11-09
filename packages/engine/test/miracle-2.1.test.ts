@@ -4,7 +4,7 @@
 // Every prayer goes through apply() (the reducer), the path a player's click takes.
 import { describe, expect, it } from 'vitest';
 import {
-  apply, previewPrayer, d20, condOn, setDevotionXp, devotionThreshold, miracleCost, encoreKey, FAITH_FX, FAITH_PATRON, GATE,
+  apply, previewPrayer, previewAttack, encoreCredit, d20, condOn, setDevotionXp, devotionThreshold, miracleCost, encoreKey, FAITH_FX, FAITH_PATRON, GATE,
   MIRACLE_COST_LEVELS, MIRACLE_FAITH, AP_MAX, PERK_AP_CAP,
   type Combat, type GameState, type Unit, type Character, type Action,
 } from '../src';
@@ -177,6 +177,98 @@ describe('the eight Miracles in a fight (items 727-734)', () => {
     const h = miracle({ patron: 'counting_weaver' }), x: any = h.cb;
     expect(x.faithRoundHp?.[h.me.id]).toBeTypeOf('number');
     h.ally().hp = 33; h.bound(() => emit(h.cb, 'round_start', { cb: h.cb, round: 2 } as any)); expect(x.faithRoundHp[h.ally().id]).toBe(33);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// The review fixes (item 737), driven through the reducer's own turn flow (combat/end-turn), not f.turn().
+describe('the review fixes, through real turns (item 737)', () => {
+  /** Initiative set to `first` (in that order), then the foes; the first one's turn. */
+  const orderFirst = (h: ReturnType<typeof miracle>, first: string[]) => {
+    h.cb.order = [...first, ...h.cb.order.filter((id) => !first.includes(id))]; h.cb.round = 1; return h.f.turn(first[0]);
+  };
+  const turnsUntilNextRound = (h: ReturnType<typeof miracle>) => {
+    const seen: string[] = [], r0 = h.cb.round;
+    for (let i = 0; i < 30 && h.cb.round === r0 && !h.cb.over; i++) { const u = h.f.unit(h.cb.order[h.cb.turn]); if (u.side !== 'pc') break; seen.push(u.id); h.f.act({ type: 'combat/end-turn', unitId: u.id } as Action, h.g.characters[u.charId!].owner); }
+    return seen;
+  };
+  it('Encore: an ally acts, ends its turn (combat/end-turn), and the priest\'s Encore still reaches it', () => {
+    const h = miracle({ patron: 'the_laughing_mask' }); for (let i = 0; i < 2; i++) big(h.foe(i), 5000);
+    orderFirst(h, [h.ally().id, h.me.id]);
+    h.act({ type: 'combat/attack', unitId: h.ally().id, targetId: h.foe(0).id, mode: 'shot' });
+    const spent = h.ally().faith!.lastSpent; expect(spent).toBeGreaterThan(0);
+    h.act({ type: 'combat/end-turn', unitId: h.ally().id });
+    expect(h.cb.order[h.cb.turn]).toBe(h.me.id); expect(h.cb.round).toBe(1);
+    expect(h.ally().faith).toMatchObject({ lastKey: 'combat/attack:shot', lastSpent: spent, lastRound: 1 });
+    h.pray('encore');
+    expect(h.ally().faith!.encore).toMatchObject({ key: 'combat/attack:shot', ap: spent, started: false });
+    expect(logHas(h.cb, /nobody has acted/)).toBe(false);
+  });
+  it('Rewoven: every ally gets exactly one more turn this round, and the order is back at round 2; the HP is kept at the real round\'s start', () => {
+    const h = miracle({ patron: 'counting_weaver', allies: 2 }); const pcs = [h.me.id, h.ally(0).id, h.ally(1).id];
+    orderFirst(h, pcs); const base = [...h.cb.order];
+    h.pray('rewoven');
+    const seen = turnsUntilNextRound(h); // the Priest's own turn (now), then the rest of round 1
+    for (const id of pcs) expect(seen.filter((x) => x === id).length).toBe(2);
+    expect(h.cb.round).toBe(2); expect(h.cb.order).toEqual(base);
+    const snap = (h.cb as any).faithRoundHp; for (const id of pcs) expect(snap[id]).toBe(h.f.unit(id).hp);
+  });
+  it('two Rewovens in one round give each ally one more turn each (two), not a doubling', () => {
+    const h = miracle({ patron: 'counting_weaver', allies: 1 }), p2 = h.ally();
+    const c2 = h.g.characters[p2.charId!]; c2.belief = { kind: 'faithful', patron: 'counting_weaver' }; c2.patron = 'counting_weaver'; setDevotionXp(c2, devotionThreshold(10));
+    (c2.skills as any).faith = 7; p2.sk = { ...(p2.sk || {}), faith: 6 };
+    const pcs = [h.me.id, p2.id]; orderFirst(h, pcs); const base = [...h.cb.order];
+    h.pray('rewoven');
+    const seen: string[] = [];
+    while (h.cb.order[h.cb.turn] !== p2.id) { seen.push(h.cb.order[h.cb.turn]); h.act({ type: 'combat/end-turn', unitId: h.cb.order[h.cb.turn] }); }
+    seen.push(p2.id); h.act({ type: 'faith/pray', unitId: p2.id, kind: 'miracle', id: 'rewoven' });
+    h.act({ type: 'combat/end-turn', unitId: p2.id });
+    seen.push(...turnsUntilNextRound(h));
+    for (const id of pcs) expect(seen.filter((x) => x === id).length).toBe(3); // its own turn and one from each Rewoven
+    expect(h.cb.order).toEqual(base);
+  });
+  it('Encore in the previews: the one who prays, short of AP after the Miracle, is shown its repeat as possible (attack, move), never lent twice', () => {
+    const h = miracle({ patron: 'the_laughing_mask' }); for (let i = 0; i < 2; i++) big(h.foe(i), 5000);
+    const ap0 = h.me.ap; h.act({ type: 'combat/attack', unitId: h.me.id, targetId: h.foe(0).id, mode: 'shot' }); const shot = ap0 - h.me.ap;
+    h.pray('encore'); const left = h.me.ap; expect(left).toBeLessThan(shot);
+    expect(h.bound(() => encoreCredit(h.me, { type: 'combat/attack', mode: 'shot' }))).toBe(shot);
+    expect(h.bound(() => encoreCredit(h.me, { type: 'combat/attack', mode: 'aimed' }))).toBe(0);
+    expect(h.bound(() => encoreCredit(h.me, { type: 'combat/attack', mode: 'shot' }, { ...h.cb, acting: true } as any))).toBe(0); // inside the reducer: already lent
+    const pv = h.bound(() => previewAttack(h.cb, h.me, h.foe(1), 'shot')); expect(pv.ok).toBe(true);
+    expect(h.bound(() => previewAttack(h.cb, h.me, h.foe(1), 'aimed')).ok).toBe(false); // a different action isn't lent
+    h.act({ type: 'combat/attack', unitId: h.me.id, targetId: h.foe(1).id, mode: 'shot' });
+    expect(h.me.ap).toBe(left); expect(h.me.faith!.encore).toBeUndefined();
+    expect(h.bound(() => previewAttack(h.cb, h.me, h.foe(1), 'shot')).ok).toBe(left >= shot); // used: no more lend
+  });
+  it('a Miracle that would find nobody is refused and costs nothing: Turned Back, The Saints\' Verdict, Love Conquers, Encore', () => {
+    const t = miracle({ patron: 'toll_keeper' });
+    expect(previewPrayer(t.g, t.me.id, 'miracle', 'turned_back').why).toBe('Nobody has fallen this fight.');
+    expect(() => t.pray('turned_back')).toThrow(/Nobody has fallen/); expect(t.c.devotionXp).toBe(devotionThreshold(10)); expect(t.c.miracleSession).toBeUndefined();
+    for (const [patron, id] of [['nerukhan', 'saints_verdict'], ['the_matchmaker', 'love_conquers']]) {
+      const h = miracle({ patron }); h.foe(0).hidden = true; h.foe(1).hidden = true;
+      expect(previewPrayer(h.g, h.me.id, 'miracle', id).why).toBe('No enemy in sight.');
+    }
+    const e = miracle({ patron: 'the_laughing_mask' }); e.foe(0).hidden = true; e.foe(1).hidden = true;
+    expect(previewPrayer(e.g, e.me.id, 'miracle', 'encore').why).toMatch(/Nobody has acted this round/);
+    e.act({ type: 'combat/move', unitId: e.me.id, to: '2,3' }); expect(previewPrayer(e.g, e.me.id, 'miracle', 'encore').ok).toBe(true);
+  });
+  it('Turned Back leaves a destroyed companion for the story (and with only that, it is refused)', () => {
+    const h = miracle({ patron: 'toll_keeper' });
+    h.cb.units.push({ ...h.foe(0), id: 'cp-x', side: h.me.side, companion: 'drone', kind: 'drone', name: 'Drone', dead: true, hp: 0, downed: false, conds: {} } as any);
+    expect(previewPrayer(h.g, h.me.id, 'miracle', 'turned_back').ok).toBe(false);
+    Object.assign(h.ally(), { hp: 0, downed: true }); h.pray('turned_back');
+    expect(h.ally().downed).toBe(false); const d = h.cb.units.find((v) => v.id === 'cp-x')!; expect(d.dead).toBe(true); expect(d.hp).toBe(0);
+  });
+  it('the log reads the Miracle first, then its price', () => {
+    const h = miracle({ patron: 'mother_ember' }); h.pray('everyone_home');
+    const m = h.cb.log.findIndex((l) => /calls for a MIRACLE/.test(l)), p = h.cb.log.findIndex((l) => /the Miracle: Devotion −5 levels/.test(l));
+    expect(m).toBeGreaterThanOrEqual(0); expect(p).toBeGreaterThan(m);
+  });
+  it('the Miracle\'s own liked tags (at 450 XP) use none of the fight\'s or session\'s tag caps', () => {
+    const h = miracle({ patron: 'old_overcast', foes: [{}, {}] }); // soldiers: the 150 Storm kills both (kill, storm)
+    h.pray('the_sky_answers', { tile: '6,5' });
+    expect(h.foe(0).dead && h.foe(1).dead).toBe(true);
+    const t = h.c.faithTally!; expect(t.sessionXp).toBe(0); expect(t.fight?.xp ?? 0).toBe(0); expect(h.c.devotionXp).toBe(102);
   });
 });
 

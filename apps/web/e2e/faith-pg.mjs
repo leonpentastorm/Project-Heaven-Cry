@@ -2,8 +2,9 @@
 // and Devotion 10 (the Miracle's gate, rules 1.6.2), start a fight, set a vow from the tools, pray the Miracle (the full-screen answer, skippable), then
 // reset the limits; then an Atheist with knowledge pieces prays a learned Hymn by dice. Then Old Overcast: Witnessed,
 // a Hymn at its gate, an overreach, an intervention (a kill brings 20 Storm on the next enemy), a vow kept to the end
-// of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one.
-import { chromium, click, BASE } from './lib.mjs';
+// of the fight and one broken; an Atheist's Whisper by dice; a conversion to an Open patron, then to a Jealous one;
+// leaving a patron; then the Laughing Mask's Encore offered free in the action panel (items 729, 737).
+import { chromium, click, BASE, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
@@ -211,5 +212,33 @@ await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'the
 cc = (await G()).characters[cid];
 const lbl = (await fp.locator('[data-devotion-label]').textContent().catch(() => '')) || '';
 ok('the tools swear a patron anyway: the cooldown is gone and the meter reads "' + lbl + '"', cc.belief?.patron === 'the_matchmaker' && (await fp.locator('[data-faith-cooldown]').count()) === 0 && lbl === 'DEVOTION 3 · 0/25 XP');
+// ---------- Encore (items 729, 737): the one who prays is offered its repeat, marked free, even short of AP ----------
+await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'the_laughing_mask', faith: 7, devotion: 10, reset: true }); await p.waitForTimeout(200);
+await act({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true });
+await act({ type: 'sandbox/fight' });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+await myTurn(); await calm();
+await act({ type: 'sandbox/clear' });
+{ const gq = await G(), mu = gq.combat.units.find((x) => x.charId), [qx, qy] = mu.pos.split(',').map(Number), M = gq.combat.map;
+  const at = [[2, 0], [0, 2], [-2, 0], [0, -2], [1, 0], [0, 1]].map(([dx, dy]) => [qx + dx, qy + dy])
+    .find(([x, y]) => x >= 0 && y >= 0 && x < M.w && y < M.h && !M.solid.includes(x + ',' + y) && !(M.cover || []).includes(x + ',' + y) && !(M.full || []).includes(x + ',' + y));
+  console.log('note Encore target at ' + String.fromCharCode(65 + at[0]) + (at[1] + 1) + ': ' + (await act({ type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: String.fromCharCode(65 + at[0]) + (at[1] + 1) }) || 'ok')); }
+await p.waitForTimeout(300);
+{ const gE = await G(), mE = gE.combat.units.find((x) => x.charId), fE = gE.combat.units.find((x) => x.side === 'foe' && !x.dead);
+  const ap0 = mE.ap, eA = await act({ type: 'combat/attack', unitId: mE.id, targetId: fE.id, mode: 'shot' });
+  const eP = await act({ type: 'faith/pray', unitId: mE.id, kind: 'miracle', id: 'encore' });
+  await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {}); await calm();
+  const uE = await myU(), en = uE.faith?.encore;
+  ok('a shot, then Encore: the repeat is lent ' + (en?.ap ?? '?') + ' AP with ' + uE.ap + ' AP left (' + (eA || eP || 'prayed') + ')', !eA && !eP && en?.key === 'combat/attack:shot' && en.ap === ap0 - 3 - uE.ap);
+  await pickAction(p, /^Shot/); await p.waitForTimeout(150);
+  const mapW = gE.combat.map.w, [fx, fy] = fE.pos.split(',').map(Number);
+  await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click(); await p.waitForTimeout(250);
+  const asideT = await p.locator('aside').first().textContent(), conf = p.getByRole('button', { name: 'Confirm', exact: true }).first();
+  ok('the action panel marks the repeat FREE · ENCORE', /FREE · ENCORE/.test(asideT));
+  ok('and Confirm is enabled even with ' + uE.ap + ' AP (the shot costs ' + en?.ap + ')', await conf.isEnabled());
+  const nE = (await G()).combat.log.length; await conf.click(); await p.waitForTimeout(600);
+  const lgE = (await G()).combat.log.slice(nE).join(' | ');
+  ok('the repeat runs free (' + lgE.slice(0, 120) + ')', /Encore: .* repeats Attack \(shot\), free/.test(lgE) && (await myU()).ap === uE.ap); }
+await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await p.waitForTimeout(300);
 console.log('errors', errors);
 await browser.close();
