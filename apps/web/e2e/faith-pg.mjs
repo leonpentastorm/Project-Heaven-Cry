@@ -235,6 +235,7 @@ await p.waitForTimeout(300);
   await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click(); await p.waitForTimeout(250);
   const asideT = await p.locator('aside').first().textContent(), conf = p.getByRole('button', { name: 'Confirm', exact: true }).first();
   ok('the action panel marks the repeat FREE · ENCORE', /FREE · ENCORE/.test(asideT));
+  await p.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Confirm' && !b.disabled), null, { timeout: 3000 }).catch(() => {});
   ok('and Confirm is enabled even with ' + uE.ap + ' AP (the shot costs ' + en?.ap + ')', await conf.isEnabled());
   const nE = (await G()).combat.log.length; await conf.click(); await p.waitForTimeout(600);
   const lgE = (await G()).combat.log.slice(nE).join(' | ');
