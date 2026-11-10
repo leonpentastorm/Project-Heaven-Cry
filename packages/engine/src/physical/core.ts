@@ -10,9 +10,9 @@ import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave } from '../magic';
 import { resOf, resGain, canReact, useReaction } from '../tactics';
 import { d20, type Rng } from '../rng';
-import { mod } from '../character';
+import { mod, packOf } from '../character';
 import type { Character } from '../character';
-import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
+import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch, PackDraw } from './types';
 import { TECHNIQUE, TECHNIQUES, PHYS_RULES, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure } from './pressure';
 
@@ -108,9 +108,28 @@ export function linesFor(def: TechDef, weaponId: string, choice?: string, u?: Un
   return { main, stack, choices: bonus };
 }
 function newPreview(def: TechDef): TechPreview { return { ok: true, why: null, id: def.id, ap: 0, rounds: 0, attacks: [], notes: [] }; }
+// ---------- a weapon drawn from the pack (Snap Shot: "Draw or swap to this weapon") ----------
+/** The techniques that may take their weapon out of the pack as part of them (args.item names the pack entry). */
+const DRAWS_FROM_PACK = new Set(['snap_shot']);
+/** A pack entry by its index or its id (gear.ts packRef, read the same way). */
+function packEntry(c: Character, ref: string | number) {
+  const pack = packOf(c);
+  if (typeof ref === 'number' || /^\d+$/.test(String(ref))) return pack[Number(ref)] || null;
+  return pack.find((x) => x.qty > 0 && !x.mags && (x.weapon === ref || x.item === ref || x.id === ref)) || null;
+}
+/** The pack weapon a technique would draw: null when args.item names none; a refusal when it can't draw that. */
+export function packDraw(u: Unit, def: TechDef, args: TechArgs): PackDraw | string | null {
+  if (args.item == null || args.item === '') return null;
+  if (!DRAWS_FROM_PACK.has(def.id)) return def.name + ' doesn\'t draw from the pack.';
+  const c = u.companion ? null : charOfUnit(u); if (!c) return 'Only a character draws from a pack.';
+  const it = packEntry(c, args.item); if (!it) return 'Nothing there in your pack.';
+  if (!it.weapon || !WEAPON[it.weapon] || it.mags) return 'That isn\'t a weapon.';
+  return { item: args.item, weaponId: it.weapon, loaded: it.loaded ?? 0, ammoType: (it.loaded && it.ammoType) || null, mods: it.mods || [] };
+}
 function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, preview: boolean): Tech {
-  const hand: 'main' | 'off' = args.hand === 'off' && u.offWeapon ? 'off' : 'main';
-  const weaponId = hand === 'off' ? u.offWeapon! : u.weapon, w = WEAPON[weaponId] || WEAPON.fists, props = weaponProps(weaponId), off = offHome(def, weaponId);
+  const dr = packDraw(u, def, args), draw = dr && typeof dr === 'object' ? dr : null;
+  const hand: 'main' | 'off' = !draw && args.hand === 'off' && u.offWeapon ? 'off' : 'main';
+  const weaponId = draw ? draw.weaponId : hand === 'off' ? u.offWeapon! : u.weapon, w = WEAPON[weaponId] || WEAPON.fists, props = weaponProps(weaponId), off = offHome(def, weaponId);
   const lf = linesFor(def, weaponId, args.line, u), applying = [lf.main, ...lf.stack].filter(Boolean) as TechLine[];
   const tgt = args.targetId ? cb.units.find((x) => x.id === args.targetId) || null : null;
   const pv = newPreview(def);
@@ -122,6 +141,7 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
     num: (k, fb = 0) => (typeof def.numbers?.[k] === 'number' ? def.numbers[k] : fb),
     note: (text) => { pv.notes.push(text); },
     state: () => (preview ? { ...techStateOf(u, def.id) } : techState(u, def.id)), // a preview gets a copy: nothing it writes is kept
+    draw,
   };
   return t;
 }
@@ -141,6 +161,10 @@ export function techniqueAp(def: TechDef, weaponId: string, choice?: string): nu
  * and gives, and its stat block's list (u.techs). */
 export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off'): { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] {
   const weaponId = hand === 'off' ? u.offWeapon : u.weapon; if (!weaponId) return [];
+  return usableWith(u, weaponId);
+}
+/** The same, for any weapon (one in the pack that a technique would draw). */
+function usableWith(u: Unit, weaponId: string): { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] {
   const sys = weaponSystem(weaponId), props = weaponProps(weaponId), c = u.companion ? null : charOfUnit(u);
   const ready = new Set(c ? readyTechniques(c, sys) : ((u as any).techs as string[]) || []), lent = weaponTeaches(weaponId);
   const out: { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] = [];
@@ -156,10 +180,11 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off'): { id: 
 const hasUsable = (u: Unit, hand: 'main' | 'off', id: string) => usable(null, u, hand).some((x) => x.id === id);
 /** Why this unit can't start this technique now, before any target is looked at (null: it can). */
 function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null {
-  const hand: 'main' | 'off' = args.hand === 'off' && u.offWeapon ? 'off' : 'main', weaponId = hand === 'off' ? u.offWeapon! : u.weapon;
+  const draw = packDraw(u, def, args); if (typeof draw === 'string') return draw; // a weapon from the pack is judged as the hand's
+  const hand: 'main' | 'off' = !draw && args.hand === 'off' && u.offWeapon ? 'off' : 'main', weaponId = draw ? draw.weaponId : hand === 'off' ? u.offWeapon! : u.weapon;
   const props = weaponProps(weaponId);
-  if (weaponSystem(weaponId) !== def.system) return def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.';
-  if (!hasUsable(u, hand, def.id)) return 'You don\'t have ' + def.name + ' ready.';
+  if (weaponSystem(weaponId) !== def.system) return draw ? (def.system === 'melee' ? 'That isn\'t a melee weapon.' : 'That isn\'t a ranged weapon.') : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.';
+  if (!(draw ? usableWith(u, weaponId).some((x) => x.id === def.id) : hasUsable(u, hand, def.id))) return 'You don\'t have ' + def.name + ' ready.';
   const bad = (def.not_with || []).find((p) => props.includes(p)); if (bad) return 'Not available with ' + (/^[aeiou]/.test(bad) ? 'an ' : 'a ') + bad + ' weapon.';
   if (def.group === 'answer') return def.name + ' is a reaction: it fires on its trigger.';
   if (def.system === 'melee') {
@@ -174,13 +199,14 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.needs.hidden && !u.hidden) return 'Only from Hidden.';
   const ap = techniqueAp(def, weaponId, args.line); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const w = WEAPON[weaponId];
-  // a grenade thrown through a technique (Lob: args.ammo names a thrown item) spends the grenade, not the gun's rounds
-  const thrownAmmo = !!args.ammo && WEAPON[args.ammo]?.category === 'thrown';
+  // a grenade thrown through Lob (args.ammo names a thrown item) spends the grenade, not the gun's rounds; no other
+  // technique can name one to skip the magazine (review fix)
+  const thrownAmmo = def.id === 'lob' && !!args.ammo && WEAPON[args.ammo]?.category === 'thrown';
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo && !thrownAmmo) {
-    const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
+    const have = draw ? draw.loaded : hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
     if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
     if (def.needs.last_round && have !== 1) return props.includes('drawn') ? 'Only with the last arrow in the quiver.' : 'Only with the last round in the weapon.'; // a Drawn weapon's u.ammo is its quiver's total (ranged/quiver.ts)
-    if (need > 0 && u.jammed && hand === 'main') return 'Jammed: clear it first.';
+    if (need > 0 && u.jammed && hand === 'main' && !draw) return 'Jammed: clear it first.';
   }
   return null;
 }
@@ -197,7 +223,15 @@ const ACTIVE: Active[] = [];
 const cur = (att?: Unit) => { const a = ACTIVE[ACTIVE.length - 1]; return a && (!att || a.t.u === att) ? a : null; };
 /** Run fn with the technique's hand as the unit's weapon (the off hand is swapped in, as a paired attack does). */
 function inHand<T>(t: Tech, fn: () => T): T {
-  const u = t.u; if (t.hand !== 'off' || !u.offWeapon) return fn();
+  const u = t.u;
+  if (t.draw) { // a preview of a weapon still in the pack (Snap Shot): as if it were in the main hand, then put back
+    const d = t.draw, dw = WEAPON[d.weaponId], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, braced: u.braced };
+    const pts = (t.c?.skills as any)?.[weaponPhys(dw.id).hits_with];
+    u.weapon = dw.id; u.ammo = d.loaded; u.maxDur = 0; u.mods = d.mods; u.ammoType = d.ammoType; u.jammed = false; u.braced = false;
+    if (typeof pts === 'number') u.attack = mod(pts);
+    try { return fn(); } finally { Object.assign(u, keep); }
+  }
+  if (t.hand !== 'off' || !u.offWeapon) return fn();
   const ow = WEAPON[u.offWeapon], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, heat: u.heat };
   const pts = (t.c?.skills as any)?.[weaponPhys(ow.id).hits_with];
   u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = (u as any).offAmmoType ?? null; u.jammed = false;
@@ -236,12 +270,12 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
       const offTurn = active(t.cb) !== u; // a reaction: no Recoil from the shots of the user's own turn
       const rd = mode === 'melee' ? null : roundFor(t, tgt), type0 = u.ammoType; if (rd) u.ammoType = rd.type;
       try {
-        const pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil: offTurn });
+        const pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil: offTurn || !!o.noRecoil });
         if (t.preview || !pv.ok) { if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && mode !== 'melee' && t.w.magazine != null && !u.infiniteAmmo && rd?.fromMag !== false) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
         const m0 = momentumOf(u), su = (u as any).setUp;
         if (su && su.t === turnStamp(t.cb) && su.target === tgt.id) st.usedSetUp = true;
         st.struck = (st.struck || 0) + 1;
-        const r = resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, { ...(offTurn ? { noAp: true } : { free: true }), ...(o.quiet ? { quiet: true } : {}) });
+        const r = resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, { ...(offTurn ? { noAp: true } : { free: true }), ...(o.quiet ? { quiet: true } : {}), ...(o.noWear ? { noWear: true } : {}), ...(o.vi != null ? { vi: o.vi } : {}) } as any);
         if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
         if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
         if (t.def.system === 'melee') {
@@ -261,6 +295,7 @@ onHook('attack_preview', (ctx: any) => {
     if (a.o.extra) ctx.terms.push({ v: a.o.extra, label: a.o.label || a.t.def.name });
     if (a.o.ignoreCover) ctx.ignoreCover = true;
     if (a.o.reach) ctx.reach = Math.max(ctx.reach || 0, a.o.reach);
+    if (a.o.noRecoil) ctx.noRecoil = true; // resolveAttack's own preview reads it from here
     if (offHome(a.t.def, a.t.weaponId)) ctx.terms.push({ v: -PHYS_RULES.off_home_penalty, label: a.t.def.name + ' off its home weapon' });
   }
   // A set-up mark (Feint, Sidestep): the user's next technique against that target this turn.
@@ -561,7 +596,9 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off'): PadGrou
       const why = def.group === 'answer' ? null : gate(cb, u, def, { hand }) || (handlerOf(def.id) ? null : NOT_BUILT);
       return { id: def.id, name: def.name, group, ap: techniqueAp(def, weaponId), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim,
         line: lf.main ? lf.main.text : null, ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
-        lent: x.how === 'lent', signature: x.how === 'ready' && taught.has(def.id) && knownSig.has(def.id), plain: def.id === 'cut' || def.id === 'shot', built: !!handlerOf(def.id) };
+        lent: x.how === 'lent', signature: x.how === 'ready' && taught.has(def.id) && knownSig.has(def.id), plain: def.id === 'cut' || def.id === 'shot', built: !!handlerOf(def.id),
+        ...(DRAWS_FROM_PACK.has(def.id) && c ? { draws: packOf(c).map((it, i) => ({ it, i })).filter(({ it }) => it.weapon && WEAPON[it.weapon] && !it.mags && weaponSystem(it.weapon) === def.system)
+          .map(({ it, i }) => { const g = gate(cb, u, def, { item: i }) || (handlerOf(def.id) ? null : NOT_BUILT); return { item: i, weapon: it.weapon!, name: WEAPON[it.weapon!].name, ok: !g, why: g }; }) } : {}) };
     }),
   })).filter((g) => g.entries.length);
 }

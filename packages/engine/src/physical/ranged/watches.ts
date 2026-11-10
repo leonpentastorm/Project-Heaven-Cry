@@ -4,6 +4,7 @@
 import { technique, strike, canStrike, holdWatch, fireWatch, stop, spendRounds, addPressure, isPressed, atCover, turnStamp, onHook, strikingWith, type Tech } from './shared';
 import { alive, dist, lineOfSight, unitSees, sideSees, effectiveRange, xy, key, type Combat, type Unit } from '../../combat';
 import type { HeldWatch } from '../types';
+import { looseRound } from './press';
 
 // 27. Overwatch: the first enemy to move in your sight: the held shot. Precise: +2. Auto: it is a Burst (3 rounds, each
 //     later one −1). Spread: anyone coming within 4 tiles (instead of anyone moving in sight).
@@ -90,9 +91,10 @@ technique({
     attack_target(ctx, t) {
       const att: Unit = ctx.att, tgt: Unit = ctx.locked || ctx.tgt, w = held(t); if (!att || !tgt || !w || w.id !== 'cover_me') return;
       const ids = w.allyIds || (w.allyId ? [w.allyId] : []);
-      // an enemy of the holder, attacking a named ally, in the holder's sight; the covering fire needs a round to fire
-      if (att.side === t.u.side || !alive(att) || att.hidden || !ids.includes(tgt.id) || !unitSees(t.cb, t.u, att.pos) || !loaded(t)) return;
-      const shoot = t.line('auto', 'precise') === 'precise' && canStrike(t, att);
+      // an enemy of the holder, attacking a named ally, in the holder's sight; the covering fire is a held shot, so it
+      // needs a round and a shot it could make: in range and line of sight (review fix: it went off at any distance seen)
+      if (att.side === t.u.side || !alive(att) || att.hidden || !ids.includes(tgt.id) || !unitSees(t.cb, t.u, att.pos) || !loaded(t) || !canStrike(t, att)) return;
+      const shoot = t.line('auto', 'precise') === 'precise';
       fireWatch(t, ctx, att, () => {
         const pen = t.num('attack_penalty', 2);
         caught(t.cb, att);
@@ -101,7 +103,7 @@ technique({
         t.cb.log.push('  Covering fire: ' + att.name + '\'s attack on ' + tgt.name + ' is at −' + pen + '.');
         addPressure(t, att, t.num('pressure', 1), 'Cover Me');
         if (shoot && alive(att)) strike(t, { target: att, label: 'Cover Me' }); // a round, Heat and a hit's Pressure, as any shot
-        else spendRounds(t, t.def.rounds as number); // the covering burst: the round goes, nothing is rolled
+        else { spendRounds(t, t.def.rounds as number); looseRound(t, att.pos, { cover: true }); } // the covering burst: the round goes, nothing is rolled; still a shot (Heat, the report)
       });
     },
   },

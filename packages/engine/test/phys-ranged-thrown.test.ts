@@ -2,9 +2,9 @@
 // at −4, Arc over full cover at −2, Blast onto a tile with no roll and +2 Pressure in the radius; grenades as Lob's
 // ammunition; smoke, flashbangs and the scrambler ending a held Watch and a Bead; smoke letting Pressure fall by 2.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, WEAPON } from '../src';
+import { phys, WEAPON, unitSees } from '../src';
 import { physFight, rig } from './helpers/physfight';
-import { type PhysF as Fight } from './helpers/physfight-ranged';
+import { calm, type PhysF as Fight } from './helpers/physfight-ranged';
 
 // ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 const RIFLE = 'hellraiser_service_rifle';
@@ -14,7 +14,7 @@ function fight(o: { weapon?: string; known?: string[]; foes?: { at?: string; tie
   const f = physFight(pcs, o.foes || [{ at: '12,5' }]);
   f.put(f.pc, '2,5'); if (!o.alone) f.put(f.pcs[1], '12,1');
   (o.foes || [{ at: '12,5' }]).forEach((s, i) => f.put(f.foes[i], s.at || '12,5'));
-  f.turn(f.pc); return f;
+  calm(f); f.turn(f.pc); return f;
 }
 /** Smoke on these tiles (a VEIL zone, as a smoke grenade lays). */
 function smoke(f: Fight, tiles: string[]) { f.cb.zones = [...(f.cb.zones || []), { id: 'zt' + (f.cb.zones || []).length, kind: 'veil', tiles, words: ['smoke'], by: '', side: 'pc', left: 2, mult: 1, who: '' } as any]; }
@@ -267,7 +267,40 @@ describe('smoke, flashbangs and the scrambler act on other people\'s fire', () =
   });
 });
 
+describe('a Blast\'s hits (review fix: they counted as no one\'s)', () => {
+  const thumper = (foes: { at: string; tier?: string }[] = [{ at: '12,6' }, { at: '13,7' }]) => { const f = fight({ weapon: 'smetanita_thumper', known: [], foes }); f.put(f.pc, '6,6'); f.put(f.pcs[1], '12,2'); return f; };
+  it('a kill by a launcher\'s Blast gives drill for the launcher (the weapon that teaches Lob)', () => {
+    const f = thumper([{ at: '12,6', tier: 'minion' }]); f.unit(f.foe.id).hp = 1; const c = f.char(f.pc);
+    expect(phys.drillOf(c, 'smetanita_thumper')).toBe(0);
+    expect(f.tech('lob', { tile: '12,6', line: 'blast' })).toBeNull(); expect(f.foe.dead).toBe(true);
+    expect(phys.drillOf(f.g.characters[c.id], 'smetanita_thumper')).toBeGreaterThan(0); // the character as the fight's end wrote it back
+  });
+  it('a Blast that leaves them standing marks each enemy hit this round with the weapon (Crossfire, the drill of a later kill); an ally isn\'t marked', () => {
+    const f = thumper(); f.foes.forEach((v) => { f.unit(v.id).hp = f.unit(v.id).maxHp = 999; }); f.put(f.pcs[1], '11,5');
+    expect(f.tech('lob', { tile: '12,6', line: 'blast' })).toBeNull();
+    for (const v of f.foes) { expect(f.unit(v.id).hitRound?.[f.pc.id]).toBe(f.cb.round); expect(f.unit(v.id).hitWith?.[f.pc.id]).toBe('smetanita_thumper'); }
+    expect(f.unit(f.pcs[1].id).hitRound).toBeUndefined();
+  });
+  it('a grenade lobbed: a kill gives drill for that grenade', () => {
+    const f = fight({ foes: [{ at: '8,5', tier: 'minion' }] }); f.pc.throwables = { frag_grenade: 1 }; f.unit(f.foe.id).hp = 1;
+    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(f.foe.dead).toBe(true);
+    expect(phys.drillOf(f.char(f.pc), 'frag_grenade')).toBeGreaterThan(0);
+  });
+});
+
 describe('smoke lets Pressure fall by 2', () => {
+  it('a Bead still holds it: a beaded target at the smoke\'s edge, still seen by the holder, keeps its Pressure (review fix: it hung on the import order)', () => {
+    const f = physFight([{ weapon: RIFLE, known: ['bead'], skills: { dexterity: 6 } }], [{ at: '7,4' }]);
+    f.put(f.pc, '2,4'); f.put(f.foe, '7,4'); calm(f); f.turn(f.pc);
+    expect(f.tech('bead', { targetId: f.foe.id })).toBeNull();
+    smoke(f, ['7,4', '8,4', '9,4']); // the target's tile is the cloud's near edge: the holder still sees it
+    expect(f.bound(() => unitSees(f.cb, f.unit(f.pc.id), f.unit(f.foe.id).pos))).toBe(true);
+    f.press(f.foe, 3, f.pc); f.turn(f.foe); f.pass(); expect(f.pressure(f.foe)).toBe(3);
+    // the holder can't see it (behind the cloud): smoke's 2 again
+    const g = physFight([{ weapon: RIFLE, known: ['bead'], skills: { dexterity: 6 } }], [{ at: '7,4' }]);
+    g.put(g.pc, '2,4'); g.put(g.foe, '7,4'); calm(g); g.turn(g.pc); g.tech('bead', { targetId: g.foe.id });
+    smoke(g, ['6,4', '7,4', '8,4']); g.press(g.foe, 3, g.pc); g.turn(g.foe); g.pass(); expect(g.pressure(g.foe)).toBe(1);
+  });
   it('an enemy standing in smoke at the end of its turn sheds 2; in the open, 1', () => {
     const run = (inSmoke: boolean) => {
       const f = fight({ foes: [{ at: '8,5' }] }); if (inSmoke) { f.pc.throwables = { smoke_grenade: 1 }; expect(f.tech('lob', { tile: '8,5', ammo: 'smoke_grenade' })).toBeNull(); }

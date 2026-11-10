@@ -57,6 +57,20 @@ function blastPressure(t: Tech, tile: string, radius: number): void {
   for (const v of caught(t.cb, tile, radius)) addPressure(t, v, t.num('blast_pressure', 2), 'a blast');
 }
 
+// ---------- a Blast's hits ----------
+// A Lob Blast hits everyone it damages with the launcher or the grenade (review fix): each such enemy is marked hit by
+// the user with it this round (hitRound: Crossfire; hitWith: drill on its kill, rules 1.12 drill point 6): after damage
+// that leaves it standing, and, for a blow that would take it out, just before (the kill's drill reads the mark). Reading: the kill spill (Pressure rule 4,
+// "a ranged attack takes someone out") stays off: the spec rules that area blasts are never ranged attacks (the
+// Bulwark ruling), and the Blast's own +2 Pressure already reaches everyone in its radius.
+let LOBBING: { by: Unit; weapon: string } | null = null;
+function lobbing<T>(by: Unit, weapon: string, fn: () => T): T { const was = LOBBING; LOBBING = { by, weapon }; try { return fn(); } finally { LOBBING = was; } }
+onHook('damage_in', (ctx: any, cb) => {
+  const L = LOBBING, v: Unit = ctx.t, src = ctx.src || {}; if (!L || !v || src.by !== L.by || src.type !== 'explosion' || v.side === L.by.side) return;
+  if (ctx.phase !== 'would_drop_to_0' && !(ctx.phase === 'after' && ctx.dealt > 0)) return;
+  ((v as any).hitRound ||= {})[L.by.id] = cb.round; ((v as any).hitWith ||= {})[L.by.id] = L.weapon;
+});
+
 // ---------- Lob, a grenade (args.ammo): the grenade's own Blast, in throwing range ----------
 function lobGrenade(t: Tech, id: string): string | null {
   const u = t.u, cb = t.cb, w = WEAPON[id];
@@ -71,7 +85,7 @@ function lobGrenade(t: Tech, id: string): string | null {
   const ctx: any = emit(cb, 'throw', { u, item: id, tile, ap: t.pv.ap, radius: radiusOf(w), cancel: false, caughtBy: null, preview: false, cb, rng: t.rng, technique: t.def.id });
   u.throwables![id]--;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: id, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id });
-  cb.log.push(u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : blast(cb, t.rng, u, tile!, id, ctx.radius)) + '.');
+  cb.log.push(u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : lobbing(u, id, () => blast(cb, t.rng, u, tile!, id, ctx.radius))) + '.');
   if (!ctx.cancel && explosive) blastPressure(t, tile!, ctx.radius);
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + nameOf(w));
   return null;
@@ -94,7 +108,7 @@ function lobBlast(t: Tech): string | null {
   if (t.hand === 'main' && w.heat_limit && !u.infiniteAmmo) { u.heat += 1; if (u.heat >= heatLimit(u, w)) u.jammed = true; }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id });
-  cb.log.push(u.name + ' lobs a round from the ' + w.name + ' onto ' + refOf(tile!) + blast(cb, t.rng, u, tile!, w.id, radius) + (u.jammed && t.hand === 'main' ? ' · the weapon jams' : '') + '.');
+  cb.log.push(u.name + ' lobs a round from the ' + w.name + ' onto ' + refOf(tile!) + lobbing(u, w.id, () => blast(cb, t.rng, u, tile!, w.id, radius)) + (u.jammed && t.hand === 'main' ? ' · the weapon jams' : '') + '.');
   blastPressure(t, tile!, radius);
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'fired');
   return null;
@@ -157,4 +171,7 @@ onHook('blast_landed', (ctx: any, cb) => {
   }
 });
 // Smoke: anyone standing in it at the end of a turn sheds at least 2 Pressure (grenade smoke and VEIL's smoke alike).
-pressureDecay((cb, u, fall) => (inSmoke(cb, u) ? Math.max(fall, lobNum('smoke_decay', 2)) : fall));
+// A fall another rule holds at 0 stays held (a Bead whose holder still sees the target, at the smoke's edge: Bead's own
+// text, "its Pressure doesn't fall while you see it", is the spec's; the smoke rule is the brief's). Either order of
+// the two rules gives the same fall (review fix: it hung on the import order).
+pressureDecay((cb, u, fall) => (fall > 0 && inSmoke(cb, u) ? Math.max(fall, lobNum('smoke_decay', 2)) : fall));

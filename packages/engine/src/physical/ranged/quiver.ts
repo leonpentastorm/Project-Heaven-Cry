@@ -13,7 +13,7 @@ import { packOf, loadedOf, roundsOf } from '../../character';
 import { packAdd } from '../../containers';
 import { WEAPON } from '../../data';
 import { AMMO_TYPES, ammoId } from '../../tactics';
-import { type Combat, type Unit, isMelee } from '../../combat';
+import { type Combat, type Unit, isMelee, reloadRefuser } from '../../combat';
 import { charOfUnit } from '../../effects/hooks';
 import { physOf, ensurePhys, weaponProps } from '../data';
 import { onHook, strikeRound, strikingWith, techState, techStateOf } from './shared';
@@ -146,11 +146,13 @@ onHook('attack_roll', (ctx: any) => {
 onHook('on_hit', (ctx: any) => { if (ctx.att && !WRAPPED.has(ctx.att)) nock(ctx.att); });
 onHook('on_miss', (ctx: any) => { if (ctx.att && !WRAPPED.has(ctx.att)) nock(ctx.att); });
 
-// ---------- no reload in a fight ----------
-onHook('action_refuse', (ctx: any) => {
-  const a = ctx.a, u: Unit | undefined = ctx.u; if (!u || ctx.fail || a?.type !== 'combat/reload') return;
-  const which = a.hand === 'off' ? [u.offWeapon] : a.hand === 'both' ? [u.weapon, u.offWeapon] : [u.weapon];
-  if (which.some((w) => isDrawn(w))) ctx.fail = 'A quiver is filled before the fight.';
+// ---------- no plain reload: in a fight none, out of one only through the quiver menu ----------
+// The engine's reload() and reloadHands() ask (combat.ts reloadRefuser), so every path is refused: the Reload action,
+// the area map's reload, Running Reload, Between Heartbeats and Resupply (review fix: only the action was). Out of a
+// fight the plain reload would top the bow up with untyped arrows and lose the quiver's types, so it goes to the menu.
+reloadRefuser((u, weaponId, cb) => {
+  if (!isDrawn(weaponId) || u.infiniteAmmo) return null;
+  return cb?.overworld ? 'Fill the quiver from the quiver menu.' : cb ? 'A quiver is filled before the fight.' : 'A quiver is filled from its own menu, out of a fight.';
 });
 
 // ---------- after the fight ----------

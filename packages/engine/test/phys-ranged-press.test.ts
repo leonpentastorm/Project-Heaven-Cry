@@ -1,7 +1,11 @@
 // Physical 2.0 (rules 1.12), ranged Press: Rake, Warning Shot, Flush, Mag Dump and Crossfire (Suppress is in
 // phys-core.test.ts). Each technique: the base with a plain weapon, every property line with and without the property,
 // every refusal, AP, rounds, Heat, Pressure before and after (misses and the caps), and the preview against the action.
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Saves roll a d20 that the attack rig doesn't reach: D.die forces every d20 (an attack's own is then set by rig()). 1
+// always fails a save, 20 always makes it, whatever the seed (review fix: these tests leaned on the seed's next die).
+const D = vi.hoisted(() => ({ die: null as number | null }));
+vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
 import { phys, WEAPON, coverOf, weaponDamage, physicalMult, heatLimit, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
@@ -29,7 +33,7 @@ const pressAfter = (pv: phys.TechPreview, u: Unit) => pv.pressure?.filter((x) =>
 const crateAt = (f: F, ref: string) => coverOf(f.cb)[f.tile(ref)];
 // volley_end, as Spray and Pray hears it
 const VOLLEY_END: any[] = []; onHook('volley_end', (ctx: any) => { VOLLEY_END.push({ u: ctx.u?.id, mode: ctx.mode, hits: (ctx.hits || []).map((v: Unit) => v.id) }); });
-beforeEach(() => { rig(null); VOLLEY_END.length = 0; });
+beforeEach(() => { rig(null); VOLLEY_END.length = 0; D.die = null; });
 
 describe('the data and the pad', () => {
   it('all five are built, with their numbers filled in', () => {
@@ -120,7 +124,28 @@ describe('Rake', () => {
     const g = fight('service_pistol', [{ at: 'G5' }, { at: 'G6' }, { at: 'H4' }], { pc: { skills: { dexterity: 0 } } });
     const pv2 = g.pv('rake', { targetId: g.foes[0].id }); rig({ hit: false, die: 5 }); const at2 = g.cb.log.length;
     g.tech('rake', { targetId: g.foes[0].id }); expect(rolledToHit(g, at2, g.pc)).toEqual(pvToHit(pv2));
-    expect(new Set(pvToHit(pv2)).size).toBeGreaterThan(1); // Recoil and Heat grow through the volley
+    expect(new Set(pvToHit(pv2)).size).toBeGreaterThan(1); // Heat grows through the volley (Recoil doesn't: below)
+  });
+  it('no Recoil inside the volley: Auto (today\'s full auto) and the 3-target Rake alike; the first roll keeps earlier Recoil (review fix)', () => {
+    const line: FoeAt[] = [{ at: 'H5' }, { at: 'I5' }, { at: 'J5' }];
+    const f = fight('hellraiser_service_rifle', line, { pc: { skills: { dexterity: 0 } } }), a = f.foes[0];
+    const pv = f.pv('rake', { targetId: a.id }); expect(pv.attacks.length).toBe(3);
+    expect(pv.attacks.map((x) => x.pv.terms!.find((t) => t.label === 'recoil')?.v)).toEqual([undefined, undefined, undefined]);
+    rig({ hit: false, die: 5 }); const at = f.cb.log.length; f.tech('rake', { targetId: a.id });
+    expect(rolledToHit(f, at, f.pc)).toEqual(pvToHit(pv));
+    // the 3-target Rake (the Spread line of a Spread and Auto weapon), after a shot this turn: Recoil on its first roll only
+    const g = fight('brigade_auto_shotgun', [{ at: 'G5' }, { at: 'G6' }, { at: 'G7' }], { pc: { skills: { dexterity: 0 } } }); rig({ hit: false, die: 5 });
+    g.tech('shot', { targetId: g.foes[2].id }); g.pc.ap = 9;
+    const gv = g.pv('rake', { targetId: g.foes[0].id, line: 'spread' }); expect(gv.attacks.length).toBe(3);
+    expect(gv.attacks.map((x) => x.pv.terms!.find((t) => t.label === 'recoil')?.v)).toEqual([-1, undefined, undefined]);
+    const at2 = g.cb.log.length; g.tech('rake', { targetId: g.foes[0].id, line: 'spread' }); expect(rolledToHit(g, at2, g.pc)).toEqual(pvToHit(gv));
+  });
+  it('one attack action wears the weapon 1 (the 3-target Rake), or today\'s full auto 2 (review fix)', () => {
+    const f = fight('brigade_auto_shotgun', [{ at: 'G5' }, { at: 'G6' }, { at: 'G7' }]); rig({ hit: false, die: 5 }); const d0 = f.pc.dur!;
+    expect(f.pc.maxDur).toBeGreaterThan(0);
+    f.tech('rake', { targetId: f.foes[0].id, line: 'spread' }); expect(f.pc.dur).toBe(d0 - 1);
+    const g = fight('hellraiser_service_rifle', crowd); rig({ hit: false, die: 5 }); const e0 = g.pc.dur!;
+    g.tech('rake', { targetId: g.foes[0].id }); expect(g.pc.dur).toBe(e0 - 2);
   });
   it('an enemy wants it on a crowd, not on one target; asking changes nothing', () => {
     const f = fight('hellraiser_service_rifle', [{ at: 'H5', weapon: 'hellraiser_service_rifle' }]);
@@ -134,7 +159,7 @@ describe('Rake', () => {
 
 // ---------- 10. Warning Shot ----------
 describe('Warning Shot', () => {
-  const nerves = (f: F, heart: number) => { f.foe.sv = { body: 0, brain: 0, heart }; };
+  const nerves = (f: F, heart: number) => { f.foe.sv = { body: 0, brain: 0, heart }; D.die = heart < 0 ? 1 : 20; };
   it('1 AP, 1 round, no attack: a failed Heart save gives +1 Pressure; Heat 1 + 1', () => {
     const f = fight('service_pistol'); nerves(f, -50); const hp = f.foe.hp;
     const pv = f.pv('warning_shot', { targetId: f.foe.id });
@@ -169,7 +194,7 @@ describe('Warning Shot', () => {
     unchanged(f, () => { expect(pressAfter(f.pv('warning_shot', { targetId: f.foe.id }), f.foe)).toBe(2); });
     f.tech('warning_shot', { targetId: f.foe.id }); expect(f.pressure(f.foe)).toBe(2);
     const g = fight('service_pistol', [{ at: 'H5', weapon: 'service_pistol' }]); g.unit(g.foe.id).techs = ['warning_shot'];
-    g.turn(g.foe); g.press(g.pc, 3, g.foe); g.pc.sv = { body: 0, brain: 0, heart: -50 };
+    g.turn(g.foe); g.press(g.pc, 3, g.foe); g.pc.sv = { body: 0, brain: 0, heart: -50 }; D.die = 1;
     expect(g.use(g.foe, 'warning_shot', { targetId: g.pc.id })).toBeNull(); expect(g.pressure(g.pc)).toBe(3);
   });
   it('a Hidden shooter is revealed by the report', () => {
@@ -269,6 +294,17 @@ describe('Mag Dump', () => {
     rig({ hit: false, die: 5 }); f.tech('mag_dump', { targetId: f.foe.id });
     expect(f.pressure(f.foe)).toBe(4); expect(f.pc.ammo).toBe(0); expect(f.pc.heat).toBe(heatLimit(f.pc, WEAPON.hellraiser_service_rifle) - 1);
   });
+  it('no Recoil on top of its own growing penalty: the step is all that grows (review fix); one wear', () => {
+    const f = fight('hellraiser_service_rifle', [{ at: 'H5' }], { pc: { skills: { dexterity: 0 } } }); const d0 = f.pc.dur!;
+    const pv = f.pv('mag_dump', { targetId: f.foe.id }); expect(pv.attacks.length).toBe(4);
+    expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'recoil')?.v)).toEqual([undefined, undefined, undefined, undefined]);
+    expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'Mag Dump')?.v ?? 0)).toEqual([0, -1, -2, -3]);
+    rig({ hit: false, die: 5 }); const at = f.cb.log.length; f.tech('mag_dump', { targetId: f.foe.id });
+    expect(rolledToHit(f, at, f.pc)).toEqual(pvToHit(pv)); expect(f.pc.dur).toBe(d0 - 1);
+    // the revolver's "no growing penalty": a shooter with no Dexterity gets none from Recoil either
+    const g = fight('drifter_revolver', [{ at: 'H5' }], { pc: { skills: { dexterity: 0 } } }); const gv = g.pv('mag_dump', { targetId: g.foe.id });
+    expect(gv.attacks.length).toBe(2); expect(gv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'recoil')?.v)).toEqual([undefined, undefined]);
+  });
   it('Quick and Precise (a revolver): no growing penalty; Quick alone keeps it', () => {
     const f = fight('drifter_revolver'); const pv = f.pv('mag_dump', { targetId: f.foe.id });
     expect(pv.attacks.length).toBe(2); expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'Mag Dump')?.v ?? 0)).toEqual([0, 0]);
@@ -316,6 +352,13 @@ describe('Crossfire', () => {
     const m = crossed('service_pistol', [{ at: 'H5' }], { hit: false }); expect(m.f.tech('crossfire', { targetId: m.f.foe.id })).toBe('No ally has hit ' + m.f.foe.name + ' this round.');
     expect(f.pc.ap).toBe(6); expect(f.pc.ammo).toBe(12);
   });
+  it('the ally\'s hit must be this round, and the user\'s own hit doesn\'t count (review fix: no test pinned either)', () => {
+    const { f } = crossed('service_pistol'); f.cb.round += 1; // the ally's hit was last round
+    expect(f.tech('crossfire', { targetId: f.foe.id })).toBe('No ally has hit ' + f.foe.name + ' this round.');
+    const g = fight('service_pistol'); g.foe.hp = 999; g.foe.maxHp = 999; rig({ hit: true, die: 12 }); g.tech('shot', { targetId: g.foe.id });
+    expect(g.foe.hitRound?.[g.pc.id]).toBe(g.cb.round); // only the user hit it
+    expect(g.tech('crossfire', { targetId: g.foe.id })).toBe('No ally has hit ' + g.foe.name + ' this round.');
+  });
   it('+2 to hit and +1 Pressure on a hit on top of the hit\'s own; 2 AP, 1 round, Heat 1 + 1', () => {
     const { f } = crossed('long_rifle'); expect(f.pressure(f.foe)).toBe(1);
     let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('crossfire', { targetId: f.foe.id }); });
@@ -347,7 +390,20 @@ describe('Crossfire', () => {
 
 describe('every Press', () => {
   it('a preview of each changes nothing', () => {
-    const f = fight('service_pistol', [{ at: 'G5' }, { at: 'G6' }]); f.foe.sv = { body: 0, brain: 0, heart: -50 };
+    const f = fight('service_pistol', [{ at: 'G5' }, { at: 'G6' }]); f.foe.sv = { body: 0, brain: 0, heart: -50 }; D.die = 1;
     unchanged(f, () => { for (const id of PRESS) f.pv(id, { targetId: f.foe.id, tile: f.tile('C4') }); });
+  });
+});
+
+// ---------- the core's gates (review fixes) ----------
+describe('a grenade named as ammunition', () => {
+  it('only Lob throws one: any other technique still needs its rounds (and a jam still stops it)', () => {
+    const f = fight('hellraiser_service_rifle'); f.pc.ammo = 1;
+    expect(f.tech('suppress', { targetId: f.foe.id })).toBe('Needs 3 rounds, 1 loaded.');
+    expect(f.tech('suppress', { targetId: f.foe.id, ammo: 'frag_grenade' })).toBe('Needs 3 rounds, 1 loaded.');
+    f.pc.ammo = 0; expect(f.tech('mag_dump', { targetId: f.foe.id, ammo: 'frag_grenade' })).toBe('Empty: reload first.');
+    f.pc.ammo = 24; f.pc.jammed = true;
+    expect(f.tech('suppress', { targetId: f.foe.id, ammo: 'frag_grenade' })).toBe('Jammed: clear it first.');
+    expect(f.pc.ap).toBe(6); expect(f.pressure(f.foe)).toBe(0);
   });
 });

@@ -2,8 +2,9 @@
 // out of a fight from the arrows carried (loadQuiver, the phys/quiver action), each shot names its arrow type (args.ammo,
 // default the type with the most left) and that type's rider applies, and a bow can't be reloaded in a fight.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, enemyTurn, type Unit, type Character, type PackItem } from '../src';
+import { phys, enemyTurn, reload, reloadHands, weaponActions, type Unit, type Character, type PackItem } from '../src';
 import { physFight, rig } from './helpers/physfight';
+import { calm } from './helpers/physfight-ranged';
 import { storyWith } from './helpers/perkfight';
 import { condOn } from '../src/magic';
 import { loadQuiver, quiverView, ensureQuiver, defaultArrow, arrowId, isDrawn } from '../src/physical/ranged/quiver';
@@ -15,7 +16,7 @@ const carried = (c: Character, type = 'standard') => (c.pack || []).filter((x) =
 /** An archer (recurve bow, Dexterity 6) against a soldier; the quiver at fight start is `q` (default: 20 standard). */
 function bowFight(q?: Record<string, number>, o: { weapon?: string; known?: string[]; foe?: { tier?: string; weapon?: string } } = {}) {
   const f = physFight([{ weapon: o.weapon || 'recurve_bow', skills: { dexterity: 6 }, known: o.known }], [{ at: 'F5', tier: o.foe?.tier || 'soldier', weapon: o.foe?.weapon }]);
-  f.put(f.pc, 'C5');
+  f.put(f.pc, 'C5'); f.put(f.foe, 'F5'); calm(f);
   if (q) { // as if the fight had started with this load (the count is what the bow holds)
     const u = f.unit(f.pc.id), c = f.char(u); phys.ensurePhys(c).quiver[u.weapon] = { ...q };
     delete u.quiver; delete (u.tech || {})._quiver; u.ammo = Object.values(q).reduce((t, n) => t + n, 0);
@@ -72,6 +73,12 @@ describe('loadQuiver (out of a fight)', () => {
     const e = c.pack!.find((x) => x.weapon === 'longbow')!; expect(e.loaded).toBe(8);
     expect(phys.physOf(c).quiver.longbow).toEqual({ standard: 6, hollow_point: 2 });
     expect(c.loaded).toBeUndefined(); // the bow in hand is untouched
+  });
+  it('out of a fight the plain reload is refused: the quiver menu fills it, so its types aren\'t lost (review fix)', () => {
+    const { s, c } = archer([arrows(10), arrows(5, 'incendiary')]);
+    expect(loadQuiver(c, 'recurve_bow', { standard: 5 })).toBeNull();
+    expect(() => s.act({ type: 'world/act', charId: c.id, act: 'reload' } as any)).toThrow('Fill the quiver from the quiver menu.');
+    const x = s.g.characters[c.id]; expect(x.loaded).toBe(5); expect(phys.physOf(x).quiver.recurve_bow).toEqual({ standard: 5 }); expect(carried(x, 'incendiary')).toBe(5);
   });
   it('through the action: out of a fight it loads; in a fight it is refused', () => {
     const { s, c } = archer();
@@ -163,6 +170,20 @@ describe('the quiver in a fight', () => {
     const g = bowFight(undefined, { weapon: 'crossbow' }); expect(g.pc.quiver).toBeUndefined();
     let msg = ''; try { g.act({ type: 'combat/reload', unitId: g.pc.id } as any); } catch (e: any) { msg = String(e.message); }
     expect(msg).not.toMatch(/quiver/);
+  });
+  it('no path refills it in a fight: Running Reload, Between Heartbeats and Resupply (the engine\'s reload refuses), and the panel says so (review fix)', () => {
+    const f = bowFight({ incendiary: 2 }); const u = f.unit(f.pc.id); u.loose = 30;
+    expect(f.bound(() => reload(f.cb, u, { free: true }))).toBe('A quiver is filled before the fight.'); // the free reloads (Between Heartbeats, Resupply)
+    expect(f.bound(() => reload(f.cb, u))).toBe('A quiver is filled before the fight.');
+    expect(f.bound(() => reloadHands(f.cb, u, 'both'))).toBe('A quiver is filled before the fight.');
+    expect(weaponActions(u).find((x) => x.id === 'reload')?.why).toMatch(/quiver/);
+    expect(u.ammo).toBe(2); expect(u.quiver).toEqual({ incendiary: 2 }); expect(u.ap).toBe(6);
+    // Running Reload's toggle: the reload is refused, the move goes, the quiver is untouched
+    const g = physFight([{ weapon: 'recurve_bow', skills: { dexterity: 6 }, perks: { running_reload: 'I' } }], [{ at: 'F5' }]); g.put(g.pc, 'C5'); g.put(g.foe, 'F5'); calm(g); g.turn(g.pc);
+    const gu = g.unit(g.pc.id); gu.ammo = 2; gu.quiver = { incendiary: 2 }; gu.loose = 30;
+    try { g.act({ type: 'combat/move', unitId: gu.id, to: g.tile('C6'), mods: ['perk:running_reload#reload'] } as any); } catch { /* the toggle may be refused outright */ }
+    expect(g.unit(gu.id).ammo).toBe(2); expect(g.unit(gu.id).quiver).toEqual({ incendiary: 2 });
+    expect(g.cb.log.some((l) => /loads \d+ rounds/.test(l))).toBe(false);
   });
   it('the quiver is written back to the character after the fight', () => {
     const f = bowFight({ standard: 5, incendiary: 2 }); rig({ hit: true, die: 12 });

@@ -8,6 +8,7 @@ import { reveal } from '../../tactics';
 import { physicalMult } from '../../character';
 import { PHYS_RULES } from '../data';
 import { pressureCap } from '../pressure';
+import { bracedSuppress } from './sets';
 
 // 8. Suppress: 3 rounds, one roll at +2. A hit is half damage and 2 Pressure in all; a miss is 1.
 //    Auto: enemies within 1 tile of the target also gain 1. Heavy, Braced: it holds until your next turn, and any enemy
@@ -16,14 +17,16 @@ technique({
   id: 'suppress',
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
-    const p = t.line('auto', 'heavy', 'silent'), onHit = t.num('pressure_hit', 2), onMiss = p === 'silent' ? 0 : t.num('pressure_miss', 1);
+    const p = t.line('auto', 'heavy', 'silent'), brace = bracedSuppress(t.u);
+    // Brace's Auto line (sets.ts): +1 more while Braced there, on the target it rolled at, hit or miss (when it gives any)
+    const onHit = t.num('pressure_hit', 2) + brace, onMiss = p === 'silent' ? 0 : t.num('pressure_miss', 1) + brace;
     // the roll spends 1 round and the technique burns the rest; its Pressure replaces the ordinary +1 for a hit
     const r = strike(t, { extra: t.num('hit', 2), mult: t.num('damage_mult', 0.5), noPressure: true });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     spendRounds(t, Math.max(0, (t.def.rounds as number) - 1));
     const near = p === 'auto' ? t.cb.units.filter((v) => v !== tgt && v.side !== t.u.side && alive(v) && dist(v.pos, tgt.pos) <= t.num('auto_spill_range', 1)) : [];
     if (t.preview) {
-      addPressure(t, tgt, onHit, 'Suppress'); t.note('A hit: half damage and ' + onHit + ' Pressure.' + (onMiss ? ' A miss: ' + onMiss + '.' : ' A miss gives none (Silent).'));
+      addPressure(t, tgt, onHit, 'Suppress'); t.note('A hit: half damage and ' + onHit + ' Pressure.' + (onMiss ? ' A miss: ' + onMiss + '.' : ' A miss gives none (Silent).') + (brace ? ' (Braced: +' + brace + '.)' : ''));
       for (const v of near) addPressure(t, v, t.num('auto_spill', 1), 'Suppress');
       if (p === 'heavy') t.note('Holds until your next turn: any enemy that moves or fires within ' + t.num('heavy_lane', 3) + ' tiles of the target gains ' + t.num('heavy_lane_pressure', 1) + '.');
       return null;
@@ -53,7 +56,8 @@ const loaded = (t: Tech): number => (t.u.infiniteAmmo || t.w.magazine == null ? 
 /** Does firing this weapon add Heat (the same test the core uses for a Press's +1)? */
 const heatsUp = (t: Tech): boolean => !!t.w.heat_limit && !t.u.infiniteAmmo;
 /** A preview of a volley's i-th roll sees the unit as the action will: the Press's +1 Heat (the core adds it before the
- * run) and i earlier rolls of this technique fired (their Heat and Recoil). Everything is put back. The action just runs. */
+ * run) and i earlier rolls of this technique fired (their Heat; their Recoil doesn't count, see later()). Everything is
+ * put back. The action just runs. */
 function asRoll<T>(t: Tech, i: number, fn: () => T): T {
   if (!t.preview) return fn();
   const u = t.u, h0 = u.heat, s0 = u.shotsThisTurn;
@@ -61,6 +65,10 @@ function asRoll<T>(t: Tech, i: number, fn: () => T): T {
   u.shotsThisTurn = (s0 || 0) + i;
   try { return fn(); } finally { u.heat = h0; u.shotsThisTurn = s0; }
 }
+/** A roll after the first of one volley (rules 1.12, Recoil: "shots inside one burst, full auto or weapon skill use the
+ * burst's own penalty instead"; spec item 88: none in a volley): no Recoil, and no wear (an attack action wears 1).
+ * Recoil from shots fired earlier in the turn still reaches the volley's first roll. */
+const later = (n: number) => (n > 0 ? { noRecoil: true, noWear: true } : {});
 /** In a preview, the Pressure entry just added comes only with a hit. */
 const onHitOnly = (t: Tech) => { if (t.preview) { const e = t.pv.pressure?.[t.pv.pressure.length - 1]; if (e) e.onHit = true; } };
 /** A shot that refused before anything was spent: the reason in plain words. */
@@ -73,10 +81,11 @@ function inWeapon<T>(t: Tech, fn: () => T): T {
   const w0 = u.weapon, a0 = u.ammoType; u.weapon = t.weaponId; u.ammoType = (u as any).offAmmoType ?? null;
   try { return fn(); } finally { u.weapon = w0; u.ammoType = a0; }
 }
-/** A round that goes out with no attack roll (Warning Shot, Flush). spendRounds paid the round; this is the rest of
+/** A round that goes out with no attack roll (Warning Shot, Flush; Rout, takes.ts; Cover Me's covering round,
+ * watches.ts). spendRounds paid the round; this is the rest of
  * what a shot does by today's rules: Heat and the jam at the limit, Recoil for later shots, wear, the report that
  * reveals a Hidden shooter, and the shot's event for the screen. Nothing in a preview. */
-function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): void {
+export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): void {
   if (t.preview) return;
   const u = t.u, w = t.w;
   if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && u.heat >= heatLimit(u, w)) { u.jammed = true; t.cb.log.push(u.name + '\'s weapon jams (Heat).'); } }
@@ -163,7 +172,7 @@ technique({
       // one full-auto volley, as fireAuto makes it (Spray and Pray and the items read the volley), one roll a target
       chained(() => {
         for (const v of list) {
-          const r = asRoll(t, fired, () => strike(t, { target: v, extra: t.num('auto_hit', -2), noPressure: true, label: 'full auto' }));
+          const r = asRoll(t, fired, () => strike(t, { target: v, extra: t.num('auto_hit', -2), noPressure: true, label: 'full auto', vi: fired, ...later(fired) }));
           if (!r.ok) continue;
           fired++; addPressure(t, v, t.num('pressure', 1), 'raked');
         }
@@ -180,7 +189,7 @@ technique({
     if (typeof list === 'string') return list;
     let fired = 0;
     for (const v of list) {
-      const r = asRoll(t, fired, () => strike(t, { target: v, extra: t.num('hit', -3), noPressure: true }));
+      const r = asRoll(t, fired, () => strike(t, { target: v, extra: t.num('hit', -3), noPressure: true, ...later(fired) }));
       if (!r.ok) continue;
       fired++;
       if (t.preview) { addPressure(t, v, t.num('pressure', 1), 'raked'); onHitOnly(t); }
@@ -280,7 +289,7 @@ technique({
       const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 1);
       for (let i = 0; i < rolls; i++) {
         if (!t.preview && !alive(tgt)) break;
-        const r = asRoll(t, i, () => strike(t, { extra: -i * step, noPressure: true, label: 'Mag Dump' }));
+        const r = asRoll(t, i, () => strike(t, { extra: -i * step, noPressure: true, label: 'Mag Dump', ...later(i) }));
         if (!r.ok) { if (i === 0) return refused(r); break; }
         fired++;
         if (t.preview) { addPressure(t, tgt, press, 'a mag dump'); if (p !== 'auto') onHitOnly(t); }

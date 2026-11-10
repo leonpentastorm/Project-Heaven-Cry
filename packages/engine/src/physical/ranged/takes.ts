@@ -1,7 +1,9 @@
 // Physical 2.0, ranged Takes: the target must be Pressed; one a turn; the target loses 2 Pressure after the effect (the
 // core does all three). wasSuppressed(t) says whether the stronger line applies. Dead Centre is the lead's reference; the
 // ranged lane builds Pin Down, Rout, Stopping Shot, Storm and Last Round here.
-import { technique, strike, canStrike, save, stop, forceMove, spendRounds, lowerPressure, wasSuppressed, isPressed, isSuppressed, pressureOf, pressureState, onHook, type Tech } from './shared';
+import { technique, strike, canStrike, save, stop, forceMove, spendRounds, lowerPressure, wasSuppressed, isPressed, isSuppressed, pressureOf, pressureState, onHook, TECHNIQUE, type Tech } from './shared';
+import { looseRound } from './press';
+import { condOn, endCond } from '../../magic';
 import { alive, dist, xy, paths, moveUnit, moveBlock, type Combat, type Unit } from '../../combat';
 import { radiusOf } from '../../tactics';
 import { AP_BASE } from '../../effects/ap';
@@ -31,21 +33,33 @@ function walkFree(u: Unit, to: string, t: Tech, keepMoved: boolean): string | nu
 const occupied = (cb: Combat, u: Unit, k: string) => cb.units.some((x) => x !== u && !x.dead && x.pos === k);
 
 // 22. Pin Down: a shot at ×0.7. On a hit the target saves (Guts or Athletics, the better) or is Pinned for 1 round.
-//     Suppressed: the save is at −2. Auto: full damage. Drawn or Silent: nailed in place until it spends 2 AP (read: it
-//     also spends 2 AP of its next turn tearing free).
+//     Suppressed: the save is at −2. Auto: full damage. Drawn or Silent: nailed in place until it spends 2 AP.
+//     Reading (review fix; for Leon): the nail's end is the 2 AP, not the round. The target pays them as its next turn
+//     starts (an AP debt: it tears free first thing), and the pin ends there: it may move with what is left. Unpaid, it
+//     stays nailed. Before, it paid the 2 AP and stayed Pinned all turn anyway, so the AP bought nothing.
 technique({
   id: 'pin_down',
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
-    const p = t.line('auto', 'drawn', 'silent'), sup = wasSuppressed(t), nailed = p === 'drawn' || p === 'silent';
+    const p = t.line('auto', 'drawn', 'silent'), sup = wasSuppressed(t), nailed = p === 'drawn' || p === 'silent', ap = t.num('nailed_ap', 2);
     const r = strike(t, { mult: p === 'auto' ? 1 : t.num('damage_mult', 0.7), label: 'Pin Down' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
-    if (t.preview) t.note('On a hit: a save (Guts or Athletics' + (sup ? ', at −' + t.num('suppressed_save', 2) : '') + ') or Pinned for ' + t.num('pinned_rounds', 1) + ' round' + (nailed ? ', nailed: it spends ' + t.num('nailed_ap', 2) + ' AP of its next turn tearing free' : '') + '.');
-    if (t.preview || (r.hit && alive(tgt))) stop(t, tgt, 'pinned', { rounds: t.num('pinned_rounds', 1), tnAdd: sup ? t.num('suppressed_save', 2) : 0, apLoss: nailed ? t.num('nailed_ap', 2) : undefined });
+    if (t.preview) t.note('On a hit: a save (Guts or Athletics' + (sup ? ', at −' + t.num('suppressed_save', 2) : '') + ') or ' + (nailed ? 'nailed in place until it spends ' + ap + ' AP (it tears free as its next turn starts, then may move)' : 'Pinned for ' + t.num('pinned_rounds', 1) + ' round') + '.');
+    if (t.preview || (r.hit && alive(tgt))) {
+      const took = stop(t, tgt, 'pinned', { rounds: t.num('pinned_rounds', 1), tnAdd: sup ? t.num('suppressed_save', 2) : 0, apLoss: nailed ? ap : undefined });
+      if (took && nailed && !t.preview) (tgt as any).nailed = true;
+    }
     return null;
   },
   ai: (t) => (t.tgt ? 7 : 0),
 });
+// The nail: its 2 AP were taken as the turn's AP was counted (turn_start_pre's debt); paid, it is free to move.
+onHook('turn_start', (ctx: any, cb) => {
+  const u: Unit = ctx.u; if (!u || !(u as any).nailed) return;
+  delete (u as any).nailed;
+  if (condOn(u, 'pinned')) { endCond(u, 'pinned', cb); cb.log.push(u.name + ' tears free of the pin (' + num('pin_down', 'nailed_ap', 2) + ' AP).'); }
+});
+const num = (id: string, k: string, fb: number) => { const v = TECHNIQUE[id]?.numbers?.[k]; return typeof v === 'number' ? v : fb; };
 
 // 23. Rout: no damage. The target makes a Heart save or runs its full move away from you, drawing opportunity attacks and
 //     Watches. Suppressed: the save is at −3. Loud: −2 more. Blast: everyone Pressed in the radius.
@@ -72,7 +86,9 @@ technique({
     if (rad) for (const v of cb.units) if (v !== tgt && v.side !== t.u.side && alive(v) && isPressed(v) && dist(v.pos, tgt.pos) <= rad) who.push({ v, sup: isSuppressed(v) });
     const tn = (sup: boolean) => (sup ? t.num('suppressed_save', 3) : 0) + (p === 'loud' ? t.num('loud_save', 2) : 0);
     const tiles = (v: Unit) => Math.floor(t.num('run_ap', AP_BASE) * v.movement);
-    spendRounds(t, typeof t.def.rounds === 'number' ? t.def.rounds : 1); // no roll: the round is fired over its head (the core checked the magazine)
+    // no roll: the round is fired over its head (the core checked the magazine). It is still a shot by today's rules
+    // (Heat, Recoil for later shots, wear, the report that reveals a Hidden shooter), as Warning Shot's is (review fix)
+    spendRounds(t, typeof t.def.rounds === 'number' ? t.def.rounds : 1); looseRound(t, tgt.pos, { rout: true });
     if (t.preview) {
       t.note('No damage. A Heart save' + (tn(who[0].sup) ? ' at −' + tn(who[0].sup) : '') + ', or it runs its full move away from you (opportunity attacks and held shots fire).' + (rad ? ' Blast: everyone Pressed within ' + rad + ' tiles of it too.' : ''));
       for (const { v, sup } of who) {
@@ -200,5 +216,7 @@ technique({
   },
   ai: (t) => (t.tgt ? 9 : 0),
 });
-// The free speed reload goes on the next speed reload of the main hand (a tactical one keeps it).
-onHook('reload', (ctx: any) => { if (ctx.u?.freeReload && !ctx.tactical && !ctx.both) delete ctx.u.freeReload; });
+// The free speed reload goes on the next speed reload of the main hand (a tactical one keeps it): spent only by the
+// reload that took it (reload() marks it ctx.freeReload; review fix: the Marksman's special load and free reloads
+// such as Resupply spent it without using it).
+onHook('reload', (ctx: any) => { if (ctx.u?.freeReload && ctx.freeReload) delete ctx.u.freeReload; });

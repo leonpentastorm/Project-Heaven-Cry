@@ -49,6 +49,9 @@ export interface StrikeOpts {
   critMin?: number; /** a roll that hits is a critical */ critOnHit?: boolean; ignoreArmour?: number | true; ignoreCover?: boolean; reach?: number;
   label?: string; noMomentum?: boolean; noPressure?: boolean;
   /** a Hidden user stays Hidden after this attack (Dead to Rights, Silent) */ quiet?: boolean;
+  /** no Recoil on this roll: a roll after the first of one volley (rules 1.12: a volley's own penalty replaces Recoil) */ noRecoil?: boolean;
+  /** this roll doesn't wear the weapon: a roll after the first of one attack action ("an attack action wears 1") */ noWear?: boolean;
+  /** the roll's place in its volley (0 the first), for the hooks that read ctx.vi (today's burst passes it) */ vi?: number;
 }
 export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null }
 export type WatchTrigger = 'moves' | 'enters_tile' | 'attacks_ally' | 'acts';
@@ -70,7 +73,11 @@ export interface Tech {
   /** def.numbers[key], else the fallback */ num(key: string, fallback?: number): number;
   /** a line for the preview card and, when it happens, the log */ note(text: string): void;
   /** per-technique state on the user, plain JSON, kept across the fight: u.tech[def.id] */ state(): Record<string, any>;
+  /** the pack weapon this use takes into the main hand (Snap Shot with args.item), until the handler has drawn it:
+   * the core judges and previews that weapon */ draw?: PackDraw | null;
 }
+/** A weapon a technique takes out of the pack (args.item): its pack reference and what it holds. */
+export interface PackDraw { item: string | number; weaponId: string; loaded: number; ammoType: string | null; mods: string[] }
 export interface TechHandler {
   id: string;
   /** a refusal in plain words, or null */ check?(t: Tech): string | null;
@@ -90,5 +97,7 @@ export interface PadEntry {
   /** a learned signature card */ signature: boolean;
   /** the weapon's one-row attack (Cut, Shot): never a chip */ plain: boolean;
   /** no handler yet */ built: boolean;
+  /** a technique that can draw its weapon from the pack (Snap Shot): each pack weapon it could take (args.item) */
+  draws?: { item: number; weapon: string; name: string; ok: boolean; why: string | null }[];
 }
 export interface PadGroup { group: TechGroup; label: string; entries: PadEntry[] }

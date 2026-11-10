@@ -8,7 +8,7 @@ const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
 import { phys, type Unit, type TechPreview } from '../src';
 import { physFight, rig, type PhysSpec } from './helpers/physfight';
-import { gameText as snap, term } from './helpers/physfight-ranged';
+import { gameText as snap, term, calm } from './helpers/physfight-ranged';
 
 // ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 const TAKES = ['pin_down', 'rout', 'stopping_shot', 'storm', 'last_round'];
@@ -19,7 +19,7 @@ function fight(o: { weapon?: string; at?: string; foes?: Foe[]; pcs?: (PhysSpec 
   const foes = o.foes || [{ at: 'H3' }];
   const f = physFight([{ weapon: o.weapon || 'service_pistol', known: TAKES, skills: { dexterity: 6 } }, ...(o.pcs || [])], foes.map((x) => ({ tier: 'soldier', ...x })));
   f.put(f.pc, o.at || 'C3'); (o.pcs || []).forEach((p, i) => f.put(f.pcs[i + 1], p.at)); foes.forEach((x, i) => f.put(f.foes[i], x.at));
-  for (const u of f.cb.units) { f.press(u, 0); u.hp = u.maxHp; delete u.conds; u.prone = false; delete (u as any).stopped; delete u.apDebt; u.overwatch = null; delete (u as any).watch; }
+  calm(f); for (const u of f.cb.units) delete u.apDebt;
   f.turn(f.pc); D.die = null; rig(null);
   return f;
 }
@@ -93,13 +93,20 @@ describe('Pin Down', () => {
     const f = fight({ weapon: 'decrkm_smg' }); f.press(f.foe, 2, f.pc);
     expect(multOf(f.pv('pin_down', { targetId: f.foe.id }), 'Pin Down')).toBeUndefined();
   });
-  it('Drawn or Silent: nailed, it spends 2 AP of its next turn tearing free', () => {
+  it('Drawn or Silent: nailed in place until it spends 2 AP: it pays them as its next turn starts, and is then free to move (review fix)', () => {
     for (const weapon of ['parlour_pistol', 'recurve_bow']) {
       const f = fight({ weapon }); f.pc.ammo = 2; f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails();
+      expect(f.pv('pin_down', { targetId: f.foe.id }).notes.some((n) => /nailed in place until it spends 2 AP/.test(n)), weapon).toBe(true);
       expect(f.tech('pin_down', { targetId: f.foe.id }), weapon).toBeNull();
       expect(f.foe.conds?.pinned, weapon).toBe(1); expect(f.foe.apDebt, weapon).toBe(2);
-      f.turn(f.foe); expect(f.foe.ap, weapon).toBe(4);
+      expect(f.walk(f.foe, 'H4'), weapon).toMatch(/^Pinned/); // nailed until it pays
+      f.turn(f.foe); expect(f.foe.ap, weapon).toBe(4); expect(f.foe.conds?.pinned, weapon).toBeFalsy();
+      expect(f.cb.log.some((l) => /tears free of the pin \(2 AP\)/.test(l)), weapon).toBe(true);
+      expect(f.walk(f.foe, 'H4'), weapon).toBeNull(); // paid: it moves
     }
+    // the base pin holds through the target's whole next turn, with no AP to pay
+    const g = fight(); g.press(g.foe, 2, g.pc); rig({ hit: true, die: 12 }); fails(); g.tech('pin_down', { targetId: g.foe.id });
+    g.turn(g.foe); expect(g.foe.ap).toBe(6); expect(g.foe.conds?.pinned).toBeTruthy(); expect(g.walk(g.foe, 'H4')).toMatch(/^Pinned/);
   });
   it('Stopped once: a second stop by another gunner fails until the end of the target\'s next turn', () => {
     const f = fight({ pcs: [{ at: 'C5', weapon: 'service_pistol', known: TAKES }] }); f.press(f.foe, 3, f.pc); rig({ hit: true, die: 12 }); fails();
@@ -113,6 +120,16 @@ describe('Pin Down', () => {
 });
 
 describe('Rout', () => {
+  it('its round is a shot by today\'s rules: +1 Heat, Recoil for later shots, wear, and the report reveals a Hidden shooter (review fix)', () => {
+    const f = fight({ weapon: 'service_pistol' }); f.press(f.foe, 2, f.pc); saves(); f.pc.hidden = true; f.pc.dexterity = 0; const d0 = f.pc.dur ?? 0;
+    expect(f.tech('rout', { targetId: f.foe.id })).toBeNull();
+    expect(f.pc.heat).toBe(1); // the round's 1 (a Take adds no Press Heat)
+    expect(f.pc.shotsThisTurn).toBe(1); expect(f.pc.hidden).toBe(false); if (f.pc.maxDur) expect(f.pc.dur).toBe(d0 - 1);
+    expect(f.fx('shot').at(-1)).toMatchObject({ unit: f.pc.id, rout: true });
+    expect(term(f.pv('shot', { targetId: f.foe.id }), 0, 'recoil')).toBe(-1);
+    const s = fight({ weapon: 'parlour_pistol' }); s.press(s.foe, 2, s.pc); saves(); s.pc.hidden = true;
+    expect(s.tech('rout', { targetId: s.foe.id })).toBeNull(); expect(s.pc.hidden).toBe(true); // Silent: no report
+  });
   it('base: no damage, a round; a failed Heart save runs it its full move away, with the engine\'s own walk', () => {
     const f = fight({ at: 'A3', foes: [{ at: 'D3' }] }); f.press(f.foe, 2, f.pc); fails();
     const before = snap(f), pv = f.pv('rout', { targetId: f.foe.id });
@@ -275,6 +292,13 @@ describe('Last Round', () => {
     rig({ hit: true, die: 12 }); f.foe.hp = 1;
     expect(f.tech('last_round', { targetId: f.foe.id })).toBeNull();
     expect(f.foe.dead || f.foe.downed).toBe(true); expect(f.pc.ammo).toBe(0); expect(f.pc.freeReload).toBe(true);
+  });
+  it('the free reload is spent only by the reload that uses it: not a special load, not a reload already free (Resupply) (review fix)', async () => {
+    const { emit } = await import('../src/effects/hooks'); const { reload } = await import('../src');
+    const f = fight(); f.pc.ammo = 0; f.pc.mags = [12, 12, 12]; f.pc.freeReload = true;
+    f.bound(() => emit(f.cb, 'reload', { u: f.unit(f.pc.id), ap: 0, cb: f.cb, special: 'incendiary' })); expect(f.pc.freeReload).toBe(true); // the Marksman's special load
+    expect(f.bound(() => reload(f.cb, f.unit(f.pc.id), { free: true }))).toBeNull(); expect(f.pc.ap).toBe(6); expect(f.pc.freeReload).toBe(true); // Resupply
+    f.pc.ammo = 0; f.act({ type: 'combat/reload', unitId: f.pc.id } as any); expect(f.pc.ap).toBe(6); expect(f.pc.freeReload).toBeUndefined(); // the speed reload it was for
   });
   it('the free reload: a tactical reload keeps it, the next speed reload uses it, the one after costs again', () => {
     const f = fight(); f.pc.ammo = 0; f.pc.mags = [12, 12, 12]; f.pc.freeReload = true;

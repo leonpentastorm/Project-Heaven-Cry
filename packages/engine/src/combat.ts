@@ -1213,7 +1213,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
     if (!stopped && rng && (cb.zones || []).length && zoneEnter(cb, rng, u, k)) { stopped = 'trap'; flush(); }
     // Rules 1.7: hazards fire on every tile entered, at any speed (the area map's moves roll on cb.worldRng).
     if (!stopped && cb.hazards?.some((h) => hazardLiveAt(h, k, u.side))) { flush(); const hz = hazardStep(cb, rng || cb.worldRng, u, k); if (hz) stopped = hz; }
-    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first
+    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, ...(mc.noWatch ? { noWatch: true } : {}), flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first; noWatch (set on move_cost): no held Watch hears the step (Shift)
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
     if (reacts && !u.dead && !u.downed) {
       // Opportunity attacks (spec): leaving an enemy's melee reach without Disengaging, checked at each step.
@@ -1445,21 +1445,37 @@ const typesFor = (types: (string | null)[] | undefined, n: number) => Array.from
  * one in the gun into the pile on the unit's tile, rounds and type kept; a tactical reload (+1 AP, item 679) puts it
  * back with the spares. A weapon loaded round by round tops up from loose rounds and has one reload. Enemies carry
  * their tier's spares and always speed-reload. */
-export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean } = {}): string | null {
+/** Rules that refuse the plain reload of a weapon (Physical 2.0: a Drawn weapon's quiver is filled only from its own
+ * menu, out of a fight: physical/ranged/quiver.ts). Each returns a refusal or null; reload(), reloadHands() and the
+ * reload entry of weaponActions() all ask, so no path (the Reload action, the area map, Running Reload, Between
+ * Heartbeats, Resupply) reloads past them. cb is null when the caller has no fight at hand (weaponActions). */
+type ReloadRefuser = (u: Unit, weaponId: string, cb: Combat | null) => string | null;
+const RELOAD_REFUSERS: ReloadRefuser[] = [];
+export const reloadRefuser = (f: ReloadRefuser) => { RELOAD_REFUSERS.push(f); };
+export function reloadRefused(u: Unit, weaponId: string | null | undefined, cb: Combat | null): string | null {
+  if (!weaponId) return null;
+  for (const f of RELOAD_REFUSERS) { const r = f(u, weaponId, cb); if (r) return r; }
+  return null;
+}
+/** o.free: a reload whose AP something else waives (Resupply, Running Reload, Between Heartbeats): it costs 0 and
+ * leaves Last Round's free speed reload (u.freeReload) for a reload that would cost AP. */
+export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean; free?: boolean } = {}): string | null {
   const w = WEAPON[u.weapon];
   if (w.magazine == null) return 'Nothing to reload.';
+  { const no = reloadRefused(u, u.weapon, cb); if (no) return no; }
   if (!weaponActions(u).some((x) => x.id === 'reload')) return 'This weapon doesn\'t reload.';
   if (forbids({ u }, 'reload')) return forbids({ u }, 'reload') + ': no reloading.';
   if (o.tactical && w.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   const tactical = !!o.tactical && !!u.mags && w.reload !== 'loose';
-  const rAp = !tactical && !o.both && u.freeReload ? 0 : reloadAp(u) + (tactical ? PILE.tactical_reload_extra_ap : 0); // Physical 2.0: Last Round's free speed reload (physical/ranged/takes.ts spends it)
+  const usesFree = !tactical && !o.both && !o.free && !!u.freeReload; // Physical 2.0: Last Round's free speed reload (physical/ranged/takes.ts spends it when ctx.freeReload)
+  const rAp = o.free || usesFree ? 0 : reloadAp(u) + (tactical ? PILE.tactical_reload_extra_ap : 0);
   if (u.ap < rAp) return 'Needs ' + rAp + ' AP.';
   // Every refusal comes before the hook: a refused reload is no reload (Speed Loader's use stays; spec item 564).
   // A full magazine isn't swapped (review fix: a speed reload dropped a full one, a tactical one cost 3 AP for nothing).
   if (w.reload === 'magazine' && u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) && !u.jammed) return 'Already full.';
   if (u.mags && w.reload === 'loose') { if (w.magazine - u.ammo <= 0) return 'Already full.'; if (!Math.min(w.magazine - u.ammo, u.loose || 0)) return 'No rounds left to load.'; }
   else if (u.mags && !u.mags.some((n) => n > 0)) return 'No loaded spare ' + (w.reload_unit || 'magazine') + 's.' + (u.mags.length && u.loose ? ' Load one first.' : '');
-  emit(cb, 'reload', { u, ap: rAp, cb, ...(o.both ? { both: true } : {}), ...(tactical ? { tactical: true } : {}) });
+  emit(cb, 'reload', { u, ap: rAp, cb, ...(o.both ? { both: true } : {}), ...(tactical ? { tactical: true } : {}), ...(usesFree ? { freeReload: true } : {}) });
   if (u.dead || u.downed) return null; // a held shot felled it as it reached for the magazine (Dead to Rights): no reload
   const rDur = (how: string) => (rAp === 1 ? 800 : how === 'loose' ? 1400 : 1200);
   // The event's counts are for the picture only (the reload card, fx/reload.ts): what was in the gun, what is in it now, its size.
@@ -1492,6 +1508,7 @@ export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: bool
 /** Reload both guns' speed price (Two guns: 3 AP, items may change it); the tactical one is this + 1. */
 export const reloadBothAp = (u: Unit) => actionAp({ u }, 'reload_both', 3).ap;
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical = false): string | null {
+  { const no = (hand === 'both' ? reloadRefused(u, u.weapon, cb) : null) || reloadRefused(u, u.offWeapon, cb); if (no) return no; }
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
   if (tactical && ow.reload === 'loose') return 'Loaded round by round: there is only one reload.';
@@ -1512,6 +1529,7 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
     if (u.ammo >= w.magazine && w.reload === 'magazine') return 'The main gun is full: reload the off-hand gun alone.';
     // The main gun first, as before (a refusal throws in the reducer, so nothing it did stays).
     const keep = u.ap, seq = cb.fxSeq || 0; u.ap = 99; const e = reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' }); u.ap = keep; if (e && e !== 'Already full.') return e;
+    if (u.dead || u.downed) return null; // a held shot felled it as it reached for the magazines (Dead to Rights): no reload, nothing spent
     mainFx = (cb.fx || []).find((f) => f.n > seq && f.k === 'reload' && f.unit === u.id) || null;
   }
   // What goes in: a loose gun takes rounds (a character's from its loose rounds of that calibre); a magazine gun its
@@ -1523,6 +1541,13 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   } else if (!pool) fresh = ow.magazine;
   else if (pool.length && Math.max(...pool) > 0) { const i = pool.indexOf(Math.max(...pool)); fresh = pool[i]; freshType = takeType(u, shared, i, pool.length); pool.splice(i, 1); }
   if (fresh == null) return ow.reload === 'loose' ? 'No rounds left to load.' : 'No loaded spare for the off-hand gun.';
+  if (hand === 'off') {
+    // The same moment the main reload has ('reload' {u, ap, hand: 'off'}): a held shot waiting for a reload fires first
+    // (Dead to Rights); listeners for the main gun's reload skip hand 'off'. Nothing is spent yet: put back what the
+    // pool gave if the shot fells it.
+    emit(cb, 'reload', { u, ap, cb, hand: 'off', ...(tactical ? { tactical: true } : {}) });
+    if (u.dead || u.downed) { if (fresh != null && pool && ow.reload !== 'loose') { pool.push(fresh); pushType(u, shared, freshType, pool.length - 1); } return null; }
+  }
   const left = have, leftType = u.offAmmoType ?? null, unit = ow.reload_unit || 'magazine';
   if (ow.reload === 'loose' && pc) { if (ow.ammo === WEAPON[u.weapon]?.ammo) u.loose = (u.loose || 0) - looseTake; else u.offLoose = (u.offLoose || 0) - looseTake; }
   u.offAmmo = fresh; u.offAmmoType = ow.reload === 'loose' ? leftType : freshType; u.ap -= ap;
@@ -1825,7 +1850,7 @@ export function weaponActions(u: Unit): WeaponAction[] {
   if (w.magazine != null && w.reload) {
     const r = reloadAp(u), unit = w.reload_unit || 'magazine';
     const label = w.reload === 'loose' ? LOOSE_LABEL[w.ammo] || 'Load rounds' : RELOAD_LABEL[w.reload_unit] || 'Reload';
-    const why = u.jammed ? 'Jammed: clear it first.' : u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) ? 'Already full.' : u.mags && w.reload !== 'loose' && !u.mags.some((n) => n > 0) ? 'No loaded spare ' + unit + 's.' : w.reload === 'loose' && u.mags && !(u.loose || 0) ? 'No rounds left to load.' : need(r);
+    const why = reloadRefused(u, w.id, null) || (u.jammed ? 'Jammed: clear it first.' : u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) ? 'Already full.' : u.mags && w.reload !== 'loose' && !u.mags.some((n) => n > 0) ? 'No loaded spare ' + unit + 's.' : w.reload === 'loose' && u.mags && !(u.loose || 0) ? 'No rounds left to load.' : need(r));
     // Rules 1.9 (item 679): a magazine weapon with tracked spares also offers the tactical reload (+1 AP; the old one goes back in the pack).
     const tac = w.reload !== 'loose' && u.mags ? { ap: r + PILE.tactical_reload_extra_ap, why: why && /^Needs/.test(why) || !why ? need(r + PILE.tactical_reload_extra_ap) : why } : undefined;
     add({ id: 'reload', label, ap: r, why, text: w.reload === 'loose' ? 'Top up from loose rounds (' + (u.loose ?? 0) + ' carried). Nothing drops.' : 'Swap in your fullest spare ' + unit + ' (' + (u.mags ? u.mags.length + ' left' : 'unlimited') + '). Speed: the one in the gun drops into the pile on your tile, rounds still in it. Tactical (+' + PILE.tactical_reload_extra_ap + ' AP): it goes back in your pack.', ...(tac ? { tactical: tac } : {}) });

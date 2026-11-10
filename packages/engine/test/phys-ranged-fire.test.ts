@@ -1,28 +1,29 @@
 // Physical 2.0 (rules 1.12), ranged Fire: Snap Shot, Burst, Called Shot, Walking Fire and Punch Through (fire.ts).
-import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, coverOf, objectsAt, d20, condOn } from '../src';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Saves roll a d20 that the attack rig doesn't reach: D.die forces every d20 (an attack's own is then set by rig()). 1
+// always fails a save, 20 always makes it, whatever the seed (review fix: these tests leaned on the seed's next die).
+const D = vi.hoisted(() => ({ die: null as number | null }));
+vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
+import { phys, coverOf, objectsAt, condOn } from '../src';
 import { physFight, rig } from './helpers/physfight';
-import { unchanged, term, offHand, type PhysF as F } from './helpers/physfight-ranged';
+import { unchanged, term, offHand, calm, type PhysF as F } from './helpers/physfight-ranged';
 
 // ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 /** One gunner at C5 against foes (default: a soldier at H5), on the gunner's turn. */
 function gunner(weapon: string, known: string[] = [], foes: any[] = [{ at: 'H5', tier: 'soldier' }], pc: any = {}): F {
   const f = physFight([{ weapon, known, skills: { dexterity: 6 }, ...pc }], foes);
-  f.put(f.pc, 'C5'); foes.forEach((x, i) => { if (x.at) f.put(f.foes[i], x.at); }); f.turn(f.pc);
+  f.put(f.pc, 'C5'); foes.forEach((x, i) => { if (x.at) f.put(f.foes[i], x.at); }); calm(f); f.turn(f.pc);
   return f;
 }
 /** The to-hit totals of the attack lines written to the log since `from` (d20 + total = sum vs Defense). */
 function rolls(f: F, from: number): number[] {
   return f.cb.log.slice(from).map((l) => /: d20 (\d+) ([+−])(\d+)/.exec(l)).filter(Boolean).map((m) => (m![2] === '−' ? -1 : 1) * Number(m![3]));
 }
-/** Seed the game's dice so that the d20 after `skip` rolls (an attack's own die is one, even when rigged) is in [lo, hi]. */
-function nextDie(f: F, lo: number, hi: number, skip = 1) {
-  for (let st = 1; st < 100000; st++) { const r = { state: st }; for (let i = 0; i < skip; i++) d20(r); const v = d20(r); if (v >= lo && v <= hi) { f.g.rng.state = st; return; } }
-}
-/** The target fails its next save (a low die and a hopeless bonus). */
-const failsSave = (f: F, u: { id: string }) => { (f.unit(u.id) as any).sv = { body: -50, brain: -50, heart: -50 }; nextDie(f, 2, 10); };
+/** The target fails its saves (a natural 1 and a hopeless bonus); keeps its nerve: a natural 20 and a sure bonus. */
+const failsSave = (f: F, u: { id: string }) => { (f.unit(u.id) as any).sv = { body: -50, brain: -50, heart: -50 }; D.die = 1; };
+const makesSave = (f: F, u: { id: string }) => { (f.unit(u.id) as any).sv = { body: 50, brain: 50, heart: 50 }; D.die = 20; };
 
-beforeEach(() => rig(null));
+beforeEach(() => { rig(null); D.die = null; });
 
 describe('Snap Shot', () => {
   const fight = (main = 'sabre', off = 'service_pistol') => { const f = gunner(main, ['snap_shot']); offHand(f, off); return f; };
@@ -152,7 +153,7 @@ describe('Called Shot', () => {
       expect(f.tech('called_shot', { targetId: f.foe.id, opt: part })).toBeNull(); expect(id === 'dazed' ? f.foe.dazedNext : condOn(f.foe, id), part).toBeTruthy(); // Dazed is a flag: −2 AP next turn
       expect(f.pc.ap).toBe(3); expect(f.pressure(f.foe)).toBe(1);
     }
-    const g = fight(); g.unit(g.foe.id).sv = { body: 50 } as any; rig({ hit: true, die: 12 });
+    const g = fight(); makesSave(g, g.foe); rig({ hit: true, die: 12 });
     g.tech('called_shot', { targetId: g.foe.id, opt: 'head' }); expect(g.foe.dazedNext).toBeFalsy();
   });
   it('a miss does nothing but spend', () => {
@@ -204,8 +205,9 @@ describe('Walking Fire', () => {
     const f = fight(); rig({ hit: false, die: 5 });
     // stepping out from behind the wall at F5 toward a target behind it: the shot from C5 has no cover in the way either way;
     // name the point and the shot comes from there (the log line follows the first leg of the move)
+    const at = f.cb.log.length; // the action's own lines only (review fix: the whole log counted the opening enemy moves)
     expect(f.tech('walking_fire', { targetId: f.foe.id, tile: f.tile('C7'), opt: '1' })).toBeNull();
-    const i = f.cb.log.findIndex((l) => / fires at /.test(l)), moves = f.cb.log.map((l, k) => (/ moves to /.test(l) ? k : -1)).filter((k) => k >= 0);
+    const log = f.cb.log.slice(at), i = log.findIndex((l) => / fires at /.test(l)), moves = log.map((l, k) => (/ moves to /.test(l) ? k : -1)).filter((k) => k >= 0);
     expect(moves.length).toBe(2); expect(moves[0]).toBeLessThan(i); expect(moves[1]).toBeGreaterThan(i);
     f.turn(f.pc); expect(f.tech('walking_fire', { targetId: f.foe.id, tile: f.pc.pos, opt: '3' })).toMatch(/0 to 0/);
     // the default: the point with the best chance, the earliest on a tie (from C5 the pistol is a range band short; D5
@@ -310,5 +312,75 @@ describe('the pad and the AI', () => {
     const s = f.bound(() => phys.aiScore(f.cb, f.pc, 'called_shot', { targetId: f.foe.id })); expect(s.score).toBe(4); expect(s.args.opt).toBe('leg');
     f.bound(() => phys.aiScore(f.cb, f.pc, 'punch_through', { targetId: f.foe.id }));
     expect(JSON.stringify(f.g)).toBe(before);
+  });
+});
+
+// ---------- review fixes ----------
+describe('Snap Shot: draw from the pack (review fix: "Draw or swap to this weapon")', () => {
+  /** A rifleman with a weapon (by default a loaded service pistol) in the pack; returns its pack index. */
+  const stow = (f: F, weapon: string, loaded?: number) => { const c: any = f.char(f.pc); c.pack = [...(c.pack || []), { id: weapon, name: weapon, qty: 1, kind: 'weapon', weapon, ...(loaded != null ? { loaded } : {}) }]; return c.pack.length - 1; };
+  it('takes a pack weapon into the main hand with no AP for the draw, and fires it; the core judges that weapon', () => {
+    const f = gunner('ccec_marksman_rifle', ['snap_shot']); const i = stow(f, 'service_pistol', 12); rig({ hit: true, die: 12 });
+    let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('snap_shot', { targetId: f.foe.id, item: i }); });
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1);
+    expect(term(pv, 0, 'Snap Shot')).toBeUndefined(); // the pistol is Quick: no penalty (the rifle would take −2)
+    expect(pv.notes.some((n) => /out of your pack/.test(n))).toBe(true);
+    const at = f.cb.log.length;
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: i })).toBeNull();
+    expect(f.pc.weapon).toBe('service_pistol'); expect(f.char(f.pc).weapon).toBe('service_pistol');
+    expect(f.char(f.pc).pack!.some((x: any) => x.weapon === 'ccec_marksman_rifle')).toBe(true); // the rifle went into the pack
+    expect(f.pc.ap).toBe(4); expect(f.pc.ammo).toBe(11); expect(f.pressure(f.foe)).toBe(1);
+    expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
+  });
+  it('the pack weapon\'s own rules: Heavy is not available, an empty one has no round, a melee weapon or a non-weapon is no draw; nothing spent', () => {
+    const f = gunner('ccec_marksman_rifle', ['snap_shot']);
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'hellraiser_lmg', 100) })).toBe('Not available with a heavy weapon.');
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'service_pistol', 0) })).toBe('Empty: reload first.');
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'sabre') })).toBe('That isn\'t a ranged weapon.');
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: 99 })).toBe('Nothing there in your pack.');
+    expect(f.tech('shot', { targetId: f.foe.id, item: stow(f, 'service_pistol', 12) })).toBe('Shot doesn\'t draw from the pack.');
+    expect(f.pc.ap).toBe(6); expect(f.pc.weapon).toBe('ccec_marksman_rifle');
+  });
+  it('the pad lists what Snap Shot could draw, each judged', () => {
+    const f = gunner('ccec_marksman_rifle', ['snap_shot']); const ok = stow(f, 'service_pistol', 12), heavy = stow(f, 'hellraiser_lmg', 100);
+    const e = f.pad().flatMap((g) => g.entries).find((x) => x.id === 'snap_shot')!;
+    expect(e.draws?.find((d) => d.item === ok)).toMatchObject({ weapon: 'service_pistol', ok: true, why: null });
+    expect(e.draws?.find((d) => d.item === heavy)).toMatchObject({ ok: false, why: 'Not available with a heavy weapon.' });
+  });
+});
+
+describe('Burst is one attack action (review fixes)', () => {
+  it('wears the weapon 1 in all, Auto or not, and Walking Fire\'s Auto burst too (today\'s fireBurst)', () => {
+    const f = gunner('hellraiser_service_rifle'); rig({ hit: false, die: 5 }); const d0 = f.pc.dur!; expect(f.pc.maxDur).toBeGreaterThan(0);
+    f.tech('burst', { targetId: f.foe.id }); expect(f.pc.dur).toBe(d0 - 1);
+    const g = gunner('ccec_marksman_rifle', ['burst']); rig({ hit: false, die: 5 }); const e0 = g.pc.dur!;
+    g.tech('burst', { targetId: g.foe.id }); expect(g.pc.dur).toBe(e0 - 1);
+    const w = gunner('hellraiser_service_rifle', ['walking_fire']); rig({ hit: false, die: 5 }); const w0 = w.pc.dur!;
+    w.tech('walking_fire', { targetId: w.foe.id, tile: w.tile('C6') }); expect(w.pc.dur).toBe(w0 - 1);
+  });
+  it('its rolls run as one \'burst\' volley with their places (ctx.volley, ctx.vi), as today\'s burst', async () => {
+    const { onHook } = await import('../src/effects/hooks'); const seen: any[] = [];
+    onHook('attack_target', (ctx: any) => { if (ctx.att?.side === 'pc') seen.push([ctx.volley, ctx.vi]); });
+    const f = gunner('hellraiser_service_rifle'); rig({ hit: false, die: 5 }); seen.length = 0;
+    f.tech('burst', { targetId: f.foe.id }); expect(seen).toEqual([['burst', 0], ['burst', 1], ['burst', 2]]);
+  });
+});
+
+describe('Punch Through, Heavy: the carried round (review fixes)', () => {
+  const fight = (weapon: string, foes: any[] = [{ at: 'G5' }, { at: 'J5' }]) => { const f = gunner(weapon, ['punch_through'], foes); f.foes.forEach((x) => { f.unit(x.id).hp = 999; f.unit(x.id).maxHp = 999; }); f.unit(f.pc.id).braced = true; return f; };
+  it('is a ranged hit on the next target: its Pressure is the ordinary once-a-turn +1, and it marks the hit', () => {
+    const f = fight('hellraiser_lmg'), [a, b] = f.foes; rig({ hit: true, die: 12 });
+    expect(f.tech('punch_through', { targetId: a.id })).toBeNull(); expect(f.pressure(b)).toBe(1);
+    expect(f.unit(b.id).hitRound?.[f.pc.id]).toBe(f.cb.round);
+    f.unit(f.pc.id).ap = 9; f.tech('shot', { targetId: b.id }); expect(f.pressure(b)).toBe(1); // the turn's slot is used: no second +1
+    const g = fight('hellraiser_lmg'), [a2, b2] = g.foes; rig({ hit: true, die: 12 }); g.unit(g.pc.id).ap = 9;
+    g.tech('shot', { targetId: b2.id }); expect(g.pressure(b2)).toBe(1);
+    g.tech('punch_through', { targetId: a2.id }); expect(g.pressure(b2)).toBe(1); // already hit this turn: the carry adds none
+  });
+  it('keeps the round\'s armour pierce (the blackpoint ignores 10)', () => {
+    const dealt = (armour: number) => { const f = fight('blackpoint_700'); f.unit(f.foes[1].id).armour = armour; rig({ hit: true, die: 12 }); const hp = f.unit(f.foes[1].id).hp; f.tech('punch_through', { targetId: f.foes[0].id }); return hp - f.unit(f.foes[1].id).hp; };
+    expect(dealt(10)).toBeGreaterThan(1); expect(dealt(10)).toBe(dealt(0));
+    const f = fight('blackpoint_700'); f.unit(f.foes[1].id).armour = 10;
+    expect(f.pv('punch_through', { targetId: f.foes[0].id }).notes.find((n) => /carries on/.test(n))).toMatch(new RegExp('at half \\(' + dealt(10) + ' after armour\\)'));
   });
 });

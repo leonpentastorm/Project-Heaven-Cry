@@ -1,7 +1,7 @@
 // Physical 2.0, ranged Fire: damage. Shot and Aimed Shot are the lead's references; the ranged lane builds Snap Shot,
 // Burst, Called Shot, Walking Fire and Punch Through here (Lob lives in thrown.ts: its Blast line is the grenade code).
-import { technique, strike, addPressure, spendRounds, save, cond, stop, stepsWithin, standingAt, stepUser, swapIn, onHook, type Tech } from './shared';
-import { alive, dist, xy, key, emitFx, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
+import { technique, strike, addPressure, spendRounds, save, cond, stop, stepsWithin, standingAt, stepUser, swapIn, turnStamp, onHook, type Tech } from './shared';
+import { alive, dist, xy, key, emitFx, chained, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { physicalMult } from '../../character';
 
@@ -36,11 +36,6 @@ technique({
 });
 
 // ---------- what this file's volleys share ----------
-/** A roll inside one of this file's volleys: a volley's own penalties replace Recoil after its first roll (today's
- * burst). Read by the attack_preview listener below; only the shooter's own attack is touched. */
-let RIDE: { u: Unit; noRecoil?: boolean } | null = null;
-function riding<T>(r: typeof RIDE, fn: () => T): T { const was = RIDE; RIDE = r; try { return fn(); } finally { RIDE = was; } }
-onHook('attack_preview', (ctx: any) => { if (RIDE && ctx.att === RIDE.u && RIDE.noRecoil) ctx.noRecoil = true; });
 const loaded = (t: Tech) => (t.hand === 'off' ? t.u.offAmmo ?? 0 : t.u.ammo);
 const usesRounds = (t: Tech) => t.w.magazine != null && !t.u.infiniteAmmo;
 /** A preview of a later roll sees the rounds and Heat the earlier rolls will have spent (put back after). */
@@ -53,15 +48,20 @@ function asIfFired<T>(t: Tech, n: number, fn: () => T): T {
 }
 interface Roll { target: Unit; extra: number }
 /** A burst: the rolls in order, then the rounds it burns beyond them, then the barrel cooling (today's burst cools 1).
- * The volley stops at a jam or an empty magazine, and skips a roll whose target is down; rounds it didn't fire stay
- * loaded. The action raises the same 'volley' event and 'volley_end' hook today's fireBurst does (Spray and Pray). */
+ * It is one attack action, as today's fireBurst makes it: the rolls run as one 'burst' volley (ctx.volley, ctx.vi:
+ * Duck and Roll, Fire Discipline), the volley's own penalties replace Recoil after its first roll, and only the first
+ * roll wears the weapon ("an attack action wears 1"). The volley stops at a jam or an empty magazine, and skips a roll
+ * whose target is down; rounds it didn't fire stay loaded. The action raises the same 'volley' event and 'volley_end'
+ * hook today's fireBurst does (Spray and Pray). */
 function volley(t: Tech, rolls: Roll[], o: { burn: number; cool: number }): string | null {
   const u = t.u, cb = t.cb;
+  const roll = (i: number, later: boolean) => strike(t, { target: rolls[i].target, extra: rolls[i].extra, label: t.def.name, vi: i, ...(later ? { noRecoil: true, noWear: true } : {}) });
   if (t.preview) {
-    for (let i = 0; i < rolls.length; i++) {
-      const r = asIfFired(t, i, () => riding(i ? { u, noRecoil: true } : null, () => strike(t, { target: rolls[i].target, extra: rolls[i].extra, label: t.def.name })));
-      if (!r.ok) return rolls[i].target.name + ': ' + (r.why || 'can\'t attack that.');
-    }
+    const why = chained(() => {
+      for (let i = 0; i < rolls.length; i++) { const r = asIfFired(t, i, () => roll(i, i > 0)); if (!r.ok) return rolls[i].target.name + ': ' + (r.why || 'can\'t attack that.'); }
+      return null;
+    }, 'burst');
+    if (why) return why;
     if (o.burn > 0) spendRounds(t, o.burn);
     if (o.cool > 0 && t.w.heat_limit) t.note('The barrel cools ' + o.cool + ' Heat after the burst.');
     return null;
@@ -69,14 +69,16 @@ function volley(t: Tech, rolls: Roll[], o: { burn: number; cool: number }): stri
   const first = rolls[0].target, rounds = rolls.length + Math.max(0, o.burn);
   emitFx(cb, 'volley', { unit: u.id, target: first.id, from: u.pos, to: first.pos, weapon: t.weaponId, cat: t.w.category, mode: 'burst', shots: rounds });
   const aimed: Unit[] = []; let made = 0;
-  for (let i = 0; i < rolls.length; i++) {
-    const tg = rolls[i].target;
-    if ((t.hand === 'main' && u.jammed) || (usesRounds(t) && loaded(t) <= 0) || !alive(u)) break;
-    if (!alive(tg)) continue;
-    const r = riding(made ? { u, noRecoil: true } : null, () => strike(t, { target: tg, extra: rolls[i].extra, label: t.def.name }));
-    if (!r.ok) break; // the preview refuses it now (pushed out of sight, the gun broke): the burst ends
-    made++; if (!aimed.includes(tg)) aimed.push(tg);
-  }
+  chained(() => {
+    for (let i = 0; i < rolls.length; i++) {
+      const tg = rolls[i].target;
+      if ((t.hand === 'main' && u.jammed) || (usesRounds(t) && loaded(t) <= 0) || !alive(u)) break;
+      if (!alive(tg)) continue;
+      const r = roll(i, made > 0);
+      if (!r.ok) break; // the preview refuses it now (pushed out of sight, the gun broke): the burst ends
+      made++; if (!aimed.includes(tg)) aimed.push(tg);
+    }
+  }, 'burst');
   if (made === rolls.length && o.burn > 0) spendRounds(t, usesRounds(t) ? Math.min(o.burn, loaded(t)) : o.burn);
   if (o.cool > 0) u.heat = Math.max(0, u.heat - o.cool);
   emit(cb, 'volley_end', { u, mode: 'burst', target: first, hits: aimed, cb, rng: t.rng });
@@ -85,21 +87,28 @@ function volley(t: Tech, rolls: Roll[], o: { burn: number; cool: number }): stri
 const unitById = (t: Tech, id: string) => t.cb.units.find((x) => x.id === id) || null;
 
 // 1. Snap Shot: draw or swap to this weapon and fire, at −2. Quick: no penalty. Heavy: not available (data: not_with).
-//    Used with the off-hand weapon, it comes to the main hand first (today's swap, its AP waived); an enemy or a
-//    companion has no pack to rebuild from and fires it from the off hand. In the main hand already it is the shot alone.
+//    Draw: args.item names a weapon in the pack; it comes out into the main hand (today's draw, its AP waived; what
+//    the main hand held goes into the pack) and fires. The core judges that weapon (the gate, its lines, its rounds)
+//    and previews the shot as if it were already in the hand. Swap: used with the off-hand weapon, it comes to the main
+//    hand first (today's swap, its AP waived); an enemy or a companion has no pack to rebuild from and fires it from
+//    the off hand. In the main hand already it is the shot alone.
 technique({
   id: 'snap_shot',
-  check(t) { return t.hand === 'off' && t.c ? swapIn(t.cb, t.u, { from: 'off' }, { dry: true }) : null; },
+  check(t) {
+    if (t.draw) return swapIn(t.cb, t.u, { item: t.draw.item, to: 'main' }, { dry: true });
+    return t.hand === 'off' && t.c ? swapIn(t.cb, t.u, { from: 'off' }, { dry: true }) : null;
+  },
   run(t) {
-    const extra = t.line('quick') ? 0 : -t.num('penalty', 2), swap = t.hand === 'off' && !!t.c;
+    const extra = t.line('quick') ? 0 : -t.num('penalty', 2), draw = t.draw || null, swap = !draw && t.hand === 'off' && !!t.c;
     if (t.preview) {
-      t.note(swap ? 'The ' + t.w.name + ' comes to your main hand first (no AP for the swap).' : t.hand === 'off' ? 'Fired from the off hand.' : 'Already in your main hand: the shot alone.');
+      t.note(draw ? 'The ' + t.w.name + ' comes out of your pack into your main hand first (no AP for the draw).' : swap ? 'The ' + t.w.name + ' comes to your main hand first (no AP for the swap).' : t.hand === 'off' ? 'Fired from the off hand.' : 'Already in your main hand: the shot alone.');
       const r = strike(t, { extra }); return r.ok ? null : r.why || 'Can\'t attack that.';
     }
-    if (swap) { const err = swapIn(t.cb, t.u, { from: 'off' }, { free: true }); if (err) return err; t.hand = 'main'; }
+    if (draw) { const err = swapIn(t.cb, t.u, { item: draw.item, to: 'main' }, { free: true }); if (err) return err; t.draw = null; }
+    else if (swap) { const err = swapIn(t.cb, t.u, { from: 'off' }, { free: true }); if (err) return err; t.hand = 'main'; }
     const r = strike(t, { extra });
-    if (!r.ok && !swap) return r.why || 'Can\'t attack that.';
-    return null; // swapped: the swap stands even if the shot couldn't follow (the log says why)
+    if (!r.ok && !swap && !draw) return r.why || 'Can\'t attack that.';
+    return null; // drawn or swapped: the change stands even if the shot couldn't follow (the log says why)
   },
   ai: (t) => (t.tgt && t.hand === 'off' ? 5 : 0),
 });
@@ -228,11 +237,23 @@ function nextInLine(t: Tech, past: Unit): Unit | null {
     const v = t.cb.units.find((w) => w !== past && w !== t.u && alive(w) && w.pos === at && w.side !== t.u.side); if (v) return v;
   }
 }
-/** The carried round's damage before the next target's armour: half the shot's, with this hand's weapon. */
+/** The carried round's damage to the next target: half the shot's, with this hand's weapon, less that target's armour
+ * as this round meets it (the weapon's pierce and the ammunition's armour rules still apply: it is the same round). */
 function carryDamage(t: Tech, next: Unit, crit: boolean): number {
   const u = t.u, w0 = u.weapon, a0 = u.ammoType;
   if (t.hand === 'off') { u.weapon = t.weaponId; u.ammoType = (u as any).offAmmoType ?? null; }
-  try { return attackDamage(t.cb, u, next, 'shot', t.c, { crit, preview: true }).total * t.num('heavy_carry_mult', 0.5); } finally { u.weapon = w0; u.ammoType = a0; }
+  try { const d = attackDamage(t.cb, u, next, 'shot', t.c, { crit, preview: true }); return Math.max(1, Math.floor(d.total * t.num('heavy_carry_mult', 0.5)) - d.armour); } finally { u.weapon = w0; u.ammoType = a0; }
+}
+/** The carried round is a ranged hit on the next target (rules 1.12, Pressure rule 4): it marks the hit (Crossfire,
+ * drill on a kill) and gives the ordinary Pressure only if it is the user's first ranged hit on that target this turn,
+ * using that turn's slot up as a hit does. */
+function carriedHit(t: Tech, next: Unit, dmg: number): string {
+  const u = t.u, cb = t.cb, stamp = turnStamp(cb);
+  ((next as any).hitRound ||= {})[u.id] = cb.round; ((next as any).hitWith ||= {})[u.id] = t.weaponId; // before the damage: a kill reads them
+  const line = hurtUnit(next, dmg, true, cb, 'weapon', u); // armour already taken off
+  const pt = u.pressedThis?.t === stamp ? u.pressedThis : (u.pressedThis = { t: stamp, ids: [] as string[] });
+  if (!pt.ids.includes(next.id)) { pt.ids.push(next.id); if (alive(next)) addPressure(t, next, t.num('heavy_carry_pressure', 1), 'a round through ' + (t.tgt?.name || 'cover')); }
+  return line;
 }
 technique({
   id: 'punch_through',
@@ -246,14 +267,13 @@ technique({
     const next = p === 'heavy' ? nextInLine(t, tgt) : null;
     if (t.preview) {
       if (ct) t.note(wreck ? 'The half cover at ' + refOf(ct) + ' is destroyed.' : 'The half cover at ' + refOf(ct) + ' takes ' + Math.floor(coverDmg) + '.');
-      if (next) t.note('On a hit the round carries on to ' + next.name + ' at half (' + Math.floor(carryDamage(t, next, false)) + ' before armour).');
+      if (next) t.note('On a hit the round carries on to ' + next.name + ' at half (' + carryDamage(t, next, false) + ' after armour).');
       return null;
     }
     const obj = ct ? objectsAt(cb, ct).find((o) => o.hp != null && o.hp > 0) : null;
     if (ct && obj) cb.log.push('  The round punches through the ' + obj.name.toLowerCase() + damageObject(cb, ct, wreck ? obj.hp! : coverDmg, 0, u) + '.');
     if (next && r.hit && alive(next)) {
-      cb.log.push('  The round carries on into ' + next.name + hurtUnit(next, carryDamage(t, next, r.crit), false, cb, 'weapon', u) + '.');
-      if (alive(next)) addPressure(t, next, t.num('heavy_carry_pressure', 1), 'a round through ' + tgt.name);
+      cb.log.push('  The round carries on into ' + next.name + carriedHit(t, next, carryDamage(t, next, r.crit)) + '.');
     }
     return null;
   },

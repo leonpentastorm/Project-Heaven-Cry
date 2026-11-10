@@ -12,8 +12,9 @@
 //         and the magazine keeps its count (a strikeRound in core).
 //   Head Down: u.noWatch = the round: the core's gate refuses every Watch technique; the old Overwatch action is
 //         refused here.
-import { technique, stepUser, stepsWithin, endWatch, lowerPressure, techState, techStateOf, turnStamp, strikingWith, strikeRound, addPressureTo, pressureOf, pressureState, pressureDecay, pressureFilter, atCover, onHook, type Tech } from './shared';
-import { type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponActions, heatLimit } from '../../combat';
+import { technique, stepUser, stepsWithin, endWatch, lowerPressure, techState, techStateOf, turnStamp, strikingWith, strikeRound, addPressureTo, pressureOf, pressureState, pressureDecay, atCover, onHook, type Tech } from './shared';
+import { type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponActions, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
+import { condSource } from '../../magic';
 import { WEAPON } from '../../data';
 import { packOf } from '../../character';
 import { AMMO_TYPES, ammoId } from '../../tactics';
@@ -143,10 +144,12 @@ onHook('turn_start_pre', (ctx: any, cb) => {
 });
 
 // ---------- 16. Brace ----------
-/** Today's Brace weapons (and every Heavy one) brace anywhere; any other weapon resting on half cover. */
+/** Today's Brace weapons (the ones with today's Brace action) brace anywhere; any other weapon, Heavy or not, resting
+ * on half cover ("Today's Brace, opened to any weapon resting on half cover": the Heavy line changes what Brace does,
+ * not where; review fix: the thumper, the breacher tube and the flamer have no Brace today). */
 function braceWhy(t: Tech): string | null {
   if (t.u.braced) return 'Already braced.';
-  const anywhere = weaponActions(t.u).some((x) => x.id === 'brace') || t.holds('heavy');
+  const anywhere = weaponActions(t.u).some((x) => x.id === 'brace');
   if (!anywhere && !coverNext(t.cb, t.u.pos, 'half')) return 'Rest the weapon on half cover to brace it.';
   return null;
 }
@@ -172,14 +175,10 @@ technique({
   },
 });
 const bracedAuto = (u: Unit) => { const b = techStateOf(u, 'brace'); return !!u.braced && !!b.auto && b.at === u.pos && weaponProps(u.weapon).includes('auto'); };
-// Auto, Braced: Suppress gives +1 more, on the target it rolled at (hit or miss; not the Auto spill around it). The roll
-// marks the pair; the next 'Suppress' Pressure on it from the user takes the +1.
-let SUP: { by: Unit; tgt: Unit } | null = null;
-onHook('attack_roll', (ctx: any) => { const tt = ctx.att ? strikingWith(ctx.att) : null; SUP = tt?.def.id === 'suppress' && bracedAuto(ctx.att) ? { by: ctx.att, tgt: ctx.tgt } : null; });
-pressureFilter((_cb, target, n, by, why) => {
-  if (!SUP || !by || by !== SUP.by || target !== SUP.tgt || why !== 'Suppress') return n;
-  SUP = null; return n + num('brace', 'auto_suppress_pressure', 1);
-});
+/** Auto, Braced: Suppress gives this much more, on the target it rolled at (hit or miss; not the Auto spill around it).
+ * Suppress (press.ts) adds it itself, in its preview and its action alike (review fix: a filter on the action alone
+ * left the card 1 short). 0 when the user isn't Braced on an Auto weapon with Brace's Auto line. */
+export const bracedSuppress = (u: Unit): number => (bracedAuto(u) ? num('brace', 'auto_suppress_pressure', 1) : 0);
 
 // ---------- 17. Load Special ----------
 /** The special rounds a character carries, by type (an enemy or a companion carries none). */
@@ -217,12 +216,14 @@ technique({
   },
   ai: () => 0, // enemies carry no special rounds
 });
-// The next Fire technique's first shot fires the chambered round (Spread: every shot of that technique, and the cone of
-// a cone weapon). The round is extra: the shot doesn't come out of the magazine.
+// The next Fire technique's first shot fires the chambered round (Spread: every shot of that technique gets its rider,
+// and the cone of a cone weapon). The chambered round is extra: that one shot doesn't come out of the magazine. The
+// later shots of a Spread weapon's Fire carry the rider but are the magazine's own rounds (review fix: one chambered
+// round made a whole Burst free).
 const LIVE = new WeakMap<Tech, string>();
 strikeRound({
   pick(t) {
-    const prev = LIVE.get(t); if (prev) return weaponProps(t.weaponId).includes('spread') ? { type: prev, fromMag: false } : null;
+    const prev = LIVE.get(t); if (prev) return weaponProps(t.weaponId).includes('spread') ? { type: prev } : null;
     if (t.def.group !== 'fire') return null;
     const st = techStateOf(t.u, 'load_special'); if (!st.type || st.weaponId !== t.weaponId || (st.hand || 'main') !== t.hand) return null;
     LIVE.set(t, st.type); return { type: st.type, fromMag: false };
@@ -238,10 +239,23 @@ strikeRound({
 const shiftTiles = (t: Tech) => (t.line('quick', 'heavy') === 'quick' ? t.num('quick_tiles', 2) : t.num('tiles', 1));
 /** Would the user be against cover on this tile (nothing is left changed). */
 const coveredAt = (t: Tech, tile: string) => { const was = t.u.pos; t.u.pos = tile; try { return atCover(t.cb, t.u); } finally { t.u.pos = was; } };
+// Shift is a move: the engine's own walk (a Prone, Pinned, Grappled or halted unit can't; traps, hazards and
+// opportunity attacks apply, review fix), its AP waived, with no held shot hearing it: no Watch, no Overwatch, no
+// Heart Overwatch ("without setting off a Watch"; the text frees it of nothing else).
+let SHIFTING: Unit | null = null;
+onHook('move_cost', (ctx: any) => { if (SHIFTING && ctx.u === SHIFTING) { ctx.ap = 0; ctx.free = true; ctx.skipOW = true; ctx.noWatch = true; } });
+/** Why this unit can't walk now (moveBlock), or toward the tile it fears (Afraid): the engine's own refusals. */
+function cantWalk(t: Tech, to: string): string | null {
+  const blk = moveBlock(t.u); if (blk) return blk;
+  const fs = condSource(t.u, 'fear'), f = fs ? t.cb.units.find((x) => x.id === fs) : null;
+  if (f && !f.dead && dist(to, f.pos) < dist(t.u.pos, f.pos)) return 'Afraid of ' + f.name + ': you can\'t move toward them.';
+  return null;
+}
 technique({
   id: 'shift',
   check(t) {
     const k = t.args.tile; if (!k) return 'Name a tile.';
+    const blk = cantWalk(t, k); if (blk) return blk;
     if (!atCover(t.cb, t.u)) return 'You aren\'t in cover.';
     const n = shiftTiles(t);
     if (!stepsWithin(t, n).some((x) => x.to === k)) return 'Too far: Shift moves ' + n + (n === 1 ? ' tile.' : ' tiles.');
@@ -250,15 +264,16 @@ technique({
   },
   run(t) {
     const s = stepsWithin(t, shiftTiles(t)).find((x) => x.to === t.args.tile)!, keep = t.line('quick', 'heavy') === 'heavy' && !!t.u.braced;
-    // no Watch fires on it (no opportunity attacks either: a technique's step)
-    stepUser(t, s.route, 'move', { noWatch: true });
-    if (t.preview) { t.note('No held shot fires on this move.' + (keep ? ' You stay Braced.' : '')); return null; }
-    if (keep && alive(t.u)) { t.u.braced = true; if (techStateOf(t.u, 'brace').at) techState(t.u, 'brace').at = t.u.pos; }
+    if (t.preview) { stepUser(t, s.route); t.note('No held shot fires on this move (opportunity attacks still do).' + (keep ? ' You stay Braced.' : '')); return null; }
+    const was = SHIFTING; SHIFTING = t.u;
+    let err: string | null; try { err = moveUnit(t.cb, t.u, s.to, t.rng, 'move', { via: paths(t.cb, t.u.pos, t.u.id) }); } finally { SHIFTING = was; }
+    if (err) return err; // refused before it moved: nothing is spent
+    if (keep && alive(t.u) && !t.u.downed) { t.u.braced = true; if (techStateOf(t.u, 'brace').at) techState(t.u, 'brace').at = t.u.pos; }
     return null;
   },
   // under fire, slide to the covered tile the fewest enemies can see
   ai(t) {
-    if (!pressureOf(t.u) || !atCover(t.cb, t.u)) return 0;
+    if (!pressureOf(t.u) || !atCover(t.cb, t.u) || moveBlock(t.u)) return 0;
     const seen = (k: string) => foesOf(t.cb, t.u).filter((v) => unitSees(t.cb, v, k)).length, now = seen(t.u.pos);
     const best = stepsWithin(t, shiftTiles(t)).filter((x) => coveredAt(t, x.to)).map((x) => ({ to: x.to, n: seen(x.to) })).sort((a, b) => a.n - b.n || (a.to < b.to ? -1 : 1))[0];
     return best && best.n < now ? { score: 6, args: { tile: best.to } } : 0;

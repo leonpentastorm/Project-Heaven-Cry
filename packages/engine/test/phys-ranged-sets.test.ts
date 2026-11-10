@@ -2,18 +2,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, packOf, resolveAttack, type Unit, type TechArgs } from '../src';
 import { physFight, rig } from './helpers/physfight';
-import { unchanged, type PhysF as F } from './helpers/physfight-ranged';
+import { unchanged, calm, type PhysF as F } from './helpers/physfight-ranged';
 
 // ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 /** One gunner (Dexterity 6 unless given) against a soldier, the gunner's turn. */
 function gunFight(weapon: string, known: string[], o: { at?: string; foeAt?: string; tier?: string; skills?: Record<string, number>; foeWeapon?: string } = {}) {
   const f = physFight([{ weapon, known, skills: { dexterity: 6, ...(o.skills || {}) } }], [{ at: o.foeAt || 'H5', tier: o.tier || 'soldier', weapon: o.foeWeapon }]);
-  f.put(f.pc, o.at || 'C5'); f.put(f.foe, o.foeAt || 'H5'); f.turn(f.pc); return f;
+  f.put(f.pc, o.at || 'C5'); f.put(f.foe, o.foeAt || 'H5'); calm(f); f.turn(f.pc); return f;
 }
 /** Two gunners (a spotter and a shooter) against a soldier. */
 function squadFight(spotter: string, shooter: string, o: { tier?: string; foeAt?: string } = {}) {
   const f = physFight([{ weapon: spotter, known: ['spot', 'dead_centre'], skills: { dexterity: 6 } }, { weapon: shooter, known: ['dead_centre'], skills: { dexterity: 6 } }], [{ at: o.foeAt || 'H5', tier: o.tier || 'soldier' }]);
-  f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'C7'); f.put(f.foe, o.foeAt || 'H5'); f.turn(f.pcs[0]); return f;
+  f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'C7'); f.put(f.foe, o.foeAt || 'H5'); calm(f); f.turn(f.pcs[0]); return f;
 }
 /** Put special rounds in the first PC's pack. */
 function give(f: F, type: string, qty: number, u?: Unit) {
@@ -64,6 +64,13 @@ describe('Bead (14)', () => {
     const f = gunFight('parlour_pistol', ['bead'], { foeAt: 'M5' }); // 10 tiles, range 4: two bands
     expect(shotPv(f, f.foe.id).rangePenalty).toBe(-4);
     f.tech('bead', { targetId: f.foe.id }); expect(shotPv(f, f.foe.id).rangePenalty).toBe(-2);
+    // review fix: the Spot half was never placed. A Precise spotter (the drifter revolver) and a beading shooter, two bands off
+    const g = physFight([{ weapon: 'drifter_revolver', known: ['spot'], skills: { dexterity: 6 } }, { weapon: 'parlour_pistol', known: ['bead'], skills: { dexterity: 6 } }], [{ at: 'M5' }]);
+    g.put(g.pcs[0], 'C7'); g.put(g.pcs[1], 'C5'); g.put(g.foe, 'M5'); calm(g); g.turn(g.pcs[0]);
+    expect(g.tech('spot', { targetId: g.foe.id })).toBeNull(); expect(g.foe.tech?.spotted?.precise).toBe(true);
+    expect(shotPv(g, g.foe.id, g.pcs[1]).rangePenalty).toBe(-2); // the Spot alone: one band
+    expect(techAs(g, g.pcs[1], 'bead', { targetId: g.foe.id })).toBeNull();
+    expect(shotPv(g, g.foe.id, g.pcs[1]).rangePenalty).toBe(-2); // both marks: still one band, not two
   });
   it('Precise: +1 to hit it (and only it); without Precise none', () => {
     const f = physFight([{ weapon: 'drifter_revolver', known: ['bead'], skills: { dexterity: 6 } }], [{ at: 'H5' }, { at: 'H7' }]);
@@ -94,9 +101,12 @@ describe('Bead (14)', () => {
   it('naming another ends the first; the new one holds', () => {
     const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['bead'], skills: { dexterity: 6 } }], [{ at: 'H5' }, { at: 'H7' }]);
     f.put(f.pc, 'C5'); f.turn(f.pc);
+    f.put(f.foes[0], 'H5'); f.put(f.foes[1], 'H7'); calm(f); f.turn(f.pc);
+    f.press(f.foes[0], 2, f.pc); f.press(f.foes[1], 2, f.pc); // review fix: the first target had no Pressure to hold
     f.tech('bead', { targetId: f.foes[0].id }); f.tech('bead', { targetId: f.foes[1].id });
     expect(f.pc.tech?.bead?.targetId).toBe(f.foes[1].id);
-    expect(f.bound(() => [phys.pressureOf(f.foes[0])])).toEqual([0]);
+    for (const v of f.foes) { f.turn(v); f.pass(); }
+    expect([f.pressure(f.foes[0]), f.pressure(f.foes[1])]).toEqual([1, 2]); // the first falls again; the new one holds
   });
   it('refusals: no target, an ally, unseen, the same target again; nothing is spent', () => {
     const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['bead'], skills: { dexterity: 6 } }, { weapon: 'service_pistol' }], [{ at: 'H5' }]);
@@ -157,7 +167,7 @@ describe('Spot (15)', () => {
     const e = squadFight('service_pistol', 'service_pistol', { tier: 'elite' }); rig({ hit: true, die: 12 }); e.press(e.foe, 2, e.pcs[0]);
     e.tech('spot', { targetId: e.foe.id }); techAs(e, e.pcs[1], 'shot', { targetId: e.foe.id }); expect(e.pressure(e.foe)).toBe(3);
     // an enemy spotter, an enemy ally's hit on a player at 2: the player stops at 3
-    const p = physFight([{ weapon: 'service_pistol' }], [{ at: 'H5' }, { at: 'H7' }]); p.put(p.pc, 'C5'); p.press(p.pc, 2, p.foes[0]);
+    const p = physFight([{ weapon: 'service_pistol' }], [{ at: 'H5' }, { at: 'H7' }]); p.put(p.pc, 'C5'); p.put(p.foes[0], 'H5'); p.put(p.foes[1], 'H7'); calm(p); p.press(p.pc, 2, p.foes[0]);
     p.foes[0].techs = ['spot']; p.turn(p.foes[0]); expect(p.use(p.foes[0], 'spot', { targetId: p.pc.id })).toBeNull();
     p.turn(p.foes[1]); rig({ hit: true, die: 12 }); p.bound(() => resolveAttack(p.cb, p.g.rng, p.foes[1], p.pc, 'shot', null, { noAp: true }));
     expect(p.pressure(p.pc)).toBe(3);
@@ -213,7 +223,10 @@ describe('Brace (16)', () => {
   });
   it('Auto, Braced: Suppress gives +1 more on its target, hit or miss; unbraced or without Auto it doesn\'t', () => {
     const hit = gunFight('hellraiser_service_rifle', ['brace', 'suppress'], { at: 'E4' }); rig({ hit: true, die: 12 });
-    expect(hit.tech('brace')).toBeNull(); expect(hit.tech('suppress', { targetId: hit.foe.id })).toBeNull(); expect(hit.pressure(hit.foe)).toBe(3);
+    expect(hit.tech('brace')).toBeNull();
+    // review fix: Suppress's own card shows it (the preview's Pressure is the action's)
+    const pv = hit.pv('suppress', { targetId: hit.foe.id }); expect(pv.pressure?.find((x) => x.unit === hit.foe.id)).toMatchObject({ add: 3, after: 3, state: 'suppressed' });
+    expect(hit.tech('suppress', { targetId: hit.foe.id })).toBeNull(); expect(hit.pressure(hit.foe)).toBe(3);
     const miss = gunFight('hellraiser_service_rifle', ['brace', 'suppress'], { at: 'E4' }); rig({ hit: false, die: 3 });
     miss.tech('brace'); miss.tech('suppress', { targetId: miss.foe.id }); expect(miss.pressure(miss.foe)).toBe(2);
     const open = gunFight('hellraiser_service_rifle', ['brace', 'suppress'], { at: 'E4' }); rig({ hit: true, die: 12 });
@@ -228,6 +241,13 @@ describe('Brace (16)', () => {
     // an elite stops at 3 all the same
     const el = gunFight('hellraiser_service_rifle', ['brace', 'suppress'], { at: 'E4', tier: 'elite' }); rig({ hit: true, die: 12 }); el.press(el.foe, 1, el.pc);
     el.tech('brace'); el.tech('suppress', { targetId: el.foe.id }); expect(el.pressure(el.foe)).toBe(3);
+  });
+  it('a Heavy weapon with no Brace today (the thumper, the breacher tube, the flamer) rests on half cover like any other (review fix)', () => {
+    for (const w of ['smetanita_thumper', 'breacher_tube', 'purifier_flamer']) {
+      const f = gunFight(w, ['brace']); expect(f.tech('brace'), w).toBe('Rest the weapon on half cover to brace it.'); expect(f.pc.braced).toBeFalsy();
+      f.put(f.pc, 'E4'); expect(f.tech('brace'), w).toBeNull(); expect(f.pc.braced).toBe(true);
+    }
+    const lmg = gunFight('hellraiser_lmg', ['brace']); expect(lmg.tech('brace')).toBeNull(); // today's Brace weapon: anywhere
   });
   it('enemies: a gun with a penalty unbraced wants it; others don\'t', () => {
     const f = gunFight('service_pistol', [], { foeWeapon: 'hellraiser_lmg' }); f.foe.techs = ['brace']; f.turn(f.foe);
@@ -264,9 +284,32 @@ describe('Load Special (17)', () => {
     f.tech('shot', { targetId: f.foe.id }); expect(hp - f.foe.hp).toBe(Math.max(1, want));
   });
   it('the default round is the one carried most; a Press or a Take doesn\'t spend it', () => {
-    const f = gunFight('hellraiser_service_rifle', ['load_special', 'suppress']); give(f, 'incendiary', 1); give(f, 'armor_piercing', 3); rig({ hit: false, die: 3 });
+    const f = gunFight('hellraiser_service_rifle', ['load_special', 'suppress', 'dead_centre']); give(f, 'incendiary', 1); give(f, 'armor_piercing', 3); rig({ hit: false, die: 3 });
     expect(f.tech('load_special')).toBeNull(); expect(f.pc.tech?.load_special?.type).toBe('armor_piercing');
     f.tech('suppress', { targetId: f.foe.id }); expect(f.pc.tech?.load_special?.type).toBe('armor_piercing');
+    // review fix: the Take half (Dead Centre on a Pressed target): the round stays chambered and the magazine pays
+    const a0 = f.pc.ammo; f.turn(f.pc); f.press(f.foe, 2, f.pc); f.foe.hp = f.foe.maxHp = 999;
+    const pv = f.pv('dead_centre', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.rounds).toBe(1);
+    expect(pv.attacks[0].pv.dmg!.mults.some((m) => m.label === 'armor-piercing rounds')).toBe(false);
+    expect(f.tech('dead_centre', { targetId: f.foe.id })).toBeNull();
+    expect(f.pc.tech?.load_special?.type).toBe('armor_piercing'); expect(f.pc.ammo).toBe(a0 - 1);
+  });
+  it('a multi-roll Fire without Spread: only its first roll fires the chambered round; the rest come out of the magazine (review fix)', () => {
+    const f = gunFight('ccec_marksman_rifle', ['load_special', 'burst']); give(f, 'hollow_point', 2); rig({ hit: false, die: 3 });
+    const plain = f.pv('burst', { targetId: f.foe.id }); expect(plain.rounds).toBe(3);
+    expect(f.tech('load_special', { ammo: 'hollow_point' })).toBeNull();
+    const pv = f.pv('burst', { targetId: f.foe.id }); expect(pv.attacks.length).toBe(2); expect(pv.rounds).toBe(2);
+    expect(pv.attacks.map((a) => a.pv.dmg!.mults.some((m) => m.label === 'hollow-point rounds'))).toEqual([true, false]);
+    const a0 = f.pc.ammo; expect(f.tech('burst', { targetId: f.foe.id })).toBeNull();
+    expect(f.pc.ammo).toBe(a0 - 2); expect(carriedOf(f, 'hollow_point')).toBe(1); expect(f.pc.tech?.load_special).toBeUndefined();
+  });
+  it('a multi-roll Fire with Spread: every roll carries the rider, but only the chambered round is free (review fix: a whole Burst was)', () => {
+    const f = gunFight('brigade_auto_shotgun', ['load_special', 'burst'], { foeAt: 'F5' }); give(f, 'hollow_point', 1); rig({ hit: false, die: 3 });
+    expect(f.pv('burst', { targetId: f.foe.id }).rounds).toBe(3);
+    expect(f.tech('load_special', { ammo: 'hollow_point' })).toBeNull();
+    const pv = f.pv('burst', { targetId: f.foe.id }); expect(pv.attacks.length).toBe(3); expect(pv.rounds).toBe(2);
+    expect(pv.attacks.every((a) => a.pv.dmg!.mults.some((m) => m.label === 'hollow-point rounds'))).toBe(true);
+    const a0 = f.pc.ammo; expect(f.tech('burst', { targetId: f.foe.id })).toBeNull(); expect(f.pc.ammo).toBe(a0 - 2);
   });
   it('Spread: every target of the Fire gets the round (the flamer\'s cone); one round still', () => {
     // the flamer (Heavy, Spread) with enhanced rounds: each hit releases bots, the cone's included
@@ -315,6 +358,22 @@ describe('Shift (18)', () => {
     const f = gunFight('hellraiser_service_rifle', ['shift'], { at: 'E4', foeAt: 'L4', foeWeapon: 'hellraiser_service_rifle' });
     f.unit(f.foe.id).overwatch = 'shot'; rig({ hit: true, die: 12 }); const hp = f.pc.hp;
     expect(f.tech('shift', { tile: 'E5' })).toBeNull(); expect(f.pc.hp).toBe(hp); expect(f.foe.overwatch).toBe('shot');
+  });
+  it('is a move: a Prone, Pinned or halted unit can\'t Shift (review fix); nothing is spent', () => {
+    const f = gunFight('hellraiser_service_rifle', ['shift'], { at: 'E4', foeAt: 'L4' });
+    f.unit(f.pc.id).prone = true; expect(f.pv('shift', { tile: 'E5' }).why).toBe('Stand up first (1 AP).');
+    expect(f.tech('shift', { tile: 'E5' })).toBe('Stand up first (1 AP).');
+    f.unit(f.pc.id).prone = false; f.unit(f.pc.id).conds = { pinned: 1 } as any; expect(f.tech('shift', { tile: 'E5' })).toMatch(/^Pinned/);
+    expect(f.pc.pos).toBe(f.tile('E4')); expect(f.pc.ap).toBe(6);
+    // an enemy Pinned in cover doesn't want it either
+    const g = gunFight('hellraiser_service_rifle', [], { at: 'C7', foeAt: 'L6' }); g.foe.techs = ['shift']; g.turn(g.foe); g.press(g.foe, 1, g.pc);
+    g.unit(g.foe.id).conds = { pinned: 1 } as any; expect(g.bound(() => phys.aiScore(g.cb, g.foe, 'shift', {})).score).toBe(0);
+  });
+  it('frees the move of Watches only: leaving an enemy\'s melee reach still draws its opportunity attack (review fix)', () => {
+    const f = gunFight('hellraiser_service_rifle', ['shift'], { at: 'E4', foeAt: 'D3', foeWeapon: 'sabre' }); rig({ hit: true, die: 12 }); const hp = f.pc.hp;
+    expect(f.tech('shift', { tile: 'E5' })).toBeNull(); expect(f.pc.pos).toBe(f.tile('E5'));
+    expect(f.cb.log.some((l) => /takes an opportunity attack/.test(l))).toBe(true); expect(f.pc.hp).toBeLessThan(hp);
+    expect(f.pc.ap).toBe(5);
   });
   it('Quick: 2 tiles; without Quick 2 is too far', () => {
     const f = gunFight('service_pistol', ['shift'], { at: 'E4' }); expect(f.tech('shift', { tile: 'E6' })).toBeNull(); expect(f.pc.pos).toBe(f.tile('E6'));

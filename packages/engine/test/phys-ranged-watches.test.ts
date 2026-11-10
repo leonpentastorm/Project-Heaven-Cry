@@ -1,10 +1,10 @@
 // Physical 2.0 (rules 1.12), ranged Watches: Cover Me (29) and Dead to Rights (30). Paid on the holder's turn; they fire
 // on the enemy's turn with no input, once, as the holder's reaction, and never while the holder is Pressed.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, resolveAttack, previewAttack, toggleProne, reload, enemyTurn, type Unit } from '../src';
+import { phys, resolveAttack, previewAttack, toggleProne, reload, reloadHands, enemyTurn, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
-import { type PhysF as F } from './helpers/physfight-ranged';
+import { calm as reset, unchanged, type PhysF as F } from './helpers/physfight-ranged';
 
 beforeEach(() => { rig(null); ROLLS.length = 0; });
 
@@ -24,12 +24,12 @@ const snap = (f: F) => JSON.stringify({ units: f.cb.units, log: f.cb.log.length,
 // Two players and an enemy: the holder at C5, the ally at C7, the enemy at H5 (a pistol soldier) unless told otherwise.
 function coverFight(weapon = 'service_pistol', foe: { tier?: string; weapon?: string } = {}, more: any[] = []) {
   const f = physFight([{ weapon, known: ['cover_me'], skills: { dexterity: 6 } }, { weapon: 'service_pistol' }], [{ at: 'H5', tier: foe.tier || 'soldier', weapon: foe.weapon || 'service_pistol' }, ...more]);
-  f.put(f.pc, 'C5'); f.put(f.pcs[1], 'C7'); f.turn(f.pc);
+  f.put(f.pc, 'C5'); f.put(f.pcs[1], 'C7'); reset(f); f.turn(f.pc);
   return f;
 }
 function rightsFight(weapon = 'service_pistol', foe: { tier?: string; weapon?: string; at?: string } = {}) {
   const f = physFight([{ weapon, known: ['dead_to_rights'], skills: { dexterity: 6 } }, { weapon: 'service_pistol' }], [{ at: foe.at || 'H5', tier: foe.tier || 'soldier', weapon: foe.weapon || 'service_pistol' }]);
-  f.put(f.pc, 'C5'); f.put(f.pcs[1], 'C7'); f.turn(f.pc);
+  f.put(f.pc, 'C5'); f.put(f.pcs[1], 'C7'); reset(f); f.turn(f.pc);
   return f;
 }
 
@@ -46,7 +46,7 @@ describe('Cover Me (29)', () => {
     expect(f.pressure(f.foe)).toBe(1);
     expect(f.unit(f.pc.id).watch).toBeUndefined(); expect(f.unit(f.pc.id).reactUsed?.n).toBe(1);
     expect(f.unit(f.pc.id).ammo).toBe(ammo - 1); // the covering round goes
-    expect(f.unit(f.pc.id).heat).toBe(heat);     // nothing rolled: no Heat (as Suppress's burned rounds)
+    expect(f.unit(f.pc.id).heat).toBe(heat + 1); // nothing rolled, but the round is still a shot by today's rules: +1 Heat (review fix)
     expect(f.fx('watch_fire').length).toBe(1);
     // once: the next attack on the ally is at its own number again, and nothing fires
     attack(f, f.foe, ally); expect(lastRoll(f.foe)!.toHit).toBe(base); expect(heldShots(f)).toBe(1); expect(f.pressure(f.foe)).toBe(1);
@@ -127,6 +127,19 @@ describe('Cover Me (29)', () => {
     const g = coverFight('ccec_marksman_rifle'); g.tech('cover_me', { allyId: g.pcs[1].id });
     g.turn(g.foe); rig({ hit: false, die: 5 }); attack(g, g.foe, g.pcs[1]); expect(g.pressure(g.foe)).toBe(1);
   });
+  it('a held shot: an attacker out of the weapon\'s range sets nothing off, though seen (review fix); the round is a shot by today\'s rules', () => {
+    // the parlour pistol (range 4: 12 tiles at most) and an enemy 15 tiles off in clear sight
+    const f = coverFight('parlour_pistol', { weapon: 'ccec_marksman_rifle' }); const ally = f.pcs[1]; f.put(f.pc, '0,0'); f.put(ally, '13,0'); f.put(f.foe, '15,0');
+    expect(f.bound(() => previewAttack(f.cb, f.unit(f.pc.id), f.unit(f.foe.id), 'shot', { free: true })).why).toBe('Out of range.');
+    expect(f.tech('cover_me', { allyId: ally.id })).toBeNull(); const ammo = f.pc.ammo;
+    f.turn(f.foe); rig({ hit: false, die: 5 }); const base = f.bound(() => previewAttack(f.cb, f.foe, ally, 'shot', { free: true })).toHit;
+    attack(f, f.foe, ally);
+    expect(lastRoll(f.foe)!.toHit).toBe(base); expect(f.pressure(f.foe)).toBe(0); expect(heldShots(f)).toBe(0);
+    expect(f.unit(f.pc.id).ammo).toBe(ammo); expect(f.unit(f.pc.id).watch?.id).toBe('cover_me');
+    // in range, a Hidden holder's covering round (a loud gun, no roll) gives it away
+    const g = coverFight('service_pistol'); g.tech('cover_me', { allyId: g.pcs[1].id }); g.unit(g.pc.id).hidden = true;
+    g.turn(g.foe); attack(g, g.foe, g.pcs[1]); expect(heldShots(g)).toBe(1); expect(g.unit(g.pc.id).hidden).toBe(false); expect(g.unit(g.pc.id).shotsThisTurn).toBe(1);
+  });
   it('Precise: a shot that fells the attacker stops its attack', () => {
     const f = coverFight('ccec_marksman_rifle'); const ally = f.pcs[1]; f.tech('cover_me', { allyId: ally.id });
     f.turn(f.foe); f.unit(f.foe.id).hp = 1; const ahp = f.unit(ally.id).hp; rig({ hit: true, die: 12 });
@@ -154,11 +167,10 @@ describe('Cover Me (29)', () => {
     expect(h.pressure(h.pc)).toBe(3); expect(heldShots(h)).toBe(1);
   });
   it('the preview describes it and changes nothing; the action then costs what it showed', () => {
-    const f = coverFight('ccec_marksman_rifle'); const ally = f.pcs[1], before = snap(f);
-    const pv = f.pv('cover_me', { allyId: ally.id });
+    const f = coverFight('ccec_marksman_rifle'); const ally = f.pcs[1];
+    let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('cover_me', { allyId: ally.id }); }); // the whole game, the dice included (review fix)
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.rounds).toBe(0); expect(pv.attacks.length).toBe(0);
     expect(pv.notes.join(' ')).toMatch(/−2 and gains 1 Pressure/); expect(pv.notes.join(' ')).toMatch(/Precise/);
-    expect(snap(f)).toBe(before);
     const ap = f.pc.ap; f.tech('cover_me', { allyId: ally.id }); expect(ap - f.pc.ap).toBe(pv.ap);
     expect(f.pv('cover_me').ok).toBe(false);
   });
@@ -220,6 +232,26 @@ describe('Dead to Rights (30)', () => {
     g.bound(() => reload(g.cb, g.unit(g.foe.id)));
     expect(g.unit(g.foe.id).ammo).toBe(3); expect(g.cb.log.some((l) => /reloads/.test(l) && l.startsWith(g.foe.name))).toBe(false);
   });
+  it('reloads the off-hand gun: the shot comes first there too; felled, nothing is reloaded or spent (review fix)', () => {
+    const arm = (g: F) => { const u = g.unit(g.foe.id); u.offWeapon = 'service_pistol'; u.offAmmo = 1; u.ammo = 3; return u; };
+    const f = rightsFight(); f.press(f.foe, 2); f.tech('dead_to_rights', { targetId: f.foe.id });
+    f.turn(f.foe); arm(f); rig({ hit: false, die: 5 });
+    expect(f.bound(() => reloadHands(f.cb, f.unit(f.foe.id), 'off'))).toBeNull();
+    expect(heldShots(f)).toBe(1); expect(f.cb.log.some((l) => /reloads: the shot lands first/.test(l))).toBe(true);
+    expect(f.unit(f.foe.id).offAmmo).toBe(12); // it missed: the reload goes ahead
+    const g = rightsFight(); g.press(g.foe, 2); g.tech('dead_to_rights', { targetId: g.foe.id });
+    g.turn(g.foe); const u = arm(g); u.hp = 1; const ap = u.ap; rig({ hit: true, die: 12 });
+    expect(g.bound(() => reloadHands(g.cb, g.unit(g.foe.id), 'off'))).toBeNull();
+    expect(g.unit(g.foe.id).dead).toBe(true); expect(g.unit(g.foe.id).offAmmo).toBe(1); expect(g.unit(g.foe.id).ap).toBe(ap);
+    expect(g.cb.log.some((l) => /reloads the off-hand gun/.test(l))).toBe(false);
+  });
+  it('reloads both guns: felled on the main gun, the off-hand gun isn\'t reloaded either and no AP goes (review fix)', () => {
+    const g = rightsFight(); g.press(g.foe, 2); g.tech('dead_to_rights', { targetId: g.foe.id });
+    g.turn(g.foe); const u = g.unit(g.foe.id); u.offWeapon = 'service_pistol'; u.offAmmo = 1; u.ammo = 3; u.hp = 1; const ap = u.ap; rig({ hit: true, die: 12 });
+    expect(g.bound(() => reloadHands(g.cb, g.unit(g.foe.id), 'both'))).toBeNull();
+    const x = g.unit(g.foe.id); expect(x.dead).toBe(true); expect(x.ammo).toBe(3); expect(x.offAmmo).toBe(1); expect(x.ap).toBe(ap);
+    expect(g.cb.log.some((l) => /reloads both guns/.test(l))).toBe(false); expect(heldShots(g)).toBe(1);
+  });
   it('leaves cover: the first step from a tile against cover to one that isn\'t', () => {
     const f = rightsFight('ccec_marksman_rifle', { at: 'I5' }); f.cb.map = { ...f.cb.map, cover: [...f.cb.map.cover, f.tile('I6')] }; // a copy: the map definition is shared
     f.press(f.foe, 2); f.tech('dead_to_rights', { targetId: f.foe.id });
@@ -279,15 +311,14 @@ describe('Dead to Rights (30)', () => {
     expect(heldShots(f)).toBe(0); expect(f.unit(f.pc.id).reactUsed?.n ?? 0).toBe(0);
   });
   it('the preview describes it and changes nothing; the action costs what it showed', () => {
-    const f = rightsFight('ccec_marksman_rifle'); const before = snap(f);
-    const pv = f.pv('dead_to_rights', { targetId: f.foe.id });
+    const f = rightsFight('ccec_marksman_rifle');
+    let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('dead_to_rights', { targetId: f.foe.id }); }); // the whole game, the dice included (review fix)
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(0);
     expect(pv.notes.join(' ')).toMatch(/isn't Pressed now/); expect(pv.notes.join(' ')).toMatch(/critical on 18–20/);
-    expect(snap(f)).toBe(before);
     const ap = f.pc.ap; f.tech('dead_to_rights', { targetId: f.foe.id }); expect(ap - f.pc.ap).toBe(pv.ap);
   });
   it('the enemy AI wants it only against a Pressed target, and not over a Watch it holds', () => {
-    const f = physFight([{ weapon: 'service_pistol' }], [{ at: 'H5', weapon: 'longbow' }]); f.put(f.pc, 'C5');
+    const f = physFight([{ weapon: 'service_pistol' }], [{ at: 'H5', weapon: 'longbow' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); reset(f);
     const foe = f.unit(f.foe.id); f.turn(foe);
     expect(f.bound(() => phys.aiScore(f.cb, foe, 'dead_to_rights', { targetId: f.pc.id })).score).toBe(0);
     f.press(f.pc, 2); const before = snap(f);
