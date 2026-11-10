@@ -73,6 +73,9 @@ export const EVENTS_FOR_THE_LEAD = [
   'E12 Cover Me\'s loose round: covering: true, not cover: true (cover is the cover tile\'s key on a shot)',
   'E13 watch_fire: why (Dead to Rights\' trigger)',
   'E14 object: max (COVER 12/30)',
+  'E15 stopped: apLoss (Stopping Shot\'s AP loss, a data number; the client shows none without it)',
+  'E16 load: weapon, hand (the chambered round\'s weapon, so only its Fire shows it; the client matches the hand only)',
+  'E17 watch_end, bead, bead_end, heat: only (or seen) for a holder the other side can\'t see, as watch_set has',
 ];
 
 // ---------- which technique an event belongs to ----------
