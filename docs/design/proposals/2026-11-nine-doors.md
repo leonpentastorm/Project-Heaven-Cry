@@ -798,3 +798,15 @@ Chain Smoker's "Light Up: +2 Composure for the scene" becomes a real fight butto
 **Skill portraits** (the faceless gesture figures): today's `analysis` figure and `proficiency` figure each stay with their id (18.1.3), so the figure that reads as examining sits under Acuity and the one that reads as handling a mechanism under Improvisation. The pigments are then wrong (each carries the other attribute's colour): two recolours, no new drawing. Leon decides whether to recolour or redraw.
 
 **Found on the way:** old Proficiency's 2020 effect line says it "unlocks exploration options and Trio-Scale Equipment". That is the tri-scale armour Leon remembered (section 9); it was a Proficiency unlock. Still not in this patch.
+
+## 19. Durability's door, the small version (Leon, 10 Nov 2026: approved)
+
+Ruling 9 left Durability's point as a data line only ("Guard gained on Brace"), which would have made it the one alpha that opens nothing in 0.19.0. Replaced by a small build. All numbers provisional.
+
+1. **Guard is a pool for anyone with Durability**, not only the Defender. Its size is the Durability points, 5 at most. The Defender keeps the largest pool and its class moves.
+2. **Gained by Brace or the Guard technique:** 1 + the Durability modifier each time, 1 more with a shield in the off hand.
+3. **Guard soaks:** each point absorbs 10 damage of the next hit, and Pressure comes off Guard first (as it already does for the Defender).
+4. **Interpose opens to anyone with Durability 3:** as a reaction, take a hit meant for an adjacent ally, for 1 Guard; your armour applies.
+5. Guard is lost when the fight ends, as now.
+
+The full shield-and-guard technique list is still its own patch after Skeleton 2.0. This replaces plan ruling 9.
