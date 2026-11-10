@@ -679,6 +679,8 @@ Asked before the build: do the names make sense, and is the attribute system rig
 4. **Creation budget (Leon: yes to the draft):** Attribute points stay at 10, each attribute starts at 1, and **no attribute is above 7 at creation** (the ceiling the Core budget gave). Provisional number, spec section 14.
 5. Touches: `rules.json` (creation, levels, caps), `character.ts` (caps, auto-spend), creation and level-up screens, all 46 archetypes (the All-in 7/1/1 family is defined by its Cores and needs a new definition), `tools/archetype_fill.py`, the spec's creation and levelling sections, `CLAUDE.md`.
 
+6. **The attribute ceiling rises with level** (Leon, 10 Nov 2026): 7 at creation, 8 from level 3, 9 from level 6, 10 from level 9. A skill can't pass its attribute, so an all-in character takes its first Mastered perk (a skill at 10) at level 9 at the earliest. The points are there by then: levels 2 to 9 give 4 Attribute points and 12 Skill points.
+
 ### 17.2 What an attribute point gives is shown
 
 Correction to what the lead said in the talk: it is not true that only Endurance and Agility give something. Every attribute already gives two numbers a point, and no screen says so:
