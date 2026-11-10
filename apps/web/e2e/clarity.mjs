@@ -46,7 +46,7 @@ const WATCH = () => {
     const tx = (n.textContent || '').trim(); if (/^(REVEALED|HIDDEN)$/.test(tx)) out.words.push({ t, text: tx });
   };
   window.__clarMarks = [];
-  window.addEventListener('phc-fx', (ev) => { const e = ev.detail || {}; const k = e.k === 'move' && e.sight && /^0+1/.test(e.sight.pc || '') ? 'fogwalk' : e.k === 'sight' && e.how === 'reveal' ? 'reveal' : e.k === 'overwatch' ? 'overwatch' : ''; if (k) window.__clarMarks.push(k); });
+  window.addEventListener('phc-fx', (ev) => { const e = ev.detail || {}; const k = e.k === 'move' && e.sight && /^0+1/.test(e.sight.pc || '') ? 'fogwalk' : e.k === 'sight' && e.how === 'reveal' ? 'reveal' : e.k === 'sight' && e.how === 'lost' ? 'lost' : e.k === 'overwatch' ? 'overwatch' : ''; if (k) window.__clarMarks.push(k); });
   const layer = document.querySelector('.phc-fx-layer');
   new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) look(n); }).observe(layer, { childList: true, subtree: true });
 };
@@ -54,7 +54,7 @@ const holdFree = (p, ms = 20000) => p.waitForFunction(() => (window.__phcHold ? 
 
 async function run(speed) {
   const p = await player(browser, 'host-' + speed);
-  await p.addInitScript((s) => { try { localStorage.setItem('phc.combatSpeed', s); } catch { /* */ } }, speed);
+  await p.addInitScript((s) => { try { localStorage.setItem('phc.combatSpeed', s); localStorage.setItem('phc.e2e', '1'); } catch { /* */ } }, speed); // phc.e2e: the sight hooks (fx/sight.ts)
   await autoConfirm(p);
   const G = () => p.evaluate(() => window.__phc.getState().game);
   const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
@@ -163,7 +163,8 @@ async function run(speed) {
   ok('…one "!" each', [...b2.values()].every((n) => n === 1));
   const rv = c.sight.find((s) => s.unit === lurker.id && s.kind === 'reveal');
   const rvFx = (g.combat.fx || []).find((e) => e.k === 'sight' && e.unit === lurker.id && e.how === 'reveal');
-  ok('the Lurker is revealed with its shimmer: "!" and REVEALED (' + (rv ? ref(rv.tile) : 'none') + ')', !!rv && !!rvFx && c.clar.words.some((w) => w.text === 'REVEALED') && !!rv.bang);
+  // A reveal in the opening (the Lurker's own attack from hiding) may have left the fight's last 40 events by now.
+  ok('the Lurker is revealed with its shimmer: "!" and REVEALED (' + (rv ? ref(rv.tile) : 'none') + (rv && !rvFx ? ', in the opening' : '') + ')', !!rv && (!!rvFx || rv.at < t1) && c.clar.words.some((w) => w.text === 'REVEALED') && !!rv.bang);
   const owFx = (g.combat.fx || []).find((e) => e.k === 'overwatch');
   if (!owFx) ok('an Overwatch was sprung (no drill unit walked into the shot this time)', false);
   else {

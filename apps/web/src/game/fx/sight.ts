@@ -22,11 +22,15 @@ export function noteSight(unit: string, kind: SightKind, tile: string, bang = fa
   if (LOG.length > 60) LOG.splice(0, LOG.length - 60);
 }
 export const sightLog = () => LOG.slice();
-/** The Overwatch beats played (watcher, mover, the tile it was stopped on), for the e2e suites (window.__phcOverwatch). */
+/** The Overwatch beats played (watcher, '' when you didn't see it; the mover; the tile it was stopped on), for the e2e
+ *  suites (window.__phcOverwatch). */
 export interface OverwatchNote { watcher: string; target: string; tile: string; at: number }
 const OW: OverwatchNote[] = [];
 export function noteOverwatch(n: OverwatchNote) { OW.push(n); if (OW.length > 20) OW.splice(0, OW.length - 20); }
-if (typeof window !== 'undefined') {
+// The hooks exist in a dev build, or when the e2e suites ask for them before the page loads (localStorage 'phc.e2e'):
+// a player's console has no record of what came into or went out of sight.
+const testHooks = (): boolean => { try { return !!(import.meta as any).env?.DEV || localStorage.getItem('phc.e2e') === '1'; } catch { return false; } };
+if (typeof window !== 'undefined' && testHooks()) {
   Object.defineProperty(window, '__phcSight', { get: () => LOG.slice(), configurable: true });
   Object.defineProperty(window, '__phcOverwatch', { get: () => OW.slice(), configurable: true });
 }
@@ -49,6 +53,8 @@ export function tickDue(now: number): boolean { if (now - lastTick < BANG_SOUND_
 /** Forget the clocks (a new fight, the tests). */
 export function resetSight() { lastBang.clear(); lastTick = -1e9; }
 
+/** Where the "!" sits off the tile's centre, in tiles. */
+export const BANG_DX = 0.5, BANG_DY = -0.5;
 /** The "!" chip over a tile: pops in, holds, lifts away (about 1.1 s at Fast; follows the map as it scrolls). */
 export function bangMark(key: string, p: Pt, hostile: boolean) {
   const ink = hostile ? HOSTILE_INK : OTHER_INK, size = Math.max(18, Math.min(30, p.s * 0.46)), ms = 1100;
@@ -57,10 +63,11 @@ export function bangMark(key: string, p: Pt, hostile: boolean) {
   el.textContent = '!';
   el.style.cssText = "width:100%;height:100%;box-sizing:border-box;display:grid;place-items:center;border-radius:50%;font-family:'Chakra Petch',sans-serif;font-weight:700;line-height:1;font-size:"
     + Math.round(size * 0.7) + 'px;color:' + ink + ';background:rgba(10,13,19,.92);border:2px solid ' + ink + ';box-shadow:0 0 0 2px rgba(10,13,19,.6),0 0 10px ' + (hostile ? 'rgba(246,81,87,.45)' : 'rgba(163,174,194,.35)');
-  // A badge on the token's top-right corner (clear of the words that float up from its middle: REVEALED, a hit).
-  const box = put(el, { x: p.x + p.s * 0.4, y: p.y - p.s * 0.42 }, size, size, ms);
+  // A badge out on the token's top-right corner, clear of a number floating up from its middle (a hit, MISS); REVEALED
+  // floats up from under the token instead (play.ts), so the two red marks never run together.
+  const box = put(el, { x: p.x + p.s * BANG_DX, y: p.y + p.s * BANG_DY }, size, size, ms);
   box.style.zIndex = '4';
-  anchorAt(box, key, ms, 0.4, -0.42);
+  anchorAt(box, key, ms, BANG_DX, BANG_DY);
   anim(el, reducedMotion() ? [{ opacity: 0 }, { opacity: 1, offset: 0.12 }, { opacity: 1, offset: 0.75 }, { opacity: 0 }]
     : [{ transform: 'translateY(6px) scale(.45)', opacity: 0 }, { transform: 'translateY(-2px) scale(1.12)', opacity: 1, offset: 0.12 }, { transform: 'translateY(0) scale(1)', opacity: 1, offset: 0.22 },
       { transform: 'translateY(0) scale(1)', opacity: 1, offset: 0.75 }, { transform: 'translateY(-' + Math.round(p.s * 0.18) + 'px) scale(.92)', opacity: 0 }],

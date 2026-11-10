@@ -5,7 +5,7 @@ import { describe, expect, it, vi, afterEach, beforeAll } from 'vitest';
 import { refOf, ARCHETYPES, newCharacter, startCombat } from '@engine';
 import { setCombatSpeed } from '../combatSpeed';
 import { setLayer } from './dom';
-import { playFx, setContext, clearFx, walkSpan, moveSeen, moveSteps, PARK_MS } from './play';
+import { playFx, setContext, clearFx, walkSpan, moveSeen, moveSteps, HOLD_MS, setTokenLooks, stepTime, holdMovers, isHeld } from './play';
 import { bangDue, tickDue, resetSight, sightLog, BANG_DEDUPE_MS, BANG_SOUND_GAP_MS } from './sight';
 import * as sfxMod from '../sfx';
 
@@ -140,12 +140,25 @@ describe('Overwatch', () => {
     vi.advanceTimersByTime(400);
     expect(layer.querySelector('[data-phc-walker="pc-a"]')).toBeNull();
   });
-  it('a parked walker gives up after a while if the rest never comes', () => {
+  it('a parked walker waits through long reaction beats (no clock of its own), and gives up only at the cap', () => {
     vi.useFakeTimers(); const layer = grid();
     fight({ f: '8,4' }, '4,1');
     vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
     playFx({ k: 'move', n: 1, unit: 'pc-a', from: '0,1', to: '2,1', path: ['0,1', '1,1', '2,1'], how: 'move' } as any);
-    vi.advanceTimersByTime(300 + PARK_MS + 200);
+    vi.advanceTimersByTime(4000); // two overwatchers, a bow's draw, a reveal: still standing where it was stopped
+    expect(layer.querySelector('[data-phc-walker="pc-a"]')).toBeTruthy();
+    vi.advanceTimersByTime(HOLD_MS);
+    expect(layer.querySelector('[data-phc-walker="pc-a"]')).toBeNull();
+  });
+  it('a mover killed by an opportunity attack falls where it fell: its parked copy (one tile on) goes', () => {
+    vi.useFakeTimers(); const layer = grid();
+    fight({ f: '3,2' }, '1,1');
+    vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
+    // The walk was flushed up to 2,1 (the tile being entered); the OA put the mover back on 1,1 and killed it there.
+    playFx({ k: 'move', n: 1, unit: 'pc-a', from: '0,1', to: '2,1', path: ['0,1', '1,1', '2,1'], how: 'move' } as any);
+    vi.advanceTimersByTime(400);
+    expect(layer.querySelector('[data-phc-walker="pc-a"]')).toBeTruthy();
+    playFx({ k: 'down', n: 2, unit: 'pc-a', at: '1,1', dead: false } as any);
     expect(layer.querySelector('[data-phc-walker="pc-a"]')).toBeNull();
   });
 });
@@ -159,8 +172,9 @@ describe('units wait for their moment', () => {
       { n: 3, k: 'move', unit: 'g', path: ['5,1', '4,1'], sight: { pc: '11', foe: '11' } }, { n: 4, k: 'move', unit: 'g', path: ['4,1', '3,1'] },
       { n: 5, k: 'move', unit: 'pc-a', path: ['0,1', '1,1'], sight: { pc: '11', foe: '00' } }, { n: 6, k: 'sight', unit: 'h', at: '6,4', how: 'enter', only: 'pc' },
       { n: 7, k: 'sight', unit: 'pc-a', at: '1,1', how: 'enter', only: 'foe' }, { n: 8, k: 'sight', unit: 'k', at: '2,2', how: 'hide', only: 'pc' },
+      { n: 9, k: 'sight', unit: 'm', at: '7,4', how: 'lost', only: 'pc', by: 'pc-a', byAt: '1,1' },
     ] as any, side);
-    expect(Object.fromEntries(m)).toEqual({ f: { kind: 'walk', stand: null }, g: { kind: 'walk', stand: '5,1' }, 'pc-a': { kind: 'walk', stand: '0,1' }, h: { kind: 'sight', stand: null } });
+    expect(Object.fromEntries(m)).toEqual({ f: { kind: 'walk', stand: null }, g: { kind: 'walk', stand: '5,1' }, 'pc-a': { kind: 'walk', stand: '0,1' }, h: { kind: 'sight', stand: null }, m: { kind: 'lost', stand: '7,4' } });
   });
 });
 
@@ -182,5 +196,58 @@ describe('the area map', () => {
     setContext({ code: 'X', characters: { a: { id: 'a', name: 'Vel' } }, story: { positions: { a: '0,1' }, npcs: [{ id: 'f', name: 'Raider', pos: '5,1' }] }, combat: null } as any, 'main');
     playFx({ k: 'move', n: 1, unit: 'f', from: '7,1', to: '5,1', path: ['7,1', '6,1', '5,1'], how: 'move', sight: { pc: '000', foe: '111' } } as any);
     expect(layer.querySelector('[data-phc-walker="f"]')).toBeTruthy();
+  });
+});
+
+describe('review fixes (combat clarity)', () => {
+  it('a hostile dropping out of sight fades where it was last seen (never a pop)', () => {
+    vi.useFakeTimers(); const layer = grid(); ctx('6,1'); resetSight();
+    vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
+    setTokenLooks([{ id: 'f', src: 'x.png', style: 'position: relative; z-index: 2; width: 38px; height: 38px' }]);
+    playFx({ k: 'sight', n: 1, unit: 'f', at: '6,1', how: 'lost', only: 'pc', by: 'pc-a', byAt: '0,1' } as any);
+    const copy = layer.querySelector('[data-phc-group="f"]');
+    expect(copy).toBeTruthy();
+    expect(sightLog().at(-1)).toMatchObject({ unit: 'f', kind: 'leave', tile: '6,1' });
+    vi.advanceTimersByTime(500);
+    expect(layer.querySelector('[data-phc-group="f"]')).toBeNull();
+  });
+  it('a sight change a walk made plays on the walker\'s step, not after the walk', () => {
+    const walks = new Map([['pc-a', [{ t: 1000, path: ['0,1', '1,1', '2,1', '3,1'], ms: 115 }]]]);
+    expect(stepTime(walks, 'pc-a', '2,1')).toBe(1230);
+    expect(stepTime(walks, 'pc-a', '9,9')).toBeNull(); expect(stepTime(walks, 'x', '2,1')).toBeNull();
+  });
+  it('a turn ring shows only for a unit the squad saw as its turn began (seen), whatever happens later in the batch', () => {
+    vi.useFakeTimers(); const layer = grid(); ctx('6,1');
+    playFx({ k: 'turn', n: 1, unit: 'f', side: 'foe', at: '6,1', round: 1, seen: { pc: 0 } } as any);
+    expect(layer.childElementCount).toBe(0);
+    playFx({ k: 'turn', n: 2, unit: 'f', side: 'foe', at: '6,1', round: 1, seen: { pc: 1 } } as any);
+    expect(layer.childElementCount).toBeGreaterThan(0);
+  });
+  it('the walker carries its kind chip and HP bar (nothing pops on where the walk ends)', () => {
+    vi.useFakeTimers(); const layer = grid(); ctx('4,1');
+    vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
+    setTokenLooks([{ id: 'f', src: 'x.png', style: 'position: relative; z-index: 2; width: 38px; height: 38px', kind: { text: 'BOT', style: 'position: absolute; right: -2px; bottom: -2px' }, hp: { box: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px', chip: 'width: 50%', fill: 'width: 50%' } }]);
+    playFx({ k: 'move', n: 1, unit: 'f', from: '6,1', to: '4,1', path: ['6,1', '5,1', '4,1'], how: 'move', sight: { pc: '111' } } as any);
+    const w = layer.querySelector('[data-phc-walker="f"]')!;
+    expect(w).toBeTruthy(); expect(w.textContent).toContain('BOT'); expect(w.querySelectorAll('span').length).toBeGreaterThanOrEqual(3);
+  });
+  it('a walk split into parts keeps its unit held through a fogged part: it never shows at the walk\'s end early', () => {
+    vi.useFakeTimers(); grid(); ctx('5,1');
+    vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
+    const a = { k: 'move', n: 1, unit: 'f', from: '9,1', to: '8,1', path: ['9,1', '8,1'], how: 'move', sight: { pc: '00' } } as any;
+    const b = { k: 'move', n: 2, unit: 'f', from: '8,1', to: '5,1', path: ['8,1', '7,1', '6,1', '5,1'], how: 'move', sight: { pc: '0011' } } as any;
+    holdMovers([a, b]);
+    expect(isHeld('f')).toBe(true);
+    playFx(a); expect(isHeld('f')).toBe(true); // a heart watch split the walk: its first step was in the fog
+    playFx(b); expect(isHeld('f')).toBe(false); // the part that ends where it stands takes over
+  });
+  it('REVEALED floats from under the token, clear of the "!" on its corner', () => {
+    vi.useFakeTimers(); const layer = grid(); ctx('4,1'); resetSight();
+    vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
+    playFx({ k: 'sight', n: 1, unit: 'f', at: '4,1', how: 'reveal', only: 'pc' } as any);
+    vi.advanceTimersByTime(300);
+    const bang = layer.querySelector('[data-phc-bang]')!.parentElement as HTMLElement;
+    const word = [...layer.children].find((b) => b.textContent === 'REVEALED') as HTMLElement;
+    expect(parseFloat(word.style.top)).toBeGreaterThan(parseFloat(bang.style.top) + parseFloat(bang.style.height));
   });
 });

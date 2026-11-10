@@ -688,7 +688,14 @@ export class CombatLogic extends DCLogic {
     // see-through where the state already has it; the effects layer walks a copy of it there. The layer also learns
     // every unit's token look, to draw a walk whose unit has no token on screen (it fell at the end of it).
     const fxHeld = fxHeldUnits(g);
-    setTokenLooks(cb.units.map((u) => ({ id: u.id, src: faceOf(u) || '', style: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157') })));
+    // The walker the layer draws carries the kind chip and HP bar its tile shows (as below), so they don't pop on when it
+    // arrives: exact HP for the squad and an Analyzed foe, else its look (unhurt, wounded, badly hurt).
+    const hpLook = (u) => {
+      const known = u.side === 'pc' || u.analyzedBy, hpPct = u.dead || u.downed ? 0 : known ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
+      return { box: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)' + (known ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.5)'),
+        chip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #FFFFFF', fill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #F65157' + (known ? '' : '; opacity: 0.6') };
+    };
+    setTokenLooks(cb.units.map((u) => { const kb = u.side === 'foe' ? kindBadge(u.kind, true) : null; return { id: u.id, src: faceOf(u) || '', style: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157'), kind: kb && kb.has ? { text: kb.text, style: kb.style } : null, hp: hpLook(u) }; }));
     const sensedAt = {}; cb.units.filter((u) => vis.sensed.has(u.id)).forEach((u) => { sensedAt[u.pos] = u; });
     const solid = new Set(cb.map.solid), diff = difficultOf(cb);
     // ---------- the chosen attack's reach in red (as on the area map): where it can land from here, as the engine allows ----------

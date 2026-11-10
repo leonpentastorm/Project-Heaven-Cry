@@ -523,9 +523,10 @@ The Music panel loses its VOICE section (it gets a one-line *Voice settings ⚙*
   at rest both slide down to a tab at the screen's edge (36 px, the top 20 px of each still showing) and slide back up
   (240 ms) when the pointer comes within the same 120 px, on focus, on a tap, or while open. Display › *Slide them down
   to a tab* turns it off; Reduce motion never slides (opacity only). They share one dock (`game/floaters.ts`): while one
-  is out (the song's title on hover, a blocked start's words, its panel open) the other slides away and takes no
-  clicks, so the title never runs under the ◈; the memory opening closes the music panel. `data-phc-float-place` says
-  where each is (tucked / out / away).
+  is out (the song's title on hover, its panel open) the other slides away and takes no clicks, so the title never runs
+  under the ◈; the memory opening closes the music panel. A blocked start's words ("Click to start the music") are wide
+  on their own, not the pointer's doing: the ◈ steps up above them (48 px) instead of leaving, so the host can still
+  open the memory. `data-phc-float-place` says where each is (tucked / out / away / lifted).
 
 ---
 

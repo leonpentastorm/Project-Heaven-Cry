@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { busOf, busLevel, musicLevel, parseUiPrefs, DEFAULT_UI_PREFS, SFX_FILES, LIMIT, CEIL, type Sfx } from './sfx';
 import { getCombatSpeed, setCombatSpeed, COMBAT_SPEED_EVENT } from './combatSpeed';
-import { floatOpacity, distToRect, floatPlace, floatMotion, setFloatOut, floatOut, onFloatOut, TUCK_PX } from './floaters';
+import { floatOpacity, distToRect, floatPlace, floatMotion, setFloatOut, floatOut, onFloatOut, TUCK_PX, LIFT_PX } from './floaters';
 
 describe('the two effect buses', () => {
   it('every sound name the game knows sits on a bus; interface sounds on ui, the world on combat', () => {
@@ -107,6 +107,14 @@ describe('the floating buttons', () => {
     expect(floatMotion('out', false).transform).toBe('translateY(0px)');
     expect(floatMotion('away', false).transform).not.toBe('translateY(0px)');
     expect(floatMotion('tucked', true)).toEqual({ transform: 'none', transition: 'opacity 150ms ease' }); // reduced motion: no slide
+  });
+  it('a blocked music start (its wide label, not the pointer\'s doing) lifts the ◈ above it instead of sending it away', () => {
+    expect(floatPlace('memory', null, true, false, false, false, false, 'music')).toBe('lifted');
+    expect(floatPlace('memory', 'music', true, false, false, false, false, 'music')).toBe('away'); // hovered or open: away
+    expect(floatPlace('music', null, true, false, false, false, false, 'music')).toBe('tucked');
+    expect(floatPlace('memory', null, true, false, false, true, false, 'music')).toBe('out'); // its own dialog open
+    expect(floatMotion('lifted', false).transform).toBe('translateY(-' + LIFT_PX + 'px)');
+    expect(floatMotion('lifted', true).transform).toBe('translateY(-' + LIFT_PX + 'px)'); // never under the label, even without motion
   });
   it('one dock: the last one out wins, going in clears only its own, listeners hear each change', () => {
     let heard = 0; const off = onFloatOut(() => heard++);

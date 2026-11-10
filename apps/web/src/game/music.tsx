@@ -200,8 +200,10 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   // hover, so it keeps off the combat log, the sheet's skill rows and the room's text (review of the UI pass). Only a
   // blocked start keeps its words: it is the one time the button asks for a click. While its title shows or its panel is
   // open the ◈ Memory button slides away (they share the dock: floaters.ts), and the Memory opening closes this panel.
-  const iconOnly = !blocked && !hover && !open;
-  const { place, ...floatStyle } = useFloatStyle(btnRef, open, 'music', !iconOnly && !!game && game.phase !== 'lobby');
+  // Only the pointer or the panel puts it "out" (the ◈ slides away); a blocked start's label is wide on its own, so the
+  // ◈ steps up above it instead and stays clickable (floaters.ts 'lifted').
+  const iconOnly = !blocked && !hover && !open, onScreen = !!game && game.phase !== 'lobby';
+  const { place, ...floatStyle } = useFloatStyle(btnRef, open, 'music', (hover || open) && onScreen, blocked && !hover && !open && onScreen);
   React.useEffect(() => onFloatOut(() => { if (floatOut() === 'memory') setOpen(false); }), []);
   if (!game || game.phase === 'lobby') return null;
   const track = want?.track || null;

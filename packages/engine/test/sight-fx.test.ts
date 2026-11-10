@@ -3,7 +3,8 @@
 // revealed, or going Hidden from it) gets one 'sight' event for that side's eyes only, and a sprung Overwatch is its own
 // 'overwatch' event between the walk up to the tile and the shot. All through apply(); none of it touches a roll.
 import { describe, expect, it } from 'vitest';
-import { apply, newGame, viewFor, active, visibility, sightFx, hide, type Action, type GameState, type FxEvent } from '../src';
+import { apply, newGame, viewFor, active, visibility, sightFx, hide, moveUnit, npcsOf, positionsOf, standable, zoneMap, refOf, type Action, type GameState, type FxEvent } from '../src';
+import { storyWith } from './helpers/perkfight';
 import { fightWith, withGame } from './helpers/perkfight';
 
 const since = (g: GameState, n: number) => (g.combat!.fx || []).filter((e) => e.n > n);
@@ -109,10 +110,12 @@ describe('team fight', () => {
     const mv = since(g, n0).find((e) => e.k === 'move')!;
     const other = owner === 'h1' ? 'p2' : 'h1';
     const vo = viewFor(g, other).combat!.fx!.find((e: FxEvent) => e.n === mv.n)!, vm = viewFor(g, owner).combat!.fx!.find((e: FxEvent) => e.n === mv.n)!;
-    // Each player's view puts its own side on 'pc': the mover's own player sees all '1' there.
-    expect(vm.sight.pc).toMatch(/^1+$/);
-    expect(vo.sight.foe).toMatch(/^1+$/);
+    // Each player's view puts its own side on 'pc', and carries only its own side's sight (where the other team had
+    // eyes on a tile is that team's secret): the mover's own player sees all '1' there.
+    expect(vm.sight.pc).toMatch(/^1+$/); expect(vm.sight.foe).toBeUndefined();
+    expect(vo.sight.foe).toBeUndefined();
     expect(vo.sight.pc).toBe(cur.side === 'pc' ? mv.sight.foe : mv.sight.pc);
+    for (const pid of ['h1', 'p2']) { const vc = viewFor(g, pid).combat!; expect(vc.sightSeen).toBeUndefined(); expect(vc.sightPos).toBeUndefined(); }
     for (const pid of ['h1', 'p2']) for (const e of viewFor(g, pid).combat!.fx!) if (e.k === 'sight') expect(e.only).toBe('pc');
   });
 });
@@ -135,6 +138,81 @@ describe('the Proving Ground', () => {
       const u = active(g.combat!)!; const n0 = top(g);
       g = apply(g, { type: 'combat/end-turn', unitId: u.id } as Action, 'h1');
       expect(since(g, n0).filter((e) => e.k === 'sight' && e.unit === lurker.id)[0]).toMatchObject({ how: 'reveal', only: 'pc' });
+    }
+  });
+});
+
+describe('review fixes (combat clarity)', () => {
+  it('a PC walking out of a foe\'s line: the foe drops out of sight where it was last seen, on the step that lost it', () => {
+    const f = fightWith([{}], [{ at: 'M3', weapon: 'fists' }]);
+    const pc = f.pc, foe = f.foe; pc.pos = '6,2'; pc.vision = 4; foe.pos = '9,2';
+    withGame(f.g, () => { delete f.cb.sightSeen; sightFx(f.cb); });
+    expect(f.cb.sightSeen!.pc).toContain(foe.id);
+    f.turn(pc); const n0 = top(f.g);
+    f.act({ type: 'combat/move', unitId: pc.id, to: '2,2' });
+    const lost = since(f.g, n0).filter((e) => e.k === 'sight' && e.unit === foe.id);
+    // 9 tiles off at 4,2 (5 > vision 4): the step onto 4,2 is the one that lost it; it fades where it stood.
+    expect(lost).toEqual([expect.objectContaining({ how: 'lost', at: '9,2', only: 'pc', by: pc.id, byAt: '4,2' })]);
+    // The walk's own move comes first; the lost event is timed to its step by byAt.
+    const ev = since(f.g, n0); expect(ev.findIndex((e) => e.k === 'move')).toBeLessThan(ev.findIndex((e) => e.k === 'sight'));
+  });
+  it('a foe the walk finds comes into sight on the step that found it (by, byAt)', () => {
+    const f = fightWith([{}], [{ at: 'M3', weapon: 'fists' }]);
+    const pc = f.pc, foe = f.foe; pc.pos = '2,2'; pc.vision = 4; foe.pos = '9,2';
+    withGame(f.g, () => { delete f.cb.sightSeen; sightFx(f.cb); });
+    f.turn(pc); const n0 = top(f.g);
+    f.act({ type: 'combat/move', unitId: pc.id, to: '7,2' });
+    expect(since(f.g, n0).filter((e) => e.k === 'sight')).toEqual([expect.objectContaining({ unit: foe.id, how: 'enter', at: '9,2', by: pc.id, byAt: '5,2' })]);
+  });
+  it('a unit lost while unseen moves on is placed where it was last seen, never where it went', () => {
+    const f = fightWith([{}], [{ at: 'M3', weapon: 'fists' }]);
+    const pc = f.pc, foe = f.foe; pc.pos = '2,2'; pc.vision = 4; foe.pos = '5,2';
+    withGame(f.g, () => { delete f.cb.sightSeen; sightFx(f.cb); });
+    const n0 = top(f.g); foe.pos = '14,2'; // carried off (a blink, a shove) out of sight
+    withGame(f.g, () => sightFx(f.cb));
+    expect(since(f.g, n0)).toEqual([expect.objectContaining({ k: 'sight', unit: foe.id, how: 'lost', at: '5,2', only: 'pc' })]);
+    expect(JSON.stringify(since(f.g, n0))).not.toContain('14,2');
+  });
+  it('a turn\'s ring and a stance\'s word carry who saw the unit then (seen), each view only its own side', () => {
+    const f = fightWith([{}], [{ at: 'M3', weapon: 'fists' }]);
+    const pc = f.pc, foe = f.foe; pc.pos = '2,2'; pc.vision = 4; foe.pos = '12,2';
+    withGame(f.g, () => { delete f.cb.sightSeen; sightFx(f.cb); });
+    f.turn(pc); const n0 = top(f.g);
+    f.act({ type: 'combat/end-turn', unitId: pc.id });
+    const t = since(f.g, n0).find((e) => e.k === 'turn' && e.unit === foe.id)!;
+    expect(t.seen).toEqual({ pc: 0, foe: 1 }); // in the fog as its turn starts (it may walk in after)
+    const vt = viewFor(f.g, 'host').combat!.fx!.find((e) => e.n === t.n)!;
+    expect(vt.seen).toEqual({ pc: 0 });
+  });
+  it('a hidden walker revealed mid-walk (a Sigil field bites it) is unseen on the tiles it crossed Hidden', () => {
+    const f = fightWith([{}], [{ at: 'M3', weapon: 'fists' }]);
+    const pc = f.pc, foe = f.foe; pc.pos = '2,2'; pc.vision = 12; foe.pos = '7,2'; foe.ap = 6; foe.hidden = true; foe.hp = foe.maxHp = 999;
+    f.cb.zones = [{ id: 'zf', kind: 'field', tiles: ['4,2'], words: ['fire', 'stay'], by: pc.id, side: 'pc', left: 4, mult: 1, who: pc.name } as any];
+    withGame(f.g, () => { delete f.cb.sightSeen; sightFx(f.cb); });
+    const n0 = top(f.g);
+    withGame(f.g, () => moveUnit(f.cb, foe, '3,2', f.g.rng as any));
+    const mv = since(f.g, n0).filter((e) => e.k === 'move' && e.unit === foe.id);
+    expect(mv.length).toBeGreaterThan(0);
+    const tiles: string[] = [], pcs: string[] = [];
+    for (const e of mv) e.path.forEach((k: string, i: number) => { tiles.push(k); pcs.push(e.sight.pc[i]); });
+    // Hidden on 6,2 and 5,2 (and on 4,2 as it stepped in): never shown there, whatever the bite did after.
+    for (const k of ['6,2', '5,2']) expect(pcs[tiles.indexOf(k)]).toBe('0');
+    expect(foe.hidden).toBe(false); // the bite revealed it: the walk shows it from 4,2 on, where it came out
+    expect(mv.map((e) => e.sight.pc).join('')).toMatch(/^0+1+$/);
+  });
+  it('a lurker that opens an area-map fight Hidden gives no sight event away (the ambush stays secret)', () => {
+    for (const d of [3, 6]) {
+      const s = storyWith([{}], 'SIGHTLURK' + d); const c = s.chars[0], at = positionsOf(s.g)[c.id];
+      const map = zoneMap(s.g), [x, y] = at.split(',').map(Number), taken = new Set([...Object.values(positionsOf(s.g)), ...npcsOf(s.g).map((n) => n.pos)]);
+      const free = (r: number) => { for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) { if (Math.max(Math.abs(i), Math.abs(j)) !== r) continue; const k = (x + i) + ',' + (y + j); if (standable(map, k) && !taken.has(k)) { taken.add(k); return k; } } throw new Error('no tile'); };
+      const place = (k: string, hidden: boolean, name: string) => { s.act({ type: 'narrator/turn', turn: { narration: 'Someone.', npcs: [{ action: 'place', name, side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: refOf(k), ...(hidden ? { hidden: true } : {}) }] } } as any); return npcsOf(s.g)[npcsOf(s.g).length - 1]; };
+      const t = place(free(1), false, 'Target'); place(free(d), true, 'Lurker');
+      s.act({ type: 'world/act', charId: c.id, act: 'attack', targetId: t.id, mode: 'shot' } as any);
+      expect(s.g.phase).toBe('combat');
+      const lurker = s.g.combat!.units.find((u) => u.name === 'Lurker')!;
+      const v = viewFor(s.g, 'host');
+      const leak = (v.combat!.fx || []).filter((e) => e.unit === lurker.id && e.k === 'sight' && (e.how === 'hide' || e.how === 'lost'));
+      expect(leak).toEqual([]);
     }
   });
 });

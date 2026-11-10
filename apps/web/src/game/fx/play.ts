@@ -86,6 +86,9 @@ const tokOf = (id: string | null | undefined, fallback?: string) => parkedOn(id,
 /** Does the squad see this unit now (its own always; everyone outside a fight)? */
 const seesUnit = (id: string | null | undefined) => !id || !seenUnits || seenUnits.has(id);
 const at = (k: string | null | undefined) => (visible(k) ? centre(k) : null);
+/** Did the squad see this unit when the event happened (a turn, a stance: the engine's seen, stamped then)? An old save
+ *  without it: the tile is in sight. */
+const sawThen = (e: FxEvent) => (e.seen && typeof e.seen.pc === 'number' ? !!e.seen.pc : visible(e.at));
 /** A one-shot combat sound at a point (panned). Its delay follows the combat speed and the tempo (fx/dom.ts fxScale); in
  *  an action slowed after a spotlight cut-in it also plays at the tempo's rate (× 0.85). The combat speed alone never
  *  changes a sound's pitch. */
@@ -111,8 +114,9 @@ const drawsArrow = (e: FxEvent) => !e.ricochet && !reducedMotion() && brassOf(e.
 // on the tile where it was shot until the rest of the walk plays (parked), and the shot lands on it.
 interface Parked { box: HTMLElement; key: string; hide: Animation | null }
 const parked = new Map<string, Parked>();
-/** How long a stopped walker waits for the rest of its walk before the real token shows again (ms at Fast). */
-export const PARK_MS = 2600;
+/** A stopped walker waits for the rest of its walk (or its fall) however long the reaction beats take: several
+ *  overwatchers, a killzone's held shots, a bow's draw. It goes when its next walk or its 'down' plays, when the queue
+ *  runs dry, or at the latest after HOLD_MS (ms at Fast). */
 function unpark(id: string, keepHide = false) { const p = parked.get(id); if (!p) return null; parked.delete(id); p.box.remove(); if (!keepHide) p.hide?.cancel(); holdChanged(); return p; }
 /** The stopped walker standing on this tile (the token to hit, shake or flash there). */
 function parkedOn(id: string | null | undefined, key: string | null | undefined): HTMLElement | null {
@@ -157,11 +161,21 @@ export function releaseMover(id: string, keepHide = false) {
   const w = waiting.get(id); if (!w) return; waiting.delete(id); clearTimeout(w.timer); w.stand?.remove(); if (!keepHide) w.hide?.cancel();
   holdChanged();
 }
+/** A unit held where it was last seen drops out of sight: its stand-in fades there (300 ms). Returns false when it was
+ *  not held with a stand-in. */
+function fadeStandIn(id: string): boolean {
+  const w = waiting.get(id); if (!w) return false;
+  waiting.delete(id); clearTimeout(w.timer); w.hide?.cancel();
+  const st = w.stand; holdChanged(); if (!st) return false;
+  anim(st, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' });
+  setTimeout(() => st.remove(), slow(300) + 40);
+  return true;
+}
 /** Every unit whose real token the screen keeps see-through now: waiting for its moment, walking, or stopped mid-walk. */
 function heldIds(): Set<string> { return new Set([...waiting.keys(), ...walking.keys(), ...parked.keys()]); }
 /** How far each fight's events have been taken up by the layer (FxLayer: queued, or synced silently), by stream. */
 const processed = new Map<string, number>();
-export function setProcessed(stream: string | null | undefined, n: number) { if (stream) processed.set(stream, n); }
+export function setProcessed(stream: string | null | undefined, n: number) { if (!stream || processed.get(stream) === n) return; processed.set(stream, n); holdChanged(); }
 /** The fight's effects stream key (its numbering restarts with every fight). */
 export const fightStream = (g: GameState | null | undefined): string | null =>
   g && g.combat ? 'cb|' + g.code + '|' + g.combat.name + '|' + (g.combat.log[0] || '') : null;
@@ -171,25 +185,59 @@ export const fightStream = (g: GameState | null | undefined): string | null =>
 export function fxHeldUnits(g: GameState | null | undefined): Set<string> {
   const out = heldIds(), cb = g?.combat, key = fightStream(g); if (!cb || !key) return out;
   let p = processed.get(key);
-  if (p == null && (cb.round || 1) <= 1 && ((cb.fx || [])[0]?.n || 1) <= 1) p = 0; // a fight's opening: it will play
+  if (p == null && (cb.round || 1) <= 1 && (cb.fx || []).length <= 40 && ((cb.fx || [])[0]?.n || 1) <= 1) p = 0; // a fight's opening: it will play (FxLayer's own test)
   if (p == null) return out;
   for (const e of cb.fx || []) if (e.n > p && e.unit && mineOnly(e) && (e.k === 'move' || (e.k === 'sight' && (e.how === 'enter' || e.how === 'reveal')))) out.add(String(e.unit));
   return out;
 }
 /** What each unit's token looks like (the combat screen tells the layer every render): a walk whose unit has no token
  *  on screen (it died at the end of it, it was never in sight before) is drawn from this. */
-const looks = new Map<string, { src: string; style: string }>();
-export function setTokenLooks(list: { id: string; src: string; style: string }[]) { looks.clear(); for (const l of list) if (l.src) looks.set(l.id, { src: l.src, style: l.style }); }
+export interface TokenLook { id: string; src: string; style: string; kind?: { text: string; style: string } | null; hp?: { box: string; chip: string; fill: string } | null }
+const looks = new Map<string, TokenLook>();
+export function setTokenLooks(list: TokenLook[]) { looks.clear(); for (const l of list) looks.set(l.id, l); }
 function lookEl(id: string): HTMLElement | null {
-  const l = looks.get(id); if (!l || typeof document === 'undefined') return null;
+  const l = looks.get(id); if (!l || !l.src || typeof document === 'undefined') return null;
   const i = document.createElement('img'); i.src = l.src; i.alt = ''; i.setAttribute('style', l.style); return i;
+}
+/** A walker, a stand-in or a fading copy of a unit: its token with its kind chip and HP bar as on its tile (a hostile is
+ *  read by those: they must not pop on when the walk ends). Drawn at the tile's own size and scaled to the map's zoom;
+ *  box: the size of the layer box to put it in (a tile on screen). */
+function unitCopy(id: string, src: HTMLElement, p: Pt): HTMLElement {
+  const base = (src.matches?.('[data-phc-group]') ? src.querySelector('[data-phc-gtok]') : src) as HTMLElement | null;
+  let anyTile = tileEl(unit(id)?.pos);
+  if (!anyTile) for (const x of units.values()) { anyTile = tileEl(x.pos); if (anyTile) break; }
+  const natural = anyTile && anyTile.offsetWidth > 4 ? anyTile.offsetWidth : 46, k = p.s / natural;
+  const wrap = document.createElement('div');
+  wrap.setAttribute('data-phc-group', id);
+  wrap.style.cssText = 'position:relative;flex:none;width:' + natural + 'px;height:' + natural + 'px;display:grid;place-items:center;transform:scale(' + k.toFixed(4) + ');transform-origin:50% 50%';
+  if (base) {
+    const tok = base.cloneNode(true) as HTMLElement;
+    tok.setAttribute('data-phc-gtok', '1');
+    tok.style.opacity = '1'; tok.style.translate = ''; tok.style.rotate = ''; tok.style.filter = ''; tok.style.boxShadow = ''; tok.style.margin = '0';
+    wrap.appendChild(tok);
+  }
+  const l = looks.get(id);
+  if (l?.kind) { const c = document.createElement('span'); c.textContent = l.kind.text; c.setAttribute('style', l.kind.style); wrap.appendChild(c); }
+  if (l?.hp) {
+    const b = document.createElement('span'); b.setAttribute('style', l.hp.box);
+    const c1 = document.createElement('span'); c1.setAttribute('style', l.hp.chip); const c2 = document.createElement('span'); c2.setAttribute('style', l.hp.fill);
+    b.append(c1, c2); wrap.appendChild(b);
+  }
+  return wrap;
+}
+/** Put a unit copy on the layer over a tile (p) for ms; returns the layer box (the copy is its first child). */
+function putCopy(id: string, src: HTMLElement, p: Pt, ms: number): HTMLElement {
+  const box = put(unitCopy(id, src, p), p, p.s, p.s, ms);
+  box.style.display = 'grid'; box.style.placeItems = 'center';
+  return box;
 }
 /** Is this unit held (its moment not played yet)? */
 export const isHeld = (id: string) => waiting.has(id);
-/** Which units of a batch to hold, and how: 'walk' (its first walk; stand: the tile to keep it on, if seen there) or
- *  'sight' (it comes into sight without walking: hidden until then). Pure (tests). */
-export function moversOf(evs: FxEvent[], sideOf: (id: string) => string | undefined): Map<string, { kind: 'walk' | 'sight'; stand: string | null }> {
-  const out = new Map<string, { kind: 'walk' | 'sight'; stand: string | null }>();
+/** Which units of a batch to hold, and how: 'walk' (its first walk; stand: the tile to keep it on, if seen there),
+ *  'sight' (it comes into sight without walking: hidden until then) or 'lost' (it drops out of sight: a copy stays where
+ *  it was last seen, stand, until that moment plays and it fades). Pure (tests). */
+export function moversOf(evs: FxEvent[], sideOf: (id: string) => string | undefined): Map<string, { kind: 'walk' | 'sight' | 'lost'; stand: string | null }> {
+  const out = new Map<string, { kind: 'walk' | 'sight' | 'lost'; stand: string | null }>();
   for (const e of evs) {
     if (!mineOnly(e) || !e.unit) continue;
     const id = String(e.unit);
@@ -199,6 +247,7 @@ export function moversOf(evs: FxEvent[], sideOf: (id: string) => string | undefi
       const mine = sideOf(id) === 'pc', seen0 = mine || !e.sight || typeof e.sight.pc !== 'string' || e.sight.pc[0] === '1';
       out.set(id, { kind: 'walk', stand: seen0 ? path[0] || null : null });
     } else if (e.k === 'sight' && (e.how === 'enter' || e.how === 'reveal')) out.set(id, { kind: 'sight', stand: null });
+    else if (e.k === 'sight' && e.how === 'lost' && e.at) out.set(id, { kind: 'lost', stand: String(e.at) }); // it stays where it was last seen until it fades
   }
   return out;
 }
@@ -212,11 +261,9 @@ export function holdMovers(evs: FxEvent[]) {
     if (!live && !m.stand && !(u.dead || seesUnit(id))) continue;
     const hide = live ? anim(live, [{ opacity: 0 }, { opacity: 0 }], { duration: HOLD_MS }) : null;
     let stand: HTMLElement | null = null;
-    const p = m.stand && m.stand !== u.pos ? centre(m.stand) : null, src = lastTok.get(id) || live || lookEl(id);
-    if (m.kind === 'walk' && p && src) {
-      const ghost = src.cloneNode(true) as HTMLElement, w = p.s * 0.88;
-      ghost.style.position = 'static'; ghost.style.inset = ''; ghost.style.width = w + 'px'; ghost.style.height = w + 'px'; ghost.style.margin = '0'; ghost.style.opacity = '1'; ghost.style.translate = ''; ghost.style.rotate = ''; ghost.style.filter = '';
-      stand = put(ghost, p, w, w, HOLD_MS); stand.style.display = 'grid'; stand.style.placeItems = 'center'; stand.setAttribute('data-phc-stand', id);
+    const p = m.stand && (m.stand !== u.pos || m.kind === 'lost') ? centre(m.stand) : null, src = lastTok.get(id) || live || lookEl(id);
+    if ((m.kind === 'walk' || m.kind === 'lost') && p && src) {
+      stand = putCopy(id, src, p, HOLD_MS); stand.setAttribute('data-phc-stand', id);
       anchor(stand, m.stand!, HOLD_MS);
     } else if (m.kind === 'walk' && m.stand === u.pos && hide) { hide.cancel(); } // it ends where it began: nothing to hold
     const timer = window.setTimeout(() => releaseMover(id), slow(HOLD_MS));
@@ -249,23 +296,21 @@ function walkUnit(e: FxEvent, path: string[], per: number, seen: boolean[]) {
     // No walk: a hostile coming out of the fog fades in where it stands; one going into it fades out where it was seen.
     unpark(id);
     if (enteredAt > 0 && live) anim(live, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease-out' });
-    if (leftAt >= 0) { const p = pts[leftAt]!, r = live?.getBoundingClientRect(), w = r?.width || p.s * 0.88, ghost = src.cloneNode(true) as HTMLElement; ghost.style.cssText += ';position:static;inset:auto;margin:0;width:' + w + 'px;height:' + w + 'px'; const box = put(ghost, p, w, w, 320); anim(box, [{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: 'forwards' }); }
+    if (leftAt >= 0) { const p = pts[leftAt]!, box = putCopy(id, src, p, 320); anim(box, [{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: 'forwards' }); }
     return;
   }
-  const r = live && live.isConnected ? live.getBoundingClientRect() : null, w = r && r.width > 4 ? r.width : last.s * 0.88, h = r && r.height > 4 ? r.height : w;
-  const ghost = src.cloneNode(true) as HTMLElement;
-  ghost.style.position = 'static'; ghost.style.inset = ''; ghost.style.width = w + 'px'; ghost.style.height = h + 'px'; ghost.style.margin = '0'; ghost.style.boxShadow = 'none'; ghost.style.opacity = '1'; ghost.style.translate = ''; ghost.style.rotate = ''; ghost.style.filter = '';
-  const ms = per * (pts.length - 1), life = final ? ms : ms + PARK_MS;
+  // The walker: the token with its kind chip and HP bar (unitCopy), so nothing pops on where the walk ends.
+  const ms = per * (pts.length - 1), life = final ? ms : HOLD_MS;
   unpark(id, true);
-  const box = put(ghost, last, w, h, life);
-  box.style.display = 'grid'; box.style.placeItems = 'center'; box.setAttribute('data-phc-walker', id);
+  const box = putCopy(id, src, last, life);
+  box.setAttribute('data-phc-walker', id);
   anim(box, pts.map((p, i) => ({ transform: 'translate(' + (p!.x - last.x) + 'px,' + (p!.y - last.y) + 'px) translateY(' + (i % 2 ? -3 : 0) + 'px)', opacity: ops[i] ? 1 : 0 })), { duration: ms, easing: 'linear', fill: 'forwards' });
   // The real token (where the whole walk ends) stays hidden while any part of it plays.
   was?.hide?.cancel();
   const hide = live ? anim(live, [{ opacity: 0 }, { opacity: 0 }], { duration: life }) : null;
   if (!final) {
     const entry: Parked = { box, key: String(e.to), hide }; parked.set(id, entry);
-    setTimeout(() => { if (parked.get(id) === entry) { parked.delete(id); holdChanged(); } }, slow(life));
+    setTimeout(() => { if (parked.get(id) === entry) unpark(id); }, slow(life)); // the cap; it normally goes long before
   } else {
     const t = window.setTimeout(() => { if (walking.get(id) === t) { walking.delete(id); holdChanged(); } }, slow(ms));
     walking.set(id, t);
@@ -425,7 +470,7 @@ function reloadPieces(e: FxEvent, p: Pt, ms: number) {
 type Handler = (e: FxEvent) => void;
 const H: Record<string, Handler> = {
   spotlight() { /* drawn by the cut-in layer (game/spotlight); the queue's gate plays it before its action */ },
-  turn(e) { const p = seesUnit(e.unit) ? at(e.at) : null; if (p) ring(p, e.side === 'pc' ? WHITE : HP, 520, { from: 0.45, to: 1.05, width: 4 }); },
+  turn(e) { const p = sawThen(e) ? centre(e.at) : null; if (p) ring(p, e.side === 'pc' ? WHITE : HP, 520, { from: 0.45, to: 1.05, width: 4 }); },
   move(e) {
     const path: string[] = (e.path || [e.from, e.to]).filter(Boolean);
     if (path.length < 2) return;
@@ -433,7 +478,11 @@ const H: Record<string, Handler> = {
     // The engine's sight counts in a fight only: the area map draws every token it has (its throwaway fight's sight is
     // not the map's).
     const seen = moveSeen(seenUnits ? e : { ...e, sight: undefined }, path, mine, (k) => visible(k) && (mine || seesUnit(e.unit) || !seenUnits)), sp = walkSpan(seen);
-    if (!sp) { releaseMover(String(e.unit || '')); return; } // never in sight: nothing drawn, nothing heard
+    const id = String(e.unit || ''), u = unit(id);
+    // Never in sight: nothing drawn, nothing heard. Only the walk's last part lets the unit go (it stands where this
+    // ends, or nothing more of it comes in this batch); a fogged part before more of the walk keeps it held, so its
+    // token never shows at the walk's end while the rest plays (a walk split by a heart watch, an OA, a trap).
+    if (!sp) { if (!u || u.dead || u.pos === e.to || lastOfUnit.has(e)) { releaseMover(id); if (parked.has(id)) unpark(id); } return; }
     walkUnit(e, path, per, seen);
     releaseMover(String(e.unit || '')); // the walker (and its own hide) has taken over from the stand-in
     // Footsteps only where the walker is seen (a step in the fog would give it away).
@@ -442,13 +491,19 @@ const H: Record<string, Handler> = {
   },
   sight(e) {
     const id = String(e.unit || ''), p = centre(e.at), hostile = unit(id)?.side !== 'pc';
+    if (e.how === 'lost') {
+      // It drops out of your sight where you last saw it (your walk took your eyes off it, a door, a watcher fell): the
+      // copy kept there fades out; never a pop.
+      if (!fadeStandIn(id) && p) { const src = lastTok.get(id) || lookEl(id); if (src) { const box = putCopy(id, src, p, 340); anchor(box, e.at, 340); anim(box, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' }); } }
+      noteSight(id, 'leave', e.at);
+      return;
+    }
     if (e.how === 'hide') {
+      if (!visible(e.at)) { releaseMover(id); return; } // a tile you don't see: nothing to fade, nothing to say
       // It fades from your eyes where you last saw it (a copy of its token: the real one is already gone).
       const src = lastTok.get(id);
       if (p && src) {
-        const ghost = src.cloneNode(true) as HTMLElement, w = p.s * 0.88;
-        ghost.style.position = 'static'; ghost.style.inset = ''; ghost.style.width = w + 'px'; ghost.style.height = w + 'px'; ghost.style.margin = '0'; ghost.style.opacity = '1';
-        const box = put(ghost, p, w, w, 700); box.style.display = 'grid'; box.style.placeItems = 'center'; anchor(box, e.at, 700);
+        const box = putCopy(id, src, p, 700); anchor(box, e.at, 700);
         anim(box, reducedMotion() ? [{ opacity: 0.9 }, { opacity: 0 }] : [{ opacity: 0.95, filter: 'none', transform: 'scale(1)' }, { opacity: 0.55, filter: 'blur(1px) brightness(1.4)', transform: 'scale(1.03)', offset: 0.35 }, { opacity: 0, filter: 'blur(3px)', transform: 'scale(.96)' }], { duration: 700, easing: 'ease-in', fill: 'forwards' });
       }
       if (p) floatText('HIDDEN', p, OTHER_INK, { small: true });
@@ -466,7 +521,8 @@ const H: Record<string, Handler> = {
     } else if (e.how === 'reveal' && tok) anim(tok, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 });
     const show = hostile && bangDue(id, performance.now());
     if (p && show) { bangMark(e.at, p, true); if (tickDue(performance.now())) play('sighted', p, { gain: 0.9 }); }
-    if (p && e.how === 'reveal') floatText('REVEALED', p, hostile ? HOSTILE_INK : OTHER_INK, { small: true, delay: 160 });
+    // REVEALED floats up from under the token, clear of the "!" on its corner (both are red: they must not run together).
+    if (p && e.how === 'reveal') floatText('REVEALED', { ...p, y: p.y + p.s * 1.05 }, hostile ? HOSTILE_INK : OTHER_INK, { small: true, delay: 160 });
     noteSight(id, e.how === 'reveal' ? 'reveal' : 'enter', e.at, show);
   },
   overwatch(e) {
@@ -479,7 +535,7 @@ const H: Record<string, Handler> = {
     if (tp) corners(tp, ink, 560);
     if (wp && tp) aimLine(wp, tp, ink, 600);
     play('rack', wp || tp, { rate: 1.2, gain: 0.55 });
-    noteOverwatch({ watcher: String(e.unit), target: String(e.target), tile: String(e.at), at: Math.round(performance.now()) });
+    noteOverwatch({ watcher: watcherSeen ? String(e.unit) : '', target: String(e.target), tile: String(e.at), at: Math.round(performance.now()) });
   },
   shot(e) {
     const g = gunOf(e.weapon || '', e.cat || ''), br = brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
@@ -635,7 +691,7 @@ const H: Record<string, Handler> = {
   },
   shield(e) { const p = at(e.at); if (!p) return; ring(p, SIGIL_INK, 420, { from: 0.7, to: 1.05, width: 7 }); floatText('SHIELD −' + (e.absorbed || 0), p, SIGIL_INK, { small: true }); play('hit_metal', p, { rate: 1.4, gain: 0.6 }); },
   down(e) {
-    if (parkedOn(e.unit, e.at)) unpark(String(e.unit)); // a walker stopped here to be shot: its fall takes over
+    if (e.unit && parked.has(String(e.unit))) unpark(String(e.unit)); // a walker stopped to be shot (or struck leaving a tile: an OA): its fall takes over, where it fell
     const p = at(e.at), live = tokOf(e.unit, e.at), tok = live || ghostOf(e.unit, e.at); play('body_fall', p || centre(e.at), { rate: jitter(0.08) });
     if (!p) return;
     const fallen = { filter: 'grayscale(1) brightness(.55)', translate: '0 ' + p.s * 0.12 + 'px', rotate: '-14deg' };
@@ -657,8 +713,8 @@ const H: Record<string, Handler> = {
     else if (!e.ok) floatText('HOLDS', p, MUTED, { small: true });
   },
   stance(e) {
-    const p = at(e.at); if (!p) return;
-    if (!seesUnit(e.unit)) return;
+    const p = sawThen(e) ? centre(e.at) : null; if (!p) return;
+    if (e.what === 'hide' && unit(e.unit)?.side !== 'pc') return; // its 'sight' hide says it (HIDDEN, fading where it stood)
     const word = e.what === 'prone' ? 'PRONE' : e.what === 'stand' ? 'UP' : e.what === 'brace' ? 'BRACED' : e.what === 'hide' ? 'HIDDEN' : 'OVERWATCH';
     floatText(word, p, WHITE, { small: true });
     play(e.what === 'prone' ? 'body_fall' : e.what === 'overwatch' ? 'rack' : e.what === 'hide' ? 'sg_mask' : 'step', p, { rate: e.what === 'prone' ? 1.3 : 1, gain: e.what === 'hide' ? 0.35 : 0.6 });
@@ -1093,7 +1149,7 @@ function baseBeat(e: FxEvent): number {
   switch (e.k) {
     case 'turn': return 140;
     case 'move': { const n = moveSteps(e, units.get(e.unit)?.side === 'pc'); return n ? Math.min(1100, Math.max(160, n * (e.how === 'sprint' ? 75 : 115))) : 60; } // a walk wholly in the fog: a breath, not a pause
-    case 'sight': return e.how === 'reveal' ? 480 : e.how === 'hide' ? 380 : 120;
+    case 'sight': return e.by ? 0 : e.how === 'reveal' ? 480 : e.how === 'hide' ? 380 : e.how === 'lost' ? 300 : 120; // by: on its walker's step (runQueue)
     case 'overwatch': return 560;
     case 'shot': return (e.chain ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
     case 'melee': return e.chain ? 240 : 420;
@@ -1238,11 +1294,23 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
   if (plan.from > 0) { const later = new Set(evs.slice(plan.from).filter((e) => e.k === 'move' || e.k === 'sight').map((e) => String(e.unit || ''))); for (const e of evs.slice(0, plan.from)) if (e.unit && !later.has(String(e.unit))) releaseMover(String(e.unit)); }
   runQueue(evs.slice(plan.from), stream, base, plan.speed, null, null);
 }
+/** The last walk or sight event of each unit in a batch being scheduled: only that one lets a held unit go when its walk
+ *  is out of sight (H.move). */
+const lastOfUnit = new WeakSet<FxEvent>();
+/** When a sight change a walker's eyes made (by, byAt: the walker and its tile then) plays: on that step of its walk,
+ *  from the walks scheduled so far (when each starts, its path, its pace per tile). null: no such walk. Pure (tests). */
+export function stepTime(walks: Map<string, { t: number; path: string[]; ms: number }[]>, by: string, byAt: string): number | null {
+  const list = walks.get(by) || [];
+  for (let j = list.length - 1; j >= 0; j--) { const w = list[j], i = w.path.lastIndexOf(byAt); if (i >= 0) return w.t + i * w.ms; }
+  return null;
+}
 /** Schedule a batch from t; stop at the first gate whose cut-in this player will see (the rest wait behind it). */
 function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: number, seg: { from: number; to: number } | null, cutId: string | null) {
   const now = performance.now();
   const gates = isFight(stream) ? gatesOf(evs, (e) => decided.has(keyOf(stream, e))) : [];
   let lastTurn = -1;
+  { const had = new Set<string>(); for (let i = evs.length - 1; i >= 0; i--) { const e = evs[i], id = String(e.unit || ''); if ((e.k === 'move' || e.k === 'sight') && id && !had.has(id)) { had.add(id); lastOfUnit.add(e); } } }
+  const walks = new Map<string, { t: number; path: string[]; ms: number }[]>();
   for (let i = 0; i < evs.length; i++) {
     const e = evs[i], gate = gates.find((x) => x.at === i);
     if (gate) {
@@ -1253,6 +1321,10 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
     const slowed = slowedIn(e, seg), tp = slowed ? CUTIN_TEMPO : 1, beat = beatOf(e);
     if (e.k === 'turn') lastTurn = t;
     const wait = t - now, go = () => { if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp); };
+    // A walk's clock: a sight change its walker's eyes made plays on that step (a hostile found or lost mid-walk), not
+    // after the whole walk.
+    if (e.k === 'move' && e.unit && mineOnly(e)) { const id = String(e.unit); (walks.get(id) || walks.set(id, []).get(id)!).push({ t, path: (e.path || [e.from, e.to]).filter(Boolean), ms: (e.how === 'sprint' ? 75 : 115) * fxPace() / tp }); }
+    if (e.k === 'sight' && e.by && e.byAt) { const at = stepTime(walks, String(e.by), String(e.byAt)); if (at != null && at < t) { if (at - now <= 4) go(); else schedule(go, at); continue; } }
     if (wait <= 4) go();
     else schedule(go, t);
     // A slowed event's whole beat follows the tempo (a bow's draw included: its after() is slowed too). Otherwise a bow's
@@ -1264,7 +1336,12 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
   if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120 * fxPace()); if (turnsUntil !== was) holdChanged(); }
-  clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, t - now + 50);
+  clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, t - now + 50);
+}
+/** The queue ran dry: a walker still stopped mid-walk (the rest of its walk never came) goes, its real token shows. */
+function idle() {
+  if (!held) for (const id of [...parked.keys()]) unpark(id);
+  try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ }
 }
 const holdChanged = () => { try { window.dispatchEvent(new CustomEvent(FX_HOLD)); } catch { /* */ } };
 /** Run f at performance.now() time t (a timer the queue can move: hurryFx). */
@@ -1320,7 +1397,7 @@ export function hurryFx(ms: number) {
   if (gateUntil > now) gateUntil = Math.max(now, gateUntil - ms);
   if (turnsUntil > now) turnsUntil = Math.max(now, turnsUntil - ms);
   holdChanged();
-  clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { try { window.dispatchEvent(new CustomEvent(FX_IDLE)); } catch { /* */ } }, queueEnd - now + 50);
+  clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, queueEnd - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden), a closed gate and every cut-in with it. */
 export function clearFx() { for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; volley = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); }
