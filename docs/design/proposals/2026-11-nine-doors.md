@@ -821,10 +821,11 @@ Settled:
 3. **Walking costs Momentum:** −1 for each tile you step. Moving with a Link keeps it.
 4. **Being hit costs Momentum:** −1 a hit. A guard skill stops that loss.
 
-Open until Leon answers (the lead's defaults in brackets):
-1. A fight starts at 0 Momentum, so an Opener could never open. [Every fighter starts a fight with 1 Momentum, and an Opener's own movement (Lunge's step, Charge's run) doesn't drain it.]
-2. The variety bonus. [Gone: only Cut gives Momentum.]
-3. Techniques whose text gives Momentum (Ambush's 2, Flurry's one a hit, Shove, Feint and Pull Out "count as a hit", Parry's Light line). [All stop giving it; Ambush costs no Momentum in place of giving 2; Parry's Light line keeps its +1, since it is a guard.]
-4. What counts as a guard skill. [The Guard technique while it is up, a hit you Parried or answered with Riposte, and any Guard points from Durability (section 19).]
-5. The old rule that Momentum falls to 0 after a turn with no attack. [Dropped: the two new drains replace it. Guard's line "your Momentum doesn't drop at the end of this turn" becomes "doesn't drop when you are hit".]
-6. Which moves drain. [A walk, a Sprint and a Disengage, a tile at a time; never a forced move, a Link's move or a technique's own step.]
+Settled with Leon's answers (10 Nov 2026):
+5. **A fight starts with 1 Momentum, and the first Opener of each fight is free of Momentum for everyone.** An Opener's own movement (Lunge's step, Charge's run) doesn't drain it.
+6. **The variety bonus is gone.**
+7. **No technique gives Momentum any more:** Ambush costs none in place of giving 2; Flurry, Shove, Feint and Pull Out stop giving it. Parry's Light line keeps its +1 (a guard).
+8. **Guard skills** (they stop the loss when you are hit): the Guard technique while it is up, a hit you Parried or answered with Riposte, and Guard points from Durability (section 19).
+9. **Shields have their own techniques on the Attack tab**, and all of them work with both Momentum and Guard. To design in Stage 3 with Durability's Guard: a block for a shield in the off hand (the lead drafts a short list: a bash that spends Guard for Momentum, a raise that turns Momentum into Guard, Interpose).
+10. **Momentum carries from turn to turn** as long as you aren't hit: the old rule (0 after a turn with no attack) is dropped. Guard's line "your Momentum doesn't drop at the end of this turn" becomes "doesn't drop when you are hit".
+11. **What drains by walking:** a walk, a Sprint and a Disengage, one a tile; never a forced move, a Link's move or a technique's own step.
