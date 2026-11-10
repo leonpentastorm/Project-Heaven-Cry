@@ -4,7 +4,8 @@ import { describe, it, expect } from 'vitest';
 import { phys, packOf } from '../src';
 import { physFight } from './helpers/physfight';
 
-const MELEE = phys.TECHNIQUES.filter((d) => d.system === 'melee').map((d) => d.id);
+// the techniques a weapon is used with (what a shield or a skill gives is its own: shield-techniques.test.ts)
+const MELEE = phys.TECHNIQUES.filter((d) => d.system === 'melee' && !phys.given(d)).map((d) => d.id);
 /** The 23 the melee lane built (the lead's references are Lunge, Cut, Coup and Riposte). */
 const BUILT_HERE = ['charge', 'feint', 'draw_cut', 'ambush', 'sweep', 'bash', 'sunder', 'flurry', 'hamstring', 'bind', 'half_sword', 'throw',
   'sidestep', 'guard', 'shove', 'trip', 'drag', 'cleave', 'break', 'run_through', 'throw_down', 'parry', 'keep_back'];

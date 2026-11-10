@@ -9,3 +9,4 @@ export * from './ai';
 export { loadQuiverWith, quiverLoader } from './ranged/quiver';
 import './melee/index';
 import './ranged/index';
+import './guard';

@@ -19,7 +19,7 @@
       "II": 6,
       "III": 12
     },
-    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one) and the character's level: rank II needs the attribute at 5 and level 6, rank III the attribute at 8 and level 12 (rules 1.11)",
+    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one) and the character's level: rank II needs the attribute at 5 and level 6, rank III the attribute at 8 and level 12",
     "rank_thresholds_provisional": true,
     "moves": "a rank's move is either written in full (a Revision 3 move) or {\"ref\": \"<origin>.<moveId>\"}: a move from the pool or an advanced class, kept under its old key class:<origin>.<moveId>",
     "advanced": {
@@ -40,7 +40,8 @@
       "hybrid_rule": "a hybrid pairs a base attribute with an attribute of another core",
       "squared_rule": "a squared class pairs a base attribute with itself"
     },
-    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)"
+    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)",
+    "rank_rule_source": "rules 1.11"
   },
   "migration": {
     "from_revision": 2,
@@ -233,7 +234,7 @@
               "name": "Shove",
               "ap_cost": 1,
               "uses": "at_will",
-              "text": "Push an adjacent enemy 1 tile, or knock it Prone. It makes a Body save against 12 + your Body debuff strength.",
+              "text": "Push an adjacent enemy 1 tile, or knock it Prone. It makes a Body save, harder the more Raw Power you have.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -248,7 +249,7 @@
                   "tiles": 1,
                   "target": "target",
                   "save": "body",
-                  "tn": "12+debuff_strength:body",
+                  "tn": "12+strength:raw_power",
                   "alt": "prone"
                 }
               ],
@@ -470,7 +471,7 @@
       "core": "mind",
       "skills": [
         "ingenuity",
-        "proficiency",
+        "analysis",
         "vigilant"
       ],
       "role": "debuff",
@@ -769,7 +770,7 @@
       "core": "mind",
       "skills": [
         "visualization",
-        "analysis",
+        "proficiency",
         "charisma"
       ],
       "role": "debuff",
@@ -2136,7 +2137,7 @@
         "name": "Bind",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "The BIND word costs 1 charge less, and its Body save is against 14 + your debuff strength instead of 12.",
+        "text": "The BIND word costs 1 charge less, and its Body save is 2 harder to make.",
         "effects": [
           {
             "op": "word_cost",
@@ -2246,7 +2247,7 @@
         "name": "Shape",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Your first Pump each turn that would cost AP is free, while the held Outburst is a Damage design (rules 1.5; Empathy's free Pumps go first).",
+        "text": "Your first Pump each turn that would cost AP is free, while the held Outburst is a Damage design (Empathy's free Pumps go first).",
         "effects": [
           {
             "op": "stat_mod",
@@ -2275,7 +2276,7 @@
         "name": "Storm Front",
         "ap_cost": 0,
         "uses": "per_turn",
-        "text": "Once per turn, for +10 MP at Begin: once a Damage Bolt or Lance has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit, at the stage reached, one roll each, with its tone's rider (rules 1.5; area shapes can't take it).",
+        "text": "Once per turn, for +10 MP at Begin: once a Damage Bolt or Lance has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit, at the stage reached, one roll each, with its tone's rider (area shapes can't take it).",
         "effects": [
           {
             "op": "area_mult",
@@ -2308,7 +2309,7 @@
         "name": "Heart Surge",
         "ap_cost": 0,
         "uses": "per_turn",
-        "text": "Once per turn, a toggle on a Release (or a snap cast): it fires one stage higher (past stage 4: x2.6; a snap: stage 1), for double the Strain: the Begin's Strain again once it lands (rules 1.5).",
+        "text": "Once per turn, a toggle on a Release (or a snap cast): it fires one stage higher (past stage 4: x2.6; a snap: stage 1), for double the Strain: the Begin's Strain again once it lands.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2496,7 +2497,7 @@
         "name": "Gift",
         "ap_cost": 0,
         "uses": "per_rest",
-        "text": "Out of combat, hand an ally one of your ready designs. They cast it once for 3 AP (Begin and Release), on your MP and your Strain; it goes off at stage 1 (rules 1.5).",
+        "text": "Out of combat, hand an ally one of your ready designs. They cast it once for 3 AP (Begin and Release), on your MP and your Strain; it goes off at stage 1.",
         "effects": [
           {
             "op": "grant_action",
@@ -4065,7 +4066,7 @@
           "name": "Gauntlet Infusion",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Choose one element at each rest (fire, freeze, shock or spark). Your melee hits deal +10 Elemental damage of it for 5 MP a hit (no Strain) and carry its stage-1 rider, with its effect and sound: Fire sets Burning 1 round on a critical, else +5 more; Shock chains to one enemy next to the target for half; Freeze Slows (Body save); Spark gives +1 AP on a kill (rules 1.5).",
+          "text": "Choose one element at each rest (fire, freeze, shock or spark). Your melee hits deal +10 Elemental damage of it for 5 MP a hit (no Strain) and carry its stage-1 rider, with its effect and sound: Fire sets Burning 1 round on a critical, else +5 more; Shock chains to one enemy next to the target for half; Freeze Slows (Body save); Spark gives +1 AP on a kill.",
           "effects": [
             {
               "op": "damage_mod",
@@ -4099,7 +4100,7 @@
           "name": "Charged by Battle",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Each melee hit you land gives 1 Charge (max 3). Charges fade after combat (rules 1.5: battle, not kills).",
+          "text": "Each melee hit you land gives 1 Charge (max 3). Charges fade after combat (battle, not kills).",
           "effects": [
             {
               "op": "resource",
@@ -4129,7 +4130,7 @@
           "name": "Discharge",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Spend all Charges with a melee hit: everyone adjacent to the target takes 20 Elemental damage per Charge and the infused element's rider at stage N (N = the Charges spent; the Outburst tone table: fire Fire, shock Storm, freeze Frost; spark has none), with full effects and screen shake (rules 1.5).",
+          "text": "Spend all Charges with a melee hit: everyone adjacent to the target takes 20 Elemental damage per Charge and the infused element's rider at stage N (N = the Charges spent; the Outburst tone table: fire Fire, shock Storm, freeze Frost; spark has none), with full effects and screen shake.",
           "effects": [
             {
               "op": "damage_mod",
@@ -4497,7 +4498,7 @@
           "name": "Judgement",
           "ap_cost": 4,
           "uses": "per_combat",
-          "text": "Once per fight, spend 1 Devotion (10 Devotion XP, rules 1.6.1): a melee or scattergun attack dealing damage x (1 + your Blessing power).",
+          "text": "Once per fight, spend 1 Devotion (10 Devotion XP): a melee or scattergun attack dealing damage x (1 + your Blessing power).",
           "effects": [
             {
               "op": "resource",
@@ -4725,7 +4726,7 @@
           "name": "Heart's Own",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "While you Begin or hold a Beloved spell, your Strain limit is 2 higher: the burn and the Mana Short count from it (rules 1.5).",
+          "text": "While you Begin or hold a Beloved spell, your Strain limit is 2 higher: the burn and the Mana Short count from it.",
           "effects": [
             {
               "op": "stat_mod",
@@ -4753,7 +4754,7 @@
           "name": "Love Made Manifest",
           "ap_cost": 0,
           "uses": "per_scene",
-          "text": "Once per combat, a Beloved Outburst Begins at stage 4: the heart full at once (rules 1.5).",
+          "text": "Once per combat, a Beloved Outburst Begins at stage 4: the heart full at once.",
           "effects": [
             {
               "op": "stat_mod",
@@ -5230,7 +5231,7 @@
           "name": "Fed",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Your Outbursts cost 10% less MP per point in their key gauge. While you hold one, spend 1 point of its gauge for a Pump that costs no AP (2 a turn). Releasing it empties that gauge (rules 1.5).",
+          "text": "Your Outbursts cost 10% less MP per point in their key gauge. While you hold one, spend 1 point of its gauge for a Pump that costs no AP (2 a turn). Releasing it empties that gauge.",
           "effects": [
             {
               "op": "emotion_fuel",
@@ -5373,7 +5374,7 @@
           "name": "Share",
           "ap_cost": 0,
           "uses": "reaction",
-          "text": "When a linked ally takes damage, take up to half of it yourself. Strain that would take a linked ally over their limit comes to you instead (as far as your limit allows); Take their Strain (1 AP, once a turn) moves up to 2. Heals you send through a link are x1.25. If a linked ally is Downed, you take 2 Strain (rules 1.5).",
+          "text": "When a linked ally takes damage, take up to half of it yourself. Strain that would take a linked ally over their limit comes to you instead (as far as your limit allows); Take their Strain (1 AP, once a turn) moves up to 2. Heals you send through a link are x1.25. If a linked ally is Downed, you take 2 Strain.",
           "effects": [
             {
               "op": "share_damage",

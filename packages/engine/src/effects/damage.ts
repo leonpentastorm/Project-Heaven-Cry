@@ -43,17 +43,23 @@ export interface DamageResult { dealt: number; shielded: number; killed: boolean
   /** The damage after reductions and the shield (it may be more than the HP it took): what the log reports. */
   amount: number }
 
+/** Read Them: the share of its damage an analysed enemy loses against the other side. */
+export const READ_THEM = 0.15;
 export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !== t.side;
 
 /** Take damage (already past armour) off a unit's HP. */
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
   if (t.dead) return res;
-  const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb };
+  const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb,
+    /** the Guard points the unit had as the hit arrived, before any soak spends them (physical/rules.ts: a guard keeps Momentum) */ guard0: t.res?.guard || 0 };
   // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
   // (−10% × Reaction Speed), each capped at 60%, before items.
   if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));
   if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
+  // Read Them (Acuity 5, rules 1.13; was Weak Point): an enemy the squad has analysed deals 15% less damage to it. The
+  // mark is Unit.weakPoint (Analyze at 5 points, Case Closed, Detective's Eye), whichever side holds it.
+  if (src.by && src.by.weakPoint && src.by.side !== t.side) ctx.dmg = ctx.dmg * (1 - READ_THEM);
   if (cb) { emit(cb, 'damage_in', ctx); }
   ctx.dmg = Math.max(0, Math.floor(ctx.dmg));
   if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
@@ -101,7 +107,7 @@ function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, 
  * actually restored (a Downed unit is brought back up at max(1, n)). */
 export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string): { restored: number; revived: boolean } {
   if (t.dead) return { restored: 0, revived: false };
-  // Healing received: +10% × Sensory (spec: Derived stats).
+  // Healing received: +10% × Camaraderie (rules 1.13).
   const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), kind, cb };
   if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }
   let restored = 0, revived = false;
@@ -113,8 +119,9 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
 }
 /** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
 export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {
-  const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx);
+  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
   const v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? (t.shield || 0) + v : Math.max(t.shield || 0, v);
   if (cb && by && v > 0) tendHook.f?.(cb, by, t);
   return v;
 }
+

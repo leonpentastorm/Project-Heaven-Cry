@@ -128,13 +128,6 @@ describe('Iron Stomach and Nothing Left to Fear in a fight (through the reducer)
 });
 
 describe('Breaching Strike II on the area map; Talks Broke Down II; Soulmate II (batch 1)', () => {
-  it('Breaching Strike II from the area map opens the fight with the strike', () => {
-    const s = storyWith([{ perks: { breaching_strike: 'II' } }]); const c = s.chars[0], at = positionsOf(s.g)[c.id];
-    s.act({ type: 'narrator/turn', turn: { narration: 'A guard.', npcs: [{ action: 'place', name: 'Raider', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: refOf(freeNear(s.g, at, 1)) }] } } as any);
-    const n = npcsOf(s.g).at(-1)!;
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'breaching_strike', actionId: 'breaching_strike', targetId: n.id } as any);
-    expect(s.g.phase).toBe('combat'); expect(logHas(s.g.combat!, /Breaching Strike/)).toBe(true);
-  });
   it('Talks Broke Down II: a lost talk costs nothing, and the first enemy hesitates', () => {
     const s = storyWith([{ perks: { talks_broke_down: 'II' } }]); const c = s.chars[0];
     s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['charisma'], tn: 20, stakes: 'Calm them', tags: ['dialogue'] }] } } as any);

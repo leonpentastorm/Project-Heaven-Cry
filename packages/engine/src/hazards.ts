@@ -7,6 +7,7 @@
 import wpJ from '../../../data/world_play.json';
 import { type Combat, type Unit, hurtUnit, emitFx, dist, refOf } from './combat';
 import { applyCond, unitSave } from './magic';
+import { passiveVigilance } from './character';
 import { type Rng, d20 } from './rng';
 import type { Approach } from './objects';
 
@@ -98,7 +99,7 @@ export function hazardStep(cb: Combat, rng: Rng | undefined, u: Unit, k: string)
 /** After a PC moves: hidden hazards within 2 tiles fall to passive Vigilant (10 + modifier) against their TN. */
 export function spotHazards(cb: Combat, u: Unit) {
   if (u.side !== 'pc' || !cb.hazards?.length) return;
-  const passive = 10 + ((u.vigilant || 0) <= 0 ? -2 : (u.vigilant || 0) - 1);
+  const passive = passiveVigilance(u.vigilant || 0);
   for (const h of cb.hazards) {
     if (!h.hidden) continue;
     const near = h.tiles.some((t) => dist(t, u.pos) <= WP.hazard_spot_range);

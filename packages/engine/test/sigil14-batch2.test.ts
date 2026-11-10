@@ -4,7 +4,7 @@
 // the class-move previews the grid paints. Everything a player does goes through apply() (combat/draw, combat/evoke,
 // combat/perk, combat/attack).
 import { describe, expect, it } from 'vitest';
-import { d20, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
+import { d20, emit, applyCond, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
@@ -93,7 +93,8 @@ describe('gap 16: a Stack fires all around its caster, not around the Stack (ite
 describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-485)', () => {
   it('skill unlocks become items once the points reach them, and are in the coverage report', () => {
     const keys = allItems().filter((i) => i.kind === 'skill').map((i) => i.key);
-    expect(keys).toEqual(['skill:brain_power.3', 'skill:brain_power.5', 'skill:rumination.5', 'skill:visualization.5', 'skill:will_power.3', 'skill:will_power.5']); // rules 1.5: Will Power's two (items 539, 540)
+    expect(keys).toEqual(['skill:brain_power.3', 'skill:brain_power.5', 'skill:rumination.5', 'skill:visualization.5', 'skill:will_power.3', 'skill:will_power.5', // rules 1.5: Will Power's two (items 539, 540)
+      'skill:raw_power.3', 'skill:raw_power.5', 'skill:dexterity.5', 'skill:proficiency.5', 'skill:camaraderie.3', 'skill:composure.5']); // rules 1.13 (perks/skeleton.ts)
     const f = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3, rumination: 4, visualization: 0 } });
     const held = itemsOf(heldOfChar(f.g.characters[f.pc.charId!])).filter((i) => i.kind === 'skill').map((i) => i.key);
     expect(held).toEqual(['skill:brain_power.3']);
@@ -122,15 +123,19 @@ describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-4
     const no = rig(['fire', 'seek'], ['14,9'], { skills: { brain_power: 4 } });
     expect(() => perk(no, 'skill:brain_power.5', 'twin_draw')).toThrow(); // needs Mastery 2
   });
-  it('Proven Formula: a spell whose words match one Evoked earlier this fight costs 1 AP less to Evoke', () => {
+  it('Proven Formula (rules 1.13): no Sigil discount any more; +3 on the save against a condition that has already hit you this fight', () => {
     const f = rig(['spark', 'seek', 'fire'], ['8,5'], { skills: { rumination: 5 } });
     line(f, ['spark', 'seek'], L2); expect(plan(f, '3,5', '8,5').ap).toBe(1);
-    let ap = f.pc.ap; evoke(f, '3,5', '8,5'); expect(ap - f.pc.ap).toBe(1);
-    line(f, ['spark', 'seek'], L2); expect(plan(f, '3,5', '8,5').ap).toBe(0);
-    ap = f.pc.ap; evoke(f, '3,5', '8,5'); expect(ap - f.pc.ap).toBe(0); expect(logHas(f.cb, /Proven Formula: SPARK · SEEK again, 1 AP less/)).toBe(true);
-    line(f, ['fire', 'seek'], L2); expect(plan(f, '3,5', '8,5').ap).toBe(1); // other words: full price
+    evoke(f, '3,5', '8,5');
+    line(f, ['spark', 'seek'], L2); expect(plan(f, '3,5', '8,5').ap).toBe(1); // the same spell again: full price
+    const ask = (id: string) => withGame(f.g, () => emit(f.cb, 'cond_apply', { by: f.foe, t: f.pc, id, fam: 'brain', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: f.cb, rng: f.g.rng })).saveAdd;
+    expect(ask('confused')).toBe(0);
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'confused', 1, undefined, { skipSave: true }));
+    expect(ask('confused')).toBe(3); expect(ask('fear')).toBe(0); // only what has already hit you
+    expect(logHas(f.cb, /Proven Formula/)).toBe(true);
     const no = rig(['spark', 'seek'], ['8,5'], { skills: { rumination: 4 } });
-    line(no, ['spark', 'seek'], L2); evoke(no, '3,5', '8,5'); line(no, ['spark', 'seek'], L2); expect(plan(no, '3,5', '8,5').ap).toBe(1);
+    withGame(no.g, () => applyCond(no.cb, no.g.rng, no.foe, no.pc, 'confused', 1, undefined, { skipSave: true }));
+    expect(withGame(no.g, () => emit(no.cb, 'cond_apply', { by: no.foe, t: no.pc, id: 'confused', fam: 'brain', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: no.cb, rng: no.g.rng })).saveAdd).toBe(0);
   });
   it('Paint the Field: a spell with no Burst gets a free SPREAD or PUSH (no charge, no Flux); a spell with a Burst ignores it', () => {
     const f = rig(['spark', 'seek'], ['8,5', '9,6'], { skills: { visualization: 5 } });

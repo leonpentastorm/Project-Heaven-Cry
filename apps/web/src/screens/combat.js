@@ -2,7 +2,7 @@
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
 import { shellVals } from './shell';
 import { DCLogic } from '../dc/runtime';
-import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss } from './shared';
+import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss, tabNavIndex } from './shared';
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
 import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
@@ -34,6 +34,7 @@ import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, parseTech, padAction, techAction, TWATCH, TPAD, techPreview, TECH_OPTS, techOptOf, previewLines, techPrompt, needsEnemy, needsTile, needsAlly, aimOf, ATTACK_MODES, isAttackMode } from '../game/techView';
 import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
+import { parseCall, callChips, callTile, callTakes, callPrompt, callPreviewOf, callLines, callReach, ORDER_THINGS, orderOpt, orderPicks, orderToggle, orderMax, CL } from '../game/callView';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, pullFreeTargets, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, perkInfoEntries, perkInfoCost, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { prayerView, vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
@@ -200,7 +201,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   window.addEventListener('phc:combat-action', (e) => { const d = (e && e.detail) || {}; if (LIVE && d.action && onScreen()) LIVE.pickAction(d.action, d.unit); });
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
-  // Keys 1–6 flip the action tabs on your turn; a resize refits the grid beside the pinned action column.
+  // Keys 1–9 flip the action tabs on your turn (the row wraps onto a second line when the tabs don't fit); a resize refits the grid beside the pinned action column.
   window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); } });
   // Ctrl or ⌘ with the wheel over the map sizes the map (not the page). Non-passive, so the page zoom is held back there.
   window.addEventListener('wheel', (e) => { if (!LIVE || !onScreen() || !(e.ctrlKey || e.metaKey) || !e.target || typeof e.target.closest !== 'function' || !e.target.closest('.phc-grid-scroll, .phc-mapzoom')) return;
@@ -353,13 +354,13 @@ export class CombatLogic extends DCLogic {
   /** Arrow keys, Home and End inside the tab bar (automatic activation, wrapping). */
   tabKey(e) {
     const ids = this._tabs || [], i = ids.indexOf(this.state.tab), n = ids.length;
-    const j = i < 0 ? -1 : e.key === 'ArrowRight' ? (i + 1) % n : e.key === 'ArrowLeft' ? (i - 1 + n) % n : e.key === 'Home' ? 0 : e.key === 'End' ? n - 1 : -1;
+    const j = tabNavIndex(e, n, i); // the row wraps onto two lines: Left and Right in reading order, Up and Down between the lines
     if (j < 0) return;
     e.preventDefault(); this.setTab(ids[j], true); sfx('tab');
   }
-  /** Number keys 1–6 anywhere on the combat screen, on your turn (1–4 pick the quick commands while the panel is hidden). */
+  /** Number keys 1–9 anywhere on the combat screen, on your turn (1–4 pick the quick commands while the panel is hidden). */
   numKey(e) {
-    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !/^[1-6]$/.test(e.key) || !this._mine) return;
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !/^[1-9]$/.test(e.key) || !this._mine) return;
     if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
     if (PANEL_HIDDEN) {
       const c = (this._quick || [])[Number(e.key) - 1];
@@ -592,6 +593,18 @@ export class CombatLogic extends DCLogic {
     /** The row a picked technique belongs to: its own (the plain attack), its weapon's Techniques row, or Hold a shot. */
     const rowSel = !tsel || tIsPlain ? S.action : tIsWatch ? TWATCH : padAction(tsel.hand);
     this._tech = tsel ? { sel: tsel, tgt: tTgt, ally: tAlly, tile: tTile, pv: tPv, ask: tAsk, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) } : null;
+    // ---------- Calls (the talking skills' actions in a fight; game/callView.ts) ----------
+    // A Call picked on the Calls tab: its target by its aim (an enemy, an ally, or yourself when nobody is picked), the
+    // tile some take (Order's move; Cue's and Warn's named step), Order's things, and the engine's preview of it all.
+    const cId = mineTurn ? parseCall(S.action) : null, cChips = mineTurn ? callChips(g, cb, cur) : [], cChip = cId ? cChips.find((c) => c.id === cId) || null : null;
+    const cOpt = cChip && cId === 'call.order' ? orderOpt(S.callOpt, cChip.step) : '';
+    const cPick = cChip ? (cChip.aim === 'enemy' ? (tgtUnit && callTakes('enemy', cur, tgtUnit) ? tgtUnit : null) : cb.units.find((u) => u.id === S.target && callTakes(cChip.aim, cur, u)) || null) : null;
+    const cTgt = cChip ? cPick || (cChip.aim === 'self-or-ally' ? cur : null) : null;
+    const cTileKind = cChip ? callTile(cId, cChip.step, cOpt) : null, cTile = cTileKind ? S.tile || null : null;
+    const cAsk = cChip ? callPrompt(cChip, { target: cTgt, tile: cTile }, cOpt) : null;
+    const cPv = cChip && cTgt ? callPreviewOf(g, cb, cur, cId, { targetId: cTgt.id, tile: cTile, opt: cOpt }) : null;
+    const cReach = cChip ? callReach(cb, cur, cChip.range) : null;
+    this._call = cChip ? { id: cId, chip: cChip, tgt: cTgt, tile: cTile, tileKind: cTileKind, opt: cOpt, pv: cPv, ask: cAsk } : null;
     const allies = cb.units.filter((u) => u.side === 'pc' && !u.dead && cur && u.id !== cur.id);
     const stimTarget = cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead);
     const covers = coverOf(cb), allObjs = objectsOf(cb).filter((o) => !(o.rig && o.side && o.side !== 'pc')), shootable = (k) => allObjs.some((o) => o.pos === k && o.hp != null && o.hp > 0), doorAt = (k) => allObjs.find((o) => o.pos === k && kindOf(o).door);
@@ -701,10 +714,10 @@ export class CombatLogic extends DCLogic {
       : cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap
       : cur && S.action === RELOAD_TAC ? ((weaponActions(cur).find((x) => x.id === 'reload') || {}).tactical || {}).ap
       : cur && (S.action === 'reload2' || S.action === RELOAD2_TAC) ? reloadBothAp(cur) + (S.action === RELOAD2_TAC ? PILE.tactical_reload_extra_ap : 0) : undefined; // the weapon's own AP (rules 1.9: speed or tactical)
-    const cost = tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' ? PICKUP_AP : S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
+    const cost = cChip ? (cPv && cPv.ap ? cPv.ap : cChip.ap) : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' ? PICKUP_AP : S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
     // Encore (items 729, 737): the selected action repeats the Miracle's named one: the engine lends its AP (previewAttack and
     // the perk previews already count it); the cost shown is what is left to pay, and the panel says it is free.
-    const encoreLend = !mineTurn ? 0 : encoreCredit(cur, tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : pkE ? { type: 'combat/perk', id: pkE.id } : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
+    const encoreLend = !mineTurn ? 0 : encoreCredit(cur, cChip ? { type: 'combat/call', id: cId } : tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : pkE ? { type: 'combat/perk', id: pkE.id } : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
     const condWord = (u) => (u.dead ? 'dead' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'wounded' : 'badly hurt');
@@ -727,12 +740,13 @@ export class CombatLogic extends DCLogic {
     // ---------- the chosen attack's reach in red (as on the area map): where it can land from here, as the engine allows ----------
     const RED_ACTS = [...ATTACK_MODES, 'paired', 'overwatch', 'shove', 'analyze', 'cover'];
     // A technique aimed at an enemy shows its weapon's reach too (melee: its reach; ranged: the range bands).
-    const tSys = tsel && needsEnemy(tId) ? (WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon] && isMelee(WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon]) ? 'melee' : tId === 'aimed' ? 'aimed' : 'shot') : null;
+    const tShield = !!(tsel && tsel.hand === 'off' && !cur.offWeapon && blocks.some((b) => b.shield)); // a shield's technique (Shield Bash): next to you
+    const tSys = tsel && needsEnemy(tId) ? (tShield ? 'melee' : WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon] && isMelee(WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon]) ? 'melee' : tId === 'aimed' ? 'aimed' : 'shot') : null;
     const redOn = !!(mineTurn && w && !isMagic && (RED_ACTS.includes(S.action) || (S.action === 'skill' && skRuns) || !!tSys));
     let red = new Map();
     if (redOn) {
       const mode = tSys ? tSys : S.action === 'skill' ? (skFx.op === 'sweep' ? 'melee' : 'shot') : ['overwatch', 'cover', 'paired', 'analyze'].includes(S.action) ? (melee ? 'melee' : 'shot') : S.action === 'shove' ? 'melee' : S.action;
-      const useW = mode === 'melee' && !melee ? WEAPON.fists : w, isM = mode === 'melee' && S.action !== 'analyze';
+      const useW = (mode === 'melee' && !melee) || tShield ? WEAPON.fists : w, isM = mode === 'melee' && S.action !== 'analyze';
       // Optics only help against units (previewAttack); shooting an object (shootCover) has no optic term: 3 bands flat.
       const mods = cur.mods || [], optic = S.action !== 'cover' && (mods.includes('mod_red_dot') || (mods.includes('mod_scope') && mode === 'aimed')) ? 1 : 0;
       const reachM = S.action === 'shove' || (S.action === 'skill' && skFx.op === 'sweep') ? 1 : (useW.properties || []).includes('reach_2') || useW.id === 'lance' || (useW === w && skFx.op === 'reach') ? (skFx.op === 'reach' && useW === w ? skFx.value : 2) : 1;
@@ -822,7 +836,7 @@ export class CombatLogic extends DCLogic {
       const uPhys = u && seenFoe(u) ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
       const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' && seenFoe(u) ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
       const pileHere = pileReach.some((o) => o.pos === k);
-      const planStyle = inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
+      const planStyle = inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : cReach ? (cReach.has(k) ? (cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : 'background: rgba(231, 235, 243, 0.07); border: 1px dashed rgba(231, 235, 243, 0.5)') : cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : '') : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
       const isHeld = !!(u && fxHeld.has(u.id));
       const known = u && (u.side === 'pc' || u.analyzedBy), hpPct = !u ? 0 : u.dead || u.downed ? 0 : known ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
       const sel = u && tgtUnit && u.id === tgtUnit.id;
@@ -908,7 +922,7 @@ export class CombatLogic extends DCLogic {
     const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!g.sandbox, g }); // the Proving Ground has no Narrator to rule on anything
     const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: items.map(([id, label, costText, text, why]) => ({
       // A move that can't be used now still opens (its footer says why); its reason is on the button too.
-      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { techLine: null, techOpt: null, tile: null } : {}) }); },
+      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { techLine: null, techOpt: null, tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
         (why && rowSel !== id ? 'opacity: 0.62; ' : '') + (rowSel === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
@@ -1002,6 +1016,14 @@ export class CombatLogic extends DCLogic {
       sel.text = tAsk ? tAsk + (tChip ? ' ' + tChip.help : '') : tPv && !tPv.ok ? (tPv.why || 'Not now.') : [...L.odds, ...L.notes].join(' · ') || (tChip ? tChip.help : '');
       sel.extra = tAsk ? '' : [...L.meters, ...L.saves].join(' · '); // (while asking for a pick, the engine's "Name a tile." says the same)
     }
+    // A Call: its name, cost and reach; what to pick next; then the engine's preview: its notes, the save and its TN.
+    if (cChip) {
+      const L = callLines(cb, cPv), who = cTgt ? (cTgt.id === cur.id ? 'To yourself. ' : 'To ' + cTgt.name + '. ') : '';
+      sel.name = cChip.name + ' · ' + cChip.apText + ' · within ' + cChip.reach;
+      sel.text = !cChip.ok ? cChip.why + ' ' + cChip.text : cAsk ? cAsk + ' ' + cChip.text : cPv && !cPv.ok ? who + (cPv.why || 'Not now.') : who + (L.notes.join(' ') || cChip.text);
+      const may = cTileKind === 'may' && !cTile ? (cId === 'call.cue' ? 'You may also click a free tile next to them: they step there.' : 'You may also click the tile they step to.') : cTile ? 'Tile ' + refOf(cTile) + '.' : '';
+      sel.extra = [L.save || cChip.save, L.gives, may, cChip.skillName + ' · step ' + cChip.step + ' of 3'].filter(Boolean).join(' · ');
+    }
     if (tpadOpen) {
       const n = tpadOpen.kind === 'watch' ? 'Hold a shot' : 'Techniques · ' + ((blocks.find((b) => b.hand === tpadOpen.hand) || {}).name || '');
       sel.name = n; sel.text = 'Pick one in the pad (arrow keys move, Enter picks), then its target on the map.'; sel.extra = '';
@@ -1017,6 +1039,11 @@ export class CombatLogic extends DCLogic {
     if (tsel && tChip && tChip.choices.length > 1) sel.toggles = [...sel.toggles, ...tChip.choices.map((c, i) => { const on = (S.techLine || tChip.choices[0].prop) === c.prop;
       return { key: 'line-' + c.prop, label: c.prop.toUpperCase() + (on ? ' ✓' : ''), pressed: on ? 'true' : 'false', title: c.text, off: false, pick: () => this.setState({ techLine: i === 0 && !S.techLine ? null : c.prop }),
         style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') }; })];
+    // Order's things: reload, stand up, pick up, and move from 3 points; one thing, two at 7 points.
+    if (cChip && cId === 'call.order') { const picks = orderPicks(S.callOpt, cChip.step); sel.toggles = [...sel.toggles, ...ORDER_THINGS.map(([id, label, title, at]) => { const on = picks.includes(id), locked = cChip.step < at;
+      return { key: 'order-' + id, label: label + (on ? ' ✓' : ''), pressed: on ? 'true' : 'false', title: locked ? 'From 3 points of ' + cChip.skillName + '.' : title + (orderMax(cChip.step) > 1 ? ' Two things an Order.' : ' One thing an Order (two from 7 points).'), off: locked,
+        pick: () => this.setState({ callOpt: orderToggle(this.state.callOpt, id, cChip.step), tile: null }),
+        style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (locked ? '; opacity: 0.45' : '') }; })]; }
     sel.hasToggles = sel.toggles.length > 0;
     // The target's face exactly as its token draws it (an art library name resolved, never the raw id: a raw id was a
     // broken image on a black square), else its initials in the token's red frame.
@@ -1135,15 +1162,15 @@ export class CombatLogic extends DCLogic {
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
     // The technique pad (a weapon's Techniques, or Hold a shot): opens inside its row, as the glyph keyboard does; one at
     // a time. A chip picks the technique and closes the pad to the selected card; a greyed chip still says why.
-    const padTV = padView(blocks, tpadOpen, null), CHIP = (c) => 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 6px; align-items: baseline; min-height: 44px; padding: 5px 8px; border-radius: 8px; text-align: left; font-family: inherit; cursor: ' + (c.ok ? 'pointer' : 'default') + '; '
-      + (c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1');
+    const padTV = padView(blocks, tpadOpen, null), CHIP = (c) => 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 6px; align-items: baseline; min-height: 44px; padding: 5px 8px; border-radius: 8px; text-align: left; font-family: inherit; cursor: ' + (c.ok && !c.reaction ? 'pointer' : 'default') + '; '
+      + (c.reaction ? 'border: 1px dotted ' + (c.ok ? '#7F8BA1' : '#2E3A50') + '; background: transparent; color: ' + (c.ok ? '#C9D3E3' : '#7F8BA1') : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1');
     const pt = this.pres('padT', padTV ? { ...padTV, groups: padTV.groups.map((gr) => ({ ...gr, chips: gr.chips.map((c) => ({ ...c, style: CHIP(c), disabled: c.ok ? 'false' : 'true', hasWhy: !c.ok, hasLine: !!c.line, hasMark: !!c.mark, hasRounds: !!c.rounds,
-      aria: c.name + ', ' + c.apText + (c.rounds ? ', ' + c.rounds : '') + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')) + (c.markTitle ? '. ' + c.markTitle : ''), onKey: glyphKeyNav,
-      pick: () => { if (!c.ok) return toast(c.why); sfx('toggle'); this.setState({ action: c.action, techLine: null, techOpt: null, tile: null, target: needsAlly(c.id) ? null : this.state.target }); this.revealAction(); } })) })) } : null);
+      reaction: c.reaction ? 'true' : 'false', aria: c.name + ', ' + (c.reaction ? 'a reaction' : c.apText) + (c.rounds ? ', ' + c.rounds : '') + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')) + (c.markTitle ? '. ' + c.markTitle : ''), onKey: glyphKeyNav,
+      pick: () => { if (c.reaction) return toast(c.name + ' is a reaction: it happens by itself. ' + (c.why || c.help)); if (!c.ok) return toast(c.why); sfx('toggle'); this.setState({ action: c.action, techLine: null, techOpt: null, tile: null, target: needsAlly(c.id) ? null : this.state.target }); this.revealAction(); } })) })) } : null);
     // A reload row the engine refuses (already full, no spare, AP short) can be read but not confirmed (review fix: a
     // full magazine was dropped for 2 AP, or put back for 3).
     const reloadWhy = ['reload', RELOAD_TAC, 'reload2', RELOAD2_TAC].includes(S.action) ? ((ITEMS.flatMap((gr) => gr[1]).find((it) => it[0] === S.action) || [])[4] || '') : '';
-    const cantConfirm = !!tpadOpen || (tsel ? !tPv || !tPv.ok || !!tAsk : false) || isPerkInfo(S.action) || !!reloadWhy || !mineTurn || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && (!pickSel || !!pickWhy)) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && !readSel && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
+    const cantConfirm = !!tpadOpen || (cId ? !cChip || !cChip.ok || !cPv || !cPv.ok || !!cAsk : false) || (tsel ? !tPv || !tPv.ok || !!tAsk : false) || isPerkInfo(S.action) || !!reloadWhy || !mineTurn || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && (!pickSel || !!pickWhy)) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && !readSel && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
     const costNet = Math.max(0, cost - encoreLend);
     const apNow = mineTurn ? (ap - costNet < 0 ? 'needs ' + costNet + ' · ' + ap + ' left' : Math.round((ap - costNet) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur && seenFoe(cur), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
@@ -1163,8 +1190,8 @@ export class CombatLogic extends DCLogic {
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));
     if (tsel && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
     // Each weapon block's header (on its plain attack's row): the weapon's icon and name, and its meter.
-    const headOf = {}; blocks.forEach((b) => { if (!b.plain && b.hand !== 'both') return; headOf[b.hand === 'both' ? 'paired' : techAction(b.hand, b.plain.id)] = { hand: b.hand, name: b.name.toUpperCase() + (b.hand === 'both' ? '' : blocks.length > 1 ? ' · ' + (b.hand === 'main' ? 'MAIN HAND' : 'OFF HAND') : ''), icon: b.icon, hasIcon: !!b.icon,
-      meter: b.meter, hint: b.meterHint, hasHint: !!b.meterHint, pips: b.pips.map((p) => ({ key: p.key, on: p.on ? 'true' : 'false', style: 'width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); ' + (p.on ? 'background: #F68A38' : 'border: 1px solid #5B6577') })), hasPips: b.pips.length > 0 }; });
+    const headOf = {}; blocks.forEach((b) => { if (!b.plain && b.hand !== 'both' && !b.shield) return; headOf[b.hand === 'both' ? 'paired' : b.plain ? techAction(b.hand, b.plain.id) : padAction(b.hand)] = { hand: b.hand, name: b.name.toUpperCase() + (b.hand === 'both' ? '' : blocks.length > 1 ? ' · ' + (b.hand === 'main' ? 'MAIN HAND' : 'OFF HAND') : ''), icon: b.icon, hasIcon: !!b.icon,
+      meter: b.meter, hint: b.meterHint, hasHint: !!b.meterHint, pips: b.pips.map((p) => ({ key: p.key, on: p.on ? 'true' : 'false', style: b.meterKind === 'guard' ? 'width: 8px; height: 11px; border-radius: 2px 2px 5px 5px; box-sizing: border-box; ' + (p.on ? 'background: #E7EBF3' : 'border: 1px solid #5B6577') : 'width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); ' + (p.on ? 'background: #F68A38' : 'border: 1px solid #5B6577') })), hasPips: b.pips.length > 0, pipKind: b.meterKind || '' }; });
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
       const seenHostile = foes.some((u) => !u.downed && vis.seen.has(u.id));
@@ -1186,22 +1213,30 @@ export class CombatLogic extends DCLogic {
       // The number is usable actions only: the Perks tab's read-only rows (pki:, used from another action's chip or
       // automatic) are counted apart, so "PERKS 3" never means three Confirms.
       const n = gr.items.filter((a) => !isPerkInfo(a.key)).length, rd = gr.items.length - n, acts = n + (n === 1 ? ' action' : ' actions') + (rd ? ', ' + rd + ' to read' : '');
-      return { key: gr.id, id: 'phc-tab-' + gr.id, name: TAB_NAME[gr.id] || gr.name, icon: gr.id === 'class' && klass ? klass.icon : '', count: n, num: i < 6 ? String(i + 1) : '', selected: on ? 'true' : 'false', tabindex: on ? '0' : '-1',
-        label: (TAB_NAME[gr.id] || gr.name) + ', ' + acts + (holds ? ', holds your chosen action' : ''), keys: i < 6 ? String(i + 1) : undefined,
-        title: gr.name + ' · ' + acts + (i < 6 ? ' · key ' + (i + 1) : ''),
+      return { key: gr.id, id: 'phc-tab-' + gr.id, name: TAB_NAME[gr.id] || gr.name, icon: gr.id === 'class' && klass ? klass.icon : '', count: n, num: i < 9 ? String(i + 1) : '', selected: on ? 'true' : 'false', tabindex: on ? '0' : '-1',
+        label: (TAB_NAME[gr.id] || gr.name) + ', ' + acts + (holds ? ', holds your chosen action' : ''), keys: i < 9 ? String(i + 1) : undefined,
+        title: gr.name + ' · ' + acts + (i < 9 ? ' · key ' + (i + 1) : ''),
         pick: () => this.setTab(gr.id), onKey: (e) => this.tabKey(e), holds,
         // Each tab wears its family's ink: full when open, a faint underline when not (with the word, never colour alone).
-        style: 'position: relative; flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 38px; padding: 0 5px; border: 0; border-bottom: 2px solid ' + (on ? ink : ink + '55') + '; border-radius: 8px 8px 0 0; background: ' + (on ? '#1C2536' : 'transparent') + '; color: ' + (on ? ink : '#A3AEC2') + '; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; cursor: pointer',
+        style: 'position: relative; flex: 1 0 auto; min-width: 0; max-width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 36px; padding: 0 9px; border: 0; border-bottom: 2px solid ' + (on ? ink : ink + '55') + '; border-radius: 8px 8px 0 0; background: ' + (on ? '#1C2536' : 'transparent') + '; color: ' + (on ? ink : '#A3AEC2') + '; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; cursor: pointer',
         countStyle: 'flex: none; min-width: 15px; padding: 0 4px; border-radius: 999px; font-size: 9.5px; line-height: 15px; letter-spacing: 0; text-align: center; ' + (on ? 'background: ' + ink + '; color: #0A0D13' : 'background: #1C2536; color: #C9D3E3'),
         numStyle: 'position: absolute; left: 4px; top: 2px; font-size: 9px; font-weight: 600; letter-spacing: 0; color: ' + (on ? '#A3AEC2' : '#5D6A80'),
         holdStyle: 'position: absolute; right: 4px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF' };
     });
+    // The Calls tab's rows are chips (as the technique pad's): the Call, its AP and reach, the text of the step the
+    // speaker has, its save and TN; greyed with the engine's reason when it can't be made now.
+    const callRow = (a) => { const c = a.key.startsWith(CL) ? cChips.find((x) => x.action === a.key) : null; if (!c) return { isCall: false, notCall: true, call: null };
+      const on = a.pressed === 'true';
+      return { isCall: true, notCall: false, call: { ...c, hasWhy: !c.ok, hasSave: !!c.save, disabled: c.ok ? 'false' : 'true', meta: c.apText + ' · ' + c.reach, to: 'TO ' + c.aimWord.toUpperCase() + ' · ' + c.skillName.toUpperCase() + ' · ' + c.stepText,
+        aria: c.name + ', ' + c.apText + ', within ' + c.reach + ', to ' + c.aimWord + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')),
+        style: 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; min-height: 44px; padding: 7px 10px; border-radius: 8px; text-align: left; font-family: inherit; cursor: pointer; '
+          + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #E7EBF3' : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1') } }; };
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
-      items: tabG.items.filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+      items: tabG.items.filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
     const holdUntil = mineTurn && typeof performance !== 'undefined' ? turnsBusyUntil() : 0, holding = holdUntil > performance.now();
@@ -1323,6 +1358,13 @@ export class CombatLogic extends DCLogic {
       if (needsTile(tq.id)) return this.setState({ tile: k });
       return;
     }
+    // A Call takes the click by its aim: an enemy, an ally or yourself; an empty tile where the Call takes one.
+    const cl = this._call;
+    if (cl && cur && parseCall(S.action)) {
+      if (u && callTakes(cl.chip.aim, cur, u)) return this.setState({ target: u.id === cur.id ? null : u.id, tile: null, readTile: null });
+      if (!u && cl.tileKind) return this.setState({ tile: S.tile === k ? null : k });
+      return;
+    }
     // With a pad open, a foe clicked is the target the technique will take (the pad stays open).
     if (padOf(S.action) && u && u.side === 'foe') return this.setState({ target: u.id });
     if (u && u.side === 'foe') { const a = [...ATTACK_MODES, 'shove', 'analyze', 'skill', 'paired'].includes(S.action) ? S.action : plainAction(cur); this.setState({ target: u.id, readTile: null, action: a, ...this.tabFor(a) }); return; }
@@ -1367,6 +1409,11 @@ export class CombatLogic extends DCLogic {
     // Physical 2.0: a pad row runs nothing (pick a technique first); a technique sends combat/technique with what was
     // picked, and never falls through to a plain attack below (code map, trap 1).
     if (padOf(a)) return;
+    if (parseCall(a)) {
+      const c = this._call; if (!cur || !c || !c.chip.ok || !c.tgt || !c.pv || !c.pv.ok || c.ask) return;
+      act({ type: 'combat/call', unitId: cur.id, id: c.id, targetId: c.tgt.id, ...(c.tile ? { tile: c.tile } : {}), ...(c.opt ? { opt: c.opt } : {}) });
+      return this.setState({ tile: null });
+    }
     const tq = parseTech(a);
     if (tq) {
       const t = this._tech; if (!cur || !t || !t.pv || !t.pv.ok || t.ask) return;

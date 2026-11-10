@@ -150,7 +150,7 @@
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "+1 Defense. Parry (reaction): +3 Defense against one melee attack.",
+      "text": "+1 Defense. Parry (reaction): +3 Defense against one melee attack. A shield: it brings Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
       "slot": "off_hand",
       "effects": [
         {
@@ -158,7 +158,12 @@
           "value": 1
         }
       ],
-      "durability": 150
+      "durability": 150,
+      "phys": {
+        "props": [
+          "shield"
+        ]
+      }
     },
     {
       "id": "riot_shield",
@@ -168,7 +173,7 @@
       "price_credits": 700,
       "adjudication": "engine",
       "provisional": true,
-      "text": "+2 Defense; you count as behind half cover against shots from the front. −0.5 Movement. Shield Wall: an adjacent ally behind you counts as behind half cover.",
+      "text": "+2 Defense; you count as behind half cover against shots from the front. −0.5 Movement. A shield: it brings Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
       "slot": "off_hand",
       "effects": [
         {
@@ -181,7 +186,12 @@
         }
       ],
       "durability": 150,
-      "hp": 60
+      "hp": 60,
+      "phys": {
+        "props": [
+          "shield"
+        ]
+      }
     },
     {
       "id": "pavise",

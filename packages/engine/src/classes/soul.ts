@@ -52,17 +52,17 @@ export function schoolRider(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t:
   if (school === 'buff') {
     if (t.side !== u.side) return '';
     const o = option || 'heal';
-    return (o === 'defense' ? applyCond(cb, rng, u, t, 'guarded', rounds(2)) : o === 'hit' ? applyCond(cb, rng, u, t, 'inspired', rounds(2)) : heal(t, 30 * m.healMult * sm * f, cb, u)).replace(/^ · /, '');
+    return (o === 'defense' ? applyCond(cb, rng, u, t, 'guarded', rounds(2), undefined, { via: 'will_power' }) : o === 'hit' ? applyCond(cb, rng, u, t, 'inspired', rounds(2), undefined, { via: 'will_power' }) : heal(t, 30 * m.healMult * sm * f, cb, u)).replace(/^ · /, '');
   }
   if (t === u) return '';
   if (school === 'control') {
     const o = option || 'push';
     if (o === 'push' || o === 'pull') { const n = Math.max(1, Math.floor(3 * f)); return magicShove(cb, t, u.pos, o === 'push' ? n : -n, u).replace(/^ · /, '') || t.name + ' can\'t be moved'; }
-    return applyCond(cb, rng, u, t, o === 'pinned' ? 'pinned' : 'slowed', rounds(2)).replace(/^ · /, '');
+    return applyCond(cb, rng, u, t, o === 'pinned' ? 'pinned' : 'slowed', rounds(2), undefined, { via: 'will_power' }).replace(/^ · /, '');
   }
   if (school === 'status') {
     const o = option || 'shaken', id = o === 'left_brain_debuff' ? 'ldebuff' : o === 'right_brain_debuff' ? 'rdebuff' : o;
-    return applyCond(cb, rng, u, t, id, rounds(2), (d.modules || []).includes('left') ? 'brain' : (d.modules || []).includes('right') ? 'heart' : undefined).replace(/^ · /, '');
+    return applyCond(cb, rng, u, t, id, rounds(2), (d.modules || []).includes('left') ? 'brain' : (d.modules || []).includes('right') ? 'heart' : undefined, { via: 'will_power' }).replace(/^ · /, '');
   }
   return '';
 }

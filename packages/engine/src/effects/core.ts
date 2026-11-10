@@ -6,7 +6,7 @@
 //
 // Inside an action (an active item's own effects), a few ops run generically when the action runs: cleanse, shield,
 // heal, condition, knockback, Echo. See run()/runs().
-import { SKILL, SKILLS } from '../data';
+import { SKILL, SKILLS, PERK } from '../data';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { Holder, ItemInfo } from './types';
@@ -213,7 +213,8 @@ registerGeneric({
 });
 registerGeneric({
   op: 'condition', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && isCondition(e.condition || e.id) && !e.choose,
-  run: (h, e, args, rng) => { const t = targetUnit(h, e, args); if (!t || !h.cb) return null; return applyCond(h.cb, rng, h.u || null, t, e.condition || e.id, typeof e.rounds === 'number' ? e.rounds : undefined) || null; },
+  // the source skill (rules 1.13): a perk's first skill, a skill's own unlock; anything else reads the call it runs inside
+  run: (h, e, args, rng) => { const t = targetUnit(h, e, args); if (!t || !h.cb) return null; const via = h.kind === 'perk' ? (PERK[h.itemId] as any)?.skills?.[0] : h.kind === 'skill' ? h.itemId : undefined; return applyCond(h.cb, rng, h.u || null, t, e.condition || e.id, typeof e.rounds === 'number' ? e.rounds : undefined, undefined, via && SKILL[via] ? { via } : {}) || null; },
 });
 registerGeneric({
   op: 'knockback', claim: () => false, runs: (e) => actPlain(e) && T_OK(e),

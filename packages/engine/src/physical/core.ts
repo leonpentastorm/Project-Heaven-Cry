@@ -2,20 +2,21 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, heatLimit } from '../combat';
-import { WEAPON } from '../data';
-import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
+import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced } from '../combat';
+import { WEAPON, ITEM } from '../data';
+import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
+import { actionAp } from '../effects/core';
 import type { HookName } from '../effects/types';
-import { applyCond, condOn, unitSave } from '../magic';
-import { resOf, resGain, canReact, useReaction } from '../tactics';
+import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
+import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
 import { d20, type Rng } from '../rng';
 import { mod } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
-import { TECHNIQUE, TECHNIQUES, PHYS_RULES, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
+import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 
 // ---------- the registry ----------
@@ -62,9 +63,43 @@ export const techState = (u: Unit, id: string): Record<string, any> => ((u.tech 
 /** The same, for reading: nothing is created. */
 export const techStateOf = (u: Unit, id: string): Record<string, any> => u.tech?.[id] || {};
 
+// ---------- a shield in the off hand, and Guard (rules 1.13: Durability's door) ----------
+/** The shield a unit holds in its off hand: an item with the Shield property (items.json `phys.props`), or null. The
+ * unit carries what its off hand holds when that isn't a weapon as `u.offItem` (combat.ts unitFromCharacter). */
+export const shieldOf = (u: Unit): string | null => { const id = u.offItem; return id && (((ITEM as any)[id]?.phys?.props as string[]) || []).includes('shield') ? id : null; };
+/** A shield's techniques strike with the bare hand behind it: this is the weapon they are worked out with. */
+const SHIELD_HAND = 'fists';
+/** What the off hand holds for a technique: its weapon, else (a shield) the bare hand behind it, else nothing. */
+const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) ? SHIELD_HAND : null);
+/** Is the off hand a shield's (no weapon in it)? */
+const shieldHand = (u: Unit, hand: 'main' | 'off') => hand === 'off' && !u.offWeapon && !!shieldOf(u);
+/** A unit's points in a skill: its character's now, else what the unit was built with (a stat block may give them). */
+export const unitSkill = (u: Unit, skill: string): number => { const c = u.companion ? null : charOfUnit(u); return (c ? (c.skills as any)?.[skill] : (u as any)[skill]) || 0; };
+const GR = () => PHYS_RULES.guard || {};
+export const guardOf = (u: Unit) => resOf(u, 'guard');
+export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
+/** What gives this unit Guard, and how much (0 for a unit with no Guard pool; the pool's size cuts it). The Guard
+ * technique scales: 1, +1 for each Durability point above 1, +1 with a shield in the off hand. The Brace action is
+ * flat: 2, 3 with a shield (the lead's tuning, 10 Nov 2026; provisional, rules.guard brace_gain / brace_shield_gain). */
+export function guardGain(u: Unit, by: 'guard' | 'brace' = 'guard'): number {
+  if (u.resMax?.guard == null) return 0;
+  const g = GR(); if (by === 'brace') return (g.brace_gain ?? 2) + (shieldOf(u) ? g.brace_shield_gain ?? 1 : 0);
+  return (g.gain_base ?? 1) + Math.max(0, unitSkill(u, 'durability') - 1) * (g.gain_per_point ?? 1) + (shieldOf(u) ? g.shield_gain ?? 1 : 0);
+}
+function guardFx(cb: Combat, u: Unit, was: number) { const now = guardOf(u); if (now !== was) emitFx(cb, 'guard', { unit: u.id, at: u.pos, now, was, max: guardMax(u) }); }
+/** Add Guard to a unit, up to its pool. Returns what it gained. */
+export function addGuard(cb: Combat, u: Unit, n: number): number { const was = guardOf(u), got = resGain(u, 'guard', Math.max(0, n)); guardFx(cb, u, was); return got; }
+/** Spend Guard. False (nothing spent) when the unit holds less. */
+export function spendGuard(cb: Combat, u: Unit, n: number): boolean { const was = guardOf(u); if (n <= 0) return true; if (!resSpend(u, 'guard', n)) return false; guardFx(cb, u, was); return true; }
+/** The Guard a technique costs to use (its own `numbers.guard_cost`: Shield Bash). An Answer spends its own as it fires. */
+export const guardCost = (def: TechDef): number => (def.group === 'answer' ? 0 : Number((def.numbers as any)?.guard_cost) || 0);
+/** Does the unit hold this item (a class move, a perk, a trait), by its key ('class:defender.brace')? */
+export const holds = (u: Unit, key: string): boolean => holdersOf({ u }).some((h) => h.key === key);
+
 // ---------- Momentum (the melee meter) ----------
-const holdsMelee = (u: Unit) => weaponSystem(u.weapon) === 'melee' || (!!u.offWeapon && weaponSystem(u.offWeapon) === 'melee');
-/** Every unit with a melee weapon in a hand has Momentum (cap 3; a class that lists Momentum keeps its own cap). */
+const holdsMelee = (u: Unit) => weaponSystem(u.weapon) === 'melee' || (!!u.offWeapon && weaponSystem(u.offWeapon) === 'melee') || !!shieldOf(u);
+/** Every unit with a melee weapon in a hand has Momentum (cap 3; a class that lists Momentum keeps its own cap). A
+ * shield in the off hand counts: its techniques run on Momentum and Guard, whatever the main hand holds. */
 export function ensureMomentum(u: Unit): void {
   if (!holdsMelee(u)) return;
   const rm = (u.resMax ||= {}), r = (u.res ||= {});
@@ -77,22 +112,38 @@ export function spendMomentum(t: Tech): number {
   const n = momentumOf(t.u); if (t.preview) { t.pv.momentum = { now: n, after: 0 }; return n; }
   if (t.u.res) t.u.res.momentum = 0; momentumFx(t.cb, t.u, n); return n;
 }
-/** A technique that worked without a damaging strike (Feint, a Link), or extra Momentum: +n, and the variety bonus once
- * per technique when it differs from the last one used this turn. */
+/** Momentum a technique gives by its own text: +n. Since the Momentum rework (Leon, 10 Nov 2026) only the plain attack
+ * gives Momentum (the engine's +1 for its hit); of the techniques, Parry's Light line and Shield Bash's hit (it pays
+ * Guard for it: proposal section 20, item 9) alone still call this. */
 export function landed(t: Tech, n = 1): number {
   if (t.def.system !== 'melee') return 0;
-  const was = momentumOf(t.u), bonus = varietyBonus(t);
-  if (t.preview) { const max = t.u.resMax?.momentum ?? PHYS_RULES.momentum.max; t.pv.momentum = { now: t.pv.momentum?.now ?? was, after: Math.min(max, (t.pv.momentum?.after ?? was) + n + bonus) }; return n + bonus; }
-  ensureMomentum(t.u); const got = resGain(t.u, 'momentum', n + bonus); momentumFx(t.cb, t.u, was); return got;
+  const was = momentumOf(t.u);
+  if (t.preview) { const max = t.u.resMax?.momentum ?? PHYS_RULES.momentum.max; t.pv.momentum = { now: t.pv.momentum?.now ?? was, after: Math.min(max, (t.pv.momentum?.after ?? was) + n) }; return n; }
+  ensureMomentum(t.u); const got = resGain(t.u, 'momentum', n); momentumFx(t.cb, t.u, was); return got;
 }
-/** +1 the first time this technique earns Momentum, if it isn't the technique the user used last this turn. The first
- * melee technique of a turn earns none (there is no last one). */
-function varietyBonus(t: Tech): number {
-  const st = scratch(t); if (st.variety) return 0; st.variety = true;
-  const ch = chainOf(t.cb, t.u); return ch.last && ch.last !== t.def.id ? PHYS_RULES.momentum.variety_bonus : 0;
+/** The plain melee attack: the one technique whose hit gives Momentum (Cut, with any melee weapon, fists included). */
+export const isPlainMelee = (def: TechDef) => def.system === 'melee' && def.id === 'cut';
+/** What using this technique costs in Momentum (the rework, Leon, 10 Nov 2026): a Strike and an Opener 1 each. The
+ * free techniques (Cut, Pull Out) cost none; a technique's own `numbers.momentum_cost` says otherwise (Ambush: 0); the
+ * first Opener a unit uses in a fight is free; the off-hand half of a both-hands technique was paid for by the main
+ * hand. Links and Answers cost none; a Finisher has its own rule (it needs 2 and spends all). */
+export function momentumCost(u: Unit, def: TechDef, args?: TechArgs): number {
+  const R = PHYS_RULES.momentum;
+  if (def.system !== 'melee' || def.free || (def.group !== 'strike' && def.group !== 'opener')) return 0;
+  if ((args as any)?._pair?.second) return 0;
+  const own = (def.numbers as any)?.momentum_cost; if (typeof own === 'number') return own;
+  if (def.group === 'opener') return R.first_opener_free && !u.openerUsed ? 0 : R.opener_cost ?? 1;
+  return R.strike_cost ?? 1;
 }
-/** Guard: Momentum doesn't drop at the end of this turn. */
-export function holdMomentum(t: Tech): void { if (!t.preview) t.u.attackedTurn = true; }
+/** Momentum lost to something that happened to the unit (a tile walked, a hit taken): −n, never below 0. The meter's
+ * own effects event shows it; the log says nothing (a walk's line stays one line). */
+export function loseMomentum(cb: Combat, u: Unit, n: number): number {
+  const was = momentumOf(u), take = Math.min(was, Math.max(0, n)); if (!take || !u.res) return 0;
+  u.res.momentum = was - take; momentumFx(cb, u, was);
+  return take;
+}
+/** Is the Guard technique up on this unit (melee/links.ts keeps its state)? A guard keeps Momentum when you are hit. */
+export const guardUp = (u: Unit): boolean => !!u.tech?.guard?.on;
 
 /** Scratch notes for one use of a technique (never saved). */
 const scratch = (t: Tech): Record<string, any> => (t as any)._s || ((t as any)._s = {});
@@ -114,7 +165,7 @@ export const offHome = (def: TechDef, weaponId: string) => def.particular && !de
 export function linesFor(def: TechDef, weaponId: string, choice?: string, u?: Unit | null): { main: TechLine | null; stack: TechLine[]; choices: TechLine[] } {
   if (offHome(def, weaponId)) return { main: null, stack: [], choices: [] };
   // a line marked when: 'braced' applies only to a user who is Braced, Prone or Emplaced (asked with a unit)
-  const met = (l: TechLine) => !u || l.when !== 'braced' || !!u.braced || !!u.prone || condOn(u, 'emplaced');
+  const met = (l: TechLine) => !u || l.when !== 'braced' || weaponBraced(u) || !!u.prone || condOn(u, 'emplaced');
   const props = weaponProps(weaponId), all = def.lines.filter((l) => lineMatches(props, l) && met(l));
   const bonus = all.filter((l) => !l.stack), stack = all.filter((l) => l.stack);
   const main = bonus.find((l) => choice && l.props.includes(choice)) || bonus[0] || null;
@@ -122,8 +173,8 @@ export function linesFor(def: TechDef, weaponId: string, choice?: string, u?: Un
 }
 function newPreview(def: TechDef): TechPreview { return { ok: true, why: null, id: def.id, ap: 0, rounds: 0, attacks: [], notes: [] }; }
 function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, preview: boolean): Tech {
-  const hand: 'main' | 'off' = args.hand === 'off' && u.offWeapon ? 'off' : 'main';
-  const weaponId = hand === 'off' ? u.offWeapon! : u.weapon, w = WEAPON[weaponId] || WEAPON.fists, props = weaponProps(weaponId), off = offHome(def, weaponId);
+  const hand: 'main' | 'off' = args.hand === 'off' && offHeld(u) ? 'off' : 'main';
+  const weaponId = hand === 'off' ? offHeld(u)! : u.weapon, w = WEAPON[weaponId] || WEAPON.fists, props = shieldHand(u, hand) ? ['shield'] : weaponProps(weaponId), off = offHome(def, weaponId);
   const lf = linesFor(def, weaponId, args.line, u), applying = [lf.main, ...lf.stack].filter(Boolean) as TechLine[];
   const tgt = args.targetId ? cb.units.find((x) => x.id === args.targetId) || null : null;
   const pv = newPreview(def);
@@ -151,23 +202,27 @@ export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?:
   const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));
 }
+const AP_BY_NAME = new Set(['shove', 'break']);
 /** A technique's AP for this unit now: its own cost, then what the unit's items do to an attack's AP (Southern Fist's
  * +1 with a weapon, Fire Discipline's first burst), asked the way the engine's own attacks ask ('attack_preview' with
  * the cost and a mode). Weapon-priced techniques ask as a melee strike or a shot; a flat one asks only when the data
  * names a mode (`ap.mode`: aimed, burst, auto). The main hand only: the items read the weapon in it. */
 export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', choice?: string, tgt?: Unit | null): number {
-  const weaponId = hand === 'off' && u.offWeapon ? u.offWeapon : u.weapon, own = techniqueAp(def, weaponId, choice, u);
+  const weaponId = hand === 'off' && offHeld(u) ? offHeld(u)! : u.weapon, own0 = techniqueAp(def, weaponId, choice, u);
+  // the techniques a perk prices by name (Siege Engine: Shove and Break 1 AP less, never below 1): the old actions' path
+  const own = AP_BY_NAME.has(def.id) ? actionAp({ u }, def.id, own0).ap : own0;
   const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
   if (!mode || hand === 'off' || def.ap.base === 'reaction') return own;
-  const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
+  const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
   emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
 }
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
  * with a property, or ready. A unit with no character (an enemy, a companion) has the free ones, what its weapon lends
  * and gives, and its stat block's list (u.techs). */
 export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?: 'stowed' | 'throwable'): { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] {
-  const weaponId = hand === 'off' ? u.offWeapon : u.weapon; if (!weaponId) return [];
-  const sys = weaponSystem(weaponId), props = weaponProps(weaponId), c = u.companion ? null : charOfUnit(u);
+  const weaponId = hand === 'off' ? offHeld(u) : u.weapon; if (!weaponId) return [];
+  const shield = shieldHand(u, hand);
+  const sys = weaponSystem(weaponId), props = shield ? ['shield'] : weaponProps(weaponId), c = u.companion ? null : charOfUnit(u);
   // A companion, a puppet or a unit with a fixed action list (the drone) has the free techniques its list allows, and
   // nothing else: the reducer refuses the rest (game.ts).
   const plainOnly = !!u.companion || !!u.allowedActions || condOn(u, 'puppeted');
@@ -175,6 +230,12 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   const OLD: Record<string, string> = { shot: 'shot', aimed_shot: 'aimed', cut: 'melee', overwatch: 'overwatch' };
   const out: { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] = [];
   for (const d of TECHNIQUES) {
+    // Rules 1.13. A technique a skill gives (Interpose at Durability 3) is everyone's who has the points, whatever is in
+    // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
+    // and that hand offers nothing else. Neither is ever learned, readied or lent.
+    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, 'technique:' + d.id).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.system !== sys) continue;
     // A technique that draws its weapon is used with a stowed one, never with the one in the hand; with a carried
     // throwable as the weapon, only what the throwable lends and what has a line for one of its properties, and never
@@ -189,12 +250,16 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   return out;
 }
 const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' | 'throwable') => usable(null, u, hand, wield).some((x) => x.id === id);
+/** The Momentum a Finisher needs to start (2 unless its data says otherwise), less what the unit's items take off it
+ * ('momentum_needed:<id>': Iron Grip II's Throw Down on a held target needs none). It still spends all there is. */
+export const finisherNeed = (cb: Combat, u: Unit, def: TechDef): number => Math.max(0, (def.needs.momentum || 2) + statQuery({ u, cb }, 'momentum_needed:' + def.id).add);
 /** Why this unit can't start this technique now, before any target is looked at (null: it can). */
 function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null {
-  const hand: 'main' | 'off' = args.hand === 'off' && u.offWeapon ? 'off' : 'main', weaponId = hand === 'off' ? u.offWeapon! : u.weapon;
-  const props = weaponProps(weaponId);
+  const hand: 'main' | 'off' = args.hand === 'off' && offHeld(u) ? 'off' : 'main', weaponId = hand === 'off' ? offHeld(u)! : u.weapon;
+  const props = shieldHand(u, hand) ? ['shield'] : weaponProps(weaponId);
   const wield = (args as any)._w as 'stowed' | 'throwable' | undefined;
-  if (weaponSystem(weaponId) !== def.system) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
+  if (def.needs.shield && !shieldHand(u, hand)) return 'Needs a shield in your off hand.';
+  if (weaponSystem(weaponId) !== def.system && !def.innate && !def.perk) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
   if (def.needs.stowed && wield !== 'stowed') return 'Pick the weapon to draw.';
   if (!hasUsable(u, hand, def.id, wield)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
   const bad = (def.not_with || []).find((p) => props.includes(p)); if (bad) return 'Not available with ' + (/^[aeiou]/.test(bad) ? 'an ' : 'a ') + bad + ' weapon.';
@@ -205,7 +270,9 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
     const ch = chainOf(cb, u);
     if (ch.ended) return 'Your chain has ended: a Finisher is the last melee technique of a turn.';
     if (def.group === 'opener' && ch.n > 0) return 'An Opener is only the first melee technique of your turn.';
-    if (def.group === 'finisher' && momentumOf(u) < (def.needs.momentum || 2)) return 'Needs Momentum ' + (def.needs.momentum || 2) + '.';
+    if (def.group === 'finisher') { const need = finisherNeed(cb, u, def); if (momentumOf(u) < need) return 'Needs Momentum ' + need + '.'; }
+    const cost = momentumCost(u, def, args); if (cost && momentumOf(u) < cost) return 'Needs ' + cost + ' Momentum: land a plain attack first.';
+    const gc = guardCost(def); if (gc && guardOf(u) < gc) return 'Needs ' + gc + ' Guard: Brace or take Guard first.';
   }
   if (def.group === 'watch' && isPressed(u)) return 'You are Pressed: you can\'t hold a shot.';
   if (def.group === 'watch' && (u as any).noWatch === cb.round) return 'Head down: no held shot this round.';
@@ -237,7 +304,14 @@ const ACTIVE: Active[] = [];
 const cur = (att?: Unit) => { const a = ACTIVE[ACTIVE.length - 1]; return a && (!att || a.t.u === att) ? a : null; };
 /** Run fn with the technique's hand as the unit's weapon (the off hand is swapped in, as a paired attack does). */
 function inHand<T>(t: Tech, fn: () => T): T {
-  const u = t.u; if (t.hand !== 'off' || !u.offWeapon) return fn();
+  const u = t.u; if (t.hand !== 'off' || !offHeld(u)) return fn();
+  if (!u.offWeapon) { // a shield: the strike is the bare hand behind it (Raw Power), whatever the main hand holds
+    const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, dmgMult: u.dmgMult };
+    const pts = (t.c?.skills as any)?.[weaponPhys(SHIELD_HAND).hits_with];
+    u.weapon = SHIELD_HAND; u.ammo = 0; u.maxDur = 0; u.mods = []; u.ammoType = null; u.jammed = false; u.dmgMult = 1;
+    if (typeof pts === 'number') u.attack = mod(pts);
+    try { return fn(); } finally { Object.assign(u, keep); }
+  }
   const ow = WEAPON[u.offWeapon], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, heat: u.heat };
   const pts = (t.c?.skills as any)?.[weaponPhys(ow.id).hits_with];
   u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = (u as any).offAmmoType ?? null; u.jammed = false;
@@ -262,8 +336,8 @@ function roundFor(t: Tech, tgt: Unit): { type: string | null; fromMag?: boolean;
   for (const r of ROUNDS) { const p = r.pick?.(t, tgt); if (p) return { ...p, by: r }; }
   return null;
 }
-/** One attack. Melee hits add Momentum (and the variety bonus) and ranged hits add Pressure by the rules: handlers
- * don't. In a preview it records the roll's chance and damage and returns hit: false. */
+/** One attack. A hit with the plain melee attack (Cut) adds 1 Momentum and ranged hits add Pressure by the rules:
+ * handlers don't. No other technique's hit gives Momentum. In a preview it records the roll's chance and damage and returns hit: false. */
 export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
   const tgt = o.target || t.tgt; if (!tgt) return { ok: false, why: 'Pick a target.', hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: null };
   const mode: 'melee' | 'shot' | 'aimed' | 'thrown' = o.thrown ? 'thrown' : o.mode || (t.def.system === 'melee' ? 'melee' : 'shot'), u = t.u, st = scratch(t);
@@ -287,7 +361,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         if (n) {
           if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n;
           // the earlier rolls reach the Heat limit: the gun jams and the later ones are never fired (the main hand: an off-hand gun's jam isn't kept)
-          if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
+          if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
         }
         let pv: ReturnType<typeof previewAttack>;
         try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil, ambush: !!o.ambush }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
@@ -302,7 +376,9 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         // (o.vi: a handler that runs its own volley numbers it; quiet: a Hidden user stays Hidden; noWear: a later roll of one attack action)
         const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : o.vi ?? 0, ro: any = { ...(noRecoil ? { noAp: true } : { free: true }), vi, ...(o.quiet ? { quiet: true } : {}), ...(o.noWear ? { noWear: true } : {}),
           // tech: the weapon's old on-hit grant stays with the plain attacks (the free techniques); ambush: the engine's own
-          ...(o.ambush ? { ambush: true } : {}), ...(t.def.free ? {} : { tech: t.def.id }) };
+          ...(o.ambush ? { ambush: true } : {}), ...(t.def.free ? {} : { tech: t.def.id }),
+          // only the plain melee attack's hit gives Momentum (the engine's +1 in resolveAttack)
+          ...(isPlainMelee(t.def) && !o.noMomentum && !o.thrown ? {} : { noMomentum: true }) };
         // the shot's effects event says which technique fired it and its place among this use's rolls (presentation only)
         ro.fx = { tech: t.def.id, vi: st.struck - 1 };
         const roll0 = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, ro), roll = o.chain ? () => asChain(roll0) : roll0;
@@ -311,11 +387,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         if (st.willUseSetUp && !r.refused && !r.cancelled) st.usedSetUp = true; // an attack that never came keeps the mark
         if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
         if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
-        if (t.def.system === 'melee') {
-          if (o.noMomentum) { if (u.res) u.res.momentum = m0; }
-          else if (r.hit) { ensureMomentum(u); if (o.thrown) resGain(u, 'momentum', 1); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); } // the engine adds the +1 for a melee hit; a thrown weapon's is added here
-          momentumFx(t.cb, u, m0);
-        }
+        if (t.def.system === 'melee') momentumFx(t.cb, u, m0); // the engine added the plain attack's +1 (a reaction's hit on the user shows itself)
         // the unit the attack was really made against (Confused, a captive held as a shield, Duck and Roll): riders follow it
         return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: act.real || tgt };
       } finally { if (rd) { u.ammoType = type0; rd.by.done?.(t, tgt); } }
@@ -371,19 +443,26 @@ export function setUp(t: Tech, target: Unit, mark: { hit?: number; noAnswer?: bo
 export function canAnswer(cb: Combat, u: Unit, id: string, against?: Unit): boolean {
   if (!alive(u) || condOn(u, 'stunned')) return false;
   if (against && (against as any).setUp?.noAnswer && (against as any).setUp.target === u.id && (against as any).setUp.t === turnStamp(cb)) return false;
-  const protective = id === 'parry';
+  const protective = id === 'parry' || id === 'shield_wall' || id === 'interpose'; // they protect: they work while Suppressed
   if (!protective && pressureOf(u) >= PHYS_RULES.pressure.suppressed) return false;
   if (!hasUsable(u, 'main', id) && !hasUsable(u, 'off', id)) return false;
   const order = (charOfUnit(u) as any)?.phys?.answers as string[] | undefined; if (order && !order.includes(id)) return false;
   return true;
 }
+/** The TN of a save a technique forces (rules 1.13; halved by Leon's ruling, 10 Nov 2026): the stop TN + half the
+ * user's strength with the skill the weapon hits with, rounded up (a unit with no sheet: half its tier's number, rounded
+ * up) + tnAdd. 10 points (strength 9): +5, TN 17; 6 points: +3; 2 points: +1. Conditions applied with their own save
+ * (cond(..., { save: true }): Bind's grapple) keep the full strength, as Sigils, Outbursts, prayers and speech do. `via` is for a save rolled after the technique's own use
+ * (Guard with Reach, a Bind walked away from), which kept the skill it was set with. */
+export const techSaveTn = (u: Unit, via: string, tnAdd = 0): number => (PHYS_RULES.stop_tn || 12) + Math.ceil(unitStrength(u, via) / 2) + tnAdd;
 /** A save by the target with the better of some skills (or a family: 'body' | 'brain' | 'heart'). True: it saved. In a
- * preview nothing is rolled: the save is listed and the target is taken to fail. tnAdd: positive is harder. */
+ * preview nothing is rolled: the save is listed and the target is taken to fail. The TN is techSaveTn: 12 + half the
+ * user's strength (rounded up) + tnAdd (positive is harder). */
 export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'brain' | 'heart', tnAdd = 0): boolean {
-  const tn = (PHYS_RULES.stop_tn || 12) + tnAdd, skills = Array.isArray(skillsOrFam) ? skillsOrFam : [skillsOrFam];
+  const tn = techSaveTn(t.u, techVia(t), tnAdd), skills = Array.isArray(skillsOrFam) ? skillsOrFam : [skillsOrFam];
   if (t.preview) { (t.pv.saves ||= []).push({ unit: target.id, skills, tn }); return false; }
   const c = target.companion ? null : charOfUnit(target);
-  const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', charisma: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
+  const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', rumination: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
   const r = d20(t.rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
   t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + skills.join(' or ') + ' ' + (r + bonus) + ' vs ' + tn + ').');
@@ -391,10 +470,12 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
 }
+/** The skill a technique's conditions and saves are delivered by (rules 1.13): the one its weapon hits with. */
+export const techVia = (t: Tech): string => hitsWith(t.weaponId) || 'raw_power';
 /** Put a condition on a target with the technique as its source. No save unless opts.save. True: it took. */
 export function cond(t: Tech, target: Unit, id: string, rounds?: number, opts: { save?: boolean; tnAdd?: number; arg?: any } = {}): boolean {
   if (t.preview) { t.note(target.name + ': ' + id.replace(/_/g, ' ') + (rounds ? ' ' + rounds + (rounds === 1 ? ' round' : ' rounds') : '') + (opts.save ? ' (save)' : '') + '.'); return true; }
-  const s = applyCond(t.cb, t.rng, t.u, target, id, rounds, undefined, { skipSave: !opts.save, tnAdd: opts.tnAdd, arg: opts.arg } as any);
+  const s = applyCond(t.cb, t.rng, t.u, target, id, rounds, undefined, { skipSave: !opts.save, tnAdd: opts.tnAdd, arg: opts.arg, via: techVia(t) });
   if (s) t.cb.log.push(target.name + s.replace(/^ · /, ': ') + '.');
   return !/resists|untouched|shrugs/.test(s);
 }
@@ -423,7 +504,7 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
       const old = target.nailed; if (old?.weapon && opts.weapon) dropNailed(t.cb, target);
       target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : old?.weapon ? { weapon: old.weapon, ...(old.item ? { item: old.item } : {}), by: old.by } : {}) };
     }
-    else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true } as any);
+    else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true, via: techVia(t) });
     else if (h === 'prone') { if (!target.prone) { target.prone = true; target.braced = false; emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); } }
   }
   if (opts.apLoss) apDebt(target, opts.apLoss);
@@ -448,10 +529,16 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
     const [ox, oy] = xy(origin), s = dir === 'away' ? 1 : -1, nx = x + s * Math.sign(x - ox), ny = y + s * Math.sign(y - oy);
     return nx === x && ny === y ? null : key(nx, ny);
   };
+  // Heavy Hands (Raw Power 3): a melee technique's push away goes 1 tile further (the card, the preview and the push agree)
+  if (dir === 'away') tiles += statQuery({ u: t.u, cb }, 'push_tiles', { tech: t.def.id, system: t.def.system }).add;
   if (t.preview) { let at = target.pos, n = 0; const blocked = moveBlockers(cb); for (; n < tiles; n++) { const to = stepTo(at); if (!to || bad(cb, to, blocked, target)) break; at = to; } if (n) (t.pv.moves ||= []).push({ unit: target.id, to: at }); return n; }
   let moved = 0; const blocked = moveBlockers(cb);
   for (let i = 0; i < tiles && alive(target); i++) {
-    const to = stepTo(target.pos); if (!to || bad(cb, to, blocked, target)) break;
+    const to = stepTo(target.pos); if (!to) break;
+    if (bad(cb, to, blocked, target)) { // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
+      if (dir === 'away') pushBlocked(t, target, to, opts.how);
+      break;
+    }
     const fm: any = emit(cb, 'forced_move', { u: target, by: t.u, tiles: 1, to, how: opts.how || t.def.id, cancel: false, cb, rng: t.rng }); if (fm.cancel) break;
     const stopNow = unheld(t.u, () => {
     const was = target.pos; target.pos = to; target.braced = false; moved++;
@@ -465,6 +552,15 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
   }
   if (moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ').');
   return moved;
+}
+/** Breaching Strike's rule for a push that is blocked, bound by perks/skeleton.ts (that file imports this one). */
+let SLAM: ((cb: Combat, by: Unit, target: Unit, into: 'wall' | Unit, how: string) => void) | null = null;
+export const setSlam = (f: typeof SLAM) => { SLAM = f; };
+/** A melee technique's push away that a wall or a body stops at `to` (forceMove's blocked tile; Shove against a blocked
+ * tile, which knocks Prone instead of moving): Breaching Strike's rule is asked. Never in a preview. */
+export function pushBlocked(t: Tech, target: Unit, to: string | null, how?: string): void {
+  if (!SLAM || t.preview || t.def.system !== 'melee' || !alive(target)) return;
+  SLAM(t.cb, t.u, target, (to && t.cb.units.find((v) => v !== target && !v.dead && v.pos === to)) || 'wall', how || t.def.id);
 }
 const bad = (cb: Combat, to: string, blocked: Set<string>, mover: Unit) => { const [x, y] = xy(to); return x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || blocked.has(to) || cb.units.some((v) => v !== mover && !v.dead && v.pos === to); };
 /** Rounds a technique burns beyond its rolls. False (with a note) if the weapon can't pay. */
@@ -711,26 +807,31 @@ function withG<T>(g: any, fn: () => T): T { if (!g) return fn(); const was = bin
 /** What the technique would do, changing nothing (the card, the AI). Pass the game (`g`) when none is bound: the screen does. */
 export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}, g?: any): TechPreview {
   if (g) return withG(g, () => previewTechnique(cb, u, id, args));
+  args = inShieldHand(id, args);
   if (args.hand === 'both') return previewPaired(cb, u, id, args);
   { // a weapon that isn't in the hand: the card is worked out as if it were
     const def0 = TECHNIQUE[id], wi = def0 ? wieldOf(cb, u, def0, args) : null;
     if (typeof wi === 'string') return { ok: false, why: wi, id, ap: 0, rounds: 0, attacks: [], notes: [] };
     if (wi) return holding(u, wi, () => previewTechnique(cb, u, id, { ...args, hand: 'main', _w: wi.kind } as TechArgs));
   }
-  const def = TECHNIQUE[id], blank = (why: string): TechPreview => ({ ok: false, why, id, ap: def ? apFor(cb, u, def, args.hand === 'off' && u.offWeapon ? 'off' : 'main', args.line) : 0, rounds: 0, attacks: [], notes: [] });
+  const def = TECHNIQUE[id], blank = (why: string): TechPreview => ({ ok: false, why, id, ap: def ? apFor(cb, u, def, args.hand === 'off' && offHeld(u) ? 'off' : 'main', args.line) : 0, rounds: 0, attacks: [], notes: [] });
   const p = prepare(cb, u, id, args, { state: 1 }, true); if (!p.t) return blank(p.why || 'Not now.');
   const t = p.t; if (p.why) { t.pv.ok = false; t.pv.why = p.why; return t.pv; }
   const m0 = momentumOf(u);
-  const err = p.h!.run(t);
+  const err = withVia(u, techVia(t), () => p.h!.run(t));
   if (err) { t.pv.ok = false; t.pv.why = err; return t.pv; }
+  // Guard as the card shows it: what using it costs (Shield Bash), on top of what the handler itself says (Raise Shield)
+  { const gc = guardCost(def); if (gc) { const g0 = t.pv.guard || { now: guardOf(u), after: guardOf(u) }; t.pv.guard = { now: g0.now, after: Math.max(0, g0.after - gc) }; } }
   // one attack and it can't be made: the technique can't be used (a volley with some refused targets still can)
   if (t.pv.attacks.length === 1 && !t.pv.attacks[0].pv.ok) { t.pv.ok = false; t.pv.why = t.pv.attacks[0].pv.why || 'Can\'t attack that.'; }
   if (def.system === 'melee') {
-    // Momentum as the card shows it: what a hit would leave (a Finisher shows what it spends)
+    // Momentum as the card shows it: what using it leaves (a Finisher shows what it spends)
+    // (a Strike or an Opener: what it spends; the plain attack: the +1 its hit gives)
     if (!t.pv.momentum) t.pv.momentum = { now: m0, after: m0 };
-    if (def.group !== 'finisher' && t.pv.attacks.some((a) => a.pv.ok) && t.pv.momentum.after === m0 && !scratch(t).noMomentum) {
-      const max = u.resMax?.momentum ?? PHYS_RULES.momentum.max, ch = chainOf(cb, u);
-      t.pv.momentum.after = Math.min(max, m0 + 1 + (ch.last && ch.last !== id ? PHYS_RULES.momentum.variety_bonus : 0));
+    if (def.group !== 'finisher') {
+      const max = u.resMax?.momentum ?? PHYS_RULES.momentum.max, cost = momentumCost(u, def, args);
+      if (cost) t.pv.momentum.after = Math.max(0, t.pv.momentum.after - cost);
+      else if (isPlainMelee(def) && t.pv.attacks.some((a) => a.pv.ok) && !scratch(t).noMomentum) t.pv.momentum.after = Math.min(max, t.pv.momentum.after + 1);
     }
     if (def.group === 'finisher') t.pv.ends = true;
   }
@@ -744,9 +845,12 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
   if (def.group === 'take' && t.tgt) { const now = pressureOf(t.tgt), after = Math.max(0, now - PHYS_RULES.pressure.take_cost); (t.pv.pressure ||= []).push({ unit: t.tgt.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
   return t.pv;
 }
+/** A shield's technique is the off hand's, whichever hand the caller named. */
+const inShieldHand = (id: string, args: TechArgs): TechArgs => (TECHNIQUE[id]?.needs.shield && args.hand !== 'off' ? { ...args, hand: 'off' } : args);
 /** Use a technique. Returns a refusal in plain words, or null. Nothing is spent on a refusal. */
 export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
   const def = TECHNIQUE[id]; if (!def) return 'No such technique.';
+  args = inShieldHand(id, args);
   if (args.hand === 'both') return usePaired(cb, u, id, args, rng);
   const wi = wieldOf(cb, u, def, args); if (typeof wi === 'string') return wi;
   if (wi?.kind === 'stowed') { // check it as if drawn, then draw it for real (free: the technique's AP pays), then use it
@@ -761,27 +865,37 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const t = p.t, ap = t.pv.ap, heat0 = u.heat;
   ensureMomentum(u);
   u.ap -= ap;
+  // a Strike or an Opener spends its Momentum as it is used (given back with the AP if the handler refuses)
+  const mCost = momentumCost(u, def, args), mWas = momentumOf(u), opener0 = u.openerUsed;
+  if (mCost && u.res) { u.res.momentum = Math.max(0, mWas - mCost); momentumFx(cb, u, mWas); }
+  // a technique that costs Guard (Shield Bash: 1 in place of the Strike's Momentum) spends it the same way
+  const gCost = guardCost(def); if (gCost) spendGuard(cb, u, gCost);
+  if (def.system === 'melee' && def.group === 'opener' && !(args as any)._pair?.second) u.openerUsed = true; // the first Opener of the fight is the free one
   if (def.group === 'take' && t.tgt) showPressure(cb, t.tgt);
   // line, opt, ammo (and a handler's own fields: Crossfire's ally) tell the screen which version of the technique this is
   const more = p.h!.fx?.(t) || {};
   const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos,
     line: lineProp(def, t.weaponId, args.line, u), opt: args.opt ?? null, ammo: args.ammo ?? (t.wield === 'throwable' && args.item != null ? String(args.item) : null), weapon: t.weaponId, ...more });
   const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
-  const err = p.h!.run(t);
+  const err = withVia(u, techVia(t), () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost comes back
-    u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true; return err;
+    u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true;
+    if (mCost && u.res) { const now = momentumOf(u); u.res.momentum = Math.min(u.resMax?.momentum ?? now + mCost, now + mCost); momentumFx(cb, u, now); }
+    if (opener0) u.openerUsed = opener0; else delete u.openerUsed;
+    if (gCost) addGuard(cb, u, gCost);
+    return err;
   }
   if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) {
     u.heat += 1;
     // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does (the main hand's gun)
-    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
+    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
   } // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
   for (const n of t.pv.notes) cb.log.push('  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
   if (def.system === 'melee') { const ch = chainFor(cb, u); ch.n++; ch.last = id; if (def.group === 'finisher') ch.ended = true; }
   if (def.group === 'take' && t.tgt) { techState(u, '_take').t = turnStamp(cb); lowerPressureOf(cb, t.tgt, PHYS_RULES.pressure.take_cost, def.name, u); }
-  u.attackedTurn = u.attackedTurn || def.system === 'melee'; // a melee technique that isn't a strike (Feint, Guard) still keeps the chain's Momentum this turn
+  u.attackedTurn = u.attackedTurn || def.system === 'melee';
   checkOver(cb);
   return null;
 }
@@ -789,14 +903,18 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
  * line that applies. The screen never works a number out itself. */
 export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any): PadGroup[] {
   if (g) return withG(g, () => techniquePad(cb, u, hand));
-  const weaponId = hand === 'off' ? u.offWeapon : u.weapon; if (!weaponId) return [];
-  const sys = weaponSystem(weaponId), have = usable(cb, u, hand), c = u.companion ? null : charOfUnit(u), knownSig = new Set(((c as any)?.phys?.known as string[]) || []);
+  const weaponId = hand === 'off' ? offHeld(u) : u.weapon; if (!weaponId) return [];
+  // A shield in the off hand has its own block (rules 1.13): its techniques, and (when the main hand's pad has no
+  // Answers row: a gun) the Answers a skill gives, so Interpose is always on a pad.
+  const more = shieldHand(u, hand) && weaponSystem(u.weapon) !== 'melee' ? usable(cb, u, 'main').filter((x) => TECHNIQUE[x.id].innate) : [];
+  const sys = weaponSystem(weaponId), have = [...usable(cb, u, hand), ...more], c = u.companion ? null : charOfUnit(u), knownSig = new Set(((c as any)?.phys?.known as string[]) || []);
   const taught = new Set(Object.values(WEAPON).map((w) => weaponTeaches(w.id)).filter(Boolean) as string[]);
   return groupsOf(sys).map((group) => ({
     group, label: groupName(group),
     entries: have.filter((x) => TECHNIQUE[x.id].group === group).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);
-      const why = def.group === 'answer' ? null : gate(cb, u, def, { hand }) || (handlerOf(def.id) ? null : NOT_BUILT);
+      // an Answer has no button; one that costs Guard says so when there is none to spend
+      const why = def.group === 'answer' ? ((def.numbers as any)?.guard_cost && guardOf(u) < (def.numbers as any).guard_cost ? 'Needs ' + (def.numbers as any).guard_cost + ' Guard: Brace or take Guard first.' : null) : gate(cb, u, def, { hand }) || (handlerOf(def.id) ? null : NOT_BUILT);
       return { id: def.id, name: def.name, group, ap: apFor(cb, u, def, hand), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim,
         line: lf.main ? lf.main.text : null, ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: x.how === 'ready' && taught.has(def.id) && knownSig.has(def.id), plain: def.id === 'cut' || def.id === 'shot', built: !!handlerOf(def.id) };
@@ -831,14 +949,20 @@ export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
 /** A unit's meters as one side may see them (the screen draws this; it compares nothing itself). Pips a Silent weapon
  * put on a unit are hidden from that unit's own side. */
 export function physView(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe', g?: any): ReturnType<typeof physViewOf> { return g ? withG(g, () => physViewOf(cb, u, viewerSide)) : physViewOf(cb, u, viewerSide); }
+/** The Momentum rule in two plain sentences (the meter's hint on the screen). */
+export const MOMENTUM_HINT = 'A plain attack that hits gives 1. A Strike or an Opener spends 1; each tile you walk and each hit you take costs 1.';
+/** The Guard rule in plain sentences (the pool's hint on the screen). */
+export const GUARD_HINT = 'Brace gives 2 Guard (3 with a shield); the Guard technique gives 1, +1 for each Durability point above 1, +1 with a shield. Each point takes 10 damage off a hit; the last point is kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
 function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
-  const max = u.resMax?.momentum, ch = chainOf(cb, u);
+  const max = u.resMax?.momentum;
   const hid = viewerSide === u.side ? Math.min(pressureOf(u), (u as any).pressHidden || 0) : 0, now = pressureOf(u) - hid;
   const state = pressureState({ pressure: now } as any);
   const by = viewerSide === u.side && hid >= pressureOf(u) ? [] : Object.keys(((u as any).pressBy || {}) as Record<string, string>).map((id) => cb.units.find((x) => x.id === id)).filter((x): x is Unit => !!x && alive(x)).map((x) => ({ unit: x.id, name: x.name }));
   const w = (u as any).watch as HeldWatch | undefined;
   return {
-    momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: ch.last ? '+1 more if your next technique isn\'t ' + (TECHNIQUE[ch.last]?.name || ch.last) : '' } : null,
+    momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
+    // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
+    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: GR().soak ?? 10, shield: !!shieldOf(u), hint: GUARD_HINT } : null,
     pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
       cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,
@@ -852,7 +976,7 @@ export type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, Str
 // Two weapons of one kind (two guns, two melee weapons): some techniques can be made with each in turn, by the paired
 // attack's rule (spec: Hands): the main hand at −1, the off hand at −3 (better by 1 per 3 Dexterity, to −1), for the
 // dearer hand's cost + 1 AP. Only techniques that are one use of one weapon at a target are offered.
-interface PairMark { hit: number; ap: number }
+interface PairMark { hit: number; ap: number; /** the off-hand half: the main hand's use paid the Momentum */ second?: boolean }
 export const PAIRED_TECHNIQUES = ['bash', 'sunder', 'hamstring', 'half_sword', 'aimed_shot', 'called_shot', 'punch_through', 'burst', 'suppress'];
 const offHandPenalty = (u: Unit) => Math.min(-1, -3 + Math.floor(((u as any).dexterity || 0) / 3));
 /** Why this unit can't use this technique with both hands (null: it can). */
@@ -869,7 +993,7 @@ export function pairedPad(cb: Combat, u: Unit, g?: any): PadEntry[] {
   if (g) return withG(g, () => pairedPad(cb, u));
   if (!u.offWeapon || !WEAPON[u.offWeapon] || weaponSystem(u.weapon) !== weaponSystem(u.offWeapon)) return [];
   return PAIRED_TECHNIQUES.map((id) => TECHNIQUE[id]).filter((def) => def && !pairedWhy(u, def)).map((def): PadEntry => {
-    const ap = pairedAp(cb, u, def, {}), why = u.ap < ap ? 'Needs ' + ap + ' AP.' : gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0 } } as any);
+    const ap = pairedAp(cb, u, def, {}), why = u.ap < ap ? 'Needs ' + ap + ' AP.' : gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
     const lf = linesFor(def, u.weapon, undefined, u);
     return { id: def.id, name: def.name, group: def.group, ap, rounds: def.rounds, ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
   });
@@ -880,7 +1004,7 @@ function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPre
   const no = pairedWhy(u, def); if (no) return blank(no);
   const ap = pairedAp(cb, u, def, args); if (u.ap < ap) return blank('Needs ' + ap + ' AP.', ap);
   const m = previewTechnique(cb, u, id, { ...args, hand: 'main', _pair: { hit: -1, ap } } as any); if (!m.ok) return { ...m, ap };
-  const o = previewTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0 } } as any);
+  const o = previewTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
   const notes = [...m.notes, ...(o.ok ? o.notes.filter((n) => !m.notes.includes(n)) : ['Off hand: ' + (o.why || 'can\'t.')]), 'Both hands: main hand −1, off hand ' + offHandPenalty(u) + ', +1 AP.'];
   return { ...m, ap, rounds: m.rounds + (o.ok ? o.rounds : 0), attacks: [...m.attacks, ...(o.ok ? o.attacks : [])], notes, ...(o.ok && o.saves ? { saves: [...(m.saves || []), ...o.saves] } : {}) };
 }
@@ -891,7 +1015,7 @@ function usePaired(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): s
   if (u.dead || u.downed || cb.over) return null;
   const tgt = args.targetId ? cb.units.find((x) => x.id === args.targetId) : null;
   if (tgt && (tgt.dead || tgt.downed)) return null; // the first weapon ended it
-  const e2 = useTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0 } } as any, rng);
+  const e2 = useTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any, rng);
   if (e2) cb.log.push('  (off hand: ' + e2 + ')');
   return null;
 }

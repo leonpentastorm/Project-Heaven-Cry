@@ -24,7 +24,7 @@ function rig(foes: string[] = ['6,5'], allies: string[] = [], o: { first?: boole
   for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).healRecv = 1; }
   for (const p of f.pcs) {
     Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: !o.first, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } });
-    p.sk = {}; p.dbf = { body: 0, brain: 0, heart: 0 };
+    p.sk = {}; p.dbf = {};
   }
   const u = f.turn(f.pc); u.ap = 60;
   f.g.rng.state = SEED;
@@ -230,7 +230,7 @@ describe('practice, gates and picks (section 5)', () => {
     expect(s.g.characters[c.id].soulKnown!.modules).toContain('quiet'); expect(soulPicksLeft(s.g.characters[c.id]).practice).toBe(0);
     expect(() => s.act({ type: 'magic/pick', charId: c.id, module: 'size' } as any, c.owner)).toThrow(/No practice pick/);
     s.g.characters[c.id].skills.implication = 10;
-    expect(() => s.act({ type: 'magic/pick', charId: c.id, module: 'swift', via: 'implication' } as any, c.owner)).toThrow(/not a Implication module/);
+    expect(() => s.act({ type: 'magic/pick', charId: c.id, module: 'swift', via: 'implication' } as any, c.owner)).toThrow(/not a Insinuation module/);
     s.act({ type: 'magic/pick', charId: c.id, module: 'anchor', via: 'implication' } as any, c.owner);
     expect(soulPicksLeft(s.g.characters[c.id]).mastered).toEqual([]);
   });

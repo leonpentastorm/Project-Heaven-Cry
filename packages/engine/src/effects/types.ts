@@ -75,7 +75,9 @@ export type HookName =
   // Class Roster Rev 3 (classes/rev3.ts): a Vent's extra Flux into the air; an enemy's walk priced by items
   | 'vent' | 'ai_move_risk'
   // rules 1.8 (feelings.ts): a condition's save passed {by, t, id}
-  | 'cond_resisted';
+  | 'cond_resisted'
+  // Calls (rules 1.13, calls/core.ts): a Call about to be made {u, t, id, kind, step, react, tnAdd, cancel}; its AP {u, id, ap, react}
+  | 'call' | 'call_cost';
 
 /** A hook handler. ctx is the hook's payload (fields documented at each emit site and in effects/hooks.ts); mutable
  * fields may be changed. Return nothing. */

@@ -2,7 +2,7 @@
 // testers missed in the old 10 px line (RELOAD, RELOAD CORE, OVERLOAD SOON, OVER THE LIMIT…).
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, ADVANCED, type Sheet, newCharacter, startCombat } from '@engine';
-import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo } from './resources';
+import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule } from './resources';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
 // Class Roster Revision 3 shelves advanced classes; this file's advanced-move UI tests turn them on (test-only switch).
@@ -153,6 +153,19 @@ describe('class resources, named from the data', () => {
     expect(r).toMatchObject({ label: 'Charges', value: '2 / 3', sub: gain, colour: '#AE9BFF' });
     expect(classResInfo(c, 'charges').source).toBe(gain);
     expect(row(resourcesOf(u, c, g), 'res-momentum')).toBeTruthy();
+  });
+  it('Guard is anyone\'s with Durability: its pips, and its rule in one sentence', () => {
+    const { u, c, g } = fight((c) => { c.classId = null; c.skills.durability = 3; });
+    expect(u.resMax?.guard).toBeGreaterThan(0);
+    u.res.guard = 2;
+    const r = row(resourcesOf(u, c, g), 'res-guard');
+    expect(r).toMatchObject({ label: 'Guard', value: '2 / ' + u.resMax.guard, kind: 'pips', now: 2 });
+    expect(r.sub).toBe('Guard: each point soaks 10 damage; Brace and the Guard technique refill it.');
+    expect(guardRule(10)).toBe(r.sub);
+    expect(r.hint.startsWith(r.sub!)).toBe(true);
+    // no Durability, no class pool: no row
+    const n = fight((c) => { c.classId = null; c.skills.durability = 0; });
+    expect(row(resourcesOf(n.u, n.c, n.g), 'res-guard')).toBeUndefined();
   });
   it('a Defender sees Guard; a Bard (the Medic moves, Revision 3) sees Supplies out of a fight too (they persist)', () => {
     const d = fight((c) => { c.classId = 'defender'; });

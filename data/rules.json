@@ -170,7 +170,7 @@
       "virtue"
     ],
     "caps": {
-      "attribute_le_core": true,
+      "attribute_le_core": false,
       "skill_le_attribute": true,
       "absolute_max": 10
     },
@@ -182,25 +182,32 @@
       "attributes": {
         "start_each": 1,
         "points": 10,
-        "cap": "its core"
+        "cap_at_creation": 7,
+        "cap_by_level": {
+          "1": 7,
+          "3": 8,
+          "6": 9,
+          "9": 10
+        }
       },
       "cores": {
         "start_each": 1,
-        "points": 6
+        "points": 0,
+        "note": "rules 1.13: Body, Mind and Soul are group names (families, colours, saves). Nobody spends Core points; a Core shows the highest attribute of its family."
       },
-      "auto_spend": "placing a skill above its attribute (or an attribute above its core) spends the attribute/core points it needs; blocked if those budgets can't cover it",
-      "lock_in_requires": "all skill, attribute and core points spent (rules 1.11: a Core point can no longer be traded for Attribute points)",
-      "after_creation": "caps apply normally; attribute and core points come from levelling",
+      "auto_spend": "placing a skill above its attribute spends the Attribute points it needs; blocked if the budget can't cover it",
+      "lock_in_requires": "all Skill and Attribute points spent",
+      "after_creation": "a skill can't pass its attribute; Attribute points come from levelling",
       "traits": {
         "min": 0,
         "max": 2
       },
-      "source": "2020 EPCCG budgets (6 core, 10 attribute, 10 skill) restored after rules 1.1",
+      "source": "rules 1.13 (Skeleton 2.0): the 2020 budgets of 10 Skill and 10 Attribute points; the 6 Core points are gone",
       "provisional": [
-        "cores.points",
-        "attributes.points"
+        "attributes.points",
+        "attributes.cap_at_creation"
       ],
-      "caps": "none beyond the tree's own (skill <= attribute <= core <= 10); the budgets allow at most 7 in one core, attribute or skill at creation"
+      "caps": "skill <= attribute; an attribute's ceiling is 7 at creation, 8 from level 3, 9 from level 6, 10 from level 9"
     },
     "levels": {
       "min": 1,
@@ -219,8 +226,9 @@
         },
         "core_points": {
           "every": 3,
-          "amount": 1,
-          "last_level": 18
+          "amount": 0,
+          "last_level": 18,
+          "note": "rules 1.13: no Core points"
         },
         "level_3": {
           "base_class": true
@@ -230,7 +238,7 @@
       },
       "extra": {
         "skill_books_and_quests": "extra skill points (narrator/quest data)",
-        "legendary_deed": "+1 core point, narrator's call"
+        "legendary_deed": "narrator's call. It was +1 core point; Cores are not spent since rules 1.13, so what a deed grants is open (spec section 14, item 1006)"
       },
       "hp_per_level_retroactive": null,
       "xp_total": {
@@ -295,7 +303,7 @@
     "note": "Attr counts from 1, Skill = points 0-10; floor results; mod(skill) = -2 at 0 points, else points-1",
     "body": {
       "max_hp": "100 + 15*(endurance-1) + (level-1)*hp_per_level",
-      "hp_per_level": "5 + 2*durability",
+      "hp_per_level": "5 + 2*pain_threshold",
       "ap_per_turn": 6,
       "initiative_bonus": "(agility-1) + mod(reaction_speed)",
       "movement": "1 + 0.5*(agility-1) tiles per AP, minimum 0.5",
@@ -304,35 +312,45 @@
       "dodge": "max(0, mod(athletics))",
       "counter_bonus": "max(0, mod(raw_power))",
       "injury_resist_pct": "10*(endurance-1)",
-      "crit_damage_taken_pct": "-10*(perception-1) - 5*durability",
+      "crit_damage_taken_pct": "-10*(perception-1) - 5*analysis (the skill named Acuity)",
       "elemental_damage_taken_pct": "-10*pain_threshold",
-      "ambush_damage_taken_pct": "-10*reaction_speed",
-      "healing_received_pct": "10*sensory",
+      "ambush_damage_taken_pct": "-10*proficiency (the skill named Improvisation)",
+      "healing_received_pct": "10*camaraderie",
       "saves": {
         "body": "mod(guts)",
-        "brain": "mod(charisma)",
+        "brain": "mod(rumination)",
         "heart": "mod(composure)"
       },
       "debuff_strength": {
-        "body": "max(0, mod(intimidation))",
-        "brain": "max(0, mod(eloquence))",
-        "heart": "max(0, mod(implication))"
-      }
+        "rule": "max(0, mod(the skill that delivered the condition)): there is no longer one number a family",
+        "by_source": {
+          "technique": "the skill the weapon hits with (a technique's own save adds half of it, rounded up)",
+          "sigil": "brain_power",
+          "outburst": "will_power",
+          "blessing": "faith",
+          "call_or_spoken": "the gamma skill that spoke (intimidation, eloquence, implication, ...)",
+          "trap_or_poison": "ingenuity"
+        },
+        "note": "before rules 1.13: body from intimidation, brain from eloquence, heart from implication"
+      },
+      "shields_received_pct": "10*conscience",
+      "guard_pool": "durability points, 5 at most (techniques.json rules.guard)"
     },
     "senses_tiles": {
-      "vision": "12 + 2*(perception-1)",
+      "vision": "12 + 2*(perception-1) + vigilant",
       "vision_dark": "half",
       "detection": "2 + vigilant",
       "stealth": "0.5*ingenuity (subtracted from enemy detection vs you)",
       "throwing_range": "6 + 0.5*dexterity",
-      "analyze_range": "4 + analysis"
+      "analyze_range": "4 + analysis",
+      "call_range": "4 + the points of the Call's gamma skill"
     },
     "multipliers": {
       "physical": "1 + 0.1*(strength-1) + 0.05*raw_power",
-      "elemental": "1 + 0.2*(expression-1) + 0.1*visualization",
+      "elemental": "1 + 0.1*(expression-1) + 0.05*visualization",
       "sigil": "1 + 0.1*(intelligence-1) + 0.1*brain_power",
       "soul": "1 + 0.05*(determination-1) + 0.1*will_power",
-      "healing_given": "1 + 0.1*(insight-1) + 0.1*camaraderie",
+      "healing_given": "1 + 0.1*(insight-1) + 0.1*empathy",
       "critical": "2 + 0.1*(perception-1) + 0.05*dexterity",
       "ambush": "1.5 + 0.05*ingenuity",
       "blessing_power": "1 + 0.1*faith"
@@ -340,17 +358,18 @@
     "magic": {
       "sigil_max_words": "2 + floor((intelligence-1)/2)",
       "sigil_ap": "max(1, words - 0.5*(expression-1))",
-      "sigil_core_saving": "floor(proficiency/3) per spell; spell cost min 1",
-      "sigil_range_bonus_tiles": "0.5*rumination",
+      "sigil_core_saving": "floor(brain_power/3) per spell; spell cost min 1",
+      "sigil_range_bonus_tiles": "0.5*brain_power",
       "sigil_duration_bonus_rounds": "0.5*brain_power",
       "max_mp": "100 + 100*(virtue-1)",
       "soul_cast_ap": "2 (Begin; Swift 1; rules 1.5)",
       "free_pumps_per_round": "1 from empathy 3, 2 from empathy 7",
       "soul_cost_pct": "-5*(insight-1)",
-      "soul_range_bonus_tiles": "0.5*lore_master",
+      "soul_range_bonus_tiles": "0.5*will_power",
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
       "strain_limit": "3 + floor(will_power/2)",
-      "prayer_cooldown_turns": "max(1, 4 - 0.5*(virtue-1) - 0.5*faith)"
+      "prayer_cooldown_turns": "max(1, 4 - 0.5*(virtue-1) - 0.5*faith)",
+      "ready_designs": "2 + floor(will_power/2), at least 3"
     },
     "social": {
       "leadership": {
@@ -378,9 +397,10 @@
           }
         ]
       },
-      "karma_bonus_per_award": "+conscience",
+      "karma_bonus_per_award": "+authority (Karma moves 1 further a point each time it changes)",
       "reputation_bonus_per_award": "+authority"
-    }
+    },
+    "source": "rules 1.13 (Skeleton 2.0): the formulas as the spec's Derived stats section states them; the engine's are in packages/engine/src/character.ts"
   },
   "classes": {
     "gained_at_level": 3,
@@ -509,14 +529,16 @@
       {
         "id": "reload",
         "ap": 2,
-        "text": "speed reload: swap in the fullest spare magazine, the old one drops into the pile on your tile (rules 1.9); or swap an Evoker core"
+        "text": "speed reload: swap in the fullest spare magazine, the old one drops into the pile on your tile; or swap an Evoker core",
+        "source": "rules 1.9"
       },
       {
         "id": "reload_tactical",
         "ap": "reload + 1",
         "extra_ap": 1,
-        "text": "tactical reload: the old magazine goes back in the pack, rounds still in it (rules 1.9, item 679)",
-        "provisional": true
+        "text": "tactical reload: the old magazine goes back in the pack, rounds still in it",
+        "provisional": true,
+        "source": "rules 1.9, item 679"
       },
       {
         "id": "clear_jam",
@@ -534,50 +556,58 @@
       {
         "id": "draw",
         "ap": 1,
-        "text": "draw from the pack into one hand (a one-handed weapon, a focus, a torch, a shield); what the hand held goes to the pack (rules 1.9, item 684)",
-        "provisional": true
+        "text": "draw from the pack into one hand (a one-handed weapon, a focus, a torch, a shield); what the hand held goes to the pack",
+        "provisional": true,
+        "source": "rules 1.9, item 684"
       },
       {
         "id": "draw_two_handed",
         "ap": 2,
-        "text": "draw a two-handed weapon: it fills both hands, what the off hand held goes to the pack (rules 1.9, item 684)",
-        "provisional": true
+        "text": "draw a two-handed weapon: it fills both hands, what the off hand held goes to the pack",
+        "provisional": true,
+        "source": "rules 1.9, item 684"
       },
       {
         "id": "swap_hands",
         "ap": 1,
-        "text": "swap main hand and off hand (rules 1.9, item 684)"
+        "text": "swap main hand and off hand",
+        "source": "rules 1.9, item 684"
       },
       {
         "id": "put_away",
         "ap": 1,
         "per_hand": true,
-        "text": "put away what a hand holds into the pack: 1 AP a hand, 2 for a two-handed weapon (rules 1.9, item 684)",
-        "provisional": true
+        "text": "put away what a hand holds into the pack: 1 AP a hand, 2 for a two-handed weapon",
+        "provisional": true,
+        "source": "rules 1.9, item 684"
       },
       {
         "id": "drop_held",
         "ap": 0,
-        "text": "drop what a hand holds: it lands in the pile on your tile (rules 1.9, item 684)",
-        "provisional": true
+        "text": "drop what a hand holds: it lands in the pile on your tile",
+        "provisional": true,
+        "source": "rules 1.9, item 684"
       },
       {
         "id": "light_armour",
         "ap": 1,
         "max_kg": 1.2,
-        "text": "put on or take off a light armour piece (1.2 kg or less), each; heavier armour isn't changed in a fight (rules 1.9, item 685)",
-        "provisional": true
+        "text": "put on or take off a light armour piece (1.2 kg or less), each; heavier armour isn't changed in a fight",
+        "provisional": true,
+        "source": "rules 1.9, item 685"
       },
       {
         "id": "fit_mod",
         "ap": 1,
-        "text": "fit a mod to the main-hand weapon (item 147)"
+        "text": "fit a mod to the main-hand weapon",
+        "source": "item 147"
       },
       {
         "id": "pickup",
         "ap": 1,
-        "text": "pick up any or all of the pile on your tile or an adjacent one (rules 1.9, item 674)",
-        "provisional": true
+        "text": "pick up any or all of the pile on your tile or an adjacent one",
+        "provisional": true,
+        "source": "rules 1.9, item 674"
       },
       {
         "id": "analyze",
@@ -997,7 +1027,7 @@
       "brain",
       "heart"
     ],
-    "save": "d20 + save_bonus[family] >= 12 + attacker debuff_strength[family]",
+    "save": "d20 + the target's save for the family (Body: Guts, Brain: Rumination, Heart: Composure) >= 12 + the strength of the skill that delivered the condition (its modifier, never below 0); a technique's own save adds half that strength, rounded up",
     "save_base_tn": 12,
     "no_save_if_from_hit": [
       "bleeding (injury)",
@@ -1128,7 +1158,7 @@
         "ap": 1,
         "effect": "all flux to the air"
       },
-      "hit": "damage spells: brain_power vs defense; Afflictions: target save vs 12 + debuff_strength; Boons and Workings: no roll",
+      "hit": "damage spells: brain_power vs defense; Afflictions: the target saves against 12 + the caster's strength with Brain Power; Boons and Workings: no roll",
       "damage": "Subjects' damage summed x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x sigil multiplier x elemental multiplier (elemental damage)",
       "example": {
         "words": [
@@ -1224,7 +1254,7 @@
       "intimidation": "body",
       "eloquence": "brain",
       "implication": "heart",
-      "resolved_as": "debuff vs save"
+      "resolved_as": "a condition against a save: the speaker's strength with the skill that spoke against the target's save for that family"
     },
     "karma": {
       "min": -100,

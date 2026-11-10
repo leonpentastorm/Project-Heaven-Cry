@@ -152,11 +152,10 @@ ok('the floating ♪ / ◈ buttons step aside on level up (they sat over the tre
 for (const [w, h] of [[1280, 720], [1440, 900], [1920, 1080]]) { await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(500); await snap('levelup-' + w); }
 await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(300);
 const u0 = (await G()).characters[cid].unspent;
-await p.locator('.phc-lu-core[data-core="mind"] button[data-raise="core"]').click(); await p.waitForTimeout(250);
-ok('a Core point spent with Mind\'s +1', (await G()).characters[cid].unspent.core === u0.core - 1);
-// the caps: an Attribute at its Core can't rise (its +1 is disabled, the reason beside it); the one Mind just raised can
-const capped = await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0]; const CORE = { endurance: 'body', strength: 'body', agility: 'body', perception: 'mind', intelligence: 'mind', expression: 'mind', insight: 'soul', determination: 'soul', virtue: 'soul' }; return Object.keys(CORE).find((a) => c.attrs[a] >= c.cores[CORE[a]]) || null; });
-if (capped) ok('an Attribute at its Core\'s value: +1 disabled, with the reason (' + capped + ')', await p.locator('.phc-lu-attrcol[data-attr="' + capped + '"] button[data-raise="attr"]').isDisabled());
+// rules 1.13: no Core points; an Attribute at its level's ceiling can't rise (its +1 is disabled)
+ok('no Core raise button anywhere (Cores are group names)', (await p.locator('button[data-raise="core"]').count()) === 0);
+const capped = await p.locator('.phc-lu-attrcol button[data-raise="attr"]:disabled').count();
+console.log('note attributes at their ceiling now: ' + capped);
 await p.locator('.phc-lu-attrcol[data-attr="intelligence"] button[data-raise="attr"]').click(); await p.waitForTimeout(250);
 ok('an Attribute point spent with Intelligence\'s +1', (await G()).characters[cid].unspent.attr === u0.attr - 1);
 const bpBefore = (await G()).characters[cid].skills.brain_power || 0;

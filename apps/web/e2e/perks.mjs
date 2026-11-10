@@ -76,6 +76,7 @@ await act({ type: 'sandbox/perk', charId: cid, perk: 'no_such_perk' });
 const toast = await p.evaluate(() => { const t = window.__phc.getState().toast; return t ? (t.text || String(t)) : ''; });
 ok('a perk that does not exist is refused: ' + toast, /No such perk/.test(toast));
 await act({ type: 'sandbox/perk', charId: cid, perk: 'used_to_the_pain', tier: 'I' });
+await act({ type: 'sandbox/perk', charId: cid, perk: 'litany', tier: 'I' });
 await act({ type: 'sandbox/class', charId: cid, classId: 'fighter', rank: 1 });
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/auto', on: false });
@@ -100,7 +101,7 @@ const gun = (await me()).weapon;
 ok('the gun (' + gun + ') grants its reload: ' + names.filter((n) => RELOAD.test(n)).join(', '), names.some((n) => RELOAD.test(n)));
 await p.locator('#phc-tab-perks').click().catch(() => {});
 await p.waitForTimeout(150);
-ok('the PERKS tab lists Breaching Strike', (await p.locator('[role="tabpanel"]').getByRole('button', { name: /Breaching Strike/ }).count()) > 0);
+ok('the PERKS tab lists Litany, and not the passive Breaching Strike', (await p.locator('[role="tabpanel"]').getByRole('button', { name: /Litany/ }).count()) > 0 && (await p.locator('[role="tabpanel"]').getByRole('button', { name: /Breaching Strike/ }).count()) === 0);
 await snap(p, '02-perks-tab');
 // a sabre in hand: no reload any more
 await act({ type: 'sandbox/give', charId: cid, item: 'sabre', equip: true });
@@ -109,27 +110,22 @@ await p.waitForTimeout(300);
 names = await allActions();
 ok('with the sabre (' + (await me()).weapon + ') no reload action shows: ' + (names.filter((n) => RELOAD.test(n)).join(', ') || 'none'), (await me()).weapon === 'sabre' && !names.some((n) => RELOAD.test(n)));
 
-// ---------- 3. Breaching Strike on the drill unit: the knockback and the log ----------
-let knocked = false, tries = 0;
-for (; tries < 10 && !knocked; tries++) {
-  g = await G(); const t = g.combat.units.find((u) => u.side === 'foe' && !u.dead && u.pos === field.at) || g.combat.units.find((u) => u.side === 'foe' && !u.dead && Math.max(Math.abs(xy(u.pos)[0] - xy((g.combat.units.find((x) => x.side === 'pc')).pos)[0]), Math.abs(xy(u.pos)[1] - xy((g.combat.units.find((x) => x.side === 'pc')).pos)[1])) === 1);
-  if (!t) break;
-  const before = t.pos;
+// ---------- 3. A perk action from the PERKS tab (Litany); Breaching Strike is passive since rules 1.13 ----------
+{
   await dismissCut();
-  await pickAction(p, /Breaching Strike/);
+  const u0 = await me();
+  await pickAction(p, /Litany/);
   await p.waitForTimeout(150);
-  await tok(before).click().catch(() => {});
-  await p.waitForTimeout(150);
-  if (!(await confirm())) { await act({ type: 'combat/perk', unitId: (await me()).id, id: 'breaching_strike', targetId: t.id }); }
+  if (!(await confirm())) { await act({ type: 'combat/perk', unitId: u0.id, id: 'litany' }); }
   await p.waitForTimeout(500);
-  g = await G(); const t2 = g.combat.units.find((u) => u.id === t.id);
-  if (t2 && !t2.dead && t2.pos !== before) { knocked = true; ok('Breaching Strike knocks the drill unit back: ' + ref(before) + ' → ' + ref(t2.pos), true); }
-  else if (t2 && t2.dead) { ok('Breaching Strike killed it outright (re-spawning)', true); await setField(); }
-  else await newTurn();
+  ok('Litany costs its 2 AP (' + u0.ap + ' → ' + (await me()).ap + ')', (await me()).ap === u0.ap - 2);
+  ok('the fight log names the Litany', /Litany/.test(await log()));
+  // a plain attack with the sabre: the only thing that builds Momentum
+  const gg = await G(), t = gg.combat.units.find((u) => u.side === 'foe' && !u.dead && u.pos === field.at);
+  if (t) await act({ type: 'combat/attack', unitId: u0.id, targetId: t.id });
+  await p.waitForTimeout(400);
 }
-ok('Breaching Strike landed and knocked back (tries: ' + tries + ')', knocked);
-ok('the fight log names the Breaching Strike', /Breaching Strike/.test(await log()));
-await p.waitForTimeout(300); await snap(p, '03-breaching-strike');
+await p.waitForTimeout(300); await snap(p, '03-litany');
 
 // ---------- 4. A class move: Lunge (Fighter I), with the Momentum the strike earned ----------
 g = await G();

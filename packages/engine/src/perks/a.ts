@@ -13,7 +13,7 @@ import type { Character } from '../character';
 import { key, xy, dist, alive, unitSees, litAt, moveBlockers, objectsOf, damageObject, resolveAttack, attackDamage, isMelee, refOf, keyOf as refKey, emitFx, fxFell, checkOver, previewAttack } from '../combat';
 import { ARMOUR, mod, packOf, maxHp as maxHpOf } from '../character';
 import { WEAPON, SKILL } from '../data';
-import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily } from '../magic';
+import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitStrength } from '../magic';
 import { die, d20, type Rng } from '../rng';
 import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON , dropHeldShot } from '../tactics';
@@ -122,19 +122,25 @@ register({
 });
 
 // ---------- Used to the Pain (Pain Threshold β) ----------
-// The first hit that takes HP each combat (a shield-only hit doesn't count; hazards, bleeding and burning don't): I:
-// under 20% of max HP → +2 AP next turn, else −1 AP next turn. II: under 30% → +3 AP; no penalty.
+// Rules 1.13 (a beta gives no AP): the first hit that takes HP each combat (a shield-only hit doesn't count; hazards,
+// bleeding and burning don't). I: under 20% of max HP, the next hit against you deals 25% less; a heavier one gives
+// nothing. II: under 30%, 40% less. Numbers PROVISIONAL (spec 14).
+const UTP = { I: { cut: 0.2, less: 25 }, II: { cut: 0.3, less: 40 } };
 register({
   id: 'used_to_the_pain', claims: 'all',
   on: {
+    damage_in: (ctx, h) => {
+      if (ctx.phase !== 'reduce' || ctx.t !== h.u || !isHit(ctx.src) || ctx.src.by?.side === h.u!.side || ctx.dmg <= 0) return;
+      const st = stateOf(h); if (!st.hard) return;
+      const less = st.hard; st.hard = 0; ctx.dmg = ctx.dmg * (1 - less / 100);
+      say(h.cb, h.u!.name + ' was ready for that one (Used to the Pain): ' + less + '% less.');
+    },
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || !isHit(ctx.src) || ctx.src.by?.side === h.u!.side) return;
       const st = stateOf(h); if (st.seen) return; st.seen = true;
-      const ratio = ctx.dmg / h.u!.maxHp, cut = tierII(h) ? 0.3 : 0.2;
-      if (ratio < cut) { const n = tierII(h) ? 3 : 2; h.u!.apNext = (h.u!.apNext || 0) + n; say(h.cb, h.u!.name + ' takes it in stride (Used to the Pain): +' + n + ' AP next turn.'); }
-      else if (!tierII(h)) { st.pen = 1; say(h.cb, h.u!.name + ' reels from the first hit (Used to the Pain): −1 AP next turn.'); }
+      const k = tierII(h) ? UTP.II : UTP.I;
+      if (ctx.dmg / h.u!.maxHp < k.cut) { st.hard = k.less; say(h.cb, h.u!.name + ' takes it in stride (Used to the Pain): the next hit deals ' + k.less + '% less.'); }
     },
-    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (st.pen) { ctx.penalties.push({ n: 1, why: 'Used to the Pain' }); st.pen = 0; } },
   },
   brief: () => null,
 });
@@ -181,124 +187,7 @@ register({
   brief: (h) => (tierII(h) ? 'never nauseated or frightened (tag fear checks: auto-pass)' : 'shakes off nausea and fear at once'),
 });
 
-// ---------- Grapple (Raw Power α) ----------
-// I: 2 AP, grab an adjacent enemy: Grappled (Body save vs 12 + your Body debuff strength). It can't move and attacks
-// anyone but you at −2 (the condition). It breaks free with 2 AP (combat/escape). The hold ends if you move or go down.
-// II: an attack aimed at you has a 50% chance to hit your captive instead. No free hand needed (PROVISIONAL, plan 6
-// Grapple 3). Story: holding an NPC marks it Grappled for the scene and asks the Narrator if the hold is plausible.
-function grabUnit(cb: Combat, u: Unit, t: Unit, r0: Rng): string | null {
-  const r = applyCond(cb, r0, u, t, 'grappled');
-  emitFx(cb, 'melee', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: 'fists', cat: 'unarmed', mode: 'grapple', hit: condOn(t, 'grappled'), crit: false, fumble: false, dmg: 0, killed: false });
-  say(cb, u.name + ' grabs for ' + t.name + ' (Grapple)' + r + '.'); return null;
-}
-const captiveOf = (cb: Combat, u: Unit) => cb.units.find((x) => !x.dead && condSource(x, 'grappled') === u.id && dist(x.pos, u.pos) <= 1) || null;
-register({
-  id: 'grapple', claims: 'all',
-  actions: [
-    {
-      // In a fight, and on the area map against an NPC token: grabbing someone there starts the fight (or, hidden, opens
-      // it as an ambush) with the grab as the opening move (PROVISIONAL, spec 14).
-      id: 'grapple', label: 'Grapple', scope: ['combat', 'world'], target: 'enemy', range: 1, ap: 2,
-      available: (h) => (h.u && condOn(h.u, 'grappled') ? 'You are held yourself.' : true),
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && condOn(t, 'grappled')) return { ok: false, why: t.name + ' is already held.' }; if (t && h.u && dist(t.pos, h.u.pos) > 1) return { ok: false, why: 'Walk up to them first.' }; return { lines: ['Grappled: Body save vs ' + (12 + (h.u?.dbf?.body || 0)) + '.' + (ow(h.cb) ? ' Starts a fight.' : '')] }; },
-      run: (h, a, rng) => {
-        if (ow(h.cb)) { const g = h.g; strikeFromWorld(a.targetId!, 2, (cbx, att, tt) => grabUnit(cbx, att, tt, g.rng)); return null; }
-        return grabUnit(h.cb!, h.u!, h.cb!.units.find((x) => x.id === a.targetId)!, rng);
-      },
-    },
-    {
-      id: 'grapple_npc', label: 'Grapple', scope: ['story', 'world'], target: 'none', ap: 0,
-      text: 'Grab and hold someone in the scene: they can\'t leave until they break free (the Narrator judges the hold).',
-      run: (h, a) => {
-        // On the area map, naming an NPC token (its id or name) is the token grab: walk up first; the fight opens with
-        // the grab as its opening move, paid from your AP (the Body save rolls in the fight), as Grapple on the token.
-        const tok = ow(h.cb) && h.u ? h.cb!.units.find((x) => x.side === 'foe' && !x.dead && (x.id === a.targetId || x.id === a.npc || (!!a.npc && x.name.toLowerCase() === String(a.npc).toLowerCase()))) : null;
-        if (tok) {
-          if (dist(tok.pos, h.u!.pos) > 1) return 'Walk up to them first.';
-          if (condOn(h.u!, 'grappled')) return 'You are held yourself.';
-          if (h.u!.ap < 2) return 'Needs 2 AP.';
-          const g = h.g; strikeFromWorld(tok.id, 2, (cbx, att, tt) => grabUnit(cbx, att, tt, g.rng)); return null;
-        }
-        const who = String(a.npc || a.text || 'them').slice(0, 60);
-        if (h.g?.story) { const k = who.toLowerCase(), m = ((h.g.story.scene.npcConds ||= {})[k] ||= []); if (!m.includes('grappled')) m.push('grappled'); }
-        postStory(h, 'grabs ' + who + ' and holds on.');
-        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Grapple on ' + who + ': held (can\'t leave or act freely) until they break free. Rule whether the hold is plausible (size, armour) and when they escape; if they are hostile, the hold starts a fight (open it with the grab).');
-        return null;
-      },
-    },
-  ],
-  on: {
-    attack_target: (ctx, h) => {
-      if (!tierII(h) || ctx.tgt !== h.u || !h.cb || !h.u || !alive(h.u)) return;
-      const cap = captiveOf(h.cb, h.u); if (!cap || ctx.att === cap || ctx.att.side === h.u.side) return;
-      const r = rngOf(h); if (!r) return;
-      const roll = die(r, 100); if (roll > 50) return;
-      ctx.tgt = cap; say(h.cb, 'The blow aimed at ' + h.u.name + ' finds the captive ' + cap.name + ' instead (Grapple II, d100 ' + roll + ').');
-    },
-    moved: (ctx, h) => { if (ctx.u !== h.u || !h.cb) return; for (const x of h.cb.units) if (condSource(x, 'grappled') === h.u!.id) { endCond(x, 'grappled', h.cb); say(h.cb, h.u!.name + ' lets go of ' + x.name + '.'); } },
-  },
-  brief: () => 'story holds on NPCs: you rule plausibility and escape',
-});
-
-// ---------- Breaching Strike (Raw Power α) ----------
-// 3 AP: a melee strike (fists with a gun) on an adjacent target; on a hit it is knocked back 1 tile (II: 2) straight
-// away from you. II: if a wall stops the knockback (a solid tile, the map edge, or a movement-blocking object; not a
-// unit), the strike does +50%: decided before the roll by simulating the push. "Ignores cover": melee already does
-// (PROVISIONAL, plan 6 Breaching Strike 1: no extra effect).
-export function knockbackSim(cb: Combat, from: Unit, t: Unit, tiles: number): { free: number; wall: boolean } {
-  const [ax, ay] = xy(from.pos); let [tx, ty] = xy(t.pos), free = 0;
-  const dx = Math.sign(tx - ax), dy = Math.sign(ty - ay); if (!dx && !dy) return { free: 0, wall: false };
-  const solid = moveBlockers(cb);
-  for (let i = 0; i < tiles; i++) {
-    const nx = tx + dx, ny = ty + dy, k = key(nx, ny);
-    if (nx < 0 || ny < 0 || nx >= cb.map.w || ny >= cb.map.h || solid.has(k)) return { free, wall: true };
-    if (cb.units.some((v) => !v.dead && v.pos === k)) return { free, wall: false };
-    tx = nx; ty = ny; free++;
-  }
-  return { free, wall: false };
-}
-register({
-  id: 'breaching_strike', claims: 'all',
-  actions: [
-    {
-      // In a fight, and on the area map against an NPC token (the fight opens with the strike: PROVISIONAL, spec 14).
-      id: 'breaching_strike', label: 'Breaching Strike', scope: ['combat', 'world'], target: 'enemy', ap: 3,
-      preview: (h, a) => {
-        const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u || !h.cb) return;
-        if (dist(h.u.pos, t.pos) > reachOf(h.u)) return { ok: false, why: 'Out of melee reach.' };
-        const pv = previewAttack(h.cb, h.u, t, 'melee', { free: true }); if (!pv.ok) return { ok: false, why: pv.why };
-        const tiles = tierII(h) ? 2 : 1, sim = immune({ u: t }, 'knockback') ? { free: 0, wall: false } : knockbackSim(h.cb, h.u, t, tiles);
-        return { lines: [pv.pct + '% to hit · knockback ' + tiles + (tierII(h) && sim.wall ? ' · slams into a wall: +50% damage' : '')] };
-      },
-      run: (h, a, rng) => {
-        if (ow(h.cb)) { const g = h.g; strikeFromWorld(a.targetId!, 3, (cbx, att, tt) => breach(h, cbx, att, tt, g.rng)); return null; }
-        return breach(h, h.cb!, h.u!, h.cb!.units.find((x) => x.id === a.targetId)!, rng);
-      },
-    },
-    {
-      id: 'breach_story', label: 'Breaching Strike', scope: ['story'], target: 'none', ap: 0,
-      text: 'Smash through a door, a barricade or someone in the way (the Narrator rules what gives).',
-      run: (h, a) => { postStory(h, a.text || 'puts a shoulder through it.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Breaching Strike out of a fight: ' + (a.text || 'breaches the way ahead') + '. Rule what breaks; a fight starts if it hits someone hostile.'); return null; },
-    },
-  ],
-  brief: () => null,
-});
-function breach(h: Holder, cb: Combat, u: Unit, t: Unit, rng: Rng): string | null {
-        const tiles = tierII(h) ? 2 : 1;
-        const imm = immune({ u: t }, 'knockback'), sim = imm ? { free: 0, wall: false } : knockbackSim(cb, u, t, tiles);
-        const wall = tierII(h) && sim.wall;
-        say(cb, u.name + ' throws a Breaching Strike' + (wall ? ' (into the wall: +50%)' : '') + '.');
-        const r = resolveAttack(cb, rng, u, t, 'melee', h.c || null, { noAp: true, dmgMult: wall ? 1.5 : 1 });
-        if (r.refused) return r.refused;
-        if (r.hit && !t.dead && !t.surrendered) {
-          if (imm) say(cb, t.name + ' holds its ground (' + imm + ').');
-          else {
-            const fm: any = emit(cb, 'forced_move', { u: t, by: u, tiles, how: 'knockback', cancel: false, cb, rng });
-            if (!fm.cancel) { const was = t.pos, line = pushAway(cb, u, t, tiles); if (t.pos !== was) { t.braced = false; dropHeldShot(cb, t, 'knocked back'); emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: t.pos, ok: true }); } if (line) say(cb, line.replace(/^ · /, '') + '.'); }
-          }
-        }
-        checkOver(cb); return null;
-}
+// Grapple became Iron Grip and Breaching Strike became a passive (rules 1.13): both are in perks/skeleton.ts.
 
 // ---------- Earthbreaker (Raw Power Mastered) ----------
 // Once per combat, 4 AP: strike a tile in melee reach. Every creature in the 3×3 around it (allies too, not you:
@@ -328,7 +217,7 @@ register({
           const r = applyDamage(cb, v, dmg, { ...(d.src as any), shield: true, downedFails: 1, credit: 'all' });
           out += r.downedHit ? ' · ' + v.name + ' (Downed) takes a death-save failure' : ' · ' + v.name + ' takes ' + r.amount;
           emitFx(cb, 'hurt', { target: v.id, at: v.pos, dmg: r.dealt, why: 'earthbreaker', killed: v.dead || v.hp === 0 }); if (r.killed) fxFell(cb, v);
-          if (!v.dead && !v.downed) out += applyCond(cb, rng, u, v, 'prone');
+          if (!v.dead && !v.downed) out += applyCond(cb, rng, u, v, 'prone', undefined, undefined, { via: 'raw_power' });
         }
         for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && ar.includes(o.pos)) out += damageObject(cb, o.pos, o.hp, 0, u);
         const w = WEAPON[u.weapon]; if (u.maxDur && w && isMelee(w)) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);
@@ -367,7 +256,8 @@ register({
 // ---------- Walking Wounded (Pain Threshold Mastered) ----------
 // Injuries never cost you AP or Movement: a head injury doesn't Daze you, a leg injury doesn't halve Movement (in a
 // fight, from a critical or the Injured condition, and on the area map). The injury is still recorded; torso Bleeding
-// and the arm's −2 still apply. Below half max HP: +1 AP at the start of each turn (within the +3 cap and 9).
+// and the arm's −2 still apply. Below half max HP you take 20% less damage (rules 1.13; PROVISIONAL, spec 14).
+const WW_LESS = 0.2;
 const wwSnap = (h: Holder) => { const st = stateOf(h); st.snap = { daz: h.u!.dazedNext || 0, mv: h.u!.movement, legs: (h.u!.injuries || []).filter((i) => i.loc === 'leg').length }; };
 function wwUndo(h: Holder, line: string) {
   const u = h.u!, st = stateOf(h), s = st.snap; if (!s) return; st.snap = null;
@@ -387,7 +277,7 @@ register({
     },
     cond_apply: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') wwSnap(h); },
     cond_landed: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') { const st = stateOf(h); if (st.snap) { const legs = (h.u!.injuries || []).filter((i) => i.loc === 'leg').length; wwUndo(h, h.u!.dazedNext && !st.snap.daz ? 'head, Dazed' : legs > st.snap.legs ? 'leg' : ''); } } },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u && !h.u!.downed && bloodied(h.u!)) ctx.grants.push({ n: 1, why: 'Walking Wounded' }); },
+    damage_in: (ctx, h) => { if (ctx.phase === 'reduce' && ctx.t === h.u && !h.u!.downed && bloodied(h.u!) && ctx.dmg > 0) ctx.dmg = ctx.dmg * (1 - WW_LESS); },
   },
   brief: () => 'injuries never slow this character down',
 });
@@ -448,12 +338,13 @@ register({
 });
 
 // ---------- Siege Engine (Raw Power + Durability, Achieved) ----------
-// Shove costs 1 AP less (min 1); Break (striking or shooting cover or an object) 1 AP less than the attack, min 1 (the
-// stat 'ap_cost:break' answers now; the engine site is a listed gap). Nothing knocks you back: shoves, knockback
+// The Shove Link and the Break Finisher cost 1 AP less, never below 1 (so a 1 AP Shove stays 1): the stat
+// 'ap_cost:shove' / 'ap_cost:break', asked by the technique AP path (physical/core.ts apFor) and by the old Shove. Nothing knocks you back: shoves, knockback
 // (generic immunity), Breaching Strike; Prone from a blocked shove still lands.
 register({
   id: 'siege_engine', claims: [0, 1],
-  stat: (h, stat, ctx) => ((stat === 'ap_cost:shove' || stat === 'ap_cost:break') && (ctx?.base ?? 2) > 1 ? -1 : 0),
+  // The Break Finisher costs 1 AP less; a Shove that moves its target gives 1 Guard (Leon, 10 Nov 2026: the Shove Link is 1 AP already, so its discount gave nothing)
+  stat: (h, stat, ctx) => ((stat === 'ap_cost:shove' || stat === 'ap_cost:break') && (ctx?.base ?? 2) > 1 ? -1 : stat === 'shove_guard' ? 1 : 0),
   on: { forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel) { ctx.cancel = true; say(h.cb, h.u!.name + ' doesn\'t move an inch (Siege Engine).'); } } },
   brief: () => 'can\'t be knocked back or off their feet in a story scuffle',
 });
@@ -494,8 +385,8 @@ register({
   actions: [
     {
       id: 'self_repair', label: 'Field Repair (self)', scope: ['combat'], target: 'none', ap: 2,
-      text: 'Patch your own machine body: +10 HP per Proficiency point, one spare-parts charge (Proficiency 3+).',
-      available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Proficiency 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : h.u.hp >= h.u.maxHp ? 'Already whole.' : true),
+      text: 'Patch your own machine body: +10 HP per Improvisation point, one spare-parts charge (Improvisation 3+).',
+      available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : h.u.hp >= h.u.maxHp ? 'Already whole.' : true),
       preview: (h) => ({ lines: ['+' + 10 * (h.u?.proficiency || 0) + ' HP (not halved by Plug).'] }),
       run: (h) => {
         const u = h.u!, n = 10 * (u.proficiency || 0), was = u.hp;
@@ -506,8 +397,8 @@ register({
     },
     {
       id: 'repair_story', label: 'Field Repair (10 min)', scope: ['story', 'world'], target: 'none', ap: 0,
-      text: 'Ten minutes with a spare-parts charge: +10 HP per Proficiency point.',
-      available: (h) => (!h.c ? false : (h.c.skills.proficiency || 0) < 3 ? 'Needs Proficiency 3.' : !packOf(h.c).some((x) => (x.item || x.id) === 'spare_parts' && x.qty > 0) ? 'No spare-parts charges.' : true),
+      text: 'Ten minutes with a spare-parts charge: +10 HP per Improvisation point.',
+      available: (h) => (!h.c ? false : (h.c.skills.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !packOf(h.c).some((x) => (x.item || x.id) === 'spare_parts' && x.qty > 0) ? 'No spare-parts charges.' : true),
       run: (h) => {
         const c = h.c!; let left = 1;
         c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left || x.qty <= 0) return x; left--; return { ...x, qty: x.qty - 1 }; }).filter((x) => x.qty > 0 || x.mags);
@@ -614,9 +505,9 @@ register({
   },
   actions: [{
     id: 'seen_it_all', label: 'Seen It All', scope: ['story', 'world'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'Once a session: you\'ve seen this before. A waiting Rumination, Lore Master or Analysis check succeeds.',
-    available: (h) => (pendingSeen(h).length ? true : 'No Rumination, Lore Master or Analysis check is waiting.'),
-    preview: (h, a) => { const k = pendingSeen(h, a.checkId)[0]; return k ? { lines: ['Auto-success: ' + k.stakes] } : { ok: false, why: 'Pick a waiting Rumination, Lore Master or Analysis check.' }; },
+    text: 'Once a session: you\'ve seen this before. A waiting Rumination, Lore Master or Acuity check succeeds.',
+    available: (h) => (pendingSeen(h).length ? true : 'No Rumination, Lore Master or Acuity check is waiting.'),
+    preview: (h, a) => { const k = pendingSeen(h, a.checkId)[0]; return k ? { lines: ['Auto-success: ' + k.stakes] } : { ok: false, why: 'Pick a waiting Rumination, Lore Master or Acuity check.' }; },
     run: (h, a) => { const k = pendingSeen(h, a.checkId)[0]; if (!k) return 'No such check.'; k.seenItAll = true; k.auto = 'success'; postStory(h, 'has seen this before.'); return null; },
   }],
   brief: (h) => (cs(h.c).no_full_rest ? 'no full rest last night: −2 Body skills today' : 'set traitState no_full_rest after a night without a full rest'),
@@ -722,7 +613,7 @@ register({
       if (!h.c || !augOf(h) || !ctx.g?.rng) return;
       const c = h.c, r = d20(ctx.g.rng), m = mod(c.skills.proficiency || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
       charState(c).augmentOffline = !ok;
-      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Proficiency d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs 12 · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
+      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Improvisation d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs 12 · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
     },
   },
   actions: [{

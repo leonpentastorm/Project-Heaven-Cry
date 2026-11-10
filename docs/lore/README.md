@@ -10,6 +10,7 @@ PHC's lore comes in layers. Each layer keeps everything below it and adds to it.
 | Index | [EPCCG cast and factions](EPCCG-Cast-and-Factions.md) | Who's who in the EPCCG, their factions, and their portraits | Writers and artists. |
 | Sectors | [Sectors](Sectors.md), [the Earth Sector](Sector-Earth.md) | What a Sector is, the sheet template, and the first Sector filled in, with 14 human origins for character creation | Writers; Narrator; character creation. |
 | Draft | [Factions](Factions.md) | **Suggested** web of how the factions relate: five tensions, six blocs, who stands where | Writers; Narrator once accepted. |
+| Character | [D12.9.6](D12-9-6.md) | The CCEC agent who spoke the 2020 EPCCG's Analysis entry; since rules 1.13 a character of the world, with the quote kept | Writers; Narrator. |
 
 ## Rules of thumb
 

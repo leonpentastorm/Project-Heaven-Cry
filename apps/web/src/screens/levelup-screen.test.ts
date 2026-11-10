@@ -3,7 +3,7 @@
 // panel on the right (emblem, name, rank, attribute progress, moves by rank with who runs them, advanced classes
 // shelved in Class Roster Revision 3); the class choice at level 3 with emblems.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, CLASS, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, CLASS, SKILL, canRaise, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
 const listeners = new Set<() => void>();
@@ -15,7 +15,7 @@ vi.mock('../game/store', () => ({ getState: () => snap || (snap = view()), subsc
 vi.mock('../game/report', () => ({ openReport: () => {}, PlaytestTools: () => null }));
 const { LevelUpLogic } = await import('./levelup.js');
 const React = await import('react'); const { createRoot } = await import('react-dom/client');
-const { makeScreen } = await import('../dc/runtime'); const { expand } = await import('./shared');
+const { makeScreen } = await import('../dc/runtime'); const { expand, D } = await import('./shared');
 const tpl = (await import('../templates/levelup.template.html?raw')).default;
 const Screen = makeScreen(expand(tpl), LevelUpLogic as any);
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -127,13 +127,50 @@ describe('level-up screen', () => {
     expect(dex2.querySelector('.phc-lu-perk[data-perk="' + taken + '"]')!.textContent).toMatch(/✓ TIER I/);
     // points: the raise buttons spend through the engine (core, then attribute, then skill)
     const raise = (sel: string) => el.querySelector(sel) as HTMLButtonElement;
-    await React.act(async () => { raise('.phc-lu-core[data-core="mind"] button[data-raise="core"]').click(); });
-    expect(G.characters[c0.id].unspent.core).toBe(0);
+    // (rules 1.13: no Core points; an attribute is raised straight away)
     await React.act(async () => { raise('.phc-lu-attrcol[data-attr="perception"] button[data-raise="attr"]').click(); });
     expect(G.characters[c0.id].unspent.attr).toBe(0);
     const before = G.characters[c0.id].skills.vigilant || 0;
     await React.act(async () => { raise('.phc-lu-skill[data-skill="vigilant"] button[data-raise="skill"]').click(); });
     expect(G.characters[c0.id].skills.vigilant).toBe(before + 1);
+    root.unmount();
+  });
+  it('no Core anywhere: families are headings; each attribute says what a point gives and the ceiling; a refused raise says the engine\'s reason', async () => {
+    const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = 8; c.unspent = { skill: 1, attr: 1, core: 0 } as any; });
+    const { el, root } = await mount();
+    expect(el.querySelector('button[data-raise="core"]')).toBeNull();
+    expect(el.textContent).not.toMatch(/Core point|its Core|Core points|\d Core\b/);
+    for (const f of el.querySelectorAll('.phc-lu-core > div:first-child')) expect(f.textContent).toMatch(/^(BODY|MIND|SOUL)\D*ceiling 8 at this level$/);
+    expect(el.querySelector('.phc-lu-spend')!.textContent).toBe('1 Skill point · 1 Attribute point');
+    expect(el.querySelector('.phc-lu-ceiling')!.textContent).toBe('Attributes: ceiling 8 at this level (9 from level 6, 10 from level 9)');
+    expect([...el.querySelectorAll('.phc-lu-ceil')].map((x) => x.textContent)).toEqual(['ceiling 8 at this level', 'ceiling 8 at this level', 'ceiling 8 at this level']);
+    // every attribute: what the next point gives (the creation step's line)
+    const per = el.querySelector('.phc-lu-attrcol[data-attr="perception"]')!;
+    expect(per.querySelector('.phc-lu-attr-next')!.textContent).toMatch(/^Next point \(\d\): \+2 tiles of vision, \+10% critical damage, −10% critical damage taken\.$/);
+    expect(el.querySelectorAll('.phc-lu-attr-next').length).toBe(9);
+    // Agility is at the ceiling: its +1 is off and the engine's reason is beside it
+    const agi = el.querySelector('.phc-lu-attrcol[data-attr="agility"]')!;
+    expect((agi.querySelector('button[data-raise="attr"]') as HTMLButtonElement).disabled).toBe(true);
+    expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toBe(canRaise(G.characters[c0.id], 'attr', 'agility'));
+    expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toMatch(/^Agility 9 opens at level 6/);
+    // every skill: its slot in words and what a point gives, from the engine's data
+    const dex = el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!;
+    expect(dex.querySelector('.phc-lu-slot')!.textContent).toBe('FIGHT');
+    expect(dex.querySelector('.phc-lu-give')!.textContent).toBe('Each point: ' + (SKILL as any).dexterity.per_point.text);
+    expect([...agi.querySelectorAll('.phc-lu-slot')].map((x) => x.textContent)).toEqual(['FIGHT', 'SURVIVE', 'TALK · NOTICE']);
+    expect(el.querySelectorAll('.phc-lu-give').length).toBe(27);
+    // the attribute's name opens its page: what a point gives, its three skills, what reads it
+    await React.act(async () => { (agi.querySelector('button.phc-lu-attrname') as HTMLButtonElement).click(); });
+    const page = el.querySelector('.phc-attr-page')!;
+    expect(page.querySelector('h2')!.textContent).toBe('Agility');
+    expect(page.querySelector('.phc-attr-gives')!.textContent).toContain('+0.5 tile of movement an AP');
+    expect([...page.querySelectorAll('button.phc-attr-skill')].map((b) => b.getAttribute('data-skill'))).toEqual(D.skills.filter((k: any) => k.attr === 'agility').sort((a: any, b: any) => 'abg'.indexOf(a.slot[0]) - 'abg'.indexOf(b.slot[0])).map((k: any) => k.id));
+    expect(page.querySelector('.phc-attr-reads')!.textContent).toMatch(/CLASS/);
+    expect(page.querySelector('.phc-attr-reads')!.textContent).toMatch(/CALL/);
+    // a skill on the page opens that skill's own page
+    await React.act(async () => { (page.querySelector('button.phc-attr-skill') as HTMLButtonElement).click(); });
+    expect(el.querySelector('.phc-attr-page')).toBeNull();
+    expect(el.querySelector('.phc-ep-give')!.textContent).toContain('WHAT A POINT GIVES');
     root.unmount();
   });
   it('advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing listed, nothing to learn', async () => {

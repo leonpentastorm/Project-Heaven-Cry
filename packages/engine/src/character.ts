@@ -6,6 +6,7 @@ import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effe
 import { statQuery, setRankRule } from './effects/hooks';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
+import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
@@ -187,26 +188,28 @@ export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m)
 
 // ---------- creation (spec: Creation budget) ----------
 /** Rules 1.11 (item 928): the Core-for-Attribute trade is gone (trade 0): every Core point is placed in a Core. */
-export const BUDGET = { skill: 10, attr: 10, core: 6, trade: 0, cap: 10 };
-/** Mind Without Fog's extra Core points at creation (rules 1.11, item 929: 1; it was 2). */
-export const FOG_CORE = 1;
-/** The creation rules' revision a new sheet is stamped with (rules 1.11). */
-export const SHEET_REV = 111;
+/** Creation budgets (rules 1.13, Skeleton 2.0): 10 Skill and 10 Attribute points, no attribute above 7. Cores are group
+ * names now: nobody spends Core points (`core` is 0 and kept so old callers read a number). */
+export const BUDGET = { skill: 10, attr: 10, core: 0, trade: 0, cap: 10, attrCap: (RULES.character.creation?.attributes as any)?.cap_at_creation ?? 7 };
+/** Mind Without Fog's extra points at creation: 2 Attribute points (rules 1.13; Leon, 10 Nov 2026: its price, no gear
+ * bonuses, is steep now that weapons give so much. It was 1 Core point). */
+export const FOG_CORE = 2;
+/** The creation rules' revision a new sheet is stamped with (rules 1.13). */
+export const SHEET_REV = 113;
 /** The budgets before rules 1.11, for sheets locked in then (no rulesRev): item 931. */
 export const LEGACY_BUDGET = { trade: 2, fog: 2 };
 
 /** Port of the prototype's derive(): what a set of skill points and hand-placed stats spend. */
-export function deriveCreation(skills: Record<string, number>, aSet: Record<string, number> = {}, cSet: Record<string, number> = {}, corePts = BUDGET.core, trade = BUDGET.trade) {
+export function deriveCreation(skills: Record<string, number>, aSet: Record<string, number> = {}, _cSet: Record<string, number> = {}, extraAttr = 0, _trade = 0) {
+  // rules 1.13: one gate (Skill ≤ Attribute). A Core is read off its family: the highest attribute in it.
   const attr: Record<string, number> = {}, core: Record<CoreId, number> = { body: 1, mind: 1, soul: 1 };
   ATTRS.forEach((a) => { attr[a.id] = Math.max(1, aSet[a.id] || 1); });
   SKILLS.forEach((s) => { const p = skills[s.id] || 0; if (p > attr[s.attribute]) attr[s.attribute] = p; });
-  CORES.forEach((c) => { core[c] = Math.max(1, cSet[c] || 1); });
   ATTRS.forEach((a) => { if (attr[a.id] > core[a.core]) core[a.core] = attr[a.id]; });
   const spent = Object.values(skills).reduce((x, y) => x + y, 0);
-  const attrSpent = ATTRS.reduce((t, a) => t + attr[a.id] - 1, 0), coreSpent = CORES.reduce((t, c) => t + core[c] - 1, 0);
-  const attrOver = Math.max(0, attrSpent - BUDGET.attr), traded = trade > 0 ? Math.ceil(attrOver / trade) : 0;
-  const coreLeft = corePts - coreSpent - traded, attrLeft = BUDGET.attr + traded * trade - attrSpent;
-  const ok = coreLeft >= 0 && attrLeft >= 0 && Object.values(attr).every((v) => v <= BUDGET.cap) && Object.values(core).every((v) => v <= BUDGET.cap) && spent <= BUDGET.skill;
+  const attrSpent = ATTRS.reduce((t, a) => t + attr[a.id] - 1, 0), coreSpent = 0, traded = 0;
+  const coreLeft = 0, attrLeft = BUDGET.attr + extraAttr - attrSpent;
+  const ok = attrLeft >= 0 && Object.values(attr).every((v) => v <= BUDGET.attrCap) && spent <= BUDGET.skill;
   return { attr, core, spent, attrSpent, coreSpent, traded, coreLeft, attrLeft, ok };
 }
 
@@ -228,11 +231,7 @@ export function traitGainError(have: string[] | null | undefined, id: string): s
  * its day are tried (the Core-for-Attribute trade at 2; Mind Without Fog's 2 Core points), so it stays legal (item 931). */
 export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'traits' | 'rulesRev'>) {
   const fog = (s.traits || []).includes('mind_without_fog');
-  const d = deriveCreation(s.skills, s.attrs, s.cores, BUDGET.core + (fog ? FOG_CORE : 0));
-  const whole = (x: ReturnType<typeof deriveCreation>) => x.ok && x.spent === BUDGET.skill && x.attrLeft === 0 && x.coreLeft === 0;
-  if (whole(d) || (Number(s.rulesRev) || 0) >= SHEET_REV) return d;
-  const old = deriveCreation(s.skills, s.attrs, s.cores, BUDGET.core + (fog ? LEGACY_BUDGET.fog : 0), LEGACY_BUDGET.trade);
-  return whole(old) ? old : d;
+  return deriveCreation(s.skills, s.attrs, s.cores, fog ? FOG_CORE : 0);
 }
 export function validateSheet(s: Sheet): string | null {
   if (!s.name?.trim()) return 'A character needs a name.';
@@ -248,9 +247,10 @@ export function validateSheet(s: Sheet): string | null {
   if (!whole(s.skills) || !whole(s.attrs) || !whole(s.cores)) return 'Points must be whole numbers from 0 to 10.';
   for (const [id, p] of Object.entries(s.skills)) { if (!SKILL[id]) return 'Unknown skill ' + id; if (p < 0 || p > 10) return 'Skills run 0–10.'; }
   const d = sheetDerive(s);
+  if (Object.values(d.attr).some((v) => v > BUDGET.attrCap)) return 'No attribute above ' + BUDGET.attrCap + ' at creation.';
   if (!d.ok) return 'Those points break the tree or the budgets.';
   if (d.spent !== BUDGET.skill) return 'Spend all 10 Skill points.';
-  if (d.attrLeft !== 0 || d.coreLeft !== 0) return 'Place every Attribute and Core point.';
+  if (d.attrLeft !== 0) return 'Place every Attribute point.';
   return startingMagicError(s, d);
 }
 /** Starting magic (spec: The Magic panel, rules 1.4): 2 Sigil words making a spell, one of them a Reach word (default
@@ -571,7 +571,8 @@ const A = (c: Character, id: string) => c.attrs[id] || 1;
 /** A derived stat after items (plan 2.4): + the items' adds, × their multipliers (effects/hooks.ts statQuery). */
 const fx = (c: Character, stat: string, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
 export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
-export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'durability'));
+// Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
+export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
 export const maxHp = (c: Character) => Math.max(1, Math.round(fx(c, 'hp', 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
 export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed')) + skillRollMod({ c }, 'reaction_speed', { roll: 'initiative' }).add);
 /** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
@@ -596,7 +597,7 @@ export function weaponMultLabel(weaponId: string | null | undefined): string {
   return [...(ph.scales_with as string[]), ...((ph.also_scales?.length ? ph.also_scales : [ph.hits_with]) as string[])].map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1');
 }
 export const critMult = (c: Character) => fx(c, 'crit_damage', 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'dexterity')); // rules 1.12 (item 953): offence reads the alpha (it was Athletics)
-export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'camaraderie'));
+export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'empathy')); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
 export const maxMp = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
 // ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
 export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
@@ -606,8 +607,9 @@ export const soulMult = (c: Character) => 1 + 0.05 * (A(c, 'determination') - 1)
 export const elementalMult = (c: Character) => 1 + 0.1 * (A(c, 'expression') - 1) + 0.05 * P(c, 'visualization');
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
-export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') / 3);
-export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'rumination'));
+// rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
+export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'brain_power') / 3);
+export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 /** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
  * cap, so it never fills an ordinary slot, now or after Brain Power rises). */
@@ -618,11 +620,11 @@ export const soulCastAp = (c: Character) => { void c; return 2; };
 /** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
 export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', P(c, 'empathy') >= 7 ? 2 : P(c, 'empathy') >= 3 ? 1 : 0)));
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
-export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'lore_master')));
+export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
 export const strainLimit = (c: Character) => fx(c, 'strain_limit', 3 + Math.floor(P(c, 'will_power') / 2));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
-export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'empathy') / 2)));
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'will_power') / 2))); // rules 1.13: ready designs are Will Power's (they were Empathy's)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
 const PR = (): any => (SOUL_RULES as any).practice || {};
 const GATES = (): any => (SOUL_RULES as any).gates || {};
@@ -685,8 +687,14 @@ export function soulPickError(c: Character, id: string, via: string): string | n
   return moduleGateError(c, id);
 }
 /** Save bonuses and debuff strength (spec: Conditions and saves). */
-export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = fam === 'body' ? 'guts' : fam === 'brain' ? 'charisma' : 'composure'; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
-export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, fx(c, 'debuff_' + fam, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication'))));
+/** The skill behind each save (rules 1.13): the betas. Body Guts, Brain Rumination (it was Charisma), Heart Composure. */
+export const SAVE_SKILL_OF: Record<'body' | 'brain' | 'heart', string> = { body: 'guts', brain: 'rumination', heart: 'composure' };
+export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = SAVE_SKILL_OF[fam]; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
+/** Debuff strength (rules 1.13, Skeleton 2.0): how hard a condition is to save against is the modifier of the skill
+ * that delivered it (`via`), floor 0. Always points − 1: a gamma that sets a TN never counts its full points. */
+export const strengthOf = (c: Character, via: string) => Math.max(0, mod(P(c, via)));
+/** Every strength above 0, by skill id: what a unit carries into a fight (Unit.dbf; a missing skill reads 0). */
+export const strengthTable = (c: Character): Record<string, number> => Object.fromEntries(SKILLS.map((s) => [s.id, strengthOf(c, s.id)] as [string, number]).filter(([, n]) => n > 0));
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
 /** What counts as each focus: the focus items, and the mana arms that count as one. */
 export const FOCUS_IDS: Record<'evoker' | 'emanator', string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'] };
@@ -716,19 +724,28 @@ export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item ||
 export const mpNow = (c: Character) => (carriesEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
 export const evoChargeNow = (c: Character) => (carriesEvoker(c) ? c.evoCharge ?? 10 : 0);
-export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + mod(P(c, skill)) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
+/** The modifier on a skill CHECK (rules 1.13): a gamma-slot skill adds its full points, every other skill points − 1;
+ * 0 points is −2 either way. Only for checks, Ask and passives: attacks, saves, Initiative and debuff TNs keep mod(). */
+export const checkModOf = (skill: string, p: number) => (p <= 0 ? -2 : SKILL[skill]?.slot === 'gamma' ? p : p - 1);
+export const checkMod = (c: Character, skill: string) => checkModOf(skill, P(c, skill));
+/** Passive Vigilance from a unit's points (traps, hidden piles, hazards, Sigil traps): 10 + the check modifier, the same
+ * rule as a voice hook's passive (rules 1.13, ruling 5). The opposed roll to spot the Hidden in a fight is not this. */
+export const passiveVigilance = (points: number) => 10 + checkModOf('vigilant', points || 0);
+export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + checkMod(c, skill) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
 // ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
 /** Critical damage taken: −10% × (Perception − 1) − 5% × Durability. */
-export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'durability')));
+export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
 export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(0.6, fx(c, 'elemental_taken', 0.1 * P(c, 'pain_threshold'))));
-/** Ambush damage taken: −10% × Reaction Speed. */
-export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'reaction_speed')));
-/** Healing and shields received: +10% × Sensory. */
-export const healReceivedMult = (c: Character) => fx(c, 'heal_received', 1 + 0.1 * P(c, 'sensory'));
+/** Ambush damage taken: −10% × Improvisation (rules 1.13; the skill with the id 'proficiency'; it was Reaction Speed). */
+export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'proficiency')));
+/** Healing received: +10% × Camaraderie (rules 1.13; it was Sensory, and covered shields too). */
+export const healReceivedMult = (c: Character) => fx(c, 'heal_received', 1 + 0.1 * P(c, 'camaraderie'));
+/** Shields received, whatever made them: +10% × Conscience (rules 1.13). */
+export const shieldReceivedMult = (c: Character) => fx(c, 'shield_received', 1 + 0.1 * P(c, 'conscience'));
 /** Counter bonus: mod(Raw Power), minimum 0. */
 export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P(c, 'raw_power'))));
 /** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */
@@ -786,6 +803,12 @@ export function applyLevels(c: Character): number {
   return gained;
 }
 
+/** The highest an attribute may be at a level (rules 1.13; Leon, 10 Nov 2026): 7 at creation, 8 from level 3, 9 from 6,
+ * 10 from 9. A skill can't pass its attribute, so the first Mastered perk comes at level 9 at the earliest. */
+const CAP_BY_LEVEL: [number, number][] = Object.entries(((RULES.character.creation?.attributes as any)?.cap_by_level || { 1: 7, 3: 8, 6: 9, 9: 10 }) as Record<string, number>).map(([l, v]) => [Number(l), Number(v)] as [number, number]).sort((x, y) => x[0] - y[0]);
+export const attrCapAt = (level: number): number => CAP_BY_LEVEL.reduce((cap, [l, v]) => (level >= l ? v : cap), CAP_BY_LEVEL[0][1]);
+/** The level at which an attribute may first reach this value. */
+export const attrCapLevel = (value: number): number => (CAP_BY_LEVEL.find(([, v]) => v >= value) || CAP_BY_LEVEL[CAP_BY_LEVEL.length - 1])[0];
 /** After creation the caps work normally: a skill can't pass its Attribute, an Attribute can't pass its Core. */
 export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: string): string | null {
   if (kind === 'skill') {
@@ -798,13 +821,11 @@ export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: stri
   if (kind === 'attr') {
     if (c.unspent.attr < 1) return 'No Attribute points to spend.';
     const a = ATTRS.find((x) => x.id === id); if (!a) return 'Unknown attribute.';
-    if (A(c, id) + 1 > c.cores[a.core]) return 'Needs a Core point first.';
     if (A(c, id) >= 10) return 'Already at 10.';
+    { const cap = attrCapAt(c.level); if (A(c, id) + 1 > cap) return a.name + ' ' + (A(c, id) + 1) + ' opens at level ' + attrCapLevel(A(c, id) + 1) + ' (the ceiling is ' + cap + ' at level ' + c.level + ').'; }
     return null;
   }
-  if (c.unspent.core < 1) return 'No Core points to spend.';
-  if ((c.cores as any)[id] >= 10) return 'Already at 10.';
-  return null;
+  return 'Cores are not raised: a Core shows the highest attribute of its family.'; // rules 1.13
 }
 
 // ---------- classes (spec: Classes; Class Roster Revision 3) ----------
@@ -972,7 +993,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
   const ban = (ctx: any) => statQuery({ c }, 'equip_ban', ctx).add > 0 ? equipBanWhy(c, ctx) : null;
   if (to === 'main') {
     if (!wid) return 'Only weapons go in the main hand.';
-    const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
+    { const rq = requiresWhy(c, (WEAPON[wid] as any).requires); if (rq) return rq; }
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid); if (sw) return sw; }
     take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType); // a stowed gun keeps the rounds in it (rules 1.3), and their type
@@ -983,12 +1004,17 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (twoHands(c, c.weapon)) return 'Your main-hand weapon needs both hands.';
     if (wid) { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
+    // Rules 1.13 (proposal 13.3): what the weapon or item asks is asked in the off hand too; a second weapon asks 2 more.
+    { const rq = requiresWhy(c, wid ? (WEAPON[wid] as any).requires : item?.requires); if (rq) return rq; }
     if (wid) { const sw = secondWeaponWhy(c, wid, c.weapon); if (sw) return sw; }
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
     // An off-hand gun holds what its pack entry held, as the main hand does (rules 1.9, item 688).
     c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };
   } else {
     const slot = item?.slot; if (!slot || slot === 'off_hand' || item.category !== 'armour') return 'That isn\'t slot armour.';
+    { const rq = requiresWhy(c, item.requires); if (rq) return rq; } // a worn piece that asks a skill
+    // Heavy armour (rules 1.13): a piece that carries an armour class (outer torso, Class 4 and 5) asks Pain Threshold.
+    if (typeof item.armour_class === 'number') { const ag = armourGateWhy(c, item.armour_class); if (ag) return ag; }
     take(); const worn = { ...(c.worn || {}) }; if (worn[slot]) putBack(worn[slot], undefined); worn[slot] = it.item || it.id; c.worn = worn;
   }
   c.pack = pack; return null;
@@ -1043,7 +1069,7 @@ export const magazineSize = (weaponId: string, mods?: string[]) => { const m = W
 export interface ClassResource { id: string; max: number; persist: boolean }
 const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   momentum: () => ({ id: 'momentum', max: 5, persist: false }),
-  guard: () => ({ id: 'guard', max: 5, persist: false }),
+  guard: () => ({ id: 'guard', max: GUARD_RULES.max ?? 5, persist: false }),
   marks: () => ({ id: 'marks', max: 3, persist: false }),
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
@@ -1059,7 +1085,29 @@ export const classResIds = (classId: string | null | undefined): string[] =>
   (classId && revision2Classes() && REV2_CLASSES[classId] ? REV2_CLASSES[classId].resources : classId && CLASS[classId] ? (CLASS[classId].resources || []).filter((r) => RES_RULES[r]) : []);
 export function classResources(c: Character): ClassResource[] {
   const ids = [...new Set([...classResIds(c.classId), ...(advancedActive(c.advancedClass) ? ADV_RES[c.advancedClass!] || [] : [])])];
-  return ids.map((id) => RES_RULES[id](c));
+  const out = ids.map((id) => RES_RULES[id](c));
+  // Rules 1.13, Durability's Guard: anyone with Durability has a Guard pool. A class that brings Guard keeps its own
+  // (the larger of the two is the pool).
+  const pool = guardPool(c);
+  if (pool > 0) { const own = out.find((r) => r.id === 'guard'); if (own) own.max = Math.max(own.max, pool); else out.push({ id: 'guard', max: pool, persist: false }); }
+  return out;
+}
+/** Durability's Guard (rules 1.13; numbers in techniques.json rules.guard, provisional): the pool is the Durability
+ * points, 5 at most; 0 without Durability. */
+const GUARD_RULES: any = (techniquesJ as any).rules?.guard || {};
+export const guardPool = (c: Pick<Character, 'skills'>): number => Math.min(GUARD_RULES.max ?? 5, Math.floor((c.skills?.durability || 0) * (GUARD_RULES.per_durability ?? 1)));
+/** Heavy armour's gate (rules 1.13, proposal 13.3; techniques.json rules.gear_gates.heavy_armour, provisional): outer
+ * torso armour of Class 4 asks Pain Threshold 3, Class 5 asks 5. Returns the refusal, or null. */
+export function armourGateWhy(c: Pick<Character, 'skills'>, armourClass: number): string | null {
+  const g: any = (techniquesJ as any).rules?.gear_gates?.heavy_armour; if (!g) return null;
+  const need = Number(g.classes?.[String(armourClass)] || 0), sk = g.skill || 'pain_threshold';
+  return need && (c.skills?.[sk] || 0) < need ? 'Class ' + armourClass + ' armour needs ' + (SKILL[sk]?.name || sk.replace('_', ' ')) + ' ' + need + '.' : null;
+}
+/** What a weapon or an item asks of its wearer (`requires`: skill → points): the refusal, or null. */
+export function requiresWhy(c: Pick<Character, 'skills'>, need: Record<string, number> | null | undefined, what?: string): string | null {
+  void what; // the words are the main hand's own (kept: screens and tests read them)
+  for (const [sk, n] of Object.entries(need || {})) if ((c.skills?.[sk] || 0) < (n as number)) return 'Needs ' + sk.replace(/_/g, ' ') + ' ' + n + '.';
+  return null;
 }
 /** Refill the persisting resources (a long rest). */
 export function restockResources(c: Character) { for (const r of classResources(c)) if (r.persist) (c.res ||= {})[r.id] = r.max; }

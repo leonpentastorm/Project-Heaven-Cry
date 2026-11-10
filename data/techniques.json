@@ -6,7 +6,35 @@
     "momentum": {
       "max": 3,
       "fighter_max": 5,
-      "variety_bonus": 1
+      "start": 1,
+      "strike_cost": 1,
+      "opener_cost": 1,
+      "first_opener_free": true,
+      "step_loss": 1,
+      "hit_loss": 1
+    },
+    "guard": {
+      "max": 5,
+      "per_durability": 1,
+      "gain_base": 1,
+      "gain_per_point": 1,
+      "shield_gain": 1,
+      "brace_gain": 2,
+      "brace_shield_gain": 1,
+      "soak": 10,
+      "keep_back": 1,
+      "pressure_per_point": 1,
+      "interpose_durability": 3,
+      "interpose_cost": 1
+    },
+    "gear_gates": {
+      "heavy_armour": {
+        "skill": "pain_threshold",
+        "classes": {
+          "4": 3,
+          "5": 5
+        }
+      }
     },
     "pressure": {
       "max": 4,
@@ -116,7 +144,8 @@
       "arc": "It flies over. Indirect fire.",
       "silent": "No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden.",
       "loud": "A cannon in the hand. A miss still gives Pressure; saves against it are harder.",
-      "drawn": "Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight."
+      "drawn": "Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight.",
+      "shield": "Carried in the off hand. It lends its own techniques, which run on Guard and Momentum."
     },
     "provisional": true
   },
@@ -229,7 +258,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it works.",
+      "text": "No damage. The target makes a Brain save against 12 + half your strength with the weapon's skill. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer.",
       "lines": [
         {
           "props": [
@@ -308,7 +337,7 @@
       "needs": {
         "hidden": true
       },
-      "text": "Strike as an ambush: the ambush's extra damage, and a critical on 19 or 20. You gain 2 Momentum instead of 1.",
+      "text": "Strike as an ambush: the ambush's extra damage, and a critical on 19 or 20. It costs no Momentum.",
       "lines": [
         {
           "props": [
@@ -328,7 +357,7 @@
       "home": [],
       "particular": false,
       "numbers": {
-        "momentum": 2,
+        "momentum_cost": 0,
         "point_crit_min": 18,
         "bare_rounds": 1
       },
@@ -529,7 +558,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits.",
+      "text": "Two strikes at ×0.6 at one target, the second at −1 to hit.",
       "lines": [
         {
           "props": [
@@ -759,7 +788,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It counts as a hit for Momentum.",
+      "text": "Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum.",
       "lines": [],
       "free": true,
       "comes_with": [],
@@ -817,7 +846,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn.",
+      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard: 1, +1 for each Durability point above 1, +1 with a shield.",
       "lines": [
         {
           "props": [
@@ -855,7 +884,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Push an enemy next to you 1 tile, or knock it Prone if it can't move back. It gives Momentum when it works.",
+      "text": "Push an enemy next to you 1 tile, or knock it Prone if it can't move back.",
       "lines": [
         {
           "props": [
@@ -2711,6 +2740,153 @@
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
+    },
+    {
+      "id": "shield_bash",
+      "name": "Shield Bash",
+      "system": "melee",
+      "group": "strike",
+      "number": 29,
+      "ap": {
+        "base": "flat",
+        "value": 2
+      },
+      "rounds": 0,
+      "needs": {
+        "shield": true
+      },
+      "text": "Strike with the shield: bare-hand damage ×1.5, hitting with Raw Power. It costs 1 Guard in place of 1 Momentum. On a hit you gain 1 Momentum, and the target makes a Body save or is pushed 1 tile.",
+      "lines": [],
+      "free": false,
+      "comes_with": [
+        "shield"
+      ],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "mult": 1.5,
+        "momentum_cost": 0,
+        "guard_cost": 1,
+        "momentum_on_hit": 1,
+        "push": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "raise_shield",
+      "name": "Raise Shield",
+      "system": "melee",
+      "group": "link",
+      "number": 30,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {
+        "shield": true
+      },
+      "text": "Turn Momentum into Guard, 1 for 1, as much as you choose up to your pool. Until your next turn, ranged attacks from the front are at −2 to hit you.",
+      "lines": [],
+      "free": false,
+      "comes_with": [
+        "shield"
+      ],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "ranged_defense": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self"
+    },
+    {
+      "id": "grapple",
+      "name": "Grapple",
+      "system": "melee",
+      "group": "link",
+      "number": 33,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Grab an enemy next to you: it saves (Body) or is Grappled until it breaks free. No damage. Given by the perk Iron Grip.",
+      "lines": [],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {},
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy",
+      "perk": "iron_grip"
+    },
+    {
+      "id": "shield_wall",
+      "name": "Shield Wall",
+      "system": "melee",
+      "group": "answer",
+      "number": 31,
+      "ap": {
+        "base": "reaction"
+      },
+      "rounds": 0,
+      "needs": {
+        "shield": true
+      },
+      "text": "Spend 1 Guard: your ally counts as behind half cover against that attack.",
+      "trigger": "an ally next to you is the target of a ranged attack",
+      "lines": [],
+      "free": false,
+      "comes_with": [
+        "shield"
+      ],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "guard_cost": 1,
+        "reach": 1,
+        "half_cover": 5
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "none"
+    },
+    {
+      "id": "interpose",
+      "name": "Interpose",
+      "system": "melee",
+      "group": "answer",
+      "number": 32,
+      "ap": {
+        "base": "reaction"
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Spend 1 Guard: you take the hit instead. Your armour applies, and the Guard you have left soaks it.",
+      "trigger": "an ally next to you is hit by an attack",
+      "lines": [],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "innate": {
+        "skill": "durability",
+        "min": 3
+      },
+      "numbers": {
+        "guard_cost": 1,
+        "reach": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "none"
     }
   ]
 }

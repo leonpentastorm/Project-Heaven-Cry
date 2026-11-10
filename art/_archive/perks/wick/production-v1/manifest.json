@@ -169,7 +169,7 @@
     },
     {
       "id": "grapple",
-      "data_id": "grapple",
+      "data_id": "iron_grip",
       "name": "Grapple",
       "family": "perks",
       "order": 8,
@@ -335,7 +335,7 @@
     },
     {
       "id": "origami-hands",
-      "data_id": "origami_hands",
+      "data_id": "both_hands",
       "name": "Origami Hands",
       "family": "perks",
       "order": 15,

@@ -48,7 +48,9 @@ export function startingTechniqueSlots(c: Pick<Character, 'skills'>): { melee: n
   return { melee: skillOf(c, 'raw_power') || skillOf(c, 'dexterity') ? st.melee : 0, ranged: skillOf(c, 'dexterity') ? st.ranged : 0 };
 }
 /** What the Kit step may offer: every technique of that system that isn't free and isn't a reaction-only rarity. */
-export const startingTechniqueChoices = (system: TechSystem): string[] => TECHNIQUES.filter((t) => t.system === system && !t.free).map((t) => t.id);
+export const startingTechniqueChoices = (system: TechSystem): string[] => TECHNIQUES.filter((t) => t.system === system && !t.free && !given(t)).map((t) => t.id);
+/** A technique nobody learns, readies or picks: a shield gives it while it is held, or a skill gives it (rules 1.13). */
+export const given = (t: TechDef | null | undefined): boolean => !!t && (!!t.needs?.shield || !!t.innate || !!t.perk);
 /** Creation's check on a sheet's picks (Sheet.techniques): the right number, known ids, one melee Opener. */
 export function startingTechniquesError(s: { skills: Record<string, number>; techniques?: { melee?: string[]; ranged?: string[] } }): string | null {
   const pick = s.techniques; if (!pick) return null; // none sent: the defaults
@@ -56,7 +58,7 @@ export function startingTechniquesError(s: { skills: Record<string, number>; tec
   for (const sys of ['melee', 'ranged'] as TechSystem[]) {
     const ids = pick[sys] || [];
     if (new Set(ids).size !== ids.length) return 'Pick two different techniques.';
-    if (ids.some((id) => TECHNIQUE[id]?.system !== sys || TECHNIQUE[id]?.free)) return 'That technique can\'t be picked here.';
+    if (ids.some((id) => TECHNIQUE[id]?.system !== sys || TECHNIQUE[id]?.free || given(TECHNIQUE[id]))) return 'That technique can\'t be picked here.';
     if (ids.length !== slots[sys]) return slots[sys] ? 'Pick ' + slots[sys] + ' ' + sys + ' techniques.' : 'This build has no ' + sys + ' skill to pick ' + sys + ' techniques with.';
   }
   if (slots.melee && !(pick.melee || []).some((id) => TECHNIQUE[id].group === 'opener')) return 'One of the melee techniques must be an Opener.';
@@ -115,7 +117,7 @@ export function picksOwed(c: Character | null | undefined, weaponId: string): nu
 /** What a pick from this weapon's bar may be: any technique of the weapon's system the character doesn't know. */
 export function pickable(c: Character | null | undefined, weaponId: string): string[] {
   const sys = weaponSystem(weaponId), known = new Set(physOf(c).known);
-  return TECHNIQUES.filter((t) => t.system === sys && !t.free && !known.has(t.id)).map((t) => t.id);
+  return TECHNIQUES.filter((t) => t.system === sys && !t.free && !given(t) && !known.has(t.id)).map((t) => t.id);
 }
 /** Drill multiplier by class (the Body classes learn weapons faster). */
 export const drillMult = (c: Character | null | undefined): number => ((PHYS_RULES.drill.martial_classes as string[]).includes((c as any)?.classId || '') ? PHYS_RULES.drill.martial_mult : 1);

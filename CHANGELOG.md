@@ -8,6 +8,29 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.19.0 — 10 November 2026
+
+Branch `claude/charming-gauss-hbq4n0`: **Skeleton 2.0** (rules 1.13), the skill-web pass. Design: `docs/design/proposals/2026-11-nine-doors.md` sections 13 to 20; plan and progress log: `docs/design/handoffs/skeleton-2.0-PLAN.md`. A new save is needed: characters made before this version don't carry over.
+
+- **The rule of the web.** In every attribute the **alpha** skill is how you fight, the **beta** how you survive, the **gamma** how you talk and notice. Numbers moved to match: HP a level is Pain Threshold's; critical damage taken Acuity's; ambush damage taken Improvisation's; Sigil range and core saving Brain Power's; Soul range and ready designs Will Power's; healing given Empathy's, healing received Camaraderie's, shields received Conscience's; Karma Authority's.
+- **Cores are no longer spent.** Body, Mind and Soul are group names. Creation is 10 Skill and 10 Attribute points with no attribute above 7; the attribute ceiling is 8 from level 3, 9 from level 6 and 10 from level 9, so a first Mastered perk comes at level 9 at the earliest. No Core points from levels. Mind Without Fog gives 2 Attribute points.
+- **Names and slots.** Analysis is **Acuity** (under Perception) and holds Analyse and the detective perks; Proficiency is **Improvisation** (under Expression) and holds Field Repair and the fix-it perks, with a new EPCCG speaker (Drava Keel, Suggested). Implication is **Insinuation**, Vigilant **Vigilance**, Sensory **Senses**. Composure is the beta and the Heart save; Lore Master is the gamma.
+- **Saves:** Body Guts, Brain Rumination, Heart Composure. **How hard a condition is to save against** comes from the skill that delivered it (Raw Power for a blow, Dexterity for a shot, Brain Power for a Sigil, Will Power for an Outburst, Faith for a prayer, Ingenuity for a trap, the gamma that spoke for words). A technique's save is 12 + half that strength.
+- **A gamma skill rolls 1 better on checks** (its full points), and the Narrator is told to call a gamma first when a character talks to someone.
+- **The nine Calls** (a new tab in a fight), one for each gamma, on one ladder by the skill's points: Order, Rally, Brief, Name It, Cue, Spot, Warn, Threaten, Taunt. Elites and bosses use a few.
+- **Momentum reworked.** Only the plain attack gives it; a Strike or an Opener spends 1 (your first Opener of a fight is free); you start a fight with 1; each tile you walk and each hit you take costs 1, unless you are guarding; it carries between turns. The variety bonus is gone.
+- **Guard for anyone with Durability:** a pool of your Durability points (5 at most), filled by Brace and the Guard technique; each point soaks 10 damage; Interpose from Durability 3. **Shield techniques:** Shield Bash, Raise Shield, Shield Wall.
+- **Perks and traits:** Heavy Hands, Follow Through, Iron Grip (it gives the **Grapple** technique) and Both Hands replace Shove, Break, Grapple and Origami Hands; Weak Point is Read Them; eight perks that handed out AP from an alpha or a beta give defence instead; Stand Still and Still Water are back to their originals; traits follow Acuity or Improvisation by what they meant.
+- **Gear gates:** servo-fist Raw Power 3, core rifle Dexterity 3, banner Empathy 3, heavy armour Pain Threshold 3 or 5; the off hand is checked.
+- **Screens:** the creation points step rebuilt around the one gate (click a skill and its attribute follows; every refusal says why; undo and reset); level-up without Cores and with the ceiling; archetype cards with nine attributes; skill and attribute pages in plain words; tab rows wrap to two lines; the shield block and Guard on the Attack tab.
+- **13 archetypes re-pointed** so each card still does what it says.
+- **Provisional numbers:** spec section 14, items 955 to 1006.
+- **Known:**
+  - The Calls have no effects of their own on screen yet, and no icons.
+  - New art wanted: icons for Iron Grip and Both Hands (they reuse the old ones), and Breaching Strike's and Nothing Gets Past's icons no longer match what the perks do.
+  - A Legendary Deed still says "+1 Core point", which gives nothing (item 1006).
+  - The four playstyles this pass leaves open (Ingenuity's stealth list, Visualization's Figments, the full shield-and-guard list, Empathy's tending and songs), Weapon Arts and tri-scale armour are queued (`docs/ROADMAP.md`).
+
 ## 0.18.1 — 10 November 2026
 
 Fixes after 0.18.0, straight on the base branch (Leon's playtest notes and his rulings on lane B's open points).

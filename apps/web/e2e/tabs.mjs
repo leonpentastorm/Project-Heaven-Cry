@@ -1,7 +1,7 @@
 // The combat action tabs (Move · Attack · Utility · Sigils · Outbursts) in the Proving Ground, at 1440×900 and
 // 1280×720 (deviceScaleFactor 1): every tab on your turn, the Outburst design cards and the glyph keyboard open, the
 // footer's Confirm always on screen, and the page itself never scrolls during a turn (the grid stays in view).
-// Also: keyboard (1–6 and arrows), the cut-in picking an action switches the tab, the last tab is remembered, and a
+// Also: keyboard (1–9 and arrows; the row wraps onto a second line when the tabs don't fit), the cut-in picking an action switches the tab, the last tab is remembered, and a
 // narrow window (900 px) keeps the tab bar and Confirm stuck to the bottom.
 // Screenshots: e2e/shots/tabs-*.png.
 import { chromium, click, BASE, OUT, pickAction } from './lib.mjs';
@@ -91,12 +91,17 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     await p.keyboard.press('End'); await p.waitForTimeout(120); const e1 = await selTab();
     await p.keyboard.press('Home'); await p.waitForTimeout(120); const h1 = await selTab();
     await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(120); const w1 = await selTab();
-    ok('End / Home / wrap-around: ' + [e1, h1, w1].join(' → '), e1 === 'outbursts' && h1 === 'move' && w1 === 'outbursts');
+    // (the last tab is Calls for a character with a talking skill, else Outbursts)
+    const lastTab = await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').last().getAttribute('data-tab');
+    ok('End / Home / wrap-around: ' + [e1, h1, w1].join(' → '), e1 === lastTab && h1 === 'move' && w1 === lastTab);
     const tabsel = await p.locator('[role="tabpanel"]').getAttribute('aria-labelledby');
-    ok('the tab panel is labelled by its tab (' + tabsel + ')', tabsel === 'phc-tab-outbursts');
+    ok('the tab panel is labelled by its tab (' + tabsel + ')', tabsel === 'phc-tab-' + lastTab);
+    // the row wraps onto a second line when the tabs don't fit: nothing scrolls sideways, nothing is cut
+    const wrapT = await p.evaluate(() => { const l = document.querySelector('[role="tablist"][aria-label="Actions"]'); return { wrap: getComputedStyle(l).flexWrap, over: l.scrollWidth - l.clientWidth, rows: new Set([...l.querySelectorAll('[role="tab"]')].map((t) => Math.round(t.getBoundingClientRect().top))).size }; });
+    ok('the tab row wraps (' + wrapT.rows + ' line' + (wrapT.rows > 1 ? 's' : '') + ') and never scrolls sideways', wrapT.wrap === 'wrap' && wrapT.over <= 1 && wrapT.rows <= 2);
     // Typing in the Say box never flips tabs.
     const say = p.getByLabel(/^Say something/);
-    if (await say.count()) { await say.focus(); await p.keyboard.press('2'); await p.waitForTimeout(120); ok('typing 2 in the Say box leaves the tab alone', (await selTab()) === 'outbursts'); await say.fill(''); }
+    if (await say.count()) { await say.focus(); await p.keyboard.press('2'); await p.waitForTimeout(120); ok('typing 2 in the Say box leaves the tab alone', (await selTab()) === lastTab); await say.fill(''); }
     // A tile that implies an action switches to its tab: a hostile under Move → Attack.
     await p.keyboard.press('Escape').catch(() => {}); await p.mouse.click(1100, 30);
     await pickAction(p, /^Move\b/); await p.waitForTimeout(150);

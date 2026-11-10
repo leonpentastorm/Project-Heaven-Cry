@@ -1,5 +1,5 @@
-// Level up, ported from design/canvas-build/levelup.logic.js onto the real character: spend skill, Attribute and
-// Core points under the tree's caps, take perk steps, and earn a class at level 3 (Class Roster Revision 3: the class
+// Level up, ported from design/canvas-build/levelup.logic.js onto the real character: spend Skill and Attribute
+// points under the tree's caps (a skill never above its attribute; an attribute never above the level's ceiling), take perk steps, and earn a class at level 3 (Class Roster Revision 3: the class
 // of the highest attribute; on a tie, the player picks among the tied, and the pick is for good).
 // Layout (Leon, 7 Nov 2026: "the level up screen is super lopsided"): at level 3 the class picker runs the full width
 // on top (up to nine cards, three to a row, then a confirm bar: the choice is permanent); the right third is the class
@@ -13,12 +13,11 @@
 // waiting: one click takes it), locked (until the next step), and the Mastered perk. Every number is the engine's
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, mod } from './shared';
-import { CLASS, PERK, PERKS, canRaise, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
+import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, perPoint, ceilingLine } from './shared';
+import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 
-const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const PERK_ICON = {};
 D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ICON[p.id] = p.icon; }); if (s.ep.mastered) PERK_ICON[s.ep.mastered.id] = s.ep.mastered.icon; });
 // A skill's perks (perks.json): its two acquired perks (Tier I, then II) and its Mastered perk.
@@ -79,13 +78,13 @@ export class LevelUpLogic extends DCLogic {
       intro: onlyOne ? 'Your highest attribute is ' + tiedAttrs[0] + ' ' + offered[0].total + ', so the ' + CLASS[offered[0].id].name + ' has found you.'
         : offered.length === 9 ? 'All nine attributes are tied at ' + offered[0].total + ', so every class is open to you. Choose the one you mean to be.'
           : tiedAttrs.slice(0, -1).join(', ') + ' and ' + tiedAttrs[tiedAttrs.length - 1] + ' are tied at ' + offered[0].total + ' as your highest attributes: choose among their classes.',
-      hint: c.unspent.attr || c.unspent.core ? 'You still have Attribute or Core points to spend below: raising an attribute first can change what is on offer.' : '',
-      hasHint: !!(c.unspent.attr || c.unspent.core), count: offered.length + (offered.length === 1 ? ' CLASS ON OFFER' : ' CLASSES ON OFFER'),
+      hint: c.unspent.attr ? 'You still have Attribute points to spend below: raising an attribute first can change what is on offer.' : '',
+      hasHint: !!c.unspent.attr, count: offered.length + (offered.length === 1 ? ' CLASS ON OFFER' : ' CLASSES ON OFFER'),
       hasSel: !!sel, noSel: !sel, confirmLabel: selK ? 'Become ' + (/^[AEIOU]/.test(selK.name) ? 'an ' : 'a ') + selK.name : '', selIcon: sel ? emblemOf(sel).icon : '',
       confirm: () => { if (sel) { act({ type: 'levelup/class', charId: c.id, classId: sel }); this.setState({ pickCls: null }); } },
       confirmStyle: 'min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; border-radius: 10px; border: 0; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer',
     };
-    // ---------- the character tree: Cores → Attributes → Skills, each skill with its perks ----------
+    // ---------- the character tree: the three families (headings only) → Attributes → Skills, each skill with its perks ----------
     const pend = {}; for (const x of pendingPerkSteps(c)) pend[x.skill] = x;
     const held = (id) => (c.perks || []).find((h) => h.id === id) || null;
     const raiseStyle = (ok, ink) => 'flex: none; min-width: 34px; min-height: 30px; padding: 0 8px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: ' + (ok ? 'pointer' : 'not-allowed') + '; border: 1px solid ' + (ok ? ink : '#2E3A50') + '; background: transparent; color: ' + (ok ? ink : LOCKED);
@@ -115,7 +114,8 @@ export class LevelUpLogic extends DCLogic {
       const p = c.skills[s.id] || 0, ink = ATTR[s.attr].ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], free = x ? x.free || 1 : 0;
       const m = MASTERED[s.id], mh = m ? held(m.id) : null, un = (SKILL[s.id] && SKILL[s.id].unlocks) || {}, np = p + 1;
       const brings = np > 10 ? '' : [STEP_AT.includes(np) ? 'M' + (STEP_AT.indexOf(np) + 1) + ': a perk step' : np === 10 ? 'Mastered: ' + (m ? m.name : 'its Mastered perk') : '', un[np] && un[np].name && np <= 5 ? 'unlocks ' + un[np].name : ''].filter(Boolean).join(' · ');
-      return { key: s.id, img: s.img, name: s.name, pts: p, mod: (mod(p) >= 0 ? '+' : '') + mod(p),
+      const [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
+      return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + ink, give: 'Each point: ' + perPoint(s.id), mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (free ? ' phc-lu-step' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }), raiseStyle: raiseStyle(!why, ink), raiseLabel: 'Raise ' + s.name,
         hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!(c.unspent.skill && !why && brings), next: 'Next point (' + np + '): ' + brings,
@@ -130,17 +130,20 @@ export class LevelUpLogic extends DCLogic {
         nameStyle: 'font-size: 14px; font-weight: 700; line-height: 1.15; color: ' + ink,
         style: 'display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (free ? '#FFFFFF' : '#232D3F') + '; border-left: 3px solid ' + ink + (free ? '; box-shadow: 0 0 0 1px rgba(255,255,255,0.25)' : '') };
     };
+    const cap = attrCapAt(c.level), ceil = ceilingLine(c.level);
     const tree = ['body', 'mind', 'soul'].map((k) => {
-      const ink = D.core[k], cw = canRaise(c, 'core', k);
-      return { key: k, name: k.toUpperCase(), label: k.charAt(0).toUpperCase() + k.slice(1) + ' core', word: WORDS[c.cores[k]], val: c.cores[k], dia: dia(10, c.cores[k], ink),
-        canRaise: !!c.unspent.core, blocked: !!cw, why: nice(cw), hasWhy: !!(cw && c.unspent.core && c.cores[k] < 10), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'core', id: k }), raiseStyle: raiseStyle(!cw, ink), raiseLabel: 'Raise ' + k.charAt(0).toUpperCase() + k.slice(1),
-        nameStyle: 'font-size: 16px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink, valStyle: 'font-size: 28px; font-weight: 700; line-height: 1; color: ' + ink,
+      const ink = D.core[k];
+      return { key: k, name: k.toUpperCase(), label: k.charAt(0).toUpperCase() + k.slice(1), about: (D.coreText && D.coreText[k] && D.coreText[k][0]) || '', ceil,
+        nameStyle: 'font-size: 16px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
         style: 'display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-top: 3px solid ' + ink,
         attrs: D.attrs.filter((a) => a.core === k).map((a) => { const aw = canRaise(c, 'attr', a.id), v = c.attrs[a.id] || 1;
-          return { key: a.id, name: a.name, val: v, pips: dia(10, v, a.ink), cap: 'Its skills go up to ' + v + '.',
+          return { key: a.id, name: a.name, val: v, pips: dia(10, v, a.ink).map((d, i) => (i >= cap ? { style: d.style + '; opacity: 0.35' } : d)), cap: 'Its skills go up to ' + v + '.',
+            // What a point gives (the creation step's lines), and the change before the point is placed.
+            next: v >= 10 ? 'At 10, the top. Each point gave: ' + ATTR_GIVES[a.id] + '.' : v >= cap ? 'At ' + v + ', the ' + ceil + '. Each point: ' + ATTR_GIVES[a.id] + '.' : 'Next point (' + (v + 1) + '): ' + ATTR_GIVES[a.id] + '.',
+            open: () => this.setState({ epccg: null, attrPage: a.id }), openLabel: a.name + ': what it gives', openStyle: 'padding: 0; border: 0; background: none; font-family: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
             canRaise: !!c.unspent.attr, blocked: !!aw, why: nice(aw), hasWhy: !!(aw && c.unspent.attr && v < 10), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }), raiseStyle: raiseStyle(!aw, a.ink), raiseLabel: 'Raise ' + a.name,
             nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink, valStyle: 'font-size: 20px; font-weight: 700; line-height: 1; color: ' + a.ink,
-            skills: D.skills.filter((sk) => sk.attr === a.id).map(skillCard) }; }) };
+            skills: D.skills.filter((sk) => sk.attr === a.id).sort((x, y) => SLOT_ORDER[x.slot] - SLOT_ORDER[y.slot]).map(skillCard) }; }) };
     });
     // ---------- the perk steps waiting (the skill cards hold them; these jump there) ----------
     const steps = pendingPerkSteps(c).map((x) => ({ key: x.skill, name: SKILL[x.skill].name, n: x.free || 1,
@@ -174,7 +177,7 @@ export class LevelUpLogic extends DCLogic {
     };
     const left = c.unspent.skill;
     const owed = pendingPerkSteps(c).reduce((n, x) => n + (x.free || 1), 0); // steps owed, not skills (a 2→5 jump owes two)
-    const allDone = !left && !c.unspent.attr && !c.unspent.core && !choosing && !steps.length;
+    const allDone = !left && !c.unspent.attr && !choosing && !steps.length;
     return {
       ...epccgVals(this), ...lightboxVals(this), zoomPc: zoomer(this, c.portrait, c.name, 'portrait'), pc: c.portrait, name: c.name,
       kicker: 'LEVEL ' + c.level + ' · ' + c.xp.toLocaleString() + ' XP', title: c.name + (choosing ? ' reaches level ' + c.level : ' grows'), hpChip: 'MAX HP ' + maxHp(c),
@@ -183,11 +186,12 @@ export class LevelUpLogic extends DCLogic {
       classChip: c.classId ? '✓ ' + k.name.toUpperCase() + ' ' + ROMAN_RANK[rank] : c.level >= 3 ? '◆ CHOOSE A CLASS' : 'CLASS AT LEVEL 3', classChipStyle: chip(!!c.classId || c.level < 3), hasClassIcon: !!c.classId, classIcon: em.icon,
       choosing, classCards, pick, cls,
       tree, steps, hasSteps: steps.length > 0,
-      spend: [left ? left + ' Skill' : '', c.unspent.attr ? c.unspent.attr + ' Attribute' : '', c.unspent.core ? c.unspent.core + ' Core' : ''].filter(Boolean).join(' · ') || 'Nothing to spend',
-      spendHead: left || c.unspent.attr || c.unspent.core ? 'TO SPEND' : 'ALL POINTS SPENT',
-      rules: 'A skill can\'t pass its Attribute, an Attribute can\'t pass its Core; 10 is the top. Each Mastery level (3, 5, 7, 9 points) gives one perk step: one of the skill\'s two perks at Tier I, or a Tier I raised to Tier II. 10 points give the skill\'s Mastered perk.',
+      spend: [left ? left + ' Skill point' + (left > 1 ? 's' : '') : '', c.unspent.attr ? c.unspent.attr + ' Attribute point' + (c.unspent.attr > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Nothing to spend',
+      ceil: 'Attributes: ' + ceil + (cap < 10 ? ' (' + [8, 9, 10].filter((n) => n > cap).map((n) => n + ' from level ' + attrCapLevel(n)).join(', ') + ')' : ''),
+      spendHead: left || c.unspent.attr ? 'TO SPEND' : 'ALL POINTS SPENT',
+      rules: 'A skill can\'t be higher than the attribute above it, and an attribute can\'t pass the ceiling for your level; 10 is the top. Each Mastery level (3, 5, 7, 9 points) gives one perk step: one of the skill\'s two perks at Tier I, or a Tier I raised to Tier II. 10 points give the skill\'s Mastered perk.',
       stepsHead: owed ? 'PERK STEPS WAITING · ' + owed : '',
-      pointsNote: 'Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Every 3rd level (to 18): +1 Core point. Unspent points keep.',
+      pointsNote: 'Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.',
       done: () => go(g.phase === 'combat' ? 'combat' : 'main', { levelupChar: null }), doneLabel: allDone ? 'Done · back to the story' : 'Back to the story (finish later)',
       doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (allDone ? 'background: #6FEA77; color: #0A0D13' : 'background: #1C2536; color: #E7EBF3'),
     };

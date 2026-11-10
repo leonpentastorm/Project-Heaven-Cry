@@ -47,16 +47,16 @@ describe('Charge', () => {
 });
 
 describe('Feint: an enemy\'s Brain debuff strength is its tier\'s', () => {
-  for (const [tier, tn] of [['minion', 14], ['soldier', 15], ['elite', 16], ['boss', 16]] as const) it(tier, () => {
+  for (const [tier, tn] of [['minion', 14], ['soldier', 15], ['elite', 15], ['boss', 15]] as const) it(tier, () => {
     const f = physFight([{ weapon: 'sabre' }], [{ at: 'D5', tier, weapon: 'sabre' }]);
     f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); (f.unit(f.foe.id) as any).techs = ['feint']; f.unit(f.foe.id).ap = 6;
     const pv = f.pv('feint', { targetId: f.pc.id }, f.foe); expect(pv.ok).toBe(true);
-    expect(pv.saves?.[0]).toMatchObject({ unit: f.pc.id, skills: ['brain'], tn }); // 12 + debuff + 2 (sabre: Light)
+    expect(pv.saves?.[0]).toMatchObject({ unit: f.pc.id, skills: ['brain'], tn }); // 12 + half the tier's number, rounded up, + 2 (sabre: Light)
   });
 });
 
 describe('riders go on the unit really struck (a redirected attack)', () => {
-  const mk = (weapon: string, known: string[], m = 0) => {
+  const mk = (weapon: string, known: string[], m = 1) => { // 1: a Strike spends 1 Momentum
     const f = physFight([{ weapon, known, skills: SK }], [{ at: 'D5', tier: 'elite' }, { at: 'D6', tier: 'elite' }]);
     f.put(f.pc, 'C5'); f.foes.forEach((x, i) => { f.put(x, i ? 'D6' : 'D5'); Object.assign(f.unit(x.id), { hp: 999, maxHp: 999, armour: 10 }); });
     f.turn(f.pc); f.momentum(f.pc, m); f.foes.forEach((x) => saves(f, x, -99)); rig({ hit: true, die: 12 });
@@ -96,7 +96,7 @@ describe('Flurry (Bare): the +1 lands on the save the next Bind or Throw Down fo
   const mk = () => {
     const f = physFight([{ weapon: 'fists', known: ['flurry', 'bind', 'throw_down'], skills: SK }], [{ at: 'D5', tier: 'soldier' }, { at: 'C4', tier: 'soldier' }]);
     f.put(f.pc, 'C5'); f.foes.forEach((x, i) => { f.put(x, i ? 'C4' : 'D5'); Object.assign(f.unit(x.id), { hp: 999, maxHp: 999 }); });
-    f.turn(f.pc); f.unit(f.pc.id).ap = 9; rig({ hit: true, die: 12 });
+    f.turn(f.pc); f.unit(f.pc.id).ap = 9; f.momentum(f.pc, 3); rig({ hit: true, die: 12 }); // Flurry and Bind are Strikes (1 Momentum each); Throw Down needs 2
     expect(f.tech('flurry', { targetId: f.foes[0].id, line: 'bare' })).toBeNull(); rig(null);
     expect((f.unit(f.pc.id) as any).setUp).toMatchObject({ target: f.foes[0].id, hit: 1, only: ['bind', 'throw_down'] });
     return f;
@@ -104,12 +104,13 @@ describe('Flurry (Bare): the +1 lands on the save the next Bind or Throw Down fo
   it('Bind (Bare): the grapple save is 1 harder, and the mark is spent', () => {
     const f = mk(); expect(f.pv('bind', { targetId: f.foes[0].id }).notes.join(' ')).toMatch(/Flurry: the save is 1 harder/);
     saves(f, f.foes[0], 50); expect(f.tech('bind', { targetId: f.foes[0].id })).toBeNull();
-    expect(f.cb.log.slice(-3).join(' ')).toMatch(/vs 13\)/); expect((f.unit(f.pc.id) as any).setUp).toBeUndefined();
+    // rules 1.13: a bare-handed grapple is saved against 12 + Raw Power strength (Raw Power 4 = 3), and Flurry's +1
+    expect(f.cb.log.slice(-3).join(' ')).toMatch(/vs 16\)/); expect((f.unit(f.pc.id) as any).setUp).toBeUndefined();
   });
   it('Throw Down (Bare): the occupant\'s Prone save is 1 harder', () => {
     const f = mk(); f.bound(() => applyCond(f.cb, f.g.rng, f.unit(f.pc.id), f.unit(f.foes[0].id), 'grappled', undefined, undefined, { skipSave: true } as any));
     const pv = f.pv('throw_down', { targetId: f.foes[0].id, tile: f.tile('C4') }); expect(pv.ok).toBe(true);
-    expect(pv.saves?.find((s) => s.unit === f.foes[1].id)?.tn).toBe(13);
+    expect(pv.saves?.find((s) => s.unit === f.foes[1].id)?.tn).toBe(13 + 2);
   });
 });
 
@@ -146,7 +147,7 @@ describe('Links', () => {
   };
   it('Shove: a push an item cancels (Siege Engine) gives no Momentum', () => {
     const f = fight('sabre', [{ weapon: 'sabre', perks: { siege_engine: 'achieved' } }], [{ at: 'J9' }]);
-    const s = f.pcs[1]; f.unit(s.id).side = 'foe'; f.put(s, 'D7'); Object.assign(f.unit(s.id), { strength: -50 }); f.unit(f.pc.id).strength = 20; quiet(f);
+    const s = f.pcs[1]; f.unit(s.id).side = 'foe'; f.put(s, 'D7'); Object.assign(f.unit(s.id), { strength: -50 }); f.unit(f.pc.id).strength = 20; quiet(f); f.momentum(f.pc, 0);
     expect(f.tech('shove', { targetId: s.id })).toBeNull();
     expect(at(f, s)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(0); expect(f.cb.log.join(' ')).toMatch(/holds its ground/);
   });
@@ -154,7 +155,7 @@ describe('Links', () => {
     const f = fight('sabre'); f.unit(f.foe.id).strength = 50; quiet(f);
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('D7')); expect(f.cb.log.join(' ')).toMatch(/shoves .* vs 60 · holds firm/);
     const g = fight('sabre'); g.unit(g.foe.id).strength = -50; g.unit(g.pc.id).strength = 20; quiet(g);
-    expect(g.tech('shove', { targetId: g.foe.id })).toBeNull(); expect(at(g, g.foe)).toBe(g.tile('E7')); expect(g.momentum(g.pc)).toBe(1);
+    expect(g.tech('shove', { targetId: g.foe.id })).toBeNull(); expect(at(g, g.foe)).toBe(g.tile('F7')); expect(g.momentum(g.pc)).toBe(1);
   });
   it('Guard: +2 Defense against an ally\'s melee too', () => {
     const f = fight('sabre', [{ weapon: 'sabre' }]); f.put(f.pcs[1], 'C8'); expect(f.tech('guard')).toBeNull();
