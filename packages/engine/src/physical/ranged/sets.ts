@@ -66,9 +66,12 @@ technique({
     emitFx(t.cb, 'bead', { unit: t.u.id, at: t.u.pos, target: v.id, to: v.pos });
     return null;
   },
-  // a target it hasn't beaded yet: more when the band it ignores is a real one, or the target is under fire
+  // a target it hasn't beaded yet: more when the band it ignores is a real one, or the target is under fire. Never
+  // over a bead it still holds on someone standing (completeness pass: an enemy switched its bead between two players
+  // every action, 1 AP each, and never fired)
   ai(t) {
-    const v = t.tgt; if (!v || techStateOf(t.u, 'bead').targetId === v.id || !unitSees(t.cb, t.u, v.pos)) return 0;
+    const v = t.tgt, held = t.cb.units.find((x) => x.id === techStateOf(t.u, 'bead').targetId);
+    if (!v || (held && alive(held)) || !unitSees(t.cb, t.u, v.pos)) return 0;
     return dist(t.u.pos, v.pos) > effectiveRange(t.w) || pressureOf(v) ? 6 : 3;
   },
 });
@@ -121,9 +124,10 @@ technique({
     emitFx(t.cb, 'spot', { unit: t.u.id, at: t.u.pos, target: v.id, to: v.pos, ...(p === 'silent' ? { only: t.u.side, hidden: true } : {}) });
     return null;
   },
-  // worth it when others on the side have a gun on the target
+  // worth it when others on the side have a gun on the target; one Spot a turn (completeness pass: an enemy spotted
+  // each player in turn instead of shooting)
   ai(t) {
-    const v = t.tgt; if (!v || techStateOf(v, 'spotted').by === t.u.id || !unitSees(t.cb, t.u, v.pos)) return 0;
+    const v = t.tgt; if (!v || t.cb.units.some((x) => techStateOf(x, 'spotted').by === t.u.id) || !unitSees(t.cb, t.u, v.pos)) return 0;
     const shooters = alliesOf(t.cb, t.u).filter((a) => WEAPON[a.weapon]?.magazine != null && unitSees(t.cb, a, v.pos)).length;
     return shooters >= 2 ? 6 : shooters ? 4 : 0;
   },
