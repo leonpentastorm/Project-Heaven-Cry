@@ -3,7 +3,8 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
-import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
+import { gearIconUri } from '../game/gearIcons';
+import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, KITS, WEAPON, ITEM, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
 import { feelingInk, feelingIconSrc } from '../game/feelingsView';
 const FEELING_START = ['rage', 'love'];
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
@@ -347,8 +348,12 @@ export class CreateLogic extends DCLogic {
     const traitChip = picked.length + ' OF 2 PICKED';
 
     // kit
-    const kitCards = D.kits.map((k) => ({ name: k.name, items: k.items.map((x) => ({ text: x })), pick: set({ kit: k.id }), pressed: S.kit === k.id ? 'true' : 'false',
-      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 18px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (S.kit === k.id ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F') }));
+    // The kit's weapons as icons (gearIcons.ts): the one in hand, the focus in the off hand, then any in the pack. Its body armour is an Armour Class
+    // from the kit, not an item, so it has no icon.
+    const kitIcons = (id) => { const K = KITS[id]; if (!K) return [];
+      return [K.weapon, ...(K.offHand ? [K.offHand] : []), ...K.pack.filter((it) => it.weapon).map((it) => it.weapon)].filter((w, i, a) => a.indexOf(w) === i).map((w) => ({ key: w, src: gearIconUri(w), name: WEAPON[w]?.name || ITEM[w]?.name || w })).filter((x) => x.src); };
+    const kitCards = D.kits.map((k) => ({ name: k.name, items: k.items.map((x) => ({ text: x })), icons: kitIcons(k.id), hasIcons: kitIcons(k.id).length > 0, pick: set({ kit: k.id }), pressed: S.kit === k.id ? 'true' : 'false',
+      style: 'position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 18px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (S.kit === k.id ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F') }));
 
     // kit: starting magic (only for a build that can cast)
     const canSigil = canSigilOf(S), canSoul = canSoulOf(S), hasMagic = canSigil || canSoul;

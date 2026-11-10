@@ -1,7 +1,8 @@
 // Physical 2.0 (rules 1.12): Pressure, the ranged meter. It sits on the target (0 to 4): Pressed at 2, Suppressed at 3,
 // Broken at 4 (enemies only). The meter's own arithmetic lives here; what raises and lowers it by the rules (a first
 // ranged hit, a kill nearby, the end of a turn) is in rules.ts, and techniques add through core's addPressure().
-import { type Combat, type Unit, emitFx, alive } from '../combat';
+import { type Combat, type Unit, emitFx, alive, coverOf, coverTileFor, unitSees, xy, key } from '../combat';
+import { isSilent } from '../tactics';
 import { PHYS_RULES } from './data';
 
 export type PressState = '' | 'pressed' | 'suppressed' | 'broken';
@@ -65,4 +66,27 @@ export function lowerPressureOf(cb: Combat, target: Unit, n: number, why: string
 export function showPressure(cb: Combat, target: Unit): void {
   if (!(target as any).pressHidden) return;
   delete (target as any).pressHidden; emitFx(cb, 'pressure', { unit: target.id, at: target.pos, now: pressureOf(target), was: pressureOf(target), state: pressureState(target), by: null, why: 'shown' });
+}
+
+// ---------- what a ranged hit gives ----------
+const foes = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
+/** Is this unit standing against cover (a cover tile within 1)? */
+export function atCover(cb: Combat, u: Unit): boolean {
+  const cov = coverOf(cb), [x, y] = xy(u.pos);
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if ((dx || dy) && (cov[key(x + dx, y + dy)] || cb.map.cover.includes(key(x + dx, y + dy)))) return true;
+  return false;
+}
+/** A shot that goes past the cover its target is using (the target stands against cover, and it doesn't face this shot). */
+export const flanksCover = (cb: Combat, att: Unit, tgt: Unit): boolean => atCover(cb, tgt) && !coverTileFor(cb, att.pos, tgt.pos);
+/** In cover and out of every enemy's sight. */
+export const coveredUnseen = (cb: Combat, u: Unit): boolean => atCover(cb, u) && !foes(cb, u).some((v) => unitSees(cb, v, u.pos));
+
+/** The Pressure the first ranged hit of a turn gives this target from this shooter, as things stand: 1; 1 more past
+ * cover the target is using; 2 in place of 1, hidden, for an unseen hit with a Silent weapon. The rule and the card
+ * both read it here. */
+export function hitPressure(cb: Combat, att: Unit, tgt: Unit): { n: number; hidden: boolean; why: string } {
+  const unseen = !!att.hidden && isSilent(att); // the Silent property, or a suppressor fitted
+  let n = unseen ? P().unseen_silent_hit : 1, why = unseen ? 'an unseen hit' : 'a hit';
+  if (flanksCover(cb, att, tgt)) { n += P().flank_bonus; why += ' past its cover'; }
+  return { n, hidden: unseen, why };
 }

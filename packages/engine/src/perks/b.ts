@@ -207,7 +207,7 @@ register({
     },
     turn_end: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.crit === 'this') s.crit = null; s.free = 0; },
     move_cost: (ctx, h) => {
-      if (ctx.u !== h.u || ctx.how !== 'move') return; const s = stateOf(h);
+      if (ctx.u !== h.u || ctx.how !== 'move' || ctx.free) return; const s = stateOf(h); // a step something else already paid for (a technique's) isn't one of these tiles
       if (s.free && s.freeTurn === turnKey(ctx.cb) && ctx.ap === 0 && ctx.tiles <= s.free) { ctx.skipOA = true; s.free -= ctx.tiles; }
     },
     damage_out: (ctx, h) => {

@@ -10,7 +10,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { unitSees, sideSees, pullFree, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, sideSees, pullFree, dropNailed, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -1373,14 +1373,15 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/gift': err = runGift(g, cb!, g.rng, u, tileKey(g, a.aim)); break;
     case 'combat/repair': err = a.targetId && a.targetId !== u.id ? repairAlly(cb!, u, cb!.units.find((x) => x.id === a.targetId)) : fieldRepair(cb!, u); break;
     case 'combat/paired': { const t = cb!.units.find((x) => x.id === a.targetId), t2 = a.targetId2 ? cb!.units.find((x) => x.id === a.targetId2) || null : null; if (!anyTarget(t, u) || (t2 && !anyTarget(t2, u))) fail('Pick someone else.'); err = pairedAttack(cb!, g.rng, u, t!, t2, c); break; }
-    case 'combat/overwatch': if (a.mode !== 'melee' && isPressed(u)) fail('You are Pressed: you can\'t hold a shot.'); refuseHook(cb!, u, a); err = setOverwatch(cb!, u, a.mode); break; // rules 1.12: refused before the AP is paid
+    case 'combat/overwatch': { const mode = playerMode(a.mode, ['shot', 'aimed', 'melee'] as const); if (mode !== 'melee' && isPressed(u)) fail('You are Pressed: you can\'t hold a shot.'); refuseHook(cb!, u, a); err = setOverwatch(cb!, u, mode); break; } // rules 1.12: refused before the AP is paid
     case 'combat/attack': {
       const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.');
       if (pup && t!.id === u.id) fail('A puppet can\'t be made to harm itself.');
-      if (a.mode === 'burst') { err = fireBurst(cb!, g.rng, u, t!, who); break; }
-      if (a.mode === 'auto') { err = fireAuto(cb!, g.rng, u, t!, who); break; }
-      const pv = previewAttack(cb!, u, t!, a.mode); if (!pv.ok) fail(pv.why!);
-      resolveAttack(cb!, g.rng, u, t!, a.mode, who); break;
+      const mode = playerMode(a.mode, ['shot', 'aimed', 'melee', 'burst', 'auto'] as const); // 'thrown' is a technique's, never a player's plain attack
+      if (mode === 'burst') { err = fireBurst(cb!, g.rng, u, t!, who); break; }
+      if (mode === 'auto') { err = fireAuto(cb!, g.rng, u, t!, who); break; }
+      const pv = previewAttack(cb!, u, t!, mode); if (!pv.ok) fail(pv.why!);
+      resolveAttack(cb!, g.rng, u, t!, mode, who); break;
     }
     case 'combat/reload': {
       const ap0 = u.ap; err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical });
@@ -1472,6 +1473,9 @@ function syncSong(g: GameState) {
 }
 
 /** Anyone and anything is a target (spec: Anyone is a target): any unit but yourself, alive. */
+/** An attack mode as a player may send it (none: a shot). Anything else is refused: the engine's own modes ('thrown') are
+ * made by techniques only. */
+function playerMode<T extends string>(m: any, ok: readonly T[]): T { const x = (m || 'shot') as T; if (!ok.includes(x)) fail('Unknown attack.'); return x; }
 /** The phys/* actions on a character (the Proving Ground runs them in a fight too). A refusal in plain words, or null. */
 function physAction(c: Character, a: Extract<Action, { type: 'phys/ready' | 'phys/pick' | 'phys/quiver' | 'phys/answers' }>): string | null {
   switch (a.type) {
@@ -1541,7 +1545,7 @@ function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base:
  * rows, light armour 1 AP a piece, heavy armour refused, a drop 0 AP into the pile on the unit's tile. The fighter's
  * state is written back to the character first, the change is made there, and the fighter is rebuilt from it. The pack
  * entry is marked before the write-back (which may drop used-up entries) and found again after it (item 684). */
-function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, op: GearOp, o: { /** part of a technique (rules 1.12): no AP */ free?: boolean; /** where a dropped weapon lands (null: no pile; default: your tile) */ at?: string | null } = {}): string | null {
+function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, op: GearOp, o: { /** part of a technique (rules 1.12): no AP */ free?: boolean; /** where a dropped weapon lands (null: no pile; default: your tile) */ at?: string | null; /** what left the hands is pushed here (the entries as they were) */ out?: PackItem[] } = {}): string | null {
   if (u.companion) return 'A companion has no pack.';
   if (!u.charId || u.charId !== c.id) return 'Only a character changes gear.';
   const disarmed = condOn(u, 'disarmed'), plan = gearPlan(c, op, { disarmed }); if (plan.why) return plan.why;
@@ -1574,6 +1578,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   if (err) return err;
   const pileAt = o.at === undefined ? u.pos : o.at;
   if (toPile.length && pileAt) dropToPile(cb, pileAt, toPile, 'drop');
+  o.out?.push(...toPile);
   refitUnit(g, u, c, base);
   if (rearm) endCond(u, 'disarmed', cb);
   // Heat stays with the fighter (design section 3: the rebuild keeps heat; review fix: two swaps no longer cool a gun);
@@ -1592,9 +1597,21 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
 setGearService({
   draw(cb, u, item) { const g: GameState | null = boundGame(), c = g && u.charId ? g.characters[u.charId] : null; return g && c ? gearInFight(g, cb, u, c, { op: 'draw', item, to: 'main' }, { free: true }) : 'Nothing stowed to draw.'; },
   lose(cb, u, hand, at) {
-    const g: GameState | null = boundGame(), c = g && u.charId ? g.characters[u.charId] : null; if (!g || !c) return;
-    const id = hand === 'off' ? c.offHand?.id : c.weapon;
-    if (!gearInFight(g, cb, u, c, { op: 'drop', slot: hand }, { free: true, at }) && id && WEAPON[id]) cb.log.push(c.name + '\'s ' + WEAPON[id].name.toLowerCase() + (at ? ' lands at ' + refOf(at) + '.' : ' stays where it struck.'));
+    const g: GameState | null = boundGame(), c = g && u.charId ? g.characters[u.charId] : null; if (!g || !c) return null;
+    const id = hand === 'off' ? c.offHand?.id : c.weapon, out: PackItem[] = [];
+    if (!gearInFight(g, cb, u, c, { op: 'drop', slot: hand }, { free: true, at, out }) && id && WEAPON[id]) cb.log.push(c.name + '\'s ' + WEAPON[id].name.toLowerCase() + (at ? ' lands at ' + refOf(at) + '.' : ' stays where it struck.'));
+    return out[0] || null;
+  },
+  // The unit as the draw would leave it (the same plan, equip and rebuild the real draw runs, on a copy of the
+  // character): the weapon fields for the card, or the draw's own refusal. Nothing is changed.
+  asDrawn(cb, u, item) {
+    const g: GameState | null = boundGame(), c0 = g && u.charId ? g.characters[u.charId] : null; if (!g || !c0) return 'Nothing stowed to draw.';
+    const c: Character = JSON.parse(JSON.stringify(c0)), disarmed = condOn(u, 'disarmed');
+    const plan = gearPlan(c, { op: 'draw', item, to: 'main' }, { disarmed }); if (plan.why) return plan.why;
+    if (disarmed) emptyHand(c, 'main');
+    const e = equip(c, plan.idx!, 'main'); if (e) return e;
+    const f: any = unitFromCharacter(c, u.pos, { state: g.rng.state });
+    return { weapon: f.weapon, ammo: f.ammo, attack: f.attack, dmgMult: f.dmgMult, dur: f.dur, maxDur: f.maxDur, mods: f.mods, ammoType: f.ammoType };
   },
 });
 /** After a swap: which focuses the hands hold now (item 630). */
@@ -1631,6 +1648,7 @@ function finishCombat(g: GameState) {
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
+  for (const u of cb.units) if (u.nailed) dropNailed(cb, u); // rules 1.12: a weapon left in someone falls where they stand when the fight ends
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
   noteDeaths(cb, g.rng); magicOut(g, cb, true);
   const won = cb.over === 'win';
@@ -2271,6 +2289,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   else if (a.act === 'analyze') { if (!target || target.side !== 'foe') fail('Pick someone to read.'); err = analyze(cb, u, target!); if (!err) { readDrawnBy(cb, u, target!); const n = npcsOf(g).find((x) => x.id === target!.id); if (n) n.analyzed = true; } }
   else if (a.act === 'read') { if (!a.tile) fail('Pick a glyph or a trace to read.'); err = readGlyph(cb, u, tileKey(g, a.tile!)); }
   else if (a.act === 'attack') {
+    if (a.mode != null) playerMode(a.mode, ['shot', 'aimed', 'melee', 'burst', 'auto'] as const);
     // Anyone and anything is a target (spec: Anyone is a target).
     let t = target;
     const o = !t ? storyObjects(g).find((x) => !x.hidden && (x.id === (a.objId || tid) || (!!tname && x.name.toLowerCase() === tname))) || null : null;

@@ -1,7 +1,7 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { fxTaps } from './fxtap';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
-import { type Character, type PackItem, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
@@ -152,7 +152,7 @@ export interface Unit {
   tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
   techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean;
   /** Rules 1.12: held where it stands until someone spends the AP to free it (Run Through, a nailing arrow): who did it, with which technique, the AP, and a weapon left in it. */
-  nailed?: { by: string; id: string; ap: number; weapon?: string }; pressedThis?: { t: string; ids: string[] }; nearFoe0?: number; noWatch?: number;
+  nailed?: { by: string; id: string; ap: number; weapon?: string; /** the weapon's own entry (rarity, wear, mods, name), kept so it comes back as it was */ item?: PackItem }; pressedThis?: { t: string; ids: string[] }; nearFoe0?: number; noWatch?: number;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
   /** Rules 1.6 (faith.ts): the vow sworn for this fight, and the faith state of the fight (tags seen per action, the
@@ -1177,14 +1177,20 @@ export function endTurn(cb: Combat, rng: Rng) {
 }
 
 /** Why a unit can't move at all right now (Downed, prone, Pinned, Grappled, Commanded to halt), or null. */
+/** What nails a unit lets go (pulled free, the unit dead, the fight over): a weapon left in it falls into the pile on its
+ * tile as the weapon it was. */
+export function dropNailed(cb: Combat, target: Unit): void {
+  const n = target.nailed; if (!n) return; delete target.nailed;
+  const it = n.item || (n.weapon && WEAPON[n.weapon] ? gearEntry(n.weapon) : null);
+  if (it) dropToPile(cb, target.pos, [it], 'drop');
+}
 /** Pull a nailed unit free (rules 1.12): the unit itself, or someone of its side next to it, pays the AP. A weapon left
  * in it falls into the pile on its tile. */
 export function pullFree(cb: Combat, u: Unit, target: Unit = u): string | null {
   const n = target.nailed; if (!n) return target === u ? 'Nothing holds you.' : 'Nothing holds ' + target.name + '.';
   if (target !== u && (target.side !== u.side || dist(u.pos, target.pos) > 1)) return 'Stand next to an ally to pull them free.';
   if (u.ap < n.ap) return 'Needs ' + n.ap + ' AP.';
-  u.ap -= n.ap; delete target.nailed;
-  if (n.weapon && WEAPON[n.weapon]) dropToPile(cb, target.pos, [{ id: n.weapon, qty: 1 } as PackItem], 'drop');
+  u.ap -= n.ap; dropNailed(cb, target);
   emitFx(cb, 'pull_free', { unit: u.id, target: target.id, at: target.pos });
   cb.log.push(u.name + (target === u ? ' pulls free' : ' pulls ' + target.name + ' free') + ' (' + n.ap + ' AP)' + (n.weapon && WEAPON[n.weapon] ? ': the ' + WEAPON[n.weapon].name.toLowerCase() + ' drops at ' + refOf(target.pos) : '') + '.');
   return null;
@@ -1332,7 +1338,7 @@ export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character
   u.ap -= pv.ap; cb.log.push(u.name + ' fires a burst' + (pv.ap !== 3 ? ' (' + pv.ap + ' AP)' : '') + '.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: WEAPON[u.weapon].category, mode: 'burst', shots: 3 });
   // resolveAttack refuses (and ends the burst on) any round the preview won't allow: broken gun, target pushed out of sight.
-  chained(() => { for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) if (resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true, noWear: i > 0, vi: i } as any).refused) break; }, 'burst');
+  chained(() => { for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) { const r = resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true, noWear: i > 0, vi: i } as any); if (r.refused || r.cancelled) break; } }, 'burst');
   u.heat = Math.max(0, u.heat - 1); emit(cb, 'volley_end', { u, mode: 'burst', target: t, cb, rng }); checkOver(cb); return null;
 }
 export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
@@ -1345,7 +1351,7 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
   // The line is worked out once; each target is checked again as it comes up (resolveAttack refuses a shot it can't
   // take), and a jam or an empty magazine ends the burst of fire.
-  chained(() => { let i = 0; for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true, vi: i++ } as any); } }, 'auto');
+  chained(() => { let i = 0; for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; if (resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true, vi: i++ } as any).cancelled) break; } }, 'auto');
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 2);
   // Ten rounds go out whatever the shots took; what items changed during the volley stays (hooks gap C4).
   if (w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - Math.max(0, 10 - (startAmmo - u.ammo)));
@@ -1480,7 +1486,7 @@ const typesFor = (types: (string | null)[] | undefined, n: number) => Array.from
  * their tier's spares and always speed-reload. */
 /** Rules 1.12 (Last Round): a unit owed a free reload pays nothing for its next speed reload. */
 export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean } = {}): string | null {
-  const free = !!u.freeReload && !o.tactical, err = reloadPaid(cb, u, o, free);
+  const free = !!u.freeReload && !o.tactical && !o.both, err = reloadPaid(cb, u, o, free); // a both-hands reload is its own action: the free one stays owed
   if (!err && free) { delete u.freeReload; cb.log.push('  (' + u.name + '\'s reload is free.)'); }
   return err;
 }

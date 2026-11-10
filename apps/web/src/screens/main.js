@@ -22,6 +22,7 @@ import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, core
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
+import { gearIconUri } from '../game/gearIcons';
 import { glyphKeyNav } from '../game/glyphKeys';
 import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer, wordMasteryChips, readableAt, traceMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
@@ -445,7 +446,8 @@ export class MainLogic extends DCLogic {
     // ---------- Gear: hands as panels, the body's slots by name, the backpack; hover for details, click for actions ----------
     const RW = (r) => (r && r !== 'standard' ? r.charAt(0).toUpperCase() + r.slice(1) : 'Standard');
     const marks = (r) => '◆'.repeat(RARITY[r || 'standard']?.marks || 0);
-    const artOf = (id) => IMG['weapon-' + id] || IMG['item-' + id] || '';
+    // Painted art when there is some; else the item's monoline icon (weapons, armour, shields: gearIcons.ts); else a glyph.
+    const artOf = (id) => IMG['weapon-' + id] || IMG['item-' + id] || gearIconUri(id);
     const glyphOf = (id) => { const wd = WEAPON[id], it = ITEM[id] || {}; if (wd) return ({ pistol: '⌐', revolver: '⌐', smg: '╤', rifle: '═', shotgun: '╦', heavy: '▬', bow: ')', light_melee: '†', heavy_melee: '⚒', unarmed: '✊', thrown: '●', mana: '✧' })[wd.category] || '⚔';
       return it.category === 'shield' ? '⛉' : it.category === 'light' ? '✦' : it.category === 'armour' ? '▣' : it.category === 'mod' ? '⚙' : '▪'; };
     const tips = {};
@@ -488,7 +490,8 @@ export class MainLogic extends DCLogic {
       const x = worn[id], wslot = SLOT_TO_WORN[id], wid = wslot && c?.worn?.[wslot], key = 'slot-' + id;
       tips[key] = wid ? itemTip(wid) : id === 'outer' && c && c.armourClass ? { title: x[0], sub: 'outer torso · Armour Class', glyph: '▣', img: '', lines: ['Armour ' + (ARMOUR[c.armourClass]?.value || 0) + ' against every hit.', 'Sets your Armour Class.'], lore: '' } : { title: 'Empty', sub: label.toLowerCase(), glyph: '·', img: '', lines: [id === 'veil' ? 'The Veil: a special equipment type; its rules aren\'t written yet.' : 'Wear a piece here from your backpack.'], lore: '' };
       const acts = gearLocked || !wslot ? [] : [...(wid ? [{ key: key + '-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: wslot }); this.setState({ gearMenu: null }); } }] : []), ...cand((it) => ITEM[it.item || it.id]?.slot === wslot, 'Wear', 'worn')];
-      return { key, label, name: x ? x[0] : '—', ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : id === 'outer' ? 'Armour Class comes from your kit for now.' : 'Nothing in the pack fits here.',
+      const icon = gearIconUri(wid);
+      return { key, label, name: x ? x[0] : '—', icon, hasIcon: !!icon, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : id === 'outer' ? 'Armour Class comes from your kit for now.' : 'Nothing in the pack fits here.',
         hover2: () => this.setState({ hotSlot: id }),
         style: 'display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 5px 6px; border-radius: 6px; font-size: 12px; cursor: pointer; width: 100%; text-align: left; color: inherit; font: inherit; border: 0; background: ' + (S.hotSlot === id || S.gearMenu === key ? '#1C2536' : 'transparent'),
         nameStyle: 'font-weight: ' + (x ? '600; color: #E7EBF3' : '400; color: #5B6577') };
@@ -930,7 +933,7 @@ export class MainLogic extends DCLogic {
             hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', hasCache: !!wc.cache && !u, hasCacheGlyph: !!wc.cache && !u && !spr, cacheGlyph: wc.cache ? wc.cache.glyph : '', cacheStyle: wc.cache ? wc.cache.style : '', cacheChip: wc.cache ? wc.cache.chip : '', cacheChipStyle: wc.cache ? wc.cache.chipStyle : '',
             hasKind: !!(kb && kb.has), kindText: kb ? kb.text : '', kindStyle: kb ? kb.style : '', kindTitle: kb ? kb.title : '',
             hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
-            hasPileTip: labels && !!wc.pile && S.hoverTile === k, pileTip: wc.pile ? wc.pile.tip : '', pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, map.w) : '',
+            hasPileTip: labels && !!wc.pile && S.hoverTile === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, map.w) : '',
             hasCross: labels && plan.cross.has(k), crossStyle: CROSS_STYLE, crossChipStyle: CROSS_CHIP_STYLE,
             hasPd: pdHere, pdStyle: 'position: absolute; inset: 1px; z-index: 6; pointer-events: none; box-sizing: border-box; border-radius: 2px; border: 2px dashed #FFFFFF; background: rgba(255, 255, 255, 0.16)',
             hasHzL: !!hzL || !!hzU, hzLayer: hzU ? 'position: absolute; inset: 0; z-index: 2; border-radius: 2px; pointer-events: none; box-sizing: border-box; border: 3px solid ' + hzU.ink + '; box-shadow: 0 0 8px ' + hzU.ink : hzL,
@@ -1176,7 +1179,7 @@ export class MainLogic extends DCLogic {
       if (!wPick || !canAct) return { has: false, rows: [] };
       const rows = pileRows(wPick, wUntick), tile = wPick.pos, far = dist(myAt, tile) > 1, setKeys = (keys) => this.setState({ wUntick: { tile, keys } });
       return { has: true, head: 'THE PILE AT ' + refOf(tile) + ' · ' + rows.length + (rows.length === 1 ? ' THING' : ' THINGS') + (far ? ' · OUT OF REACH' : ''),
-        rows: rows.map((r) => ({ ...r, off: far, toggle: () => setKeys(toggleUntick(wUntick, r.key)) })), all: () => setKeys([]), none: () => setKeys(rows.map((r) => r.key)) };
+        rows: rows.map((r) => ({ ...r, off: far, icon: far ? r.iconOff : r.icon, toggle: () => setKeys(toggleUntick(wUntick, r.key)) })), all: () => setKeys([]), none: () => setKeys(rows.map((r) => r.key)) };
     })();
     const wConfirm = () => { if (!c) return; if (isMagicW) return magicConfirm();
       if (wPkE && wPanel) return wPanel.confirm();

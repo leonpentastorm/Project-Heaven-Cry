@@ -29,6 +29,7 @@ art/
     STYLE-LOCK.md                  the Wick icon lock (master: traits/mind-without-fog.png)
     weapons/<weapon_id>.svg        monoline weapon icons, one per data/weapons.json id (60); README.md is the spec
     armour/<item_id>.svg           monoline armour and shield icons, one per data/items.json armour/shield id (19)
+    focus/<item_id>.svg            monoline magic-focus icons: the Evoker and the Emanator, both gloves (2)
   emblems/
     ahoc/ahoc-seal-white.png       the AHOC seal used in the UI (+ the red 2020 original)
     patrons/<patron_id>.png        the eight patron marks

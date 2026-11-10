@@ -14,6 +14,7 @@ technique({
     // the roll spends 1 round and the technique burns the rest; its Pressure replaces the ordinary +1 for a hit
     const r = strike(t, { extra: t.num('hit', 2), mult: t.num('damage_mult', 0.5), noPressure: true });
     if (!r.ok) return r.why || 'Can\'t attack that.';
+    if (r.cancelled) return null; // answered before it was fired: no rounds burned, no Pressure
     spendRounds(t, Math.max(0, (t.def.rounds as number) - 1));
     const struck = r.target || tgt; // the unit the shot was really made at (a redirect: a captive held as a shield)
     const near = p === 'auto' ? t.cb.units.filter((v) => v !== struck && v.side !== t.u.side && alive(v) && dist(v.pos, struck.pos) <= t.num('auto_spill_range', 1)) : [];

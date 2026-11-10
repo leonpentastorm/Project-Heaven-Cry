@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, previewAttack, resolveAttack, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley } from '../combat';
+import { type Combat, type Unit, previewAttack, resolveAttack, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, heatLimit } from '../combat';
 import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -16,7 +16,7 @@ import { packOf } from '../character';
 import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
 import { TECHNIQUE, TECHNIQUES, PHYS_RULES, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
-import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure } from './pressure';
+import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 
 // ---------- the registry ----------
 const HANDLERS: Record<string, TechHandler> = {};
@@ -34,11 +34,12 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
   for (const u of [...cb.units]) {
     if (!alive(u)) continue;
     const w = (u as any).watch as { id: string; hand: 'main' | 'off'; tile?: string; allyId?: string; targetId?: string } | undefined;
-    if (w && TECHNIQUE[w.id]) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId }, rng, false)); }
+    // unheld: a unit in the middle of a technique used with a grenade reacts with the weapon really in its hand
+    if (w && TECHNIQUE[w.id]) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) unheld(u, () => fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId }, rng, false))); }
     for (const h of Object.values(HANDLERS)) {
       const def = TECHNIQUE[h.id], fn = h.react?.[name]; if (!fn || def?.group !== 'answer' || !alive(u)) continue;
       const hand = hasUsable(u, 'main', h.id) ? 'main' : hasUsable(u, 'off', h.id) ? 'off' : null; if (!hand) continue;
-      fn(ctx, buildTech(cb, u, def, { hand }, rng, false));
+      unheld(u, () => fn(ctx, buildTech(cb, u, def, { hand }, rng, false)));
     }
   }
 }
@@ -164,9 +165,10 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   for (const d of TECHNIQUES) {
     if (d.system !== sys) continue;
     // A technique that draws its weapon is used with a stowed one, never with the one in the hand; with a carried
-    // throwable as the weapon, only what the throwable lends and what has a line for one of its properties.
+    // throwable as the weapon, only what the throwable lends and what has a line for one of its properties, and never
+    // a Watch (a held shot is held with the weapon in the hand).
     if (!!d.needs.stowed !== (wield === 'stowed')) continue;
-    if (wield === 'throwable' && (d.free || !(lent === d.id || d.home.some((p) => props.includes(p)) || d.lines.some((l) => l.props.some((p) => props.includes(p)))))) continue;
+    if (wield === 'throwable' && (d.free || d.group === 'watch' || !(lent === d.id || d.home.some((p) => props.includes(p)) || d.lines.some((l) => l.props.some((p) => props.includes(p)))))) continue;
     if (d.free) { if (!u.allowedActions || u.allowedActions.includes(OLD[d.id])) out.push({ id: d.id, how: 'free' }); }
     else if (ready.has(d.id)) out.push({ id: d.id, how: 'ready' });
     else if (lent === d.id) out.push({ id: d.id, how: 'lent' });
@@ -244,11 +246,16 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
       const atk0 = u.attack; if (o.thrown && t.c) u.attack = mod((t.c.skills as any).dexterity || 0);
       // In a preview nothing has been spent yet: the rolls this technique has already shown count as fired (rounds,
       // Heat, and Recoil unless the technique is one volley), so each later roll's card is the roll it will be.
-      const n = t.preview && fires ? st.rolls || 0 : 0, keep = { ammo: u.ammo, heat: u.heat, shots: u.shotsThisTurn };
-      if (n) { if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n; }
+      const n = t.preview && fires ? st.rolls || 0 : 0, keep = { ammo: u.ammo, heat: u.heat, shots: u.shotsThisTurn, jammed: u.jammed };
+      if (n) {
+        if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n;
+        // the earlier rolls reach the Heat limit: the gun jams and the later ones are never fired (the main hand: an off-hand gun's jam isn't kept)
+        if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
+      }
       let pv: ReturnType<typeof previewAttack>;
-      try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; } if (t.preview) u.attack = atk0; }
+      try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
       if (pv.ok && fires) st.rolls = (st.rolls || 0) + 1;
+      if (t.preview && pv.ok && mode !== 'melee') (st.far ||= []).push(tgt.id); // a ranged or thrown roll: its hit gives Pressure (the card shows it)
       if (t.preview || !pv.ok) { u.attack = atk0; if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && fires && t.w.magazine != null && !u.infiniteAmmo) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
       const m0 = momentumOf(u), su = (u as any).setUp;
       if (su && su.t === turnStamp(t.cb) && su.target === tgt.id) st.usedSetUp = true;
@@ -258,7 +265,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
       const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : 0, roll = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, noRecoil ? ({ noAp: true, vi } as any) : { free: true });
       try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
       if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
-      if (r.cancelled) return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt }; // a reaction ended it before the roll
+      if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
       if (t.def.system === 'melee') {
         if (o.noMomentum) { if (u.res) u.res.momentum = m0; }
         else if (r.hit) { ensureMomentum(u); if (o.thrown) resGain(u, 'momentum', 1); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); } // the engine adds the +1 for a melee hit; a thrown weapon's is added here
@@ -285,7 +292,7 @@ onHook('attack_preview', (ctx: any) => {
 });
 onHook('attack_roll', (ctx: any) => {
   const a = cur(ctx.att); if (!a) return;
-  a.real = ctx.tgt; // after any redirect
+  if (!a.real) a.real = ctx.tgt; // after any redirect; the first roll of this strike (a cone's other rolls come later)
   if (a.o.critMin) ctx.critMin = Math.min(ctx.critMin, a.o.critMin);
   // "a hit is a critical": only a roll that would hit anyway is raised
   if (a.o.critOnHit && ctx.die !== 1 && ctx.die + ctx.toHit >= ctx.need) ctx.critMin = Math.min(ctx.critMin, ctx.die);
@@ -382,12 +389,15 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
   for (let i = 0; i < tiles && alive(target); i++) {
     const to = stepTo(target.pos); if (!to || bad(cb, to, blocked, target)) break;
     const fm: any = emit(cb, 'forced_move', { u: target, by: t.u, tiles: 1, to, how: opts.how || t.def.id, cancel: false, cb, rng: t.rng }); if (fm.cancel) break;
+    const stopNow = unheld(t.u, () => {
     const was = target.pos; target.pos = to; target.braced = false; moved++;
     emitFx(cb, 'shove', { unit: t.u.id, target: target.id, from: was, to, ok: true });
     // The walk a held shot is waiting for: the new Watches listen on move_step, the old Overwatch on its own call.
     const ms: any = emit(cb, 'move_step', { u: target, from: was, at: to, i, route: [was, to], how: 'forced', stop: false, cb, rng: t.rng, forced: true });
     if (alive(target)) triggerOverwatch(cb, t.rng, target);
-    if (ms.stop) break;
+    return !!ms.stop;
+    });
+    if (stopNow) break;
   }
   if (moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ').');
   return moved;
@@ -423,8 +433,12 @@ export const hitByAlly = (t: Tech, target: Unit): boolean => Object.entries(((ta
 // Lob or Rout; args.item is the throwable's id). For both, the unit is shown holding that weapon while the technique
 // is checked, previewed and run, so every helper reads the right properties, AP and numbers. A real draw goes through
 // the gear service the reducer registers (the same change a player's draw makes, free of AP).
-export interface Wield { kind: 'stowed' | 'throwable'; item: string | number; weaponId: string; ammo: number; entry?: any }
-export interface GearService { draw(cb: Combat, u: Unit, item: string | number): string | null; lose(cb: Combat, u: Unit, hand: 'main' | 'off', at: string | null): void }
+export interface Wield { kind: 'stowed' | 'throwable'; item: string | number; weaponId: string; ammo: number; entry?: any; /** a stowed weapon: the unit's weapon fields as the draw would leave them */ as?: Record<string, any> }
+export interface GearService {
+  draw(cb: Combat, u: Unit, item: string | number): string | null;
+  /** returns the entry that left the hand (its rarity, wear, mods and name), or null */ lose(cb: Combat, u: Unit, hand: 'main' | 'off', at: string | null): any;
+  /** the unit's weapon fields as a draw of this pack entry would leave them, or the draw's refusal; changes nothing */ asDrawn(cb: Combat, u: Unit, item: string | number): Record<string, any> | string;
+}
 let GEAR: GearService | null = null;
 /** game.ts gives the core its gear changes (drawing from the pack, a weapon leaving the hand for a pile). */
 export const setGearService = (s: GearService) => { GEAR = s; };
@@ -433,7 +447,13 @@ export function stowedOf(u: Unit): { item: number; weaponId: string; name: strin
   const c = u.companion ? null : charOfUnit(u); if (!c) return [];
   return packOf(c).map((x, i) => ({ x, i })).filter(({ x }) => x.qty > 0 && !x.mags && !!x.weapon && !!WEAPON[x.weapon] && WEAPON[x.weapon].category !== 'thrown').map(({ x, i }) => ({ item: i, weaponId: x.weapon!, name: x.name || WEAPON[x.weapon!].name }));
 }
-function wieldOf(u: Unit, def: TechDef, args: TechArgs): Wield | null | string {
+/** A stowed weapon as the thing a technique is used with: the draw's own refusal (a skill it needs, an item that bans
+ * it, a hand that can't take it), or the fields the draw would leave. */
+function stowedWield(cb: Combat, u: Unit, idx: number, it: any): Wield | string {
+  const as = GEAR ? GEAR.asDrawn(cb, u, idx) : 'Nothing to draw it with here.'; if (typeof as === 'string') return as;
+  return { kind: 'stowed', item: idx, weaponId: it.weapon, ammo: as.ammo ?? it.loaded ?? 0, entry: it, as };
+}
+function wieldOf(cb: Combat, u: Unit, def: TechDef, args: TechArgs): Wield | null | string {
   if ((args as any)._w) return null; // already holding it (inside the swap, or after the draw)
   const c = u.companion ? null : charOfUnit(u);
   if (def.needs.stowed) {
@@ -441,7 +461,7 @@ function wieldOf(u: Unit, def: TechDef, args: TechArgs): Wield | null | string {
     if (!c) return 'Nothing stowed to draw.';
     const idx = packRef(c, args.item), it = packOf(c)[idx];
     if (!it || !it.weapon || !WEAPON[it.weapon] || WEAPON[it.weapon].category === 'thrown' || it.mags) return 'That isn\'t a stowed weapon.';
-    return { kind: 'stowed', item: idx, weaponId: it.weapon, ammo: it.loaded ?? 0, entry: it };
+    return stowedWield(cb, u, idx, it);
   }
   if (args.item == null) return null;
   const id = String(args.item), w = WEAPON[id];
@@ -449,14 +469,39 @@ function wieldOf(u: Unit, def: TechDef, args: TechArgs): Wield | null | string {
   const n = u.throwables?.[id] ?? 0; if (n < 1) return 'You carry no ' + w.name.toLowerCase() + '.';
   return { kind: 'throwable', item: id, weaponId: id, ammo: n };
 }
-/** Run fn with the unit holding the wielded weapon in its main hand; everything is put back after. */
+const HELD_FIELDS = ['weapon', 'ammo', 'attack', 'dur', 'maxDur', 'mods', 'ammoType', 'jammed', 'dmgMult'] as const;
+const putFields = (u: Unit, v: Record<string, any>) => { for (const k of Object.keys(v)) { if (v[k] === undefined) delete (u as any)[k]; else (u as any)[k] = v[k]; } };
+const HOLDS: { u: Unit; keep: Record<string, any>; out: boolean }[] = [];
+/** Run fn with the unit holding the wielded weapon in its main hand; everything is put back after. A stowed weapon is
+ * shown as the real draw would leave it (wi.as, from the gear service): its own to-hit, rarity and wear, no brace on a
+ * different weapon, and not Disarmed (a draw ends that). */
 function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
   const c = u.companion ? null : charOfUnit(u), w = WEAPON[wi.weaponId];
-  const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, braced: u.braced, dmgMult: u.dmgMult };
-  const pts = (c?.skills as any)?.[w.skill];
-  u.weapon = w.id; u.ammo = wi.ammo; u.maxDur = 0; u.dur = undefined; u.mods = wi.entry?.mods || []; u.ammoType = wi.entry?.ammoType ?? null; u.jammed = false; u.dmgMult = 1;
-  if (typeof pts === 'number') u.attack = mod(pts);
-  try { return fn(); } finally { Object.assign(u, keep); if (keep.dur === undefined) delete u.dur; if (keep.dmgMult === undefined) delete u.dmgMult; if (keep.mods === undefined) delete u.mods; if (keep.ammoType === undefined) delete u.ammoType; if (keep.braced === undefined) delete u.braced; }
+  const keep: Record<string, any> = {}; for (const k of HELD_FIELDS) keep[k] = (u as any)[k];
+  let braced: boolean | undefined, disarmed: number | undefined, drew = false;
+  if (wi.kind === 'stowed' && wi.as) {
+    drew = true; braced = u.braced; disarmed = u.conds?.disarmed;
+    putFields(u, wi.as); if (wi.as.weapon !== keep.weapon) u.braced = false;
+    if (disarmed != null) delete u.conds!.disarmed;
+  } else {
+    const pts = (c?.skills as any)?.[w.skill];
+    putFields(u, { weapon: w.id, ammo: wi.ammo, maxDur: 0, dur: undefined, mods: wi.entry?.mods || [], ammoType: wi.entry?.ammoType ?? null, jammed: false, dmgMult: 1 });
+    if (typeof pts === 'number') u.attack = mod(pts);
+  }
+  const hold = { u, keep, out: false }; HOLDS.push(hold);
+  try { return fn(); } finally {
+    HOLDS.splice(HOLDS.indexOf(hold), 1); putFields(u, keep);
+    if (drew) { if (braced === undefined) delete u.braced; else u.braced = braced; if (disarmed != null) (u.conds ||= {}).disarmed = disarmed; }
+  }
+}
+/** Run fn with a unit's real weapon back in its hand, if it is in the middle of a technique used with something else
+ * (its own held shot fires, an opportunity attack is taken). What fn does to the real weapon (a round fired, a jam) is
+ * kept. Any other unit: just fn. */
+export function unheld<T>(u: Unit, fn: () => T): T {
+  const h = [...HOLDS].reverse().find((x) => x.u === u); if (!h || h.out) return fn();
+  const held: Record<string, any> = {}; for (const k of Object.keys(h.keep)) held[k] = (u as any)[k];
+  putFields(u, h.keep); h.out = true;
+  try { return fn(); } finally { for (const k of Object.keys(h.keep)) h.keep[k] = (u as any)[k]; putFields(u, held); h.out = false; }
 }
 /** The weapon leaves the user's hand as part of the technique (thrown, or left in a target): into the pile on a tile, or
  * nowhere (at: null; whoever holds it now keeps track of it). The user is then unarmed in that hand. */
@@ -464,7 +509,12 @@ export function loseWeapon(t: Tech, at: string | null): void {
   if (t.wield === 'throwable') return; // a throwable is spent with spendRounds
   if (t.preview) { t.note(at ? 'The weapon lands at ' + refOf(at) + ': you are unarmed until you pick it up.' : 'The weapon stays there: you are unarmed.'); return; }
   const u = t.u, id = t.hand === 'off' ? u.offWeapon : u.weapon; if (!id || id === 'fists') return;
-  if (t.c && GEAR) { GEAR.lose(t.cb, u, t.hand, at); return; }
+  if (t.c && GEAR) {
+    const e = GEAR.lose(t.cb, u, t.hand, at);
+    // left in a target this technique nailed: the weapon's own entry stays with it, and comes back as it was
+    if (at === null && e) { const held = t.cb.units.find((v) => v.nailed && v.nailed.by === u.id && v.nailed.weapon === id && !v.nailed.item); if (held) held.nailed!.item = e; }
+    return;
+  }
   if (at) dropToPile(t.cb, at, [{ id, name: WEAPON[id]?.name || id, qty: 1, kind: 'weapon', weapon: id } as any], 'drop');
   if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; }
 }
@@ -502,7 +552,7 @@ export function stepUser(t: Tech, route: string[], opts: { /** move this unit, n
   for (const k of route) {
     if (!alive(u) || moveBlock(u)) break;
     const was = u.pos;
-    if (moveUnit(cb, u, k, t.rng, 'move', { shortest: true, free: true, oa: !!opts.oa })) break; // free: the items are told before they price it
+    if (unheld(t.u, () => moveUnit(cb, u, k, t.rng, 'move', { shortest: true, free: true, oa: !!opts.oa }))) break; // free: the items are told before they price it; unheld: reactions on the way see the user's real weapon
     if (u.pos === was) break; n++;
     if (u.pos !== k) break; // stopped short (a trap, a held shot)
   }
@@ -575,7 +625,7 @@ function withG<T>(g: any, fn: () => T): T { if (!g) return fn(); const was = bin
 export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}, g?: any): TechPreview {
   if (g) return withG(g, () => previewTechnique(cb, u, id, args));
   { // a weapon that isn't in the hand: the card is worked out as if it were
-    const def0 = TECHNIQUE[id], wi = def0 ? wieldOf(u, def0, args) : null;
+    const def0 = TECHNIQUE[id], wi = def0 ? wieldOf(cb, u, def0, args) : null;
     if (typeof wi === 'string') return { ok: false, why: wi, id, ap: 0, rounds: 0, attacks: [], notes: [] };
     if (wi) return holding(u, wi, () => previewTechnique(cb, u, id, { ...args, hand: 'main', _w: wi.kind } as TechArgs));
   }
@@ -596,11 +646,12 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
     }
     if (def.group === 'finisher') t.pv.ends = true;
   }
-  // a ranged hit's ordinary Pressure, as the card shows it (the first hit on each target this turn)
-  if (def.system === 'ranged' && def.group !== 'take') for (const a of t.pv.attacks) {
-    const v = cb.units.find((x) => x.id === a.target); if (!v || !a.pv.ok || v.side === u.side || (t.pv.pressure || []).some((x) => x.unit === v.id) || scratch(t).noPressure) continue;
-    if (((u as any).pressedThis?.t === turnStamp(cb) && (u as any).pressedThis.ids.includes(v.id))) continue;
-    const now = pressureOf(v), after = Math.min(pressureCap(v), now + 1); (t.pv.pressure ||= []).push({ unit: v.id, add: after - now, after, state: pressureState({ pressure: after } as any), onHit: true });
+  // a ranged or thrown hit's ordinary Pressure, as the card shows it: the first hit on each target this turn, with what
+  // the rules add (past cover the target is using; unseen with a Silent weapon)
+  if (def.group !== 'take') for (const a of t.pv.attacks) {
+    const v = cb.units.find((x) => x.id === a.target); if (!v || !a.pv.ok || v.side === u.side || !(scratch(t).far || []).includes(v.id) || (t.pv.pressure || []).some((x) => x.unit === v.id) || scratch(t).noPressure) continue;
+    if (u.pressedThis?.t === turnStamp(cb) && u.pressedThis.ids.includes(v.id)) continue;
+    const now = pressureOf(v), after = Math.min(pressureCap(v), now + inHand(t, () => hitPressure(cb, u, v)).n); (t.pv.pressure ||= []).push({ unit: v.id, add: after - now, after, state: pressureState({ pressure: after } as any), onHit: true });
   }
   if (def.group === 'take' && t.tgt) { const now = pressureOf(t.tgt), after = Math.max(0, now - PHYS_RULES.pressure.take_cost); (t.pv.pressure ||= []).push({ unit: t.tgt.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
   return t.pv;
@@ -608,7 +659,7 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
 /** Use a technique. Returns a refusal in plain words, or null. Nothing is spent on a refusal. */
 export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
   const def = TECHNIQUE[id]; if (!def) return 'No such technique.';
-  const wi = wieldOf(u, def, args); if (typeof wi === 'string') return wi;
+  const wi = wieldOf(cb, u, def, args); if (typeof wi === 'string') return wi;
   if (wi?.kind === 'stowed') { // check it as if drawn, then draw it for real (free: the technique's AP pays), then use it
     const pv0 = previewTechnique(cb, u, id, args); if (!pv0.ok) return pv0.why || 'Not now.';
     const e = GEAR ? GEAR.draw(cb, u, wi.item) : 'Nothing to draw it with here.'; if (e) return e;
@@ -627,7 +678,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (err) { // a handler must refuse before it changes anything: the cost comes back
     u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true; return err;
   }
-  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo) u.heat += 1; // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
+  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) u.heat += 1; // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
   for (const n of t.pv.notes) cb.log.push('  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
@@ -662,9 +713,9 @@ export interface PackPad { item: string | number; kind: 'stowed' | 'throwable'; 
 export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
   if (g) return withG(g, () => packPad(cb, u));
   const out: PackPad[] = [];
-  const block = (wi: Wield, name: string, count?: number) => holding(u, wi, () => {
+  const block = (wi: Wield, name: string, count?: number, refused?: string) => holding(u, wi, () => {
     const entries = usable(cb, u, 'main', wi.kind).map((x): PadEntry => {
-      const def = TECHNIQUE[x.id], lf = linesFor(def, wi.weaponId, undefined, u), why = gate(cb, u, def, { hand: 'main', _w: wi.kind } as TechArgs) || (handlerOf(def.id) ? null : NOT_BUILT);
+      const def = TECHNIQUE[x.id], lf = linesFor(def, wi.weaponId, undefined, u), why = refused || gate(cb, u, def, { hand: 'main', _w: wi.kind } as TechArgs) || (handlerOf(def.id) ? null : NOT_BUILT);
       return { id: def.id, name: def.name, group: def.group, ap: apFor(cb, u, def, 'main'), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
         ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(wi.weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: false, plain: false, built: !!handlerOf(def.id) };
@@ -672,7 +723,11 @@ export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
     if (entries.length) out.push({ item: wi.item, kind: wi.kind, weapon: wi.weaponId, name, ...(count != null ? { count } : {}), entries });
   });
   const c = u.companion ? null : charOfUnit(u);
-  if (c) for (const s of stowedOf(u)) { const it = packOf(c)[s.item]; block({ kind: 'stowed', item: s.item, weaponId: s.weaponId, ammo: it.loaded ?? 0, entry: it }, s.name); }
+  if (c) for (const s of stowedOf(u)) {
+    const it = packOf(c)[s.item], wi = stowedWield(cb, u, s.item, it);
+    // a weapon the draw itself refuses (a skill it needs, a ban) is listed, greyed, with the draw's own words
+    if (typeof wi === 'string') block({ kind: 'stowed', item: s.item, weaponId: s.weaponId, ammo: it.loaded ?? 0, entry: it }, s.name, undefined, wi); else block(wi, s.name);
+  }
   for (const [id, n] of Object.entries(u.throwables || {})) if (n > 0 && WEAPON[id]?.category === 'thrown') block({ kind: 'throwable', item: id, weaponId: id, ammo: n }, WEAPON[id].name, n);
   return out;
 }

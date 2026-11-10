@@ -189,7 +189,9 @@ For rules that stand outside one use of a technique (a held lane, a Bead, smoke)
 - **A technique used with a carried throwable** (a grenade through Lob or Rout). `args.item` is the throwable's id. The handler runs with the grenade as the weapon (`t.wield === 'throwable'`, its Blast, Arc and Thrown lines apply, Lob is at home); `spendRounds(t, 1)` takes one from what is carried. Offered: what the throwable lends, and ready techniques that have a line for one of its properties.
 - `packPad(cb, u, g)` lists both for the screen: one block per stowed weapon or kind of throwable, with its entries and the `item` to send.
 
-**An attack that never comes.** A Watch on `attack_target` that takes the attacker out (or sets `ctx.cancel`) ends that attack: its AP is spent and nothing is rolled ("the shot lands first").
+**An attack that never comes.** A Watch on `attack_target` that takes the attacker out (or sets `ctx.cancel`) ends that attack: its AP is spent and nothing is rolled ("the shot lands first"). The technique whose strike was ended sees `r.cancelled`: return null at once, with no riders (it is not a miss: no Pressure for a miss, no extra rounds burned).
+
+**Reactions during a technique.** While a technique is used with a grenade the unit is shown holding it; its own reactions (a held shot, an opportunity attack) are made with the weapon really in its hand (`unheld`, which `stepUser`, `forceMove` and the `react` dispatch already use). A Watch is never held with a grenade.
 
 ### 5.3 Actions
 

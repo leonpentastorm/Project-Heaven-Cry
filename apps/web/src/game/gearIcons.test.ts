@@ -6,10 +6,11 @@ import items from '../../../../data/items.json';
 import { gearIcon, hasGearIcon, GEAR_ICON_IDS } from './gearIcons';
 
 const weaponIds = (weapons as { items: { id: string }[] }).items.map((w) => w.id);
-const armourIds = (items as { items: { id: string; category?: string }[] }).items.filter((i) => i.category === 'armour' || i.category === 'shield').map((i) => i.id);
+const armourIds = (items as { items: { id: string; category?: string }[] }).items.filter((i) => i.category === 'armour' || i.category === 'shield' || i.category === 'focus').map((i) => i.id);
 
 describe('gear icons', () => {
-  it('every weapon, armour piece and shield has an icon', () => {
+  it('every weapon, armour piece, shield and magic focus has an icon', () => {
+    expect(armourIds).toEqual(expect.arrayContaining(['evoker', 'emanator']));
     expect(weaponIds.length).toBeGreaterThan(0);
     expect(armourIds.length).toBeGreaterThan(0);
     for (const id of [...weaponIds, ...armourIds]) expect(hasGearIcon(id), id).toBe(true);
@@ -31,5 +32,18 @@ describe('gear icons', () => {
     expect(gearIcon(null)).toBeNull();
     expect(hasGearIcon('toString')).toBe(false);
     expect(GEAR_ICON_IDS).toContain('hellraiser_service_rifle');
+  });
+});
+
+describe('gear icons as images', () => {
+  it('a data URI in the ink asked for, with no currentColor left; empty for an item with no icon', async () => {
+    const { gearIconUri, GEAR_INK, GEAR_INK_OFF } = await import('./gearIcons');
+    const on = decodeURIComponent(gearIconUri('hellraiser_service_rifle').slice('data:image/svg+xml,'.length));
+    expect(on).toMatch(/^<svg\b/);
+    expect(on).toContain('stroke="' + GEAR_INK + '"');
+    expect(on).not.toMatch(/currentColor|<!--/);
+    expect(gearIconUri('hellraiser_service_rifle', GEAR_INK_OFF)).toContain(encodeURIComponent(GEAR_INK_OFF));
+    expect(gearIconUri('ration_pack')).toBe('');
+    expect(gearIconUri(undefined)).toBe('');
   });
 });
