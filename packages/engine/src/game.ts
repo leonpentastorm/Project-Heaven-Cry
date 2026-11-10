@@ -30,7 +30,7 @@ import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emit
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -1362,7 +1362,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     }
     case 'combat/technique': {
       // Physical 2.0: the technique checks its own targets and tiles (an ally, a tile, several enemies); a tile may come as a map reference.
-      const { type: _t, unitId: _u, id, _w: _internal, ...rest } = a as any; const args: TechArgs = { ...rest }; // _w is the core's own mark: never taken from a client
+      const { type: _t, unitId: _u, id, _w: _internal, _pair: _internal2, ...rest } = a as any; const args: TechArgs = { ...rest }; // _w is the core's own mark: never taken from a client
       if (typeof args.tile === 'string') args.tile = tileKey(g, args.tile);
       if (args.targetId && !anyTarget(cb!.units.find((x) => x.id === args.targetId), u)) fail('Pick someone else.');
       if (!TECHNIQUE[id]) fail('No such technique.');
@@ -1566,6 +1566,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
     case 'wear': err = equip(c, idx, 'worn'); break; // a light piece already there comes off into the pack (item 685)
     case 'mod': err = fitMod(c, idx); break;
     case 'swap': {
+      { const sw = secondWeaponWhy(c, c.weapon, c.offHand?.id); if (sw) return sw; } // the main-hand weapon becomes the second one
       if (disarmed) leaveDowned();
       const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
       c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods, ...(off.name ? { name: off.name } : {}) };

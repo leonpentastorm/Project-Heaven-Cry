@@ -24,6 +24,11 @@ Fixes after 0.18.0, straight on the base branch (Leon's playtest notes and his r
 - **Technique text is written for players:** no "today's rule" wording anywhere in a technique's text, and a technique's card says first what it needs (a Pressed target, Momentum, Hidden, a weapon in the pack, an Opener's place in the chain).
 - **Only guns sound like guns:** a technique's volley (Suppress, Rake, Mag Dump, Burst) with a flamer, a launcher, the core rifle, a bow or a scattergun plays that weapon's own shot for each round, with no gun rattle, tracer stream or brass.
 - **The breacher tube's reload card** shows the rocket going in (it was an empty box with a count).
+- **Two weapons** (provisional, item 956):
+  - two weapons of one kind (two guns, two melee weapons) have a third block on the Attack tab, **Both hands**: the paired attack, reloading both guns, and nine techniques made with each weapon in turn (main hand −1, off hand −3 less 1 per 3 Dexterity, +1 AP);
+  - the second weapon needs 2 more points of its skill than in the main hand;
+  - two guns share one Heat bar, its limit the two limits added, cooling 4 a turn.
+- **A melee technique that moves you shows how far it reaches:** Lunge's red covers its step (2 with a Reach weapon), Charge's covers the run your AP still buys.
 - **A learned signature's chip** no longer says "A signature you learned…" in its text (the ◆ stays).
 - **Rulings confirmed as built:** Snap Shot draws from the pack only; Pin Down holds until 2 AP is spent; Rout through a grenade spends it; Throw stays open to characters who know Lob; the parlour pistol is Silent; a weapon pulled out by the wielder's ally stays in that ally's hand.
 

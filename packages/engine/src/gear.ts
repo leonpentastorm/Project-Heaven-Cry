@@ -11,7 +11,7 @@ import type { Combat, Unit } from './combat';
 import { holderOf, uses } from './effects';
 
 /** The gear costs (PROVISIONAL, items 684, 685). */
-export const GEAR: { hand_ap: number; two_handed_draw_ap: number; swap_hands_ap: number; put_away_ap_per_hand: number; drop_ap: number; light_armour_ap: number; light_armour_max_kg: number } = (wpJ as any).gear;
+export const GEAR: { hand_ap: number; two_handed_draw_ap: number; swap_hands_ap: number; put_away_ap_per_hand: number; drop_ap: number; light_armour_ap: number; light_armour_max_kg: number; second_weapon_skill_extra?: number } = (wpJ as any).gear;
 
 /** One gear change in a fight. `item` names a pack entry by its index or its id (item 684). */
 export type GearOp =

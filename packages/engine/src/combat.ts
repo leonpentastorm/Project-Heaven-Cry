@@ -1055,7 +1055,10 @@ function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): 
   return out;
 }
 /** A gun's Heat limit for this unit: the weapon's, + items (stat 'heat_limit'; Belt Discipline: hooks gap J1). */
-export const heatLimit = (u: Unit, w: WeaponDef) => (w.heat_limit || 0) + (u.charId || u.held ? statQuery({ u }, 'heat_limit').add : 0);
+/** Two guns that build Heat share one pool (Leon, 10 Nov 2026): one bar, its limit the two limits added, so there is
+ * one number to watch. Either gun's shot adds to it; it cools 2 a turn for each of the two. */
+const heatPair = (u: Unit): WeaponDef | null => { const m = WEAPON[u.weapon], o = u.offWeapon ? WEAPON[u.offWeapon] : null; return m && o && m.heat_limit && o.heat_limit ? o : null; };
+export const heatLimit = (u: Unit, w: WeaponDef) => { const o = heatPair(u), m = WEAPON[u.weapon]; return (o && (w === m || w === o) ? (m.heat_limit || 0) + (o.heat_limit || 0) : w.heat_limit || 0) + (u.charId || u.held ? statQuery({ u }, 'heat_limit').add : 0); };
 /** After a critical: Injury resistance (d100), then a d6 for the location (spec: Injuries). Returns the log suffix.
  * 'injury' {t, d, loc, side, cancel, noDaze, noHalve} fires before it lands (cb given; hooks gap A9): cancel stops
  * it, noDaze/noHalve keep the injury but not its AP or Movement cost. */
@@ -1124,7 +1127,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
   u.ap = t.ap; for (const l of t.lines) cb.log.push(l);
   if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
-  u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
+  u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
   // Stunned (spec): the turn is lost; the engine passes it (endTurn).
   if (condOn(u, 'stunned') && !u.downed) { u.ap = 0; u.skipTurn = true; cb.log.push(u.name + ' is Stunned and loses the turn.'); }
   emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round });

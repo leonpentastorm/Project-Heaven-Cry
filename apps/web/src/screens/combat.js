@@ -736,7 +736,11 @@ export class CombatLogic extends DCLogic {
       // Optics only help against units (previewAttack); shooting an object (shootCover) has no optic term: 3 bands flat.
       const mods = cur.mods || [], optic = S.action !== 'cover' && (mods.includes('mod_red_dot') || (mods.includes('mod_scope') && mode === 'aimed')) ? 1 : 0;
       const reachM = S.action === 'shove' || (S.action === 'skill' && skFx.op === 'sweep') ? 1 : (useW.properties || []).includes('reach_2') || useW.id === 'lance' || (useW === w && skFx.op === 'reach') ? (skFx.op === 'reach' && useW === w ? skFx.value : 2) : 1;
-      const maxR = S.action === 'analyze' ? 4 + (cur.analysis || 0) : isM ? reachM : effectiveRange(useW) * (3 + optic);
+      // A melee technique that moves you first reaches further than the weapon: Lunge's step (2 with a Reach weapon),
+      // Charge's run (as far as the AP left after the strike lets you walk). The red shows who it can reach, not the blade.
+      const tProps = (useW.phys && useW.phys.props) || [], tApLeft = Math.max(0, cur.ap - (tChip ? tChip.ap : 2));
+      const moveR = !tsel || !isM ? 0 : tId === 'lunge' ? (tProps.includes('reach') ? 2 : 1) : tId === 'charge' ? Math.floor(tApLeft * (cur.movement || 1) + (cur.bank || 0)) : 0;
+      const maxR = S.action === 'analyze' ? 4 + (cur.analysis || 0) : isM ? reachM + moveR : effectiveRange(useW) * (3 + optic);
       const memo = [cur.id, cur.pos, cur.weapon, S.action, maxR, cb.round, cb.log.length].join('|');
       if (!this._red || this._red.key !== memo) {
         // By range band (spec: −2 to hit per band past the first): the first band reads strongest, the far ones fade.
@@ -1153,7 +1157,7 @@ export class CombatLogic extends DCLogic {
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));
     if (tsel && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
     // Each weapon block's header (on its plain attack's row): the weapon's icon and name, and its meter.
-    const headOf = {}; blocks.forEach((b) => { if (!b.plain) return; headOf[techAction(b.hand, b.plain.id)] = { hand: b.hand, name: b.name.toUpperCase() + (blocks.length > 1 ? ' · ' + (b.hand === 'main' ? 'MAIN HAND' : 'OFF HAND') : ''), icon: b.icon, hasIcon: !!b.icon,
+    const headOf = {}; blocks.forEach((b) => { if (!b.plain && b.hand !== 'both') return; headOf[b.hand === 'both' ? 'paired' : techAction(b.hand, b.plain.id)] = { hand: b.hand, name: b.name.toUpperCase() + (b.hand === 'both' ? '' : blocks.length > 1 ? ' · ' + (b.hand === 'main' ? 'MAIN HAND' : 'OFF HAND') : ''), icon: b.icon, hasIcon: !!b.icon,
       meter: b.meter, hint: b.meterHint, hasHint: !!b.meterHint, pips: b.pips.map((p) => ({ key: p.key, on: p.on ? 'true' : 'false', style: 'width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); ' + (p.on ? 'background: #F68A38' : 'border: 1px solid #5B6577') })), hasPips: b.pips.length > 0 }; });
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move

@@ -286,6 +286,7 @@
     "hand_ap": 1,
     "two_handed_draw_ap": 2,
     "swap_hands_ap": 1,
+    "second_weapon_skill_extra": 2,
     "put_away_ap_per_hand": 1,
     "drop_ap": 0,
     "light_armour_ap": 1,

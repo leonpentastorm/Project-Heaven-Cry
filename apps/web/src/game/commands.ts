@@ -138,6 +138,8 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   const wa = cur ? weaponActions(cur) : [], W = (id: string) => wa.find((x: any) => x.id === id);
   const offW: any = cur && cur.offWeapon ? (WEAPON as any)[cur.offWeapon] : null;
   const legacy = isLegacyUnit(cur);
+  // two weapons of one kind: the both-hands block (the paired attack, the shared techniques, reloading both guns)
+  const blocks0 = legacy ? [] : weaponBlocks(opts.g, cb, cur), dual = blocks0.some((b) => b.hand === 'both');
   // a gun in either hand: Reload and Clear jam are listed with the shots, on the Attack tab
   const gunTab = !!cur && ((!!w && !melee && w.id !== 'fists') || (!!offW && !isMelee(offW)));
   const clearItems: ActionItem[] = W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : [];
@@ -163,12 +165,12 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
           ...(modes.includes('burst') ? [['burst', 'Burst', '3 AP', '3 rounds at one target, each later round −1 more.'] as ActionItem] : []),
           ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', '10 rounds: one roll at −2 against every enemy near the line to your target.'] as ActionItem] : [])]),
         ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : [])]
-        : [...blockItems(weaponBlocks(opts.g, cb, cur)) as ActionItem[],
+        : [...withBoth(blockItems(blocks0) as ActionItem[], dual, cur),
           // a gun in the hand still hits: the butt of the weapon (the engine's bare-hand strike; Leon, 10 Nov 2026)
           ...(w && !melee ? [['melee', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee') + ' AP', 'An enemy next to you: d20 + Raw Power vs Defense, the damage of a bare-hand strike. No round spent, no Heat.'] as ActionItem] : [])]),
-      ...(offW ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).'] as ActionItem] : []),
+      ...(offW && !dual ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).'] as ActionItem] : []),
       // with a gun in a hand, reloading and clearing a jam sit with the shots (Leon, 10 Nov 2026: no tab switch mid-fight)
-      ...(gunTab ? [...reloadItems(cur), ...clearItems] : []),
+      ...(gunTab ? [...reloadItems(cur).filter((it) => !dual || !String(it[0]).startsWith('reload2')), ...clearItems] : []),
       ['shove', 'Shove', '2 AP', 'An adjacent enemy: d20 + Raw Power vs 10 + its best of Raw Power and Athletics. Pushed 1 tile, or prone if blocked. Shove them into fire.'],
       ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
       ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
@@ -187,7 +189,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(cur && cur.conds?.burning > 0 ? [['extinguish', 'Put out the fire', '1 AP', 'Burning: 10 damage at the start of each of your turns until someone spends 1 AP to put it out.'] as ActionItem] : []),
       ...(cur && cur.conds?.grappled > 0 ? [['escape', 'Break free', '2 AP', 'Grappled: d20 + the better of Raw Power and Athletics against the grappler\'s.'] as ActionItem] : []),
       ...(cur && (cur.conds?.disarmed > 0 || cur.conds?.lowered > 0) ? [['recover', cur.conds?.disarmed > 0 ? 'Recover your weapon' : 'Raise your weapon', cur.conds?.disarmed > 0 ? '2 AP' : '1 AP', 'Until then you attack with your fists.'] as ActionItem] : []),
-      ...reloadBothItems(cur),
+      ...(dual ? [] : reloadBothItems(cur)), // two guns: with the both-hands block on the Attack tab
       ...(cur && !cur.hidden && cur.side === 'pc' ? [['hide', 'Hide', '2 AP', 'Only out of every enemy\'s sight, and never while Marked. Hidden: enemies can\'t target you; your first attack from hiding is an ambush (crit on 19–20, × your Ambush multiplier). Enemies look for you at the end of their turns.', (cb && cb.units.some((v: any) => v.side !== cur.side && !v.dead && !v.downed && unitSees(cb, v, cur.pos))) ? 'An enemy can see you.' : cur.conds?.marked > 0 ? 'Marked.' : null] as ActionItem] : []),
       ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']], null, 'utility'],
   ];
@@ -430,4 +432,13 @@ function pullFreeItems(cb: any, cur: any): ActionItem[] {
     : t.side === cur.side ? 'Pull ' + t.name + ' free of what nails them in place. Pick them as the target if more than one is held.'
       : 'Pull the weapon out of ' + t.name + ': it goes to a free hand, else to the ground. This frees them.';
   return [['pullfree', self ? 'Pull free' : t.side === cur.side ? 'Pull an ally free' : 'Pull the weapon out', ap + ' AP', text, cur.ap < ap ? 'Needs ' + ap + ' AP.' : null] as ActionItem];
+}
+
+/** The both-hands block's rows get "Reload both" after them (two guns), so the block is everything the pair does. */
+function withBoth(items: ActionItem[], dual: boolean, cur: any): ActionItem[] {
+  if (!dual) return items;
+  const both = reloadBothItems(cur);
+  if (!both.length) return items;
+  let at = items.findIndex((it) => it[0] === 'tpad:both'); if (at < 0) at = items.findIndex((it) => it[0] === 'paired');
+  return at < 0 ? items : [...items.slice(0, at + 1), ...both, ...items.slice(at + 1)];
 }

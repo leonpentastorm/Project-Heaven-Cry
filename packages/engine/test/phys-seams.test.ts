@@ -1,6 +1,6 @@
 // Physical 2.0: where the melee lane, the ranged lane and the core meet (the pre-release review's findings).
 import { describe, it, expect, beforeEach } from 'vitest';
-import { applyCond, objectsOf, heatLimit, WEAPON, phys } from '../src';
+import { applyCond, objectsOf, heatLimit, WEAPON, phys, secondWeaponWhy } from '../src';
 const heatLimitOf = (u: any) => heatLimit(u, WEAPON[u.weapon]);
 import { physFight, rig } from './helpers/physfight';
 beforeEach(() => rig(null));
@@ -101,5 +101,46 @@ describe('the crossbow (0.18.1)', () => {
     expect(heavy.ok).toBe(true); expect(heavy.ap).toBe(4);
     expect(heavy.attacks[0].pv.pct).toBeGreaterThan(plain.attacks[0].pv.pct); // Precise: +2
     expect((heavy.attacks[0].pv as any).dmg.total ?? 0).toBeGreaterThan(((plain.attacks[0].pv as any).dmg.total ?? 0) * 1.4);
+  });
+});
+
+describe('both hands (0.18.1): a technique made with each weapon in turn', () => {
+  it('two pistols: Aimed Shot with both, main at −1 and off at −3 (+1 per 3 Dexterity), the dearer cost + 1 AP', () => {
+    const f = physFight([{ weapon: 'service_pistol', off: 'service_pistol', skills: { dexterity: 6 } }], [{ tier: 'soldier' }], { seed: 'B1' });
+    f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'F5'); foe.hp = foe.maxHp = 9000;
+    f.turn(f.pc); rig({ hit: true, die: 12 });
+    const u = f.unit(f.pc.id); u.maxDur = 100; u.dur = 100; (u as any).dexterity = 6;
+    const one = f.pv('aimed_shot', { targetId: f.foe.id }), two = f.pv('aimed_shot', { targetId: f.foe.id, hand: 'both' } as any);
+    expect(two.ok, two.why || '').toBe(true); expect(two.ap).toBe(one.ap + 1); expect(two.attacks.length).toBe(2);
+    expect(two.attacks[0].pv.pct).toBeLessThan(one.attacks[0].pv.pct);            // −1
+    expect(two.attacks[1].pv.pct).toBeLessThanOrEqual(two.attacks[0].pv.pct);       // off hand: −1 at Dexterity 6
+    const ap0 = f.unit(f.pc.id).ap, a0 = f.unit(f.pc.id).ammo, o0 = f.unit(f.pc.id).offAmmo ?? 0;
+    expect(f.tech('aimed_shot', { targetId: f.foe.id, hand: 'both' } as any)).toBeNull();
+    const a = f.unit(f.pc.id); expect(ap0 - a.ap).toBe(two.ap); expect(a.ammo).toBe(a0 - 1); expect(a.offAmmo).toBe(o0 - 1);
+  });
+  it('refused with a gun and a blade, and for a technique that isn\'t one weapon at one target', () => {
+    const f = physFight([{ weapon: 'sabre', off: 'service_pistol', skills: SK }], [{ tier: 'soldier' }], { seed: 'B2' });
+    f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    expect(f.pv('sunder', { targetId: f.foe.id, hand: 'both' } as any).why).toMatch(/two melee weapons/);
+    const g2 = physFight([{ weapon: 'sabre', off: 'combat_knife', known: ['sunder', 'coup'], skills: SK }], [{ tier: 'soldier' }], { seed: 'B3' });
+    g2.put(g2.pc, 'C5'); g2.put(g2.foe, 'D5'); g2.turn(g2.pc);
+    expect(g2.pv('coup', { targetId: g2.foe.id, hand: 'both' } as any).why).toMatch(/one weapon/);
+    expect(phys.pairedPad(g2.cb, g2.unit(g2.pc.id), g2.g).map((e) => e.id)).toContain('sunder');
+  });
+});
+
+describe('two weapons (0.18.1)', () => {
+  it('two guns share one Heat pool: the two limits added', () => {
+    const f = physFight([{ weapon: 'service_pistol', off: 'service_pistol', skills: SK }], [{ tier: 'soldier' }], { seed: 'HP' });
+    const u = f.unit(f.pc.id), one = WEAPON.service_pistol.heat_limit || 0;
+    if (one) expect(heatLimit(u, WEAPON.service_pistol)).toBe(one * 2);
+    u.offWeapon = null as any; if (one) expect(heatLimit(u, WEAPON.service_pistol)).toBe(one);
+  });
+  it('the second weapon asks 2 more of its skill', () => {
+    const c: any = { skills: { dexterity: 1, raw_power: 5 } };
+    expect(secondWeaponWhy(c, 'service_pistol', 'sabre')).toMatch(/Dexterity 2/);
+    c.skills.dexterity = 2; expect(secondWeaponWhy(c, 'service_pistol', 'sabre')).toBeNull();
+    expect(secondWeaponWhy(c, 'service_pistol', 'fists')).toBeNull(); // one weapon: no second
+    expect(secondWeaponWhy(c, 'riot_shield', 'sabre')).toBeNull();    // a shield is not a weapon
   });
 });
