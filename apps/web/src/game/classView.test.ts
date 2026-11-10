@@ -9,31 +9,35 @@ const charWith = (o: Partial<Character> = {}): Character => {
   const c = newCharacter('c1', 'p1', { name: 'T', portrait: '', origin: 'x', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} });
   return Object.assign(c, o);
 };
-/** Class Roster Revision 3: a class's rank reads its attribute (II at 5, III at 8). */
+/** Class Roster Revision 3: a class's rank reads its attribute (II at 5, III at 8) and, since rules 1.11, the level (6, 12). */
 const setAttr = (c: Character, cls: string, v: number) => { c.attrs[CLASS[cls].attribute] = v; };
 
 describe('classView', () => {
   it('attribute progress to the next rank (5, 8)', () => {
-    const c = charWith({ classId: 'marksman' }); setAttr(c, 'marksman', 4);
+    const c = charWith({ classId: 'marksman', level: 4 }); setAttr(c, 'marksman', 4);
     const s = attributeProgress(c, 'marksman')!;
-    expect(s.total).toBe(4); expect(s.rank).toBe(1); expect(s.next).toBe(5); expect(s.nextLine).toBe('Rank II at Agility 5 · 1 to go');
+    expect(s.total).toBe(4); expect(s.rank).toBe(1); expect(s.next).toBe(5); expect(s.nextLine).toBe('Rank II at Agility 5 · 1 to go and level 6 · 2 to go');
+    setAttr(c, 'marksman', 8); expect(attributeProgress(c, 'marksman')!.rank).toBe(1); // the attribute alone isn't enough (rules 1.11)
+    expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Rank II at Agility 5 ✓ and level 6 · 2 to go');
+    c.level = 6; expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Rank III at Agility 8 ✓ and level 12 · 6 to go');
+    c.level = 12; setAttr(c, 'marksman', 4);
     expect(s.skills.map((x: any) => x.id)).toEqual(CLASS.marksman.skills);
     expect(s.label).toBe('AGILITY 4'); expect(s.ink).toBe('#E3BF51'); // the attribute's ink
     setAttr(c, 'marksman', 8); expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Top rank');
   });
   it('moves by rank, two a rank: earned lit, the rest locked with their threshold; reused moves keep their old key', () => {
-    const c = charWith({ classId: 'marksman' }); setAttr(c, 'marksman', 5); // rank II
+    const c = charWith({ classId: 'marksman', level: 6 }); setAttr(c, 'marksman', 5); // rank II
     const m = classMoves({}, c, 'marksman');
     expect(m.map((x) => x.earned)).toEqual([true, true, true, true, false, false]);
-    expect(m[4].unlock).toBe('unlocks at Agility 8');
+    expect(m[4].unlock).toBe('unlocks at Agility 8 and level 12');
     expect(m.find((x) => x.id === 'called_shot')!.key).toBe('class:gunslinger.called_shot');
     m.forEach((x) => expect(['Engine runs it', 'Narrator rules it', 'Both']).toContain(x.badge));
     expect(classLabel(c)).toBe('Marksman II');
   });
   it('ranks: three, two moves each, with the attribute value that unlocks them', () => {
-    const c = charWith({ classId: 'bard' }); setAttr(c, 'bard', 5);
+    const c = charWith({ classId: 'bard', level: 6 }); setAttr(c, 'bard', 5);
     const r = classRanks({}, c, 'bard');
-    expect(r.map((x) => x.head)).toEqual(['RANK I · WITH THE CLASS', 'RANK II · INSIGHT 5', 'RANK III · INSIGHT 8']);
+    expect(r.map((x) => x.head)).toEqual(['RANK I · WITH THE CLASS', 'RANK II · INSIGHT 5 · LEVEL 6', 'RANK III · INSIGHT 8 · LEVEL 12']);
     expect(r.map((x) => x.unlocked)).toEqual([true, true, false]);
     r.forEach((x) => expect(x.moves.length).toBe(2));
     expect(r[0].moves[0].key).toBe('class:medic.triage'); // a reused move keeps its old key
@@ -68,7 +72,7 @@ describe('classView', () => {
     c.advancedClass = 'gunslinger'; expect(classLabel(c)).toBe('Marksman I');
   });
   it('uses left from the engine counters (a per-scene move)', () => {
-    const c = charWith({ classId: 'mage' }); setAttr(c, 'mage', 5); c.uses = {};
+    const c = charWith({ classId: 'mage', level: 6 }); setAttr(c, 'mage', 5); c.uses = {};
     const g = { characters: { c1: c }, story: { scene: { n: 1 }, round: 1 }, sessionN: 1 };
     expect(usesLine(g, c, 'class:mage.overcharge', 'II')).toMatch(/1\/1 scene left/);
   });

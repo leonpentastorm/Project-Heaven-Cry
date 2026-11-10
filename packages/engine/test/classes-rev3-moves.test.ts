@@ -14,7 +14,7 @@ type F = ReturnType<typeof fightWith>;
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 /** A character of a Revision 3 class with its attribute at n (rank I 1-4, II at 5, III at 8). */
-const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 5, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
+const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 12, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
 function rngFor(...ns: number[]): number { for (let s = 1; s < 2000000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const seed = (f: { g: any }, ...ns: number[]) => { f.g.rng.state = rngFor(...ns); };
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));

@@ -1,7 +1,7 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
 import feelJ from '../../../data/feelings.json';
@@ -10,6 +10,10 @@ import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from '.
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
+  /** The creation rules this sheet was locked in under (SHEET_REV; rules 1.11, item 931). A sheet without it was made
+   * before 1.11 and is read by the budgets of its day (a Core point could buy 2 Attribute points; Mind Without Fog
+   * gave 2 Core points), so characters made then stay legal. */
+  rulesRev?: number;
   /** An uploaded portrait's eye line for the spotlight cut-in's torn strip (y from the top, 0.05–0.70; decision 113).
    * Presentation only; the art library's portraits carry their own (art/catalog.json eye_line). */
   portraitEye?: number;
@@ -175,10 +179,17 @@ export function devotionWords(xp: number): string {
 export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 
 // ---------- creation (spec: Creation budget) ----------
-export const BUDGET = { skill: 10, attr: 10, core: 6, trade: 2, cap: 10 };
+/** Rules 1.11 (item 928): the Core-for-Attribute trade is gone (trade 0): every Core point is placed in a Core. */
+export const BUDGET = { skill: 10, attr: 10, core: 6, trade: 0, cap: 10 };
+/** Mind Without Fog's extra Core points at creation (rules 1.11, item 929: 1; it was 2). */
+export const FOG_CORE = 1;
+/** The creation rules' revision a new sheet is stamped with (rules 1.11). */
+export const SHEET_REV = 111;
+/** The budgets before rules 1.11, for sheets locked in then (no rulesRev): item 931. */
+export const LEGACY_BUDGET = { trade: 2, fog: 2 };
 
 /** Port of the prototype's derive(): what a set of skill points and hand-placed stats spend. */
-export function deriveCreation(skills: Record<string, number>, aSet: Record<string, number> = {}, cSet: Record<string, number> = {}, corePts = BUDGET.core) {
+export function deriveCreation(skills: Record<string, number>, aSet: Record<string, number> = {}, cSet: Record<string, number> = {}, corePts = BUDGET.core, trade = BUDGET.trade) {
   const attr: Record<string, number> = {}, core: Record<CoreId, number> = { body: 1, mind: 1, soul: 1 };
   ATTRS.forEach((a) => { attr[a.id] = Math.max(1, aSet[a.id] || 1); });
   SKILLS.forEach((s) => { const p = skills[s.id] || 0; if (p > attr[s.attribute]) attr[s.attribute] = p; });
@@ -186,9 +197,9 @@ export function deriveCreation(skills: Record<string, number>, aSet: Record<stri
   ATTRS.forEach((a) => { if (attr[a.id] > core[a.core]) core[a.core] = attr[a.id]; });
   const spent = Object.values(skills).reduce((x, y) => x + y, 0);
   const attrSpent = ATTRS.reduce((t, a) => t + attr[a.id] - 1, 0), coreSpent = CORES.reduce((t, c) => t + core[c] - 1, 0);
-  const attrOver = Math.max(0, attrSpent - BUDGET.attr), traded = Math.ceil(attrOver / BUDGET.trade);
-  const coreLeft = corePts - coreSpent - traded, attrLeft = BUDGET.attr + traded * BUDGET.trade - attrSpent;
-  const ok = coreLeft >= 0 && Object.values(attr).every((v) => v <= BUDGET.cap) && Object.values(core).every((v) => v <= BUDGET.cap) && spent <= BUDGET.skill;
+  const attrOver = Math.max(0, attrSpent - BUDGET.attr), traded = trade > 0 ? Math.ceil(attrOver / trade) : 0;
+  const coreLeft = corePts - coreSpent - traded, attrLeft = BUDGET.attr + traded * trade - attrSpent;
+  const ok = coreLeft >= 0 && attrLeft >= 0 && Object.values(attr).every((v) => v <= BUDGET.cap) && Object.values(core).every((v) => v <= BUDGET.cap) && spent <= BUDGET.skill;
   return { attr, core, spent, attrSpent, coreSpent, traded, coreLeft, attrLeft, ok };
 }
 
@@ -205,6 +216,17 @@ export function traitGainError(have: string[] | null | undefined, id: string): s
 }
 
 /** A sheet is legal to lock in: every budget spent, tree caps hold, 0–2 traits, a name, an origin, a kit. */
+/** A sheet's creation spend by the rules it was made under. A sheet stamped with rules 1.11 (rulesRev) is read by
+ * today's budgets only. One with no stamp was locked in before 1.11: if today's budgets don't fit it, the budgets of
+ * its day are tried (the Core-for-Attribute trade at 2; Mind Without Fog's 2 Core points), so it stays legal (item 931). */
+export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'traits' | 'rulesRev'>) {
+  const fog = (s.traits || []).includes('mind_without_fog');
+  const d = deriveCreation(s.skills, s.attrs, s.cores, BUDGET.core + (fog ? FOG_CORE : 0));
+  const whole = (x: ReturnType<typeof deriveCreation>) => x.ok && x.spent === BUDGET.skill && x.attrLeft === 0 && x.coreLeft === 0;
+  if (whole(d) || (Number(s.rulesRev) || 0) >= SHEET_REV) return d;
+  const old = deriveCreation(s.skills, s.attrs, s.cores, BUDGET.core + (fog ? LEGACY_BUDGET.fog : 0), LEGACY_BUDGET.trade);
+  return whole(old) ? old : d;
+}
 export function validateSheet(s: Sheet): string | null {
   if (!s.name?.trim()) return 'A character needs a name.';
   if (!s.origin) return 'Pick an origin.';
@@ -218,8 +240,7 @@ export function validateSheet(s: Sheet): string | null {
   const whole = (o: Record<string, unknown> = {}) => Object.values(o).every((v) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 10);
   if (!whole(s.skills) || !whole(s.attrs) || !whole(s.cores)) return 'Points must be whole numbers from 0 to 10.';
   for (const [id, p] of Object.entries(s.skills)) { if (!SKILL[id]) return 'Unknown skill ' + id; if (p < 0 || p > 10) return 'Skills run 0–10.'; }
-  const corePts = BUDGET.core + (s.traits.includes('mind_without_fog') ? 2 : 0);
-  const d = deriveCreation(s.skills, s.attrs, s.cores, corePts);
+  const d = sheetDerive(s);
   if (!d.ok) return 'Those points break the tree or the budgets.';
   if (d.spent !== BUDGET.skill) return 'Spend all 10 Skill points.';
   if (d.attrLeft !== 0 || d.coreLeft !== 0) return 'Place every Attribute and Core point.';
@@ -394,8 +415,7 @@ export function armourCap(c: { traits?: string[] }): number | null {
 }
 /** Turn a locked-in sheet into a level-1 character (spec: Creation; kits from the creation screen). */
 export function newCharacter(id: string, owner: string, s: Sheet): Character {
-  const corePts = BUDGET.core + (s.traits.includes('mind_without_fog') ? 2 : 0);
-  const d = deriveCreation(s.skills, s.attrs, s.cores, corePts);
+  const d = sheetDerive(s);
   const kit = KITS[s.kit] || KITS.medic;
   const c: Character = {
     ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],
@@ -711,15 +731,35 @@ export function levelForXp(xp: number): number {
 }
 export const xpForLevel = (l: number) => XP_TOTAL[String(Math.min(20, Math.max(1, l)))];
 
+/** What reaching `level` gives (spec table "On reaching a level"; rules 1.11, item 924): odd levels 2 Skill points,
+ * even levels 1 Skill point and 1 Attribute point, a Core point every 3rd level up to 18. Read from rules.json
+ * `character.levels.gains`, so the numbers live in the data. */
+export function levelGains(level: number): { skill: number; attr: number; core: number } {
+  const G = RULES.character.levels.gains || {};
+  if (level < 2) return { skill: 0, attr: 0, core: 0 };
+  const sp = G.skill_points || {}, ap = G.attribute_points || {}, cp = G.core_points || {};
+  const every = (o: any) => Math.max(1, Number(o.every) || 1);
+  return {
+    skill: Number(level % 2 ? sp.odd_levels : sp.even_levels) || 0,
+    attr: level % every(ap) === 0 ? Number(ap.amount) || 0 : 0,
+    core: level % every(cp) === 0 && level <= (Number(cp.last_level) || 20) ? Number(cp.amount) || 0 : 0,
+  };
+}
+/** The whole table for a screen: the points levels 2 to `max` give in all. */
+export function careerGains(max = 20) {
+  const t = { skill: 0, attr: 0, core: 0 };
+  for (let l = 2; l <= max; l++) { const g = levelGains(l); t.skill += g.skill; t.attr += g.attr; t.core += g.core; }
+  return t;
+}
+
 /** Apply levels gained: points per level, HP per level (spec table "On reaching a level"). Returns levels gained. */
 export function applyLevels(c: Character): number {
   const target = levelForXp(c.xp);
   let gained = 0;
   while (c.level < target) {
     c.level++; gained++;
-    c.unspent.skill += 1;
-    if (c.level % 2 === 0) c.unspent.attr += 1;
-    if (c.level % 5 === 0) c.unspent.core += 1;
+    const gain = levelGains(c.level);
+    c.unspent.skill += gain.skill; c.unspent.attr += gain.attr; c.unspent.core += gain.core;
     c.hp = Math.min(maxHp(c), c.hp + hpPerLevel(c));
   }
   return gained;
@@ -750,6 +790,9 @@ export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: stri
 /** The class roster revision (3: one base class per attribute). */
 export const CLASS_REV = 3;
 const RANK_AT: { II: number; III: number } = { II: Number(CLASS_RULES?.rank_thresholds?.II) || 5, III: Number(CLASS_RULES?.rank_thresholds?.III) || 8 };
+/** Rules 1.11 (item 930): a rank needs a level as well as the attribute (rank II level 6, rank III level 12). */
+export const RANK_LEVEL: { II: number; III: number } = { II: Number(CLASS_RULES?.rank_levels?.II) || 1, III: Number(CLASS_RULES?.rank_levels?.III) || 1 };
+export const RANK_ATTR = RANK_AT;
 const attrOf = (c: { attrs?: Record<string, number> }, a: string) => c.attrs?.[a] || 1;
 /** Every base class with its attribute's value now (the class score; trait bonuses never count). */
 export function classTotals(c: Pick<Character, 'attrs'>) {
@@ -760,16 +803,17 @@ export function eligibleClasses(c: Pick<Character, 'attrs'>) {
   const t = classTotals(c), top = Math.max(...t.map((x) => x.total));
   return t.filter((x) => x.total === top);
 }
-/** Rank reads the class's own attribute: I on gaining it, II at 5, III at 8 (provisional), even if another attribute
- * later grows higher. */
-export function classRank(c: Pick<Character, 'classId' | 'attrs'> & { skills?: Record<string, number> }): number {
+/** Rank reads the class's own attribute and the character's level: I on gaining it, II at attribute 5 and level 6,
+ * III at attribute 8 and level 12 (rules 1.11, provisional), even if another attribute later grows higher. A caller
+ * that passes no level (a bare sheet) is read by the attribute alone. */
+export function classRank(c: Pick<Character, 'classId' | 'attrs'> & { skills?: Record<string, number>; level?: number }): number {
   if (!c.classId) return 0;
   if (revision2Classes() && REV2_CLASSES[c.classId]) { // the test-only Revision 2 shells: signature totals 13 / 18
     const t = REV2_CLASSES[c.classId].signature.reduce((n, s) => n + (c.skills?.[s] || 0), 0); return t >= 18 ? 3 : t >= 13 ? 2 : 1;
   }
   const k = CLASS[c.classId]; if (!k) return 1;
-  const v = attrOf(c, k.attribute);
-  return v >= RANK_AT.III ? 3 : v >= RANK_AT.II ? 2 : 1;
+  const v = attrOf(c, k.attribute), lv = typeof c.level === 'number' ? c.level : 20;
+  return v >= RANK_AT.III && lv >= RANK_LEVEL.III ? 3 : v >= RANK_AT.II && lv >= RANK_LEVEL.II ? 2 : 1;
 }
 /** Why this character can't take this class at level 3, or null. The class is set for good once picked (changing class
  * is a separate system for later). */

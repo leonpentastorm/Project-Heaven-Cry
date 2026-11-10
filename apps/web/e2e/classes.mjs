@@ -2,7 +2,7 @@
 //  · every attribute tied at level 3: the level-up picker offers all nine classes (emblem, name, the attribute in its
 //    ink, the fantasy line, resource, both rank I moves, the "permanent" warning), laid out at 1440×1000 and 420 wide;
 //  · a card selects and previews, the confirm bar commits; a second pick is refused by the engine;
-//  · the class attribute raised to 5: rank II's two moves unlock in the class panel;
+//  · the class attribute raised to 5 at level 6: rank II's two moves unlock in the class panel;
 //  · in a fight, the CLASS tab wears the class's emblem and lists its moves (the Infiltrator's Mark and Toxin);
 //  · the Proving Ground's class menu lists only the nine base classes.
 // Screenshots: e2e/shots/classes-*.png (deviceScaleFactor 1).
@@ -95,8 +95,9 @@ ok('rank I unlocked, II and III locked: ' + (await states()).join(' | '), JSON.s
 ok('the class panel reads the attribute: ' + (await p.locator('.phc-lu-attr').textContent()), (await p.locator('.phc-lu-attr').textContent()).trim() === 'PERCEPTION ' + top);
 ok('the quiet advanced line', (await p.locator('.phc-lu-adv-note').textContent()) === 'Advanced classes are being rebuilt.');
 
-// ---------- 4. Perception to 5: rank II ----------
+// ---------- 4. Perception to 5 and level 6: rank II (rules 1.11: a rank needs its level too) ----------
 const per = SKILLS.find((k) => (k.attribute || k.attr) === 'perception');
+await act({ type: 'sandbox/level', charId: cid, level: 6 });
 await act({ type: 'sandbox/skill', charId: cid, skill: per.id, points: 5 });
 await p.waitForTimeout(400);
 g = await G();
@@ -141,7 +142,7 @@ const base = opts.filter((o) => o !== 'Classless');
 ok('the class menu has nine classes: ' + base.join(', '), base.length === 9 && !opts.some((o) => /Gunslinger|Shade|Templar|advanced/i.test(o)));
 ok('no advanced optgroup in the class menu', (await drawer.getByLabel('Class', { exact: true }).locator('optgroup').count()) === 0);
 const help = await drawer.getByText(/Rank reads/).first().textContent().catch(() => '');
-ok('the helper text gives the new rank rule: ' + help, /rank II at Perception 5, rank III at 8/.test(help) && !/signature|13 and 18/.test(help));
+ok('the helper text gives the new rank rule: ' + help, /rank II at Perception 5 and level 6, rank III at 8 and level 12/.test(help) && !/signature|13 and 18/.test(help));
 await snap('06-tools-class');
 
 ok('no page errors: ' + p.errors.join(' | '), !p.errors.length);

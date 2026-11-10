@@ -3,7 +3,7 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
-import { validateSheet, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
+import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
 import { feelingInk, feelingIconSrc } from '../game/feelingsView';
 const FEELING_START = ['rage', 'love'];
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
@@ -97,10 +97,10 @@ const title = (id) => id.charAt(0).toUpperCase() + id.slice(1);
 const mod = (p) => (p === 0 ? -2 : p - 1);
 const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 // Creation budgets (spec: Creation budget; rules.character.creation): 10 Skill, 10 Attribute, 6 Core points,
-// and an unspent Core point trades for 2 Attribute points. No creation caps (Leon): only the tree's own,
+// and every Core point is placed in a Core (rules 1.11: the Core-for-Attribute trade is gone). No creation caps (Leon): only the tree's own,
 // skill <= attribute <= core <= 10, so 6 Core points into Body make a legal 7/1/1 character.
-const BUDGET = 10, CAP = 10, ATTR_PTS = 10, BASE_CORE_PTS = 6, TRADE = 2, STAT_CAP = 10;
-let CORE_PTS = BASE_CORE_PTS; // Mind Without Fog: +2 Core points at creation (set each render from the picked traits)
+const BUDGET = 10, CAP = 10, ATTR_PTS = 10, BASE_CORE_PTS = 6, TRADE = 0, FOG_CORE = 1, STAT_CAP = 10;
+let CORE_PTS = BASE_CORE_PTS; // Mind Without Fog: +1 Core point at creation (set each render from the picked traits)
 
 function derive(skills, aSet, cSet) {
   aSet = aSet || {}; cSet = cSet || {};
@@ -111,10 +111,10 @@ function derive(skills, aSet, cSet) {
   D.attrs.forEach((a) => { if (attr[a.id] > core[a.core]) core[a.core] = attr[a.id]; });
   const spent = Object.values(skills).reduce((x, y) => x + y, 0);
   const attrSpent = D.attrs.reduce((t, a) => t + attr[a.id] - 1, 0), coreSpent = CORES.reduce((t, c) => t + core[c] - 1, 0);
-  // Unspent Core points are traded for Attribute points only as far as the Attributes need them.
-  const attrOver = Math.max(0, attrSpent - ATTR_PTS), traded = Math.ceil(attrOver / TRADE);
+  // Rules 1.11: no trade (TRADE 0): the Attribute budget is the Attribute budget.
+  const attrOver = Math.max(0, attrSpent - ATTR_PTS), traded = TRADE > 0 ? Math.ceil(attrOver / TRADE) : 0;
   const coreLeft = CORE_PTS - coreSpent - traded, attrLeft = ATTR_PTS + traded * TRADE - attrSpent;
-  const ok = coreLeft >= 0 && Object.values(attr).every((v) => v <= STAT_CAP) && Object.values(core).every((v) => v <= STAT_CAP) && spent <= BUDGET;
+  const ok = coreLeft >= 0 && attrLeft >= 0 && Object.values(attr).every((v) => v <= STAT_CAP) && Object.values(core).every((v) => v <= STAT_CAP) && spent <= BUDGET;
   // Class Roster Revision 3: the class of the highest attribute (every tied one) is the one level 3 offers.
   const totals = D.classes.map((c) => ({ id: c.id, name: c.name, core: c.core, attribute: c.attribute, total: attr[c.attribute] || 1 }));
   const top = Math.max(...totals.map((t) => t.total));
@@ -208,7 +208,7 @@ export class CreateLogic extends DCLogic {
   renderVals() {
     const S = this.state;
     const set = (patch) => () => this.setState(patch);
-    CORE_PTS = BASE_CORE_PTS + (S.traits.includes('mind_without_fog') ? 2 : 0);
+    CORE_PTS = BASE_CORE_PTS + (S.traits.includes('mind_without_fog') ? FOG_CORE : 0);
     const der = derive(S.skills, S.aSet, S.cSet);
     const left = BUDGET - der.spent;
     const stepIdx = STEPS.findIndex((s) => s[0] === S.step);
@@ -521,7 +521,7 @@ export class CreateLogic extends DCLogic {
   }
   sheet() {
     const S = this.state, o = S.origin === null ? null : D.origins[S.origin];
-    return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, ...(S.upload ? { portraitEye: Math.round((S.portraitEye ?? EYE_DEFAULT) * 100) / 100 } : {}), origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits],
+    return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, ...(S.upload ? { portraitEye: Math.round((S.portraitEye ?? EYE_DEFAULT) * 100) / 100 } : {}), origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits], rulesRev: SHEET_REV,
       skills: { ...S.skills }, attrs: derive(S.skills, S.aSet, S.cSet).attr, cores: derive(S.skills, S.aSet, S.cSet).core, identity: { ...S.idv }, archetype: S.applied || null,
       // Blessing 2.0: Faithful (to a patron) or Atheist; not chosen reads as Atheist (the engine's rule for old saves).
       ...(S.belief ? { belief: { ...S.belief } } : {}),
@@ -534,7 +534,7 @@ export class CreateLogic extends DCLogic {
    *  record gets no stamp, only the reason; a second press while the stamp is down does nothing. */
   lockIn() {
     if (this.state.stamp || this.locking) return;
-    CORE_PTS = BASE_CORE_PTS + (this.state.traits.includes('mind_without_fog') ? 2 : 0);
+    CORE_PTS = BASE_CORE_PTS + (this.state.traits.includes('mind_without_fog') ? FOG_CORE : 0);
     const sheet = this.sheet(), err = this.refusal(sheet);
     if (err) { sfx('error'); return toast(err); }
     this.locking = true;

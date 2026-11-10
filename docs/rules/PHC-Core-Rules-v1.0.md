@@ -6,6 +6,8 @@
 
 > **Revision 1.10 (2026-11-09), Sigil 1.5:** a Line is a stroke (the glyphs drawn as one); touching glyphs of other strokes no longer poison a Line; Lines stay 2–4 glyphs; study, copying and sigil marks; word mastery and inflections; Junctions at Brain Power Mastered. See Mana, Drawing a spell, rule 3, The Magic panel and learning, and items 901 on. Design: `docs/design/sigil-1.5-spec.md`.
 
+> **Revision 1.11 (2026-11-10), level gains:** every level gives two picks (odd levels 2 Skill points; even levels 1 Skill point and 1 Attribute point) and a Core point comes every 3rd level (3, 6, 9, 12, 15, 18), not every 5th. A class rank needs a level as well as the attribute (rank II level 6, rank III level 12). At creation the budgets are unchanged, the Core-for-Attribute trade is gone, and Mind Without Fog gives 1 Core point, not 2. See Characters, Classes and items 924 on. Design: `docs/design/proposals/2026-11-skeleton.md`.
+
 2026-11-03 · Leon PT
 
 ## How to use this spec
@@ -73,10 +75,10 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 |---|---|---|
 | Skills | 0 each | spend **10 Skill points** |
 | Attributes | 1 each | spend **10 Attribute points** |
-| Cores | 1 each | spend **6 Core points**. An unspent Core point trades for **2 Attribute points** |
+| Cores | 1 each | spend **6 Core points** |
 | Traits | none | pick 0–2 |
 
-Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Skill points), so focusing on one Core costs nothing that spreading across three would save. A specialist who needs fewer Core points trades the rest for Attributes.
+Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Skill points), so focusing on one Core costs nothing that spreading across three would save. Every point is placed where it belongs: a Core point can't be traded for Attribute points (rules 1.11, item 928; before it, an unspent Core point became 2 Attribute points, which only ever worked for one point and was a loss when it did).
 
 **No creation caps.** Only the tree's own caps apply (Skill ≤ Attribute ≤ Core ≤ 10). Put all 6 Core points into Body and you have a 7/1/1 character; the budgets themselves stop a skill at 7 at creation.
 
@@ -96,10 +98,13 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 
 | On reaching a level | You gain |
 |---|---|
-| Every level | +1 Skill point; HP rises by your HP-per-level stat |
-| Every even level | +1 Attribute point |
-| Every 5th level | +1 Core point |
+| Every level | HP rises by your HP-per-level stat |
+| Every odd level (3, 5, … 19) | +2 Skill points |
+| Every even level (2, 4, … 20) | +1 Skill point and +1 Attribute point |
+| Every 3rd level (3, 6, 9, 12, 15, 18) | also +1 Core point |
 | Level 3 | Your base class (see Classes) |
+
+Rules revision 1.11 (10 Nov 2026; provisional, items 924–927). Over levels 2 to 20 that is **28 Skill points, 10 Attribute points and 6 Core points**, on top of creation's 10, 10 and 6: 38 Skill points in a career. Before 1.11 a level gave 1 Skill point, and a Core point came every 5th level (19 Skill and 4 Core points in a career): raising a capped skill needs a point of each kind, so every character's best skill rose by 1 per 5 levels and no build that started below a Core of 6 could ever reach a Mastered perk. Points you don't spend are kept.
 
 Skill books and quest rewards can grant extra Skill points. A Legendary Deed, at the Narrator's call, grants an extra Core point.
 
@@ -195,7 +200,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 **The class is fixed.** The class picked at level 3 is kept for good, even if another attribute later grows higher. A second pick is refused: "Your class is set; changing class is a separate system for later." Changing class will be its own system later (item 553).
 
-**Class rank** reads the class's own attribute: rank I when you gain the class, rank II at that attribute **5**, rank III at **8** (item 552). Each rank gives **two moves**, so a class has six. When ranks II and III arrive on the pacing target is for playtests to show.
+**Class rank** reads the class's own attribute and your level: rank I when you gain the class, rank II at that attribute **5** and **level 6**, rank III at **8** and **level 12** (items 552 and 930; the levels are rules 1.11). Each rank gives **two moves**, so a class has six. The level stops a 7/1/1 build from taking ranks I and II in the same moment and rank III a level later; a build that keeps its class attribute up reaches rank III at about level 12 whatever its Cores were at creation.
 
 | Core | Class | Attribute | Rank I | Rank II | Rank III |
 |---|---|---|---|---|---|
@@ -2636,7 +2641,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 18. **Free shots and the reaction limit.** Dance of Iron and Catch give free shots. Do they use the one reaction per round? *Suggested: yes, unless the text says "free reaction".*
 19. **No dodge action.** Riposte now triggers when a melee attack against you misses.
 20. **Last Charge.** 7 m is not a whole number of tiles; *data uses 5 tiles*. Its shield of 100 × Armour Class is off the HP scale.
-21. **Mind Without Fog.** It locks Karma permanently and gives +2 Core points at creation (8 instead of 6). Confirm both.
+21. **Mind Without Fog.** It locks Karma permanently and gives +1 Core point at creation (7 instead of 6; rules 1.11, item 929: it was +2, which allowed a 9/1/1 start). Confirm both.
 22. ~~Undefined actions.~~ *Written 7 Nov 2026 (see Analyze and the actions perks rely on); provisional, item 60.*
 23. **Perk type labels.** Origami Hands, Hold the Stroke and Pattern Lock carry type labels that don't match their effects. Soulmate scales by Mastery inside Tier I.
 24. **Bone Talk** calls Shaken a body debuff; Shaken is in the heart family.
@@ -2674,7 +2679,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 44. **The 30 weapon perks** are all new.
 45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest.
 46. **One Blade** (Blade Recluse trait): "weapon mastery levels 25% faster" now means each kill with the named weapon's family counts as 1.25.
-47. **Creation budgets restored** (archetypes spend all of them; their extra Attribute and Core placements are provisional too) (the 2020 EPCCG's 6 Core, 10 Attribute, 10 Skill points), with skills spending the Attribute and Core points they need automatically, no creation caps beyond the tree's own (so up to 7 in one Core, Attribute or skill), and the exchange rate of 1 unspent Core point for 2 Attribute points (the 2020 line "one Core point represents two Attribute points", read as an exchange rate). Replaces 1.1's free automatic rise, which let builds spread across three Cores finish with up to 4 more Core points than single-Core builds.
+47. **Creation budgets restored** (archetypes spend all of them; their extra Attribute and Core placements are provisional too) (the 2020 EPCCG's 6 Core, 10 Attribute, 10 Skill points), with skills spending the Attribute and Core points they need automatically, no creation caps beyond the tree's own (so up to 7 in one Core, Attribute or skill), and (until rules 1.11 removed it, item 928) the exchange rate of 1 unspent Core point for 2 Attribute points (the 2020 line "one Core point represents two Attribute points", read as an exchange rate). Replaces 1.1's free automatic rise, which let builds spread across three Cores finish with up to 4 more Core points than single-Core builds.
 48. **Movement is tiles per AP** (Leon: moving 4 tiles costs 4 AP unless you have good Agility). Restores the 2020 rule: Movement 1 + 0.5 × (Agility − 1) tiles per AP, never below 0.5, paid-for tiles carry over within the turn. Replaces 1.1's "3 + 0.5 × (Agility − 1) tiles for 1 AP". Check the pace in playtest (an Agility 1 character spending 4 of 6 AP to cross 4 tiles), and the converted armour penalties (−0.5 / −0.5 / −1 Movement).
 49. **A perk step at every Mastery level, and 27 Mastered perks** (Leon). Replaces Tier I at 3 / Tier II or second perk at 7 / both Tier II at 10. A skill at 5 points now holds two steps (Tier II can arrive at 5, two points earlier), and a 7/3 creation spread holds 4 steps instead of 3. The Mastered perks' numbers are all new: check Last Wall, Earthbreaker, Nothing Gets Past, Judgement Day and On My Mark against the AP ceiling and the action economy first.
 50. **Rival's Neck and Neck** (Leon: rivals help each other grow): 50 XP (tagged `bond`) when your rival reaches a new level, and +10% XP from every source but Essence while your rival is a higher level; both ways. Check that two rivals don't pull ahead of the rest of the squad.
@@ -4586,3 +4591,11 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 921. **A sigil mark's TN** by age (fresh, old, ancient) and damage (intact, worn, broken): fresh 8 / 12 / 16, old 12 / 16 / 20, ancient 16 / 20 / 20. The default is old and intact (12). Success gives +3 study (copying a glyph in a fight gives 2: a mark costs a check and 2 AP). Numbers in objects.json `sigil_mark.mark`.
 922. **Investigate's limits:** each character tries each mark once (the approach rule); a word already on the known-to-study list gives no more study; a critical that teaches the word does not take the scene's one new thing (it is study, not a bonus source), and with no slot free the word goes on the known-to-study list with the study. A failure costs nothing more (no Flux sting: a mark is not your Evoker).
 923. **Narrator grants and the rest rule:** the spec's "one per long rest from those" bonus sources is the engine's "one new thing a scene" (it takes a rest to sink in); a Narrator word grant keeps item 914. *Leon to confirm a scene against a long rest.*
+924. **Level gains (rules 1.11):** odd levels +2 Skill points; even levels +1 Skill point and +1 Attribute point; a Core point at levels 3, 6, 9, 12, 15 and 18. Aim (Leon, 10 Nov 2026): a fully optimised character has at least 1 point in every skill it uses, and enough to Master two skills (an All-in build) or to Master one and hold several at 7. rules.json `character.levels.gains`; the engine reads it (`levelGains`).
+925. **Old saves keep what they have:** a character already past a level is not paid the difference (no back-pay for levels gained before 1.11). *Leon to confirm, or ask for a one-time top-up on load.*
+926. **Left as it was:** the XP table and the 20 levels (`docs/design/proposals/2026-11-skeleton.md`, section 6).
+927. **The advanced class gates** (item 557: a hybrid at 6 and 5 across two Cores, a squared class at its attribute 9, from level 7) are unchanged and become reachable near level 7 to 9 under 1.11 (before: level 15 at the earliest for a hybrid).
+928. **No Core-for-Attribute trade at creation (rules 1.11).** Every Core point is placed in a Core and the Attribute budget is 10. Before: an unspent Core point became 2 Attribute points; trading two or more was never legal (the Attribute points had nowhere to go) and trading one swapped a point worth several levels for two worth less. rules.json drops `unspent_core_point_trades_for_attribute_points`; the engine's `BUDGET.trade` is 0. Every archetype already spent all 6.
+929. **Mind Without Fog gives +1 Core point** at creation (it was +2): `FOG_CORE` in the engine, traits.json `creation_points` value 1. A character made with 8 Core points before 1.11 keeps them (item 931).
+930. **Class ranks need a level too (rules 1.11):** rank II at the class attribute 5 and level 6, rank III at 8 and level 12 (classes.json `assignment.rank_levels`; engine `RANK_LEVEL`, `classRank`). The Proving Ground's rank tool raises the level to the rank's as well as the attribute. A saved character below the level drops to the rank its level allows until it gets there, in a fight saved in progress too. A rank that arrives with a level is announced like one that arrives with an Attribute point ("reaches Fighter II: Riposte, Lingering Dread"), and the character's units in a running fight hold it at once. *Leon to confirm 6 and 12.*
+931. **Characters made before 1.11 stay legal.** A sheet locked in under 1.11 is stamped (`rulesRev`, engine `SHEET_REV`) and must fit today's budgets. A sheet with no stamp was made before: when today's budgets don't fit it, the budgets of its day are used (a Core point for 2 Attribute points; Mind Without Fog's 2 Core points), so a saved character or a character file from before 1.11 can still be brought into a room (engine `sheetDerive`). Reopening one in creation and locking it in again makes it a 1.11 sheet. *Leon to confirm, or ask for old sheets to be refused with a reason instead.*

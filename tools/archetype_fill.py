@@ -12,7 +12,7 @@ import json, pathlib, sys
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "data")
 rules = json.loads((root / "rules.json").read_text())["character"]["creation"]
 ATTR_PTS, CORE_PTS = rules["attributes"]["points"], rules["cores"]["points"]
-TRADE = rules["cores"]["unspent_core_point_trades_for_attribute_points"]
+TRADE = rules["cores"].get("unspent_core_point_trades_for_attribute_points", 0)  # rules 1.11: the trade is gone
 CAP = 10  # no creation caps beyond the tree's own (decision 50)
 skills = {s["id"]: s for s in json.loads((root / "skills.json").read_text())["items"]}
 attrs = json.loads((root / "attributes.json").read_text())["items"]
@@ -65,7 +65,7 @@ def fill(aid, preset):
                 core[CORE_OF[x]] = max(core[CORE_OF[x]], v)
             a_sp, c_sp = sum(v - 1 for v in attr.values()), sum(v - 1 for v in core.values())
             # spend everything: unspent Core points are traded for Attribute points
-            if c_sp > CORE_PTS or a_sp + TRADE * c_sp != ATTR_PTS + TRADE * CORE_PTS:
+            if c_sp > CORE_PTS or a_sp + TRADE * c_sp != ATTR_PTS + TRADE * CORE_PTS or (not TRADE and c_sp != CORE_PTS):
                 continue
             mean = sum(attr[x] for x in prio) / len(prio)
             outside = sum(attr[x] - need[x] for x in pr if x not in prio)  # borrowed attributes: as few points as possible

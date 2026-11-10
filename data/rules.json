@@ -186,11 +186,10 @@
       },
       "cores": {
         "start_each": 1,
-        "points": 6,
-        "unspent_core_point_trades_for_attribute_points": 2
+        "points": 6
       },
       "auto_spend": "placing a skill above its attribute (or an attribute above its core) spends the attribute/core points it needs; blocked if those budgets can't cover it",
-      "lock_in_requires": "all skill, attribute and core points spent (unspent core points traded for attribute points count as spent once placed)",
+      "lock_in_requires": "all skill, attribute and core points spent (rules 1.11: a Core point can no longer be traded for Attribute points)",
       "after_creation": "caps apply normally; attribute and core points come from levelling",
       "traits": {
         "min": 0,
@@ -198,7 +197,6 @@
       },
       "source": "2020 EPCCG budgets (6 core, 10 attribute, 10 skill) restored after rules 1.1",
       "provisional": [
-        "cores.unspent_core_point_trades_for_attribute_points",
         "cores.points",
         "attributes.points"
       ],
@@ -209,18 +207,26 @@
       "max": 20,
       "gains": {
         "every_level": {
-          "skill_points": 1,
           "hp": "hp_per_level"
         },
-        "even_levels": {
-          "attribute_points": 1
+        "skill_points": {
+          "odd_levels": 2,
+          "even_levels": 1
         },
-        "every_5th_level": {
-          "core_points": 1
+        "attribute_points": {
+          "every": 2,
+          "amount": 1
+        },
+        "core_points": {
+          "every": 3,
+          "amount": 1,
+          "last_level": 18
         },
         "level_3": {
           "base_class": true
-        }
+        },
+        "provisional": true,
+        "source": "rules revision 1.11 (10 Nov 2026), docs/design/proposals/2026-11-skeleton.md; before it: 1 skill point a level, an attribute point on even levels, a core point every 5th level"
       },
       "extra": {
         "skill_books_and_quests": "extra skill points (narrator/quest data)",

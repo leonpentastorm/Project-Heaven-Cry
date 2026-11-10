@@ -167,7 +167,7 @@ export class LevelUpLogic extends DCLogic {
       sig: prog ? prog.skills.map((s) => ({ key: s.id, name: s.name, pts: s.pts, style: 'font-size: 13px; font-weight: 700; color: ' + ATTR[SK[s.id].attr].ink })) : [],
       total: prog ? prog.label : '', totalStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: ' + (prog ? prog.ink : '#A3AEC2'), nextLine: prog ? prog.nextLine : '',
       bar: prog ? 'height: 100%; border-radius: 99px; background: ' + (prog.ink) + '; width: ' + prog.pct + '%' : '',
-      movesHead: k ? 'MOVES · RANK II AT ' + (ATTR[k.attribute]?.name || k.attribute).toUpperCase() + ' 5, RANK III AT 8' : '',
+      movesHead: k ? 'MOVES · RANK II AT ' + (ATTR[k.attribute]?.name || k.attribute).toUpperCase() + ' 5 AND LEVEL 6, RANK III AT 8 AND LEVEL 12' : '',
       ranks, closest, hasClosest: closest.length > 0,
       // Advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing to learn.
       advNote: 'Advanced classes are being rebuilt.', hasAdvNote: !!c.classId && !advancedLive(),
@@ -187,7 +187,7 @@ export class LevelUpLogic extends DCLogic {
       spendHead: left || c.unspent.attr || c.unspent.core ? 'TO SPEND' : 'ALL POINTS SPENT',
       rules: 'A skill can\'t pass its Attribute, an Attribute can\'t pass its Core; 10 is the top. Each Mastery level (3, 5, 7, 9 points) gives one perk step: one of the skill\'s two perks at Tier I, or a Tier I raised to Tier II. 10 points give the skill\'s Mastered perk.',
       stepsHead: owed ? 'PERK STEPS WAITING · ' + owed : '',
-      pointsNote: 'Every level: +1 Skill point. Even levels: +1 Attribute point. Every 5th level: +1 Core point. Unspent points keep.',
+      pointsNote: 'Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Every 3rd level (to 18): +1 Core point. Unspent points keep.',
       done: () => go(g.phase === 'combat' ? 'combat' : 'main', { levelupChar: null }), doneLabel: allDone ? 'Done · back to the story' : 'Back to the story (finish later)',
       doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (allDone ? 'background: #6FEA77; color: #0A0D13' : 'background: #1C2536; color: #E7EBF3'),
     };

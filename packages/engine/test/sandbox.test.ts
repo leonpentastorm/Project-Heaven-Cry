@@ -260,8 +260,12 @@ describe('the tools', () => {
   });
   it('class (base with rank, advanced), level, skill', () => {
     let g = start(); const c = charOf(g);
+    // rules 1.11: a rank needs its level too, so the rank tool raises both (rank II: level 6; rank III: level 12)
+    const g2 = apply(g, { type: 'sandbox/class', charId: c.id, classId: 'bard', rank: 2 }, HOST);
+    expect(charOf(g2).level).toBe(6); expect(charOf(g2).attrs.insight).toBe(5); expect(classRank(charOf(g2))).toBe(2);
     g = apply(g, { type: 'sandbox/class', charId: c.id, classId: 'bard', rank: 3 }, HOST);
     expect(charOf(g).classId).toBe('bard'); expect(charOf(g).attrs.insight).toBe(8); expect(classRank(charOf(g))).toBe(3);
+    expect(charOf(g).level).toBe(12); expect(charOf(g).hp).toBe(maxHp(charOf(g)));
     // An advanced class (on here by the test switch): its attribute pair raised to the gate, seated with its first attribute's class.
     const adv = ADVANCED_CLASSES[0];
     _setAdvancedLive(null); // as in play: shelved

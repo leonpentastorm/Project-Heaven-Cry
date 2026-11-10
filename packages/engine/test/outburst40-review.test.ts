@@ -41,7 +41,7 @@ describe('Fuse and the release hook (rules 1.8 section 4)', () => {
   it('\'outburst_release\' fires once for a fused release, and Heart Surge\'s multiplier reaches the delayed blast', () => {
     let n = 0, on = false; onHook('outburst_release', () => { if (on) n++; });
     const run = (surge: boolean) => {
-      const f = rig(['6,5'], { ...SOUL, classId: 'channeler', level: 5, attrs: { [CLASS.channeler.attribute]: 8 } });
+      const f = rig(['6,5'], { ...SOUL, classId: 'channeler', level: 12, attrs: { [CLASS.channeler.attribute]: 8 } });
       const d = give(f.pc, { modules: ['fuse', 'at_once'] }); n = 0; on = true;
       A(f, { type: 'combat/outburst', design: d, aim: '6,5', ...(surge ? { mods: ['class:channeler.heart_surge#surge'] } : {}) });
       expect(lost(f.foe)).toBe(0); expect((f.cb.zones || []).some((z: any) => z.kind === 'fuse')).toBe(true);

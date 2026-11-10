@@ -518,8 +518,8 @@ export const sandboxClassOptions = () => CLASSES.map((k) => ({ id: k.id, label: 
 /** The line under the class menu: the rank rule (II at the class's attribute 5, III at 8). */
 export function sandboxClassHelp(c: Pick<Character, 'classId'>): string {
   const an = c.classId ? ATTR[CLASS[c.classId]?.attribute]?.name : null;
-  return (an ? 'Rank reads ' + an + ': rank II at ' + an + ' 5, rank III at 8; picking II or III raises it that far.'
-    : 'One class per attribute. Rank reads the class\'s attribute: rank II at 5, rank III at 8.') + ' Advanced classes are being rebuilt.';
+  return (an ? 'Rank reads ' + an + ' and your level: rank II at ' + an + ' 5 and level 6, rank III at 8 and level 12; picking II or III raises both that far.'
+    : 'One class per attribute. Rank reads the class\'s attribute and your level: rank II at 5 and level 6, rank III at 8 and level 12.') + ' Advanced classes are being rebuilt.';
 }
 
 function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: boolean }) {

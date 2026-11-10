@@ -3,10 +3,10 @@
 // rank (earned or locked, with who runs it), the classes on offer before one is earned (the highest attribute, ties
 // included), the picker's cards, and the uses left on any item. Advanced classes are shelved: a held one is never shown
 // as active. Pure functions of the character (and the game, for the use counters), so they are testable.
-import { CLASS, ADVANCED, ATTR, CLASS_MIGRATION, classTotals, classRank, eligibleClasses, advancedClassError, advancedActive, verdictFor, itemInfo, actionDefs, uses, scopeOf, usesLabel, SKILL } from '@engine';
+import { CLASS, ADVANCED, ATTR, CLASS_MIGRATION, RANK_LEVEL, classTotals, classRank, eligibleClasses, advancedClassError, advancedActive, verdictFor, itemInfo, actionDefs, uses, scopeOf, usesLabel, SKILL } from '@engine';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 
-/** Class Roster Revision 3: rank II at the class's attribute 5, rank III at 8 (provisional). */
+/** Class Roster Revision 3: rank II at the class's attribute 5, rank III at 8; rules 1.11: and at level 6 and 12 (provisional). */
 export const RANK_AT = { I: 0, II: 5, III: 8 } as const;
 const RANKS = ['I', 'II', 'III'] as const;
 export const ROMAN_RANK = ['', 'I', 'II', 'III'];
@@ -67,7 +67,7 @@ export function classMoves(g: any, c: any, clsId: string): MoveView[] {
   return RANKS.flatMap((r, i) => ((k.ranks || {})[r]?.moves || []).map((m: any) => {
     // A move keeps the key its handler runs under (Bard's Triage is class:medic.triage).
     const key = m.key || 'class:' + clsId + '.' + m.id, v = verdictFor(key, r), earned = rank > i;
-    return { key, id: m.id, name: m.name, text: m.text || '', rank: 'RANK ' + r, earned, unlock: earned ? '' : i === 0 ? 'unlocks with the class' : 'unlocks at ' + attrName(k.attribute) + ' ' + RANK_AT[r],
+    return { key, id: m.id, name: m.name, text: m.text || '', rank: 'RANK ' + r, earned, unlock: earned ? '' : i === 0 ? 'unlocks with the class' : 'unlocks at ' + attrName(k.attribute) + ' ' + RANK_AT[r] + ' and level ' + RANK_LEVEL[r as 'II' | 'III'],
       badge: v.label, verdict: v.verdict, uses: earned ? usesLine(g, c, key, r) : '', ap: m.ap_cost ? m.ap_cost + ' AP' : '' };
   }));
 }
@@ -76,7 +76,7 @@ export interface RankView { rank: string; head: string; unlocked: boolean; state
 export function classRanks(g: any, c: any, clsId: string): RankView[] {
   const k: any = (CLASS as any)[clsId]; if (!k) return [];
   const all = classMoves(g, c, clsId), rank = c?.classId === clsId ? classRank(c) : 0;
-  return RANKS.map((r, i) => ({ rank: r, head: 'RANK ' + r + ' · ' + (i === 0 ? 'WITH THE CLASS' : attrName(k.attribute).toUpperCase() + ' ' + RANK_AT[r]),
+  return RANKS.map((r, i) => ({ rank: r, head: 'RANK ' + r + ' · ' + (i === 0 ? 'WITH THE CLASS' : attrName(k.attribute).toUpperCase() + ' ' + RANK_AT[r] + ' · LEVEL ' + RANK_LEVEL[r as 'II' | 'III']),
     unlocked: rank > i, state: rank > i ? 'UNLOCKED' : 'LOCKED', moves: all.filter((m) => m.rank === 'RANK ' + r) }));
 }
 /** An advanced class's moves (all earned once learned). */
@@ -87,16 +87,19 @@ export function advancedMoves(g: any, c: any, advId: string): MoveView[] {
 }
 
 /** A class's attribute and its three skills with the character's points, and the progress to the next rank (Class
- * Roster Revision 3: the rank reads the class's attribute, II at 5, III at 8). `total` is the attribute's value. */
+ * Roster Revision 3: the rank reads the class's attribute, II at 5, III at 8; rules 1.11: and the level, 6 and 12).
+ * `total` is the attribute's value. */
 export function attributeProgress(c: any, clsId: string) {
   const k: any = (CLASS as any)[clsId]; if (!k) return null;
   const skills = (k.skills || []).map((s: string) => ({ id: s, name: (SKILL as any)[s]?.name || s, pts: c.skills?.[s] || 0 }));
-  const total = c.attrs?.[k.attribute] || 1, rank = total >= RANK_AT.III ? 3 : total >= RANK_AT.II ? 2 : 1;
+  const total = c.attrs?.[k.attribute] || 1, lv = typeof c.level === 'number' ? c.level : 20;
+  const rank = total >= RANK_AT.III && lv >= RANK_LEVEL.III ? 3 : total >= RANK_AT.II && lv >= RANK_LEVEL.II ? 2 : 1;
+  const nextLevel = rank === 1 ? RANK_LEVEL.II : rank === 2 ? RANK_LEVEL.III : 0;
   const next = rank === 1 ? RANK_AT.II : rank === 2 ? RANK_AT.III : null, prev = rank === 1 ? 1 : rank === 2 ? RANK_AT.II : RANK_AT.III;
   const an = attrName(k.attribute);
   return { skills, total, rank, next, attribute: k.attribute, attributeName: an, ink: ATTR_INK[k.attribute] || '#E7EBF3', label: an.toUpperCase() + ' ' + total,
-    pct: next ? Math.round((total - prev) / (next - prev) * 100) : 100,
-    nextLine: next ? 'Rank ' + ROMAN_RANK[rank + 1] + ' at ' + an + ' ' + next + ' · ' + (next - total) + ' to go' : 'Top rank' };
+    pct: next ? Math.max(0, Math.min(100, Math.round((total - prev) / (next - prev) * 100))) : 100,
+    nextLine: next ? 'Rank ' + ROMAN_RANK[rank + 1] + ' at ' + an + ' ' + next + (total < next ? ' · ' + (next - total) + ' to go' : ' ✓') + ' and level ' + nextLevel + (lv < nextLevel ? ' · ' + (nextLevel - lv) + ' to go' : ' ✓') : 'Top rank' };
 }
 
 const RES_WORD: Record<string, string> = { guard: 'Guard', momentum: 'Momentum', heat: 'Heat', marks: 'Marks', toxins: 'Toxin doses', flux: 'Flux', supplies: 'Supplies', mp: 'MP', strain: 'Strain', devotion: 'Devotion' };
@@ -113,7 +116,7 @@ export function classCard(c: any, clsId: string) {
   const an = attrName(k.attribute);
   return { id: k.id, name: k.name, core: k.core, attribute: k.attribute, attributeName: an, attrInk: ATTR_INK[k.attribute] || '#E7EBF3', value: c?.attrs?.[k.attribute] || 1,
     tagline: k.tagline || '', resource: resourceLine(clsId), skills: (k.skills || []).map((s: string) => (SKILL as any)[s]?.name || s),
-    rankLine: 'Rank II at ' + an + ' ' + RANK_AT.II + ' · rank III at ' + an + ' ' + RANK_AT.III,
+    rankLine: 'Rank II at ' + an + ' ' + RANK_AT.II + ' and level ' + RANK_LEVEL.II + ' · rank III at ' + an + ' ' + RANK_AT.III + ' and level ' + RANK_LEVEL.III,
     moves: ((k.ranks?.I?.moves) || []).map((m: any) => ({ key: m.key || 'class:' + clsId + '.' + m.id, name: m.name, text: m.text || '', ap: m.ap_cost ? m.ap_cost + ' AP' : '' })), ...emblemOf(k.id) };
 }
 

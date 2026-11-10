@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  PORTRAIT_MAX,
+  PORTRAIT_MAX, SHEET_REV,
   ARCHETYPES, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   standable, loadedOf, pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
@@ -50,6 +50,28 @@ describe('creation', () => {
   it('rejects unspent points and broken trees', () => {
     expect(validateSheet({ ...sheetFrom(ARCHETYPES[0].id), skills: { durability: 3 } })).toMatch(/Spend all 10/);
     expect(deriveCreation({ durability: 8 }).ok).toBe(false);
+  });
+  it('a Core point can\'t be traded for Attribute points (rules 1.11): 6/1/1 with 12 Attribute points is refused', () => {
+    const d = deriveCreation({ durability: 6 }, { endurance: 6, strength: 6, agility: 3 }, { body: 6 });
+    expect(d.attrSpent).toBe(12); expect(d.traded).toBe(0); expect(d.ok).toBe(false);
+    expect(deriveCreation({ durability: 6 }, { endurance: 6, strength: 6 }, { body: 7 }).ok).toBe(true); // 10 Attribute, 6 Core
+  });
+  it('Mind Without Fog gives 1 more Core point at creation (rules 1.11; it was 2)', () => {
+    expect(deriveCreation({ durability: 8 }, {}, {}, 7).ok).toBe(true);  // 8/1/1 with the trait's point
+    const base = sheetFrom(ARCHETYPES.find((x) => x.family === 'all_in')!.id);
+    const fog = { ...base, traits: ['mind_without_fog'], cores: { ...base.cores, mind: 2 }, rulesRev: SHEET_REV };
+    expect(validateSheet(fog as any)).toBeNull();
+    expect(validateSheet({ ...fog, cores: { ...base.cores, mind: 3 } } as any)).toMatch(/break the tree or the budgets/);
+  });
+  it('a sheet locked in before 1.11 (no rulesRev) stays legal by the budgets of its day (item 931)', () => {
+    const base = sheetFrom(ARCHETYPES.find((x) => x.family === 'all_in')!.id);
+    const oldFog = { ...base, traits: ['mind_without_fog'], cores: { ...base.cores, mind: 3 } }; // 8 Core points
+    expect((oldFog as any).rulesRev).toBeUndefined(); expect(validateSheet(oldFog as any)).toBeNull();
+    const a0 = ARCHETYPES[0], s0 = sheetFrom(a0.id);
+    const traded = { ...s0, skills: { durability: 6, guts: 4 }, attrs: { endurance: 6, strength: 6, agility: 3 }, cores: { body: 6, mind: 1, soul: 1 } }; // 5 Core, 12 Attribute
+    expect(validateSheet(traded as any)).toBeNull();
+    expect(validateSheet({ ...traded, rulesRev: SHEET_REV } as any)).toMatch(/break the tree or the budgets|Place every/);
+    const c = newCharacter('x', 'p', oldFog as any); expect(c.cores.mind).toBe(3);
   });
   it('a 7/1/1 build is legal (no creation caps)', () => {
     const allIn = ARCHETYPES.find((x) => x.family === 'all_in')!;
