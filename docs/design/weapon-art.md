@@ -13,7 +13,17 @@ Two rulings from Leon on 10 Nov 2026:
 | Hellraiser service rifle (`hellraiser_service_rifle`) | [`weapon-art/hellraiser_service_rifle.svg`](weapon-art/hellraiser_service_rifle.svg) |
 | Lumeri censer gun (`lumeri_censer_gun`) | [`weapon-art/lumeri_censer_gun.svg`](weapon-art/lumeri_censer_gun.svg) |
 
-Preview (each at 256, 64 and 32 px, on the panel and on white): [`weapon-art/preview.png`](weapon-art/preview.png).
+## The set
+
+Every weapon in `data/weapons.json` (60) and every armour piece and shield in `data/items.json` (19) has an icon:
+`art/icons/weapons/<id>.svg` and `art/icons/armour/<id>.svg` (working spec: `art/icons/weapons/README.md`). Contact
+sheets, each icon at 96 px and at 32 px on the panel:
+
+- Weapons: [`weapon-art/weapons-sheet.png`](weapon-art/weapons-sheet.png)
+- Armour and shields: [`weapon-art/armour-sheet.png`](weapon-art/armour-sheet.png)
+
+The two reference drawings above are the first drafts; the shipped icons are the simplified versions in
+`art/icons/weapons/` (no floating parts: the bayonet shares the barrel's edge).
 
 ## The rule
 
@@ -47,5 +57,8 @@ Preview (each at 256, 64 and 32 px, on the panel and on white): [`weapon-art/pre
 
 ## Where it's used
 
-The inventory and backpack rows, the Proving Ground's gear list, pile hover lists and the reload card. These two are
-the reference; the other 58 weapons in `data/weapons.json` follow the rule as they're drawn.
+The inventory and backpack rows, the Proving Ground's gear list, pile hover lists and the reload card. The game loads
+them through `apps/web/src/game/gearIcons.ts`: `gearIcon(id)` returns the SVG markup for a weapon, armour or shield id
+(or `null`), `hasGearIcon(id)` says whether there is one; the screen tints it with CSS `color`. A new icon needs no code
+change: drop `<id>.svg` in the folder. `gearIcons.test.ts` fails if any item in the data lacks one or breaks the line
+rule.

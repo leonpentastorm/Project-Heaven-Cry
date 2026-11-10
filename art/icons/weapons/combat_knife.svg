@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Combat knife -->
+  <g transform="rotate(-45 32 32)">
+    <path d="M4 30 L7 28.5 L20 28.5 L20 22.5 L24 22.5 L24 26.5 L30 26.5 L33 23 L36 26.5 L39 23 L42 26.5 L45 23 L48 26.5 L51 26.5
+             L62 32 Q54 38.5 42 38.5 L24 38.5 L24 42 L20 42 L20 35.5 L7 35.5 L4 34 Z"/>
+    <path d="M27.5 32.5 L46 32.5"/>
+  </g>
+</svg>

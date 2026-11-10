@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Armoured greaves -->
+  <g transform="translate(-5 0)">
+    <path d="M20 3 L35 3 L36 17 Q44 17 46 23 L52 26 L45 30 Q43 34 38 35 L39 48 L51 55 Q55 57 55 61 L28 61 L28 52 Q24 42 25 34 Q20 28 21 18 Z"/>
+    <path d="M36 17 Q31 26 38 35"/>
+    <path d="M25 34 L34.9 29.6"/>
+    <path d="M28 52 L44 52"/>
+  </g>
+</svg>

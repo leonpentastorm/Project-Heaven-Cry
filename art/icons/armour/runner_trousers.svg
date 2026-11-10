@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Runner's trousers -->
+  <path d="M15 4 L49 4 L50 10 L54 59 L38 59 L33 24 L31 24 L26 59 L10 59 L14 10 Z"/>
+  <path d="M14 10 L50 10"/>
+  <path d="M12 36 L20 32 L28.5 36 M35.5 36 L44 32 L52 36"/>
+</svg>

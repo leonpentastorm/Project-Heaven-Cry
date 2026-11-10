@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Coach gun -->
+  <g transform="translate(1.5 3) rotate(-16 32 32)">
+    <path d="M3 22 L16 25 L19 23 L22 23 L20 16.5 L26.5 23 L61 23 L61 31 L30 31 L28 33 L19.5 31 L4 37.5 L3 37 Z"/>
+    <path d="M30 27 L61 27"/>
+    <path d="M21.5 31.4 L21.5 35 L26.5 35 L28.6 32.4"/>
+  </g>
+</svg>

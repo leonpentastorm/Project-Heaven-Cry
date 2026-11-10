@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Repeating crossbow -->
+  <g transform="translate(4 8) rotate(-16 32 32)">
+    <path d="M3 25 L18 23 L27 23 L27 13 L43 13 L43 23 L55 23 L55 28 L26 28 L24.5 36 L20 35.5 L21 28 L18 28 L6 35 L3 34 Z"/>
+    <path d="M48 9 Q55 25.5 48 42"/>
+    <path d="M48 9 L43 17 M48 42 L45.5 28"/>
+    <path d="M43 13 L21 7 L18.5 10"/>
+  </g>
+</svg>

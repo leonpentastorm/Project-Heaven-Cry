@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Work gloves -->
+  <g transform="translate(4 -3)">
+    <path d="M15 62 L49 62 L47 48 L46 46 L46 19 A3 3 0 0 0 40 19 L40 28 L40 13 A3.5 3.5 0 0 0 33 13 L33 26 L33 11.5 A3.5 3.5 0 0 0 26 11.5 L26 26 L26 15.5 A3.5 3.5 0 0 0 19 15.5 L19 34 L13 27 A3.2 3.2 0 0 0 8 31 L18 46 L17 48 Z"/>
+    <path d="M17 48 L47 48"/>
+    <path d="M19 33 Q32 37 46 33"/>
+  </g>
+</svg>

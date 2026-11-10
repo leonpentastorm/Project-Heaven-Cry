@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Adamantile battle rifle -->
+  <g transform="translate(1.5 3) rotate(-16 32 32)">
+    <path d="M3 22.5 L17 21.5 L17 19.5 L21 19.5 L33 13.5 L36.5 19.5 L50 19.5 L53.5 23 L57 23 L57 21.5 L61 21.5 L61 28.5
+             L57 28.5 L57 27 L53.5 27 L50 30.5 L36 30.5 L36 38.5 L30 38.5 L30 30.5 L25 30.5 L23.5 39.5 L19 39 L20.5 30.5
+             L17 30.5 L4.5 35.5 L3 35.5 Z"/>
+    <path d="M40 19.5 L40 30.5"/>
+    <path d="M24.2 34 L30 34"/>
+  </g>
+</svg>

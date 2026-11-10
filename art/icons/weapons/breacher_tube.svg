@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Breacher tube -->
+  <g transform="translate(2 3) rotate(-16 32 32)">
+    <path d="M3 18.5 L8 21 L48 21 L48 19.5 L53 19.5 L61 25.5 L53 31.5 L48 31.5 L48 30 L30 30 L28.5 38 L24 37.5 L25.5 30
+             L8 30 L3 32.5 Z"/>
+    <path d="M32 21 L32 17 L38 17 L38 21"/>
+    <path d="M34 30 L34 34 L29.2 34"/>
+  </g>
+</svg>
