@@ -666,3 +666,45 @@ This overrides 15.5's verdict on the Camaraderie perks. Counted against today's 
 
 1. **One session builds all of it** (this lead session, after Physical 2.0 is merged and live), the screen included. Section 14.5's split into three implementers is withdrawn.
 2. **The tab rows wrap.** With ARMS joining the character panel's tabs (SKILLS, STATUS, PERKS, GEAR, ARMS, MAGIC, FAITH) and CALLS joining the fight panel's (Move, Attack, Utility, Perks, Class, Sigils, Outbursts, Faith, Calls: nine, from `TAB_NAME` in `apps/web/src/game/commands.ts`), each row has too many to click on one line. Both rows must wrap onto a second line when the tabs don't fit, with nothing cut off and nothing to scroll sideways. To check: the number keys that switch tabs still work across both lines; the fight panel's height rule still holds (the grid and Confirm on screen with no page scroll at 1440 × 900 and 1280 × 720, `e2e/tabs.mjs`); a character with every tab showing at both sizes: in the fight panel that is someone with perk actions, class moves, an Evoker, an Emanator and a patron, so all nine tabs are up.
+
+## 17. The ladder and the names (Leon, 10 Nov 2026)
+
+Asked before the build: do the names make sense, and is the attribute system right. Decided so far; open points are marked.
+
+### 17.1 Cores stop being points
+
+1. **Body, Mind and Soul stay as group names** (the three families, their colours, the three saves, which magic a family runs on). **Nobody spends Core points any more**: not at creation (the 6 go), not from levelling (the Core point every 3rd level goes). The cap is one gate: Skill ≤ Attribute ≤ 10.
+2. Reason (Leon): the Core, Attribute, Skill ladder is two layers of gates and the hardest thing to explain to a new player.
+3. What it changes in play: a Core no longer holds an attribute down, so a build can be high in attributes from two families from the start (Strength and Intelligence together). Today 6 Core points allow 7/1/1 at most.
+4. **Open:** the creation budget. My draft: Attribute points stay at 10 (each attribute starts at 1), with **no attribute above 7 at creation**, which is the ceiling the Core budget gave before. Provisional. The other reading of "all to attribute" is 16 Attribute points (the 6 Core points added); I advise against it, because an attribute point is strong (see 17.2) and 16 lets a new character hold three attributes at 6.
+5. Touches: `rules.json` (creation, levels, caps), `character.ts` (caps, auto-spend), creation and level-up screens, all 46 archetypes (the All-in 7/1/1 family is defined by its Cores and needs a new definition), `tools/archetype_fill.py`, the spec's creation and levelling sections, `CLAUDE.md`.
+
+### 17.2 What an attribute point gives is shown
+
+Correction to what the lead said in the talk: it is not true that only Endurance and Agility give something. Every attribute already gives two numbers a point, and no screen says so:
+
+| Attribute | A point gives (engine today) |
+|---|---|
+| Endurance | +15 max HP; +10% chance to ignore an injury |
+| Strength | +10% physical damage; +5 kg carried |
+| Agility | +0.5 tile of movement an AP; +1 Initiative |
+| Perception | +2 tiles of vision; +10% critical damage; −10% critical damage taken |
+| Intelligence | +10% Sigil power; a longer Line every 2 points |
+| Expression | +10% elemental damage; glyphs 0.1 AP cheaper |
+| Insight | +10% healing given; Soul magic costs 5% less MP |
+| Determination | +5% Soul power; +10% mana syphoned |
+| Virtue | +100 max MP; prayers come back half a turn sooner |
+
+1. **The rule:** every attribute's numbers are printed on the creation screen and on the level-up stepper, beside the `‹ 3 ›`, and the preview shows the change before the point is placed. Nobody learns about 50 HP after the fact.
+2. **Audit in Stage 1:** each line above is checked against the slot rule (an attribute may give offence, defence and a world number; that is its job as the whole kit) and against the data strings, which disagree with the engine in four places (elemental, Soul power, healing, critical damage taken).
+
+### 17.3 Names and slots
+
+1. **Composure and Lore Master swap slots** (as Dexterity and Athletics did). Composure is Determination's beta and the Heart save. Lore Master is its gamma: lore checks with full points, and a Call. This replaces "Heart save: Lore Master" in 13 to 15 and plan ruling 16's wording (the Heart save is still a Soul skill, so the Brain Debuff result stands).
+2. **The Steady Call moves or changes.** Open: the lead drafts Lore Master's Call (working name **Name It**: you call out what the thing is; the ally you call to is steadied against it). Steady as written may simply be that Call.
+3. **Analysis and Proficiency swap attributes** (the lead's reading of Leon's "maybe analysis sit under the attribute instead"; to confirm). Perception becomes Ingenuity, Analysis, Vigilance: see it, read it, notice it. Expression becomes Visualization, the renamed Proficiency, Charisma: imagine it, make it, present it, which also suits the Visualizer as the artist's Evoker. Both stay betas and keep their Skeleton 2.0 numbers. Cost: two skill portraits change pigment (Perception's and Expression's), and two voices change colour.
+4. **Proficiency is renamed.** Leon's meaning: the hands of someone who solves a puzzle cube at speed or assembles a clock's insides. Suggested: **Tinkering** (plain, and nobody mistakes it); second choice **Handiwork**. Not Deftness or Finesse, which read as Dexterity. Open until Leon picks.
+5. **Implication becomes Insinuation.**
+6. **Grammar:** Vigilant becomes **Vigilance**; Sensory becomes **Senses**. Suggested as well: Lore Master becomes **Lore** (a skill, not a person), open.
+7. Ingenuity keeps its name until its stealth and trap list exists.
+8. **Ids do not change** (`vigilant`, `sensory`, `implication`, `proficiency`, `lore_master` stay as ids in data, saves in code and art file names); only the `name` shown changes. Text that names a skill (perks, traits, voices, the spec, the Narrator's prompt, the wiki) is swept in Stage 3.
