@@ -1,6 +1,6 @@
 # PHC review: a first read (November 2026)
 
-For Leon. Written from `origin/develop` at v0.0.1 by the newest collaborator, as a designer and as a player. This file is the only thing the branch changes.
+For Leon. Written from `origin/develop` at v0.15.0 by the newest collaborator, as a designer and as a player. This file is the only thing the branch changes.
 
 ## Verdict
 
@@ -13,6 +13,29 @@ PHC has a world worth playing in and one of the better central ideas I've seen i
 3. **Not read:** most of section 14 item by item, Weapons version 2 past its first table, the perk-in-play chapters (spec lines 1809 to 2200), the advanced class drafts, the UI specs. If a point of mine is already settled in one of those, say so and I'll withdraw it.
 4. **Numbers.** Where I give a damage or survival figure that is not quoted from the spec, it is my own arithmetic from the spec's tables, not a simulation. I say so each time. The roadmap's damage simulator (item 4) should replace all of it.
 5. **I checked the engine** only to confirm what a rule actually does (for example, that guns use the Physical multiplier: `packages/engine/src/combat.ts` line 759).
+6. **A small drift to fix:** `docs/HANDOFF.md` and `docs/ROADMAP.md` still say v0.0.1; `package.json` and the title screen say 0.15.0.
+
+## 0a. What the live game showed
+
+A scripted play-through of the live build (v0.15.0) at 1440 × 900: creation twice, the Proving Ground with a rifle character (the Sharpshooter archetype, Line soldier kit) and with a Sigil character (the Sigilist archetype, Sigil student kit), and the level 3 screen. No Narrator, no co-op, sound off. The clicks were scripted, so times for a human are estimates. Everything below was on screen unless I say otherwise; I looked at the screenshots myself for points 1, 2, 5, 6 and 9.
+
+1. **The dice are as transparent as the brief promises.** The target card reads "Hit 70% · need 10 (you roll d20 +3)" and "damage 30 ×1.2 Blaze (The Brightest Light) = 36", naming the trait that supplied the multiplier. A Sigil spell previews "−62 HP · 70% to hit (d20 +3 vs Defense 10)" and "Fires ↑ (across the Line)" before you Evoke. Almost every refused action says why. This is the best thing about how it plays.
+2. **Creation is seven steps and a great deal of reading.** Identity, Archetype, Skills, Traits, Belief, Kit, Lock in. With an archetype it is 11 clicks and a name. But the Archetype step carries about 1,300 words over 46 cards and the Traits step about 5,100 words over 74 cards. The Skills step prints "CLASS AT LEVEL 3" with the classes the build will be offered.
+3. **Skill entries hide what the skill does in a fight.** Dexterity's entry lists throwing range; that it is the to-hit skill for every gun appears only on the combat button's tooltip.
+4. **A rifle turn is 9 to 10 clicks; a Sigil spell is about 18.** Draw, step, draw, Evoke took 3.6 to 4.6 AP and 6 of a core's 10 charge. My estimate for a human: 15 to 30 seconds for the rifle turn, 40 to 60 for the Sigil turn. That is the turn-length gap from section 7, point 5.
+5. **Rifle against Sigil, same level, as played.** The rifle: 2 AP, 55 to 70% to hit, 30 to 42 damage, minus 5 armour on troopers. FIRE · SEEK: about 4 AP, 70% (45% into cover), 62 damage, and the Line is used up whether it hits or misses. Per AP they are about equal, and only one of them costs most of a core. The mage's first turn (3.6 AP, 4 charge) produced nothing because the two glyphs did not form a Line.
+6. **Solo fights swing hard.** The rifle character (145 HP) won wave 1 in two rounds without being hit, took 37 in wave 2, and in wave 3 lost 79 HP in one enemy phase and was Downed in round 2. The mage took 106 from one drone in a single turn of wave 1 (a critical for 52, then 27 and 27) and finished the wave at 2 HP. This matches the arithmetic in section 4, point 2.
+7. **Sigils punish learning.** Finishing a Line while walking toward the enemy fires it backwards (the rule in the spec, but a surprise in play); at the map edge there was no tile to fire from; a new glyph joined an old one diagonally because the "new Line" choice is easy to miss; an enemy walking over a glyph wiped it.
+8. **A character without Faith sees the whole Faith tab greyed out** with "Praying needs Faith 3" (section 4, point 20). With Faith 3 from the practice tools, a Whisper healed 20 for 1 AP and a Hymn healed 52 where its card says 40 (Blessing power is applied but not shown on the card).
+9. **The mana meter moves as fast as I guessed.** In one run it read Normal, 19 of 40, in wave 1 and Flooded, 35 of 40, by wave 3.
+10. **Smaller things a first-time player will hit:**
+    - Burst and Full auto show the same "damage 30" as a single shot at a lower hit chance, with no rounds or ammo cost on the panel; one full-auto action took the magazine from 12 to 2.
+    - Opening the Move tab does not select Move, so a click on a tile does nothing.
+    - The Pump button acts at once and Confirm then pumps again.
+    - The sheet says Movement 2.5 where combat says 2.
+    - At 900 px high the combat log is below the fold, so the dice result needs a scroll.
+    - After a miss, nothing offered a way to spend Echo on the reroll. If that button exists, it is hard to find; if it doesn't, Echo has no use in a fight at all.
+11. **Not confirmed, worth checking:** at level 3 the mage's perk steps for her creation skills were all still waiting to be spent. If creation never prompts for them, level 1 characters fight their first session without perks they already own.
 
 ## 1. Vision
 
