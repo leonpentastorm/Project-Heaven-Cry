@@ -1,7 +1,7 @@
 // Physical 2.0 (rules 1.12), the foundation: the data, Momentum, Pressure, the reference techniques (Cut, Lunge, Coup,
 // Riposte; Shot, Aimed Shot, Suppress, Dead Centre, Overwatch, Deny), drill, and the actions.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, WEAPON, TECHNIQUES, TECHNIQUE, PHYS_RULES, resolveAttack, validateSheet } from '../src';
+import { phys, WEAPON, TECHNIQUES, TECHNIQUE, PHYS_RULES, resolveAttack, validateSheet, enemyIntent, enemyTurn } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { sheetOf } from './helpers/perkfight';
 
@@ -191,5 +191,31 @@ describe('ready, picks and creation', () => {
     expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['bash', 'sweep'], ranged: [] } })).toMatch(/Opener/);
     expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'sweep'], ranged: [] } })).toBeNull();
     expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'cut'], ranged: [] } })).toMatch(/can't be picked/);
+  });
+});
+
+describe('enemies', () => {
+  it('a soldier with a rifle opens with Suppress, says so when read, and falls back to plain shots', () => {
+    const f = physFight([{ weapon: 'sabre' }], [{ at: 'H5', tier: 'soldier', weapon: 'hellraiser_service_rifle' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5');
+    expect(f.foe.techs).toEqual(['lunge', 'suppress']);
+    f.turn(f.foe); rig({ hit: true, die: 12 });
+    const before = JSON.stringify(f.cb), it0 = f.bound(() => enemyIntent(f.cb, f.foe));
+    expect(it0).toMatchObject({ kind: 'attack', targetId: f.pc.id }); expect(it0.text).toBe('use Suppress on ' + f.pc.name);
+    expect(JSON.stringify(f.cb)).toBe(before); // planning changes nothing
+    f.bound(() => enemyTurn(f.cb, f.g.rng));
+    expect(f.cb.log.some((l) => l === f.foe.name + ' uses Suppress on ' + f.pc.name + '.')).toBe(true);
+    expect(f.cb.log.filter((l) => / uses Suppress /.test(l)).length).toBe(1); // then a plain shot with the AP left
+    expect(f.pressure(f.pc)).toBe(2);
+  });
+  it('a minion has no list: it shoots as before', () => {
+    const f = physFight([{ weapon: 'sabre' }], [{ at: 'H5', tier: 'minion', weapon: 'hellraiser_service_rifle' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.turn(f.foe);
+    expect(f.foe.techs).toBeUndefined(); expect(f.bound(() => enemyIntent(f.cb, f.foe)).text).toMatch(/^shoot /);
+  });
+  it('an elite swordsman lunges in, and finishes with Coup once it has Momentum', () => {
+    const f = physFight([{ weapon: 'sabre' }], [{ at: 'E5', tier: 'elite', weapon: 'sabre' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.foe); rig({ hit: true, die: 12 });
+    f.pc.hp = f.pc.maxHp = 999;
+    f.bound(() => enemyTurn(f.cb, f.g.rng));
+    const used = f.cb.log.filter((l) => l.startsWith(f.foe.name + ' uses ')).map((l) => l.split(' uses ')[1].split(' on ')[0]);
+    expect(used[0]).toBe('Lunge'); expect(used).toContain('Coup'); expect(f.foe.pos).toBe(f.tile('D5'));
   });
 });

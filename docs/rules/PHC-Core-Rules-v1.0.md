@@ -984,6 +984,10 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 9. **A Press** adds 1 Heat on top of what it fires. A **Set** costs 1 AP, never fires and adds no Heat. Every technique lists its rounds beside its AP; a technique the magazine can't pay for is refused with the count.
 10. **The quiver.** A Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight.
 
+#### Enemies
+
+Enemies have both meters and follow every rule above. An enemy has the free techniques, the technique its weapon lends, and the list of its tier (item 950). A minion has no list and keeps to plain attacks. The enemy AI uses a technique where it would have made a plain attack, when the technique is worth more to it; Analyze shows it ("means to use Suppress on …").
+
 #### The melee techniques (27)
 
 AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
@@ -4905,4 +4909,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 947. **Weapon mastery** (kills per weapon family, attack bonus +1 / +2, three perks) is replaced by drill. *Leon to confirm that the attack bonus goes too; the engine never applied it.*
 948. **The old Suppressed condition** (item 83: −1 AP and no reactions, from Spray and Pray and other perks) stays beside Pressure until it is moved onto Pressure 3; the two AP losses don't add.
 949. **The quiver** (Leon, 10 Nov 2026): loaded from a menu out of a fight, any mix of arrow types up to capacity, the type named per shot, no reload in a fight. Crossbows keep their reload.
-950. **Enemies** have Momentum and Pressure and use techniques from a list on their stat block. *The lists and the AI step are not built yet.*
+950. **Enemies** have Momentum and Pressure and use techniques: the free ones, what their weapon lends, and their tier's list (enemies.json `techniques`). First lists, to grow as the techniques are built: a minion none (plain attacks only, whatever its weapon lends); a soldier Lunge, Suppress; an elite Lunge, Coup, Riposte, Suppress, Dead Centre; a boss the elite's and Deny. Where an enemy would make a plain attack it uses the technique its handler scores highest, if that beats a plain attack (5); the scores are in the handlers (`ai`). Analyze reads the technique as the intent.

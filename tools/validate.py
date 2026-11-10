@@ -1077,6 +1077,11 @@ if isinstance(tq, dict):
     for tier in ((trules.get("drill") or {}).get("per_kill") or {}):
         if tier not in wtiers:
             errors.append(f"techniques: drill.per_kill names unknown tier {tier}")
+    for e in items("enemies"):
+        for sysm in ("melee", "ranged"):
+            for tid in ((e.get("techniques") or {}).get(sysm) or []) if isinstance(e, dict) else []:
+                if techs.get(tid, {}).get("system") != sysm or techs.get(tid, {}).get("free"):
+                    errors.append(f"enemies:{e.get('id')}: techniques.{sysm} names '{tid}', not a {sysm} technique to list")
     skill_ids = {s_.get("id") for s_ in items("skills") if isinstance(s_, dict)}
     attr_ids = {a_.get("id") for a_ in items("attributes") if isinstance(a_, dict)}
     for w in items("weapons"):

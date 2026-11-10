@@ -452,6 +452,13 @@ function prepare(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng, prev
   t.pv.ap = techniqueAp(def, t.weaponId, args.line);
   return { t, why: targetGate(t) || h.check?.(t) || null, h };
 }
+/** A handler's own score for the enemy AI: how much this unit wants the technique now (a plain attack is 5; 0: never),
+ * and the arguments it would use if it chose them itself. Pure: the Tech is a preview. */
+export function aiScore(cb: Combat, u: Unit, id: string, args: TechArgs): { score: number; args: TechArgs } {
+  const def = TECHNIQUE[id], h = handlerOf(id); if (!def || !h?.ai) return { score: 0, args };
+  const r = h.ai(buildTech(cb, u, def, args, { state: 1 }, true));
+  return typeof r === 'number' ? { score: r, args } : { score: r.score, args: { ...args, ...r.args } };
+}
 /** What the technique would do, changing nothing (the card, the AI). */
 export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}): TechPreview {
   const def = TECHNIQUE[id], blank = (why: string): TechPreview => ({ ok: false, why, id, ap: def ? techniqueAp(def, (args.hand === 'off' && u.offWeapon) || u.weapon, args.line) : 0, rounds: 0, attacks: [], notes: [] });

@@ -29,5 +29,5 @@ technique({
     });
     return r.ok ? null : r.why || 'Can\'t attack that.';
   },
-  ai: (t) => (t.u.ap >= 5 ? 6 : 4),
+  ai: () => 4, // an enemy keeps to plain shots unless its list gives it better
 });

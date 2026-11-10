@@ -412,6 +412,7 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: t.attack_bonus,
     mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
+    ...(t.techniques && (t.techniques.melee?.length || t.techniques.ranged?.length) ? { techs: [...(t.techniques.melee || []), ...(t.techniques.ranged || [])] } : {}),
   };
 }
 
@@ -1674,6 +1675,11 @@ export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? action
  * ignores Hidden PCs (it doesn't know where they are). An enemy a False Image fooled sees the image where its owner
  * stands (illusion.ts: it attacks and closes on the image instead). enemyIntent below reads the same choices without
  * acting (the Trickster's Read). */
+/** Steps an engine system outside this file gives the enemy AI (physical/ai.ts: a technique), tried where the plain
+ * attack would be. plan says what it would do now, changing nothing (the intent line); act does it and returns true. */
+export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
+const ENEMY_STEPS: EnemyStep[] = [];
+export const enemyStep = (s: EnemyStep) => { ENEMY_STEPS.push(s); };
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
@@ -1697,6 +1703,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
     if (enemyNeedsReload(u) && u.ap >= 2) { reload(cb, u); continue; }
+    if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
     if (targets.length) { const t = targets[0].t; if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
@@ -1768,7 +1775,9 @@ function intentInner(cb: Combat, u: Unit): Intent {
   if (enemyNeedsReload(u)) return { kind: 'reload', text: 'reload' };
   const mode = enemyMode(u), pcs = perceivedFoes(cb, u), targets = enemyTargets(cb, u, mode, order, pcs);
   let out: Intent;
-  if (targets.length) {
+  const step = ENEMY_STEPS.map((s) => s.plan(cb, u)).find(Boolean);
+  if (step) out = { kind: 'attack', text: step.text, ...(step.targetId ? { targetId: step.targetId } : {}) };
+  else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
     out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name), targetId: owner!.id, ...(ghost ? { image: t.id } : {}) };
   } else if (moveBlock(u) || !pcs.length) out = { kind: 'wait', text: 'hold where it is' };

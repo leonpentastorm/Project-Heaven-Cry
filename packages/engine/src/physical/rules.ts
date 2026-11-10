@@ -38,9 +38,10 @@ onHook('on_hit', (ctx: any, cb) => {
   // who hit whom this round and with what (Crossfire; drill credit on the kill)
   ((tgt as any).hitRound ||= {})[att.id] = cb.round; ((tgt as any).hitWith ||= {})[att.id] = ctx.mode === 'melee' && !/melee|unarmed/.test(WEAPON[att.weapon]?.category || '') ? 'fists' : att.weapon;
   if (ctx.melee) { if (pressureOf(att)) lowerPressureOf(cb, att, P().melee_hit_sheds, 'fighting it out'); return; }
-  if (strikeNoPressure(att) || !alive(tgt)) return;
-  const stamp = turnStamp(cb), pt = (att as any).pressedThis?.t === stamp ? (att as any).pressedThis : ((att as any).pressedThis = { t: stamp, ids: [] as string[] });
+  // the first ranged hit on this target this turn (a technique that gives its own Pressure for the hit still uses it up)
+  const stamp = turnStamp(cb), pt = att.pressedThis?.t === stamp ? att.pressedThis : (att.pressedThis = { t: stamp, ids: [] as string[] });
   if (pt.ids.includes(tgt.id)) return; pt.ids.push(tgt.id);
+  if (strikeNoPressure(att) || !alive(tgt)) return;
   const unseen = !!att.hidden && weaponProps(att.weapon).includes('silent');
   let n = unseen ? P().unseen_silent_hit : 1, why = unseen ? 'an unseen hit' : 'a hit';
   if (flanksCover(cb, att, tgt)) { n += P().flank_bonus; why += ' past its cover'; }
