@@ -1,4 +1,6 @@
-# The nine doors: alpha, beta and gamma across the skill web
+# Skeleton 2.0 and the nine doors: alpha, beta and gamma across the skill web
+
+> **Skeleton 2.0** (Leon's name, 10 Nov 2026) is the skill change pass: section 13 is its full change list and wins over the earlier sections where they differ. The four new combat playstyles (section 5) come after it.
 
 A proposal. Written 10 Nov 2026 by the lead session, from a design talk with Leon while Physical 2.0 was being built. Nothing here is built except section 2. Every name marked *(Suggested)* is mine and is Leon's to change.
 
@@ -402,3 +404,75 @@ So moving the numbers is small. The risk is the **36 perks that hang on gamma sk
 4. **Stage 3: the perks, one skill at a time.** A perk stays on its skill. Only a perk whose effect is the wrong kind for the slot is listed, and Leon decides for each: move it to the attribute's alpha or beta, or reword it as a Call rider.
 5. **The engine's tests are the guard:** 1,893 today. A stage is done when they pass with only the changes the table names.
 6. **A new save every update** (Leon), so no character has to survive the change.
+
+## 13. Skeleton 2.0: every change
+
+Rules revision 1.13, the version after Physical 2.0. Sections 9 to 12 are the reasoning; this is the list.
+
+### 13.1 Rules
+
+1. **The slot rule is written into the spec:** alpha opens the combat playstyle and carries offence; beta carries defence; gamma is for world play and speech.
+2. **A gamma skill adds its full points to a skill check** (0 points is still −2). The Narrator is told to call gamma skills first when a character talks to a sentient being.
+3. **Saves:** Body save Guts (as now); Brain save **Analysis**; Heart save **Lore Master**.
+4. **Debuff strength** is the modifier of the skill that delivered the condition: the playstyle's alpha for a blow, shot, spell, song or prayer; the gamma that spoke, for words.
+5. **Calls:** nine spoken actions, one per gamma, on the shared ten-level ladder (10.5).
+6. **Gear gates:** weapons and foci by an alpha, armour by a beta.
+
+### 13.2 What a point gives, all 27
+
+| Attribute | α | β | γ |
+|---|---|---|---|
+| Endurance | **Durability:** Guard gained on Brace (1 + modifier) | **Pain Threshold:** −10% elemental damage taken; +2 HP a level | **Sensory:** Warn |
+| Strength | **Raw Power:** +5% physical damage; Counter bonus; strength of your melee conditions | **Guts:** Body save | **Intimidation:** Threaten |
+| Agility | **Dexterity:** throwing range; less Recoil; Critical multiplier; **Initiative**; strength of your shots' conditions | **Athletics:** Dodge; **−10% ambush damage taken** | **Reaction Speed:** Cue |
+| Perception | **Ingenuity:** Stealth; Ambush damage; **+1 Vision**; strength of your traps | **Proficiency:** **Detection range; spotting the Hidden; sensing the unseen** | **Vigilant:** Spot |
+| Intelligence | **Brain Power:** Sigil damage; duration; **Sigil range**; **cheaper Sigils**; strength of your Sigils' conditions | **Rumination:** **−5% critical damage taken** | **Eloquence:** Brief |
+| Expression | **Visualization:** +10% elemental damage | **Analysis:** **Brain save**; Analyze range | **Charisma:** Rally |
+| Insight | **Empathy:** **+10% healing and shields given**; strength of your songs' conditions | **Camaraderie:** **+10% healing received** | **Implication:** Taunt |
+| Determination | **Will Power:** Soul damage; Syphon; Strain limit; module slots; **Soul range**; **ready designs**; strength of your Outbursts' conditions | **Lore Master:** **Heart save** | **Composure:** Steady |
+| Virtue | **Faith:** Blessing power; prayer cooldown; strength of your Blessings' conditions | **Conscience:** **+10% shields received** | **Authority:** Reputation and **Karma** awards; Leadership; Order |
+
+Bold marks a number that moved in. Every gamma also gets full points on checks. Persuade and the offer of terms stay as ways to talk an enemy down, read from Eloquence and Charisma.
+
+### 13.3 Gear gates that change
+
+| Gear | From | To |
+|---|---|---|
+| Hellraiser servo-fist | Proficiency 3 | Raw Power 3 |
+| Core rifle | Proficiency 3 | Dexterity 3 |
+| Bot-thread banner | Camaraderie 3 | Empathy 3 |
+| Heavy armour | Durability | Pain Threshold |
+| Light blades (new gate) | none | Dexterity, as guns are |
+
+### 13.4 Data fixes that ride along (known issues 1 to 4)
+
+Will Power's Soul damage set to the spec's 10%; one elemental multiplier everywhere; Empathy's stale line removed; Threaten saved with the save its condition belongs to.
+
+### 13.5 What is built
+
+1. **Spec:** the rule, the 27 lines, the saves, the debuff rule, the Calls, the gates; section 14 items for every moved and new number.
+2. **Data:** `skills.json` (27 per-point lines, slots, gates), `attributes.json` and `rules.json` formulas, `weapons.json` requirements, a new `calls.json`.
+3. **Engine:** the derived-stat functions read their new skills; the check roll adds full points for a gamma; one function for debuff strength by source; the Calls as a list with a preview and a use, like techniques; the enemy AI may use Threaten and Taunt.
+4. **Client:** skill cards read from the data, so they follow. New: a Calls pad in the fight panel, and the Calls on the sheet. (Client lane.)
+5. **Narrator:** the gamma rule in its prompt, and the Calls in its wiki.
+6. **A check tool:** every derived number for all 46 archetype builds, before and after, so only what this list names may differ.
+
+### 13.6 What it does not do
+
+1. The four new playstyles: the stealth list, Figments, the shield-and-guard list, the tending list. Their alphas hold the lines above until those exist.
+2. Tri-scale armour.
+3. Perks and Mastery unlocks: none is moved or reworded. It produces the list of the ones that sit on the wrong slot (the eight in 9.5 and whichever of the 36 gamma perks), for Leon to rule on.
+4. Balance. Every number is the old number in a new place, or new and provisional.
+
+### 13.7 Order
+
+1. Stage 1: the moves (13.2 without the Calls, 13.3, 13.4), with the check tool.
+2. Stage 2: the Calls.
+3. Stage 3: the perk and unlock list, then Leon's rulings.
+4. Review, version, live.
+
+### 13.8 Still open
+
+1. Rumination's line (critical damage taken), or the Brain save there and Analysis left with Analyze range.
+2. Rally at 7 points: 2 AP for 1.
+3. Whether the Calls ship in the same version as the moves or the one after.
