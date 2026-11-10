@@ -10,8 +10,8 @@ const BUILT_HERE = ['charge', 'feint', 'draw_cut', 'ambush', 'sweep', 'bash', 's
   'sidestep', 'guard', 'shove', 'trip', 'drag', 'cleave', 'break', 'run_through', 'throw_down', 'parry', 'keep_back'];
 
 describe('the melee pad', () => {
-  it('there are 27 melee techniques and each has a handler', () => {
-    expect(MELEE.length).toBe(27);
+  it('there are 28 melee techniques and each has a handler', () => {
+    expect(MELEE.length).toBe(28);
     for (const id of BUILT_HERE) expect(MELEE, id).toContain(id);
     for (const id of MELEE) expect(phys.handlerOf(id), id).not.toBeNull();
   });

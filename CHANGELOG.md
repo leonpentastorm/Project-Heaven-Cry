@@ -31,6 +31,8 @@ Fixes after 0.18.0, straight on the base branch (Leon's playtest notes and his r
 - **A melee technique that moves you shows how far it reaches:** Lunge's red covers its step (2 with a Reach weapon), Charge's covers the run your AP still buys.
 - **Momentum says its rule** on its bar (it read "Momentum ()." for anyone but a Fighter).
 - **The chip over a hovered target** (the odds, or why not) stays whole: a long reason wraps, and at the map's edge it slides inward.
+- **Throw and Pull Out** (provisional, item 957): a thrown melee weapon that hits stays in its target until the target falls (it drops there) or someone next to it uses **Pull Out**, a technique everyone knows: 1 AP, no roll, the weapon straight back into your hand, half its damage and Bleeding. A miss still lands on the target's tile.
+- **A surrendered enemy is grey** on the map and in the initiative strip, with a grey border and "(surrendered)" by its name.
 - **A learned signature's chip** no longer says "A signature you learned…" in its text (the ◆ stays).
 - **Rulings confirmed as built:** Snap Shot draws from the pack only; Pin Down holds until 2 AP is spent; Rout through a grenade spends it; Throw stays open to characters who know Lob; the parlour pistol is Silent; a weapon pulled out by the wielder's ally stays in that ally's hand.
 

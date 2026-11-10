@@ -144,3 +144,28 @@ describe('two weapons (0.18.1)', () => {
     expect(secondWeaponWhy(c, 'riot_shield', 'sabre')).toBeNull();    // a shield is not a weapon
   });
 });
+
+describe('Throw and Pull Out (0.18.1)', () => {
+  it('a thrown weapon that hits stays in the target; Pull Out from next to it brings it back, hurts and bleeds', () => {
+    const f = physFight([{ weapon: 'combat_knife', known: ['throw'], skills: SK }], [{ tier: 'soldier' }], { seed: 'T1' });
+    f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'F5'); foe.hp = foe.maxHp = 900;
+    f.turn(f.pc); rig({ hit: true, die: 12 });
+    expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
+    expect(f.unit(f.pc.id).weapon).toBe('fists'); expect((f.unit(f.foe.id).stuck || []).length).toBe(1);
+    expect(f.pv('pull_out', { targetId: f.foe.id }).why).toMatch(/Stand next to/);
+    f.put(f.pc, 'E5'); const hp0 = f.unit(f.foe.id).hp, ap0 = f.unit(f.pc.id).ap;
+    expect(f.tech('pull_out', { targetId: f.foe.id })).toBeNull();
+    const me = f.unit(f.pc.id), v = f.unit(f.foe.id);
+    expect(me.weapon).toBe('combat_knife'); expect(f.char(f.pc).weapon).toBe('combat_knife'); expect(ap0 - me.ap).toBe(1);
+    expect(v.stuck).toBeUndefined(); expect(v.hp).toBeLessThan(hp0); expect(v.bleed || (v.conds as any)?.bleeding).toBeTruthy();
+  });
+  it('a weapon stuck in a unit falls on its tile when the unit dies', () => {
+    const f = physFight([{ weapon: 'combat_knife', known: ['throw'], skills: SK }, { weapon: 'sabre', skills: SK }], [{ tier: 'minion' }], { seed: 'T2' });
+    f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'E5'); const foe = f.put(f.foe, 'F5'); foe.hp = foe.maxHp = 60;
+    f.turn(f.pcs[0]); rig({ hit: true, die: 12 }); expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
+    if (!f.unit(f.foe.id).dead) { f.turn(f.pcs[1]); f.unit(f.foe.id).hp = 1; f.act({ type: 'combat/technique', unitId: f.pcs[1].id, id: 'cut', targetId: f.foe.id } as any); }
+    expect(glaivePiles(f)).toBe(0);
+    const piles = objectsOf(f.cb).filter((o: any) => (o.items || []).some((i: any) => /combat_knife/.test(JSON.stringify(i)))).length;
+    expect(piles).toBe(1);
+  });
+});

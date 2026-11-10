@@ -152,6 +152,8 @@ export interface Unit {
   tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
   techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean;
   /** Rules 1.12: held where it stands until someone spends the AP to free it (Run Through, a nailing arrow): who did it, with which technique, the AP, and a weapon left in it. */
+  /** weapons thrown into this unit and still in it (rules 1.12, Throw): they fall where it falls; Pull Out takes one back */
+  stuck?: { by: string; weapon: string; item?: PackItem }[];
   nailed?: { by: string; id: string; ap: number; weapon?: string; /** the weapon's own entry (rarity, wear, mods, name), kept so it comes back as it was */ item?: PackItem }; pressedThis?: { t: string; ids: string[] }; nearFoe0?: number; noWatch?: number;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
@@ -1218,6 +1220,12 @@ export function endTurn(cb: Combat, rng: Rng) {
 /** Why a unit can't move at all right now (Downed, prone, Pinned, Grappled, Commanded to halt), or null. */
 /** What nails a unit lets go (pulled free, the unit dead, the fight over): a weapon left in it falls into the pile on its
  * tile as the weapon it was. */
+/** Every weapon stuck in a unit (a Throw that hit) falls into the pile on its tile: it died, gave up, or the fight ended. */
+export function dropStuck(cb: Combat, target: Unit): void {
+  const list = target.stuck; if (!list || !list.length) return; delete target.stuck;
+  const items = list.map((x) => x.item || (WEAPON[x.weapon] ? gearEntry(x.weapon) : null)).filter(Boolean) as PackItem[];
+  if (items.length) dropToPile(cb, target.pos, items, 'drop');
+}
 export function dropNailed(cb: Combat, target: Unit): void {
   const n = target.nailed; if (!n) return; delete target.nailed;
   const it = n.item || (n.weapon && WEAPON[n.weapon] ? gearEntry(n.weapon) : null);

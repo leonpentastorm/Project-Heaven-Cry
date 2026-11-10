@@ -503,6 +503,7 @@ export interface Wield { kind: 'stowed' | 'throwable'; item: string | number; we
 export interface GearService {
   draw(cb: Combat, u: Unit, item: string | number): string | null;
   /** returns the entry that left the hand (its rarity, wear, mods and name), or null */ lose(cb: Combat, u: Unit, hand: 'main' | 'off', at: string | null): any;
+  /** put this entry straight into a free hand (main first); false when no hand is free or the weapon is refused */ take?(cb: Combat, u: Unit, item: any): boolean;
   /** the unit's weapon fields as a draw of this pack entry would leave them, or the draw's refusal; changes nothing */ asDrawn(cb: Combat, u: Unit, item: string | number): Record<string, any> | string;
 }
 let GEAR: GearService | null = null;
@@ -584,6 +585,25 @@ export function loseWeapon(t: Tech, at: string | null): void {
   }
   if (at) dropToPile(t.cb, at, [{ id, name: WEAPON[id]?.name || id, qty: 1, kind: 'weapon', weapon: id } as any], 'drop');
   if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; }
+}
+
+/** The weapon leaves the hand and stays in a unit it hit (Throw): it is carried there until that unit falls (it drops
+ * on its tile) or someone next to it pulls it out (Pull Out). */
+export function loseWeaponInto(t: Tech, target: Unit): void {
+  if (t.wield === 'throwable' || t.preview) return;
+  const u = t.u, id = t.hand === 'off' ? u.offWeapon : u.weapon; if (!id || id === 'fists') return;
+  let item: any = null;
+  if (t.c && GEAR) item = GEAR.lose(t.cb, u, t.hand, null);
+  else { if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; } }
+  (target.stuck ||= []).push({ by: u.id, weapon: id, ...(item ? { item } : {}) });
+  t.cb.log.push('  The ' + (WEAPON[id]?.name || id).toLowerCase() + ' is stuck in ' + target.name + '.');
+}
+/** Take a weapon entry straight into a free hand of the unit (a character: the reducer's gear change; a unit with no
+ * sheet: its empty main hand). False when it has no free hand. */
+export function takeWeapon(cb: Combat, u: Unit, weaponId: string, item?: any): boolean {
+  if (u.charId && !u.companion && GEAR?.take) return GEAR.take(cb, u, item || { id: weaponId, name: WEAPON[weaponId]?.name || weaponId, qty: 1, kind: 'weapon', weapon: weaponId });
+  if (u.weapon === 'fists' || !WEAPON[u.weapon]) { u.weapon = weaponId; u.ammo = 0; u.jammed = false; return true; }
+  return false;
 }
 
 // ---------- moving the user ----------

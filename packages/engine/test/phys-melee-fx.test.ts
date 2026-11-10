@@ -70,7 +70,8 @@ describe('each technique\'s beat', () => {
     const f = fight('combat_knife', ['throw'], ['F5']); rig({ hit: true, die: 12 });
     const n = mark(f); expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
     const e = one(f, n, 'throw'); expect(e).toMatchObject({ from: f.tile('C5'), to: f.tile('F5'), weapon: 'combat_knife', target: f.foe.id });
-    expect(f.fx('pile').some((x: any) => x.n > e.n)).toBe(true);
+    // a hit leaves the weapon in the target (0.18.1): no pile yet, it is carried there
+    expect((f.unit(f.foe.id).stuck || []).length).toBe(1);
   });
   it('Bind: the link to the target; Bare: a grapple', () => {
     const f = fight('sabre', ['bind']); const n = mark(f); expect(f.tech('bind', { targetId: f.foe.id })).toBeNull();

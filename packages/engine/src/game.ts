@@ -10,7 +10,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { unitSees, sideSees, pullFree, dropNailed, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -1614,6 +1614,7 @@ setGearService({
     if (!gearInFight(g, cb, u, c, { op: 'drop', slot: hand }, { free: true, at, out }) && id && WEAPON[id]) cb.log.push(c.name + '\'s ' + WEAPON[id].name.toLowerCase() + (at ? ' lands at ' + refOf(at) + '.' : ' stays where it struck.'));
     return out[0] || null;
   },
+  take(cb, u, it) { const g: GameState | null = boundGame(); return !!g && takeIntoHand(g, cb, u, it); },
   // The unit as the draw would leave it (the same plan, equip and rebuild the real draw runs, on a copy of the
   // character): the weapon fields for the card, or the draw's own refusal. Nothing is changed.
   asDrawn(cb, u, item) {
@@ -1660,7 +1661,7 @@ function finishCombat(g: GameState) {
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
-  for (const u of cb.units) if (u.nailed) dropNailed(cb, u); // rules 1.12: a weapon left in someone falls where they stand when the fight ends
+  for (const u of cb.units) { if (u.nailed) dropNailed(cb, u); if (u.stuck) dropStuck(cb, u); } // rules 1.12: a weapon left in someone falls where they stand when the fight ends
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
   noteDeaths(cb, g.rng); magicOut(g, cb, true);
   const won = cb.over === 'win';
