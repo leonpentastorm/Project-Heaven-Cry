@@ -413,7 +413,7 @@ Rules revision 1.13, the version after Physical 2.0. Sections 9 to 12 are the re
 
 1. **The slot rule is written into the spec:** alpha opens the combat playstyle and carries offence; beta carries defence; gamma is for world play and speech.
 2. **A gamma skill adds its full points to a skill check** (0 points is still −2). The Narrator is told to call gamma skills first when a character talks to a sentient being.
-3. **Saves:** Body save Guts (as now); Brain save **Analysis**; Heart save **Lore Master**.
+3. **Saves:** Body save Guts (as now); Brain save **Rumination** (Leon: analysing something well has nothing to do with keeping your mind); Heart save **Lore Master**.
 4. **Debuff strength** is the modifier of the skill that delivered the condition: the playstyle's alpha for a blow, shot, spell, song or prayer; the gamma that spoke, for words.
 5. **Calls:** nine spoken actions, one per gamma, on the shared ten-level ladder (10.5).
 6. **Gear gates:** weapons and foci by an alpha, armour by a beta.
@@ -426,8 +426,8 @@ Rules revision 1.13, the version after Physical 2.0. Sections 9 to 12 are the re
 | Strength | **Raw Power:** +5% physical damage; Counter bonus; strength of your melee conditions | **Guts:** Body save | **Intimidation:** Threaten |
 | Agility | **Dexterity:** throwing range; less Recoil; Critical multiplier; **Initiative**; strength of your shots' conditions | **Athletics:** Dodge; **−10% ambush damage taken** | **Reaction Speed:** Cue |
 | Perception | **Ingenuity:** Stealth; Ambush damage; **+1 Vision**; strength of your traps | **Proficiency:** **Detection range; spotting the Hidden; sensing the unseen** | **Vigilant:** Spot |
-| Intelligence | **Brain Power:** Sigil damage; duration; **Sigil range**; **cheaper Sigils**; strength of your Sigils' conditions | **Rumination:** **−5% critical damage taken** | **Eloquence:** Brief |
-| Expression | **Visualization:** +10% elemental damage | **Analysis:** **Brain save**; Analyze range | **Charisma:** Rally |
+| Intelligence | **Brain Power:** Sigil damage; duration; **Sigil range**; **cheaper Sigils**; strength of your Sigils' conditions | **Rumination:** **Brain save** | **Eloquence:** Brief |
+| Expression | **Visualization:** +10% elemental damage | **Analysis:** **−5% critical damage taken**; Analyze range | **Charisma:** Rally |
 | Insight | **Empathy:** **+10% healing and shields given**; strength of your songs' conditions | **Camaraderie:** **+10% healing received** | **Implication:** Taunt |
 | Determination | **Will Power:** Soul damage; Syphon; Strain limit; module slots; **Soul range**; **ready designs**; strength of your Outbursts' conditions | **Lore Master:** **Heart save** | **Composure:** Steady |
 | Virtue | **Faith:** Blessing power; prayer cooldown; strength of your Blessings' conditions | **Conscience:** **+10% shields received** | **Authority:** Reputation and **Karma** awards; Leadership; Order |
@@ -476,3 +476,76 @@ Will Power's Soul damage set to the spec's 10%; one elemental multiplier everywh
 1. Rumination's line (critical damage taken), or the Brain save there and Analysis left with Analyze range.
 2. Rally at 7 points: 2 AP for 1.
 3. Whether the Calls ship in the same version as the moves or the one after.
+
+## 14. The perks in Skeleton 2.0, and the art
+
+Leon's answers, 10 Nov 2026: the Brain save sits on Rumination (Analysis takes critical damage resistance); Rally at 7 points is fine, seven points is a big commitment; Skeleton 2.0 is a big patch with the same set-up as Physical 2.0 (three implementers and the lead), so draft freely.
+
+### 14.1 What exists
+
+| | Count | Has its own icon |
+|---|---|---|
+| Acquired perks (2 a skill) | 54 | yes |
+| Mastered perks (1 a skill) | 27 | yes |
+| Achieved perks (two or three skills each) | 19 | yes |
+| Ultimate perks | 6 | yes |
+| Mastery unlocks (at 3 and 5 points, 2 a skill) | 54 | **no** |
+
+### 14.2 The method
+
+Every perk gets one of four verdicts. The first three need no new art.
+
+| Verdict | Meaning | Art |
+|---|---|---|
+| **Keep** | fits its slot, or is harmless | none |
+| **Reword** | same name, same skill, same picture; the effect changes to fit the slot | none |
+| **Move** | goes to another skill, swapping places with a perk there | none |
+| **Replace** | no honest rewording keeps the name true; a new perk takes its place | **one new icon** |
+
+Rules I hold to:
+
+1. A perk keeps its name and its skill unless that is impossible. The names and icons are the game's memory.
+2. **AP perks on gammas stay.** Many gamma perks already move AP on a condition (Grim Reaper, Overruled, Talks Broke Down, Sweet Talker, Outclassed, You Get Used to It, Got You in My Sight, Rounding Up). That is the same idea as the Calls, from 2020. They are the model, not the problem.
+3. **Durability's perks stay.** Bulwark, Shrug It Off, Last Wall and Take the Hit protect, but protecting others is Durability's playstyle.
+4. Only three things make a perk wrong: straight damage on a beta or gamma; a defence on a gamma; an AP gift on a beta that a Call now does.
+5. Achieved perks need two or three skills, so they have no slot. They are checked only for reading a number that moved.
+6. Ultimates are not touched.
+
+### 14.3 First pass over all 81 skill perks
+
+**Keep: 72.** **For a ruling: 9.**
+
+| Perk | Skill | What is wrong | My proposal |
+|---|---|---|---|
+| Eyes in the Back (acquired) | Vigilant γ | a defence (can't be flanked) | **Move** to Proficiency, swapping with Hot Swap, which is a gear-handling AP perk and suits a gamma less... or **Reword** as a Spot rider: allies you Spot for can't be flanked this round |
+| Nothing Gets Past (mastered) | Vigilant γ | offence (every mover draws an Overwatch shot) | **Reword:** every enemy that moves in your sight is Spotted for free. The name still fits |
+| Still Water (mastered) | Composure γ | a defence (immune to Brain debuffs) | **Reword:** keep "nothing reads you"; the immunity becomes "your Steady also ends one Brain condition" |
+| Case Closed (mastered) | Analysis β | offence (+2 to hit for allies) | **Reword:** keep "Analyze reveals everything"; the +2 becomes a defence against that enemy |
+| True Name (mastered) | Lore Master β | offence (+50% damage to a named being) | **Reword:** the named being's effects are resisted (+ to saves against it); the damage half goes |
+| Rally Cry (acquired) | Camaraderie β | an AP gift, now Charisma's Rally | **Reword:** when an ally drops, the others gain a defence until their next turn |
+| Many Hands (mastered) | Camaraderie β | an AP gift without limit | **Reword:** keep the shared reaction; the AP half goes to the Calls |
+| On My Mark (mastered) | Authority γ | orders an ally to act out of turn, **attacks included** | Leon ruled Order never attacks. Either this is the one exception, earned at 10 points, or it becomes "your Order costs 0 AP" |
+| Roll With It, tier II | Athletics β | a small critical damage rider | **Reword** the rider to a second free tile |
+
+**Mastery unlocks for a ruling: 7 of 54** (no art either way): Tuned (+10% damage on Proficiency), Weak Point (+15% squad damage on Analysis), Proven Formula (Sigil discount on Rumination), Hand-Off (AP gift on Camaraderie), Stand Still (defence on Composure), Second Wind (self-heal on Durability), Paint the Field (a Sigil rider on Visualization).
+
+### 14.4 New art
+
+| For | Icons | When |
+|---|---|---|
+| The nine Calls | 9 | Skeleton 2.0, if Calls get icons as prayers do |
+| Perks that end up **Replaced** | 0 by my proposals; at most 9 if Leon replaces every one above | Skeleton 2.0 |
+| **Skeleton 2.0 total** | **9, at most 18** | |
+| The Visualizer (a focus icon, beside the Evoker and Emanator) | 1 | with Figments |
+| The five Figment forms | 5 | with Figments |
+| The stealth list (about 20 entries) | about 20, if each gets one | with stealth |
+| Techniques (58) | none today: the pad uses words | Leon's call |
+
+All in the white-ink Wick style of the perk and prayer icons (`art/icons/STYLE-LOCK.md`).
+
+### 14.5 Who does what (the same set-up as Physical 2.0)
+
+1. **Lead:** the spec, the data, the derived numbers, the check rule, the check tool, every merge.
+2. **Implementer A:** the Calls in the engine (nine handlers on one frame) and the enemy AI's use of Threaten and Taunt.
+3. **Implementer B:** the perk pass: every Reword and Move Leon rules on, the seven unlocks, and the achieved perks that read a moved number, each with its test.
+4. **Implementer C:** the screen: the Calls pad, the sheet, the skill cards' new lines, creation.
