@@ -340,3 +340,65 @@ Split the line that is moving anyway: **Camaraderie gives +10% healing received;
 **The limits that stay:** one helping Call and one hindering Call on a unit each round; no damage; the AP ceiling of 9 on any turn.
 
 **Where it can run hot.** From 7 points Rally gives 2 AP for 1: a specialist with three allies turns 3 AP into 6 each round. That is the reward for seven points in a gamma, and the one-per-unit limit and the ceiling of 9 hold it, but it is the first number to watch in play.
+
+## 11. The gammas' old fight numbers, moved out (Leon, 10 Nov 2026)
+
+Leon: the Calls are the talker's tree; spread every old combat bonus the gammas had to alphas and betas, where it makes sense for a build. This replaces the gamma and beta rows of 9.2 and the saves of 9.1.
+
+**The rule used:** a number goes to the alpha or beta of its **own attribute** first, so points in one attribute build one fighter. It crosses to another attribute only to fill a beta that would be left empty.
+
+| Gamma | Old fight number | Goes to | Why |
+|---|---|---|---|
+| Reaction Speed | Initiative | **Dexterity** (α, same attribute) | acting first is tempo: offence |
+| Reaction Speed | −10% ambush damage taken | **Athletics** (β, same attribute) | defence |
+| Vigilant | Detection range; the roll to spot the Hidden; sensing the unseen | **Proficiency** (β, same attribute) | counter-stealth is defence |
+| Vigilant | +1 Vision range | **Ingenuity** (α, same attribute) | the scout sees first |
+| Charisma | Brain save | **Analysis** (β, same attribute) | |
+| Composure | Heart save | **Lore Master** (β, same attribute) | |
+| Intimidation | Body debuff strength | **Raw Power**, and each playstyle's own alpha | 9.1, ruling 2 |
+| Eloquence | Brain debuff strength | **Brain Power**, and each playstyle's own alpha | the same |
+| Implication | Heart debuff strength | **Empathy**, and each playstyle's own alpha | the same |
+| Sensory | +10% healing received | **Camaraderie** (β) | crosses: Camaraderie's own line went to Empathy |
+| Sensory | +10% shields received | **Conscience** (β) | crosses: Conscience's own line went to Authority |
+| Sensory | sensing the unseen (1 + Sensory ÷ 3 tiles) | **Proficiency** (β) | with Detection |
+| Authority | none | | |
+
+**The nine betas after it:**
+
+| Beta | A point gives |
+|---|---|
+| Pain Threshold | −10% elemental damage taken; +2 HP a level |
+| Guts | Body save |
+| Athletics | Dodge; −10% ambush damage taken |
+| Proficiency | Detection range; the roll to spot the Hidden |
+| Rumination | −5% critical damage taken (from Durability; it was going to Proficiency) |
+| Analysis | Brain save; Analyze range |
+| Camaraderie | +10% healing received |
+| Lore Master | Heart save |
+| Conscience | +10% shields received |
+
+**The nine gammas after it:** full points on skill checks, called most when talking to someone, and one Call each (section 10). Nothing else in a fight.
+
+**Open:** Rumination's line (critical damage taken) is the weakest fit by name. The Brain save could sit there and Analysis keep only Analyze range; I chose the same-attribute rule.
+
+## 12. Will this pass break the skills and the perks?
+
+Leon's worry, 10 Nov 2026. Measured against today's data:
+
+| | Total | Read a number that moves | Tied to a gamma skill |
+|---|---|---|---|
+| Perks | 106 | 3 | 36 |
+| Traits | 74 | 1 | 0 |
+| Engine files that read the saves, debuff strengths or Initiative | | 5 | |
+| Engine lines that name a gamma skill directly | | about 40 | |
+
+So moving the numbers is small. The risk is the **36 perks that hang on gamma skills**: some give fight bonuses that, by the rule, no longer belong on a gamma. And the Mastery unlocks in 9.5.
+
+**How to do it without breaking things:**
+
+1. **Not inside Physical 2.0.** Its own version, after that one is live.
+2. **Stage 1: numbers only change which skill they read.** No new mechanic. Before and after, print every derived number for all 46 archetype builds and read the differences; nothing should change that the table above doesn't say.
+3. **Stage 2: the Calls**, as a new list like the techniques, with their own tests.
+4. **Stage 3: the perks, one skill at a time.** A perk stays on its skill. Only a perk whose effect is the wrong kind for the slot is listed, and Leon decides for each: move it to the attribute's alpha or beta, or reword it as a Call rider.
+5. **The engine's tests are the guard:** 1,893 today. A stage is done when they pass with only the changes the table names.
+6. **A new save every update** (Leon), so no character has to survive the change.
