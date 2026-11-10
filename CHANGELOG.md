@@ -8,6 +8,22 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.16.0 — 10 November 2026
+
+Branch `claude/awesome-babbage-8gngk8`: **combat clarity** (Leon: "I want the movement in combat to be more clear").
+
+- **The ♪ and ◈ buttons** sit as small tabs at the bottom edge and slide up when the pointer comes near, on focus, on a tap, or while their panel is open. They share one dock: while one is out, the other slides away, so the song title and the memory never overlap, and opening the memory closes the music panel. Settings › Display can turn the slide off. Reduced motion never slides.
+- **Out of the fog:**
+  - a hostile walks in from the fog's edge and fades up, and a small red "!" pops on its token's corner. A soft Kenney tick plays, at most once per wave of arrivals;
+  - a unit walking into the fog, or dropping out of your sight, fades out where you last saw it, on the step that lost it;
+  - units stay where they were until their own walk plays, so nothing pops in at its end tile;
+  - each side's sight is worked out by the engine step by step and sent only to that side, so a co-op opponent learns nothing hidden.
+- **Stealth:** a reveal shimmers in with the "!" and REVEALED, and going Hidden fades out with HIDDEN. A hostile placed Hidden in the Proving Ground now starts the fight Hidden.
+- **Overwatch** is its own beat: the watcher's ring flashes, OVERWATCH shows over it and a dashed aim line runs to the tile. The mover stops on that tile, the shot plays, then it walks on, or falls there. It follows the combat speed setting.
+- **Known:**
+  - the area map has no fog, so a hidden NPC revealed there still just appears;
+  - a unit that leaves and re-enters sight within one batch may show its final token early.
+
 ## 0.15.0 — 9 November 2026
 
 Branch `feature/combat-polish` (implementer 1), merged through `claude/awesome-babbage-8gngk8`: **UI pass, combat polish**.

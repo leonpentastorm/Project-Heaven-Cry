@@ -19,6 +19,8 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
   // The spotlight cut-in (game/spotlight, decision 113): a tear and a low ring.
   | 'spotlight_tear'
+  // Combat clarity: the soft tick with the "!" when a hostile comes into sight (fx/sight.ts; rate-limited).
+  | 'sighted'
   | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent'
   | ElementSfx | WordSfx | SoulSfx | FeelSfx | FaithSfx;
 /** Faith 2.2 (rules 1.6.3): the Miracle cut-in's heavenly sting (game/cutIn.ts). */
@@ -93,6 +95,8 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   feel_residue_bright: CB('feel_residue_bright'), feel_residue_hollow: CB('feel_residue_hollow'), feel_residue_wild: CB('feel_residue_wild'), feel_residue_holy: CB('feel_residue_holy'),
   feel_unlock: CB('feel_unlock'), feel_revert: CB('feel_revert'), feel_tick: CB('feel_tick'),
   spotlight_tear: CB('spotlight_tear'),
+  // Combat clarity: a hostile comes into sight (Kenney's Interface "select", the same file as hover, quieter and lower).
+  sighted: '/sfx/select_001.ogg',
   // Faith 2.2: the Miracle cut-in's sting (leohpaz's revive, CC BY 4.0: trimmed to its first rising run, mono, levelled).
   miracle_sting: CB('miracle_sting'),
 };
@@ -127,7 +131,7 @@ const MIX: Partial<Record<Sfx, number>> = {
   // Feelings: the pump layer sits under the thump (0.55); residue stings are quieter still.
   feel_pump_warm: 0.4, feel_pump_cold: 0.4, feel_pump_sharp: 0.38, feel_pump_low: 0.45, feel_pump_bright: 0.45, feel_pump_hollow: 0.45, feel_pump_wild: 0.4, feel_pump_holy: 0.4,
   feel_residue_warm: 0.28, feel_residue_cold: 0.28, feel_residue_sharp: 0.3, feel_residue_low: 0.3, feel_residue_bright: 0.28, feel_residue_hollow: 0.3, feel_residue_wild: 0.3, feel_residue_holy: 0.3,
-  feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3, spotlight_tear: 0.55, miracle_sting: 0.55,
+  feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3, spotlight_tear: 0.55, miracle_sting: 0.55, sighted: 0.16,
   sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 
@@ -138,8 +142,8 @@ export type CutinPref = 'all' | 'scene' | 'off';
 /** Volumes are 0–100 (combat goes to 150 for headroom). master multiplies the effects and the music; combat and ui
  *  are the two effect buses (UI pass, docs/design/ui-pass-shell.md 6.2); float and floatFade are the Music and Memory
  *  buttons' opacity at rest and whether they fade when the pointer is away (section 7). */
-export interface UiPrefs { master: number; combat: number; ui: number; music: number; mute: boolean; reduceMotion: boolean; cutins: CutinPref; float: number; floatFade: boolean }
-export const DEFAULT_UI_PREFS: UiPrefs = { master: 100, combat: 100, ui: 35, music: 70, mute: false, reduceMotion: false, cutins: 'all', float: 55, floatFade: true };
+export interface UiPrefs { master: number; combat: number; ui: number; music: number; mute: boolean; reduceMotion: boolean; cutins: CutinPref; float: number; floatFade: boolean; floatSlide: boolean }
+export const DEFAULT_UI_PREFS: UiPrefs = { master: 100, combat: 100, ui: 35, music: 70, mute: false, reduceMotion: false, cutins: 'all', float: 55, floatFade: true, floatSlide: true };
 const clampN = (v: unknown, lo: number, hi: number, d: number) => { const n = Number(v); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, Math.round(n))) : d; };
 /** Saved settings, cleaned up. Before the UI pass there was one effects volume (sfx, default 60) for clicks and
  *  gunshots alike. An old save moves it over (docs/design/ui-pass-shell.md 6.2): combat takes it scaled so the old
@@ -156,6 +160,7 @@ export function parseUiPrefs(raw: string | null | undefined): UiPrefs {
     music: clampN(o.music, 0, 100, D.music),
     mute: typeof o.mute === 'boolean' ? o.mute : D.mute, reduceMotion: typeof o.reduceMotion === 'boolean' ? o.reduceMotion : D.reduceMotion,
     cutins: o.cutins === 'scene' || o.cutins === 'off' ? o.cutins : 'all', float: clampN(o.float, 20, 100, D.float), floatFade: typeof o.floatFade === 'boolean' ? o.floatFade : D.floatFade,
+    floatSlide: typeof o.floatSlide === 'boolean' ? o.floatSlide : D.floatSlide,
   };
 }
 let prefs: UiPrefs = (() => { try { return parseUiPrefs(localStorage.getItem(LS)); } catch { return { ...DEFAULT_UI_PREFS }; } })();

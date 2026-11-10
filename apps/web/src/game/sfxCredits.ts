@@ -3,7 +3,7 @@
 // in public/sfx/sfx-loudness.json); the CC BY entries say so, as their licences ask changes to be indicated.
 import type { Credit } from './credits';
 export const SFX_CREDITS: Credit[] = [
-  { what: 'Interface Sounds (select, click, confirmation, back, maximize, minimize, error, toggle, pluck)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
+  { what: 'Interface Sounds (select, click, confirmation, back, maximize, minimize, error, toggle, pluck; select is also the soft tick when a hostile comes into sight)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/interface-sounds' },
   { what: 'Cute Mission Complete (Wick\'s hello, pitched up)', who: 'fupi', licence: 'CC0', url: 'https://opengameart.org/content/cute-mission-complete' },
   { what: 'The Free Firearm Sound Library (gunshots: pistols, revolvers, rifles, carbines, shotguns, submachine guns, bursts and full auto)', who: 'The Free Firearm Sound Library team (freefirearmsfx.com), via OpenGameArt', licence: 'CC0', url: 'https://opengameart.org/content/the-free-firearm-sound-library' },
   { what: 'Gun Reload Sounds (magazine reloads, the gun cock that clears a jam)', who: 'SpringySpringo', licence: 'CC0', url: 'https://opengameart.org/content/gun-reload-sounds' },

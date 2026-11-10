@@ -7,7 +7,7 @@ import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
-import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy } from './combat';
+import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy } from './combat';
 import { type Rng, d20 } from './rng';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitDebuff } from './magic';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
@@ -86,6 +86,7 @@ export function hide(cb: Combat, u: Unit, why = ''): string {
   u.hidden = true; u.hideEntry = (u.hideEntry || 0) + 1;
   for (const side of ['pc', 'foe']) if (side !== u.side) ((cb.lastSeen ||= {})[side] ||= {})[u.id] = u.pos;
   emit(cb, 'hide', { u, why, cb });
+  sightFx(cb, null, { [u.id]: 'hide' }); // presentation: it fades from the eyes of a side that saw it
   return ' · ' + u.name + ' is Hidden' + (why ? ' (' + why + ')' : '');
 }
 /** Stop being Hidden (spotted, an attack that isn't silent, damage taken, an enemy ending its turn next to you). */
@@ -95,6 +96,7 @@ export function reveal(cb: Combat, u: Unit, why: string): string {
   for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id];
   cb.log.push(u.name + ' is revealed (' + why + ').');
   emit(cb, 'spotted', { u, why, cb });
+  sightFx(cb, null, { [u.id]: 'reveal' }); // presentation: it shimmers into the sight of a side that can see its tile
   return ' · revealed';
 }
 /** The Hide action (2 AP, provisional): only out of every enemy's sight, never while Marked. */
