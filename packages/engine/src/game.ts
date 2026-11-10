@@ -1376,6 +1376,7 @@ function combatAction(g: GameState, a: Action, by: string) {
       resolveAttack(cb!, g.rng, u, t!, a.mode, who); break;
     }
     case 'combat/reload': {
+      refuseHook(cb!, u, a); // an item or rule may refuse it (Physical 2.0: a Drawn weapon's quiver is filled before the fight)
       const ap0 = u.ap; err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical });
       if (!err) faithReloaded(cb!, u, ap0 - u.ap); // the Quartermaster's intervention (rules 1.6.3, item 742)
       break;

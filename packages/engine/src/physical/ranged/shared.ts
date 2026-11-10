@@ -5,3 +5,5 @@ export { pressureOf, pressureState, isPressed, isSuppressed, addPressureTo, lowe
 export { pressureDecay, atCover, flanksCover, coveredUnseen } from '../rules';
 export { onHook } from '../../effects/hooks';
 export type { Tech, TechHandler, StrikeResult, WatchSpec } from '../types';
+// the quiver (quiver.ts): the arrow a strike names, and the arrows spendRounds burns
+export { strikingWith, strikeWrap, roundsSpent } from '../core';

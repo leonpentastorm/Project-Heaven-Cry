@@ -176,7 +176,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   const w = WEAPON[weaponId];
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
-    if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : 'Empty: reload first.';
+    if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
     if (def.needs.last_round && have !== 1) return 'Only with the last round in the weapon.';
     if (need > 0 && u.jammed && hand === 'main') return 'Jammed: clear it first.';
   }
@@ -213,6 +213,20 @@ function roundFor(t: Tech, tgt: Unit): { type: string; fromMag?: boolean; by: St
   for (const r of ROUNDS) { const p = r.pick(t, tgt); if (p) return { ...p, by: r }; }
   return null;
 }
+/** Code run around every strike, inside the technique's hand, before its attack is previewed or made; what it returns
+ * is run after the strike (the quiver: the arrow the shot names, ranged/quiver.ts). Additive (the ranged lane). */
+type StrikeWrap = (t: Tech, tgt: Unit) => (() => void) | void;
+const STRIKE_WRAPS: StrikeWrap[] = [];
+export const strikeWrap = (f: StrikeWrap): void => { STRIKE_WRAPS.push(f); };
+function wrapped<T>(t: Tech, tgt: Unit, fn: () => T): T {
+  const undo = STRIKE_WRAPS.map((f) => f(t, tgt));
+  try { return fn(); } finally { for (let i = undo.length - 1; i >= 0; i--) undo[i]?.(); }
+}
+/** Code run after spendRounds takes rounds out of the weapon, not in a preview (the quiver: which arrows they were).
+ * Additive (the ranged lane). */
+type SpendHook = (t: Tech, n: number) => void;
+const SPEND_HOOKS: SpendHook[] = [];
+export const roundsSpent = (f: SpendHook): void => { SPEND_HOOKS.push(f); };
 /** One attack. Melee hits add Momentum (and the variety bonus) and ranged hits add Pressure by the rules: handlers
  * don't. In a preview it records the roll's chance and damage and returns hit: false. */
 export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
@@ -223,7 +237,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
   const a0 = tgt.armour; if (o.ignoreArmour) tgt.armour = o.ignoreArmour === true ? 0 : Math.max(0, a0 - o.ignoreArmour);
   ACTIVE.push({ t, o, tgt });
   try {
-    return inHand(t, () => {
+    return inHand(t, () => wrapped(t, tgt, () => {
       const offTurn = active(t.cb) !== u; // a reaction: no Recoil from the shots of the user's own turn
       const rd = mode === 'melee' ? null : roundFor(t, tgt), type0 = u.ammoType; if (rd) u.ammoType = rd.type;
       try {
@@ -242,7 +256,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         }
         return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: tgt };
       } finally { if (rd) u.ammoType = type0; }
-    });
+    }));
   } finally { ACTIVE.pop(); tgt.armour = a0; }
 }
 // The hooks strike shapes the attack through. They read ACTIVE and never run for anyone else's attack.
@@ -366,7 +380,9 @@ export function spendRounds(t: Tech, n: number): boolean {
   if (t.u.infiniteAmmo || t.w.magazine == null || n <= 0) return true;
   const have = t.hand === 'off' ? t.u.offAmmo ?? 0 : t.u.ammo; if (have < n) { t.note('Needs ' + n + ' rounds, ' + have + ' loaded.'); return false; }
   if (t.preview) { t.pv.rounds += n; return true; }
-  if (t.hand === 'off') t.u.offAmmo = have - n; else t.u.ammo = have - n; return true;
+  if (t.hand === 'off') t.u.offAmmo = have - n; else t.u.ammo = have - n;
+  for (const f of SPEND_HOOKS) f(t, n);
+  return true;
 }
 /** Extra Pressure from a technique (the ordinary +1 for a ranged hit is automatic). Returns what landed. */
 export function addPressure(t: Tech, target: Unit, n: number, why: string, opts: { hidden?: boolean } = {}): number {
