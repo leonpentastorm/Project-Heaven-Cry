@@ -234,6 +234,31 @@ item and ink, then cached.
 - `ground.mjs`: weapons hit harder under the new damage rule (the rifle does 45 to an object, not 30), so the pillar the
   test shoots breaks in two shots. Its "spend a round" helper now checks the magazine really went down.
 
+**Browser test results** (one run of the whole list against the final build; no failure, no crash):
+
+| Suite | Checks passed |
+|---|---|
+| `physical.mjs` | 33 |
+| `tabs.mjs` | 28 |
+| `slate.mjs` | 24 |
+| `classes.mjs` | 34 |
+| `classes-moves.mjs` | 52 |
+| `perks.mjs` | 27 |
+| `pg-levelup.mjs` | 53 |
+| `right-panels.mjs` | 18 |
+| `gear-icons.mjs` | 14 |
+| `sandbox.mjs` | 33 |
+| `ground.mjs` | 28 |
+| `feel.mjs` | 27 |
+| `missions.mjs` | 17 |
+| `ui-shell.mjs` | 86 |
+| `playscreen.mjs` | 10 |
+| `creation-layout.mjs` | 25 |
+| `two-players.mjs` | no host or guest errors |
+
+`physical.mjs` passes 31 to 33 checks depending on the dice (a missed Lunge or Suppress skips its follow-up step with a
+`note` line); it never failed in six runs.
+
 ## Screenshots (`physical-2.0-shots/`)
 
 - Part 1:
