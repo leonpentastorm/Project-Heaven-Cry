@@ -15,7 +15,7 @@
 //     the target is slammed into whoever stands there and stays where it was, and the occupant is struck at half of the
 //     slam (Momentum included), as Run Through's behind-strike is half of its strike. Bare: the slam always hits (no
 //     roll); Flurry's Bare mark then makes the occupant's Prone save harder.
-import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook, setUpBonus } from './shared';
+import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook, setUpBonus, meleeFx, fxMark, movedSince, refuseFx } from './shared';
 import type { Tech, StrikeResult } from './shared';
 import type { StrikeOpts } from '../types';
 import { strikingWith, loseWeapon } from '../core';
@@ -71,8 +71,11 @@ technique({
     const p = t.line('heavy', 'edge'), m = momentumOf(t.u);
     const within = p === 'heavy' ? t.num('heavy_apart', 2) : t.num('adjacent', 1);
     const bleed = (r: StrikeResult) => { if (p === 'edge' && r.target && (t.preview || (r.hit && !r.killed && alive(r.target)))) cond(t, r.target, 'bleeding'); };
+    // the arc runs through every target in order (the extras as they stand before the first strike)
+    const ex0 = t.preview ? [] : cleaveExtras(t, tgt, m, within);
+    const fx = meleeFx(t, 'arc', { tiles: [tgt.pos, ...ex0.map((v) => v.pos)], struck: [tgt.id, ...ex0.map((v) => v.id)], cleave: true });
     const r = strike(t, { noMomentum: true, label: 'Cleave' });
-    if (!r.ok) return r.why || 'Can\'t attack that.';
+    if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t attack that.'; }
     bleed(r);
     const extras = cleaveExtras(t, tgt, m, within);
     if (t.preview) t.note(extras.length ? 'Then ' + extras.map((v) => v.name).join(', ') + ', each at full damage.' : 'No other enemy close enough to cleave into.');
@@ -96,6 +99,7 @@ technique({
     if (t.preview) t.note('On a hit, ' + v.name + ' saves (Body, −' + m * t.num('save_per_momentum', 1) + ') or:');
     if (t.preview || (r.hit && !r.killed && alive(v))) {
       if (!save(t, v, 'body', m * t.num('save_per_momentum', 1))) {
+        meleeFx(t, 'break', { target: v.id, to: v.pos, stun: boss ? 'dazed' : 'stunned', armour: p === 'blunt', disarm: p === 'hook' });
         cond(t, v, boss ? 'dazed' : 'stunned', boss ? undefined : t.num('stun_rounds', 1));
         if (p === 'blunt') breakArmour(t, v);
         if (p === 'hook') cond(t, v, 'disarmed');
@@ -154,6 +158,8 @@ technique({
       if (b) also(t, { target: b, mult: mult * t.num('point_behind_pct', 50) / 100, noMomentum: true, ...pierce, reach: dist(t.u.pos, b.pos), label: 'Run Through, behind' });
     }
     if (pinned) {
+      if (!t.preview) { const [ux, uy] = xy(t.u.pos), [x, y] = xy(v.pos), b = p === 'point' ? behindOf(t, v) : null, beyond = key(x + Math.sign(x - ux), y + Math.sign(y - uy));
+        meleeFx(t, 'pin', { target: v.id, to: v.pos, line: [t.u.pos, v.pos, ...(p === 'point' ? [beyond] : [])], weapon: leave ? t.weaponId : null, behind: b ? b.id : null }); }
       stop(t, v, 'pinned', { save: false, untilAp: t.num('pull_free_ap', 2), ...(leave ? { weapon: t.weaponId } : {}) });
       if (t.preview) t.note(v.name + ' stays Pinned until ' + t.num('pull_free_ap', 2) + ' AP is spent to pull free.');
       if (leave) { if (!t.preview) t.cb.log.push(t.u.name + ' leaves the ' + t.w.name + ' in ' + v.name + '.'); loseWeapon(t, null); }
@@ -233,7 +239,9 @@ technique({
       // the grapple (or the bind) ends: the body leaves your hands
       if (t.preview) t.note('The hold on ' + tgt.name + ' ends.');
       else { if (condSource(tgt, 'grappled') === t.u.id) endCond(tgt, 'grappled', t.cb); if (t.u.tech?.bind?.target === tgt.id) t.u.tech.bind = {}; }
+      const mk = fxMark(t), from = tgt.pos, wasProne = !!tgt.prone;
       if (!occ && at !== tgt.pos && (t.preview || alive(tgt))) throwTo(t, tgt, at);
+      if (!t.preview) { const path = movedSince(t, tgt.id, mk); meleeFx(t, 'slam', { target: tgt.id, from, path: path.length ? path : [from], land: occ ? at : tgt.pos, occupant: occ ? occ.id : null, prone: !wasProne }); }
       if (t.preview || alive(tgt)) stop(t, tgt, 'prone', { save: false });
       if (occ) {
         also(t, { target: occ, mult: slam * t.num('occupant_pct', 50) / 100, noMomentum: true, reach: Math.max(1, dist(t.u.pos, occ.pos)), label: 'Throw Down, slammed into' });

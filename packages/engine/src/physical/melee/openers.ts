@@ -1,6 +1,6 @@
 // Physical 2.0, melee Openers: the first melee technique of a turn. Lunge is the lead's reference; the melee lane builds
 // Charge, Feint, Draw Cut and Ambush here.
-import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, landed, momentumOf, onHook, turnStamp, techState, techStateOf } from './shared';
+import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, landed, momentumOf, onHook, turnStamp, techState, techStateOf, meleeFx, fxMark, movedSince, fallFx, refuseFx } from './shared';
 import { canStrike } from '../core';
 import { PHYS_RULES } from '../data';
 import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
@@ -21,7 +21,10 @@ technique({
     if (t.preview) { const r = step ? (stepUser(t, step.route), standingAt(t, step.to, hit)) : hit(); if (p === 'heavy' && r.ok) t.note('On a hit: pushed ' + t.num('heavy_push', 1) + '.'); return r.ok ? null : r.why || 'Can\'t attack that.'; }
     if (step) stepUser(t, step.route);
     const r = hit(); if (!r.ok) return null; // the step was taken; the strike couldn't follow (the log says why)
-    if (r.hit && !r.killed && r.target && p === 'heavy') stop(t, r.target, 'push', { tiles: t.num('heavy_push', 1), save: false }); // r.target: the unit really struck
+    if (r.hit && !r.killed && r.target && p === 'heavy') { // r.target: the unit really struck
+      const mk = fxMark(t); stop(t, r.target, 'push', { tiles: t.num('heavy_push', 1), save: false });
+      const path = movedSince(t, r.target.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: r.target.id, path, how: 'push' });
+    }
     return null;
   },
   ai: (t) => (t.tgt ? 6 : 0),
@@ -101,18 +104,19 @@ technique({
       if (p === 'reach' && plan.route.length) t.note(tgt.name + ' can\'t take its held shot or Keep Back at your run.');
       return null;
     }
+    const fx = meleeFx(t, 'charge', { route: [t.u.pos, ...plan.route], tiles: plan.tiles, target: tgt.id });
     if (plan.route.length) {
       const P = { dist: {} as Record<string, number>, prev: {} as Record<string, string> };
       plan.route.forEach((k, i) => { P.dist[k] = i + 1; P.prev[k] = i ? plan.route[i - 1] : t.u.pos; });
       PREEMPT = p === 'reach' ? { by: t.u.id, target: tgt.id } : null;
       let err: string | null;
       try { err = moveUnit(t.cb, t.u, plan.to, t.rng, 'move', { via: P }); } finally { PREEMPT = null; }
-      if (err) return err; // refused before anything moved: the technique's AP comes back
+      if (err) { refuseFx(fx); return err; } // refused before anything moved: the technique's AP comes back
       if (!alive(t.u) || t.u.pos !== plan.to) return null; // the run was cut short: no strike (the log says why)
     }
     const r = hit(); if (!r.ok) return null;
     const v = r.target || tgt; // the unit really struck (a redirect): the rider follows it
-    if (r.hit && !r.killed && prone && alive(v)) stop(t, v, 'prone', { save: ['body'] });
+    if (r.hit && !r.killed && prone && alive(v)) { const was = !!v.prone; stop(t, v, 'prone', { save: ['body'] }); fallFx(t, v, was); }
     return null;
   },
   ai: (t) => (t.tgt ? 6 : 0),
@@ -134,7 +138,8 @@ technique({
     // the user's Brain debuff strength: a character's own, a foe's from its caster block or its tier
     const tnAdd = unitDebuff(t.u, 'brain') + (p === 'light' ? t.num('light_save', 2) : 0);
     if (t.preview) t.note('No damage. ' + tgt.name + ' makes a Brain save; if it fails:');
-    if (save(t, tgt, 'brain', tnAdd)) { t.cb.log.push(tgt.name + ' isn\'t fooled by the feint.'); return null; } // it saw through: nothing more
+    if (save(t, tgt, 'brain', tnAdd)) { t.cb.log.push(tgt.name + ' isn\'t fooled by the feint.'); meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: false }); return null; } // it saw through: nothing more
+    meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: true, lowered: p === 'hook' });
     setUp(t, tgt, { hit: t.num('hit', 3), noAnswer: true, label: 'Feint' });
     if (p === 'hook') cond(t, tgt, 'lowered');
     landed(t);
@@ -177,6 +182,7 @@ technique({
       if (p === 'edge') t.note('On a hit: ' + tgt.name + ' is Bleeding.');
       return null;
     }
+    meleeFx(t, 'draw', { target: tgt.id, to: tgt.pos, weapon: t.weaponId });
     const r = strike(t, opts); if (!r.ok) return null; // drawn; the strike couldn't follow (the log says why)
     const v = r.target || tgt;
     if (r.hit && !r.killed && p === 'edge' && alive(v)) cond(t, v, 'bleeding');
@@ -198,6 +204,7 @@ technique({
       if (!canStrike(t, tgt)) return 'Walk up to them first.';
       if (t.preview) { cond(t, tgt, 'grappled', t.num('bare_rounds', 1)); cond(t, tgt, 'silenced', t.num('bare_rounds', 1)); t.note('No damage.'); landed(t, gain); return null; }
       t.u.ambushUsed = t.u.hideEntry || 1;
+      meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: true });
       emitFx(t.cb, 'melee', { unit: t.u.id, target: tgt.id, from: t.u.pos, to: tgt.pos, weapon: t.weaponId, cat: 'unarmed', mode: 'grapple', hit: true, crit: false, fumble: false, dmg: 0, killed: false });
       cond(t, tgt, 'grappled', t.num('bare_rounds', 1)); cond(t, tgt, 'silenced', t.num('bare_rounds', 1));
       const rv = reveal(t.cb, t.u, 'attacked'); if (rv) t.cb.log.push(t.u.name + rv.replace(/^ · /, ': ') + '.');
@@ -205,9 +212,10 @@ technique({
       return null;
     }
     const ready = ambushReady(t.u), mult = t.u.ambushMult || 1.5;
+    const fx = meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: false });
     // from a fresh Hidden entry the engine applies the multiplier itself (its preview doesn't show it: the card adds it)
     const r = strike(t, { mult: ready && !t.preview ? 1 : mult, critMin: p === 'point' ? t.num('point_crit_min', 18) : ready ? undefined : 19, label: 'ambush' });
-    if (!r.ok) return r.why || 'Can\'t attack that.';
+    if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t attack that.'; }
     if (t.preview) { const max = t.u.resMax?.momentum ?? PHYS_RULES.momentum.max, now = momentumOf(t.u); t.pv.momentum = { now, after: Math.min(max, now + gain) }; t.note('On a hit: +' + gain + ' Momentum.'); return null; }
     if (r.hit) landed(t, gain - 1); // the hit gave the first
     return null;

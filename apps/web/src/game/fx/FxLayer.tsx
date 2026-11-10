@@ -10,6 +10,7 @@ import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
 import { canDraw, clearFx, fightStream, forgetSpotlights, holdMovers, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
+import { meleeMarksOf, syncMeleeMarks, clearMeleeMarks } from './melee-techniques';
 import { closeKeptBoxes } from '../cutIn';
 import { getState } from '../store';
 
@@ -28,6 +29,8 @@ function streamOf(g: GameState | null, screen: string): { key: string; list: FxE
   return null;
 }
 const lastN = (l: FxEvent[]) => (l.length ? l[l.length - 1].n : 0);
+/** The standing melee marks for the screen on show (a fight only), as the squad sees them. */
+const marksOn = (g: GameState | null, screen: string) => (screen === 'combat' && g?.combat ? meleeMarksOf(g, seenNow()) : []);
 
 export function FxLayer({ game, screen }: { game: GameState | null; screen: string }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
@@ -40,16 +43,18 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   const screenAt = React.useRef({ screen, at: 0 }); if (screenAt.current.screen !== screen) screenAt.current = { screen, at: Date.now() };
   React.useEffect(() => { setLayer(ref.current); if (game) preloadCombatSfx(); return () => setLayer(null); }, [!!game]);
   // Leaving the room unmounts the layer in the same render that drops the game: nothing queued may play on the title.
-  React.useEffect(() => () => { clearFx(); closeKeptBoxes(); clearAmbient(); }, []); // a box the player kept open goes with the room
+  React.useEffect(() => () => { clearFx(); closeKeptBoxes(); clearAmbient(); clearMeleeMarks(); }, []); // a box the player kept open goes with the room
   // A hidden tab plays nothing: on return it catches up silently.
   React.useEffect(() => {
-    const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); return; } if (document.hidden) { clearFx(); clearAmbient(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) { fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; setProcessed(ck, fight.current.n); } } };
+    const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); syncMeleeMarks(marksOn(latest.current.game, latest.current.screen)); return; } if (document.hidden) { clearFx(); clearAmbient(); clearMeleeMarks(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) { fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; setProcessed(ck, fight.current.n); } } };
     document.addEventListener('visibilitychange', vis); return () => document.removeEventListener('visibilitychange', vis);
   }, []);
   // Where everyone stands now and what the squad sees, for effects already queued as well as new ones (set before the
   // paint, so the units a new batch is about to show can be held where they were: play.ts holdMovers).
   React.useLayoutEffect(() => { setContext(game, screen); }, [game, screen]);
   React.useEffect(() => { if (!document.hidden) syncAmbient(ambientOf(game, screen, seenNow())); }, [game, screen]);
+  // The melee techniques' lasting states (a Bind, a grapple, a weapon left in a nailed unit, a Guard, a Feint's mark).
+  React.useEffect(() => { if (!document.hidden) syncMeleeMarks(marksOn(game, screen)); }, [game, screen]);
   // After the play effect below has read this render's tokens, keep copies of the living ones for the next kill.
   React.useEffect(() => { rememberTokens(); });
   const s = streamOf(game, screen), top = s ? lastN(s.list) : 0;

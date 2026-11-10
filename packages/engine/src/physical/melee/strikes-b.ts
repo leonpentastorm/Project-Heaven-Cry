@@ -9,7 +9,7 @@
 //   Hamstring with Point: the target's u.tech.hamstring = { lame } (the Slowed it was given): no Sprint or Disengage
 //     while that Slowed lasts.
 //   Throw: Dexterity replaces the weapon's skill on the roll, and the weapon goes to the pile on the target's tile.
-import { technique, strike, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp } from './shared';
+import { technique, strike, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
 import type { Tech } from './shared';
 import { canStrike, loseWeapon } from '../core';
 import { PHYS_RULES } from '../data';
@@ -32,7 +32,7 @@ technique({
     if (t.preview) t.note('On a hit:');
     const v = r.target || tgt; // the unit really struck (a redirect): the riders follow it
     if (!t.preview && (!r.hit || r.killed || !alive(v))) return null;
-    if (p === 'hook') { stop(t, v, 'prone', { save: ['body'] }); return null; }
+    if (p === 'hook') { const was = !!v.prone; stop(t, v, 'prone', { save: ['body'] }); fallFx(t, v, was); return null; }
     if (p !== 'edge' && save(t, v, 'body')) return null;
     const took = cond(t, v, 'slowed', t.num('slow_rounds', 2));
     if (p === 'point') {
@@ -67,12 +67,13 @@ technique({
     const harder = p === 'bare' || p === 'hook' ? su : 0;
     if (p === 'bare') { // today's Grapple: a Body save, then held until it breaks free
       if (condOn(tgt, 'grappled')) return tgt.name + ' is already held.';
-      if (cond(t, tgt, 'grappled', undefined, { save: true, tnAdd: harder || undefined }) && (t.preview || condOn(tgt, 'grappled'))) landed(t);
+      if (cond(t, tgt, 'grappled', undefined, { save: true, tnAdd: harder || undefined }) && (t.preview || condOn(tgt, 'grappled'))) { landed(t); meleeFx(t, 'bind', { target: tgt.id, to: tgt.pos, kind: 'grapple' }); }
       return null;
     }
     const pen = p === 'heavy' ? t.num('heavy_penalty', 4) : t.num('penalty', 2);
     t.note(tgt.name + ' is Bound until your next turn: −' + pen + ' to attack anyone but you, and a Body save to move away. You can\'t use Reach while binding.');
     if (!t.preview) Object.assign(t.state(), { target: tgt.id, pen, r: t.cb.round });
+    meleeFx(t, 'bind', { target: tgt.id, to: tgt.pos, kind: 'bind', pen });
     if (p === 'hook' && !save(t, tgt, 'brain', harder)) cond(t, tgt, 'disarmed');
     landed(t);
     return null;
@@ -148,8 +149,9 @@ technique({
   run(t) {
     if (!t.tgt) return 'Pick a target.';
     const p = t.line('point', 'heavy');
+    const fx = meleeFx(t, 'thrust', { target: t.tgt.id, to: t.tgt.pos, point: p === 'point' });
     const r = strike(t, { mult: p === 'heavy' ? 1 : t.num('damage_mult', 0.8), ignoreArmour: p === 'point' ? true : t.num('armour_ignore', 10), label: 'Half-Sword' });
-    if (!r.ok) return r.why || 'Can\'t attack that.';
+    if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t attack that.'; }
     t.note(p === 'point' ? 'Ignores all armour.' : 'Ignores ' + t.num('armour_ignore', 10) + ' armour.');
     return null;
   },
@@ -174,12 +176,13 @@ technique({
     if (!lineOfSight(t.cb, t.u.pos, tgt.pos)) return 'No line of sight to throw.';
     // "Without Thrown" reads the weapon, not the chosen line: a throwing weapon never takes the penalty.
     const p = t.line('thrown', 'heavy'), thrown = t.holds('thrown');
+    const fx = meleeFx(t, 'throw', { from: t.u.pos, to: tgt.pos, target: tgt.id, weapon: t.weaponId });
     // the core's thrown strike: a ranged attack at throwing range (sight, cover), aimed with Dexterity, Pressure on a
     // hit and Momentum for this melee technique; then the weapon leaves the hand for the pile on the target's tile
     const r = strike(t, { thrown: true, extra: thrown ? 0 : -t.num('unthrown_hit', 2), mult: thrown ? 1 : t.num('unthrown_mult', 0.7), label: thrown ? 'Throw' : 'Throw (not a throwing weapon)' });
-    if (!r.ok) return r.why || 'Can\'t throw at that.';
+    if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t throw at that.'; }
     const v = r.target || tgt;
-    if (p === 'heavy' && (t.preview ? (t.note('On a hit:'), true) : r.hit && !r.killed && alive(v))) stop(t, v, 'prone', { save: ['body'] });
+    if (p === 'heavy' && (t.preview ? (t.note('On a hit:'), true) : r.hit && !r.killed && alive(v))) { const was = !!v.prone; stop(t, v, 'prone', { save: ['body'] }); fallFx(t, v, was); }
     loseWeapon(t, v.pos);
     return null;
   },

@@ -12,7 +12,7 @@
 //     Guard with Reach) is the Body family save.
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
-import { technique, landed, holdMomentum, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, type Tech } from './shared';
+import { technique, landed, holdMomentum, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { strikingWith } from '../core';
 import { PHYS_RULES } from '../data';
 import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
@@ -94,7 +94,8 @@ technique({
       t.note('No opportunity attack. Your next Strike against ' + foe.name + ' this turn ignores a carried shield' + (sh ? ' (+' + sh + ' to hit)' : '') + ' and counts as flanking.');
       return null;
     }
-    stepUser(t, step.route);
+    const from = t.u.pos, n = stepUser(t, step.route);
+    if (n) meleeFx(t, 'sidestep', { from, to: t.u.pos, path: [from, ...step.route.slice(0, n)], foe: foe.id });
     if (alive(t.u) && alive(foe) && dist(t.u.pos, foe.pos) <= 1) Object.assign(t.state(), { t: turnStamp(t.cb), target: foe.id, n: null });
     return null;
   },
@@ -142,6 +143,7 @@ technique({
     }
     Object.assign(t.state(), { on: true, t: turnStamp(t.cb), def, reach: p === 'reach', heavy: p === 'heavy', front });
     holdMomentum(t);
+    meleeFx(t, 'guard', { front, reach: p === 'reach', heavy: p === 'heavy' });
     t.cb.log.push(t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ').');
     return null;
   },
@@ -218,8 +220,10 @@ technique({
     const roll = d20(t.rng), total = roll + bonus;
     t.cb.log.push(u.name + ' shoves ' + tgt.name + ': d20 ' + roll + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + ' = ' + total + ' vs ' + need + (total >= need ? '' : ' · holds firm') + '.');
     if (total < need) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
-    const was = tgt.pos, wasProne = !!tgt.prone;
+    const was = tgt.pos, wasProne = !!tgt.prone, mk = fxMark(t);
     stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
+    const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how: 'push' });
+    fallFx(t, tgt, wasProne);
     // it works when the target really moved, or went Prone where it was blocked (an item may cancel the push)
     if (tgt.pos !== was || (blocked && tgt.prone && !wasProne)) landed(t);
     else t.cb.log.push(tgt.name + ' holds its ground.');
@@ -245,8 +249,9 @@ technique({
     const tgt = t.tgt!, p = t.line('hook', 'reach', 'bare'), harder = p === 'hook' || p === 'reach' ? t.num('save_penalty', 2) : 0;
     const grapple = p === 'bare' && t.args.opt === 'grapple';
     if (t.preview && p === 'bare' && !grapple) t.note('Bare: you may go Prone with it, and then it is Grappled.');
-    const ok = stop(t, tgt, 'prone', { save: ['body'], tnAdd: harder });
+    const wasProne = !!tgt.prone, ok = stop(t, tgt, 'prone', { save: ['body'], tnAdd: harder });
     if (!ok) return null;
+    fallFx(t, tgt, wasProne);
     landed(t);
     if (grapple) {
       if (t.preview) t.note('You go Prone with it.');
@@ -312,7 +317,7 @@ technique({
   run(t) {
     const tgt = t.tgt!, { how } = dragPlan(t), p = t.line('hook', 'bare');
     if (save(t, tgt, ['body'])) return null; // it holds firm: no Momentum
-    let worked = false;
+    let worked = false; const mk = fxMark(t), from = t.u.pos;
     if (how === 'pull') worked = forceMove(t, tgt, 'toward', p === 'hook' ? t.num('hook_tiles', 2) : t.num('tiles', 1)) > 0;
     else if (how === 'swap') worked = swap(t, tgt);
     else {
@@ -321,7 +326,7 @@ technique({
       if (t.preview) { stepUser(t, [to]); (t.pv.moves ||= []).push({ unit: tgt.id, to: dest }); worked = true; }
       else if (stepUser(t, [to]) && alive(t.u) && alive(tgt)) worked = forceMove(t, tgt, dest, 1) > 0;
     }
-    if (worked) landed(t);
+    if (worked) { landed(t); const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how, ...(how !== 'pull' ? { user: [from, t.u.pos] } : {}) }); }
     else if (!t.preview) t.cb.log.push(tgt.name + ' doesn\'t move.');
     return null;
   },

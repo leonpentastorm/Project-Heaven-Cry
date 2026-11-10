@@ -10,6 +10,7 @@ import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
+import { meleeTechHandlers, meleeTechBeat, quickStrikes } from './melee-techniques';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
@@ -320,7 +321,7 @@ function walkUnit(e: FxEvent, path: string[], per: number, seen: boolean[]) {
 }
 
 // ---------- weapons ----------
-type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam';
+type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam' | 'thrown';
 interface Gun { sound: Sfx | null; rate?: number; look: Look; color?: string; blast?: 'frag' | 'fire' | 'smoke' | 'flash' | 'zap' }
 function gunOf(id: string, cat: string): Gun {
   switch (id) {
@@ -352,6 +353,9 @@ function gunOf(id: string, cat: string): Gun {
   if (cat === 'heavy') return { sound: 'gun_heavy', look: 'bullet' };
   if (cat === 'bow') return { sound: 'swish', rate: 0.8, look: 'arrow' };
   if (cat === 'thrown') return { sound: 'swish', rate: 0.7, look: 'lob' };
+  // a thrown melee weapon (Throw, Flurry's Thrown line): a swish, and its flight is drawn by its melee_fx (the weapon's
+  // own icon; fx/melee-techniques.ts), not a tracer. Before this it fell through to a pistol shot.
+  if (/melee|unarmed/.test(cat)) return { sound: 'swish', rate: 0.8, look: 'thrown' };
   return { sound: 'gun_pistol', look: 'bullet' };
 }
 /** What a reload handles, for its sound: arrows and bolts, a fuel canister, a launcher's shell, shotgun-style shells,
@@ -557,21 +561,21 @@ const H: Record<string, Handler> = {
       if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
-      if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow') mp = muzzle(from, toP, g.color);
+      if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown') mp = muzzle(from, toP, g.color);
       if (from && shooterTok && !rico) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
       // the casing: thrown out behind the shooter (away from the target), with a wisp of smoke; a pump, a lever or a
       // bolt is worked first, so its casing comes a beat later
       if (from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
       const start = mp || (from ? { x: from.x, y: from.y } : null);
       const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
-      const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' ? 1.1 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
+      const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' || g.look === 'thrown' ? 0.9 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
       const ft = start ? Math.max(60, Math.min(g.look === 'lob' ? 650 : 320, dist / speed)) : 0;
       const coverP = e.cover ? centre(e.cover) : null;
       const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
       if (start) {
         if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
         else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
-        else projectile(start, end, ft, g.look, toP.s, g.color);
+        else if (g.look !== 'thrown') projectile(start, end, ft, g.look, toP.s, g.color);
       }
       after(() => {
         if (e.object) { burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
@@ -1135,6 +1139,8 @@ Object.assign(H, worldHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play }
 Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, dust, corners, glitch, condWord }));
 // Physical 2.0 (fx/physical.ts): techniques, Momentum, Pressure, held Watches, Stopped, drill.
 Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, nameOf: (id) => (phys.TECHNIQUE as any)[id]?.name || id }));
+// The melee techniques' own beats (fx/melee-techniques.ts): arcs, thrown weapons, holds, slams, skids, falls, clashes…
+Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen }));
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
@@ -1146,6 +1152,7 @@ function baseBeat(e: FxEvent): number {
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
+  const mb = meleeTechBeat(e); if (mb !== undefined) return mb;
   const pb = physBeat(e); if (pb !== undefined) return pb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
   const wb = worldBeat(e); if (wb !== undefined) return wb;
@@ -1155,8 +1162,8 @@ function baseBeat(e: FxEvent): number {
     case 'move': { const n = moveSteps(e, units.get(e.unit)?.side === 'pc'); return n ? Math.min(1100, Math.max(160, n * (e.how === 'sprint' ? 75 : 115))) : 60; } // a walk wholly in the fog: a breath, not a pause
     case 'sight': return e.by ? 0 : e.how === 'reveal' ? 480 : e.how === 'hide' ? 380 : e.how === 'lost' ? 300 : 120; // by: on its walker's step (runQueue)
     case 'overwatch': return 560;
-    case 'shot': return (e.chain ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
-    case 'melee': return e.chain ? 240 : 420;
+    case 'shot': return (e.chain || e._quick ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
+    case 'melee': return e.chain || e._quick ? 240 : 420; // _quick: a Sweep's, Cleave's or Flurry's later strikes (fx/melee-techniques.ts quickStrikes)
     case 'volley': return e.mode === 'auto' ? 260 : 90;
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(1200, (e.dur || 1000) * 0.85);
     case 'explode': return 220; // whoever stands in the blast is hurt with it, not after the smoke
@@ -1286,6 +1293,7 @@ export const sameAction = (sp: FxEvent, x: FxEvent) => { const f = Number.isFini
 /** queueFx for a batch with no Miracle in it. from: count the backlog from this time (after a Miracle's hold). */
 function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: number; from?: number }) {
   if (!evs.length) return;
+  evs = quickStrikes(evs); // a multi-strike technique's later strikes play at the chained beat
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
   const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), k = fxPace(), room = Math.max(1500 * k, 7000 * k - backlog);

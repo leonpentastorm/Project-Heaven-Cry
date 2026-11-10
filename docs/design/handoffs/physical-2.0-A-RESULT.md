@@ -158,3 +158,7 @@ After merging the base at its latest (`29a06d6`, the core services' "thirteen fi
 - `python3 tools/validate.py data`: 0 errors, 0 warnings.
 
 **With that base merge:** Run Through's own `on_downed` hook is gone. The base's `dropNailed` (in the reducer's death sweep and at the fight's end) now drops a weapon left in a target, keeping the item itself (rarity, name, durability). My test for it now kills the target through the reducer, not `useTechnique` directly, so the sweep runs.
+
+## Later: the melee technique effects
+
+Leon asked for new effects for the melee techniques (10 Nov 2026). The design is [`physical-2.0-A-FX.md`](physical-2.0-A-FX.md) and the build, with why he asked, is [`physical-2.0-A-FX-RESULT.md`](physical-2.0-A-FX-RESULT.md). The engine side is one new event, `melee_fx`, emitted from `melee/*` only.

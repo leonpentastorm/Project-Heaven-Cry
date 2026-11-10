@@ -20,6 +20,7 @@ import { type Combat, type Unit, alive, xy, key, keyOf, refOf, dist, lineOfSight
 import { throwRangeOf } from '../../tactics';
 import { PHYS_RULES, weaponPhys } from '../data';
 import { save, stop, forceMove, setUp, momentumOf, chainOf, canStrike, loseWeapon } from '../core';
+import { meleeFx, fxMark, movedSince, refuseFx } from './shared';
 import type { Tech } from './shared';
 
 /** args.tile as a tile key ("x,y"); the reducer already turns a map reference into one, a direct call may not. */
@@ -73,6 +74,7 @@ technique({
       if (struck.some((v) => v.side === t.u.side)) t.note('Allies in the arc are struck too.');
     }
     const mult = t.num('mult', 0.7);
+    meleeFx(t, 'arc', { tiles, struck: struck.map((v) => v.id), dir: dir || null, heavy: p === 'heavy' });
     for (const v of struck) {
       if (!alive(t.u)) break;
       if (!alive(v)) continue;
@@ -110,7 +112,9 @@ technique({
     if (t.preview || (r.hit && !r.killed && alive(v))) {
       if (!save(t, v, 'body')) {
         if (push) {
+          const mk = fxMark(t);
           stop(t, v, 'push', { tiles: t.num('heavy_push', 2), save: false });
+          const path = movedSince(t, v.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: v.id, path, how: 'push' });
           // the card shows where the push leaves it (stop's preview only writes a note)
           if (t.preview && !t.pv.moves?.some((m) => m.unit === v.id)) forceMove(t, v, 'away', t.num('heavy_push', 2));
         }
@@ -143,6 +147,7 @@ technique({
     if (t.preview) { t.note('On a hit: ' + v.name + '\'s armour ' + base + ' → ' + now + ' for the rest of the fight' + (broken ? ' (after the Break)' : '') + '.'); return null; }
     st.done = { ...(st.done || {}), [v.id]: true };
     if (broken) br!.cut = now; else v.armour = now;
+    meleeFx(t, 'sunder', { target: v.id, to: v.pos, was: base, now, broken });
     t.cb.log.push(v.name + '\'s armour is sundered to ' + now + (broken ? ' once the Break ends' : '') + ' (Sunder).');
     return null;
   },
@@ -169,11 +174,12 @@ technique({
     }
     if (t.preview) { previewMomentum(t, n); if (p === 'bare') t.note('Each hit after the first: +' + t.num('bare_bonus', 1) + ' to the save your next Bind or Throw Down against it this turn forces.'); }
     let hits = 0, last: Unit | null = null, lastHit: Unit | null = null;
+    const fx = meleeFx(t, 'flurry', { targets: targets.map((v) => v.id), tiles: targets.map((v) => v.pos), strikes: n, thrown, weapon: t.weaponId });
     for (let i = 0; i < n; i++) {
       let v = targets[i % targets.length];
       if (!t.preview) { if (!alive(t.u)) break; if (!alive(v)) { const o = targets.find((x) => alive(x)); if (!o) break; v = o; } }
       const r = strike(t, { target: v, mult, extra: i ? later : 0, label: 'Flurry', ...(thrown ? { thrown: true } : {}) });
-      if (!r.ok) { if (i === 0) return r.why || 'Can\'t attack that.'; continue; }
+      if (!r.ok) { if (i === 0) { refuseFx(fx); return r.why || 'Can\'t attack that.'; } continue; }
       last = v; if (r.hit) { hits++; lastHit = r.target || v; }
     }
     // the mark goes on the unit really struck (a redirect); Bind and Throw Down read it (melee/shared setUpBonus)

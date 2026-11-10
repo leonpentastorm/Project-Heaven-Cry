@@ -1,7 +1,7 @@
 // Physical 2.0, melee Answers: reactions. The core calls `react` on the hook for every unit that has the Answer usable;
 // the handler checks the trigger and calls answer(), which spends the reaction. Riposte is the lead's reference; the
 // melee lane builds Parry and Keep Back here.
-import { technique, strike, canStrike, answer, canAnswer, landed, stop, onHook } from './shared';
+import { technique, strike, canStrike, answer, canAnswer, landed, stop, onHook, meleeFx, fallFx } from './shared';
 import type { Tech } from './shared';
 import type { StrikeOpts } from '../types';
 import { alive, active, dist, type Unit } from '../../combat';
@@ -69,6 +69,7 @@ technique({
         const shield = heavy && shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, bonus = attackSkill(t) + shield;
         const r = d20(t.rng), total = r + bonus, won = total > vs;
         t.cb.log.push(t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': d20 ' + r + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + (shield ? ' (incl. +' + shield + ' shield)' : '') + ' = ' + total + ' vs ' + vs + (won ? ' · the hit is halved' : ' · it gets through') + '.');
+        meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won });
         if (!won) return;
         ctx.dmg = ctx.dmg * t.num('halve', 0.5);
         if (t.line('light')) landed(t, t.num('light_momentum', 1));
@@ -99,7 +100,9 @@ technique({
         const r = strike(t, { target: m, reach });
         const v = r.target || m; // the unit really struck (a redirect): only the mover itself can be stopped on its walk
         if (!r.hit || !alive(v)) return;
-        if (stop(t, v, t.line('hook') ? ['halt', 'prone'] : 'halt', { save: ['body'] }) && v === m) ctx.stop = 'kept back';
+        const wasProne = !!v.prone, held = stop(t, v, t.line('hook') ? ['halt', 'prone'] : 'halt', { save: ['body'] });
+        if (held) { meleeFx(t, 'halt', { target: v.id, to: v.pos, reach }); fallFx(t, v, wasProne); }
+        if (held && v === m) ctx.stop = 'kept back';
       });
     },
   },
