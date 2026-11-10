@@ -67,6 +67,8 @@ describe('the Narrator and faith', () => {
     // about $0.00005 more a warm turn.
     // Sigil 1.5 / Outburst 4.0 in actions[] (a pump's feeling, a draw's stroke, revert; merge review, 9 Nov 2026) brought
     // it to about 25.04k from 24.98k: the cap moves to 25.1k on purpose.
-    expect(e.stable).toBeLessThan(25100);
+    // Physical 2.0 (rules 1.12): the WEAPON TECHNIQUES paragraph and each character's ready techniques, about 0.15k:
+    // the cap moves to 25.3k on purpose.
+    expect(e.stable).toBeLessThan(25300);
   });
 });
