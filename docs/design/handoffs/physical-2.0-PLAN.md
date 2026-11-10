@@ -67,11 +67,12 @@ The proposals leave these open. They are in the spec as provisional items.
 10. **Enemies** have Momentum (cap 3) and can be Pressed, Suppressed and Broken. They use techniques from a short list on their stat block.
 11. **Pressure and Momentum exist in fights only,** not on the area map.
 12. **The quiver** (Leon): a bow's quiver is loaded from a menu out of a fight, up to the weapon's capacity, in any mix of arrow types you carry. In a fight you pick the type for each shot from what is loaded. A bow can't be reloaded in a fight.
-13. **Becoming Pressed drops a held Watch.** A Watch can't be set while Pressed (the proposal); the lead adds that reaching Pressed ends one already held. It is how a held lane is taken back: Suppress the watcher.
+13. **Becoming Pressed drops a held Watch** (confirmed by Leon). A Watch can't be set while Pressed (the proposal); reaching Pressed ends one already held. It is how a held lane is taken back: Suppress the watcher.
 14. **Suppress gives 2 Pressure in all on a hit,** not 2 on top of the ordinary 1 (the proposal's example turn ends at Pressure 2). A technique that states its own Pressure for a hit replaces the ordinary +1 (`noPressure` on its strike, then `addPressure`).
 15. **A Take's own hit adds no Pressure.** The core lowers the target by 2 after the effect.
 16. **The fall of Pressure at a turn's end is one number, not a sum:** 2 if the unit is in cover and unseen, or ended closer to the nearest enemy than it began; otherwise 1.
 17. **The first melee technique of a turn earns no variety bonus** (there is no last technique to differ from). An off-turn strike (Riposte) starts no chain.
+19. **The Parlour pistol teaches Crossfire** (confirmed by Leon): Warning Shot can't be used with a Silent weapon. **Weapon mastery is retired** with its attack bonus (confirmed by Leon): drill replaces it.
 18. **A handler that refuses must refuse before it changes anything.** The core runs the preview first and refuses on what it says, so a refusal costs nothing; a `run` that still returns a refusal gets its AP back.
 
 ## 5. The contract

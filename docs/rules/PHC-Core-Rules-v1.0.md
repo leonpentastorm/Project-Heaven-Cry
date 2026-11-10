@@ -855,7 +855,7 @@ Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanc
 
 ### Weapon mastery
 
-> **Rules 1.12:** drill (Physical techniques, below) takes weapon mastery's place: a bar per weapon, three marks, techniques for rewards. The table below is kept until Leon confirms what happens to its attack bonus (item 947).
+> **Rules 1.12:** drill (Physical techniques, below) takes weapon mastery's place: a bar per weapon, three marks, techniques for rewards. The kills table, its attack bonus and the weapon perks below are **retired** (Leon, 10 Nov 2026; item 947) and kept here for reference only.
 
 Weapon mastery is the second way a character grows, beside character level. It's tracked by **kills**, separately for each of ten weapon families:
 
@@ -4903,12 +4903,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 940. **What everyone knows, and creation's picks:** Cut, Shot, Aimed Shot, Overwatch; 2 melee picks (one an Opener) with Raw Power or Athletics, 2 ranged with Dexterity; the defaults are Lunge and Sidestep, Suppress and Shift.
 941. **A weapon lends its signature while held; Auto weapons always offer Burst and Rake** (the lead's readings of Leon's "cards you drag into your weapon").
 942. **Off its home:** −2 to hit and no property line, for the techniques marked particular (Leon: "work a bit worse if not used on the right weapon class").
-943. **Becoming Pressed ends a held Watch** (the lead's reading; the proposal only says one can't be set while Pressed). *Leon to confirm.*
+943. **Becoming Pressed ends a held Watch** (confirmed by Leon, 10 Nov 2026; the proposal only said one can't be set while Pressed): a held lane is taken back by suppressing the watcher.
 944. **A technique's own Pressure replaces the ordinary +1** (Suppress: 2 in all on a hit, 1 on a miss), and **a Take's hit adds none** (the lead's readings).
 945. **Every technique's own numbers** (`numbers` on each of the 58 in techniques.json: to-hit bonuses, damage multipliers, tiles, rounds, durations) are placeholders, flagged `provisional: true`, for the balance pass after every Body system is in.
 946. **Damage follows what the weapon is aimed with** (Leon, 10 Nov 2026, melee answer 4): a weapon attack's multiplier is 1 + 0.1 × (the `scales_with` Attribute − 1) + 0.05 × the `hits_with` skill, in place of Strength and Raw Power for every weapon. Bare weapons use Strength and add 0.05 × both Raw Power and Athletics (answer 5). The 0.1 and 0.05 are the old physical multiplier's, kept as placeholders. Perks and traits that raise physical damage apply to every weapon as before. Enemies without a character sheet have no multiplier, as before.
-947. **Weapon mastery** (kills per weapon family, attack bonus +1 / +2, three perks) is replaced by drill. *Leon to confirm that the attack bonus goes too; the engine never applied it.*
+947. **Weapon mastery** (kills per weapon family, attack bonus +1 / +2, three perks) is replaced by drill. The attack bonus goes with it (confirmed by Leon, 10 Nov 2026; the engine never applied it).
 948. **The old Suppressed condition** (item 83: −1 AP and no reactions, from Spray and Pray and other perks) stays beside Pressure until it is moved onto Pressure 3; the two AP losses don't add.
 949. **The quiver** (Leon, 10 Nov 2026): loaded from a menu out of a fight, any mix of arrow types up to capacity, the type named per shot, no reload in a fight. Crossbows keep their reload.
 950. **Enemies** have Momentum and Pressure and use techniques: the free ones, what their weapon lends, and their tier's list (enemies.json `techniques`). First lists, to grow as the techniques are built: a minion none (plain attacks only, whatever its weapon lends); a soldier Lunge, Suppress; an elite Lunge, Coup, Riposte, Suppress, Dead Centre; a boss the elite's and Deny. Where an enemy would make a plain attack it uses the technique its handler scores highest, if that beats a plain attack (5); the scores are in the handlers (`ai`). Analyze reads the technique as the intent.
-951. **The Parlour pistol teaches Crossfire,** not Warning Shot as the ranged proposal's table had it: Warning Shot is not available with a Silent weapon, so the pistol could never use its own signature (found in review, 10 Nov 2026). *Leon to confirm the pick.* **Dead Centre's home is Precise or Drawn** (the proposal names bows the best at Takes; with Precise alone its Drawn line could never apply). The validator now refuses both kinds of conflict.
+951. **The Parlour pistol teaches Crossfire,** not Warning Shot as the ranged proposal's table had it: Warning Shot is not available with a Silent weapon, so the pistol could never use its own signature (found in review; the pick confirmed by Leon, 10 Nov 2026). **Dead Centre's home is Precise or Drawn** (the proposal names bows the best at Takes; with Precise alone its Drawn line could never apply). The validator now refuses both kinds of conflict.
