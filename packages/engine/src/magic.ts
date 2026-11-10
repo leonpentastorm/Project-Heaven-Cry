@@ -197,7 +197,7 @@ const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, b
 export const condIsBoon = (id: string) => !!CONDS[condId(id)]?.boon;
 export function unitSave(u: Unit, fam: Fam): number {
   const base = u.sv ? u.sv[fam] : u.mg ? u.mg.saves[fam] : TIER_SAVE[u.tier || 'minion'] ?? 0;
-  return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'charisma') : fam === 'heart' ? condSkillMod(u, 'composure') : 0) + residueStand(liveCb(), u, 'save');
+  return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'rumination') : fam === 'heart' ? condSkillMod(u, 'composure') : 0) /* rules 1.13: the Brain save's skill is Rumination, so only the Left Brain Debuff lowers it */ + residueStand(liveCb(), u, 'save');
 }
 /** Conditions on skill rolls (spec): Left Brain Debuff −2 on Mind skills, Right Brain Debuff −2 on Expression and Soul
  * skills. Reaches every d20 that uses the skill (attacks, Sigil and Soul strikes, saves). */
