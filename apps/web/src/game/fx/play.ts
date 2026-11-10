@@ -10,6 +10,7 @@ import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
+import { wrapRanged, rangedBeat } from './ranged';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
@@ -1135,6 +1136,8 @@ Object.assign(H, worldHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play }
 Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, dust, corners, glitch, condWord }));
 // Physical 2.0 (fx/physical.ts): techniques, Momentum, Pressure, held Watches, Stopped, drill.
 Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, nameOf: (id) => (phys.TECHNIQUE as any)[id]?.name || id }));
+// Physical 2.0 B (fx/ranged.ts): the ranged techniques, the quiver and thrown weapons; it wraps the handlers above.
+wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners });
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
@@ -1146,6 +1149,7 @@ function baseBeat(e: FxEvent): number {
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
+  const rb = rangedBeat(e); if (rb !== undefined) return rb;
   const pb = physBeat(e); if (pb !== undefined) return pb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
   const wb = worldBeat(e); if (wb !== undefined) return wb;

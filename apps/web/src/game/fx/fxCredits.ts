@@ -5,6 +5,7 @@ export const FX_CREDITS: Credit[] = [
   { what: 'Sunbursts / 2D Rays (the Miracle cut-in\'s light rays; softened and faded at the rim)', who: 'simranzenov', licence: 'CC0', url: 'https://opengameart.org/content/sunbursts-2d-rays' },
   { what: 'Smoke Particles (explosions, fire flashes, smoke, puffs)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/smoke-particles' },
   { what: 'Splat Pack (blood marks)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/splat-pack' },
+  { what: 'Earth Impact - Magic Effect (cover debris: the splinter-and-chip burst and the flying chips when a shot strikes or punches through cover; recoloured to white so the game tints it by cover)', who: 'Cethiel', licence: 'CC0', url: 'https://opengameart.org/content/earth-impact-magic-effect' },
   { what: 'Tracers, timer rings, Sigil squares, glyph strokes and Soul motes', who: 'drawn in the game (SVG and CSS)' },
   { what: 'Element effects (fire, frost, shock, stone, gale, spark, acid: impacts, trails, standing fields), Sigil beams, lobs, chains, traps, turrets, walls and boons', who: 'drawn in the game (SVG and CSS) over the sprites above' },
 ];
