@@ -166,13 +166,8 @@ technique({
 // A weapon left in a target (Run Through, Reach) falls into the pile on its tile when the target is Downed or killed:
 // "until someone pulls it out" never leaves it lost with the body. (Surrender, or a fight ending with the unit still
 // nailed: a request for the lead.)
-onHook('on_downed', (ctx: any) => {
-  const v: Unit | undefined = ctx.victim, cb: Combat | undefined = ctx.cb, n = v?.nailed;
-  if (!v || !cb || !n || n.id !== 'run_through' || !n.weapon || !WEAPON[n.weapon]) return;
-  const w = n.weapon; delete v.nailed;
-  dropToPile(cb, v.pos, [{ id: w, name: WEAPON[w].name, qty: 1, kind: 'weapon', weapon: w } as any], 'drop');
-  cb.log.push('The ' + WEAPON[w].name.toLowerCase() + ' falls from ' + v.name + ' at ' + refOf(v.pos) + '.');
-});
+// A weapon left in a nailed target falls when it is downed or the fight ends: the core's dropNailed (combat.ts) does it, keeping the item (rarity, durability).
+
 // 24. Throw Down: only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per
 //     Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.
 //     Bare: no roll needed. Heavy: you may throw it 2 tiles.

@@ -194,7 +194,8 @@ describe('Finishers', () => {
     rig({ hit: true, die: 12 });
     expect(f.tech('run_through', { targetId: f.foe.id, line: 'reach', opt: 'leave' })).toBeNull();
     expect(f.unit(f.foe.id).nailed).toMatchObject({ weapon: 'lance' });
-    f.unit(f.foe.id).hp = 1; f.turn(f.pcs[1]); expect(f.use(f.pcs[1], 'cut', { targetId: f.foe.id })).toBeNull();
+    f.unit(f.foe.id).hp = 1; f.turn(f.pcs[1]); rig({ hit: true, die: 12 }); expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); // through the reducer, whose death sweep drops it (dropNailed)
+    expect(f.unit(f.foe.id).dead).toBe(true);
     expect(pileAt(f, f.tile('D5'))).toContain('lance'); expect(f.unit(f.foe.id).nailed).toBeFalsy();
   });
   it('Break (Blunt) then an ally\'s Sunder: the armour mends to the sundered value', () => {

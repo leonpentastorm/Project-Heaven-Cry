@@ -150,7 +150,11 @@ All of these techniques have `"numbers": {}` in the data today. The code uses th
 
 ## Checks
 
-- `npm test -w @phc/engine`: 90 files, 2091 passed, 1 skipped, 1 failed (request 1).
-- `npm test -w @phc/web`: 641 passed, 2 skipped.
+After merging the base at its latest (`29a06d6`, the core services' "thirteen fixes from the second review"):
+
+- `npm test -w @phc/engine`: 90 files, 2100 passed, 1 skipped, 1 failed: the lead's `phys-core.test.ts` expects Sidestep to be `NOT_BUILT` (request 1).
+- `npm test -w @phc/web`: 647 passed, 2 skipped.
 - `npx tsc --noEmit`: clean in `packages/engine` and in `apps/web`.
 - `python3 tools/validate.py data`: 0 errors, 0 warnings.
+
+**With that base merge:** Run Through's own `on_downed` hook is gone. The base's `dropNailed` (in the reducer's death sweep and at the fight's end) now drops a weapon left in a target, keeping the item itself (rarity, name, durability). My test for it now kills the target through the reducer, not `useTechnique` directly, so the sweep runs.
