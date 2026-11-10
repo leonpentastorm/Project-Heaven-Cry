@@ -232,11 +232,23 @@ describe('Drag (19)', () => {
   it('a save holds it', () => {
     const f = fight('sabre'); strong(f, f.foe); f.tech('drag', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(0);
   });
-  it('Hook: 2 tiles (with Reach, from 2 tiles away); it stops beside you', () => {
+  it('Hook: pulls from 2 tiles away, from 3 with Reach, up to 2 tiles; it stops beside you (Leon\'s ruling, 10 Nov 2026)', () => {
     const f = fight('glaive', { foes: [{ at: 'E7' }] }); weak(f, f.foe);
     const pv = f.pv('drag', { targetId: f.foe.id, line: 'hook' }); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('D7') }]);
     f.tech('drag', { targetId: f.foe.id, line: 'hook' }); expect(at(f, f.foe)).toBe(f.tile('D7'));
-    const g = fight('war_axe', { foes: [{ at: 'E7' }] }); expect(g.tech('drag', { targetId: g.foe.id })).toMatch(/next to you/); // Hook alone: no reach
+    // Hook alone reaches 2 tiles (the war axe has no Reach): 1 tile brings it beside you; 3 tiles away is too far
+    const g = fight('war_axe', { foes: [{ at: 'E7' }] }); weak(g, g.foe);
+    expect(g.pv('drag', { targetId: g.foe.id }).moves).toEqual([{ unit: g.foe.id, to: g.tile('D7') }]);
+    expect(g.tech('drag', { targetId: g.foe.id })).toBeNull(); expect(at(g, g.foe)).toBe(g.tile('D7')); expect(g.momentum(g.pc)).toBe(1);
+    const far = fight('war_axe', { foes: [{ at: 'F7' }] }); expect(far.tech('drag', { targetId: far.foe.id })).toMatch(/within 2 tiles/);
+    // Hook and Reach (the glaive): from 3 tiles away, and the pull is the Hook's 2 tiles
+    const h = fight('glaive', { foes: [{ at: 'F7' }] }); weak(h, h.foe);
+    expect(h.pv('drag', { targetId: h.foe.id, line: 'hook' }).moves).toEqual([{ unit: h.foe.id, to: h.tile('D7') }]);
+    expect(h.tech('drag', { targetId: h.foe.id, line: 'hook' })).toBeNull(); expect(at(h, h.foe)).toBe(h.tile('D7'));
+    expect(fight('glaive', { foes: [{ at: 'G7' }] }).tech('drag', { targetId: 'foe-0', line: 'hook' })).toMatch(/within 3 tiles/);
+    // no Hook: next to you only (the sabre), and Reach alone 2 tiles (the lance)
+    expect(fight('sabre', { foes: [{ at: 'E7' }] }).tech('drag', { targetId: 'foe-0' })).toMatch(/next to you/);
+    expect(fight('lance', { foes: [{ at: 'F7' }] }).tech('drag', { targetId: 'foe-0' })).toMatch(/within 2 tiles/);
   });
   it('Bare: you may move 1 tile and bring it with you', () => {
     const f = fight('fists'); weak(f, f.foe);

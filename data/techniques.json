@@ -207,7 +207,12 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "min_run": 3,
+        "per_tile_pct": 10,
+        "max_pct": 50,
+        "point_armour": 5
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -243,7 +248,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 3,
+        "light_save": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -319,7 +327,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "momentum": 2,
+        "point_crit_min": 18,
+        "bare_rounds": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -409,7 +421,10 @@
         "edge"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "mult": 0.7,
+        "reach_out": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "tile"
@@ -452,7 +467,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "mult": 0.5,
+        "heavy_push": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -490,7 +508,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "mult": 0.7,
+        "lower": 5,
+        "blunt_hook_lower": 10
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -532,7 +554,14 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "mult": 0.6,
+        "strikes": 2,
+        "light_strikes": 3,
+        "later_hit": -1,
+        "bare_bonus": 1,
+        "thrown_targets": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -574,7 +603,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "damage_mult": 0.7,
+        "slow_rounds": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -616,7 +648,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "range": 1,
+        "penalty": 2,
+        "heavy_penalty": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -660,7 +696,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "damage_mult": 0.8,
+        "armour_ignore": 10
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy",
@@ -700,7 +739,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "unthrown_hit": 2,
+        "unthrown_mult": 0.7
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -730,7 +772,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "tiles": 1,
+        "light_tiles": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "tile"
@@ -766,7 +811,9 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "defense": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "self"
@@ -804,7 +851,12 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "range": 1,
+        "reach_range": 2,
+        "tiles": 1,
+        "heavy_tiles": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -842,7 +894,9 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "save_penalty": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -865,7 +919,7 @@
           "props": [
             "hook"
           ],
-          "text": "2 tiles, and from 2 tiles away with Reach."
+          "text": "you pull from 2 tiles away (3 with Reach), up to 2 tiles."
         },
         {
           "props": [
@@ -878,7 +932,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "tiles": 1,
+        "hook_tiles": 2,
+        "hook_reach": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -961,7 +1019,10 @@
         "edge"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "adjacent": 1,
+        "heavy_apart": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -999,7 +1060,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "save_per_momentum": 1,
+        "stun_rounds": 1,
+        "armour_rounds": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1030,7 +1095,7 @@
           "props": [
             "reach"
           ],
-          "text": "you may leave the weapon in (you are unarmed; the target stays Pinned until someone pulls it out for 2 AP). Without Point: −2 to hit."
+          "text": "you may leave the weapon in (you are unarmed; the target stays Pinned until anyone next to it pulls it out for 2 AP; you, or anyone not on its side, take it into a free hand). Without Point: −2 to hit."
         }
       ],
       "free": false,
@@ -1040,7 +1105,12 @@
         "reach"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "per_momentum_pct": 20,
+        "point_behind_pct": 50,
+        "reach_no_point_hit": 2,
+        "pull_free_ap": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1081,7 +1151,12 @@
         "bare"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "per_momentum_pct": 25,
+        "tiles": 1,
+        "heavy_tiles": 2,
+        "occupant_pct": 50
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy+tile"
@@ -1097,7 +1172,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Roll your attack skill against the attacker's total. If you win, the hit is halved.",
+      "text": "Roll your attack skill against the attacker's total. If you win, the hit is halved. A shield in the off hand adds +2.",
       "trigger": "a melee attack hits you",
       "lines": [
         {
@@ -1110,14 +1185,19 @@
           "props": [
             "heavy"
           ],
-          "text": "you may parry for an adjacent ally. A shield in the off hand adds +2."
+          "text": "you may parry for an adjacent ally."
         }
       ],
       "free": false,
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "ally_reach": 1,
+        "shield_bonus": 2,
+        "halve": 0.5,
+        "light_momentum": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "none"
@@ -1187,7 +1267,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "reach_base": 1,
+        "reach_tiles": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "none"

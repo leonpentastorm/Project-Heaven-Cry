@@ -10,7 +10,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { unitSees, sideSees, pullFree, dropNailed, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, sideSees, pullFree, dropNailed, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -1358,7 +1358,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/prone': err = toggleProne(cb!, u); break;
     case 'combat/pull-free': { // rules 1.12: free yourself, or an ally next to you, from what nails them in place
       const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) : u; if (!t) fail('Pick who to free.');
-      err = pullFree(cb!, u, t!); break;
+      err = pullFree(cb!, u, t!, (it) => takeIntoHand(g, cb!, u, it)); break;
     }
     case 'combat/technique': {
       // Physical 2.0: the technique checks its own targets and tiles (an ally, a tile, several enemies); a tile may come as a map reference.
@@ -1532,7 +1532,7 @@ function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base:
   for (const k of GEAR_FRESH) { if (f[k] === undefined) delete x[k]; else x[k] = JSON.parse(JSON.stringify(f[k])); }
   const dDef = fresh.def - base.def, dArm = fresh.armour - base.armour, dMove = fresh.movement - base.movement, dVis = (fresh.vision || 12) - (base.vision || 12);
   if (dDef) u.def += dDef;
-  if (dArm) { u.armour = Math.max(0, u.armour + dArm); if (u.baseArmour != null) u.baseArmour += dArm; }
+  if (dArm) { setEffectiveArmour(u, effectiveArmour(u) + dArm); if (u.baseArmour != null) u.baseArmour += dArm; } // under a Break (rules 1.12) the change goes to what the Break gives back
   if (dMove) { if (u.conds?.slowed && u.baseMove != null) { u.baseMove += dMove; u.movement = u.baseMove / 2; } else { u.movement = Math.max(0.5, u.movement + dMove); if (u.baseMove != null) u.baseMove += dMove; } }
   if (dVis) { if (u.baseVision != null) u.baseVision += dVis; else u.vision = Math.max(1, (u.vision || 12) + dVis); }
   // A focus counts only in a hand (item 630): what the hands hold now decides what this fighter can cast. Its store
@@ -1591,6 +1591,16 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   return null;
 }
 
+/** A character takes a weapon straight into a free hand (rules 1.12: one pulled out of a nailed target), through the
+ * same gear change a draw makes, free of AP. False: no free hand, or the draw refuses it (a skill it needs, a ban). */
+function takeIntoHand(g: GameState, cb: Combat, u: Combat['units'][number], it: PackItem): boolean {
+  const c = u.charId && !u.companion ? g.characters[u.charId] : null; if (!c) return false;
+  const mainFree = u.weapon === 'fists' || !WEAPON[u.weapon], to = mainFree ? 'main' : !u.offWeapon && !c.offHand && !twoHands(c, c.weapon) ? 'off' : null; if (!to) return false;
+  c.pack = [...packOf(c).map((x) => ({ ...x })), { ...it, qty: 1, _nail: 1 } as any];
+  const e = gearInFight(g, cb, u, c, { op: 'draw', item: c.pack.length - 1, to }, { free: true });
+  c.pack = packOf(c).filter((x: any) => !(e && x._nail)).map((x: any) => { const { _nail, ...rest } = x; void _nail; return rest; });
+  return !e;
+}
 // Physical 2.0 (rules 1.12): the technique core changes gear through the same path a player's gear change takes, for
 // the character behind the unit in the game bound for this action: a draw that is part of a technique (Draw Cut, Snap
 // Shot), and a weapon that leaves the hand (thrown, or left in a target).

@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, previewAttack, resolveAttack, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, heatLimit } from '../combat';
+import { type Combat, type Unit, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, heatLimit } from '../combat';
 import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -197,7 +197,8 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.group === 'watch' && (u as any).noWatch === cb.round) return 'Head down: no held shot this round.';
   if (def.group === 'take' && techStateOf(u, '_take').t === turnStamp(cb)) return 'One Take a turn.';
   if (def.needs.hidden && !u.hidden) return 'Only from Hidden.';
-  const ap = apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  const ap = apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
+  if (u.ap + encoreCredit(u, { type: 'combat/technique', id: def.id }, cb) < ap) return 'Needs ' + ap + ' AP.'; // Encore lends a repeat its AP (items 729, 737)
   const w = WEAPON[weaponId];
   if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
@@ -253,16 +254,19 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
       }
       let pv: ReturnType<typeof previewAttack>;
-      try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
+      try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil, ambush: !!o.ambush }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
       if (pv.ok && fires) st.rolls = (st.rolls || 0) + 1;
       if (t.preview && pv.ok && mode !== 'melee') (st.far ||= []).push(tgt.id); // a ranged or thrown roll: its hit gives Pressure (the card shows it)
       if (t.preview || !pv.ok) { u.attack = atk0; if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && fires && t.w.magazine != null && !u.infiniteAmmo) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
       const m0 = momentumOf(u), su = (u as any).setUp;
-      if (su && su.t === turnStamp(t.cb) && su.target === tgt.id) st.usedSetUp = true;
+      if (su && su.t === turnStamp(t.cb) && su.target === tgt.id && (!su.only || su.only.includes(t.def.id))) st.usedSetUp = true; // a mark for other techniques only is not spent by this one
       st.struck = (st.struck || 0) + 1;
       let r: ReturnType<typeof resolveAttack>;
       // a volley's rounds are numbered and named, as the engine's own burst and full auto are (Fire Discipline, Spray and Pray)
-      const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : 0, roll = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, noRecoil ? ({ noAp: true, vi } as any) : { free: true });
+      // tech: the weapon's old on-hit grant stays with the plain attacks (the free techniques); ambush: the engine's own
+      const how = { ...(o.ambush ? { ambush: true } : {}), ...(t.def.free ? {} : { tech: t.def.id }) };
+      const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : 0, roll0 = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, noRecoil ? ({ noAp: true, vi, ...how } as any) : { free: true, ...how });
+      const roll = o.chain ? () => asChain(roll0) : roll0;
       try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
       if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
       if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
@@ -358,19 +362,28 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
   if (ranged && stoppedNow(target)) { t.note(target.name + ' can\'t be stopped again this round.'); return false; }
   const sv = opts.save === undefined ? 'default' : opts.save;
   if (sv !== false && save(t, target, sv === 'default' ? PHYS_RULES.stop_save : sv, opts.tnAdd || 0)) return false;
-  if (t.preview) { t.note(target.name + ': ' + list.map((h) => (h === 'push' ? 'pushed ' + (opts.tiles || 1) : h === 'halt' ? 'stopped' : h)).join(', ') + (opts.apLoss ? ', −' + opts.apLoss + ' AP next turn' : '') + '.'); return true; }
+  if (t.preview) {
+    t.note(target.name + ': ' + list.map((h) => (h === 'push' ? 'pushed ' + (opts.tiles || 1) : h === 'halt' ? 'stopped' : h)).join(', ') + (opts.apLoss ? ', −' + opts.apLoss + ' AP next turn' : '') + '.');
+    if (list.includes('push')) forceMove(t, target, 'away', opts.tiles || 1, { from: opts.from }); // where the push would leave it (pv.moves)
+    return true;
+  }
+  const took: StopHow[] = [];
   for (const h of list) {
+    // a push that moved nobody (blocked, or an item held it firm) didn't happen: it isn't logged or counted
+    if (h === 'push') { if (forceMove(t, target, 'away', opts.tiles || 1, { from: opts.from }) > 0) took.push(h); continue; }
+    took.push(h);
     if (h === 'pinned' && opts.untilAp) target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : {}) };
     else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true } as any);
     else if (h === 'prone') { if (!target.prone) { target.prone = true; target.braced = false; emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); } }
-    else if (h === 'push') forceMove(t, target, 'away', opts.tiles || 1, { from: opts.from });
   }
   if (opts.apLoss) apDebt(target, opts.apLoss);
+  if (!took.length && !opts.apLoss) return false;
   // Stopped once: until the end of the target's next turn (rules.ts ticks it down at each of its turn ends; stopped on
   // its own turn by a Watch, this turn's end is the first tick).
   if (ranged) (target as any).stopped = active(t.cb) === target ? 2 : 1;
-  emitFx(t.cb, 'stopped', { unit: target.id, how: list.join('+'), by: t.u.id });
-  t.cb.log.push(target.name + ' is ' + list.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
+  if (!took.length) return true; // only the AP loss landed
+  emitFx(t.cb, 'stopped', { unit: target.id, how: took.join('+'), by: t.u.id });
+  t.cb.log.push(target.name + ' is ' + took.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
   return true;
 }
 export type StopHow = 'pinned' | 'push' | 'prone' | 'halt';

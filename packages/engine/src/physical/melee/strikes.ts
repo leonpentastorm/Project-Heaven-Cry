@@ -75,10 +75,11 @@ technique({
     }
     const mult = t.num('mult', 0.7);
     const fx = meleeFx(t, 'arc', { tiles, struck: struck.map((v) => v.id), dir: dir || null, heavy: p === 'heavy' });
+    let made = 0;
     for (const v of struck) {
       if (!alive(t.u)) break;
       if (!alive(v)) continue;
-      const r = strike(t, { target: v, mult, label: 'Sweep' });
+      const r = strike(t, { target: v, mult, label: 'Sweep', chain: made++ > 0 }); // the later strikes play at the chained beat
       if (r.hit && r.crit && !r.killed && p === 'edge') cond(t, r.target || v, 'bleeding'); // the unit really struck
     }
     upto(t, fx);
@@ -116,8 +117,6 @@ technique({
           const mk = fxMark(t);
           stop(t, v, 'push', { tiles: t.num('heavy_push', 2), save: false });
           const path = movedSince(t, v.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: v.id, path, how: 'push' });
-          // the card shows where the push leaves it (stop's preview only writes a note)
-          if (t.preview && !t.pv.moves?.some((m) => m.unit === v.id)) forceMove(t, v, 'away', t.num('heavy_push', 2));
         }
         else cond(t, v, 'dazed');
       }
@@ -179,7 +178,7 @@ technique({
     for (let i = 0; i < n; i++) {
       let v = targets[i % targets.length];
       if (!t.preview) { if (!alive(t.u)) break; if (!alive(v)) { const o = targets.find((x) => alive(x)); if (!o) break; v = o; } }
-      const r = strike(t, { target: v, mult, extra: i ? later : 0, label: 'Flurry', ...(thrown ? { thrown: true } : {}) });
+      const r = strike(t, { target: v, mult, extra: i ? later : 0, label: 'Flurry', chain: i > 0, ...(thrown ? { thrown: true } : {}) });
       if (!r.ok) { if (i === 0) { refuseFx(fx); return r.why || 'Can\'t attack that.'; } continue; }
       last = v; if (r.hit) { hits++; lastHit = r.target || v; }
     }

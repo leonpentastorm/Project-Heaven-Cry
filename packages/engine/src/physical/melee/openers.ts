@@ -172,12 +172,12 @@ technique({
   },
   run(t) {
     const tgt = t.tgt!, p = t.line('edge', 'light');
-    // an ambush the engine doesn't already give (it does from Hidden): its multiplier and criticals, named on the card
-    const amb = p === 'light' && !hasActed(t.cb, tgt) && !ambushReady(t.u);
-    const opts = { mult: amb ? t.u.ambushMult || 1.5 : 1, critMin: amb ? 19 : undefined, label: amb ? 'ambush (Draw Cut)' : 'Draw Cut' };
+    // Light: the engine's own ambush (its multiplier, criticals on 19-20, and everything that reads an ambush)
+    const amb = p === 'light' && !hasActed(t.cb, tgt);
+    const opts = { ambush: amb, label: 'Draw Cut' };
     if (t.preview) {
       t.note('Draws the ' + t.w.name + ' from the pack.');
-      const r = strike(t, { ...opts, mult: ambushReady(t.u) ? t.u.ambushMult || 1.5 : opts.mult });
+      const r = strike(t, { ...opts, ambush: amb || ambushReady(t.u) }); // from Hidden the engine ambushes anyway: the card shows it
       if (!r.ok) return r.why || 'Can\'t attack that.';
       if (p === 'edge') t.note('On a hit: ' + tgt.name + ' is Bleeding.');
       return null;
@@ -211,10 +211,9 @@ technique({
       landed(t, gain);
       return null;
     }
-    const ready = ambushReady(t.u), mult = t.u.ambushMult || 1.5;
     const fx = meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: false });
-    // from a fresh Hidden entry the engine applies the multiplier itself (its preview doesn't show it: the card adds it)
-    const r = strike(t, { mult: ready && !t.preview ? 1 : mult, critMin: p === 'point' ? t.num('point_crit_min', 18) : ready ? undefined : 19, label: 'ambush' });
+    // the engine's own ambush, also when this Hidden entry's is already spent (only a fresh one is used up)
+    const r = strike(t, { ambush: true, critMin: p === 'point' ? t.num('point_crit_min', 18) : undefined, label: 'ambush' });
     if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t attack that.'; }
     if (t.preview) { const max = t.u.resMax?.momentum ?? PHYS_RULES.momentum.max, now = momentumOf(t.u); t.pv.momentum = { now, after: Math.min(max, now + gain) }; t.note('On a hit: +' + gain + ' Momentum.'); return null; }
     if (r.hit) landed(t, gain - 1); // the hit gave the first

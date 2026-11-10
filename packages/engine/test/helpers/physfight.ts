@@ -33,7 +33,7 @@ export function physFight(specs: PhysSpec[] = [{}], foes: FoeSpec[] = [{}], o: {
     if (s.known) { p.known = [...s.known]; p.ready = { melee: s.known.filter((id) => phys.TECHNIQUE[id]?.system === 'melee'), ranged: s.known.filter((id) => phys.TECHNIQUE[id]?.system === 'ranged') }; (p as any).uncapped = true; }
     if (s.ready) p.ready = { melee: s.ready.melee || [], ranged: s.ready.ranged || [] };
     if (s.drill) p.drill = { ...s.drill };
-    if (s.off) { u.offWeapon = s.off; u.offAmmo = WEAPON[s.off]?.magazine ?? 0; }
+    if (s.off) { u.offWeapon = s.off; u.offAmmo = WEAPON[s.off]?.magazine ?? 0; c.offHand = { id: s.off, ...(WEAPON[s.off]?.magazine != null ? { loaded: WEAPON[s.off].magazine } : {}) } as any; } // on the sheet too: the gear service drops and stows what the character holds
   });
   const tile = (ref: string) => (/^\d+,\d+$/.test(ref) ? ref : keyOf(ref, f.cb.map) || ref);
   const api = Object.assign(f, {

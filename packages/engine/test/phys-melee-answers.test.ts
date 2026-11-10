@@ -60,13 +60,13 @@ describe('Parry', () => {
     expect(swing(f, f.pcs[1])).toBe(Math.floor(whole / 2));
     expect(answered(f, 'Parry')).toBe(1); expect(f.unit(f.pcs[1].id).reactUsed?.n).toBe(1); expect(f.pc.reactUsed?.n ?? 0).toBe(0);
   });
-  it('Heavy: a shield in the off hand adds +2 to the parry roll; without Heavy it adds nothing', () => {
+  it('a shield in the off hand adds +2 to the parry roll, with any weapon (Leon\'s ruling, 10 Nov 2026)', () => {
     const bonus = (weapon: string, shield: boolean) => {
       const f = fight(weapon); if (shield) f.char(f.pc).offHand = { id: 'riot_shield' } as any;
       swing(f); const m = parries(f)[0].match(/d20 (\d+) ([+−])(\d+)/)!; return (m[2] === '−' ? -1 : 1) * Number(m[3]);
     };
     expect(bonus('ork_machete', true) - bonus('ork_machete', false)).toBe(2);
-    expect(bonus('sabre', true) - bonus('sabre', false)).toBe(0);
+    expect(bonus('sabre', true) - bonus('sabre', false)).toBe(2);
   });
   it('protective: it works while Suppressed (Riposte does not)', () => {
     const f = fight('bot_thread_banner'); f.press(f.pc, 3, f.foe); swing(f); expect(answered(f, 'Parry')).toBe(1);

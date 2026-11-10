@@ -59,6 +59,13 @@ export interface StrikeOpts {
   /** this roll is one of a volley: no Recoil on it (the technique's own penalty per round stands in). Named 'burst' or
    * 'auto', the items written for the engine's burst and full auto see it as one (ctx.volley, ctx.vi) */
   volley?: boolean | 'burst' | 'auto';
+  /** a later strike of one use (Sweep, Cleave, Flurry): its event carries the engine's chain flag, so it plays at the
+   * chained beat. No volley is named: items see it as an attack of its own. */
+  chain?: boolean;
+  /** this strike is an ambush whatever the user's Hidden state (Draw Cut's Light line, Ambush): criticals on 19-20, the
+   * user's Ambush multiplier, and everything that reads an ambush (the target's Ambush damage taken, Always Up…). Only
+   * an ambush from a fresh Hidden entry uses that entry's ambush. */
+  ambush?: boolean;
 }
 export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null;
   /** the attack was answered before it was made and never came (not a miss): return at once, with no riders */ cancelled?: boolean }

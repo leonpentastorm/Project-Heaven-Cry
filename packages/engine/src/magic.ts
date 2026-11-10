@@ -143,6 +143,7 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
  * 1.9: the same sweep rolls each death's drops (loot.ts) on the fight's dice, so it happens exactly once per death; the
  * area map's throwaway fight rolls none (item 697). */
 export function noteDeaths(cb: Combat, rng?: Rng) {
+  for (const u of cb.units) if (u.nailed && u.surrendered) dropNailed(cb, u); // rules 1.12: a unit that gave up (or was subdued, or lifted out) lets go of a weapon left in it
   const seen = new Set(cb.deadSeen || []);
   for (const u of cb.units) if (u.dead && !seen.has(u.id)) {
     seen.add(u.id); cb.deadSeen = [...seen];

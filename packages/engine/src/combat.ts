@@ -288,6 +288,9 @@ export const currentVolley = () => VOLLEY;
 /** Run attacks as one named volley (rules 1.12: a technique's Burst or Rake), so items that read ctx.volley and the
  * round's index (ctx.vi) see them as they see the engine's own burst and full auto. */
 export function asVolley<T>(name: string, f: () => T): T { return chained(f, name); }
+/** Run attacks as chained swings or shots of one use (rules 1.12: the later strikes of Sweep, Cleave and Flurry): their
+ * events carry chain: true, and no volley is named (items see each as an attack of its own). */
+export function asChain<T>(f: () => T): T { return chained(f); }
 /** A volley's AP through the items ('attack_preview' with the volley's mode and base AP; Southern Fist, Fire
  * Discipline: hooks gap A6/I2). */
 function volleyAp(cb: Combat, u: Unit, t: Unit | null, mode: string, base: number): number {
@@ -762,15 +765,33 @@ export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
 /** A weapon a melee strike is made with: a melee weapon, or one whose rules 1.12 system is melee though its category isn't
  * (the Evoker blade, the Emanator gauntlet, the banner, the grand staff). Any other weapon strikes in melee as fists. */
 export const meleeArm = (w: WeaponDef) => isMelee(w) || (w as any).phys?.system === 'melee';
+/** What an attack is made with. A melee-mode attack with a weapon that has no melee side is made with the fists; so is
+ * one by a unit that is Disarmed or whose weapon is lowered (the conditions forbid weapon attacks: rules 1.12, whatever
+ * put the condition there). Ranged and thrown attacks keep the weapon here: previewAttack refuses those itself. */
+export const strikeWeapon = (att: Unit, mode: string): WeaponDef => {
+  const w = WEAPON[att.weapon];
+  return mode === 'melee' && (!meleeArm(w) || (w !== WEAPON.fists && (condOn(att, 'disarmed') || condOn(att, 'lowered')))) ? WEAPON.fists : w;
+};
+/** A unit's armour as it is worn: what it shows now plus what a Break (rules 1.12, Blunt) is holding at 0 for a round. */
+export const effectiveArmour = (u: Unit): number => u.armour + (u.tech?.break?.cut ?? 0);
+/** Set the armour a unit wears. Under a Break the change goes to what the Break gives back (the armour stays 0 now). */
+export function setEffectiveArmour(u: Unit, n: number): void {
+  const br = u.tech?.break; n = Math.max(0, n);
+  if (br && br.cut != null) br.cut = n; else u.armour = n;
+}
 export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
   typeof w.damage === 'number' ? w.damage : w.damage?.within_4 ? (range <= 4 ? w.damage.within_4 : w.damage.within_8) : w.id === 'recurve_bow' ? 20 + 5 * rawPower : 20;
 export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? 3 : (w.ap_cost.single ?? 2));
 export const effectiveRange = (w: WeaponDef) => (typeof w.range_tiles === 'number' ? w.range_tiles : 8);
 
+const ENCORE_PLAIN: Record<string, string> = { shot: 'combat/attack:shot', aimed_shot: 'combat/attack:aimed', cut: 'combat/attack:melee', overwatch: 'combat/overwatch' };
 /** Encore's key for an action: its type and what it is (a perk's id, an attack's mode, a move's kind…), never its
  * target. Prayers, ending the turn and declining a window can't be repeated (null). */
 export function encoreKey(a: any): string | null {
   const t = String(a?.type || ''); if (!t.startsWith('combat/') || ['combat/pray', 'combat/end-turn', 'combat/decline'].includes(t)) return null;
+  // Rules 1.12: a free technique is the plain action it stands for (Shot is the shot, Aimed Shot the aimed shot, Cut the
+  // melee attack, Overwatch the overwatch), so either one repeats the other. Any other technique is itself, by its id.
+  if (t === 'combat/technique') { const plain = ENCORE_PLAIN[String(a.id)]; return plain || 'combat/technique:' + String(a.id || ''); }
   const what = t === 'combat/attack' ? a.mode || 'shot' : t === 'combat/move' ? a.how || 'move' : a.id ?? a.word ?? a.design ?? a.item ?? a.kind ?? a.hand ?? '';
   return t + (what ? ':' + what : '');
 }
@@ -791,8 +812,8 @@ export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: n
 /** 'thrown' (rules 1.12): the held weapon is thrown: a ranged attack at throwing range with line of sight and cover,
  * whatever the weapon is; no rounds, Heat or Recoil. Only a technique makes one (physical/core.ts strike). */
 export type AttackMode = 'shot' | 'aimed' | 'melee' | 'burst' | 'auto' | 'thrown';
-export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, opts: { extra?: number; free?: boolean; noRecoil?: boolean } = {}): AttackPreview {
-  const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = mode === 'melee' && !meleeArm(w) ? WEAPON.fists : w;
+export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, opts: { extra?: number; free?: boolean; noRecoil?: boolean; /** the attack is an ambush whatever the attacker's Hidden state (a technique's: its damage shows the Ambush multiplier) */ ambush?: boolean } = {}): AttackPreview {
+  const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = (w as any).grants?.effect || {};
   const ap0 = opts.free ? 0 : mode === 'burst' ? 3 : mode === 'auto' ? (fx.op === 'auto_ap' ? fx.value : 4) : mode === 'aimed' && fx.op === 'aimed_ap' ? fx.value : attackApCost(useW, mode === 'aimed' ? 'aimed' : mode === 'melee' ? 'melee' : 'shot');
   const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0; // rules 1.12: the Reach property, for a melee strike
@@ -849,7 +870,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const toHit = terms.reduce((t, x) => t + x.v, 0);
   const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
   const who = charFor(att);
-  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true }) };
+  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: !!opts.ambush && tgt.side !== att.side }) };
 }
 /** The live character behind a PC unit, when a game is bound (multipliers come from it). */
 const charFor = (u: Unit): Character | null => { const G = boundGameRef(); return (u.charId && G?.characters?.[u.charId]) || null; };
@@ -860,7 +881,7 @@ const charFor = (u: Unit): Character | null => { const G = boundGameRef(); retur
  * together and are capped at +100%, plan 6a-1; stackDamage). Special ammo (rules.json ammo_types), the Ambush
  * multiplier, Weakened and the target's Critical damage taken are applied here. */
 export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean } = {}) {
-  const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = mode === 'melee' && !meleeArm(w) ? WEAPON.fists : w;
+  const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? (att.dur ?? att.maxDur) <= att.maxDur * 0.25 : false;
   const bayonet = melee && useW === WEAPON.fists && hasMod(att.mods, 'mod_bayonet');
@@ -902,7 +923,9 @@ export function noteCrit(cb: Combat, by: Unit | null | undefined, tgt: Unit | nu
 }
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string;
   /** The attack was called and paid for but never made: a reaction to it took the attacker out, or cancelled it (a held shot that lands first, rules 1.12). */ cancelled?: boolean }
-export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean } = {}): AttackResult {
+export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean;
+  /** an ambush whatever the attacker's Hidden state (rules 1.12: Draw Cut's Light line, Ambush): criticals on 19-20, the Ambush multiplier, and everything that reads an ambush */ ambush?: boolean;
+  /** the technique this attack is a strike of, when it isn't one of the plain attacks (physical/core.ts leaves the free ones out: Cut, Shot, Aimed Shot, Overwatch). A weapon's old on-hit grant fires only on a plain attack */ tech?: string } = {}): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
   // Confused (spec): each attack has a 50% chance to go at someone at random (anyone else it could attack).
   if (condOn(att, 'confused') && die(rng, 2) === 1) {
@@ -928,7 +951,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     cb.log.push(line);
     return { roll: 0, total: 0, vs: 0, hit: false, crit: false, fumble: false, damage: 0, line, killed: false, refused: pv.why };
   }
-  const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = mode === 'melee' && !meleeArm(w) ? WEAPON.fists : w;
+  const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const attAt = att.pos, tgtAt = tgt.pos;
   att.ap -= pv.ap;
   if (att.mg) calmFight(cb, att); // rules 1.5, calming the heart: the first weapon attack of your turn eases 1 Strain
@@ -937,8 +960,8 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   // The die, then items: 'attack_roll' {att, tgt, mode, die, toHit, need, critMin, noFumble, hit?} (die may be rerolled,
   // critMin lowered; set hit to force the result).
   // An ambush (spec: attacks from Hidden crit on 19-20 and use the Ambush multiplier): the first attack of each Hidden entry.
-  const ambush = ambushReady(att) && tgt.side !== att.side;
-  if (ambush) att.ambushUsed = att.hideEntry || 1;
+  const hiddenAmbush = ambushReady(att), ambush = (hiddenAmbush || !!opts.ambush) && tgt.side !== att.side;
+  if (ambush && hiddenAmbush) att.ambushUsed = att.hideEntry || 1; // only an ambush from Hidden uses the entry's
   const rc: any = { att, tgt, mode, die: d20(rng), toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, cb, rng, mods: cb.mods || [] };
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
@@ -969,7 +992,8 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     if (crit) noteCrit(cb, att, tgt, 'weapon'); // the spotlight's crit (decision 113): presentation only
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt, cb, att);
     if (crit && !tgt.dead && melee && hasMod(att.mods, 'mod_serrated') && !immune({ u: tgt }, 'bleed')) { tgt.bleed = 3; injury += ' · Bleeding'; }
-    if (!tgt.dead && fx.op === 'on_hit') injury += onHit(cb, att, tgt, fx);
+    // the weapon's old on-hit grant (armour break, Prone, a push…): on a plain attack only, never next to another technique's own effect (rules 1.12)
+    if (!tgt.dead && fx.op === 'on_hit' && !opts.tech) injury += onHit(cb, att, tgt, fx);
     // The Evoker blade's Edge Word (item 487): a hit leaves one glyph free of AP this turn (charge and Flux as usual),
     // drawn on your own tile as any glyph; not on an attack that already drew one (Sword Form: one free glyph an attack).
     if (fx.op === 'edge_word' && att.mg?.evoker && !att.edgeWord && !(att.ps as any)?.['class:blade_scribe.sword_form']?.edge) { att.edgeWord = true; injury += ' · Edge Word: your next glyph this turn costs 0 AP'; }
@@ -1185,11 +1209,26 @@ export function dropNailed(cb: Combat, target: Unit): void {
   if (it) dropToPile(cb, target.pos, [it], 'drop');
 }
 /** Pull a nailed unit free (rules 1.12): the unit itself, or someone of its side next to it, pays the AP. A weapon left
- * in it falls into the pile on its tile. */
-export function pullFree(cb: Combat, u: Unit, target: Unit = u): string | null {
+ * in it falls into the pile on its tile. A nail that carries a weapon (Run Through, Reach; Leon's ruling, 10 Nov 2026)
+ * may be pulled by anyone next to the target: the one who left it, or anyone else not on the target's side, takes the
+ * weapon into a free hand (`take`: the reducer's gear change for a character; a unit with no sheet takes it bare-handed),
+ * else it falls to the pile on the target's tile. */
+export function pullFree(cb: Combat, u: Unit, target: Unit = u, take?: (it: PackItem) => boolean): string | null {
   const n = target.nailed; if (!n) return target === u ? 'Nothing holds you.' : 'Nothing holds ' + target.name + '.';
-  if (target !== u && (target.side !== u.side || dist(u.pos, target.pos) > 1)) return 'Stand next to an ally to pull them free.';
+  const other = target !== u && target.side !== u.side, wid = n.weapon && WEAPON[n.weapon] ? n.weapon : null;
+  if (target !== u && dist(u.pos, target.pos) > 1) return other && wid ? 'Stand next to ' + target.name + ' to pull the weapon out.' : 'Stand next to an ally to pull them free.';
+  if (other && !wid) return 'Stand next to an ally to pull them free.';
   if (u.ap < n.ap) return 'Needs ' + n.ap + ' AP.';
+  if (other) {
+    const it = n.item || gearEntry(wid!)!;
+    u.ap -= n.ap; delete target.nailed;
+    emitFx(cb, 'pull_free', { unit: u.id, target: target.id, at: target.pos, weapon: wid });
+    let took = !!take && take(it);
+    if (!took && !u.charId && !u.companion && !u.allowedActions && u.weapon === 'fists') { u.weapon = wid!; u.ammo = 0; u.jammed = false; took = true; } // no sheet: straight into the empty hand
+    if (!took) dropToPile(cb, target.pos, [it], 'drop');
+    cb.log.push(u.name + ' pulls the ' + WEAPON[wid!].name.toLowerCase() + ' out of ' + target.name + ' (' + n.ap + ' AP)' + (took ? ' and keeps it in hand' : ': it drops at ' + refOf(target.pos)) + '. ' + target.name + ' is free.');
+    return null;
+  }
   u.ap -= n.ap; dropNailed(cb, target);
   emitFx(cb, 'pull_free', { unit: u.id, target: target.id, at: target.pos });
   cb.log.push(u.name + (target === u ? ' pulls free' : ' pulls ' + target.name + ' free') + ' (' + n.ap + ' AP)' + (n.weapon && WEAPON[n.weapon] ? ': the ' + WEAPON[n.weapon].name.toLowerCase() + ' drops at ' + refOf(target.pos) : '') + '.');
@@ -1394,7 +1433,9 @@ function onHit(cb: Combat, att: Unit, t: Unit, fx: any): string {
   if (fx.apply === 'ap_loss') { t.stunnedNext = Math.max(t.stunnedNext, fx.value || 1); return ' · staggered (−AP next turn)'; }
   if (fx.apply === 'prone') { t.prone = true; return ' · knocked prone'; }
   if (fx.apply === 'bleed') { if (immune({ u: t }, 'bleed')) return ''; t.bleed = 3; return ' · Bleeding'; }
-  if (fx.apply === 'armour_break') { t.baseArmour ??= t.armour; t.armour = Math.max(t.baseArmour - 10, t.armour - (fx.value || 5), 0); return ' · armour broken (' + t.armour + ')'; }
+  if (fx.apply === 'armour_break') { // on the armour it wears: a Break's 0 for a round is not what is cut (it is mended to the cut value)
+    const worn = effectiveArmour(t); t.baseArmour ??= worn; const now = Math.max(t.baseArmour - 10, worn - (fx.value || 5), 0); setEffectiveArmour(t, now);
+    return ' · armour broken (' + now + ')'; }
   if (fx.apply === 'push') {
     if (immune({ u: t }, 'knockback')) return '';
     if ((emit(cb, 'forced_move', { u: t, by: att, tiles: fx.value || 1, how: 'knockback', cancel: false, cb }) as any).cancel) return '';

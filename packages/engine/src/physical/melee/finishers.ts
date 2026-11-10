@@ -79,7 +79,7 @@ technique({
     bleed(r);
     const extras = cleaveExtras(t, tgt, m, within);
     if (t.preview) t.note(extras.length ? 'Then ' + extras.map((v) => v.name).join(', ') + ', each at full damage.' : 'No other enemy close enough to cleave into.');
-    for (const v of extras) { const x = also(t, { target: v, noMomentum: true, label: 'Cleave', ...(within > 1 ? { reach: within } : {}) }); if (x.ok) bleed(x); }
+    for (const v of extras) { const x = also(t, { target: v, noMomentum: true, label: 'Cleave', chain: true, ...(within > 1 ? { reach: within } : {}) }); if (x.ok) bleed(x); }
     upto(t, fx);
     spendMomentum(t);
     return null;

@@ -44,7 +44,8 @@ function attackSkill(t: Tech): number {
 const shieldInOffHand = (t: Tech) => !!t.c?.offHand && (ITEM as any)[t.c.offHand.id]?.category === 'shield';
 
 // 25. Parry: a melee attack hits you: roll your attack skill against the attacker's total. If you win, the hit is halved.
-//     Light: and you gain 1 Momentum. Heavy: you may parry for an adjacent ally. A shield in the off hand adds +2.
+//     A shield in the off hand adds +2 (with any weapon). Light: and you gain 1 Momentum. Heavy: you may parry for an
+//     adjacent ally.
 //     The hook is damage_in, phase 'reduce' (the hit has landed, its damage not yet taken): the halving is on the damage
 //     after the attacker's multipliers and armour, before the shield. A protective reaction: it works while Suppressed
 //     (the core's canAnswer). "Win" is a higher total; a tie goes to the attacker.
@@ -66,7 +67,8 @@ technique({
       const vs = attackTotal(att, v); if (vs == null) return;
       answer(t, att, () => {
         ROLLS.delete(att); ctx.parried = true;
-        const shield = heavy && shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, bonus = attackSkill(t) + shield;
+        const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
+           bonus = attackSkill(t) + shield;
         const r = d20(t.rng), total = r + bonus, won = total > vs;
         t.cb.log.push(t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': d20 ' + r + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + (shield ? ' (incl. +' + shield + ' shield)' : '') + ' = ' + total + ' vs ' + vs + (won ? ' · the hit is halved' : ' · it gets through') + '.');
         meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won });

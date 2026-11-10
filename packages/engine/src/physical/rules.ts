@@ -6,7 +6,7 @@
 //   a turn's start: the held Watch ends; an enemy Suppressed loses 1 AP, Broken 2
 //   a turn's end: Pressure falls by 1 (2 in cover and unseen, or closer to the nearest enemy than the turn began)
 //   reactions: Pressed holds no Watch; Suppressed takes no opportunity attack either
-import { type Combat, type Unit, alive, dist, unitSees, emitFx, meleeArm } from '../combat';
+import { type Combat, type Unit, alive, dist, unitSees, emitFx, strikeWeapon } from '../combat';
 import { onHook, charOfUnit } from '../effects/hooks';
 import { condOn } from '../magic';
 import { WEAPON } from '../data';
@@ -28,7 +28,7 @@ onHook('on_hit', (ctx: any, cb) => {
   const att: Unit = ctx.att, tgt: Unit = ctx.tgt; if (!att || !tgt || att.side === tgt.side) return;
   // who hit whom this round and with what (Crossfire; drill credit on the kill)
   (tgt.hitRound ||= {})[att.id] = cb.round;
-  if (ctx.dmg > 0) hitWith(tgt, att.id, ctx.mode === 'melee' && WEAPON[att.weapon] && !meleeArm(WEAPON[att.weapon]) ? 'fists' : att.weapon);
+  if (ctx.dmg > 0) hitWith(tgt, att.id, ctx.mode === 'melee' && WEAPON[att.weapon] ? strikeWeapon(att, 'melee').id : att.weapon);
   if (ctx.melee) { if (pressureOf(att)) lowerPressureOf(cb, att, P().melee_hit_sheds, 'fighting it out'); return; }
   // the first ranged hit on this target this turn (a technique that gives its own Pressure for the hit still uses it up)
   const stamp = turnStamp(cb), pt = att.pressedThis?.t === stamp ? att.pressedThis : (att.pressedThis = { t: stamp, ids: [] as string[] });

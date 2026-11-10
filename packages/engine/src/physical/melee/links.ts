@@ -212,8 +212,7 @@ technique({
     if (t.preview) {
       t.note('Shove: d20 ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + ' (Strength and Raw Power) against ' + need + '.');
       (t.pv.saves ||= []).push({ unit: tgt.id, skills: ['raw_power', 'athletics'], tn: need }); // its defence, as a save the card can show
-      if (!blocked) forceMove(t, tgt, 'away', tiles); // where the push would leave it
-      stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
+      stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false }); // a push records where it would leave it
       landed(t); // the card shows the Momentum it gives when it works
       return null;
     }
@@ -264,8 +263,8 @@ technique({
 });
 
 // ---------- 19. Drag ----------
-// Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). Hook: 2 tiles, and from 2
-// tiles away with Reach. Bare: you may move 1 tile and bring it with you.
+// Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). Hook: you pull from 2 tiles
+// away (3 with Reach), up to 2 tiles. Bare: you may move 1 tile and bring it with you.
 // args.opt: 'pull' (the default when it can be pulled), 'swap' (the default next to you), 'carry' (Bare; args.tile is
 // the user's step, next to the user).
 function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
@@ -311,7 +310,8 @@ technique({
   id: 'drag',
   check(t) {
     const e = enemyCheck(t, 'drag'); if (e) return e;
-    const r = reachOf(t); if (dist(t.u.pos, t.tgt!.pos) > r) return r > 1 ? 'Drag someone within ' + r + ' tiles.' : 'Drag someone next to you.';
+    // Hook (Leon's ruling, 10 Nov 2026): the hook itself pulls from 2 tiles away, and from 3 with Reach
+    const r = reachOf(t) + (t.line('hook', 'bare') === 'hook' ? t.num('hook_reach', 1) : 0); if (dist(t.u.pos, t.tgt!.pos) > r) return r > 1 ? 'Drag someone within ' + r + ' tiles.' : 'Drag someone next to you.';
     return dragPlan(t).why || null;
   },
   run(t) {

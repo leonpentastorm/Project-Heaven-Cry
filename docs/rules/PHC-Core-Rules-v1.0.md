@@ -986,7 +986,7 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 10. **The quiver.** A Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight.
 11. **Thrown weapons.** A technique that throws the held weapon makes a ranged attack at throwing range, with line of sight and cover, aimed with Dexterity whatever the weapon hits with. It burns no rounds and adds no Heat or Recoil. A hit gives Pressure as any ranged hit does (and Momentum when the technique is a melee one). The weapon lands in the pile on the target's tile.
 12. **A weapon that isn't in the hand.** A technique that draws its weapon (Draw Cut, Snap Shot) names a stowed weapon: the draw is part of the technique and costs nothing more, and the weapon that was in the hand goes to the pack. A carried grenade is the weapon of a technique used with it (Lob, Rout): it has the grenade's properties, and one is spent.
-13. **Nailed in place.** Where a technique pins "until it spends 2 AP", the target can't move until it pays 2 AP to pull free, or an ally next to it does. A weapon left in it falls to its tile when it is freed.
+13. **Nailed in place.** Where a technique pins "until it spends 2 AP", the target can't move until it pays 2 AP to pull free, or an ally next to it does. A weapon left in it falls to its tile when it is freed, when it dies or surrenders, or when the fight ends. **A weapon left in it (Run Through, Reach)** may be pulled out by anyone next to it for the same 2 AP, which frees it: the one who left it, or anyone else not on the target's side, takes the weapon into a free hand (no free hand: it falls to the target's tile); an ally of the target frees it as above (Leon, 10 Nov 2026).
 14. **An attack that never comes.** When a held shot answers an attack being called and takes the attacker out, that attack is not made; its AP is spent.
 
 #### Enemies
@@ -1029,7 +1029,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn. | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
 | 17 | **Shove** | 1 | Today's Shove (push 1 tile, or Prone if blocked), at 1 AP as a Link. It gives Momentum when it works. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
 | 18 | **Trip** | 1 | The target makes a Body save or falls Prone. | **Hook or Reach:** the save is at −2. **Bare:** you may go Prone with it and it is Grappled. |
-| 19 | **Drag** | 1 | Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). | **Hook:** 2 tiles, and from 2 tiles away with Reach. **Bare:** you may move 1 tile and bring it with you. |
+| 19 | **Drag** | 1 | Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). | **Hook:** you pull from 2 tiles away (3 with Reach), up to 2 tiles. **Bare:** you may move 1 tile and bring it with you. |
 
 **Finishers**
 
@@ -1038,14 +1038,14 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 20 | **Coup** | weapon | Needs Momentum 2. One strike at +25% damage per Momentum spent. (This is the Fighter's Finisher, opened to everyone; see section 6.) | **Edge:** +50% more against a target that is Bleeding, Dazed, Prone or Downed. **Point:** a hit is a critical if the target is at a quarter HP or less. |
 | 21 | **Cleave** † | weapon | Needs Momentum 2. One strike; then the same strike at one more adjacent enemy per Momentum spent, each at full damage. | **Heavy:** the extra targets may be 2 tiles apart. **Edge:** every target hit bleeds. |
 | 22 | **Break** | weapon | Needs Momentum 2. One strike. The target makes a Body save at −1 per Momentum spent or is Stunned (bosses: Dazed). | **Blunt:** its armour is also 0 for a round. **Hook:** it is Disarmed as well. |
-| 23 | **Run Through** † | weapon | Needs Momentum 2. One strike at +20% per Momentum spent. On a hit the target is Pinned where it stands until it spends 2 AP to pull free. | **Point:** ignores armour, and if a second enemy stands directly behind the first it is struck at half. **Reach:** you may leave the weapon in (you are unarmed; the target stays Pinned until someone pulls it out for 2 AP). Without Point: −2 to hit. |
+| 23 | **Run Through** † | weapon | Needs Momentum 2. One strike at +20% per Momentum spent. On a hit the target is Pinned where it stands until it spends 2 AP to pull free. | **Point:** ignores armour, and if a second enemy stands directly behind the first it is struck at half. **Reach:** you may leave the weapon in (you are unarmed; the target stays Pinned until anyone next to it pulls it out for 2 AP; you, or anyone not on its side, take it into a free hand). Without Point: −2 to hit. |
 | 24 | **Throw Down** † | weapon | Needs Momentum 2. Only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone. | **Bare:** no roll needed. **Heavy:** you may throw it 2 tiles. |
 
 **Answers**
 
 | # | Technique | AP | What it does | With the right weapon |
 |---|---|---|---|---|
-| 25 | **Parry** | reaction | *When a melee attack hits you:* Roll your attack skill against the attacker's total. If you win, the hit is halved. | **Light:** and you gain 1 Momentum. **Heavy:** you may parry for an adjacent ally. A shield in the off hand adds +2. |
+| 25 | **Parry** | reaction | *When a melee attack hits you:* Roll your attack skill against the attacker's total. If you win, the hit is halved. A shield in the off hand adds +2. | **Light:** and you gain 1 Momentum. **Heavy:** you may parry for an adjacent ally. |
 | 26 | **Riposte** | reaction | *When a melee attack misses you:* Strike back for 0 AP (today's Sabre skill and Fighter move). | **Edge or Point:** +2 to hit. |
 | 27 | **Keep Back** | reaction | *When an enemy steps into your reach:* Strike it first. If you hit, it makes a Body save or stops where it is. | **Reach:** your reach is 2 tiles, so most enemies never arrive. **Hook:** on a failed save it is also Prone. |
 
