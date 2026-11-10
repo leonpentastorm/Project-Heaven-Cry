@@ -1,6 +1,6 @@
 # Proposal: the skeleton (Cores, Attributes, Skills, and what a level gives)
 
-Status: **for Leon to decide.** Nothing here is applied. No spec, data or engine file is changed by this branch.
+Status: **section 4 accepted and applied as rules 1.11** (Leon, 10 Nov 2026: "apply everything you recommend with the skeleton"): the level gains, rank levels 6 and 12, no Core-for-Attribute trade, Mind Without Fog at +1 Core. Spec items 924–930. **Section 5 is not applied:** it is carried into `2026-11-melee-techniques.md` (the `hits_with` / `scales_with` fields, drill in place of kills, where the fencer lives).
 
 Leon, 10 Nov 2026: the 2020 budgets (6 Core, 10 Attribute, 10 Skill) were drawn out of a hat, every number needs tuning, and the damage pass waits until the Body classes have their own tools. So this looks only at the frame those numbers hang on: the three budgets, the caps, what a level gives, and where the Body tools will plug in. It sets no damage, HP or cost number.
 
