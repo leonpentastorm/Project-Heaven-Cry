@@ -12,7 +12,7 @@
 // then 'on_damaged' {t, src, dmg, prevHp} when HP was lost, 'on_downed' {victim, by, src, ownTurn} on a Down or a death,
 // and 'on_kill' {victim, by, src} when kill credit is given.
 import type { Combat, Unit } from '../combat';
-import { emit } from './hooks';
+import { emit, onHook } from './hooks';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
@@ -43,6 +43,8 @@ export interface DamageResult { dealt: number; shielded: number; killed: boolean
   /** The damage after reductions and the shield (it may be more than the HP it took): what the log reports. */
   amount: number }
 
+/** Read Them: the share of its damage an analysed enemy loses against the other side. */
+export const READ_THEM = 0.15;
 export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !== t.side;
 
 /** Take damage (already past armour) off a unit's HP. */
@@ -55,6 +57,9 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   // (−10% × Reaction Speed), each capped at 60%, before items.
   if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));
   if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
+  // Read Them (Acuity 5, rules 1.13; was Weak Point): an enemy the squad has analysed deals 15% less damage to it. The
+  // mark is Unit.weakPoint (Analyze at 5 points, Case Closed, Detective's Eye), whichever side holds it.
+  if (src.by && src.by.weakPoint && src.by.side !== t.side) ctx.dmg = ctx.dmg * (1 - READ_THEM);
   if (cb) { emit(cb, 'damage_in', ctx); }
   ctx.dmg = Math.max(0, Math.floor(ctx.dmg));
   if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
@@ -119,3 +124,8 @@ export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | nu
   if (cb && by && v > 0) tendHook.f?.(cb, by, t);
   return v;
 }
+
+// Rules 1.13: Weak Point's +15% squad damage is gone (an analysed enemy now deals less: Read Them, above). The two
+// places that still add it (combat.ts attackDamage, and spells) label it 'Weak Point': it is taken out here, before the
+// damage is stacked, until those lines are deleted.
+onHook('damage_out', (ctx: any) => { const vs: any[] | undefined = ctx?.vs; if (!vs) return; for (let i = vs.length - 1; i >= 0; i--) if (vs[i]?.label === 'Weak Point') vs.splice(i, 1); });

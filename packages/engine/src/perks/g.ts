@@ -171,7 +171,7 @@ register({
       const n = tierII(h) ? 2 : 1, found: { what: string; owner?: string }[] = [];
       for (const o of objectsOf(cb)) { if (found.length >= n) break; if (isTrap(o) && !trapKnown(o, 'pc')) { const k: any = o; if (k.side) (k.knownBy ||= []).push('pc'); else o.hidden = false; found.push({ what: 'a trap at ' + o.pos, owner: k.owner }); } }
       const foes = cb.units.filter((t) => t.side !== u.side && alive(t) && !t.analyzedBy && !t.companion).sort((a, b) => b.hp - a.hp || (a.id < b.id ? -1 : 1));
-      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; t.weakPoint = true; found.push({ what: t.name + '\'s weak point (+15% squad damage)', owner: t.id }); }
+      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; t.weakPoint = true; found.push({ what: 'how ' + t.name + ' fights (read: it deals 15% less to the squad)', owner: t.id }); }
       if (!found.length) return;
       const linked = found.length === 2 && !!found[0].owner && found[0].owner === found[1].owner;
       say(cb, u.name + '\'s eye catches what doesn\'t fit (Detective\'s Eye): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');

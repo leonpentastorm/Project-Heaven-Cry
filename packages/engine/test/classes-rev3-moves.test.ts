@@ -45,7 +45,7 @@ describe('Defender', () => {
   it('Shrug It Off: a maul\'s knockdown on the enemy\'s turn is shrugged off for 1 Guard and the reaction; with no Guard it stays', () => {
     for (const guard of [2, 0]) {
       const f = fightWith([cls('defender', 5)], [{ weapon: 'maul' }]);
-      const d = at(f, f.pc, '4,2'); tough(d); d.res = { ...(d.res || {}), guard }; d.def = -40;
+      const d = at(f, f.pc, '4,2'); tough(d); d.res = { ...(d.res || {}), guard }; d.def = -40; d.armour = 999; // the blow gets 1 damage through: 1 Guard soaks it (rules 1.13), 1 is left to shrug with
       const foe = at(f, f.foe, '5,2'); foe.attack = 60; foe.techs = []; // plain attacks: the maul's knockdown is its plain attack's grant, not a technique's (rules 1.12) order(f, d, foe);
       f.turn(d); act(f, d, { type: 'combat/end-turn' });
       expect(logHas(f.cb, /knocks? .*prone|Knockdown|prone/i)).toBe(true);

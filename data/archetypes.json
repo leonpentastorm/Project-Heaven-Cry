@@ -64,8 +64,8 @@
       "role": "Tank",
       "blurb": "Stands in the doorway so nobody else has to. Has been shot more times than most people have been hugged.",
       "preset": {
-        "durability": 4,
-        "pain_threshold": 3,
+        "pain_threshold": 4,
+        "durability": 3,
         "guts": 3
       },
       "cores": {
@@ -99,20 +99,19 @@
         "durability": 3,
         "reaction_speed": 3,
         "vigilant": 2,
-        "guts": 2
+        "pain_threshold": 2
       },
       "cores": {
-        "body": 4,
+        "body": 5,
         "mind": 4,
         "soul": 1
       },
       "leans": [
-        "infiltrator",
-        "marksman"
+        "defender"
       ],
       "attributes": {
-        "endurance": 3,
-        "strength": 3,
+        "endurance": 5,
+        "strength": 1,
         "agility": 4,
         "perception": 4,
         "intelligence": 1,
@@ -294,7 +293,7 @@
       "blurb": "Carries the gun nobody else can lift and believes volume of fire is a personality.",
       "preset": {
         "dexterity": 4,
-        "durability": 3,
+        "pain_threshold": 3,
         "guts": 3
       },
       "cores": {
@@ -552,7 +551,7 @@
       "role": "Sigil defender",
       "blurb": "Raises walls of command words around the squad, and lectures them about it afterwards.",
       "preset": {
-        "rumination": 4,
+        "brain_power": 4,
         "composure": 3,
         "analysis": 3
       },
@@ -583,8 +582,8 @@
       "role": "Sigil support",
       "blurb": "Inscribes the squad's gear before the fight, so the fight is shorter than it should be.",
       "preset": {
-        "rumination": 4,
-        "proficiency": 3,
+        "brain_power": 4,
+        "empathy": 3,
         "eloquence": 3
       },
       "cores": {
@@ -617,7 +616,7 @@
       "preset": {
         "analysis": 4,
         "charisma": 3,
-        "eloquence": 3
+        "brain_power": 3
       },
       "cores": {
         "body": 1,
@@ -711,7 +710,7 @@
       "role": "Knowledge",
       "blurb": "Has read about it. Has read about everything. Will tell you, at length, in the middle of the firefight.",
       "preset": {
-        "rumination": 4,
+        "lore_master": 4,
         "analysis": 3,
         "brain_power": 3
       },
@@ -775,8 +774,8 @@
       "role": "Soul healer",
       "blurb": "Feels your wound from across the room and closes it before you finish screaming.",
       "preset": {
-        "camaraderie": 4,
-        "empathy": 3,
+        "empathy": 4,
+        "camaraderie": 3,
         "implication": 3
       },
       "cores": {
@@ -808,7 +807,7 @@
       "blurb": "Hears the squad's sins, prays over their wounds, and reports to nobody but the saints.",
       "preset": {
         "faith": 4,
-        "camaraderie": 3,
+        "empathy": 3,
         "conscience": 3
       },
       "cores": {
@@ -871,8 +870,8 @@
       "role": "Occult caster",
       "blurb": "Knows the old stories are true and the twin world is listening. Respected, feared, never invited twice.",
       "preset": {
-        "lore_master": 4,
-        "will_power": 3,
+        "will_power": 4,
+        "lore_master": 3,
         "implication": 3
       },
       "cores": {
@@ -968,7 +967,7 @@
       "blurb": "Turns a squad into a chorus. Morale goes up, enemy morale goes elsewhere.",
       "preset": {
         "implication": 4,
-        "camaraderie": 3,
+        "empathy": 3,
         "authority": 3
       },
       "cores": {
@@ -1098,7 +1097,7 @@
       "preset": {
         "faith": 4,
         "durability": 3,
-        "guts": 3
+        "pain_threshold": 3
       },
       "cores": {
         "body": 4,
@@ -1162,10 +1161,10 @@
       "role": "Combat healer",
       "blurb": "Under fire, on their knees, hands in someone's chest, telling them a terrible joke. Never leaves anyone behind.",
       "preset": {
-        "camaraderie": 4,
-        "sensory": 3,
+        "empathy": 4,
+        "camaraderie": 3,
         "proficiency": 2,
-        "empathy": 1
+        "pain_threshold": 1
       },
       "cores": {
         "body": 3,

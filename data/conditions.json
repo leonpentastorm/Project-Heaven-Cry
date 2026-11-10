@@ -911,7 +911,7 @@
       },
       "ends_on": [
         "duration",
-        "body save at the end of each of your turns (12 + the source's Body debuff strength)"
+        "body save at the end of each of your turns (12 + the strength of whoever put it on you, by the skill that delivered it)"
       ],
       "stacks": false,
       "set_by": "sigils:acid",

@@ -220,7 +220,7 @@ function glassesOff(h: Holder, why: string): boolean {
   delete worn[slot]; c.worn = worn;
   c.pack = [...packOf(c), { id: 'prescription_glasses', item: 'prescription_glasses', name: ITEM.prescription_glasses?.name || 'Prescription glasses', qty: 1, kind: 'tool' }];
   refreshUnit(h);
-  const line = c.name + '\'s glasses come off (' + why + '): −4 Proficiency and Ingenuity until they\'re back on.';
+  const line = c.name + '\'s glasses come off (' + why + '): −4 Acuity and Ingenuity until they\'re back on.';
   if (inFight(h)) say(h.cb, line); else sys(h, line);
   return true;
 }
@@ -513,7 +513,7 @@ register({
       return null;
     },
   }],
-  brief: () => 'buys at 80%, sells at 120%; giving or taking a gift: call Analysis, a fail means they can\'t',
+  brief: () => 'buys at 80%, sells at 120%; giving or taking a gift: call Acuity, a fail means they can\'t',
 });
 
 // ---------- Inner Ring Heir ----------

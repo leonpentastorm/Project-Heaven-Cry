@@ -13,6 +13,26 @@
       "step_loss": 1,
       "hit_loss": 1
     },
+    "guard": {
+      "max": 5,
+      "per_durability": 1,
+      "gain_base": 1,
+      "gain_per_point": 1,
+      "shield_gain": 1,
+      "soak": 10,
+      "pressure_per_point": 1,
+      "interpose_durability": 3,
+      "interpose_cost": 1
+    },
+    "gear_gates": {
+      "heavy_armour": {
+        "skill": "pain_threshold",
+        "classes": {
+          "4": 3,
+          "5": 5
+        }
+      }
+    },
     "pressure": {
       "max": 4,
       "player_max": 3,
@@ -121,7 +141,8 @@
       "arc": "It flies over. Indirect fire.",
       "silent": "No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden.",
       "loud": "A cannon in the hand. A miss still gives Pressure; saves against it are harder.",
-      "drawn": "Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight."
+      "drawn": "Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight.",
+      "shield": "Carried in the off hand. It lends its own techniques, which run on Guard and Momentum."
     },
     "provisional": true
   },
@@ -822,7 +843,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit.",
+      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard: 1, +1 for each Durability point above 1, +1 with a shield.",
       "lines": [
         {
           "props": [
@@ -2716,6 +2737,130 @@
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
+    },
+    {
+      "id": "shield_bash",
+      "name": "Shield Bash",
+      "system": "melee",
+      "group": "strike",
+      "number": 29,
+      "ap": {
+        "base": "flat",
+        "value": 2
+      },
+      "rounds": 0,
+      "needs": {
+        "shield": true
+      },
+      "text": "Strike with the shield: bare-hand damage ×1.5, hitting with Raw Power. It costs 1 Guard in place of 1 Momentum. On a hit you gain 1 Momentum, and the target makes a Body save or is pushed 1 tile.",
+      "lines": [],
+      "free": false,
+      "comes_with": [
+        "shield"
+      ],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "mult": 1.5,
+        "momentum_cost": 0,
+        "guard_cost": 1,
+        "momentum_on_hit": 1,
+        "push": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "raise_shield",
+      "name": "Raise Shield",
+      "system": "melee",
+      "group": "link",
+      "number": 30,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {
+        "shield": true
+      },
+      "text": "Turn Momentum into Guard, 1 for 1, as much as you choose up to your pool. Until your next turn, ranged attacks from the front are at −2 to hit you.",
+      "lines": [],
+      "free": false,
+      "comes_with": [
+        "shield"
+      ],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "ranged_defense": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self"
+    },
+    {
+      "id": "shield_wall",
+      "name": "Shield Wall",
+      "system": "melee",
+      "group": "answer",
+      "number": 31,
+      "ap": {
+        "base": "reaction"
+      },
+      "rounds": 0,
+      "needs": {
+        "shield": true
+      },
+      "text": "Spend 1 Guard: the attack is at −2 to hit, and your ally counts as behind half cover against it.",
+      "trigger": "an ally next to you is the target of a ranged attack",
+      "lines": [],
+      "free": false,
+      "comes_with": [
+        "shield"
+      ],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "guard_cost": 1,
+        "defense": 2,
+        "reach": 1,
+        "half_cover": 5
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "none"
+    },
+    {
+      "id": "interpose",
+      "name": "Interpose",
+      "system": "melee",
+      "group": "answer",
+      "number": 32,
+      "ap": {
+        "base": "reaction"
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Spend 1 Guard: you take the hit instead. Your armour applies, and the Guard you have left soaks it.",
+      "trigger": "an ally next to you is hit by an attack",
+      "lines": [],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "innate": {
+        "skill": "durability",
+        "min": 3
+      },
+      "numbers": {
+        "guard_cost": 1,
+        "reach": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "none"
     }
   ]
 }

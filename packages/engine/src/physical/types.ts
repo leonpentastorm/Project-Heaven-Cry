@@ -17,7 +17,10 @@ export interface TechDef {
    * weapon-based cost is priced as a melee strike or a shot without it. */
   ap: { base: 'weapon' | 'flat' | 'reaction'; add?: number; value?: number; mode?: 'melee' | 'shot' | 'aimed' | 'burst' | 'auto' };
   rounds: number | 'all';
-  needs: { momentum?: number; pressed?: boolean; hidden?: boolean; held?: boolean; last_round?: boolean; stowed?: boolean };
+  needs: { momentum?: number; pressed?: boolean; hidden?: boolean; held?: boolean; last_round?: boolean; stowed?: boolean;
+    /** a shield's technique (rules 1.13): the off hand holds a shield, and the technique is that hand's */ shield?: boolean };
+  /** a technique a skill gives to everyone who has the points (Interpose: Durability 3), whatever is in the hands */
+  innate?: { skill: string; min: number };
   text: string; trigger?: string; suppressed?: string; lines: TechLine[];
   /** everyone knows it; no ready slot */ free: boolean;
   /** weapons with one of these properties always offer it */ comes_with: string[];
@@ -41,6 +44,7 @@ export interface TechPreview {
   /** every attack roll in it, with the unit it is against */ attacks: { target: string; pv: AttackPreview }[];
   notes: string[];
   momentum?: { now: number; after: number };
+  /** Guard (rules 1.13): what the unit holds and what using this leaves */ guard?: { now: number; after: number };
   /** onHit: the ordinary +1 a ranged hit gives (only if the roll hits) */ pressure?: { unit: string; add: number; after: number; state: string; onHit?: boolean }[];
   /** tiles it covers */ area?: string[];
   /** where it puts someone (the user included) */ moves?: { unit: string; to: string }[];

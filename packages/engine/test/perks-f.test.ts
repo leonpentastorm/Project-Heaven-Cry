@@ -97,16 +97,18 @@ describe('Open Hand', () => {
 });
 
 describe('Clean Hands', () => {
-  for (const [tier, n] of [['I', 2], ['II', 3]] as const) it(tier + ': a Spare blow subdues the foe (no kill) and banks +' + n + ' AP for next turn', () => {
+  // rules 1.13: no AP. A shield worth 15% (II: 25%) of max HP.
+  for (const [tier, n] of [['I', 15], ['II', 25]] as const) it(tier + ': a Spare blow subdues the foe (no kill) and gives a shield of ' + n + '% of max HP; no AP', () => {
     const f = fight([{ perks: { clean_hands: tier } }]); sure(f.pc); f.foe.hp = 1;
     pcAct(f, { type: 'combat/attack', targetId: f.foe.id, mode: 'shot', mods: ['spare'] });
     expect(f.foe.subdued).toBe(true); expect(f.foe.dead).toBeFalsy(); expect(f.pc.kills).toBe(0);
-    expect(f.pc.apNext).toBe(n);
+    expect(f.pc.apNext || 0).toBe(0);
+    expect(f.pc.shield).toBe(Math.floor(Math.floor(f.pc.maxHp * n / 100) * (f.pc.shieldRecv || 1)));
   });
   it('protecting an innocent counts: healing a civilian', () => {
     const f = fight([{ perks: { clean_hands: 'I' } }]); f.foe.tags = ['civilian']; f.foe.hp = 5;
     withGame(f.g, () => healUnit(f.cb, f.foe, 10, f.pc, 'stim'));
-    expect(f.pc.apNext).toBe(2);
+    expect(f.pc.apNext || 0).toBe(0); expect(f.pc.shield).toBeGreaterThan(0);
   });
 });
 
@@ -150,14 +152,16 @@ describe('True Name', () => {
 });
 
 describe('Case Closed', () => {
-  it('Analyze reads everything; you and every ally get +2 to hit and +20% against it', () => {
+  it('Analyze reads everything; you and every ally have +2 Defense against it, and no bonus to hit or damage (rules 1.13)', () => {
     const f = fight([{ perks: { case_closed: 'mastered' }, skills: { analysis: 10 } }, {}]);
     pcAct(f, { type: 'combat/analyze', targetId: f.foe.id });
     expect(logHas(f.cb, /Case Closed on .*saves body.*motive/)).toBe(true);
     const ally = f.pcs[1]; ally.pos = '3,6'; ally.ap = 9;
     const pv = withGame(f.g, () => previewAttack(f.cb, ally, f.foe, 'shot'));
-    expect(pv.terms!.some((t) => t.label === 'Case Closed' && t.v === 2)).toBe(true);
-    expect(pv.dmg!.mults.some((x) => x.label.startsWith('against this target') && x.label.includes('Case Closed'))).toBe(true);
+    expect(pv.terms!.some((t) => t.label === 'Case Closed')).toBe(false);
+    expect(pv.dmg!.mults.some((x) => x.label.includes('Case Closed') || x.label.includes('Weak Point'))).toBe(false);
+    f.foe.ap = 9;
+    for (const t of f.pcs) { const back = withGame(f.g, () => previewAttack(f.cb, f.foe, t, 'shot')); expect(back.terms!.some((x) => x.label === 'Case Closed' && x.v === -2)).toBe(true); }
   });
   it('story: a successful Analysis check owes the motive', () => {
     const s = storyWith([{ perks: { case_closed: 'mastered' }, skills: { analysis: 10 } }]);

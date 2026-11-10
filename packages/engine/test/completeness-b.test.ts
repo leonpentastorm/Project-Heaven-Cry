@@ -2,8 +2,8 @@
 // enemy or the world, each through the reducer (apply): an enemy's turn after combat/end-turn, a story check, a
 // Narrator turn, an area-map act.
 import { describe, expect, it } from 'vitest';
-import { makeObject, apply, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, condOn, d20, type GameState, type Combat, type Unit } from '../src';
-import { fightWith, storyWith } from './helpers/perkfight';
+import { makeObject, apply, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, condOn, d20, applyDamage, type GameState, type Combat, type Unit } from '../src';
+import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
 function rngFor(n: number): { state: number } { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
@@ -28,19 +28,21 @@ function storyCheck(s: any, charId: string, skills: string[], tags: string[], di
 }
 
 describe('Clean Hands out of a fight', () => {
-  it('a spared moment the Narrator accepts gives +2 AP (II +3) next overworld round; refused, nothing', () => {
-    for (const [tier, n] of [['I', 2], ['II', 3]] as const) {
+  it('a spared moment the Narrator accepts is a shield of 15% (II 25%) of max HP when the next fight starts, and no AP; refused, nothing', () => {
+    const fightNow = (s: ReturnType<typeof storyWith>) => { s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any); return s.g.combat!.units.find((u) => u.side === 'pc')!; };
+    for (const [tier, n] of [['I', 15], ['II', 25]] as const) {
       const s = storyWith([{ perks: { clean_hands: tier } }]); const c = s.chars[0];
       s.act({ type: 'story/perk', charId: c.id, id: 'clean_hands', actionId: 'clean_story', text: 'let the deserter go' } as any);
       const r = s.g.story.rulings!.find((x) => /^Clean Hands:/.test(x.text))!;
       s.act({ type: 'narrator/turn', turn: { narration: 'He runs.', perkRulings: [{ id: r.id, accepted: true }] } } as any);
-      expect(apLeft(s.g, s.g.characters[c.id])).toBe(6 + n);
+      expect(apLeft(s.g, s.g.characters[c.id])).toBe(6);
+      const u = fightNow(s); expect(u.shield).toBe(Math.floor(Math.floor(u.maxHp * n / 100) * (u.shieldRecv || 1)));
     }
     const s = storyWith([{ perks: { clean_hands: 'I' } }]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'clean_hands', actionId: 'clean_story', text: 'nobody' } as any);
     const r = s.g.story.rulings!.find((x) => /^Clean Hands:/.test(x.text))!;
     s.act({ type: 'narrator/turn', turn: { narration: 'No.', perkRulings: [{ id: r.id, accepted: false }] } } as any);
-    expect(apLeft(s.g, s.g.characters[c.id])).toBe(6);
+    expect(apLeft(s.g, s.g.characters[c.id])).toBe(6); expect(fightNow(s).shield || 0).toBe(0);
   });
 });
 
@@ -113,34 +115,21 @@ describe('Earthbreaker and Last Wall: the story and the brief', () => {
   });
 });
 
-describe('Grapple II redirects an enemy\'s attack to the captive (through the reducer)', () => {
-  it('half the blows aimed at the grappler land on the captive', () => {
+describe('Iron Grip redirects an enemy\'s attack to the held target (through the reducer)', () => {
+  it('half the blows aimed at the holder land on the held target (tier I now)', () => {
     let redirected = false;
     for (let seed = 1; seed < 20 && !redirected; seed++) {
-      const f = fightWith([{ perks: { grapple: 'II' } }], [{ at: 'C6', weapon: 'fists' }, { at: 'C8', weapon: 'fists' }], { seed: 'GR' + seed });
+      const f = fightWith([{ perks: { iron_grip: 'I' } }], [{ at: 'C6', weapon: 'fists' }, { at: 'C8', weapon: 'fists' }], { seed: 'GR' + seed });
       const pc = f.pc, [cap, foe] = f.foes; pc.pos = '5,5'; cap.pos = '6,5'; foe.pos = '4,5'; foe.attack = 60; cap.attack = -60;
       cap.conds = { ...(cap.conds || {}), grappled: 99 }; cap.condBy = { ...(cap.condBy || {}), grappled: pc.id };
       enemyTurn(f, pc, foe);
-      redirected = logHas(f.cb, /finds the captive/);
+      redirected = logHas(f.cb, /finds .* instead \(Iron Grip/);
     }
     expect(redirected).toBe(true);
   });
 });
 
 describe('Into the Dark, Shadow Step and Charge! on the area map', () => {
-  it('Into the Dark I: the first move in a zone the character hasn\'t moved in yet costs 1 AP less; once per zone', () => {
-    const s = storyWith([{ perks: { into_the_dark: 'I' } }, {}]); const [c, d] = s.chars;
-    const from = positionsOf(s.g)[c.id], to = freeNear(s.g, from, 3);
-    s.act({ type: 'world/act', charId: c.id, act: 'move', to, how: 'move' } as any);
-    const used = 6 - apLeft(s.g, s.g.characters[c.id]);
-    const from2 = positionsOf(s.g)[d.id], to2 = freeNear(s.g, from2, 3);
-    s.act({ type: 'world/act', charId: d.id, act: 'move', to: to2, how: 'move' } as any);
-    const plain = 6 - apLeft(s.g, s.g.characters[d.id]);
-    expect(used).toBe(Math.max(0, plain - 1));
-    const back = freeNear(s.g, positionsOf(s.g)[c.id], 3), ap0 = apLeft(s.g, s.g.characters[c.id]);
-    s.act({ type: 'world/act', charId: c.id, act: 'move', to: back, how: 'move' } as any);
-    expect(ap0 - apLeft(s.g, s.g.characters[c.id])).toBe(plain); // once a zone
-  });
   it('Shadow Step: a sneak from cover to cover on the area map pays for half the tiles (move and the sneak surcharge)', () => {
     const run = (perks: any) => {
       const s = storyWith([{ perks }]); const c = s.chars[0], map = zoneMap(s.g);
@@ -203,10 +192,11 @@ describe('triggers from an enemy, through the reducer', () => {
     f.turn(b); f.act({ type: 'combat/end-turn', unitId: b.id });
     expect(logHas(f.cb, /Rally Cry/)).toBe(true);
   });
-  it('Walking Wounded: a stim through combat/stim on a hurt holder; the +1 AP below half HP shows at its turn', () => {
+  it('Walking Wounded: a stim through combat/stim on a hurt holder; below half HP it has no extra AP (rules 1.13) and takes 20% less', () => {
     const f = fightWith([{ perks: { walking_wounded: 'mastered' } }, {}], [{ at: 'O10' }]);
     const [w, medic] = f.pcs; w.pos = '5,5'; medic.pos = '5,6'; f.g.characters[medic.charId!].stims = 3; w.hp = Math.floor(w.maxHp / 3);
-    const u = f.turn(w); expect(u.ap).toBe(7);
+    const u = f.turn(w); expect(u.ap).toBe(6);
+    const was = f.unit(w.id).hp; withGame(f.g, () => applyDamage(f.cb, f.unit(w.id), 10, { by: f.foe, type: 'weapon', ranged: true })); expect(was - f.unit(w.id).hp).toBe(8); f.unit(w.id).hp = was;
     f.turn(medic); f.act({ type: 'combat/stim', unitId: medic.id, targetId: w.id } as any);
     expect(f.unit(w.id).hp).toBeGreaterThan(Math.floor(w.maxHp / 3));
   });

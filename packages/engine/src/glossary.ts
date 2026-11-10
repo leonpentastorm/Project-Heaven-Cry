@@ -21,7 +21,10 @@ const line = (...parts: any[]) => parts.map(str).filter(Boolean).join(' ');
 function build(): WikiEntry[] {
   const out: WikiEntry[] = [];
   const add = (key: string, name: string, text: string) => out.push({ key, name, text: text.trim() });
-  for (const s of SKILLS as any[]) add('skill:' + s.id, s.name, line(s.name + ' (' + s.core + ', ' + s.attribute + ').', s.summary,
+  // A skill says its slot in words (rules 1.13): alpha a way of fighting, beta a defence, gamma world play and speech,
+  // which rolls 1 better on checks (its full points; an alpha or a beta adds its points − 1).
+  for (const s of SKILLS as any[]) add('skill:' + s.id, s.name, line(s.name + ' (' + s.core + ', ' + (ATTR[s.attribute]?.name || s.attribute) + '; ' + SLOT_WORDS[s.slot as 'alpha' | 'beta' | 'gamma'] + ').', s.summary,
+    s.per_point?.text ? 'A point gives: ' + s.per_point.text : '',
     s.voice ? 'Voice: ' + s.voice.persona + ' Wants: ' + s.voice.wants + ' Style: ' + s.voice.style : '',
     s.overreach ? 'Overreach at ' + s.overreach.from_points + '+: ' + (s.overreach.text || s.overreach.trigger || '') : ''));
   // Perks, traits and class moves say who runs them (effects/coverage.ts): the Narrator rules only what the engine doesn't.
@@ -61,7 +64,7 @@ function build(): WikiEntry[] {
     'Drawing: one glyph on the caster\'s own tile; step and draw again to walk a Line, 2 to 4 tiles in a straight row (diagonals too). Glyphs fade after a few rounds.',
     'Evoking (1 AP): stand at an end or behind it to fire along the Line, beside it to fire across; the Line\'s length is the spell\'s width, the Reach its depth. A finished Line fires back the way the caster walked. Middle glyphs can\'t fire.',
     'Reach: SEEK a straight bolt (cover stops it), ARC a lob over everything, SENSE appears with no sight, RELAY casts from an ally. Delivery: STAY strikes, then leaves a field (full the first time, half after), WAIT a hidden trap, WATCH a turret, TWICE two missiles, PULL, CHAIN, LEECH. Burst: CONDENSE one target, SPREAD 5x5, PUSH a cone.',
-    'A Stack (two glyphs on one tile, a perk\'s hook) fires all around its caster. Every save is in the log. Skill unlocks the engine runs: Overclock (one word past Max Sigil words, +2 charge), Twin Draw (two spells for the longer one\'s Glyph AP, once a fight), Proven Formula (a spell Evoked again this fight: 1 AP less), Paint the Field (a free SPREAD or PUSH on a spell with no Burst). The Evoker blade\'s Edge Word: after a hit, the next glyph that turn costs 0 AP.',
+    'A Stack (two glyphs on one tile, a perk\'s hook) fires all around its caster. Every save is in the log. Skill unlocks the engine runs: Overclock (one word past Max Sigil words, +2 charge), Twin Draw (two spells for the longer one\'s Glyph AP, once a fight), Paint the Field (a free SPREAD or PUSH on a spell with no Burst). The Evoker blade\'s Edge Word: after a hit, the next glyph that turn costs 0 AP.',
     'Spells hit friends too unless KIN is in them; a spell that finds nothing it may affect fizzles. Refused: ' + (sg.refused || []).map((r: any) => r.why).join(' ') ,
     'Starting magic: ' + (sg.starting?.words ?? 2) + ' words that make a spell, one of them a Reach word. Retired 1.2 words and shapes (RETURN, Rings, Stacks) are gone.'));
   // Enemy Sigil casters (enemies.json casters; items 469, 490, 491): what a fight's foe may name by `caster`.
@@ -112,6 +115,12 @@ function build(): WikiEntry[] {
   return out;
 }
 const TQ: any[] = (techniquesJ as any).items, TR: any = (techniquesJ as any).rules;
+/** A skill's slot, as the wiki says it. */
+const SLOT_WORDS = {
+  alpha: 'an alpha skill: it opens a way of fighting',
+  beta: 'a beta skill: a defence',
+  gamma: 'a gamma skill: world play and speech; on a check it adds its full points, so it rolls 1 better than an alpha or a beta with the same points, and it is called first when talking to someone',
+};
 let cache: WikiEntry[] | null = null;
 export const wikiEntries = () => (cache ||= build());
 export function wikiLookup(key: string): WikiEntry | null {

@@ -41,12 +41,6 @@ describe('Many Hands', () => {
     enemyTurn(f, f.unit(h.id), f.unit(foe.id));
     expect(logHas(f.cb, /reacts on .*reaction \(Many Hands\)/)).toBe(true);
   });
-  it('area map: Hand-Off moves AP to an ally at once', () => {
-    const s = storyWith([{ perks: { many_hands: 'mastered' } }, {}]); const [a, b] = s.chars;
-    s.g.story.positions![b.id] = freeNear(s.g, positionsOf(s.g)[a.id], 1);
-    s.act({ type: 'world/act', charId: a.id, act: 'perk', id: 'many_hands', actionId: 'hand_off', targetId: 'pc-' + b.id, choice: '2' } as any);
-    expect(apLeft(s.g, s.g.characters[b.id])).toBe(8); expect(apLeft(s.g, s.g.characters[a.id])).toBe(6 - 2); // the AP handed over is the action's price
-  });
 });
 
 describe('Grenadier\'s Arm: objects', () => {
@@ -174,10 +168,10 @@ describe('Field Medic, Humanity First, Factory Made, Heavyworlder, Old School', 
     expect(() => f.act({ type: 'combat/shove', unitId: m.id, targetId: foe.id })).toThrow(/First, Do No Harm/);
     expect(() => f.act({ type: 'combat/overwatch', unitId: m.id, mode: 'shot' })).toThrow(/First, Do No Harm/);
   });
-  it('Humanity First: AP handed over by a non-human squadmate is refused', () => {
-    const f = fightWith([{ traits: ['humanity_first'] }, { traits: ['factory_made'], perks: { many_hands: 'mastered' } }], [{ at: 'O10' }]);
+  it('Humanity First: AP given by a non-human squadmate is refused (the Rally Call, now that Hand-Off gives none)', () => {
+    const f = fightWith([{ traits: ['humanity_first'] }, { traits: ['factory_made'], skills: { charisma: 5 } }], [{ at: 'O10' }]);
     const [h, bot] = f.pcs; h.pos = '3,3'; bot.pos = '3,4';
-    f.turn(bot); f.act({ type: 'combat/perk', unitId: bot.id, id: 'many_hands', actionId: 'hand_off', targetId: h.id, choice: '2' } as any);
+    f.turn(bot); f.act({ type: 'combat/call', unitId: bot.id, id: 'call.rally', targetId: h.id } as any);
     expect(logHas(f.cb, /won't take AP from .*Humanity First/)).toBe(true); expect(f.unit(h.id).apNext || 0).toBe(0);
   });
   it('Factory Made: a squadmate Field Repairs the machine body (combat/repair on them)', () => {

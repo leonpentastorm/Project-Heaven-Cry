@@ -2798,7 +2798,7 @@
       "type": "hellraiser_servo_fist",
       "provisional": true,
       "requires": {
-        "proficiency": 3
+        "raw_power": 3
       },
       "tags": [
         "electronic"
@@ -2972,7 +2972,7 @@
       "provisional": true,
       "reload": "loose",
       "requires": {
-        "proficiency": 3
+        "dexterity": 3
       },
       "tags": [
         "electronic"
@@ -3265,7 +3265,7 @@
       "type": "bot_thread_banner",
       "provisional": true,
       "requires": {
-        "camaraderie": 3
+        "empathy": 3
       },
       "phys": {
         "system": "melee",

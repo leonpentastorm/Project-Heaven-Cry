@@ -118,32 +118,6 @@ describe('Got You in My Sight on the area map', () => {
   });
 });
 
-describe('area-map strikes open the fight (Breaching Strike, Grapple)', () => {
-  it('Breaching Strike on a token next to you starts the fight with the strike; the cost comes off your AP', () => {
-    const s = storyWith([{ perks: { breaching_strike: 'I' } }]); const c = s.chars[0], at = positionsOf(s.g)[c.id];
-    const n = place(s, freeNear(s.g, at, 1));
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'breaching_strike', actionId: 'breaching_strike', targetId: n.id } as any);
-    expect(s.g.phase).toBe('combat');
-    expect(logHas(s.g.combat!, /Breaching Strike/)).toBe(true);
-    const me = s.g.combat!.units.find((u) => u.charId === c.id)!;
-    expect(me.waitRound).toBe(2); // in the open: you act from round 2
-    // Too far: refused before anything is spent.
-    const s2 = storyWith([{ perks: { breaching_strike: 'I' } }]); const c2 = s2.chars[0], n2 = place(s2, freeNear(s2.g, positionsOf(s2.g)[c2.id], 4));
-    expect(() => s2.act({ type: 'world/act', charId: c2.id, act: 'perk', id: 'breaching_strike', actionId: 'breaching_strike', targetId: n2.id } as any)).toThrow(/reach/);
-    expect(s2.g.phase).toBe('story');
-  });
-  it('Grapple on a token next to you opens the fight with the grab (the Body save rolls in the fight)', () => {
-    const s = storyWith([{ perks: { grapple: 'I' } }]); const c = s.chars[0], at = positionsOf(s.g)[c.id];
-    const n = place(s, freeNear(s.g, at, 1));
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'grapple', actionId: 'grapple', targetId: n.id } as any);
-    expect(s.g.phase).toBe('combat'); expect(logHas(s.g.combat!, /grabs for Raider \(Grapple\)/)).toBe(true);
-  });
-  it('the story Breaching Strike opens a ruling', () => {
-    const s = storyWith([{ perks: { breaching_strike: 'II' } }]); const c = s.chars[0];
-    s.act({ type: 'story/perk', charId: c.id, id: 'breaching_strike', actionId: 'breach_story', text: 'shoulders the hatch' } as any);
-    expect((s.g.story.rulings || []).some((r) => /Breaching Strike out of a fight: shoulders the hatch/.test(r.text))).toBe(true);
-  });
-});
 
 describe('Talks Broke Down: the Narrator says whether the fight came from the talk', () => {
   const talkThenFight = (fromTalk: boolean | undefined, rounds = 0) => {

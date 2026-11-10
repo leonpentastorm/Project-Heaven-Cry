@@ -340,7 +340,7 @@
       "attribute": "endurance",
       "core": "body",
       "slot": "gamma",
-      "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilant.",
+      "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilance.",
       "per_point": {
         "text": "You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
@@ -512,22 +512,15 @@
       ],
       "unlocks": {
         "3": {
-          "name": "Shove",
+          "name": "Heavy Hands",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "2 AP: push an adjacent target back 1 tile per point of Strength, or knock it Prone.",
+          "text": "A melee technique of yours that pushes its target moves it 1 tile further.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "shove",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "condition",
-              "condition": "prone",
-              "target": "target",
-              "when": "on_shove_choice"
+              "op": "knockback",
+              "tiles": 1,
+              "target": "target"
             },
             {
               "op": "perk_choice",
@@ -535,22 +528,24 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "5": {
-          "name": "Break",
-          "category": "Active Skill",
+          "name": "Follow Through",
+          "category": "Combat Interaction",
           "mastery": 2,
-          "text": "3 AP: destroy a door, a lock, a piece of cover, or one armour slot on an adjacent enemy.",
+          "text": "When a Finisher of yours takes its target out, you are left with 1 Momentum.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "break",
-              "ap": 3,
-              "uses": "at_will"
+              "op": "resource",
+              "resource": "momentum",
+              "set": 1,
+              "when": "a Finisher of yours takes its target out"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -804,9 +799,10 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "debuff_body",
+            "stat": "strength",
             "basis": "skill_mod",
-            "min": 0
+            "min": 0,
+            "context": "Threaten and the conditions this skill speaks: the save against them is 12 + this"
           }
         ]
       },
@@ -1143,15 +1139,18 @@
           "name": "Quick Draw",
           "category": "AP Mod",
           "mastery": 2,
-          "text": "Your first shot in each combat costs 0 AP.",
+          "text": "Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "free_first_shot_per_combat",
-              "value": 1
+              "op": "cost_mod",
+              "action": "attack_with_a_drawn_weapon",
+              "value": "zero",
+              "uses": "per_combat",
+              "context": "Draw Cut, Snap Shot"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -1565,7 +1564,7 @@
       "attribute": "expression",
       "core": "mind",
       "slot": "beta",
-      "summary": "The mechanic. Fixes guns, gear and machines in the field, robot squadmates included.",
+      "summary": "Making a thing work now with what is at hand. Fixes guns, gear and machines in the field, robot squadmates included.",
       "per_point": {
         "text": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
         "effects": [
@@ -1582,7 +1581,7 @@
           "name": "Field Repair",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Proficiency point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
+          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Improvisation point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
           "effects": [
             {
               "op": "grant_action",
@@ -1602,15 +1601,16 @@
           "name": "Tuned",
           "category": "Passive",
           "mastery": 2,
-          "text": "One weapon you personally maintain gains +10% damage and never jams.",
+          "text": "The weapon in your main hand never jams and never breaks.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "tuned_weapon_damage_pct",
-              "value": 10
+              "op": "immunity",
+              "to": "weapon_jam_and_break",
+              "context": "the weapon in your main hand"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -2055,14 +2055,15 @@
         },
         "5": {
           "name": "Proven Formula",
-          "category": "AP Mod",
+          "category": "Passive",
           "mastery": 2,
-          "text": "A Sigil spell you've already drawn this combat costs 1 AP less.",
+          "text": "+3 on your saves against a spell or condition that has already hit you this combat.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap_cost:repeat_sigil_spell",
-              "value": -1
+              "op": "save_mod",
+              "value": 3,
+              "target": "self",
+              "when": "against a spell or condition that has already hit you this combat"
             }
           ],
           "adjudication": "engine"
@@ -2181,9 +2182,10 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "debuff_brain",
+            "stat": "strength",
             "basis": "skill_mod",
-            "min": 0
+            "min": 0,
+            "context": "Persuade and the conditions this skill speaks: the save against them is 12 + this"
           }
         ]
       },
@@ -2472,7 +2474,7 @@
       "attribute": "perception",
       "core": "mind",
       "slot": "beta",
-      "summary": "Detective work and target analysis. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
+      "summary": "Seeing how a thing works: a lock, a mechanism, a crime scene, an enemy. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
       "per_point": {
         "text": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
         "effects": [
@@ -2505,15 +2507,16 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Weak Point",
+          "name": "Read Them",
           "category": "Passive",
           "mastery": 2,
-          "text": "Enemies you've analyzed take +15% damage from your whole squad.",
+          "text": "Enemies you've analyzed deal 15% less damage to your whole squad.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "analyzed_target_damage_taken_pct",
-              "value": 15
+              "op": "damage_reduction",
+              "value_pct": 15,
+              "target": "squad",
+              "source": "enemies you have analyzed"
             }
           ],
           "adjudication": "engine"
@@ -2806,7 +2809,7 @@
           "name": "Mercy",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "2 AP: a humanoid enemy below 50% HP makes a Heart save against your Heart debuff strength, or surrenders or flees.",
+          "text": "2 AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
           "effects": [
             {
               "op": "grant_action",
@@ -2933,15 +2936,17 @@
       "unlocks": {
         "3": {
           "name": "Hand-Off",
-          "category": "AP Mod",
+          "category": "Passive",
           "mastery": 1,
-          "text": "Once per round, give 1 of your AP to an adjacent ally.",
+          "text": "Once per round, when an ally next to you is attacked, they use your Defense in place of their own if yours is higher.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "hand_off",
-              "ap": 0,
-              "uses": "per_round"
+              "op": "stat_mod",
+              "stat": "defense",
+              "basis": "your Defense",
+              "target": "an adjacent ally",
+              "limit": "once per round",
+              "when": "an attack against them, if your Defense is higher"
             },
             {
               "op": "perk_choice",
@@ -2949,7 +2954,8 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "5": {
           "name": "Nobody Left Behind",
@@ -3074,9 +3080,10 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "debuff_heart",
+            "stat": "strength",
             "basis": "skill_mod",
-            "min": 0
+            "min": 0,
+            "context": "Taunt and the conditions this skill speaks: the save against them is 12 + this"
           }
         ]
       },
@@ -3249,7 +3256,7 @@
           "name": "Overdraw",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Overdraw: once per combat, a Pump adds 2 stages instead of 1 (at stage 2 or lower), and the heart pays +1 Strain after it (rules 1.5).",
+          "text": "Once per combat, a Pump adds 2 stages instead of 1 (at stage 2 or lower), and the heart pays +1 Strain after it.",
           "effects": [
             {
               "op": "grant_action",
@@ -3270,7 +3277,7 @@
           "name": "Pure Heart",
           "category": "Combat Interaction",
           "mastery": 2,
-          "text": "Pure Heart: once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release (rules 1.5).",
+          "text": "Once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
           "effects": [
             {
               "op": "grant_action",
@@ -3319,8 +3326,8 @@
       "overreach": {
         "from_points": 5,
         "trigger": "contact with the upper realm (a holy site, a Blessing, a strong Soul spell)",
-        "consequence": "Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
-        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Indulge: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
+        "consequence": "Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Acuity this scene.",
+        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Indulge: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Acuity this scene.",
         "effects": [
           {
             "op": "narrator",
@@ -3388,7 +3395,7 @@
       "attribute": "determination",
       "core": "soul",
       "slot": "gamma",
-      "summary": "The occultist's library. Mirrors Rumination.",
+      "summary": "The occultist's library: old scripts, curses, relics and the names of things.",
       "per_point": {
         "text": "Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
@@ -3477,8 +3484,8 @@
       "overreach": {
         "from_points": 5,
         "trigger": "a purely scientific explanation",
-        "consequence": "You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
-        "text": "Trigger: a purely scientific explanation. Indulge: You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
+        "consequence": "You reject it: −2 on rolls that rely on tech (Evokers, Acuity, Improvisation) this scene.",
+        "text": "Trigger: a purely scientific explanation. Indulge: You reject it: −2 on rolls that rely on tech (Evokers, Acuity, Improvisation) this scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -3574,23 +3581,19 @@
         },
         "5": {
           "name": "Stand Still",
-          "category": "Combat Starter",
+          "category": "Passive",
           "mastery": 2,
-          "text": "Until you first act in a combat, enemies attacking you take −2 to hit, and the first one to miss gives you a free attack.",
+          "text": "Until you first move, attack or use an ability in a combat, your Calls cost 1 AP less.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "defense_until_first_act",
-              "value": 2
-            },
-            {
-              "op": "grant_action",
-              "action": "stand_still_counter",
-              "ap": 0,
-              "uses": "per_combat"
+              "op": "cost_mod",
+              "action": "call",
+              "value": -1,
+              "when": "until you first act in a combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",

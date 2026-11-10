@@ -23,7 +23,8 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 
 **Conventions**
 
-- Rolls are d20 plus modifiers against a target. "Roll Analysis" means d20 + your Analysis modifier.
+- Rolls are d20 plus modifiers against a target. "Roll Acuity" means d20 + your Acuity modifier.
+- **Skill names changed in rules 1.13** (ids did not). Older lines and section 14 items still use the old names; read them so: **Analysis** is **Acuity** (Perception's beta: knowing how a thing works; Analyze, locks, hacking, pricing, reading a scene). **Proficiency** is **Improvisation** (Expression's beta: making a thing work now; Field Repair, fitting, modding, upkeep), except where the old line is about understanding or cracking a mechanism, which is Acuity. **Implication** is **Insinuation**, **Vigilant** is **Vigilance**, **Sensory** is **Senses**. Composure is Determination's beta and Lore Master its gamma. The current rule for every perk the pass changed is in "The perk, unlock and trait pass".
 - The grid uses square tiles of 1.5 m. Distances in old drafts given in metres convert at 1 tile per 1.5 m.
 - Per-point bonuses from Attributes and Skills add into one derived stat (see Derived stats). Separate multipliers from traits, perks, criticals and conditions then multiply: a ×1.3 stat with a +50% trait is ×1.95.
 - Round down unless a rule says otherwise. AP can be fractional (0.5); a fraction left at the end of a turn is lost.
@@ -131,35 +132,40 @@ Skill books and quest rewards can grant extra Skill points. A Legendary Deed, at
 
 In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the starting value. A Skill is its points (0–10); mod(skill) is its modifier (−2 at 0, otherwise points − 1). Results round down. Percentage caps stop any reduction above 60%.
 
+**The slot decides what a skill's points are for** (rules 1.13, Skeleton 2.0). An **alpha** opens a way of fighting and carries the offence. A **beta** is a defence. A **gamma** is world play and speech: on a check it adds its **full points** (1 better than an alpha or a beta with the same points; 0 points is still −2), it is called first when talking to someone, and it owns a **Call**, the only way AP is given or taken inside a turn. The skills named Acuity and Improvisation keep the ids `analysis` and `proficiency` in the data; Insinuation, Vigilance and Senses keep `implication`, `vigilant` and `sensory`.
+
 **Body and survival**
 
 | Stat | Formula |
 |---|---|
 | Max HP | 100 + 15 × (Endurance − 1) + (level − 1) × HP per level |
-| HP per level | 5 + 2 × Durability |
+| HP per level | 5 + 2 × Pain Threshold (rules 1.13: it was Durability) |
 | AP per turn | 6 |
 | Initiative bonus | (Agility − 1) + Reaction Speed modifier |
 | Movement (tiles per AP) | 1 + 0.5 × (Agility − 1); never below 0.5 |
 | Carry weight | 20 kg + 5 kg × (Strength − 1). Over it you are **Overburdened** (a permanent status while it lasts): −1 Movement per started 5 kg over, never below 0.5, and no Sprint (provisional, item 54) |
 | Defense | 10 + Dodge, where Dodge = mod(Athletics), minimum 0 |
+| Guard pool | Durability points, 5 at most; Brace and the Guard technique each give 1 + (Durability − 1), 1 more with a shield |
 | Counter bonus | mod(Raw Power), minimum 0 |
 | Injury resistance | 10% × (Endurance − 1) chance to ignore an injury |
-| Critical damage taken | −10% × (Perception − 1) − 5% × Durability |
+| Critical damage taken | −10% × (Perception − 1) − 5% × Acuity (rules 1.13: it was Durability) |
 | Elemental damage taken | −10% × Pain Threshold |
-| Ambush damage taken | −10% × Reaction Speed |
-| Healing and shields received | +10% × Sensory |
-| Saves (Body / Brain / Heart) | mod(Guts) / mod(Charisma) / mod(Composure) |
-| Debuff strength (Body / Brain / Heart) | mod(Intimidation) / mod(Eloquence) / mod(Implication), minimum 0 |
+| Ambush damage taken | −10% × Improvisation (rules 1.13: it was Reaction Speed) |
+| Healing received | +10% × Camaraderie (rules 1.13: it was Sensory) |
+| Shields received | +10% × Conscience, whatever made the shield (rules 1.13) |
+| Saves (Body / Brain / Heart) | mod(Guts) / mod(Rumination) / mod(Composure) (rules 1.13: the Brain save was Charisma) |
+| Strength of a condition you inflict | mod of the skill that delivered it, minimum 0: a weapon's skill for a technique, Brain Power for a Sigil, Will Power for an Outburst, Faith for a Blessing, the gamma that spoke for a Call or a spoken condition, Ingenuity for a trap or a poison (rules 1.13: it was one number a family, from Intimidation, Eloquence and Implication) |
 
 **Senses and reach** (in tiles)
 
 | Stat | Formula |
 |---|---|
-| Vision range | 12 + 2 × (Perception − 1) + Vigilant; halved in darkness (see Vision) |
-| Detection range | 2 + Vigilant |
+| Vision range | 12 + 2 × (Perception − 1) + Vigilance; halved in darkness (see Vision) |
+| Detection range | 2 + Vigilance |
 | Stealth | 0.5 × Ingenuity, subtracted from enemies' Detection range against you |
 | Throwing range | 6 + 0.5 × Dexterity |
-| Analyze range | 4 + Analysis |
+| Analyze range | 4 + Acuity |
+| A Call's range | 4 + the points of its gamma skill |
 
 **Damage multipliers**
 
@@ -167,10 +173,10 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 |---|---|
 | Weapon attacks (rules 1.12) | 1 + 0.1 × (the weapon's Attribute − 1) + 0.05 × the skill the weapon hits with. Heavy melee: Strength and Raw Power. Light melee, guns, bows and thrown weapons: Agility and Dexterity. Bare hands: Strength, and 0.05 × both Raw Power and Dexterity. Each weapon names its own (`phys.scales_with`, `phys.hits_with`; item 946) |
 | Physical (anything that isn't a weapon attack: a thrown body, a sling stone) | 1 + 0.1 × (Strength − 1) + 0.05 × Raw Power |
-| Elemental | 1 + 0.2 × (Expression − 1) + 0.1 × Visualization |
+| Elemental | 1 + 0.1 × (Expression − 1) + 0.05 × Visualization |
 | Sigil | 1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power |
 | Soul | 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (rules 1.5; 2.45 maxed) |
-| Healing and shields given | 1 + 0.1 × (Insight − 1) + 0.1 × Camaraderie |
+| Healing given | 1 + 0.1 × (Insight − 1) + 0.1 × Empathy (rules 1.13: it was Camaraderie) |
 | Critical | 2 + 0.1 × (Perception − 1) + 0.05 × Dexterity (rules 1.12: it was Athletics; offence sits on the alpha, item 953) |
 | Ambush | 1.5 + 0.05 × Ingenuity |
 | Blessing power | 1 + 0.1 × Faith |
@@ -182,18 +188,51 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Max Sigil words per spell | 2 + floor((Intelligence − 1) ÷ 2); a spell never holds more than 4 glyphs (rules 1.4) |
 | Glyphs on the ground at once | Max Sigil words (+ Hold the Stroke); it keeps growing above Intelligence 5 (rules 1.4) |
 | Glyph AP cost (draft 1.2) | 1 − 0.1 × (Expression − 1) per glyph, minimum 0.5 (was: Sigil AP cost) |
-| Sigil Core saving | floor(Proficiency ÷ 3) per spell, minimum cost 1 |
-| Sigil range bonus | +0.5 tile × Rumination, rounded down; added once to a Reach word's range, never to Touch (rules 1.4) |
+| Sigil Core saving | floor(Brain Power ÷ 3) per spell, minimum cost 1 (rules 1.13: it was Proficiency) |
+| Sigil range bonus | +0.5 tile × Brain Power, rounded down; added once to a Reach word's range, never to Touch (rules 1.13: it was Rumination) |
 | Sigil duration bonus | +0.5 round × Brain Power |
 | Max MP (Emanator charge) | 100 + 100 × (Virtue − 1) |
 | Soul cast AP | 2 (rules 1.5: Begin, and class moves cast like an Outburst; Swift 1). Empathy instead gives free Pumps: 1 a round from Empathy 3, 2 from 7 |
 | Soul mana cost | −5% × (Insight − 1) |
-| Soul range bonus | +0.5 tile × Lore Master |
+| Soul range bonus | +0.5 tile × Will Power (rules 1.13: it was Lore Master) |
+| Ready designs | 2 + floor(Will Power ÷ 2), at least 3 (rules 1.13: it was Empathy) |
 | Mana Syphon bonus | +10% × (Determination − 1) + 10% × Will Power |
 | Strain limit | 3 + floor(Will Power ÷ 2) |
 | Prayer cooldown | 4 turns − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1 |
 
-**Social.** Leadership comes from Authority: 0 Unfit, 1–2 Squad, 3–4 Platoon, 5+ Command. Each point of Conscience adds 1 Karma to every Karma award; each point of Authority adds 1 Reputation to every Reputation award.
+**Social.** Leadership comes from Authority: 0 Unfit, 1–2 Squad, 3–4 Platoon, 5+ Command. Each point of Authority moves Karma 1 further every time it changes, more when it is awarded and more when it is taken (rules 1.13: it was Conscience).
+
+**What a point gives, skill by skill** (rules 1.13; the lines the skill cards and the level-up screen show, from `skills.json` `per_point.text`).
+
+| Skill | Attribute | Slot | A point gives |
+|---|---|---|---|
+| Durability | Endurance | alpha | Your Guard pool holds 1 more (5 at most). Brace and the Guard technique each give you more Guard: 1, plus 1 for every point here after the first. |
+| Pain Threshold | Endurance | beta | −10% elemental damage taken. +2 HP every level. |
+| Senses | Endurance | gamma | You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
+| Raw Power | Strength | alpha | +1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks. |
+| Guts | Strength | beta | +1 on Body saves (poison, knock-downs, being pushed or pinned). |
+| Intimidation | Strength | gamma | Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say. |
+| Athletics | Agility | beta | +1 Defense (you are harder to hit), from 2 points. |
+| Dexterity | Agility | alpha | +1 to hit with guns, light blades and thrown weapons. +5% critical damage. You throw half a tile further. Your shots' techniques are harder to save against. |
+| Reaction Speed | Agility | gamma | +1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
+| Ingenuity | Perception | alpha | +5% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against. |
+| Improvisation | Expression | beta | −10% ambush damage taken. Field Repair restores 5% more from 3 points up. |
+| Vigilance | Perception | gamma | You notice traps, hidden things and hidden enemies 1 better, and 1 tile further off. Your Spot Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
+| Brain Power | Intelligence | alpha | +10% Sigil power. You know 1 more Sigil word. Every 2 points: Sigils reach 1 tile further and last 1 round longer. Every 3 points: a Sigil burns 1 less core charge. Your Sigils' conditions are harder to save against. |
+| Rumination | Intelligence | beta | +1 on Brain saves (confusion, illusions, having your mind turned). |
+| Eloquence | Intelligence | gamma | Persuading an enemy in a fight is harder to resist. Your Brief Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
+| Visualization | Expression | alpha | +5% elemental damage. |
+| Acuity | Perception | beta | −5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point. |
+| Charisma | Expression | gamma | An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
+| Empathy | Insight | alpha | +10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two. |
+| Camaraderie | Insight | beta | +10% healing received. |
+| Insinuation | Insight | gamma | Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say. |
+| Will Power | Determination | alpha | +10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. |
+| Lore Master | Determination | gamma | Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
+| Composure | Determination | beta | +1 on Heart saves (fear, despair, losing your nerve). |
+| Faith | Virtue | alpha | +10% Blessing power. Prayers come back half a turn sooner. Your Blessings' conditions are harder to save against. |
+| Conscience | Virtue | beta | +10% to every shield you are given. |
+| Authority | Virtue | gamma | Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
 
 ## Classes
 
@@ -386,9 +425,9 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 - **Shove** (2 AP): an adjacent enemy. Roll d20 + Raw Power modifier against 10 + the target's Raw Power or Athletics modifier, whichever is higher (an enemy uses its attack bonus). On a success it moves 1 tile directly away from you. If that tile is blocked, it is knocked prone instead. Shoving someone into fire or a toxic spill is the point.
 - **Break**: attacking an object (Shoot an object; a melee strike works the same way). See Cover and Map objects.
 - **Brace** (1 AP): set a heavy weapon. While braced (or prone) you don't move, the LMG loses its −2, the .700 Blackpoint can fire, and Recoil is halved. Moving ends it.
-- **Field Repair** (2 AP): Proficiency 3+, uses a spare-parts kit charge, restores 10% + 5% per Proficiency point above 3 of a weapon's or a robot's Durability. Out of combat, 10 minutes per charge restores 50%.
-- **Improvise Tool**: out of combat, a Proficiency check the Narrator calls; on a success you have a one-use tool for the job, as the Narrator describes it.
-- **Analyze on NPCs**: out of combat it is an Analysis check the Narrator calls (TN by how guarded they are). On a success you learn what Analyze reveals in a fight, in words.
+- **Field Repair** (2 AP): Improvisation 3+, uses a spare-parts kit charge, restores 10% + 5% per Improvisation point above 3 of a weapon's or a robot's Durability. Out of combat, 10 minutes per charge restores 50%.
+- **Improvise Tool**: out of combat, an Improvisation check the Narrator calls; on a success you have a one-use tool for the job, as the Narrator describes it.
+- **Analyze on NPCs**: out of combat it is an Acuity check the Narrator calls (TN by how guarded they are). On a success you learn what Analyze reveals in a fight, in words.
 - **Wards and rituals** belong to Sigil and Soul magic; until that pass, the Narrator rules them from the perk's text.
 
 **Prone** (1 AP to drop or stand): ranged attacks against you are at −2 and melee attacks at +2, and you can't move until you stand. **Opportunity attacks** need a free reaction (one per round). **Overwatch** spends the shot's AP now and holds the shot until your next turn: the first enemy that moves while in your line of sight and range takes it, as your reaction.
@@ -399,7 +438,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 - **Fog of war:** the squad shares what any member sees. An enemy out of every member's sight (range and line of sight) isn't shown and can't be targeted. **Sensory** lets you sense what you can't see: within 1 + Sensory ÷ 3 tiles (rounded down), an unseen enemy shows as a presence, with no details.
 - Enemies see by the same rule (Vision 12, halved in darkness).
 
-**Analyze.** 2 AP (1 with Analysis's Quick Read), at an enemy you can see within 4 + Analysis tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has Weak Point (Analysis 5), the squad deals +15% damage to that enemy. Details are provisional (item 56).
+**Analyze.** 2 AP (1 with Acuity's Quick Read), at an enemy you can see within 4 + Acuity tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has **Read Them** (Acuity 5; it was Weak Point), that enemy deals 15% less damage to the whole squad (rules 1.13: a beta is defence; the +15% squad damage is gone). Details are provisional (item 56).
 
 **Attack roll.** d20 + attack skill modifier + weapon accuracy + situational modifiers, against the target's **Defense** (10 + Dodge).
 
@@ -1251,9 +1290,9 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 
 ## Conditions and saves
 
-**Debuffs come in three families,** matching the three Cores. Whoever inflicts one adds their **debuff strength** for that family; whoever receives one rolls a **save** for that family.
+**Debuffs come in three families,** Body, Brain and Heart. Whoever receives one rolls a **save** for its family: Body saves with **Guts**, Brain with **Rumination**, Heart with **Composure** (rules 1.13; the Brain save was Charisma). Whoever inflicts one adds their **strength with the skill that delivered it**: the modifier of that skill, never below 0. A technique reads the skill its weapon hits with, a Sigil Brain Power, an Outburst Will Power, a Blessing Faith, a Call or a spoken condition the gamma that spoke, a trap or a poison Ingenuity, a companion its handler's Empathy. There is no single Body, Brain or Heart strength any more.
 
-**The save.** d20 + your save bonus for the family, against 12 + the attacker's debuff strength for it. Succeed and the condition doesn't land. Conditions that come from a hit (Bleeding from an injury, Burning from incendiary rounds) don't allow a save.
+**The save.** d20 + your save bonus for the family, against 12 + the attacker's strength with the skill that delivered it (a technique's own save uses half of it, rounded up: see Physical techniques). Succeed and the condition doesn't land. Conditions that come from a hit (Bleeding from an injury, Burning from incendiary rounds) don't allow a save.
 
 **Stacking.** The same condition never stacks; a second application resets it to the longer duration.
 
@@ -1492,7 +1531,7 @@ Every word answers one question:
 6. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
 7. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
 8. **Co-op.** Two Sigil users can build one Line together, each drawing their own glyphs: the second extends the first one's stroke by picking it on the draw step (rule 3.6). Whoever Evokes pays the firing charge, rolls, and needs Max Sigil words of at least the Line's length. **Enemy Sigil users** can Evoke any Line they can read, yours included, and the other way round.
-9. **Skill unlocks that change drawing and Evoking** (engine-run, items 482–485): **Brain Power · Overclock** (Mastery 1): your next glyph may make a spell one word longer than your Max Sigil words (never past 4), for 2 charge more. **Brain Power · Twin Draw** (Mastery 2): once per combat, the glyphs of two spells cost the Glyph AP of the longer spell only (steps still cost Movement). **Rumination · Proven Formula** (Mastery 2): a spell whose words, in order, match one you already Evoked this combat costs 1 AP less to Evoke. **Visualization · Paint the Field** (Mastery 2): once per Evoke, a spell with no Burst word gets a free SPREAD or PUSH (no glyph, no charge, not counted toward 4).
+9. **Skill unlocks that change drawing and Evoking** (engine-run, items 482–485): **Brain Power · Overclock** (Mastery 1): your next glyph may make a spell one word longer than your Max Sigil words (never past 4), for 2 charge more. **Brain Power · Twin Draw** (Mastery 2): once per combat, the glyphs of two spells cost the Glyph AP of the longer spell only (steps still cost Movement). (**Rumination · Proven Formula** is no longer a Sigil unlock: since rules 1.13 it is +3 on saves against a condition that has already hit you this combat.) **Visualization · Paint the Field** (Mastery 2): once per Evoke, a spell with no Burst word gets a free SPREAD or PUSH (no glyph, no charge, not counted toward 4).
 
 #### 4. Evoking: the facing rule
 
@@ -2128,6 +2167,7 @@ Hymn's or Miracle's AP); the prayer traits; and the Factory Made and The Old Blo
 - **Achieved** (combo perks, 19): each joins two or three skills. They need **Mastery 2 (5 points) in every skill listed**, plus a deed done in play. The Narrator grants them; the engine checks the skill requirement and records the deed. Every skill is in at least one combo.
 - **Ultimate** (6): granted automatically when you hold both of the Achieved perks it names. **They're secret:** no screen lists them, hints at them or shows progress toward them until one is granted, which gets its own award screen. The AI Narrator never mentions an Ultimate the player doesn't hold.
 - Every AP gain from perks obeys the AP ceiling: +3 per turn at most, 9 AP at most, 2 AP at least.
+- **Only a gamma's perk gives or takes AP inside a turn** (rules 1.13). An alpha's or a beta's perk may make its own skill's action cheaper, and nothing more; the perks that used to hand AP out are listed in "The perk, unlock and trait pass" below.
 
 ## Shared rules for perks, traits and classes (rules 1.3)
 
@@ -2137,7 +2177,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Damage types.** Physical by default. Each weapon names its type (weapons.json `damage_type`): the flamer and incendiary rounds deal fire, the core rifle and Enhanced rounds Elemental, SHOCK and SPARK lightning, the bot-scrambler emp. Fire and lightning count as Elemental for *Elemental damage taken*. Grenades, launchers, satchels and barrels are **explosive**. The derived reductions apply in the chain: Elemental damage taken −10% × Pain Threshold, Ambush damage taken −10% × Reaction Speed, Critical damage taken −10% × (Perception − 1) − 5% × Durability (it shrinks the critical multiplier's bonus), each capped at 60%. Healing and shields received get +10% × Sensory. The air's Healing given multiplier applies to magical healing.
 
-**Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Case Closed, Weak Point, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
+**Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel; Case Closed and Weak Point left this list with rules 1.13) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
 
 **Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type.
 
@@ -2202,11 +2242,10 @@ Written 7 Nov 2026, when every perk, trait and class move was built into the eng
 
 ### Movement, stealth and vision
 
-**Into the Dark.**
-- **I:** your first normal move each fight onto a tile your squad hasn't seen this fight costs 1 AP less. One Movement's worth of tiles is free. It doesn't apply to Sprint.
-- **On the area map:** the first move in each zone this character hasn't moved in yet gets the same discount.
-- **II:** +1 AP on your first turn in a fight in a place that causes Fear. That is either the Narrator's start-fight `fear` flag or a zone tagged `fear`. On the area map, the first move in such a zone gives the +1 AP.
-- **Narrator:** describes the character striding in first.
+**Into the Dark** (rules 1.13: it gives no AP any more).
+- **I:** you can't be ambushed on your first move into the unknown. The first time in a fight you walk onto a tile your side hasn't seen, attacks against you are not ambushes until your next turn starts: no critical on 19 and no Ambush multiplier. Once a fight.
+- **II:** and you can't be made Afraid during round 1 of a fight in a place that causes Fear. That is either the Narrator's start-fight `fear` flag or a zone tagged `fear`.
+- **Narrator:** out of a fight, the character who walks in first is never caught off guard there.
 
 **Wall Run.** A move may cross wall faces, low obstacles (half-cover objects) and holes as if they were floor.
 - **Tier I:** at most 2 such tiles in a row. **Tier II:** at most 4.
@@ -2218,7 +2257,7 @@ Written 7 Nov 2026, when every perk, trait and class move was built into the eng
 **Roll With It.** A *successful dodge* is an attack against you that misses. It works once a round.
 - **I:** 1 free tile. **II:** 2 free tiles.
 - **Free tiles:** they cost no AP and draw no opportunity attacks. A miss on your own turn (Overwatch during your move) gives them at once. A miss on an enemy's turn gives them at the start of your next turn.
-- **II also:** your next attack gets +0.1 on its critical multiplier. The bonus waits for your next turn when the miss came on an enemy's turn, and it is spent by that attack whether it hits or misses.
+- Tier II's critical rider is gone (rules 1.13: no damage on a beta).
 
 **Shadow Step.**
 - **I:** while Hidden, a move from a tile next to cover to a tile next to cover counts half its tiles, rounded up. On the area map, sneaking from cover to cover halves the tiles for the move and for the sneak surcharge.
@@ -2394,10 +2433,10 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
   - **Automatic interrupts** (Angel of the Trenches): resolved at the trigger with no choice. "Hold position" turns it
     off.
 - **AP debt** (On My Mark) comes off the next turn after the floor of 2, at most 4.
-- **AP an ally gives** (Hand-Off, Rally Cry, Outclassed) is banked for the ally's next turn. It counts toward that
+- **AP an ally gives** (a Call, Outclassed; Hand-Off and Rally Cry give none since rules 1.13) is banked for the ally's next turn. It counts toward that
   turn's +3 perk-AP cap.
 - **Healing an ally** (Triage) has a floor of 1 AP.
-- **Help** means an engine action that benefits a squadmate: a stim, Hand-Off, Command, Field Repair on an ally, or a
+- **Help** means an engine action that benefits a squadmate: a stim, Command, Field Repair on an ally, or a
   Thrown Stim. Rival's Petty gate reads this list.
 
 ### Status, surrender, judgement, kin and companions
@@ -2527,6 +2566,56 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 - **Rest-camp fight** (Insomniac): a fight that starts in the same scene as a rest.
 - **Masterpiece** (both Oils, once a session, 0 AP): an ally's next d20 gets +2: a story check, a save against an
   enemy's condition, or an attack roll. An Echo reroll of that same check keeps the +2.
+
+### The perk, unlock and trait pass (rules 1.13, Skeleton 2.0)
+
+Leon's rulings of 10 Nov 2026. Where an older line in this spec says otherwise (the items named below), this section wins. Numbers marked provisional are items 973 to 990.
+
+**Replaced** (a new perk in the same place; the old ids `grapple` and `origami_hands` are gone).
+
+| Was | Is now | Skill | What it does |
+|---|---|---|---|
+| Shove (unlock at 3) | **Heavy Hands** | Raw Power | A melee technique of yours that pushes its target moves it 1 tile further. |
+| Break (unlock at 5) | **Follow Through** | Raw Power | When a Finisher of yours takes its target out, you are left with 1 Momentum. |
+| Grapple (perk) | **Iron Grip** (`iron_grip`) | Raw Power | **I:** a target you have Bound or Grappled can't use Answers or reactions; attacks aimed at you have a 50% chance to hit it instead; when you move, it comes with you, into the tile you leave. **II:** each of your melee techniques that hits a target you hold gives you 1 Momentum (once a technique, never a Finisher), and Throw Down on it needs no Momentum. |
+| Origami Hands (perk) | **Both Hands** (`both_hands`) | Dexterity | **I:** after one of your melee techniques hits, your next shot that turn has no Recoil. **II:** and after one of your shots hits, you gain 1 Momentum, once a turn. |
+
+Shove and Break are techniques everyone can learn (the Shove Link, the Break Finisher), and grappling is Bind with bare hands. Origami Hands' traps wait for the stealth list.
+
+**Reworded** (same name, same skill, same picture).
+
+| Perk or unlock | Skill | Rule now |
+|---|---|---|
+| **Breaching Strike** I/II | Raw Power | A passive (the 3 AP strike is gone). **I:** when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, it takes the hit again at half damage: half the damage of the hit that pushed it, or half a plain blow with the weapon in hand when the push had no hit (Shove). **II:** the enemy it was pushed into takes the same. |
+| **Quick Draw** (unlock at 5) | Dexterity | Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP. |
+| **Read Them** (unlock at 5; was Weak Point) | Acuity | Enemies you've analyzed deal 15% less damage to your whole squad. Named Read Them because Read is a class move. |
+| **Case Closed** (Mastered) | Acuity | Analyze reveals everything at once, as before. You and your allies have +2 Defense against an enemy you've analyzed (its attacks on your side are at −2). The +2 to hit and the +20% damage are gone. |
+| **Nothing Gets Past** (Mastered) | Vigilance | Every enemy that moves in your sight is Spotted for free: the mark your Spot Call would leave at your level, with no AP, no reaction and no Call slot used; once a round for each enemy. The every-mover Overwatch is gone (the Marksman's Killzone holds several shots). |
+| **Still Water** (Mastered) | Composure | Its original text stands: immune to Brain debuffs, and nothing reads you. Composure is a beta again, and a defence is its job. |
+| **Stand Still** (unlock at 5) | Composure | Until you first move, attack or use an ability in a combat, your Calls cost 1 AP less (never below 0). Making a Call is not acting. |
+| **Proven Formula** (unlock at 5) | Rumination | +3 on your saves against a spell or condition that has already hit you this combat. Engine reading: a condition that has taken hold on you once this fight is saved against at +3 from then on. |
+| **Tuned** (unlock at 5) | Improvisation | The weapon in your main hand never jams and never breaks. The +10% damage is gone. |
+| **Roll With It** II | Athletics | 2 free tiles, and nothing else. |
+| **You Get Used to It** I/II | Composure | **I:** the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +2. **II:** +4, and you may give the bonus to that ally instead (the Seen worse action, 0 AP). |
+
+**AP gifts on alphas and betas, turned into defence** (15.7: anything that gives or takes AP inside a turn is a gamma's).
+
+| Perk or unlock | Skill | Was | Is now |
+|---|---|---|---|
+| **Hand-Off** (unlock at 3) | Camaraderie | give 1 AP to an adjacent ally | Once per round, when an ally next to you is attacked, they use your Defense in place of their own if yours is higher. |
+| **Rally Cry** I/II | Camaraderie | +1 / +2 AP to all when an ally drops | When an ally drops to 0 HP, every other ally takes 15% (II: 25%) less damage until their own next turn. |
+| **Many Hands** (Mastered) | Camaraderie | Hand-Off of any amount of AP; a shared reaction | Your Hand-Off reaches any ally within 3 tiles. An ally you can see may use your reaction as their own (kept). |
+| **Used to the Pain** I/II | Pain Threshold | ±AP after the first hit of a fight | If the first hit of a fight took less than 20% (II: 30%) of your max HP, the next hit against you deals 25% (II: 40%) less. A heavier first hit gives nothing; there is no penalty. |
+| **Walking Wounded** (Mastered) | Pain Threshold | +1 AP a turn below half HP | Injuries never cost you AP or Movement (kept). Below half your max HP you take 20% less damage. |
+| **Into the Dark** I/II | Guts | a free first move; +1 AP in a place of Fear | **I:** no ambush counts against you on your first move into the unknown. **II:** no Fear in round 1 of a fight in a place that causes Fear. |
+| **Clean Hands** I/II | Conscience | +2 / +3 AP after sparing someone | A shield worth 15% (II: 25%) of your max HP after you spare an enemy or protect an innocent, once a turn. Out of a fight, a claim the Narrator accepts is that shield when the next fight starts. |
+| **Blueprint** II | Visualization | +1 AP to allies who saw the sketch | +2 Movement in the first round (tier I: +1). |
+
+**Kept as they are:** Still Standing, Eyes in the Back, True Name, Second Wind, On My Mark, Paint the Field, and the eleven discounts on a skill's own action (Speed Load, Quick Draw, Hot-Swap, Overhaul, Twin Draw, Parallel Thought, Quick Read, Rite in the Field, Righteous, Shrug It Off II). The gammas' AP perks stay (Grim Reaper, Overruled, Talks Broke Down, Sweet Talker, Outclassed, Got You in My Sight, Rounding Up).
+
+**Moved.** Dead Signal's skills are Acuity and Ingenuity (it was Proficiency: knowing where the wire is). The detective perks (Detective's Eye, Pattern Lock, Case Closed, Cold Read) are Acuity's and the gear perks (Jury-Rig, Hot-Swap, Overhaul, Field Surgeon) are Improvisation's, because the perks stayed on their ids.
+
+**Traits** follow what a skill means now, not its old name. Understanding, hacking, pricing and seeing read **Acuity**: Bottle Butts for Eyes (+1 with the glasses, −4 without), Slicer's Backdoor, Oil in My Mind, Market Blood, Old Timer. Repairing, modding and upkeep read **Improvisation**: Factory Made's self-repair, Drone Handler, Augmented's maintenance check, Ghost Soldier's arm. Lunarshine's Wasted state lowers both. A trait's Composure modifier reaches the Heart save again; a Charisma modifier no longer reaches a save; a Lore Master modifier is worth a full point on lore checks.
 
 ### Class moves in play
 
@@ -3113,7 +3202,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Out of a fight, it ends a story Body condition.
     - If the condition was only narrated, it opens a pending ruling instead.
     - It never removes Marked, Augment Offline, Emplaced or Last Turn.
-102. **Used to the Pain.** It triggers on the first wound only, so a hit absorbed by a shield doesn't count. Friendly
+102. **Used to the Pain.** It triggers on the first wound only, so a hit absorbed by a shield doesn't count. Friendly *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     fire doesn't count either. The AP goes through the bank, so it counts toward the next turn's +3 cap.
 103. **Scar Tissue.** It stacks on wounds.
     - The reduction combined with the derived Elemental damage taken stays within the 60% cap.
@@ -3122,13 +3211,13 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Tier II passes checks tagged `fear`, `nausea`, `gore`, `horror` or `disgust` automatically, and a story
       Fear or Nausea on the character ends at once.
     - Tier I ends a story Fear or Nausea at the next check or scene.
-105. **Grapple.**
+105. **Grapple.** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - It needs no free hand. Leon decides if one is required.
     - The hold ends when the grappler moves, and the engine's source check ends it when the grappler goes down.
     - Tier II redirects 50% of the attacks aimed at the grappler to an adjacent captive, rolled d100 on the game's RNG.
     - In the story, the NPC is marked `grappled` in `npcConds` and the Narrator rules whether the hold is plausible.
     - The Fists weapon skill "Grapple" stays separate. Folding the two together is a data job (see Data deltas).
-106. **Breaching Strike.**
+106. **Breaching Strike.** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - "Ignores cover" had no effect, since melee already ignores cover; `ignore_cover` is dropped from the data (both
       tiers) and the text.
     - The wall bonus is decided by simulating the push before the roll.
@@ -3211,12 +3300,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 *Movement, stealth and vision*
 
-121. *(B1)* **Into the Dark I:** the free part is 1 AP (one Movement of tiles), once a fight. It doesn't apply to Sprint (audit problem 1). "Unexplored" is a tile the squad hasn't seen this fight; on the area map, a zone this character hasn't moved in yet. The first zone counts as new.
+121. *(B1)* **Into the Dark I:** the free part is 1 AP (one Movement of tiles), once a fight. It doesn't apply to Sprint (audit problem 1). "Unexplored" is a tile the squad hasn't seen this fight; on the area map, a zone this character hasn't moved in yet. The first zone counts as new. *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
 122. *(B2)* **Wall Run:**
     - **Runnable tiles:** map walls with at least one open neighbour, half-cover objects, and objects whose kind contains hole, pit or gap. Never doors or free-standing full-cover objects.
     - **The II strike:** your weapon's basic attack (shot, or melee with a melee weapon).
     - **Story:** the distance limit is the Narrator's judgement; the engine auto-passes a tagged Athletics check (provisional reading; a check `distance` field would let the engine own it).
-123. *(B3)* **Roll With It:** once a round, and the tiles are deferred off your turn (audit problems 2 and 3). The II crit bonus is spent by the next attack, hit or miss.
+123. *(B3)* **Roll With It:** once a round, and the tiles are deferred off your turn (audit problems 2 and 3). The II crit bonus is spent by the next attack, hit or miss. *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
 124. *(B4)* **Shadow Step II:** TN 10 + best notice + 2 per earlier success; no new ambush (plan 6a-8, GAMEBREAKING fix). No witness: stays Hidden.
 125. *(B5)* **Got You in My Sight:**
     - once a round;
@@ -3288,7 +3377,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - PROVISIONAL.
 147. *(C6)* **Hot-Swap (6b).** In a fight, swapping a mod costs 1 AP, like swapping a weapon. Hot-Swap makes the first swap
     of the turn free (Tier II: the first two). PROVISIONAL. *(Rules 1.9: the swaps it covers are drawing, putting away and swapping hands, a two-handed draw included; not armour: item 686.)*
-148. *(C7)* **Origami Hands (GAMEBREAKING, 6a-6).**
+148. *(C7)* **Origami Hands (GAMEBREAKING, 6a-6).** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - Each build uses one spare-parts charge, and at most 2 of your traps can stand on the map at once.
     - Trap: 25 damage (Tier II: 37).
     - Sling: d20 + Dexterity against Defense, within throwing range, 10 × Strength physical damage.
@@ -3306,7 +3395,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Bench repair (out of combat) restores 100% for one spare-parts charge.
     - The extra slot is available after a long rest, once per weapon. The player picks its type by the mod they fit.
     - PROVISIONAL.
-151. *(C10)* **Nothing Gets Past (6b).**
+151. *(C10)* **Nothing Gets Past (6b).** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - "Hold the line" spends all whole shots of AP. Each enemy that moves draws one shot per move.
     - The whole chain runs on one reaction (the extra shots refund it).
     - Tiles not walked stay in the mover's bank.
@@ -3469,7 +3558,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     fight against upper-realm beings. A failure costs −2 AP on your first turn.
     - Communion: once per scene, a private pending ruling.
 180. *(D19)* **Music traits.** They follow the scope in the spec text above. Shields of 30+ count as a big heal.
-181. *(D20)* **You Get Used to It.** Tier I's −1 comes at the start of your next turn, at most once per turn. The +3 AP comes
+181. *(D20)* **You Get Used to It.** Tier I's −1 comes at the start of your next turn, at most once per turn. The +3 AP comes *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     when you heal or shield an ally (not yourself) who carries a Brain debuff. It is once per turn and within the
     +3 cap. Tier II has no penalty.
 182. *(D21)* **Shared Breath** (PROVISIONAL). The link range is 3 tiles, with sight.
@@ -3501,7 +3590,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - On the area map, the +2 goes to the story AP. The first-turn penalty applies only in a fight.
 186. *(E2)* **Overruled!** Read at the start of the turn only (plan). Persuade (rules 1.3 parley, 2 AP) lets a non-caster
     inflict the Left Brain Debuff. No story part.
-187. *(E3)* **Blueprint (ambiguous: Movement).**
+187. *(E3)* **Blueprint (ambiguous: Movement).** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - "+1 Movement" is +1 tile per AP, as written. At Agility 1 that doubles your movement. PROVISIONAL, flagged as
       strong.
     - Sketching costs 1 AP on the area map and nothing in the story. Once per scene. PROVISIONAL.
@@ -3516,7 +3605,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
       scene's last talk counts however many rounds back. Item 383.
     - Tier II's hesitating enemy is the first enemy in initiative order. It loses 1 AP on its round-1 turn, once
       however many holders there are.
-189. *(E5)* **Rally Cry.**
+189. *(E5)* **Rally Cry.** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - It triggers when an ally drops to 0 HP to an enemy, a hazard or an enemy effect. Friendly fire and your own
       side's Mana Short don't trigger it. PROVISIONAL.
     - "Every other ally" includes the holder. Allies that are already Downed are left out.
@@ -3535,7 +3624,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - On the area map, buffing or debuffing a charmed NPC adds the AP to the story AP.
 192. *(E8)* **Outclassed.** Only a death counts as the first kill; a surrender doesn't. The first casualty is the first PC
     Downed or killed on the holder's side; companions don't count. Each flag is set once per fight.
-193. *(E9)* **Many Hands (GAMEBREAKING-adjacent: "any amount").**
+193. *(E9)* **Many Hands (GAMEBREAKING-adjacent: "any amount").** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - Hand-Off gives 1 to 3 AP. More is wasted to the +3 cap, so the action caps the amount at 3 and says why.
       PROVISIONAL.
     - Range is 3 tiles, once per round.
@@ -3653,7 +3742,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Setting: always (default), ask (no automatic offer; the free Offer mercy action is used on your turn), or never.
       The engine can't pause an enemy turn to ask.
     - **PROVISIONAL.**
-214. *(F4)* **Clean Hands.** Spare is a toggle chosen before the roll. A blow that takes a foe's last HP subdues it.
+214. *(F4)* **Clean Hands.** Spare is a toggle chosen before the roll. A blow that takes a foe's last HP subdues it. *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - Spared foes give no kill credit.
     - Every surrender you cause counts as a spare.
     - Protect means healing or shielding a unit tagged civilian, or a neutral one.
@@ -3674,7 +3763,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - It lasts for the scene: in the story it's `c.state.true_name`, and a fight in the same scene against that name
       counts.
     - **PROVISIONAL.**
-217. *(F7)* **Case Closed.**
+217. *(F7)* **Case Closed.** *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     - Analyze also logs the target's kind, tags, saves and conditions, and sets Weak Point.
     - +2 to hit and +20% (target bucket) for the whole squad.
     - New action, **Close the case** (the Analyze AP cost): re-read an enemy someone else analyzed, because `analyze()`
@@ -4399,7 +4488,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 377. **Bulwark in the attack preview.** The covered ally's damage chain shows "Bulwark (name)" (×0.75, Tier II ×0.5),
     the best one only. It is shown in the preview alone, because the real cut comes after armour in damage_in. Sigil,
     Soul and Elemental damage from a caster more than 1 tile away is ranged; explosions never are. *Engine: perks/a.ts.*
-378. **Breaching Strike on the area map.** The same 3 AP strike against an NPC token next to you starts the fight with
+378. **Breaching Strike on the area map.** The same 3 AP strike against an NPC token next to you starts the fight with *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     the strike (from Sneak, unseen, as an ambush on your turn; in the open, you act from round 2). Too far is refused
     before anything is spent. In the story panel it is a ruling for the Narrator (no AP). PROVISIONAL. *Engine:
     perks/a.ts, game.ts strikeFromWorld.*
@@ -4412,7 +4501,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     'npc_sense'.*
 381. **Skin Map on the area map.** A lurking token within 6 tiles with a line is revealed for the party when placed,
     at each round start and when the holder moves. PROVISIONAL.
-382. **Clean Hands out of a fight.** "I spared them" (twice a scene) opens a ruling; if the Narrator accepts it, +2
+382. **Clean Hands out of a fight.** "I spared them" (twice a scene) opens a ruling; if the Narrator accepts it, +2 *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     AP (Tier II +3) on the next overworld round, within the round's AP ceiling. Refused, nothing. PROVISIONAL (the audit's
     recommendation). *Engine: perks/f.ts 'ruling_answered', 'round_ap'.*
 383. **Talks Broke Down: the Narrator's `fromTalk`.** Optional boolean on `combat`. False: no effect (an unrelated fight
@@ -4430,7 +4519,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 387. **Iron Stomach and Nothing Left to Fear between story and fight.** A story Fear carried into a fight lands through
     the immunities: Iron Stomach I caps it at 1 round, II and Nothing Left to Fear cancel it, and an Afraid ally within 3
     tiles who sees a Nothing Left to Fear holder loses it at fight start or its turn start.
-388. **Grapple's scene hold on the area map.** Naming an NPC token (its id or name) in the scene hold on the area map is
+388. **Grapple's scene hold on the area map.** Naming an NPC token (its id or name) in the scene hold on the area map is *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
     the token grab: walk up first (too far is refused before anything is spent), 2 AP, and the fight opens with the
     grab as its opening move (the Body save rolls in the fight), as Grapple on the token does. In the story panel (no
     map) it stays a scene condition and a ruling, which now tells the Narrator a hold on someone hostile starts the
@@ -4588,7 +4677,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 481. **COMMAND · move, checked** (completeness batch 2). The tile is checked when the spell is planned and Evoked: a move order needs a tile the target could walk to in 3 tiles (the same walk as item 480 d); none, or one out of reach, is refused before anything is spent. The preview draws the walk and the tile it would stop on. On the target's turn the walk is checked again (the ground may have changed): too far, no way through, or prone, it stays where it is and the log says why. PROVISIONAL.
 482. **Brain Power · Overclock in the engine** (Mastery 1, 3 points; skill unlocks are now runtime items, key `skill:<skill>.<points>`). An action (0 AP, at will) arms it: while armed, and then while the next glyph you draw stands, your Max Sigil words is +1 (the 4-glyph cap holds, item 437), and that glyph costs **+2 charge**. Refused once your Max Sigil words is already 4 (item 451). It stacks with the Mage's Overcharge up to the cap. PROVISIONAL.
 483. **Brain Power · Twin Draw** (Mastery 2, 5 points; 1.4 reading of "draw two spells with one action, pay the longer's AP"). **Once per combat**, an action (0 AP) starts it: the first glyph you draw afterwards starts spell A; a glyph that touches one of A's glyphs (diagonals too) joins A; any other glyph is spell B. **B's glyphs cost no Glyph AP while B has fewer glyphs than A**, so the two spells cost the Glyph AP of the longer only. Charge, Flux and steps are paid as usual. It ends when B is as long as A, or with the fight. Combat only. PROVISIONAL.
-484. **Rumination · Proven Formula** (Mastery 2, 5 points). A Line whose words, in the order they were written, match a spell you Evoked earlier in this combat (on the area map: this scene) costs **1 AP less to Evoke** (never below 0). It applies to the Evoke's AP only, not to Glyph AP. PROVISIONAL.
+484. **Rumination · Proven Formula** (Mastery 2, 5 points). A Line whose words, in the order they were written, match a spell you Evoked earlier in this combat (on the area map: this scene) costs **1 AP less to Evoke** (never below 0). It applies to the Evoke's AP only, not to Glyph AP. PROVISIONAL. *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
 485. **Paint the Field in the engine** (Mastery 2, 5 points; item 450). The Evoke carries the choice (SPREAD or PUSH); a spell that already has a Burst ignores it. The free word shapes the spell before it is aimed, before the Mage's Payload (which then doubles it). It is no glyph, so it adds no Flux, costs no charge, isn't a repeat and doesn't count toward 4 or Max Sigil words. PUSH's rule holds (refused on your own tile). PROVISIONAL.
 486. **Barrage and the 1.4 elements** (closes the impact doc's OPEN). Barrage takes 1 charge off the 2-charge damage words: FIRE, FREEZE, SHOCK, STONE and **ACID**. SPARK and GALE cost 1 already, the floor, so they gain nothing. OPEN for Leon only if he wants Barrage limited to the three words of the old text. PROVISIONAL.
 487. **Evoker blade · Edge Word in the engine.** A hit with the blade (an Evoker in hand) leaves one free glyph: your next glyph **this turn** costs 0 AP (charge and Flux as usual), drawn on your own tile by the drawing rules. It doesn't stack with itself, ends at the end of your turn, and isn't given by an attack that already drew a glyph through Sword Form (one free glyph per attack, item 321). PROVISIONAL.
@@ -5007,3 +5096,21 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 970. **Taunt** binds weapon attacks only, as the Taunted condition always has; a Sigil, an Outburst or a prayer ignores it.
 971. **Enemy Calls:** an elite has Threaten and Rally at level 3; a boss Threaten, Taunt and Rally at level 5; minions and soldiers none (enemies.json `calls`, `call_level`). One Call a turn, only while it has an ally standing, and only when the Call scores above a plain attack (5): Threaten 6 to 6.5, Rally 6 to 6.5, Taunt 6.5 (calls.json `rules.enemy`). An enemy's save TN uses its tier's strength, not its level.
 972. **What a view shows of a Call's mark:** a mark shows to the side that made it; the AP loss, the no-approach and the dearer attack that a failed save put on a unit also show to that unit's side. A side is not shown that one of its units is Spotted, nor where a warned enemy will step.
+973. **The perk, unlock and trait pass (rules 1.13, Skeleton 2.0; proposal sections 15 and 18).** The rules are in "The perk, unlock and trait pass". Items 974 to 990 are its provisional numbers and the readings made while building it; each perk and unlock they name carries `provisional: true` in the data.
+974. **Used to the Pain:** 25% less from the next hit when the first hit took under 20% of max HP; tier II 40% and 30%. Only the one next hit. The proposal gave no number.
+975. **Walking Wounded:** 20% less damage below half HP. The proposal gave no number.
+976. **Rally Cry:** 15% (II 25%) less damage, for every other ally, each until their own next turn starts; drops and holders don't stack (the best counts). The proposal gave no number.
+977. **Clean Hands:** the shield is 15% (II 25%) of the holder's max HP, once a turn; shields received apply and shields don't stack. Out of a fight an accepted claim is one shield held for the next fight. The proposal gave no number.
+978. **Roll With It II is 2 tiles**, as before, with the rider removed. The proposal's "a second free tile" can also be read as 3.
+979. **Breaching Strike's tiers:** I is the half hit against a wall, a solid object or another enemy; II adds the same damage to the enemy it was pushed into. The proposal gave no tiers. "The hit again" is half the damage the pushing hit dealt; a push with no hit is half a plain blow with the weapon in hand. The engine sees a push that moved the target at least 1 tile and then left it against something; a target that was already against the wall is not seen until the technique core reports a blocked push.
+980. **Both Hands' tiers:** I is the shot with no Recoil; II adds the Momentum. The proposal's second half read "counts as different for Momentum", which was the variety bonus the Momentum rework removed. Its reading under the new rule: a shot that hits gives 1 Momentum, once a turn, to a holder with a melee weapon in a hand. To confirm.
+981. **Iron Grip II** read "earns the variety bonus" in the proposal. Its reading under the new rule: each melee technique that hits a held target gives 1 Momentum, once a technique, never a Finisher (which ends the hold). To confirm. "Held" is Grappled by you or Bound by you, next to you. The drag is one held target, into the tile you leave; what can't be moved (nailed, an item that holds it) stays behind.
+982. **Read Them** is the name of Weak Point's replacement: "Read" is a class move. It applies to whoever is on the other side of the analysed unit, by weapon or spell.
+983. **Case Closed** gives no bonus to hit or damage any more: the proposal names only the +2 to hit, and the +20% damage went with it as offence on a beta.
+984. **Many Hands** now widens Hand-Off's Defense loan to 3 tiles. The proposal only says the AP gift goes; the old perk's 3-tile reach was kept for the new Hand-Off.
+985. **Hand-Off** is automatic: the first enemy attack roll each round against an ally in reach whose Defense is lower than the holder's. A preview shows it and spends nothing. Rival's Petty check and Humanity First's refusal of AP no longer touch it (no AP moves); Humanity First still refuses AP from a Call.
+986. **Stand Still** is built as Leon's 15.5 ruling (Calls 1 AP cheaper until you first act). Composure became a beta after that ruling, and its old text (−2 to be hit until you first act) is a defence that would fit a beta: to confirm which stands.
+987. **Tuned:** "the weapon you maintain" is read as the weapon in your main hand. A jam is cleared the moment the attack is over, and wear stops at 1 point of Durability.
+988. **Nothing Gets Past** leaves the Spot mark of the holder's own level (at 10 points: two allies, +1 to hit, not Hidden to them), takes no Call slot on the enemy, and doesn't replace a Spot the enemy already carries. Not while the holder is Silenced or Stunned.
+989. **Into the Dark I** is once a fight: from the first walk onto a tile your side hasn't seen until your next turn starts. II is round 1 of a fight in a place that causes Fear. The area-map discount of item 121 is gone with the AP.
+990. **Open after the pass:** Siege Engine still says "Shove and Break cost 1 AP less", and both are techniques now, priced by the technique core (the discount reaches neither). Proven Formula counts conditions only (a spell's damage has no save). You Get Used to It's bonus is for the save against a condition, not a technique's or a story save. Chain Smoker's Light Up (+2 Composure for the scene) is a real Heart save bonus again: to watch.

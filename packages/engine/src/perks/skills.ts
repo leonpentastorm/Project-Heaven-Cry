@@ -3,7 +3,7 @@
 // points in the skill reach the unlock's level. The four Sigil ones:
 //   Brain Power · Overclock (M1, 3 points)      item 451, 482
 //   Brain Power · Twin Draw (M2, 5 points)      item 483
-//   Rumination · Proven Formula (M2, 5 points)  item 484
+//   Rumination · Proven Formula (M2, 5 points)  item 484 (rules 1.13: a save bonus, no longer a Sigil discount)
 //   Visualization · Paint the Field (M2, 5)     item 450, 485
 // and the two Soul ones (rules 1.5):
 //   Will Power · Overdraw (M1, 3 points)        item 539
@@ -11,7 +11,7 @@
 // Every number here is PROVISIONAL (spec section 14).
 import { register, stateOf, uses, modOn, emit, boundGame, type Holder, type ActionDef } from '../effects';
 import { type Combat, type Unit, dist, emitFx } from '../combat';
-import { compileSpell, MAX_GLYPHS, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, type Spell } from '../magic';
+import { compileSpell, MAX_GLYPHS, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, isBoon, type Spell } from '../magic';
 import type { Rng } from '../rng';
 
 const say = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
@@ -96,23 +96,17 @@ register({
 });
 
 // ---------- Rumination · Proven Formula (Mastery 2) ----------
-// "A Sigil spell you've already drawn this combat costs 1 AP less" (item 484): a Line whose words, in the order they
-// were written, match a spell you Evoked earlier in this fight costs 1 AP less to Evoke (never below 0). On the area map,
-// earlier this scene.
-const PF_AP = 1;
-const spellKey = (words: string[]) => words.join(' ');
+// Rules 1.13 (a beta is defence; the old Sigil discount is what Brain Power's Twin Draw and Parallel Thought give): +3 on
+// your saves against a spell or condition that has already hit you this combat. Engine reading: a condition that has
+// taken hold on you once this fight (whatever delivered it) is saved against at +3 from then on.
+const PF_SAVE = 3;
 register({
   id: 'skill:rumination.5', kind: 'skill', claims: 'all',
   on: {
-    evoke_cost: (ctx, h) => {
-      if (!mine(h, ctx.u) || !ctx.pattern?.words) return; const st = stateOf(h);
-      if (!(st.done || []).includes(spellKey(ctx.pattern.words)) || ctx.ap <= 0) return;
-      ctx.ap = Math.max(0, ctx.ap - PF_AP);
-    },
-    evoked: (ctx, h) => {
-      if (!mine(h, ctx.u) || !ctx.pattern?.words) return; const st = stateOf(h), k = spellKey(ctx.pattern.words);
-      if ((st.done ||= []).includes(k)) say(h.cb, '(Proven Formula: ' + ctx.pattern.words.map(W).join(' · ') + ' again, ' + PF_AP + ' AP less.)');
-      else st.done.push(k);
+    cond_landed: (ctx, h) => { if (!mine(h, ctx.t) || isBoon(ctx.id)) return; const st = stateOf(h); if (!(st.hit ||= []).includes(ctx.id)) st.hit.push(ctx.id); },
+    cond_apply: (ctx, h) => {
+      if (!mine(h, ctx.t) || ctx.skipSave || !((h.u?.ps?.[h.key] as any)?.hit || []).includes(ctx.id)) return;
+      ctx.saveAdd = (ctx.saveAdd || 0) + PF_SAVE; say(h.cb, '(Proven Formula: ' + h.u!.name + ' has been hit by this before, +' + PF_SAVE + ' on the save.)');
     },
   },
   brief: () => null,

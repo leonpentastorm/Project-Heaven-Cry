@@ -9,9 +9,10 @@ const BUILT = ['cut', 'lunge', 'coup', 'riposte', 'shot', 'aimed_shot', 'suppres
 beforeEach(() => rig(null));
 
 describe('the data', () => {
-  it('has 60 techniques, 28 melee and 32 ranged, each in a group of its system', () => {
-    expect(TECHNIQUES.length).toBe(60);
-    expect(TECHNIQUES.filter((t) => t.system === 'melee').length).toBe(28);
+  it('has 64 techniques, 32 melee (28 learned, 3 a shield gives, 1 a skill gives) and 32 ranged, each in a group of its system', () => {
+    expect(TECHNIQUES.length).toBe(64);
+    expect(TECHNIQUES.filter((t) => t.system === 'melee').length).toBe(32);
+    expect(TECHNIQUES.filter((t) => t.needs.shield || t.innate).map((t) => t.id).sort()).toEqual(['interpose', 'raise_shield', 'shield_bash', 'shield_wall']);
     for (const t of TECHNIQUES) expect(PHYS_RULES.groups[t.system], t.id).toContain(t.group);
     expect(TECHNIQUES.filter((t) => t.free).map((t) => t.id).sort()).toEqual(['aimed_shot', 'cut', 'overwatch', 'pull_out', 'shot']);
   });

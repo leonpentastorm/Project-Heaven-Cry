@@ -923,26 +923,34 @@ for (const id of ['the_soundscape_of_the_soul', 'headbanger', 'underground_sound
 }
 
 // =====================================================================================================================
-// You Get Used to It (Composure). I: −1 AP on your next turn when an ally takes a Brain debuff (once a turn); +3 AP
-// now when you heal or shield an ally who carries one (once a turn; the +3 perk cap applies). II: no penalty.
+// You Get Used to It (Composure, a beta since rules 1.13: it no longer moves AP). I: the first time each round an ally
+// within 5 tiles takes a Brain or Heart condition, your next save this round is at +2 (you have seen worse). II: +4, and
+// you may give the bonus to that ally instead (the "Seen worse" action, 0 AP): their next save this round. Engine
+// reading: "a save" is the save against a condition. PROVISIONAL (spec 14).
 // =====================================================================================================================
-const brainDebuffed = (t: Unit) => debuffsOf(t, 'brain').length > 0;
-function ygui(h: Holder, ctx: any) {
-  const u = h.u, t: Unit = ctx.t; if (!u || !me(h, ctx.by) || !t || me(h, t) || t.side !== u.side || !brainDebuffed(t) || !(ctx.n > 0)) return;
-  if (!uses(h).take('per_turn', 1, h.key + '#gain')) return;
-  grantPerkAp(ctx.cb, u, 3, 'You Get Used to It');
-}
+const YGU_RANGE = 5;
+const yguState = (h: Holder): Record<string, any> => (h.u?.ps?.[h.key] as any) || {};
 register({
   id: 'you_get_used_to_it', claims: 'all',
   on: {
     cond_landed: (ctx, h) => {
-      const u = h.u, t: Unit = ctx.t; if (!u || h.tier === 'II' || !t || me(h, t) || t.side !== u.side || condFamily(ctx.id) !== 'brain' || isBoon(ctx.id)) return;
-      const s = stateOf(h); if (s.pen) return; s.pen = 1; log(ctx.cb, u.name + ' flinches for ' + t.name + ': −1 AP next turn (You Get Used to It).');
+      const u = h.u, t: Unit = ctx.t, cb: Combat = ctx.cb; if (!u || !t || !cb || ow(cb) || me(h, t) || t.side !== u.side || !alive(u) || isBoon(ctx.id)) return;
+      const fam = condFamily(ctx.id); if ((fam !== 'brain' && fam !== 'heart') || dist(u.pos, t.pos) > YGU_RANGE) return;
+      const s = stateOf(h); if (s.r === cb.round) return;
+      s.r = cb.round; s.n = h.tier === 'II' ? 4 : 2; s.to = u.id; s.ally = t.id;
+      log(cb, u.name + ' has seen worse than what took ' + t.name + ' (You Get Used to It): +' + s.n + ' on their next save this round.');
     },
-    turn_start_pre: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (s.pen) { ctx.penalties.push({ n: 1, why: 'You Get Used to It' }); s.pen = 0; } },
-    heal_given: (ctx, h) => ygui(h, ctx),
-    shield_grant: (ctx, h) => ygui(h, ctx),
+    cond_apply: (ctx, h) => {
+      const s = yguState(h), cb: Combat = ctx.cb; if (!s.n || !cb || s.r !== cb.round || ctx.t?.id !== s.to || ctx.skipSave || isBoon(ctx.id)) return;
+      ctx.saveAdd = (ctx.saveAdd || 0) + s.n; log(cb, '(You Get Used to It: +' + s.n + ' on ' + ctx.t.name + '\'s save.)'); stateOf(h).n = 0;
+    },
   },
+  actions: [{
+    id: 'seen_worse', label: 'Seen worse: give it', scope: ['combat'], ap: 0, target: 'none', uses: { per: 'per_round', n: 1 },
+    text: 'Give this round\'s save bonus to the ally whose condition woke it: their next save this round, not yours.',
+    available: (h) => { if (h.tier !== 'II' || !h.u || !h.cb) return false; const s = yguState(h); return s.n && s.r === h.cb.round && s.to === h.u.id && h.cb.units.some((x) => x.id === s.ally && alive(x)) ? true : 'Nothing to give this round.'; },
+    run: (h) => { const s = stateOf(h), t = h.cb!.units.find((x) => x.id === s.ally); if (!t || !s.n) return 'Nothing to give this round.'; s.to = t.id; log(h.cb, h.u!.name + ' talks ' + t.name + ' through it (You Get Used to It): +' + s.n + ' on ' + t.name + '\'s next save this round.'); return null; },
+  }],
   brief: () => null,
 });
 
@@ -1023,7 +1031,7 @@ function castMirage(h: Holder, rng: Rng, specs: { kind: Proj['kind']; tile: stri
       rolls.push(e.name + ' ' + (r + m + plus) + (ok ? ' sees through it' : ' believes'));
     }
     s.proj.push(p);
-    lines.push('a ' + sp.kind + ' at ' + refOf(sp.tile) + (rolls.length ? ' (Analysis vs ' + tn + ': ' + rolls.join(', ') + ')' : ' (no one sees it)'));
+    lines.push('a ' + sp.kind + ' at ' + refOf(sp.tile) + (rolls.length ? ' (Acuity vs ' + tn + ': ' + rolls.join(', ') + ')' : ' (no one sees it)'));
   }
   return u.name + ' projects ' + lines.join(' and ') + ' (Mirage).';
 }
@@ -1045,18 +1053,18 @@ register({
   actions: [
     {
       id: 'mirage', label: 'Mirage', scope: ['combat'], ap: 2, target: 'tile',
-      text: 'Project a false wall, figure or sound onto a tile in range. Enemies who fail an Analysis check believe it.',
-      preview: (h, args) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return { ok: false, why: sp }; return { tiles: sp.map((x) => x.tile), lines: ['A ' + sp.map((x) => x.kind).join(' and a ') + ' (Analysis vs ' + (12 + visMod(charOf(h))) + ')'] }; },
+      text: 'Project a false wall, figure or sound onto a tile in range. Enemies who fail an Acuity check believe it.',
+      preview: (h, args) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return { ok: false, why: sp }; return { tiles: sp.map((x) => x.tile), lines: ['A ' + sp.map((x) => x.kind).join(' and a ') + ' (Acuity vs ' + (12 + visMod(charOf(h))) + ')'] }; },
       run: (h, args, rng) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return sp; log(h.cb, castMirage(h, rng, sp)); return null; },
     },
     {
       // 2 overworld AP on the area map (the audit's story side); free in the story panel (a scene's action, once a round there).
       id: 'mirage_story', label: 'Mirage', scope: ['story', 'world'], ap: (h) => (h.cb ? 2 : 0), target: 'text',
-      text: 'Project a false wall, figure or sound to distract or misdirect. The engine rolls the NPCs\' Analysis; the Narrator plays them.',
+      text: 'Project a false wall, figure or sound to distract or misdirect. The engine rolls the NPCs\' Acuity; the Narrator plays them.',
       run: (h, args, rng) => {
         const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Project in the story.';
         const tn = 12 + visMod(c), rolls = npcsOf(g).filter((n: any) => n.side === 'hostile' && !n.dead).slice(0, 8).map((n: any) => { const r = d20(rng), m = TIER_SAVE[n.tier || 'minion'] ?? 0, ok = r === 20 || (r !== 1 && r + m >= tn); return n.name + ' ' + (r + m) + (ok ? ' sees through it' : ' believes'); });
-        const t = String(args.text || '').trim().slice(0, 200), eid = postStory(h, 'projects ' + t + ' (Mirage; Analysis vs ' + tn + (rolls.length ? ': ' + rolls.join(', ') : '') + ').');
+        const t = String(args.text || '').trim().slice(0, 200), eid = postStory(h, 'projects ' + t + ' (Mirage; Acuity vs ' + tn + (rolls.length ? ': ' + rolls.join(', ') : '') + ').');
         pendRuling(g, c, h.key, 'Mirage: ' + c.name + ' projects ' + t + '. The engine rolled: ' + (rolls.join(', ') || 'no hostile NPCs nearby') + '. Play what the fooled NPCs do.', eid || undefined);
         return null;
       },

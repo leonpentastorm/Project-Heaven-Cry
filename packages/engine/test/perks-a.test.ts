@@ -7,7 +7,7 @@ import {
   applyDamage, applyCond, resolveAttack, previewAttack, shove, healUnit, blessing, movement, carryLimit, maxHp, skillRollMod, PATRONS, condOn,
   type Unit, type Combat,
 } from '../src';
-import { behindLine, knockbackSim } from '../src/perks/a';
+import { behindLine } from '../src/perks/a';
 import { fightWith, storyWith, withGame, rng } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -16,11 +16,6 @@ const at = (f: F, u: Unit, pos: string) => { f.unit(u.id).pos = pos; };
 const sure = (u: Unit) => { u.attack = 60; }; // hits on anything but a natural 1
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const pcAct = (f: F, a: any) => f.act({ unitId: f.pc.id, ...a });
-/** Grapple until the hold lands (a natural 20 always saves), AP put back between tries. */
-function grab(f: F, foe: Unit) {
-  for (let i = 0; i < 20 && !condOn(f.unit(foe.id), 'grappled'); i++) { f.unit(f.pc.id).ap = 6; pcAct(f, { type: 'combat/perk', id: 'grapple', targetId: foe.id }); }
-  expect(condOn(f.unit(foe.id), 'grappled')).toBe(true);
-}
 /** A Narrator check on a character, then roll it. Returns the check entry's head. */
 function storyCheck(s: ReturnType<typeof storyWith>, charId: string, skills: string[], extra: any = {}) {
   s.act({ type: 'narrator/turn', turn: { narration: 'Try it.', checks: [{ charId, skills, tn: 12, stakes: 'It works.', ...extra }] } } as any);
@@ -80,18 +75,24 @@ describe('Shrug It Off', () => {
 });
 
 describe('Used to the Pain', () => {
-  const hitThen = (tier: string, dmg: number) => {
-    const f = fightWith([{ perks: { used_to_the_pain: tier } }]);
-    withGame(f.g, () => { applyDamage(f.cb, f.pc, dmg, { by: f.foe, type: 'weapon', ranged: true }); applyDamage(f.cb, f.pc, dmg, { by: f.foe, type: 'weapon', ranged: true }); });
-    return f.turn(f.pc).ap;
+  // rules 1.13: no AP any more. A light first hit hardens you against the next hit; a heavy one doesn't.
+  const hits = (tier: string, first: number) => {
+    const f = fightWith([{ perks: { used_to_the_pain: tier } }]); const pc = f.pc, hp = pc.maxHp;
+    const src = () => ({ by: f.foe, type: 'weapon', ranged: true }) as any;
+    return withGame(f.g, () => {
+      applyDamage(f.cb, pc, Math.floor(hp * first), src());
+      const a = pc.hp; applyDamage(f.cb, pc, 20, src()); const second = a - pc.hp;
+      const b = pc.hp; applyDamage(f.cb, pc, 20, src()); return { second, third: b - pc.hp, ap: f.turn(pc).ap, log: f.cb.log };
+    });
   };
-  it('Tier I: a light first hit gives +2 AP next turn; a heavy one −1 AP; only the first hit counts', () => {
-    expect(hitThen('I', 10)).toBe(8);
-    expect(hitThen('I', 40)).toBe(5);
+  it('Tier I: a first hit under 20% of max HP makes the next hit deal 25% less; only that one; a heavy first hit gives nothing', () => {
+    const light = hits('I', 0.1); expect(light.second).toBe(15); expect(light.third).toBe(20); expect(light.ap).toBe(6);
+    expect(light.log.some((l) => /Used to the Pain/.test(l))).toBe(true);
+    const heavy = hits('I', 0.25); expect(heavy.second).toBe(20); expect(heavy.ap).toBe(6); // no AP penalty either
   });
-  it('Tier II: under 30% gives +3 AP; a heavy first hit costs nothing', () => {
-    expect(hitThen('II', 40)).toBe(9);
-    expect(hitThen('II', 60)).toBe(6);
+  it('Tier II: the threshold is 30%, and the next hit deals 40% less', () => {
+    expect(hits('II', 0.25).second).toBe(12);
+    expect(hits('II', 0.35).second).toBe(20);
   });
 });
 
@@ -134,53 +135,7 @@ describe('Iron Stomach', () => {
   });
 });
 
-describe('Grapple', () => {
-  it('Tier I: 2 AP, the target is Grappled (can\'t move); the hold ends when you move', () => {
-    const f = fightWith([{ perks: { grapple: 'I' } }], [{ at: 'C6' }]);
-    const u = f.turn(f.pc); at(f, f.foe, '2,4'); f.unit(f.foe.id).sv = { body: -30, brain: 0, heart: 0 };
-    pcAct(f, { type: 'combat/perk', id: 'grapple', targetId: f.foe.id });
-    expect(f.unit(u.id).ap).toBe(4);
-    grab(f, f.foe);
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'grapple', targetId: f.foe.id })).toThrow(/already held/);
-    pcAct(f, { type: 'combat/move', to: '1,2' });
-    expect(condOn(f.foe, 'grappled')).toBe(false);
-  });
-  it('Tier II: attacks aimed at you can land on your captive instead', () => {
-    const f = fightWith([{ perks: { grapple: 'II' } }], [{ at: 'C6' }, { at: 'H6' }]);
-    f.turn(f.pc); at(f, f.foes[0], '2,4'); f.unit(f.foes[0].id).sv = { body: -30, brain: 0, heart: 0 };
-    grab(f, f.foes[0]);
-    const shooter = f.foes[1]; sure(shooter); at(f, shooter, '6,4');
-    withGame(f.g, () => { for (let i = 0; i < 12; i++) { resolveAttack(f.cb, f.g.rng, shooter, f.pc, 'shot', null, { noAp: true }); f.pc.hp = f.pc.maxHp; f.pc.downed = false; } });
-    expect(logHas(f.cb, /finds the captive/)).toBe(true);
-  });
-  it('story: holding an NPC marks it Grappled and asks the Narrator', () => {
-    const s = storyWith([{ perks: { grapple: 'I' } }]);
-    s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'grapple', actionId: 'grapple_npc', npc: 'The courier' });
-    expect(s.g.story.scene.npcConds!['the courier']).toContain('grappled');
-    expect(s.g.story.rulings!.at(-1)!.key).toBe('perk:grapple');
-  });
-});
 
-describe('Breaching Strike', () => {
-  it('Tier I: 3 AP, a melee hit that knocks the target back 1 tile', () => {
-    const f = fightWith([{ perks: { breaching_strike: 'I' } }], [{ at: 'C6' }]);
-    const u = f.turn(f.pc); sure(u); at(f, u, '3,5'); at(f, f.foe, '4,5');
-    pcAct(f, { type: 'combat/perk', id: 'breaching_strike', targetId: f.foe.id });
-    expect(f.pc.ap).toBe(3); expect(f.foe.hp).toBeLessThan(f.foe.maxHp); expect(f.foe.pos).toBe('5,5');
-  });
-  it('Tier II: 2 tiles; slammed into a wall it takes +50%', () => {
-    const f = fightWith([{ perks: { breaching_strike: 'II' } }], [{ at: 'C6' }]);
-    let u = f.turn(f.pc); sure(u); at(f, u, '3,8'); at(f, f.foe, '4,8');
-    pcAct(f, { type: 'combat/perk', id: 'breaching_strike', targetId: f.foe.id });
-    expect(f.foe.pos).toBe('6,8');
-    // Against the crate at 7,1: the push is stopped, the hit is +50%.
-    const g2 = fightWith([{ perks: { breaching_strike: 'II' } }], [{ at: 'C6' }]);
-    u = g2.turn(g2.pc); sure(u); at(g2, u, '7,3'); at(g2, g2.foe, '7,2');
-    expect(knockbackSim(g2.cb, g2.pc, g2.foe, 2).wall).toBe(true);
-    g2.act({ type: 'combat/perk', unitId: g2.pc.id, id: 'breaching_strike', targetId: g2.foe.id });
-    expect(logHas(g2.cb, /into the wall: \+50%/)).toBe(true); expect(g2.foe.pos).toBe('7,2');
-  });
-});
 
 describe('Earthbreaker', () => {
   it('once per combat, 4 AP: everyone in the 3×3 takes melee damage and falls Prone; cover in it breaks', () => {
@@ -218,14 +173,16 @@ describe('Last Wall', () => {
 });
 
 describe('Walking Wounded', () => {
-  it('a head injury doesn\'t Daze and a leg injury doesn\'t slow; below half HP +1 AP a turn', () => {
+  it('a head injury doesn\'t Daze and a leg injury doesn\'t slow; below half HP you take 20% less damage (no AP)', () => {
     const f = fightWith([{ perks: { walking_wounded: 'mastered' } }]);
     const u = f.pc, mv = u.movement;
     withGame(f.g, () => { for (let s = 1; s < 60; s++) { applyCond(f.cb, rng(s), f.foe, u, 'injured'); } });
     expect(u.injuries!.some((i) => i.loc === 'leg')).toBe(true);
     expect(u.movement).toBe(mv); expect(u.dazedNext || 0).toBe(0);
-    f.unit(u.id).hp = Math.floor(u.maxHp / 2) - 1;
-    expect(f.turn(u).ap).toBe(7);
+    const hit = () => withGame(f.g, () => { const a = f.unit(u.id).hp; applyDamage(f.cb, f.unit(u.id), 20, { by: f.foe, type: 'weapon', ranged: true }); return a - f.unit(u.id).hp; });
+    f.unit(u.id).hp = u.maxHp; expect(hit()).toBe(20);
+    f.unit(u.id).hp = Math.floor(u.maxHp / 2) - 1; expect(hit()).toBe(16);
+    expect(f.turn(u).ap).toBe(6);
   });
   it('out of a fight, a leg injury doesn\'t halve Movement', () => {
     const s = storyWith([{ perks: { walking_wounded: 'mastered' } }, {}]);

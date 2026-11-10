@@ -166,14 +166,14 @@ register({
 // ---------- Blueprint (Visualization α) ----------
 // Story / area map: "Sketch the ground" (1 AP on the area map, free in the story; once a scene, PROVISIONAL plan 6):
 // every squadmate in the scene (the holder too) has seen it. When the next fight starts in the same scene, those units
-// get +1 Movement (tiles per AP: as written; strong at Agility 1, flagged) on their round-1 turn; II: and +1 AP on it
-// (perk AP, the +3 cap). The mark is used up by that fight, or lapses with the scene. A fight with no story before it
+// get +1 Movement (tiles per AP: as written; strong at Agility 1, flagged) on their round-1 turn; II: +2 Movement
+// (rules 1.13: an alpha gives no AP). The mark is used up by that fight, or lapses with the scene. A fight with no story before it
 // (the sandbox) gets nothing.
 register({
   id: 'blueprint', claims: 'all',
   actions: [{
     id: 'sketch', label: 'Sketch the ground', scope: ['world', 'story'], ap: (h) => (h.cb ? 1 : 0), uses: { per: 'per_scene', n: 1 }, target: 'none',
-    text: 'Sketch the ground before the assault: every squadmate here gets +1 Movement in round 1 of the next fight this scene (II: +1 AP too).',
+    text: 'Sketch the ground before the assault: every squadmate here gets +1 Movement in round 1 of the next fight this scene (II: +2).',
     run: (h) => {
       const g = gameOf(h); if (!g) return 'No story.';
       const saw = Object.values(g.characters || {}).filter((c: any) => !c.dead).map((c: any) => c.id);
@@ -190,17 +190,12 @@ register({
       delete st.sketch;
       if (sk.scene !== (g.story.scene?.n ?? 0)) return;
       for (const u of cb.units) if (u.charId && sk.saw.includes(u.charId)) { const us = unitState(h, u); us.tier = us.tier === 'II' ? 'II' : sk.tier; }
-      say(cb, 'The squad fights to ' + h.c.name + '\'s sketch (Blueprint): +1 Movement in round 1' + (sk.tier === 'II' ? ', +1 AP' : '') + '.');
-    },
-    turn_start_pre: (ctx, h) => {
-      const u = ctx.u as Unit, cb = h.cb; if (!cb || cb.round !== 1 || !u.ps?.[h.key]?.tier) return;
-      const us = unitState(h, u); if (us.apDone) return; us.apDone = true;
-      if (us.tier === 'II') pushAp(ctx, 1, 'Blueprint');
+      say(cb, 'The squad fights to ' + h.c.name + '\'s sketch (Blueprint): +' + (sk.tier === 'II' ? 2 : 1) + ' Movement in round 1.');
     },
     turn_start: (ctx, h) => {
       const u = ctx.u as Unit, cb = h.cb; if (!cb || cb.round !== 1 || !u.ps?.[h.key]?.tier) return;
       const us = unitState(h, u); if (us.mv != null) return;
-      us.mv = u.movement; u.movement += 1;
+      us.mv = u.movement; u.movement += us.tier === 'II' ? 2 : 1;
     },
     turn_end: (ctx, h) => {
       const u = ctx.u as Unit, us = u.ps?.[h.key]; if (!us || us.mv == null || us.mvBack) return;
@@ -243,9 +238,10 @@ register({
 });
 
 // ---------- Rally Cry (Camaraderie β) ----------
-// I: when an ally drops to 0 HP (Downed or killed) by an enemy, a hazard or an enemy's effect (not friendly fire or your
-// own side's magic: plan 6, PROVISIONAL), every other ally, the holder included, banks +1 AP for their next turn; II +2.
-// Several drops or holders in one round don't stack (the best counts). Banked AP counts toward that turn's +3 cap.
+// Rules 1.13 (a beta gives no AP). I: when an ally drops to 0 HP (Downed or killed) by an enemy, a hazard or an enemy's
+// effect (not friendly fire or your own side's magic), every other ally, the holder included, takes 15% less damage
+// until their own next turn starts; II: 25%. Several drops or holders don't stack (the best counts). PROVISIONAL.
+const RALLY = { I: 0.15, II: 0.25 };
 register({
   id: 'rally_cry', claims: 'all',
   on: {
@@ -253,14 +249,19 @@ register({
       const v = ctx.victim as Unit, u = h.u, cb = h.cb; if (!u || !cb || v.side !== u.side || v.companion) return;
       if (ctx.by && ctx.by.side === v.side) return; // friendly fire, or your own Mana Short
       if (ctx.dead && v.downed) return; // finished off while already Downed: they dropped to 0 once, not twice
-      const n = tierII(h) ? 2 : 1;
-      const got: string[] = [];
+      const n = tierII(h) ? RALLY.II : RALLY.I, got: string[] = [];
       for (const a of cb.units) {
         if (a === v || a.side !== u.side || a.dead || a.downed || a.companion) continue;
-        const as = unitState(h, a), had = as.round === cb.round ? as.n || 0 : 0; if (had >= n) continue;
-        bankAp(a, n - had, 'Rally Cry', null); as.round = cb.round; as.n = n; got.push(a.name);
+        const as = unitState(h, a); if ((as.less || 0) >= n) continue;
+        as.less = n; got.push(a.name);
       }
-      if (got.length) say(cb, v.name + ' is down: ' + got.join(', ') + ' +' + n + ' AP next turn (Rally Cry).');
+      if (got.length) say(cb, v.name + ' is down: ' + got.join(', ') + ' take ' + Math.round(n * 100) + '% less damage until their next turn (Rally Cry).');
+    },
+    turn_start: (ctx, h) => { const as = (ctx.u as Unit)?.ps?.[h.key] as any; if (as?.less) as.less = 0; },
+    damage_in: (ctx, h) => {
+      if (ctx.phase !== 'reduce' || ctx.dmg <= 0) return; const t = ctx.t as Unit, less = (t.ps?.[h.key] as any)?.less || 0; if (!less) return;
+      const prev = ctx._rally || 0; if (less <= prev) return; // two holders: the best one counts
+      ctx.dmg = (ctx.dmg / (1 - prev)) * (1 - less); ctx._rally = less;
     },
   },
   brief: () => null,
@@ -326,7 +327,7 @@ register({
     },
     turn_start_pre: (ctx, h) => { if (ctx.u === h.u && stateOf(h).sting) { delete stateOf(h).sting; pushAp(ctx, -2, 'Sweet Talker: betrayal'); } },
   },
-  brief: (h) => { const ch = cs(h.c).charmed; return ch?.npcs?.length ? 'charmed this scene: ' + ch.npcs.slice(0, 3).join(', ') + ' (name the target on social checks)' : 'name the target NPC on Charisma/Implication checks'; },
+  brief: (h) => { const ch = cs(h.c).charmed; return ch?.npcs?.length ? 'charmed this scene: ' + ch.npcs.slice(0, 3).join(', ') + ' (name the target on social checks)' : 'name the target NPC on Charisma/Insinuation checks'; },
 });
 
 // ---------- Outclassed (Authority γ) ----------
@@ -356,35 +357,10 @@ register({
 });
 
 // ---------- Many Hands (Camaraderie Mastered) ----------
-// Hand-Off without limits: once per round, give any amount of your AP to one ally within 3 tiles. It arrives on their
-// next turn (banked), within the +3 perk AP cap and the 9 ceiling, so the action offers at most 3 (plan 6 Many Hands
-// 1, PROVISIONAL). An ally you can see whose reaction is spent may use yours: tactics.ts canReact/useReaction spend
-// the holder's (reactionDonor). Area map: the AP moves the same way (it arrives at once, the area map has no turn order).
-register({
-  id: 'many_hands', claims: 'all',
-  actions: [{
-    id: 'hand_off', label: 'Hand-Off', scope: ['combat', 'world'], ap: 1, uses: { per: 'per_round', n: 1 }, target: 'ally', range: 3,
-    text: 'Give up to 3 of your AP (any amount; only 3 can count) to an ally within 3 tiles: it arrives on their next turn.',
-    preview: (h, args) => {
-      const u = h.u; if (!u) return { ok: false, why: 'Not here.' };
-      const n = Math.max(1, Math.min(PERK_AP_CAP, Math.floor(Number(args.choice) || 1)));
-      if (u.ap < n) return { ok: false, why: 'You have ' + u.ap + ' AP.', ap: n };
-      if (args.targetId === u.id) return { ok: false, why: 'Pick an ally.', ap: n };
-      return { ap: n, lines: ['Hand ' + n + ' AP over' + (Number(args.choice) > PERK_AP_CAP ? ' (only ' + PERK_AP_CAP + ' can count: the +3 cap)' : '') + '.'] };
-    },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t || t === u) return 'Pick an ally.';
-      const n = Math.max(1, Math.min(PERK_AP_CAP, Math.floor(Number(args.choice) || 1)));
-      const p = pettyGate(h, t, rng); if (p) { u.ap += n; return null; } // Petty: the AP stays with you (the use is spent)
-      if (overworld(cb)) { if (refusedGift(cb, t, n, u)) { u.ap += n; return null; } const g = gameOf(h), tc = charOf(h, t); if (g && tc) (g.story.ap ||= {})[tc.id] = apLeft(g, tc) + n; t.ap += n; say(cb, u.name + ' hands ' + n + ' AP to ' + t.name + ' (Many Hands).'); return null; }
-      if (refusedGift(cb, t, n, u)) { u.ap += n; return null; } // refused (Humanity First): the AP stays with you
-      if (active(cb) === t) grantPerkAp(cb, t, n, 'Hand-Off from ' + u.name); else bankAp(t, n, 'Hand-Off from ' + u.name, cb);
-      emitFx(cb, 'perk', { unit: u.id, target: t.id, from: u.pos, to: t.pos, id: 'many_hands' });
-      return null;
-    },
-  }],
-  brief: () => null,
-});
+// Rules 1.13 (the AP gift went to the Calls). Your Hand-Off (Camaraderie 3: an ally uses your Defense against one
+// attack a round) reaches any ally within 3 tiles: perks/skeleton.ts reads this perk for its reach. An ally you can see
+// whose reaction is spent may use yours: tactics.ts canReact/useReaction spend the holder's (reactionDonor).
+register({ id: 'many_hands', claims: 'all', brief: () => null });
 
 // ---------- On My Mark (Authority Mastered) ----------
 // 1 AP, once per round, on your turn: order an ally who can hear you (any conscious ally: a shout or the radio,
@@ -699,8 +675,8 @@ register({
   id: 'field_surgeon', claims: 'all', priority: 200,
   actions: [
     { id: 'repair_ally', label: 'Field Repair an ally', scope: ['combat'], ap: (h) => actionAp({ u: h.u }, 'field_repair', 2).ap, target: 'ally', range: 1,
-      text: 'Patch up an adjacent ally: +10 HP per Proficiency point × your Healing given, one spare-parts charge (Proficiency 3+).',
-      available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Proficiency 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : true),
+      text: 'Patch up an adjacent ally: +10 HP per Improvisation point × your Healing given, one spare-parts charge (Improvisation 3+).',
+      available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : true),
       preview: (h, args) => { const t = unitById(h.cb, args.targetId); if (t === h.u) return { ok: false, why: 'Pick an ally (your weapon: Field Repair).' }; return { lines: ['+' + surgeonHeal(h) + ' HP' + (t && isMachine(t) ? ' (full power on a machine)' : '') + '.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
@@ -715,7 +691,7 @@ register({
       text: 'Out of a fight, 10 minutes and one spare-parts charge: a squadmate (name them) heals half their max HP.',
       run: (h, args) => {
         const t = pickChar(h, args.choice || args.text || args.npc); if (typeof t === 'string') return t;
-        if ((h.c?.skills?.proficiency || 0) < 3) return 'Needs Proficiency 3.';
+        if ((h.c?.skills?.proficiency || 0) < 3) return 'Needs Improvisation 3.';
         if (!h.c || partsOf(h.c) <= 0) return 'No spare-parts charges.';
         const max = maxHp(t); if (t.hp >= max) return t.name + ' is already whole.';
         takePart(h.c); const was = t.hp; t.hp = Math.min(max, Math.max(t.hp, 0) + Math.floor(max * 0.5)); if (was <= 0) (t as any).downedFails = 0;

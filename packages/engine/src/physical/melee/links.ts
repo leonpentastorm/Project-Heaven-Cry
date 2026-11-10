@@ -13,7 +13,8 @@
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
 import { technique, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
-import { strikingWith, techSaveTn, techVia } from '../core';
+import { PHYS_RULES } from '../data';
+import { strikingWith, techSaveTn, techVia, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
 import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
 import { mod } from '../../character';
 import { zoneEnter } from '../../magic';
@@ -121,17 +122,17 @@ onHook('attack_roll', (ctx: any, cb) => { if (ctx.att && ctx.tgt) { const s = si
 // reads this state; physical/rules.ts keeps the Momentum). Reach: enemies
 // must make a Body save to step next to you. Heavy: the +2 also applies to ranged attacks from the front.
 // The front is the way the user faced when it took Guard: toward args.tile if named, else toward the nearest enemy.
-const guardOf = (u: Unit): Record<string, any> | null => { const g = (u as any).tech?.guard; return g?.on ? g : null; };
+const guardStance = (u: Unit): Record<string, any> | null => { const g = (u as any).tech?.guard; return g?.on ? g : null; };
 /** The front: within 67.5° of the facing (three of the eight directions, as a riot shield's front). */
 const FRONT_COS = Math.cos((67.5 * Math.PI) / 180);
-function inFront(g: Record<string, any>, from: string, at: string): boolean {
+export function inFront(g: Record<string, any>, from: string, at: string): boolean {
   const [fx, fy] = g.front || [0, 0]; if (!fx && !fy) return false;
   const [x, y] = xy(at), [ax, ay] = xy(from), dx = ax - x, dy = ay - y, l = Math.hypot(dx, dy) * Math.hypot(fx, fy);
   return l > 0 && (dx * fx + dy * fy) / l >= FRONT_COS - 1e-9;
 }
 technique({
   id: 'guard',
-  check(t) { return guardOf(t.u) && guardOf(t.u)!.t === turnStamp(t.cb) ? 'You are already on Guard.' : null; },
+  check(t) { return guardStance(t.u) && guardStance(t.u)!.t === turnStamp(t.cb) ? 'You are already on Guard.' : null; },
   run(t) {
     const p = t.line('reach', 'heavy'), def = t.num('defense', 2);
     const foes = t.cb.units.filter((v) => v.side !== t.u.side && alive(v)).sort((a, b) => dist(a.pos, t.u.pos) - dist(b.pos, t.u.pos) || (a.id < b.id ? -1 : 1));
@@ -140,11 +141,14 @@ technique({
     if (t.preview) {
       t.note('+' + def + ' Defense against melee until your next turn' + (p === 'heavy' ? ', and against ranged attacks from the front' : '') + '. Your Momentum doesn\'t drop when you are hit.');
       if (p === 'reach') t.note('Enemies must make a Body save to step next to you.');
+      // Durability's Guard (rules 1.13): the technique gives Guard points to a unit with the pool
+      { const n = Math.min(guardGain(t.u), guardMax(t.u) - guardOf(t.u)); if (guardGain(t.u)) { t.note(n > 0 ? '+' + n + ' Guard.' : 'Your Guard is full.'); t.pv.guard = { now: guardOf(t.u), after: guardOf(t.u) + Math.max(0, n) }; } }
       return null;
     }
     Object.assign(t.state(), { on: true, t: turnStamp(t.cb), def, reach: p === 'reach', heavy: p === 'heavy', front, via: techVia(t) });
     meleeFx(t, 'guard', { front, reach: p === 'reach', heavy: p === 'heavy' });
-    t.cb.log.push(t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ').');
+    const got = addGuard(t.cb, t.u, guardGain(t.u));
+    t.cb.log.push(t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ')' + (got ? ': +' + got + ' Guard (' + guardOf(t.u) + '/' + guardMax(t.u) + ')' : '') + '.');
     return null;
   },
   ai: (t) => (t.u.ap <= 1 && t.cb.units.some((v) => v.side !== t.u.side && alive(v) && dist(v.pos, t.u.pos) <= 2) ? 4 : 0),
@@ -153,7 +157,7 @@ onHook('turn_start_pre', (ctx: any) => { const g = ctx.u && (ctx.u as any).tech?
 onHook('attack_preview', (ctx: any) => {
   // "+2 Defense against melee": against anyone's, an ally's swing too (Sweep and Cleave strike allies in the arc)
   const tgt: Unit = ctx.tgt, att: Unit = ctx.att; if (!tgt || !att) return;
-  const g = guardOf(tgt); if (!g) return;
+  const g = guardStance(tgt); if (!g) return;
   if (ctx.melee || (g.heavy && inFront(g, att.pos, tgt.pos))) ctx.terms.push({ v: -(g.def || 0), label: 'Guard' });
 });
 // Reach: an enemy stepping next to a guard makes a Body save; on a failure it stops on the tile it came from. Forced
@@ -163,7 +167,7 @@ onHook('move_step', (ctx: any, cb) => {
   // never put a mover back onto a tile someone else now holds (a swap: Drag's step is skipped above in any case)
   if (cb.units.some((v) => v !== m && alive(v) && v.pos === ctx.from)) return;
   for (const h of cb.units) {
-    const g = guardOf(h); if (!g?.reach || h.side === m.side || !alive(h) || dist(h.pos, ctx.at) > 1 || dist(h.pos, ctx.from) <= 1) continue;
+    const g = guardStance(h); if (!g?.reach || h.side === m.side || !alive(h) || dist(h.pos, ctx.at) > 1 || dist(h.pos, ctx.from) <= 1) continue;
     if (bodySave(cb, ctx.rng, m, h.name + '\'s Guard', techSaveTn(h, g.via || 'raw_power'))) continue; // the guard's strength with the weapon it was set with
     m.pos = ctx.from; ctx.stop = 'guard';
     cb.log.push(m.name + ' can\'t get past ' + h.name + '\'s guard and stops at ' + refOf(m.pos) + '.');
@@ -177,13 +181,14 @@ onHook('reaction_window', (ctx: any) => {
   if (ctx.cancel || ctx.kind !== 'opportunity' || !ctx.mover || !ctx.reactor || !ctx.at) return;
   if (ctx.mover.pos !== ctx.at && dist(ctx.reactor.pos, ctx.mover.pos) <= 1) ctx.cancel = true;
 });
-// The Defender (the ranged proposal, section 6): Pressure comes off its Guard first, each point that would land costing
-// 1 Guard instead, with no reaction, while it has any.
+// Guard (rules 1.13; first the Defender's, the ranged proposal's section 6; now anyone's with a pool): Pressure comes
+// off Guard first, each point that would land costing 1 Guard instead, with no reaction, while the unit has any.
 pressureFilter((cb, target, n) => {
   if (target.resMax?.guard == null) return n;
-  const g = resOf(target, 'guard'), take = Math.min(g, n); if (!take) return n;
-  target.res!.guard = g - take;
-  cb.log.push(target.name + ' takes ' + take + ' Pressure on Guard (' + (g - take) + ' Guard left).');
+  const per = PHYS_RULES.guard?.pressure_per_point ?? 1; // Guard a point of Pressure (techniques.json rules.guard)
+  const g = resOf(target, 'guard'), take = Math.min(Math.floor(g / per), n); if (!take) return n;
+  spendGuard(cb, target, take * per);
+  cb.log.push(target.name + ' takes ' + take + ' Pressure on Guard (' + (g - take * per) + ' Guard left).');
   return n - take;
 });
 

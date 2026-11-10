@@ -6,6 +6,7 @@ import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effe
 import { statQuery, setRankRule } from './effects/hooks';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
+import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
@@ -992,7 +993,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
   const ban = (ctx: any) => statQuery({ c }, 'equip_ban', ctx).add > 0 ? equipBanWhy(c, ctx) : null;
   if (to === 'main') {
     if (!wid) return 'Only weapons go in the main hand.';
-    const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
+    { const rq = requiresWhy(c, (WEAPON[wid] as any).requires); if (rq) return rq; }
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid); if (sw) return sw; }
     take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType); // a stowed gun keeps the rounds in it (rules 1.3), and their type
@@ -1003,12 +1004,17 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (twoHands(c, c.weapon)) return 'Your main-hand weapon needs both hands.';
     if (wid) { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
+    // Rules 1.13 (proposal 13.3): what the weapon or item asks is asked in the off hand too; a second weapon asks 2 more.
+    { const rq = requiresWhy(c, wid ? (WEAPON[wid] as any).requires : item?.requires); if (rq) return rq; }
     if (wid) { const sw = secondWeaponWhy(c, wid, c.weapon); if (sw) return sw; }
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
     // An off-hand gun holds what its pack entry held, as the main hand does (rules 1.9, item 688).
     c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };
   } else {
     const slot = item?.slot; if (!slot || slot === 'off_hand' || item.category !== 'armour') return 'That isn\'t slot armour.';
+    { const rq = requiresWhy(c, item.requires); if (rq) return rq; } // a worn piece that asks a skill
+    // Heavy armour (rules 1.13): a piece that carries an armour class (outer torso, Class 4 and 5) asks Pain Threshold.
+    if (typeof item.armour_class === 'number') { const ag = armourGateWhy(c, item.armour_class); if (ag) return ag; }
     take(); const worn = { ...(c.worn || {}) }; if (worn[slot]) putBack(worn[slot], undefined); worn[slot] = it.item || it.id; c.worn = worn;
   }
   c.pack = pack; return null;
@@ -1063,7 +1069,7 @@ export const magazineSize = (weaponId: string, mods?: string[]) => { const m = W
 export interface ClassResource { id: string; max: number; persist: boolean }
 const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   momentum: () => ({ id: 'momentum', max: 5, persist: false }),
-  guard: () => ({ id: 'guard', max: 5, persist: false }),
+  guard: () => ({ id: 'guard', max: GUARD_RULES.max ?? 5, persist: false }),
   marks: () => ({ id: 'marks', max: 3, persist: false }),
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
@@ -1079,7 +1085,29 @@ export const classResIds = (classId: string | null | undefined): string[] =>
   (classId && revision2Classes() && REV2_CLASSES[classId] ? REV2_CLASSES[classId].resources : classId && CLASS[classId] ? (CLASS[classId].resources || []).filter((r) => RES_RULES[r]) : []);
 export function classResources(c: Character): ClassResource[] {
   const ids = [...new Set([...classResIds(c.classId), ...(advancedActive(c.advancedClass) ? ADV_RES[c.advancedClass!] || [] : [])])];
-  return ids.map((id) => RES_RULES[id](c));
+  const out = ids.map((id) => RES_RULES[id](c));
+  // Rules 1.13, Durability's Guard: anyone with Durability has a Guard pool. A class that brings Guard keeps its own
+  // (the larger of the two is the pool).
+  const pool = guardPool(c);
+  if (pool > 0) { const own = out.find((r) => r.id === 'guard'); if (own) own.max = Math.max(own.max, pool); else out.push({ id: 'guard', max: pool, persist: false }); }
+  return out;
+}
+/** Durability's Guard (rules 1.13; numbers in techniques.json rules.guard, provisional): the pool is the Durability
+ * points, 5 at most; 0 without Durability. */
+const GUARD_RULES: any = (techniquesJ as any).rules?.guard || {};
+export const guardPool = (c: Pick<Character, 'skills'>): number => Math.min(GUARD_RULES.max ?? 5, Math.floor((c.skills?.durability || 0) * (GUARD_RULES.per_durability ?? 1)));
+/** Heavy armour's gate (rules 1.13, proposal 13.3; techniques.json rules.gear_gates.heavy_armour, provisional): outer
+ * torso armour of Class 4 asks Pain Threshold 3, Class 5 asks 5. Returns the refusal, or null. */
+export function armourGateWhy(c: Pick<Character, 'skills'>, armourClass: number): string | null {
+  const g: any = (techniquesJ as any).rules?.gear_gates?.heavy_armour; if (!g) return null;
+  const need = Number(g.classes?.[String(armourClass)] || 0), sk = g.skill || 'pain_threshold';
+  return need && (c.skills?.[sk] || 0) < need ? 'Class ' + armourClass + ' armour needs ' + (SKILL[sk]?.name || sk.replace('_', ' ')) + ' ' + need + '.' : null;
+}
+/** What a weapon or an item asks of its wearer (`requires`: skill → points): the refusal, or null. */
+export function requiresWhy(c: Pick<Character, 'skills'>, need: Record<string, number> | null | undefined, what?: string): string | null {
+  void what; // the words are the main hand's own (kept: screens and tests read them)
+  for (const [sk, n] of Object.entries(need || {})) if ((c.skills?.[sk] || 0) < (n as number)) return 'Needs ' + sk.replace(/_/g, ' ') + ' ' + n + '.';
+  return null;
 }
 /** Refill the persisting resources (a long rest). */
 export function restockResources(c: Character) { for (const r of classResources(c)) if (r.persist) (c.res ||= {})[r.id] = r.max; }

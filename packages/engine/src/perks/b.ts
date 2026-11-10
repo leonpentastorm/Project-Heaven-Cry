@@ -65,48 +65,46 @@ function fixBank(h: Holder, ctx: any) { const s = stateOf(h); if (ctx.u === h.u 
 const carriesToolbox = (c: Character | null | undefined) => !!c && packOf(c).some((x) => (x.item || x.id) === 'toolbox' && x.qty > 0);
 
 // =====================================================================================================================
-// Into the Dark (Guts). I: the first move into ground the squad hasn't seen this fight costs 1 AP less (one Movement of
-// tiles free, not Sprint, once a fight; provisional). Overworld: the first move in a zone this character hasn't moved
-// in yet. II: +1 AP on the first turn in a place that causes Fear (the Narrator's start_fight fear flag or a zone tag).
+// Into the Dark (Guts). Rules 1.13 (a beta gives no AP). I: you can't be ambushed on your first move into the unknown:
+// the first time in a fight you walk onto ground your side hasn't seen, attacks against you are not ambushes until your
+// next turn starts (no critical on 19, no Ambush multiplier). II: and you can't be made Afraid during round 1 of a fight
+// in a place that causes Fear (the Narrator's start_fight fear flag or a zone tag). Story: the Narrator's.
 // =====================================================================================================================
 function noteExplored(h: Holder, cb: Combat) {
   if (!h.u || ow(cb)) return; const s = stateOf(h); if (s.used) return;
   const seen = new Set<string>(s.seen || []); for (const k of visibility(cb, h.u.side).tiles) seen.add(k); s.seen = [...seen];
 }
+const inDark = (h: Holder) => !!(h.u?.ps?.[h.key] as any)?.dark;
 register({
   id: 'into_the_dark', claims: 'all',
   on: {
     combat_start: (ctx, h) => noteExplored(h, ctx.cb),
-    turn_start: (ctx, h) => noteExplored(h, ctx.cb),
+    turn_start: (ctx, h) => { if (ctx.u === h.u) { const s = stateOf(h); if (s.dark) s.dark = false; } noteExplored(h, ctx.cb); },
     move_cost: (ctx, h) => {
-      if (ctx.u !== h.u || ctx.how !== 'move' || ctx.ap <= 0) return;
-      const cb: Combat = ctx.cb, s = stateOf(h);
-      if (ow(cb)) {
-        const g = gameOf(h), z = g?.story?.zone || 'start'; const zones: string[] = (s.zones ||= []);
-        if (zones.includes(z)) return; zones.push(z);
-      } else {
-        if (s.used || (s.seen || []).includes(ctx.to)) return;
-        if (!uses(h).take('per_combat')) return; s.used = true;
-      }
-      ctx.ap -= 1; s.bankFix = (s.bankFix || 0) + h.u!.movement;
-      log(cb, h.u!.name + ' strides into the dark first (Into the Dark: 1 AP of the move is free).');
+      if (ctx.u !== h.u || ow(ctx.cb)) return; const s = stateOf(h);
+      if (s.used || (s.seen || []).includes(ctx.to)) return;
+      s.used = true; s.dark = true;
+      log(ctx.cb, h.u!.name + ' goes into the dark first (Into the Dark): no ambush counts against them until their next turn.');
     },
-    moved: (ctx, h) => {
-      fixBank(h, ctx); if (ctx.u === h.u) noteExplored(h, ctx.cb);
-      // II on the area map: the first move in a frightening zone gives the +1 AP (no hook for the round's AP yet).
-      if (ctx.u === h.u && h.tier === 'II' && ow(ctx.cb)) {
-        const g = gameOf(h), s = stateOf(h), z = g?.story?.zone || 'start';
-        if (zoneHas(g, 'fear') && !(s.fearZones ||= []).includes(z)) { s.fearZones.push(z); h.u!.ap += 1; log(ctx.cb, h.u!.name + ' +1 AP (Into the Dark: a place that causes Fear).'); }
-      }
+    moved: (ctx, h) => { if (ctx.u === h.u) noteExplored(h, ctx.cb); },
+    attack_roll: (ctx, h) => {
+      if (ctx.tgt !== h.u || !ctx.ambush || !inDark(h)) return;
+      if (ctx.mode !== 'aimed') ctx.critMin = Math.max(ctx.critMin, 20);
+      log(ctx.cb, 'No ambush against ' + h.u!.name + ' (Into the Dark).');
     },
-    turn_start_pre: (ctx, h) => {
-      if (ctx.u !== h.u || h.tier !== 'II' || ow(ctx.cb)) return;
+    damage_out: (ctx, h) => {
+      if (ctx.tgt !== h.u || !inDark(h)) return;
+      const i = (ctx.mults as { v: number; label: string }[]).findIndex((m) => m.label === 'ambush'); if (i >= 0) ctx.mults.splice(i, 1);
+    },
+    cond_apply: (ctx, h) => {
+      if (ctx.t !== h.u || h.tier !== 'II' || ctx.id !== 'fear' || ow(ctx.cb) || ctx.cb.round !== 1) return;
       if (!(ctx.cb.fear || zoneHas(gameOf(h), 'fear'))) return;
-      if (uses(h).take('per_combat', 1, h.key + '#fear')) pushAp(ctx, 1, 'Into the Dark');
+      ctx.cancel = true; ctx.why = 'Into the Dark';
     },
   },
-  brief: () => 'Narrator: let them stride into the unknown first; mark frightening places with fear.',
+  brief: (h) => 'Narrator: walking first into the unknown, they are never surprised there' + (h.tier === 'II' ? '; no Fear on their first turn in a frightening place' : ''),
 });
+
 
 // =====================================================================================================================
 // Wall Run (Athletics). I: a move may cross up to 2 tiles in a row of wall faces, low obstacles or holes, ending on
@@ -186,8 +184,8 @@ register({
 
 // =====================================================================================================================
 // Roll With It (Athletics). A successful dodge is an attack against you that misses. I: 1 free tile (no AP, no
-// opportunity attacks); II: 2, and your next attack gets +0.1 on the critical multiplier. Once a round. A miss on your
-// own turn (Overwatch on your move) gives the tiles at once; on an enemy's turn they wait for your next turn.
+// opportunity attacks); II: 2 (rules 1.13: the critical rider is gone; PROVISIONAL, spec 14). Once a round. A miss on
+// your own turn (Overwatch on your move) gives the tiles at once; on an enemy's turn they wait for your next turn.
 // =====================================================================================================================
 register({
   id: 'roll_with_it', claims: 'all',
@@ -197,29 +195,20 @@ register({
       if (!uses(h).take('per_round')) return;
       const s = stateOf(h), n = h.tier === 'II' ? 2 : 1, now = myTurn(ctx.cb, h.u);
       if (now) { h.u.bank = (h.u.bank || 0) + n; s.free = (s.free || 0) + n; s.freeTurn = turnKey(ctx.cb); } else s.next = n;
-      if (h.tier === 'II') s.crit = now ? 'this' : 'next';
-      log(ctx.cb, h.u.name + ' rolls with it: ' + n + ' free ' + (n === 1 ? 'tile' : 'tiles') + (now ? '' : ' next turn') + (h.tier === 'II' ? ', +10% Critical damage on the next attack' : '') + '.');
+      log(ctx.cb, h.u.name + ' rolls with it: ' + n + ' free ' + (n === 1 ? 'tile' : 'tiles') + (now ? '' : ' next turn') + '.');
     },
     turn_start: (ctx, h) => {
       if (ctx.u !== h.u) return; const s = stateOf(h);
       if (s.next) { h.u!.bank = (h.u!.bank || 0) + s.next; s.free = s.next; s.freeTurn = turnKey(ctx.cb); s.next = 0; } else s.free = 0;
-      if (s.crit === 'next') s.crit = 'this';
     },
-    turn_end: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.crit === 'this') s.crit = null; s.free = 0; },
+    turn_end: (ctx, h) => { if (ctx.u !== h.u) return; stateOf(h).free = 0; },
     move_cost: (ctx, h) => {
       if (ctx.u !== h.u || ctx.how !== 'move' || ctx.free) return; const s = stateOf(h); // a step something else already paid for (a technique's) isn't one of these tiles
       if (s.free && s.freeTurn === turnKey(ctx.cb) && ctx.ap === 0 && ctx.tiles <= s.free) { ctx.skipOA = true; s.free -= ctx.tiles; }
     },
-    damage_out: (ctx, h) => {
-      if (ctx.att !== h.u || !ctx.crit || stateOf(h).crit !== 'this') return;
-      const m = ctx.mults.find((x: any) => x.label === 'critical'); if (m) { m.v = Math.round((m.v + 0.1) * 100) / 100; m.label = 'critical (+0.1 Roll With It)'; }
-    },
-    on_hit: (ctx, h) => { if (ctx.att === h.u && stateOf(h).crit === 'this') stateOf(h).crit = null; },
   },
   brief: () => null,
 });
-// The attacker's own miss also spends the armed crit bonus (registered as a second handler so on_miss stays one rule).
-register({ id: 'roll_with_it', on: { on_miss: (ctx, h) => { if (ctx.att === h.u && stateOf(h).crit === 'this') stateOf(h).crit = null; } } });
 
 // =====================================================================================================================
 // Shadow Step (Ingenuity). I: while Hidden, a move from a tile next to cover to a tile next to cover counts half its
@@ -883,8 +872,8 @@ register({
   // What a fitted mod does in the arm is the Narrator's: the brief names them.
   actions: [{
     id: 'fit_arm', label: 'Fit a mod to the arm', pickLabel: 'The mod in your pack (its id)', scope: ['story', 'world'], ap: 0, target: 'none',
-    text: 'Out of a fight, Proficiency 3: fit a mod from your pack into the prosthetic arm (2 slots). The Narrator rules what it does there.',
-    available: (h) => { const c = h.c; if (!c || !hasArm(c)) return false; if ((c.skills.proficiency || 0) < 3) return 'Needs Proficiency 3.'; return armMods(c).length >= ARM_SLOTS ? 'Both arm slots are taken.' : true; },
+    text: 'Out of a fight, Improvisation 3: fit a mod from your pack into the prosthetic arm (2 slots). The Narrator rules what it does there.',
+    available: (h) => { const c = h.c; if (!c || !hasArm(c)) return false; if ((c.skills.proficiency || 0) < 3) return 'Needs Improvisation 3.'; return armMods(c).length >= ARM_SLOTS ? 'Both arm slots are taken.' : true; },
     preview: (h, a) => { const e = armFitCheck(h.c!, a.choice); return e ? { ok: false, why: e } : { lines: ['Fits into the prosthetic arm (' + (armMods(h.c!).length + 1) + '/' + ARM_SLOTS + ').'] }; },
     run: (h, a) => {
       const c = h.c!, e = armFitCheck(c, a.choice); if (e) return e;
@@ -903,7 +892,7 @@ const hasArm = (c: Character) => packOf(c).some((x) => (x.item || x.id) === 'pro
 const armMods = (c: Character): string[] => (Array.isArray((c.state as any)?.arm_mods) ? (c.state as any).arm_mods : []);
 const armIdx = (pack: any[], choice: any) => (/^\d+$/.test(String(choice ?? '')) ? +choice : pack.findIndex((p) => (p.item || p.id) === choice));
 function armFitCheck(c: Character, choice: any): string | null {
-  if (!hasArm(c)) return 'No prosthetic arm.'; if ((c.skills.proficiency || 0) < 3) return 'Needs Proficiency 3.';
+  if (!hasArm(c)) return 'No prosthetic arm.'; if ((c.skills.proficiency || 0) < 3) return 'Needs Improvisation 3.';
   if (armMods(c).length >= ARM_SLOTS) return 'Both arm slots are taken.';
   const pack = packOf(c), it = pack[armIdx(pack, choice)], m: any = it && ITEM[it.item || it.id];
   return m && m.category === 'mod' ? null : 'Pick a mod from your pack.';

@@ -75,7 +75,7 @@ describe('2. a Strike and an Opener spend 1 Momentum', () => {
   });
   it('Cut and Pull Out are free and spend none; Links and Answers spend none', () => {
     for (const id of ['cut', 'pull_out', 'sidestep', 'guard', 'shove', 'trip', 'drag', 'parry', 'riposte', 'keep_back']) expect(phys.momentumCost({} as Unit, phys.TECHNIQUE[id]), id).toBe(0);
-    for (const id of phys.TECHNIQUES.filter((d) => d.system === 'melee' && d.group === 'strike' && !d.free).map((d) => d.id)) expect(phys.momentumCost({} as Unit, phys.TECHNIQUE[id]), id).toBe(1);
+    for (const id of phys.TECHNIQUES.filter((d) => d.system === 'melee' && d.group === 'strike' && !d.free && d.id !== 'shield_bash' /* 1 Guard in its place */).map((d) => d.id)) expect(phys.momentumCost({} as Unit, phys.TECHNIQUE[id]), id).toBe(1);
     for (const d of phys.TECHNIQUES.filter((x) => x.system === 'ranged')) expect(phys.momentumCost({ openerUsed: true } as Unit, d), d.id).toBe(0);
     const f = fight('sabre', ['sidestep', 'guard', 'shove', 'trip'], { m: 0 }); weak(f.foe); f.pc.strength = 20; rig({ hit: true, die: 12 });
     expect(f.tech('guard')).toBeNull(); expect(f.tech('trip', { targetId: f.foe.id })).toBeNull();
@@ -184,8 +184,8 @@ describe('5. being hit costs Momentum', () => {
   });
   it('not while the unit holds Guard points', () => {
     const f = fight('sabre', [], { m: 2 }); f.pc.resMax!.guard = 5; f.pc.res!.guard = 1; f.turn(f.foe); rig({ hit: true, die: 12 });
-    expect(hitPc(f)).toBeGreaterThan(0); expect(f.momentum(f.pc)).toBe(2);
-    f.pc.res!.guard = 0; expect(hitPc(f)).toBeGreaterThan(0); expect(f.momentum(f.pc)).toBe(1);
+    hitPc(f); expect(f.pc.res!.guard).toBe(0); expect(f.momentum(f.pc)).toBe(2); // the Guard point soaked the hit (rules 1.13) and kept the Momentum
+    expect(hitPc(f)).toBeGreaterThan(0); expect(f.momentum(f.pc)).toBe(1);
   });
 });
 

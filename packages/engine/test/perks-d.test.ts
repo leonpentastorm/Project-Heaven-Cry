@@ -380,13 +380,31 @@ describe('Music traits', () => {
 });
 
 describe('You Get Used to It', () => {
-  it('I: an ally takes a Brain debuff: −1 AP next turn; healing an ally who carries one: +3 AP now', () => {
-    const f = fightWith([{ perks: { you_get_used_to_it: 'I' } }, { name: 'Ally' }], [{ at: 'P11' }]); const [a, b] = f.pcs;
-    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, b, 'ldebuff', 2, undefined, { skipSave: true }));
-    expect(f.turn(a).ap).toBe(5);
-    const u = f.turn(a), ap = u.ap; b.hp = 10;
-    withGame(f.g, () => healUnit(f.cb, f.unit(b.id), 20, u, 'stim'));
-    expect(f.unit(a.id).ap).toBe(ap + 3);
+  it('I: the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is +2; no AP moves', () => {
+    const f = fightWith([{ perks: { you_get_used_to_it: 'I' } }, { name: 'Ally' }], [{ at: 'P11' }]); const [a, b] = f.pcs; a.pos = '3,3'; b.pos = '3,5';
+    const ctxOf = (t: Unit, id = 'fear') => withGame(f.g, () => emit(f.cb, 'cond_apply', { by: f.foe, t, id, fam: 'heart', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: f.cb, rng: f.g.rng }));
+    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0);
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'ldebuff', 2, undefined, { skipSave: true }));
+    expect(logHas(f.cb, /You Get Used to It/)).toBe(true);
+    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(2);
+    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0); // one save
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'shaken', 2, undefined, { skipSave: true }));
+    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0); // the first time each round only
+    expect(f.turn(f.unit(a.id)).ap).toBe(6); // neither a penalty nor a gift
+    f.cb.round += 1; f.unit(b.id).pos = '3,10'; // 7 tiles away: too far
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'fear', 2, undefined, { skipSave: true }));
+    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0);
+  });
+  it('II: +4, and Seen worse (0 AP) gives it to that ally for their next save this round', () => {
+    const f = fightWith([{ perks: { you_get_used_to_it: 'II' } }, { name: 'Ally' }], [{ at: 'P11' }]); const [a, b] = f.pcs; a.pos = '3,3'; b.pos = '3,5';
+    const ctxOf = (t: Unit) => withGame(f.g, () => emit(f.cb, 'cond_apply', { by: f.foe, t, id: 'fear', fam: 'heart', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: f.cb, rng: f.g.rng }));
+    f.turn(f.unit(a.id));
+    expect(() => f.act({ type: 'combat/perk', unitId: a.id, id: 'you_get_used_to_it', actionId: 'seen_worse' } as any)).toThrow(/Nothing to give/);
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'ldebuff', 2, undefined, { skipSave: true }));
+    const ap = f.unit(a.id).ap;
+    f.act({ type: 'combat/perk', unitId: a.id, id: 'you_get_used_to_it', actionId: 'seen_worse' } as any);
+    expect(f.unit(a.id).ap).toBe(ap);
+    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0); expect(ctxOf(f.unit(b.id)).saveAdd).toBe(4);
   });
   it('II: no penalty', () => {
     const f = fightWith([{ perks: { you_get_used_to_it: 'II' } }, { name: 'Ally' }], [{ at: 'P11' }]); const [a, b] = f.pcs;

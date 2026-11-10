@@ -291,12 +291,12 @@ register({
         say(cb, u.name + ' adds ' + t.name + ' to the case file' + markTarget(h, t, rng) + '.'); return null;
       } },
     { id: 'case_file_story', label: 'Open a case file', scope: ['story'], ap: 0, target: 'npc', uses: { per: 'per_scene', n: 1 },
-      text: 'Name an NPC and study them. Pass an Analysis check in this scene and they start your next fight with them Marked.',
+      text: 'Name an NPC and study them. Pass an Acuity check in this scene and they start your next fight with them Marked.',
       run: (h, a) => {
         const who = String(a.npc || a.text || '').trim(); if (!who) return 'Name who you\'re studying.';
         const st = charState(h.c)[h.key] ||= {}; st.pending = { npc: who.slice(0, 60), scene: h.g?.story?.scene?.n ?? 0 };
         const eid = postStory(h, 'opens a case file on ' + who + '.');
-        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Case File on ' + who + ': call an Analysis check if they can be studied here; a success files them (Marked when a fight with them starts).', eid || undefined);
+        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Case File on ' + who + ': call an Acuity check if they can be studied here; a success files them (Marked when a fight with them starts).', eid || undefined);
         return null;
       } },
   ],
@@ -312,7 +312,7 @@ register({
       for (const t of ctx.cb.units as Unit[]) if (t.side === 'foe' && files.some((f) => f.toLowerCase() === t.name.toLowerCase())) say(ctx.cb, 'Case File: ' + t.name + ' is a known face' + markTarget(h, t, rngOf(h, ctx)) + '.');
     },
   },
-  brief: () => 'story case files: you call the Analysis check; a pass files the NPC (Marked in the next fight)',
+  brief: () => 'story case files: you call the Acuity check; a pass files the NPC (Marked in the next fight)',
 });
 
 // ---------- Weak Point (class) ----------

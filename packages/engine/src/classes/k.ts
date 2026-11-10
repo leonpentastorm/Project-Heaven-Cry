@@ -337,7 +337,7 @@ function halfPool(cb: Combat, u: Unit, t: string): string[] {
 }
 function halfWhy(cb: Combat, u: Unit, t: string | null): string | null {
   if (!t) return 'Pick a tile.';
-  if (t !== u.pos) return 'Your own tile: step onto it first (rules 1.4).';
+  if (t !== u.pos) return 'Your own tile: step onto it first.';
   if (!standable(cb.map, t)) return 'Nothing can be drawn there.';
   const here = (cb.glyphs || []).filter((g) => g.pos === t), cap = halfCap(cb, u, t);
   if (here.length >= cap) return cap === 1 ? 'One glyph per tile: a second half-glyph goes only on a tile holding one half-glyph of yours.' : 'This tile holds ' + cap + ' glyphs at most.';
@@ -731,7 +731,7 @@ function ksRestore(h: Holder) {
 }
 function ksWhy(cb: Combat, u: Unit, t: string | null, w: string): string | null {
   if (!SIGIL[w] || !u.mg!.words.includes(w)) return 'Pick a word you know (choice).';
-  if (!t) return 'Pick a tile.'; if (t !== u.pos) return 'Cut it on your own tile (rules 1.4): step onto it first.';
+  if (!t) return 'Pick a tile.'; if (t !== u.pos) return 'Cut it on your own tile: step onto it first.';
   if (!standable(cb.map, t)) return 'Nothing can be cut there.';
   const here = (cb.glyphs || []).filter((g) => g.pos === t && g.id !== KS(u));
   if (here.length >= glyphsPerTile(cb, u, t)) return 'One glyph per tile: this tile already holds ' + here.map((g) => g.word.toUpperCase()).join(', ') + '.';
@@ -767,7 +767,7 @@ register({
     moved: (ctx, h) => ksRestore({ ...h, cb: ctx.cb }), glyph_cost: (ctx, h) => { if (!ctx.preview) ksRestore({ ...h, cb: ctx.cb }); },
     on_hit: (ctx, h) => ksRestore({ ...h, cb: ctx.cb }),
   },
-  brief: () => 'Keystone: NPC Sigil users can read a cut glyph (Analysis TN 12) and Evoke a pattern holding it.',
+  brief: () => 'Keystone: NPC Sigil users can read a cut glyph (Acuity TN 12) and Evoke a pattern holding it.',
 });
 // Survey (K17, PROVISIONAL, audit 1-3; rules 1.4, item 467): a Line (or Stack) that holds your Keystone costs 1 charge
 // less to fire (1 at least) for you and your allies, and you and your allies can Evoke it from up to 2 tiles from any of
@@ -828,7 +828,7 @@ register({
       available: (h) => (!h.u || !h.cb ? false : foundOn(h) && ksOf(h.cb, h.u) ? true : false),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile') || u.pos, ks = ksOf(cb, u); if (!ks) return { ok: false, why: 'Cut a Keystone first.' };
-        if (t !== u.pos) return { ok: false, why: 'Draw on your own tile (rules 1.4).' };
+        if (t !== u.pos) return { ok: false, why: 'Draw on your own tile.' };
         if (dist(t, ks.pos) > 2) return { ok: false, why: 'Within 2 tiles of the Keystone.' };
         if (!a.choice || !u.mg!.words.includes(a.choice)) return { ok: false, why: 'Pick a word you know (choice).' };
         return {};

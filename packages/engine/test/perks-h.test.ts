@@ -149,15 +149,15 @@ describe('Bottle Butts for Eyes', () => {
     expect(hit).not.toBeNull();
     const c = hit!.characters[c0.id];
     expect(c.pack!.some((x) => x.id === 'prescription_glasses')).toBe(true);
-    expect(hit!.combat!.units.find((u) => u.side === 'pc')!.sk?.proficiency).toBe(-4);
+    expect(hit!.combat!.units.find((u) => u.side === 'pc')!.sk?.analysis).toBe(-4);
     expect(hit!.combat!.log.some((l) => /glasses come off/.test(l))).toBe(true);
   });
   it('story: the Narrator knocks them off (traitState), and the next check shows −4', () => {
     const s = storyWith([{ traits: ['bottle_butts_for_eyes'] }]); const c = s.chars[0];
     s.g.characters[c.id].worn = { ...(s.g.characters[c.id].worn || {}), head_accessory: 'prescription_glasses' };
-    expect(check(s, c.id, ['proficiency']).roll()).toMatch(/\+1 Bottle Butts/);
+    expect(check(s, c.id, ['analysis']).roll()).toMatch(/\+1 Bottle Butts/);
     turn(s, { traitState: [{ charId: c.id, key: 'glasses', value: 'off' }] });
-    expect(check(s, c.id, ['proficiency']).roll()).toMatch(/−4 Bottle Butts/);
+    expect(check(s, c.id, ['analysis']).roll()).toMatch(/−4 Bottle Butts/);
     expect(sys(s, /glasses come off/)).toBe(true);
   });
 });

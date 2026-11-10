@@ -57,7 +57,7 @@ onHook('moved', (ctx: any, cb) => {
 // Being hit: −1 for each damaging hit taken, from any source. Not while guarding: the Guard technique is up, the hit
 // was Parried, or the unit held Guard points as it arrived. A condition's own tick (Bleeding, Burning) and the harm a
 // unit does itself (Strain, a Mana Short) are not hits.
-const NOT_A_HIT = new Set(['bleed', 'bleeding', 'burn', 'burning', 'poison', 'strain', 'overload', 'short', 'heart', 'shame', 'shared']);
+export const NOT_A_HIT = new Set(['bleed', 'bleeding', 'burn', 'burning', 'poison', 'strain', 'overload', 'short', 'heart', 'shame', 'shared']);
 onHook('damage_in', (ctx: any, cb) => {
   const u: Unit = ctx.t; if (ctx.phase !== 'after' || !u || !(ctx.dealt > 0) || !momentumOf(u)) return;
   if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;

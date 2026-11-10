@@ -31,7 +31,7 @@ import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emit
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -1555,7 +1555,7 @@ function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'ge
 }
 /** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
  * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
-const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
   'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'shieldRecv', 'stealth', 'injResist'] as const;
 /** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
@@ -3323,7 +3323,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (a.type === 'sandbox/equip') err = sbEquip(c, a.idx, a.to);
         else if (a.type === 'sandbox/unequip') err = sbUnequip(c, a.slot);
         else if (a.type === 'sandbox/drop') { const pack = packOf(c).map((x) => ({ ...x })); if (!pack[a.idx]) err = 'Nothing there.'; else if ((err = partError(c, a.idx, pack[a.idx].qty))) { /* Gun Nut's Collector: a collection gun stays (item 369) */ } else { pack.splice(a.idx, 1); c.pack = pack; } }
-        else { const want = Math.max(0, Math.min(5, Math.round(a.armourClass))), cap = armourCap(c); if (cap != null && want > cap) fail(c.name + ' can wear Class ' + cap + ' at most (' + (TRAITS.find((x) => (c.traits || []).includes(x.id) && (x as any).effects?.some((e: any) => e.op === 'armor_class_max'))?.name || 'a trait') + ').'); c.armourClass = want; }
+        else { const want = Math.max(0, Math.min(5, Math.round(a.armourClass))), cap = armourCap(c); if (cap != null && want > cap) fail(c.name + ' can wear Class ' + cap + ' at most (' + (TRAITS.find((x) => (c.traits || []).includes(x.id) && (x as any).effects?.some((e: any) => e.op === 'armor_class_max'))?.name || 'a trait') + ').'); { const ag = armourGateWhy(c, want); if (ag) fail(ag); } c.armourClass = want; } // heavy armour asks Pain Threshold (rules 1.13)
       });
       if (err) fail(err);
       return;
@@ -3413,7 +3413,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/technique': {
-      const c = mine(a.charId), ids = a.id === 'all' ? TECHNIQUES.filter((t) => !t.free).map((t) => t.id) : [a.id];
+      const c = mine(a.charId), ids = a.id === 'all' ? TECHNIQUES.filter((t) => !t.free && !t.needs?.shield && !t.innate).map((t) => t.id) : [a.id]; // what a shield or a skill gives is never learned
       if (ids.some((id) => !TECHNIQUE[id] || TECHNIQUE[id].free)) fail('No such technique to learn.');
       sbChange(g, c, () => {
         const p = ensurePhys(c);

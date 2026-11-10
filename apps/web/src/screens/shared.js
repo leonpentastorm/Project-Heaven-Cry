@@ -160,7 +160,7 @@ export function effectsOf(u) {
   if (u.jammed) fx.push(['JAMMED', 'The gun won\'t fire until cleared (2 AP).']);
   if (u.heat) fx.push(['HEAT ' + u.heat, '−' + Math.floor(u.heat / 2) + ' to hit; drops by 2 each turn.']);
   (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.']));
-  if (u.weakPoint) fx.push(['WEAK POINT', '+15% damage from the squad.']);
+  if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.']);
   if (u.overweight > 0) fx.push(['OVERBURDENED', u.overweight + ' kg over the carry limit: −' + Math.ceil(u.overweight / 5) + ' Movement, no Sprint.']);
   return fx;
 }

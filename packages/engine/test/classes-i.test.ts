@@ -142,7 +142,9 @@ describe('Defender', () => {
     expect(f.unit(d.id).res!.guard).toBe(3); expect(f.unit(d.id).def).toBe(def0 + 2); expect(f.unit(d.id).ap).toBe(4);
     const foe = f.unit(f.foe.id); sure(foe); const hpA = f.unit(ally.id).hp, hpD = f.unit(d.id).hp;
     withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, f.unit(ally.id), 'shot', null, { noAp: true }));
-    expect(f.unit(ally.id).hp).toBe(hpA); expect(f.unit(d.id).hp).toBeLessThan(hpD); expect(f.unit(d.id).res!.guard).toBe(2);
+    // the hit lands on the Defender: 1 Guard for the Interpose, and what Guard is left soaks it, 10 a point (rules 1.13)
+    expect(f.unit(ally.id).hp).toBe(hpA); expect(f.unit(d.id).res!.guard).toBeLessThanOrEqual(2);
+    expect(hpD - f.unit(d.id).hp + 10 * (2 - f.unit(d.id).res!.guard)).toBeGreaterThan(0);
     expect(logHas(f.cb, /interposes for/)).toBe(true);
     act(f, f.unit(d.id), { type: 'combat/move', to: '3,3' });
     expect(f.unit(d.id).def).toBe(def0);

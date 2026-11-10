@@ -3,7 +3,7 @@
 // resolveAttack, spotHidden…), the same calls the reducer makes.
 import { describe, expect, it } from 'vitest';
 import {
-  MAPS, apply, moveUnit, resolveAttack, previewAttack, attackDamage, endTurn, hide, spotHidden, maxReactions, makeObject, applyRest, applyCond, emit,
+  MAPS, apply, moveUnit, resolveAttack, previewAttack, attackDamage, endTurn, hide, spotHidden, maxReactions, makeObject, applyRest, applyCond, emit, condOn,
   d20, die, packOf, movement, drawGlyph, pathOpts, storyCb, positionsOf, stateOf, holderOf, type Unit, type Combat, type GameState,
 } from '../src';
 import { builtInCampaign, statQuery } from '../src';
@@ -18,21 +18,35 @@ const wallAt = (cb: Combat, x: number) => { cb.map = { ...cb.map, solid: Array.f
 MAPS.laneb_dark = { ...MAPS.yard, id: 'laneb_dark', dark: true };
 
 describe('Into the Dark', () => {
-  it('I: the first move into ground the squad has not seen costs 1 AP less; once a fight', () => {
+  // rules 1.13: no AP. The first walk onto unseen ground: no ambush counts against you until your next turn.
+  it('I: on your first move into unseen ground no attack is an ambush against you until your next turn; the move costs its AP', () => {
     const f = fightWith([{ perks: { into_the_dark: 'I' } }], [{ at: 'O10' }]);
     const cb = f.cb, pc = f.pc; pc.movement = 1; pc.vision = 2; cb.map = { ...cb.map, dark: true };
     delete pc.ps!['perk:into_the_dark']; at(pc, '1,5'); f.turn(pc);
     f.act({ type: 'combat/move', unitId: pc.id, to: '4,5' });
-    expect(f.pc.ap).toBe(6 - 2); // 3 tiles at Movement 1: 3 AP, one free
+    expect(f.pc.ap).toBe(6 - 3); // 3 tiles at Movement 1: nothing is free any more
     expect(logHas(f.cb, /Into the Dark/)).toBe(true);
-    f.act({ type: 'combat/move', unitId: f.pc.id, to: '4,8' });
-    expect(f.pc.ap).toBe(4 - 3); // only once a fight
+    const foe = f.foe; foe.attack = 60; at(foe, '6,5');
+    const dmg = (ambush: boolean) => withGame(f.g, () => attackDamage(f.cb, f.foe, f.pc, 'shot', null, { ambush }));
+    expect(dmg(true).mults.some((m) => m.label === 'ambush')).toBe(false); // the Ambush multiplier is gone
+    withGame(f.g, () => resolveAttack(f.cb, rngFor(5), f.foe, f.pc, 'shot', null, { noAp: true, ambush: true }));
+    expect(logHas(f.cb, /No ambush against/)).toBe(true);
+    f.turn(f.pc); // your next turn: the window is over, and it is once a fight
+    expect(dmg(true).mults.some((m) => m.label === 'ambush')).toBe(true);
+    f.act({ type: 'combat/move', unitId: f.pc.id, to: '4,7' });
+    expect(dmg(true).mults.some((m) => m.label === 'ambush')).toBe(true);
   });
-  it('II: +1 AP on the first turn in a place that causes Fear', () => {
-    const f = fightWith([{ perks: { into_the_dark: 'II' } }], [{ at: 'O10' }]);
-    f.cb.fear = true;
-    expect(f.turn(f.pc).ap).toBe(7);
-    expect(f.turn(f.pc).ap).toBe(6);
+  it('II: no Fear in round 1 of a fight in a place that causes Fear; elsewhere, and later, Fear lands', () => {
+    const fear = (tier: string, place: boolean, round = 1) => {
+      const f = fightWith([{ perks: { into_the_dark: tier } }], [{ at: 'O10' }]); f.cb.fear = place; f.cb.round = round;
+      withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'fear', 2, undefined, { skipSave: true }));
+      expect(f.turn(f.pc).ap).toBeLessThanOrEqual(6); // and no AP from it
+      return condOn(f.pc, 'fear');
+    };
+    expect(fear('II', true)).toBe(false);
+    expect(fear('II', false)).toBe(true);
+    expect(fear('II', true, 2)).toBe(true);
+    expect(fear('I', true)).toBe(true);
   });
 });
 
@@ -86,14 +100,14 @@ describe('Roll With It', () => {
     f.act({ type: 'combat/move', unitId: u.id, to: '0,5' }); // leaves the foe's reach: free and no opportunity attack
     expect(f.pc.ap).toBe(6); expect(logHas(f.cb, /opportunity attack/)).toBe(false);
   });
-  it('II: 2 tiles, and the next attack gets +0.1 on the critical multiplier', () => {
+  it('II: 2 tiles, and nothing else (rules 1.13: the critical rider is gone)', () => {
     const f = fightWith([{ perks: { roll_with_it: 'II' } }], [{ at: 'F6' }]);
     const pc = f.pc, foe = f.foe; foe.attack = -40;
     withGame(f.g, () => { f.cb.turn = f.cb.order.indexOf(foe.id); resolveAttack(f.cb, rngFor(5), foe, pc, 'shot', null, { noAp: true }); });
     const u = f.turn(pc); expect(u.bank).toBe(2);
     withGame(f.g, () => {
       const d = attackDamage(f.cb, u, f.foe, 'shot', null, { crit: true });
-      expect(d.mults.some((m) => /Roll With It/.test(m.label))).toBe(true);
+      expect(d.mults.some((m) => /Roll With It/.test(m.label))).toBe(false);
     });
   });
 });

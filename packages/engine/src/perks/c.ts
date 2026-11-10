@@ -11,7 +11,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   key, xy, dist, alive, refOf, keyOf as refKey, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, reload, clearJam,
-  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees,
+  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees,
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
@@ -19,6 +19,8 @@ import { applyCond, condOn } from '../magic';
 import { d20 } from '../rng';
 import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
+import { callMarks, callLevel } from '../calls/core';
+import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
 
 // ---------- small helpers ----------
@@ -40,7 +42,7 @@ const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.windo
 const isMachine = (x: { kind?: string; name?: string } | null | undefined) => !!x && (['robot', 'machine', 'turret', 'drone'].includes(x.kind || '') || /robot|drone|automaton|\bbot\b|turret/i.test(x.name || ''));
 const isGun = (w: any) => !!w && !isMelee(w) && w.category !== 'thrown' && w.category !== 'bow' && w.magazine != null;
 /** The weapon-skill points behind a skill on a unit (proficiency, dexterity…), with item modifiers. */
-const unitMod = (u: Unit, skill: 'proficiency' | 'dexterity') => mod((u as any)[skill] || 0) + (u.sk?.[skill] || 0);
+const unitMod = (u: Unit, skill: 'proficiency' | 'dexterity' | 'analysis') => mod((u as any)[skill] || 0) + (u.sk?.[skill] || 0);
 
 // ======================================================================================================== PERKS
 
@@ -261,8 +263,8 @@ register({
         checkOver(cb); return null;
       } },
     { id: 'repair_drone', label: 'Patch the drone', scope: ['combat', 'world'], ap: (h) => (h.u ? actionAp({ u: h.u }, 'field_repair', 2).ap : 2), target: 'ally', range: 1,
-      text: 'Field Repair on a drone at double strength: (10% + 5% per Proficiency above 3) × 2 of its max HP, one spare-parts charge.',
-      available: (h) => { if (!tierII(h) || !h.u || !h.cb) return false; if (!h.cb.units.some((v) => v.companion === 'drone' && !v.dead && v.side === h.u!.side)) return false; return (h.u.proficiency || 0) < 3 ? 'Needs Proficiency 3.' : !(h.u.parts || 0) ? 'No spare parts.' : true; },
+      text: 'Field Repair on a drone at double strength: (10% + 5% per Improvisation above 3) × 2 of its max HP, one spare-parts charge.',
+      available: (h) => { if (!tierII(h) || !h.u || !h.cb) return false; if (!h.cb.units.some((v) => v.companion === 'drone' && !v.dead && v.side === h.u!.side)) return false; return (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare parts.' : true; },
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t || t.companion !== 'drone' ? { ok: false, why: 'Pick a drone next to you.' } : t.hp >= t.maxHp ? { ok: false, why: 'Already in full repair.' } : {}; },
       run: (h, args) => {
         const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId)!; if (!t || t.companion !== 'drone') return 'Pick a drone.';
@@ -294,72 +296,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Origami Hands (Dexterity β) ----------
-// 2 AP (II: 1): build from scraps. Each build uses one spare-parts charge, and at most 2 of your traps stand on the map
-// (plan 6a-6; PROVISIONAL). Trap: a tripwire on an adjacent free tile, hidden from the other side, 25 damage (II: +50%,
-// 37), credited to you. Sling: one thrown shot now (throwing range, d20 + Dexterity vs Defense, 10 physical damage ×
-// Strength). Tool: a one-use improvised tool goes in your pack and the Narrator rules what it can do. Area map: trap and
-// tool. Story: improvise a tool (a spare-parts charge, no Proficiency check; the Narrator rules the scraps).
-const TRAP_DMG = 25, MAX_TRAPS = 2, SLING_DMG = 10;
-const myTraps = (cb: Combat, u: Unit) => objectsOf(cb).filter((o) => isTrap(o) && (o as any).owner === u.id && !o.resolved);
-const plotTool = (c: Character, what: string) => { const pack = packOf(c).map((x) => ({ ...x })); pack.push({ id: 'plot_improvised_' + pack.length, name: 'Improvised ' + (what || 'tool').slice(0, 40), qty: 1, kind: 'plot', text: 'One use (Origami Hands): the Narrator rules what it can do.' } as any); c.pack = pack; };
-register({
-  id: 'origami_hands', claims: 'all',
-  actions: [
-    { id: 'improvise', label: 'Improvise', scope: ['combat', 'world'], ap: (h) => (tierII(h) ? 1 : 2), target: 'none',
-      text: 'One spare-parts charge: a tripwire on a tile next to you, a sling shot at an enemy, or a one-use tool.',
-      available: (h) => (!h.u ? false : !(h.u.parts || 0) ? 'No spare parts (scraps).' : true),
-      preview: (h, args) => {
-        const u = h.u!, cb = h.cb!, ch = args.choice || 'trap';
-        if (ch === 'trap') {
-          const k = tileOf(cb, args.tile); if (!k) return { ok: false, why: 'Pick a tile next to you.' };
-          if (dist(k, u.pos) !== 1 || !standable(cb.map, k) || moveBlockers(cb).has(k) || cb.units.some((v) => !v.dead && v.pos === k) || objectsAt(cb, k).some(isTrap)) return { ok: false, why: 'A free tile next to you.' };
-          if (myTraps(cb, u).length >= MAX_TRAPS) return { ok: false, why: 'At most ' + MAX_TRAPS + ' of your traps at once.' };
-          return { lines: ['A tripwire at ' + refOf(k) + ': ' + (tierII(h) ? Math.floor(TRAP_DMG * 1.5) : TRAP_DMG) + ' damage, hidden from the enemy.'], tiles: [k] };
-        }
-        if (ch === 'sling') {
-          if (overworld(cb)) return { ok: false, why: 'A sling shot starts a fight: attack instead.' };
-          const t = unitById(cb, args.targetId); if (!t || t.side === u.side || !alive(t)) return { ok: false, why: 'Pick an enemy.' };
-          if (dist(u.pos, t.pos) > throwRangeOf(u) || !lineOfSight(cb, u.pos, t.pos)) return { ok: false, why: 'Out of throwing range or sight.' };
-          return { lines: ['A sling shot: d20 ' + (unitMod(u, 'dexterity') >= 0 ? '+' : '') + unitMod(u, 'dexterity') + ' vs ' + t.def + ', ' + SLING_DMG + ' damage.'] };
-        }
-        if (ch === 'tool') return { lines: ['A one-use improvised ' + (args.text || 'tool') + ': the Narrator rules what it can do.'] };
-        return { ok: false, why: 'Choose trap, sling or tool.' };
-      },
-      run: (h, args, rng) => {
-        const u = h.u!, cb = h.cb!, ch = args.choice || 'trap';
-        u.parts = Math.max(0, (u.parts || 0) - 1);
-        if (ch === 'trap') {
-          const k = tileOf(cb, args.tile)!, dmg = tierII(h) ? Math.floor(TRAP_DMG * 1.5) : TRAP_DMG;
-          cb.objects = [...objectsOf(cb), makeObject('trap_' + u.id + '_' + k.replace(',', '_') + '_' + cb.round + '_' + objectsOf(cb).length, 'trap', k, { name: 'Tripwire', hidden: true, side: u.side, owner: u.id, damage: dmg } as any)];
-          say(cb, u.name + ' strings a tripwire at ' + refOf(k) + ' (Origami Hands, ' + dmg + ' damage).'); return null;
-        }
-        if (ch === 'sling') {
-          const t = unitById(cb, args.targetId)!, r = d20(rng), m = unitMod(u, 'dexterity'), ok = r === 20 || (r !== 1 && r + m >= t.def);
-          emitFx(cb, 'shot', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: 'sling', cat: 'thrown', mode: 'shot', hit: ok, crit: r === 20, fumble: r === 1, dmg: 0, killed: false });
-          let line = u.name + ' slings a stone at ' + t.name + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs ' + t.def;
-          if (ok) { const pm = h.c ? physicalMult(h.c) : 1, d = Math.max(1, Math.floor(SLING_DMG * pm) - t.armour), res = applyDamage(cb, t, d, { by: u, type: 'weapon', ranged: true, shield: true, credit: 'all', weapon: 'sling' }); line += ' · hit, ' + res.amount + ' damage' + (res.killed ? ' · down' : ''); }
-          else line += ' · miss';
-          say(cb, line + ' (Origami Hands).'); checkOver(cb); return null;
-        }
-        if (h.c) plotTool(h.c, args.text || 'tool');
-        say(cb, u.name + ' folds scraps into an improvised ' + (args.text || 'tool') + ' (Origami Hands).');
-        note(h, 'made a one-use improvised ' + (args.text || 'tool') + ': whether the scraps were there and what it can do');
-        return null;
-      } },
-    { id: 'improvise_story', label: 'Improvise a tool', scope: ['story'], ap: 0, target: 'text',
-      text: 'Say what you make: one spare-parts charge, no Proficiency check; the Narrator rules what it can do.',
-      available: (h) => (h.c && packOf(h.c).some((p) => (p.item || p.id) === 'spare_parts' && p.qty > 0) ? true : 'No spare parts (scraps).'),
-      run: (h, args) => {
-        const c = h.c!; const pack = packOf(c).map((x) => ({ ...x })); const i = pack.findIndex((p) => (p.item || p.id) === 'spare_parts' && p.qty > 0);
-        if (i < 0) return 'No spare parts.'; if (pack[i].qty > 1) pack[i].qty--; else pack.splice(i, 1); c.pack = pack;
-        plotTool(c, String(args.text || 'tool'));
-        note(h, 'improvises "' + String(args.text || 'a tool').slice(0, 120) + '" from scraps (no check): rule whether the scraps are there and what it can do');
-        return null;
-      } },
-  ],
-  brief: () => 'improvised tools: whether scraps are there and what they can do',
-});
+// Origami Hands was replaced by Both Hands (rules 1.13: perks/skeleton.ts); its traps wait for the stealth list.
 
 // ---------- Trick Shot (Dexterity Mastered) ----------
 // Once per turn, a ranged attack can ricochet (the Ricochet toggle on Attack): it ignores half cover (no −5, never
@@ -468,39 +405,26 @@ const extraModAction = (label: string, avail: (h: Holder) => boolean | string) =
   run: (h: Holder, args: any) => fitExtra(h.c!, args.choice, label),
 });
 
-// ---------- Nothing Gets Past (Vigilant Mastered) ----------
-// "Hold the line": Overwatch with every whole shot your AP pays for (the first is the normal Overwatch; the rest wait in
-// a pool). Each enemy that moves in your sight and range before your next turn draws one shot, resolved on the tile
-// where it came into sight (the walk is tile by tile), until the pool or the ammo runs out; one shot per enemy per move.
-// The extra shots don't use more reactions (plan 6b; PROVISIONAL). Unwalked tiles stay in the mover's bank.
-const owCost = (u: Unit, mode: string) => attackApCost(WEAPON[u.weapon], mode === 'aimed' ? 'aimed' : 'shot');
+// ---------- Nothing Gets Past (Vigilance Mastered) ----------
+// Rules 1.13 (a gamma deals no damage: the old every-mover Overwatch is the Marksman's Killzone now). Every enemy that
+// moves in your sight is Spotted for free: the mark your Spot Call would leave (at 10 points: the next two allies to
+// attack it ignore its cover at +1 to hit, and it isn't Hidden to them), with no AP, no reaction and no Call slot used.
+// Once a round for each enemy; an enemy that already carries a Spot keeps it. Not while you are Silenced or Stunned.
 register({
   id: 'nothing_gets_past', claims: 'all',
-  actions: [{
-    id: 'hold_line', label: 'Hold the line (all AP)', scope: ['combat'], target: 'none', ap: 0,
-    text: 'Overwatch with every shot your AP pays for: each enemy that moves in your sight before your next turn draws one.',
-    available: (h) => (!h.u || isMelee(WEAPON[h.u.weapon]) ? false : h.u.overwatch ? 'Already on overwatch.' : isPressed(h.u) ? 'You are Pressed: you can\'t hold a shot.' : h.u.ap < owCost(h.u, 'shot') ? 'Needs ' + owCost(h.u, 'shot') + ' AP.' : true),
-    preview: (h, args) => { const u = h.u!, c = owCost(u, args.choice || 'shot'), n = Math.floor(u.ap / c); return n < 1 ? { ok: false, why: 'Needs ' + c + ' AP.' } : { lines: [n + (n === 1 ? ' shot' : ' shots') + ' held (' + c + ' AP each).'] }; },
-    run: (h, args) => {
-      const u = h.u!, cb = h.cb!, mode = args.choice === 'aimed' ? 'aimed' : 'shot', c = owCost(u, mode), n = Math.floor(u.ap / c); if (n < 1) return 'Needs ' + c + ' AP.';
-      u.ap -= n * c; const st = stateOf(h); st.pool = (n - 1) * c; st.cost = c; st.mode = mode; st.shot = {}; st.owUsed = -1;
-      u.overwatch = mode; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' });
-      say(cb, u.name + ' holds the line: ' + n + (n === 1 ? ' shot' : ' shots') + ' on overwatch (Nothing Gets Past).'); return null;
-    },
-  }],
   on: {
-    turn_start: (ctx, h) => { if (ctx.u === h.u) { const st = stateOf(h); delete st.pool; st.shot = {}; } },
     move_step: (ctx, h) => {
-      const u = h.u, st = stateOf(h), cb = h.cb; if (!u || !cb || st.pool == null || ctx.u.side === u.side || !alive(u)) return;
-      if (ctx.i === 0) (st.shot ||= {})[ctx.u.id] = false; // a new move: this mover can draw a shot again
-      if (u.overwatch || isPressed(u) || st.shot?.[ctx.u.id] || st.pool < st.cost) return; // rules 1.12: Pressed holds no shot
-      u.overwatch = st.mode; st.pool -= st.cost;
-      if (st.owUsed === cb.round) refundReaction(cb, u); // the chain runs on the one reaction its first shot used
-    },
-    reaction_window: (ctx, h) => {
-      const st = stateOf(h); if (ctx.reactor !== h.u || ctx.kind !== 'overwatch' || st.pool == null) return;
-      if (st.shot?.[ctx.mover.id]) { ctx.cancel = true; return; }
-      (st.shot ||= {})[ctx.mover.id] = true; st.owUsed = h.cb!.round;
+      const u = h.u, cb = h.cb, m: Unit = ctx.u; if (!u || !cb || overworld(cb) || !m || m.side === u.side || !alive(u) || !alive(m)) return;
+      if (condOn(u, 'silenced') || condOn(u, 'stunned') || !unitSees(cb, u, ctx.at || m.pos)) return;
+      if (m.hidden && !sideSees(cb, u.side as 'pc' | 'foe', m)) return;
+      const st = stateOf(h); if (st.r !== cb.round) { st.r = cb.round; st.ids = []; }
+      if (st.ids.includes(m.id) || callMarks(m).spot) return;
+      const def = CALL['call.spot']; if (!def) return;
+      const step = def.steps[Math.max(0, callStepAt(def, callLevel(u, def)) - 1)], num = (k: string) => (typeof step?.numbers?.[k] === 'number' ? step.numbers[k] : 0);
+      st.ids.push(m.id);
+      callMarks(m).spot = { by: u.id, side: u.side, r: cb.round, left: num('allies') || 1, users: [], live: null, hit: num('hit'), unhide: !!num('unhide') };
+      emitFx(cb, 'perk', { unit: u.id, target: m.id, from: u.pos, to: m.pos, id: 'nothing_gets_past' });
+      say(cb, u.name + ' calls ' + m.name + ' out as it moves (Nothing Gets Past): Spotted.');
     },
   },
   brief: () => null,
@@ -927,11 +851,11 @@ register({
   id: 'slicer', claims: [2, 3],
   actions: [
     { id: 'backdoor', label: 'Backdoor', scope: ['combat', 'world'], ap: 2, target: 'tile',
-      text: 'Take over a door, terminal, camera, alarm or emplaced turret within 5 tiles until your next turn: Proficiency against its tier. A door: open, close or lock it.',
-      preview: (h, args) => { const d = deviceAt(h, args); if (typeof d === 'string') return { ok: false, why: d }; const m = unitMod(h.u!, 'proficiency'); return { lines: [d.name + ': d20 ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + d.tn + ' (' + Math.max(5, Math.min(95, (21 - (d.tn - m)) * 5)) + '%).'] }; },
+      text: 'Take over a door, terminal, camera, alarm or emplaced turret within 5 tiles until your next turn: Acuity against its tier. A door: open, close or lock it.',
+      preview: (h, args) => { const d = deviceAt(h, args); if (typeof d === 'string') return { ok: false, why: d }; const m = unitMod(h.u!, 'analysis'); return { lines: [d.name + ': d20 ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + d.tn + ' (' + Math.max(5, Math.min(95, (21 - (d.tn - m)) * 5)) + '%).'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, d = deviceAt(h, args); if (typeof d === 'string') return d;
-        const r = d20(rng), m = unitMod(u, 'proficiency'), ok = r === 20 || (r !== 1 && r + m >= d.tn);
+        const r = d20(rng), m = unitMod(u, 'analysis'), ok = r === 20 || (r !== 1 && r + m >= d.tn);
         let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs ' + d.tn;
         if (!ok) { say(cb, line + ' · locked out (Slicer).'); return null; }
         const st = stateOf(h), list: any[] = (st.devices ||= []);
@@ -951,8 +875,8 @@ register({
         return null;
       } },
     { id: 'backdoor_story', label: 'Backdoor', scope: ['story'], ap: 0, target: 'text',
-      text: 'Say which system you crack (bank, cameras, a city\'s network): the Narrator calls the Proficiency check and its TN.',
-      run: (h, args) => { note(h, 'Backdoor on "' + String(args.text || '').slice(0, 120) + '": call a Proficiency check at the system\'s tier'); return null; } },
+      text: 'Say which system you crack (bank, cameras, a city\'s network): the Narrator calls the Acuity check and its TN.',
+      run: (h, args) => { note(h, 'Backdoor on "' + String(args.text || '').slice(0, 120) + '": call an Acuity check at the system\'s tier'); return null; } },
   ],
   on: {
     turn_start: (ctx, h) => {
@@ -973,6 +897,6 @@ register({
     notice: (ctx, h) => { if (ctx.c === h.c && isMachine(ctx.npc)) ctx.range += 2; },
     stay_hidden: (ctx, h) => { if (ctx.c === h.c && isMachine(ctx.npc)) ctx.tn += 2; },
   },
-  brief: () => 'off-map systems: you call the Proficiency check; tag robots kind robot so they spot them +2',
+  brief: () => 'off-map systems: you call the Acuity check; tag robots kind robot so they spot them +2',
 });
 

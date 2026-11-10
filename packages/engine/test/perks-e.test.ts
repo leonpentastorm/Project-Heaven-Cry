@@ -106,11 +106,11 @@ describe('Overruled!', () => {
 
 // ======================================================================================================== Blueprint
 describe('Blueprint', () => {
-  for (const tier of ['I', 'II'] as const) it(tier + ': the sketch gives the squad +1 Movement in round 1' + (tier === 'II' ? ' and +1 AP' : ''), () => {
+  for (const tier of ['I', 'II'] as const) it(tier + ': the sketch gives the squad +' + (tier === 'II' ? 2 : 1) + ' Movement in round 1, and no AP', () => {
     const f = fightAfter([{ perks: { blueprint: tier } }, {}], [{ at: 'P6' }], (s) => s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'blueprint' }));
     open(f.cb);
     const [a, b] = f.pcs, mv = f.unit(b.id).movement;
-    const ub = f.turn(f.unit(b.id)); expect(ub.movement).toBe(mv + 1); expect(ub.ap).toBe(tier === 'II' ? 7 : 6);
+    const ub = f.turn(f.unit(b.id)); expect(ub.movement).toBe(mv + (tier === 'II' ? 2 : 1)); expect(ub.ap).toBe(6);
     pcAct(f as any, { type: 'combat/end-turn' }, ub);
     expect(f.unit(b.id).movement).toBe(mv);
     f.cb.round = 2; const ua = f.turn(f.unit(a.id)); expect(ua.ap).toBe(6);
@@ -146,20 +146,24 @@ describe('Talks Broke Down', () => {
 
 // ======================================================================================================== Rally Cry
 describe('Rally Cry', () => {
-  for (const [tier, n] of [['I', 1], ['II', 2]] as const) it(tier + ': an ally Downed by an enemy gives every other ally +' + n + ' AP next turn', () => {
+  // rules 1.13: no AP. The others take less damage until their own next turn.
+  for (const [tier, n] of [['I', 15], ['II', 25]] as const) it(tier + ': an ally Downed by an enemy makes every other ally take ' + n + '% less damage until their next turn', () => {
     const f = fightWith([{ perks: { rally_cry: tier } }, {}, {}], [{ at: 'P6' }]);
     const [a, b, c] = f.pcs, foe = f.foes[0];
+    const hit = (u: Unit) => withGame(f.g, () => { const was = f.unit(u.id).hp; applyDamage(f.cb, f.unit(u.id), 100, { type: 'weapon', by: f.unit(foe.id) }); const d = was - f.unit(u.id).hp; f.unit(u.id).hp = was; return d; });
+    f.unit(a.id).hp = f.unit(a.id).maxHp = 500; f.unit(b.id).hp = f.unit(b.id).maxHp = 500;
+    expect(hit(a)).toBe(100);
     withGame(f.g, () => applyDamage(f.cb, f.unit(c.id), 9999, { type: 'weapon', by: f.unit(foe.id) }));
-    expect(f.unit(c.id).downed).toBe(true);
-    withGame(f.g, () => applyDamage(f.cb, f.unit(b.id), 9999, { type: 'weapon', by: f.unit(foe.id) }));
-    expect(f.unit(a.id).apNext).toBe(n); // a second drop in the same round doesn't stack (best counts)
-    expect(f.turn(f.unit(a.id)).ap).toBe(6 + n); expect(f.unit(c.id).apNext || 0).toBe(0);
+    expect(f.unit(c.id).downed).toBe(true); expect(logHas(f.cb, /Rally Cry/)).toBe(true);
+    expect(hit(a)).toBe(100 - n); expect(hit(b)).toBe(100 - n);
+    expect(f.unit(a.id).apNext || 0).toBe(0); expect(f.turn(f.unit(a.id)).ap).toBe(6); // no AP
+    expect(hit(a)).toBe(100); expect(hit(b)).toBe(100 - n); // it ends at each one's own next turn
   });
   it('friendly fire doesn\'t rally anyone', () => {
     const f = fightWith([{ perks: { rally_cry: 'II' } }, {}, {}]);
     const [a, b, c] = f.pcs;
     withGame(f.g, () => applyDamage(f.cb, f.unit(c.id), 9999, { type: 'weapon', by: f.unit(b.id) }));
-    expect(f.unit(a.id).apNext || 0).toBe(0);
+    expect(logHas(f.cb, /Rally Cry/)).toBe(false); expect((f.unit(a.id).ps?.['perk:rally_cry'] as any)?.less || 0).toBe(0);
   });
 });
 
@@ -248,19 +252,10 @@ describe('Outclassed', () => {
 
 // ======================================================================================================== Many Hands
 describe('Many Hands', () => {
-  it('Hand-Off: up to 3 AP to an ally within 3 tiles, once a round; it arrives on their turn', () => {
+  it('rules 1.13: no Hand-Off action any more (the AP gift went to the Calls); the perk only widens the Defense loan', () => {
     const f = fightWith([{ perks: { many_hands: 'mastered' } }, {}]); open(f.cb);
-    const [me, ally] = f.pcs; at(f, me, '2,5'); at(f, ally, '5,5');
-    f.turn(f.unit(me.id));
-    pcAct(f, { type: 'combat/perk', id: 'many_hands', targetId: ally.id, choice: '5' }, me);
-    expect(f.unit(me.id).ap).toBe(3); expect(f.unit(ally.id).apNext).toBe(3);
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'many_hands', targetId: ally.id, choice: '1' }, me)).toThrow(/Used/);
-    expect(f.turn(f.unit(ally.id)).ap).toBe(9);
-  });
-  it('out of range (4 tiles) is refused', () => {
-    const f = fightWith([{ perks: { many_hands: 'mastered' } }, {}]); open(f.cb);
-    const [me, ally] = f.pcs; at(f, me, '2,5'); at(f, ally, '6,5'); f.turn(f.unit(me.id));
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'many_hands', targetId: ally.id, choice: '2' }, me)).toThrow(/range/);
+    const [me, ally] = f.pcs; at(f, me, '2,5'); at(f, ally, '5,5'); f.turn(f.unit(me.id));
+    expect(() => pcAct(f, { type: 'combat/perk', id: 'many_hands', targetId: ally.id, choice: '2' }, me)).toThrow(/isn't an action/);
   });
 });
 
@@ -546,14 +541,6 @@ describe('Rival', () => {
     expect(cr.level).toBeGreaterThan(1); expect(cme.xp).toBe(50 * (cr.level - 1));
     const x0 = cme.xp; s.act({ type: 'narrator/turn', turn: { narration: 'XP.', xp: [{ charId: me.id, source: 'quest', amount: 100, reason: 'test' }] } } as any);
     expect(s.g.characters[me.id].xp - x0).toBe(cme.level < cr.level ? 110 : 100);
-  });
-  it('Petty: helping your rival (Hand-Off) takes a Camaraderie check; a failure keeps the AP', () => {
-    const f = fightAfter([{ traits: ['rival'], perks: { many_hands: 'mastered' }, skills: { camaraderie: 0 } }, {}], [{ at: 'P6' }], (s) => s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'rival', choice: s.chars[1].name }));
-    open(f.cb); const [me, r] = f.pcs; at(f as any, me, '2,5'); at(f as any, r, '3,5');
-    f.turn(f.unit(me.id)); f.g.rng.state = rngFor(2);
-    f.act({ type: 'combat/perk', unitId: me.id, id: 'many_hands', targetId: r.id, choice: '2' });
-    expect(f.unit(me.id).ap).toBe(6); expect(f.unit(r.id).apNext || 0).toBe(0);
-    expect(logHas(f.cb, /Petty/)).toBe(true);
   });
 });
 

@@ -195,7 +195,7 @@
       "id": "used_to_the_pain",
       "name": "Used to the Pain",
       "tier": "acquired",
-      "perk_type": "ap_mod",
+      "perk_type": "passive",
       "skills": [
         "pain_threshold"
       ],
@@ -209,21 +209,13 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: the first time you're hit each combat, if it took less than 20% of your max HP, +2 AP next turn; if more, −1 AP. II: the threshold becomes 30%, the gain +3 AP, and the penalty is gone.",
+      "text": "I: the first time you're hit each combat, if it took less than 20% of your max HP, the next hit against you deals 25% less damage. A heavier first hit gives you nothing. II: the threshold becomes 30% of your max HP, and the next hit deals 40% less.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 2,
-          "when": "first_hit_taken_in_combat and damage < 0.20*hp_max",
-          "duration": "next_turn"
-        },
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -1,
-          "when": "first_hit_taken_in_combat and damage >= 0.20*hp_max",
-          "duration": "next_turn"
+          "op": "damage_reduction",
+          "value_pct": 25,
+          "target": "self",
+          "when": "the next hit after the first hit of a combat, if that first hit took less than 20% of max HP"
         }
       ],
       "tiers": {
@@ -235,21 +227,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "the first time you're hit each combat, if it took less than 20% of your max HP, +2 AP next turn; if more, −1 AP.",
+          "text": "the first time you're hit each combat, if it took less than 20% of your max HP, the next hit against you deals 25% less damage. A heavier first hit gives you nothing.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
-              "when": "first_hit_taken_in_combat and damage < 0.20*hp_max",
-              "duration": "next_turn"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -1,
-              "when": "first_hit_taken_in_combat and damage >= 0.20*hp_max",
-              "duration": "next_turn"
+              "op": "damage_reduction",
+              "value_pct": 25,
+              "target": "self",
+              "when": "the next hit after the first hit of a combat, if that first hit took less than 20% of max HP"
             }
           ]
         },
@@ -261,14 +245,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "the threshold becomes 30%, the gain +3 AP, and the penalty is gone.",
+          "text": "the threshold becomes 30% of your max HP, and the next hit deals 40% less.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 3,
-              "when": "first_hit_taken_in_combat and damage < 0.30*hp_max",
-              "duration": "next_turn"
+              "op": "damage_reduction",
+              "value_pct": 40,
+              "target": "self",
+              "when": "the next hit after the first hit of a combat, if that first hit took less than 30% of max HP"
             }
           ],
           "replaces_tier_I": true,
@@ -278,7 +261,8 @@
       "adjudication": "engine",
       "recovered": "recovered",
       "tags": [
-        "ap"
+        "survival",
+        "defense"
       ],
       "provisional": true
     },
@@ -520,7 +504,7 @@
       "id": "breaching_strike",
       "name": "Breaching Strike",
       "tier": "acquired",
-      "perk_type": "active_skill",
+      "perk_type": "combat_interaction",
       "skills": [
         "raw_power"
       ],
@@ -532,20 +516,14 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 3,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: 3 AP, a melee hit that knocks the target back 1 tile. II: 2 tiles; a target slammed into a wall takes +50% damage.",
+      "text": "I: when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, it takes the hit again at half damage. II: and the enemy it was pushed into takes that damage too.",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "breaching_strike",
-          "ap": 3,
-          "uses": "at_will"
-        },
-        {
-          "op": "knockback",
-          "tiles": 1,
-          "target": "target"
+          "op": "damage_mod",
+          "value": 0.5,
+          "context": "the hit again, on a target your melee technique pushed into a wall, a solid object or another enemy"
         }
       ],
       "tiers": {
@@ -556,19 +534,13 @@
               "min": 3
             }
           ],
-          "ap_cost": 3,
-          "text": "3 AP, a melee hit that knocks the target back 1 tile.",
+          "ap_cost": null,
+          "text": "when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, it takes the hit again at half damage.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "breaching_strike",
-              "ap": 3,
-              "uses": "at_will"
-            },
-            {
-              "op": "knockback",
-              "tiles": 1,
-              "target": "target"
+              "op": "damage_mod",
+              "value": 0.5,
+              "context": "the hit again, on a target your melee technique pushed into a wall, a solid object or another enemy"
             }
           ]
         },
@@ -579,24 +551,18 @@
               "min": 5
             }
           ],
-          "ap_cost": 3,
-          "text": "2 tiles; a target slammed into a wall takes +50% damage.",
+          "ap_cost": null,
+          "text": "and the enemy it was pushed into takes that damage too.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "breaching_strike",
-              "ap": 3,
-              "uses": "at_will"
+              "op": "damage_mod",
+              "value": 0.5,
+              "context": "the hit again, on a target your melee technique pushed into a wall, a solid object or another enemy"
             },
             {
-              "op": "knockback",
-              "tiles": 2,
-              "target": "target"
-            },
-            {
-              "op": "damage_mult",
-              "value": 1.5,
-              "context": "breaching_strike target collides with a wall"
+              "op": "damage_mod",
+              "value": 0.5,
+              "context": "the same damage to the enemy it was pushed into"
             }
           ],
           "replaces_tier_I": true,
@@ -612,8 +578,8 @@
       "provisional": true
     },
     {
-      "id": "grapple",
-      "name": "Grapple",
+      "id": "iron_grip",
+      "name": "Iron Grip",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -627,21 +593,25 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 2,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: 2 AP, grab an adjacent enemy. It can't move, and attacks anyone but you at −2. II: attacks aimed at you have a 50% chance to hit your captive instead.",
+      "text": "I: a target you have Bound or Grappled can't use Answers or reactions. Attacks aimed at you have a 50% chance to hit it instead. When you move, it comes with you. II: each of your melee techniques that hits a target you hold gives you 1 Momentum, and Throw Down on it needs no Momentum.",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "grapple",
-          "ap": 2,
-          "uses": "at_will"
+          "op": "forbid",
+          "action": "reactions",
+          "context": "a target you have Bound or Grappled (Answers included)"
         },
         {
-          "op": "condition",
-          "condition": "grappled",
-          "target": "target",
-          "when": "grapple"
+          "op": "redirect_attack",
+          "chance": 0.5,
+          "to": "held_target",
+          "context": "attacks aimed at you while you hold a target"
+        },
+        {
+          "op": "state",
+          "state": "dragged",
+          "context": "a target you hold moves with you, into the tile you leave"
         }
       ],
       "tiers": {
@@ -652,20 +622,24 @@
               "min": 3
             }
           ],
-          "ap_cost": 2,
-          "text": "2 AP, grab an adjacent enemy. It can't move, and attacks anyone but you at −2.",
+          "ap_cost": null,
+          "text": "a target you have Bound or Grappled can't use Answers or reactions. Attacks aimed at you have a 50% chance to hit it instead. When you move, it comes with you.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "grapple",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "forbid",
+              "action": "reactions",
+              "context": "a target you have Bound or Grappled (Answers included)"
             },
             {
-              "op": "condition",
-              "condition": "grappled",
-              "target": "target",
-              "when": "grapple"
+              "op": "redirect_attack",
+              "chance": 0.5,
+              "to": "held_target",
+              "context": "attacks aimed at you while you hold a target"
+            },
+            {
+              "op": "state",
+              "state": "dragged",
+              "context": "a target you hold moves with you, into the tile you leave"
             }
           ]
         },
@@ -676,26 +650,36 @@
               "min": 5
             }
           ],
-          "ap_cost": 2,
-          "text": "attacks aimed at you have a 50% chance to hit your captive instead.",
+          "ap_cost": null,
+          "text": "each of your melee techniques that hits a target you hold gives you 1 Momentum, and Throw Down on it needs no Momentum.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "grapple",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "condition",
-              "condition": "grappled",
-              "target": "target",
-              "when": "grapple"
+              "op": "forbid",
+              "action": "reactions",
+              "context": "a target you have Bound or Grappled (Answers included)"
             },
             {
               "op": "redirect_attack",
               "chance": 0.5,
-              "to": "grappled_captive",
-              "context": "attacks aimed at you while grappling"
+              "to": "held_target",
+              "context": "attacks aimed at you while you hold a target"
+            },
+            {
+              "op": "state",
+              "state": "dragged",
+              "context": "a target you hold moves with you, into the tile you leave"
+            },
+            {
+              "op": "resource",
+              "resource": "momentum",
+              "value": 1,
+              "when": "a melee technique of yours hits a target you hold (once a technique)"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "momentum_needed:throw_down",
+              "value": "zero",
+              "when": "on a target you hold"
             }
           ],
           "replaces_tier_I": true,
@@ -714,7 +698,7 @@
       "id": "into_the_dark",
       "name": "Into the Dark",
       "tier": "acquired",
-      "perk_type": "ap_mod",
+      "perk_type": "passive",
       "skills": [
         "guts"
       ],
@@ -728,13 +712,12 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: your first move into an unexplored room or area costs 0 AP. II: +1 AP on your first turn inside a place that causes Fear.",
+      "text": "I: you can't be ambushed on your first move into an unexplored room or area: until your next turn, attacks from hiding get no ambush bonus against you. II: and you can't be made Afraid during your first turn inside a place that causes Fear.",
       "effects": [
         {
-          "op": "cost_mod",
-          "action": "move",
-          "value": "zero",
-          "when": "first move into an unexplored room or area"
+          "op": "immunity",
+          "to": "ambush",
+          "context": "your first move into an unexplored room or area, until your next turn"
         }
       ],
       "tiers": {
@@ -746,13 +729,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "your first move into an unexplored room or area costs 0 AP.",
+          "text": "you can't be ambushed on your first move into an unexplored room or area: until your next turn, attacks from hiding get no ambush bonus against you.",
           "effects": [
             {
-              "op": "cost_mod",
-              "action": "move",
-              "value": "zero",
-              "when": "first move into an unexplored room or area"
+              "op": "immunity",
+              "to": "ambush",
+              "context": "your first move into an unexplored room or area, until your next turn"
             }
           ]
         },
@@ -764,19 +746,19 @@
             }
           ],
           "ap_cost": null,
-          "text": "+1 AP on your first turn inside a place that causes Fear.",
+          "text": "and you can't be made Afraid during your first turn inside a place that causes Fear.",
           "effects": [
             {
-              "op": "cost_mod",
-              "action": "move",
-              "value": "zero",
-              "when": "first move into an unexplored room or area"
+              "op": "immunity",
+              "to": "ambush",
+              "context": "your first move into an unexplored room or area, until your next turn"
             },
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 1,
-              "when": "first turn inside a Fear-causing place"
+              "op": "immunity",
+              "conditions": [
+                "fear"
+              ],
+              "context": "your first turn inside a Fear-causing place"
             }
           ],
           "replaces_tier_I": true,
@@ -787,7 +769,7 @@
       "recovered": null,
       "tags": [
         "exploration",
-        "ap"
+        "defense"
       ],
       "provisional": true
     },
@@ -1064,7 +1046,7 @@
       "skills": [
         "athletics"
       ],
-      "skill_greek": "alpha",
+      "skill_greek": "beta",
       "requires": [
         {
           "skill": "athletics",
@@ -1136,7 +1118,7 @@
       "skills": [
         "athletics"
       ],
-      "skill_greek": "alpha",
+      "skill_greek": "beta",
       "requires": [
         {
           "skill": "athletics",
@@ -1146,7 +1128,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: after a successful dodge, move 1 tile for free. II: 2 tiles, and your next attack that turn gets +10% Critical Damage.",
+      "text": "I: after a successful dodge, move 1 tile for free. II: 2 tiles.",
       "effects": [
         {
           "op": "free_move",
@@ -1180,18 +1162,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "2 tiles, and your next attack that turn gets +10% Critical Damage.",
+          "text": "2 tiles.",
           "effects": [
             {
               "op": "free_move",
               "tiles": 2,
               "when": "successful dodge"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "crit_damage",
-              "value": 0.1,
-              "when": "next attack this turn after a successful dodge"
             }
           ],
           "replaces_tier_I": true,
@@ -1207,14 +1183,14 @@
       "provisional": true
     },
     {
-      "id": "origami_hands",
-      "name": "Origami Hands",
+      "id": "both_hands",
+      "name": "Both Hands",
       "tier": "acquired",
-      "perk_type": "active_skill",
+      "perk_type": "combat_interaction",
       "skills": [
         "dexterity"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "alpha",
       "requires": [
         {
           "skill": "dexterity",
@@ -1222,19 +1198,14 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 2,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: 2 AP, build an improvised tool or trap from scraps: a tripwire, a lockpick, a sling. II: 1 AP, and your traps deal +50% damage.",
+      "text": "I: after one of your melee techniques hits, your next shot that turn has no Recoil. II: and after one of your shots hits, you gain 1 Momentum, once a turn.",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "improvise_tool",
-          "ap": 2,
-          "uses": "at_will"
-        },
-        {
-          "op": "narrator",
-          "note": "Decide whether scraps are available and what the improvised item can do."
+          "op": "recoil_mult",
+          "value": 0,
+          "context": "your next shot this turn, after a melee technique of yours hits"
         }
       ],
       "tiers": {
@@ -1245,18 +1216,13 @@
               "min": 3
             }
           ],
-          "ap_cost": 2,
-          "text": "2 AP, build an improvised tool or trap from scraps: a tripwire, a lockpick, a sling.",
+          "ap_cost": null,
+          "text": "after one of your melee techniques hits, your next shot that turn has no Recoil.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "improvise_tool",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "narrator",
-              "note": "Decide whether scraps are available and what the improvised item can do."
+              "op": "recoil_mult",
+              "value": 0,
+              "context": "your next shot this turn, after a melee technique of yours hits"
             }
           ]
         },
@@ -1267,34 +1233,30 @@
               "min": 5
             }
           ],
-          "ap_cost": 1,
-          "text": "1 AP, and your traps deal +50% damage.",
+          "ap_cost": null,
+          "text": "and after one of your shots hits, you gain 1 Momentum, once a turn.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "improvise_tool",
-              "ap": 1,
-              "uses": "at_will"
+              "op": "recoil_mult",
+              "value": 0,
+              "context": "your next shot this turn, after a melee technique of yours hits"
             },
             {
-              "op": "damage_mult",
-              "value": 1.5,
-              "context": "your traps"
-            },
-            {
-              "op": "narrator",
-              "note": "Decide whether scraps are available and what the improvised item can do."
+              "op": "resource",
+              "resource": "momentum",
+              "value": 1,
+              "when": "a shot of yours hits (once a turn)"
             }
           ],
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
-      "recovered": "recovered_name",
+      "adjudication": "engine",
+      "recovered": null,
       "tags": [
-        "crafting",
-        "traps"
+        "melee",
+        "ranged"
       ],
       "provisional": true
     },
@@ -1306,7 +1268,7 @@
       "skills": [
         "dexterity"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "alpha",
       "requires": [
         {
           "skill": "dexterity",
@@ -1804,7 +1766,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: in a fight, drawing, putting away or swapping what a hand holds (a two-handed draw too), or fitting a mod, costs 0 AP, once per turn; not armour (rules 1.9, item 686). II: twice per turn.",
+      "text": "I: in a fight, drawing, putting away or swapping what a hand holds (a two-handed draw too), or fitting a mod, costs 0 AP, once per turn; not armour. II: twice per turn.",
       "effects": [
         {
           "op": "cost_mod",
@@ -2527,7 +2489,7 @@
       "excludes": [],
       "ap_cost": 2,
       "uses": "at_will",
-      "text": "I: 2 AP, project a false wall, figure or sound onto a tile in range. Enemies who fail an Analysis check treat it as real for a round. II: two projections, lasting 2 rounds.",
+      "text": "I: 2 AP, project a false wall, figure or sound onto a tile in range. Enemies who fail an Acuity check treat it as real for a round. II: two projections, lasting 2 rounds.",
       "effects": [
         {
           "op": "grant_action",
@@ -2551,7 +2513,7 @@
             }
           ],
           "ap_cost": 2,
-          "text": "2 AP, project a false wall, figure or sound onto a tile in range. Enemies who fail an Analysis check treat it as real for a round.",
+          "text": "2 AP, project a false wall, figure or sound onto a tile in range. Enemies who fail an Acuity check treat it as real for a round.",
           "effects": [
             {
               "op": "grant_action",
@@ -2620,7 +2582,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: sketch the ground before an assault; allies who saw the sketch get +1 Movement in the first round. II: and +1 AP.",
+      "text": "I: sketch the ground before an assault; allies who saw the sketch get +1 Movement in the first round. II: +2 Movement.",
       "effects": [
         {
           "op": "stat_mod",
@@ -2658,19 +2620,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "and +1 AP.",
+          "text": "+2 Movement.",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "move",
-              "value": 1,
-              "target": "ally",
-              "when": "first round, ally saw the sketch"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 1,
+              "value": 2,
               "target": "ally",
               "when": "first round, ally saw the sketch"
             }
@@ -3301,7 +3256,7 @@
       "id": "rally_cry",
       "name": "Rally Cry",
       "tier": "acquired",
-      "perk_type": "ap_mod",
+      "perk_type": "passive",
       "skills": [
         "camaraderie"
       ],
@@ -3315,15 +3270,14 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: when an ally drops to 0 HP, every other ally gets +1 AP on their next turn. II: +2 AP.",
+      "text": "I: when an ally drops to 0 HP, every other ally takes 15% less damage until their next turn. II: 25% less.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 1,
+          "op": "damage_reduction",
+          "value_pct": 15,
           "target": "other_allies",
           "when": "an ally drops to 0 HP",
-          "duration": "next_turn"
+          "source": "until each ally's next turn"
         }
       ],
       "tiers": {
@@ -3335,15 +3289,14 @@
             }
           ],
           "ap_cost": null,
-          "text": "when an ally drops to 0 HP, every other ally gets +1 AP on their next turn.",
+          "text": "when an ally drops to 0 HP, every other ally takes 15% less damage until their next turn.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 1,
+              "op": "damage_reduction",
+              "value_pct": 15,
               "target": "other_allies",
               "when": "an ally drops to 0 HP",
-              "duration": "next_turn"
+              "source": "until each ally's next turn"
             }
           ]
         },
@@ -3355,15 +3308,14 @@
             }
           ],
           "ap_cost": null,
-          "text": "+2 AP.",
+          "text": "25% less.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
+              "op": "damage_reduction",
+              "value_pct": 25,
               "target": "other_allies",
               "when": "an ally drops to 0 HP",
-              "duration": "next_turn"
+              "source": "until each ally's next turn"
             }
           ],
           "replaces_tier_I": true,
@@ -3373,8 +3325,8 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "ap",
-        "support"
+        "support",
+        "defense"
       ],
       "provisional": true
     },
@@ -3396,7 +3348,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: once you've charmed or flattered someone this scene (a Charisma or Implication success), buffing them or debuffing them gives you +2 AP. If someone you charmed debuffs you, −2 AP: betrayal stings. II: +3 AP, and the sting is gone.",
+      "text": "I: once you've charmed or flattered someone this scene (a Charisma or Insinuation success), buffing them or debuffing them gives you +2 AP. If someone you charmed debuffs you, −2 AP: betrayal stings. II: +3 AP, and the sting is gone.",
       "effects": [
         {
           "op": "stat_mod",
@@ -3420,7 +3372,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "once you've charmed or flattered someone this scene (a Charisma or Implication success), buffing them or debuffing them gives you +2 AP. If someone you charmed debuffs you, −2 AP: betrayal stings.",
+          "text": "once you've charmed or flattered someone this scene (a Charisma or Insinuation success), buffing them or debuffing them gives you +2 AP. If someone you charmed debuffs you, −2 AP: betrayal stings.",
           "effects": [
             {
               "op": "stat_mod",
@@ -3713,7 +3665,7 @@
       "skills": [
         "lore_master"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "gamma",
       "requires": [
         {
           "skill": "lore_master",
@@ -3782,7 +3734,7 @@
       "skills": [
         "lore_master"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "gamma",
       "requires": [
         {
           "skill": "lore_master",
@@ -3853,11 +3805,11 @@
       "id": "you_get_used_to_it",
       "name": "You Get Used to It",
       "tier": "acquired",
-      "perk_type": "ap_mod",
+      "perk_type": "passive",
       "skills": [
         "composure"
       ],
-      "skill_greek": "gamma",
+      "skill_greek": "beta",
       "requires": [
         {
           "skill": "composure",
@@ -3867,19 +3819,14 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: −1 AP when an ally takes a Brain Debuff; +3 AP when you heal or shield an ally against one. II: no penalty.",
+      "text": "I: the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +2: you have seen worse. II: +4, and you may give the bonus to that ally instead.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -1,
-          "when": "an ally takes a Brain Debuff"
-        },
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 3,
-          "when": "you heal or shield an ally against a Brain Debuff"
+          "op": "save_mod",
+          "value": 2,
+          "target": "self",
+          "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
+          "duration": "your next save this round"
         }
       ],
       "tiers": {
@@ -3891,19 +3838,14 @@
             }
           ],
           "ap_cost": null,
-          "text": "−1 AP when an ally takes a Brain Debuff; +3 AP when you heal or shield an ally against one.",
+          "text": "the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +2: you have seen worse.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -1,
-              "when": "an ally takes a Brain Debuff"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 3,
-              "when": "you heal or shield an ally against a Brain Debuff"
+              "op": "save_mod",
+              "value": 2,
+              "target": "self",
+              "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
+              "duration": "your next save this round"
             }
           ]
         },
@@ -3915,13 +3857,20 @@
             }
           ],
           "ap_cost": null,
-          "text": "no penalty.",
+          "text": "+4, and you may give the bonus to that ally instead.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 3,
-              "when": "you heal or shield an ally against a Brain Debuff"
+              "op": "save_mod",
+              "value": 4,
+              "target": "self",
+              "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
+              "duration": "your next save this round"
+            },
+            {
+              "op": "grant_action",
+              "action": "seen_worse",
+              "ap": 0,
+              "uses": "per_round"
             }
           ],
           "replaces_tier_I": true,
@@ -3931,9 +3880,10 @@
       "adjudication": "engine",
       "recovered": "recovered",
       "tags": [
-        "ap",
-        "support"
-      ]
+        "support",
+        "defense"
+      ],
+      "provisional": true
     },
     {
       "id": "flat_line",
@@ -3943,7 +3893,7 @@
       "skills": [
         "composure"
       ],
-      "skill_greek": "gamma",
+      "skill_greek": "beta",
       "requires": [
         {
           "skill": "composure",
@@ -4302,7 +4252,7 @@
       "id": "clean_hands",
       "name": "Clean Hands",
       "tier": "acquired",
-      "perk_type": "ap_mod",
+      "perk_type": "passive",
       "skills": [
         "conscience"
       ],
@@ -4316,14 +4266,13 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: +2 AP on your next turn after you spare an enemy or protect an innocent. II: +3 AP.",
+      "text": "I: after you spare an enemy or protect an innocent, you gain a shield worth 15% of your max HP. II: 25% of your max HP.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 2,
-          "when": "you spare an enemy or protect an innocent",
-          "duration": "next_turn"
+          "op": "shield",
+          "value": "15% of max HP",
+          "target": "self",
+          "when": "you spare an enemy or protect an innocent"
         }
       ],
       "tiers": {
@@ -4335,14 +4284,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "+2 AP on your next turn after you spare an enemy or protect an innocent.",
+          "text": "after you spare an enemy or protect an innocent, you gain a shield worth 15% of your max HP.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
-              "when": "you spare an enemy or protect an innocent",
-              "duration": "next_turn"
+              "op": "shield",
+              "value": "15% of max HP",
+              "target": "self",
+              "when": "you spare an enemy or protect an innocent"
             }
           ]
         },
@@ -4354,14 +4302,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "+3 AP.",
+          "text": "25% of your max HP.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 3,
-              "when": "you spare an enemy or protect an innocent",
-              "duration": "next_turn"
+              "op": "shield",
+              "value": "25% of max HP",
+              "target": "self",
+              "when": "you spare an enemy or protect an innocent"
             }
           ],
           "replaces_tier_I": true,
@@ -4371,8 +4318,8 @@
       "adjudication": "hybrid",
       "recovered": null,
       "tags": [
-        "ap",
-        "morality"
+        "morality",
+        "defense"
       ],
       "provisional": true
     },
@@ -4607,18 +4554,17 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "Hurt is information. You've read it all before.",
-      "text": "Injuries never cost you AP or Movement. Below half your max HP, you get +1 AP at the start of each turn (the AP ceiling still applies).",
+      "text": "Injuries never cost you AP or Movement. Below half your max HP, you take 20% less damage.",
       "effects": [
         {
           "op": "immunity",
           "to": "injury_ap_and_move_penalties"
         },
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 1,
-          "when": "turn_start",
-          "context": "hp below half"
+          "op": "damage_reduction",
+          "value_pct": 20,
+          "target": "self",
+          "when": "hp below half"
         }
       ],
       "adjudication": "engine",
@@ -4626,7 +4572,7 @@
       "provisional": true,
       "tags": [
         "survival",
-        "ap"
+        "defense"
       ]
     },
     {
@@ -4817,7 +4763,7 @@
       "skills": [
         "athletics"
       ],
-      "skill_greek": "alpha",
+      "skill_greek": "beta",
       "requires": [
         {
           "skill": "athletics",
@@ -4857,7 +4803,7 @@
       "skills": [
         "dexterity"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "alpha",
       "requires": [
         {
           "skill": "dexterity",
@@ -5039,27 +4985,20 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "You held the line of sight. All of it.",
-      "text": "Your Overwatch doesn't stop at the first enemy: every enemy that moves into your line before your next turn draws a shot, as long as you held the AP for it. Each shot hits before the enemy's move finishes.",
+      "text": "Every enemy that moves in your sight is Spotted for free, as your Spot Call would mark it: no AP and no reaction, once a round for each enemy.",
       "effects": [
         {
-          "op": "extra_use",
-          "action": "overwatch",
-          "value": "every enemy entering the line",
-          "context": "each shot paid from AP held for Overwatch"
-        },
-        {
-          "op": "interrupt",
-          "action": "overwatch_shot",
-          "when": "enemy moves into your line",
-          "context": "resolves before the move ends"
+          "op": "free_action",
+          "action": "call.spot",
+          "context": "an enemy that moves in your sight; once a round for each enemy; no AP, no reaction"
         }
       ],
       "adjudication": "engine",
       "recovered": null,
       "provisional": true,
       "tags": [
-        "ranged",
-        "control"
+        "watch",
+        "support"
       ]
     },
     {
@@ -5229,7 +5168,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "Everything about them, in the order it matters.",
-      "text": "Analyze reveals everything at once: HP, armour, resistances, weak points and what the target wants. Allies attacking an enemy you've analyzed get +2 to hit and +20% damage.",
+      "text": "Analyze reveals everything at once: HP, armour, resistances, weak points and what the target wants. You and your allies have +2 Defense against an enemy you've analyzed.",
       "effects": [
         {
           "op": "reveal",
@@ -5244,15 +5183,9 @@
         },
         {
           "op": "attack_mod",
-          "value": 2,
-          "target": "allies",
-          "context": "vs an enemy you've analyzed"
-        },
-        {
-          "op": "damage_mult",
-          "value": 1.2,
-          "target": "allies",
-          "context": "vs an enemy you've analyzed"
+          "value": -2,
+          "target": "enemies you have analyzed",
+          "context": "their attacks against you and your allies"
         }
       ],
       "adjudication": "engine",
@@ -5260,7 +5193,8 @@
       "provisional": true,
       "tags": [
         "analysis",
-        "support"
+        "support",
+        "defense"
       ]
     },
     {
@@ -5348,7 +5282,7 @@
       "id": "many_hands",
       "name": "Many Hands",
       "tier": "mastered",
-      "perk_type": "ap_mod",
+      "perk_type": "passive",
       "skills": [
         "camaraderie"
       ],
@@ -5363,14 +5297,13 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "Nobody on this squad fights alone. Not even you.",
-      "text": "Hand-Off has no limit: give any amount of your AP to any ally within 3 tiles, once per round. An ally you can see may use your reaction as their own.",
+      "text": "Your Hand-Off reaches any ally within 3 tiles, not only one next to you. An ally you can see may use your reaction as their own.",
       "effects": [
         {
           "op": "stat_mod",
-          "stat": "hand_off_ap_max",
+          "stat": "hand_off_range",
           "value": 3,
-          "context": "ally within 3 tiles, once per round",
-          "note": "capped at 3: more is lost to the +3 perk-AP cap (provisional)"
+          "context": "Hand-Off (Camaraderie 3): an ally within 3 tiles uses your Defense"
         },
         {
           "op": "reaction",
@@ -5382,7 +5315,7 @@
       "provisional": true,
       "tags": [
         "squad",
-        "ap"
+        "defense"
       ]
     },
     {
@@ -5468,7 +5401,7 @@
       "skills": [
         "lore_master"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "gamma",
       "requires": [
         {
           "skill": "lore_master",
@@ -5508,7 +5441,7 @@
       "skills": [
         "composure"
       ],
-      "skill_greek": "gamma",
+      "skill_greek": "beta",
       "requires": [
         {
           "skill": "composure",
@@ -6285,12 +6218,12 @@
       "tier": "achieved",
       "perk_type": null,
       "skills": [
-        "proficiency",
+        "analysis",
         "ingenuity"
       ],
       "requires": [
         {
-          "skill": "proficiency",
+          "skill": "analysis",
           "min": 5
         },
         {
