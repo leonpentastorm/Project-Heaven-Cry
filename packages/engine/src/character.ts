@@ -190,8 +190,9 @@ export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m)
 /** Creation budgets (rules 1.13, Skeleton 2.0): 10 Skill and 10 Attribute points, no attribute above 7. Cores are group
  * names now: nobody spends Core points (`core` is 0 and kept so old callers read a number). */
 export const BUDGET = { skill: 10, attr: 10, core: 0, trade: 0, cap: 10, attrCap: (RULES.character.creation?.attributes as any)?.cap_at_creation ?? 7 };
-/** Mind Without Fog's extra point at creation: 1 Attribute point (rules 1.13; it was a Core point. PROVISIONAL). */
-export const FOG_CORE = 1;
+/** Mind Without Fog's extra points at creation: 2 Attribute points (rules 1.13; Leon, 10 Nov 2026: its price, no gear
+ * bonuses, is steep now that weapons give so much. It was 1 Core point). */
+export const FOG_CORE = 2;
 /** The creation rules' revision a new sheet is stamped with (rules 1.13). */
 export const SHEET_REV = 113;
 /** The budgets before rules 1.11, for sheets locked in then (no rulesRev): item 931. */

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   PORTRAIT_MAX, SHEET_REV,
-  ARCHETYPES, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, FOG_CORE, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   standable, loadedOf, pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -58,9 +58,10 @@ describe('creation', () => {
     expect(ok.ok).toBe(true); expect(ok.attrLeft).toBe(0); expect(ok.coreLeft).toBe(0); expect(ok.core).toEqual({ body: 6, mind: 1, soul: 1 });
     expect(deriveCreation({}, { endurance: 8, strength: 4 }).ok).toBe(false);                 // 10 points, but an attribute above 7
   });
-  it('Mind Without Fog gives 1 more Attribute point at creation (rules 1.13; it was a Core point)', () => {
-    expect(deriveCreation({}, { endurance: 7, strength: 6 }).ok).toBe(false);                 // 11 points without the trait
-    expect(deriveCreation({}, { endurance: 7, strength: 6 }, {}, 1).ok).toBe(true);
+  it('Mind Without Fog gives 2 more Attribute points at creation (rules 1.13; it was a Core point)', () => {
+    expect(deriveCreation({}, { endurance: 7, strength: 7 }).ok).toBe(false);                 // 12 points without the trait
+    expect(deriveCreation({}, { endurance: 7, strength: 7 }, {}, FOG_CORE).ok).toBe(true);
+    expect(FOG_CORE).toBe(2);
   });
   it('a 7/1/1 build is legal (no creation caps)', () => {
     const allIn = ARCHETYPES.find((x) => x.family === 'all_in')!;
