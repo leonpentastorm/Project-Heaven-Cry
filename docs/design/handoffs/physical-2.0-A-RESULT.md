@@ -51,7 +51,7 @@ Each has a regression test in `test/phys-melee-review.test.ts` unless noted.
 - No numbers were written into `data/techniques.json`, because this stage's ownership excludes `data/`. Every number is read with `t.num(key, fallback)`. The keys are listed below.
 - `test/phys-core.test.ts` (the lead's file) has one failure: it still expects Sidestep's pad entry to be `NOT_BUILT`. It is the only failing test in the engine suite. See request 1.
 - Enemies don't use any of the 23 in practice yet. Each has an `ai()` score, but no enemy tier lists them in a test.
-- Not pushed. This stage says to commit, and the push is the lead's.
+- Pushed to `claude/awesome-babbage-8gngk8` for the lead to merge.
 
 ## Readings that differ from the brief
 
