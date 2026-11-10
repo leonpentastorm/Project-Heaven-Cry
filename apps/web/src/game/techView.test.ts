@@ -124,3 +124,58 @@ describe('the ARMS tab (part 5)', () => {
     expect(v.fight).toBe(true); expect(v.lockText).toMatch(/after it/); expect(v.ready[0].items.every((i: any) => i.off)).toBe(true);
   });
 });
+
+describe('a shield in the off hand: its own block, and Guard as its meter', () => {
+  function shieldFight(o: { dur?: number; guard?: number; m?: number; weapon?: string } = {}) {
+    const f = physFight([{ weapon: o.weapon || 'sabre', known: [], skills: { athletics: 4, raw_power: 6, dexterity: 6, durability: o.dur ?? 3 } }], [{ at: 'D5' }]);
+    f.put(f.pc, 'C5'); f.char(f.pc).offHand = { id: 'riot_shield' } as any; f.pc.offItem = 'riot_shield';
+    f.cb.order = [f.pc.id, ...f.cb.order.filter((id: string) => id !== f.pc.id)]; f.turn(f.pc);
+    f.momentum(f.pc, o.m ?? 2); if (f.pc.resMax?.guard != null) f.pc.res!.guard = o.guard ?? 1;
+    return f;
+  }
+  const blocksOf = (f: any) => f.bound(() => weaponBlocks(f.g, f.cb, f.unit(f.pc.id)));
+  it('the block: the shield by name, Guard pips now / max from the engine, Shield Bash and Raise Shield as chips, its reactions to read', () => {
+    const f = shieldFight({ dur: 3, guard: 2 });
+    const B = blocksOf(f), sh = B.find((b: any) => b.shield)!;
+    expect(B.map((b: any) => b.hand)).toEqual(['main', 'off']); // never a "both hands" block with a shield
+    const gd = f.bound(() => phys.physView(f.cb, f.unit(f.pc.id), 'pc')).guard!;
+    expect(sh).toMatchObject({ hand: 'off', weaponId: 'riot_shield', system: 'melee', meterKind: 'guard', plain: null });
+    expect(sh.meter).toBe('Guard ' + gd.now + ' / ' + gd.max); expect(gd.now).toBe(2);
+    expect(sh.pips.length).toBe(gd.max); expect(sh.pips.filter((p: any) => p.on).length).toBe(gd.now);
+    expect(sh.meterHint).toContain('takes ' + gd.soak + ' damage off a hit');
+    const chips = sh.groups.flatMap((gr: any) => gr.chips);
+    expect(chips.filter((c: any) => !c.reaction).map((c: any) => c.id).sort()).toEqual(['raise_shield', 'shield_bash']);
+    expect(chips.filter((c: any) => c.reaction).map((c: any) => c.id).sort()).toEqual(['interpose', 'shield_wall']);
+    expect(chips.find((c: any) => c.id === 'shield_wall')).toMatchObject({ apText: 'reaction' });
+    expect(sh.total).toBe(2); // reactions aren't counted as things to press
+    // the main hand keeps its Momentum pips
+    expect(B[0].meterKind).toBe('momentum'); expect(B[0].meter).toMatch(/^Momentum 2 \/ /);
+    // the rows: the main hand's, then the shield's pad under its own header
+    const rows = blockItems(B);
+    expect(rows.map((r: any) => r[0])).toEqual(['tq:main:cut', 'tpad:main', 'tpad:off']);
+    expect(rows[2][1]).toBe('Shield techniques · ' + sh.usable);
+    // the pad opens with both groups; a picked chip is a technique of the off hand
+    const pad = padView(B, padOf('tpad:off'), null)!;
+    expect(pad.groups.flatMap((gr: any) => gr.chips).find((c: any) => c.id === 'shield_bash').action).toBe('tq:off:shield_bash');
+  });
+  it('Raise Shield: 1, 2 or all (all when nothing is picked), previewed as Momentum → Guard by the engine', async () => {
+    const { TECH_OPTS, techOptOf } = await import('./techView');
+    expect(TECH_OPTS.raise_shield.map((o) => o[1])).toEqual(['TURN 1', 'TURN 2', 'ALL']);
+    expect(techOptOf('raise_shield', null)).toBeNull(); expect(techOptOf('raise_shield', '1')).toBe('1'); expect(techOptOf('raise_shield', '2')).toBe('2'); expect(techOptOf('raise_shield', '')).toBeNull();
+    expect(techOptOf('called_shot', null)).toBe('leg'); expect(techOptOf('bash', null)).toBeNull(); // the others keep their defaults
+    const f = shieldFight({ dur: 5, guard: 0, m: 3 });
+    const u = f.unit(f.pc.id), sel = { hand: 'off' as const, id: 'raise_shield' };
+    const one = f.bound(() => techPreview(f.g, f.cb, u, sel, { opt: techOptOf('raise_shield', '1') }))!, all = f.bound(() => techPreview(f.g, f.cb, u, sel, { opt: techOptOf('raise_shield', null) }))!;
+    expect(one.ok).toBe(true); expect((one as any).guard).toEqual({ now: 0, after: 1 }); expect((all as any).guard).toEqual({ now: 0, after: 3 });
+    expect(previewLines(f.cb, one).meters).toEqual(['Momentum 3 → 2', 'Guard 0 → 1']);
+    expect(f.tech('raise_shield', { hand: 'off', opt: '2' } as any)).toBeNull();
+    expect(f.unit(f.pc.id).res!.guard).toBe(2); expect(f.momentum(f.pc)).toBe(1);
+  });
+  it('no shield: no off-hand block; no Durability: the block says there is no pool', () => {
+    const f = shieldFight({ dur: 3 }); f.char(f.pc).offHand = null as any; f.pc.offItem = null;
+    expect(blocksOf(f).map((b: any) => b.hand)).toEqual(['main']);
+    const z = shieldFight({ dur: 0 });
+    const sh = blocksOf(z).find((b: any) => b.shield);
+    if (sh && z.unit(z.pc.id).resMax?.guard == null) { expect(sh.meter).toBe('No Guard pool'); expect(sh.pips).toEqual([]); }
+  });
+});

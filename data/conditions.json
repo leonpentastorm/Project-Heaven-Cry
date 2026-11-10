@@ -532,7 +532,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your patron is watching (rules 1.6.3) until the fight ends or your patron intervenes: attack rolls with a tag your patron likes get +2; taboo actions cost double Devotion XP. A successful Hymn of your own patron, or a Miracle, gives it (Faith 5); your patron's intervention ends it.",
+      "text": "Your patron is watching until the fight ends or your patron intervenes: attack rolls with a tag your patron likes get +2; taboo actions cost double Devotion XP. A successful Hymn of your own patron, or a Miracle, gives it (Faith 5); your patron's intervention ends it.",
       "effects": [
         {
           "op": "attack_mod",
@@ -554,7 +554,8 @@
         "intervention"
       ],
       "stacks": false,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "source": "rules 1.6.3"
     },
     {
       "id": "downed",
@@ -639,7 +640,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You obey one short order (one word or one action) on your next turn, unless it would harm you directly. The Sigil word COMMAND gives the orders halt, kneel, drop its weapon, or move up to 3 tiles (rules 1.4).",
+      "text": "You obey one short order (one word or one action) on your next turn, unless it would harm you directly. The Sigil word COMMAND gives the orders halt, kneel, drop its weapon, or move up to 3 tiles.",
       "effects": [
         {
           "op": "narrator",
@@ -653,7 +654,8 @@
         "duration"
       ],
       "stacks": false,
-      "adjudication": "hybrid"
+      "adjudication": "hybrid",
+      "source": "rules 1.4"
     },
     {
       "id": "puppeted",
@@ -684,7 +686,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You drop or lower your weapon. Recovering it costs 2 AP (1 AP if it is in your tile). Drawing another weapon into the main hand, or swapping the off-hand one there, also ends it; the downed weapon stays in the pile on your tile (rules 1.9, item 687).",
+      "text": "You drop or lower your weapon. Recovering it costs 2 AP (1 AP if it is in your tile). Drawing another weapon into the main hand, or swapping the off-hand one there, also ends it; the downed weapon stays in the pile on your tile.",
       "effects": [
         {
           "op": "forbid",
@@ -704,7 +706,8 @@
         "recover_weapon"
       ],
       "stacks": false,
-      "adjudication": "engine"
+      "adjudication": "engine",
+      "source": "rules 1.9, item 687"
     },
     {
       "id": "injured",
@@ -911,7 +914,7 @@
       },
       "ends_on": [
         "duration",
-        "body save at the end of each of your turns (12 + the source's Body debuff strength)"
+        "body save at the end of each of your turns (12 + the strength of whoever put it on you, by the skill that delivered it)"
       ],
       "stacks": false,
       "set_by": "sigils:acid",
@@ -1004,7 +1007,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your next attack or spell roll gets +2 (Hope, rules 1.8).",
+      "text": "Your next attack or spell roll gets +2 (Hope).",
       "effects": [
         {
           "op": "attack_mod",
@@ -1022,7 +1025,8 @@
       "stacks": false,
       "set_by": "feelings:hope",
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.8"
     },
     {
       "id": "scorned",
@@ -1030,7 +1034,7 @@
       "kind": "condition",
       "family": "heart",
       "save": false,
-      "text": "-2 to attack the one who scorned you (Contempt, rules 1.8).",
+      "text": "-2 to attack the one who scorned you (Contempt).",
       "effects": [
         {
           "op": "attack_mod",
@@ -1047,7 +1051,8 @@
       "stacks": false,
       "set_by": "feelings:contempt",
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.8"
     }
   ],
   "families": {

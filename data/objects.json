@@ -286,7 +286,7 @@
       "blocks_sight": false,
       "cover": null,
       "hp": null,
-      "text": "A Sigil word drawn into the world long ago: carved on a door or a ruin, a Keystone, a warding post, an old plate fixed to a wall (rules 1.10). Investigate it (2 AP, adjacent): Analysis or Rumination, the TN by its age and damage. Success copies the word for study; a critical teaches it.",
+      "text": "A Sigil word drawn into the world long ago: carved on a door or a ruin, a Keystone, a warding post, an old plate fixed to a wall. Investigate it (2 AP, adjacent): Acuity or Rumination, the TN by its age and damage. Success copies the word for study; a critical teaches it.",
       "adjudication": "engine",
       "provisional": true,
       "mark": {

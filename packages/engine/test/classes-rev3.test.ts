@@ -24,7 +24,7 @@ describe('the nine classes (data)', () => {
   it('one base class per attribute, in its core, with that attribute\'s three skills; six moves, two a rank', () => {
     expect(CLASSES.map((k) => k.id)).toEqual(['defender', 'fighter', 'marksman', 'infiltrator', 'mage', 'trickster', 'bard', 'channeler', 'guardian']);
     expect(new Set(CLASSES.map((k) => k.attribute)).size).toBe(9);
-    expect(CLASS.infiltrator).toMatchObject({ attribute: 'perception', core: 'mind', skills: ['ingenuity', 'proficiency', 'vigilant'] });
+    expect(CLASS.infiltrator).toMatchObject({ attribute: 'perception', core: 'mind', skills: ['ingenuity', 'analysis', 'vigilant'] }); // rules 1.13: Acuity (the id 'analysis') sits under Perception
     for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);

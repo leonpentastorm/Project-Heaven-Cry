@@ -679,6 +679,8 @@ Asked before the build: do the names make sense, and is the attribute system rig
 4. **Creation budget (Leon: yes to the draft):** Attribute points stay at 10, each attribute starts at 1, and **no attribute is above 7 at creation** (the ceiling the Core budget gave). Provisional number, spec section 14.
 5. Touches: `rules.json` (creation, levels, caps), `character.ts` (caps, auto-spend), creation and level-up screens, all 46 archetypes (the All-in 7/1/1 family is defined by its Cores and needs a new definition), `tools/archetype_fill.py`, the spec's creation and levelling sections, `CLAUDE.md`.
 
+6. **The attribute ceiling rises with level** (Leon, 10 Nov 2026): 7 at creation, 8 from level 3, 9 from level 6, 10 from level 9. A skill can't pass its attribute, so an all-in character takes its first Mastered perk (a skill at 10) at level 9 at the earliest. The points are there by then: levels 2 to 9 give 4 Attribute points and 12 Skill points.
+
 ### 17.2 What an attribute point gives is shown
 
 Correction to what the lead said in the talk: it is not true that only Endurance and Agility give something. Every attribute already gives two numbers a point, and no screen says so:
@@ -798,3 +800,34 @@ Chain Smoker's "Light Up: +2 Composure for the scene" becomes a real fight butto
 **Skill portraits** (the faceless gesture figures): today's `analysis` figure and `proficiency` figure each stay with their id (18.1.3), so the figure that reads as examining sits under Acuity and the one that reads as handling a mechanism under Improvisation. The pigments are then wrong (each carries the other attribute's colour): two recolours, no new drawing. Leon decides whether to recolour or redraw.
 
 **Found on the way:** old Proficiency's 2020 effect line says it "unlocks exploration options and Trio-Scale Equipment". That is the tri-scale armour Leon remembered (section 9); it was a Proficiency unlock. Still not in this patch.
+
+## 19. Durability's door, the small version (Leon, 10 Nov 2026: approved)
+
+Ruling 9 left Durability's point as a data line only ("Guard gained on Brace"), which would have made it the one alpha that opens nothing in 0.19.0. Replaced by a small build. All numbers provisional.
+
+1. **Guard is a pool for anyone with Durability**, not only the Defender. Its size is the Durability points, 5 at most. The Defender keeps the largest pool and its class moves.
+2. **Gained by Brace or the Guard technique:** 1 + the Durability modifier each time, 1 more with a shield in the off hand.
+3. **Guard soaks:** each point absorbs 10 damage of the next hit, and Pressure comes off Guard first (as it already does for the Defender).
+4. **Interpose opens to anyone with Durability 3:** as a reaction, take a hit meant for an adjacent ally, for 1 Guard; your armour applies.
+5. Guard is lost when the fight ends, as now.
+
+The full shield-and-guard technique list is still its own patch after Skeleton 2.0. This replaces plan ruling 9.
+
+## 20. Momentum, reworked (Leon, 10 Nov 2026)
+
+Leon's words: "make it so momentum wears off by one each step you take (use link to move while maintaining momentum), taking hit also decrease your momentum (use any guard skill to stop momentum decreasing this way), the normal attack is the only thing that give you momentum, strike and opener use momentum at one each, finisher stay the same." Technique saves also add the weapon skill's strength (his yes to the lead's recommendation).
+
+Settled:
+1. **Only the plain attack (Cut) gives Momentum**, +1 on a hit.
+2. **A Strike and an Opener each spend 1 Momentum.** A Finisher is unchanged: it needs 2 and spends all of it.
+3. **Walking costs Momentum:** −1 for each tile you step. Moving with a Link keeps it.
+4. **Being hit costs Momentum:** −1 a hit. A guard skill stops that loss.
+
+Settled with Leon's answers (10 Nov 2026):
+5. **A fight starts with 1 Momentum, and the first Opener of each fight is free of Momentum for everyone.** An Opener's own movement (Lunge's step, Charge's run) doesn't drain it.
+6. **The variety bonus is gone.**
+7. **No technique gives Momentum any more:** Ambush costs none in place of giving 2; Flurry, Shove, Feint and Pull Out stop giving it. Parry's Light line keeps its +1 (a guard).
+8. **Guard skills** (they stop the loss when you are hit): the Guard technique while it is up, a hit you Parried or answered with Riposte, and Guard points from Durability (section 19).
+9. **Shields have their own techniques on the Attack tab**, and all of them work with both Momentum and Guard. To design in Stage 3 with Durability's Guard: a block for a shield in the off hand (the lead drafts a short list: a bash that spends Guard for Momentum, a raise that turns Momentum into Guard, Interpose).
+10. **Momentum carries from turn to turn** as long as you aren't hit: the old rule (0 after a turn with no attack) is dropped. Guard's line "your Momentum doesn't drop at the end of this turn" becomes "doesn't drop when you are hit".
+11. **What drains by walking:** a walk, a Sprint and a Disengage, one a tile; never a forced move, a Link's move or a technique's own step.

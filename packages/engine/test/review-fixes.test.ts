@@ -1,7 +1,7 @@
 // Regression tests for the defects found in the review of the perks, traits and class moves pass (7 Nov 2026). One
 // test per defect, through the reducer where the player would reach it.
 import { describe, expect, it } from 'vitest';
-import { d20, beginTurn, applyDamage, harm, emit, checkOver, previewAttack, perkActionsFor, pendingPerkSteps, CLASS, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
+import { d20, beginTurn, applyDamage, attackDamage, harm, emit, checkOver, previewAttack, perkActionsFor, pendingPerkSteps, CLASS, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
@@ -76,13 +76,21 @@ describe('5 Beast Handler: the bite grapples without a chip', () => {
   });
 });
 
-describe('6 Weak Point reaches spells', () => {
-  it('+15% on a Sigil hit against a Weak-Pointed foe', () => {
+describe('6 Weak Point became Read Them (it reached spells)', () => {
+  it('rules 1.13 (Read Them): no +15% against an analysed foe, by weapon or spell; the analysed foe deals 15% less to the squad', () => {
     const f = fightWith([{}], [{ at: 'H6' }]); const foe = f.foe; foe.hp = foe.maxHp = 1000; foe.armour = 0;
     withGame(f.g, () => harm(f.cb, f.g.rng, f.pc, foe, 100, 'soul')); const plain = 1000 - foe.hp;
     foe.weakPoint = true; const was = foe.hp;
     withGame(f.g, () => harm(f.cb, f.g.rng, f.pc, foe, 100, 'soul'));
-    expect(plain).toBe(100); expect(was - foe.hp).toBeGreaterThanOrEqual(114);
+    expect(plain).toBe(100); expect(was - foe.hp).toBe(100);
+    const d = withGame(f.g, () => attackDamage(f.cb, f.pc, foe, 'shot', null, { preview: true }));
+    expect(d.mults.some((m: any) => /Weak Point/.test(m.label))).toBe(false);
+    const pc = f.pc; pc.hp = pc.maxHp = 1000;
+    withGame(f.g, () => applyDamage(f.cb, pc, 100, { by: foe, type: 'weapon', ranged: true }));
+    expect(1000 - pc.hp).toBe(85);
+    foe.weakPoint = false; pc.hp = 1000;
+    withGame(f.g, () => applyDamage(f.cb, pc, 100, { by: foe, type: 'weapon', ranged: true }));
+    expect(1000 - pc.hp).toBe(100);
   });
 });
 

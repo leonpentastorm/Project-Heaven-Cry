@@ -8,11 +8,29 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF } from '@engine';
 
 export const D = PD;
 export const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 export const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
 export const mod = (p) => (p <= 0 ? -2 : p - 1);
+/** A skill's modifier on a CHECK, as the engine rolls it (rules 1.13: a gamma skill counts its full points; the slot is
+ * read from the engine's data, never from the screen data). Saves, attacks and Initiative keep mod(). */
+export const checkMod = (skillId, p) => checkModOf(skillId, p || 0);
+/** What one more point of an attribute gives, in the game's numbers (creation, level up, the attribute page). */
+export const ATTR_GIVES = {
+  endurance: '+15 max HP, +10% chance to ignore an injury', strength: '+10% physical damage, +5 kg carried', agility: '+0.5 tile of movement an AP, +1 Initiative',
+  perception: '+2 tiles of vision, +10% critical damage, −10% critical damage taken', intelligence: '+10% Sigil power, a longer Line every 2 points', expression: '+10% elemental damage, glyphs 0.1 AP cheaper',
+  insight: '+10% healing given, Soul magic costs 5% less MP', determination: '+5% Soul power, +10% mana syphoned', virtue: '+100 max MP, prayers come back half a turn sooner',
+};
+/** A skill's place under its attribute, in words: the first is how you fight, the second how you survive, the third how
+ *  you talk and notice (the third rolls checks one better than the others, which the roll shown already counts). */
+export const SLOT_WORD = { alpha: ['FIGHT', 'How you fight'], beta: ['SURVIVE', 'How you survive'], gamma: ['TALK · NOTICE', 'How you talk and notice (it rolls checks 1 better than other skills)'] };
+export const SLOT_ORDER = { alpha: 0, beta: 1, gamma: 2 };
+/** What each point of a skill gives, in the game's numbers (the engine's skill data; the screen data has only the summary). */
+export const perPoint = (id) => (ENGINE_SKILL[id] && ENGINE_SKILL[id].per_point && ENGINE_SKILL[id].per_point.text) || (SK[id] && SK[id].summary) || '';
+/** The attribute ceiling at a level, as the screens say it. */
+export const ceilingLine = (level) => 'ceiling ' + attrCapAt(level) + ' at this level';
 export const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 export const IMG = D.img;
 /** Any built asset by name (tools/build_web_assets.py): campaign maps, sprites, banners, portraits. URLs pass through. */
@@ -62,8 +80,42 @@ export function lightboxVals(self) {
 }
 
 // ---------- EPCCG "?" pop-up (ported verbatim from epccg.logic.js) ----------
-const EP_SLOT = { alpha: 'α', beta: 'β', gamma: 'γ' };
-const EP_BLANK = { zoom: () => {}, title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', quote: [], rows: [], perks: [], perkHead: '', perkNote: '', perkNameStyle: '', m: {}, combos: [], hasCombos: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
+/** The skill page's header: the skill's place under its attribute, in words. */
+export const slotLine = (slot) => (slot === 'gamma' ? 'How you talk and notice: it rolls 1 better on checks' : (SLOT_WORD[slot] || ['', ''])[1]);
+const SAVE_NAME = { body: 'Body', brain: 'Brain', heart: 'Heart' };
+const AP_BLANK = { title: '', kicker: '', name: '', gives: [], skills: [], reads: [], hasReads: false, boxStyle: '', nameStyle: '', about: '' };
+/** The attribute page (opened from an attribute's name on the creation and level-up screens, and from a skill page):
+ *  what a point gives, its three skills, and what reads it: its class, the Call its talking skill makes, the save its
+ *  surviving skill rolls. `self.state.attrPage` holds the open attribute. */
+export function attrPageVals(self) {
+  const id = self.state.attrPage, a = id && ATTR[id];
+  const closeAttrPage = () => self.setState({ attrPage: null });
+  if (!a) return { apOpen: false, ap: AP_BLANK, closeAttrPage };
+  const ink = a.ink, fam = a.core.charAt(0).toUpperCase() + a.core.slice(1);
+  const skills = D.skills.filter((k) => k.attr === id).sort((x, y) => SLOT_ORDER[x.slot] - SLOT_ORDER[y.slot]);
+  const reads = [];
+  const cls = D.classes.find((c) => c.attribute === id);
+  if (cls) reads.push({ k: 'CLASS', name: cls.name, text: 'The class that finds you at level 3 when ' + a.name + ' is your highest attribute. Its rank grows with ' + a.name + ': II at 5, III at 8.' });
+  for (const k of skills) {
+    const call = callOfSkill(k.id);
+    if (call) reads.push({ k: 'CALL', name: call.name, text: 'Spoken in a fight with ' + k.name + ': ' + call.text });
+    const save = Object.keys(SAVE_SKILL_OF).find((f) => SAVE_SKILL_OF[f] === k.id);
+    if (save) reads.push({ k: 'SAVE', name: SAVE_NAME[save] + ' save', text: 'Rolled with ' + k.name + ' when something tries to ' + (save === 'body' ? 'knock you down, push you or poison you' : save === 'brain' ? 'cloud or trick your mind' : 'frighten or break you') + '.' });
+  }
+  return { apOpen: true, closeAttrPage, ap: {
+    title: a.name + ': attribute', kicker: fam.toUpperCase() + ' · ATTRIBUTE', name: a.name, about: a.fx ? a.fx + '.' : '',
+    gives: String(ATTR_GIVES[id] || '').split(', ').map((t) => ({ text: t.charAt(0).toUpperCase() + t.slice(1) })),
+    rule: 'A skill can\'t be higher than the attribute above it: ' + a.name + ' is the ceiling of ' + skills.map((k) => k.name).join(', ').replace(/, ([^,]*)$/, ' and $1') + '.',
+    skills: skills.map((k) => ({ key: k.id, name: k.name, img: k.img, slot: slotLine(k.slot), give: perPoint(k.id), summary: k.summary,
+      open: () => self.setState({ attrPage: null, epccg: k.id }), label: k.name + ': open its page',
+      style: 'display: flex; gap: 12px; align-items: flex-start; text-align: left; padding: 12px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F; border-left: 3px solid ' + ink + '; color: #E7EBF3; font-family: inherit; cursor: pointer' })),
+    reads: reads.map((r, i) => ({ ...r, key: i })), hasReads: reads.length > 0,
+    inkStyle: 'color: ' + ink,
+    boxStyle: 'width: min(820px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 22px 24px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 4px solid ' + ink + '; font-family: \'Chakra Petch\', sans-serif; color: #E7EBF3',
+    nameStyle: 'margin: 0; font-family: \'Spectral\', serif; font-size: 32px; font-weight: 600; color: ' + ink,
+  } };
+}
+const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', give: '', title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', quote: [], rows: [], perks: [], perkHead: '', perkNote: '', perkNameStyle: '', m: {}, combos: [], hasCombos: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
 export const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 export const epRgba = (hex, a) => 'rgba(' + [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ') + ', ' + a + ')';
 export function masteredVals(self, m, ink, skillName, pts) {
@@ -89,12 +141,14 @@ export function masteredVals(self, m, ink, skillName, pts) {
 export function epccgVals(self) {
   const id = self.state.epccg, s = id && D.skills.find((x) => x.id === id);
   const closeEpccg = () => self.setState({ epccg: null });
-  if (!s) return { epOpen: false, ep: EP_BLANK, closeEpccg };
+  if (!s) return { epOpen: false, ep: EP_BLANK, closeEpccg, ...attrPageVals(self) };
   const e = s.ep, a = ATTR[s.attr], ink = a.ink;
   const same = e.speaker.indexOf(e.portrait.split(' ').slice(-1)[0]) >= 0;
-  return { epOpen: true, closeEpccg, ep: {
+  return { ...attrPageVals(self), epOpen: true, closeEpccg, ep: {
     title: s.name + ': EPCCG entry', kicker: 'EPCCG · ARTICLE 5 · ENTRY ' + String(e.entry).padStart(2, '0'),
-    name: s.name, line: EP_SLOT[s.slot] + ' skill of ' + a.name + ' · ' + s.core.charAt(0).toUpperCase() + s.core.slice(1),
+    name: s.name, line: slotLine(s.slot), attrName: a.name, openAttr: () => self.setState({ epccg: null, attrPage: a.id }), attrLabel: a.name + ': what the attribute gives',
+    attrStyle: 'padding: 0; border: 0; background: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; color: ' + ink,
+    give: perPoint(s.id),
     img: e.img, zoom: zoomer(self, e.img, e.portrait, 'portrait'), alt: e.portrait + ', First-Patch Revival portrait for ' + s.name, pictured: e.portrait,
     caption: same ? 'Speaks for ' + s.name + ' in the EPCCG.' : 'The one these words are about. Words by ' + e.speaker + '.',
     quote: e.quote.map((t) => { const stage = /^\*.*\*$/.test(t); return { text: stage ? t.slice(1, -1) : t.replace(/\*/g, ''),
@@ -110,11 +164,36 @@ export function epccgVals(self) {
       segs: c.skills.map((k) => ({ style: 'flex: 1; height: 4px; background: ' + k.ink })),
       chips: c.skills.map((k, i) => ({ plus: i > 0, label: k.name + ' ' + k.min,
         style: 'padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid ' + k.ink + '; color: ' + k.ink + (k.id === s.id ? '; background: ' + epRgba(k.ink, 0.16) : '') })) })),
-    rows: [['EFFECT', e.effect], ['AT HIGH LEVELS', e.high], ['GOOD FOR', e.good], ['BAD FOR', e.bad]].filter((r) => r[1]).map(([k, v]) => ({ k, v: v.charAt(0).toUpperCase() + v.slice(1) })),
+    // (the hand-written effect line is replaced by "What a point gives", read from the engine's skill data)
+    rows: [['AT HIGH LEVELS', e.high], ['GOOD FOR', e.good], ['BAD FOR', e.bad]].filter((r) => r[1]).map(([k, v]) => ({ k, v: v.charAt(0).toUpperCase() + v.slice(1) })),
     boxStyle: 'width: min(960px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 22px 24px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 4px solid ' + ink,
     nameStyle: 'margin: 0; font-family: \'Spectral\', serif; font-size: 32px; font-weight: 600; color: ' + ink,
     quoteStyle: 'margin: 0; display: flex; flex-direction: column; gap: 8px; padding: 4px 0 4px 16px; border-left: 3px solid ' + ink,
   } };
+}
+
+/** Arrow keys in a tab row that may wrap onto two lines. Left and Right follow the reading order (the order on screen,
+ *  wrapping at the ends); Up and Down go to the nearest tab on the line above or below (nothing on a single line);
+ *  Home and End are the first and last. `e` is the key event on a tab inside a role="tablist", `n` the number of tabs,
+ *  `i` the open one. Returns the index to open, or -1 when the key isn't one of these. */
+export function tabNavIndex(e, n, i) {
+  const k = e && e.key;
+  if (!n || i < 0) return -1;
+  if (k === 'ArrowRight') return (i + 1) % n;
+  if (k === 'ArrowLeft') return (i - 1 + n) % n;
+  if (k === 'Home') return 0;
+  if (k === 'End') return n - 1;
+  if (k !== 'ArrowDown' && k !== 'ArrowUp') return -1;
+  const el = e.currentTarget || e.target, list = el && typeof el.closest === 'function' ? el.closest('[role="tablist"]') : null;
+  if (!list) return -1;
+  const r = Array.from(list.querySelectorAll('[role="tab"]')).map((t) => t.getBoundingClientRect()), me = r[i];
+  if (!me) return -1;
+  const rows = Array.from(new Set(r.map((x) => Math.round(x.top)))).sort((a, b) => a - b);
+  if (rows.length < 2) return -1;
+  const to = rows[(rows.indexOf(Math.round(me.top)) + (k === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length], cx = me.left + me.width / 2;
+  let best = -1, bd = Infinity;
+  r.forEach((x, j) => { if (Math.round(x.top) !== to) return; const d = Math.abs(x.left + x.width / 2 - cx); if (d < bd) { bd = d; best = j; } });
+  return best;
 }
 
 /** Small shared bits for game chrome: player colour badge styles. */
@@ -156,7 +235,7 @@ export function effectsOf(u) {
   if (u.jammed) fx.push(['JAMMED', 'The gun won\'t fire until cleared (2 AP).']);
   if (u.heat) fx.push(['HEAT ' + u.heat, '−' + Math.floor(u.heat / 2) + ' to hit; drops by 2 each turn.']);
   (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.']));
-  if (u.weakPoint) fx.push(['WEAK POINT', '+15% damage from the squad.']);
+  if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.']);
   if (u.overweight > 0) fx.push(['OVERBURDENED', u.overweight + ' kg over the carry limit: −' + Math.ceil(u.overweight / 5) + ' Movement, no Sprint.']);
   return fx;
 }

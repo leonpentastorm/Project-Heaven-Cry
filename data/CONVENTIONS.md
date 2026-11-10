@@ -95,6 +95,16 @@ Every rule-bearing item carries both:
 - Each weapon in `weapons.json` has `phys`: `system`, `props` (melee: edge point blunt hook reach heavy light bare thrown; ranged: quick auto precise spread heavy blast arc silent loud drawn thrown), `hits_with` (a skill), `scales_with` and `also_scales` (attributes or skills), and `teaches` (the technique it lends while held and teaches at drill mark I).
 - Enemy tiers in `enemies.json` list the techniques they have ready: `techniques: { melee: [...], ranged: [...] }`.
 
+## Calls (calls.json, rules 1.13)
+
+- Nine entries, one per gamma skill. Ids are prefixed `call.` (`call.rally`, `call.spot`): the bare names are taken by techniques, class moves and unlocks.
+- `skill` is the gamma that speaks it (the validator refuses any other slot and a second Call on one skill). The name shown for the skill is read from `skills.json`, never written here.
+- `kind`: `helping` (aimed at an ally) or `hindering` (aimed at an enemy). `aim`: `ally`, `enemy` or `self-or-ally`. `save` (hindering only): the family the target saves with (`heart` for Threaten and Taunt; Spot has none).
+- `steps`: exactly three, opening at `rules.steps_at` (1, 3 and 7 points). Each has a `text` (what the pad shows for a speaker at that step) and `numbers` (every number the handler reads: `t.num('key')` in the engine). All three steps give the same keys.
+- `rules` is the shared ladder: `ap` 2, `cheap_at` 5 points for `cheap_ap` 1, `free_at` 10 points for `free_per_turn` 1 free Call, `range_base` 4 + `range_per_point` 1, `reaction_at` 9 points (`reactions_per_round` 1, `reaction_ap` 0), `save_tn` 12 (+ the speaker's strength with the skill), `helping_per_round` and `hindering_per_round` 1, `mark_rounds` (how long a Spot, Warn or Cue can outlive its round), and `enemy` (`per_turn`, and the score a Call must beat: a plain attack's 5).
+- `adjudication: "engine"` and `provisional: true` on every Call.
+- Enemy tiers in `enemies.json`: `calls` (a list of Call ids, empty for a tier that never Calls) and `call_level` (0 to 10: it stands in for the skill points an enemy doesn't have, and sets its cost, reach and step).
+
 ## Requirements
 `requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.

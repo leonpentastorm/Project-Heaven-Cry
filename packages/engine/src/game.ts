@@ -4,7 +4,7 @@ import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAP
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
-  type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
+  type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
@@ -12,6 +12,7 @@ import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharac
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
+import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from './calls';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -30,7 +31,7 @@ import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emit
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -115,7 +116,7 @@ export interface GameState {
     /** The last id number given to placed Sigil magic on the area map (glyphs 'gl', zones 'z', RAISE walls 'sw'): kept
      * so ids never repeat between area-map actions (an Evoke uses its glyphs up, a wall outlives them). */
     glyphSeq?: number;
-    magic?: Record<string, { flux: number; strain: number; held: HeldOutburst | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string>;
+    magic?: Record<string, { flux: number; strain: number; held: HeldOutburst | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string>; condVia?: Record<string, string>;
       /** Rules 1.5: free Pumps left this round, the calming ways used this round. */ freePumps?: number; calmFight?: boolean; calmTend?: boolean }>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
@@ -353,6 +354,8 @@ export type Action =
   // allyId, line, ammo, opt…); out of a fight, the ready list of a system, a drill pick for a weapon, a bow's quiver
   // (arrows per type), and the Answers this character will use, in order (null: every ready Answer).
   | ({ type: 'combat/technique'; unitId: string; id: string } & TechArgs) | { type: 'combat/pull-free'; unitId: string; targetId?: string }
+  // rules 1.13: a Call (calls/). opt: Order's things ('reload+move'); tile: Order's move, Cue's step, Warn's named tile; react: made off your turn, on your reaction (from 9 points)
+  | { type: 'combat/call'; unitId: string; id: string; targetId?: string; tile?: string; opt?: string; text?: string; react?: boolean }
   | { type: 'phys/ready'; charId: string; system: TechSystem; ids: string[] } | { type: 'phys/pick'; charId: string; weaponId: string; id: string }
   | { type: 'phys/quiver'; charId: string; weaponId: string; load: Record<string, number> } | { type: 'phys/answers'; charId: string; ids: string[] | null }
   | SandboxAction
@@ -628,7 +631,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (asked.filter((x) => x === a.skill).length >= al.limit) fail(al.limit === 1 ? 'Once per scene per skill.' : al.limit + ' times per scene per skill.');
       asked.push(a.skill);
       const hook = g.story.scene.hooks.filter((h) => h.skill === a.skill && !g.story.scene.revealed.includes(c!.id + ':' + h.id)).sort((x, y) => x.tn - y.tn)[0];
-      const m = mod(c!.skills[a.skill] || 0) + songMod(g, c!, a.skill) + skillRollMod({ c: c! }, a.skill, { roll: 'ask', tags: zoneTags(g) }).add, die = d20(g.rng), total = die + m, ok = !!hook && total >= hook.tn;
+      const m = checkMod(c!, a.skill) + songMod(g, c!, a.skill) + skillRollMod({ c: c! }, a.skill, { roll: 'ask', tags: zoneTags(g) }).add, die = d20(g.rng), total = die + m, ok = !!hook && total >= hook.tn;
       const head = sk.name.toUpperCase() + ' · YOU ASKED · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + total + (hook ? ' vs ' + hook.tn : '') + ' · ' + (ok ? '✓ SPEAKS' : '✕ NOTHING TO SAY');
       if (ok) g.story.scene.revealed.push(c!.id + ':' + hook!.id);
       push(g, { kind: 'voice', skill: a.skill, charId: c!.id, to: by, head, text: ok ? hook!.line : sk.name + ' has nothing to say about this.', ok });
@@ -653,7 +656,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const why = canRaise(c!, a.kind, a.id); if (why) fail(why);
       const rankBefore = c!.classId ? classRank(c!) : 0;
       if (a.kind === 'skill') { c!.skills[a.id] = (c!.skills[a.id] || 0) + 1; c!.unspent.skill--; }
-      if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15; }
+      if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15;  const fam = ATTRS.find((x) => x.id === a.id)!.core as keyof Character['cores']; if ((c!.cores[fam] || 1) < c!.attrs[a.id]) c!.cores = { ...c!.cores, [fam]: c!.attrs[a.id] }; }
       if (a.kind === 'core') { (c!.cores as any)[a.id]++; c!.unspent.core--; }
       awardAutomatic(g, c!);
       rankReached(g, c!, rankBefore);
@@ -784,7 +787,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at >= 0 && g.story.magic?.[c!.id]?.held?.design === d.id) fail('You are holding that Outburst: release it or let it go first.');
       const r = checkOutburstDesign(c!, d, moduleSlots(c!), at >= 0 ? d.id : 'o' + (g.seq + 1)); if (typeof r === 'string') fail(r);
       const { design: clean, learnTone } = r as Exclude<typeof r, string>;
-      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Empathy): forget one first.');
+      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Will Power): forget one first.');
       if (at < 0) g.seq++;
       if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
       if (at >= 0) list[at] = clean; else list.push(clean);
@@ -948,8 +951,12 @@ function closeRoundIfDone(g: GameState) {
 function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
   // Combined checks (spec): the lowest modifier among the skills, +2 for each other skill with at least 1 point. Items'
   // skill mods go into each skill's own modifier (plan 6a-15: every d20 that uses the skill); whole-check mods after.
+  // Rules 1.13: on a check a gamma skill counts its full points (each gamma first, then the lowest is taken). A story
+  // save is not a check: it rolls the family's save skill (Guts, Rumination, Composure) whatever skills were listed,
+  // on the plain modifier.
+  const isSave = ck.kind === 'save'; if (isSave && ck.family && SAVE_SKILL_OF[ck.family]) ck.skills = [SAVE_SKILL_OF[ck.family]];
   const tags = [...(ck.tags || []), ...zoneTags(g)], cctx = { tags, check: ck, target: ck.target, applies: ck.applies || [], roll: 'check' };
-  const sk = ck.skills.map((s) => ({ s, m: mod(c.skills[s] || 0) + songMod(g, c, s), it: skillRollMod({ c }, s, cctx) }));
+  const sk = ck.skills.map((s) => ({ s, m: (isSave ? mod(c.skills[s] || 0) : checkMod(c, s)) + songMod(g, c, s), it: skillRollMod({ c }, s, cctx) }));
   const mods = sk.map((x) => x.m + x.it.add), low = Math.min(...mods), lowIx = mods.indexOf(low);
   const whole = [...checkQuery({ c }, ck, cctx), ...storyCondMods(g, c, ck)];
   // 'check_mod' {c, ck, tags, add: CheckMod[], tn}: handlers push { add, label } or change tn (tn_mod, in the ladder).
@@ -1007,7 +1014,7 @@ function storyCondMods(g: GameState, c: Character, ck: Check): { add: number; la
  * mods and the story Brain debuffs (spec: Item modifiers on every d20). Whole-check mods (check_mod) aren't included. */
 export function sideRollMod(g: GameState, c: Character, skill: string, roll = 'check'): number {
   const debuff = storyCondMods(g, c, { skills: [skill], tags: [] } as any).filter((x) => /Brain Debuff/.test(x.label)).reduce((t, x) => t + x.add, 0);
-  return mod(c.skills[skill] || 0) + songMod(g, c, skill) + skillRollMod({ c }, skill, { roll, tags: zoneTags(g) }).add + debuff;
+  return checkMod(c, skill) + songMod(g, c, skill) + skillRollMod({ c }, skill, { roll, tags: zoneTags(g) }).add + debuff;
 }
 /** Put a condition on a character for the scene, session or arc (or take it off). */
 export function setStoryCond(g: GameState, c: Character, id: string, scope: 'scene' | 'session' | 'arc' = 'scene', end = false, by?: string) {
@@ -1020,7 +1027,7 @@ export function setStoryCond(g: GameState, c: Character, id: string, scope: 'sce
  * leaving their band. Returns the change made. */
 export function applyKarma(g: GameState, c: Character, amount: number, opts: { unlawful?: boolean; why?: string } = {}): number {
   if (!amount) return 0;
-  const consc = (c.skills.conscience || 0) * Math.sign(amount);
+  const consc = (c.skills.authority || 0) * Math.sign(amount); // rules 1.13: the Karma award reads Authority (it was Conscience)
   const ctx: any = emitStory(g, 'karma_award', { c, amount: amount + consc, unlawful: !!opts.unlawful, mult: 1, why: opts.why || '', g }, [c]);
   const was = c.karma || 0; c.karma = Math.max(-100, Math.min(100, Math.round(was + ctx.amount * (ctx.mult || 1))));
   const d = c.karma - was; if (d) push(g, { kind: 'system', text: c.name + ' ' + (d > 0 ? '+' : '') + d + ' Karma (' + karmaBand(c.karma) + (opts.why ? ': ' + opts.why : '') + ').', ooc: true });
@@ -1193,12 +1200,14 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   }
   // Checks the Narrator asks for: the engine rolls them when the player clicks.
   for (const ck of t.checks || []) {
-    const c = g.characters[ck.charId], skills = (ck.skills || []).filter((s) => SKILL[s]).slice(0, 3);
+    // a story save rolls its family's save skill, whatever the Narrator listed (rules 1.13)
+    const fam = ck.kind === 'save' && ['body', 'brain', 'heart'].includes(ck.family || '') ? ck.family! : null;
+    const c = g.characters[ck.charId], skills = fam ? [SAVE_SKILL_OF[fam]] : (ck.skills || []).filter((s) => SKILL[s]).slice(0, 3);
     if (!c || c.dead || !skills.length || !TN_LADDER.includes(ck.tn)) continue;
     const tags = Array.isArray(ck.tags) ? ck.tags.filter((x) => typeof x === 'string').slice(0, 8).map((x) => x.slice(0, 40)) : undefined;
     const applies = Array.isArray(ck.applies) ? ck.applies.filter((x) => typeof x === 'string').slice(0, 6) : undefined;
     const nc: Check = { id: id(g, 'k'), charId: c.id, skills, tn: ck.tn, stakes: ck.stakes || 'The Narrator calls for a check.', done: false, ...(tags?.length ? { tags } : {}), ...(ck.target ? { target: String(ck.target).slice(0, 40) } : {}), ...(applies?.length ? { applies } : {}),
-      ...(ck.kind === 'save' ? { kind: 'save' as const, ...(['body', 'brain', 'heart'].includes(ck.family || '') ? { family: ck.family } : {}) } : {}), ...(ck.footnote && g.characters[ck.footnote] ? { footnote: ck.footnote } : {}),
+      ...(ck.kind === 'save' ? { kind: 'save' as const, ...(fam ? { family: fam } : {}) } : {}), ...(ck.footnote && g.characters[ck.footnote] ? { footnote: ck.footnote } : {}),
       ...(ck.double ? { double: true } : {}), ...(ck.auto === 'success' || ck.auto === 'fail' ? { auto: ck.auto } : {}) };
     emitStory(g, 'check_build', { c, ck: nc, g }); // 'check_build' {c, ck}: items may add tags or flags to a new check
     g.checks.push(nc);
@@ -1322,6 +1331,8 @@ function combatAction(g: GameState, a: Action, by: string) {
   const cb = g.combat; if (!cb || g.phase !== 'combat') fail('No fight is on.');
   if (cb!.over) fail('The fight is over.');
   const u = active(cb!)!;
+  // rules 1.13: a Call made as a reaction comes from a unit whose turn it isn't (from 9 points, once a round)
+  if (a.type === 'combat/call' && a.react && a.unitId !== u.id) { callReaction(g, cb!, a, by); return; }
   if (!('unitId' in a) || a.unitId !== u.id) fail('It\'s ' + u.name + '\'s turn.');
   // Who gives this unit its orders: its character's player; a companion's owner; a Puppeted enemy's puppeteer (rules 1.3).
   const pup = u.side === 'foe' ? puppeteerOf(g, cb!, u) : null;
@@ -1347,6 +1358,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   const inWindow = !!cb!.window;
   // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
   const encore = inWindow ? null : encoreBefore(cb!, u, a);
+  const brief = briefBefore(cb!, u, a); // rules 1.13: a Brief's discount on this action, lent the same way
   markAction(cb!); // spotlight.ts: this action's fx start here (a spotlight in it slows its playback on the client)
   (cb as any).acting = true; // encoreCredit: previews inside the action don't lend Encore's AP again
   try {
@@ -1368,6 +1380,7 @@ function combatAction(g: GameState, a: Action, by: string) {
       if (!TECHNIQUE[id]) fail('No such technique.');
       refuseHook(cb!, u, a); err = useTechnique(cb!, u, id, args, g.rng); break;
     }
+    case 'combat/call': { err = runCall(g, cb!, u, a); break; }
     case 'combat/brace': err = brace(cb!, u); break;
     case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, who); break; }
     case 'combat/gift': err = runGift(g, cb!, g.rng, u, tileKey(g, a.aim)); break;
@@ -1436,6 +1449,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   }
   } finally { delete cb!.mods; delete (cb as any).acting; }
   if (err) fail(err);
+  briefAfter(cb!, u, brief);
   encoreAfter(cb!, u, encore);
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
@@ -1498,6 +1512,24 @@ function physAction(c: Character, a: Extract<Action, { type: 'phys/ready' | 'phy
 const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead && !t.surrendered;
 /** What a companion or a puppet may do (rules 1.3). */
 const ACT_NAME: Record<string, string> = { move: 'move', sprint: 'sprint', disengage: 'disengage', shot: 'shoot', aimed: 'take an aimed shot', melee: 'strike' };
+/** rules 1.13: make a Call. Only the fields a Call reads are taken from a client's action (nothing internal). */
+function runCall(g: GameState, cb: Combat, u: Combat['units'][number], a: Extract<Action, { type: 'combat/call' }>): string | null {
+  if (!CALL[a.id]) fail('No such Call.');
+  const args: CallArgs = { ...(typeof a.targetId === 'string' ? { targetId: a.targetId } : {}), ...(typeof a.tile === 'string' ? { tile: tileKey(g, a.tile) } : {}), ...(typeof a.opt === 'string' ? { opt: a.opt.slice(0, 40) } : {}), ...(typeof a.text === 'string' ? { text: a.text } : {}), ...(a.react ? { react: true } : {}) };
+  refuseHook(cb, u, a);
+  return useCall(cb, u, a.id, args, g.rng);
+}
+/** A Call as a reaction: the speaker isn't the unit whose turn it is. Its own player sends it; it spends the unit's
+ * reaction (once a round) and no AP. A companion, a puppet and a unit with a fixed action list never Call. */
+function callReaction(g: GameState, cb: Combat, a: Extract<Action, { type: 'combat/call' }>, by: string) {
+  const u = cb.units.find((x) => x.id === a.unitId); if (!u) fail('No such unit.');
+  const c = u!.charId ? g.characters[u!.charId] : null;
+  if (!c || c.owner !== by) fail('Not your unit.');
+  if (u!.companion || u!.allowedActions || condOn(u!, 'puppeted')) fail(u!.name + ' can\'t Call.');
+  const err = runCall(g, cb, u!, { ...a, react: true }); if (err) fail(err);
+  emitHook(cb, 'action_done', { u: u!, a, cb });
+  for (const x of cb.units) x.ap = Math.round(x.ap * 10) / 10;
+}
 const COMPANION_ACTS = new Set(['combat/move', 'combat/attack', 'combat/technique', 'combat/overwatch', 'combat/end-turn', 'combat/decline', 'combat/reload', 'combat/prone', 'combat/extinguish', 'combat/escape']);
 /** The PC character who Puppeted this enemy (its player runs the enemy's turn), if the puppeteer is up. */
 function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Character | null {
@@ -1523,8 +1555,8 @@ function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'ge
 }
 /** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
  * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
-const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
-  'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'stealth', 'injResist'] as const;
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
+  'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'shieldRecv', 'stealth', 'injResist'] as const;
 /** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
  * a slow, a blind or a guard on them stays; HP, AP, conditions, Flux, Strain and a held Outburst are kept. */
@@ -1850,7 +1882,7 @@ export function viewFor(g: GameState, playerId: string): GameState {
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
   // Physical 2.0 (rules 1.12): a Silent weapon's pips are hidden from the side they are on; a held shot shows to its
   // own side, and to the other side only while it sees the holder.
-  if (v.combat && g.combat) { const cb0 = g.combat; v.combat = { ...v.combat, units: v.combat.units.map((u) => physFog(cb0, u, me)) }; }
+  if (v.combat && g.combat) { const cb0 = g.combat; v.combat = { ...v.combat, units: v.combat.units.map((u) => callView(physFog(cb0, u, me), me)) }; } // rules 1.13: a Call's mark shows to the side that made it (calls/core.ts)
   pileFog(g, v, me); // rules 1.9: a pile shows only on a tile the viewer's party sees now (item 676)
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
@@ -2060,6 +2092,7 @@ function magicIn(g: GameState, cb: Combat) {
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held ? migrateHeld(s.held, u.mg.designs.find((d) => d.id === s.held!.design)) : null; u.mg.cast = !!s.cast;
       if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; if ((s as any).pumps) u.mg.pumps = JSON.parse(JSON.stringify((s as any).pumps)); }
     if (s.condBy) u.condBy = { ...s.condBy };
+    if (s.condVia) u.condVia = { ...s.condVia };
     // Merged with what the fight's start put on (a grudge's condition, item 723): the longer of the two stays.
     if (s.conds && Object.keys(s.conds).length) { const at0 = u.conds || {}; u.conds = { ...s.conds }; for (const [k, n] of Object.entries(at0)) u.conds[k] = Math.max(u.conds[k] || 0, n as number); if (u.conds.slowed && !at0.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded && !at0.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded && !at0.guarded) u.def += 2; }
     if (s.shield) u.shield = s.shield;
@@ -2095,7 +2128,8 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
     const conds = afterFight ? {} : { ...(u.conds || {}) };
     m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast,
       ...(!afterFight && u.mg && u.mg.freePumps != null ? { freePumps: u.mg.freePumps } : {}), ...(!afterFight && u.mg?.pumps?.length ? { pumps: u.mg.pumps } : {}), ...(!afterFight && u.mg?.calmFight ? { calmFight: true } : {}), ...(!afterFight && u.mg?.calmTend ? { calmTend: true } : {}),
-      ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}) };
+      ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}),
+      ...(!afterFight && u.condVia && Object.keys(u.condVia).length ? { condVia: { ...u.condVia } } : {}) };
     // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
     // A grudge's Shaken (item 723) is the fight's only: it isn't carried.
     if (afterFight && (u.conds?.shaken ?? 0) > 0 && u.faith?.grudgeCond !== 'shaken') { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
@@ -2790,10 +2824,12 @@ const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is
 const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null);
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
-  'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
-  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
+  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
+  'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
-  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed'] as const;
+  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',
+  // Calls (rules 1.13): the marks Calls left and the unit's own Call counters
+  'call'] as const;
 
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
@@ -3287,7 +3323,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (a.type === 'sandbox/equip') err = sbEquip(c, a.idx, a.to);
         else if (a.type === 'sandbox/unequip') err = sbUnequip(c, a.slot);
         else if (a.type === 'sandbox/drop') { const pack = packOf(c).map((x) => ({ ...x })); if (!pack[a.idx]) err = 'Nothing there.'; else if ((err = partError(c, a.idx, pack[a.idx].qty))) { /* Gun Nut's Collector: a collection gun stays (item 369) */ } else { pack.splice(a.idx, 1); c.pack = pack; } }
-        else { const want = Math.max(0, Math.min(5, Math.round(a.armourClass))), cap = armourCap(c); if (cap != null && want > cap) fail(c.name + ' can wear Class ' + cap + ' at most (' + (TRAITS.find((x) => (c.traits || []).includes(x.id) && (x as any).effects?.some((e: any) => e.op === 'armor_class_max'))?.name || 'a trait') + ').'); c.armourClass = want; }
+        else { const want = Math.max(0, Math.min(5, Math.round(a.armourClass))), cap = armourCap(c); if (cap != null && want > cap) fail(c.name + ' can wear Class ' + cap + ' at most (' + (TRAITS.find((x) => (c.traits || []).includes(x.id) && (x as any).effects?.some((e: any) => e.op === 'armor_class_max'))?.name || 'a trait') + ').'); { const ag = armourGateWhy(c, want); if (ag) fail(ag); } c.armourClass = want; } // heavy armour asks Pain Threshold (rules 1.13)
       });
       if (err) fail(err);
       return;
@@ -3377,7 +3413,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/technique': {
-      const c = mine(a.charId), ids = a.id === 'all' ? TECHNIQUES.filter((t) => !t.free).map((t) => t.id) : [a.id];
+      const c = mine(a.charId), ids = a.id === 'all' ? TECHNIQUES.filter((t) => !t.free && !t.needs?.shield && !t.innate).map((t) => t.id) : [a.id]; // what a shield or a skill gives is never learned
       if (ids.some((id) => !TECHNIQUE[id] || TECHNIQUE[id].free)) fail('No such technique to learn.');
       sbChange(g, c, () => {
         const p = ensurePhys(c);

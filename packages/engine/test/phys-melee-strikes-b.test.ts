@@ -49,7 +49,7 @@ describe('Hamstring', () => {
     const pv = f.pv('hamstring', { targetId: f.foe.id });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(hasMult(pv, 0.7)).toBe(true);
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cutDmg(f).total * 0.7, 5);
-    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 }]);
+    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 2 }]);
     expect(pv.notes.some((n) => /slowed 2 rounds/.test(n))).toBe(true);
     rig({ hit: true, die: 12 }); const hp = f.foe.hp;
     expect(f.tech('hamstring', { targetId: f.foe.id })).toBeNull();
@@ -94,14 +94,15 @@ describe('Hamstring', () => {
     expect(f.tech('hamstring', { targetId: f.foe.id })).toMatch(/reach/);
     expect(f.pc.ap).toBe(6);
   });
-  it('Momentum: +1 a hit, +1 more after a different technique, none extra for a repeat', () => {
-    const f = fight('sabre'); rig({ hit: true, die: 12 });
-    const pv = f.pv('hamstring', { targetId: f.foe.id }); expect(pv.momentum).toEqual({ now: 0, after: 1 });
+  it('Momentum: it spends 1 each use and its hit gives none; refused at 0; no variety bonus after a Cut', () => {
+    const f = fight('sabre'); rig({ hit: true, die: 12 }); f.momentum(f.pc, 2);
+    const pv = f.pv('hamstring', { targetId: f.foe.id }); expect(pv.momentum).toEqual({ now: 2, after: 1 });
     f.tech('hamstring', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1);
-    f.tech('hamstring', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(2);   // a repeat: +1 only
-    f.unit(f.pc.id).ap = 6; f.tech('cut', { targetId: f.foe.id }); f.momentum(f.pc, 0);
-    const pv2 = f.pv('hamstring', { targetId: f.foe.id }); expect(pv2.momentum).toEqual({ now: 0, after: 2 });
-    f.tech('hamstring', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(2);   // after Cut: +2
+    f.tech('hamstring', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(0);   // a repeat: 1 again
+    f.unit(f.pc.id).ap = 6; expect(f.tech('hamstring', { targetId: f.foe.id })).toBe('Needs 1 Momentum: land a plain attack first.');
+    f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1); // the plain attack gives it back
+    const pv2 = f.pv('hamstring', { targetId: f.foe.id }); expect(pv2.momentum).toEqual({ now: 1, after: 0 });
+    f.tech('hamstring', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(0);   // after Cut: 1 spent, nothing extra
   });
   it('a melee stop ignores Stopped once (the core keeps it for ranged techniques)', () => {
     const f = fight('war_axe'); weak(f, f.foe); f.unit(f.foe.id).stopped = 1;
@@ -110,12 +111,12 @@ describe('Hamstring', () => {
 });
 
 describe('Bind', () => {
-  it('base: no damage, Momentum as a hit; the Bound unit attacks anyone but you at −2', () => {
-    const f = fight('sabre', { two: true }); const hp = f.foe.hp;
-    const pv = f.pv('bind', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.attacks).toEqual([]); expect(pv.momentum).toEqual({ now: 0, after: 1 });
+  it('base: no damage, 1 Momentum spent; the Bound unit attacks anyone but you at −2', () => {
+    const f = fight('sabre', { two: true }); const hp = f.foe.hp; f.momentum(f.pc, 1);
+    const pv = f.pv('bind', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.attacks).toEqual([]); expect(pv.momentum).toEqual({ now: 1, after: 0 });
     expect(pv.notes.some((n) => /Bound until your next turn: −2/.test(n))).toBe(true);
     expect(f.tech('bind', { targetId: f.foe.id })).toBeNull();
-    expect(f.foe.hp).toBe(hp); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(4);
+    expect(f.foe.hp).toBe(hp); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(4);
     expect(f.bound(() => SB.isBoundBy(f.cb, f.foe, f.pc))).toBe(true);
     f.turn(f.foe);
     const other = f.bound(() => phys.previewTechnique(f.cb, f.foe, 'shot', { targetId: f.pcs[1].id }));
@@ -159,13 +160,13 @@ describe('Bind', () => {
     expect(g.bound(() => SB.isBoundBy(g.cb, g.foe, g.pc))).toBe(true); // Bound either way
     const n = fight('sabre'); expect(n.pv('bind', { targetId: n.foe.id }).saves || []).toEqual([]);
   });
-  it('Bare: it is Grappled instead (today\'s grapple), and only Momentum when it takes', () => {
-    const f = fight('fists'); weak(f, f.foe);
+  it('Bare: it is Grappled instead (today\'s grapple); the Momentum is spent whether or not it takes', () => {
+    const f = fight('fists'); weak(f, f.foe); f.momentum(f.pc, 2);
     expect(f.tech('bind', { targetId: f.foe.id })).toBeNull();
     expect(f.foe.conds?.grappled).toBeGreaterThan(0); expect(f.foe.condBy?.grappled).toBe(f.pc.id); expect(f.pc.tech?.bind?.target).toBeUndefined();
     expect(f.momentum(f.pc)).toBe(1);
-    expect(f.tech('bind', { targetId: f.foe.id })).toMatch(/already held/);
-    const g = fight('fists'); strong(g, g.foe); g.tech('bind', { targetId: g.foe.id }); expect(g.foe.conds?.grappled || 0).toBe(0); expect(g.momentum(g.pc)).toBe(0);
+    expect(f.tech('bind', { targetId: f.foe.id })).toMatch(/already held/); expect(f.momentum(f.pc)).toBe(1); // a refusal spends nothing
+    const g = fight('fists'); strong(g, g.foe); g.momentum(g.pc, 1); g.tech('bind', { targetId: g.foe.id }); expect(g.foe.conds?.grappled || 0).toBe(0); expect(g.momentum(g.pc)).toBe(0);
   });
   it('refusals: no target, an ally, too far; nothing is spent', () => {
     const f = fight('sabre', { two: true, foes: [{ at: 'H5' }] });
@@ -174,9 +175,9 @@ describe('Bind', () => {
     expect(f.tech('bind', { targetId: f.foe.id })).toMatch(/next to you/);
     expect(f.pc.ap).toBe(6);
   });
-  it('Momentum: the variety bonus after another technique', () => {
-    const f = fight('sabre'); rig({ hit: true, die: 12 }); f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1);
-    expect(f.tech('bind', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(3);
+  it('Momentum: no variety bonus after another technique; Bind spends the 1 the Cut gave', () => {
+    const f = fight('sabre'); rig({ hit: true, die: 12 }); f.momentum(f.pc, 0); f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1);
+    expect(f.tech('bind', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(0);
   });
   it('a real attack by the Bound unit at someone else takes the −2', () => {
     const f = fight('sabre', { two: true }); f.tech('bind', { targetId: f.foe.id }); f.turn(f.foe);
@@ -216,11 +217,11 @@ describe('Half-Sword', () => {
     const f = fight('sabre', { foes: [{ at: 'H5' }] });
     expect(f.tech('half_sword')).toMatch(/Pick a target/); expect(f.tech('half_sword', { targetId: f.foe.id })).toMatch(/reach/);
   });
-  it('Momentum: +1, +1 more after Hamstring, and a repeat earns only the hit', () => {
-    const f = fight('sabre'); rig({ hit: true, die: 12 });
-    f.tech('hamstring', { targetId: f.foe.id }); f.tech('half_sword', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(3);
-    const g = fight('sabre'); rig({ hit: true, die: 12 });
-    g.tech('half_sword', { targetId: g.foe.id }); g.tech('half_sword', { targetId: g.foe.id }); expect(g.momentum(g.pc)).toBe(2);
+  it('Momentum: 1 spent each use, after Hamstring or after itself; its hits give none', () => {
+    const f = fight('sabre'); rig({ hit: true, die: 12 }); f.momentum(f.pc, 3);
+    expect(f.tech('hamstring', { targetId: f.foe.id })).toBeNull(); expect(f.tech('half_sword', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1);
+    const g = fight('sabre'); rig({ hit: true, die: 12 }); g.momentum(g.pc, 2);
+    expect(g.tech('half_sword', { targetId: g.foe.id })).toBeNull(); expect(g.tech('half_sword', { targetId: g.foe.id })).toBeNull(); expect(g.momentum(g.pc)).toBe(0);
   });
 });
 
@@ -235,7 +236,7 @@ describe('Throw', () => {
     expect(pv.notes.some((n) => /lands at G5/.test(n))).toBe(true);
     rig({ hit: true, die: 12 }); const hp = f.foe.hp;
     expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
-    expect(hp - f.foe.hp).toBe(hpLost(pv)); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(4);
+    expect(hp - f.foe.hp).toBe(hpLost(pv)); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(4); // a Strike: the fight's 1 is spent, the hit gives none
     expect(f.pc.weapon).toBe('fists'); expect(f.char(f.pc).weapon).toBe('fists');
     expect((f.foe.stuck || []).map((x: any) => x.weapon)).toEqual(['combat_knife']); // a hit: the knife stays in the target (0.18.1)
   });

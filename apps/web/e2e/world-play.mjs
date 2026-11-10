@@ -245,7 +245,7 @@ g = await G();
 const mine2 = (g.story.hazards || []).find((h) => h.severity === 'heavy');
 await p.locator('button[data-near="h' + mine2.id + '"]').first().click();
 await panel.waitFor();
-ok('the hazard panel shows the ways through with odds (' + (await panel.locator('[data-odds]').allTextContents()).join(', ') + ')', (await panel.locator('[data-odds]').count()) === 2 && /Vigilant or Sensory/.test(await panel.textContent()));
+ok('the hazard panel shows the ways through with odds (' + (await panel.locator('[data-odds]').allTextContents()).join(', ') + ')', (await panel.locator('[data-odds]').count()) === 2 && /Vigilance or Senses/.test(await panel.textContent()));
 await snap('12-hazard-panel');
 await panel.locator('button[data-try^="ap-0"]').click();
 await p.waitForTimeout(700);

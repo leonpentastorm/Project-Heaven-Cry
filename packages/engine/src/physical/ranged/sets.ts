@@ -13,7 +13,7 @@
 //   Head Down: u.noWatch = the round: the core's gate refuses every Watch technique; the old Overwatch action is
 //         refused here.
 import { technique, stepUser, stepsWithin, endWatch, ownSideOnly, lowerPressure, techState, techStateOf, turnStamp, strikingWith, strikeRound, addPressureTo, pressureOf, pressureState, pressureDecay, atCover, onHook, type Tech } from './shared';
-import { type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponActions, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
+import { type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponBraces, weaponBraced, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
 import { condSource } from '../../magic';
 import { WEAPON } from '../../data';
 import { packOf } from '../../character';
@@ -152,8 +152,8 @@ onHook('turn_start_pre', (ctx: any, cb) => {
  * on half cover ("Today's Brace, opened to any weapon resting on half cover": the Heavy line changes what Brace does,
  * not where; review fix: the thumper, the breacher tube and the flamer have no Brace today). */
 function braceWhy(t: Tech): string | null {
-  if (t.u.braced) return 'Already braced.';
-  const anywhere = weaponActions(t.u).some((x) => x.id === 'brace');
+  if (weaponBraced(t.u)) return 'Already braced.'; // braced for Guard only: the weapon can still be set
+  const anywhere = weaponBraces(t.u);
   if (!anywhere && !coverNext(t.cb, t.u.pos, 'half')) return 'Rest the weapon on half cover to brace it.';
   return null;
 }
@@ -166,7 +166,7 @@ technique({
       t.note('Braced until you move: Recoil halved.' + (p === 'heavy' ? ' Its penalties are gone (no −2 unbraced; a weapon that needs bracing can fire).' : '') + (p === 'auto' ? ' Suppress gives +' + t.num('auto_suppress_pressure', 1) + ' Pressure more.' : ''));
       return null;
     }
-    t.u.braced = true;
+    t.u.braced = true; delete t.u.guardBrace;
     Object.assign(techState(t.u, 'brace'), { auto: p === 'auto', at: t.u.pos });
     emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'brace' });
     return null;

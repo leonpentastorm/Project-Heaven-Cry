@@ -61,8 +61,8 @@
 </div>
 </sc-for>
 </div>
-<div role="tablist" aria-label="Sheet" style="display: flex; flex-wrap: wrap; gap: 4px">
-<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+<div role="tablist" aria-label="Sheet" class="phc-sheet-tabs" style="display: flex; flex-wrap: wrap; gap: 4px; min-width: 0">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="7"><button type="button" role="tab" id="{{t.id}}" data-tab="{{t.key}}" aria-selected="{{t.selected}}" tabindex="{{t.tabindex}}" onClick="{{t.pick}}" onKeyDown="{{t.onKey}}" style="{{t.style}}">{{t.label}}</button></sc-for>
 </div>
 
 <sc-if value="{{tabSkills}}" hint-placeholder-val="{{true}}">
@@ -100,7 +100,7 @@
 </div>
 </div>
 <div class="{{tabCls}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px">
-<sc-for list="{{status}}" as="r" hint-placeholder-count="10"><div style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="color: #A3AEC2">{{r.k}}</span><span>{{r.v}}</span></div></sc-for>
+<sc-for list="{{status}}" as="r" hint-placeholder-count="10"><div data-derived="{{r.key}}" style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="display: flex; flex-direction: column; min-width: 0"><span style="color: #A3AEC2">{{r.k}}</span><sc-if value="{{r.hasFrom}}" hint-placeholder-val="{{true}}"><span data-derived-from="" style="font-size: 10.5px; color: #7F8BA1">{{r.from}}</span></sc-if></span><span style="white-space: nowrap; font-weight: 600">{{r.v}}</span></div></sc-for>
 </div>
 <div class="{{tabCls}}" style="display: flex; flex-direction: column; gap: 4px; padding-top: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">REPUTATION</span>

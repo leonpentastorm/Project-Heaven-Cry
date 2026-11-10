@@ -5,3 +5,4 @@ import './strikes-b';
 import './links';
 import './finishers';
 import './answers';
+import './shield';

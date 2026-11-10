@@ -56,45 +56,7 @@ describe('Earthbreaker and Last Wall in the Narrator brief (items 14, 15)', () =
   });
 });
 
-describe('Grapple: a named token on the area map; the story hold (item 16)', () => {
-  it('the scene grab naming a token next to you opens the fight with the grab; a token too far is refused', () => {
-    const s = storyWith([{ perks: { grapple: 'I' } }]); const c = s.chars[0], at = positionsOf(s.g)[c.id];
-    const n = place(s, freeNear(s.g, at, 1), { name: 'Dock thug' });
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'grapple', actionId: 'grapple_npc', npc: 'Dock thug' } as any);
-    expect(s.g.phase).toBe('combat'); expect(logHas(s.g.combat!, /grabs for Dock thug \(Grapple\)/)).toBe(true);
-    void n;
-    const s2 = storyWith([{ perks: { grapple: 'II' } }]); const c2 = s2.chars[0];
-    place(s2, freeNear(s2.g, positionsOf(s2.g)[c2.id], 4), { name: 'Far thug' });
-    expect(() => s2.act({ type: 'world/act', charId: c2.id, act: 'perk', id: 'grapple', actionId: 'grapple_npc', npc: 'Far thug' } as any)).toThrow(/Walk up/);
-    expect(s2.g.phase).toBe('story');
-  });
-  it('in the story panel the hold is a scene condition and a ruling that says a hostile hold starts the fight', () => {
-    const s = storyWith([{ perks: { grapple: 'I' } }]); const c = s.chars[0];
-    s.act({ type: 'story/perk', charId: c.id, id: 'grapple', actionId: 'grapple_npc', npc: 'The courier' } as any);
-    expect(s.g.story.scene.npcConds?.['the courier']).toContain('grappled');
-    expect(rulingHas(s.g, /Grapple on The courier: held.*starts a fight/)).toBe(true);
-  });
-});
 
-describe('Into the Dark II on the area map (item 17)', () => {
-  it('in a zone that causes Fear, the first move gives +1 AP back as well as the free AP; once a zone', () => {
-    const run = (tier: string | null, fear: boolean) => {
-      const s = storyWith([tier ? { perks: { into_the_dark: tier } } : {}]); const c = s.chars[0];
-      const z = (s.g.campaign as any).zones.find((x: any) => x.id === zoneMap(s.g).id); if (fear) z.fear = true;
-      const from = positionsOf(s.g)[c.id], to = freeNear(s.g, from, 3);
-      s.act({ type: 'world/act', charId: c.id, act: 'move', to, how: 'move' } as any);
-      const first = apLeft(s.g, s.g.characters[c.id]);
-      s.act({ type: 'world/act', charId: c.id, act: 'move', to: freeNear(s.g, positionsOf(s.g)[c.id], 1), how: 'move' } as any);
-      return { first, s, c };
-    };
-    const plain = run(null, true).first, one = run('I', true).first, two = run('II', true), twoCalm = run('II', false).first;
-    expect(one).toBe(plain + 1);
-    expect(two.first).toBe(plain + 2); expect(storyHas(two.s.g, /a place that causes Fear/)).toBe(true);
-    expect(twoCalm).toBe(plain + 1);
-    // Once a zone: the second move gave nothing more.
-    expect(two.s.g.story.entries.filter((e: any) => /a place that causes Fear/.test(e.text || '')).length).toBe(1);
-  });
-});
 
 describe('Grim Reaper from the area map (item 19)', () => {
   const ambush = (spec: CharSpec) => {
@@ -164,20 +126,6 @@ describe('triggers from a reducer action or an enemy\'s turn (item 20)', () => {
     f.cb.order = [ally.id, near.id, me.id, ...f.cb.order.filter((id) => ![me.id, ally.id, near.id].includes(id))];
     f.turn(ally); f.act({ type: 'combat/end-turn', unitId: ally.id });
     expect(f.unit(ally.id).downed).toBe(true); expect(logHas(f.cb, /First casualty \(Outclassed\)/)).toBe(true);
-  });
-  it('You Get Used to It: a stim through combat/stim on an ally who carries a Brain debuff gives +3 AP at once', () => {
-    const run = (perks: any, debuff: boolean) => {
-      const f = fightWith([{ perks }, { name: 'Ally' }], [{ at: 'P11' }]); open(f.cb);
-      const [a, b] = f.pcs; a.pos = '3,3'; b.pos = '3,4'; f.g.characters[a.charId!].stims = 2;
-      f.unit(b.id).hp = 10; if (debuff) f.unit(b.id).conds = { ...(f.unit(b.id).conds || {}), ldebuff: 2 };
-      const u = f.turn(a), ap = u.ap;
-      f.act({ type: 'combat/stim', unitId: a.id, targetId: b.id } as any);
-      expect(f.unit(b.id).hp).toBeGreaterThan(10);
-      return { spent: ap - f.unit(a.id).ap, f };
-    };
-    const plain = run({}, true).spent, held = run({ you_get_used_to_it: 'I' }, true), clean = run({ you_get_used_to_it: 'I' }, false).spent;
-    expect(held.spent).toBe(plain - 3); expect(logHas(held.f.cb, /You Get Used to It/)).toBe(true);
-    expect(clean).toBe(plain);
   });
   it('Sweet Talker: charm in the story, then a plea through combat/perk that lands on the charmed NPC gives +2 AP (II +3)', () => {
     for (const [tier, n] of [['I', 2], ['II', 3]] as const) {

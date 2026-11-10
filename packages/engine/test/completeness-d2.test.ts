@@ -136,12 +136,6 @@ describe('Humanity First in a fight, through combat/* (item 42)', () => {
     const full = heal([]), half = heal(['factory_made']);
     expect(full).toBeGreaterThan(0); expect(half).toBe(Math.round(full * 0.5));
   });
-  it('Xenophobe on the area map: a non-human\'s Hand-Off is refused (the AP stays with the giver)', () => {
-    const s = storyWith([{ traits: ['humanity_first'] }, { traits: ['factory_made'], perks: { many_hands: 'mastered' } }]); const [h, bot] = s.chars;
-    s.g.story.positions![bot.id] = freeAt(s.g, positionsOf(s.g)[h.id], 1);
-    s.act({ type: 'world/act', charId: bot.id, act: 'perk', id: 'many_hands', actionId: 'hand_off', targetId: h.id, choice: '2' } as any);
-    expect(apLeft(s.g, s.g.characters[h.id])).toBe(6); expect(apLeft(s.g, s.g.characters[bot.id])).toBe(6); // refused: nothing moves
-  });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------

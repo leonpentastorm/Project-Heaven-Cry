@@ -27,7 +27,7 @@ technique({
 function walkFree(u: Unit, to: string, t: Tech, keepMoved: boolean): string | null {
   const keep = { ap: u.ap, bank: u.bank, moved: u.moved };
   u.ap = 99; u.bank = 999; // the walk is priced at 0 AP, and nothing an item adds to it can refuse it
-  try { return moveUnit(t.cb, u, to, t.rng, 'move', { via: paths(t.cb, u.pos, u.id) }); } finally { u.ap = keep.ap; u.bank = keep.bank; if (!keepMoved) u.moved = keep.moved; }
+  try { return moveUnit(t.cb, u, to, t.rng, 'move', { via: paths(t.cb, u.pos, u.id), part: true }); } finally { u.ap = keep.ap; u.bank = keep.bank; if (!keepMoved) u.moved = keep.moved; }
 }
 const occupied = (cb: Combat, u: Unit, k: string) => cb.units.some((x) => x !== u && !x.dead && x.pos === k);
 

@@ -163,35 +163,6 @@ describe('Hot-Swap', () => {
   });
 });
 
-describe('Origami Hands', () => {
-  it('I: 2 AP and a spare part: a tripwire next to you that the enemy walks into (25, credited to you); at most 2', () => {
-    const f = fightWith([{ perks: { origami_hands: 'I' }, kit: 'medic' }], [{ at: 'O10' }]);
-    const pc = at(f.pc, '3,5'); pc.parts = 3; const u = f.turn(pc);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'origami_hands', actionId: 'improvise', choice: 'trap', tile: '4,5' } as any);
-    expect(f.pc.ap).toBe(4); expect(f.pc.parts).toBe(2);
-    const trap: any = f.cb.objects!.find((o) => o.kind === 'trap'); expect(trap.damage).toBe(25); expect(trap.owner).toBe(f.pc.id);
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'origami_hands', actionId: 'improvise', choice: 'trap', tile: '3,6' } as any);
-    expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'origami_hands', actionId: 'improvise', choice: 'trap', tile: '2,5' } as any)).toThrow(/At most 2/);
-    const foe = at(f.foe, '6,5'), hp = foe.hp; foe.ap = 6;
-    withGame(f.g, () => moveUnit(f.cb, foe, '4,5', f.g.rng));
-    expect(foe.hp).toBe(hp - Math.max(1, 25 - foe.armour)); expect(foe.pos).toBe('4,5');
-  });
-  it('II: 1 AP and traps deal +50% (37); a sling shot; a tool goes in the pack for the Narrator; story improvises without a check', () => {
-    const f = fightWith([{ perks: { origami_hands: 'II' }, kit: 'medic' }], [{ at: 'H6' }]);
-    const pc = at(f.pc, '3,5'); pc.parts = 3; const u = f.turn(pc);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'origami_hands', actionId: 'improvise', choice: 'trap', tile: '4,5' } as any);
-    expect(f.pc.ap).toBe(5); expect((f.cb.objects!.find((o) => o.kind === 'trap') as any).damage).toBe(37);
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'origami_hands', actionId: 'improvise', choice: 'sling', targetId: f.foe.id } as any);
-    expect(logHas(f.cb, /slings a stone at Foe 1/)).toBe(true);
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'origami_hands', actionId: 'improvise', choice: 'tool', text: 'lockpick' } as any);
-    expect(packOf(charOf(f.g, f.pc)).some((p) => p.name === 'Improvised lockpick')).toBe(true);
-    expect((f.cb.notes || []).some((n) => /lockpick/.test(n))).toBe(true);
-    const s = storyWith([{ perks: { origami_hands: 'I' }, kit: 'medic' }]); const c = s.chars[0];
-    s.act({ type: 'story/perk', charId: c.id, id: 'origami_hands', actionId: 'improvise_story', text: 'a grappling hook' } as any);
-    expect(packOf(s.g.characters[c.id]).find((p) => (p.item || p.id) === 'spare_parts')!.qty).toBe(2);
-    expect(s.g.story.rulings!.some((r) => /grappling hook/.test(r.text))).toBe(true);
-  });
-});
 
 describe('Trick Shot', () => {
   it('Ricochet: ignores half cover, and a hit bounces half its damage into a second enemy within 2 tiles; once a turn', () => {
@@ -215,9 +186,9 @@ describe('Trick Shot', () => {
 describe('Overhaul', () => {
   it('Field Repair costs 1 AP and restores twice as much', () => {
     const f = fightWith([{ perks: { overhaul: 'mastered' }, kit: 'medic', skills: { proficiency: 10 } }], [{ at: 'O10' }]);
-    const pc = f.pc; pc.proficiency = 10; pc.parts = 2; pc.dur = 0; const u = f.turn(pc);
+    const pc = f.pc; pc.proficiency = 10; pc.parts = 2; pc.dur = 1; const u = f.turn(pc); // Tuned (5 points): the weapon is never at 0
     f.act({ type: 'combat/repair', unitId: u.id } as any);
-    expect(f.pc.ap).toBe(5); expect(f.pc.dur).toBe(Math.ceil(f.pc.maxDur! * (0.1 + 0.05 * 7) * 2));
+    expect(f.pc.ap).toBe(5); expect(f.pc.dur).toBe(1 + Math.ceil(f.pc.maxDur! * (0.1 + 0.05 * 7) * 2));
   });
   it('story: bench repair to full on one part; after a long rest, a permanent extra slot of a type the weapon has', () => {
     const s = storyWith([{ perks: { overhaul: 'mastered' }, kit: 'medic' }]); const c = s.chars[0];
@@ -234,21 +205,31 @@ describe('Overhaul', () => {
 });
 
 describe('Nothing Gets Past', () => {
-  it('Hold the line: every enemy that moves in sight draws a shot from the held AP, one per enemy per move, on one reaction', () => {
-    const f = fightWith([{ perks: { nothing_gets_past: 'mastered' } }], [{ at: 'J4' }, { at: 'J8' }]);
-    const pc = at(f.pc, '3,5'); const u = f.turn(pc);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'nothing_gets_past', actionId: 'hold_line' } as any);
-    expect(f.pc.ap).toBe(0); expect(f.pc.overwatch).toBe('shot');
+  // rules 1.13: no shots. Every enemy that moves in your sight is Spotted for free (the Spot Call's mark at your level).
+  it('every enemy that moves in sight is Spotted, free: no AP, no reaction, once a round each; allies use the mark', () => {
+    const f = fightWith([{ perks: { nothing_gets_past: 'mastered' }, skills: { vigilant: 10 } }, {}], [{ at: 'J4' }, { at: 'J8' }]);
+    const pc = at(f.pc, '3,5'); const u = f.turn(pc), ap = u.ap;
     const [a, b] = f.foes; a.hp = b.hp = 999; a.ap = b.ap = 6;
     withGame(f.g, () => { moveUnit(f.cb, a, '8,3', f.g.rng); moveUnit(f.cb, b, '8,7', f.g.rng); });
-    expect(f.cb.log.filter((l) => /fires from overwatch/.test(l)).length).toBe(2);
-    expect(f.pc.reactUsed!.n).toBe(1);
-    // Plain Overwatch: one shot only.
-    const g = fightWith([{}], [{ at: 'J4' }, { at: 'J8' }]); const v = at(g.pc, '3,5'); g.turn(v);
-    g.act({ type: 'combat/overwatch', unitId: v.id, mode: 'shot' } as any);
-    const [c1, c2] = g.foes; c1.hp = c2.hp = 999; c1.ap = c2.ap = 6;
-    withGame(g.g, () => { moveUnit(g.cb, c1, '8,3', g.g.rng); moveUnit(g.cb, c2, '8,7', g.g.rng); });
-    expect(g.cb.log.filter((l) => /fires from overwatch/.test(l)).length).toBe(1);
+    expect(f.cb.log.filter((l) => /Nothing Gets Past\): Spotted/.test(l)).length).toBe(2);
+    expect(f.pc.ap).toBe(ap); expect(f.pc.reactUsed?.n || 0).toBe(0);
+    const mark = f.foes[0].call!.spot!;
+    expect(mark.by).toBe(f.pc.id); expect(mark.left).toBe(2); expect(mark.hit).toBe(1); expect(mark.unhide).toBe(true); // step 3 at 10 points
+    expect(f.foes[0].call!.hindered).toBeUndefined(); // it takes no Call slot
+    withGame(f.g, () => moveUnit(f.cb, f.foes[0], '8,4', f.g.rng));
+    expect(f.cb.log.filter((l) => /Nothing Gets Past\): Spotted/.test(l)).length).toBe(2); // once a round for each enemy
+    // no shot is fired, and it holds no Overwatch
+    expect(f.cb.log.some((l) => /fires from overwatch/.test(l))).toBe(false);
+    expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'nothing_gets_past', actionId: 'hold_line' } as any)).toThrow();
+  });
+  it('an enemy that moves where you can\'t see is not Spotted; without the perk nobody is', () => {
+    const f = fightWith([{ perks: { nothing_gets_past: 'mastered' }, skills: { vigilant: 10 } }], [{ at: 'J4' }]);
+    at(f.pc, '3,5'); f.pc.vision = 2; f.turn(f.pc); const a = f.foe; a.ap = 6;
+    withGame(f.g, () => moveUnit(f.cb, a, '10,3', f.g.rng));
+    expect(f.foe.call?.spot).toBeUndefined();
+    const g = fightWith([{ skills: { vigilant: 10 } }], [{ at: 'J4' }]); at(g.pc, '3,5'); g.turn(g.pc); g.foe.ap = 6;
+    withGame(g.g, () => moveUnit(g.cb, g.foe, '8,3', g.g.rng));
+    expect(g.foe.call?.spot).toBeUndefined();
   });
 });
 
@@ -439,9 +420,9 @@ describe('Blade Recluse', () => {
 });
 
 describe('Slicer', () => {
-  it('Backdoor: 2 AP, a locked door within 5 tiles opens on Proficiency; it locks again at your next turn', () => {
+  it('Backdoor: 2 AP, a locked door within 5 tiles opens on Acuity; it locks again at your next turn', () => {
     const f = fightWith([{ traits: ['slicer'] }], [{ at: 'O10' }]);
-    const u = f.turn(at(f.pc, '3,5')); u.proficiency = 30;
+    const u = f.turn(at(f.pc, '3,5')); u.analysis = 30;
     f.cb.objects = [...(f.cb.objects || []), makeObject('d1', 'door', '7,5', { locked: true })];
     f.g.rng.state = rngFor(10).state;
     f.act({ type: 'combat/perk', unitId: u.id, id: 'slicer', actionId: 'backdoor', tile: '7,5', choice: 'open' } as any);
@@ -451,7 +432,7 @@ describe('Slicer', () => {
   });
   it('a turret unit is Puppeted; mobile robots are refused; lightning Stuns the slicer; machines spot them +2', () => {
     const f = fightWith([{ traits: ['slicer'] }], [{ at: 'H6' }, { at: 'H8' }]);
-    const u = f.turn(at(f.pc, '3,5')); u.proficiency = 30; const [t, r] = f.foes; t.kind = 'turret'; r.kind = 'robot';
+    const u = f.turn(at(f.pc, '3,5')); u.analysis = 30; const [t, r] = f.foes; t.kind = 'turret'; r.kind = 'robot';
     f.g.rng.state = rngFor(10).state;
     f.act({ type: 'combat/perk', unitId: u.id, id: 'slicer', actionId: 'backdoor', tile: refOf(t.pos) } as any);
     expect(condOn(f.foes[0], 'puppeted')).toBe(true);

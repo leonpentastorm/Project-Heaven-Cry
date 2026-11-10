@@ -109,7 +109,7 @@
       "cost": null,
       "flavour": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.",
       "upsides": [
-        "Still Water: gain 1 Core point at creation, to raise any Core above what your skills need. Heart Debuffs never affect you."
+        "Still Water: gain 2 Attribute points at creation (12 in place of 10). Heart Debuffs never affect you."
       ],
       "downsides": [
         "Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change."
@@ -118,7 +118,7 @@
         "Mechanical note: 'Karma can never change' locks Karma at its starting value."
       ],
       "narrator_hook": "every faction wants to convert the one recruit who can't be converted.",
-      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: gain 1 Core point at creation, to raise any Core above what your skills need. Heart Debuffs never affect you.\n− Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.",
+      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: gain 2 Attribute points at creation (12 in place of 10). Heart Debuffs never affect you.\n− Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.",
       "effects": [
         {
           "op": "creation_points",
@@ -380,11 +380,11 @@
         "One Blade: weapon mastery levels 25% faster. Name one weapon: it can't be disarmed and gets one extra mod slot."
       ],
       "downsides": [
-        "Rusty Manners: −1 Charisma, Implication and Authority. If anyone asks about your weapon, you tell them, at length."
+        "Rusty Manners: −1 Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length."
       ],
       "notes": [],
       "narrator_hook": "the negotiation where someone compliments the sword.",
-      "text": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.\n+ One Blade: weapon mastery levels 25% faster. Name one weapon: it can't be disarmed and gets one extra mod slot.\n− Rusty Manners: −1 Charisma, Implication and Authority. If anyone asks about your weapon, you tell them, at length.",
+      "text": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.\n+ One Blade: weapon mastery levels 25% faster. Name one weapon: it can't be disarmed and gets one extra mod slot.\n− Rusty Manners: −1 Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length.",
       "effects": [
         {
           "op": "weapon_mastery_rate",
@@ -469,14 +469,14 @@
       "cost": null,
       "flavour": "Four-eyes, bookworm, glass-jaw. You've been called a lot of names, most of them accurate, but they didn't have to say it out loud.",
       "upsides": [
-        "Well-Read: +2 Rumination; start with [Prescription Glasses]. While wearing them, +1 Proficiency and Ingenuity."
+        "Well-Read: +2 Rumination; start with [Prescription Glasses]. While wearing them, +1 Acuity and Ingenuity."
       ],
       "downsides": [
-        "Glasses Off: without them, −4 Proficiency and Ingenuity."
+        "Glasses Off: without them, −4 Acuity and Ingenuity."
       ],
       "notes": [],
       "narrator_hook": "enemies can aim for the glasses; rain, smoke and fistfights knock them off.",
-      "text": "Four-eyes, bookworm, glass-jaw. You've been called a lot of names, most of them accurate, but they didn't have to say it out loud.\n+ Well-Read: +2 Rumination; start with [Prescription Glasses]. While wearing them, +1 Proficiency and Ingenuity.\n− Glasses Off: without them, −4 Proficiency and Ingenuity.",
+      "text": "Four-eyes, bookworm, glass-jaw. You've been called a lot of names, most of them accurate, but they didn't have to say it out loud.\n+ Well-Read: +2 Rumination; start with [Prescription Glasses]. While wearing them, +1 Acuity and Ingenuity.\n− Glasses Off: without them, −4 Acuity and Ingenuity.",
       "effects": [
         {
           "op": "skill_mod",
@@ -489,7 +489,7 @@
         },
         {
           "op": "skill_mod",
-          "skill": "proficiency",
+          "skill": "analysis",
           "value": 1,
           "context": "wearing:prescription_glasses"
         },
@@ -501,7 +501,7 @@
         },
         {
           "op": "skill_mod",
-          "skill": "proficiency",
+          "skill": "analysis",
           "value": -4,
           "context": "not_wearing:prescription_glasses"
         },
@@ -595,11 +595,11 @@
         "Blank Face: every Composure check in dialogue succeeds. Robots and machines treat you as one of their own."
       ],
       "downsides": [
-        "Uncanny: you can't use Implication or Charisma in dialogue (their combat perks still work), and children and animals panic around you."
+        "Uncanny: you can't use Insinuation or Charisma in dialogue (their combat perks still work), and children and animals panic around you."
       ],
       "notes": [],
       "narrator_hook": "the scene that needs a warm human face.",
-      "text": "You bought a new face at a back-alley clinic in Central City. It was a robot clinic. Nobody told the surgeon you weren't a robot.\n+ Blank Face: every Composure check in dialogue succeeds. Robots and machines treat you as one of their own.\n− Uncanny: you can't use Implication or Charisma in dialogue (their combat perks still work), and children and animals panic around you.",
+      "text": "You bought a new face at a back-alley clinic in Central City. It was a robot clinic. Nobody told the surgeon you weren't a robot.\n+ Blank Face: every Composure check in dialogue succeeds. Robots and machines treat you as one of their own.\n− Uncanny: you can't use Insinuation or Charisma in dialogue (their combat perks still work), and children and animals panic around you.",
       "effects": [
         {
           "op": "auto_success",
@@ -861,14 +861,14 @@
       "cost": null,
       "flavour": "Oil paint runs through the vessels of your brain. Give you a glass of wine and you could argue technique with Rémy Étienne or Master Sakamoto all night.",
       "upsides": [
-        "Canvas: read any artwork, mural, graffiti or designed object to learn who made it, how, and where it came from. +1 Visualization, Analysis and Rumination."
+        "Canvas: read any artwork, mural, graffiti or designed object to learn who made it, how, and where it came from. +1 Visualization, Acuity and Rumination."
       ],
       "downsides": [
-        "Paper: −1 Durability, Pain Threshold and Sensory. With both Oil traits, this penalty applies once."
+        "Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once."
       ],
       "notes": [],
       "narrator_hook": "gang tags, forged paintings, propaganda posters, a killer's \"art.\"",
-      "text": "Oil paint runs through the vessels of your brain. Give you a glass of wine and you could argue technique with Rémy Étienne or Master Sakamoto all night.\n+ Canvas: read any artwork, mural, graffiti or designed object to learn who made it, how, and where it came from. +1 Visualization, Analysis and Rumination.\n− Paper: −1 Durability, Pain Threshold and Sensory. With both Oil traits, this penalty applies once.",
+      "text": "Oil paint runs through the vessels of your brain. Give you a glass of wine and you could argue technique with Rémy Étienne or Master Sakamoto all night.\n+ Canvas: read any artwork, mural, graffiti or designed object to learn who made it, how, and where it came from. +1 Visualization, Acuity and Rumination.\n− Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once.",
       "effects": [
         {
           "op": "narrator",
@@ -950,16 +950,16 @@
       "cost": null,
       "flavour": "You don't know the technique. You know exactly how the painter felt.",
       "upsides": [
-        "Canvas: read any artwork to learn the maker's emotional state and intent. +1 Empathy, Camaraderie and Implication."
+        "Canvas: read any artwork to learn the maker's emotional state and intent. +1 Empathy, Camaraderie and Insinuation."
       ],
       "downsides": [
-        "Still Paper: −1 Durability, Pain Threshold and Sensory. With both Oil traits, this penalty applies once."
+        "Still Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once."
       ],
       "notes": [
         "Both Oils: Masterpiece. A recruit with both reads an artwork's whole story (maker, method and meaning) at once. Once per session, they can make a work of art that gives one ally +2 on a roll of that ally's choice."
       ],
       "narrator_hook": "the same gang tags and forgeries, read from the heart.",
-      "text": "You don't know the technique. You know exactly how the painter felt.\n+ Canvas: read any artwork to learn the maker's emotional state and intent. +1 Empathy, Camaraderie and Implication.\n− Still Paper: −1 Durability, Pain Threshold and Sensory. With both Oil traits, this penalty applies once.\nBoth Oils: Masterpiece. A recruit with both reads an artwork's whole story (maker, method and meaning) at once. Once per session, they can make a work of art that gives one ally +2 on a roll of that ally's choice.",
+      "text": "You don't know the technique. You know exactly how the painter felt.\n+ Canvas: read any artwork to learn the maker's emotional state and intent. +1 Empathy, Camaraderie and Insinuation.\n− Still Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once.\nBoth Oils: Masterpiece. A recruit with both reads an artwork's whole story (maker, method and meaning) at once. Once per session, they can make a work of art that gives one ally +2 on a roll of that ally's choice.",
       "effects": [
         {
           "op": "narrator",
@@ -1045,12 +1045,12 @@
         "Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability."
       ],
       "downsides": [
-        "Wasted (5 drinks): −2 Reaction Speed, Dexterity, Proficiency, Vigilant, Analysis and Visualization.",
+        "Wasted (5 drinks): −2 Reaction Speed, Dexterity, Acuity, Vigilance, Improvisation and Visualization.",
         "The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Will Power check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure."
       ],
       "notes": [],
       "narrator_hook": "the bar scene, the dry mission, the open bottle in the evidence room.",
-      "text": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?\n+ Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.\n+ Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability.\n− Wasted (5 drinks): −2 Reaction Speed, Dexterity, Proficiency, Vigilant, Analysis and Visualization.\n− The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Will Power check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure.",
+      "text": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?\n+ Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.\n+ Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability.\n− Wasted (5 drinks): −2 Reaction Speed, Dexterity, Acuity, Vigilance, Improvisation and Visualization.\n− The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Will Power check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure.",
       "effects": [
         {
           "op": "stacking_state",
@@ -1374,14 +1374,14 @@
       "cost": null,
       "flavour": "You fought in a war the records say never happened. The arm is new. The habits aren't.",
       "upsides": [
-        "Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Proficiency can modify."
+        "Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Improvisation can modify."
       ],
       "downsides": [
-        "The War Never Ended: resting in a settlement takes a Vigilant check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Implication and Composure."
+        "The War Never Ended: resting in a settlement takes a Vigilance check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Insinuation and Composure."
       ],
       "notes": [],
       "narrator_hook": "the ceasefire, the homecoming, the quiet town.",
-      "text": "You fought in a war the records say never happened. The arm is new. The habits aren't.\n+ Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Proficiency can modify.\n− The War Never Ended: resting in a settlement takes a Vigilant check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Implication and Composure.",
+      "text": "You fought in a war the records say never happened. The arm is new. The habits aren't.\n+ Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Improvisation can modify.\n− The War Never Ended: resting in a settlement takes a Vigilance check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Insinuation and Composure.",
       "effects": [
         {
           "op": "damage_mod",
@@ -1725,14 +1725,14 @@
       "cost": null,
       "flavour": "Oil for blood, a plug for a gender, and a serial number for a name. The Factory built you to be spent. You weren't.",
       "upsides": [
-        "Machine Body: immune to poison, bleed and suffocation. Proficiency's Field Repair restores your HP, at 10 per Proficiency rank."
+        "Machine Body: immune to poison, bleed and suffocation. Improvisation's Field Repair restores your HP, at 10 per Improvisation rank."
       ],
       "downsides": [
         "Plug: heals and Blessings work at half power on you, lightning and EMP deal double, and some humans won't talk to a machine."
       ],
       "notes": [],
       "narrator_hook": "robot-rights politics, scrapyards, and the officer who calls you equipment.",
-      "text": "Oil for blood, a plug for a gender, and a serial number for a name. The Factory built you to be spent. You weren't.\n+ Machine Body: immune to poison, bleed and suffocation. Proficiency's Field Repair restores your HP, at 10 per Proficiency rank.\n− Plug: heals and Blessings work at half power on you, lightning and EMP deal double, and some humans won't talk to a machine.",
+      "text": "Oil for blood, a plug for a gender, and a serial number for a name. The Factory built you to be spent. You weren't.\n+ Machine Body: immune to poison, bleed and suffocation. Improvisation's Field Repair restores your HP, at 10 per Improvisation rank.\n− Plug: heals and Blessings work at half power on you, lightning and EMP deal double, and some humans won't talk to a machine.",
       "effects": [
         {
           "op": "immunity",
@@ -1793,11 +1793,11 @@
         "Concrete Forest: in ruins and dense urban terrain, +1 Movement, and you always know one way out."
       ],
       "downsides": [
-        "Open Sky: in open terrain, −2 Vigilant and half Detection Range."
+        "Open Sky: in open terrain, −2 Vigilance and half Detection Range."
       ],
       "notes": [],
       "narrator_hook": "the mission that leaves the city.",
-      "text": "You grew up in the dead-building forest past the desert, Black Scavenger country, where every corner is an ambush.\n+ Concrete Forest: in ruins and dense urban terrain, +1 Movement, and you always know one way out.\n− Open Sky: in open terrain, −2 Vigilant and half Detection Range.",
+      "text": "You grew up in the dead-building forest past the desert, Black Scavenger country, where every corner is an ambush.\n+ Concrete Forest: in ruins and dense urban terrain, +1 Movement, and you always know one way out.\n− Open Sky: in open terrain, −2 Vigilance and half Detection Range.",
       "effects": [
         {
           "op": "stat_mod",
@@ -2203,11 +2203,11 @@
         "Breath Held: if you haven't moved this turn, your first shot ignores cover and does +50% Critical Damage."
       ],
       "downsides": [
-        "Tunnel Vision: until your next move, you can't make Vigilant checks, and ambushes against you do +50% damage."
+        "Tunnel Vision: until your next move, you can't make Vigilance checks, and ambushes against you do +50% damage."
       ],
       "notes": [],
       "narrator_hook": "the flanker you didn't see.",
-      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores cover and does +50% Critical Damage.\n− Tunnel Vision: until your next move, you can't make Vigilant checks, and ambushes against you do +50% damage.",
+      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores cover and does +50% Critical Damage.\n− Tunnel Vision: until your next move, you can't make Vigilance checks, and ambushes against you do +50% damage.",
       "effects": [
         {
           "op": "ignore_cover",
@@ -3088,14 +3088,14 @@
       "cost": null,
       "flavour": "You can't say anything plainly. Plain words are for orders and obituaries.",
       "upsides": [
-        "Verse: once per scene, answer in metaphor. The listener rolls Implication against your Implication; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene."
+        "Verse: once per scene, answer in metaphor. The listener rolls Insinuation against your Insinuation; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene."
       ],
       "downsides": [
         "Nothing Straight: giving a plain, direct answer takes an Eloquence check."
       ],
       "notes": [],
       "narrator_hook": "the panicked squadmate who needs a simple yes.",
-      "text": "You can't say anything plainly. Plain words are for orders and obituaries.\n+ Verse: once per scene, answer in metaphor. The listener rolls Implication against your Implication; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene.\n− Nothing Straight: giving a plain, direct answer takes an Eloquence check.",
+      "text": "You can't say anything plainly. Plain words are for orders and obituaries.\n+ Verse: once per scene, answer in metaphor. The listener rolls Insinuation against your Insinuation; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene.\n− Nothing Straight: giving a plain, direct answer takes an Eloquence check.",
       "effects": [
         {
           "op": "opposed",
@@ -3236,11 +3236,11 @@
         "Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake."
       ],
       "downsides": [
-        "Price on Everything: giving away an item or accepting a gift takes an Analysis check: you can't stop pricing it. −1 Camaraderie."
+        "Price on Everything: giving away an item or accepting a gift takes an Acuity check: you can't stop pricing it. −1 Camaraderie."
       ],
       "notes": [],
       "narrator_hook": "the squadmate who needs your spare medkit for free.",
-      "text": "You grew up behind a stall in Mandestra. You can price a man by his boots.\n+ Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake.\n− Price on Everything: giving away an item or accepting a gift takes an Analysis check: you can't stop pricing it. −1 Camaraderie.",
+      "text": "You grew up behind a stall in Mandestra. You can price a man by his boots.\n+ Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake.\n− Price on Everything: giving away an item or accepting a gift takes an Acuity check: you can't stop pricing it. −1 Camaraderie.",
       "effects": [
         {
           "op": "price_mod",
@@ -3353,14 +3353,14 @@
       "cost": null,
       "flavour": "You started out cracking bank cards in Central City. You graduated to doors, cameras and turrets.",
       "upsides": [
-        "Backdoor: 2 AP: take control of one electronic device within 5 tiles (door, camera, turret) for a round, on a Proficiency check against its tier."
+        "Backdoor: 2 AP: take control of one electronic device within 5 tiles (door, camera, turret) for a round, on an Acuity check against its tier."
       ],
       "downsides": [
         "Jacked In: your implant makes EMP and lightning stun you for 1 turn, and machines spot you more easily: +2 to their Detection against you."
       ],
       "notes": [],
       "narrator_hook": "the facility where everything is networked, including the guards.",
-      "text": "You started out cracking bank cards in Central City. You graduated to doors, cameras and turrets.\n+ Backdoor: 2 AP: take control of one electronic device within 5 tiles (door, camera, turret) for a round, on a Proficiency check against its tier.\n− Jacked In: your implant makes EMP and lightning stun you for 1 turn, and machines spot you more easily: +2 to their Detection against you.",
+      "text": "You started out cracking bank cards in Central City. You graduated to doors, cameras and turrets.\n+ Backdoor: 2 AP: take control of one electronic device within 5 tiles (door, camera, turret) for a round, on an Acuity check against its tier.\n− Jacked In: your implant makes EMP and lightning stun you for 1 turn, and machines spot you more easily: +2 to their Detection against you.",
       "effects": [
         {
           "op": "grant_action",
@@ -3370,7 +3370,7 @@
         },
         {
           "op": "narrator",
-          "note": "Backdoor: Proficiency check vs device tier; control one electronic device within 5 tiles for a round"
+          "note": "Backdoor: Acuity check vs device tier; control one electronic device within 5 tiles for a round"
         },
         {
           "op": "condition",
@@ -3404,11 +3404,11 @@
         "Shaped Charge: set an explosive as a 2 AP action and choose the blast's shape: line, cone or circle. +30% explosive damage."
       ],
       "downsides": [
-        "Ringing Ears: −2 Vigilant, and any check that depends on hearing fails."
+        "Ringing Ears: −2 Vigilance, and any check that depends on hearing fails."
       ],
       "notes": [],
       "narrator_hook": "the whisper, the footstep, the ticking you didn't hear.",
-      "text": "Every problem is a load-bearing wall.\n+ Shaped Charge: set an explosive as a 2 AP action and choose the blast's shape: line, cone or circle. +30% explosive damage.\n− Ringing Ears: −2 Vigilant, and any check that depends on hearing fails.",
+      "text": "Every problem is a load-bearing wall.\n+ Shaped Charge: set an explosive as a 2 AP action and choose the blast's shape: line, cone or circle. +30% explosive damage.\n− Ringing Ears: −2 Vigilance, and any check that depends on hearing fails.",
       "effects": [
         {
           "op": "action_cost",
@@ -3450,14 +3450,14 @@
       "cost": null,
       "flavour": "It's small, it's loud, and it's the only one in the squad that never complains.",
       "upsides": [
-        "Little Friend: start with a drone: 30 HP, 3 AP of its own, scouts or carries 5 kg. Proficiency repairs it."
+        "Little Friend: start with a drone: 30 HP, 3 AP of its own, scouts or carries 5 kg. Improvisation repairs it."
       ],
       "downsides": [
         "Tethered: if the drone is destroyed, you take a Heart Debuff until you rebuild it, which takes a rest and materials."
       ],
       "notes": [],
       "narrator_hook": "EMP fields, jammers, and the enemy who shoots the drone first.",
-      "text": "It's small, it's loud, and it's the only one in the squad that never complains.\n+ Little Friend: start with a drone: 30 HP, 3 AP of its own, scouts or carries 5 kg. Proficiency repairs it.\n− Tethered: if the drone is destroyed, you take a Heart Debuff until you rebuild it, which takes a rest and materials.",
+      "text": "It's small, it's loud, and it's the only one in the squad that never complains.\n+ Little Friend: start with a drone: 30 HP, 3 AP of its own, scouts or carries 5 kg. Improvisation repairs it.\n− Tethered: if the drone is destroyed, you take a Heart Debuff until you rebuild it, which takes a rest and materials.",
       "effects": [
         {
           "op": "companion",
@@ -3468,7 +3468,7 @@
         },
         {
           "op": "narrator",
-          "note": "drone scouts or carries 5 kg; Proficiency repairs it"
+          "note": "drone scouts or carries 5 kg; Improvisation repairs it"
         },
         {
           "op": "condition",
@@ -3497,11 +3497,11 @@
         "Chrome: pick one augment at creation. Arm: +20% Physical Damage. Eye: +2 Vision Range and sight in darkness. Legs: +1 Movement and jumps of up to 2 tiles."
       ],
       "downsides": [
-        "Maintenance: after each rest, make a Proficiency check; on a fail, the augment doesn't work the next day. EMP disables it for 2 turns."
+        "Maintenance: after each rest, make an Improvisation check; on a fail, the augment doesn't work the next day. EMP disables it for 2 turns."
       ],
       "notes": [],
       "narrator_hook": "the long mission far from a workshop.",
-      "text": "Part of you came out of a catalogue.\n+ Chrome: pick one augment at creation. Arm: +20% Physical Damage. Eye: +2 Vision Range and sight in darkness. Legs: +1 Movement and jumps of up to 2 tiles.\n− Maintenance: after each rest, make a Proficiency check; on a fail, the augment doesn't work the next day. EMP disables it for 2 turns.",
+      "text": "Part of you came out of a catalogue.\n+ Chrome: pick one augment at creation. Arm: +20% Physical Damage. Eye: +2 Vision Range and sight in darkness. Legs: +1 Movement and jumps of up to 2 tiles.\n− Maintenance: after each rest, make an Improvisation check; on a fail, the augment doesn't work the next day. EMP disables it for 2 turns.",
       "effects": [
         {
           "op": "choose",
@@ -3772,14 +3772,14 @@
       "cost": null,
       "flavour": "You were already old when Daggerfall happened.",
       "upsides": [
-        "Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Analysis check succeeds automatically."
+        "Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Acuity check succeeds automatically."
       ],
       "downsides": [
         "Old Bones: −0.5 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day."
       ],
       "notes": [],
       "narrator_hook": "the forced march.",
-      "text": "You were already old when Daggerfall happened.\n+ Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Analysis check succeeds automatically.\n− Old Bones: −0.5 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day.",
+      "text": "You were already old when Daggerfall happened.\n+ Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Acuity check succeeds automatically.\n− Old Bones: −0.5 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day.",
       "effects": [
         {
           "op": "resource",

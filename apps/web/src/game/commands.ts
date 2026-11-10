@@ -14,6 +14,7 @@ import { classIconUri, classCore, CORE_INK } from './classIcons';
 import { heldClassId, currentClassId } from './classView';
 import { pilesIn } from './worldView';
 import { weaponBlocks, blockItems, techAction, TWATCH, legacyAttack } from './techView';
+import { callItems } from './callView';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
@@ -21,7 +22,7 @@ export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal
 export type ActionItem = [string, string, string, string, (string | null)?];
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
-export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith' };
+export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
 
 // ---------- prayers (Blessing 2.0, rules 1.6; the engine's faithView and previewPrayer) ----------
 /** A prayer's id in the action list: "pr:<kind>:<id>" (a Hymn's id is its "<patron>.<hymn>" key). */
@@ -231,6 +232,9 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   // Faith (rules 1.6): Whispers, Hymns and the Miracle, in Virtue ink.
   const pray = prayerItems(opts.g, cur);
   if (pray.length) ITEMS.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
+  // Calls (the nine talking skills' actions in a fight): one row per Call the unit has a point for; no tab without one.
+  const cl = callItems(opts.g, cb, cur);
+  if (cl.length) ITEMS.push(['CALLS · SPOKEN TO ONE WHO CAN HEAR YOU', cl as ActionItem[], null, 'calls']);
   // A unit with a fixed action list (the drone: move and a plain shot; spec 14 item 370) shows only those.
   const allowed: string[] | undefined = cur && cur.allowedActions;
   const LIST = allowed ? ITEMS.map(([n, items, ink, tab]) => [n, items.filter((it) => allowed.includes(it[0])), ink, tab] as ActionGroup).filter((gr) => gr[1].length) : ITEMS;

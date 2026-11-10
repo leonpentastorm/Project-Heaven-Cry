@@ -115,9 +115,9 @@ describe('Never There against a real Overwatch shot (item 29)', () => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('Overhaul on the area map; the Field Repair text (item 30)', () => {
-  it('the data says what the spec says: 10% + 5% per Proficiency point above 3 of Durability, no HP per point', () => {
+  it('the data says what the spec says: 10% + 5% per Improvisation point above 3 of Durability, no HP per point', () => {
     const t = (SKILL as any).proficiency.unlocks['3'].text as string;
-    expect(t).toMatch(/10% \+ 5% per Proficiency point above 3/); expect(t).not.toMatch(/HP per point/);
+    expect(t).toMatch(/10% \+ 5% per Improvisation point above 3/); expect(t).not.toMatch(/HP per point/);
   });
   it('world/act repair: 1 AP and twice the durability; without Overhaul 2 AP and the plain amount', () => {
     const run = (perk: boolean) => {
@@ -306,7 +306,7 @@ describe('Ghost Soldier: the settlement rest and the prosthetic arm (item 38)', 
     expect(briefOf(h)).toMatch(/arm mods: .*Scope/);
     const low = storyWith([{ traits: ['ghost_soldier'], skills: { proficiency: 2 } }]); const lc = low.g.characters[low.chars[0].id];
     lc.pack = [...(lc.pack || []), { id: 'prosthetic_arm', item: 'prosthetic_arm', name: 'Prosthetic arm', qty: 1, kind: 'tool' } as any, { id: 'mod_scope', item: 'mod_scope', name: 'Scope', qty: 1, kind: 'tool' } as any];
-    expect(() => low.act({ type: 'story/perk', charId: lc.id, id: 'ghost_soldier', actionId: 'fit_arm', choice: 'mod_scope' } as any)).toThrow(/Proficiency 3/);
+    expect(() => low.act({ type: 'story/perk', charId: lc.id, id: 'ghost_soldier', actionId: 'fit_arm', choice: 'mod_scope' } as any)).toThrow(/Improvisation 3/);
   });
 });
 

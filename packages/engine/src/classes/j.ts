@@ -180,7 +180,7 @@ register({
     run: (h, _a, rng) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h);
       say(cb, u.name + ' digs in and emplaces the ' + W(u).name + applyCond(cb, rng, u, u, 'emplaced', undefined, undefined, { skipSave: true }) + ' · +5 armour.');
-      u.braced = true; if (!st.armour) { st.armour = 5; u.armour += 5; }
+      u.braced = true; delete u.guardBrace; if (!st.armour) { st.armour = 5; u.armour += 5; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       return null;
     },
@@ -209,7 +209,7 @@ function suppressShot(h: Holder, t: Unit, why: string, rng: Rng) {
   z.struck.push(t.id);
   say(cb, u.name + '\'s suppressing fire catches ' + t.name + ' ' + why + '.');
   const r = quiet(u, () => resolveAttack(cb, rng, u, t, 'shot', null, { noAp: true, noWear: true }));
-  if (r.hit && alive(t)) say(cb, t.name + applyCond(cb, rng, u, t, 'pinned') + '.');
+  if (r.hit && alive(t)) say(cb, t.name + applyCond(cb, rng, u, t, 'pinned', undefined, undefined, { via: 'dexterity' }) + '.');
   checkOver(cb);
 }
 register({
@@ -291,12 +291,12 @@ register({
         say(cb, u.name + ' adds ' + t.name + ' to the case file' + markTarget(h, t, rng) + '.'); return null;
       } },
     { id: 'case_file_story', label: 'Open a case file', scope: ['story'], ap: 0, target: 'npc', uses: { per: 'per_scene', n: 1 },
-      text: 'Name an NPC and study them. Pass an Analysis check in this scene and they start your next fight with them Marked.',
+      text: 'Name an NPC and study them. Pass an Acuity check in this scene and they start your next fight with them Marked.',
       run: (h, a) => {
         const who = String(a.npc || a.text || '').trim(); if (!who) return 'Name who you\'re studying.';
         const st = charState(h.c)[h.key] ||= {}; st.pending = { npc: who.slice(0, 60), scene: h.g?.story?.scene?.n ?? 0 };
         const eid = postStory(h, 'opens a case file on ' + who + '.');
-        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Case File on ' + who + ': call an Analysis check if they can be studied here; a success files them (Marked when a fight with them starts).', eid || undefined);
+        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Case File on ' + who + ': call an Acuity check if they can be studied here; a success files them (Marked when a fight with them starts).', eid || undefined);
         return null;
       } },
   ],
@@ -312,7 +312,7 @@ register({
       for (const t of ctx.cb.units as Unit[]) if (t.side === 'foe' && files.some((f) => f.toLowerCase() === t.name.toLowerCase())) say(ctx.cb, 'Case File: ' + t.name + ' is a known face' + markTarget(h, t, rngOf(h, ctx)) + '.');
     },
   },
-  brief: () => 'story case files: you call the Analysis check; a pass files the NPC (Marked in the next fight)',
+  brief: () => 'story case files: you call the Acuity check; a pass files the NPC (Marked in the next fight)',
 });
 
 // ---------- Weak Point (class) ----------
@@ -864,14 +864,14 @@ register({
 // its type (FIRE 15, SHOCK 15, FREEZE 12, SPARK 7, ACID 7 Elemental; STONE 17, GALE 7 Sigil) and its listed rider
 // (FREEZE: Slowed, Body save; ACID: Corroded, no save, a Body save ends it; FIRE's Burning needs a critical spell and
 // GALE's shove a spell, so neither rides a bullet: PROVISIONAL, lane classes-j); an Affliction applies its condition
-// with its own save (against 12 + your debuff strength; COMMAND's order is halt). The hit releases bots (+1 on the
+// with its own save (against 12 + your Brain Power strength; COMMAND's order is halt). The hit releases bots (+1 on the
 // meter). PROVISIONAL (audit 1). The pack shows them on the sheet as state.
 const inscribable = (w: string) => { const k = (SIGIL[w] as any)?.class; return k === 'subject_element' || k === 'subject_affliction'; };
 const insOf = (h: Holder) => cs(h.c)['class:spellslinger.inscribed_rounds'] as { word: string; n: number } | undefined;
 /** A word's condition rider on one creature (sigils.json applies): its save family, rounds, and COMMAND's halt. */
 function rider(cb: Combat, rng: Rng, u: Unit, t: Unit, word: string): string {
   const ap: any = (SIGIL[word] as any)?.applies; if (!ap?.condition || t.dead) return '';
-  return withElement(SIGIL[word].class === 'subject_element' ? word : null, () => applyCond(cb, rng as any, u, t, condKey(ap.condition), ap.rounds, (ap.save || undefined) as any, { skipSave: !ap.save, ...(word === 'command' ? { arg: 'halt' } : {}) } as any));
+  return withElement(SIGIL[word].class === 'subject_element' ? word : null, () => applyCond(cb, rng as any, u, t, condKey(ap.condition), ap.rounds, (ap.save || undefined) as any, { skipSave: !ap.save, via: 'brain_power', ...(word === 'command' ? { arg: 'halt' } : {}) } as any));
 }
 register({
   id: 'spellslinger.inscribed_rounds', claims: 'all',
@@ -1045,8 +1045,8 @@ register({
       const cb = h.cb!, rng = rngOf(h, ctx) as any, t = ctx.tgt, fireExtra = el === 'fire' && !ctx.crit ? 5 : 0;
       let line = 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + withElement(el, () => harm(cb, rng, u, t, (10 + fireExtra) * (u.mg!.elemMult || 1), 'elemental', DMG_T[el]));
       emitFx(cb, 'infusion', { unit: u.id, target: t.id, at: t.pos, element: el });
-      if (el === 'fire' && ctx.crit && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'burning', 1, undefined, { skipSave: true }));
-      if (el === 'freeze' && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'slowed', undefined, undefined));
+      if (el === 'fire' && ctx.crit && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'burning', 1, undefined, { skipSave: true, via: 'brain_power' }));
+      if (el === 'freeze' && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'slowed', undefined, undefined, { via: 'brain_power' }));
       if (el === 'shock') { const v = cb.units.find((x) => x !== t && x !== u && x.side !== u.side && alive(x) && adj(x.pos, t.pos)); if (v) { emitFx(cb, 'chain', { unit: u.id, from: t.pos, to: v.pos, target: v.id, element: 'shock' }); line += ' · it arcs to ' + v.name + withElement(el, () => harm(cb, rng, u, v, 5 * (u.mg!.elemMult || 1), 'elemental', DMG_T[el])); } }
       if (el === 'spark' && (t.dead || ctx.killed) && u.ap < 9) { u.ap = Math.min(9, u.ap + 1); line += ' · +1 AP (Spark)'; }
       say(cb, line + '.');
@@ -1123,7 +1123,7 @@ register({
     available: (h) => (!h.u || has(h.u, DEF_BRACE) ? false : true),
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h), n = Math.max(1, 1 + mod(h.c?.skills?.durability || 0)), got = resGain(u, 'guard', n);
-      u.braced = true; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
+      u.braced = true; delete u.guardBrace; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       say(cb, u.name + ' braces behind the plate: +' + got + ' Guard (' + resOf(u, 'guard') + '/5), +2 Defense' + bulwarkShield(h) + '.');
       return null;

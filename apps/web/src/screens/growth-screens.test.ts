@@ -131,8 +131,8 @@ describe('a sigil mark on the area map (rules 1.10, The Magic panel rule 4)', ()
     expect(r.objPanel.isMark).toBe(true);
     expect(r.objPanel.mark.kicker).toBe('SIGIL MARK · OLD · WORN · TN 16');
     expect(r.objPanel.mark.word).toMatch(/^An unread word/);
-    expect(r.objPanel.mark.rule).toMatch(/better of Analysis or Rumination, 2 AP/);
-    expect(r.objPanel.approaches[0].skills[0].name).toBe('Analysis or Rumination');
+    expect(r.objPanel.mark.rule).toMatch(/better of Acuity or Rumination, 2 AP/);
+    expect(r.objPanel.approaches[0].skills[0].name).toBe('Acuity or Rumination');
     expect(r.objPanel.approaches[0].success).toMatch(/copy the word for study/);
     expect(r.objPanel.mark.hasOutcome).toBe(false);
     (G.story.objects!.find((o) => o.kind === 'sigil_mark' && o.pos === k) as any).copiedBy = [c().id]; c().sigilGrowth.toStudy = ['ward'];

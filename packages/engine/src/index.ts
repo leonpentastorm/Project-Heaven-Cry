@@ -31,3 +31,9 @@ export { TECHNIQUES, TECHNIQUE, PHYS_RULES, PHYS_REV, weaponPhys, weaponProps, w
   drillOf, drillMark, drillMarks, picksOwed, pickable, drillMult, defaultTechniques, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, type CharPhys, type WeaponPhys } from './physical/data';
 export { pressureOf, pressureState, pressureCap, isPressed, isSuppressed, type PressState } from './physical/pressure';
 export type { TechSystem, TechGroup, TechLine, TechDef, TechArgs, TechPreview, PadEntry, PadGroup, HeldWatch, WatchSpec } from './physical/types';
+// Calls (rules 1.13, Skeleton 2.0): the nine gamma skills' speech actions. `calls` holds everything; the names the client uses are also top-level.
+export * as calls from './calls';
+export { call, previewCall, useCall, callPad, callLevel, callAp, callTn, callView, callHandler, aiCallScore } from './calls/core';
+export { CALLS, CALL, CALL_RULES, callOfSkill, callRangeAt, callStepAt, type CallRules } from './calls/data';
+export { aiCall } from './calls/ai';
+export type { CallDef, CallArgs, CallPreview, CallPadEntry, CallHandler, CallMarks, CallKind, CallAim, CallStep } from './calls/types';

@@ -6,12 +6,12 @@
 // Every item runs its tiers in combat and its story part (checks, story conditions, rest, session start) where it has
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags F…) and docs/design/perk-runtime.md.
-import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, has, armedOf, disarm, modOn, charOfUnit, bindGame, restN, type Holder } from '../effects';
+import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, has, armedOf, disarm, modOn, charOfUnit, bindGame, restN, grantShield, type Holder } from '../effects';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
 import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
-import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitDebuff } from '../magic';
+import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength } from '../magic';
 import { d20 } from '../rng';
 import { tendHook } from '../effects/damage';
 import { WEAPON } from '../data';
@@ -68,7 +68,7 @@ function carryStoryCond(h: Holder, ctx: any, id: string) {
 // answer, and reports a refusal through conditions [{target, id:'shaken'}]. An NPC that is Shaken this scene gives
 // every character +2 on social checks against it (the NPC's −2; the TN ladder is fixed), and starts a fight in the
 // same scene Shaken.
-// Combat (PROVISIONAL): 2 AP, an enemy within hearing (8 tiles) who can see you: a Heart save (12 + your Heart debuff
+// Combat (PROVISIONAL): 2 AP, an enemy within hearing (8 tiles) who can see you: a Heart save (12 + your Intimidation
 // strength) or Shaken; Tier II: every enemy within hearing who sees you rolls. What it answers goes to the Narrator.
 const shakenNpc = (g: any, ref: any) => !!ref && (npcConds(g, ref).includes('shaken') || npcConds(g, String(ref).toLowerCase()).includes('shaken'));
 register({
@@ -80,14 +80,14 @@ register({
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
         if (!unitSees(h.cb!, t, h.u.pos)) return { ok: false, why: t.name + ' has to see you.' };
-        const tn = 12 + unitDebuff(h.u, 'heart');
+        const tn = 12 + unitStrength(h.u, 'intimidation');
         return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '; the whole group in earshot rolls.' : '.')] };
       },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
         const group = tierII(h) ? cb.units.filter((v) => v.side === t.side && up(v) && dist(v.pos, u.pos) <= HEARING && unitSees(cb, v, u.pos)) : [t];
         if (!group.includes(t)) group.unshift(t);
-        let out = ''; for (const v of group) out += applyCond(cb, rng, u, v, 'shaken', undefined, 'heart');
+        let out = ''; for (const v of group) out += applyCond(cb, rng, u, v, 'shaken', undefined, 'heart', { via: 'intimidation' });
         say(cb, u.name + ' leans in (Bone Talk' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + ')' + out + '.');
         note(h, u.name + ' threatened ' + (group.length > 1 ? 'the group led by ' : '') + t.name + (a.text ? ' ("' + a.text.slice(0, 120) + '")' : '') + ': voice what they blurt out, if anything, in the report.');
       },
@@ -105,7 +105,7 @@ register({
     combat_start: (ctx, h) => {
       const sc = h.g?.story?.scene?.npcConds; if (!sc || !h.cb) return;
       for (const v of h.cb.units) if (v.side !== h.u?.side && !condOn(v, 'shaken') && (shakenNpc(h.g, v.npcId) || shakenNpc(h.g, v.name)))
-        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx) || { state: 1 }, h.u || null, v, 'shaken', 99, 'heart', { skipSave: true }) + '.');
+        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx) || { state: 1 }, h.u || null, v, 'shaken', 99, 'heart', { skipSave: true, via: 'intimidation' }) + '.');
     },
   },
   brief: (h) => 'Narrator: does the threat name a real detail; the true answer, or Shaken (conditions)' + (tierII(h) ? '; the group leader answers' : ''),
@@ -114,22 +114,21 @@ register({
 // ---------- The Name They Whisper (Intimidation Mastered) ----------
 // When a fight starts, every enemy not marked unaware saves (Heart) or is Afraid of you for 2 rounds. An enemy at half
 // HP or less that can see you, at the end of its own turn, makes a Heart save or surrenders: once per enemy a fight,
-// only while you're up, never a Boss (plan 6, The Name They Whisper: GAMEBREAKING fix; PROVISIONAL). The TN uses the
-// better of your Intimidation and Implication modifiers (plan 6; PROVISIONAL).
-const nameTnAdd = (h: Holder) => (h.u && h.c ? Math.max(0, mod(h.c.skills.intimidation || 0) - unitDebuff(h.u, 'heart')) : 0);
+// only while you're up, never a Boss (plan 6, The Name They Whisper: GAMEBREAKING fix; PROVISIONAL). The TN is 12 +
+// your Intimidation strength (rules 1.13: a perk that speaks reads the gamma it belongs to).
 register({
   id: 'the_name_they_whisper', claims: 'all', narrator: (e: any) => e?.op === 'narrator',
   on: {
     combat_start: (ctx, h) => {
       const cb = h.cb!, u = h.u; if (!up(u) || !oncePerFight(h, 'started')) return;
-      const rng = rngOf(h, ctx) || { state: 1 }, add = nameTnAdd(h); let out = '';
-      for (const v of cb.units) if (v.side !== u.side && up(v) && !(v.tags || []).includes('unaware')) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { tnAdd: add });
+      const rng = rngOf(h, ctx) || { state: 1 }; let out = '';
+      for (const v of cb.units) if (v.side !== u.side && up(v) && !(v.tags || []).includes('unaware')) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { via: 'intimidation' });
       if (out) say(cb, 'They know the name ' + u.name + ' (The Name They Whisper)' + out + '.');
     },
     turn_end: (ctx, h) => {
       const cb = h.cb!, u = h.u, t: Unit = ctx.u;
       if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos)) return;
-      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, ctx.rng || rngOf(h) || { state: 1 }, u, t, nameTnAdd(h)) + '.');
+      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, ctx.rng || rngOf(h) || { state: 1 }, u, t, 0, 'intimidation') + '.');
     },
   },
   brief: () => 'Narrator: NPCs who know the name react; mark strangers unaware when a fight starts',
@@ -137,14 +136,14 @@ register({
 
 // ---------- Open Hand (Empathy Mastered) ----------
 // When an enemy you can see drops to a quarter of its HP or less (from above, still standing), mercy is offered as a
-// free action: it makes a Heart save (12 + your Heart debuff strength) or surrenders for the rest of the fight. One
+// free action: it makes a Heart save (12 + your Empathy strength, rules 1.13) or surrenders for the rest of the fight. One
 // offer per enemy, its own (not the general surrender save; PROVISIONAL). Bosses, machines and no_surrender foes never
 // take it. The setting (always / ask / never) is yours: 'ask' leaves the free Offer mercy action for your turn.
 function mercyOk(t: Unit) { const was = t.surrenderTried; t.surrenderTried = false; const ok = canSurrender(t); t.surrenderTried = was; return ok; }
 const offered = (h: Holder): string[] => (stateOf(h).offered ||= []);
 function offerMercy(h: Holder, t: Unit, rng: Rng): string {
   offered(h).push(t.id);
-  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitDebuff(h.u!, 'heart'), held = r === 20 || (r !== 1 && r + m >= tn);
+  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitStrength(h.u!, 'empathy'), held = r === 20 || (r !== 1 && r + m >= tn);
   const roll = ' (Heart save d20 ' + r + ' ' + sgn(m) + ' vs ' + tn + ')';
   return held ? ' · ' + t.name + ' won\'t take it' + roll : surrender(h.cb!, t, h.u!, 'mercy accepted' + roll);
 }
@@ -170,7 +169,7 @@ register({
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
         if (!unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' };
-        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitDebuff(h.u, 'heart')) + ' or it surrenders.'] };
+        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'empathy')) + ' or it surrenders.'] };
       },
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
     },
@@ -188,35 +187,45 @@ register({
 });
 
 // ---------- Clean Hands (Conscience β) ----------
-// +2 AP (II: +3) on your next turn after you spare an enemy or protect an innocent, once a turn. Spare: the Spare toggle
-// on an attack makes a blow that takes a foe's last HP subdue it instead (no kill credit); any surrender you cause
-// (talked down, mercy, the Name) counts. Protect: healing or shielding a civilian or neutral. The choice is made before
-// the roll and spared foes give no kill credit (plan 6, Clean Hands 2; PROVISIONAL). Out of combat the Narrator rules
-// spared or protected moments.
-function cleanAp(h: Holder, why: string) {
-  if (overworld(h.cb) || (!h.u && h.c)) { // the area map and the story: +2 (II +3) AP on the next overworld round, once a round
-    const g = h.g, st = stateOf(h); if (!g?.story || st.owRound === g.story.round) return;
-    st.owRound = g.story.round; st.owAp = tierII(h) ? 3 : 2; postStory(h, 'Clean Hands (' + why + '): +' + st.owAp + ' AP next round.', { kind: 'system' }); return;
+// Rules 1.13 (a beta gives no AP): after you spare an enemy or protect an innocent you gain a shield worth 15% of your
+// max HP (II: 25%), once a turn; shields received apply, and shields don't stack (the larger stands). Spare: the Spare
+// toggle on an attack makes a blow that takes a foe's last HP subdue it instead (no kill credit); any surrender you
+// cause (talked down, mercy, the Name) counts. Protect: healing or shielding a civilian or neutral. Out of combat the
+// Narrator rules spared or protected moments: an accepted claim is a shield waiting when the next fight starts.
+// PROVISIONAL (spec 14).
+const CLEAN = { I: 15, II: 25 };
+const cleanPct = (h: Holder) => (tierII(h) ? CLEAN.II : CLEAN.I);
+function cleanShield(h: Holder, why: string) {
+  if (overworld(h.cb) || (!h.u && h.c)) { // the area map and the story: the shield waits for the next fight
+    const st = stateOf(h); if (st.owed) return;
+    st.owed = true; postStory(h, 'Clean Hands (' + why + '): a shield of ' + cleanPct(h) + '% of max HP when the next fight starts.', { kind: 'system' }); return;
   }
-  if (!h.u || !uses(h).take('per_turn', 1, h.key + '#ap')) return;
-  bankAp(h.u, tierII(h) ? 3 : 2, 'Clean Hands: ' + why, h.cb);
+  if (!h.u || !uses(h).take('per_turn', 1, h.key + '#shield')) return;
+  const n = grantShield(h.cb || null, h.u, Math.floor(h.u.maxHp * cleanPct(h) / 100), h.u);
+  say(h.cb, h.u.name + ' keeps clean hands (' + why + '): a shield of ' + n + '.');
 }
 const innocent = (t: Unit) => (t.tags || []).includes('civilian') || (t.side as string) === 'neutral';
 register({
   id: 'clean_hands', claims: 'all',
-  toggles: [{ id: 'spare', label: 'Spare', on: ['combat/attack'], preview: (h) => 'A blow that takes their last HP subdues them; +' + (tierII(h) ? 3 : 2) + ' AP next turn' }],
+  toggles: [{ id: 'spare', label: 'Spare', on: ['combat/attack'], preview: (h) => 'A blow that takes their last HP subdues them; you gain a shield of ' + cleanPct(h) + '% of your max HP' }],
   on: {
     damage_in: (ctx, h) => { if (ctx.phase === 'would_drop_to_0' && ctx.src?.by === h.u && ctx.t.side !== h.u!.side && modOn(h, 'spare')) ctx.src.nonlethal = true; },
-    on_surrender: (ctx, h) => { if (ctx.by === h.u || (ctx.by == null && ctx.t?.lastHitBy === h.u?.id)) cleanAp(h, 'spared ' + ctx.t.name); },
-    heal_given: (ctx, h) => { if (ctx.by === h.u && ctx.n > 0 && innocent(ctx.t)) cleanAp(h, 'protected ' + ctx.t.name); },
-    shield_grant: (ctx, h) => { if (ctx.by === h.u && ctx.n > 0 && innocent(ctx.t)) cleanAp(h, 'protected ' + ctx.t.name); },
-    ruling_answered: (ctx, h) => { if (ctx.c === h.c && ctx.accepted && /^Clean Hands:/.test(ctx.r.text)) cleanAp(h, 'the Narrator agrees'); },
-    round_ap: (ctx, h) => { if (ctx.c !== h.c) return; const st = stateOf(h); if (st.owAp) { ctx.ap += st.owAp; ctx.lines.push('Clean Hands'); st.owAp = 0; } },
+    on_surrender: (ctx, h) => { if (ctx.by === h.u || (ctx.by == null && ctx.t?.lastHitBy === h.u?.id)) cleanShield(h, 'spared ' + ctx.t.name); },
+    heal_given: (ctx, h) => { if (ctx.by === h.u && ctx.n > 0 && innocent(ctx.t)) cleanShield(h, 'protected ' + ctx.t.name); },
+    shield_grant: (ctx, h) => { if (ctx.by === h.u && ctx.n > 0 && ctx.t !== h.u && innocent(ctx.t)) cleanShield(h, 'protected ' + ctx.t.name); },
+    ruling_answered: (ctx, h) => { if (ctx.c === h.c && ctx.accepted && /^Clean Hands:/.test(ctx.r.text)) cleanShield(h, 'the Narrator agrees'); },
+    // a claim accepted out of a fight: the shield is there when the next fight starts
+    combat_start: (ctx, h) => {
+      const cb: Combat = ctx.cb; if (!h.u || overworld(cb)) return;
+      const st = h.g?.story && h.c ? (((h.g.story.ps ||= {})[h.c.id] ||= {}).items ||= {})[h.key] : null; if (!st?.owed) return;
+      st.owed = false; const n = grantShield(cb, h.u, Math.floor(h.u.maxHp * cleanPct(h) / 100), h.u);
+      say(cb, h.u.name + ' walks in with clean hands: a shield of ' + n + '.');
+    },
   },
   actions: [{
     id: 'clean_story', label: 'I spared them', scope: ['story', 'world'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 2 },
-    text: 'Out of a fight: claim a moment you spared someone or protected an innocent. If the Narrator agrees, +' + 2 + ' AP (II +3) next overworld round.',
-    run: (h, a) => { const t = String(a.text || a.npc || 'someone').slice(0, 120), eid = postStory(h, 'spares or protects: ' + t + '.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Clean Hands: ' + h.c.name + ' spared or protected ' + t + '. Accept if it truly happened (+AP next round); refuse if not.', eid || undefined); return null; },
+    text: 'Out of a fight: claim a moment you spared someone or protected an innocent. If the Narrator agrees, you start the next fight with a shield (15% of your max HP; II: 25%).',
+    run: (h, a) => { const t = String(a.text || a.npc || 'someone').slice(0, 120), eid = postStory(h, 'spares or protects: ' + t + '.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Clean Hands: ' + h.c.name + ' spared or protected ' + t + '. Accept if it truly happened (a shield when the next fight starts); refuse if not.', eid || undefined); return null; },
   }],
   brief: () => 'out of a fight: accept or refuse their Clean Hands claims (spared/protected)',
 });
@@ -289,29 +298,30 @@ register({
   brief: (h) => { const tn = ro(h.c).true_name; return 'Narrator: confirm studied; the named one can\'t lie' + (tn && tn.scene === sceneN(h) ? ' (named: ' + String(tn.id).slice(0, 30) + ')' : ''); },
 });
 
-// ---------- Case Closed (Analysis Mastered) ----------
-// Analyze reveals everything at once (HP, Defense, armour, its kind and tags, its saves, conditions, a Weak Point) and
-// what it wants (the Narrator's, in the report). You and every ally attacking an enemy you analyzed get +2 to hit and
-// +20% damage (the target bucket). An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
-// Story: a successful Analysis check on an NPC owes the motive (a pending ruling).
+// ---------- Case Closed (Acuity Mastered; id analysis) ----------
+// Analyze reveals everything at once (HP, Defense, armour, its kind and tags, its saves, conditions; it is read, as
+// Read Them has it: −15% damage to your side) and what it wants (the Narrator's, in the report). Rules 1.13 (a beta is
+// defence): you and every ally have +2 Defense against an enemy you analyzed (its attacks on your side are at −2); the
+// +2 to hit and +20% damage are gone. An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
+// Story: a successful Acuity check on an NPC owes the motive (a pending ruling).
 const closed = (h: Holder): string[] => ((h.u?.ps?.[h.key] as any)?.closed || []);
 function closeCase(h: Holder, t: Unit) {
   const st = stateOf(h); (st.closed ||= []).includes(t.id) || st.closed.push(t.id);
   t.weakPoint = true;
   const conds = debuffsOf(t);
   say(h.cb, 'Case Closed on ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + ', ' + (t.kind || 'human') + ((t.tags || []).length ? ' (' + t.tags!.join(', ') + ')' : '') +
-    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · Weak Point · +2 to hit, +20% damage for the squad · motive: for the Narrator.');
+    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, and the squad has +2 Defense against it · motive: for the Narrator.');
   note(h, h.u!.name + ' read ' + t.name + ' completely: say what it wants, in the report.');
 }
 register({
   id: 'case_closed', claims: 'all',
   on: {
     analyze: (ctx, h) => { if (ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
-    attack_preview: (ctx, h) => { if (h.u && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id)) ctx.terms.push({ v: 2, label: 'Case Closed' }); },
-    damage_out: (ctx, h) => { if (h.u && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.vs.some((x: any) => x.label === 'Case Closed')) ctx.vs.push({ v: 0.2, label: 'Case Closed' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: -2, label: 'Case Closed' }); },
+    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.roll?.ok || !ctx.ck.skills?.includes('analysis') || !h.g || !h.c) return;
-      pendRuling(h.g, h.c, h.key, 'Case Closed: the Analysis check succeeded; tell ' + h.c.name + ' (a private perkLine) what ' + (ctx.ck.target || 'the subject') + ' wants most.');
+      pendRuling(h.g, h.c, h.key, 'Case Closed: the Acuity check succeeded; tell ' + h.c.name + ' (a private perkLine) what ' + (ctx.ck.target || 'the subject') + ' wants most.');
     },
   },
   actions: [{
@@ -327,11 +337,12 @@ register({
     },
     run: (h, a) => { closeCase(h, h.cb!.units.find((x) => x.id === a.targetId)!); },
   }],
-  brief: () => 'Narrator: the motive (in the fight report, or after a successful Analysis check)',
+  brief: () => 'Narrator: the motive (in the fight report, or after a successful Acuity check)',
 });
 
 // ---------- Still Water (Composure Mastered) ----------
-// Immune to the Brain family (the generic immunity handles it: Left and Right Brain Debuff, Confused, Silenced). Nothing
+// Composure is a beta again (rules 1.13), so the original stands: immune to the Brain family (the generic immunity
+// handles it: Left and Right Brain Debuff, Confused, Silenced). Nothing
 // reads you: enemy AI picks targets as if you were at full HP, and hostile reads (Analyze, Empathy, lie-reading by
 // NPCs) reveal nothing; allies' reads still work (plan 6, Still Water 3; PROVISIONAL).
 function aiPick(cb: Combat, att: Unit, mode: AttackMode): Unit | null {
@@ -560,8 +571,8 @@ register({
 
 // ---------- Trench Poet ----------
 // Verse, once per scene (a fight is the scene): answer in metaphor at one listener within hearing (8 tiles, no sight).
-// The spec's debuff rule instead of an opposed roll NPCs can't make: the listener's Heart save against 12 + your Heart
-// debuff strength (Implication), Confused on a fail (Confused is Brain in the spec; landed through the Heart save here
+// The spec's debuff rule instead of an opposed roll NPCs can't make: the listener's Heart save against 12 + your
+// Insinuation strength (id implication), Confused on a fail (Confused is Brain in the spec; landed through the Heart save here
 // as the trait says; plan 6, Trench Poet 2; PROVISIONAL). 1 AP in a fight (PROVISIONAL). Allies who hear you get +1
 // Composure for the scene (Heart saves in a fight). Nothing Straight: the Narrator calls the Eloquence check.
 const verse = (h: Holder) => { const v = ro(h.c).verse; return v && v.scene === sceneN(h) ? (v.allies as string[]) : []; };
@@ -571,12 +582,12 @@ register({
     {
       id: 'verse', label: 'Verse', scope: ['combat'], target: 'enemy', ap: 1, range: HEARING, uses: { per: 'per_scene', n: 1 },
       text: 'Answer in metaphor: the listener saves (Heart) or is Confused; allies in earshot get +1 Composure this scene.',
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitDebuff(h.u, 'heart')) + ' or Confused.'] }; },
+      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'implication')) + ' or Confused.'] }; },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
         const allies = cb.units.filter((v) => v.side === u.side && v !== u && !v.dead && v.charId && dist(v.pos, u.pos) <= HEARING).map((v) => v.charId!);
         cst(h.c).verse = { scene: sceneN(h), allies };
-        say(cb, u.name + ' answers in verse' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + applyCond(cb, rng, u, t, 'confused', undefined, 'heart') + (allies.length ? ' · allies +1 Composure this scene' : '') + '.');
+        say(cb, u.name + ' answers in verse' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + applyCond(cb, rng, u, t, 'confused', undefined, 'heart', { via: 'implication' }) + (allies.length ? ' · allies +1 Composure this scene' : '') + '.');
       },
     },
     {
@@ -841,7 +852,7 @@ register({
   actions: [
     {
       id: 'repair_drone', label: 'Repair drone', scope: ['combat'], target: 'ally', ap: 2, range: 1,
-      text: 'Adjacent: one spare-parts charge, 10 HP × your Proficiency Mastery level.',
+      text: 'Adjacent: one spare-parts charge, 10 HP × your Improvisation Mastery level.',
       available: (h) => (inFight(h) && h.cb!.units.some((v) => myComp(h, v, 'drone') && !v.dead) ? true : false),
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t) return {};
@@ -907,7 +918,7 @@ register({
       // Every bite carries the grapple (PROVISIONAL, spec 14): the beast's turns have no attack-mod chip to pick (its
       // instinct bite runs inside the owner's end-turn; the client has no companion orders), so a toggle never reached it.
       if (ctx.tgt.side === ctx.att.side || condOn(ctx.tgt, 'grappled')) return;
-      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, ctx.rng || rngOf(h) || { state: 1 }, ctx.att, ctx.tgt, 'grappled', undefined, 'body') + '.');
+      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, ctx.rng || rngOf(h) || { state: 1 }, ctx.att, ctx.tgt, 'grappled', undefined, 'body', { via: 'empathy', str: unitStrength(h.u, 'empathy') }) + '.');
     },
     on_downed: (ctx, h) => { if (myComp(h, ctx.victim, 'beast') && ctx.victim.dead) lost(h, ctx, 'beast'); },
     combat_start: (ctx, h) => carryStoryCond(h, ctx, 'shaken'),

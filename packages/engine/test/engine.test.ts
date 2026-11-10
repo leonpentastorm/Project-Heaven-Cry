@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   PORTRAIT_MAX, SHEET_REV,
-  ARCHETYPES, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
+  ARCHETYPES, FOG_CORE, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   standable, loadedOf, pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
 } from '../src';
 
@@ -19,7 +19,7 @@ describe('spec tables', () => {
   });
   it('HP and movement (Derived stats)', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    c.attrs.endurance = 3; c.skills.durability = 2; c.level = 3;
+    c.attrs.endurance = 3; c.skills.pain_threshold = 2; c.level = 3; // rules 1.13: HP a level reads Pain Threshold
     expect(maxHp(c)).toBe(100 + 15 * 2 + 2 * (5 + 4));
     c.attrs.agility = 3; c.armourClass = 0; expect(movement(c)).toBe(2);
     c.armourClass = 5; expect(movement(c)).toBe(1);
@@ -51,27 +51,17 @@ describe('creation', () => {
     expect(validateSheet({ ...sheetFrom(ARCHETYPES[0].id), skills: { durability: 3 } })).toMatch(/Spend all 10/);
     expect(deriveCreation({ durability: 8 }).ok).toBe(false);
   });
-  it('a Core point can\'t be traded for Attribute points (rules 1.11): 6/1/1 with 12 Attribute points is refused', () => {
-    const d = deriveCreation({ durability: 6 }, { endurance: 6, strength: 6, agility: 3 }, { body: 6 });
-    expect(d.attrSpent).toBe(12); expect(d.traded).toBe(0); expect(d.ok).toBe(false);
-    expect(deriveCreation({ durability: 6 }, { endurance: 6, strength: 6 }, { body: 7 }).ok).toBe(true); // 10 Attribute, 6 Core
+  it('rules 1.13: no Core points; 10 Attribute points, none above 7; a Core reads the highest attribute of its family', () => {
+    const d = deriveCreation({ durability: 6 }, { endurance: 6, strength: 6, agility: 3 });
+    expect(d.attrSpent).toBe(12); expect(d.ok).toBe(false);                                   // 12 Attribute points: over
+    const ok = deriveCreation({ durability: 6 }, { endurance: 6, strength: 6 });
+    expect(ok.ok).toBe(true); expect(ok.attrLeft).toBe(0); expect(ok.coreLeft).toBe(0); expect(ok.core).toEqual({ body: 6, mind: 1, soul: 1 });
+    expect(deriveCreation({}, { endurance: 8, strength: 4 }).ok).toBe(false);                 // 10 points, but an attribute above 7
   });
-  it('Mind Without Fog gives 1 more Core point at creation (rules 1.11; it was 2)', () => {
-    expect(deriveCreation({ durability: 8 }, {}, {}, 7).ok).toBe(true);  // 8/1/1 with the trait's point
-    const base = sheetFrom(ARCHETYPES.find((x) => x.family === 'all_in')!.id);
-    const fog = { ...base, traits: ['mind_without_fog'], cores: { ...base.cores, mind: 2 }, rulesRev: SHEET_REV };
-    expect(validateSheet(fog as any)).toBeNull();
-    expect(validateSheet({ ...fog, cores: { ...base.cores, mind: 3 } } as any)).toMatch(/break the tree or the budgets/);
-  });
-  it('a sheet locked in before 1.11 (no rulesRev) stays legal by the budgets of its day (item 931)', () => {
-    const base = sheetFrom(ARCHETYPES.find((x) => x.family === 'all_in')!.id);
-    const oldFog = { ...base, traits: ['mind_without_fog'], cores: { ...base.cores, mind: 3 } }; // 8 Core points
-    expect((oldFog as any).rulesRev).toBeUndefined(); expect(validateSheet(oldFog as any)).toBeNull();
-    const a0 = ARCHETYPES[0], s0 = sheetFrom(a0.id);
-    const traded = { ...s0, skills: { durability: 6, guts: 4 }, attrs: { endurance: 6, strength: 6, agility: 3 }, cores: { body: 6, mind: 1, soul: 1 } }; // 5 Core, 12 Attribute
-    expect(validateSheet(traded as any)).toBeNull();
-    expect(validateSheet({ ...traded, rulesRev: SHEET_REV } as any)).toMatch(/break the tree or the budgets|Place every/);
-    const c = newCharacter('x', 'p', oldFog as any); expect(c.cores.mind).toBe(3);
+  it('Mind Without Fog gives 2 more Attribute points at creation (rules 1.13; it was a Core point)', () => {
+    expect(deriveCreation({}, { endurance: 7, strength: 7 }).ok).toBe(false);                 // 12 points without the trait
+    expect(deriveCreation({}, { endurance: 7, strength: 7 }, {}, FOG_CORE).ok).toBe(true);
+    expect(FOG_CORE).toBe(2);
   });
   it('a 7/1/1 build is legal (no creation caps)', () => {
     const allIn = ARCHETYPES.find((x) => x.family === 'all_in')!;
@@ -188,8 +178,9 @@ describe('vision, stances and reactions', () => {
     expect(previewAttack(cb, u, e, 'shot').toHit).toBe(base - 2); expect(previewAttack(cb, u, e, 'melee').toHit).toBeGreaterThan(previewAttack({ ...cb } as any, u, { ...e, prone: false } as any, 'melee').toHit);
     e.prone = false; u.strength = 20; expect(shove(cb, { state: 3 }, u, e)).toBeNull(); expect(e.pos).toBe('3,5');
     u.ap = 9; expect(fireBurst(cb, { state: 9 }, u, e, c)).toBeNull(); expect(u.ap).toBe(6);
-    u.ap = 9; expect(brace(cb, u)).toMatch(/nothing to brace/); // weapon-granted (plan 2.9): only heavy weapons brace
-    const w0 = u.weapon; u.weapon = 'hellraiser_lmg'; expect(brace(cb, u)).toBeNull(); expect(u.braced).toBe(true); u.weapon = w0;
+    u.ap = 9; { const rm = u.resMax; delete u.resMax; expect(brace(cb, u)).toMatch(/nothing to brace/); if (rm) u.resMax = rm; } // weapon-granted (plan 2.9): only heavy weapons brace, for a unit with no Guard pool (rules 1.13: a pool braces with anything)
+    { const rm = u.resMax; delete u.resMax; // the weapon's own brace, without the pool's Guard
+    const w0 = u.weapon; u.weapon = 'hellraiser_lmg'; expect(brace(cb, u)).toBeNull(); expect(u.braced).toBe(true); u.weapon = w0; if (rm) u.resMax = rm; }
     expect(toggleProne(cb, u)).toBeNull(); expect(moveUnit(cb, u, '1,6')).toMatch(/Stand up/); toggleProne(cb, u);
     // overwatch: e moves in sight and takes the shot
     u.ap = 9; e.pos = '8,5'; expect(setOverwatch(cb, u, 'shot')).toBeNull(); e.ap = 9;

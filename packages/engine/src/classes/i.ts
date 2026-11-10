@@ -18,12 +18,12 @@ import {
   resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury,
 } from '../combat';
 import {
-  type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, debuffStrength,
+  type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
   classResources, migrateDesign,
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV } from '../data';
 import {
-  applyCond, endCond, condOn, condSource, unitSave, unitDebuff, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
+  applyCond, endCond, condOn, condSource, unitSave, unitStrength, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
   grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
   formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP, planStrike,
   type EvokePreview, type Spell,
@@ -360,7 +360,7 @@ register({
       available: (h) => (h.u ? true : false),
       run: (h) => {
         const u = h.u!, st = stateOf(h), c = h.c, n = Math.max(1, 1 + mod(c?.skills.durability || 0)), got = resGain(u, 'guard', n);
-        u.braced = true; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
+        u.braced = true; delete u.guardBrace; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
         emitFx(h.cb!, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
         say(h.cb, u.name + ' braces and holds the line: +' + got + ' Guard (' + resOf(u, 'guard') + '), +2 Defense until they move.');
         emit(h.cb!, 'braced', { u, cb: h.cb }); // 'braced' {u}: the Defender's Brace landed (Adamantile Knight's Bulwark of Will)
@@ -592,7 +592,7 @@ register({
 
 // ---------- Toxin (rank II, 1 AP) ----------
 // Spend 1 dose: your next hit with a blade, dart, thrown weapon or arrow (not bullets, PROVISIONAL) also inflicts
-// Weakened, Slowed or Bleeding (your choice; Body save against 12 + your Body debuff strength). The coat lasts until
+// Weakened, Slowed or Bleeding (your choice; Body save against 12 + your Ingenuity strength: poison, rules 1.13). The coat lasts until
 // that hit or the fight's end. Out of combat: coat before the fight (the first fight starts coated).
 const TOX = [['weakened', 'Weakened'], ['slowed', 'Slowed'], ['bleeding', 'Bleeding']] as const;
 const coatable = (u: Unit) => { const w = WEAPON[u.weapon]; return !!w && (isMelee(w) || /bow|thrown/.test(w.category)); };
@@ -616,8 +616,8 @@ register({
     on_hit: (ctx, h) => {
       const st = stateOf(h), u = h.u!; if (ctx.att !== u || !st.coat || !coatable(u) || ctx.tgt.dead) return;
       const id = st.coat; delete st.coat;
-      const r = d20(rngOf(h, ctx)), m = unitSave(ctx.tgt, 'body'), tn = 12 + unitDebuff(u, 'body'), ok = r === 20 || (r !== 1 && r + m >= tn);
-      say(h.cb, 'The toxin on ' + u.name + '\'s weapon: ' + ctx.tgt.name + ' Body save d20 ' + r + ' ' + fmt(m) + ' vs ' + tn + (ok ? ' · resists.' : (applyCond(h.cb!, rngOf(h, ctx), u, ctx.tgt, id, undefined, 'body', { skipSave: true }) || ' · takes hold') + '.'));
+      const r = d20(rngOf(h, ctx)), m = unitSave(ctx.tgt, 'body'), tn = 12 + unitStrength(u, 'ingenuity'), ok = r === 20 || (r !== 1 && r + m >= tn);
+      say(h.cb, 'The toxin on ' + u.name + '\'s weapon: ' + ctx.tgt.name + ' Body save d20 ' + r + ' ' + fmt(m) + ' vs ' + tn + (ok ? ' · resists.' : (applyCond(h.cb!, rngOf(h, ctx), u, ctx.tgt, id, undefined, 'body', { skipSave: true, via: 'ingenuity' }) || ' · takes hold') + '.'));
     },
   },
   brief: () => null,
@@ -996,7 +996,7 @@ register({
 // Scribe's live ones (the snapshot is kept for the story ruling). For now only the Scribe can trigger it: handing the
 // object to an ally needs a runtime hook (see the notes). A 1.2 stored spell keeps its words (its shape is ignored; RETURN
 // becomes SEEK); one that no longer makes a spell is dropped when triggered.
-interface Stored { id: string; words: string[]; shape?: string; stamp: string; nums: SigilNums; debuff: Record<'body' | 'brain' | 'heart', number> }
+interface Stored { id: string; words: string[]; shape?: string; stamp: string; nums: SigilNums; /** The Brain Power strength when it was stored (rules 1.13; older saves hold a per-family record). */ debuff: number | Record<string, number> }
 const storedCap = (c: Character) => Math.max(1, mod(c.skills.rumination || 0));
 const storedOf = (h: Holder): Stored[] => (keep(h).spells ||= []).filter((x: Stored) => x.stamp === restStamp(h));
 const STORE_REFUSED = ['stay', 'wait', 'watch'];
@@ -1036,7 +1036,7 @@ register({
         if (evoChargeNow(c) < cost) return 'Needs ' + cost + ' charge (' + evoChargeNow(c) + ' in the core).';
         c.evoCharge = evoChargeNow(c) - cost;
         const sp: Stored = { id: 's' + (++h.g.seq), words, stamp: restStamp(h), nums: { brain: mod(c.skills.brain_power || 0), sigilMult: sigilMult(c), elemMult: elementalMult(c), healMult: healingMult(c) },
-          debuff: { body: debuffStrength(c, 'body'), brain: debuffStrength(c, 'brain'), heart: debuffStrength(c, 'heart') } };
+          debuff: strengthOf(c, 'brain_power') };
         keep(h).spells = [...storedOf(h), sp];
         postStory(h, c.name + ' writes ' + words.map((w) => w.toUpperCase()).join(' · ') + ' onto an object: ' + cost + ' charge. ' + storedOf(h).length + '/' + storedCap(c) + ' stored.');
       },
@@ -1061,7 +1061,8 @@ register({
         const aim = tileOf(cb, args.tile) || undefined;
         const pv = withStored(cb, u, sw.words, () => previewEvoke(cb, u, u.pos, aim)); if (!pv.ok) return pv.why || 'Can\'t set it off there.';
         say(cb, u.name + ' triggers a stored spell (' + sw.words.map((w) => w.toUpperCase()).join(' · ') + ') from ' + refOf(u.pos) + '.');
-        const err = withStored(cb, u, sw.words, () => evoke(cb, rng as Rng, u, u.pos, aim)); if (err) { cb.log.pop(); return err; }
+        // its conditions read the Brain Power strength stored with it (rules 1.13)
+        const err = withVia(u, 'brain_power', () => withStored(cb, u, sw.words, () => evoke(cb, rng as Rng, u, u.pos, aim)), typeof sp.debuff === 'number' ? sp.debuff : undefined); if (err) { cb.log.pop(); return err; }
         keep(h).spells = list.slice(1); checkOver(cb); return null;
       },
     },
@@ -1073,7 +1074,7 @@ register({
         const list = storedOf(h), sp = list[0]!; keep(h).spells = list.slice(1);
         const eid = postStory(h, (h.c?.name || '') + ' sets off a stored ' + sp.words.map((w) => w.toUpperCase()).join(' · ') + '.');
         // "(stack)": a stored spell reads as a Stack does under 1.4, all around its tile (the 1.2 saves' word kept).
-        pendRuling(h.g, h.c!, h.key, 'Stored spell ' + sp.words.join('+') + ' (stack) set off out of combat: it goes off from the object with its own Reach, all around' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '') + '. Its numbers: Brain Power ' + fmt(sp.nums.brain) + ' to hit, Sigil ×' + sp.nums.sigilMult.toFixed(2) + ', debuff TN ' + (12 + sp.debuff.body) + '. Rule what it hits.', eid || undefined);
+        pendRuling(h.g, h.c!, h.key, 'Stored spell ' + sp.words.join('+') + ' (stack) set off out of combat: it goes off from the object with its own Reach, all around' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '') + '. Its numbers: Brain Power ' + fmt(sp.nums.brain) + ' to hit, Sigil ×' + sp.nums.sigilMult.toFixed(2) + ', debuff TN ' + (12 + (typeof sp.debuff === 'number' ? sp.debuff : sp.debuff?.body ?? 0)) + '. Rule what it hits.', eid || undefined);
       },
     },
   ],
@@ -1087,7 +1088,7 @@ register({
 // ======================================================================================================== TRICKSTER
 
 // ---------- Bind (rank I, passive) ----------
-// BIND costs 1 charge less (the data's word_cost, generic) and its Body save is against 14 + your debuff strength (the
+// BIND costs 1 charge less (the data's word_cost, generic) and its Body save is against 14 + your Brain Power strength (the
 // +2 follows whoever Evokes the pattern, PROVISIONAL). GAMEBREAKING (dead move): rank I also teaches BIND, outside the
 // words-known cap (PROVISIONAL; a data delta: unlock_word bind; until then the engine adds the word to the fighter).
 register({
@@ -1113,7 +1114,7 @@ register({
 
 // ---------- Rewrite (rank III, 3 AP, once a turn) ----------
 // Spend 3 charge (+1 Flux, PROVISIONAL): an enemy within 8 + your Sigil range bonus you can see (PROVISIONAL) makes a
-// Brain save (12 + your Brain debuff strength). On a failure one helpful state flips into its opposite until it would
+// Brain save (12 + your Brain Power strength). On a failure one helpful state flips into its opposite until it would
 // have ended: Braced → Prone; Guarded or Withdrawing (+2 Defense) → −2 Defense; Inspired (+2 to hit) → −2 to hit; a
 // shield → that much Sigil damage, at most 30 × your Sigil multiplier (GAMEBREAKING uncapped; PROVISIONAL), armour
 // applies; Hidden → revealed and Marked; Overwatch → the held shot and its reaction are lost; Emplaced → Prone. A state
@@ -1133,22 +1134,22 @@ register({
       available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 3) return 'Needs 3 charge.'; return true; },
       preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
         if (dist(u.pos, t.pos) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (!lineOfSight(cb, u.pos, t.pos)) return { ok: false, why: 'No line of sight.' };
-        const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (12 + unitDebuff(u, 'brain')) + ').' : t.name + ' shows no state the engine knows: the Narrator picks what flips.'] }; },
+        const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (12 + unitStrength(u, 'brain_power')) + ').' : t.name + ' shows no state the engine knows: the Narrator picks what flips.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, r0 = rng as Rng; u.mg!.charge -= 3; u.mg!.cast = true;
-        const r = d20(r0), m = unitSave(t, 'brain'), tn = 12 + unitDebuff(u, 'brain'), ok = r === 20 || (r !== 1 && r + m >= tn);
+        const r = d20(r0), m = unitSave(t, 'brain'), tn = 12 + unitStrength(u, 'brain_power'), ok = r === 20 || (r !== 1 && r + m >= tn);
         let line = u.name + ' rewrites ' + t.name + ' (Brain save d20 ' + r + ' ' + fmt(m) + ' vs ' + tn + ')';
         if (ok) { say(cb, line + ' · resists' + addFlux(cb, u, 1) + '.'); return; }
         const f = flippable(t)[0], st = stateOf(h);
         switch (f) {
           case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); useReaction(cb, t); line += ' · its held shot is gone'; break;
           case 'shield': { const n = Math.min(t.shield || 0, Math.floor(30 * (u.mg?.sigilMult || 1))); t.shield = 0; line += ' · the shield turns on it' + harm(cb, r0, u, t, n, 'sigil'); break; }
-          case 'braced': case 'emplaced': t.braced = false; endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true }); break;
+          case 'braced': case 'emplaced': t.braced = false; endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
           case 'guarded': case 'withdrawing': { const left = t.conds![f]; endCond(t, f, cb); t.def -= 2; (st.def ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its guard becomes an opening (−2 Defense, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
           case 'inspired': { const left = t.conds!.inspired; endCond(t, 'inspired', cb); (st.hit ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its nerve turns (−2 to hit, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
           case 'quickened': endCond(t, 'quickened', cb); t.dazedNext = 1; line += ' · its haste turns to a stagger (Dazed: −2 AP on its next turn)'; break;
           case 'sharpened': endCond(t, 'sharpened', cb); (st.blunt ||= []).push({ id: t.id, until: cb.round + 2 }); line += ' · its edge turns (−3 to hit and ×0.8 damage on its next attack)'; break;
-          case 'hidden': line += reveal(cb, t, 'rewritten') + applyCond(cb, r0, u, t, 'marked', undefined, undefined, { skipSave: true }); break;
+          case 'hidden': line += reveal(cb, t, 'rewritten') + applyCond(cb, r0, u, t, 'marked', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
           default: line += ' · no state the engine knows: the Narrator rules what flips'; note(h, t.name + ' failed the Rewrite save: pick the opposite of one of its exotic buffs, until it would have ended.');
         }
         say(cb, line + addFlux(cb, u, 1) + '.'); checkOver(cb);
@@ -1159,9 +1160,9 @@ register({
       text: 'Flip a blessing, ward or advantage someone relies on (pick who and what). The engine rolls their Brain save; the Narrator rules the flip.',
       available: (h) => (h.c && hasEvoker(h.c) ? (evoChargeNow(h.c) < 3 ? 'Needs 3 charge in the core.' : true) : 'Needs an Evoker in hand.'),
       run: (h, args) => {
-        const c = h.c!; c.evoCharge = evoChargeNow(c) - 3; const r = d20(h.g.rng), tn = 12 + debuffStrength(c, 'brain'), ok = r === 20 || (r !== 1 && r >= tn);
+        const c = h.c!; c.evoCharge = evoChargeNow(c) - 3; const r = d20(h.g.rng), tn = 12 + strengthOf(c, 'brain_power'), ok = r === 20 || (r !== 1 && r >= tn);
         const eid = postStory(h, c.name + ' rewrites: "' + String(args.text).slice(0, 160) + '"');
-        pendRuling(h.g, c, h.key, 'Rewrite on "' + String(args.text).slice(0, 120) + '": Brain save d20 ' + r + ' + their Charisma modifier vs ' + tn + ' (a plain d20 ' + (ok ? 'already holds' : 'fails without help') + '). On a failure one helpful state flips to its opposite until it ends: rule which.', eid || undefined);
+        pendRuling(h.g, c, h.key, 'Rewrite on "' + String(args.text).slice(0, 120) + '": Brain save d20 ' + r + ' + their Rumination modifier vs ' + tn + ' (a plain d20 ' + (ok ? 'already holds' : 'fails without help') + '). On a failure one helpful state flips to its opposite until it ends: rule which.', eid || undefined);
       },
     },
   ],
@@ -1534,7 +1535,7 @@ register({
 });
 
 // ---------- Puppet (rank III, once a scene) ----------
-// Soul cast AP, 60 MP, 1 extra Strain: a target in Soul reach you can see makes a Heart save (12 + your Heart debuff
+// Soul cast AP, 60 MP, 1 extra Strain: a target in Soul reach you can see makes a Heart save (12 + your Will Power debuff
 // strength; bosses roll twice and keep the better). The class text wins over conditions.json (Brain, a whole turn):
 // on a failure you choose its next ACTION (PROVISIONAL): one move, one attack (on anyone but itself, its allies
 // included) or one other action; then it acts as itself with what AP it has left. The engine refuses self-harm by
@@ -1547,12 +1548,12 @@ register({
     {
       id: 'puppet', label: 'Puppet', scope: ['combat'], target: 'enemy', ap: (h) => (h.u?.mg ? soulPrice(h, 'status', 60, 1).ap : 2), uses: { per: 'per_scene', n: 1 },
       available: (h) => { const e = soulReady(h); if (e) return e; const p = soulPrice(h, 'status', 60, 1); if (h.u!.mg!.emanator && h.u!.mg!.mp < p.mp) return 'Needs ' + p.mp + ' MP.'; return true; },
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'status', 60, 1), e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Puppet ' + t.name + ': Heart save vs ' + (12 + unitDebuff(h.u!, 'heart')) + (isBoss(t) ? ' (rolled twice)' : '') + '; ' + p.mp + ' MP.'] }; },
+      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'status', 60, 1), e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Puppet ' + t.name + ': Heart save vs ' + (12 + unitStrength(h.u!, 'will_power')) + (isBoss(t) ? ' (rolled twice)' : '') + '; ' + p.mp + ' MP.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, p = soulPrice(h, 'status', 60, 1), r0 = rng as Rng;
-        const tn = 12 + unitDebuff(u, 'heart'), m = unitSave(t, 'heart'), a = d20(r0), b = isBoss(t) ? d20(r0) : 0, r = Math.max(a, b), ok = r === 20 || (r !== 1 && r + m >= tn);
+        const tn = 12 + unitStrength(u, 'will_power'), m = unitSave(t, 'heart'), a = d20(r0), b = isBoss(t) ? d20(r0) : 0, r = Math.max(a, b), ok = r === 20 || (r !== 1 && r + m >= tn);
         let line = u.name + ' reaches for ' + t.name + '\'s strings (Heart save d20 ' + (b ? a + '/' + b : a) + ' ' + fmt(m) + ' vs ' + tn + ')';
-        line += ok ? ' · resists' : applyCond(cb, r0, u, t, 'puppeted', 1, 'heart', { skipSave: true }) + ': ' + u.name + ' chooses its next action';
+        line += ok ? ' · resists' : applyCond(cb, r0, u, t, 'puppeted', 1, 'heart', { skipSave: true, via: 'will_power' }) + ': ' + u.name + ' chooses its next action';
         say(cb, line + ' (' + p.mp + ' MP)' + soulPay(h, r0, p) + '.');
       },
     },
@@ -1561,7 +1562,7 @@ register({
       text: '60 MP: say who and what they do. The engine rolls their Heart save; the Narrator plays out the forced act.',
       available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => {
-        const c = h.c!; c.mp = mpNow(c) - 60; const r = d20(h.g.rng), tn = 12 + debuffStrength(c, 'heart');
+        const c = h.c!; c.mp = mpNow(c) - 60; const r = d20(h.g.rng), tn = 12 + strengthOf(c, 'will_power');
         const eid = postStory(h, c.name + ' reaches for someone\'s strings: "' + String(args.text).slice(0, 160) + '"');
         pendRuling(h.g, c, h.key, 'Puppet: "' + String(args.text).slice(0, 120) + '". Their Heart save: d20 ' + r + ' + their Composure modifier vs ' + tn + ' (a boss rolls again and keeps the better). On a failure they do the one thing asked, never harming themselves directly; rule it.', eid || undefined);
       },

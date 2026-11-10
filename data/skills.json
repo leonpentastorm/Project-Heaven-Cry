@@ -45,7 +45,7 @@
       "slot": "alpha",
       "summary": "The tank.",
       "per_point": {
-        "text": "+2 HP per level-up; −5% critical damage taken.",
+        "text": "Your Guard pool holds 1 more (5 at most). The Guard technique gives you more Guard: 1, plus 1 for every point here after the first (Brace gives a flat 2, whatever your points).",
         "effects": [
           {
             "op": "stat_mod",
@@ -182,7 +182,7 @@
           "Yeah, I take hits for a living. Men these days are weak one way or another, and I mostly make my money off the ones who are weak in the heart."
         ],
         "intro": "Durability is your metabolism and circulation; what commoners call \"being in good shape.\" Who cares if you can shoot fire from your palms when you can inhale the fireball they just threw and breathe it back in their faces?",
-        "effect": "more HP per level-up, Critical Damage reduction; gates endurance equipment.",
+        "effect": "Your Guard pool holds 1 more (5 at most). The Guard technique gives you more Guard: 1, plus 1 for every point here after the first (Brace gives a flat 2, whatever your points).",
         "high_levels": "you look like a pro wrestler and weaker folk start trembling. Not sure they'll dare talk to a walking marble statue, though.",
         "good_for": "gym rats, tomboys, brawlers who tank for the team.",
         "bad_for": "scholars, exam crammers, light-armour fans.",
@@ -198,7 +198,7 @@
       "slot": "beta",
       "summary": "Wounds don't slow you down.",
       "per_point": {
-        "text": "−10% elemental damage taken.",
+        "text": "−10% elemental damage taken. +2 HP every level.",
         "effects": [
           {
             "op": "stat_mod",
@@ -326,7 +326,7 @@
           "Want to test if your poison's strong enough? Coat a blade and go poke Knight Jiren in the arm. No, I'm serious. Once he sleepwalked into the snake pen, slept there all night and walked out with a dozen Crobar still hanging off his back. THEN HE WENT AND MADE BREAKFAST. Sometimes I wonder if anyone around here is still normal."
         ],
         "intro": "Pain Threshold is why you can take an arrow and still get up. Or change a lightbulb without flipping the breaker? Who knows. Just remember: not feeling pain doesn't mean you can't die. Don't get delusional.",
-        "effect": "Elemental Damage reduction; unlocks exploration options and Trio-Scale Equipment.",
+        "effect": "−10% elemental damage taken. +2 HP every level.",
         "high_levels": "the \"threshold\" part disappears and you go numb to anything that hurts. And again: A KNIFE YOU CAN'T FEEL CAN STILL STOP YOUR HEART.",
         "good_for": "bushido duellists the sneaky types keep poisoning, people who hate pain, the last survivor of a house fire, masochists.",
         "bad_for": "anyone who still likes their limbs and doesn't want to lose one because they \"forgot fire is hot.\"",
@@ -336,13 +336,13 @@
     },
     {
       "id": "sensory",
-      "name": "Sensory",
+      "name": "Senses",
       "attribute": "endurance",
       "core": "body",
       "slot": "gamma",
-      "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilant.",
+      "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilance.",
       "per_point": {
-        "text": "+10% healing and shields received.",
+        "text": "You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
@@ -475,7 +475,7 @@
           "She can feel it, trust me. Even a single sigh. Back when her eyes still worked and her legs hadn't given out, Grandma Marry was already the Grandma Marry she is now. What I always admired most was how she could read the temperature of the air with one finger raised to the sky. Or the way she sits in her deck chair, eyes closed, smelling the morning, with a smile on her lips. Sometimes she makes a twenty-year-old girl like me jealous."
         ],
         "intro": "Sensory is how sensitive your skin and senses are to the world: a cold breeze, a scent you can't name, a faint tremor underground. With high Sensory it feels like nature itself is shaking your hand.",
-        "effect": "Heal/Shield received bonus; unlocks sensation options in exploration and dialogue.",
+        "effect": "You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you become one with every movement around you, a little too well. If your ears are that sharp, stay away from concerts. Those speakers don't hit gently.",
         "good_for": "people who stroll for the breeze, travellers who go somewhere just to breathe it, scouts and rogues listening for footsteps.",
         "bad_for": "death metal fans, people who can't take the cold, elves of every kind.",
@@ -491,7 +491,7 @@
       "slot": "alpha",
       "summary": "Hit harder, bend further, lift higher.",
       "per_point": {
-        "text": "+5% physical damage; Counter bonus = your Raw Power modifier (minimum 0). Attack skill for heavy melee, unarmed and bows' damage.",
+        "text": "+1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks.",
         "effects": [
           {
             "op": "stat_mod",
@@ -512,22 +512,15 @@
       ],
       "unlocks": {
         "3": {
-          "name": "Shove",
+          "name": "Heavy Hands",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "2 AP: push an adjacent target back 1 tile per point of Strength, or knock it Prone.",
+          "text": "A melee technique of yours that pushes its target moves it 1 tile further.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "shove",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "condition",
-              "condition": "prone",
-              "target": "target",
-              "when": "on_shove_choice"
+              "op": "knockback",
+              "tiles": 1,
+              "target": "target"
             },
             {
               "op": "perk_choice",
@@ -535,22 +528,24 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "5": {
-          "name": "Break",
-          "category": "Active Skill",
+          "name": "Follow Through",
+          "category": "Combat Interaction",
           "mastery": 2,
-          "text": "3 AP: destroy a door, a lock, a piece of cover, or one armour slot on an adjacent enemy.",
+          "text": "When a Finisher of yours takes its target out, you are left with 1 Momentum.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "break",
-              "ap": 3,
-              "uses": "at_will"
+              "op": "resource",
+              "resource": "momentum",
+              "set": 1,
+              "when": "a Finisher of yours takes its target out"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -635,7 +630,7 @@
           "Back in the army they kept saying my arms were bigger than my brain. Yeah, maybe. Maybe. If I pulled my brain out and measured it with a ruler, my arm probably is bigger. But you can't arm-wrestle with a brain, and when it comes to arm-wrestling I'm the best there is. So I used my arms to wrestle their brains, and a few concrete tables. Nobody said anything after that."
         ],
         "intro": "Just saying the name makes you feel the strength rising. Raw Power isn't technique, calm or authority. It's STRENGTH: hit harder, bend further, lift higher. Things only muscle can do.",
-        "effect": "Physical Damage and Counter Roll; gates strength equipment.",
+        "effect": "+1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks.",
         "high_levels": "you break locks, doors and bones, and laugh at people who can't. But that much muscle makes it easy to hurt the things you never meant to.",
         "good_for": "martial artists, berserkers, competitive lifters, guys going for the record on the bar's punching machine.",
         "bad_for": "mages, cat and bunny lovers, high nobility who don't want to be called thugs.",
@@ -651,7 +646,7 @@
       "slot": "beta",
       "summary": "Fear doesn't get a vote.",
       "per_point": {
-        "text": "Body save = your Guts modifier.",
+        "text": "+1 on Body saves (poison, knock-downs, being pushed or pinned).",
         "effects": [
           {
             "op": "stat_mod",
@@ -779,7 +774,7 @@
           "Why has no one else uncovered the secret of Arganzaz? Because they are a pack of faint hearts, that's why. I saw a jade-inlaid door twenty yards wide slowly opening. I heard a thousand wandering ghosts wailing and smelled ten thousand walking corpses. What they did was scream and run. What I did was hold my breath and walk in. That is why they now call me the Keeper of the secret of Arganzaz."
         ],
         "intro": "Guts is your tolerance for anything spooky or scary: a door with a skull over it, or a pitch-black hole with a sign saying \"Hole of Pain.\" What it is doesn't matter. What matters is that you're not scared of it.",
-        "effect": "Body Debuff save; unlocks exploration options and Trio-Scale Equipment.",
+        "effect": "+1 on Body saves (poison, knock-downs, being pushed or pinned).",
         "high_levels": "you feel like an impregnable fortress. But people don't label things \"dangerous\" for fun, and you not being scared doesn't stop it from chewing your bones.",
         "good_for": "thrill-seekers, manly men, manly women, holo-streamers filming viral reels in abandoned graveyards.",
         "bad_for": "horror-movie fans, delicate ladies, team leaders and scouts.",
@@ -800,13 +795,14 @@
       "slot": "gamma",
       "summary": "You run the conversation through fear.",
       "per_point": {
-        "text": "Body debuff strength = your Intimidation modifier (minimum 0).",
+        "text": "Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "debuff_body",
+            "stat": "strength",
             "basis": "skill_mod",
-            "min": 0
+            "min": 0,
+            "context": "Threaten and the conditions this skill speaks: the save against them is 12 + this"
           }
         ]
       },
@@ -937,7 +933,7 @@
           "Have you ever had the pleasure of tasting animal marrow? Oh, who am I kidding. A merchant from Mandestra must have tasted every pleasure under the sun. Forgive my peasant manners. And you know what, Mr. Galon? If the shipment I'm waiting for doesn't arrive on time, then with these two peasant hands I'll treat you to a very special marrow broth, made from the bones of your arm. Understand? Snap that dainty hand of yours like a chicken neck, and then we savour that faintly sweet flavour together, like business partners sharing a milkshake. Slurp. Slurp. Slurp."
         ],
         "intro": "Intimidation is your control over the fear of whoever stands in front of you. One piercing look, one commanding cough: the person running this conversation is you.",
-        "effect": "Body Debuff DS bonus; unlocks threat options in exploration and dialogue.",
+        "effect": "Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
         "high_levels": "everyone sees a demon in human skin, whether you want it or not. Whether that's good or bad is up to you.",
         "good_for": "people done with smooth talkers' bullshit, people who want every conversation to open with the other guy's trousers turning brown, serial killers.",
         "bad_for": "upstanding middle-class citizens, anyone keeping an angelic image, heartbreakers.",
@@ -953,7 +949,7 @@
       "slot": "beta",
       "summary": "Armour just slows you down.",
       "per_point": {
-        "text": "Dodge (Defense) = your Athletics modifier (minimum 0). The better of Athletics and Guts resists being pushed, pinned or stopped.",
+        "text": "+1 Defense (you are harder to hit), from 2 points.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1084,7 +1080,7 @@
           "Armour? What armour? Oh, I left the vest at base. First-floor locker room, locker 16, key's under the red flowerpot if you want it. Natalia still grumbles every time I deploy: 'Are those two banners on your back for a burial shroud or what?' But the armoury boys lean on tech way too much. What I'm fighting out here are Orks. ORKS. They swing junk machetes, and the gunners aren't any better, aiming with both eyes open. If you can dodge everything they throw at you, armour just slows you down!"
         ],
         "intro": "Athletics is how nimble and supple you are. It decides how well you pull off anything that needs flexibility: flips, swimming, dodging.",
-        "effect": "Dodge Roll and Critical Damage; gates agility equipment.",
+        "effect": "+1 Defense (you are harder to hit), from 2 points.",
         "high_levels": "your body is light as a feather and limber as a cat. Until someone ties you down. Then you aren't a person who lost a leg, you're a bird that lost its wings. Prepare for the trauma.",
         "good_for": "gymnasts, dancers, guys who spam crouch after every kill.",
         "bad_for": "slow-living types, high nobility, heavy-armour users.",
@@ -1100,7 +1096,7 @@
       "slot": "alpha",
       "summary": "The quick hand. Guns, bows, thrown weapons and light blades; reloads, recoil, quick-draw.",
       "per_point": {
-        "text": "+0.5 Throwing range. Recoil penalty reduced by floor(Dexterity ÷ 2). +5% to the Critical multiplier. Attack skill for guns, bows, thrown weapons and light melee.",
+        "text": "+1 to hit with guns, light blades and thrown weapons. +5% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1143,15 +1139,18 @@
           "name": "Quick Draw",
           "category": "AP Mod",
           "mastery": 2,
-          "text": "Your first shot in each combat costs 0 AP.",
+          "text": "Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "free_first_shot_per_combat",
-              "value": 1
+              "op": "cost_mod",
+              "action": "attack_with_a_drawn_weapon",
+              "value": "zero",
+              "uses": "per_combat",
+              "context": "Draw Cut, Snap Shot"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -1237,7 +1236,7 @@
           "No tricks here. I don't even need to open my eyes. I've carried this revolver since the years before Operation Daggerfall, stranger. Call me old-fashioned, call me outdated, but don't take this old body lightly in a gunfight. Wander within 500 metres and if your head doesn't vanish, your hat will need a big patch. These eyes aren't what they were, but these hands have never left the gunbelt. Identify. Squeeze. Breathe the powder smoke. Dig the grave."
         ],
         "intro": "Dexterity measures how reliable you are at anything that needs precision. Anyone can reload a gun or throw a dart. Nobody does it as fast or as clean as you.",
-        "effect": "throwing range; unlocks exploration options and Trio-Scale Equipment.",
+        "effect": "+1 to hit with guns, light blades and thrown weapons. +5% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
         "high_levels": "your hands work like a machine and your trained skills fire almost on their own. So you want to use them even when it's the wrong moment, and announcing your habits to the whole world is never a good idea.",
         "good_for": "gunslingers, snipers, blade masters, point strikers.",
         "bad_for": "gamblers, magic users, anyone who doesn't want to be called \"hands faster than brain.\"",
@@ -1253,7 +1252,7 @@
       "slot": "gamma",
       "summary": "Spotting danger is one thing. Moving in time is another.",
       "per_point": {
-        "text": "−10% ambush damage taken. Adds its modifier to Initiative.",
+        "text": "+1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1383,7 +1382,7 @@
           "I shoot first. Honestly, you don't need fancy gear out here. Want it harder? Hand me a couple of daggers. Surviving the lowlands is tough because it has the one thing the desert doesn't: dead buildings. Wherever you go in here, you're swimming through a concrete forest. If they poke out of some dark corner and you don't react in time, a hundred percent you end up strung on a pole. Me, I just throw a knife and duck before they pull the trigger."
         ],
         "intro": "Reaction Speed is the time between your eyes firing and your body moving: a glint from an enemy scope, or a strange blink from a partner right before the handshake. Spotting danger is one thing. Reacting in time is another.",
-        "effect": "Ambush Damage reduction; unlocks reaction options in exploration and dialogue.",
+        "effect": "+1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you're frighteningly fast and never caught flat-footed. But reacting that fast makes you look plainly impatient, and plenty of times reacting fast just makes things go wrong faster.",
         "good_for": "gamers, sailors, gunners, every other kind of -er, gamblers.",
         "bad_for": "calm people, people who need to save face, anyone who doesn't want to look like they're on speed.",
@@ -1399,7 +1398,7 @@
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "per_point": {
-        "text": "+0.5 Stealth (subtracted from enemies' Detection range against you); +5% to the Ambush multiplier.",
+        "text": "+5% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1546,7 +1545,7 @@
           "A thousand gold for two rocks. The number of people still paying in gold coins outside Central City is baffling. Back when I worked the city, I'd swipe a bank card out of some guy's pocket and that was dinner sorted. Back then I still had Travis to crack the cards... People call it petty theft, but the trade takes real skill. First you learn to walk in step with the crowd and spot which pocket bulges most. Then you work out how much weight to slip back in so they don't notice the coins have flown. If you don't know how, don't mess around. The old men at the guard post started carrying shock batons last week, and it hurts like you wouldn't believe."
         ],
         "intro": "Ingenuity is the finesse in everything you do: staying unseen while sneaking, picking pockets, that sort of thing.",
-        "effect": "reduces Ambush Range, raises Ambush Damage; gates finesse equipment.",
+        "effect": "+5% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
         "high_levels": "you turn into a cosplayer of the sneaking-soldier legend, flickering in and out of the shadows. But all that shifty behaviour makes it hard to look a cop in the eye.",
         "good_for": "rogues, scouts, bandits, gamblers.",
         "bad_for": "model citizens, uniformed (not undercover) cops, anyone trying to romance a uniformed (not undercover) cop.",
@@ -1561,13 +1560,13 @@
     },
     {
       "id": "proficiency",
-      "name": "Proficiency",
-      "attribute": "perception",
+      "name": "Improvisation",
+      "attribute": "expression",
       "core": "mind",
       "slot": "beta",
-      "summary": "The mechanic. Fixes guns, gear and machines in the field, robot squadmates included.",
+      "summary": "Making a thing work now with what is at hand. Fixes guns, gear and machines in the field, robot squadmates included.",
       "per_point": {
-        "text": "Sigil Core saving of floor(Proficiency ÷ 3) charge per spell (minimum cost 1).",
+        "text": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1582,7 +1581,7 @@
           "name": "Field Repair",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Proficiency point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
+          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Improvisation point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
           "effects": [
             {
               "op": "grant_action",
@@ -1602,15 +1601,16 @@
           "name": "Tuned",
           "category": "Passive",
           "mastery": 2,
-          "text": "One weapon you personally maintain gains +10% damage and never jams.",
+          "text": "The weapon in your main hand never jams and never breaks.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "tuned_weapon_damage_pct",
-              "value": 10
+              "op": "immunity",
+              "to": "weapon_jam_and_break",
+              "context": "the weapon in your main hand"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -1675,49 +1675,46 @@
       ],
       "number": 11,
       "voice": {
-        "persona": "A fussy, delighted tinkerer for whom every machine is a puzzle and every puzzle is a joy.",
-        "wants": "To take it apart and see how it goes.",
-        "style": "Fast, technical, affectionate about parts; loses the thread of people.",
-        "never": "Never cares about the conversation when there's a mechanism in the room.",
-        "tone_from": "Demitri Kortev of Kortev Utility Shack",
+        "persona": "A cheerful fixer who trusts her hands more than any plan.",
+        "wants": "To try it now and see.",
+        "style": "Quick, practical, amused; counts what is in reach.",
+        "never": "Never waits for the right tool.",
+        "tone_from": "Drava Keel, salvage fitter of the Mandestra lowland yards",
         "sample_lines": {
-          "notices": "That turret's feed is jammed on the third link. It's firing half as often as it should.",
-          "pushes": "Never mind the colonel. Look at the clockwork in that wall.",
-          "quiet": "Every piece fits somewhere. You just have to see all of them."
+          "notices": "That strap, that pipe and your belt. That's a splint.",
+          "pushes": "Stop reading the plan. The plan left ten minutes ago.",
+          "quiet": "It doesn't have to be right. It has to hold."
         },
         "provisional": true
       },
       "epccg": {
         "entry": 11,
-        "speaker": "Demitri Kortev of Kortev Utility Shack",
-        "portrait": "Demitri Kortev",
-        "portrait_id": "first-patch-revival--proficiency",
+        "speaker": "Drava Keel, salvage fitter of the Mandestra lowland yards",
+        "portrait": "Drava Keel",
+        "portrait_id": "drava-keel",
         "quote": [
-          "Yes, yes, a watchmaker and a gunsmith aren't far apart. Lay every part of a pendulum clock on the table and odds are your brain starts shorting out. Guns are the same: picking one up and shooting is a world away from stripping every screw and putting it back. Anyone can read a clock, but how many can fix one? What you need is someone who sees every piece of the puzzle and joins them into one. Like me! Unless you use a digital clock or one of those toy guns from the carnival stalls, in which case: scram. Shoo, shoo."
+          "The manual says a servo-hand wants a clean bench, a calibrated driver and four hours. I had a ditch, a soup spoon, and as long as it takes an Ork to cross a field. He still has the hand. Plans are lovely things. I have had hundreds, and every one of them died in the first minute, most of them louder than I did. What you have after that is whatever is in your pockets, and how fast you stop mourning the plan. The spoon is still in there, by the way. Load-bearing. Nobody tell him."
         ],
-        "intro": "Proficiency is your grasp of complex mechanisms, from something as small as a stopwatch to something as huge as a transcontinental cannon. All of it can be taken apart by you.",
-        "effect": "Sigil Draw Core reduction; unlocks exploration options and Trio-Scale Equipment.",
-        "high_levels": "you see how everything works, man-made or not. That helps with a lot, but you lose interest in anything that isn't screws and gears, and it cuts you off from human society.",
-        "good_for": "engineers, roboticists, weapon modders, clockmakers.",
-        "bad_for": "enchanters, magic users, party people, therapists.",
-        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
-        "game_text_edits": [
-          [
-            "toy guns from Alcatraz",
-            "toy guns from the carnival stalls"
-          ]
-        ]
+        "intro": "Improvisation is what you do when the plan is gone: making the thing in front of you work with whatever is at hand, right now, and working out why later.",
+        "effect": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
+        "high_levels": "nothing catches you flat and nothing stays broken near you. But you stop making plans at all, and the people who depend on you can never tell what you will do next.",
+        "good_for": "field mechanics, ditch medics, smugglers, anyone who performs for a living.",
+        "bad_for": "planners, quartermasters, whoever signed for the equipment.",
+        "source": "docs/design/proposals/2026-11-nine-doors.md, section 18.4 (new in rules 1.13; not in the 2020 EPCCG)",
+        "game_text_edits": [],
+        "provisional": true,
+        "note": "Suggested: a new speaker and entry for Improvisation; the cast is the owner's to approve. Second choice for the face: Milo Quill."
       }
     },
     {
       "id": "vigilant",
-      "name": "Vigilant",
+      "name": "Vigilance",
       "attribute": "perception",
       "core": "mind",
       "slot": "gamma",
       "summary": "Sight, sound and hostile intent.",
       "per_point": {
-        "text": "+1 Detection range (Detection = 2 + Vigilant).",
+        "text": "You notice traps, hidden things and hidden enemies 1 better, and 1 tile further off. Your Spot Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1844,7 +1841,7 @@
           "They keep saying I can dodge bullets. As if any human could. They've got a few knives in the neck before they can pull the trigger, that's all. Run enough jobs for old Rourigaz and you'll get used to it: every time someone aims at you, even from the dark, your spine goes cold. Just remember to cut their spine out in return, as a thank-you gift."
         ],
         "intro": "Vigilant is the survival instinct your ancestors handed down. An enemy in the bushes, a prying gaze in the dark: with eyes and ears tuned to detail, you notice what's off before anyone else.",
-        "effect": "Detection Range; unlocks alertness options in exploration and dialogue.",
+        "effect": "You notice traps, hidden things and hidden enemies 1 better, and 1 tile further off. Your Spot Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you're hyper-aware of everything you see and hear and can sense danger in a heartbeat. But that alert, you're never sure if the danger is real or you're just imagining things.",
         "good_for": "debtors on the run from loan sharks, husbands afraid of wives in high heels, grunts terrified of punji traps, snipers.",
         "bad_for": "anyone who doesn't want to be called jumpy or a coward.",
@@ -1860,7 +1857,7 @@
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
       "per_point": {
-        "text": "+10% to the Sigil multiplier; +0.5 round Sigil duration.",
+        "text": "+10% Sigil power. You know 1 more Sigil word. Every 2 points: Sigils reach 1 tile further and last 1 round longer. Every 3 points: a Sigil burns 1 less core charge. Your Sigils' conditions are harder to save against.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2002,7 +1999,7 @@
           "Stop flailing and concentrate. In nearly twenty years of using an Evoker I have never needed to dance a single kata to trigger a sigil. If you want martial arts in your magic, kindly go south and join a sect. I may be a spellcaster, but I am a scientist and they are philosophers. Now breathe deep, memorise the sigil's path, draw it, and press the blue button on the right-hand grip. If you burn through your MagiCore before finishing a Fireball, I'm done teaching you."
         ],
         "intro": "Brain Power is your brain's processing speed. In PC-parts terms, it's the difference between two graphics cards. It lets you handle information faster than others, and helps a lot with Sigils and Evokers.",
-        "effect": "Sigil Damage and Sigil Stay Duration; gates big-brain equipment.",
+        "effect": "+10% Sigil power. You know 1 more Sigil word. Every 2 points: Sigils reach 1 tile further and last 1 round longer. Every 3 points: a Sigil burns 1 less core charge. Your Sigils' conditions are harder to save against.",
         "high_levels": "your brain is always hunting detail, almost hyperactive. Look at a rock and instead of \"where's it from\" and \"why is it here\", you're on \"its chemical composition\" and \"a hundred ways to arrange rocks into a code.\" Training a brain that big isn't always smart.",
         "good_for": "Evoker users, scientists, researchers.",
         "bad_for": "Emanator users, healers, melee fighters.",
@@ -2018,7 +2015,7 @@
       "slot": "beta",
       "summary": "The scientist's library. Mirrors Lore Master.",
       "per_point": {
-        "text": "+0.5 tile Sigil range.",
+        "text": "+1 on Brain saves (confusion, illusions, having your mind turned).",
         "effects": [
           {
             "op": "stat_mod",
@@ -2055,14 +2052,15 @@
         },
         "5": {
           "name": "Proven Formula",
-          "category": "AP Mod",
+          "category": "Passive",
           "mastery": 2,
-          "text": "A Sigil spell you've already drawn this combat costs 1 AP less.",
+          "text": "+3 on your saves against a spell or condition that has already hit you this combat.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap_cost:repeat_sigil_spell",
-              "value": -1
+              "op": "save_mod",
+              "value": 3,
+              "target": "self",
+              "when": "against a spell or condition that has already hit you this combat"
             }
           ],
           "adjudication": "engine"
@@ -2156,7 +2154,7 @@
           "The knowledge you need to become a Keeper of Books? Seven hundred and forty-five reigns. Two hundred thousand years of history. Five hundred and forty thousand inventions, great and small. Nine million three hundred and fifty thousand species of plant and animal, and hundreds of millions of pages turned. Now kindly erase your presence from my library."
         ],
         "intro": "Rumination is how well you absorb and retain scientific knowledge: history, politics, maths, physics, chemistry. It also lets you look at an object and pull up the theory behind it.",
-        "effect": "Sigil Range bonus; unlocks exploration options and Trio-Scale Equipment.",
+        "effect": "+1 on Brain saves (confusion, illusions, having your mind turned).",
         "high_levels": "you always side with science, experiment and hard data. Great in a lab; uncomfortable with anything science can't explain, like incantations, charms, souls or spiritual links.",
         "good_for": "bookworms, hackermen, tech professionals of every field.",
         "bad_for": "lifters who only care about strength, students of the surreal, the devout, conspiracy preachers on the pirate bands.",
@@ -2177,13 +2175,14 @@
       "slot": "gamma",
       "summary": "Logic as a weapon.",
       "per_point": {
-        "text": "Brain debuff strength = your Eloquence modifier (minimum 0).",
+        "text": "Persuading an enemy in a fight is harder to resist. Your Brief Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "debuff_brain",
+            "stat": "strength",
             "basis": "skill_mod",
-            "min": 0
+            "min": 0,
+            "context": "Persuade and the conditions this skill speaks: the save against them is 12 + this"
           }
         ]
       },
@@ -2310,7 +2309,7 @@
           "Fine, if you insist, I'll review all the evidence. Aaaand there's nothing worth reviewing. The dashcam at 11:45 shows, plain as day, the defendant stabbing a man to death. And I'm sick of your take-the-punch-take-the-bribe attitude, Your Honour, and your jury's too. The evidence is right there, so why no arrest? Because the defendant comes from a good family? Or because the pile of cash under the table is just too hard to pass up? You know what? As counsel for the plaintiff, I'm going to walk outside and tell the world I won. There is only one truth, and if you disagree it's because you're a pack of nitpicking self-servers. I WIN. BYE-BYE. CLOSE THE COURT."
         ],
         "intro": "Eloquence is your power to argue and debate logically, whether you're stuck in a battle of wits or a high courtroom. Believe in yourself, pick apart every word out of your opponent's mouth, cook up something clever and fire it back with confidence.",
-        "effect": "Brain Debuff DS bonus; unlocks rhetoric options in exploration and dialogue.",
+        "effect": "Persuading an enemy in a fight is harder to resist. Your Brief Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you must win EVERY conversation, and you'll use every trick there is, whether the other side meant harm or not. Good or bad? Depends.",
         "good_for": "lawyers, preachers, politicians, keyboard warriors.",
         "bad_for": "quiet types, people who hate arguing, people who'd rather argue with their fists.",
@@ -2326,7 +2325,7 @@
       "slot": "alpha",
       "summary": "Shapes thought into images and Sigils into forms.",
       "per_point": {
-        "text": "+10% to the Elemental multiplier.",
+        "text": "+5% elemental damage.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2458,7 +2457,7 @@
           "Thinking it in your head is not enough! Master Sakamoto once spent four months mixing just 200 grams of watercolour. He called it 'Thousand-Autumn Red.' And if you must know: I've watched the video of him mixing it over a thousand times, and I still can't make that colour. No one can guess what you might do with a few rose stems, glue and an egg yolk. I wonder what 'Afternoon of Blood' looked like inside his mind. But the undeniable truth is that the way he carried that thought from his head onto paper is irresistible. A beauty only he could paint."
         ],
         "intro": "Visualization is your power to picture the world: to take the shapeless thoughts in your head and express them outward as images.",
-        "effect": "Sigil Range bonus and Elemental Damage; gates image-making equipment.",
+        "effect": "+5% elemental damage.",
         "high_levels": "you see the story behind every landscape and make landscapes out of every story. You risk sinking into faraway worlds and forgetting this one.",
         "good_for": "critics, painters, Projector Gear® users.",
         "bad_for": "the near-sighted, people who'd rather feel than describe.",
@@ -2468,13 +2467,13 @@
     },
     {
       "id": "analysis",
-      "name": "Analysis",
-      "attribute": "expression",
+      "name": "Acuity",
+      "attribute": "perception",
       "core": "mind",
       "slot": "beta",
-      "summary": "Detective work and target analysis. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
+      "summary": "Seeing how a thing works: a lock, a mechanism, a crime scene, an enemy. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
       "per_point": {
-        "text": "+1 Analyze range (Analyze range = 4 + Analysis).",
+        "text": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2505,15 +2504,16 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Weak Point",
+          "name": "Read Them",
           "category": "Passive",
           "mastery": 2,
-          "text": "Enemies you've analyzed take +15% damage from your whole squad.",
+          "text": "Enemies you've analyzed deal 15% less damage to your whole squad.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "analyzed_target_damage_taken_pct",
-              "value": 15
+              "op": "damage_reduction",
+              "value_pct": 15,
+              "target": "squad",
+              "source": "enemies you have analyzed"
             }
           ],
           "adjudication": "engine"
@@ -2581,33 +2581,44 @@
       ],
       "number": 17,
       "voice": {
-        "persona": "A forensic machine of a mind that reconstructs events from casings and stains.",
-        "wants": "The one correct answer, assembled from evidence.",
-        "style": "Clinical, enumerated, deductive: 'First... Second...'",
-        "never": "Never lets go of the first good clue.",
-        "tone_from": "D12.9.6 of the CCEC",
+        "persona": "A fussy, delighted tinkerer for whom every machine is a puzzle and every puzzle is a joy.",
+        "wants": "To take it apart and see how it goes.",
+        "style": "Fast, technical, affectionate about parts; loses the thread of people.",
+        "never": "Never cares about the conversation when there's a mechanism in the room.",
+        "tone_from": "Demitri Kortev of Kortev Utility Shack",
         "sample_lines": {
-          "notices": "First: no casings. Second: the wall is dented from the far side. He wasn't shot.",
-          "pushes": "That first clue is the clue. Ignore the rest.",
-          "quiet": "Send the apology letter later. Find the spy now."
+          "notices": "That turret's feed is jammed on the third link. It's firing half as often as it should.",
+          "pushes": "Never mind the colonel. Look at the clockwork in that wall.",
+          "quiet": "Every piece fits somewhere. You just have to see all of them."
         },
         "provisional": true
       },
       "epccg": {
         "entry": 17,
-        "speaker": "D12.9.6 of the CCEC (Central City Espionage Commission)",
-        "portrait": "D12.9.6",
-        "portrait_id": "first-patch-revival--analysis",
+        "speaker": "Demitri Kortev of Kortev Utility Shack",
+        "portrait": "Demitri Kortev",
+        "portrait_id": "first-patch-revival--proficiency",
         "quote": [
-          "Look at the crime scene again. First: this man was never shot. He may be stuck to a wall full of bullet holes, but bullets didn't kill him. Why? Pick up a casing and look closely. Not an enhanced round; nobody is crazy enough to load enhanced rounds into an SMG. It smells of Outburst mana, a foreign Outburst to be exact. Second: the body stayed stuck to the wall until we pulled it off. Some strong force pushed him from the opposite side, and it wasn't an enhanced round. One .700 Blackpoint? Maybe. Fifty .32 Decrkm? Definitely not. From the mana, the victim was hit by an Outburst. The casings and holes say the killer wanted us to believe he died to bullets, enhanced rounds specifically. Send the apology letter. We need to find a spy from Bazaim."
+          "Yes, yes, a watchmaker and a gunsmith aren't far apart. Lay every part of a pendulum clock on the table and odds are your brain starts shorting out. Guns are the same: picking one up and shooting is a world away from stripping every screw and putting it back. Anyone can read a clock, but how many can fix one? What you need is someone who sees every piece of the puzzle and joins them into one. Like me! Unless you use a digital clock or one of those toy guns from the carnival stalls, in which case: scram. Shoo, shoo."
         ],
-        "intro": "Analysis is your ability to break the world down: work through any situation logically and land on the most correct answer.",
-        "effect": "Analyze Range; unlocks exploration options and Trio-Scale Equipment.",
-        "high_levels": "you over-analyse everything until your view narrows to a slit. Once you pick a detail, your brain glues itself to it and forgets a case usually has more than one.",
-        "good_for": "detectives, hunters, assassins, secret agents.",
-        "bad_for": "Orks, Rockmen, barbarians.",
-        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
-        "game_text_edits": []
+        "intro": "Acuity is your grasp of complex mechanisms, from something as small as a stopwatch to something as huge as a transcontinental cannon. All of it can be taken apart by you.",
+        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
+        "high_levels": "you see how everything works, man-made or not: a lock, a network, a crime scene, the way an enemy guards itself. That helps with a lot, but the first answer that fits is the one you keep, and you lose interest in anything that can't be taken apart, people included.",
+        "good_for": "detectives, locksmiths, slicers, clockmakers, anyone who reads an enemy before the shooting starts.",
+        "bad_for": "enchanters, party people, therapists, anyone who has to act before they understand.",
+        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5 (entry 11, Proficiency: Demitri Kortev's entry stands for Acuity since rules 1.13; docs/design/proposals/2026-11-nine-doors.md sections 17.5 and 18.1)",
+        "game_text_edits": [
+          [
+            "toy guns from Alcatraz",
+            "toy guns from the carnival stalls"
+          ],
+          [
+            "Proficiency is your grasp of complex mechanisms",
+            "Acuity is your grasp of complex mechanisms"
+          ]
+        ],
+        "provisional": true,
+        "note": "Rules 1.13: the 2020 Proficiency entry, moved here with its speaker; the intro's skill name, the high levels and the good for / bad for lines are rewritten for Acuity (knowing how a thing works). The 2020 Analysis entry (D12.9.6) left the book: docs/lore/D12-9-6.md."
       }
     },
     {
@@ -2618,7 +2629,7 @@
       "slot": "gamma",
       "summary": "Warmth, persuasion, and lying with a smile.",
       "per_point": {
-        "text": "Brain save = your Charisma modifier.",
+        "text": "An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2749,7 +2760,7 @@
           "I asked whether he'd like a glass of water or anything. Honestly, officers, that afternoon was the first time I'd met Mr. Duboi, and everything in my statement is true. Granted, keeping an electric chair in one's office isn't for everyone, but I'm a lover of the arts. I adore bold, satirical work; how could I not display one of the masterpieces of my collection? It was a regrettable accident. That chair was never used until Mr. Duboi volunteered himself into it. How was I to know he would switch the power on himself and die so needlessly? Tell the court I'll be there. A gentleman like me never passes up a conversation he is certain to win."
         ],
         "intro": "Charisma is the power of words: how well you persuade and steer a conversation, and how warm you come across while doing it. Extremely handy for lying and making things up.",
-        "effect": "Brain Debuff save roll; unlocks persuasion options in exploration and dialogue.",
+        "effect": "An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you can talk anyone into anything, but all that warmth makes some people see you as a spineless bootlicker. Depends who you're talking to.",
         "good_for": "politicians, merchants, lawyers.",
         "bad_for": "antiheroes, the antisocial, anyone who hates looking soft in a conversation.",
@@ -2765,7 +2776,7 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "per_point": {
-        "text": "−0.5 AP Soul cast cost (3 − 0.5 × Empathy, minimum 1). Ready Soul designs: 2 + floor(Empathy ÷ 2).",
+        "text": "+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2806,7 +2817,7 @@
           "name": "Mercy",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "2 AP: a humanoid enemy below 50% HP makes a Heart save against your Heart debuff strength, or surrenders or flees.",
+          "text": "2 AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
           "effects": [
             {
               "op": "grant_action",
@@ -2904,7 +2915,7 @@
           "I saw. Horror... horror and pain, grief and helplessness. Oh, I'd give my whole fortune to forget, you understand? Forget the horror in their eyes, the horror I still feel in my chest, the horror no words can describe. The horror of an empty face hanging above an iron stake."
         ],
         "intro": "Empathy is the bridge between one person and another: feeling what someone else is going through, putting yourself where they stand, and understanding at least partly why they do what they do.",
-        "effect": "Outburst Cast Time reduction and Elemental Damage.",
+        "effect": "+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.",
         "high_levels": "you become one with humanity. You understand everyone's circumstances, and everyone's story gets into you. You cry other people's tears and stick your nose into business that isn't yours.",
         "good_for": "therapists, human lie detectors, good alignments.",
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
@@ -2920,7 +2931,7 @@
       "slot": "beta",
       "summary": "The squad is a world of its own.",
       "per_point": {
-        "text": "+10% to the Healing and shields given multiplier.",
+        "text": "+10% healing received.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2933,15 +2944,17 @@
       "unlocks": {
         "3": {
           "name": "Hand-Off",
-          "category": "AP Mod",
+          "category": "Passive",
           "mastery": 1,
-          "text": "Once per round, give 1 of your AP to an adjacent ally.",
+          "text": "Once per round, when an ally next to you is attacked, they use your Defense in place of their own if yours is higher.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "hand_off",
-              "ap": 0,
-              "uses": "per_round"
+              "op": "stat_mod",
+              "stat": "defense",
+              "basis": "your Defense",
+              "target": "an adjacent ally",
+              "limit": "once per round",
+              "when": "an attack against them, if your Defense is higher"
             },
             {
               "op": "perk_choice",
@@ -2949,7 +2962,8 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "5": {
           "name": "Nobody Left Behind",
@@ -3054,7 +3068,7 @@
           "If you don't want to get brainwashed, I'd stay away from that Souji. 'The power of friendship,' then 'the bond of hearts'; he says that stuff without a shred of embarrassment. He wants to befriend everyone he meets and goes around calling people 'comrade' before he's even graduated. Go into a fight with him and before you know it half the enemy team are on our side. Last week he talked that platinum-haired girl from the rival school onto our team, just like that. Is that insane or what? Jealous? Why on earth would I be jealous? Completely ridiculous!"
         ],
         "intro": "Camaraderie is your teamwork and your solidarity with your squad, plus your knack for making friends and building factions.",
-        "effect": "Heal/Shield Power; unlocks exploration options and Trio-Scale Equipment.",
+        "effect": "+10% healing received.",
         "high_levels": "you become the heart of any team you join. You start seeing the team as its own little world and judge outsiders harder than you mean to.",
         "good_for": "captains, team players.",
         "bad_for": "lone wolves, edgelords, murder hobos.",
@@ -3064,19 +3078,20 @@
     },
     {
       "id": "implication",
-      "name": "Implication",
+      "name": "Insinuation",
       "attribute": "insight",
       "core": "soul",
       "slot": "gamma",
       "summary": "Metaphor, subtext, poetry and flirting.",
       "per_point": {
-        "text": "Heart debuff strength = your Implication modifier (minimum 0).",
+        "text": "Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "debuff_heart",
+            "stat": "strength",
             "basis": "skill_mod",
-            "min": 0
+            "min": 0,
+            "context": "Taunt and the conditions this skill speaks: the save against them is 12 + this"
           }
         ]
       },
@@ -3201,7 +3216,7 @@
           "I've lived alone between earth and sky too long for one or two more haters to matter. But Jazmine is something else. Coarse as an old man from Chezknov, and yet sometimes... gentle as a golden lotus in a stinking marsh. Can your smile melt my heart? Hard to say. The one thing I know for certain: you make me want to be a better man."
         ],
         "intro": "Implication is your command of metaphor. You catch people's meaning when they talk in figures, you understand difficult poetry and literature, and it helps a great deal with lying and with flirting. (With literature. It can't generate a credit card.)",
-        "effect": "Heart Debuff DS bonus; unlocks metaphor options in exploration and dialogue.",
+        "effect": "Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
         "high_levels": "you drown in the meaning behind every word. Every metaphor lands, but you fall into the \"yes means no, no means yes\" trap.",
         "good_for": "poets, writers, artists, the hopelessly lovestruck.",
         "bad_for": "the antisocial, blunt people, paladins.",
@@ -3217,7 +3232,7 @@
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "per_point": {
-        "text": "+15% to the Soul multiplier; +10% Mana Syphon. Strain limit 3 + floor(Will Power ÷ 2); module slots 1 + floor(Will Power ÷ 3); two schools per design from 5.",
+        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against.",
         "effects": [
           {
             "op": "stat_mod",
@@ -3249,7 +3264,7 @@
           "name": "Overdraw",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Overdraw: once per combat, a Pump adds 2 stages instead of 1 (at stage 2 or lower), and the heart pays +1 Strain after it (rules 1.5).",
+          "text": "Once per combat, a Pump adds 2 stages instead of 1 (at stage 2 or lower), and the heart pays +1 Strain after it.",
           "effects": [
             {
               "op": "grant_action",
@@ -3270,7 +3285,7 @@
           "name": "Pure Heart",
           "category": "Combat Interaction",
           "mastery": 2,
-          "text": "Pure Heart: once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release (rules 1.5).",
+          "text": "Once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
           "effects": [
             {
               "op": "grant_action",
@@ -3319,8 +3334,8 @@
       "overreach": {
         "from_points": 5,
         "trigger": "contact with the upper realm (a holy site, a Blessing, a strong Soul spell)",
-        "consequence": "Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
-        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Indulge: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Analysis this scene.",
+        "consequence": "Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Acuity this scene.",
+        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Indulge: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Acuity this scene.",
         "effects": [
           {
             "op": "narrator",
@@ -3374,7 +3389,7 @@
           "Yes, your heart can shatter like silken tofu. Connecting to the twin world is no joke. Pulling a few little sparks over ten minutes, anyone with a cheap Emanator can do that. A bolt over ten thousand volts in two seconds? Try it and you'll learn what a Mana Short is. There was a Linker once who didn't just bleed internally; he shorted so hard his heart burst on the spot and left a hole in his chest. Outburst craft needs a pure heart, the strength to resist temptation, and the understanding to hold the connection. Now breathe deep and meditate until your doubts fall away!"
         ],
         "intro": "Will Power is the strength of your heart: generosity and spiritual sharpness. A person's soul lives in the heart, and Will Power measures both your mental strength and the strength of the soul inside you. Essential for Outbursts and Emanators.",
-        "effect": "Outburst Damage and Mana Syphon; gates heart-based equipment.",
+        "effect": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against.",
         "high_levels": "your heart and soul turn hard and strong. You connect easily with the supernatural, but you slip easily into delusion, because the link to your upper-realm soul is so strong you can't tell this world from that one.",
         "good_for": "Emanator users, monks, crusaders, Bonders.",
         "bad_for": "Evoker users, scientists, melee users.",
@@ -3387,10 +3402,10 @@
       "name": "Lore Master",
       "attribute": "determination",
       "core": "soul",
-      "slot": "beta",
-      "summary": "The occultist's library. Mirrors Rumination.",
+      "slot": "gamma",
+      "summary": "The occultist's library: old scripts, curses, relics and the names of things.",
       "per_point": {
-        "text": "+0.5 tile Soul range.",
+        "text": "Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
@@ -3477,8 +3492,8 @@
       "overreach": {
         "from_points": 5,
         "trigger": "a purely scientific explanation",
-        "consequence": "You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
-        "text": "Trigger: a purely scientific explanation. Indulge: You reject it: −2 on rolls that rely on tech (Evokers, Proficiency) this scene.",
+        "consequence": "You reject it: −2 on rolls that rely on tech (Evokers, Acuity, Improvisation) this scene.",
+        "text": "Trigger: a purely scientific explanation. Indulge: You reject it: −2 on rolls that rely on tech (Evokers, Acuity, Improvisation) this scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -3526,7 +3541,7 @@
           "Mother wanted to know, to understand, to hold the chance to prove it true. And after more than a hundred years of study, they chose Mother for this seat. The one who makes the unreal real."
         ],
         "intro": "Lore Master is how well you adapt to and absorb supernatural knowledge, the kind science dismisses as baseless. You understand how it works without leaning on dangerous shortcuts like charms or spiritual links.",
-        "effect": "Outburst Range bonus; unlocks exploration options and Trio-Scale Equipment.",
+        "effect": "Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you can tell at once whether something is the work of the supernatural and how to deal with it. Comfortable among mages, but you start rejecting proven science because you see the supernatural threads behind it.",
         "good_for": "dreamers, divine casters, spellswords.",
         "bad_for": "scientists, hackers, barbarians.",
@@ -3539,10 +3554,10 @@
       "name": "Composure",
       "attribute": "determination",
       "core": "soul",
-      "slot": "gamma",
+      "slot": "beta",
       "summary": "A face that never moves.",
       "per_point": {
-        "text": "Heart save = your Composure modifier.",
+        "text": "+1 on Heart saves (fear, despair, losing your nerve).",
         "effects": [
           {
             "op": "stat_mod",
@@ -3576,7 +3591,7 @@
           "name": "Stand Still",
           "category": "Combat Starter",
           "mastery": 2,
-          "text": "Until you first act in a combat, enemies attacking you take −2 to hit, and the first one to miss gives you a free attack.",
+          "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
           "effects": [
             {
               "op": "stat_mod",
@@ -3590,7 +3605,8 @@
               "uses": "per_combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -3676,7 +3692,7 @@
           "In the ring, kid, the first punch you throw doesn't come from your fist. What you need is your eyes! When he walks at you, arms up and chest out, you stand still. When your lips feel his boozy breath, you stand still. When his bloodthirsty stare locks on yours, you stand stiller. Only when his eyes slip off yours do you get to move. The only problem is, the fight ended long before that."
         ],
         "intro": "Composure is your ability to stay calm in any situation. Neither a monster at midnight nor the woman waiting at the end of the alley can move your face an inch.",
-        "effect": "Heart Debuff save roll; unlocks calm options in exploration and dialogue.",
+        "effect": "+1 on Heart saves (fear, despair, losing your nerve).",
         "high_levels": "your face goes stone in every situation. Great when someone threatens or interrogates you; terrible for anyone who just wants to be friendly.",
         "good_for": "security guards, police, iron men, lead men.",
         "bad_for": "small bois, shy bois, studs and sluts.",
@@ -3692,7 +3708,7 @@
       "slot": "alpha",
       "summary": "The saints judge. You deliver.",
       "per_point": {
-        "text": "+10% Blessing power; −0.5 turn prayer cooldown. Pray needs Faith 3, Witnessed Faith 5, Miracle Faith 7, and a patron.",
+        "text": "+10% Blessing power. Prayers come back half a turn sooner. Your Blessings' conditions are harder to save against.",
         "effects": [
           {
             "op": "stat_mod",
@@ -3837,7 +3853,7 @@
           "*heavy metal plays*"
         ],
         "intro": "Faith is your ability to place your trust in higher powers. In a world where anything can happen, plenty of people face life's cruelty on the strength of belief. And unlike real life, here the odds of a prayer coming true are better than 1%.",
-        "effect": "Blessing Power and Blessing cooldown reduction; gates devotional equipment.",
+        "effect": "+10% Blessing power. Prayers come back half a turn sooner. Your Blessings' conditions are harder to save against.",
         "high_levels": "your bond with your faith tightens and amplifies everything your religion gives you. Everyone else sees an insufferable zealot, or worse, a heretic.",
         "good_for": "crusaders, divine classes, cultists, missionaries.",
         "bad_for": "atheists, scientists, smartasses.",
@@ -3853,7 +3869,7 @@
       "slot": "beta",
       "summary": "Seeing where an act leads.",
       "per_point": {
-        "text": "+1 Karma on every Karma award.",
+        "text": "+10% to every shield you are given.",
         "effects": [
           {
             "op": "stat_mod",
@@ -3983,7 +3999,7 @@
           "It is not a question of right or wrong. Nor of left or right. In a world of upheaval and chaos, the only thing that makes a God or a Demon is conscience."
         ],
         "intro": "Conscience is your ability to tell right from wrong, and to see the good or harm in an act not just now but far into the future, not just for you but for all of humanity.",
-        "effect": "more Karma earned; unlocks exploration options and Trio-Scale Equipment.",
+        "effect": "+10% to every shield you are given.",
         "high_levels": "you understand the consequences of everything you're about to do. But you think from one angle only, good or evil, right or wrong, and yours is the only one that counts.",
         "good_for": "lawful alignments, living saints, Satan in human skin.",
         "bad_for": "neutral alignments, emotionless robots, weathervanes.",
@@ -3999,7 +4015,7 @@
       "slot": "gamma",
       "summary": "The measure of cool, and your Leadership rating.",
       "per_point": {
-        "text": "+1 Reputation on every Reputation award. Leadership: 0 Unfit, 1–2 Squad, 3–4 Platoon, 5+ Command.",
+        "text": "Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "effects": [
           {
             "op": "stat_mod",
@@ -4126,7 +4142,7 @@
           "A skinny frame in a plain, no-frills uniform. Easy stance, warm laugh. Nobody would guess Hank Ladan outranks a marshal, and nobody dares look him in the eye, or at the five stars on his shoulder. Not even a guy like me who won three straight wrestling tournaments in the Marine mess hall. Something comes off him that makes your knees want to buckle, out of respect or fear. He has the nepo babies over in the Air branch falling in line, and every agent in the enforcement bureau bows when he passes. A busted-up marine like me? Honestly, I'd rather hunt ten Ork fangs in one afternoon than hear one word of criticism from him."
         ],
         "intro": "Authority is the measure of cool. Anyone can put on a suit; Authority decides whether you look cool in it. Be the groomsman and still draw more of the bride's eyes and respect than the groom. Oh, so dignified.",
-        "effect": "more Reputation earned; unlocks dominance options in exploration and dialogue.",
+        "effect": "Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "people mistake you for a general, a leader or a top CEO, which raises the odds you get investigated and make the news for buying apples at the market instead of the supermarket.",
         "good_for": "soldiers, police, security, teachers, anyone who has to be cool.",
         "bad_for": "sugar babies, fuckboys (you risk ending up married instead of a one-night stand).",
@@ -4142,5 +4158,5 @@
     "mastered": 2
   },
   "voice_cards_note": "Each skill's voice is the player's own inner voice. Its register is borrowed from the skill's EPCCG speaker (tone_from), never their identity. 'pushes' lines are how the skill sounds when it urges an Overreach or a bad idea.",
-  "epccg_note": "epccg blocks are the EPCCG's own skill write-ups (Article 5) as game text: the in-world quote, its speaker, the portrait (First-Patch Revival, the EPCCG cast) and the explanation. Real-Earth names are swapped for in-world ones (game_text_edits) under the Unspoken Name; the source Markdown keeps the original wording. Mechanics in 'effect' are 2020 wording; the spec and per_point win."
+  "epccg_note": "epccg blocks are the EPCCG's own skill write-ups (Article 5) as game text: the in-world quote, its speaker, the portrait (First-Patch Revival, the EPCCG cast) and the explanation. Real-Earth names are swapped for in-world ones (game_text_edits) under the Unspoken Name; the source Markdown keeps the original wording. Since rules 1.13 'effect' is the skill's per_point.text (what a point gives now), so the page can't contradict the rules; the 2020 effect wording is in the source Markdown. Two entries changed in rules 1.13 and are provisional: Acuity (id analysis) carries Demitri Kortev's entry, and Improvisation (id proficiency) a new one, Drava Keel (Suggested); D12.9.6's entry moved to docs/lore/D12-9-6.md."
 }

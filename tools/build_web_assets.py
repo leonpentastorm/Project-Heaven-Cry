@@ -38,6 +38,13 @@ for fam, prefix in (("traits", "wick-trait-"), ("perks", "wick-perk-")):
         small = ROOT / a.get("exports", {}).get("128", a["path"])
         emit(prefix + iid, small, (128, 128), None, 90)
         emit(prefix + iid, ROOT / a["path"], None, (512, 512), 90)
+        # A renamed item keeps its art file (rules 1.13: Grapple is Iron Grip, Origami Hands is Both Hands): the catalog
+        # entry's `data_id` names the item it belongs to now, and the same images also answer to that name, which is
+        # the one the screens ask for ("wick-perk-" + the data id with hyphens). No second copy is written.
+        alias = a.get("data_id", "").replace("_", "-")
+        if alias and alias != iid and alias not in C[fam]:
+            for suffix in ("", "-lg"):
+                assets[prefix + alias + suffix] = assets[prefix + iid + suffix]
 emit("wick-mind-without-fog", ROOT / C["traits"]["mind-without-fog"]["path"], (128, 128), (512, 512), 90)
 emit("world-outpost813", ROOT / C["illustrations"]["outpost813"]["path"], (1400, 800), (1600, 900))
 emit("emblem-ahoc-seal", ROOT / C["emblems"]["ahoc-seal-white"]["path"], (240, 240), (512, 512), 90)

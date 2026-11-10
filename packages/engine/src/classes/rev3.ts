@@ -19,7 +19,7 @@ import {
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
-import { applyCond, endCond, condOn, unitSave, unitDebuff, shiftMana } from '../magic';
+import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana } from '../magic';
 type Fam = 'body' | 'brain' | 'heart';
 import { d20, type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
@@ -46,12 +46,12 @@ const policyAction = (id: string, label: string, value: string, text: string): A
   run: (h) => { stateOf(h).policy = value; say(h.cb, (h.u?.name || 'Someone') + ': ' + label + '.'); },
 });
 /** A family save against this unit's move: 'cond_apply' {id, fam} first (an immunity cancels it, items add to the
- * save or its TN), then d20 + the target's save against 12 + the mover's debuff strength (spec: Conditions and saves). */
-function famSave(cb: Combat, rng: Rng, by: Unit, t: Unit, id: string, fam: Fam): { ok: boolean; cancel: string | null; line: string } {
+ * save or its TN), then d20 + the target's save against 12 + the mover's strength with the skill that delivers the move (`via`, rules 1.13). */
+function famSave(cb: Combat, rng: Rng, by: Unit, t: Unit, id: string, fam: Fam, via: string): { ok: boolean; cancel: string | null; line: string } {
   const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
   if (ca.cancel) return { ok: true, cancel: ca.why || 'immune', line: t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '') };
   if (ca.skipSave) return { ok: false, cancel: null, line: 'no save' };
-  const r = d20(rng), m = unitSave(t, fam) + (ca.saveAdd || 0), tn = 12 + unitDebuff(by, fam) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
+  const r = d20(rng), m = unitSave(t, fam) + (ca.saveAdd || 0), tn = 12 + unitStrength(by, via) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
   return { ok, cancel: null, line: fam + ' save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : r === 20 ? ', natural 20' : '') };
 }
 /** The tile one step on from `from` past `t` (a push), or null off the map. */
@@ -140,26 +140,26 @@ register({
 // ======================================================================================================== FIGHTER
 // ---------- Shove (rank I, 1 AP) ----------
 // An adjacent enemy: push it 1 tile straight away from you, or knock it Prone (you choose). It makes a Body save
-// against 12 + your Body debuff strength; a save, an immunity (Heavyworlder, a Braced Anchor) or a blocked tile and it
+// against 12 + your Raw Power strength; a save, an immunity (Heavyworlder, a Braced Anchor) or a blocked tile and it
 // holds. A push into a wall, a unit or the map's edge is refused before anything is spent: knock it Prone instead.
 // Not the base Shove (2 AP, an opposed roll), which every character keeps.
 register({
   id: 'fighter.shove', claims: 'all',
   actions: [{
     id: 'class_shove', label: 'Shove', scope: ['combat'], target: 'enemy', ap: 1, range: 1, pick: ['push', 'prone'], pickLabel: 'Push it back, or knock it down',
-    text: 'Push an adjacent enemy 1 tile, or knock it Prone: a Body save against 12 + your Body debuff strength.',
+    text: 'Push an adjacent enemy 1 tile, or knock it Prone: a Body save against 12 + your Raw Power strength.',
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       const how = args.choice === 'prone' ? 'prone' : 'push';
       if (how === 'prone' && t.prone) return { ok: false, why: t.name + ' is already prone.' };
-      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !free(cb, to, t)) return { ok: false, why: 'Nothing behind them to push into: knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitDebuff(u, 'body')) + ').'] }; }
-      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (12 + unitDebuff(u, 'body')) + ').'] };
+      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !free(cb, to, t)) return { ok: false, why: 'Nothing behind them to push into: knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
+      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, how = args.choice === 'prone' ? 'prone' : 'push', was = t.pos;
       const im = immune({ u: t }, 'shove') || (how === 'push' ? immune({ u: t }, 'knockback') : null);
       if (im) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ', who doesn\'t budge (' + im + ').'); return; }
-      const s = famSave(cb, rng as Rng, u, t, how === 'prone' ? 'prone' : 'shoved', 'body');
+      const s = famSave(cb, rng as Rng, u, t, how === 'prone' ? 'prone' : 'shoved', 'body', 'raw_power');
       if (s.ok) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': ' + (s.cancel ? s.line : 'holds firm (' + s.line + ')') + '.'); return; }
       if (how === 'push') {
         const to = pushTile(cb, u, t);
@@ -193,7 +193,7 @@ register({
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h); st.on = true; st.stash = {};
       const set: string[] = [];
-      for (const id of UNSTOP) if (condOn(u, id)) { st.stash[id] = { n: u.conds![id], by: u.condBy?.[id] || null, arg: u.condArg?.[id] || null }; endCond(u, id, cb); set.push(id); }
+      for (const id of UNSTOP) if (condOn(u, id)) { st.stash[id] = { n: u.conds![id], by: u.condBy?.[id] || null, arg: u.condArg?.[id] || null, via: u.condVia?.[id] || null }; endCond(u, id, cb); set.push(id); }
       const got = resGain(u, 'momentum', 2);
       emitFx(cb, 'unstoppable', { unit: u.id, at: u.pos, ignored: set });
       say(cb, u.name + ' is Unstoppable until their next turn' + (set.length ? ' (' + set.join(', ') + ' set aside)' : '') + (got ? ': +' + got + ' Momentum (' + resOf(u, 'momentum') + ')' : '') + '.');
@@ -207,7 +207,7 @@ register({
       const u = h.u!, cb = h.cb!, back: string[] = [];
       for (const [id, v] of Object.entries(st.stash || {}) as [string, any][]) {
         const n = v.n - 1; if (n <= 0 || u.dead) continue; // the tick it would have had at the end of the turn you used it
-        applyCond(cb, rngOf(h, ctx), unitById(cb, v.by), u, id, n, undefined, { skipSave: true, ...(v.arg ? { arg: v.arg } : {}) });
+        applyCond(cb, rngOf(h, ctx), unitById(cb, v.by), u, id, n, undefined, { skipSave: true, ...(v.arg ? { arg: v.arg } : {}), ...(v.via ? { via: v.via } : {}) });
         if (u.condFresh) u.condFresh = u.condFresh.filter((x) => x !== id); back.push(id);
       }
       st.stash = {};
@@ -341,7 +341,7 @@ register({
 // Either: an adjacent enemy machine, turret or drone is disabled for 2 rounds (Stunned for 2 of its turns: no actions,
 // no reactions), or an adjacent barricade stops blocking the way for 2 rounds, or an adjacent emplaced turret object is
 // disabled for 2 rounds (the Narrator runs those: a note says so). Or rig your own tile: the next enemy to step onto it
-// takes 30 (armour applies) and its walk stops; it makes a Body save against 12 + your Body debuff strength or is
+// takes 30 (armour applies) and its walk stops; it makes a Body save against 12 + your Ingenuity strength or is
 // Pinned. Your side never springs it and its walks avoid it; the other side can't see it. One rigged tile at a time
 // (a new one replaces the old). Combat only.
 register({
@@ -354,7 +354,7 @@ register({
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for 2 rounds.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-        const line = applyCond(cb, rng as Rng, u, t, 'stunned', 2, undefined, { skipSave: true });
+        const line = applyCond(cb, rng as Rng, u, t, 'stunned', 2, undefined, { skipSave: true, via: 'ingenuity' });
         emitFx(cb, 'sabotage', { unit: u.id, target: t.id, at: t.pos, rounds: 2, what: 'machine' });
         say(cb, u.name + ' sabotages ' + t.name + ': disabled for 2 rounds' + line + '.');
       },
@@ -394,7 +394,7 @@ register({
     trap_sprung: (ctx, h) => {
       const o: any = ctx.obj, cb = h.cb!; if (!o || o.rig !== h.key || o.owner !== h.u?.id || !inFight(h)) return;
       const v: Unit = ctx.u; if (v.dead) return;
-      say(cb, v.name + ' springs ' + h.u!.name + '\'s rigged tile' + applyCond(cb, rngOf(h, ctx), h.u!, v, 'pinned', undefined, 'body') + '.');
+      say(cb, v.name + ' springs ' + h.u!.name + '\'s rigged tile' + applyCond(cb, rngOf(h, ctx), h.u!, v, 'pinned', undefined, 'body', { via: 'ingenuity' }) + '.');
     },
     round_start: (ctx, h) => {
       const st = stateOf(h), cb = h.cb!; if (!st.objs?.length) return;
@@ -458,7 +458,7 @@ register({
 
 // ---------- False Image (rank I, 2 AP, 1 charge) ----------
 // A decoy of you on a free tile within 8 + your Sigil range bonus that you can see (the Seal's reach, item 287). Every
-// enemy that can see that tile makes a Brain save against 12 + your Brain debuff strength; those that fail take it
+// enemy that can see that tile makes a Brain save against 12 + your Brain Power strength; those that fail take it
 // for you (illusion.ts: the AI attacks and closes on it, not on you; spells leave you alone). One image at a time; it
 // fades at the start of your turn two rounds on, when you fall, or when it is attacked (the attack passes through).
 // Needs an Evoker and adds no Flux (it isn't a word). Combat only.
@@ -481,7 +481,7 @@ register({
       if (dist(u.pos, k) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' };
       if (!unitSees(cb, u, k)) return { ok: false, why: 'You can\'t see that tile.' };
       if (!free(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
-      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (12 + unitDebuff(u, 'brain')) + ').'] };
+      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (12 + unitStrength(u, 'brain_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!; u.mg!.charge -= 1; u.mg!.cast = true;
@@ -489,7 +489,7 @@ register({
       const lines: string[] = [];
       for (const e of cb.units) {
         if (e.side === u.side || !alive(e) || !unitSees(cb, e, k)) continue;
-        const s = famSave(cb, rng as Rng, u, e, 'false_image', 'brain');
+        const s = famSave(cb, rng as Rng, u, e, 'false_image', 'brain', 'brain_power');
         if (!s.ok) img.fooled.push(e.id);
         lines.push(e.name + (s.cancel ? ' is untouched (' + s.cancel + ')' : s.ok ? ' sees through it (' + s.line + ')' : ' is fooled (' + s.line + ')'));
       }
@@ -506,16 +506,16 @@ register({
 
 // ---------- Silver Tongue (rank II, 2 AP) ----------
 // An enemy within 6 tiles who can hear you (not a machine, turret or drone: nothing to lie to) makes a Brain save
-// against 12 + your Brain debuff strength, or loses 2 AP on its next turn (a Boss or Celestial 1), through the turn's
+// against 12 + your Charisma strength, or loses 2 AP on its next turn (a Boss or Celestial 1), through the turn's
 // AP (the floor of 2 holds). A second one before that turn doesn't add: the larger stands. Combat only.
 register({
   id: 'trickster.silver_tongue', claims: 'all',
   actions: [{
     id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 2, range: 6,
     text: 'A target within 6 tiles who can hear you makes a Brain save, or loses 2 AP on its next turn (bosses lose 1).',
-    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (12 + unitDebuff(h.u!, 'brain')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
+    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (12 + unitStrength(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
     run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, s = famSave(cb, rng as Rng, u, t, 'silver_tongue', 'brain'), n = isBoss(t) ? 1 : 2;
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, s = famSave(cb, rng as Rng, u, t, 'silver_tongue', 'brain', 'charisma'), n = isBoss(t) ? 1 : 2;
       emitFx(cb, 'silver_tongue', { unit: u.id, target: t.id, from: u.pos, to: t.pos, ok: !s.ok, ap: s.ok ? 0 : n });
       if (s.ok) { say(cb, u.name + ' talks at ' + t.name + ': ' + (s.cancel ? s.line : 'it doesn\'t buy it (' + s.line + ')') + '.'); return; }
       const st = stateOf(h), tg = (st.tongue ||= {}); tg[t.id] = Math.max(tg[t.id] || 0, n);

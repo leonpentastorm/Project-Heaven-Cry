@@ -45,7 +45,7 @@ describe('Encore and techniques', () => {
     expect(f.tech('shot', { targetId: f.foe.id })).toMatch(/Needs 2 AP/); // once
   });
   it('a repeated technique (the same id) is lent its AP; a different one is not', () => {
-    const f = fight('sabre', ['bash', 'sunder']); rig({ hit: true, die: 12 });
+    const f = fight('sabre', ['bash', 'sunder']); rig({ hit: true, die: 12 }); f.momentum(f.pc, 3); // each Strike spends 1 Momentum
     expect(f.tech('bash', { targetId: f.foe.id })).toBeNull(); expect((f.pc.faith as any).lastKey).toBe('combat/technique:bash');
     lend(f, 'combat/technique:bash', 2);
     expect(f.tech('sunder', { targetId: f.foe.id })).toMatch(/Needs 2 AP/); expect(f.pc.faith?.encore).toBeTruthy();
@@ -58,9 +58,9 @@ describe('Encore and techniques', () => {
 describe('(a) the later strikes of Sweep, Cleave and Flurry carry the chain flag', () => {
   const chains = (f: F) => f.fx('melee').filter((e: any) => e.unit === f.pc.id).map((e: any) => !!e.chain);
   it('Sweep and Flurry', () => {
-    const f = fight('sabre', ['sweep'], [{ at: 'D7' }, { at: 'D6' }, { at: 'D8' }]); rig({ hit: true, die: 12 });
+    const f = fight('sabre', ['sweep'], [{ at: 'D7' }, { at: 'D6' }, { at: 'D8' }]); rig({ hit: true, die: 12 }); f.momentum(f.pc, 1); // a Strike spends 1 Momentum
     expect(f.tech('sweep', { targetId: f.foes[0].id })).toBeNull(); expect(chains(f)).toEqual([false, true, true]);
-    const g = fight('sabre', ['flurry']); rig({ hit: true, die: 12 });
+    const g = fight('sabre', ['flurry']); rig({ hit: true, die: 12 }); g.momentum(g.pc, 1);
     expect(g.tech('flurry', { targetId: g.foe.id })).toBeNull(); expect(chains(g)).toEqual([false, true, true]); // Light: three strikes
     const h = fight('sabre'); rig({ hit: true, die: 12 }); h.tech('cut', { targetId: h.foe.id }); h.tech('cut', { targetId: h.foe.id });
     expect(chains(h)).toEqual([false, false]); // two Cuts are two attacks
@@ -74,7 +74,7 @@ describe('(a) the later strikes of Sweep, Cleave and Flurry carry the chain flag
 describe('2. the melee numbers are in the data', () => {
   it('the fallbacks the handlers used are written under each technique', () => {
     const want: Record<string, Record<string, number>> = {
-      charge: { min_run: 3, per_tile_pct: 10, max_pct: 50, point_armour: 5 }, feint: { hit: 3, light_save: 2 }, ambush: { momentum: 2, point_crit_min: 18, bare_rounds: 1 },
+      charge: { min_run: 3, per_tile_pct: 10, max_pct: 50, point_armour: 5 }, feint: { hit: 3, light_save: 2 }, ambush: { momentum_cost: 0, point_crit_min: 18, bare_rounds: 1 },
       sweep: { mult: 0.7, reach_out: 2 }, bash: { mult: 0.5, heavy_push: 2 }, sunder: { mult: 0.7, lower: 5, blunt_hook_lower: 10 },
       flurry: { mult: 0.6, strikes: 2, light_strikes: 3, later_hit: -1, bare_bonus: 1, thrown_targets: 2 }, hamstring: { damage_mult: 0.7, slow_rounds: 2 },
       bind: { range: 1, penalty: 2, heavy_penalty: 4 }, half_sword: { damage_mult: 0.8, armour_ignore: 10 }, throw: { unthrown_hit: 2, unthrown_mult: 0.7 },
@@ -122,7 +122,7 @@ describe('10 and 15. a push through stop()', () => {
   it('the card shows where a push leaves the target, once', () => {
     const f = fight('maul', ['bash', 'shove']); f.unit(f.pc.id).strength = 20;
     const moves = (id: string, args: any) => (f.pv(id, { targetId: f.foe.id, ...args }).moves || []).filter((m) => m.unit === f.foe.id);
-    expect(moves('bash', { line: 'heavy', opt: 'push' })).toEqual([{ unit: f.foe.id, to: f.tile('F7') }]);
+    expect(moves('bash', { line: 'heavy', opt: 'push' })).toEqual([{ unit: f.foe.id, to: f.tile('G7') }]);
     expect(moves('shove', {})).toHaveLength(1);
   });
   it('a push that moves nobody is not logged as one, and stop() says it didn\'t take', () => {
@@ -131,7 +131,7 @@ describe('10 and 15. a push through stop()', () => {
     expect(f.foe.pos).toBe(f.tile('D7')); expect(f.cb.log.some((l) => /is pushed/.test(l))).toBe(false); expect(f.fx('stopped')).toHaveLength(0);
     HOLD = false; const g = fight('maul', ['lunge']); rig({ hit: true, die: 12 });
     expect(g.tech('lunge', { targetId: g.foe.id, line: 'heavy' })).toBeNull();
-    expect(g.foe.pos).toBe(g.tile('E7')); expect(g.cb.log.some((l) => /is pushed \(Lunge\)/.test(l))).toBe(true); expect(g.fx('stopped')).toHaveLength(1);
+    expect(g.foe.pos).toBe(g.tile('F7')); expect(g.cb.log.some((l) => /is pushed \(Lunge\)/.test(l))).toBe(true); expect(g.fx('stopped')).toHaveLength(1);
   });
 });
 

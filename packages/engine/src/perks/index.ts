@@ -9,3 +9,4 @@ import './f';
 import './g';
 import './h';
 import './skills';
+import './skeleton';

@@ -455,21 +455,19 @@ if isinstance(arch, dict):
             for s, v in preset.items():
                 if s in skill_attr and at[skill_attr[s]] < v:
                     errors.append(f"archetype {aid}: {s} {v} is above its attribute")
+            # rules 1.13 (Skeleton 2.0): Cores are group names, not points. An attribute runs 1 to 7 at creation, every
+            # Attribute point is spent, and a Core shows the highest attribute of its family.
+            A_CAP = cb.get("attributes", {}).get("cap_at_creation", 7)
             for x, v in at.items():
-                if v > co[attr_core[x]] or v > CAPC or v < 1:
-                    errors.append(f"archetype {aid}: attribute {x} {v} breaks a cap")
-            if a.get("family") != "all_in" and sum(1 for v in co.values() if v > 1) < 2:
-                errors.append(f"archetype {aid}: regular presets spread over at least two Cores (only All-in goes single-Core)")
+                if v > A_CAP or v < 1:
+                    errors.append(f"archetype {aid}: attribute {x} {v} is outside 1-{A_CAP}")
             for c, v in co.items():
                 top_attr = max([at[x] for x in at if attr_core[x] == c] + [1])
                 if v != top_attr:
-                    errors.append(f"archetype {aid}: core {c} {v} is raised for nothing (its attributes need {top_attr})")
-            if any(v > CAPC or v < 1 for v in co.values()):
-                errors.append(f"archetype {aid}: a core is outside 1-10")
-            a_sp, c_sp = sum(v - 1 for v in at.values()), sum(v - 1 for v in co.values())
-            traded = -(-max(0, a_sp - A_PTS) // TR) if TR else 0  # rules 1.11: no Core-for-Attribute trade
-            if C_PTS - c_sp - traded != 0 or A_PTS + traded * TR - a_sp != 0:
-                errors.append(f"archetype {aid}: doesn't spend every creation point (core left {C_PTS - c_sp - traded}, attribute left {A_PTS + traded * TR - a_sp})")
+                    errors.append(f"archetype {aid}: core {c} should read {top_attr} (the highest attribute of its family)")
+            a_sp = sum(v - 1 for v in at.values())
+            if A_PTS - a_sp != 0:
+                errors.append(f"archetype {aid}: doesn't spend every Attribute point (left {A_PTS - a_sp})")
         # leans: the class of the highest attribute, every tied one (Class Roster Revision 3)
         top_at = max(at.values()) if at else 0
         leans = sorted(b["id"] for b in base if at.get(b.get("attribute")) == top_at)
@@ -1008,6 +1006,90 @@ if lt is not None:
     if bt and (bt.get("none") or not bt.get("entries")):
         errors.append("loot_tables: the boss table always drops something (no weight for nothing, at least one entry)")
 
+# Rules 1.13, Skeleton 2.0: data/calls.json (the nine Calls, one per gamma skill) and the enemy tiers' Call lists
+cq = data.get("calls")
+if isinstance(cq, dict):
+    CALL_KINDS = {"helping", "hindering"}
+    CALL_AIMS = {"ally", "enemy", "self-or-ally"}
+    crules = cq.get("rules") or {}
+    skill_by_id = {s.get("id"): s for s in items("skills") if isinstance(s, dict)}
+    gammas = {sid for sid, s in skill_by_id.items() if s.get("slot") == "gamma"}
+    cdefs = {c.get("id"): c for c in items("calls") if isinstance(c, dict)}
+    if len(cdefs) != len(items("calls")):
+        errors.append("calls: ids must be present and unique")
+    for k in ("ap", "cheap_at", "cheap_ap", "free_at", "free_per_turn", "range_base", "range_per_point", "reaction_at", "reactions_per_round", "reaction_ap", "save_tn", "helping_per_round", "hindering_per_round", "mark_rounds"):
+        if not isinstance(crules.get(k), int) or isinstance(crules.get(k), bool):
+            errors.append(f"calls: rules.{k} must be a whole number")
+    steps_at = crules.get("steps_at")
+    if not (isinstance(steps_at, list) and len(steps_at) == 3 and steps_at == sorted(steps_at) and steps_at[0] == 1):
+        errors.append("calls: rules.steps_at must be three rising point values, the first 1")
+    if not isinstance((crules.get("enemy") or {}).get("per_turn"), int) or not isinstance((crules.get("enemy") or {}).get("beats"), (int, float)):
+        errors.append("calls: rules.enemy needs per_turn and beats")
+    seen_skills = {}
+    for cid, c in cdefs.items():
+        where = f"calls:{cid}"
+        if not isinstance(cid, str) or not cid.startswith("call."):
+            errors.append(f"{where}: a Call's id starts with 'call.' (the bare names are taken by techniques, moves and unlocks)")
+        sk = c.get("skill")
+        if sk not in skill_by_id:
+            errors.append(f"{where}: skill '{sk}' is not a skill")
+        elif sk not in gammas:
+            errors.append(f"{where}: skill '{sk}' is not a gamma (only the gamma skills have Calls)")
+        if sk in seen_skills:
+            errors.append(f"{where}: {sk} already has a Call ({seen_skills[sk]})")
+        seen_skills[sk] = cid
+        if c.get("kind") not in CALL_KINDS:
+            errors.append(f"{where}: kind '{c.get('kind')}' is not one of {sorted(CALL_KINDS)}")
+        if c.get("aim") not in CALL_AIMS:
+            errors.append(f"{where}: aim '{c.get('aim')}' is not one of {sorted(CALL_AIMS)}")
+        if (c.get("aim") == "enemy") != (c.get("kind") == "hindering"):
+            errors.append(f"{where}: a hindering Call is aimed at an enemy, a helping Call at an ally")
+        if c.get("save") not in (None, "body", "brain", "heart"):
+            errors.append(f"{where}: save must be body | brain | heart")
+        if c.get("save") and c.get("kind") != "hindering":
+            errors.append(f"{where}: only a hindering Call has a save")
+        if not c.get("name") or not isinstance(c.get("text"), str) or not c.get("text"):
+            errors.append(f"{where}: needs a name and a text")
+        if c.get("adjudication") not in ("engine", "hybrid", "narrator"):
+            errors.append(f"{where}: adjudication must be engine | hybrid | narrator")
+        if c.get("provisional") is not True:
+            errors.append(f"{where}: its numbers are provisional until play settles them (provisional: true)")
+        st = c.get("steps")
+        if not (isinstance(st, list) and len(st) == 3):
+            errors.append(f"{where}: needs exactly three steps")
+            continue
+        if [x.get("at") for x in st] != steps_at:
+            errors.append(f"{where}: its steps open at {[x.get('at') for x in st]}, the ladder's are {steps_at}")
+        keys = None
+        for i, x in enumerate(st):
+            if not isinstance(x.get("text"), str) or not x.get("text"):
+                errors.append(f"{where}: step {i + 1} needs a text")
+            nums = x.get("numbers")
+            if not isinstance(nums, dict) or not nums:
+                errors.append(f"{where}: step {i + 1} needs its numbers")
+                continue
+            for k, v in nums.items():
+                if not isinstance(v, (int, float)) or isinstance(v, bool):
+                    errors.append(f"{where}: step {i + 1} numbers.{k} must be a number")
+            if keys is not None and set(nums) != keys:
+                errors.append(f"{where}: step {i + 1} must give the same numbers as step 1 ({sorted(keys)})")
+            keys = keys or set(nums)
+    for g in sorted(gammas - set(seen_skills)):
+        errors.append(f"calls: the gamma skill {g} has no Call")
+    for t in items("enemies"):
+        if not isinstance(t, dict):
+            continue
+        lst = t.get("calls")
+        if lst is None:
+            errors.append(f"enemies:{t.get('id')}: needs a calls list (empty for a tier that never Calls) and a call_level")
+            continue
+        for cid in lst:
+            if cid not in cdefs:
+                errors.append(f"enemies:{t.get('id')}: calls names '{cid}', not a Call")
+        lv = t.get("call_level")
+        if not isinstance(lv, int) or isinstance(lv, bool) or lv < 0 or lv > 10 or (lst and lv < 1):
+            errors.append(f"enemies:{t.get('id')}: call_level must be 0 to 10, and at least 1 for a tier with Calls")
+
 # Rules 1.12, Physical 2.0: data/techniques.json and the weapons' phys blocks (docs/design/handoffs/physical-2.0-PLAN.md)
 tq = data.get("techniques")
 if isinstance(tq, dict):
@@ -1015,6 +1097,7 @@ if isinstance(tq, dict):
     RANGED_PROPS = {"quick", "auto", "precise", "spread", "heavy", "blast", "arc", "silent", "loud", "drawn", "thrown"}
     GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer"}, "ranged": {"fire", "press", "set", "take", "watch"}}
     AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
+    SHIELD_PROPS = {"shield"}  # carried by an off-hand item (items.json phys.props), never by a weapon
     trules = tq.get("rules") or {}
     techs = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
     if len(techs) != len(items("techniques")):
@@ -1028,7 +1111,7 @@ if isinstance(tq, dict):
         if sysm not in GROUPS:
             errors.append(f"{where}: system must be melee or ranged")
             continue
-        props_ok = MELEE_PROPS if sysm == "melee" else RANGED_PROPS
+        props_ok = (MELEE_PROPS | SHIELD_PROPS) if sysm == "melee" else RANGED_PROPS  # a shield's techniques come with the Shield property (rules 1.13)
         if t.get("group") not in GROUPS[sysm]:
             errors.append(f"{where}: group '{t.get('group')}' is not a {sysm} group")
         ap = t.get("ap") or {}
@@ -1082,7 +1165,7 @@ if isinstance(tq, dict):
                 errors.append(f"techniques: starting.{key} names '{tid}', not a {sysm} technique that can be picked")
     if st.get("default_melee") and not any(techs.get(tid, {}).get("group") == "opener" for tid in st.get("default_melee")):
         errors.append("techniques: starting.default_melee needs an Opener")
-    for pr in MELEE_PROPS | RANGED_PROPS:
+    for pr in MELEE_PROPS | RANGED_PROPS | SHIELD_PROPS:
         if pr not in (trules.get("props") or {}):
             errors.append(f"techniques: rules.props has no text for '{pr}'")
     wtiers = {e.get("id") for e in items("enemies") if isinstance(e, dict)}
@@ -1092,10 +1175,59 @@ if isinstance(tq, dict):
     for e in items("enemies"):
         for sysm in ("melee", "ranged"):
             for tid in ((e.get("techniques") or {}).get(sysm) or []) if isinstance(e, dict) else []:
-                if techs.get(tid, {}).get("system") != sysm or techs.get(tid, {}).get("free"):
+                if techs.get(tid, {}).get("system") != sysm or techs.get(tid, {}).get("free") or (techs.get(tid, {}).get("needs") or {}).get("shield") or techs.get(tid, {}).get("innate"):
                     errors.append(f"enemies:{e.get('id')}: techniques.{sysm} names '{tid}', not a {sysm} technique to list")
     skill_ids = {s_.get("id") for s_ in items("skills") if isinstance(s_, dict)}
     attr_ids = {a_.get("id") for a_ in items("attributes") if isinstance(a_, dict)}
+    # Rules 1.13: Durability's Guard, the shield's techniques, the technique a skill gives, and heavy armour's gate
+    gd = trules.get("guard")
+    if not isinstance(gd, dict):
+        errors.append("techniques: rules.guard is missing (rules 1.13: Durability's Guard)")
+    else:
+        for k in ("max", "per_durability", "gain_base", "gain_per_point", "shield_gain", "soak", "pressure_per_point", "interpose_durability", "interpose_cost"):
+            if not isinstance(gd.get(k), (int, float)) or isinstance(gd.get(k), bool) or gd.get(k) <= 0:
+                errors.append(f"techniques: rules.guard.{k} must be a positive number")
+    hg = ((trules.get("gear_gates") or {}).get("heavy_armour") or {})
+    if hg.get("skill") not in skill_ids:
+        errors.append(f"techniques: rules.gear_gates.heavy_armour.skill '{hg.get('skill')}' is not a skill")
+    for cls_, need in (hg.get("classes") or {}).items():
+        if cls_ not in ("1", "2", "3", "4", "5") or not isinstance(need, int) or not 1 <= need <= 10:
+            errors.append(f"techniques: rules.gear_gates.heavy_armour.classes: '{cls_}': {need} is not an armour class with a skill level")
+    shield_items = [i_ for i_ in items("items") if isinstance(i_, dict) and "shield" in ((i_.get("phys") or {}).get("props") or [])]
+    for i_ in items("items"):
+        ph = i_.get("phys") if isinstance(i_, dict) else None
+        if ph is None:
+            continue
+        if not isinstance(ph, dict) or set(ph.get("props") or []) - SHIELD_PROPS or not ph.get("props") or set(ph) - {"props"}:
+            errors.append(f"items:{i_.get('id')}: an item's phys block is {{props: [shield]}} and nothing else")
+        elif i_.get("slot") != "off_hand":
+            errors.append(f"items:{i_.get('id')}: the Shield property is for an off-hand item")
+    for tid, t in techs.items():
+        nd, inn = t.get("needs") or {}, t.get("innate")
+        if nd.get("shield") and ("shield" not in (t.get("comes_with") or []) or t.get("free")):
+            errors.append(f"techniques:{tid}: a shield's technique comes with the Shield property and is never free")
+        if ("shield" in (t.get("comes_with") or [])) and not nd.get("shield"):
+            errors.append(f"techniques:{tid}: comes with a shield but doesn't need one (needs.shield)")
+        if nd.get("shield") and not shield_items:
+            errors.append(f"techniques:{tid}: needs a shield, and no item carries the Shield property")
+        if inn is not None:
+            if not isinstance(inn, dict) or inn.get("skill") not in skill_ids or not isinstance(inn.get("min"), int) or not 1 <= inn.get("min") <= 10:
+                errors.append(f"techniques:{tid}: innate needs a skill and a level (1 to 10)")
+            if t.get("group") != "answer" or t.get("comes_with") or nd.get("shield") or t.get("free"):
+                errors.append(f"techniques:{tid}: a technique a skill gives is an Answer with no weapon property (the engine lists it with any weapon)")
+        gc = (t.get("numbers") or {}).get("guard_cost")
+        if gc is not None and (not isinstance(gc, int) or gc < 1):
+            errors.append(f"techniques:{tid}: numbers.guard_cost must be a whole number of Guard")
+    # gear gates (proposal 13.3): what a weapon or an item asks is a skill and a level
+    for kind_ in ("weapons", "items"):
+        for g_ in items(kind_):
+            for sk_, n_ in ((g_.get("requires") or {}) if isinstance(g_, dict) else {}).items():
+                if sk_ not in skill_ids or not isinstance(n_, int) or not 1 <= n_ <= 10:
+                    errors.append(f"{kind_}:{g_.get('id')}: requires '{sk_}': {n_} is not a skill and a level (1 to 10)")
+    for sysm, key in (("melee", "default_melee"), ("ranged", "default_ranged")):
+        for tid in st.get(key) or []:
+            if (techs.get(tid, {}).get("needs") or {}).get("shield") or techs.get(tid, {}).get("innate"):
+                errors.append(f"techniques: starting.{key} names '{tid}', which is given, not learned")
     for w in items("weapons"):
         if not isinstance(w, dict):
             continue
