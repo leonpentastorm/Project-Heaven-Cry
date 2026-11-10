@@ -1,126 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" width="1280" height="480">
-  <!-- Hellraiser service rifle: the frontline rifle of the Hellraiser Divisions, built to beat Orks to death when it runs
-       dry. Weapon art rule (Leon, 10 Nov 2026): mechanical, edgy, goth gun-nut. -->
-  <defs>
-    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6d737c"/>
-      <stop offset="0.12" stop-color="#454a52"/>
-      <stop offset="0.55" stop-color="#2a2d33"/>
-      <stop offset="1" stop-color="#121316"/>
-    </linearGradient>
-    <linearGradient id="steelDark" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3b3f46"/>
-      <stop offset="1" stop-color="#0c0d0f"/>
-    </linearGradient>
-    <linearGradient id="polymer" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3a3532"/>
-      <stop offset="1" stop-color="#16110f"/>
-    </linearGradient>
-    <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#d9dde2"/>
-      <stop offset="0.5" stop-color="#8b9199"/>
-      <stop offset="1" stop-color="#3c4046"/>
-    </linearGradient>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#151b27"/>
-      <stop offset="1" stop-color="#0a0d13"/>
-    </linearGradient>
-    <pattern id="hazard" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-      <rect width="14" height="14" fill="#141416"/>
-      <rect width="7" height="14" fill="#a3171b"/>
-    </pattern>
-    <filter id="drop" x="-5%" y="-10%" width="110%" height="130%">
-      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000" flood-opacity="0.7"/>
-    </filter>
-  </defs>
-  <rect width="640" height="240" rx="14" fill="url(#bg)"/>
-  <rect x="1" y="1" width="638" height="238" rx="13" fill="none" stroke="#232D3F" stroke-width="2"/>
-
-  <g filter="url(#drop)" stroke="#050607" stroke-width="2.4" stroke-linejoin="miter">
-    <!-- barrel and gas tube -->
-    <rect x="490" y="96" width="70" height="14" fill="url(#steel)"/>
-    <rect x="470" y="84" width="58" height="9" fill="url(#steelDark)"/>
-    <!-- front sight tower with its hood -->
-    <path d="M520 112 L520 78 L530 64 L548 64 L548 112 Z" fill="url(#steel)"/>
-    <path d="M528 66 L528 78 M540 66 L540 78" stroke="#050607" stroke-width="3"/>
-    <rect x="532" y="68" width="4" height="12" fill="#cfd3d8" stroke="none"/>
-    <!-- muzzle brake: heavy, ported -->
-    <path d="M558 90 L606 90 L614 96 L614 110 L606 116 L558 116 Z" fill="url(#steel)"/>
-    <g fill="#050607" stroke="none">
-      <rect x="566" y="94" width="5" height="18"/><rect x="576" y="94" width="5" height="18"/><rect x="586" y="94" width="5" height="18"/><rect x="596" y="94" width="5" height="18"/>
-    </g>
-
-    <!-- bayonet: a saw-backed blade on a lug under the barrel -->
-    <path d="M548 118 L598 118 L632 125 L598 132 L548 132 Z" fill="url(#blade)"/>
-    <path d="M562 118 L567 113 L572 118 L577 113 L582 118 L587 113 L592 118" fill="url(#blade)" stroke-width="1.4"/>
-    <path d="M552 125 L614 125" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1.2" fill="none"/>
-    <path d="M522 112 L552 112 L556 134 L522 134 Z" fill="url(#steelDark)"/>
-    <rect x="528" y="118" width="10" height="10" fill="#050607" stroke="none"/>
-    <!-- handguard: angular, vented, with a slanted lower edge -->
-    <path d="M378 76 L476 76 L494 88 L494 106 L472 132 L404 132 L392 124 L378 124 Z" fill="url(#polymer)"/>
-    <g fill="#050607" stroke="none">
-      <path d="M402 88 L412 88 L404 112 L394 112 Z"/><path d="M420 88 L430 88 L422 112 L412 112 Z"/>
-      <path d="M438 88 L448 88 L440 112 L430 112 Z"/><path d="M456 88 L466 88 L458 112 L448 112 Z"/>
-    </g>
-    <path d="M384 78 L474 78 L488 86" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.6" fill="none"/>
-
-    <!-- receiver: a slab with a chamfered nose -->
-    <path d="M176 70 L370 70 L384 78 L384 128 L176 128 Z" fill="url(#steel)"/>
-    <path d="M178 72 L368 72 L382 80" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.6" fill="none"/>
-    <!-- top rail with teeth -->
-    <path d="M190 56 L372 56 L372 70 L190 70 Z" fill="url(#steelDark)"/>
-    <g fill="#5c626b" stroke="none">
-      <rect x="196" y="58" width="8" height="5"/><rect x="212" y="58" width="8" height="5"/><rect x="228" y="58" width="8" height="5"/>
-      <rect x="244" y="58" width="8" height="5"/><rect x="260" y="58" width="8" height="5"/><rect x="276" y="58" width="8" height="5"/>
-      <rect x="292" y="58" width="8" height="5"/><rect x="308" y="58" width="8" height="5"/><rect x="324" y="58" width="8" height="5"/>
-      <rect x="340" y="58" width="8" height="5"/><rect x="356" y="58" width="8" height="5"/>
-    </g>
-    <!-- rear aperture sight -->
-    <path d="M196 56 L196 40 L214 40 L220 56 Z" fill="url(#steel)"/>
-    <circle cx="206" cy="47" r="3.2" fill="#050607" stroke="none"/>
-    <!-- side plate, ejection port, charging handle -->
-    <path d="M196 80 L330 80 L340 90 L340 118 L196 118 Z" fill="url(#steelDark)" stroke-width="1.6"/>
-    <rect x="272" y="86" width="54" height="12" fill="#050607" stroke="none"/>
-    <rect x="276" y="89" width="46" height="6" fill="#b08a3a" stroke="none"/>
-    <path d="M232 84 L258 84 L264 90 L258 96 L232 96 Z" fill="url(#steel)"/>
-    <!-- red war-paint stripe and the division stencil -->
-    <path d="M176 120 L384 120 L384 128 L176 128 Z" fill="#a3171b" stroke="none"/>
-    <text x="350" y="112" font-family="'Chakra Petch', 'Arial Narrow', sans-serif" font-size="12" font-weight="700" fill="#c9ccd1" stroke="none" text-anchor="middle" letter-spacing="1">101</text>
-    <!-- bolts -->
-    <g fill="#8a9099" stroke="#050607" stroke-width="1">
-      <circle cx="186" cy="80" r="3"/><circle cx="186" cy="116" r="3"/><circle cx="372" cy="86" r="3"/><circle cx="372" cy="114" r="3"/>
-      <circle cx="206" cy="108" r="2.6"/><circle cx="226" cy="108" r="2.6"/>
-    </g>
-    <!-- selector -->
-    <path d="M212 98 L238 104" stroke="#cfd3d8" stroke-width="4" stroke-linecap="round"/>
-
-    <!-- box magazine: oversized, slight curve, ribbed, witness holes -->
-    <path d="M300 128 L350 128 L356 178 L362 214 L314 220 L306 184 Z" fill="url(#steelDark)"/>
-    <path d="M306 140 L350 140 M308 156 L352 156 M310 172 L355 172 M312 188 L358 188" stroke="#4b5059" stroke-width="2" fill="none"/>
-    <g fill="#b08a3a" stroke="none">
-      <circle cx="342" cy="148" r="2.2"/><circle cx="344" cy="164" r="2.2"/><circle cx="346" cy="180" r="2.2"/>
-    </g>
-    <path d="M312 214 L364 208 L366 218 L314 226 Z" fill="url(#steel)"/>
-
-    <!-- pistol grip: angular, stippled -->
-    <path d="M234 128 L268 128 L256 186 L250 196 L230 196 L224 188 L230 140 Z" fill="url(#steelDark)"/>
-    <path d="M236 142 L258 142 M234 156 L256 156 M232 170 L254 170 M230 184 L252 184" stroke="#4b5059" stroke-width="2" fill="none"/>
-    <path d="M266 130 L255 186" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1.6" fill="none"/>
-    <!-- trigger guard: angular -->
-    <path d="M268 128 L268 150 L296 150 L300 128" fill="none" stroke="url(#steel)" stroke-width="6"/>
-    <path d="M268 128 L268 150 L296 150 L300 128" fill="none" stroke="#050607" stroke-width="1"/>
-    <path d="M280 130 L278 140 L284 146" fill="none" stroke="#cfd3d8" stroke-width="3" stroke-linecap="round"/>
-
-    <!-- skeletonised straight-line stock with a cheek riser and a hazard-striped butt -->
-    <path d="M178 72 L144 72 L136 64 L86 64 L78 72 L44 74 L34 78 L34 148 L48 152 L178 124 Z" fill="url(#steel)"/>
-    <path d="M64 88 L166 84 L166 104 L76 130 Z" fill="url(#bg)" stroke-width="2"/>
-    <path d="M40 82 L56 82 L56 144 L40 148 Z" fill="url(#steelDark)" stroke-width="1.6"/>
-    <path d="M28 76 L40 78 L40 150 L28 154 Z" fill="url(#hazard)"/>
-    <path d="M84 66 L138 66" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1.6" fill="none"/>
-    <path d="M98 146 L106 138" stroke="#a3171b" stroke-width="4" fill="none"/>
-    <!-- trench spikes on the riser -->
-    <path d="M92 64 L98 52 L104 64 M110 64 L116 52 L122 64 M128 64 L134 52 L140 64" fill="url(#steel)" stroke-width="1.6"/>
-    <!-- sling loop -->
-    <path d="M116 140 Q124 152 134 136" fill="none" stroke="#8a9099" stroke-width="3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Hellraiser service rifle. Monoline icon: one outline for the silhouette, a few interior lines; 64 grid, 2-unit
+       stroke, gaps never narrower than the stroke. -->
+  <g transform="translate(0 4) rotate(-16 32 32)">
+    <!-- the silhouette: stock, rail, receiver, handguard, barrel, brake, magazine, grip -->
+    <path d="M2.5 24.5 L17 22.5 L17 19.5 L35 19.5 L35 21.5 L46 21.5 L48 23.5 L55 23.5 L55 21.5 L60.5 21.5 L60.5 29.5
+             L55 29.5 L55 27.5 L48 27.5 L45 30.5 L35 30.5 L36 42 L30.5 42.5 L29 30.5 L24 30.5 L22.5 39.5 L17.5 39 L19 30.5
+             L17 30.5 L5 36.5 L2.5 35.5 Z"/>
+    <!-- stock cutout and two trench spikes -->
+    <path d="M7 27.5 L13.5 26.8 L8 31 Z"/>
+    <path d="M6 24 L7.5 20.5 L9 23.6 M10.5 23.4 L12 20 L13.5 23"/>
+    <!-- receiver: ejection port; trigger -->
+    <path d="M21 25 L29 25"/>
+    <path d="M24 30.5 L24 34 L28 34"/>
+    <!-- handguard vents, front sight, brake port -->
+    <path d="M39.5 24.5 L39 27.5 M43 24.5 L42.5 27.5"/>
+    <path d="M50.5 23.5 L50.5 18.5"/>
+    <path d="M57.8 21.5 L57.8 29.5"/>
+    <!-- bayonet -->
+    <path d="M48.5 32.5 L55 32.5 L62.5 34 L55 35.5 L48.5 35.5"/>
   </g>
 </svg>

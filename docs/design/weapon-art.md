@@ -1,44 +1,51 @@
-# Weapon art: mechanical, edgy, goth gun-nut (rule, Leon, 10 Nov 2026)
+# Weapon icons: monoline, and every weapon looks cool (rule, Leon, 10 Nov 2026)
 
-**Every weapon in the game looks cool, in a mechanical, edgy, 2009 goth gun-nut way.** Not cute, not soft, not a
-friendly UI pictogram. Leon's verdict on a soft line icon was "goofy ass icon"; these two drawings are the reference
-for the bar instead:
+Two rulings from Leon on 10 Nov 2026:
 
-| Weapon | Reference |
+1. **Every weapon looks cool, in a mechanical, edgy, 2009 goth gun-nut way.** Not cute, not soft. (A soft line icon of
+   the censer gun was "goofy".)
+2. **The icons are monoline, like a professional line-icon set** (his reference: a 40-icon outline weapon set).
+   Hand-drawn shaded SVG paintings don't reach the quality of painted art, so weapon icons don't try: they are clean
+   outline icons, and the edge lives in the silhouette.
+
+| Weapon | Icon |
 |---|---|
-| Hellraiser service rifle (`hellraiser_service_rifle`) | [`weapon-art/hellraiser_service_rifle.svg`](weapon-art/hellraiser_service_rifle.svg) (render: `.png`) |
-| Lumeri censer gun (`lumeri_censer_gun`) | [`weapon-art/lumeri_censer_gun.svg`](weapon-art/lumeri_censer_gun.svg) (render: `.png`) |
+| Hellraiser service rifle (`hellraiser_service_rifle`) | [`weapon-art/hellraiser_service_rifle.svg`](weapon-art/hellraiser_service_rifle.svg) |
+| Lumeri censer gun (`lumeri_censer_gun`) | [`weapon-art/lumeri_censer_gun.svg`](weapon-art/lumeri_censer_gun.svg) |
+
+Preview (each at 256, 64 and 32 px, on the panel and on white): [`weapon-art/preview.png`](weapon-art/preview.png).
 
 ## The rule
 
-1. **Side profile, muzzle to the right, the whole weapon,** on the game's dark panel (`#10151F`–`#0A0D13`, a
-   `#232D3F` frame). **Silhouette first:** it must still read as that weapon at 160 × 60 px.
-2. **Over-built and mechanical.** Slab plates, chamfers and bevels, visible bolts and rivets, rails with teeth, ports,
-   ejection ports, levers, bands. Exaggerate the part that says what the weapon does: the Hellraiser's ported brake and
-   bayonet, the censer gun's caged censer, a drum, a core, a fuel tank.
-3. **Edge.** Blades, spikes, saw-backs, teeth, hazard stripes, war paint, unit stencils, trophies, charms, prayer
-   beads. Something on every weapon is sharp, painted or hung on it.
-4. **Goth.** Blackened iron and gunmetal, aged brass, dark wood, bone and leather. Ornament where the faction would
-   put it: lancet windows, filigree, reliquaries, sun marks, skulls only where the faction is that kind of faction.
-5. **Light.** A hard rim light on the top edges, deep shadow underneath, a drop shadow under the weapon, and **at most
-   one glow** (embers, a mana core, a pilot light).
-6. **Faction signature,** so a weapon says who made it (from the EPCCG; Suggested until Leon confirms each):
-   - **Hellraiser Divisions:** brutal slabs, war-red paint (`#A3171B`), division numbers (101, 237), bayonets,
-     trench spikes, hazard stripes.
-   - **Lumeri Church:** gothic church iron, brass, lancet windows on embers, the Lumeri sun, incense, prayer beads.
-   - **Adamantile Brigade:** knightly plate, heavy rivets, engraved crests, oversized everything.
-   - **Science Team / Sigil arms:** precise machining, glass core windows glowing in the Mind cyan (`#4FC8DF`).
-   - **Thousand World Legion:** clean, mass-produced, stencilled serials, practical.
-   - **Rigaz Trade Company:** corporate polish, the ™® on everything, a price tag.
-   - **Orks:** crude scrap, welds, teeth, tape, nails.
-   - **Central City:** chrome, civilian lines, shock-baton blue.
-7. **Invented, never real.** Real guns are loose reference for how mechanisms work, never a recognisable real model,
-   maker mark or name (the Unspoken Name). Stencils and marks are in-world: division numbers, the Lumeri sun.
-8. **Format.** An SVG master on a 640 × 240 viewBox, built from shapes, gradients and line work. Textures (grain,
-   rust, scratches) only from CC0 / CC BY 4.0 sources, credited, as the sound and VFX rule says (CLAUDE.md).
-   Weapon art never uses the white flat ink of the Wick icons: that ink is for traits, perks and prayers only.
+**The line**
+1. **A 64 × 64 viewBox, a 2-unit stroke**, round caps and joins, no fill, `stroke="currentColor"`. The UI sets the
+   colour: white ink on the dark panel, or an attribute's ink where the screen colours by meaning.
+2. **One closed outline for the silhouette**, then **two to four interior lines** for what matters (a port, a vent,
+   a window, the trigger). Never a pile of separate parts.
+3. **Gaps never narrower than the stroke.** Two parallel lines sit at least 4 units apart centre to centre, or they
+   blur into one at 32 px.
+4. **Long guns lie along a slight diagonal** (about −16°, muzzle up and right) and fill the square; pistols and
+   blades may sit straight or on the 45°. Centre the weight in the square.
+5. **It must read at 32 px.** Check at 256, 64 and 32 before it ships.
+
+**The cool**
+6. **The silhouette carries the edge:** a bayonet, a saw-back, trench spikes, a ported brake, a drum, a censer, a
+   blade, a hook. Every weapon gets one thing that's sharp, heavy or strange.
+7. **A faction signature in one or two lines** (Suggested until Leon confirms each):
+   - **Hellraiser Divisions:** bayonets, trench spikes, ported brakes, slab shapes.
+   - **Lumeri Church:** lancet windows, the censer, spires, prayer beads, incense.
+   - **Adamantile Brigade:** plate shapes, oversized guards, crests.
+   - **Science Team / Sigil arms:** a core window, precise straight lines.
+   - **Thousand World Legion:** plain, mass-produced shapes.
+   - **Rigaz Trade Company:** sleek lines and a tag.
+   - **Orks:** jagged, nailed, uneven outlines.
+   - **Central City:** clean civilian lines.
+8. **Invented, never real.** Real guns are loose reference for how mechanisms work, never a recognisable real model,
+   maker mark or name (the Unspoken Name).
+9. **Not Wick's mode.** Weapon icons are their own mode: Wick's white flat-ink figures are for traits, perks and
+   prayers only.
 
 ## Where it's used
 
-The inventory and backpack rows, the Proving Ground's gear list, loot piles' hover cards and the reload card. Not
-built yet: these two are the reference; the other 58 weapons in `data/weapons.json` follow this rule as they're drawn.
+The inventory and backpack rows, the Proving Ground's gear list, pile hover lists and the reload card. These two are
+the reference; the other 58 weapons in `data/weapons.json` follow the rule as they're drawn.
