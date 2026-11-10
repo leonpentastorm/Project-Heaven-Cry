@@ -9,8 +9,9 @@
 import { type Combat, type Unit, alive, dist, coverOf, coverTileFor, unitSees, emitFx, xy, key } from '../combat';
 import { onHook, charOfUnit } from '../effects/hooks';
 import { condOn } from '../magic';
+import { isSilent } from '../tactics';
 import { WEAPON } from '../data';
-import { PHYS_RULES, TECHNIQUE, weaponProps, addDrill, drillMult } from './data';
+import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
 import { pressureOf, pressureState, addPressureTo, lowerPressureOf, isPressed, isSuppressed, onPressureState } from './pressure';
 import { ensureMomentum, strikeNoPressure, turnStamp, endWatch } from './core';
 
@@ -42,7 +43,7 @@ onHook('on_hit', (ctx: any, cb) => {
   const stamp = turnStamp(cb), pt = att.pressedThis?.t === stamp ? att.pressedThis : (att.pressedThis = { t: stamp, ids: [] as string[] });
   if (pt.ids.includes(tgt.id)) return; pt.ids.push(tgt.id);
   if (strikeNoPressure(att) || !alive(tgt)) return;
-  const unseen = !!att.hidden && weaponProps(att.weapon).includes('silent');
+  const unseen = !!att.hidden && isSilent(att); // the Silent property, or a suppressor fitted
   let n = unseen ? P().unseen_silent_hit : 1, why = unseen ? 'an unseen hit' : 'a hit';
   if (flanksCover(cb, att, tgt)) { n += P().flank_bonus; why += ' past its cover'; }
   addPressureTo(cb, tgt, n, att, why, { hidden: unseen });

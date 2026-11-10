@@ -219,3 +219,19 @@ describe('enemies', () => {
     expect(used[0]).toBe('Lunge'); expect(used).toContain('Coup'); expect(f.foe.pos).toBe(f.tile('D5'));
   });
 });
+
+describe('what each side sees', () => {
+  it('a Silent weapon\'s unseen hit hides its pips from the target\'s side, in the meters and in the room\'s view', async () => {
+    const { viewFor } = await import('../src');
+    const f = physFight([{ weapon: 'parlour_pistol', skills: { dexterity: 6 } }], [{ at: 'H8', tier: 'soldier' }]); f.put(f.pc, 'D8'); f.put(f.foe, 'H8'); f.turn(f.pc);
+    f.pc.hidden = true; rig({ hit: true, die: 12 });
+    expect(f.tech('shot', { targetId: f.foe.id })).toBeNull();
+    expect(f.pressure(f.foe)).toBe(2); expect(f.foe.pressHidden).toBe(2);
+    const mine = f.bound(() => phys.physView(f.cb, f.foe, 'pc')), theirs = f.bound(() => phys.physView(f.cb, f.foe, 'foe'));
+    expect(mine.pressure.now).toBe(2); expect(theirs.pressure.now).toBe(0); expect(theirs.pressure.by).toEqual([]);
+    expect(viewFor(f.g, 'host').combat!.units.find((u) => u.id === f.foe.id)!.pressure).toBe(2); // the shooter's side sees them
+    expect(f.pc.hidden).toBe(true); // a Silent weapon never reveals its user
+    f.press(f.pc, 2, f.foe); f.unit(f.pc.id).pressHidden = 2; // the other way round: pips on a player that their side can't see
+    const v = viewFor(f.g, 'host').combat!.units.find((u) => u.id === f.pc.id)!; expect(v.pressure).toBeUndefined(); expect(v.pressHidden).toBeUndefined();
+  });
+});

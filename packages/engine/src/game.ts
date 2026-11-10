@@ -10,7 +10,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, sideSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -1769,6 +1769,15 @@ export const DRONE_ROUND_AP = COMPANION_ROUND_AP.drone;
 
 // ---------- views ----------
 /** What one player may see: no hooks, no one else's voices or Overreach. */
+/** One unit as a side may see its Physical 2.0 state (viewFor). The unit is copied only when something is taken out. */
+function physFog(cb: Combat, u: Combat['units'][number], me: 'pc' | 'foe'): Combat['units'][number] {
+  const hid = u.side === me ? Math.min(u.pressure || 0, u.pressHidden || 0) : 0, blind = u.side !== me && !!u.watch && !sideSees(cb, me, u);
+  if (!hid && !blind) return u;
+  const x = { ...u };
+  if (hid) { const left = (u.pressure || 0) - hid; if (left > 0) x.pressure = left; else { delete x.pressure; delete x.pressBy; } delete x.pressHidden; }
+  if (blind) delete x.watch;
+  return x;
+}
 export function viewFor(g: GameState, playerId: string): GameState {
   // The skill panel shows Ask only where a voice has something (Silent elsewhere): which skills, never the hooks themselves.
   const sc = g.story.scene, voiced: Record<string, string[]> = {};
@@ -1788,6 +1797,9 @@ export function viewFor(g: GameState, playerId: string): GameState {
   // has eyes). A move's per-tile sight and a turn's or stance's seen keep the viewer's own side only.
   if (v.combat) { v.combat = { ...v.combat }; delete v.combat.sightSeen; delete v.combat.sightPos; delete v.combat.sightWhy; }
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
+  // Physical 2.0 (rules 1.12): a Silent weapon's pips are hidden from the side they are on; a held shot shows to its
+  // own side, and to the other side only while it sees the holder.
+  if (v.combat && g.combat) { const cb0 = g.combat; v.combat = { ...v.combat, units: v.combat.units.map((u) => physFog(cb0, u, me)) }; }
   pileFog(g, v, me); // rules 1.9: a pile shows only on a tile the viewer's party sees now (item 676)
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
@@ -2727,7 +2739,9 @@ const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.co
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
   'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
-  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes'] as const;
+  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
+  // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
+  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload'] as const;
 
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */

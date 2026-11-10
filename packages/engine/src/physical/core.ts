@@ -409,7 +409,9 @@ export function holdWatch(t: Tech, spec: WatchSpec): void {
   endWatch(t.cb, t.u, 'replaced'); t.u.overwatch = null;
   const w: HeldWatch = { id: t.def.id, hand: t.hand, ap: t.pv.ap, r: t.cb.round, ...spec };
   (t.u as any).watch = w;
-  emitFx(t.cb, 'watch_set', { unit: t.u.id, at: t.u.pos, id: w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), allyId: w.allyId || null, targetId: w.targetId || null });
+  // a held shot the other side can't see being set is its holder's side's to know (viewFor drops an event marked `only`)
+  emitFx(t.cb, 'watch_set', { unit: t.u.id, at: t.u.pos, id: w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), allyId: w.allyId || null, targetId: w.targetId || null,
+    ...(sideSees(t.cb, t.u.side === 'pc' ? 'foe' : 'pc', t.u) ? {} : { only: t.u.side }) });
 }
 /** Drop a held Watch (the user's next turn, Pressed, smoke, a flashbang). */
 export function endWatch(cb: Combat, u: Unit, why: string): void {
