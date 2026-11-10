@@ -143,6 +143,14 @@ export interface Unit {
   infiniteAmmo?: boolean;
   /** Class resources (Momentum, Guard, Marks, Charges, Supplies…): current values, and maxima. */
   res?: Record<string, number>; resMax?: Record<string, number>;
+  /** Physical 2.0 (rules 1.12; src/physical). Pressure 0–4 on this unit, how many of its pips its own side can't see (a
+   * Silent weapon's), who put it there, who hit it in which round and with which weapon (Crossfire; drill on the kill),
+   * turns left of Stopped once, the Watch it holds, its melee chain this turn, per-technique state, a set-up mark, an
+   * enemy's technique list, a Drawn weapon's quiver, and a free speed reload owed (Last Round). */
+  pressure?: number; pressHidden?: number; pressBy?: Record<string, string>; hitRound?: Record<string, number>; hitWith?: Record<string, string>;
+  stopped?: number; watch?: import('./physical/types').HeldWatch; chain?: { t: string; n: number; last: string | null; ended: boolean };
+  tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
+  techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean; pressedThis?: { t: string; ids: string[] }; nearFoe0?: number; noWatch?: number;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
   /** Rules 1.6 (faith.ts): the vow sworn for this fight, and the faith state of the fight (tags seen per action, the
@@ -887,7 +895,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     if (pool.length) { const pick = pool[die(rng, pool.length) - 1]; cb.log.push(att.name + ' is Confused: the attack goes at ' + pick.name + ' instead.'); tgt0 = pick; }
   }
   // ctx.locked: an item that keeps the attack on its first target whatever redirects it (Rabbit's Foot's hunters).
-  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, mods: cb.mods || [], locked: null }), tgt: Unit = at.locked || at.tgt || tgt0;
+  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, rng, mods: cb.mods || [], locked: null }), tgt: Unit = at.locked || at.tgt || tgt0;
   if (!who) who = charFor(att);
   if (att.companion) who = null; // a companion fights with its own numbers
   const pv = previewAttack(cb, att, tgt, mode, { extra: opts.extra, free: opts.free || opts.noAp, noRecoil: !!opts.noAp });
@@ -1203,7 +1211,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
     if (!stopped && rng && (cb.zones || []).length && zoneEnter(cb, rng, u, k)) { stopped = 'trap'; flush(); }
     // Rules 1.7: hazards fire on every tile entered, at any speed (the area map's moves roll on cb.worldRng).
     if (!stopped && cb.hazards?.some((h) => hazardLiveAt(h, k, u.side))) { flush(); const hz = hazardStep(cb, rng || cb.worldRng, u, k); if (hz) stopped = hz; }
-    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng });
+    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
     if (reacts && !u.dead && !u.downed) {
       // Opportunity attacks (spec): leaving an enemy's melee reach without Disengaging, checked at each step.

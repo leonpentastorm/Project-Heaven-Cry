@@ -21,6 +21,9 @@ export interface Sheet {
   downedFails?: number;
   skills: Record<string, number>; attrs: Record<string, number>; cores: Record<CoreId, number>;
   identity: Record<string, string>; archetype?: string | null;
+  /** Physical 2.0 (rules 1.12): the techniques picked at creation, by system (none: the defaults). Moved into the
+   * character's technique state (phys) the first time that is written. */
+  techniques?: { melee?: string[]; ranged?: string[] };
   /** Race, as free text (rules 1.3; The Old Blood reads it): human unless the player says otherwise. */
   race?: string;
   /** Starting magic chosen at creation (spec: The Magic panel): 2 Sigil words that make a Stack, and 1 Outburst design. */
@@ -45,6 +48,8 @@ export interface Vow { id: string; allyId?: string; state: 'sworn' | 'kept' | 'b
 export interface Character extends Sheet {
   id: string; owner: string;
   level: number; xp: number; xpBySource: Record<string, number>;
+  /** Physical 2.0 (rules 1.12): techniques known and ready, drill per weapon, picks taken, quivers (physical/data.ts). */
+  phys?: import('./physical/data').CharPhys;
   hp: number; echo: number; classId: string | null;
   perks: { id: string; tier: 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' }[];
   unspent: { skill: number; attr: number; core: number };
