@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Frontier hand cannon -->
+  <path d="M17 14.5 L20 14.5 L20 12.5 Q20 11 21.5 11 L36.5 11 Q38 11 38 12.5 L38 17 L46 17 L46 14.5 L61 14.5
+           L61 29 L46 29 L46 27 L38 27 L38 32.5 Q38 34 36.5 34 L23 34 L20.5 53 Q20.3 55 18.3 55 L8 55 Q6 55 6.2 53
+           L9.5 24 Q8 15 3 9.5 Q11 10.5 17 14.5 Z"/>
+  <path d="M20 14.5 L20 34"/>
+  <path d="M51 14.5 L51 20.5 M56 14.5 L56 20.5"/>
+  <path d="M33 34 L33 37.5 Q33 41 29.5 41 L22.6 41"/>
+</svg>

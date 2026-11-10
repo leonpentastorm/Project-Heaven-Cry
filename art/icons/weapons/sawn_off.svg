@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sawn-off -->
+  <g transform="translate(-0.5 2) rotate(-16 32 32)">
+    <path d="M12 22.5 L24 22 L22.5 16.5 L27.5 22 L54 22 L56.5 30 L25 30 L21.5 40.5 L15.5 40.5 L18 30 L12 28 Z"/>
+    <path d="M27 26 L55.3 26"/>
+    <path d="M30 30 L30 34 L23.7 34"/>
+  </g>
+</svg>

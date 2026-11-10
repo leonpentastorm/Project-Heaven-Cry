@@ -5,6 +5,7 @@
 // Every item runs every tier in combat, on the area map where it applies, and its story part where it has one; what
 // the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit (plan
 // section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
+import { isPressed } from '../physical/pressure';
 import { register, stateOf, uses, note, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
@@ -58,7 +59,7 @@ function runningReload(h: Holder, u: Unit, cb: Combat, wantReload: boolean, want
     const e = free(u, () => clearJam(cb, u)); if (e) uses(h).refund('per_turn', h.key + RR_CLEAR); else did.push('clears the jam');
   }
   if (wantReload && canReloadNow(u) && uses(h).take('per_turn', 1, h.key + RR_RELOAD)) {
-    const e = free(u, () => reload(cb, u)); if (e) { uses(h).refund('per_turn', h.key + RR_RELOAD); say(cb, '(Running Reload: ' + e + ')'); } else did.push('reloads');
+    const e = free(u, () => reload(cb, u, { free: true })); if (e) { uses(h).refund('per_turn', h.key + RR_RELOAD); say(cb, '(Running Reload: ' + e + ')'); } else did.push('reloads');
   }
   if (did.length) say(cb, u.name + ' ' + did.join(' and ') + ' on the move (Running Reload: no extra AP).');
   return did.join(', ');
@@ -478,7 +479,7 @@ register({
   actions: [{
     id: 'hold_line', label: 'Hold the line (all AP)', scope: ['combat'], target: 'none', ap: 0,
     text: 'Overwatch with every shot your AP pays for: each enemy that moves in your sight before your next turn draws one.',
-    available: (h) => (!h.u || isMelee(WEAPON[h.u.weapon]) ? false : h.u.overwatch ? 'Already on overwatch.' : h.u.ap < owCost(h.u, 'shot') ? 'Needs ' + owCost(h.u, 'shot') + ' AP.' : true),
+    available: (h) => (!h.u || isMelee(WEAPON[h.u.weapon]) ? false : h.u.overwatch ? 'Already on overwatch.' : isPressed(h.u) ? 'You are Pressed: you can\'t hold a shot.' : h.u.ap < owCost(h.u, 'shot') ? 'Needs ' + owCost(h.u, 'shot') + ' AP.' : true),
     preview: (h, args) => { const u = h.u!, c = owCost(u, args.choice || 'shot'), n = Math.floor(u.ap / c); return n < 1 ? { ok: false, why: 'Needs ' + c + ' AP.' } : { lines: [n + (n === 1 ? ' shot' : ' shots') + ' held (' + c + ' AP each).'] }; },
     run: (h, args) => {
       const u = h.u!, cb = h.cb!, mode = args.choice === 'aimed' ? 'aimed' : 'shot', c = owCost(u, mode), n = Math.floor(u.ap / c); if (n < 1) return 'Needs ' + c + ' AP.';
@@ -492,7 +493,7 @@ register({
     move_step: (ctx, h) => {
       const u = h.u, st = stateOf(h), cb = h.cb; if (!u || !cb || st.pool == null || ctx.u.side === u.side || !alive(u)) return;
       if (ctx.i === 0) (st.shot ||= {})[ctx.u.id] = false; // a new move: this mover can draw a shot again
-      if (u.overwatch || st.shot?.[ctx.u.id] || st.pool < st.cost) return;
+      if (u.overwatch || isPressed(u) || st.shot?.[ctx.u.id] || st.pool < st.cost) return; // rules 1.12: Pressed holds no shot
       u.overwatch = st.mode; st.pool -= st.cost;
       if (st.owUsed === cb.round) refundReaction(cb, u); // the chain runs on the one reaction its first shot used
     },
@@ -564,7 +565,7 @@ register({
       const b = ctx.att?.ps?.[BLESS]; if (!b || !b.loaded || ctx.melee || ctx.spell || ctx._holy || !holyFoe(ctx.tgt)) return;
       ctx.vs.push({ v: Math.round((b.mult - 1) * 100) / 100, label: 'Holy Ordnance' }); ctx._holy = true;
     },
-    reload: (ctx) => { const b = ctx.u?.ps?.[BLESS]; if (!b) return; b.loaded = false; if (b.spare > 0) { b.spare--; b.loaded = true; } if (!b.loaded && !b.spare) delete ctx.u.ps[BLESS]; },
+    reload: (ctx) => { const b = ctx.u?.ps?.[BLESS]; if (!b || ctx.hand === 'off') return; /* the blessed magazines are the main gun's */ b.loaded = false; if (b.spare > 0) { b.spare--; b.loaded = true; } if (!b.loaded && !b.spare) delete ctx.u.ps[BLESS]; },
     combat_end: (ctx, h) => {
       const g = h.g, cb = h.cb; if (!g || !cb) return;
       for (const v of cb.units) { const b = v.ps?.[BLESS], c = v.charId ? g.characters?.[v.charId] : null; if (b && c && (b.loaded || b.spare)) charState(c).holyBless = { mult: b.mult, mags: (b.loaded ? 1 : 0) + b.spare }; if (b) delete v.ps![BLESS]; }

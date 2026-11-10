@@ -1,7 +1,7 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, WEAPON, visibility } from '@engine';
+import { type FxEvent, type GameState, SIGIL, WEAPON, visibility, phys } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
@@ -9,6 +9,9 @@ import { soulHandlers, soulBeat, discharge } from './soul';
 import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
+import { physHandlers, physBeat } from './physical';
+import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
+import { wrapRanged, rangedBeat, rangedBatch, resetRanged } from './ranged';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
@@ -17,7 +20,7 @@ import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
 import { reloadCard } from './reload';
 import { bangMark, bangDue, tickDue, noteSight, noteOverwatch, tagChip, aimLine, resetSight, HOSTILE_INK, OTHER_INK } from './sight';
-import { type Pt, after, bumpGen, withTempo, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
+import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
 
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
@@ -62,14 +65,15 @@ const lastTok = new Map<string, HTMLElement>();
 const ghosts = new Map<string, HTMLElement>();
 /** After each render: copy the living units' tokens (never overwritten by a dead unit's empty tile). */
 export function rememberTokens() {
+  try { rememberTiles(); } catch { /* the effects never stop the game */ }
   for (const id of [...lastTok.keys()]) if (!units.has(id)) lastTok.delete(id);
   for (const [id, u] of units) { if (u.dead || heldIds().has(id)) continue; const t = tokenEl(tileEl(u.pos)); if (t) lastTok.set(id, t.cloneNode(true) as HTMLElement); } // a held token is see-through: keep the last good copy
 }
-function ghostOf(id: string | null | undefined, key: string | null | undefined): HTMLElement | null {
+function ghostOf(id: string | null | undefined, key: string | null | undefined, life = 2400): HTMLElement | null {
   if (!id || !key || !visible(key)) return null;
   const had = ghosts.get(id); if (had && had.isConnected) return had;
   const src = lastTok.get(id) || lookEl(id), p = centre(key); if (!src || !p) return null;
-  const copy = src.cloneNode(true) as HTMLElement, ms = 2400;
+  const copy = src.cloneNode(true) as HTMLElement, ms = life;
   copy.style.opacity = ''; // a copy kept from a see-through (held) token
   const box = put(copy, p, p.s, p.s, ms); box.style.zIndex = '1';
   anchor(box, key, ms);
@@ -82,7 +86,13 @@ const tokOrGhost = (id: string | null | undefined, key: string | null | undefine
 const visible = (k: string | null | undefined) => !k || !seenTiles || seenTiles.has(k);
 /** Where a unit's token is on screen now (it may have moved since the event); a walker stopped on the event's tile (an
  *  Overwatch shot mid-walk) is the token there. */
-const tokOf = (id: string | null | undefined, fallback?: string) => parkedOn(id, fallback) || tokenEl(tileEl(unit(id)?.pos || fallback));
+const tokOf = (id: string | null | undefined, fallback?: string) => parkedOn(id, fallback) || standOf(id, fallback) || tokenEl(tileEl(unit(id)?.pos || fallback));
+/** A unit held where it was (its walk or its push not played yet): the stand-in on that tile is its token (a shot lands on
+ *  it, a flash shows on it). */
+function standOf(id: string | null | undefined, key: string | null | undefined): HTMLElement | null {
+  const w = id ? waiting.get(id) : undefined, st = w?.stand; if (!st || !st.isConnected || (key && st.getAttribute('data-phc-stand-at') !== key)) return null;
+  const c = st.firstElementChild as HTMLElement | null; return (c?.querySelector('[data-phc-gtok]') as HTMLElement | null) || c;
+}
 /** Does the squad see this unit now (its own always; everyone outside a fight)? */
 const seesUnit = (id: string | null | undefined) => !id || !seenUnits || seenUnits.has(id);
 const at = (k: string | null | undefined) => (visible(k) ? centre(k) : null);
@@ -188,6 +198,7 @@ export function fxHeldUnits(g: GameState | null | undefined): Set<string> {
   if (p == null && (cb.round || 1) <= 1 && (cb.fx || []).length <= 40 && ((cb.fx || [])[0]?.n || 1) <= 1) p = 0; // a fight's opening: it will play (FxLayer's own test)
   if (p == null) return out;
   for (const e of cb.fx || []) if (e.n > p && e.unit && mineOnly(e) && (e.k === 'move' || (e.k === 'sight' && (e.how === 'enter' || e.how === 'reveal')))) out.add(String(e.unit));
+  for (const e of cb.fx || []) if (e.n > p && e.k === 'shove' && e.target && e.ok && e.from !== e.to && mineOnly(e)) out.add(String(e.target));
   return out;
 }
 /** What each unit's token looks like (the combat screen tells the layer every render): a walk whose unit has no token
@@ -239,7 +250,11 @@ export const isHeld = (id: string) => waiting.has(id);
 export function moversOf(evs: FxEvent[], sideOf: (id: string) => string | undefined): Map<string, { kind: 'walk' | 'sight' | 'lost'; stand: string | null }> {
   const out = new Map<string, { kind: 'walk' | 'sight' | 'lost'; stand: string | null }>();
   for (const e of evs) {
-    if (!mineOnly(e) || !e.unit) continue;
+    if (!mineOnly(e)) continue;
+    // a push (Stopping Shot, a shove): the unit stays where it was until its push plays (live check, 10 Nov 2026: it
+    // stood on the tile it was pushed to before the shot that pushed it landed)
+    if (e.k === 'shove' && e.target && e.ok && e.from && e.to && e.from !== e.to) { const t = String(e.target); if (!out.has(t)) out.set(t, { kind: 'walk', stand: String(e.from) }); continue; }
+    if (!e.unit) continue;
     const id = String(e.unit);
     if (out.has(id)) continue;
     if (e.k === 'move') {
@@ -263,14 +278,87 @@ export function holdMovers(evs: FxEvent[]) {
     let stand: HTMLElement | null = null;
     const p = m.stand && (m.stand !== u.pos || m.kind === 'lost') ? centre(m.stand) : null, src = lastTok.get(id) || live || lookEl(id);
     if ((m.kind === 'walk' || m.kind === 'lost') && p && src) {
-      stand = putCopy(id, src, p, HOLD_MS); stand.setAttribute('data-phc-stand', id);
+      stand = putCopy(id, src, p, HOLD_MS); stand.setAttribute('data-phc-stand', id); stand.setAttribute('data-phc-stand-at', m.stand!);
       anchor(stand, m.stand!, HOLD_MS);
     } else if (m.kind === 'walk' && m.stand === u.pos && hide) { hide.cancel(); } // it ends where it began: nothing to hold
     const timer = window.setTimeout(() => releaseMover(id), slow(HOLD_MS));
     waiting.set(id, { hide: m.kind === 'walk' && m.stand === u.pos ? null : hide, stand, timer });
   }
+  // A unit this batch kills is gone from the grid at once, but its fall plays later (after a takedown cut-in, after the
+  // shot's flight): its ghost stands on its tile from now until its 'down' plays (live check: the token vanished and its
+  // loot pile showed during the cut-in, then came back alive for the shot).
+  for (const e of evs) if (e.k === 'down' && e.dead && e.unit && mineOnly(e) && unit(String(e.unit))?.dead) ghostOf(String(e.unit), e.at, HOLD_MS);
+  holdTiles(evs);
   holdChanged();
 }
+
+// ---------- cover and clouds waiting for their moment ----------
+// The grid shows the state after the action at once: a wall already rubble (or at its new HP) while the shell that
+// breaks it is still in the air, a smoke cloud's tint before the grenade lands. Each render keeps a copy of every tile
+// with breakable cover on it; a batch that damages that cover puts the copy over the tile until the last 'object' event
+// for it plays. A smoke grenade's cloud tint (the tile's zone layer) is held see-through until its 'explode' plays.
+const lastTiles = new Map<string, HTMLElement>();
+const tileHolds = new Map<string, { box: HTMLElement; left: number; timer: number }>();
+const cloudHolds = new Map<string, Animation[]>();
+/** After each render: copy the tiles with breakable cover (not one held now: its copy is the old look). */
+function rememberTiles() {
+  const objs: any[] = (ctxGame?.combat as any)?.objects || [];
+  const keys = new Set<string>(objs.filter((o) => o && o.pos && o.hp != null && o.hp > 0).map((o) => String(o.pos)));
+  for (const k of [...lastTiles.keys()]) if (!keys.has(k) && !tileHolds.has(k)) lastTiles.delete(k);
+  for (const k of keys) { if (tileHolds.has(k)) continue; const el = tileEl(k); if (el) lastTiles.set(k, el.cloneNode(true) as HTMLElement); }
+}
+/** The tiles (and clouds) a batch changes, held as they were. Pure part: which tiles, how many object events each. */
+export function tilesOf(evs: FxEvent[]): { objects: Map<string, number>; clouds: { at: string; radius: number; n: number }[] } {
+  const objects = new Map<string, number>(), clouds: { at: string; radius: number; n: number }[] = [];
+  for (const e of evs) {
+    if (!mineOnly(e) || !e.at) continue;
+    if (e.k === 'object' && Number(e.dmg) > 0) objects.set(String(e.at), (objects.get(String(e.at)) || 0) + 1);
+    if (e.k === 'explode' && gunOf(String(e.what || ''), '').blast === 'smoke') clouds.push({ at: String(e.at), radius: Number(e.radius) || 1, n: e.n || 0 });
+  }
+  return { objects, clouds };
+}
+function holdTiles(evs: FxEvent[]) {
+  if (!hasLayer() || reducedMotion()) return;
+  const { objects, clouds } = tilesOf(evs);
+  for (const [k, n] of objects) {
+    const had = tileHolds.get(k); if (had) { had.left += n; continue; }
+    const src = lastTiles.get(k), tile = tileEl(k), p = centre(k); if (!src || !tile || !p || !visible(k)) continue;
+    const r = tile.getBoundingClientRect(), copy = document.createElement('div');
+    copy.className = String(src.className || '').replace(/\bphc-tok\b/g, 'phc-tok-was');
+    copy.setAttribute('style', (src.getAttribute('style') || '') + ';width:100%;height:100%;margin:0;position:relative;pointer-events:none');
+    for (const c of Array.from(src.childNodes)) copy.appendChild(c.cloneNode(true));
+    const box = put(copy, p, r.width, r.height, HOLD_MS); box.style.zIndex = '0'; box.setAttribute('data-phc-tile-was', k);
+    anchor(box, k, HOLD_MS);
+    tileHolds.set(k, { box, left: n, timer: window.setTimeout(() => releaseTile(k, true), slow(HOLD_MS)) });
+  }
+  for (const c of clouds) {
+    const id = c.at + '|' + c.n; if (cloudHolds.has(id)) continue;
+    const anims: Animation[] = [];
+    const R = Math.max(0, Math.min(6, Math.round(c.radius))), [cx, cy] = c.at.split(',').map(Number);
+    for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) {
+      const z = zoneLayerOf(tileEl((cx + dx) + ',' + (cy + dy))); if (!z) continue;
+      const a = anim(z, [{ opacity: 0 }, { opacity: 0 }], { duration: HOLD_MS }); if (a) anims.push(a);
+    }
+    cloudHolds.set(id, anims);
+  }
+}
+/** A tile's zone layer (combat.js: placed magic, smoke, light), by its style. */
+function zoneLayerOf(tile: HTMLElement | null): HTMLElement | null {
+  if (!tile) return null;
+  for (const c of Array.from(tile.children) as HTMLElement[]) { const st = c.getAttribute('style') || ''; if (/z-index:\s*1(\D|$)/.test(st) && /box-sizing:\s*border-box/.test(st)) return c; }
+  return null;
+}
+/** One of a held tile's object events played: the last one shows the tile as it is now. */
+function releaseTile(k: string, all = false) {
+  const h = tileHolds.get(k); if (!h) return;
+  if (!all && --h.left > 0) return;
+  tileHolds.delete(k); clearTimeout(h.timer);
+  const box = h.box; anim(box, [{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }); setTimeout(() => box.remove(), slow(120) + 30);
+}
+function releaseCloud(e: FxEvent) {
+  for (const [id, anims] of cloudHolds) if (id === e.at + '|' + (e.n || 0) || (!e.n && id.startsWith(e.at + '|'))) { for (const a of anims) a.cancel(); cloudHolds.delete(id); }
+}
+function releaseAllTiles() { for (const k of [...tileHolds.keys()]) releaseTile(k, true); for (const anims of cloudHolds.values()) for (const a of anims) a.cancel(); cloudHolds.clear(); }
 
 function walkUnit(e: FxEvent, path: string[], per: number, seen: boolean[]) {
   const sp = walkSpan(seen); if (!sp) return;
@@ -319,7 +407,7 @@ function walkUnit(e: FxEvent, path: string[], per: number, seen: boolean[]) {
 }
 
 // ---------- weapons ----------
-type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam';
+type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam' | 'thrown';
 interface Gun { sound: Sfx | null; rate?: number; look: Look; color?: string; blast?: 'frag' | 'fire' | 'smoke' | 'flash' | 'zap' }
 function gunOf(id: string, cat: string): Gun {
   switch (id) {
@@ -351,6 +439,9 @@ function gunOf(id: string, cat: string): Gun {
   if (cat === 'heavy') return { sound: 'gun_heavy', look: 'bullet' };
   if (cat === 'bow') return { sound: 'swish', rate: 0.8, look: 'arrow' };
   if (cat === 'thrown') return { sound: 'swish', rate: 0.7, look: 'lob' };
+  // a thrown melee weapon (Throw, Flurry's Thrown line): a swish, and its flight is drawn by its melee_fx (the weapon's
+  // own icon; fx/melee-techniques.ts), not a tracer. Before this it fell through to a pistol shot.
+  if (/melee|unarmed/.test(cat)) return { sound: 'swish', rate: 0.8, look: 'thrown' };
   return { sound: 'gun_pistol', look: 'bullet' };
 }
 /** What a reload handles, for its sound: arrows and bolts, a fuel canister, a launcher's shell, shotgun-style shells,
@@ -428,11 +519,23 @@ function dust(p: { x: number; y: number }, s: number, color = '#A3AEC2') {
   burst('dust', p, s * 0.7, 520, { color, from: 0.3, to: 1.1 });
   burst('dirt', p, s * 0.5, 380, { color: '#7F8BA1', from: 0.5, to: 1.2 });
 }
+/** A flashbang's white-out: over the map only (not the panels, the header or the turn bar; live check, 10 Nov 2026),
+ *  brightest at the blast and falling off over a dozen tiles. Without a map on screen, the whole-screen tint. */
+function mapFlash(k: string | undefined, p: Pt, ms = 350) {
+  let g: HTMLElement | null = tileEl(k) || null; const tw = g ? g.getBoundingClientRect().width : 0;
+  while (g && g.parentElement && g.getBoundingClientRect().width < tw * 4) g = g.parentElement;
+  const r = g && g !== tileEl(k) ? g.getBoundingClientRect() : null;
+  if (!r || r.width < 10) { screenTint('white', ms); return; }
+  const d = document.createElement('div'), cx = p.x - r.left, cy = p.y - r.top;
+  d.style.cssText = 'width:100%;height:100%;border-radius:6px;background:radial-gradient(circle at ' + cx + 'px ' + cy + 'px, rgba(255,255,255,.9) 0, rgba(255,255,255,.6) ' + p.s * 2.5 + 'px, rgba(255,255,255,.22) ' + p.s * 7 + 'px, rgba(255,255,255,.08) ' + p.s * 12 + 'px)';
+  const box = put(d, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, r.width, r.height, ms); box.style.zIndex = '2';
+  anim(box, [{ opacity: 0 }, { opacity: 1, offset: 0.12 }, { opacity: 1, offset: 0.5 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
+}
 function explosion(k: string | undefined, radius = 1, kind: 'frag' | 'fire' | 'smoke' | 'flash' | 'zap' = 'frag', point?: Pt) {
   const p = point || centre(k); if (!p) return;
   const size = p.s * (1.2 + radius * 1.1);
   if (kind === 'smoke') { burst('puff', p, size, 1600, { from: 0.3, to: 1.4, fade: 0 }); play('vent', p, { rate: 0.8 }); return; }
-  if (kind === 'flash') { burst('flare', p, size * 2, 400, { color: WHITE, from: 0.2, to: 2 }); screenTint('white', 350); play('explosion', p, { rate: 1.4, gain: 0.6 }); return; }
+  if (kind === 'flash') { burst('flare', p, size * 2, 400, { color: WHITE, from: 0.2, to: 2 }); mapFlash(k, p, 350); play('explosion', p, { rate: 1.4, gain: 0.6 }); return; }
   if (kind === 'zap') { burst('zap', p, size, 420, { color: SIGIL_INK, from: 0.5, to: 1.3 }); play('sigil_overload', p, { rate: 1.3 }); return; }
   burst('fireflash_' + (1 + Math.floor(Math.random() * 2)), p, size * 0.8, 160, { from: 0.3, to: 1.2, fade: 0.6 });
   burst('boom_' + (1 + Math.floor(Math.random() * 3)), p, size, 560, { from: 0.6, to: 1.5, delay: 60 });
@@ -556,21 +659,21 @@ const H: Record<string, Handler> = {
       if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
-      if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow') mp = muzzle(from, toP, g.color);
+      if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown') mp = muzzle(from, toP, g.color);
       if (from && shooterTok && !rico) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
       // the casing: thrown out behind the shooter (away from the target), with a wisp of smoke; a pump, a lever or a
       // bolt is worked first, so its casing comes a beat later
       if (from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
       const start = mp || (from ? { x: from.x, y: from.y } : null);
       const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
-      const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' ? 1.1 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
+      const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' || g.look === 'thrown' ? 0.9 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
       const ft = start ? Math.max(60, Math.min(g.look === 'lob' ? 650 : 320, dist / speed)) : 0;
       const coverP = e.cover ? centre(e.cover) : null;
       const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
       if (start) {
         if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
         else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
-        else projectile(start, end, ft, g.look, toP.s, g.color);
+        else if (!(g.look === 'thrown' && e.thrown)) projectile(start, end, ft, g.look === 'thrown' ? 'arrow' : g.look, toP.s, g.color); // a thrown melee weapon's flight is its melee_fx; any other melee-category shot keeps a tracer
       }
       after(() => {
         if (e.object) { burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
@@ -705,6 +808,19 @@ const H: Record<string, Handler> = {
   door(e) { const p = at(e.at); play(e.open ? 'door_open' : 'door_close', p || centre(e.at)); if (p) dust({ x: p.x, y: p.y + p.s * 0.3 }, p.s * 0.6); },
   trap(e) { const p = at(e.at); play('chop', p, { rate: 0.8 }); if (p) { burst('spark_burst', p, p.s, 300, { color: HP }); floatText('TRAP', p, HP, { small: true }); } },
   shove(e) {
+    // a unit held where it was (holdMovers): a step of a longer push moves its stand-in on; the last step lets it go
+    const tid = e.target ? String(e.target) : '', w = tid ? waiting.get(tid) : undefined;
+    if (w && e.ok && e.from !== e.to) {
+      const u = unit(tid);
+      if (w.stand && u && u.pos !== e.to) {
+        const a = centre(e.from), b = centre(e.to), inner = w.stand.firstElementChild as HTMLElement | null;
+        reanchor(w.stand, e.to); w.stand.setAttribute('data-phc-stand-at', e.to);
+        if (a && b && inner && !reducedMotion()) anim(inner, [{ translate: (a.x - b.x) + 'px ' + (a.y - b.y) + 'px' }, { translate: '0 0' }], { duration: 220, easing: 'cubic-bezier(.2,.9,.3,1)' });
+        const p = at(e.to); if (p) play('hit_heavy', p, { rate: 0.9, gain: 0.6 });
+        return;
+      }
+      releaseMover(tid);
+    }
     if (e.ok && e.from !== e.to) slideFrom(e.from, e.to);
     if (e.magic && e.ok && e.from !== e.to) dragTrail(e.from, e.to, !!e.pull);
     const p = at(e.to); if (!p) return;
@@ -1132,6 +1248,12 @@ function chipShatter(p: Pt, word: string) {
 Object.assign(H, worldHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play }));
 // Class Roster Revision 3's moves (fx/classes.ts): the same kit as the Soul handlers, plus a few particles from here.
 Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, dust, corners, glitch, condWord }));
+// Physical 2.0 (fx/physical.ts): techniques, Momentum, Pressure, held Watches, Stopped, drill.
+Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, nameOf: (id) => (phys.TECHNIQUE as any)[id]?.name || id }));
+// The melee techniques' own beats (fx/melee-techniques.ts): arcs, thrown weapons, holds, slams, skids, falls, clashes…
+Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen }));
+// Physical 2.0 B (fx/ranged.ts): the ranged techniques, the quiver and thrown weapons; it wraps the handlers above.
+wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
@@ -1143,6 +1265,9 @@ function baseBeat(e: FxEvent): number {
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
+  const mb = meleeTechBeat(e); if (mb !== undefined) return mb;
+  const rb = rangedBeat(e); if (rb !== undefined) return rb;
+  const pb = physBeat(e); if (pb !== undefined) return pb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
   const wb = worldBeat(e); if (wb !== undefined) return wb;
   if (e.k === 'explode' && e.what === 'discharge') return 520;
@@ -1151,8 +1276,8 @@ function baseBeat(e: FxEvent): number {
     case 'move': { const n = moveSteps(e, units.get(e.unit)?.side === 'pc'); return n ? Math.min(1100, Math.max(160, n * (e.how === 'sprint' ? 75 : 115))) : 60; } // a walk wholly in the fog: a breath, not a pause
     case 'sight': return e.by ? 0 : e.how === 'reveal' ? 480 : e.how === 'hide' ? 380 : e.how === 'lost' ? 300 : 120; // by: on its walker's step (runQueue)
     case 'overwatch': return 560;
-    case 'shot': return (e.chain ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
-    case 'melee': return e.chain ? 240 : 420;
+    case 'shot': return (e.chain || e._quick ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
+    case 'melee': return e.chain || e._quick ? 240 : 420; // _quick: a Sweep's, Cleave's or Flurry's later strikes (fx/melee-techniques.ts quickStrikes)
     case 'volley': return e.mode === 'auto' ? 260 : 90;
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(1200, (e.dur || 1000) * 0.85);
     case 'explode': return 220; // whoever stands in the blast is hurt with it, not after the smoke
@@ -1206,6 +1331,7 @@ export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1) {
   const ev = { n: 0, ...e } as FxEvent;
   try { if (mineOnly(ev)) withTempo(tempo, () => H[ev.k]?.(ev)); } catch (err) { console.warn('fx', ev.k, err); }
+  try { if (ev.k === 'object' && ev.at) releaseTile(String(ev.at)); else if (ev.k === 'explode' && ev.at) releaseCloud(ev); } catch { /* */ }
   // The turn intro (turnIntro.tsx) times enemy-turn banners on this clock instead of estimating. stream names whose
   // numbering n belongs to (FxLayer's stream key: 'cb|…' for a fight, 'st|…' for the area map).
   if (ev.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: ev.n, stream: stream || '' } })); } catch { /* */ }
@@ -1215,7 +1341,7 @@ export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tem
  *  blur: "the battle keeps going in super speed"). */
 export const MAX_SPEEDUP = 1.35;
 /** Skip an effect: nothing drawn or heard, but its place in the stream is announced so turn banners keep their clock. */
-function skipFx(e: FxEvent, stream?: string) { if (e.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: e.n, stream: stream || '' } })); } catch { /* */ } }
+function skipFx(e: FxEvent, stream?: string) { try { if (e.k === 'object' && e.at) releaseTile(String(e.at)); else if (e.k === 'explode' && e.at) releaseCloud(e); else if (e.k === 'shove' && e.target) releaseMover(String(e.target)); } catch { /* */ } if (e.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: e.n, stream: stream || '' } })); } catch { /* */ } }
 /** How far past the room a spotlight's protected tail may run (its action and everything after it) before the protection
  *  gives way: the moment is then skipped like any old effect, with no cut-in, so play never lags far. */
 export const PROTECT_GRACE = 1.5;
@@ -1260,6 +1386,7 @@ const isFight = (stream?: string) => !!stream && stream.startsWith('cb|');
  *  decided: what happened after it matters, not a replay of every step). A spotlight's action is never skipped. */
 export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; from?: number } = {}) {
   if (!evs.length) return;
+  if (opts.from == null) rangedBatch(evs, stream); // fx/ranged.ts: tag the batch's techniques in order (a new fight forgets the last)
   // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
   // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms
   // to the map, then the miracle happens". What came before it plays first as usual (a decided fight skips it: the
@@ -1282,6 +1409,7 @@ export const sameAction = (sp: FxEvent, x: FxEvent) => { const f = Number.isFini
 /** queueFx for a batch with no Miracle in it. from: count the backlog from this time (after a Miracle's hold). */
 function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: number; from?: number }) {
   if (!evs.length) return;
+  evs = meleePrepass(evs); // the melee techniques' movement beats over their moves, quick later strikes, Thrown Flurry flights
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
   const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), k = fxPace(), room = Math.max(1500 * k, 7000 * k - backlog);
@@ -1400,7 +1528,7 @@ export function hurryFx(ms: number) {
   clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, queueEnd - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden), a closed gate and every cut-in with it. */
-export function clearFx() { for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; volley = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); }
+export function clearFx() { releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; volley = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */

@@ -271,7 +271,10 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const ink = (RES_INK as any)[info.core] || RES_INK.body;
     const rule = info.rule;
     const spend = info.spend.length ? ' Spent by ' + info.spend.join(', ') + '.' : '';
-    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: ink, sub: info.source,
+    // Physical 2.0 (rules 1.12): Momentum is on every unit holding a melee weapon; the engine's hint ("+1 more if your
+    // next technique isn't Lunge") sits beside the pips.
+    const mHint = id === 'momentum' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.momentum?.hint || ''; } catch { return ''; } })() : '';
+    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: ink, sub: mHint || info.source,
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),
       hint: (rule || info.label + ' (' + info.source + ').') + spend });
   }

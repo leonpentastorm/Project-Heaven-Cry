@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Incendiary grenade -->
+  <path d="M27 20 L27 12 L35 12 L35 20 C41 20 44 22 44 27 L44 52 Q44 57 39 57 L23 57 Q18 57 18 52 L18 27 C18 22 21 20 27 20 Z"/>
+  <path d="M31 51 C25 51 23.5 45 26.5 41 C27.5 43.5 29.5 44 29.5 41 C29.5 36 32 33 35 30 C35 35 38 38 37.5 44 C37 48.5 34.5 51 31 51 Z"/>
+  <path d="M35 12 L42 12 Q48 13 48 22 L48 44"/>
+  <circle cx="22" cy="10" r="5"/>
+</svg>

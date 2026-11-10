@@ -8,7 +8,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf } from '@engine';
 import { setLayer } from './fx/dom';
 import { clearFx, hurryFx, queueFx, FX_EVENT } from './fx/play';
-import { closeCutIns, cutInTiming, lineParts, miracleCutIn, playIntervention, showCutIn } from './cutIn';
+import { closeCutIns, closeKeptBoxes, cutInTiming, lineParts, miracleCutIn, playIntervention, showCutIn, CUT_BOX_READ_MS } from './cutIn';
 import * as sfxMod from './sfx';
 
 function grid(w = 10, h = 8) {
@@ -29,7 +29,7 @@ const MIRACLE = { k: 'miracle', n: 9, patron: 'mother_ember', id: 'hearth_unbrok
 describe('the cut-in system', () => {
   let spy: any;
   beforeEach(() => { vi.useFakeTimers(); spy = vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {}); });
-  afterEach(() => { closeCutIns(); clearFx(); vi.advanceTimersByTime(20000); spy.mockRestore(); vi.useRealTimers(); vi.restoreAllMocks(); });
+  afterEach(() => { closeCutIns(); closeKeptBoxes(); clearFx(); vi.advanceTimersByTime(20000); spy.mockRestore(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
   it('marks the called name in the line (any case, every time), or shows the name alone', () => {
     expect(lineParts('LEON, LOVE. COME HERE, leon.', 'Leon')).toEqual([{ text: 'LEON', name: true }, { text: ', LOVE. COME HERE, ', name: false }, { text: 'leon', name: true }, { text: '.', name: false }]);
@@ -79,6 +79,8 @@ describe('the cut-in system', () => {
     const box = document.querySelector('[data-phc-cut-box]') as HTMLElement;
     expect(box.textContent).toMatch(/MIRACLE · MOTHER EMBER/); expect(box.textContent).toMatch(/Hearth Unbroken/); expect(box.textContent).toMatch(/Every ally heals\./); expect(box.textContent).toMatch(/WHAT IT DID.*Leon heals 40/);
     vi.advanceTimersByTime(T.boxMs + 400);
+    expect(document.querySelector('[data-phc-cut-box]')).toBeTruthy(); // it outlives the cut-in: a read's worth of time (12 s)
+    vi.advanceTimersByTime(CUT_BOX_READ_MS.full);
     expect(document.querySelector('[data-phc-cut-box]')).toBeNull();
     expect(document.querySelector('[data-phc-cut-spot]')).toBeNull();
   });
@@ -204,6 +206,55 @@ describe('the cut-in system', () => {
     showCutIn(miracleCutIn(MIRACLE)); // the second has landed and shows its box: the box closes
     expect(document.querySelectorAll('[data-phc-cut-box]').length).toBe(0);
   });
+  // Leon, 10 Nov 2026: the box that says what a Miracle did stays long enough to read, can be kept, and is the player's to close.
+  describe('the box: a read\'s worth of time, Keep open, and close', () => {
+    const box = () => document.querySelector('[data-phc-cut-box]') as HTMLElement | null;
+    const up = () => { grid(); showCutIn({ ...miracleCutIn(MIRACLE), focus: null }); vi.advanceTimersByTime(cutInTiming('full').boxAt + 10); return box()!; };
+    const keepBtn = (b: HTMLElement) => b.querySelector('button.p') as HTMLButtonElement;
+    it('stays 12 seconds by itself, whatever the cut-in\'s own length, and says so', () => {
+      const b = up(); expect(CUT_BOX_READ_MS.full).toBe(12000);
+      expect(b.textContent).toMatch(/Closes by itself in 12 seconds/); expect(keepBtn(b).textContent).toBe('KEEP OPEN'); expect(keepBtn(b).getAttribute('aria-pressed')).toBe('false');
+      vi.advanceTimersByTime(11000); expect(box()).toBeTruthy();
+      vi.advanceTimersByTime(1500); expect(box()).toBeNull();
+    });
+    it('Keep open stops the clock: it stays through time, a cleared queue (the tab hidden) and a spotlight, until × closes it', async () => {
+      const { claimStage } = await import('./stage');
+      const b = up(); keepBtn(b).click();
+      expect(keepBtn(b).getAttribute('aria-pressed')).toBe('true'); expect(keepBtn(b).textContent).toMatch(/KEPT OPEN/); expect(b.textContent).toMatch(/Stays until you close it/); expect(b.dataset.kept).toBe('1');
+      vi.advanceTimersByTime(60000); expect(box()).toBe(b);
+      clearFx(); expect(box()).toBe(b);
+      claimStage(); expect(box()).toBe(b);
+      (b.querySelector('button[aria-label="Close"]') as HTMLButtonElement).click(); vi.advanceTimersByTime(260); expect(box()).toBeNull();
+    });
+    it('pressing Keep open again puts it back on the clock', () => {
+      const b = up(); keepBtn(b).click(); vi.advanceTimersByTime(30000); keepBtn(b).click();
+      expect(keepBtn(b).getAttribute('aria-pressed')).toBe('false'); expect(b.dataset.kept).toBeUndefined();
+      vi.advanceTimersByTime(11000); expect(box()).toBe(b); vi.advanceTimersByTime(1500); expect(box()).toBeNull();
+    });
+    it('a kept box gives way to the next Miracle\'s box, and goes when the room is left', () => {
+      const b = up(); keepBtn(b).click();
+      showCutIn({ ...miracleCutIn({ ...MIRACLE, name: 'The Sky Answers', patron: 'old_overcast' }), focus: null });
+      expect(box()).toBe(b); // still there under the new portrait
+      vi.advanceTimersByTime(cutInTiming('full').boxAt + 10);
+      expect(document.querySelectorAll('[data-phc-cut-box]').length).toBe(1); expect(box()!.textContent).toMatch(/The Sky Answers/);
+      keepBtn(box()!).click(); closeKeptBoxes(); expect(box()).toBeNull();
+    });
+    it('a box on the clock still closes at once for a cleared queue, a spotlight or a new cut-in', async () => {
+      const { claimStage } = await import('./stage');
+      up(); clearFx(); expect(box()).toBeNull();
+      up(); claimStage(); expect(box()).toBeNull();
+      up(); showCutIn({ ...miracleCutIn(MIRACLE), focus: null }); expect(box()).toBeNull();
+    });
+    it('only the buttons take clicks; the small cut-in\'s box stays 6 seconds', () => {
+      const b = up(); const css = document.getElementById('phc-cutin-css')!.textContent || '';
+      expect(/\[data-phc-cut-box\]\{[^}]*pointer-events:none/.test(css)).toBe(true); expect(/\.p\{[^}]*pointer-events:auto/.test(css)).toBe(true);
+      closeCutIns(); void b;
+      showCutIn({ size: 'small', accent: '#4E8DD1', kicker: 'OLD OVERCAST INTERVENES', box: { title: 'Old Overcast intervenes' } });
+      vi.advanceTimersByTime(400); expect(box()!.textContent).toMatch(/Closes by itself in 6 seconds/);
+      vi.advanceTimersByTime(5000); expect(box()).toBeTruthy(); vi.advanceTimersByTime(1500); expect(box()).toBeNull();
+    });
+  });
+
   it('hurryFx moves what the queue holds up, never before now', () => {
     grid(); const seen: string[] = [], on = (e: any) => seen.push(e.detail.k);
     window.addEventListener(FX_EVENT, on);

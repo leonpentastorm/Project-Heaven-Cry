@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Kemizuchi duelling blade -->
+  <g transform="translate(0 1) rotate(-45 32 32)">
+    <path d="M-3 30.5 L-1 29.5 L13.5 29.5 L13.5 22.5 L18.5 22.5 L18.5 28.5 L21.5 28.5 L26 33 L31 28.5 L67 28.5 L58 36
+             L18.5 36 L18.5 43 L13.5 43 L13.5 36 L-1 36 L-3 35 Z"/>
+    <path d="M58 28.5 L58 36"/>
+    <path d="M5 29.5 L5 36"/>
+  </g>
+</svg>

@@ -1,0 +1,2645 @@
+{
+  "$schema_version": "1.0",
+  "kind": "techniques",
+  "source": "docs/design/proposals/2026-11-melee-techniques.md and 2026-11-ranged-techniques.md (Physical 2.0, rules 1.12); every number is provisional",
+  "rules": {
+    "momentum": {
+      "max": 3,
+      "fighter_max": 5,
+      "variety_bonus": 1
+    },
+    "pressure": {
+      "max": 4,
+      "player_max": 3,
+      "elite_max": 3,
+      "boss_max": 2,
+      "pressed": 2,
+      "suppressed": 3,
+      "broken": 4,
+      "pressed_ranged_hit": -1,
+      "suppressed_ap": 1,
+      "broken_ap": 2,
+      "decay": 1,
+      "decay_hidden": 2,
+      "decay_closing": 2,
+      "melee_hit_sheds": 1,
+      "flank_bonus": 1,
+      "kill_spill": 1,
+      "kill_spill_range": 3,
+      "take_cost": 2,
+      "unseen_silent_hit": 2
+    },
+    "ready": {
+      "base": 3,
+      "per_skill": 0.5
+    },
+    "drill": {
+      "per_kill": {
+        "minion": 5,
+        "soldier": 10,
+        "elite": 25,
+        "boss": 50
+      },
+      "martial_mult": 3,
+      "martial_classes": [
+        "defender",
+        "fighter",
+        "marksman"
+      ],
+      "marks": [
+        300,
+        900,
+        1800
+      ]
+    },
+    "off_home_penalty": 2,
+    "stop_save": [
+      "guts",
+      "athletics"
+    ],
+    "stop_tn": 12,
+    "starting": {
+      "melee": 2,
+      "ranged": 2,
+      "default_melee": [
+        "lunge",
+        "sidestep"
+      ],
+      "default_ranged": [
+        "suppress",
+        "shift"
+      ]
+    },
+    "groups": {
+      "melee": [
+        "opener",
+        "strike",
+        "link",
+        "finisher",
+        "answer"
+      ],
+      "ranged": [
+        "fire",
+        "press",
+        "set",
+        "take",
+        "watch"
+      ]
+    },
+    "group_names": {
+      "opener": "Openers",
+      "strike": "Strikes",
+      "link": "Links",
+      "finisher": "Finishers",
+      "answer": "Answers",
+      "fire": "Fire",
+      "press": "Press",
+      "set": "Sets",
+      "take": "Takes",
+      "watch": "Hold a shot"
+    },
+    "props": {
+      "edge": "It cuts. Typical rider: Bleeding.",
+      "point": "It thrusts. Typical riders: to-hit, armour ignored, pinning.",
+      "blunt": "It crushes. Typical riders: Prone, Dazed, armour broken.",
+      "hook": "It catches. Typical riders: pull, trip, disarm.",
+      "reach": "It strikes 2 tiles away.",
+      "heavy": "Mass. Melee: 3 AP an attack, knockback, hitting several. Ranged: must be Braced to work well.",
+      "light": "Fast. 2 AP an attack; extra steps and strikes.",
+      "bare": "A fist or a glove. Grapples and throws.",
+      "thrown": "It can leave the hand.",
+      "quick": "Handy. Firing next to an enemy doesn't provoke; moving costs no accuracy.",
+      "auto": "Throws many rounds. Pressure on a miss; several targets. Always offers Burst and Rake.",
+      "precise": "A long barrel or glass. Better when you haven't moved; criticals.",
+      "spread": "Shot or flame in a cone. Everyone close; breaks cover.",
+      "blast": "It explodes. Aimed at a tile; Pressure to everyone in the radius.",
+      "arc": "It flies over. Indirect fire.",
+      "silent": "No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden.",
+      "loud": "A cannon in the hand. A miss still gives Pressure; saves against it are harder.",
+      "drawn": "Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight."
+    },
+    "provisional": true
+  },
+  "items": [
+    {
+      "id": "lunge",
+      "name": "Lunge",
+      "system": "melee",
+      "group": "opener",
+      "number": 1,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Step 1 tile toward the target, then strike. The step draws no opportunity attack.",
+      "lines": [
+        {
+          "props": [
+            "point"
+          ],
+          "text": "+2 to hit."
+        },
+        {
+          "props": [
+            "reach"
+          ],
+          "text": "the step may be 2 tiles."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "on a hit the target is pushed 1 tile."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "step": 1,
+        "point_hit": 2,
+        "reach_step": 2,
+        "heavy_push": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "charge",
+      "name": "Charge",
+      "system": "melee",
+      "group": "opener",
+      "number": 2,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "After moving 3 or more tiles in a straight line this turn: strike at +10% damage per tile moved, up to +50%.",
+      "lines": [
+        {
+          "props": [
+            "point"
+          ],
+          "text": "ignores 5 armour."
+        },
+        {
+          "props": [
+            "blunt",
+            "heavy"
+          ],
+          "text": "the target makes a Body save or falls Prone.",
+          "match": "any"
+        },
+        {
+          "props": [
+            "reach"
+          ],
+          "text": "you strike before it can take its Overwatch or Keep Back."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "min_run": 3,
+        "per_tile_pct": 10,
+        "max_pct": 50,
+        "point_armour": 5
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "feint",
+      "name": "Feint",
+      "system": "melee",
+      "group": "opener",
+      "number": 3,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it works.",
+      "lines": [
+        {
+          "props": [
+            "light"
+          ],
+          "text": "the save is at −2."
+        },
+        {
+          "props": [
+            "hook"
+          ],
+          "text": "on a failed save its weapon is also lowered (1 AP to raise)."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "hit": 3,
+        "light_save": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "draw_cut",
+      "name": "Draw Cut",
+      "system": "melee",
+      "group": "opener",
+      "number": 4,
+      "ap": {
+        "base": "weapon",
+        "add": -1
+      },
+      "rounds": 0,
+      "needs": {
+        "stowed": true
+      },
+      "text": "Draw this weapon from the pack or a sheath and strike in one action. Only if you started the turn with it stowed.",
+      "lines": [
+        {
+          "props": [
+            "edge"
+          ],
+          "text": "Bleeding on a hit."
+        },
+        {
+          "props": [
+            "light"
+          ],
+          "text": "if the target hasn't acted this fight, it counts as an ambush."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {},
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "ambush",
+      "name": "Ambush",
+      "system": "melee",
+      "group": "opener",
+      "number": 5,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {
+        "hidden": true
+      },
+      "text": "Only from Hidden: strike with the Ambush multiplier (today's rule), and gain 2 Momentum instead of 1.",
+      "lines": [
+        {
+          "props": [
+            "point"
+          ],
+          "text": "crits on 18–20."
+        },
+        {
+          "props": [
+            "bare"
+          ],
+          "text": "no damage, the target is Grappled and Silenced for 1 round instead."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "momentum": 2,
+        "point_crit_min": 18,
+        "bare_rounds": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "cut",
+      "name": "Cut",
+      "system": "melee",
+      "group": "strike",
+      "number": 6,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "One strike. Everyone knows it; it never takes a ready slot.",
+      "lines": [
+        {
+          "props": [
+            "edge"
+          ],
+          "text": "a critical leaves Bleeding."
+        },
+        {
+          "props": [
+            "point"
+          ],
+          "text": "+1 to hit."
+        },
+        {
+          "props": [
+            "blunt"
+          ],
+          "text": "a critical leaves Dazed."
+        }
+      ],
+      "free": true,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "point_hit": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "sweep",
+      "name": "Sweep",
+      "system": "melee",
+      "group": "strike",
+      "number": 7,
+      "ap": {
+        "base": "weapon",
+        "add": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each.",
+      "lines": [
+        {
+          "props": [
+            "reach"
+          ],
+          "text": "the arc is 2 tiles out."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "all adjacent enemies, not just the arc."
+        },
+        {
+          "props": [
+            "edge"
+          ],
+          "text": "each one hit bleeds on a critical. Friendly fire applies."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "heavy",
+        "reach",
+        "edge"
+      ],
+      "particular": true,
+      "numbers": {
+        "mult": 0.7,
+        "reach_out": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "tile"
+    },
+    {
+      "id": "bash",
+      "name": "Bash",
+      "system": "melee",
+      "group": "strike",
+      "number": 8,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Strike at ×0.5 with the pommel, haft or fist. The target makes a Body save or is Dazed.",
+      "lines": [
+        {
+          "props": [
+            "blunt"
+          ],
+          "text": "full damage."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "on a failed save it is pushed 2 tiles instead of Dazed, your choice."
+        },
+        {
+          "props": [
+            "bare"
+          ],
+          "text": "costs 1 AP less.",
+          "ap": -1
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "mult": 0.5,
+        "heavy_push": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "sunder",
+      "name": "Sunder",
+      "system": "melee",
+      "group": "strike",
+      "number": 9,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per attacker).",
+      "lines": [
+        {
+          "props": [
+            "blunt",
+            "hook"
+          ],
+          "text": "10 lower.",
+          "match": "any"
+        },
+        {
+          "props": [
+            "edge"
+          ],
+          "text": "if the target has no armour left, Bleeding instead."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "mult": 0.7,
+        "lower": 5,
+        "blunt_hook_lower": 10
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "flurry",
+      "name": "Flurry",
+      "system": "melee",
+      "group": "strike",
+      "number": 10,
+      "ap": {
+        "base": "weapon",
+        "add": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits.",
+      "lines": [
+        {
+          "props": [
+            "light"
+          ],
+          "text": "three strikes."
+        },
+        {
+          "props": [
+            "bare"
+          ],
+          "text": "each hit after the first adds +1 to the next Bind or Throw Down this turn."
+        },
+        {
+          "props": [
+            "thrown"
+          ],
+          "text": "the strikes may go to two targets in throwing range; the weapons land in the pile on their tiles."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "mult": 0.6,
+        "strikes": 2,
+        "light_strikes": 3,
+        "later_hit": -1,
+        "bare_bonus": 1,
+        "thrown_targets": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "hamstring",
+      "name": "Hamstring",
+      "system": "melee",
+      "group": "strike",
+      "number": 11,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds.",
+      "lines": [
+        {
+          "props": [
+            "edge"
+          ],
+          "text": "no save."
+        },
+        {
+          "props": [
+            "hook"
+          ],
+          "text": "Prone instead of Slowed."
+        },
+        {
+          "props": [
+            "point"
+          ],
+          "text": "it also can't Sprint or Disengage while Slowed."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "damage_mult": 0.7,
+        "slow_rounds": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "bind",
+      "name": "Bind",
+      "system": "melee",
+      "group": "strike",
+      "number": 12,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding.",
+      "lines": [
+        {
+          "props": [
+            "hook"
+          ],
+          "text": "Brain save or it is Disarmed."
+        },
+        {
+          "props": [
+            "bare"
+          ],
+          "text": "it is Grappled (today's grapple rules)."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "the −2 becomes −4."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "range": 1,
+        "penalty": 2,
+        "heavy_penalty": 4
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "half_sword",
+      "name": "Half-Sword",
+      "system": "melee",
+      "group": "strike",
+      "number": 13,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "A short, driven thrust: ×0.8 damage, ignores 10 armour.",
+      "lines": [
+        {
+          "props": [
+            "point"
+          ],
+          "text": "ignores all armour."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "full damage."
+        },
+        {
+          "props": [
+            "bare",
+            "blunt"
+          ],
+          "text": "not available (greyed, with the reason).",
+          "match": "any"
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "damage_mult": 0.8,
+        "armour_ignore": 10
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy",
+      "not_with": [
+        "bare",
+        "blunt"
+      ]
+    },
+    {
+      "id": "throw",
+      "name": "Throw",
+      "system": "melee",
+      "group": "strike",
+      "number": 14,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Throw the weapon at a target in throwing range (Dexterity to hit). It lands in the pile on the target's tile.",
+      "lines": [
+        {
+          "props": [
+            "thrown"
+          ],
+          "text": "no penalty and full damage. Without Thrown: −2 to hit, ×0.7."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "the target makes a Body save or is knocked Prone."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "unthrown_hit": 2,
+        "unthrown_mult": 0.7
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "sidestep",
+      "name": "Sidestep",
+      "system": "melee",
+      "group": "link",
+      "number": 15,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Move 1 tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking.",
+      "lines": [
+        {
+          "props": [
+            "light"
+          ],
+          "text": "2 tiles."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "tiles": 1,
+        "light_tiles": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "tile"
+    },
+    {
+      "id": "guard",
+      "name": "Guard",
+      "system": "melee",
+      "group": "link",
+      "number": 16,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn.",
+      "lines": [
+        {
+          "props": [
+            "reach"
+          ],
+          "text": "enemies must make a Body save to step next to you."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "the +2 also applies to ranged attacks from the front."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "defense": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self"
+    },
+    {
+      "id": "shove",
+      "name": "Shove",
+      "system": "melee",
+      "group": "link",
+      "number": 17,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Today's Shove (push 1 tile, or Prone if blocked), at 1 AP as a Link. It gives Momentum when it works.",
+      "lines": [
+        {
+          "props": [
+            "blunt",
+            "heavy"
+          ],
+          "text": "2 tiles.",
+          "match": "any"
+        },
+        {
+          "props": [
+            "reach"
+          ],
+          "text": "from 2 tiles away."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "range": 1,
+        "reach_range": 2,
+        "tiles": 1,
+        "heavy_tiles": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "trip",
+      "name": "Trip",
+      "system": "melee",
+      "group": "link",
+      "number": 18,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "The target makes a Body save or falls Prone.",
+      "lines": [
+        {
+          "props": [
+            "hook",
+            "reach"
+          ],
+          "text": "the save is at −2.",
+          "match": "any"
+        },
+        {
+          "props": [
+            "bare"
+          ],
+          "text": "you may go Prone with it and it is Grappled."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "save_penalty": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "drag",
+      "name": "Drag",
+      "system": "melee",
+      "group": "link",
+      "number": 19,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save).",
+      "lines": [
+        {
+          "props": [
+            "hook"
+          ],
+          "text": "you pull from 2 tiles away (3 with Reach), up to 2 tiles."
+        },
+        {
+          "props": [
+            "bare"
+          ],
+          "text": "you may move 1 tile and bring it with you."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "tiles": 1,
+        "hook_tiles": 2,
+        "hook_reach": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "coup",
+      "name": "Coup",
+      "system": "melee",
+      "group": "finisher",
+      "number": 20,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {
+        "momentum": 2
+      },
+      "text": "One strike at +25% damage per Momentum spent. (This is the Fighter's Finisher, opened to everyone; see section 6.)",
+      "lines": [
+        {
+          "props": [
+            "edge"
+          ],
+          "text": "+50% more against a target that is Bleeding, Dazed, Prone or Downed."
+        },
+        {
+          "props": [
+            "point"
+          ],
+          "text": "a hit is a critical if the target is at a quarter HP or less."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "per_momentum_pct": 25,
+        "edge_bonus_pct": 50,
+        "point_crit_hp_pct": 25
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "cleave",
+      "name": "Cleave",
+      "system": "melee",
+      "group": "finisher",
+      "number": 21,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {
+        "momentum": 2
+      },
+      "text": "One strike; then the same strike at one more adjacent enemy per Momentum spent, each at full damage.",
+      "lines": [
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "the extra targets may be 2 tiles apart."
+        },
+        {
+          "props": [
+            "edge"
+          ],
+          "text": "every target hit bleeds."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "heavy",
+        "edge"
+      ],
+      "particular": true,
+      "numbers": {
+        "adjacent": 1,
+        "heavy_apart": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "break",
+      "name": "Break",
+      "system": "melee",
+      "group": "finisher",
+      "number": 22,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {
+        "momentum": 2
+      },
+      "text": "One strike. The target makes a Body save at −1 per Momentum spent or is Stunned (bosses: Dazed).",
+      "lines": [
+        {
+          "props": [
+            "blunt"
+          ],
+          "text": "its armour is also 0 for a round."
+        },
+        {
+          "props": [
+            "hook"
+          ],
+          "text": "it is Disarmed as well."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "save_per_momentum": 1,
+        "stun_rounds": 1,
+        "armour_rounds": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "run_through",
+      "name": "Run Through",
+      "system": "melee",
+      "group": "finisher",
+      "number": 23,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {
+        "momentum": 2
+      },
+      "text": "One strike at +20% per Momentum spent. On a hit the target is Pinned where it stands until it spends 2 AP to pull free.",
+      "lines": [
+        {
+          "props": [
+            "point"
+          ],
+          "text": "ignores armour, and if a second enemy stands directly behind the first it is struck at half."
+        },
+        {
+          "props": [
+            "reach"
+          ],
+          "text": "you may leave the weapon in (you are unarmed; the target stays Pinned until anyone next to it pulls it out for 2 AP; you, or anyone not on its side, take it into a free hand). Without Point: −2 to hit."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "point",
+        "reach"
+      ],
+      "particular": true,
+      "numbers": {
+        "per_momentum_pct": 20,
+        "point_behind_pct": 50,
+        "reach_no_point_hit": 2,
+        "pull_free_ap": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "throw_down",
+      "name": "Throw Down",
+      "system": "melee",
+      "group": "finisher",
+      "number": 24,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 0,
+      "needs": {
+        "momentum": 2,
+        "held": true
+      },
+      "text": "Only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.",
+      "lines": [
+        {
+          "props": [
+            "bare"
+          ],
+          "text": "no roll needed."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "you may throw it 2 tiles."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "bare"
+      ],
+      "particular": true,
+      "numbers": {
+        "per_momentum_pct": 25,
+        "tiles": 1,
+        "heavy_tiles": 2,
+        "occupant_pct": 50
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy+tile"
+    },
+    {
+      "id": "parry",
+      "name": "Parry",
+      "system": "melee",
+      "group": "answer",
+      "number": 25,
+      "ap": {
+        "base": "reaction"
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Roll your attack skill against the attacker's total. If you win, the hit is halved. A shield in the off hand adds +2.",
+      "trigger": "a melee attack hits you",
+      "lines": [
+        {
+          "props": [
+            "light"
+          ],
+          "text": "and you gain 1 Momentum."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "you may parry for an adjacent ally."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "ally_reach": 1,
+        "shield_bonus": 2,
+        "halve": 0.5,
+        "light_momentum": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "none"
+    },
+    {
+      "id": "riposte",
+      "name": "Riposte",
+      "system": "melee",
+      "group": "answer",
+      "number": 26,
+      "ap": {
+        "base": "reaction"
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Strike back for 0 AP (today's Sabre skill and Fighter move).",
+      "trigger": "a melee attack misses you",
+      "lines": [
+        {
+          "props": [
+            "edge",
+            "point"
+          ],
+          "text": "+2 to hit.",
+          "match": "any"
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "edge_point_hit": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "none"
+    },
+    {
+      "id": "keep_back",
+      "name": "Keep Back",
+      "system": "melee",
+      "group": "answer",
+      "number": 27,
+      "ap": {
+        "base": "reaction"
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Strike it first. If you hit, it makes a Body save or stops where it is.",
+      "trigger": "an enemy steps into your reach",
+      "lines": [
+        {
+          "props": [
+            "reach"
+          ],
+          "text": "your reach is 2 tiles, so most enemies never arrive."
+        },
+        {
+          "props": [
+            "hook"
+          ],
+          "text": "on a failed save it is also Prone."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "reach_base": 1,
+        "reach_tiles": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "none"
+    },
+    {
+      "id": "shot",
+      "name": "Shot",
+      "system": "ranged",
+      "group": "fire",
+      "number": 0,
+      "ap": {
+        "base": "flat",
+        "value": 2,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "One shot. Everyone knows it; it takes no ready slot.",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "+1 if you haven't moved this turn."
+        },
+        {
+          "props": [
+            "loud"
+          ],
+          "text": "a miss gives +1 Pressure."
+        }
+      ],
+      "free": true,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "precise_still_hit": 1,
+        "loud_miss_pressure": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "snap_shot",
+      "name": "Snap Shot",
+      "system": "ranged",
+      "group": "fire",
+      "number": 1,
+      "ap": {
+        "base": "flat",
+        "value": 2,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {
+        "stowed": true
+      },
+      "text": "Draw or swap to this weapon and fire, at −2.",
+      "lines": [
+        {
+          "props": [
+            "quick"
+          ],
+          "text": "no penalty."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "not available."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "penalty": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy",
+      "not_with": [
+        "heavy"
+      ]
+    },
+    {
+      "id": "burst",
+      "name": "Burst",
+      "system": "ranged",
+      "group": "fire",
+      "number": 2,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "burst"
+      },
+      "rounds": 3,
+      "needs": {},
+      "text": "Two rolls at one target, the second at −2.",
+      "lines": [
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "three rolls (today's burst), and it may split between two adjacent targets."
+        },
+        {
+          "props": [
+            "quick"
+          ],
+          "text": "no −2."
+        }
+      ],
+      "free": false,
+      "comes_with": [
+        "auto"
+      ],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "rolls": 2,
+        "later_penalty": 2,
+        "auto_rolls": 3,
+        "auto_step": 1,
+        "auto_heat_cool": 1,
+        "auto_split_targets": 2,
+        "auto_split_range": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "aimed_shot",
+      "name": "Aimed Shot",
+      "system": "ranged",
+      "group": "fire",
+      "number": 3,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "aimed"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "+2 to hit (today's rule).",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "+3, and a critical on 18–20 if you haven't moved."
+        },
+        {
+          "props": [
+            "drawn"
+          ],
+          "text": "full draw, +25% damage."
+        }
+      ],
+      "free": true,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "hit": 2,
+        "precise_hit": 3,
+        "precise_crit_min": 18,
+        "drawn_damage_pct": 25
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "called_shot",
+      "name": "Called Shot",
+      "system": "ranged",
+      "group": "fire",
+      "number": 4,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "−2 to hit. Choose leg (Slowed), arm (weapon lowered) or head (Dazed); the target makes a Body save.",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "no penalty."
+        },
+        {
+          "props": [
+            "loud",
+            "heavy"
+          ],
+          "text": "leg is Prone instead.",
+          "match": "any"
+        },
+        {
+          "props": [
+            "spread"
+          ],
+          "text": "only within 4 tiles."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "penalty": 2,
+        "spread_range": 4
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "walking_fire",
+      "name": "Walking Fire",
+      "system": "ranged",
+      "group": "fire",
+      "number": 5,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "Move 2 tiles and fire one shot at any point of the move.",
+      "lines": [
+        {
+          "props": [
+            "quick"
+          ],
+          "text": "3 tiles, and no opportunity attacks."
+        },
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "the shot is a Burst for 3 rounds."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "not available."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "tiles": 2,
+        "quick_tiles": 3,
+        "auto_rolls": 3,
+        "auto_step": 1,
+        "auto_rounds": 3,
+        "auto_heat_cool": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy+tile",
+      "not_with": [
+        "heavy"
+      ]
+    },
+    {
+      "id": "punch_through",
+      "name": "Punch Through",
+      "system": "ranged",
+      "group": "fire",
+      "number": 6,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "Half cover counts −2, not −5, and the cover takes the damage as well.",
+      "lines": [
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "the round carries on to the next target in line at half."
+        },
+        {
+          "props": [
+            "blast",
+            "spread"
+          ],
+          "text": "half cover is destroyed.",
+          "match": "any"
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "half_cover": 2,
+        "heavy_carry_mult": 0.5,
+        "heavy_carry_pressure": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "lob",
+      "name": "Lob",
+      "system": "ranged",
+      "group": "fire",
+      "number": 7,
+      "ap": {
+        "base": "flat",
+        "value": 3
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "Fire at a target only an ally can see (through smoke or dark), at −4.",
+      "lines": [
+        {
+          "props": [
+            "arc"
+          ],
+          "text": "over full cover, at −2."
+        },
+        {
+          "props": [
+            "blast"
+          ],
+          "text": "you aim at the tile; no penalty, and everyone in the radius gains +2 Pressure."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "arc",
+        "blast"
+      ],
+      "particular": true,
+      "numbers": {
+        "hit": -4,
+        "arc_hit": -2,
+        "blast_pressure": 2,
+        "blast_range_bands": 3,
+        "smoke_decay": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "tile"
+    },
+    {
+      "id": "suppress",
+      "name": "Suppress",
+      "system": "ranged",
+      "group": "press",
+      "number": 8,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 3,
+      "needs": {},
+      "text": "One roll at +2. A hit is half damage and +2 Pressure; a miss is +1.",
+      "lines": [
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "enemies within 1 tile of the target also gain +1."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "it holds until your next turn: any enemy that moves or fires inside 3 tiles of the target gains +1 (today's Suppressing Fire).",
+          "when": "braced"
+        },
+        {
+          "props": [
+            "silent"
+          ],
+          "text": "hits only."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "hit": 2,
+        "damage_mult": 0.5,
+        "pressure_hit": 2,
+        "pressure_miss": 1,
+        "auto_spill": 1,
+        "auto_spill_range": 1,
+        "heavy_lane": 3,
+        "heavy_lane_pressure": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "rake",
+      "name": "Rake",
+      "system": "ranged",
+      "group": "press",
+      "number": 9,
+      "ap": {
+        "base": "flat",
+        "value": 4,
+        "mode": "auto"
+      },
+      "rounds": 6,
+      "needs": {},
+      "text": "Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit.",
+      "lines": [
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "today's full-auto cone for 10 rounds; +1 Pressure hit or miss."
+        },
+        {
+          "props": [
+            "spread"
+          ],
+          "text": "the cone is 1 wider."
+        }
+      ],
+      "free": false,
+      "comes_with": [
+        "auto"
+      ],
+      "home": [
+        "auto"
+      ],
+      "particular": true,
+      "numbers": {
+        "hit": -3,
+        "targets": 3,
+        "group_span": 2,
+        "spread_wider": 1,
+        "pressure": 1,
+        "auto_rounds": 10,
+        "auto_hit": -2,
+        "auto_cone_width": 1.5,
+        "auto_heat": 4,
+        "auto_wear": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "warning_shot",
+      "name": "Warning Shot",
+      "system": "ranged",
+      "group": "press",
+      "number": 10,
+      "ap": {
+        "base": "flat",
+        "value": 1,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "No attack. The target makes a Heart save or gains +1 Pressure.",
+      "lines": [
+        {
+          "props": [
+            "loud"
+          ],
+          "text": "the save is at −2."
+        },
+        {
+          "props": [
+            "silent"
+          ],
+          "text": "not available."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "pressure": 1,
+        "loud_save_tn": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy",
+      "not_with": [
+        "silent"
+      ]
+    },
+    {
+      "id": "flush",
+      "name": "Flush",
+      "system": "ranged",
+      "group": "press",
+      "number": 11,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "Hit the target's cover (no roll; the cover takes the damage). The target gains +2 Pressure.",
+      "lines": [
+        {
+          "props": [
+            "spread",
+            "blast"
+          ],
+          "text": "double damage to the cover.",
+          "match": "any"
+        },
+        {
+          "props": [
+            "arc"
+          ],
+          "text": "the cover is ignored and the target takes half damage as well."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "pressure": 2,
+        "cover_mult": 2,
+        "arc_damage_mult": 0.5
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "mag_dump",
+      "name": "Mag Dump",
+      "system": "ranged",
+      "group": "press",
+      "number": 12,
+      "ap": {
+        "base": "flat",
+        "value": 4,
+        "mode": "shot"
+      },
+      "rounds": "all",
+      "needs": {},
+      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most 4 rolls), each at −1 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
+      "lines": [
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "+1 Pressure per roll, hit or miss."
+        },
+        {
+          "props": [
+            "quick",
+            "precise"
+          ],
+          "text": "no growing penalty.",
+          "match": "all",
+          "note": "a revolver"
+        },
+        {
+          "props": [
+            "spread"
+          ],
+          "text": "both barrels, one roll at double damage within 4 tiles."
+        },
+        {
+          "props": [
+            "drawn"
+          ],
+          "text": "not available."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "auto",
+        "quick",
+        "spread"
+      ],
+      "particular": true,
+      "numbers": {
+        "per_roll": 3,
+        "max_rolls": 4,
+        "step": 1,
+        "pressure": 1,
+        "heat_under": 1,
+        "spread_mult": 2,
+        "spread_range": 4
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy",
+      "not_with": [
+        "drawn"
+      ]
+    },
+    {
+      "id": "crossfire",
+      "name": "Crossfire",
+      "system": "ranged",
+      "group": "press",
+      "number": 13,
+      "ap": {
+        "base": "flat",
+        "value": 2,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "A shot at a target an ally has already hit this round: +2 to hit and +1 extra Pressure.",
+      "lines": [
+        {
+          "props": [
+            "quick"
+          ],
+          "text": "step 1 tile first, with no opportunity attack."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "hit": 2,
+        "extra_pressure": 1,
+        "quick_step": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "bead",
+      "name": "Bead",
+      "system": "ranged",
+      "group": "set",
+      "number": 14,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Name a target. Until you move or name another, your shots at it ignore one range band, and its Pressure doesn't fall while you see it.",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "+1 to hit it."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "you may move 1 tile without losing it."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "range_bands": 1,
+        "precise_hit": 1,
+        "heavy_move_tiles": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "spot",
+      "name": "Spot",
+      "system": "ranged",
+      "group": "set",
+      "number": 15,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Name a target for the squad: until your next turn allies have +1 to hit it, and the first ally to hit it adds +1 Pressure more.",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "allies also ignore one range band."
+        },
+        {
+          "props": [
+            "silent"
+          ],
+          "text": "the target isn't told."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "hit": 1,
+        "first_hit_pressure": 1,
+        "precise_range_bands": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "brace",
+      "name": "Brace",
+      "system": "ranged",
+      "group": "set",
+      "number": 16,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Today's Brace, opened to any weapon resting on half cover: Recoil halved.",
+      "lines": [
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "removes its penalties (today's rule)."
+        },
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "Suppress gives +1 more."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "auto_suppress_pressure": 1
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self"
+    },
+    {
+      "id": "load_special",
+      "name": "Load Special",
+      "system": "ranged",
+      "group": "set",
+      "number": 17,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Chamber one special round you carry (armour-piercing, hollow-point, incendiary, enhanced) for your next Fire. The magazine stays as it is.",
+      "lines": [
+        {
+          "props": [
+            "drawn"
+          ],
+          "text": "not needed (any arrow, every shot)."
+        },
+        {
+          "props": [
+            "spread"
+          ],
+          "text": "the whole cone gets the round's rider."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {},
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self",
+      "not_with": [
+        "drawn"
+      ]
+    },
+    {
+      "id": "shift",
+      "name": "Shift",
+      "system": "ranged",
+      "group": "set",
+      "number": 18,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Move 1 tile from cover to cover without setting off a Watch.",
+      "lines": [
+        {
+          "props": [
+            "quick"
+          ],
+          "text": "2 tiles."
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "you stay Braced."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "tiles": 1,
+        "quick_tiles": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "tile"
+    },
+    {
+      "id": "vent",
+      "name": "Vent",
+      "system": "ranged",
+      "group": "set",
+      "number": 19,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "−2 Heat now.",
+      "lines": [
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "−4 (a barrel swap)."
+        },
+        {
+          "props": [
+            "drawn"
+          ],
+          "text": "not needed."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "heat": 2,
+        "heavy_heat": 4
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self",
+      "not_with": [
+        "drawn"
+      ]
+    },
+    {
+      "id": "head_down",
+      "name": "Head Down",
+      "system": "ranged",
+      "group": "set",
+      "number": 20,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Remove 1 Pressure from yourself, 2 behind full cover. You can't Watch this round.",
+      "lines": [],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "pressure": 1,
+        "full_cover_pressure": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self"
+    },
+    {
+      "id": "dead_centre",
+      "name": "Dead Centre",
+      "system": "ranged",
+      "group": "take",
+      "number": 21,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {
+        "pressed": true
+      },
+      "text": "One shot at +50% damage.",
+      "suppressed": "Its cover doesn't count.",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "+2 to hit."
+        },
+        {
+          "props": [
+            "drawn"
+          ],
+          "text": "ignores 5 armour."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "precise",
+        "drawn"
+      ],
+      "particular": true,
+      "numbers": {
+        "damage_pct": 50,
+        "precise_hit": 2,
+        "drawn_pierce": 5
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "pin_down",
+      "name": "Pin Down",
+      "system": "ranged",
+      "group": "take",
+      "number": 22,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {
+        "pressed": true
+      },
+      "text": "A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned (today's condition) for 1 round.",
+      "suppressed": "The save is at −2.",
+      "lines": [
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "full damage."
+        },
+        {
+          "props": [
+            "drawn",
+            "silent"
+          ],
+          "text": "nailed in place until it spends 2 AP.",
+          "match": "any"
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "damage_mult": 0.7,
+        "pinned_rounds": 1,
+        "suppressed_save": 2,
+        "nailed_ap": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "rout",
+      "name": "Rout",
+      "system": "ranged",
+      "group": "take",
+      "number": 23,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {
+        "pressed": true
+      },
+      "text": "No damage. The target makes a Heart save or runs its full move away from you, drawing opportunity attacks and Watches.",
+      "suppressed": "The save is at −3.",
+      "lines": [
+        {
+          "props": [
+            "loud"
+          ],
+          "text": "−2 more."
+        },
+        {
+          "props": [
+            "blast"
+          ],
+          "text": "everyone Pressed in the radius."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "suppressed_save": 3,
+        "loud_save": 2,
+        "run_ap": 6
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "stopping_shot",
+      "name": "Stopping Shot",
+      "system": "ranged",
+      "group": "take",
+      "number": 24,
+      "ap": {
+        "base": "flat",
+        "value": 2,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {
+        "pressed": true
+      },
+      "text": "A shot. On a hit the target saves (Guts or Athletics, whichever is better) or loses 1 AP next turn and is pushed 1 tile.",
+      "suppressed": "It also falls Prone on a failed save.",
+      "lines": [
+        {
+          "props": [
+            "loud",
+            "heavy"
+          ],
+          "text": "pushed 2.",
+          "match": "any"
+        },
+        {
+          "props": [
+            "spread"
+          ],
+          "text": "pushed 2 and Prone either way.",
+          "when": "within_4"
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "push": 1,
+        "push_more": 2,
+        "ap_loss": 1,
+        "spread_range": 4
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "storm",
+      "name": "Storm",
+      "system": "ranged",
+      "group": "take",
+      "number": 25,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {
+        "pressed": true
+      },
+      "text": "Move up to 3 tiles toward the target without its reaction, then shoot.",
+      "suppressed": "Your shot is a critical on 18–20.",
+      "lines": [
+        {
+          "props": [
+            "quick"
+          ],
+          "text": "+2 to hit."
+        },
+        {
+          "props": [
+            "spread"
+          ],
+          "text": "Body save or Prone."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "move": 3,
+        "quick_hit": 2,
+        "suppressed_crit_min": 18
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "last_round",
+      "name": "Last Round",
+      "system": "ranged",
+      "group": "take",
+      "number": 26,
+      "ap": {
+        "base": "flat",
+        "value": 2,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {
+        "pressed": true,
+        "last_round": true
+      },
+      "text": "Only with the last round in the weapon: +3 to hit. If it takes the target out, your next speed reload is free.",
+      "suppressed": "It can't be reduced by cover.",
+      "lines": [
+        {
+          "props": [
+            "quick",
+            "precise"
+          ],
+          "text": "+50% damage.",
+          "match": "all",
+          "note": "a revolver"
+        },
+        {
+          "props": [
+            "drawn"
+          ],
+          "text": "the last arrow in the quiver counts."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "hit": 3,
+        "damage_pct": 50
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
+      "id": "overwatch",
+      "name": "Overwatch",
+      "system": "ranged",
+      "group": "watch",
+      "number": 27,
+      "ap": {
+        "base": "weapon",
+        "add": 0
+      },
+      "rounds": 1,
+      "needs": {},
+      "trigger": "the first enemy to move in your sight (today's rule, unchanged)",
+      "text": "the held shot",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "+2."
+        },
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "it is a Burst."
+        },
+        {
+          "props": [
+            "spread"
+          ],
+          "text": "anyone coming within 4 tiles."
+        }
+      ],
+      "free": true,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "precise_hit": 2,
+        "spread_range": 4
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "self"
+    },
+    {
+      "id": "deny",
+      "name": "Deny",
+      "system": "ranged",
+      "group": "watch",
+      "number": 28,
+      "ap": {
+        "base": "flat",
+        "value": 2,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "trigger": "the first enemy to enter a tile you name",
+      "text": "the shot; on a hit it stops there",
+      "lines": [
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "any tile in a straight line of 3.",
+          "when": "braced"
+        },
+        {
+          "props": [
+            "blast"
+          ],
+          "text": "the tile takes the blast."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "heavy_line": 3
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "tile"
+    },
+    {
+      "id": "cover_me",
+      "name": "Cover Me",
+      "system": "ranged",
+      "group": "watch",
+      "number": 29,
+      "ap": {
+        "base": "flat",
+        "value": 2,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "trigger": "the first enemy to attack an ally you name",
+      "text": "that attack is at −2, and the enemy gains +1 Pressure",
+      "lines": [
+        {
+          "props": [
+            "auto"
+          ],
+          "text": "two allies."
+        },
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "you also take the shot."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "attack_penalty": 2,
+        "pressure": 1,
+        "auto_allies": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "ally"
+    },
+    {
+      "id": "dead_to_rights",
+      "name": "Dead to Rights",
+      "system": "ranged",
+      "group": "watch",
+      "number": 30,
+      "ap": {
+        "base": "flat",
+        "value": 3,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "trigger": "a Pressed enemy you name attacks, stands up, reloads or leaves cover",
+      "text": "the shot lands first, at +2",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "a critical on 18–20."
+        },
+        {
+          "props": [
+            "silent"
+          ],
+          "text": "you stay Hidden."
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "hit": 2,
+        "precise_crit_min": 18
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    }
+  ]
+}

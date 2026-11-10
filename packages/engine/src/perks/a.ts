@@ -16,7 +16,7 @@ import { WEAPON, SKILL } from '../data';
 import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily } from '../magic';
 import { die, d20, type Rng } from '../rng';
 import { setStoryCond, storyConds, strikeFromWorld } from '../game';
-import { reveal, PATRON } from '../tactics';
+import { reveal, PATRON , dropHeldShot } from '../tactics';
 
 // ---------- small helpers ----------
 const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -294,7 +294,7 @@ function breach(h: Holder, cb: Combat, u: Unit, t: Unit, rng: Rng): string | nul
           if (imm) say(cb, t.name + ' holds its ground (' + imm + ').');
           else {
             const fm: any = emit(cb, 'forced_move', { u: t, by: u, tiles, how: 'knockback', cancel: false, cb, rng });
-            if (!fm.cancel) { const was = t.pos, line = pushAway(cb, u, t, tiles); if (t.pos !== was) { t.braced = false; t.overwatch = null; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: t.pos, ok: true }); } if (line) say(cb, line.replace(/^ · /, '') + '.'); }
+            if (!fm.cancel) { const was = t.pos, line = pushAway(cb, u, t, tiles); if (t.pos !== was) { t.braced = false; dropHeldShot(cb, t, 'knocked back'); emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: t.pos, ok: true }); } if (line) say(cb, line.replace(/^ · /, '') + '.'); }
           }
         }
         checkOver(cb); return null;
@@ -439,7 +439,7 @@ register({
     turn_start: (ctx, h) => { if (ctx.u === h.u && stateOf(h).lt) stateOf(h).lt.began = true; },
     turn_end: (ctx, h) => {
       const st = stateOf(h); if (ctx.u !== h.u || !st.lt || !st.lt.began) return;
-      const u = h.u!; u.hp = 0; u.downed = true; u.braced = false; u.overwatch = null;
+      const u = h.u!; u.hp = 0; u.downed = true; u.braced = false; dropHeldShot(h.cb, u, 'down');
       btbEnd(h, u.name + '\'s Last Turn is over: Downed.'); if (h.cb) fxFell(h.cb, u);
     },
     heal_given: (ctx, h) => { if (ctx.t === h.u && stateOf(h).lt && ctx.n > 0) btbEnd(h, h.u!.name + ' is patched up in time: the Last Turn ends, still standing.'); },

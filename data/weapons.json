@@ -46,7 +46,18 @@
         }
       },
       "lore": "Issued to everyone, trusted by no one, carried by all of them.",
-      "type": "service_pistol"
+      "type": "service_pistol",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "snap_shot"
+      }
     },
     {
       "id": "drifter_revolver",
@@ -91,7 +102,19 @@
         }
       },
       "lore": "Six chances, and frontier folk count every one.",
-      "type": "drifter_revolver"
+      "type": "drifter_revolver",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick",
+          "precise"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "mag_dump"
+      }
     },
     {
       "id": "decrkm_smg",
@@ -141,7 +164,19 @@
         }
       },
       "lore": "Thirty rounds of opinion.",
-      "type": "decrkm_smg"
+      "type": "decrkm_smg",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick",
+          "auto"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "rake"
+      }
     },
     {
       "id": "hellraiser_service_rifle",
@@ -190,7 +225,19 @@
         }
       },
       "lore": "The Hellraisers' answer to every frontier.",
-      "type": "hellraiser_service_rifle"
+      "type": "hellraiser_service_rifle",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "auto",
+          "precise"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "suppress"
+      }
     },
     {
       "id": "lever_carbine",
@@ -234,7 +281,19 @@
       "type": "lever_carbine",
       "tags": [
         "lever"
-      ]
+      ],
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "precise",
+          "quick"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "walking_fire"
+      }
     },
     {
       "id": "lumeri_scattergun",
@@ -281,7 +340,19 @@
         }
       },
       "lore": "The Church calls it a key.",
-      "type": "lumeri_scattergun"
+      "type": "lumeri_scattergun",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "spread",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "flush"
+      }
     },
     {
       "id": "long_rifle",
@@ -323,7 +394,19 @@
         }
       },
       "lore": "Fired from the next valley over.",
-      "type": "long_rifle"
+      "type": "long_rifle",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "precise",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "bead"
+      }
     },
     {
       "id": "blackpoint_700",
@@ -368,7 +451,20 @@
         }
       },
       "lore": "Anti-materiel. Everyone else is materiel.",
-      "type": "blackpoint_700"
+      "type": "blackpoint_700",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "heavy",
+          "precise",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "dead_centre"
+      }
     },
     {
       "id": "hellraiser_lmg",
@@ -414,7 +510,19 @@
         }
       },
       "lore": "The Hellraisers' favourite sentence: \"hold here.\"",
-      "type": "hellraiser_lmg"
+      "type": "hellraiser_lmg",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "heavy",
+          "auto"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "brace"
+      }
     },
     {
       "id": "recurve_bow",
@@ -459,7 +567,20 @@
         }
       },
       "lore": "Quiet, cheap, and it never jams.",
-      "type": "recurve_bow"
+      "type": "recurve_bow",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "drawn",
+          "silent",
+          "quick"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "pin_down"
+      }
     },
     {
       "id": "crossbow",
@@ -504,7 +625,18 @@
         }
       },
       "lore": "Patience, cranked.",
-      "type": "crossbow"
+      "type": "crossbow",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "precise",
+          "silent"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "combat_knife",
@@ -521,7 +653,7 @@
         "throw": 2
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 0.5,
       "accuracy": 0,
       "price_credits": 60,
@@ -551,7 +683,21 @@
         }
       },
       "lore": "Every kit has one. Every story ends with one.",
-      "type": "combat_knife"
+      "type": "combat_knife",
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "edge",
+          "point",
+          "thrown"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "coup"
+      }
     },
     {
       "id": "sabre",
@@ -567,7 +713,7 @@
         "attack": 2
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 1.5,
       "accuracy": 0,
       "price_credits": 400,
@@ -588,7 +734,19 @@
         }
       },
       "lore": "An officer's argument.",
-      "type": "sabre"
+      "type": "sabre",
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "edge"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "riposte"
+      }
     },
     {
       "id": "ork_machete",
@@ -625,7 +783,19 @@
         }
       },
       "lore": "Orks don't make tools. They make machetes.",
-      "type": "ork_machete"
+      "type": "ork_machete",
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "edge"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "teaches": "cleave"
+      }
     },
     {
       "id": "maul",
@@ -663,7 +833,19 @@
         }
       },
       "lore": "It doesn't cut. It explains.",
-      "type": "maul"
+      "type": "maul",
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "blunt"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "teaches": "break"
+      }
     },
     {
       "id": "lance",
@@ -702,7 +884,20 @@
         }
       },
       "lore": "Adamantile knights don't stop. They arrive.",
-      "type": "lance"
+      "type": "lance",
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "point",
+          "reach"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "teaches": "charge"
+      }
     },
     {
       "id": "fists",
@@ -738,7 +933,23 @@
         }
       },
       "lore": "Everyone's first weapon.",
-      "type": "fists"
+      "type": "fists",
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "bare"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ],
+        "teaches": "bind"
+      }
     },
     {
       "id": "frag_grenade",
@@ -776,7 +987,20 @@
       },
       "lore": "Pull, count, apologise.",
       "type": "frag_grenade",
-      "explosive": true
+      "explosive": true,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "thrown",
+          "blast",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "rout"
+      }
     },
     {
       "id": "smoke_grenade",
@@ -814,7 +1038,20 @@
         }
       },
       "lore": "Not a weapon. A permission slip.",
-      "type": "smoke_grenade"
+      "type": "smoke_grenade",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "thrown",
+          "blast",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "head_down"
+      }
     },
     {
       "id": "flashbang",
@@ -855,7 +1092,19 @@
         }
       },
       "lore": "Lumeri riot police swear by them.",
-      "type": "flashbang"
+      "type": "flashbang",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "thrown",
+          "blast",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "decrkm_autopistol",
@@ -903,7 +1152,19 @@
       "type": "decrkm_autopistol",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.12
+      "magazine_kg": 0.12,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick",
+          "auto"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "burst"
+      }
     },
     {
       "id": "parlour_pistol",
@@ -943,7 +1204,19 @@
       "lore": "Two rounds. That's usually one more than it takes.",
       "type": "parlour_pistol",
       "provisional": true,
-      "reload": "loose"
+      "reload": "loose",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick",
+          "silent"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "crossfire"
+      }
     },
     {
       "id": "magistrate_pistol",
@@ -989,7 +1262,19 @@
       "type": "magistrate_pistol",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.1
+      "magazine_kg": 0.1,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "stopping_shot"
+      }
     },
     {
       "id": "frontier_hand_cannon",
@@ -1034,7 +1319,19 @@
       "provisional": true,
       "reload": "magazine",
       "magazine_kg": 0.06,
-      "reload_unit": "speedloader"
+      "reload_unit": "speedloader",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "loud",
+          "precise"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "last_round"
+      }
     },
     {
       "id": "legion_pdw",
@@ -1083,7 +1380,19 @@
       "type": "legion_pdw",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.18
+      "magazine_kg": 0.18,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick",
+          "auto"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "storm"
+      }
     },
     {
       "id": "whisper_smg",
@@ -1132,7 +1441,19 @@
       "type": "whisper_smg",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.2
+      "magazine_kg": 0.2,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "auto",
+          "silent"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "spot"
+      }
     },
     {
       "id": "mandestra_drum_gun",
@@ -1178,7 +1499,19 @@
       "provisional": true,
       "reload": "magazine",
       "magazine_kg": 0.6,
-      "reload_unit": "drum"
+      "reload_unit": "drum",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "auto",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "rake"
+      }
     },
     {
       "id": "adamantile_battle_rifle",
@@ -1226,7 +1559,19 @@
       "type": "adamantile_battle_rifle",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.2
+      "magazine_kg": 0.2,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "precise",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "punch_through"
+      }
     },
     {
       "id": "ccec_marksman_rifle",
@@ -1271,7 +1616,18 @@
       "type": "ccec_marksman_rifle",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.15
+      "magazine_kg": 0.15,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "precise"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "called_shot"
+      }
     },
     {
       "id": "legion_bullpup",
@@ -1319,7 +1675,19 @@
       "type": "legion_bullpup",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.18
+      "magazine_kg": 0.18,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "auto",
+          "quick"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "shift"
+      }
     },
     {
       "id": "coach_gun",
@@ -1368,7 +1736,19 @@
       "lore": "Two arguments, one conclusion.",
       "type": "coach_gun",
       "provisional": true,
-      "reload": "loose"
+      "reload": "loose",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "spread",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "mag_dump"
+      }
     },
     {
       "id": "sawn_off",
@@ -1412,7 +1792,19 @@
       "lore": "Illegal in Central City, which is how you know it works.",
       "type": "sawn_off",
       "provisional": true,
-      "reload": "loose"
+      "reload": "loose",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "spread",
+          "quick"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "storm"
+      }
     },
     {
       "id": "brigade_auto_shotgun",
@@ -1463,7 +1855,19 @@
       "type": "brigade_auto_shotgun",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.3
+      "magazine_kg": 0.3,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "spread",
+          "auto"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "burst"
+      }
     },
     {
       "id": "hellraiser_rotary",
@@ -1509,7 +1913,20 @@
       "provisional": true,
       "reload": "magazine",
       "magazine_kg": 1.2,
-      "reload_unit": "belt"
+      "reload_unit": "belt",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "heavy",
+          "auto",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "suppress"
+      }
     },
     {
       "id": "smetanita_thumper",
@@ -1553,7 +1970,20 @@
       "type": "smetanita_thumper",
       "provisional": true,
       "reload": "loose",
-      "explosive": true
+      "explosive": true,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "heavy",
+          "blast",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "lob"
+      }
     },
     {
       "id": "breacher_tube",
@@ -1599,7 +2029,20 @@
       "provisional": true,
       "reload": "loose",
       "reload_ap": 3,
-      "explosive": true
+      "explosive": true,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "heavy",
+          "blast",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "flush"
+      }
     },
     {
       "id": "purifier_flamer",
@@ -1642,7 +2085,18 @@
       "lore": "The Lumeri insist it's a sacrament.",
       "type": "purifier_flamer",
       "provisional": true,
-      "reload": "loose"
+      "reload": "loose",
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "heavy",
+          "spread"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "satchel_charge",
@@ -1683,7 +2137,19 @@
       "lore": "Some problems are best solved from the next room.",
       "type": "satchel_charge",
       "provisional": true,
-      "explosive": true
+      "explosive": true,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "thrown",
+          "blast",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "longbow",
@@ -1732,6 +2198,19 @@
       "reload": "loose",
       "requires": {
         "raw_power": 3
+      },
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "drawn",
+          "silent",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "dead_to_rights"
       }
     },
     {
@@ -1781,7 +2260,19 @@
       "type": "repeating_crossbow",
       "provisional": true,
       "reload": "magazine",
-      "magazine_kg": 0.2
+      "magazine_kg": 0.2,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "silent",
+          "quick"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "burst"
+      }
     },
     {
       "id": "throwing_knives",
@@ -1798,7 +2289,7 @@
         "aimed": 3
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 0.8,
       "accuracy": 0,
       "price_credits": 80,
@@ -1821,7 +2312,20 @@
       },
       "lore": "Four problems, four solutions.",
       "type": "throwing_knives",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "point",
+          "thrown"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "flurry"
+      }
     },
     {
       "id": "hatchet",
@@ -1838,7 +2342,7 @@
         "aimed": 3
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 1,
       "accuracy": 0,
       "price_credits": 120,
@@ -1863,7 +2367,21 @@
       },
       "lore": "Frontier tool first, weapon whenever needed.",
       "type": "hatchet",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "edge",
+          "hook",
+          "thrown"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "throw"
+      }
     },
     {
       "id": "legion_gladius",
@@ -1880,7 +2398,7 @@
         "aimed": 3
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 1.3,
       "accuracy": 0,
       "price_credits": 300,
@@ -1903,7 +2421,20 @@
       },
       "lore": "Made for the second rank of a shield wall.",
       "type": "legion_gladius",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "point",
+          "edge"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "parry"
+      }
     },
     {
       "id": "kemizuchi_duelling_blade",
@@ -1920,7 +2451,7 @@
         "aimed": 3
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 1.2,
       "accuracy": 1,
       "price_credits": 550,
@@ -1943,7 +2474,19 @@
       },
       "lore": "The school across town settles things with this.",
       "type": "kemizuchi_duelling_blade",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "point"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "lunge"
+      }
     },
     {
       "id": "war_axe",
@@ -1984,7 +2527,20 @@
       },
       "lore": "Plate is just a slower kind of skin.",
       "type": "war_axe",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "edge",
+          "hook"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "teaches": "sunder"
+      }
     },
     {
       "id": "adamantile_greatsword",
@@ -2024,7 +2580,20 @@
       },
       "lore": "The Brigade's way of saying \"stand back.\"",
       "type": "adamantile_greatsword",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "edge",
+          "point"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "teaches": "sweep"
+      }
     },
     {
       "id": "glaive",
@@ -2066,7 +2635,21 @@
       },
       "lore": "The space around you is yours.",
       "type": "glaive",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "edge",
+          "hook",
+          "reach"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "teaches": "keep_back"
+      }
     },
     {
       "id": "ork_rip_saw",
@@ -2107,7 +2690,19 @@
       },
       "lore": "Ork engineering: loud, sharp, and on fire.",
       "type": "ork_rip_saw",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "edge"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "teaches": "hamstring"
+      }
     },
     {
       "id": "knuckledusters",
@@ -2143,7 +2738,24 @@
       },
       "lore": "A bar argument that brought friends.",
       "type": "knuckledusters",
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "bare",
+          "blunt"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ],
+        "teaches": "bash"
+      }
     },
     {
       "id": "hellraiser_servo_fist",
@@ -2187,7 +2799,24 @@
       },
       "tags": [
         "electronic"
-      ]
+      ],
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "bare",
+          "blunt"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ],
+        "teaches": "throw_down"
+      }
     },
     {
       "id": "incendiary_grenade",
@@ -2228,7 +2857,19 @@
       "lore": "The frontier's least favourite smell.",
       "type": "incendiary_grenade",
       "provisional": true,
-      "explosive": true
+      "explosive": true,
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "thrown",
+          "blast",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "bot_scrambler",
@@ -2270,7 +2911,19 @@
       "provisional": true,
       "tags": [
         "electronic"
-      ]
+      ],
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "thrown",
+          "blast",
+          "arc"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "core_rifle",
@@ -2320,7 +2973,17 @@
       },
       "tags": [
         "electronic"
-      ]
+      ],
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "precise"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "spellslinger_pistol",
@@ -2370,7 +3033,17 @@
       },
       "tags": [
         "evoker_linked"
-      ]
+      ],
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "quick"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "evoker_blade",
@@ -2387,7 +3060,7 @@
         "aimed": 3
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 1.8,
       "accuracy": 0,
       "price_credits": 2400,
@@ -2417,7 +3090,18 @@
       },
       "tags": [
         "evoker_linked"
-      ]
+      ],
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "edge"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "emanator_gauntlet",
@@ -2460,6 +3144,22 @@
       "provisional": true,
       "requires": {
         "will_power": 3
+      },
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "bare",
+          "blunt"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ]
       }
     },
     {
@@ -2509,6 +3209,17 @@
       "reload": "loose",
       "requires": {
         "faith": 3
+      },
+      "phys": {
+        "system": "ranged",
+        "props": [
+          "spread",
+          "loud"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
       }
     },
     {
@@ -2526,7 +3237,7 @@
         "aimed": 3
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 3,
       "accuracy": 0,
       "price_credits": 1800,
@@ -2552,6 +3263,17 @@
       "provisional": true,
       "requires": {
         "camaraderie": 3
+      },
+      "phys": {
+        "system": "melee",
+        "props": [
+          "reach",
+          "blunt"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
       }
     },
     {
@@ -2569,7 +3291,7 @@
         "aimed": 3
       },
       "ammo": null,
-      "skill": "athletics",
+      "skill": "dexterity",
       "weight_kg": 2.5,
       "accuracy": 0,
       "price_credits": 2400,
@@ -2596,7 +3318,19 @@
       },
       "tags": [
         "evoker_linked"
-      ]
+      ],
+      "phys": {
+        "system": "melee",
+        "props": [
+          "heavy",
+          "blunt",
+          "reach"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      }
     },
     {
       "id": "beast_bite",
@@ -2624,7 +3358,23 @@
       "lore": "A beast companion's own weapon (rules 1.3; provisional).",
       "type": "fists",
       "companion_only": true,
-      "provisional": true
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "bare",
+          "edge"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ]
+      }
     }
   ]
 }

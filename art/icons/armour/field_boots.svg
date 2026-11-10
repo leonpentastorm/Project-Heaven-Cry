@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Field boots -->
+  <g transform="translate(-3 0)">
+    <path d="M16 5 L32 5 L33 30 Q35 36 44 38 L54 41 Q59 43 59 49 L59 59 L53 59 L51 56 L47 56 L45 59 L39 59 L37 56 L33 56 L31 59 L25 59 L23 56 L19 56 L17 59 L12 59 L12 50 Q14 44 15 36 Z"/>
+    <path d="M12 52 L59 52"/>
+    <path d="M24 5 L25 30 Q27 37 38 38.5"/>
+  </g>
+</svg>

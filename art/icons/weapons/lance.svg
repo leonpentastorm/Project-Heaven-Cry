@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Lance -->
+  <g transform="rotate(-45 32 32)">
+    <path d="M-6 30 L8 30 L8 20 L11.5 20 L23 27 L70 32 L23 37 L11.5 44 L8 44 L8 34 L-6 34 L-8 32 Z"/>
+    <path d="M23 27 L23 37"/>
+    <path d="M1 30 L1 34"/>
+  </g>
+</svg>

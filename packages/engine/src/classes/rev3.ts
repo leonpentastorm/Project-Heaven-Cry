@@ -230,7 +230,7 @@ register({
     if (uses({ ...h, cb }).left('per_turn', 1, h.key) <= 0) return 0;
     return -Math.min(1, Math.max(0, (ctx?.base ?? 2) - 1));
   },
-  on: { reload: (ctx, h) => { if (ctx.u === h.u && !ctx.both && inFight(h)) uses(h).take('per_turn', 1, h.key); } },
+  on: { reload: (ctx, h) => { if (ctx.u === h.u && !ctx.both && ctx.hand !== 'off' && inFight(h)) uses(h).take('per_turn', 1, h.key); } }, // the off-hand gun's reload isn't its (spec item 564)
   brief: () => null,
 });
 

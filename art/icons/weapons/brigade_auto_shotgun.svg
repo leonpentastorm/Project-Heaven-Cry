@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Brigade auto-shotgun -->
+  <g transform="translate(1 5.5) rotate(-16 32 32)">
+    <path d="M3.5 20 L16 20 L18 18 L34 18 L34 16 L44 16 Q46.5 11.5 51.5 12 L49 16 L53 16 L53 20 L56 20 L56 19 L62 20
+             L59.5 24 L62 28 L56 29 L56 28 L53 28 L53 31 L37 31 L37 37.5 L26 37.5 L26 31 L23 31 L21.5 39 L17 38.5 L18.5 31
+             L16 31 L4.5 35 L3.5 34 Z"/>
+    <path d="M40 21.5 L40 25.5 M46 21.5 L46 25.5"/>
+  </g>
+</svg>

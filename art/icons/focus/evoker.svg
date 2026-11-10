@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Evoker -->
+  <g transform="translate(2 -2)">
+    <path d="M20 62 L48 62 L48 52 L49 49 L49 24 L48 22 L43.5 22 L42.5 24 L42.5 28 L42.5 17 L41.5 15 L36.5 15 L35.5 17 L35.5 27
+             L35.5 14 L34.5 12 L29.5 12 L28.5 14 L28.5 27 L28.5 16 L25.25 7 L22 16 L22 33 L16 26 A3 3 0 0 0 11.5 30 L20 41 L20 52 Z"/>
+    <path d="M35.5 33.5 L40.3 36.25 L40.3 41.75 L35.5 44.5 L30.7 41.75 L30.7 36.25 Z"/>
+    <path d="M20 52 L48 52"/>
+  </g>
+</svg>

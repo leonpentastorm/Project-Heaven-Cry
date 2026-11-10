@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Smiling mask -->
+  <path d="M32 4 C46 4 54 13 54 28 C54 44 44 55 32 61 C20 55 10 44 10 28 C10 13 18 4 32 4 Z"/>
+  <path d="M15 26 Q21 18.5 28 25 Q21 22.5 15 26 Z"/>
+  <path d="M49 26 Q43 18.5 36 25 Q43 22.5 49 26 Z"/>
+  <path d="M13 33 Q32 56 51 33 Q32 46 13 33 Z"/>
+</svg>

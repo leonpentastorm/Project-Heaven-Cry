@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Parlour pistol -->
+  <path d="M18 14 L60 14 L60 30 L26 30 L24.5 32 Q23.5 41 21 46.5 Q18.5 53 12.5 53 Q7.5 53 5.5 48 Q9.5 46.5 11 41
+           L12.5 24 Q10 17 6.5 12 Q13 12.5 18 14 Z"/>
+  <path d="M26 14 L26 30"/>
+  <path d="M26 22 L60 22"/>
+  <path d="M31 30 Q31.5 35 27.5 36.5"/>
+</svg>

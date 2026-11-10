@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Maul -->
+  <g transform="rotate(-45 32 32)">
+    <path d="M-4 30 L-2 29 L1 29 L1 30 L46 30 L46 22 L44 20 L44 16 L58 16 L58 20 L56 22 L56 29 L61 32 L56 35 L56 42
+             L58 44 L58 48 L44 48 L44 44 L46 42 L46 34 L1 34 L1 35 L-2 35 L-4 34 Z"/>
+    <path d="M46 22 L56 22 M46 42 L56 42"/>
+  </g>
+</svg>

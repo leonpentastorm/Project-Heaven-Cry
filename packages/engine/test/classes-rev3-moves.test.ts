@@ -46,7 +46,7 @@ describe('Defender', () => {
     for (const guard of [2, 0]) {
       const f = fightWith([cls('defender', 5)], [{ weapon: 'maul' }]);
       const d = at(f, f.pc, '4,2'); tough(d); d.res = { ...(d.res || {}), guard }; d.def = -40;
-      const foe = at(f, f.foe, '5,2'); foe.attack = 60; order(f, d, foe);
+      const foe = at(f, f.foe, '5,2'); foe.attack = 60; foe.techs = []; // plain attacks: the maul's knockdown is its plain attack's grant, not a technique's (rules 1.12) order(f, d, foe);
       f.turn(d); act(f, d, { type: 'combat/end-turn' });
       expect(logHas(f.cb, /knocks? .*prone|Knockdown|prone/i)).toBe(true);
       if (guard) { expect(logCount(f.cb, /shrugs it off: no longer prone/)).toBeGreaterThanOrEqual(1); expect(f.unit(d.id).res!.guard).toBeLessThan(2); expect(fx(f, 'shrug').length).toBeGreaterThanOrEqual(1); }
@@ -268,7 +268,7 @@ describe('Trickster', () => {
     expect(f.unit(u.id).ap).toBe(5);
     const it0 = f.unit(foe.id).readIntent!; expect(it0).toMatchObject({ kind: 'attack', targetId: u.id, by: u.id });
     expect(fx(f, 'intent')[0]).toMatchObject({ target: foe.id, kind: 'attack' });
-    expect(logHas(f.cb, /Read: .* means to shoot/)).toBe(true);
+    expect(logHas(f.cb, /Read: .* means to (shoot|use Suppress on)/)).toBe(true); // rules 1.12: a soldier opens with Suppress
     const n = f.cb.log.length; act(f, f.unit(u.id), { type: 'combat/end-turn' });
     expect(f.cb.log.slice(n).some((l) => l.startsWith(foe.name + ' fires at ' + u.name))).toBe(true);
     expect(f.unit(foe.id).readIntent).toBeUndefined(); // cleared when its turn ended

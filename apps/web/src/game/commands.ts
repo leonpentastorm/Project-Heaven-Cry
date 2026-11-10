@@ -4,7 +4,7 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, perkInfoFor, bindGame, type PerkActionEntry, type PerkInfoEntry,
+import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, perkInfoFor, bindGame, type PerkActionEntry, type PerkInfoEntry,
   focusHand, NEEDS_EVOKER, NEEDS_EMANATOR, reloadBothAp, PILE, PICKUP_AP, dist } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
@@ -13,6 +13,7 @@ import { prayerButtons, FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 import { heldClassId, currentClassId } from './classView';
 import { pilesIn } from './worldView';
+import { weaponBlocks, blockItems, techAction, TWATCH, legacyAttack } from './techView';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
@@ -136,7 +137,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   // Weapon-granted actions (engine weaponActions, plan 2.9): only what this weapon grants shows, with the engine's reason.
   const wa = cur ? weaponActions(cur) : [], W = (id: string) => wa.find((x: any) => x.id === id);
   const offW: any = cur && cur.offWeapon ? (WEAPON as any)[cur.offWeapon] : null;
-  const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op), skPassive = sk && !skRuns && skFx.op !== 'narrator';
+  const legacy = isLegacyUnit(cur);
   const loadInfo = (() => { if (!cur || !w || w.reload !== 'magazine' || !cur.mags) return null; const cap = w.magazine || 0, open = cur.mags.filter((n: number) => n < cap).sort((a: number, b: number) => b - a); if (!open.length || !cur.loose) return null; const r = Math.min(cap - open[0], cur.loose, cur.ap * ROUNDS_PER_AP); return { rounds: r, ap: Math.ceil(r / ROUNDS_PER_AP) }; })();
   const mg = cur && cur.mg, words = mg ? mg.words || [] : [], designs = mg ? mg.designs || [] : [];
   const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator));
@@ -148,19 +149,25 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ['disengage', 'Disengage', '1 AP', 'Step 1 tile with no opportunity attacks.'],
       ['prone', cur && cur.prone ? 'Stand up' : 'Drop prone', '1 AP', 'Prone: ranged attacks against you −2, melee +2; you can\'t move until you stand.']], null, 'move'],
     ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), [
-      ...(melee ? [['melee', 'Strike', attackApCost(w, 'melee') + ' AP', 'd20 + ' + w.skill.replace('_', ' ') + ' vs Defense. ' + w.damage + ' damage.'] as ActionItem]
+      // Physical 2.0 (rules 1.12; game/techView.ts): one block per held weapon, its plain attack (Cut, Shot) and its
+      // Techniques pad, then Hold a shot. They replace the old Shot / Aimed / Burst / Full auto / Overwatch / weapon
+      // skill / Melee rows (the engine still takes those actions; a saved turn-card pick maps onto the new rows).
+      // A companion, a puppet or a unit with a fixed action list (the drone) can't use techniques (the engine's gate), so
+      // it keeps the old rows.
+      ...(legacy ? [...(melee ? [['melee', 'Strike', attackApCost(w, 'melee') + ' AP', 'd20 + ' + w.skill.replace('_', ' ') + ' vs Defense. ' + w.damage + ' damage.'] as ActionItem]
         : [['shot', 'Shot', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'd20 + Dexterity vs Defense; −5 if they\'re behind half cover. ' + (w && typeof w.damage === 'number' ? w.damage + ' damage. ' : '') + 'Heat +1.'] as ActionItem,
           ['aimed', 'Aimed shot', '3 AP', '+2 to hit; crits on 19–20.'] as ActionItem,
           ...(modes.includes('burst') ? [['burst', 'Burst', '3 AP', '3 rounds at one target, each later round −1 more.'] as ActionItem] : []),
-          ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', '10 rounds: one roll at −2 against every enemy near the line to your target.'] as ActionItem] : []),
-          ['melee', 'Melee (fists)', '2 AP', 'd20 + Raw Power vs Defense. 10 damage.'] as ActionItem]),
-      ...(sk ? [['skill', sk.name + (skPassive ? ' (always on)' : ''), skRuns ? skFx.ap + ' AP' : skPassive ? '—' : 'Narrator', sk.text + (skPassive ? ' The engine applies it on every attack.' : skRuns ? '' : ' The engine doesn\'t run this one yet: use Say, and the Narrator rules it after the fight.')] as ActionItem] : []),
+          ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', '10 rounds: one roll at −2 against every enemy near the line to your target.'] as ActionItem] : [])]),
+        ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : [])]
+        : blockItems(weaponBlocks(opts.g, cb, cur)) as ActionItem[]),
       ...(offW ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).'] as ActionItem] : []),
       ['shove', 'Shove', '2 AP', 'An adjacent enemy: d20 + Raw Power vs 10 + its best of Raw Power and Athletics. Pushed 1 tile, or prone if blocked. Shove them into fire.'],
-      ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : []),
       ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
       ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
     ['UTILITY', [
+      // rules 1.12: what nails a unit in place (Run Through's pin) holds until 2 AP is spent to pull free
+      ...pullFreeItems(cb, cur),
       ...reloadItems(cur),
       ...(W('load') ? [['load', W('load')!.label, loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : W('load')!.text, W('load')!.why] as ActionItem] : []),
       ...(W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : []),
@@ -222,6 +229,23 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   return LIST;
 }
 
+/** A unit that can't use techniques (the engine's gate: a companion, a puppet, a unit with a fixed action list) keeps
+ *  the old attack rows. */
+export const isLegacyUnit = (u: any) => !!u && (!!u.companion || Array.isArray(u.allowedActions) || u.side !== 'pc');
+/** The plain attack's action for the main hand: Cut for a melee weapon, Shot for a ranged one (the old 'melee' or
+ *  'shot' for a unit that keeps the old rows). */
+export function plainAction(u: any): string {
+  const sys = u ? phys.weaponSystem(u.weapon) : 'melee';
+  if (isLegacyUnit(u)) return sys === 'melee' ? 'melee' : 'shot';
+  return techAction('main', sys === 'melee' ? 'cut' : 'shot');
+}
+/** An action id a saved pick or another screen may hold from before techniques, mapped to today's row (or itself). */
+export function mapLegacy(u: any, a: string | null | undefined): string | null {
+  if (!a || isLegacyUnit(u)) return a || null;
+  const m = legacyAttack(a, !!u?.offWeapon);
+  return m === 'plain:main' ? plainAction(u) : m || a;
+}
+
 // ---------- the turn card's four commands ----------
 export interface Command { action: string; label: string; sub: string; key: string; off?: boolean; custom?: boolean }
 export interface CatEntry { action: string; label: string; cost: string; text: string; tab: string; ink: string | null; why: string | null }
@@ -266,7 +290,7 @@ export function catalogue(cb: any, u: any, ch: any, opts: ActionOpts = {}): CatE
 
 /** The smart default: an attack (or Clear jam), Move, Reload (or Shove), then the unit's signature move. */
 export function smartCommands(u: any): Command[] {
-  const w: any = (WEAPON as any)[u.weapon], melee = w ? isMelee(w) : true, mg = u.mg;
+  const w: any = (WEAPON as any)[u.weapon], legacy = isLegacyUnit(u), melee = legacy ? (w ? isMelee(w) : true) : phys.weaponSystem(u.weapon) === 'melee', mg = u.mg;
   const sk: any = w && w.grants, skFx: any = sk?.effect || {};
   const cmds: Command[] = [];
   // Holding an Outburst (rules 1.5): the heart's two moves come first, Pump and Release; then Move and the weapon.
@@ -275,14 +299,14 @@ export function smartCommands(u: any): Command[] {
     cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : '1 AP'), key: '1', off: full || (!free && (u.ap ?? 0) < 1) });
     cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' ×' + stageMult(st) + ' · 1 AP', key: '2', off: (u.ap ?? 0) < 1 });
     cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '3', off: !!u.prone });
-    if (melee) cmds.push({ action: 'melee', label: 'Strike', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
-    else cmds.push({ action: 'shot', label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });
+    if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
+    else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });
     if (Array.isArray(u.allowedActions)) return cmds.filter((c) => u.allowedActions.includes(c.action)).map((c, i) => ({ ...c, key: String(i + 1) }));
     return cmds;
   }
   if (u.jammed) cmds.push({ action: 'clear', label: 'Clear jam', sub: 'The gun is jammed', key: '1' });
-  else if (melee) cmds.push({ action: 'melee', label: 'Strike', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
-  else cmds.push({ action: 'shot', label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
+  else if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
+  else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
   cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
   const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name
   if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
@@ -291,6 +315,7 @@ export function smartCommands(u: any): Command[] {
   if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });
   else if (mg && (mg.emanator || mg.designs?.length) && mg.designs?.length) cmds.push({ action: 'outburst', label: 'Outburst', sub: Math.round(mg.mp) + ' MP in the heart', key: '4' });
   else if (mg && (mg.evoker || mg.words?.length)) cmds.push({ action: 'draw', label: 'Draw a glyph', sub: 'Evoker ' + mg.charge + ' charge', key: '4' });
+  else if (!legacy) cmds.push(melee ? { action: 'tpad:main', label: 'Techniques', sub: 'What your ' + (w ? w.name : 'fists') + ' can do', key: '4' } : { action: TWATCH, label: 'Hold a shot', sub: 'Watch for their move', key: '4' });
   else if (sk && (skFx.op === 'multi_shot' || skFx.op === 'sweep')) cmds.push({ action: 'skill', label: sk.name, sub: skFx.ap + ' AP · ' + (skFx.op === 'multi_shot' ? (skFx.shots || 3) + ' shots at one target' : 'every adjacent enemy'), key: '4', off: u.jammed || u.ap < (skFx.ap || 0) || (skFx.op === 'multi_shot' && w.magazine != null && u.ammo <= 0) });
   else cmds.push({ action: 'overwatch', label: 'Overwatch', sub: 'Hold a shot for their move', key: '4' });
   // A unit with a fixed action list (the drone, item 370) keeps only those commands, renumbered.
@@ -299,7 +324,7 @@ export function smartCommands(u: any): Command[] {
 }
 
 /** Spare picks when the smart default runs out (it has four, and some may already be the player's picks). */
-const SPARE = ['overwatch', 'aimed', 'sprint', 'shove', 'reload', 'analyze', 'stim', 'prone', 'disengage', 'melee'];
+const SPARE = ['overwatch', 'aimed', TWATCH, 'tpad:main', 'sprint', 'shove', 'reload', 'analyze', 'stim', 'prone', 'disengage', 'melee'];
 
 /** The four commands for this unit. Each slot the player set holds their pick (if the unit still has that action; greyed
  *  with the reason when it can't be used now). The other slots take the smart default's commands in its own order,
@@ -312,7 +337,7 @@ export function resolveCommands(cb: any, u: any, ch: any, prefs: (string | null)
   const slots: (Command | null)[] = [null, null, null, null], used = new Set<string>();
   // The player's picks first, in their slots (a pick that repeats an earlier slot, or that the unit lacks, is left open).
   for (let i = 0; i < 4; i++) {
-    const a = prefs[i], e = a ? by.get(a) : undefined;
+    const a = mapLegacy(u, prefs[i]), e = a ? by.get(a) : undefined; // a pick saved before techniques lands on its new row
     if (!e || used.has(e.action)) continue;
     used.add(e.action);
     slots[i] = { action: e.action, label: e.label, sub: e.why ? 'Not now: ' + e.why.replace(/\.$/, '') : e.cost + (e.tab === 'attack' && (WEAPON as any)[u.weapon] ? ' · ' + (WEAPON as any)[u.weapon].name : ''), key: String(i + 1), off: !!e.why, custom: true };
@@ -383,4 +408,19 @@ export function pickChoice(e: { options?: { id: string; label: string }[]; pickM
 /** Does this action want a detail (a pick, words, a name, what you say)? */
 export function wantsDetail(e: { options?: unknown[]; pickLabel?: string; target?: string }, pv?: { ok: boolean; why?: string } | null): boolean {
   return !!((e.options && e.options.length) || e.pickLabel || ['text', 'npc'].includes(e.target || '') || (pv && !pv.ok && /\b(name|pick|choose|type|say|word)/i.test(pv.why || '')));
+}
+
+/** Whom the unit could pull free now (rules 1.12): itself, an ally next to it, or a weapon left in someone next to it. */
+export function pullFreeTargets(cb: any, cur: any): any[] {
+  if (!cb || !cur) return [];
+  const near = (v: any) => { const [ax, ay] = cur.pos.split(',').map(Number), [bx, by] = v.pos.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)) <= 1; };
+  return (cb.units as any[]).filter((v) => v.nailed && v.hp > 0 && (v.id === cur.id || (near(v) && (v.side === cur.side || v.nailed.weapon))));
+}
+function pullFreeItems(cb: any, cur: any): ActionItem[] {
+  const ts = pullFreeTargets(cb, cur); if (!ts.length) return [];
+  const t = ts[0], ap = t.nailed.ap, self = t.id === cur.id;
+  const text = self ? 'You are nailed in place. Pull free: you can move again, and a weapon left in you drops at your feet.'
+    : t.side === cur.side ? 'Pull ' + t.name + ' free of what nails them in place. Pick them as the target if more than one is held.'
+      : 'Pull the weapon out of ' + t.name + ': it goes to a free hand, else to the ground. This frees them.';
+  return [['pullfree', self ? 'Pull free' : t.side === cur.side ? 'Pull an ally free' : 'Pull the weapon out', ap + ' AP', text, cur.ap < ap ? 'Needs ' + ap + ' AP.' : null] as ActionItem];
 }

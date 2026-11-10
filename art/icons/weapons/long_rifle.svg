@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Long rifle -->
+  <g transform="translate(1 2.5) rotate(-16 32 32)">
+    <path d="M2.5 23 L20 21 L39 21 L39 22.5 L56 22.5 L57.5 19 L59 22.5 L62 22.5 L62 26.5 L44 26.5 L41 29.5 L24 29.5 L17 32
+             L9.5 35 L8 39 L6 36 L2.5 36.5 Z"/>
+    <path d="M36 29.5 L37.5 33"/>
+    <circle cx="38.4" cy="35" r="2"/>
+    <path d="M24 29.5 L24 33.5 L29 33.5"/>
+  </g>
+</svg>

@@ -24,3 +24,10 @@ export * from './containers';
 export * from './gear';
 export * from './loot';
 export * from './feelings';
+// Physical 2.0 (rules 1.12): the technique systems. `phys` holds everything; the names the client uses are also top-level.
+export * as phys from './physical';
+export { previewTechnique, useTechnique, techniquePad, packPad, stowedOf, physView, type PackPad, techniqueAp, linesFor, offHome, momentumOf, handlerOf as techniqueHandler, NOT_BUILT as TECHNIQUE_NOT_BUILT } from './physical/core';
+export { TECHNIQUES, TECHNIQUE, PHYS_RULES, PHYS_REV, weaponPhys, weaponProps, weaponSystem, weaponTeaches, hitsWith, scalesWith, propText, groupsOf, groupName, physOf, knownTechniques, readyCap, readyTechniques, readyError,
+  drillOf, drillMark, drillMarks, picksOwed, pickable, drillMult, defaultTechniques, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, type CharPhys, type WeaponPhys } from './physical/data';
+export { pressureOf, pressureState, pressureCap, isPressed, isSuppressed, type PressState } from './physical/pressure';
+export type { TechSystem, TechGroup, TechLine, TechDef, TechArgs, TechPreview, PadEntry, PadGroup, HeldWatch, WatchSpec } from './physical/types';

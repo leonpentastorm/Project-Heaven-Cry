@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Smetanita thumper -->
+  <g transform="translate(2 3) rotate(-16 32 32)">
+    <path d="M4 24.5 L15 25 L19 22 L22 22 L22 19 Q22 17 24 17 L36 17 Q38 17 38 19 L38 21 L57 21 L57 31 L38 31 L38 35
+             Q38 37 36 37 L24 37 Q22 37 22 35 L22 33 L20.5 40 L16 39.5 L17.5 32 L14 31 L5 36 L4 35.5 Z"/>
+    <path d="M24 23.5 L36 23.5 M24 30.5 L36 30.5"/>
+    <path d="M46 21 L46 14.5 L50 14.5 L50 21"/>
+  </g>
+</svg>

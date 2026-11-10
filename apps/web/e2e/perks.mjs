@@ -155,6 +155,12 @@ ok('Lunge (class move) spent its Momentum and struck', lunged);
 await snap(p, '04-lunge');
 
 // ---------- 5. A passive: Used to the Pain after a drill unit's hit ----------
+// Physical 2.0: a melee fighter answers misses (Riposte), so a lone drill unit can fall before it lands a hit and the
+// wave ends. A champion next to the Recruit lasts the six rounds and hits.
+{ const gg = await G(), m = gg.combat.units.find((u) => u.side === 'pc'), [mx, my] = xy(m.pos);
+  for (const [dx, dy] of [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) { const k = (mx + dx) + ',' + (my + dy); const n0 = gg.combat.units.length;
+    if (mx + dx < 0 || my + dy < 0 || gg.combat.units.some((u) => !u.dead && u.pos === k) || gg.combat.map.solid.includes(k)) continue;
+    await act({ type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: ref(k) }); await p.waitForTimeout(300); if ((await G()).combat.units.length > n0) break; } }
 await act({ type: 'sandbox/ai', on: true });
 let pain = false;
 for (let i = 0; i < 6 && !pain; i++) {

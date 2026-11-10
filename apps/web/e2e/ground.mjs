@@ -18,7 +18,7 @@ const key = (x, y) => x + ',' + y;
 p.on('dialog', (d) => d.accept());
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
 const openTools = async () => { if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click(); await drawer.waitFor(); };
-const closeTools = async () => { if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click(); await drawer.waitFor({ state: 'detached' }).catch(() => {}); } };
+const closeTools = async () => { if (await drawer.count()) { await drawer.getByRole('button', { name: /^Close the tools/ }).first().click(); await drawer.waitFor({ state: 'detached' }).catch(() => {}); } };
 const area = p.locator('div[role="dialog"][aria-label="Area map"]');
 const openArea = async () => { if (!(await area.count())) await p.getByRole('button', { name: 'Area map', exact: true }).first().click(); await area.waitFor(); await p.waitForTimeout(250); };
 const closeArea = async () => { if (await area.count()) { await area.getByRole('button', { name: 'Close', exact: true }).first().click(); await area.waitFor({ state: 'hidden' }).catch(() => {}); await p.waitForTimeout(250); } };
@@ -29,7 +29,8 @@ const mine = (g) => g.combat.units.find((u) => u.charId === meId);
 const myTurn = () => p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 6; }, meId, { timeout: 15000 });
 const confirmBtn = () => p.locator('.phc-cb-confirm button').first();
 /** Spend a round on something with HP (no hostile needed): the pillar, then the crates. */
-const burn = async () => { for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9']) { const e = await act({ type: 'combat/shoot-cover', unitId: mine(await G()).id, tile: k }); if (!e) return true; } return false; };
+// (a refusal is only a toast, so success is read from the magazine: Physical 2.0's damage breaks the pillar in two shots)
+const burn = async () => { for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9', '12,9']) { const a0 = mine(await G()).ammo; await act({ type: 'combat/shoot-cover', unitId: mine(await G()).id, tile: k }); await p.waitForTimeout(150); if (mine(await G()).ammo < a0) return true; } return false; };
 
 // 1. The Proving Ground, solo, the enemies passing their turns (Enemy AI off); start the fight.
 await p.setViewportSize({ width: 1440, height: 1000 });

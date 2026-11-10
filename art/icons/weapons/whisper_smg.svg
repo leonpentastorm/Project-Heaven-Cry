@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Whisper SMG -->
+  <g transform="translate(2.5 3) rotate(-16 32 32)">
+    <path d="M4 20 L8 20 L8 22 L18 22 L18 20 L36 20 L36 21 L61 21 L55 30 L36 30 L33 30 Q33.5 37 37.5 42 L33 44.5
+             Q29 38 28 30 L25 30 L23.5 39 L19 38.5 L20.5 30 L18 30 L18 26 L8 26 L8 33 L4 33 Z"/>
+    <path d="M42 21 L42 30"/>
+    <path d="M24.8 33.5 L29 33.5"/>
+  </g>
+</svg>

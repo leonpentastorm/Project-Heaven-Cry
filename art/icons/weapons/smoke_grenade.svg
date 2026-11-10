@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Smoke grenade -->
+  <path d="M27 19 L27 11 L35 11 L35 19 L41 19 L45 23 L45 54 L41 58 L21 58 L17 54 L17 23 L21 19 Z"/>
+  <path d="M17 28 L45 28 M17 49 L45 49"/>
+  <path d="M35 11 L42 11 Q49 12 49 21 L49 42"/>
+  <circle cx="22" cy="9" r="5"/>
+</svg>

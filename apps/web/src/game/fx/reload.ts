@@ -22,6 +22,7 @@ import { PILE, WEAPON, type FxEvent } from '@engine';
 import { reducedMotion } from '../sfx';
 import { type Mag, type Shell, arrowPicture, brassOf, magPicture, roundPicture } from './brass';
 import { anim, after, centre, clampCentre, layerEl, slow, tileEl, tokenEl } from './dom';
+import { gearIconUri } from '../gearIcons';
 
 // ---------- what the card shows (pure: tests) ----------
 /** How a gun's reload is drawn: a magazine swapped; a revolver's cylinder; a row of rounds fed one by one; arrows into
@@ -113,6 +114,8 @@ export function reloadCard(e: Partial<FxEvent>, key: string, ms: number): HTMLEl
   const title = div(TXT + 'position:absolute;left:0;right:0;margin:0 auto;width:fit-content;top:' + (plan.mode === 'load' ? 8 : 6) * u + 'px;padding:' + (plan.mode === 'load' ? 0 : 2.5 * u) + 'px ' + (plan.mode === 'load' ? 0 : 6 * u) + 'px;border-radius:' + 4 * u + 'px;text-align:center;font-size:' + (plan.mode === 'load' ? 11 : 10) * u + 'px;letter-spacing:.14em;' + chip,
     { 'data-reload-title': '', 'data-reload-chip': plan.mode });
   title.textContent = plan.title; card.appendChild(title);
+  // the weapon's icon (gearIcons.ts) before the title, in the chip's own ink; with two guns each column's label has its own
+  if (!labelled) { const ic = iconImg(plan.guns[0].weapon, plan.mode === 'tactical' ? '#0A0D13' : plan.mode === 'speed' ? INK : '#FFFFFF', 18 * u); if (ic) { title.style.display = 'flex'; title.style.alignItems = 'center'; title.style.gap = 4 * u + 'px'; title.prepend(ic); } }
   // a tactical reload's extra cost (rules 1.9) on a tab at the card's top right
   if (plan.mode === 'tactical') {
     const ap = div(TXT + 'position:absolute;top:' + -10 * u + 'px;right:' + -6 * u + 'px;padding:' + 2.5 * u + 'px ' + 5 * u + 'px;border-radius:' + 6 * u + 'px;background:#FFFFFF;color:#0A0D13;font-size:' + 10 * u + 'px;letter-spacing:.06em;box-shadow:0 1px 4px rgba(0,0,0,.7)', { 'data-reload-ap': '' });
@@ -143,7 +146,9 @@ export function reloadCard(e: Partial<FxEvent>, key: string, ms: number): HTMLEl
   plan.guns.forEach((g, i) => {
     const cw = cols[i], col = div('position:absolute;left:' + x + 'px;top:0;width:' + cw + 'px;height:' + H + 'px', { 'data-reload-gun': g.hand });
     card.appendChild(col);
-    if (labelled) { const l = div(TXT + 'position:absolute;left:0;right:0;top:' + 22 * u + 'px;text-align:center;font-size:' + 8.5 * u + 'px;letter-spacing:.16em;color:' + MUTED); l.textContent = plan.guns.length > 1 ? (g.hand === 'off' ? 'OFF' : 'MAIN') : 'OFF HAND'; col.appendChild(l); }
+    if (labelled) { const l = div(TXT + 'position:absolute;left:0;right:0;top:' + 22 * u + 'px;text-align:center;font-size:' + 8.5 * u + 'px;letter-spacing:.16em;color:' + MUTED); l.textContent = plan.guns.length > 1 ? (g.hand === 'off' ? 'OFF' : 'MAIN') : 'OFF HAND';
+      const ic = iconImg(g.weapon, MUTED, 14 * u); if (ic) { l.style.display = 'flex'; l.style.justifyContent = 'center'; l.style.alignItems = 'center'; l.style.gap = 3 * u + 'px'; l.style.top = 19 * u + 'px'; l.prepend(ic); }
+      col.appendChild(l); }
     // how far the old magazine falls to reach the unit (a card under the unit: it just drops out of sight)
     const wellY = card.getBoundingClientRect().top + top + 4 * u + 27 * u;
     drawGun(col, g, cw, top, H, u, ms, i * 0.06, still, flip ? 46 * u : Math.max(40 * u, p.y - wellY));
@@ -158,6 +163,13 @@ export function reloadCard(e: Partial<FxEvent>, key: string, ms: number): HTMLEl
   if (e.unit) live.set(e.unit, box);
   setTimeout(() => { box.remove(); if (e.unit && live.get(e.unit) === box) live.delete(e.unit); }, slow(total) + 60);
   return box;
+}
+
+/** A weapon's icon as an <img> in one ink (null when it has none: nothing is drawn). */
+function iconImg(weapon: string, ink: string, size: number): HTMLImageElement | null {
+  const src = gearIconUri(weapon, ink); if (!src) return null;
+  const im = document.createElement('img'); im.src = src; im.alt = ''; im.setAttribute('data-reload-icon', weapon);
+  im.style.cssText = 'flex:none;display:block;width:' + size + 'px;height:' + size + 'px'; return im;
 }
 
 /** A column's width for a gun: room for its magazine and where the old one goes, or for its row of rounds. */
