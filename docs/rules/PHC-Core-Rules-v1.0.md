@@ -165,13 +165,13 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Stat | Formula |
 |---|---|
-| Weapon attacks (rules 1.12) | 1 + 0.1 × (the weapon's Attribute − 1) + 0.05 × the skill the weapon hits with. Heavy melee: Strength and Raw Power. Light melee: Agility and Athletics. Guns, bows and thrown weapons: Agility and Dexterity. Bare hands: Strength, and 0.05 × both Raw Power and Athletics. Each weapon names its own (`phys.scales_with`, `phys.hits_with`; item 946) |
+| Weapon attacks (rules 1.12) | 1 + 0.1 × (the weapon's Attribute − 1) + 0.05 × the skill the weapon hits with. Heavy melee: Strength and Raw Power. Light melee, guns, bows and thrown weapons: Agility and Dexterity. Bare hands: Strength, and 0.05 × both Raw Power and Dexterity. Each weapon names its own (`phys.scales_with`, `phys.hits_with`; item 946) |
 | Physical (anything that isn't a weapon attack: a thrown body, a sling stone) | 1 + 0.1 × (Strength − 1) + 0.05 × Raw Power |
 | Elemental | 1 + 0.2 × (Expression − 1) + 0.1 × Visualization |
 | Sigil | 1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power |
 | Soul | 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (rules 1.5; 2.45 maxed) |
 | Healing and shields given | 1 + 0.1 × (Insight − 1) + 0.1 × Camaraderie |
-| Critical | 2 + 0.1 × (Perception − 1) + 0.05 × Athletics |
+| Critical | 2 + 0.1 × (Perception − 1) + 0.05 × Dexterity (rules 1.12: it was Athletics; offence sits on the alpha, item 953) |
 | Ambush | 1.5 + 0.05 × Ingenuity |
 | Blessing power | 1 + 0.1 × Faith |
 
@@ -407,7 +407,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 |---|---|
 | Guns, bows, thrown weapons | Dexterity |
 | Heavy melee and unarmed | Raw Power |
-| Light (finesse) melee | Athletics |
+| Light (finesse) melee | Dexterity (rules 1.12, item 953: the attack skill is the attribute's alpha) |
 | Sigils that strike | Brain Power |
 | Soul spells that strike | Will Power |
 
@@ -502,7 +502,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 
 **Bows and crossbows** make no noise, so a shot doesn't reveal a Hidden archer. Bows have no Heat and no recoil, and their damage scales with the archer's Raw Power.
 
-**Melee** reaches adjacent tiles (diagonals count); polearms reach 2 tiles. Heavy melee weapons cost 3 AP per attack, and use Raw Power. Light melee weapons cost 2 AP, and use Athletics.
+**Melee** reaches adjacent tiles (diagonals count); polearms reach 2 tiles. Heavy melee weapons cost 3 AP per attack, and use Raw Power. Light melee weapons cost 2 AP, and use Dexterity (rules 1.12, item 953).
 
 **Ammo types**
 
@@ -556,7 +556,7 @@ The full roster, hands and dual wielding, rarity, durability, mods, calibres and
 | **Type** | One per icon (e.g. "service rifle"). Rarer versions are the same type. |
 | **Family** | The weapon-mastery family: kills here level its mastery. |
 | **Hands** | 1H or 2H. |
-| **Uses** | The attack skill: Dexterity (guns, bows, thrown), Athletics (light blades), Raw Power (heavy melee, unarmed). |
+| **Uses** | The attack skill: Dexterity (guns, bows, thrown, light blades), Raw Power (heavy melee, unarmed). |
 | **Grants** | One **weapon skill**: an action or reaction you have only while you wield it. |
 | **Stats** | Damage, range (tiles), magazine and ammo, heat limit, modes, AP, weight. |
 | **Durability** | Wear points (section 4). |
@@ -583,7 +583,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 1. **Hands.** A 2H weapon fills both hands. The off hand takes a 1H weapon, a shield, a torch or a focus.
 2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Changing what a hand holds in a fight costs **1 AP a hand** (rules 1.9, World Play: Gear in a fight): drawing from the pack into one hand 1, a two-handed weapon 2, swapping main and off hand 1, putting away 1 a hand, dropping 0 (it lands in the pile on your tile). A focus drawn from the pack counts at once. Out of a fight gear changes are free.
 3. **Single attacks.** With a weapon in each hand, attack with either one at its normal cost and modifiers.
-4. **Paired attack.** One action with both weapons. **AP = the higher attack cost + 1.** The main hand attacks at −1 and the off hand at −3, at the same target or two targets, each with its own roll. The off-hand penalty drops by 1 for every 3 points in its attack skill (Dexterity for guns, Athletics for blades), to a minimum of −1.
+4. **Paired attack.** One action with both weapons. **AP = the higher attack cost + 1.** The main hand attacks at −1 and the off hand at −3, at the same target or two targets, each with its own roll. The off-hand penalty drops by 1 for every 3 points in its attack skill (Dexterity, for guns and light blades alike: rules 1.12, item 953), to a minimum of −1.
 5. **Two guns.** Each gun tracks its own heat, ammo and recoil. Reloading one gun is 2 AP; reloading both is 3 AP (a tactical reload of both, 4; item 679).
 6. **Gun and blade.** A paired attack may mix a shot and a strike: the strike needs an adjacent target, and firing at an adjacent enemy provokes as usual.
 7. **Injured arms.** An arm injury (spec: Injuries) applies to the weapon in that arm.
@@ -608,7 +608,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 | Magazine | Extended magazine | +50% capacity (round down) | 0.2 | 300 |
 | Magazine | Quick-release | Reload costs 1 AP | 0.1 | 350 |
 | Underbarrel | Foregrip | First burst each turn ignores recoil | 0.2 | 150 |
-| Underbarrel | Bayonet | Melee strike 15 damage, Athletics, 2 AP | 0.4 | 120 |
+| Underbarrel | Bayonet | Melee strike 15 damage, Dexterity, 2 AP | 0.4 | 120 |
 | Underbarrel | Underslung launcher | Holds 1 grenade round (Heavy: grenade launcher, single) | 1.5 | 900 |
 | Edge (melee) | Serrated edge | Crits also cause Bleeding | 0.1 | 250 |
 | Edge (melee) | Weighted head | +3 damage, +0.5 kg | 0.5 | 200 |
@@ -736,7 +736,7 @@ Weapon skills and lore:
 - **Crossbow · Bolt Rest:** aimed shots cost 2 AP. *"Patience, cranked."*
 - **Repeating crossbow · Volley:** 3 AP; two bolts, each with its own roll. *"An Arkvelton toy that got out of hand."*
 
-##### 7.7 Light blades: 6 types (1H, Athletics)
+##### 7.7 Light blades: 6 types (1H, Dexterity)
 
 | Type | Dmg | Kg | Price | Notes |
 |---|---|---|---|---|
@@ -804,7 +804,7 @@ Weapon skills and lore:
 
 ##### 7.11 Mana arms: 7 types (new family; requirements listed)
 
-Guns use Dexterity; melee uses Athletics or Raw Power. These are the class weapons for Spellslinger, Storm Hand, Blade Scribe, Lumeri Templar and Banner Dancer, but anyone who meets the requirement can use them.
+Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. These are the class weapons for Spellslinger, Storm Hand, Blade Scribe, Lumeri Templar and Banner Dancer, but anyone who meets the requirement can use them.
 
 | Type | Hands | Dmg | Range | Feeds on | Kg | Price | Needs |
 |---|---|---|---|---|---|---|---|
@@ -931,13 +931,13 @@ Ranged:
 | **Drawn** | Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight. |
 | **Thrown** | It can leave the hand. |
 
-Each weapon also names the skill its attacks roll (**hits with**) and what its damage **scales with**: the damage multiplier of a weapon attack is 1 + 0.1 × (that Attribute − 1) + 0.05 × that skill (Derived stats). A Bare weapon scales with Strength and with both Raw Power and Athletics.
+Each weapon also names the skill its attacks roll (**hits with**) and what its damage **scales with**: the damage multiplier of a weapon attack is 1 + 0.1 × (that Attribute − 1) + 0.05 × that skill (Derived stats). A Bare weapon scales with Strength and with both Raw Power and Dexterity.
 
 #### Knowing, readying and drill
 
 1. **Everyone knows** Cut, Shot, Aimed Shot and Overwatch. They take no ready slot.
-2. **At creation** a character with Raw Power or Athletics picks 2 melee techniques (one must be an Opener), and one with Dexterity picks 2 ranged techniques. With no picks sent, they are Lunge and Sidestep, and Suppress and Shift. A character made before 1.12 gets those defaults.
-3. **Ready lists.** A character has one ready list per system: 3 + half the attack skill, rounded down (melee: the better of Raw Power and Athletics; ranged: Dexterity). Only ready techniques can be used. The lists are changed out of a fight.
+2. **At creation** a character with Raw Power or Dexterity picks 2 melee techniques (one must be an Opener), and one with Dexterity picks 2 ranged techniques. With no picks sent, they are Lunge and Sidestep, and Suppress and Shift. A character made before 1.12 gets those defaults.
+3. **Ready lists.** A character has one ready list per system: 3 + half the attack skill, rounded down (melee: the better of Raw Power and Dexterity; ranged: Dexterity). Only ready techniques can be used. The lists are changed out of a fight.
 4. **A weapon lends its signature.** Each weapon teaches one technique. While you hold the weapon, that technique is usable without knowing it and without a ready slot.
 5. **Auto weapons always offer Burst and Rake,** known or not.
 6. **Drill** is an XP bar per weapon. When an enemy dies, everyone who hit it in that fight gains drill for the weapon they hit it with: minion 5, soldier 10, elite 25, boss 50. A hit alone gives nothing. Defenders, Fighters and Marksmen earn it at ×3.
@@ -1113,27 +1113,27 @@ Melee:
 
 | Weapon | Properties | Hits with | Damage scales with | Teaches |
 |---|---|---|---|---|
-| Combat knife | Light, Edge, Point, Thrown | Athletics | Agility | Coup |
-| Sabre | Light, Edge | Athletics | Agility | Riposte |
+| Combat knife | Light, Edge, Point, Thrown | Dexterity | Agility | Coup |
+| Sabre | Light, Edge | Dexterity | Agility | Riposte |
 | Ork machete | Heavy, Edge | Raw Power | Strength | Cleave |
 | Maul | Heavy, Blunt | Raw Power | Strength | Break |
 | Lance | Heavy, Point, Reach | Raw Power | Strength | Charge |
-| Gloves or bare fists | Light, Bare | Raw Power | Strength, Raw Power, Athletics | Bind |
-| Throwing knives | Light, Point, Thrown | Athletics | Agility | Flurry |
-| Hatchet | Light, Edge, Hook, Thrown | Athletics | Agility | Throw |
-| Legion gladius | Light, Point, Edge | Athletics | Agility | Parry |
-| Kemizuchi duelling blade | Light, Point | Athletics | Agility | Lunge |
+| Gloves or bare fists | Light, Bare | Raw Power | Strength, Raw Power, Dexterity | Bind |
+| Throwing knives | Light, Point, Thrown | Dexterity | Agility | Flurry |
+| Hatchet | Light, Edge, Hook, Thrown | Dexterity | Agility | Throw |
+| Legion gladius | Light, Point, Edge | Dexterity | Agility | Parry |
+| Kemizuchi duelling blade | Light, Point | Dexterity | Agility | Lunge |
 | War axe | Heavy, Edge, Hook | Raw Power | Strength | Sunder |
 | Adamantile greatsword | Heavy, Edge, Point | Raw Power | Strength | Sweep |
 | Glaive | Heavy, Edge, Hook, Reach | Raw Power | Strength | Keep Back |
 | Ork rip-saw | Heavy, Edge | Raw Power | Strength | Hamstring |
-| Knuckledusters | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Athletics | Bash |
-| Hellraiser servo-fist | Heavy, Bare, Blunt | Raw Power | Strength, Raw Power, Athletics | Throw Down |
-| Evoker blade | Light, Edge | Athletics | Agility | — |
-| Emanator gauntlet | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Athletics | — |
-| Bot-thread banner | Reach, Blunt | Athletics | Agility | — |
-| Grand staff | Heavy, Blunt, Reach | Athletics | Agility | — |
-| Bite and claws | Light, Bare, Edge | Raw Power | Strength, Raw Power, Athletics | — |
+| Knuckledusters | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | Bash |
+| Hellraiser servo-fist | Heavy, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | Throw Down |
+| Evoker blade | Light, Edge | Dexterity | Agility | — |
+| Emanator gauntlet | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | — |
+| Bot-thread banner | Reach, Blunt | Dexterity | Agility | — |
+| Grand staff | Heavy, Blunt, Reach | Dexterity | Agility | — |
+| Bite and claws | Light, Bare, Edge | Raw Power | Strength, Raw Power, Dexterity | — |
 
 Ranged:
 
@@ -4904,16 +4904,18 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 937. **Stopped once** (Leon: "gating 1 pin already did that"): ranged techniques only; until the end of the target's next turn; the save is the better of Guts and Athletics against TN 12.
 938. **Ready slots:** 3 + half the attack skill, rounded down, per system. Changed out of a fight only.
 939. **Drill:** 5, 10, 25 or 50 a kill by tier for everyone who hit the victim, ×3 for Defenders, Fighters and Marksmen; marks at 300, 900 and 1,800 (Leon: about two hours of fighting to a signature for a class that isn't martial). Mark I: the signature; marks II and III: a pick.
-940. **What everyone knows, and creation's picks:** Cut, Shot, Aimed Shot, Overwatch; 2 melee picks (one an Opener) with Raw Power or Athletics, 2 ranged with Dexterity; the defaults are Lunge and Sidestep, Suppress and Shift.
+940. **What everyone knows, and creation's picks:** Cut, Shot, Aimed Shot, Overwatch; 2 melee picks (one an Opener) with Raw Power or Dexterity, 2 ranged with Dexterity; the defaults are Lunge and Sidestep, Suppress and Shift.
 941. **A weapon lends its signature while held; Auto weapons always offer Burst and Rake** (the lead's readings of Leon's "cards you drag into your weapon").
 942. **Off its home:** −2 to hit and no property line, for the techniques marked particular (Leon: "work a bit worse if not used on the right weapon class").
 943. **Becoming Pressed ends a held Watch** (confirmed by Leon, 10 Nov 2026; the proposal only said one can't be set while Pressed): a held lane is taken back by suppressing the watcher.
 944. **A technique's own Pressure replaces the ordinary +1** (Suppress: 2 in all on a hit, 1 on a miss), and **a Take's hit adds none** (the lead's readings).
 945. **Every technique's own numbers** (`numbers` on each of the 58 in techniques.json: to-hit bonuses, damage multipliers, tiles, rounds, durations) are placeholders, flagged `provisional: true`, for the balance pass after every Body system is in.
-946. **Damage follows what the weapon is aimed with** (Leon, 10 Nov 2026, melee answer 4): a weapon attack's multiplier is 1 + 0.1 × (the `scales_with` Attribute − 1) + 0.05 × the `hits_with` skill, in place of Strength and Raw Power for every weapon. Bare weapons use Strength and add 0.05 × both Raw Power and Athletics (answer 5). The 0.1 and 0.05 are the old physical multiplier's, kept as placeholders. Perks and traits that raise physical damage apply to every weapon as before. Enemies without a character sheet have no multiplier, as before.
+946. **Damage follows what the weapon is aimed with** (Leon, 10 Nov 2026, melee answer 4): a weapon attack's multiplier is 1 + 0.1 × (the `scales_with` Attribute − 1) + 0.05 × the `hits_with` skill, in place of Strength and Raw Power for every weapon. Bare weapons use Strength and add 0.05 × both Raw Power and Dexterity (answer 5, as changed by item 953). The 0.1 and 0.05 are the old physical multiplier's, kept as placeholders. Perks and traits that raise physical damage apply to every weapon as before. Enemies without a character sheet have no multiplier, as before.
 947. **Weapon mastery** (kills per weapon family, attack bonus +1 / +2, three perks) is replaced by drill. The attack bonus goes with it (confirmed by Leon, 10 Nov 2026; the engine never applied it).
 948. **The old Suppressed condition** (item 83: −1 AP and no reactions, from Spray and Pray and other perks) stays beside Pressure until it is moved onto Pressure 3; the two AP losses don't add.
 949. **The quiver** (Leon, 10 Nov 2026): loaded from a menu out of a fight, any mix of arrow types up to capacity, the type named per shot, no reload in a fight. Crossbows keep their reload.
 950. **Enemies** have Momentum and Pressure and use techniques: the free ones, what their weapon lends, and their tier's list (enemies.json `techniques`). First lists, to grow as the techniques are built: a minion none (plain attacks only, whatever its weapon lends); a soldier Lunge, Suppress; an elite Lunge, Coup, Riposte, Suppress, Dead Centre; a boss the elite's and Deny. Where an enemy would make a plain attack it uses the technique its handler scores highest, if that beats a plain attack (5); the scores are in the handlers (`ai`). Analyze reads the technique as the intent.
 951. **The Parlour pistol teaches Crossfire,** not Warning Shot as the ranged proposal's table had it: Warning Shot is not available with a Silent weapon, so the pistol could never use its own signature (found in review; the pick confirmed by Leon, 10 Nov 2026). **Dead Centre's home is Precise or Drawn** (the proposal names bows the best at Takes; with Precise alone its Drawn line could never apply). The validator now refuses both kinds of conflict.
 952. **Readings made while building the core (rules 1.12):** a technique's AP is priced by the user's items as an attack's is (Southern Fist, Fire Discipline); companions, puppets and the drone use the free techniques only; a held melee strike is not a held shot (Pressed leaves it); a technique's step is the engine's own move, free and without opportunity attacks, so a Pinned, Grappled, Prone or nailed user doesn't step and traps and held shots on the way fire; Draw Cut needs the weapon stowed now (the proposal's "at the start of the turn" isn't tracked: stowing and drawing in one turn gains nothing); pulling free costs 2 AP (placeholder).
+953. **Alpha, beta, gamma (Leon, 10 Nov 2026; "rules are rules").** In every attribute the **alpha** skill opens the combat playstyle and gates what you deal damage with; the **beta** skill carries defence and gates armour; the **gamma** skill is for world play and speech, and weighs more in skill checks. First application, in rules 1.12: **Agility's alpha is Dexterity and its beta is Athletics** (they were the other way round). Light blades hit with Dexterity; bare hands scale with Raw Power and Dexterity; the Critical multiplier reads Dexterity; a melee ready list and creation's melee picks read the better of Raw Power and Dexterity. Athletics keeps Dodge, its unlocks, and the saves and contests that resist being moved or stopped (with Guts, also a beta). The 0.05 a point is the old number, moved. **Characters made before this are not changed:** a light-blade build made on Athletics now attacks with Dexterity. *Leon to say whether old characters get a one-time swap of the two skills.*
+954. **Still to bring under item 953** (`docs/design/proposals/2026-11-nine-doors.md`): the other skills whose points give the wrong kind of thing for their slot; the four alphas that open no playstyle yet (Durability, Ingenuity, Visualization, Empathy); gear gates (weapons and foci by the alpha, armour by the beta, tri-scale armour by two or three betas); and how much more a gamma skill weighs in a check.

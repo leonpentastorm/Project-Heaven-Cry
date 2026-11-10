@@ -164,27 +164,27 @@ describe('Watches', () => {
 });
 
 describe('damage follows what the weapon is aimed with', () => {
-  it('a gun scales with Agility and Dexterity, a heavy blade with Strength and Raw Power, bare hands with Strength and both', async () => {
+  it('a gun and a light blade scale with Agility and Dexterity, a heavy blade with Strength and Raw Power, bare hands with Strength and both alphas', async () => {
     const { weaponMult, weaponMultLabel, newCharacter } = await import('../src');
     const c = newCharacter('c1', 'host', sheetOf({ archetype: 'sharpshooter' }));
     c.attrs = { ...c.attrs, strength: 3, agility: 5 }; c.skills = { ...c.skills, raw_power: 2, athletics: 4, dexterity: 6 }; c.perks = []; c.traits = []; c.classId = null;
     expect(weaponMult(c, 'service_pistol')).toBeCloseTo(1 + 0.4 + 0.3); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
-    expect(weaponMult(c, 'sabre')).toBeCloseTo(1 + 0.4 + 0.2); expect(weaponMultLabel('sabre')).toBe('Agility and Athletics');
+    expect(weaponMult(c, 'sabre')).toBeCloseTo(1 + 0.4 + 0.3); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
     expect(weaponMult(c, 'maul')).toBeCloseTo(1 + 0.2 + 0.1); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
-    expect(weaponMult(c, 'fists')).toBeCloseTo(1 + 0.2 + 0.1 + 0.2); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Athletics');
+    expect(weaponMult(c, 'fists')).toBeCloseTo(1 + 0.2 + 0.1 + 0.3); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Dexterity');
   });
 });
 
 describe('ready, picks and creation', () => {
   it('a new character knows the defaults for its skills; the pad lists free, ready and lent techniques', () => {
-    const f = physFight([{ weapon: 'sabre', skills: { athletics: 3, dexterity: 0 } }], [{ at: 'D5' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
+    const f = physFight([{ weapon: 'sabre', skills: { dexterity: 3 } }], [{ at: 'D5' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
     const ids = f.pad().flatMap((g) => g.entries.map((e) => e.id));
     expect(ids).toContain('cut'); expect(ids).toContain('lunge'); expect(ids).toContain('riposte'); // free, ready, lent by the sabre
     expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'riposte')?.lent).toBe(true);
     expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'sidestep')?.why).toBe(phys.NOT_BUILT);
   });
   it('phys/ready sets the ready list within the cap; phys/pick takes a pick a drill mark gave', () => {
-    const f = physFight([{ weapon: 'ork_machete', skills: { athletics: 2 } }], [{}]); const c = f.char(f.pc);
+    const f = physFight([{ weapon: 'ork_machete', skills: { raw_power: 2, dexterity: 0 } }], [{}]); const c = f.char(f.pc);
     phys.ensurePhys(c).known.push('coup', 'sweep', 'bash');
     f.g.combat!.over = 'win';
     expect(() => f.act({ type: 'phys/ready', charId: c.id, system: 'melee', ids: ['lunge', 'coup', 'sweep', 'bash', 'sidestep'] })).toThrow(/can ready 4/);
@@ -198,11 +198,11 @@ describe('ready, picks and creation', () => {
   });
   it('a sheet\'s starting picks are checked: two of a system it has the skill for, one melee Opener', () => {
     const s: any = { ...sheetOf({ archetype: 'sharpshooter' }) }; expect(validateSheet(s)).toBeNull();
-    const melee = (s.skills.raw_power || s.skills.athletics) ? 2 : 0, ranged = s.skills.dexterity ? 2 : 0;
+    const melee = (s.skills.raw_power || s.skills.dexterity) ? 2 : 0, ranged = s.skills.dexterity ? 2 : 0; // the alphas (item 953)
     expect(phys.startingTechniqueSlots(s)).toEqual({ melee, ranged });
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['bash', 'sweep'], ranged: [] } })).toMatch(/Opener/);
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'sweep'], ranged: [] } })).toBeNull();
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'cut'], ranged: [] } })).toMatch(/can't be picked/);
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['bash', 'sweep'], ranged: [] } })).toMatch(/Opener/);
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['lunge', 'sweep'], ranged: [] } })).toBeNull();
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['lunge', 'cut'], ranged: [] } })).toMatch(/can't be picked/);
   });
 });
 

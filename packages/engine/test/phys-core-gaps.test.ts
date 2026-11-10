@@ -31,7 +31,7 @@ describe('a thrown strike', () => {
     const f = fight(); rig({ hit: true, die: 12 });
     const pv = f.pv('throw', { targetId: f.foe.id }); expect(pv.ok).toBe(true);
     expect(pv.attacks[0].pv.terms!.find((x) => x.label === 'skill')!.v).toBe(4); // Dexterity 5, not Athletics 1
-    expect(f.pc.attack).toBe(0); // put back after the card
+    expect(f.pc.attack).toBe(4); // a knife hits with Dexterity either way now (item 953); nothing left changed after the card
     expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
     expect(f.pressure(f.foe)).toBe(1); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.shotsThisTurn).toBe(0);
     expect(f.fx('shot').some((e: any) => e.thrown && e.weapon === 'combat_knife')).toBe(true);
