@@ -160,7 +160,7 @@ describe('a whole fight with every Soul caster', () => {
     }
     expect(Date.now() - t0).toBeLessThan(8000);
     expect(cb.log.some((l) => /MANA SHORT/.test(l))).toBe(false);
-    for (const e of es.slice(0, 3)) { expect(fx(cb, 'burn', e), e.name).toHaveLength(0); expect(fx(cb, 'release', e).length, e.name).toBeGreaterThan(0); }
+    for (const e of es.slice(0, 3)) { expect(fx(cb, 'burn', e), e.name).toHaveLength(0); expect(cb.log.some((l) => l.startsWith(e.name + ' releases ')), e.name).toBe(true); } // (the log, not the effects list: that one is capped, and a long fight drops its early events)
     expect(ps.some((p) => p.hp < 500)).toBe(true);
   });
 });

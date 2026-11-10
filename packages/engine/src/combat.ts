@@ -1805,7 +1805,9 @@ export const enemyStep = (s: EnemyStep) => { ENEMY_STEPS.push(s); };
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
+  const stood = new Set<string>([u.pos]); // the tiles it has stood on this turn: it doesn't pace between them
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
+    stood.add(u.pos);
     // 'enemy_action_start' {u, step}: before each enemy action; an item may open a window (Between Heartbeats) or set
     // ctx.skip to make the enemy lose the action. A window pauses the enemy until it closes.
     const ea: any = emit(cb, 'enemy_action_start', { u, step, skip: false, cb, rng });
@@ -1833,7 +1835,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
     if (!pcs.length) break;
-    const best = enemyCloseTile(cb, u, mode, order, pcs, w);
+    const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);
     if (!best || moveUnit(cb, u, best.tile, rng)) break;
   }
 }
@@ -1852,21 +1854,34 @@ function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string
 /** Where an enemy closes in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never
  * nearer the source; fleeing: the tile farthest from every PC). 'ai_move_risk' {u, from, to, risk} lets items add to a
  * tile's cost (Anchor: walking away from a Defender who will strike), only while someone listens. Pure. */
-function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon]): { tile: string; near: Unit | null } | null {
+function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon], stood?: Set<string>): { tile: string; near: Unit | null } | null {
   const P = paths(cb, u.pos, u.id);
   const fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
   const risky = anyOn(cb, 'ai_move_risk');
   // A False Image it was fooled by is someone standing there, as far as it knows (spec item 573): never a tile to end on.
   const imaged = new Set(pcs.filter((t) => isGhost(t)).map((t) => t.pos));
-  let best: string | null = null, bestScore = Infinity;
-  for (const [k, tiles] of Object.entries(P.dist)) {
-    if (k === u.pos || imaged.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
-    if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
-    const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
+  // Where it stands is the tile to beat: a move that gains nothing is not made (it used to take the best OTHER tile
+  // every step, so an enemy with nothing to attack walked back and forth between two equal tiles), and it never walks
+  // back onto a tile it already stood on this turn.
+  const score0 = (k: string, tiles: number) => { const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
     const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));
-    let score = (order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100) + near + tiles * 0.1) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
+    // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
+    return order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100 + near) + tiles * 0.1; };
+  let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05;
+  for (const [k, tiles] of Object.entries(P.dist)) {
+    if (k === u.pos || imaged.has(k) || stood?.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
+    if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
+    let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
     if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
     if (score < bestScore) { bestScore = score; best = k; }
+  }
+  // Nothing nearer or in sight within this turn's reach, and it sees nobody from here: head for the nearest tile anywhere
+  // that has a line on someone (around a wall, not up against it), one turn's walk at a time.
+  if (!best && order !== 'flee' && !risky && score0(u.pos, 0) >= 100) { // (not when an item prices the walk: Anchor's blow is weighed tile by tile above)
+    let goal: string | null = null, gd = Infinity;
+    for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || tiles >= gd || score0(k, 0) >= 100) continue; if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue; gd = tiles; goal = k; }
+    if (goal) { const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity;
+      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; } } }
   }
   if (!best) return null;
   const b = best;

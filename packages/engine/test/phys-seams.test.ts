@@ -47,3 +47,22 @@ describe('Physical 2.0 seams', () => {
     expect(f.unit(f.foe.id).pos).toBe(foe.pos); expect(f.unit(f.foe.id).nailed).toBeTruthy();
   });
 });
+
+// 0.18.1 (Leon's playtest: "they move around in place back and forth"): an enemy with nothing to attack took the best
+// OTHER tile every step, so two equal tiles made it pace. Where it stands is now the tile to beat.
+import { enemyTurn } from '../src';
+import { withGame } from './helpers/perkfight';
+describe('the enemy AI does not pace', () => {
+  it('an enemy with a line on its target and 1 AP left over stays where it is (it used to shuffle to the next tile and back)', () => {
+    for (const seed of ['P1', 'P2', 'P3', 'P4']) {
+      const f = physFight([{ weapon: 'sabre', skills: SK }], [{ tier: 'soldier', weapon: 'service_pistol' }], { seed });
+      f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.unit(f.pc.id).hp = f.unit(f.pc.id).maxHp = 9000;
+      for (let r = 0; r < 3; r++) {
+        const u = f.unit(f.foe.id); u.techs = []; f.cb.turn = f.cb.order.indexOf(u.id); u.ap = 5; u.ammo = 12; const n0 = (f.cb.fx || []).length;
+        withGame(f.g, () => enemyTurn(f.cb, f.g.rng));
+        const moves = (f.cb.fx || []).slice(n0).filter((e: any) => e.k === 'move' && e.unit === u.id);
+        expect(moves.length, seed + ' round ' + r).toBe(0);
+      }
+    }
+  });
+});
