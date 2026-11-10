@@ -583,7 +583,7 @@ A Fighter who puts 5 points in Raw Power would unlock two things they already ha
 | Unlock at 3 | **Heavy Hands:** a melee technique that pushes moves its target 1 tile further |
 | Unlock at 5 | **Follow Through:** a Finisher that takes its target out leaves you 1 Momentum |
 | Perk | **Breaching Strike** (name kept): a target you push into a wall or another enemy takes the hit again at half |
-| Perk | **Iron Grip** (replaces Grapple): a target you Bind or Grapple can't use Answers, and attacks aimed at you may hit it |
+| Perk | **Iron Grip** (replaces Grapple). **I:** a target you Bind or Grapple can't use Answers or reactions; attacks aimed at you have a 50% chance to hit it (the old Grapple's tier II); when you move, it comes with you. **II:** every melee technique against a target you hold earns the variety bonus, and Throw Down on it needs no Momentum |
 
 ### 15.3 Dexterity has nothing for a blade
 
@@ -655,3 +655,9 @@ This overrides 15.5's verdict on the Camaraderie perks. Counted against today's 
 **Kind 2: a cheaper cost on the skill's own action (11).** Speed Load and Quick Draw (Dexterity), Hot-Swap and Overhaul (Proficiency), Twin Draw and Parallel Thought (Brain Power), Proven Formula (Rumination), Quick Read (Analysis), Rite in the Field (Lore Master), Righteous (Conscience), Shrug It Off's tier II.
 
 **The question:** does "anything that changes AP" include Kind 2? A gunner reloading faster reads to me as the gunner's own craft, not the talker's. If Kind 2 also goes, Dexterity, Proficiency and Brain Power each lose two of their five entries and need new ones. My lean: Kind 1 is gamma only; Kind 2 stays where the action lives.
+
+### 15.8 Leon's answers (10 Nov 2026)
+
+1. **"Changes AP" means AP given or taken in the turn.** Making your own skill's action cheaper or dearer does not count: the eleven cost discounts stay where they are.
+2. **Still Standing stays.**
+3. **The Raw Power replacements and the mirrored analyst: yes.** Iron Grip was too weak for a perk and is strengthened above: tier I takes the old Grapple's best part and adds dragging the held target; tier II makes a held target the centre of a chain.
