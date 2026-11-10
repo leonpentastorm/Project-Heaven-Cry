@@ -422,12 +422,12 @@ Rules revision 1.13, the version after Physical 2.0. Sections 9 to 12 are the re
 
 | Attribute | α | β | γ |
 |---|---|---|---|
-| Endurance | **Durability:** Guard gained on Brace (1 + modifier) | **Pain Threshold:** −10% elemental damage taken; +2 HP a level | **Sensory:** Warn |
+| Endurance | **Durability:** Guard gained on Brace (1 + modifier) | **Pain Threshold:** −10% elemental damage taken; +2 HP a level | **Sensory:** sensing the unseen (kept); Warn |
 | Strength | **Raw Power:** +5% physical damage; Counter bonus; strength of your melee conditions | **Guts:** Body save | **Intimidation:** Threaten |
-| Agility | **Dexterity:** throwing range; less Recoil; Critical multiplier; **Initiative**; strength of your shots' conditions | **Athletics:** Dodge; **−10% ambush damage taken** | **Reaction Speed:** Cue |
-| Perception | **Ingenuity:** Stealth; Ambush damage; **+1 Vision**; strength of your traps | **Proficiency:** **Detection range; spotting the Hidden; sensing the unseen** | **Vigilant:** Spot |
+| Agility | **Dexterity:** throwing range; less Recoil; Critical multiplier; strength of your shots' conditions | **Athletics:** Dodge | **Reaction Speed:** Initiative (kept: section 15); Cue |
+| Perception | **Ingenuity:** Stealth; Ambush damage; strength of your traps | **Proficiency:** **−5% critical damage taken** | **Vigilant:** Detection and Vision range, spotting the Hidden (kept: section 15); Spot |
 | Intelligence | **Brain Power:** Sigil damage; duration; **Sigil range**; **cheaper Sigils**; strength of your Sigils' conditions | **Rumination:** **Brain save** | **Eloquence:** Brief |
-| Expression | **Visualization:** +10% elemental damage | **Analysis:** **−5% critical damage taken**; Analyze range | **Charisma:** Rally |
+| Expression | **Visualization:** +10% elemental damage | **Analysis:** **−10% ambush damage taken**; Analyze range | **Charisma:** Rally |
 | Insight | **Empathy:** **+10% healing and shields given**; strength of your songs' conditions | **Camaraderie:** **+10% healing received** | **Implication:** Taunt |
 | Determination | **Will Power:** Soul damage; Syphon; Strain limit; module slots; **Soul range**; **ready designs**; strength of your Outbursts' conditions | **Lore Master:** **Heart save** | **Composure:** Steady |
 | Virtue | **Faith:** Blessing power; prayer cooldown; strength of your Blessings' conditions | **Conscience:** **+10% shields received** | **Authority:** Reputation and **Karma** awards; Leadership; Order |
@@ -549,3 +549,87 @@ All in the white-ink Wick style of the perk and prayer icons (`art/icons/STYLE-L
 2. **Implementer A:** the Calls in the engine (nine handlers on one frame) and the enemy AI's use of Threaten and Taunt.
 3. **Implementer B:** the perk pass: every Reword and Move Leon rules on, the seven unlocks, and the achieved perks that read a moved number, each with its test.
 4. **Implementer C:** the screen: the Calls pad, the sheet, the skill cards' new lines, creation.
+
+## 15. The perks again, judged by the build that buys them
+
+Leon, 10 Nov 2026: On My Mark stays as it is (earned at 10 points, on the one skill it suits). Calls get no icons in Skeleton 2.0. Art can be replaced: judge each perk by whether it makes sense for the builds and classes that will hold it, not by what saves a picture. **This section replaces 14.3.**
+
+For each skill I asked: who puts points here after Skeleton 2.0, and does each unlock and perk help that character do their job?
+
+### 15.1 Two of my own moves were wrong
+
+Judged by build, two of section 11's moves make no sense, and I take them back:
+
+1. **Initiative stays on Reaction Speed.** Its name, its unlocks (Shoot First, Cut In) and its Mastered perk (Before the Blink) are all about acting first. Going first is tempo, not damage: exactly the combat quality of life a gamma may give.
+2. **Detection, Vision and sensing the unseen stay on Vigilant and Sensory.** Every Vigilant perk is about seeing. Moving the numbers to Proficiency, the mechanic, would have made a lookout buy a repair skill.
+
+So a gamma keeps **information and tempo**; it gives up **damage, saves and damage reduction**. Proficiency takes critical damage resistance, and Analysis takes ambush resistance (you read the set-up).
+
+### 15.2 What Physical 2.0 makes redundant
+
+Four Raw Power entries are now techniques that everyone can learn:
+
+| Today | Is now |
+|---|---|
+| Shove (unlock at 3) | the Shove Link |
+| Break (unlock at 5) | the Break Finisher |
+| Breaching Strike (perk) | what Bash and a Heavy weapon's push already do |
+| Grapple (perk) | Bind with bare hands |
+
+A Fighter who puts 5 points in Raw Power would unlock two things they already have. **All four are replaced** with things that bend the chain, which is what a Raw Power build now does every turn:
+
+| Slot | Proposal *(names Suggested)* |
+|---|---|
+| Unlock at 3 | **Heavy Hands:** a melee technique that pushes moves its target 1 tile further |
+| Unlock at 5 | **Follow Through:** a Finisher that takes its target out leaves you 1 Momentum |
+| Perk | **Breaching Strike** (name kept): a target you push into a wall or another enemy takes the hit again at half |
+| Perk | **Iron Grip** (replaces Grapple): a target you Bind or Grapple can't use Answers, and attacks aimed at you may hit it |
+
+### 15.3 Dexterity has nothing for a blade
+
+Light blades now hit with Dexterity, but its unlocks and perks are all about guns (Speed Load, Quick Draw, Running Reload, Trick Shot), plus Origami Hands, which builds traps.
+
+1. **Quick Draw** (unlock at 5) becomes: your first attack in each fight with a weapon you draw for it costs 0 AP. It then serves the knife as well as the pistol, and fits Draw Cut and Snap Shot.
+2. **Origami Hands is replaced.** Traps belong with stealth; its idea goes to Ingenuity's list when that is built. In its place, a perk for the character the swap created, blade in one hand and gun in the other: **Both Hands** *(Suggested)*: after a melee technique of yours hits, your next Shot that turn has no Recoil; after a Shot hits, your next melee technique that turn counts as different for Momentum.
+
+### 15.4 The analyst
+
+Weak Point (+15% squad damage on analysed enemies) and Case Closed (+2 to hit them) are the reason anyone buys Analysis today. By the rule they are offence on a beta.
+
+**My proposal: mirror them.** Analysis becomes the skill of not being hit by what you have read:
+
+- **Weak Point** becomes **Read** *(Suggested)*: enemies you have analysed deal 15% less damage to your squad.
+- **Case Closed** keeps the full reveal; allies get +2 Defense against an analysed enemy.
+- Pattern Lock (+Dodge against attacks you have seen) already says the same thing.
+
+The squad still has ways to mark a target for damage on the right slots: Faith's Deliver the Sinner, and Vigilant's Spot.
+
+### 15.5 The rest of the rulings
+
+| Perk | Skill | Verdict, by build |
+|---|---|---|
+| On My Mark | Authority | **Keep** (Leon) |
+| Eyes in the Back | Vigilant | **Keep.** It is exactly what a lookout is for; it is information that happens to protect |
+| Nothing Gets Past | Vigilant | **Reword:** every enemy that moves in your sight is Spotted for free. The Marksman's Killzone already covers several held shots |
+| Still Water | Composure | **Reword:** nothing reads you (kept); your Steady also ends one Brain or Heart condition. The old immunity made no sense once the saves left Composure |
+| Stand Still (unlock) | Composure | **Reword:** until you first act in a fight, your Calls cost 1 AP less |
+| True Name | Lore Master | **Keep.** Once a session, the Narrator's call, and the lore-hunter's one big moment |
+| Proven Formula (unlock) | Rumination | **Reword:** +3 on saves against a spell or condition that has already hit you this fight. Its AP discount is what Brain Power's Parallel Thought already gives |
+| Tuned (unlock) | Proficiency | **Reword:** the weapon you maintain never jams and never breaks. The +10% damage goes |
+| Hand-Off, Many Hands, Rally Cry | Camaraderie | **Keep.** They pass your own AP on; they don't make any. They count as the ally's one helping Call that round, so they can't stack with Rally |
+| Roll With It, tier II | Athletics | **Reword** the damage rider to a second free tile |
+| Second Wind (unlock) | Durability | **Keep.** A tank's own recovery is part of standing in the way |
+| Paint the Field (unlock) | Visualization | **Keep for now; replace when Figments are built** |
+
+Everything not named in 15.2 to 15.5 fits the build that buys it and stays as it is: 67 of the 81 skill perks, and 46 of the 54 unlocks.
+
+### 15.6 New art, recounted
+
+| | New icons |
+|---|---|
+| Iron Grip (replaces Grapple) | 1 |
+| Both Hands (replaces Origami Hands) | 1 |
+| Read (if Weak Point's unlock gets one: unlocks have none today) | 0 |
+| **Skeleton 2.0 total** | **2** |
+
+Origami Hands' icon is kept for the stealth list.
