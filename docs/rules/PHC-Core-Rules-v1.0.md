@@ -1188,6 +1188,67 @@ Ranged:
 | Spellslinger's pistol | Quick | Dexterity | Agility | — |
 | Lumeri censer gun | Spread, Loud | Dexterity | Agility | — |
 
+### Calls (rules 1.13, Skeleton 2.0)
+
+Design: `docs/design/proposals/2026-11-nine-doors.md`, sections 10, 15.7 and 17.3. Data: `data/calls.json`. Engine: `packages/engine/src/calls/`. A **Call** is what a gamma skill does in a fight: something you say to one unit that can hear you. Each of the nine gamma skills has exactly one, and every Call obeys the same ladder, so none outgrows the others. Everything that gives or takes AP inside a turn by speech is a Call. **Every number in this section is provisional** (section 14, items 958 on).
+
+#### The ladder
+
+By the speaker's points in the Call's skill:
+
+| Points | What every Call gains |
+|---|---|
+| 1 | usable: 2 AP, heard within 5 tiles |
+| each point | +1 tile of voice (5 at 1 point, 14 at 10) |
+| 3 | effect step 2 |
+| 5 | costs 1 AP |
+| 7 | effect step 3 |
+| 9 | may also be made as a reaction, once a round |
+| 10 | your first Call each turn costs 0 AP |
+
+- **As many Calls a turn as your AP pays for.**
+- **One helping Call and one hindering Call on a unit each round**, whoever makes them. A helping Call is aimed at an ally (Name It also at yourself); a hindering Call at an enemy.
+- **A Call deals no damage.**
+- **A hindering Call's save** is against **12 + the speaker's strength with that skill** (points − 1, floor 0; not halved, and never the full-points number a gamma adds to checks). Threaten and Taunt are Heart saves; Spot has no save. A Call on an ally just works.
+- **Hearing, not sight:** the target must be within the voice's range; no line of sight is needed. A Hidden enemy your side doesn't see can't be Called at (Spot from 3 points is the exception, below).
+- **Silenced:** a Silenced unit can't Call. **Stunned:** a Stunned ally can't be Ordered or Cued. **Suppressed:** a Suppressed ally has no reaction, so it can't be Ordered and gets nothing from Cue (the Call is refused, nothing spent).
+- **AP a Call gives** lands **this turn** when the ally has not acted yet this round (at once on their own turn; otherwise at the start of their turn, up to the turn's 9) and **on their next turn** when they have. Every AP a Call gives counts in the +3 of AP a unit may gain in one turn.
+- **As a reaction (9 points):** the speaker's player makes the Call while it is another unit's turn. It spends the speaker's reaction and no AP, once a round. On your own turn a Call is an action.
+- **What a Call leaves standing** (Spot, Warn, Cue) lasts until the start of the speaker's next turn, and is used up only by the real event (a real attack, a real reaction), never by a card or a preview.
+- Companions, puppets and units with a fixed action list never Call.
+
+#### The nine Calls
+
+| Call | Skill | On | Step 1 (1 point) | Step 2 (3 points) | Step 3 (7 points) |
+|---|---|---|---|---|---|
+| **Order** | Authority | ally | They reload, stand up or pick up, now | or move their Movement (the tiles 1 AP walks them) | two different things of those |
+| **Rally** | Charisma | ally | They gain 1 AP | 1 AP, and they shed 1 Pressure | 2 AP, and they shed 1 Pressure |
+| **Brief** | Eloquence | ally | Their next action costs 1 AP less | their next two actions cost 1 AP less each | their next action costs 2 AP less, the one after 1 less |
+| **Name It** | Lore Master | ally or self | Cancels 1 AP they would lose next turn | cancels 2 | cancels all of it, and ends Shaken and Afraid |
+| **Cue** | Reaction Speed | ally | One more reaction | or a step of 1 tile now, on that reaction | and they act straight after you in the order |
+| **Spot** | Vigilance | enemy (no save) | The next ally to attack it ignores its cover | and it isn't Hidden to them | the next two allies, at +1 to hit |
+| **Warn** | Senses | ally | They step 1 tile before the next attack on them | up to 2 tiles | and that attack is at −2 to hit |
+| **Threaten** | Intimidation | enemy (Heart save) | Shaken, and −1 AP on its next turn | and it can't move toward you on that turn | −2 AP |
+| **Taunt** | Insinuation | enemy (Heart save) | Taunted: its next attack must go at you | and that attack costs it 1 AP more | 2 AP more |
+
+How each is run:
+
+- **Order.** The speaker chooses what (`reload`, `stand`, `pickup`, `move`) and, for a move, the tile. The ally does it at once, on their reaction (it is spent) and for none of their AP. Pick up takes everything in the pile under them, or the first pile next to them. An ordered move is a real move: it can draw opportunity attacks and held shots. **An Order never makes an ally attack** (the Mastered perk On My Mark keeps that, and is unchanged).
+- **Rally.** The AP rule above. From 7 points it gives 2 AP for 1: the first number to watch in play.
+- **Brief.** The discount holds until the end of the ally's next turn. An action that costs nothing doesn't use it up; an action that costs less than the discount uses it up all the same. What it saves counts in the turn's +3 of gained AP.
+- **Name It.** At the start of the ally's next turn, AP they would lose is given back, up to the Call's number: penalties first (Suppressed, Nausea, a Threaten), then Stunned's 1, Dazed's 2, then an AP debt. Used or not, it ends at that turn start.
+- **Cue.** The extra reaction is used after the ally's own, and lasts until the start of the speaker's next turn. From step 2 the speaker may name a free tile next to the ally in place of the stored reaction: the ally steps there at once, free and with no opportunity attack. At step 3, an ally who has not acted yet this round acts straight after the speaker; the order is put back when the round ends.
+- **Spot.** The mark is used by allies only, never by the speaker; one attack action per ally (a burst is one attack). From step 2 a Spotted unit that is or becomes Hidden shows to the speaker's side and can be attacked by the allies still to use the mark, and the speaker may Spot a Hidden enemy whose tile they can see.
+- **Warn.** When the next weapon attack on the ally is made, they step first: to the tile the speaker named with the Call, if it is still within reach, or else to the nearest tile that takes them out of that attack. If no tile within reach does, they stay. The step is free and draws no opportunity attack. An attack that can no longer reach them is wasted: its AP is spent and nothing is rolled.
+- **Threaten.** On a failed save: Shaken (3 rounds), and the AP comes off its next turn as a penalty (so the turn's floor of 2 holds, and Name It can cancel it). From step 2 it can't move toward the speaker on that turn. `combat/parley` with `threaten` is the same effect on the old Talk action (2 AP, 8 tiles), at the speaker's step, and counts as the target's hindering Call of the round.
+- **Taunt.** On a failed save: Taunted (1 round), as the condition has always worked (weapon attacks only). The extra AP is on its first attack at the speaker.
+
+**Persuade and the offer of terms** stay as ways to talk an enemy down (Eloquence and Charisma, the Talk action at 2 AP within 8 tiles). They are not Calls and are outside the one-a-round limits.
+
+#### Enemies
+
+An enemy has no skill points. A tier lists the Calls it has and one level that stands in for the points (enemies.json `calls`, `call_level`): a minion and a soldier none; an **elite** Threaten and Rally at level 3 (2 AP, 7 tiles, step 2); a **boss** Threaten, Taunt and Rally at level 5 (1 AP, 9 tiles, step 2). The save against an enemy's Call uses its tier's strength (12 + 2 for an elite or a boss), as every enemy condition does. An enemy makes **one Call a turn at most**, only while another of its side still stands, and only where the Call is worth more to it than a plain attack: it Threatens a fighter who is above half HP and not yet Shaken, Rallies one of its own who is Pressed, and a boss Taunts a fighter off a wounded ally. Reading an enemy's intent shows it ("means to call Threaten at …").
+
 ## Conditions and saves
 
 **Debuffs come in three families,** matching the three Cores. Whoever inflicts one adds their **debuff strength** for that family; whoever receives one rolls a **save** for that family.
@@ -2094,7 +2155,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Surrender and subdue.** Talking a beaten enemy down (Parley, below) calls its **surrender save**: a Heart save against 12 + the speaker's Heart debuff strength, only when it is at half HP or less or every ally of its is down, and only once per enemy a fight. Bosses, machines, robots, turrets, drones and anyone tagged no_surrender never surrender. A non-lethal blow that takes a foe's last HP **subdues** it instead. Surrendered and subdued foes are out of the fight: not targets, counted as defeated, no kill credit and no rise on the meter. After the fight they stay on the map as neutral prisoners, for the Narrator to deal with. The fight's XP counts them as defeated.
 
-**Talking in a fight** (the action table's 2 AP): within 8 tiles of someone who can hear you. **Persuade** (Eloquence): a Left Brain Debuff against a Brain save. **Threaten** (Intimidation): Shaken against a Body save. **Parley** (offer terms): the surrender save. What you say goes to the Narrator with the fight report.
+**Talking in a fight** (the action table's 2 AP): within 8 tiles of someone who can hear you. **Persuade** (Eloquence): a Left Brain Debuff against a Brain save. **Threaten** (Intimidation): Shaken against a Heart save, with the Threaten Call's AP loss (rules 1.13: Threaten is a Call; this action stays as another way to make it). **Parley** (offer terms): the surrender save. What you say goes to the Narrator with the fight report.
 
 **Throwing** (2 AP): a grenade at a tile within Throwing range (6 + 0.5 × Dexterity) and line of sight; a satchel is placed on your tile or next to you. Frag: 40 to everyone within 2 tiles, and the objects there. Smoke: blocks sight within 3 tiles for 2 rounds. Flashbang: Blinded 1 round within 2 tiles (Body save). Incendiary: 15 and Burning (no save) within 2, and the tile burns. Bot-scrambler: robots, machines and drones within 2 are Stunned (no save), mana arms there jam, and Sigils drawn there cost +1 AP for 2 rounds. Satchel: 120 within 2. Explosive weapons (the thumper, the breacher tube) splash everyone else within their radius of the target on a hit, and the flamer's cone gives everyone in 3 tiles its own attack.
 
@@ -4931,3 +4992,18 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 955. **The crossbow (Leon, 10 Nov 2026; provisional numbers):** damage 55 (was 35); a Shot costs 3 AP and loads the next bolt as part of it; Bolt Rest makes an Aimed Shot cost the same 3. Its signature is the new technique **Heavy Bolt** (31): 4 AP, +50% damage, ignores 10 armour, a Body save or pushed 1 tile; the repeating crossbow can ready it at 1 AP less. To settle in play: 55 against the service rifle's 30 at 2 AP, and whether the other flat-cost techniques should also cost a crossbow 1 more.
 956. **Two weapons (Leon, 10 Nov 2026; provisional):** the second weapon needs +2 of its skill (`gear.second_weapon_skill_extra`); two guns pool their Heat (limits added, cooling 4); two weapons of one kind have a both-hands block with nine techniques made with each weapon in turn. To settle in play: which techniques belong on that list, whether the −1 per 2 Heat penalty is too hard on a pooled bar, and whether a gun and a blade should get paired techniques of their own.
 957. **Throw and Pull Out (Leon, 10 Nov 2026; provisional):** a thrown melee weapon that hits stays in its target until the target falls (it drops there) or someone next to it uses **Pull Out** (technique 28, free to everyone: 1 AP, no roll, half the weapon's damage, Bleeding, the weapon straight back into a free hand). A miss still lands on the target's tile. Flurry's Thrown line still drops its weapons on the ground.
+958. **The Calls ladder (rules 1.13):** 2 AP; heard within 4 + points tiles; step 2 at 3 points; 1 AP from 5; step 3 at 7; as a reaction once a round from 9; the first Call of a turn free at 10 (calls.json `rules`). One helping and one hindering Call on a unit a round. The save is 12 + the speaker's strength (points − 1, floor 0).
+959. **Each Call's step numbers** (calls.json `steps[].numbers`): Rally 1 / 1 / 2 AP and 0 / 1 / 1 Pressure; Brief −1 / −1, −1 / −2, −1; Name It 1 / 2 / all; Cue 1 reaction, a step from 3 points, the order from 7; Spot 1 / 1 / 2 allies and +1 to hit at 7; Warn 1 / 2 / 2 tiles and −2 to hit at 7; Threaten −1 / −1 / −2 AP; Taunt +0 / +1 / +2 AP. Rally's 2 AP for 1 at 7 points is the first to watch.
+960. **A Call as a reaction costs the reaction and no AP,** and is sent by the speaker's player during another unit's turn. The engine plays an enemy's whole turn without stopping, so in practice it is made on an ally's turn. The proposal names no trigger and no cost; to settle: whether it should cost its AP, and whether it needs a held form that fires inside an enemy's turn.
+961. **"Your first Call each turn costs 0" is one free Call a turn in all,** when that first Call is in a skill at 10 points. A speaker with two gammas at 10 does not get two free Calls.
+962. **"This round" is read as "until the start of the speaker's next turn"** for what Spot, Warn and Cue leave standing: by the round counter alone, a speaker who acts last would mark nothing. The one-helping and one-hindering limit is by the round counter.
+963. **Order:** the speaker chooses the thing and the tile, not the ally's player; pick up takes the whole pile; "their Movement" is the tiles 1 AP walks them, rounded down, at least 1; the ordered move can draw opportunity attacks; two things are two different things.
+964. **Brief:** holds to the end of the ally's next turn (the proposal's "this round" gave nothing to an ally who had acted); a free action doesn't use it up; what it saves counts in the +3 of AP gained in a turn; it does nothing inside an off-turn window. No enemy tier has it.
+965. **Name It** cancels penalties, then Stunned's 1, then Dazed's 2, then an AP debt, and ends at that turn start whether used or not.
+966. **Cue:** the second reaction is held, not tied to the round's count, until the speaker's next turn. The step is to a tile the speaker names when Calling (the engine has no reaction that is a move chosen later). The order change applies only to an ally still to act, and is undone when the round ends. A Suppressed ally is refused, nothing spent.
+967. **Spot:** the speaker's own attacks never use the mark; one attack action per ally; from 3 points a Hidden enemy in the speaker's sight can be Spotted and a Spotted Hidden unit shows to the speaker's side, but only the allies still to use the mark can attack it. Speaking doesn't reveal a Hidden speaker.
+968. **Warn:** the tile is named with the Call or chosen by the engine (the nearest tile that takes the ally out of the attack; none: no step). An attack that can't reach after the step is wasted and its AP is spent. Only weapon attacks trigger it: Sigils, Outbursts and prayers do not. This makes step 1 able to cancel one melee attack for 2 AP: to watch.
+969. **Threaten:** the AP loss is a turn-start penalty (the floor of 2 holds), not a debt; "can't move toward you" lasts for its next turn only, not for Shaken's 3 rounds; bosses and machines are not exempt. The old Talk action's Threaten is the same effect at 2 AP and 8 tiles, which reaches further than a low speaker's Call: to settle whether the old action should go once the Calls pad is on screen.
+970. **Taunt** binds weapon attacks only, as the Taunted condition always has; a Sigil, an Outburst or a prayer ignores it.
+971. **Enemy Calls:** an elite has Threaten and Rally at level 3; a boss Threaten, Taunt and Rally at level 5; minions and soldiers none (enemies.json `calls`, `call_level`). One Call a turn, only while it has an ally standing, and only when the Call scores above a plain attack (5): Threaten 6 to 6.5, Rally 6 to 6.5, Taunt 6.5 (calls.json `rules.enemy`). An enemy's save TN uses its tier's strength, not its level.
+972. **What a view shows of a Call's mark:** a mark shows to the side that made it; the AP loss, the no-approach and the dearer attack that a failed save put on a unit also show to that unit's side. A side is not shown that one of its units is Spotted, nor where a warned enemy will step.

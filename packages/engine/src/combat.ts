@@ -14,7 +14,7 @@ import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
-import { turnAp } from './effects/ap';
+import { turnAp, briefCredit } from './effects/ap';
 import { skillRollMod, actionAp, immune, forbids } from './effects/core';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
@@ -152,6 +152,9 @@ export interface Unit {
   stopped?: number; watch?: import('./physical/types').HeldWatch; chain?: { t: string; n: number; last: string | null; ended: boolean };
   tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
   techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean;
+  /** Calls (rules 1.13, calls/): what Calls left on this unit and its own Call counters; an enemy's Call list and the
+   * level that stands in for its skill points. */
+  call?: import('./calls/types').CallMarks; calls?: string[]; callLevel?: number;
   /** Rules 1.12: held where it stands until someone spends the AP to free it (Run Through, a nailing arrow): who did it, with which technique, the AP, and a weapon left in it. */
   /** weapons thrown into this unit and still in it (rules 1.12, Throw): they fall where it falls; Pull Out takes one back */
   stuck?: { by: string; weapon: string; item?: PackItem }[];
@@ -265,7 +268,8 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
  *  miss {unit?, target, at, by} · cond {target, at, id, resisted?} · overload {unit, at} · vent {unit, at, flux} ·
  *  outburst {unit, at, design, school, hold, stage} · grow {unit, at, stage} · release {unit, at, to, school, stage, wild,
  *  area, targets} · short {unit, at, burst} · syphon {unit, at, mp} · crystallise {unit, at, dur} · mana {band, mana} ·
- *  song {unit, at}. */
+ *  song {unit, at} · call {unit, id, target, at, step, kind: helping|hindering, reaction?, only?} (rules 1.13: one per
+ *  Call made; its save, condition and moves are their own events). */
 export interface FxEvent { n: number; k: string; [field: string]: any }
 export const FX_CAP = 40;
 /** Shots and swings inside a burst, auto, skill or paired attack are marked chain (the client spaces them tighter). */
@@ -425,6 +429,7 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: t.attack_bonus,
     mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
     ...(t.techniques && (t.techniques.melee?.length || t.techniques.ranged?.length) ? { techs: [...(t.techniques.melee || []), ...(t.techniques.ranged || [])] } : {}),
+    ...(t.calls?.length ? { calls: [...t.calls], callLevel: t.call_level || 1 } : {}), // rules 1.13: an officer's Calls
   };
 }
 
@@ -675,7 +680,7 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
 /** Items that change who is seen (Sixth Sense, Skin Map, Sworn Sibling, Upper-Touched, Chain Smoker): the 'sees' hook
  * {cb, side, t, by, seen, sensed}. side is the side looking; by is the one unit looking (an attack, a reaction) or null
  * for the side's shared sight (the fog of war). Handlers may set seen or sensed. Allies count too (a sibling). */
-const sightHooked = (cb: Combat) => anyOn(cb, 'sees');
+const sightHooked = (cb: Combat) => anyOn(cb, 'sees') || cb.units.some((u) => u.hidden && !!u.call?.spot?.unhide); // rules 1.13: a Spotted unit isn't Hidden to the allies it was pointed out to (calls/rules.ts)
 function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen: boolean, sensed: boolean): { seen: boolean; sensed: boolean } {
   const r: any = emit(cb, 'sees', { cb, side, t, by, seen, sensed });
   return { seen: !!r.seen, sensed: !!r.sensed };
@@ -806,7 +811,9 @@ export function encoreKey(a: any): string | null {
  * repeat with too little AP isn't shown as "Needs N AP". Never inside the reducer's own action (cb.acting): there
  * encoreBefore has already lent it, and a perk's inner attack mustn't borrow it. */
 export function encoreCredit(u: Unit | null | undefined, a: any, cb?: Combat | null): number {
-  const en = u?.faith?.encore; if (!en || (cb as any)?.acting || encoreKey(a) !== en.key) return 0; return en.ap || 0;
+  if ((cb as any)?.acting) return 0;
+  const brief = a?.type === 'combat/end-turn' ? 0 : briefCredit(u, cb); // rules 1.13: a Brief's discount is lent the same way (calls/rules.ts)
+  const en = u?.faith?.encore; if (!en || encoreKey(a) !== en.key) return brief; return (en.ap || 0) + brief;
 }
 /** One term of a to-hit sum or a damage chain, for the transparent breakdown (spec: dice are transparent). */
 export interface Term { v: number; label: string }
@@ -950,7 +957,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     if (pool.length) { const pick = pool[die(rng, pool.length) - 1]; cb.log.push(att.name + ' is Confused: the attack goes at ' + pick.name + ' instead.'); tgt0 = pick; }
   }
   // ctx.locked: an item that keeps the attack on its first target whatever redirects it (Rabbit's Foot's hunters).
-  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, rng, mods: cb.mods || [], locked: null, cancel: false, why: '' }), tgt: Unit = at.locked || at.tgt || tgt0;
+  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, free: !!(opts.free || opts.noAp), cb, rng, mods: cb.mods || [], locked: null, cancel: false, why: '' }), tgt: Unit = at.locked || at.tgt || tgt0;
   // A reaction to the attack being called (a held shot that lands first: 'attack_target' may set ctx.cancel, or take the
   // attacker out) ends it here: its AP is spent, nothing is rolled.
   if (at.cancel || att.dead || att.downed || att.surrendered) {
@@ -1290,6 +1297,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
   { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
+  // Threatened (a Call, rules 1.13): on its next turn it can't move toward the one who threatened it.
+  { const cw = u.call?.cowed, f = cw ? cb.units.find((x) => x.id === cw.by) : null; if (f && alive(f) && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Threatened by ' + f.name + ': you can\'t move toward them this turn.'; }
   let ap: number;
   if (how === 'disengage') { const f = forbids({ u }, 'disengage'); if (f) return f + ': you never Disengage.'; }
   if (how === 'sprint') {
@@ -1833,7 +1842,8 @@ export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? action
  * attack would be. plan says what it would do now, changing nothing (the intent line); act does it and returns true. */
 export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
 const ENEMY_STEPS: EnemyStep[] = [];
-export const enemyStep = (s: EnemyStep) => { ENEMY_STEPS.push(s); };
+/** first: tried before the steps already registered (a Call comes before a technique: calls/ai.ts). */
+export const enemyStep = (s: EnemyStep, first = false) => { if (first) ENEMY_STEPS.unshift(s); else ENEMY_STEPS.push(s); };
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
@@ -1888,7 +1898,9 @@ function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string
  * tile's cost (Anchor: walking away from a Defender who will strike), only while someone listens. Pure. */
 function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon], stood?: Set<string>): { tile: string; near: Unit | null } | null {
   const P = paths(cb, u.pos, u.id);
-  const fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
+  const fearOf = condSource(u, 'fear'), fu0 = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
+  // Threatened (a Call, rules 1.13): it doesn't close on the one who threatened it this turn (as with what it fears).
+  const cowBy = u.call?.cowed ? cb.units.find((x) => x.id === u.call!.cowed!.by && alive(x)) : null, fu = fu0 && !fu0.dead ? fu0 : cowBy || fu0, fu2 = fu === cowBy ? null : cowBy;
   const risky = anyOn(cb, 'ai_move_risk');
   // A False Image it was fooled by is someone standing there, as far as it knows (spec item 573): never a tile to end on.
   const imaged = new Set(pcs.filter((t) => isGhost(t)).map((t) => t.pos));
@@ -1903,6 +1915,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   for (const [k, tiles] of Object.entries(P.dist)) {
     if (k === u.pos || imaged.has(k) || stood?.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
     if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
+    if (fu2 && dist(k, fu2.pos) < dist(u.pos, fu2.pos)) continue;
     let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
     if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
     if (score < bestScore) { bestScore = score; best = k; }

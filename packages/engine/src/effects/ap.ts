@@ -20,10 +20,16 @@ export function turnAp(u: Unit, grants: ApLine[], penalties: ApLine[]): { ap: nu
   const stun = u.stunnedNext ? 1 : 0, daze = u.dazedNext ? 2 : 0;
   const pos = [...(u.apNext ? [{ n: u.apNext, why: 'banked' }] : []), ...grants.filter((g) => g.n > 0)];
   const posSum = pos.reduce((t, g) => t + g.n, 0), gained = Math.min(PERK_AP_CAP, posSum);
-  const neg = penalties.reduce((t, g) => t - Math.abs(g.n), 0);
-  let ap = Math.max(AP_MIN, Math.min(AP_MAX, AP_BASE + gained + neg - stun - daze));
-  const debt = Math.min(AP_DEBT_CAP, u.apDebt || 0); ap = Math.max(0, ap - debt);
+  // Name It (a Call, rules 1.13): AP the unit would lose this turn is cancelled, up to the Call's number: penalties
+  // first (Suppressed, Nausea, a Threaten), then Stunned's 1, Dazed's 2, then an AP debt. Used or not, it ends here.
+  const cancel0 = u.call?.cancel?.n || 0; let cancel = cancel0;
+  const keep = (n: number) => { const c = Math.min(cancel, n); cancel -= c; return n - c; };
+  const neg = -keep(penalties.reduce((t, g) => t + Math.abs(g.n), 0)), stunL = keep(stun), dazeL = keep(daze);
+  let ap = Math.max(AP_MIN, Math.min(AP_MAX, AP_BASE + gained + neg - stunL - dazeL));
+  const debt = keep(Math.min(AP_DEBT_CAP, u.apDebt || 0)); ap = Math.max(0, ap - debt);
   const lines: string[] = [];
+  if (cancel0 - cancel > 0) lines.push(u.name + ' keeps ' + (cancel0 - cancel) + ' AP it would have lost (Name It).');
+  if (u.call?.cancel) delete u.call.cancel;
   if (posSum) lines.push(u.name + ' +' + gained + ' AP (' + pos.map((g) => g.why).join(', ') + ')' + (posSum > gained ? '; ' + (posSum - gained) + ' lost to the +' + PERK_AP_CAP + ' cap' : '') + '.');
   if (neg) lines.push(u.name + ' ' + neg + ' AP (' + penalties.map((g) => g.why).join(', ') + ').');
   if (debt) lines.push(u.name + ' pays back ' + debt + ' AP.');
@@ -48,6 +54,12 @@ export function bankAp(u: Unit, n: number, why: string, cb?: Combat | null, from
   if (n <= 0 || refusedGift(cb || null, u, n, from)) return;
   u.apNext = (u.apNext || 0) + n;
   if (cb) cb.log.push(u.name + ' banks ' + n + ' AP for next turn (' + why + ').');
+}
+/** Brief (a Call, rules 1.13): the AP the unit's next action costs less, as a loan the reducer makes before the action
+ * and settles after it. It counts in the turn's +3 of gained AP and never takes the turn past 9; nothing in a window. */
+export function briefCredit(u: Unit | null | undefined, cb?: Combat | null): number {
+  const cut = u?.call?.brief?.cuts?.[0] || 0; if (!u || !cut || cb?.window) return 0;
+  return Math.max(0, Math.min(cut, PERK_AP_CAP - (u.apGained || 0), AP_MAX - (u.apTurnTotal ?? u.ap)));
 }
 /** An AP gift from another unit (Hand-Off): 'ap_gift' {t, from, n, cb, cancel, why} lets the receiver's items refuse it
  * (Humanity First won't take AP from a non-human). The AP stays with the giver (the caller gives it back). */

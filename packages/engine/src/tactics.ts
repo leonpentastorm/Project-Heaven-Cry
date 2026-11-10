@@ -64,7 +64,11 @@ export function reactionsUsed(cb: Combat, u: Unit): number {
   if (u.reactUsed && u.reactUsed.r === cb.round) return u.reactUsed.n;
   return u.reactedRound === cb.round ? 1 : 0; // old saves
 }
-const ownReact = (cb: Combat, u: Unit) => reactionsUsed(cb, u) < maxReactions(u, cb);
+/** Cue (a Call, rules 1.13): one more reaction, good until the start of the speaker's next turn (calls/rules.ts ends
+ * it there; the round bound is for a speaker who never gets that turn). Never for a unit with no reaction at all. */
+export const cueLive = (cb: Combat, u: Unit): boolean => !!u.call?.cue && cb.round <= u.call.cue.r + 1;
+const baseReact = (cb: Combat, u: Unit) => reactionsUsed(cb, u) < maxReactions(u, cb);
+const ownReact = (cb: Combat, u: Unit) => baseReact(cb, u) || (cueLive(cb, u) && maxReactions(u, cb) > 0);
 /** Many Hands (Camaraderie Mastered, perk-runtime E-H1): an ally whose reactions are spent may spend a holder's who can
  * see them (alive, same side, not the same unit). The first such holder in unit order. */
 export function reactionDonor(cb: Combat, u: Unit): Unit | null {
@@ -74,6 +78,7 @@ export function reactionDonor(cb: Combat, u: Unit): Unit | null {
 export const canReact = (cb: Combat, u: Unit) => ownReact(cb, u) || !!reactionDonor(cb, u);
 /** Spend a reaction now; false when none is left. */
 export function useReaction(cb: Combat, u: Unit): boolean {
+  if (!baseReact(cb, u) && cueLive(cb, u) && maxReactions(u, cb) > 0) { delete u.call!.cue; cb.log.push(u.name + ' reacts again (Cue).'); return true; } // the cued reaction, after its own
   if (!ownReact(cb, u)) {
     const d = reactionDonor(cb, u); if (!d) return false;
     d.reactUsed = { r: cb.round, n: reactionsUsed(cb, d) + 1 }; d.reactedRound = cb.round;
@@ -171,17 +176,23 @@ export const HEARING = 8;
  * Narrator). The strength is the gamma that spoke. 'parley' {u, t, kind, text, tnAdd, via, cancel, result} lets items
  * change it (Overruled, Crowd-Pleaser, Lay Down Arms…; a perk that speaks with another gamma sets `via`). */
 export const PARLEY_VIA: Record<string, string> = { persuade: 'eloquence', threaten: 'intimidation', parley: 'charisma' };
+/** Rules 1.13: Threaten is a Call (calls/handlers.ts). combat/parley kind 'threaten' stays as an alias of its effect:
+ * the Call's handler file binds it here (this file can't import calls/: it loads first). */
+export interface ThreatenAlias { refuse(cb: Combat, u: Unit, t: Unit): string | null; run(cb: Combat, rng: Rng, u: Unit, t: Unit, tnAdd: number, via?: string): string }
+let THREATEN: ThreatenAlias | null = null;
+export const setThreaten = (f: ThreatenAlias) => { THREATEN = f; };
 export function parley(cb: Combat, rng: Rng, u: Unit, t: Unit, kind: 'persuade' | 'threaten' | 'parley', text = ''): string | null {
   if (!t || t.dead || t.surrendered || t.side === u.side) return 'Pick an enemy who can hear you.';
   if (dist(u.pos, t.pos) > HEARING) return 'Too far to be heard (' + HEARING + ' tiles).';
   const ap = actionAp({ u }, 'parley', 2).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  if (kind === 'threaten' && THREATEN) { const no = THREATEN.refuse(cb, u, t); if (no) return no; } // one hindering Call on a unit a round
   const ctx: any = emit(cb, 'parley', { u, t, kind, text, tnAdd: 0, via: PARLEY_VIA[kind], cancel: null as string | null, result: '', cb, rng });
   if (ctx.cancel) return ctx.cancel;
   u.ap -= ap;
   const said = text ? ' "' + text.slice(0, 200) + '"' : '';
   let out = '';
   if (kind === 'persuade') out = applyCond(cb, rng, u, t, 'ldebuff', undefined, 'brain', { tnAdd: ctx.tnAdd, via: ctx.via });
-  else if (kind === 'threaten') out = applyCond(cb, rng, u, t, 'shaken', undefined, 'heart', { tnAdd: ctx.tnAdd, via: ctx.via });
+  else if (kind === 'threaten') out = THREATEN ? THREATEN.run(cb, rng, u, t, ctx.tnAdd, ctx.via) : applyCond(cb, rng, u, t, 'shaken', undefined, 'heart', { tnAdd: ctx.tnAdd, via: ctx.via });
   else out = trySurrender(cb, rng, u, t, ctx.tnAdd, ctx.via);
   cb.log.push(u.name + (kind === 'persuade' ? ' works on ' : kind === 'threaten' ? ' threatens ' : ' offers terms to ') + t.name + said + out + (ctx.result || '') + '.');
   if (text) (cb.notes ||= []).push(u.name + ' (round ' + cb.round + ', ' + kind + ' at ' + t.name + '):' + said);

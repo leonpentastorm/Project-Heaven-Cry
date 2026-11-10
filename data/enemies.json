@@ -1,7 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "enemies",
-  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52); Endurance and spare magazines added for injuries, ammo and stealing (provisional); technique lists by tier (rules 1.12, provisional, item 950)",
+  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52); Endurance and spare magazines added for injuries, ammo and stealing (provisional); technique lists by tier (rules 1.12, provisional, item 950); Calls by tier (rules 1.13, provisional)",
   "items": [
     {
       "id": "minion",
@@ -19,7 +19,9 @@
       "techniques": {
         "melee": [],
         "ranged": []
-      }
+      },
+      "calls": [],
+      "call_level": 0
     },
     {
       "id": "soldier",
@@ -41,7 +43,9 @@
         "ranged": [
           "suppress"
         ]
-      }
+      },
+      "calls": [],
+      "call_level": 0
     },
     {
       "id": "elite",
@@ -66,7 +70,12 @@
           "suppress",
           "dead_centre"
         ]
-      }
+      },
+      "calls": [
+        "call.threaten",
+        "call.rally"
+      ],
+      "call_level": 3
     },
     {
       "id": "boss",
@@ -92,7 +101,13 @@
           "dead_centre",
           "deny"
         ]
-      }
+      },
+      "calls": [
+        "call.threaten",
+        "call.taunt",
+        "call.rally"
+      ],
+      "call_level": 5
     }
   ],
   "companions": [

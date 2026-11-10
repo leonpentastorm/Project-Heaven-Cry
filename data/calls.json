@@ -1,0 +1,365 @@
+{
+  "$schema_version": "1.0",
+  "kind": "calls",
+  "source": "PHC Core Rules v1.0, Calls (rules 1.13, Skeleton 2.0): the nine gamma skills' speech actions in a fight. Every number is provisional (spec section 14).",
+  "rules": {
+    "ap": 2,
+    "cheap_at": 5,
+    "cheap_ap": 1,
+    "free_at": 10,
+    "free_per_turn": 1,
+    "range_base": 4,
+    "range_per_point": 1,
+    "steps_at": [
+      1,
+      3,
+      7
+    ],
+    "reaction_at": 9,
+    "reactions_per_round": 1,
+    "reaction_ap": 0,
+    "save_tn": 12,
+    "helping_per_round": 1,
+    "hindering_per_round": 1,
+    "mark_rounds": 1,
+    "enemy": {
+      "per_turn": 1,
+      "beats": 5
+    },
+    "text": "A Call is spoken to one unit that can hear you: 2 AP, within 5 tiles + 1 per point of its skill. Step 2 of its effect at 3 points, 1 AP from 5 points, step 3 at 7 points, usable as a reaction once a round from 9 points, and the first Call of each turn is free at 10 points. A unit can be the target of one helping Call and one hindering Call each round. A Call deals no damage. A hindering Call with a save is saved against 12 + the speaker's strength with its skill (points − 1, floor 0). A Silenced unit can't Call. AP a Call gives lands this turn if the ally has not acted yet this round (up to the turn's 9) and on its next turn if it has, inside the +3 cap on AP gained in a turn."
+  },
+  "items": [
+    {
+      "id": "call.order",
+      "name": "Order",
+      "skill": "authority",
+      "kind": "helping",
+      "aim": "ally",
+      "text": "An ally does one thing now, on their reaction and for none of their AP. You choose what, and never an attack.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "They reload, stand up or pick up, now.",
+          "numbers": {
+            "things": 1,
+            "move": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "They reload, stand up, pick up, or move their Movement (the tiles 1 AP walks them), now.",
+          "numbers": {
+            "things": 1,
+            "move": 1
+          }
+        },
+        {
+          "at": 7,
+          "text": "They do two different things of those, now, on the one reaction.",
+          "numbers": {
+            "things": 2,
+            "move": 1
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.rally",
+      "name": "Rally",
+      "skill": "charisma",
+      "kind": "helping",
+      "aim": "ally",
+      "text": "An ally gains AP: this turn if they have not acted yet this round, on their next turn if they have.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "They gain 1 AP.",
+          "numbers": {
+            "ap": 1,
+            "pressure": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "They gain 1 AP and shed 1 Pressure.",
+          "numbers": {
+            "ap": 1,
+            "pressure": 1
+          }
+        },
+        {
+          "at": 7,
+          "text": "They gain 2 AP and shed 1 Pressure.",
+          "numbers": {
+            "ap": 2,
+            "pressure": 1
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.brief",
+      "name": "Brief",
+      "skill": "eloquence",
+      "kind": "helping",
+      "aim": "ally",
+      "text": "An ally's next action costs less AP. It holds until the end of their next turn; an action that costs nothing doesn't use it up.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "Their next action costs 1 AP less.",
+          "numbers": {
+            "first": 1,
+            "second": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "Their next two actions cost 1 AP less each.",
+          "numbers": {
+            "first": 1,
+            "second": 1
+          }
+        },
+        {
+          "at": 7,
+          "text": "Their next action costs 2 AP less, and the one after 1 AP less.",
+          "numbers": {
+            "first": 2,
+            "second": 1
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.name_it",
+      "name": "Name It",
+      "skill": "lore_master",
+      "kind": "helping",
+      "aim": "self-or-ally",
+      "text": "You call out what the thing is, and it stops costing the one you call to: AP they would lose at the start of their next turn (Dazed, Stunned, Suppressed, a penalty, an AP debt) is cancelled.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "Cancels 1 AP they would lose next turn.",
+          "numbers": {
+            "cancel": 1,
+            "all": 0,
+            "ends_fear": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "Cancels 2 AP they would lose next turn.",
+          "numbers": {
+            "cancel": 2,
+            "all": 0,
+            "ends_fear": 0
+          }
+        },
+        {
+          "at": 7,
+          "text": "Cancels all the AP they would lose next turn, and ends Shaken and Afraid on them.",
+          "numbers": {
+            "cancel": 0,
+            "all": 1,
+            "ends_fear": 1
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.cue",
+      "name": "Cue",
+      "skill": "reaction_speed",
+      "kind": "helping",
+      "aim": "ally",
+      "text": "An ally gets a second reaction, good until the start of your next turn.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "They get one more reaction.",
+          "numbers": {
+            "reactions": 1,
+            "step": 0,
+            "order": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "They get one more reaction, or you name a tile next to them and they spend it at once on that step (free, no opportunity attack).",
+          "numbers": {
+            "reactions": 1,
+            "step": 1,
+            "order": 0
+          }
+        },
+        {
+          "at": 7,
+          "text": "As step 2, and if they have not acted yet this round they act straight after you in the order.",
+          "numbers": {
+            "reactions": 1,
+            "step": 1,
+            "order": 1
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.spot",
+      "name": "Spot",
+      "skill": "vigilant",
+      "kind": "hindering",
+      "aim": "enemy",
+      "text": "You point an enemy out. No save. The mark holds until the start of your next turn and is used up by an ally's real attack, never by you.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "The next ally to attack it ignores its cover.",
+          "numbers": {
+            "allies": 1,
+            "unhide": 0,
+            "hit": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "The next ally to attack it ignores its cover, and it isn't Hidden to them. You can Spot a Hidden enemy whose tile you can see.",
+          "numbers": {
+            "allies": 1,
+            "unhide": 1,
+            "hit": 0
+          }
+        },
+        {
+          "at": 7,
+          "text": "The next two allies to attack it ignore its cover, at +1 to hit, and it isn't Hidden to them.",
+          "numbers": {
+            "allies": 2,
+            "unhide": 1,
+            "hit": 1
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.warn",
+      "name": "Warn",
+      "skill": "sensory",
+      "kind": "helping",
+      "aim": "ally",
+      "text": "Before the next weapon attack on an ally lands, they step clear, free and with no opportunity attack: to the tile you named, or else to the nearest tile that takes them out of the attack. An attack that can no longer reach them is wasted. The warning holds until the start of your next turn.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "They step 1 tile before the next attack on them.",
+          "numbers": {
+            "tiles": 1,
+            "hit": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "They step up to 2 tiles before the next attack on them.",
+          "numbers": {
+            "tiles": 2,
+            "hit": 0
+          }
+        },
+        {
+          "at": 7,
+          "text": "They step up to 2 tiles before the next attack on them, and that attack is at −2 to hit.",
+          "numbers": {
+            "tiles": 2,
+            "hit": -2
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.threaten",
+      "name": "Threaten",
+      "skill": "intimidation",
+      "kind": "hindering",
+      "aim": "enemy",
+      "save": "heart",
+      "text": "An enemy makes a Heart save against 12 + your Intimidation strength, or is Shaken (3 rounds) and loses AP on its next turn.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "Shaken, and it loses 1 AP on its next turn.",
+          "numbers": {
+            "ap_loss": 1,
+            "no_approach": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "Shaken, it loses 1 AP on its next turn, and on that turn it can't move toward you.",
+          "numbers": {
+            "ap_loss": 1,
+            "no_approach": 1
+          }
+        },
+        {
+          "at": 7,
+          "text": "Shaken, it loses 2 AP on its next turn, and on that turn it can't move toward you.",
+          "numbers": {
+            "ap_loss": 2,
+            "no_approach": 1
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "call.taunt",
+      "name": "Taunt",
+      "skill": "implication",
+      "kind": "hindering",
+      "aim": "enemy",
+      "save": "heart",
+      "text": "An enemy makes a Heart save against 12 + your Insinuation strength, or is Taunted (1 round): its next attack must go at you, if it can see you.",
+      "steps": [
+        {
+          "at": 1,
+          "text": "Taunted: it must attack you.",
+          "numbers": {
+            "attack_ap": 0
+          }
+        },
+        {
+          "at": 3,
+          "text": "Taunted, and that attack on you costs it 1 AP more.",
+          "numbers": {
+            "attack_ap": 1
+          }
+        },
+        {
+          "at": 7,
+          "text": "Taunted, and that attack on you costs it 2 AP more.",
+          "numbers": {
+            "attack_ap": 2
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    }
+  ]
+}

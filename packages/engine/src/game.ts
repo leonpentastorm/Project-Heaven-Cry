@@ -12,6 +12,7 @@ import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharac
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
+import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from './calls';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
@@ -353,6 +354,8 @@ export type Action =
   // allyId, line, ammo, opt…); out of a fight, the ready list of a system, a drill pick for a weapon, a bow's quiver
   // (arrows per type), and the Answers this character will use, in order (null: every ready Answer).
   | ({ type: 'combat/technique'; unitId: string; id: string } & TechArgs) | { type: 'combat/pull-free'; unitId: string; targetId?: string }
+  // rules 1.13: a Call (calls/). opt: Order's things ('reload+move'); tile: Order's move, Cue's step, Warn's named tile; react: made off your turn, on your reaction (from 9 points)
+  | { type: 'combat/call'; unitId: string; id: string; targetId?: string; tile?: string; opt?: string; text?: string; react?: boolean }
   | { type: 'phys/ready'; charId: string; system: TechSystem; ids: string[] } | { type: 'phys/pick'; charId: string; weaponId: string; id: string }
   | { type: 'phys/quiver'; charId: string; weaponId: string; load: Record<string, number> } | { type: 'phys/answers'; charId: string; ids: string[] | null }
   | SandboxAction
@@ -1328,6 +1331,8 @@ function combatAction(g: GameState, a: Action, by: string) {
   const cb = g.combat; if (!cb || g.phase !== 'combat') fail('No fight is on.');
   if (cb!.over) fail('The fight is over.');
   const u = active(cb!)!;
+  // rules 1.13: a Call made as a reaction comes from a unit whose turn it isn't (from 9 points, once a round)
+  if (a.type === 'combat/call' && a.react && a.unitId !== u.id) { callReaction(g, cb!, a, by); return; }
   if (!('unitId' in a) || a.unitId !== u.id) fail('It\'s ' + u.name + '\'s turn.');
   // Who gives this unit its orders: its character's player; a companion's owner; a Puppeted enemy's puppeteer (rules 1.3).
   const pup = u.side === 'foe' ? puppeteerOf(g, cb!, u) : null;
@@ -1353,6 +1358,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   const inWindow = !!cb!.window;
   // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
   const encore = inWindow ? null : encoreBefore(cb!, u, a);
+  const brief = briefBefore(cb!, u, a); // rules 1.13: a Brief's discount on this action, lent the same way
   markAction(cb!); // spotlight.ts: this action's fx start here (a spotlight in it slows its playback on the client)
   (cb as any).acting = true; // encoreCredit: previews inside the action don't lend Encore's AP again
   try {
@@ -1374,6 +1380,7 @@ function combatAction(g: GameState, a: Action, by: string) {
       if (!TECHNIQUE[id]) fail('No such technique.');
       refuseHook(cb!, u, a); err = useTechnique(cb!, u, id, args, g.rng); break;
     }
+    case 'combat/call': { err = runCall(g, cb!, u, a); break; }
     case 'combat/brace': err = brace(cb!, u); break;
     case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, who); break; }
     case 'combat/gift': err = runGift(g, cb!, g.rng, u, tileKey(g, a.aim)); break;
@@ -1442,6 +1449,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   }
   } finally { delete cb!.mods; delete (cb as any).acting; }
   if (err) fail(err);
+  briefAfter(cb!, u, brief);
   encoreAfter(cb!, u, encore);
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
@@ -1504,6 +1512,24 @@ function physAction(c: Character, a: Extract<Action, { type: 'phys/ready' | 'phy
 const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead && !t.surrendered;
 /** What a companion or a puppet may do (rules 1.3). */
 const ACT_NAME: Record<string, string> = { move: 'move', sprint: 'sprint', disengage: 'disengage', shot: 'shoot', aimed: 'take an aimed shot', melee: 'strike' };
+/** rules 1.13: make a Call. Only the fields a Call reads are taken from a client's action (nothing internal). */
+function runCall(g: GameState, cb: Combat, u: Combat['units'][number], a: Extract<Action, { type: 'combat/call' }>): string | null {
+  if (!CALL[a.id]) fail('No such Call.');
+  const args: CallArgs = { ...(typeof a.targetId === 'string' ? { targetId: a.targetId } : {}), ...(typeof a.tile === 'string' ? { tile: tileKey(g, a.tile) } : {}), ...(typeof a.opt === 'string' ? { opt: a.opt.slice(0, 40) } : {}), ...(typeof a.text === 'string' ? { text: a.text } : {}), ...(a.react ? { react: true } : {}) };
+  refuseHook(cb, u, a);
+  return useCall(cb, u, a.id, args, g.rng);
+}
+/** A Call as a reaction: the speaker isn't the unit whose turn it is. Its own player sends it; it spends the unit's
+ * reaction (once a round) and no AP. A companion, a puppet and a unit with a fixed action list never Call. */
+function callReaction(g: GameState, cb: Combat, a: Extract<Action, { type: 'combat/call' }>, by: string) {
+  const u = cb.units.find((x) => x.id === a.unitId); if (!u) fail('No such unit.');
+  const c = u!.charId ? g.characters[u!.charId] : null;
+  if (!c || c.owner !== by) fail('Not your unit.');
+  if (u!.companion || u!.allowedActions || condOn(u!, 'puppeted')) fail(u!.name + ' can\'t Call.');
+  const err = runCall(g, cb, u!, { ...a, react: true }); if (err) fail(err);
+  emitHook(cb, 'action_done', { u: u!, a, cb });
+  for (const x of cb.units) x.ap = Math.round(x.ap * 10) / 10;
+}
 const COMPANION_ACTS = new Set(['combat/move', 'combat/attack', 'combat/technique', 'combat/overwatch', 'combat/end-turn', 'combat/decline', 'combat/reload', 'combat/prone', 'combat/extinguish', 'combat/escape']);
 /** The PC character who Puppeted this enemy (its player runs the enemy's turn), if the puppeteer is up. */
 function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Character | null {
@@ -1856,7 +1882,7 @@ export function viewFor(g: GameState, playerId: string): GameState {
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
   // Physical 2.0 (rules 1.12): a Silent weapon's pips are hidden from the side they are on; a held shot shows to its
   // own side, and to the other side only while it sees the holder.
-  if (v.combat && g.combat) { const cb0 = g.combat; v.combat = { ...v.combat, units: v.combat.units.map((u) => physFog(cb0, u, me)) }; }
+  if (v.combat && g.combat) { const cb0 = g.combat; v.combat = { ...v.combat, units: v.combat.units.map((u) => callView(physFog(cb0, u, me), me)) }; } // rules 1.13: a Call's mark shows to the side that made it (calls/core.ts)
   pileFog(g, v, me); // rules 1.9: a pile shows only on a tile the viewer's party sees now (item 676)
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
@@ -2801,7 +2827,9 @@ const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed'
   'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
   'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
-  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed'] as const;
+  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',
+  // Calls (rules 1.13): the marks Calls left and the unit's own Call counters
+  'call'] as const;
 
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */

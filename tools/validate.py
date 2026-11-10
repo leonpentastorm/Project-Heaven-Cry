@@ -1006,6 +1006,90 @@ if lt is not None:
     if bt and (bt.get("none") or not bt.get("entries")):
         errors.append("loot_tables: the boss table always drops something (no weight for nothing, at least one entry)")
 
+# Rules 1.13, Skeleton 2.0: data/calls.json (the nine Calls, one per gamma skill) and the enemy tiers' Call lists
+cq = data.get("calls")
+if isinstance(cq, dict):
+    CALL_KINDS = {"helping", "hindering"}
+    CALL_AIMS = {"ally", "enemy", "self-or-ally"}
+    crules = cq.get("rules") or {}
+    skill_by_id = {s.get("id"): s for s in items("skills") if isinstance(s, dict)}
+    gammas = {sid for sid, s in skill_by_id.items() if s.get("slot") == "gamma"}
+    cdefs = {c.get("id"): c for c in items("calls") if isinstance(c, dict)}
+    if len(cdefs) != len(items("calls")):
+        errors.append("calls: ids must be present and unique")
+    for k in ("ap", "cheap_at", "cheap_ap", "free_at", "free_per_turn", "range_base", "range_per_point", "reaction_at", "reactions_per_round", "reaction_ap", "save_tn", "helping_per_round", "hindering_per_round", "mark_rounds"):
+        if not isinstance(crules.get(k), int) or isinstance(crules.get(k), bool):
+            errors.append(f"calls: rules.{k} must be a whole number")
+    steps_at = crules.get("steps_at")
+    if not (isinstance(steps_at, list) and len(steps_at) == 3 and steps_at == sorted(steps_at) and steps_at[0] == 1):
+        errors.append("calls: rules.steps_at must be three rising point values, the first 1")
+    if not isinstance((crules.get("enemy") or {}).get("per_turn"), int) or not isinstance((crules.get("enemy") or {}).get("beats"), (int, float)):
+        errors.append("calls: rules.enemy needs per_turn and beats")
+    seen_skills = {}
+    for cid, c in cdefs.items():
+        where = f"calls:{cid}"
+        if not isinstance(cid, str) or not cid.startswith("call."):
+            errors.append(f"{where}: a Call's id starts with 'call.' (the bare names are taken by techniques, moves and unlocks)")
+        sk = c.get("skill")
+        if sk not in skill_by_id:
+            errors.append(f"{where}: skill '{sk}' is not a skill")
+        elif sk not in gammas:
+            errors.append(f"{where}: skill '{sk}' is not a gamma (only the gamma skills have Calls)")
+        if sk in seen_skills:
+            errors.append(f"{where}: {sk} already has a Call ({seen_skills[sk]})")
+        seen_skills[sk] = cid
+        if c.get("kind") not in CALL_KINDS:
+            errors.append(f"{where}: kind '{c.get('kind')}' is not one of {sorted(CALL_KINDS)}")
+        if c.get("aim") not in CALL_AIMS:
+            errors.append(f"{where}: aim '{c.get('aim')}' is not one of {sorted(CALL_AIMS)}")
+        if (c.get("aim") == "enemy") != (c.get("kind") == "hindering"):
+            errors.append(f"{where}: a hindering Call is aimed at an enemy, a helping Call at an ally")
+        if c.get("save") not in (None, "body", "brain", "heart"):
+            errors.append(f"{where}: save must be body | brain | heart")
+        if c.get("save") and c.get("kind") != "hindering":
+            errors.append(f"{where}: only a hindering Call has a save")
+        if not c.get("name") or not isinstance(c.get("text"), str) or not c.get("text"):
+            errors.append(f"{where}: needs a name and a text")
+        if c.get("adjudication") not in ("engine", "hybrid", "narrator"):
+            errors.append(f"{where}: adjudication must be engine | hybrid | narrator")
+        if c.get("provisional") is not True:
+            errors.append(f"{where}: its numbers are provisional until play settles them (provisional: true)")
+        st = c.get("steps")
+        if not (isinstance(st, list) and len(st) == 3):
+            errors.append(f"{where}: needs exactly three steps")
+            continue
+        if [x.get("at") for x in st] != steps_at:
+            errors.append(f"{where}: its steps open at {[x.get('at') for x in st]}, the ladder's are {steps_at}")
+        keys = None
+        for i, x in enumerate(st):
+            if not isinstance(x.get("text"), str) or not x.get("text"):
+                errors.append(f"{where}: step {i + 1} needs a text")
+            nums = x.get("numbers")
+            if not isinstance(nums, dict) or not nums:
+                errors.append(f"{where}: step {i + 1} needs its numbers")
+                continue
+            for k, v in nums.items():
+                if not isinstance(v, (int, float)) or isinstance(v, bool):
+                    errors.append(f"{where}: step {i + 1} numbers.{k} must be a number")
+            if keys is not None and set(nums) != keys:
+                errors.append(f"{where}: step {i + 1} must give the same numbers as step 1 ({sorted(keys)})")
+            keys = keys or set(nums)
+    for g in sorted(gammas - set(seen_skills)):
+        errors.append(f"calls: the gamma skill {g} has no Call")
+    for t in items("enemies"):
+        if not isinstance(t, dict):
+            continue
+        lst = t.get("calls")
+        if lst is None:
+            errors.append(f"enemies:{t.get('id')}: needs a calls list (empty for a tier that never Calls) and a call_level")
+            continue
+        for cid in lst:
+            if cid not in cdefs:
+                errors.append(f"enemies:{t.get('id')}: calls names '{cid}', not a Call")
+        lv = t.get("call_level")
+        if not isinstance(lv, int) or isinstance(lv, bool) or lv < 0 or lv > 10 or (lst and lv < 1):
+            errors.append(f"enemies:{t.get('id')}: call_level must be 0 to 10, and at least 1 for a tier with Calls")
+
 # Rules 1.12, Physical 2.0: data/techniques.json and the weapons' phys blocks (docs/design/handoffs/physical-2.0-PLAN.md)
 tq = data.get("techniques")
 if isinstance(tq, dict):
