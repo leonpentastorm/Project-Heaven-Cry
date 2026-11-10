@@ -166,6 +166,10 @@ const waiting = new Map<string, Waiting>();
 /** Units whose walk is playing now (the combat screen draws their real token see-through until it ends). */
 const walking = new Map<string, number>();
 export const HOLD_MS = 9000;
+/** A held unit is never let go while the queue that holds its moment is still playing (a long enemy phase, a cut-in in
+ *  the middle): it waits past HOLD_MS, to this cap at most. Before, the 9 s ran out and a unit an enemy pushed late in
+ *  its phase stood on the tile it was pushed to before the blow that pushed it had played (Leon, 10 Nov 2026). */
+export const HOLD_CAP_MS = 60000;
 /** Stop holding a unit: its stand-in goes; its real token shows again (unless keepHide: a walker took it over). */
 export function releaseMover(id: string, keepHide = false) {
   const w = waiting.get(id); if (!w) return; waiting.delete(id); clearTimeout(w.timer); w.stand?.remove(); if (!keepHide) w.hide?.cancel();
@@ -274,15 +278,21 @@ export function holdMovers(evs: FxEvent[]) {
     const u = unit(id); if (!u) continue;
     const live = !u.dead && seesUnit(id) ? tokenEl(tileEl(u.pos)) : null;
     if (!live && !m.stand && !(u.dead || seesUnit(id))) continue;
-    const hide = live ? anim(live, [{ opacity: 0 }, { opacity: 0 }], { duration: HOLD_MS }) : null;
+    const hide = live ? anim(live, [{ opacity: 0 }, { opacity: 0 }], { duration: HOLD_CAP_MS }) : null;
     let stand: HTMLElement | null = null;
     const p = m.stand && (m.stand !== u.pos || m.kind === 'lost') ? centre(m.stand) : null, src = lastTok.get(id) || live || lookEl(id);
     if ((m.kind === 'walk' || m.kind === 'lost') && p && src) {
-      stand = putCopy(id, src, p, HOLD_MS); stand.setAttribute('data-phc-stand', id); stand.setAttribute('data-phc-stand-at', m.stand!);
-      anchor(stand, m.stand!, HOLD_MS);
+      stand = putCopy(id, src, p, HOLD_CAP_MS); stand.setAttribute('data-phc-stand', id); stand.setAttribute('data-phc-stand-at', m.stand!);
+      anchor(stand, m.stand!, HOLD_CAP_MS);
     } else if (m.kind === 'walk' && m.stand === u.pos && hide) { hide.cancel(); } // it ends where it began: nothing to hold
-    const timer = window.setTimeout(() => releaseMover(id), slow(HOLD_MS));
-    waiting.set(id, { hide: m.kind === 'walk' && m.stand === u.pos ? null : hide, stand, timer });
+    const t0 = performance.now(), entry = { hide: m.kind === 'walk' && m.stand === u.pos ? null : hide, stand, timer: 0 };
+    const tick = () => { // let go once its queue has run out (or at the cap), never in the middle of it
+      if (waiting.get(id) !== entry) return;
+      if (performance.now() < queueEnd && performance.now() - t0 < slow(HOLD_CAP_MS)) { entry.timer = window.setTimeout(tick, 400); return; }
+      releaseMover(id);
+    };
+    entry.timer = window.setTimeout(tick, slow(HOLD_MS));
+    waiting.set(id, entry);
   }
   // A unit this batch kills is gone from the grid at once, but its fall plays later (after a takedown cut-in, after the
   // shot's flight): its ghost stands on its tile from now until its 'down' plays (live check: the token vanished and its
@@ -454,9 +464,11 @@ export function reloadKind(id: string, cat: string, look: Look = gunOf(id, cat).
   return 'gun';
 }
 /** A burst or full-auto volley has one long recording; the shots inside it then fire silently. */
-function volleySound(cat: string, mode: string): { s: Sfx; rate?: number } | null {
+function volleySound(cat: string, mode: string, weapon = ''): { s: Sfx; rate?: number } | null {
   if (mode !== 'burst' && mode !== 'auto') return null;
   if (cat === 'shotgun') return null;
+  // only a gun rattles: a bow's volley is its arrows, each with its own draw and release (and so for anything else that isn't bullets)
+  if (gunOf(weapon, cat).look !== 'bullet') return null;
   if (mode === 'auto') return cat === 'heavy' ? { s: 'auto_heavy' } : cat === 'rifle' ? { s: 'auto_rifle' } : { s: 'auto_smg', rate: cat === 'pistol' ? 1.1 : 1 };
   return cat === 'rifle' || cat === 'heavy' ? { s: 'burst_rifle' } : { s: 'burst_smg', rate: cat === 'pistol' ? 1.1 : 1 };
 }
@@ -713,11 +725,11 @@ const H: Record<string, Handler> = {
     }, 120);
   },
   volley(e) {
-    const vs = volleySound(e.cat || '', e.mode), p = at(e.from) || centre(e.to);
+    const vs = volleySound(e.cat || '', e.mode, e.weapon || ''), p = at(e.from) || centre(e.to);
     volley = { unit: e.unit, silent: !!vs, until: performance.now() + slow(2500) }; // the shots it covers are spaced at the pace
     if (vs) play(vs.s, p, { rate: vs.rate });
     if (e.mode === 'skill' && e.name) { const q = centre(e.from); if (q && visible(e.from)) floatText(String(e.name).toUpperCase(), q, WHITE, { small: true, ms: 1100 }); }
-    if (e.mode === 'auto' && p && e.to) {
+    if (e.mode === 'auto' && p && e.to && gunOf(e.weapon || '', e.cat || '').look === 'bullet') {
       // The spray: extra tracers fanning around the line (the engine rolls one shot per enemy near it).
       const toP = centre(e.to); if (!toP || !visible(e.from)) return;
       const br = brassOf(e.weapon || '', e.cat || ''), who = br.when === 'shot' ? whoOf(tokOf(e.unit, e.from)) : null, aim = angle(p, toP);

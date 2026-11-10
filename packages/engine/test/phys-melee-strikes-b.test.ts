@@ -237,7 +237,7 @@ describe('Throw', () => {
     expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
     expect(hp - f.foe.hp).toBe(hpLost(pv)); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(4);
     expect(f.pc.weapon).toBe('fists'); expect(f.char(f.pc).weapon).toBe('fists');
-    const pile = pileAt(f.cb.objects || [], f.foe.pos)!; expect(pile.items!.some((x: any) => (x.item || x.pack?.weapon) === 'combat_knife')).toBe(true);
+    expect((f.foe.stuck || []).map((x: any) => x.weapon)).toEqual(['combat_knife']); // a hit: the knife stays in the target (0.18.1)
   });
   it('without Thrown: −2 to hit and ×0.7; a miss still leaves the weapon in the pile', () => {
     const f = fight('sabre', far);
@@ -259,7 +259,7 @@ describe('Throw', () => {
     f.char(f.pc).offHand = { id: 'combat_knife' } as any; // the helper puts the off hand on the unit only
     expect(f.tech('throw', { targetId: f.foe.id, hand: 'off' })).toBeNull();
     expect(f.pc.offWeapon).toBeFalsy(); expect(f.pc.weapon).toBe('sabre'); expect(f.char(f.pc).offHand).toBeNull();
-    expect(pileAt(f.cb.objects || [], f.foe.pos)!.items!.some((x: any) => (x.item || x.pack?.weapon) === 'combat_knife')).toBe(true);
+    expect((f.foe.stuck || []).map((x: any) => x.weapon)).toEqual(['combat_knife']);
   });
   it('refusals: no target, out of throwing range, bare hands; nothing is spent', () => {
     const f = fight('combat_knife', { foes: [{ at: 'P5' }] });

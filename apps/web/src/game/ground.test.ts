@@ -125,7 +125,9 @@ describe('reloads and pick-up in the action lists (combat and the area map)', ()
     for (let i = 0; i < 8 && active(g.combat!)!.charId !== rook(g).id; i++) { const x = active(g.combat!)!; g = ap(g, { type: 'combat/end-turn', unitId: x.id }, x.charId === rook(g).id ? H : P2); }
     const view = () => viewFor(g, H), me = () => view().combat!.units.find((x) => x.charId === rook(g).id)!;
     const util = () => actionGroups(view().combat, me(), rook(g), { g: view() }).find((gr) => gr[3] === 'utility')![1];
-    expect(util().map((it) => it[0]).slice(0, 2)).toEqual(['reload', RELOAD_TAC]);
+    // a gun's reloads are listed with its shots (the Attack tab) since 0.18.1
+    const atk = () => actionGroups(view().combat, me(), rook(g), { g: view() }).find((gr) => gr[3] === 'attack')![1];
+    expect(atk().map((it) => it[0]).filter((id) => id === 'reload' || id === RELOAD_TAC)).toEqual(['reload', RELOAD_TAC]);
     expect(util().find((it) => it[0] === 'pickup')![4]).toBe('Nothing on the ground next to you.');
     g = ap(g, { type: 'combat/reload', unitId: me().id });
     const pile = pileOf(view().combat!.objects, me().pos)!;

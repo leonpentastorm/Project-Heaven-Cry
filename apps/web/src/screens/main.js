@@ -1150,7 +1150,7 @@ export class MainLogic extends DCLogic {
     const W_ITEMS = [
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile'],
         ...(myDrone() ? [['drone', 'Move the drone', myDrone().ap + ' AP left']] : []), ...(myBeast() ? [['beast', 'Move the beast', myBeast().ap + ' AP left']] : []), ...(myTwin() ? [['twin', 'Move the twin', myTwin().ap + ' AP left']] : [])]],
-      ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : 'Melee (fists)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
+      ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : wW && wW.id !== 'fists' ? 'Strike (weapon\'s butt)' : 'Strike (bare hand)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
       ['UTILITY', [...W_UTIL, ['pickup', 'Pick up', PICKUP_AP + ' AP'], ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
       ...(wPk.some((e) => e.tab === 'perks') ? [['PERKS & TRAITS', wPk.filter((e) => e.tab === 'perks').map((e) => [pkId(e), e.label, pkCost(e)])]] : []),
       ...(wPk.some((e) => e.tab === 'class') ? [['CLASS · ' + (wKlass ? wKlass.name.toUpperCase() : 'MOVES'), wPk.filter((e) => e.tab === 'class').map((e) => [pkId(e), e.label, pkCost(e)]), wKlass ? wKlass.ink : null]] : []),

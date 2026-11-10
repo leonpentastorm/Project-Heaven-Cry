@@ -48,7 +48,9 @@ export function brassOf(id: string, cat: string): Brass {
     case 'adamantile_battle_rifle': case 'ccec_marksman_rifle': return B('rifle', 'shot', 'box_mag');
     case 'mandestra_drum_gun': return B('pistol', 'shot', 'drum');
     case 'brigade_auto_shotgun': return B('hull', 'shot', 'shotgun_mag');
-    case 'breacher_tube': return B(null, null);
+    // the tube keeps nothing to eject, but its reload is a rocket slid in by hand: the card shows the round going in
+    // (when: null: no casing on a shot or a reload; before, the card was an empty box with a count)
+    case 'breacher_tube': return B('grenade_40', null, null, { load: 'rounds' });
     case 'purifier_flamer': return B(null, null, 'fuel_can');
     // the enchanted guns: a sigil-etched casing, a blessed censer hull (pumped), a spent core charge
     case 'spellslinger_pistol': return B('etched', 'shot', 'etched_mag');

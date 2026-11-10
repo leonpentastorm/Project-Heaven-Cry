@@ -30,7 +30,8 @@ export interface TechDef {
 /** What the player (or the enemy AI) chose. `line` is a property id when two lines match; `ammo` an arrow or special
  * round type; `opt` an optional outcome the text offers ('push', 'swap', 'leg'…); `item` a pack reference. */
 export interface TechArgs {
-  hand?: 'main' | 'off'; targetId?: string; targetIds?: string[]; tile?: string; allyId?: string; allyIds?: string[];
+  /** 'both': the technique is made with each hand's weapon in turn (two weapons of one kind; the paired attack's rule) */
+  hand?: 'main' | 'off' | 'both'; targetId?: string; targetIds?: string[]; tile?: string; allyId?: string; allyIds?: string[];
   line?: string; ammo?: string; opt?: string;
   /** a weapon that isn't in the hand: a pack entry (index or id) for a technique that draws, or a carried throwable's id */
   item?: string | number; mods?: string[];

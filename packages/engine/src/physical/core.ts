@@ -146,6 +146,7 @@ export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?:
   const w = WEAPON[weaponId] || WEAPON.fists;
   const fx: any = (w as any).grants?.effect || {};
   const base = def.ap.base === 'reaction' ? 0 : def.id === 'aimed_shot' && fx.op === 'aimed_ap' ? fx.value // the crossbow's Bolt Rest
+    : def.id === 'shot' ? Math.max(def.ap.value || 0, attackApCost(w, 'shot')) // a weapon whose shot costs more than 2 (the crossbow: 3, the next bolt loaded with it)
     : def.ap.base === 'flat' ? def.ap.value || 0 : attackApCost(w, isMelee(w) ? 'melee' : 'shot') + (def.ap.add || 0);
   const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));
@@ -210,7 +211,8 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.group === 'watch' && (u as any).noWatch === cb.round) return 'Head down: no held shot this round.';
   if (def.group === 'take' && techStateOf(u, '_take').t === turnStamp(cb)) return 'One Take a turn.';
   if (def.needs.hidden && !u.hidden) return 'Only from Hidden.';
-  const ap = apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
+  const pair = (args as any)._pair as PairMark | undefined;
+  const ap = pair ? pair.ap : apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
   if (u.ap + encoreCredit(u, { type: 'combat/technique', id: def.id }, cb) < ap) return 'Needs ' + ap + ' AP.'; // Encore lends a repeat its AP (items 729, 737)
   const w = WEAPON[weaponId];
   if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
@@ -329,6 +331,8 @@ onHook('attack_preview', (ctx: any) => {
     if (a.o.reach) ctx.reach = Math.max(ctx.reach || 0, a.o.reach);
     if (offHome(a.t.def, a.t.weaponId)) ctx.terms.push({ v: -PHYS_RULES.off_home_penalty, label: a.t.def.name + ' off its home weapon' });
   }
+  // Both hands (a technique made with each weapon in turn): the paired attack's penalty for this hand.
+  { const pr = a ? ((a.t.args as any)._pair as PairMark | undefined) : undefined; if (pr && pr.hit) ctx.terms.push({ v: pr.hit, label: 'both hands' }); }
   // A set-up mark (Feint, Sidestep): the user's next technique against that target this turn.
   const su = (ctx.att as any).setUp; if (su && su.t === turnStamp(ctx.cb) && su.target === ctx.tgt.id && su.hit && (!su.only || (!!a && su.only.includes(a.t.def.id)))) ctx.terms.push({ v: su.hit, label: su.label || 'set up' });
   // Pressed (rules 1.12): −1 to hit with ranged attacks. Melee swings are not affected.
@@ -499,6 +503,7 @@ export interface Wield { kind: 'stowed' | 'throwable'; item: string | number; we
 export interface GearService {
   draw(cb: Combat, u: Unit, item: string | number): string | null;
   /** returns the entry that left the hand (its rarity, wear, mods and name), or null */ lose(cb: Combat, u: Unit, hand: 'main' | 'off', at: string | null): any;
+  /** put this entry straight into a free hand (main first); false when no hand is free or the weapon is refused */ take?(cb: Combat, u: Unit, item: any): boolean;
   /** the unit's weapon fields as a draw of this pack entry would leave them, or the draw's refusal; changes nothing */ asDrawn(cb: Combat, u: Unit, item: string | number): Record<string, any> | string;
 }
 let GEAR: GearService | null = null;
@@ -580,6 +585,25 @@ export function loseWeapon(t: Tech, at: string | null): void {
   }
   if (at) dropToPile(t.cb, at, [{ id, name: WEAPON[id]?.name || id, qty: 1, kind: 'weapon', weapon: id } as any], 'drop');
   if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; }
+}
+
+/** The weapon leaves the hand and stays in a unit it hit (Throw): it is carried there until that unit falls (it drops
+ * on its tile) or someone next to it pulls it out (Pull Out). */
+export function loseWeaponInto(t: Tech, target: Unit): void {
+  if (t.wield === 'throwable' || t.preview) return;
+  const u = t.u, id = t.hand === 'off' ? u.offWeapon : u.weapon; if (!id || id === 'fists') return;
+  let item: any = null;
+  if (t.c && GEAR) item = GEAR.lose(t.cb, u, t.hand, null);
+  else { if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; } }
+  (target.stuck ||= []).push({ by: u.id, weapon: id, ...(item ? { item } : {}) });
+  t.cb.log.push('  The ' + (WEAPON[id]?.name || id).toLowerCase() + ' is stuck in ' + target.name + '.');
+}
+/** Take a weapon entry straight into a free hand of the unit (a character: the reducer's gear change; a unit with no
+ * sheet: its empty main hand). False when it has no free hand. */
+export function takeWeapon(cb: Combat, u: Unit, weaponId: string, item?: any): boolean {
+  if (u.charId && !u.companion && GEAR?.take) return GEAR.take(cb, u, item || { id: weaponId, name: WEAPON[weaponId]?.name || weaponId, qty: 1, kind: 'weapon', weapon: weaponId });
+  if (u.weapon === 'fists' || !WEAPON[u.weapon]) { u.weapon = weaponId; u.ammo = 0; u.jammed = false; return true; }
+  return false;
 }
 
 // ---------- moving the user ----------
@@ -671,7 +695,7 @@ function prepare(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng, prev
   const g = gate(cb, u, def, args); if (g) return { t: null, why: g, h: null };
   const h = handlerOf(id); if (!h) return { t: null, why: NOT_BUILT, h: null };
   const t = buildTech(cb, u, def, args, rng, preview); (t as any)._p0 = t.tgt ? pressureOf(t.tgt) : 0;
-  t.pv.ap = apFor(cb, u, def, t.hand, args.line, t.tgt);
+  t.pv.ap = (args as any)._pair ? (args as any)._pair.ap : apFor(cb, u, def, t.hand, args.line, t.tgt);
   return { t, why: targetGate(t) || h.check?.(t) || null, h };
 }
 /** A handler's own score for the enemy AI: how much this unit wants the technique now (a plain attack is 5; 0: never),
@@ -687,6 +711,7 @@ function withG<T>(g: any, fn: () => T): T { if (!g) return fn(); const was = bin
 /** What the technique would do, changing nothing (the card, the AI). Pass the game (`g`) when none is bound: the screen does. */
 export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}, g?: any): TechPreview {
   if (g) return withG(g, () => previewTechnique(cb, u, id, args));
+  if (args.hand === 'both') return previewPaired(cb, u, id, args);
   { // a weapon that isn't in the hand: the card is worked out as if it were
     const def0 = TECHNIQUE[id], wi = def0 ? wieldOf(cb, u, def0, args) : null;
     if (typeof wi === 'string') return { ok: false, why: wi, id, ap: 0, rounds: 0, attacks: [], notes: [] };
@@ -722,6 +747,7 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
 /** Use a technique. Returns a refusal in plain words, or null. Nothing is spent on a refusal. */
 export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
   const def = TECHNIQUE[id]; if (!def) return 'No such technique.';
+  if (args.hand === 'both') return usePaired(cb, u, id, args, rng);
   const wi = wieldOf(cb, u, def, args); if (typeof wi === 'string') return wi;
   if (wi?.kind === 'stowed') { // check it as if drawn, then draw it for real (free: the technique's AP pays), then use it
     const pv0 = previewTechnique(cb, u, id, args); if (!pv0.ok) return pv0.why || 'Not now.';
@@ -745,7 +771,11 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (err) { // a handler must refuse before it changes anything: the cost comes back
     u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true; return err;
   }
-  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) u.heat += 1; // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
+  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) {
+    u.heat += 1;
+    // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does (the main hand's gun)
+    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
+  } // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
   for (const n of t.pv.notes) cb.log.push('  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
@@ -817,3 +847,51 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   };
 }
 export type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, Character };
+
+// ---------- both hands (Leon, 10 Nov 2026) ----------
+// Two weapons of one kind (two guns, two melee weapons): some techniques can be made with each in turn, by the paired
+// attack's rule (spec: Hands): the main hand at −1, the off hand at −3 (better by 1 per 3 Dexterity, to −1), for the
+// dearer hand's cost + 1 AP. Only techniques that are one use of one weapon at a target are offered.
+interface PairMark { hit: number; ap: number }
+export const PAIRED_TECHNIQUES = ['bash', 'sunder', 'hamstring', 'half_sword', 'aimed_shot', 'called_shot', 'punch_through', 'burst', 'suppress'];
+const offHandPenalty = (u: Unit) => Math.min(-1, -3 + Math.floor(((u as any).dexterity || 0) / 3));
+/** Why this unit can't use this technique with both hands (null: it can). */
+function pairedWhy(u: Unit, def: TechDef): string | null {
+  if (!u.offWeapon || !WEAPON[u.offWeapon]) return 'Needs a weapon in each hand.';
+  if (weaponSystem(u.weapon) !== def.system || weaponSystem(u.offWeapon) !== def.system) return 'Needs two ' + (def.system === 'melee' ? 'melee weapons' : 'guns') + '.';
+  if (!PAIRED_TECHNIQUES.includes(def.id)) return def.name + ' is made with one weapon.';
+  if (!hasUsable(u, 'main', def.id) || !hasUsable(u, 'off', def.id)) return 'Both weapons must be able to use ' + def.name + '.';
+  return null;
+}
+const pairedAp = (cb: Combat, u: Unit, def: TechDef, args: TechArgs) => Math.max(apFor(cb, u, def, 'main', args.line), techniqueAp(def, u.offWeapon!, args.line, u)) + 1;
+/** The techniques a unit could make with both hands now, as pad entries (the screen's third block). */
+export function pairedPad(cb: Combat, u: Unit, g?: any): PadEntry[] {
+  if (g) return withG(g, () => pairedPad(cb, u));
+  if (!u.offWeapon || !WEAPON[u.offWeapon] || weaponSystem(u.weapon) !== weaponSystem(u.offWeapon)) return [];
+  return PAIRED_TECHNIQUES.map((id) => TECHNIQUE[id]).filter((def) => def && !pairedWhy(u, def)).map((def): PadEntry => {
+    const ap = pairedAp(cb, u, def, {}), why = u.ap < ap ? 'Needs ' + ap + ' AP.' : gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0 } } as any);
+    const lf = linesFor(def, u.weapon, undefined, u);
+    return { id: def.id, name: def.name, group: def.group, ap, rounds: def.rounds, ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
+  });
+}
+function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPreview {
+  const def = TECHNIQUE[id], blank = (why: string, ap = 0): TechPreview => ({ ok: false, why, id, ap, rounds: 0, attacks: [], notes: [] });
+  if (!def) return blank('No such technique.');
+  const no = pairedWhy(u, def); if (no) return blank(no);
+  const ap = pairedAp(cb, u, def, args); if (u.ap < ap) return blank('Needs ' + ap + ' AP.', ap);
+  const m = previewTechnique(cb, u, id, { ...args, hand: 'main', _pair: { hit: -1, ap } } as any); if (!m.ok) return { ...m, ap };
+  const o = previewTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0 } } as any);
+  const notes = [...m.notes, ...(o.ok ? o.notes.filter((n) => !m.notes.includes(n)) : ['Off hand: ' + (o.why || 'can\'t.')]), 'Both hands: main hand −1, off hand ' + offHandPenalty(u) + ', +1 AP.'];
+  return { ...m, ap, rounds: m.rounds + (o.ok ? o.rounds : 0), attacks: [...m.attacks, ...(o.ok ? o.attacks : [])], notes, ...(o.ok && o.saves ? { saves: [...(m.saves || []), ...o.saves] } : {}) };
+}
+function usePaired(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
+  const pv = previewPaired(cb, u, id, args); if (!pv.ok) return pv.why || 'Not now.';
+  cb.log.push(u.name + ' uses both hands.');
+  const e = useTechnique(cb, u, id, { ...args, hand: 'main', _pair: { hit: -1, ap: pv.ap } } as any, rng); if (e) { cb.log.pop(); return e; }
+  if (u.dead || u.downed || cb.over) return null;
+  const tgt = args.targetId ? cb.units.find((x) => x.id === args.targetId) : null;
+  if (tgt && (tgt.dead || tgt.downed)) return null; // the first weapon ended it
+  const e2 = useTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0 } } as any, rng);
+  if (e2) cb.log.push('  (off hand: ' + e2 + ')');
+  return null;
+}

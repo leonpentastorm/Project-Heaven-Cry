@@ -8,6 +8,34 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.18.1 — 10 November 2026
+
+Fixes after 0.18.0, straight on the base branch (Leon's playtest notes and his rulings on lane B's open points).
+
+- **Enemies no longer pace in place.** An enemy with nothing to attack used to take the best *other* tile every step, so with spare AP it shuffled to the next tile and back each turn. Where it stands is now the tile to beat; a shooter with a line on someone doesn't creep with spare AP; it never walks back onto a tile it stood on this turn; one that sees nobody heads for the nearest tile with a line on someone.
+- **The area map:** the turn column (the actions) scrolls on its own and the map stays in view. Before, the whole card scrolled and the map left the screen.
+- **A gun in hand has a "Strike (weapon's butt)" row** on the Attack tab and on the area map (the bare-hand strike's numbers).
+- **A Press's own +1 Heat can jam the gun** (ruling).
+- **With a gun in a hand, Reload (both kinds) and Clear jam are on the Attack tab,** with the shots. Other weapons keep them under Utility.
+- **A bow's volley is arrows:** Burst, Suppress and Rake with a bow draw and loose each arrow with its own sound; the gun rattle, the tracer spray and the brass are for guns only.
+- **A pushed unit stays where it was until the push plays.** A unit held for its moment was let go after 9 seconds whatever was still to play, so late in a long enemy phase (or after a cut-in) you stood on the tile you were pushed to before the blow landed. It now waits for its queue (60 seconds at most). Not reproduced in a test: the push hold itself measures right in the browser.
+- **A blade and a gun together:** the Heat bar shows for the off-hand gun (it only showed for a main-hand gun), and the gun's block shows its Heat.
+- **The crossbow** (provisional, item 955): damage 55 (was 35); a Shot costs 3 AP and loads the next bolt as part of it, so there is no separate reload while bolts are carried; an Aimed Shot costs the same 3. Its signature is a new technique, **Heavy Bolt** (4 AP: +50% damage, ignores 10 armour, a Body save or pushed 1 tile); the repeating crossbow can ready it at 1 AP less.
+- **Technique text is written for players:** no "today's rule" wording anywhere in a technique's text, and a technique's card says first what it needs (a Pressed target, Momentum, Hidden, a weapon in the pack, an Opener's place in the chain).
+- **Only guns sound like guns:** a technique's volley (Suppress, Rake, Mag Dump, Burst) with a flamer, a launcher, the core rifle, a bow or a scattergun plays that weapon's own shot for each round, with no gun rattle, tracer stream or brass.
+- **The breacher tube's reload card** shows the rocket going in (it was an empty box with a count).
+- **Two weapons** (provisional, item 956):
+  - two weapons of one kind (two guns, two melee weapons) have a third block on the Attack tab, **Both hands**: the paired attack, reloading both guns, and nine techniques made with each weapon in turn (main hand −1, off hand −3 less 1 per 3 Dexterity, +1 AP);
+  - the second weapon needs 2 more points of its skill than in the main hand;
+  - two guns share one Heat bar, its limit the two limits added, cooling 4 a turn.
+- **A melee technique that moves you shows how far it reaches:** Lunge's red covers its step (2 with a Reach weapon), Charge's covers the run your AP still buys.
+- **Momentum says its rule** on its bar (it read "Momentum ()." for anyone but a Fighter).
+- **The chip over a hovered target** (the odds, or why not) stays whole: a long reason wraps, and at the map's edge it slides inward.
+- **Throw and Pull Out** (provisional, item 957): a thrown melee weapon that hits stays in its target until the target falls (it drops there) or someone next to it uses **Pull Out**, a technique everyone knows: 1 AP, no roll, the weapon straight back into your hand, half its damage and Bleeding. A miss still lands on the target's tile.
+- **A surrendered enemy is grey** on the map and in the initiative strip, with a grey border and "(surrendered)" by its name.
+- **A learned signature's chip** no longer says "A signature you learned…" in its text (the ◆ stays).
+- **Rulings confirmed as built:** Snap Shot draws from the pack only; Pin Down holds until 2 AP is spent; Rout through a grenade spends it; Throw stays open to characters who know Lob; the parlour pistol is Silent; a weapon pulled out by the wielder's ally stays in that ally's hand.
+
 ## 0.18.0 — 10 November 2026
 
 Branch `claude/charming-gauss-hbq4n0`: **Physical 2.0** (rules 1.12). Weapons fight with techniques. Built by the lead (foundation, core, integration) and three implementers: A (`claude/awesome-babbage-8gngk8`, melee), B (`claude/physical-2.0-B-ranged` and `-fx`, ranged), C (`feature/physical-2.0-C-client`, the screens). Plan and hand-offs: `docs/design/handoffs/physical-2.0-*.md`.

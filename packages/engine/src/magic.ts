@@ -8,7 +8,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed } from './combat';
+import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck } from './combat';
 import { type Rng, d20, die } from './rng';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
@@ -143,6 +143,7 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
  * 1.9: the same sweep rolls each death's drops (loot.ts) on the fight's dice, so it happens exactly once per death; the
  * area map's throwaway fight rolls none (item 697). */
 export function noteDeaths(cb: Combat, rng?: Rng) {
+  for (const u of cb.units) if (u.stuck && (u.surrendered || u.dead || u.downed)) dropStuck(cb, u); // a thrown weapon falls where its target falls
   for (const u of cb.units) if (u.nailed && u.surrendered) dropNailed(cb, u); // rules 1.12: a unit that gave up (or was subdued, or lifted out) lets go of a weapon left in it
   const seen = new Set(cb.deadSeen || []);
   for (const u of cb.units) if (u.dead && !seen.has(u.id)) {

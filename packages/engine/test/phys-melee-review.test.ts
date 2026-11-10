@@ -133,7 +133,7 @@ describe('Throw', () => {
     const pv = f.pv('throw', { targetId: f.foe.id }); expect(pv.ok).toBe(true);
     expect((pv.attacks[0].pv.terms || []).some((t: any) => t.v === -2)).toBe(true);
     rig({ hit: true, die: 12 }); expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
-    expect(pileAt(f, f.tile('E5'))).toContain('knuckledusters');
+    expect((f.unit(f.foe.id).stuck || []).map((x: any) => x.weapon)).toContain('knuckledusters'); // a hit: it stays in the target (0.18.1)
     const g = physFight([{ weapon: 'fists', known: ['throw'], skills: SK }], [{ at: 'E5' }]); g.put(g.pc, 'C5'); g.put(g.foe, 'E5'); g.turn(g.pc);
     expect(g.tech('throw', { targetId: g.foe.id })).toMatch(/hands are bare/);
   });
