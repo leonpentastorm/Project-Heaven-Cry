@@ -8,7 +8,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit } from './combat';
+import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed } from './combat';
 import { type Rng, d20, die } from './rng';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
@@ -147,6 +147,7 @@ export function noteDeaths(cb: Combat, rng?: Rng) {
   for (const u of cb.units) if (u.dead && !seen.has(u.id)) {
     seen.add(u.id); cb.deadSeen = [...seen];
     shiftMana(cb, deathMana(u), u.name + ' fell');
+    dropNailed(cb, u); // rules 1.12: a weapon left in it falls where it fell
     if (rng && !cb.overworld) rollDeathDrops(cb, rng, u);
   }
   cb.deadSeen = [...seen];

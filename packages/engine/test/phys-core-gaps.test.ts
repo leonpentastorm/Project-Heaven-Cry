@@ -136,3 +136,83 @@ describe('a weapon that isn\'t in the hand', () => {
     expect(f.tech('lob', { tile: 'H5', item: 'smoke_grenade' })).toMatch(/carry no/);
   });
 });
+
+describe('second review', () => {
+  it('a Watch is never offered or accepted with a grenade as its weapon', () => {
+    const f = physFight([{ weapon: 'service_pistol', known: ['deny', 'lob'], skills: { dexterity: 4 } }], [{ at: 'H5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc); f.pc.throwables = { frag_grenade: 2 };
+    expect(f.bound(() => phys.packPad(f.cb, f.pc)).flatMap((b) => b.entries.map((e) => e.id))).not.toContain('deny');
+    expect(f.tech('deny', { tile: 'G5', item: 'frag_grenade' })).toMatch(/can't be used with that/); expect(f.pc.ap).toBe(6);
+    expect(f.tech('deny', { tile: 'G5' })).toBeNull(); // with the gun in the hand it still holds
+  });
+  it('a weapon left in a nailed target comes back as the weapon it was: pulled free, or when the target dies', () => {
+    technique({ id: 'run_through', run(t) { const r = strike(t, { noMomentum: true }); if (!r.ok) return r.why || 'no'; if (r.hit && r.target) { stop(t, r.target, 'pinned', { save: false, untilAp: 2, weapon: t.weaponId }); loseWeapon(t, null); } phys.spendMomentum(t); return null; } });
+    const fight = () => { const f = physFight([{ weapon: 'lance', known: ['run_through'], skills: { raw_power: 4 } }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc); f.foe.hp = f.foe.maxHp = 999;
+      const c = f.char(f.pc); c.weaponState = { ...(c.weaponState || {}), rarity: 'masterwork', name: 'Old Faithful' } as any; f.momentum(f.pc, 2); rig({ hit: true, die: 12 }); return f; };
+    const f = fight(); expect(f.tech('run_through', { targetId: f.foe.id })).toBeNull();
+    expect(f.pc.weapon).toBe('fists'); expect(f.foe.nailed?.item).toMatchObject({ weapon: 'lance', rarity: 'masterwork', name: 'Old Faithful' });
+    f.turn(f.foe); rig(null); f.bound(() => enemyTurn(f.cb, f.g.rng));
+    const pile = objectsOf(f.cb).find((o: any) => (o.items || []).some((i: any) => i.item === 'lance')) as any;
+    expect(pile?.pos).toBe(f.tile('D5')); expect(pile.items.find((i: any) => i.item === 'lance').pack).toMatchObject({ weapon: 'lance', rarity: 'masterwork' });
+    // the target dies with it still in: it falls where the target fell
+    const g = fight(); g.tech('run_through', { targetId: g.foe.id }); g.unit(g.foe.id).hp = 1; rig({ hit: true, die: 12 });
+    expect(g.tech('cut', { targetId: g.foe.id })).toMatch(/chain has ended/); g.cb.round++; g.turn(g.pc); rig({ hit: true, die: 12 }); // the next round
+    expect(g.tech('cut', { targetId: g.foe.id })).toBeNull(); expect(g.foe.dead).toBe(true);
+    expect(objectsOf(g.cb).some((o: any) => o.pos === g.tile('D5') && (o.items || []).some((i: any) => i.item === 'lance' && i.pack?.rarity === 'masterwork'))).toBe(true);
+  });
+  it('a reaction during a technique used with a grenade is made with the weapon really in the hand', () => {
+    const f = physFight([{ weapon: 'service_pistol', known: ['rout'], skills: { dexterity: 4 } }], [{ at: 'H5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.turn(f.pc);
+    f.foe.hp = f.foe.maxHp = 999; f.pc.throwables = { frag_grenade: 2 }; rig({ hit: true, die: 12 });
+    expect(f.tech('overwatch')).toBeNull(); f.press(f.foe, 2); const ammo = f.pc.ammo; // pressed by nobody, so the PC's own Watch stands
+    expect(f.tech('rout', { targetId: f.foe.id, item: 'frag_grenade' })).toBeNull();
+    expect(f.fx('shot').some((e: any) => e.weapon === 'service_pistol')).toBe(true); expect(f.fx('shot').some((e: any) => e.weapon === 'frag_grenade')).toBe(false);
+    expect(f.pc.ammo).toBe(ammo - 1); expect(f.pc.throwables).toEqual({ frag_grenade: 1 }); expect(f.pc.weapon).toBe('service_pistol');
+  });
+  it('the card for a drawn weapon is the roll: rarity and wear count, a broken one is refused before the draw, and a draw ends Disarmed', async () => {
+    const { applyCond } = await import('../src');
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['draw_cut', 'snap_shot'], skills: { athletics: 4, dexterity: 4 } }], [{ at: 'D5', tier: 'elite' }]);
+    f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc); f.foe.hp = f.foe.maxHp = 999;
+    const c = f.char(f.pc); c.pack = [...(c.pack || []), { ...gearEntry('sabre')!, rarity: 'masterwork' as any }, { ...gearEntry('service_pistol')!, loaded: 6, dur: 0 }]; const sabre = c.pack.length - 2, pistol = c.pack.length - 1;
+    const pv = f.pv('draw_cut', { targetId: f.foe.id, item: sabre }); expect(pv.ok).toBe(true); rig({ die: 10 });
+    expect(f.tech('draw_cut', { targetId: f.foe.id, item: sabre })).toBeNull();
+    expect(f.cb.log.some((l) => l.includes('d20 10 ' + (pv.attacks[0].pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.attacks[0].pv.toHit) + ' '))).toBe(true);
+    const idx = f.char(f.pc).pack!.findIndex((x) => x.weapon === 'service_pistol' && !x.mags);
+    expect(f.pv('snap_shot', { targetId: f.foe.id, item: idx }).why).toMatch(/Broken/); expect(f.tech('snap_shot', { targetId: f.foe.id, item: idx })).toMatch(/Broken/); expect(f.pc.weapon).toBe('sabre');
+    f.char(f.pc).pack![idx].dur = 100; f.bound(() => applyCond(f.cb, f.g.rng, null, f.pc, 'disarmed', undefined, undefined, { skipSave: true }));
+    f.turn(f.pc); rig({ hit: true, die: 12 }); expect(f.tech('snap_shot', { targetId: f.foe.id, item: idx })).toBeNull(); expect(f.pc.weapon).toBe('service_pistol'); expect(f.pc.conds?.disarmed).toBeFalsy();
+    void pistol;
+  });
+  it('a plain attack can\'t be sent as thrown', () => {
+    const f = physFight([{ weapon: 'combat_knife' }], [{ at: 'G5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'G5'); f.turn(f.pc);
+    expect(() => f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'thrown' } as any)).toThrow(/Unknown attack/); expect(f.pc.ap).toBe(6);
+  });
+  it('an attack that never comes is not a miss: no rounds burned, no Pressure, no extra Heat', () => {
+    technique({ id: 'cover_me', run(t) { holdWatch(t, { trigger: 'attacks_ally' }); return null; }, react: { attack_target(ctx, t) { if (ctx.att.side === t.u.side) return; fireWatch(t, ctx, ctx.att, () => { ctx.cancel = true; ctx.why = 'driven back'; }); } } });
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['suppress'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'elite', weapon: 'service_pistol' }]);
+    f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.unit(f.foe.id).techs = ['cover_me']; f.turn(f.foe); expect(f.use(f.foe, 'cover_me')).toBeNull();
+    f.turn(f.pc); f.unit(f.foe.id).watch = { id: 'cover_me', hand: 'main', ap: 2, r: f.cb.round, trigger: 'attacks_ally' } as any; // the turn start cleared nothing of the foe's; keep it explicit
+    const ammo = f.pc.ammo, heat = f.pc.heat;
+    expect(f.tech('suppress', { targetId: f.foe.id })).toBeNull();
+    expect(f.cb.log.some((l) => /never comes: driven back/.test(l))).toBe(true);
+    expect(f.pc.ammo).toBe(ammo); expect(f.pc.heat).toBe(heat); expect(f.pressure(f.foe)).toBe(0); expect(f.pc.ap).toBe(3); // the AP is spent
+  });
+  it('the card shows the Pressure the hit will really give: past cover the target is using, and from a thrown weapon', () => {
+    const f = physFight([{ weapon: 'ccec_marksman_rifle', skills: { dexterity: 6 } }], [{ at: 'E3', tier: 'soldier' }]); f.put(f.pc, 'A1'); f.put(f.foe, 'E3'); f.turn(f.pc);
+    expect(f.bound(() => phys.flanksCover(f.cb, f.pc, f.foe))).toBe(true); // the wall at F4 is behind it from here, not between
+    const pv = f.pv('shot', { targetId: f.foe.id }); expect(pv.pressure?.[0]).toMatchObject({ unit: f.foe.id, after: 2, onHit: true });
+    rig({ hit: true, die: 12 }); f.tech('shot', { targetId: f.foe.id }); expect(f.pressure(f.foe)).toBe(2);
+    const g = physFight([{ weapon: 'combat_knife', known: ['throw'], skills: { dexterity: 5 } }], [{ at: 'G8', tier: 'elite' }]); g.put(g.pc, 'C8'); g.put(g.foe, 'G8'); g.turn(g.pc);
+    expect(g.pv('throw', { targetId: g.foe.id }).pressure?.[0]).toMatchObject({ unit: g.foe.id, after: 1 });
+  });
+  it('a card with several rolls stops at the jam the earlier rolls bring', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['walking_fire'], skills: { dexterity: 4 } }], [{ at: 'H5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.turn(f.pc); f.foe.hp = f.foe.maxHp = 999;
+    const limit = f.bound(() => (WEAPON.hellraiser_service_rifle as any).heat_limit as number); f.pc.heat = limit - 1; rig({ die: 10 });
+    const pv = f.pv('walking_fire', { targetId: f.foe.id }); expect(pv.attacks.map((a) => a.pv.ok)).toEqual([true, false]); expect(pv.rounds).toBe(1);
+    expect(f.tech('walking_fire', { targetId: f.foe.id })).toBeNull(); expect(f.cb.log.filter((l) => / fires at /.test(l)).length).toBe(1); expect(f.pc.jammed).toBe(true);
+  });
+  it('Shot is priced by the items that price an attack; a both-hands reload leaves a free reload owed', () => {
+    const f = physFight([{ weapon: 'service_pistol', traits: ['southern_fist'] }], [{ at: 'H5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.turn(f.pc);
+    expect(f.pv('shot', { targetId: f.foe.id }).ap).toBe(3);
+    const g = physFight([{ weapon: 'service_pistol', off: 'service_pistol' }], [{ at: 'H5' }]); g.turn(g.pc); g.pc.ammo = 0; g.pc.mags = [12, 12]; g.pc.freeReload = true;
+    g.bound(() => reload(g.cb, g.pc, { both: true })); expect(g.pc.freeReload).toBe(true);
+  });
+});

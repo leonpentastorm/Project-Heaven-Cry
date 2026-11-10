@@ -60,7 +60,8 @@ export interface StrikeOpts {
    * 'auto', the items written for the engine's burst and full auto see it as one (ctx.volley, ctx.vi) */
   volley?: boolean | 'burst' | 'auto';
 }
-export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null }
+export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null;
+  /** the attack was answered before it was made and never came (not a miss): return at once, with no riders */ cancelled?: boolean }
 export type WatchTrigger = 'moves' | 'enters_tile' | 'attacks_ally' | 'acts';
 export interface WatchSpec { trigger: WatchTrigger; tile?: string; tiles?: string[]; allyId?: string; allyIds?: string[]; targetId?: string }
 export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number }
