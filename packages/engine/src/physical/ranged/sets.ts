@@ -12,7 +12,7 @@
 //         and the magazine keeps its count (a strikeRound in core).
 //   Head Down: u.noWatch = the round: the core's gate refuses every Watch technique; the old Overwatch action is
 //         refused here.
-import { technique, stepUser, stepsWithin, endWatch, lowerPressure, techState, techStateOf, turnStamp, strikingWith, strikeRound, addPressureTo, pressureOf, pressureState, pressureDecay, atCover, onHook, type Tech } from './shared';
+import { technique, stepUser, stepsWithin, endWatch, ownSideOnly, lowerPressure, techState, techStateOf, turnStamp, strikingWith, strikeRound, addPressureTo, pressureOf, pressureState, pressureDecay, atCover, onHook, type Tech } from './shared';
 import { type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponActions, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
 import { condSource } from '../../magic';
 import { WEAPON } from '../../data';
@@ -41,7 +41,7 @@ export function beadOn(cb: Combat, target: Unit): Unit[] {
 export function endBead(cb: Combat, u: Unit, why: string): void {
   const st = techStateOf(u, 'bead'); if (!st.targetId) return;
   const was = st.targetId; techState(u, 'bead').targetId = null;
-  emitFx(cb, 'bead_end', { unit: u.id, at: u.pos, target: was, why });
+  emitFx(cb, 'bead_end', { unit: u.id, at: u.pos, target: was, why, ...ownSideOnly(cb, u) });
   if (why !== 'replaced') cb.log.push(u.name + ' loses the bead (' + why + ').');
 }
 technique({
@@ -63,7 +63,7 @@ technique({
     }
     endBead(t.cb, t.u, 'replaced');
     Object.assign(techState(t.u, 'bead'), { targetId: v.id, line: p, weaponId: t.weaponId, moved: 0, free, t: turnStamp(t.cb) });
-    emitFx(t.cb, 'bead', { unit: t.u.id, at: t.u.pos, target: v.id, to: v.pos });
+    emitFx(t.cb, 'bead', { unit: t.u.id, at: t.u.pos, target: v.id, to: v.pos, ...ownSideOnly(t.cb, t.u) });
     return null;
   },
   // a target it hasn't beaded yet: more when the band it ignores is a real one, or the target is under fire. Never
@@ -215,7 +215,7 @@ technique({
     let left = 1; // the round comes out of the pack now
     t.c!.pack = packOf(t.c!).map((x) => { if (!left || (x.item || x.id) !== 'ammo_' + type || x.qty <= 0) return x; left -= 1; return { ...x, qty: x.qty - 1 }; }).filter((x) => x.qty > 0 || (x as any).mags);
     Object.assign(techState(t.u, 'load_special'), { type, weaponId: t.weaponId, hand: t.hand });
-    emitFx(t.cb, 'load', { unit: t.u.id, at: t.u.pos, rounds: 1, special: type, dur: 400 });
+    emitFx(t.cb, 'load', { unit: t.u.id, at: t.u.pos, rounds: 1, special: type, dur: 400, weapon: t.weaponId, hand: t.hand });
     return null;
   },
   ai: () => 0, // enemies carry no special rounds
@@ -297,7 +297,7 @@ technique({
     t.note('Heat ' + was + ' → ' + after + (heavy ? ' (a barrel swap).' : '.'));
     if (t.preview) return null;
     t.u.heat = after;
-    emitFx(t.cb, 'heat', { unit: t.u.id, at: t.u.pos, now: after, was, why: 'vent' });
+    emitFx(t.cb, 'heat', { unit: t.u.id, at: t.u.pos, now: after, was, why: 'vent', limit: heatLimit(t.u, t.w), ...ownSideOnly(t.cb, t.u) });
     return null;
   },
   // close to jamming: cool it
@@ -318,7 +318,7 @@ technique({
     lowerPressure(t, t.u, n);
     (t.u as any).noWatch = t.cb.round;
     endWatch(t.cb, t.u, 'head down');
-    if (t.u.overwatch) { t.u.overwatch = null; t.u.owShots = 0; emitFx(t.cb, 'watch_end', { unit: t.u.id, at: t.u.pos, id: 'overwatch', why: 'head down' }); }
+    if (t.u.overwatch) { t.u.overwatch = null; t.u.owShots = 0; emitFx(t.cb, 'watch_end', { unit: t.u.id, at: t.u.pos, id: 'overwatch', why: 'head down', ...ownSideOnly(t.cb, t.u) }); }
     return null;
   },
   ai(t) { return pressureOf(t.u) >= 2 ? 6 : 0; },

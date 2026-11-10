@@ -1,9 +1,9 @@
 // Physical 2.0, ranged Takes: the target must be Pressed; one a turn; the target loses 2 Pressure after the effect (the
 // core does all three). wasSuppressed(t) says whether the stronger line applies. Dead Centre is the lead's reference; the
 // ranged lane builds Pin Down, Rout, Stopping Shot, Storm and Last Round here.
-import { technique, strike, canStrike, save, stop, forceMove, spendRounds, lowerPressure, wasSuppressed, isPressed, isSuppressed, pressureOf, pressureState, onHook, TECHNIQUE, type Tech } from './shared';
+import { technique, strike, canStrike, save, stop, ownSideOnly, forceMove, spendRounds, lowerPressure, wasSuppressed, isPressed, isSuppressed, pressureOf, pressureState, onHook, TECHNIQUE, type Tech } from './shared';
 import { looseRound } from './press';
-import { alive, dist, xy, paths, moveUnit, moveBlock, type Combat, type Unit } from '../../combat';
+import { alive, dist, xy, paths, moveUnit, moveBlock, emitFx, type Combat, type Unit } from '../../combat';
 import { radiusOf } from '../../tactics';
 import { AP_BASE } from '../../effects/ap';
 import { PHYS_RULES } from '../data';
@@ -96,6 +96,7 @@ technique({
       const blk = moveBlock(v); if (blk) { t.note(v.name + ' can\'t run: ' + blk); continue; }
       const to = runTo(cb, v, t.u, tiles(v)); if (!to) { t.note(v.name + ' has nowhere to run.'); continue; }
       cb.log.push(v.name + ' breaks and runs (Rout).');
+      emitFx(cb, 'routed', { unit: v.id, from: v.pos, to, by: t.u.id });
       const err = walkFree(v, to, t, false); if (err) t.note(v.name + ' can\'t run: ' + err);
     }
     // Blast: it is a Take on each of them, so each pays the Take's cost (the core lowers the target itself)
@@ -203,7 +204,7 @@ technique({
     const r = strike(t, { extra: t.num('hit', 3), ignoreCover: sup, mult: p === 'quick' || p === 'precise' ? 1 + t.num('damage_pct', 50) / 100 : 1, label: 'Last Round' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (t.preview) { if (sup) t.note('Suppressed: its cover doesn\'t count.'); if (reloads) t.note('If it takes ' + tgt.name + ' out, your next speed reload is free.'); return null; }
-    if (reloads && !r.cancelled && (r.killed || !alive(tgt))) { t.u.freeReload = true; t.note('The next speed reload is free.'); }
+    if (reloads && !r.cancelled && (r.killed || !alive(tgt))) { t.u.freeReload = true; t.note('The next speed reload is free.'); emitFx(t.cb, 'free_reload', { unit: t.u.id, at: t.u.pos, tech: t.def.id, ...ownSideOnly(t.cb, t.u) }); }
     return null;
   },
   ai: (t) => (t.tgt ? 9 : 0),

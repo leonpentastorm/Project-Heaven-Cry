@@ -103,7 +103,7 @@ technique({
         t.cb.log.push('  Covering fire: ' + att.name + '\'s attack on ' + tgt.name + ' is at −' + pen + '.');
         addPressure(t, att, t.num('pressure', 1), 'Cover Me');
         if (shoot && alive(att)) strike(t, { target: att, label: 'Cover Me' }); // a round, Heat and a hit's Pressure, as any shot
-        else { spendRounds(t, t.def.rounds as number); looseRound(t, att.pos, { cover: true }); } // the covering burst: the round goes, nothing is rolled; still a shot (Heat, the report)
+        else { spendRounds(t, t.def.rounds as number); looseRound(t, att.pos, { covering: true }); } // the covering burst: the round goes, nothing is rolled; still a shot (Heat, the report)
       });
     },
   },
@@ -131,7 +131,7 @@ onHook('turn_end', (ctx: any) => { if ((ctx.u as any)?.coveredBy) delete (ctx.u 
 
 // 30. Dead to Rights: when a Pressed enemy you name attacks, stands up, reloads or leaves cover: the shot lands first,
 //     at +2. Precise: a critical on 18–20. Silent: you stay Hidden.
-function rights(t: Tech, ctx: any, why: string): void {
+function rights(t: Tech, ctx: any, why: string): void { // why: 'attacks' | 'stands up' | 'reloads' | 'leaves cover' (the watch_fire event carries it)
   const m = t.tgt, w = held(t); if (!m || !w || w.id !== 'dead_to_rights' || w.targetId !== m.id) return;
   if (!alive(m) || m.hidden || !isPressed(m) || !canStrike(t, m)) return;
   const p = t.line('precise', 'silent');
@@ -141,7 +141,7 @@ function rights(t: Tech, ctx: any, why: string): void {
     const was = !!t.u.hidden;
     strike(t, { target: m, extra: t.num('hit', 2), critMin: p === 'precise' ? t.num('precise_crit_min', 18) : undefined, quiet: p === 'silent', label: 'Dead to Rights' });
     if (p === 'silent' && was && t.u.hidden) t.cb.log.push('  ' + t.u.name + ' stays Hidden.');
-  });
+  }, 'watch', { why });
 }
 technique({
   id: 'dead_to_rights',

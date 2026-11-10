@@ -258,6 +258,7 @@ technique({
     const obj = ct ? objectsAt(cb, ct).find((o) => o.hp != null && o.hp > 0) : null;
     if (ct && obj) cb.log.push('  The round punches through the ' + obj.name.toLowerCase() + damageObject(cb, ct, wreck ? obj.hp! : coverDmg, 0, u) + '.');
     if (next && r.hit && alive(next)) {
+      emitFx(cb, 'carry', { unit: u.id, from: tgt.pos, to: next.pos, target: next.id, tech: t.def.id });
       cb.log.push('  The round carries on into ' + next.name + carriedHit(t, next, carryDamage(t, next, r.crit)) + '.');
     }
     return null;

@@ -115,6 +115,46 @@ Each technique: what it does, and the property lines it honours. Numbers come fr
 5. Anyone standing in smoke at the end of a turn sheds at least 2 Pressure. A Bead's hold (0) wins in either import order.
 6. Today's Throw is untouched and keeps every grenade effect (Blinded, the scrambler's Stun, burning tiles).
 
+## The effects events (done; was requests 7 and the fx lane's `EVENTS_FOR_THE_LEAD`)
+
+The ranged effects (`apps/web/src/game/fx/ranged.ts` on the fx branch) key on these. Field names match what that file
+reads. Every one is presentation only: no rule reads them. An event about a unit the other side can't see now carries
+`only: <its side>` (`ownSideOnly` in `physical/core.ts`, the same test `watch_set` used), so a Hidden holder isn't
+given away. Tests: `test/phys-ranged-fx-events.test.ts`.
+
+| # | Event or field | Payload | Where |
+| --- | --- | --- | --- |
+| E1 | `technique` + `line`, `opt`, `ammo`, `weapon` | `line`: the property line that applies (the player's `args.line` when held, else the main line's held property; null off its home or with none); `opt`: `args.opt` or null; `ammo`: `args.ammo`, or the grenade's id when a carried grenade is the weapon, or null; `weapon`: the weapon id | `core.ts useTechnique` |
+| E1a | `shot` (and `melee`) + `tech`, `vi` | `tech`: the technique id; `vi`: the roll's place among this use's real rolls (0 first) | `core.ts strike` passes `fx` to `resolveAttack` (new option, spread into the event; a cone's extra rolls carry it too). The no-roll rounds: `looseRound` (Warning Shot, Flush, Rout, Cover Me) and Lob's shots, `vi: 0` |
+| E2 | `swap_in` | `{unit, at, weapon, from: 'pack', tech, only?}` | `core.ts useTechnique`, after the stowed draw through the gear service succeeds (Snap Shot; Draw Cut gets it too). The base's draw emitted nothing |
+| E3 | `carry` | `{unit, from: target's tile, to: next's tile, target: next id, tech}` | `fire.ts punch_through`, before the carried hit |
+| E4 | `volley` with `mode` `suppress` / `rake` / `dump` | `{unit, target, from, to, weapon, cat, mode, shots, tech}`; Rake adds `targets: [ids]`; Mag Dump `shots` is the rounds loaded, plus `rolls` | `press.ts`: Suppress (3), the 3-target Rake (its rounds), Mag Dump (not the Spread line: one roll). The rolls run in `chained()` **without a volley name**, so the shots carry `chain: true` and no hook sees `ctx.volley` (Duck and Roll, Cover Me and the class burst hooks read it; a name would change them). A volley whose first roll is refused is taken back out of the stream |
+| E5 | `save` | `{unit: the target, at, ok, tech, only?}`, passed and failed; nothing in a preview; `only` when the user's side can't see the target | `core.ts save()` |
+| E6 | `lane` / `lane_end` | `{unit, at: the lane's centre, r, only?}` / `{unit, why: 'turn' \| 'down'}` | `press.ts` Suppress Heavy where the lane is set; `turn_start_pre` and a new `on_downed` listener (the holder falls) |
+| E7 | `heat` with `why: 'dump'` | `{unit, at, now, was, why, limit, only?}`; `now` is the Heat after the core's Press +1, `was` the Heat before the dump | `press.ts mag_dump` |
+| E8 | `technique` + `with` | the ally whose hit this round made Crossfire legal (the first one listed in `hitRound`) | a new optional `fx(t)` on `TechHandler`, merged into the technique event; Crossfire's in `press.ts` |
+| E9 | `shot` + `round` | the special round or arrow type fired (`ammoId`), omitted for standard rounds | `combat.ts resolveAttack` |
+| E10 | `routed` | `{unit, from, to, by}` | `takes.ts rout`, before each run |
+| E11 | `free_reload` | `{unit, at, tech, only?}` | `takes.ts last_round` |
+| E12 | Cover Me's loose round: `covering: true` | (was `cover: true`, which clashed with the shot's cover field) | `watches.ts cover_me` |
+| E13 | `watch_fire` + `why` | `'attacks' \| 'stands up' \| 'reloads' \| 'leaves cover'` | `fireWatch` takes extra fields; `watches.ts rights()` passes `why` |
+| E14 | `object` + `max` | the object's most HP | `combat.ts damageObject` |
+| E15 | `stopped` + `apLoss` (and `untilAp` for a nail) | the data number the stop costs | `core.ts stop()` |
+| E16 | `load` + `weapon`, `hand` | Load Special's chambered round: the weapon and hand it was loaded for | `sets.ts load_special` |
+| E17 | `only` on `watch_end`, `bead`, `bead_end`, `heat` | the holder's side, when the other side can't see the holder | `core.ts endWatch`; `sets.ts` (Bead, its end, Vent, Head Down's old Overwatch); `thrown.ts` (smoke ending an Overwatch). Vent's `heat` also gains `limit` |
+
+Notes for the client side:
+1. A shot with a Load Special round now carries `round`, so `ranged.ts` takes `e.round` and never calls `roundOf()`
+   for it: the `pending` entry the `load` event set stays, and the next Fire's first shot (standard) would show the old
+   round. The client should clear `pending` for the unit when a shot carries `round` (or when a `tech` shot of a Fire
+   technique arrives).
+2. A Press's own volley now precedes its shots; Spray and Pray and Ammo Hog read the stream and see `suppress`, `rake`
+   or `dump`, which they treat as not full auto (as before, when no volley was sent). One edge changes: a Mag Dump
+   right after a full-auto volley no longer reads as a round of that full auto (its first roll got Spray and Pray's +1
+   before; the dump isn't full auto, so this is a fix).
+3. `phys-ranged-press.test.ts`'s full-auto Rake test counted every volley in the fight; the opening enemy turns can
+   Suppress, which now sends its own volley, so it counts the user's.
+
 ## Readings (for Leon and the lead)
 
 1. **Snap Shot is pack-only.** The base marks it `needs.stowed`, so it is used only with a stowed weapon (`args.item`).
@@ -211,6 +251,9 @@ Each technique: what it does, and the property lines it honours. Numbers come fr
     `reload(..., { free: true })`.
 22. `data/techniques.json`: the `numbers` of the 25 techniques only.
 23. Tests outside the lane's files: `test/classes-i.test.ts` gains one test (Special Ammo with a bow).
+24. The effects events (E1–E17): `combat.ts` `resolveAttack` option `fx` and the shot's `round`, `damageObject`'s `max`;
+    `physical/types.ts` `TechHandler.fx`; `physical/core.ts` `ownSideOnly`, the technique, `swap_in`, `save`, `stopped`,
+    `watch_end` and `watch_fire` fields; `physical/ranged/shared.ts` re-exports `ownSideOnly`.
 
 ## Requests for the lead
 
@@ -236,9 +279,8 @@ Each technique: what it does, and the property lines it honours. Numbers come fr
    5. The quiver menu (`phys/quiver`) and an arrow picker on bow shots (`args.ammo`; `quiverView(u)` gives counts).
    6. Snap Shot's and Lob's pack lists (`packPad`), Walking Fire's fire point (`args.opt`), Called Shot's part
       (`args.opt`), Burst's split (`targetIds`).
-7. **New fx events** for the catalogue comment and the client: `bead` {unit, at, target, to}, `bead_end` {unit, at,
-   target, why}, `spot` {unit, at, target, to, only?, hidden?}, `heat` {unit, at, now, was, why: 'vent'}, and `load`
-   gains `special: type`.
+7. **New fx events** for the catalogue comment in `combat.ts`: `bead`, `bead_end`, `spot`, `heat`, `load` `special`,
+   and the effects events E1–E17 (done: see "The effects events" above; only the catalogue comment is left).
 8. **A Press's +1 Heat and the jam** (readings 3): decide whether the core should check the jam limit when it adds it.
 9. **One move helper.** `walkFree` (takes.ts), Walking Fire's walk and Shift's walk call `moveUnit` and put AP back. The
    base's `stepUser(t, route, { unit, oa: true })` may now do the same job; folding them in is the lead's call.
@@ -299,7 +341,8 @@ Each technique: what it does, and the property lines it honours. Numbers come fr
 | `packages/engine/test/phys-ranged-thrown.test.ts` | 38 |
 | `packages/engine/test/phys-ranged-ai.test.ts` | 26 |
 | `packages/engine/test/phys-ranged-offhand.test.ts` | 13 |
-| **Ranged in all** | **304** |
+| `packages/engine/test/phys-ranged-fx-events.test.ts` | 26 |
+| **Ranged in all** | **330** |
 
 Plus one test in `test/classes-i.test.ts` (Special Ammo with a bow). Shared helpers are in
 `test/helpers/physfight-ranged.ts` (`PhysF`, `gameText`, `unchanged`, `term`, `offHand`, `calm`). Save dice are forced
@@ -308,7 +351,7 @@ through a `vi.mock` of the d20. `test/helpers/physfight.ts` is untouched.
 ## Checks (run at the commit of this note)
 
 1. Engine `npx tsc --noEmit -p .`: clean.
-2. Engine `npx vitest run`: 91 files, 2198 passed, 1 skipped (the existing skip in `coverage.test.ts`).
+2. Engine `npx vitest run`: 92 files, 2224 passed, 1 skipped (the existing skip in `coverage.test.ts`).
 3. Web `npx tsc --noEmit -p .`: clean.
 4. `npm test -w @phc/web`: 74 files passed, 1 skipped; 653 tests passed, 2 skipped.
 5. `python3 tools/validate.py data`: 0 errors, 0 warnings.

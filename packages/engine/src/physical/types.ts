@@ -99,6 +99,8 @@ export interface TechHandler {
   react?: Partial<Record<HookName, (ctx: any, t: Tech) => void>>;
   /** enemy AI: how much it wants this against t.tgt now (0: never; a plain attack scores 5). Pure: no dice, no state. */
   ai?(t: Tech): number | { score: number; args: TechArgs };
+  /** extra fields for the technique's effects event (presentation only; never changes anything) */
+  fx?(t: Tech): Record<string, any> | null;
 }
 export interface PadEntry {
   id: string; name: string; group: TechGroup; ap: number; rounds: number | 'all'; ok: boolean; why: string | null;

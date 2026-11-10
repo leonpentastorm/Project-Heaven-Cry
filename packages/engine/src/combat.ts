@@ -476,7 +476,7 @@ export function damageObject(cb: Combat, k: string, dmg: number, depth = 0, by: 
   const o = objectsAt(cb, k).find((x) => x.hp != null && x.hp > 0); if (!o) return '';
   const name = o.name.toLowerCase();
   o.hp = Math.max(0, o.hp! - Math.max(1, Math.floor(dmg)));
-  emitFx(cb, 'object', { at: k, what: o.kind, dmg: Math.max(1, Math.floor(dmg)), broken: o.hp <= 0, hp: o.hp });
+  emitFx(cb, 'object', { at: k, what: o.kind, dmg: Math.max(1, Math.floor(dmg)), broken: o.hp <= 0, hp: o.hp, ...(o.max != null ? { max: o.max } : {}) });
   if (o.hp > 0) return ' · the ' + name + ' takes ' + Math.floor(dmg) + ' (' + o.hp + '/' + o.max + ')';
   cb.objects = objectsOf(cb).filter((x) => x !== o);
   emit(cb, 'object_destroyed', { obj: o, by, cb });
@@ -903,7 +903,8 @@ export function noteCrit(cb: Combat, by: Unit | null | undefined, tgt: Unit | nu
 }
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string;
   /** The attack was called and paid for but never made: a reaction to it took the attacker out, or cancelled it (a held shot that lands first, rules 1.12). */ cancelled?: boolean }
-export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean; quiet?: boolean } = {}): AttackResult {
+export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean; quiet?: boolean;
+  /** fields added to the shot's effects event (a technique's id and roll index: presentation only) */ fx?: Record<string, any> } = {}): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
   // Confused (spec): each attack has a 50% chance to go at someone at random (anyone else it could attack).
   if (condOn(att, 'confused') && die(rng, 2) === 1) {
@@ -959,7 +960,9 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   att.firstShotDone = true; att.firstShotTurn = true; att.attackedTurn = true;
   // The event goes out before the hit's consequences (knockback, conditions) so the client plays them in order.
   const ev = emitFx(cb, melee ? 'melee' : 'shot', { unit: att.id, target: tgt.id, from: attAt, to: tgtAt, weapon: useW.id, cat: useW.category, mode, hit, crit, fumble, dmg: 0, killed: false,
-    ...(!melee && att.jammed ? { jam: true } : {}), ...(fxChain ? { chain: true } : {}), ...(mode === 'thrown' ? { thrown: true } : {}) });
+    ...(!melee && att.jammed ? { jam: true } : {}), ...(fxChain ? { chain: true } : {}), ...(mode === 'thrown' ? { thrown: true } : {}),
+    // the special round or arrow fired (Load Special's, a quiver's): its look on screen
+    ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}), ...(opts.fx || {}) });
   let damage = 0, killed = false, injury = '';
   if (hit) {
     const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush });
@@ -1000,7 +1003,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, cb, rng, mods: cb.mods || [] });
   else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
   // The flamer's cone (cone_3): everyone else in a 3-tile cone toward the target gets the same attack, each its own roll.
-  if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of coneUnits(cb, att.pos, tgtAt, 3)) if (v !== tgt && v !== att && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true }), 'cone');
+  if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of coneUnits(cb, att.pos, tgtAt, 3)) if (v !== tgt && v !== att && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true, ...(opts.fx ? { fx: opts.fx } : {}) }), 'cone');
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
 }
 

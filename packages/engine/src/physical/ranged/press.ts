@@ -1,7 +1,7 @@
 // Physical 2.0, ranged Press: Pressure with little or no damage (+1 Heat on top of what it fires: the core adds it).
 // Suppress is the lead's reference; the ranged lane builds Rake, Warning Shot, Flush, Mag Dump and Crossfire here.
-import { technique, strike, canStrike, spendRounds, addPressure, addPressureTo, onHook, save, hitByAlly, stepsWithin, stepUser, standingAt, turnStamp, atCover, flanksCover, hitPressure, pressureOf, isPressed, type Tech, type StrikeResult } from './shared';
-import { alive, dist, xy, emitFx, fxFell, chained, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, attackApCost, refOf, type Combat, type Unit } from '../../combat';
+import { technique, strike, canStrike, spendRounds, addPressure, addPressureTo, onHook, save, hitByAlly, ownSideOnly, stepsWithin, stepUser, standingAt, turnStamp, atCover, flanksCover, hitPressure, pressureOf, isPressed, type Tech, type StrikeResult } from './shared';
+import { alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, attackApCost, refOf, type Combat, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { applyDamage } from '../../effects/damage';
 import { reveal } from '../../tactics';
@@ -21,8 +21,10 @@ technique({
     // Brace's Auto line (sets.ts): +1 more while Braced there, on the target it rolled at, hit or miss (when it gives any)
     const onHit = t.num('pressure_hit', 2) + brace, onMiss = p === 'silent' ? 0 : t.num('pressure_miss', 1) + brace;
     // the roll spends 1 round and the technique burns the rest; its Pressure replaces the ordinary +1 for a hit
-    const r = strike(t, { extra: t.num('hit', 2), mult: t.num('damage_mult', 0.5), noPressure: true });
-    if (!r.ok) return r.why || 'Can\'t attack that.';
+    // (the volley event and the chained roll are the screen's: one burst of 3 rounds; no hook reads the chain)
+    const vev = !t.preview && canStrike(t, tgt) ? volleyFx(t, tgt, 'suppress', t.def.rounds as number) : null;
+    const r = chained(() => strike(t, { extra: t.num('hit', 2), mult: t.num('damage_mult', 0.5), noPressure: true }));
+    if (!r.ok) { dropFx(t.cb, vev); return r.why || 'Can\'t attack that.'; }
     if (r.cancelled) return null; // answered before it was fired: no rounds burned, no Pressure
     spendRounds(t, Math.max(0, (t.def.rounds as number) - 1));
     const struck = r.target || tgt; // the unit the shot was really made at (a redirect: a captive held as a shield)
@@ -35,7 +37,10 @@ technique({
     }
     if (alive(struck)) addPressure(t, struck, r.hit ? onHit : onMiss, 'Suppress');
     for (const v of near) addPressure(t, v, t.num('auto_spill', 1), 'Suppress');
-    if (p === 'heavy') Object.assign(t.state(), { lane: struck.pos, r: t.num('heavy_lane', 3), n: t.num('heavy_lane_pressure', 1), got: {} });
+    if (p === 'heavy') {
+      Object.assign(t.state(), { lane: struck.pos, r: t.num('heavy_lane', 3), n: t.num('heavy_lane_pressure', 1), got: {} });
+      emitFx(t.cb, 'lane', { unit: t.u.id, at: struck.pos, r: t.num('heavy_lane', 3), ...ownSideOnly(t.cb, t.u) });
+    }
     return null;
   },
   ai: (t) => (t.tgt && !t.tgt.pressure ? 7 : 3),
@@ -50,7 +55,9 @@ function lane(cb: Combat, who: Unit, at: string) {
 }
 onHook('move_step', (ctx: any, cb) => { if (ctx.u && alive(ctx.u)) lane(cb, ctx.u, ctx.at); });
 onHook('attack_roll', (ctx: any, cb) => { if (ctx.att && !ctx.melee && ctx.mode !== 'melee') lane(cb, ctx.att, ctx.att.pos); });
-onHook('turn_start_pre', (ctx: any) => { const s = ctx.u && (ctx.u as any).tech?.suppress; if (s?.lane) delete s.lane; });
+onHook('turn_start_pre', (ctx: any, cb) => { const s = ctx.u && (ctx.u as any).tech?.suppress; if (s?.lane) { delete s.lane; emitFx(cb, 'lane_end', { unit: ctx.u.id, why: 'turn', ...ownSideOnly(cb, ctx.u) }); } });
+// the holder falls: the lane is gone (lane() already skips a fallen holder; this takes it down for the screen)
+onHook('on_downed', (ctx: any, cb) => { const v = ctx.victim, s = v && (v as any).tech?.suppress; if (s?.lane) { delete s.lane; emitFx(cb, 'lane_end', { unit: v.id, why: 'down' }); } });
 
 // ---------- helpers the Presses below share ----------
 /** Rounds in the hand the technique uses (Infinity for a weapon with no magazine or a unit with endless ammunition). */
@@ -67,6 +74,13 @@ const onHitOnly = (t: Tech) => { if (t.preview) { const e = t.pv.pressure?.[t.pv
 const refused = (r: StrikeResult) => r.why || 'Can\'t attack that.';
 const noShot = (target: Unit) => 'You can\'t get a shot at ' + target.name + ' from here.';
 const enemyOf = (t: Tech, target: Unit) => target.side !== t.u.side;
+/** A Press's volley for the screen (Suppress's 3 rounds, the 3-target Rake, Mag Dump): the event the engine's burst
+ * and full auto send, with its own mode ('suppress' | 'rake' | 'dump': no item reads those as a burst or full auto). */
+function volleyFx(t: Tech, tgt: Unit, mode: 'suppress' | 'rake' | 'dump', shots: number, more: Record<string, any> = {}): FxEvent {
+  const u = t.u; return emitFx(t.cb, 'volley', { unit: u.id, target: tgt.id, from: u.pos, to: tgt.pos, weapon: t.weaponId, cat: t.w.category, mode, shots, tech: t.def.id, ...more });
+}
+/** Take back a volley event whose first roll was refused (nothing was fired). */
+function dropFx(cb: Combat, ev: FxEvent | null): void { if (!ev || !cb.fx) return; const i = cb.fx.indexOf(ev); if (i >= 0) cb.fx.splice(i, 1); }
 /** The weapon in the technique's hand, for engine code that reads u.weapon (the off hand is swapped in, then back). */
 function inWeapon<T>(t: Tech, fn: () => T): T {
   const u = t.u; if (t.hand !== 'off') return fn();
@@ -83,7 +97,7 @@ export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): v
   if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && u.heat >= heatLimit(u, w)) { u.jammed = true; t.cb.log.push(u.name + '\'s weapon jams (Heat).'); } }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   if (t.hand === 'main' && u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);
-  emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...(u.jammed && t.hand === 'main' ? { jam: true } : {}), ...fx });
+  emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...(u.jammed && t.hand === 'main' ? { jam: true } : {}), tech: t.def.id, vi: 0, ...fx });
   if (u.hidden && !t.holds('silent') && !(u.mods || []).includes('mod_suppressor')) reveal(t.cb, u, 'fired');
 }
 /** Damage with no roll (Flush's Arc line): the weapon's damage as a hit would do it, times mult, less armour, credited
@@ -180,14 +194,17 @@ technique({
     const list = groupTargets(t, tgt, rakeSpan(t, p));
     if (typeof list === 'string') return list;
     let fired = 0;
-    for (const v of list) {
-      const r = strike(t, { target: v, extra: t.num('hit', -3), noPressure: true, ...later(fired) });
-      if (r.cancelled) break; // answered before it was fired: the volley ends
-      if (!r.ok) continue;
-      fired++;
-      if (t.preview) { addPressure(t, v, t.num('pressure', 1), 'raked'); onHitOnly(t); }
-      else if (r.hit) addPressure(t, v, t.num('pressure', 1), 'raked');
-    }
+    if (!t.preview) volleyFx(t, tgt, 'rake', t.def.rounds as number, { targets: list.map((v) => v.id) });
+    chained(() => { // the rolls chained for the screen only (no volley name: no item reads it as a burst or full auto)
+      for (const v of list) {
+        const r = strike(t, { target: v, extra: t.num('hit', -3), noPressure: true, ...later(fired) });
+        if (r.cancelled) break; // answered before it was fired: the volley ends
+        if (!r.ok) continue;
+        fired++;
+        if (t.preview) { addPressure(t, v, t.num('pressure', 1), 'raked'); onHitOnly(t); }
+        else if (r.hit) addPressure(t, v, t.num('pressure', 1), 'raked');
+      }
+    });
     burnRest(t, t.def.rounds as number, fired, ammo0);
     if (t.preview) t.note(list.length + (list.length === 1 ? ' target' : ' targets') + ', each at ' + t.num('hit', -3) + '; +' + t.num('pressure', 1) + ' Pressure on each hit.');
     return null;
@@ -269,7 +286,7 @@ technique({
   id: 'mag_dump',
   check(t) { return t.tgt ? null : 'Pick a target.'; },
   run(t) {
-    const tgt = t.tgt!, p = t.line('auto', 'quick', 'spread'), u = t.u, ammo0 = loaded(t), press = t.num('pressure', 1);
+    const tgt = t.tgt!, p = t.line('auto', 'quick', 'spread'), u = t.u, ammo0 = loaded(t), press = t.num('pressure', 1), heat0 = u.heat;
     let fired = 0;
     if (p === 'spread') {
       const close = dist(u.pos, tgt.pos) <= t.num('spread_range', 4);
@@ -281,15 +298,21 @@ technique({
       else if (r.hit) addPressure(t, tgt, press, 'a mag dump');
     } else {
       const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 1);
-      for (let i = 0; i < rolls; i++) {
-        if (!t.preview && !alive(tgt)) break;
-        const r = strike(t, { extra: -i * step, noPressure: true, label: 'Mag Dump', ...later(i) });
-        if (!r.ok) { if (i === 0) return refused(r); break; }
-        if (r.cancelled) return null; // answered before it was fired: the dump ends there, nothing more burned
-        fired++;
-        if (t.preview) { addPressure(t, tgt, press, 'a mag dump'); if (p !== 'auto') onHitOnly(t); }
-        else if (p === 'auto' || r.hit) addPressure(t, tgt, press, 'a mag dump');
-      }
+      const vev = t.preview ? null : volleyFx(t, tgt, 'dump', Number.isFinite(ammo0) ? ammo0 : rolls, { rolls });
+      // the rolls chained for the screen only (no volley name: no item reads it as a burst or full auto)
+      const out = chained((): string | null | undefined => {
+        for (let i = 0; i < rolls; i++) {
+          if (!t.preview && !alive(tgt)) break;
+          const r = strike(t, { extra: -i * step, noPressure: true, label: 'Mag Dump', ...later(i) });
+          if (!r.ok) { if (i === 0) { dropFx(t.cb, vev); return refused(r); } break; }
+          if (r.cancelled) return null; // answered before it was fired: the dump ends there, nothing more burned
+          fired++;
+          if (t.preview) { addPressure(t, tgt, press, 'a mag dump'); if (p !== 'auto') onHitOnly(t); }
+          else if (p === 'auto' || r.hit) addPressure(t, tgt, press, 'a mag dump');
+        }
+        return undefined;
+      });
+      if (out !== undefined) return out;
       if (t.preview) t.note(rolls + (rolls === 1 ? ' roll' : ' rolls') + (step && rolls > 1 ? ', each at −' + step + ' more than the last' : '') + '; +' + press + ' Pressure per ' + (p === 'auto' ? 'roll, hit or miss' : 'hit') + '.');
     }
     burnRest(t, Number.isFinite(ammo0) ? ammo0 : 0, fired, ammo0); // the rest of the magazine goes too
@@ -297,7 +320,12 @@ technique({
     // base: so the rolls match the card), so the run leaves it one lower.
     if (heatsUp(t)) {
       const to = heatLimit(u, t.w) - t.num('heat_under', 1);
-      if (t.preview) t.note('Heat goes to ' + to + '.'); else u.heat = Math.max(u.heat, to - 1);
+      if (t.preview) t.note('Heat goes to ' + to + '.');
+      else {
+        u.heat = Math.max(u.heat, to - 1);
+        // for the screen: the Heat as it stands once the core adds the Press's +1
+        emitFx(t.cb, 'heat', { unit: u.id, at: u.pos, now: u.heat + 1, was: heat0, why: 'dump', limit: heatLimit(u, t.w), ...ownSideOnly(t.cb, u) });
+      }
     }
     if (t.preview) t.note('Empties the weapon.');
     return null;
@@ -336,4 +364,10 @@ technique({
     return null;
   },
   ai: (t) => (t.tgt && enemyOf(t, t.tgt) && hitByAlly(t, t.tgt) && canStrike(t, t.tgt) ? 7 : 0),
+  // the screen draws the converging line from the ally whose hit made it legal (the first such ally)
+  fx(t) {
+    const tgt = t.tgt; if (!tgt) return null;
+    const id = Object.entries(((tgt as any).hitRound || {}) as Record<string, number>).find(([id, r]) => r === t.cb.round && id !== t.u.id && t.cb.units.find((x) => x.id === id)?.side === t.u.side)?.[0];
+    return id ? { with: id } : null;
+  },
 });

@@ -96,6 +96,15 @@ export function holdMomentum(t: Tech): void { if (!t.preview) t.u.attackedTurn =
 
 /** Scratch notes for one use of a technique (never saved). */
 const scratch = (t: Tech): Record<string, any> => (t as any)._s || ((t as any)._s = {});
+/** For an effects event about a unit the other side can't see now (a Hidden holder, one in the fog): `only` keeps the
+ * event to the unit's own side (viewFor drops it for the other side), as watch_set has it. Presentation only. */
+export const ownSideOnly = (cb: Combat, u: Unit): { only?: string } => (sideSees(cb, u.side === 'pc' ? 'foe' : 'pc', u) ? {} : { only: u.side });
+/** The property line that applies with this weapon, as the pad shows it (the player's choice when it is held). */
+function lineProp(def: TechDef, weaponId: string, choice: string | undefined, u: Unit): string | null {
+  const m = linesFor(def, weaponId, choice, u).main; if (!m) return null;
+  const props = weaponProps(weaponId);
+  return (choice && m.props.includes(choice) && props.includes(choice) ? choice : m.props.find((p) => props.includes(p))) || m.props[0] || null;
+}
 
 // ---------- the Tech a handler gets ----------
 const lineMatches = (props: string[], l: TechLine) => (l.match === 'all' ? l.props.every((p) => props.includes(p)) : l.props.some((p) => props.includes(p)));
@@ -287,6 +296,8 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         // a volley's rounds are numbered and named, as the engine's own burst and full auto are (Fire Discipline, Spray and Pray)
         // (o.vi: a handler that runs its own volley numbers it; quiet: a Hidden user stays Hidden; noWear: a later roll of one attack action)
         const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : o.vi ?? 0, ro: any = { ...(noRecoil ? { noAp: true } : { free: true }), vi, ...(o.quiet ? { quiet: true } : {}), ...(o.noWear ? { noWear: true } : {}) };
+        // the shot's effects event says which technique fired it and its place among this use's rolls (presentation only)
+        ro.fx = { tech: t.def.id, vi: st.struck - 1 };
         const roll = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, ro);
         try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
         if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
@@ -366,6 +377,8 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
   const r = d20(t.rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
   t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + skills.join(' or ') + ' ' + (r + bonus) + ' vs ' + tn + ').');
+  // the save for the screen (HOLDS / STEADY); kept to the target's side when the user's side can't see it
+  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
 }
 /** Put a condition on a target with the technique as its source. No save unless opts.save. True: it took. */
@@ -396,7 +409,7 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
   // Stopped once: until the end of the target's next turn (rules.ts ticks it down at each of its turn ends; stopped on
   // its own turn by a Watch, this turn's end is the first tick).
   if (ranged) (target as any).stopped = active(t.cb) === target ? 2 : 1;
-  emitFx(t.cb, 'stopped', { unit: target.id, how: list.join('+'), by: t.u.id });
+  emitFx(t.cb, 'stopped', { unit: target.id, how: list.join('+'), by: t.u.id, ...(opts.apLoss ? { apLoss: opts.apLoss } : {}), ...(opts.untilAp && list.includes('pinned') ? { untilAp: opts.untilAp } : {}) });
   t.cb.log.push(target.name + ' is ' + list.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
   return true;
 }
@@ -597,24 +610,24 @@ export function holdWatch(t: Tech, spec: WatchSpec): void {
   (t.u as any).watch = w;
   // a held shot the other side can't see being set is its holder's side's to know (viewFor drops an event marked `only`)
   emitFx(t.cb, 'watch_set', { unit: t.u.id, at: t.u.pos, id: w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), allyId: w.allyId || null, targetId: w.targetId || null,
-    ...(sideSees(t.cb, t.u.side === 'pc' ? 'foe' : 'pc', t.u) ? {} : { only: t.u.side }) });
+    ...ownSideOnly(t.cb, t.u) });
 }
 /** Drop a held Watch (the user's next turn, Pressed, smoke, a flashbang). */
 export function endWatch(cb: Combat, u: Unit, why: string): void {
   const w = (u as any).watch as HeldWatch | undefined; if (!w) return;
-  delete (u as any).watch; emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why });
+  delete (u as any).watch; emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why, ...ownSideOnly(cb, u) });
   if (why !== 'replaced' && why !== 'fired' && why !== 'turn') cb.log.push(u.name + ' loses the held shot (' + why + ').');
 }
 /** A held Watch's trigger has happened: spend the reaction and run fn (the strikes). False when the user can't react
  * now (Pressed, no reaction left, an item cancels it): the Watch stays held. kind 'overwatch' keeps the old Overwatch's
  * reaction window and event, so every perk written for it still applies. */
-export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind: 'watch' | 'overwatch' = 'watch'): boolean {
+export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind: 'watch' | 'overwatch' = 'watch', fx: Record<string, any> = {}): boolean {
   const u = t.u, cb = t.cb, w = (u as any).watch as HeldWatch | undefined;
   if (t.preview || !w || w.id !== t.def.id || !alive(u) || isPressed(u) || !canReact(cb, u)) return false;
   const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: target, kind, id: w.id, cancel: false, at: target.pos, cb, rng: t.rng }); if (rw.cancel) return false;
   ctx?.flush?.(); // the mover's walk so far plays before the shot
   useReaction(cb, u); delete (u as any).watch;
-  emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot' });
+  emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot', ...fx });
   cb.log.push(u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
   fn(); checkOver(cb);
   return true;
@@ -692,6 +705,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (wi?.kind === 'stowed') { // check it as if drawn, then draw it for real (free: the technique's AP pays), then use it
     const pv0 = previewTechnique(cb, u, id, args); if (!pv0.ok) return pv0.why || 'Not now.';
     const e = GEAR ? GEAR.draw(cb, u, wi.item) : 'Nothing to draw it with here.'; if (e) return e;
+    emitFx(cb, 'swap_in', { unit: u.id, at: u.pos, weapon: wi.weaponId, from: 'pack', tech: id, ...ownSideOnly(cb, u) });
     return useTechnique(cb, u, id, { ...args, item: undefined, hand: 'main', _w: 'stowed' } as TechArgs, rng);
   }
   if (wi?.kind === 'throwable') return holding(u, wi, () => useTechnique(cb, u, id, { ...args, hand: 'main', _w: 'throwable' } as TechArgs, rng));
@@ -701,7 +715,10 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   ensureMomentum(u);
   u.ap -= ap;
   if (def.group === 'take' && t.tgt) showPressure(cb, t.tgt);
-  const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos });
+  // line, opt, ammo (and a handler's own fields: Crossfire's ally) tell the screen which version of the technique this is
+  const more = p.h!.fx?.(t) || {};
+  const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos,
+    line: lineProp(def, t.weaponId, args.line, u), opt: args.opt ?? null, ammo: args.ammo ?? (t.wield === 'throwable' && args.item != null ? String(args.item) : null), weapon: t.weaponId, ...more });
   const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
   const err = p.h!.run(t);
   if (err) { // a handler must refuse before it changes anything: the cost comes back
