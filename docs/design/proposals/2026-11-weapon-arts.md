@@ -21,15 +21,23 @@ Leon, 10 Nov 2026. **Queued, not designed.** This file records the idea as he ga
 - **Drill marks** already exist (I teaches the signature, later marks give picks). Mark III unlocking "take the card out" fits without a new track.
 - **Kills as a charge** already count for drill; the charge can read the same event.
 
-## To decide before building
+## Decided (Leon, 10 Nov 2026)
 
-1. **Which weapons have an Art.** Every weapon, or only named and rare ones (so finding the katana matters).
-2. **The charge.** How many kills, by enemy tier (drill already weighs minion 5, soldier 10, elite 25, boss 50); whether it carries between fights; whether a moved card keeps its charge.
-3. **Moving a card.** Whether the source weapon loses it; what a card may be set into (any weapon, the same system, the same hands); what it costs and where it is done (a rest, a workbench, anywhere).
-4. **Which class holds two**, and whether that is a base class's rank or one of the advanced classes still shelved.
-5. **Scale.** A sword wave is a ranged area attack from a melee weapon: what damage against the balance targets (350 a hit, 500 on a mega crit), and whether an Art ignores the weapon's own system (a melee weapon making a ranged attack).
-6. **Art needs.** Each Art wants its own effect on screen; by the standing rule, textured effects are sourced (CC BY or CC0), SVG ones are drawn.
-7. **Enemies.** Whether elites and bosses carry Arts, and whether killing one drops the card.
+1. **Who has a card.** A weapon of **Masterwork rarity or better has a card of its own**. A standard weapon uses **its family's card**, one shared by every weapon of that family.
+2. **The charge.** A card is **ready at the start of every fight** (one use). After it is used it **recharges on kills**; how many depends on how strong the card is.
+3. **Taking a card out.** At drill mark III you get **a copy** in your card menu, on the **ARMS tab**. The weapon keeps its card. A copy can be set into another weapon.
+4. **Which class holds two** is settled when the advanced classes are balanced.
+5. **Strength.** After the balance pass melee's ceiling is 125% of the weapon baseline. **Using a unique card puts you at that ceiling at once in raw damage, plus whatever the card itself does**, which may take it higher; that is accepted.
+6. **Enemies.** Elites and bosses can **use** Arts. Killing one **does not drop the card**. The Narrator or the campaign's builder may have it drop **the weapon**, for a player to pick up and master.
+
+## Still to decide
+
+1. How many kills each strength of card needs, by enemy tier (drill weighs minion 5, soldier 10, elite 25, boss 50).
+2. What a copy may be set into: any weapon, the same system (melee or ranged), the same hands. Leon's example crosses families (katana to greatsword) inside melee.
+3. Whether a family card can be copied out too, or only a unique one.
+4. The list of families and one card for each; the unique cards for Masterwork and better weapons.
+5. Each card's effect on screen (textured effects are sourced under CC BY or CC0; SVG ones are drawn).
+6. Leon's seventh point arrived empty: to ask.
 
 ## When
 
