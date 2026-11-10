@@ -9,7 +9,7 @@
 //   Hamstring with Point: the target's u.tech.hamstring = { lame } (the Slowed it was given): no Sprint or Disengage
 //     while that Slowed lasts.
 //   Throw: Dexterity replaces the weapon's skill on the roll, and the weapon goes to the pile on the target's tile.
-import { technique, strike, save, cond, stop, landed, techState, techStateOf, onHook } from './shared';
+import { technique, strike, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp } from './shared';
 import type { Tech } from './shared';
 import { canStrike, loseWeapon } from '../core';
 import { PHYS_RULES } from '../data';
@@ -30,13 +30,14 @@ technique({
     const r = strike(t, { mult: t.num('damage_mult', 0.7) });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (t.preview) t.note('On a hit:');
-    if (!t.preview && (!r.hit || r.killed || !alive(tgt))) return null;
-    if (p === 'hook') { stop(t, tgt, 'prone', { save: ['body'] }); return null; }
-    if (p !== 'edge' && save(t, tgt, 'body')) return null;
-    const took = cond(t, tgt, 'slowed', t.num('slow_rounds', 2));
+    const v = r.target || tgt; // the unit really struck (a redirect): the riders follow it
+    if (!t.preview && (!r.hit || r.killed || !alive(v))) return null;
+    if (p === 'hook') { stop(t, v, 'prone', { save: ['body'] }); return null; }
+    if (p !== 'edge' && save(t, v, 'body')) return null;
+    const took = cond(t, v, 'slowed', t.num('slow_rounds', 2));
     if (p === 'point') {
-      if (t.preview) t.note(tgt.name + ' can\'t Sprint or Disengage while Slowed.');
-      else if (took && condOn(tgt, 'slowed')) techState(tgt, 'hamstring').lame = tgt.condAt?.slowed ?? true;
+      if (t.preview) t.note(v.name + ' can\'t Sprint or Disengage while Slowed.');
+      else if (took && condOn(v, 'slowed')) techState(v, 'hamstring').lame = v.condAt?.slowed ?? true;
     }
     return null;
   },
@@ -61,15 +62,18 @@ technique({
     if (dist(t.u.pos, tgt.pos) > t.num('range', 1)) return 'Bind needs a target next to you (no Reach while binding).';
     if (!canStrike(t, tgt)) return 'You can\'t reach ' + tgt.name + ' now.';
     const p = t.line('hook', 'bare', 'heavy');
+    // Flurry's Bare mark: Bind rolls nothing, so the +1 goes on the save it forces (the grapple's, or Hook's Brain save)
+    const su = setUpBonus(t, tgt); if (su && (p === 'bare' || p === 'hook')) { t.note('Flurry: the save is ' + su + ' harder.'); spendSetUp(t); }
+    const harder = p === 'bare' || p === 'hook' ? su : 0;
     if (p === 'bare') { // today's Grapple: a Body save, then held until it breaks free
       if (condOn(tgt, 'grappled')) return tgt.name + ' is already held.';
-      if (cond(t, tgt, 'grappled', undefined, { save: true }) && (t.preview || condOn(tgt, 'grappled'))) landed(t);
+      if (cond(t, tgt, 'grappled', undefined, { save: true, tnAdd: harder || undefined }) && (t.preview || condOn(tgt, 'grappled'))) landed(t);
       return null;
     }
     const pen = p === 'heavy' ? t.num('heavy_penalty', 4) : t.num('penalty', 2);
     t.note(tgt.name + ' is Bound until your next turn: −' + pen + ' to attack anyone but you, and a Body save to move away. You can\'t use Reach while binding.');
     if (!t.preview) Object.assign(t.state(), { target: tgt.id, pen, r: t.cb.round });
-    if (p === 'hook' && !save(t, tgt, 'brain')) cond(t, tgt, 'disarmed');
+    if (p === 'hook' && !save(t, tgt, 'brain', harder)) cond(t, tgt, 'disarmed');
     landed(t);
     return null;
   },
@@ -122,10 +126,17 @@ onHook('move_cost', (ctx: any, cb) => {
   if ((ctx.how === 'sprint' || ctx.how === 'disengage') && lame(u)) { ctx.ap = Math.max(ctx.ap, u.ap + 1); return; }
   const b = binderOf(cb, u); if (!b) return;
   const route: string[] = ctx.route || [], i = route.findIndex((k) => dist(k, b.pos) > 1); if (i < 0) return;
+  // one save a turn: a failed save stands for the rest of the Bound unit's turn (a refused walk costs nothing, so it
+  // can't be tried again for a fresh roll)
+  const s = techState(b, 'bind'), stamp = turnStamp(cb), failed = s.failed === stamp + ':' + u.id;
   const rng = boundGame()?.rng;
-  if (rng && bodySave(cb, rng, u, 'the bind')) return; // it breaks away; the step out of reach ends the bind
+  if (!failed && rng && bodySave(cb, rng, u, 'the bind')) return; // it breaks away; the step out of reach ends the bind
+  if (!failed) s.failed = stamp + ':' + u.id;
   route.length = i; // the walk the engine takes is this route: it stops before the first tile out of reach
   cb.log.push(u.name + ' is Bound by ' + b.name + ' and can\'t move away.');
+  // Nothing left to walk: the move is refused, not paid for (move_cost can't refuse in words, so the price is put out
+  // of reach, as Hamstring does; request 4). A walk that keeps some tiles goes ahead as far as it can.
+  if (!route.length) ctx.ap = Math.max(ctx.ap, u.ap + 1);
 });
 
 // ---------- 13. Half-Sword ----------
@@ -146,12 +157,15 @@ technique({
 });
 
 // ---------- 14. Throw ----------
+/** Weapons that are part of the body: nothing to throw. */
+const NATURAL = new Set(['fists', 'beast_bite']);
 // Throw the weapon at a target in throwing range (Dexterity to hit). It lands in the pile on the target's tile.
 // Thrown: no penalty and full damage. Without Thrown: −2 to hit, ×0.7. Heavy: the target makes a Body save or is
 // knocked Prone.
 technique({
   id: 'throw',
-  check: (t) => (t.holds('bare') ? 'Nothing to throw: your hands are bare.' : null),
+  // Only a weapon that is part of the body has nothing to throw; knuckledusters or a gauntlet can be thrown (×0.7, −2).
+  check: (t) => (NATURAL.has(t.weaponId) ? 'Nothing to throw: your hands are bare.' : null),
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
     if (tgt.id === t.u.id) return 'Pick someone else.';

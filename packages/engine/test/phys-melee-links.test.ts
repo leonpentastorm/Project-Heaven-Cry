@@ -12,7 +12,9 @@ type F = ReturnType<typeof physFight>;
 const saves = (f: F, u: Unit, n: number) => { const x = f.unit(u.id); x.sv = { body: n, brain: n, heart: n }; x.attack = n; quiet(f); };
 /** Set the game's dice so the next d20s are not natural 1s or 20s (a natural 20 always saves). */
 function quiet(f: F) { for (let s = f.g.rng.state; ; s++) { const r = { state: s }; if ([0, 1, 2, 3].every(() => { const d = d20(r); return d > 1 && d < 20; })) { f.g.rng.state = s; return; } } }
-const weak = (f: F, u: Unit) => saves(f, u, -50), strong = (f: F, u: Unit) => saves(f, u, 50);
+const weak = (f: F, u: Unit) => saves(f, u, -50), strong = (f: F, u: Unit) => { saves(f, u, 50); f.unit(u.id).strength = 50; };
+/** Shove is today's opposed roll (Strength and Raw Power): a weak target, and a PC that always wins it but on a natural 1. */
+const weakShove = (f: F, u: Unit) => { weak(f, u); f.unit(u.id).strength = -50; f.unit(f.pc.id).strength = 20; };
 /** A fight: the PC with a weapon on C7, a soldier on D7 (next to it), the PC's turn. */
 function fight(weapon: string, o: { foes?: { at: string; weapon?: string }[]; pcs?: any[]; known?: string[] } = {}) {
   const f = physFight([{ weapon, known: o.known || LINKS, skills: { athletics: 4, raw_power: 4 } }, ...(o.pcs || [])], (o.foes || [{ at: 'D7' }]).map((x) => ({ tier: 'soldier', ...x })));
@@ -125,10 +127,10 @@ describe('Guard (16)', () => {
 
 describe('Shove (17)', () => {
   it('pushes 1 tile on a failed save, for 1 AP, and gives Momentum', () => {
-    const f = fight('sabre'); weak(f, f.foe);
+    const f = fight('sabre'); weakShove(f, f.foe);
     const pv = f.pv('shove', { targetId: f.foe.id });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('E7') }]);
-    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, tn: 12 }); expect(pv.momentum).toEqual({ now: 0, after: 1 });
+    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['raw_power', 'athletics'], tn: 10 }); expect(pv.momentum).toEqual({ now: 0, after: 1 });
     unchanged(f, () => f.pv('shove', { targetId: f.foe.id }));
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
     expect(at(f, f.foe)).toBe(pv.moves![0].to); expect(f.pc.ap).toBe(5); expect(f.momentum(f.pc)).toBe(pv.momentum!.after);
@@ -138,18 +140,18 @@ describe('Shove (17)', () => {
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(5);
   });
   it('blocked, it falls Prone', () => {
-    const f = fight('sabre', { foes: [{ at: 'D7' }, { at: 'E7' }] }); weak(f, f.foes[0]);
+    const f = fight('sabre', { foes: [{ at: 'D7' }, { at: 'E7' }] }); weakShove(f, f.foes[0]);
     expect(f.pv('shove', { targetId: f.foes[0].id }).notes.join(' ')).toMatch(/prone/);
     f.tech('shove', { targetId: f.foes[0].id }); expect(at(f, f.foes[0])).toBe(f.tile('D7')); expect(f.unit(f.foes[0].id).prone).toBe(true);
     expect(f.tech('shove', { targetId: f.foes[0].id })).toMatch(/already Prone/);
   });
   it('Blunt or Heavy: 2 tiles; without: 1', () => {
-    const f = fight('maul'); weak(f, f.foe); f.tech('shove', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('F7'));
-    const g = fight('knuckledusters'); weak(g, g.foe); g.tech('shove', { targetId: g.foe.id }); expect(at(g, g.foe)).toBe(g.tile('F7'));
-    const h = fight('kemizuchi_duelling_blade'); weak(h, h.foe); h.tech('shove', { targetId: h.foe.id }); expect(at(h, h.foe)).toBe(h.tile('E7'));
+    const f = fight('maul'); weakShove(f, f.foe); f.tech('shove', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('F7'));
+    const g = fight('knuckledusters'); weakShove(g, g.foe); g.tech('shove', { targetId: g.foe.id }); expect(at(g, g.foe)).toBe(g.tile('F7'));
+    const h = fight('kemizuchi_duelling_blade'); weakShove(h, h.foe); h.tech('shove', { targetId: h.foe.id }); expect(at(h, h.foe)).toBe(h.tile('E7'));
   });
   it('Reach: from 2 tiles away (the line is picked when two apply); without it, next to you only', () => {
-    const f = fight('bot_thread_banner', { foes: [{ at: 'E7' }] }); weak(f, f.foe);
+    const f = fight('bot_thread_banner', { foes: [{ at: 'E7' }] }); weakShove(f, f.foe);
     expect(f.tech('shove', { targetId: f.foe.id, line: 'blunt' })).toMatch(/next to you/);
     expect(f.tech('shove', { targetId: f.foe.id, line: 'reach' })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('F7'));
     const g = fight('sabre', { foes: [{ at: 'E7' }] }); expect(g.tech('shove', { targetId: g.foe.id })).toMatch(/next to you/); expect(g.pc.ap).toBe(6);
@@ -161,19 +163,19 @@ describe('Shove (17)', () => {
     f.unit(f.foe.id).dead = true; expect(f.tech('shove', { targetId: f.foe.id })).toMatch(/out of the fight|Pick a target|Pick someone else/);
   });
   it('Momentum: the variety bonus after another technique; a repeat earns only its own 1', () => {
-    const f = fight('sabre', { foes: [{ at: 'D7' }, { at: 'D8' }] }); weak(f, f.foes[0]); weak(f, f.foes[1]); rig({ hit: true, die: 12 });
+    const f = fight('sabre', { foes: [{ at: 'D7' }, { at: 'D8' }] }); weakShove(f, f.foes[0]); weakShove(f, f.foes[1]); rig({ hit: true, die: 12 });
     f.tech('cut', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1);
     f.tech('shove', { targetId: f.foes[0].id }); expect(f.momentum(f.pc)).toBe(3);
     f.momentum(f.pc, 0); f.tech('shove', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1); // Shove after Shove
   });
   it('a moved enemy sets off a held Watch', () => {
-    const f = fight('sabre', { pcs: [{ weapon: 'hellraiser_service_rifle' }] }); f.put(f.pcs[1], 'C10'); weak(f, f.foe);
+    const f = fight('sabre', { pcs: [{ weapon: 'hellraiser_service_rifle' }] }); f.put(f.pcs[1], 'C10'); weakShove(f, f.foe);
     f.turn(f.pcs[1]); expect(f.tech('overwatch')).toBeNull(); f.turn(f.pc); rig({ hit: true, die: 12 }); const hp = f.foe.hp;
     f.tech('shove', { targetId: f.foe.id });
     expect(f.unit(f.pcs[1].id).watch).toBeUndefined(); expect(f.unit(f.foe.id).hp).toBeLessThan(hp);
   });
   it('a Deny lane halts the push (a ranged Stopped once); a melee push is not bound by Stopped once', () => {
-    const f = fight('maul', { pcs: [{ weapon: 'ccec_marksman_rifle', known: ['deny'] }] }); f.put(f.pcs[1], 'C10'); weak(f, f.foe);
+    const f = fight('maul', { pcs: [{ weapon: 'ccec_marksman_rifle', known: ['deny'] }] }); f.put(f.pcs[1], 'C10'); weakShove(f, f.foe);
     f.turn(f.pcs[1]); expect(f.tech('deny', { tile: 'E7' })).toBeNull(); f.turn(f.pc); rig({ hit: true, die: 12 });
     f.tech('shove', { targetId: f.foe.id });
     expect(at(f, f.foe)).toBe(f.tile('E7')); // 2 tiles, halted on the first by Deny
@@ -261,7 +263,7 @@ describe('every Link: preview and run agree, and a preview changes nothing', () 
   it('with the same seed, the preview\'s moves and Momentum are what the action does', () => {
     const cases: [string, string, any, string?][] = [['sidestep', 'sabre', { tile: 'D6' }], ['shove', 'maul', {}], ['trip', 'sabre', {}], ['drag', 'sabre', {}], ['guard', 'sabre', {}]];
     for (const [id, w, a] of cases) {
-      const f = fight(w); weak(f, f.foe); const args = { targetId: f.foe.id, ...a, ...(a.tile ? { tile: f.tile(a.tile) } : {}) };
+      const f = fight(w); if (id === 'shove') weakShove(f, f.foe); else weak(f, f.foe); const args = { targetId: f.foe.id, ...a, ...(a.tile ? { tile: f.tile(a.tile) } : {}) };
       const before = JSON.stringify(f.g); const pv = f.pv(id, args); expect(JSON.stringify(f.g), id).toBe(before);
       expect(pv.ok, id).toBe(true);
       expect(f.tech(id, args), id).toBeNull();

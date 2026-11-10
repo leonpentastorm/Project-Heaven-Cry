@@ -6,14 +6,19 @@
 //     Guard act on nobody and give none; they still count as the last technique, so the next one earns the variety bonus.
 //   - Shove, Trip and Drag act on an enemy; Shove at 1 tile (Reach: 2), Trip and Drag within the weapon's reach (2 with
 //     a Reach weapon, else 1).
-//   - Shove keeps today's push-or-Prone, but its roll is the stop save (Guts or Athletics against rules.stop_tn), as
-//     every push goes through stop(). "Body save" (Trip, Drag, Guard with Reach) is the Body family save.
+//   - Shove is today's Shove: d20 + Strength + Raw Power against 10 + the target's better of Raw Power and Athletics
+//     (combat.ts shove), then the push or Prone through stop() with no second save. It works (Momentum) only when the
+//     target really moved or went Prone: a push an item cancels (Siege Engine) gives none. "Body save" (Trip, Drag,
+//     Guard with Reach) is the Body family save.
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
 import { technique, landed, holdMomentum, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, type Tech } from './shared';
 import { strikingWith } from '../core';
 import { PHYS_RULES } from '../data';
 import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
+import { mod } from '../../character';
+import { zoneEnter } from '../../magic';
+import { hazardStep, hazardLiveAt } from '../../hazards';
 import { ITEM } from '../../data';
 import { emit, charOfUnit } from '../../effects/hooks';
 import { immune } from '../../effects/core';
@@ -144,14 +149,17 @@ technique({
 });
 onHook('turn_start_pre', (ctx: any) => { const g = ctx.u && (ctx.u as any).tech?.guard; if (g?.on) delete g.on; }); // until your next turn
 onHook('attack_preview', (ctx: any) => {
-  const tgt: Unit = ctx.tgt, att: Unit = ctx.att; if (!tgt || !att || att.side === tgt.side) return;
+  // "+2 Defense against melee": against anyone's, an ally's swing too (Sweep and Cleave strike allies in the arc)
+  const tgt: Unit = ctx.tgt, att: Unit = ctx.att; if (!tgt || !att) return;
   const g = guardOf(tgt); if (!g) return;
   if (ctx.melee || (g.heavy && inFront(g, att.pos, tgt.pos))) ctx.terms.push({ v: -(g.def || 0), label: 'Guard' });
 });
 // Reach: an enemy stepping next to a guard makes a Body save; on a failure it stops on the tile it came from. Forced
 // moves are not steps.
 onHook('move_step', (ctx: any, cb) => {
-  const m: Unit = ctx.u; if (!m || ctx.forced || ctx.how === 'forced' || !ctx.rng || !alive(m) || ctx.stop) return;
+  const m: Unit = ctx.u; if (!m || ctx.forced || ctx.how === 'forced' || ctx.how === 'drag' || !ctx.rng || !alive(m) || ctx.stop) return;
+  // never put a mover back onto a tile someone else now holds (a swap: Drag's step is skipped above in any case)
+  if (cb.units.some((v) => v !== m && alive(v) && v.pos === ctx.from)) return;
   for (const h of cb.units) {
     const g = guardOf(h); if (!g?.reach || h.side === m.side || !alive(h) || dist(h.pos, ctx.at) > 1 || dist(h.pos, ctx.from) <= 1) continue;
     if (bodySave(cb, ctx.rng, m, h.name + '\'s Guard')) continue;
@@ -159,6 +167,13 @@ onHook('move_step', (ctx: any, cb) => {
     cb.log.push(m.name + ' can\'t get past ' + h.name + '\'s guard and stops at ' + refOf(m.pos) + '.');
     return;
   }
+});
+// A mover the Guard put back never left the reach it was standing in: moveUnit's opportunity check still looks at the
+// tile it was undone from, so it is cancelled here (a mover standing again inside the reactor's reach, off the tile
+// the step reached). The walk animation and Overwatch still see the undone tile: request 5 (a ctx.back on move_step).
+onHook('reaction_window', (ctx: any) => {
+  if (ctx.cancel || ctx.kind !== 'opportunity' || !ctx.mover || !ctx.reactor || !ctx.at) return;
+  if (ctx.mover.pos !== ctx.at && dist(ctx.reactor.pos, ctx.mover.pos) <= 1) ctx.cancel = true;
 });
 // The Defender (the ranged proposal, section 6): Pressure comes off its Guard first, each point that would land costing
 // 1 Guard instead, with no reaction, while it has any.
@@ -188,9 +203,26 @@ technique({
     const tgt = t.tgt!, { tiles } = shoveLine(t);
     const im = immune({ u: tgt }, 'shove'); if (im) { t.note(tgt.name + ' doesn\'t budge (' + im + ').'); return null; }
     const to = awayFrom(t.u.pos, tgt.pos), blocked = !to || !freeTile(t.cb, to, tgt);
-    if (t.preview && !blocked) forceMove(t, tgt, 'away', tiles); // where the push would leave it
-    const ok = stop(t, tgt, blocked ? 'prone' : 'push', { tiles });
-    if (ok) landed(t);
+    // today's opposed roll (combat.ts shove): d20 + Strength + Raw Power against 10 + the target's better of Raw Power
+    // and Athletics. Nothing is rolled in a preview: the roll is listed as the target's save against that number.
+    const u = t.u, bonus = (u.strength ?? 0) + (u.sk?.raw_power || 0);
+    const need = 10 + Math.max((tgt.strength ?? 0) + (tgt.sk?.raw_power || 0), tgt.athleticsPts != null ? mod(tgt.athleticsPts) + (tgt.sk?.athletics || 0) : 0, 0);
+    if (t.preview) {
+      t.note('Shove: d20 ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + ' (Strength and Raw Power) against ' + need + '.');
+      (t.pv.saves ||= []).push({ unit: tgt.id, skills: ['raw_power', 'athletics'], tn: need }); // its defence, as a save the card can show
+      if (!blocked) forceMove(t, tgt, 'away', tiles); // where the push would leave it
+      stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
+      landed(t); // the card shows the Momentum it gives when it works
+      return null;
+    }
+    const roll = d20(t.rng), total = roll + bonus;
+    t.cb.log.push(u.name + ' shoves ' + tgt.name + ': d20 ' + roll + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + ' = ' + total + ' vs ' + need + (total >= need ? '' : ' · holds firm') + '.');
+    if (total < need) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
+    const was = tgt.pos, wasProne = !!tgt.prone;
+    stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
+    // it works when the target really moved, or went Prone where it was blocked (an item may cancel the push)
+    if (tgt.pos !== was || (blocked && tgt.prone && !wasProne)) landed(t);
+    else t.cb.log.push(tgt.name + ' holds its ground.');
     return null;
   },
   ai: (t) => (t.tgt && t.tgt.side !== t.u.side && dist(t.u.pos, t.tgt.pos) <= 1 ? 3 : 0),
@@ -240,6 +272,7 @@ function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
     if (!freeTile(t.cb, to, tgt)) return { how, why: 'Something is in the way.' };
   }
   if (how === 'swap' && !near) return { how, why: 'Swap tiles with someone next to you.' };
+  if (how === 'swap') { const blk = moveBlock(t.u); if (blk) return { how, why: blk }; } // the swap is a step for the user
   if (how === 'carry') {
     if (t.line('hook', 'bare') !== 'bare') return { how, why: 'Taking it with you needs a Bare weapon.' };
     if (!near) return { how, why: 'Take someone next to you.' };
@@ -257,6 +290,13 @@ function swap(t: Tech, tgt: Unit): boolean {
   tgt.pos = a; u.pos = b; tgt.braced = false; u.braced = false; u.moved = true;
   emitFx(cb, 'shove', { unit: u.id, target: tgt.id, from: b, to: a, ok: true }); moveFx(cb, u, [a, b], 'drag');
   cb.log.push(u.name + ' and ' + tgt.name + ' swap places (' + t.def.name + ').');
+  // what each tile does to whoever enters it (a Sigil zone, a hazard), as the engine's own move runs it
+  const enter = (v: Unit, k: string) => {
+    if (!alive(v) || v.pos !== k) return;
+    if ((cb.zones || []).length) zoneEnter(cb, t.rng, v, k);
+    if (alive(v) && v.pos === k && cb.hazards?.some((h) => hazardLiveAt(h, k, v.side as 'pc' | 'foe'))) hazardStep(cb, t.rng, v, k);
+  };
+  enter(tgt, a); enter(u, b);
   emit(cb, 'move_step', { u: tgt, from: b, at: a, i: 0, route: [b, a], how: 'forced', stop: false, cb, rng: t.rng, forced: true });
   if (alive(tgt)) triggerOverwatch(cb, t.rng, tgt);
   if (alive(u)) { emit(cb, 'move_step', { u, from: a, at: b, i: 0, route: [b], how: 'drag', stop: false, cb, rng: t.rng, technique: t.def.id }); if (alive(u) && !u.hidden) triggerOverwatch(cb, t.rng, u, [a, b]); }

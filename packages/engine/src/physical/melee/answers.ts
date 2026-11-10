@@ -97,8 +97,9 @@ technique({
       answer(t, m, () => {
         ctx.flush?.(); // the walk so far plays before the strike
         const r = strike(t, { target: m, reach });
-        if (!r.hit || !alive(m)) return;
-        if (stop(t, m, t.line('hook') ? ['halt', 'prone'] : 'halt', { save: ['body'] })) ctx.stop = 'kept back';
+        const v = r.target || m; // the unit really struck (a redirect): only the mover itself can be stopped on its walk
+        if (!r.hit || !alive(v)) return;
+        if (stop(t, v, t.line('hook') ? ['halt', 'prone'] : 'halt', { save: ['body'] }) && v === m) ctx.stop = 'kept back';
       });
     },
   },

@@ -8,14 +8,19 @@
 //     0 lasts until the start of the breaker's next turn (break.armour_rounds rounds).
 //   Run Through: the Pin is the core's nail (stop 'pinned' with untilAp): it holds until the unit, or an ally next to
 //     it, spends 2 AP (combat/pull-free; the enemy AI frees itself). Reach, opt 'leave': the weapon stays in the target
-//     (loseWeapon(t, null), recorded on the nail) and drops into the pile on its tile when it is pulled free.
+//     (loseWeapon(t, null), recorded on the nail) and drops into the pile on its tile when it is pulled free, or when
+//     the target is Downed or killed. The Reach line's "until someone pulls it out" is read as the core nail rule (the
+//     target, or an ally next to it): the wielder can't pull it back (a request for the lead).
 //   Throw Down: the tile is next to you (Heavy: within 2 tiles of you); no tile is the target's own. An occupied tile:
-//     the target is slammed into whoever stands there and stays where it was. Bare: the slam always hits (no roll).
-import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook } from './shared';
+//     the target is slammed into whoever stands there and stays where it was, and the occupant is struck at half of the
+//     slam (Momentum included), as Run Through's behind-strike is half of its strike. Bare: the slam always hits (no
+//     roll); Flurry's Bare mark then makes the occupant's Prone save harder.
+import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook, setUpBonus } from './shared';
 import type { Tech, StrikeResult } from './shared';
 import type { StrikeOpts } from '../types';
 import { strikingWith, loseWeapon } from '../core';
 import { weaponPhys, TECHNIQUE } from '../data';
+import { WEAPON } from '../../data';
 import { type Combat, type Unit, alive, dist, xy, key, keyOf, refOf, moveBlockers, dropToPile } from '../../combat';
 import { condOn, condSource, endCond } from '../../magic';
 import { handEntry, emptyHand, mod, type PackItem } from '../../character';
@@ -84,15 +89,16 @@ technique({
   id: 'break',
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
-    const p = t.line('blunt', 'hook'), m = momentumOf(t.u), boss = tgt.tier === 'boss';
+    const p = t.line('blunt', 'hook'), m = momentumOf(t.u);
     const r = strike(t, { noMomentum: true, label: 'Break, Momentum ' + m });
     if (!r.ok) return r.why || 'Can\'t attack that.';
-    if (t.preview) t.note('On a hit, ' + tgt.name + ' saves (Body, −' + m * t.num('save_per_momentum', 1) + ') or:');
-    if (t.preview || (r.hit && !r.killed && alive(tgt))) {
-      if (!save(t, tgt, 'body', m * t.num('save_per_momentum', 1))) {
-        cond(t, tgt, boss ? 'dazed' : 'stunned', boss ? undefined : t.num('stun_rounds', 1));
-        if (p === 'blunt') breakArmour(t, tgt);
-        if (p === 'hook') cond(t, tgt, 'disarmed');
+    const v = r.target || tgt, boss = v.tier === 'boss'; // the unit really struck (a redirect): the riders follow it
+    if (t.preview) t.note('On a hit, ' + v.name + ' saves (Body, −' + m * t.num('save_per_momentum', 1) + ') or:');
+    if (t.preview || (r.hit && !r.killed && alive(v))) {
+      if (!save(t, v, 'body', m * t.num('save_per_momentum', 1))) {
+        cond(t, v, boss ? 'dazed' : 'stunned', boss ? undefined : t.num('stun_rounds', 1));
+        if (p === 'blunt') breakArmour(t, v);
+        if (p === 'hook') cond(t, v, 'disarmed');
       }
     }
     spendMomentum(t);
@@ -141,20 +147,31 @@ technique({
     const pierce = p === 'point' ? { ignoreArmour: true as const } : {};
     const r = strike(t, { mult, extra, noMomentum: true, ...pierce, label: 'Run Through, Momentum ' + m });
     if (!r.ok) return r.why || 'Can\'t attack that.';
-    const pinned = t.preview || (r.hit && !r.killed && alive(tgt));
+    const v = r.target || tgt; // the unit really struck (a redirect): the pin, the weapon and the line behind follow it
+    const pinned = t.preview || (r.hit && !r.killed && alive(v));
     if (p === 'point' && (t.preview || r.hit)) {
-      const b = behindOf(t, tgt);
+      const b = behindOf(t, v);
       if (b) also(t, { target: b, mult: mult * t.num('point_behind_pct', 50) / 100, noMomentum: true, ...pierce, reach: dist(t.u.pos, b.pos), label: 'Run Through, behind' });
     }
     if (pinned) {
-      stop(t, tgt, 'pinned', { save: false, untilAp: t.num('pull_free_ap', 2), ...(leave ? { weapon: t.weaponId } : {}) });
-      if (t.preview) t.note(tgt.name + ' stays Pinned until ' + t.num('pull_free_ap', 2) + ' AP is spent to pull free.');
-      if (leave) { if (!t.preview) t.cb.log.push(t.u.name + ' leaves the ' + t.w.name + ' in ' + tgt.name + '.'); loseWeapon(t, null); }
+      stop(t, v, 'pinned', { save: false, untilAp: t.num('pull_free_ap', 2), ...(leave ? { weapon: t.weaponId } : {}) });
+      if (t.preview) t.note(v.name + ' stays Pinned until ' + t.num('pull_free_ap', 2) + ' AP is spent to pull free.');
+      if (leave) { if (!t.preview) t.cb.log.push(t.u.name + ' leaves the ' + t.w.name + ' in ' + v.name + '.'); loseWeapon(t, null); }
     }
     spendMomentum(t);
     return null;
   },
   ai: (t) => (t.tgt ? 5 + 2 * momentumOf(t.u) : 0),
+});
+// A weapon left in a target (Run Through, Reach) falls into the pile on its tile when the target is Downed or killed:
+// "until someone pulls it out" never leaves it lost with the body. (Surrender, or a fight ending with the unit still
+// nailed: a request for the lead.)
+onHook('on_downed', (ctx: any) => {
+  const v: Unit | undefined = ctx.victim, cb: Combat | undefined = ctx.cb, n = v?.nailed;
+  if (!v || !cb || !n || n.id !== 'run_through' || !n.weapon || !WEAPON[n.weapon]) return;
+  const w = n.weapon; delete v.nailed;
+  dropToPile(cb, v.pos, [{ id: w, name: WEAPON[w].name, qty: 1, kind: 'weapon', weapon: w } as any], 'drop');
+  cb.log.push('The ' + WEAPON[w].name.toLowerCase() + ' falls from ' + v.name + ' at ' + refOf(v.pos) + '.');
 });
 // 24. Throw Down: only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per
 //     Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.
@@ -212,7 +229,8 @@ technique({
     const p = t.line('bare', 'heavy'), m = momentumOf(t.u), { at, why } = slamTile(t); if (why) return why;
     const sure = p === 'bare';
     (t as any)._sure = sure; // read by this file's attack_roll listener for this use only (never saved)
-    const r = strike(t, { mult: 1 + m * t.num('per_momentum_pct', 25) / 100, noMomentum: true, label: 'Throw Down, Momentum ' + m });
+    const slam = 1 + m * t.num('per_momentum_pct', 25) / 100, flurry = sure ? setUpBonus(t, tgt) : 0; // read before the strike spends it
+    const r = strike(t, { mult: slam, noMomentum: true, label: 'Throw Down, Momentum ' + m });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (t.preview && sure) { for (const a of t.pv.attacks) a.pv.pct = 100; t.note('No roll needed.'); }
     if (t.preview || r.hit) {
@@ -223,8 +241,9 @@ technique({
       if (!occ && at !== tgt.pos && (t.preview || alive(tgt))) throwTo(t, tgt, at);
       if (t.preview || alive(tgt)) stop(t, tgt, 'prone', { save: false });
       if (occ) {
-        also(t, { target: occ, mult: t.num('occupant_pct', 50) / 100, noMomentum: true, reach: Math.max(1, dist(t.u.pos, occ.pos)), label: 'Throw Down, slammed into' });
-        if (t.preview || alive(occ)) stop(t, occ, 'prone');
+        also(t, { target: occ, mult: slam * t.num('occupant_pct', 50) / 100, noMomentum: true, reach: Math.max(1, dist(t.u.pos, occ.pos)), label: 'Throw Down, slammed into' });
+        if (t.preview && flurry) t.note('Flurry: ' + occ.name + '\'s save is ' + flurry + ' harder.');
+        if (t.preview || alive(occ)) stop(t, occ, 'prone', flurry ? { tnAdd: flurry } : {});
       }
     }
     spendMomentum(t);

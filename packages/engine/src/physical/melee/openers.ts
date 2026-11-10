@@ -1,10 +1,11 @@
 // Physical 2.0, melee Openers: the first melee technique of a turn. Lunge is the lead's reference; the melee lane builds
 // Charge, Feint, Draw Cut and Ambush here.
 import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, landed, momentumOf, onHook, turnStamp, techState, techStateOf } from './shared';
-import { canStrike, usable } from '../core';
+import { canStrike } from '../core';
 import { PHYS_RULES } from '../data';
 import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
 import { ambushReady, reveal } from '../../tactics';
+import { unitDebuff } from '../../magic';
 import type { Tech } from './shared';
 
 // 1. Lunge: step 1 tile toward the target, then strike; the step draws no opportunity attack.
@@ -28,13 +29,13 @@ technique({
 
 // ---------- Charge's run-up ----------
 // The straight line a unit has walked this turn, tile by tile (any walk: a move, a sprint, a technique's step). Kept on
-// the unit as Charge's technique state, so it is saved with the fight. A forced move ends it.
+// the unit as Charge's technique state, so it is saved with the fight. A forced move ends it. Every unit's run is kept,
+// whatever it held while walking: the text asks only that the run was made this turn, so a weapon drawn after the walk
+// can still Charge (usability is checked when Charge is used).
 interface Run { t: string; dx: number; dy: number; n: number; at: string }
-const canCharge = (u: Unit) => usable(null, u, 'main').some((x) => x.id === 'charge') || (!!u.offWeapon && usable(null, u, 'off').some((x) => x.id === 'charge'));
 onHook('move_step', (ctx: any, cb) => {
   const u: Unit | undefined = ctx?.u; if (!u || ctx.preview || !cb) return;
   if (ctx.forced) { if (u.tech?.charge?.run) delete u.tech.charge.run; return; }
-  if (!canCharge(u)) return;
   const [fx, fy] = xy(ctx.from), [ax, ay] = xy(ctx.at), dx = Math.sign(ax - fx), dy = Math.sign(ay - fy), stamp = turnStamp(cb);
   const st = techState(u, 'charge'), r: Run | undefined = st.run;
   st.run = r && r.t === stamp && r.at === ctx.from && r.dx === dx && r.dy === dy ? { ...r, n: r.n + 1, at: ctx.at } : { t: stamp, dx, dy, n: 1, at: ctx.at };
@@ -82,8 +83,9 @@ technique({
     const minRun = t.num('min_run', 3), cap = t.num('max_pct', 50), per = t.num('per_tile_pct', 10);
     // in the action the technique's own AP is already paid
     let plans = runPlans(t, tgt, t.preview ? t.pv.ap : 0).filter((x) => x.tiles >= minRun);
-    if (t.args.tile && t.args.tile !== t.u.pos) plans = plans.filter((x) => x.to === t.args.tile);
-    if (!plans.length) return t.args.tile && t.args.tile !== t.u.pos ? 'Charge needs a straight run of ' + minRun + ' tiles ending where you can strike ' + tgt.name + '.' : 'No straight run of ' + minRun + ' tiles to ' + tgt.name + '.';
+    // a named tile is where the run ends: the user's own tile means "strike from here after the run already walked"
+    if (t.args.tile) plans = plans.filter((x) => x.to === t.args.tile);
+    if (!plans.length) return t.args.tile ? 'Charge needs a straight run of ' + minRun + ' tiles ending where you can strike ' + tgt.name + '.' : 'No straight run of ' + minRun + ' tiles to ' + tgt.name + '.';
     // the most bonus; then the least AP; then the nearest tile to the target
     const pct = (x: RunPlan) => Math.min(cap, x.tiles * per), [tx, ty] = xy(tgt.pos), far = (k: string) => { const [x, y] = xy(k); return Math.hypot(x - tx, y - ty); };
     const plan = [...plans].sort((a, b) => pct(b) - pct(a) || a.ap - b.ap || far(a.to) - far(b.to) || (a.to < b.to ? -1 : 1))[0];
@@ -109,7 +111,8 @@ technique({
       if (!alive(t.u) || t.u.pos !== plan.to) return null; // the run was cut short: no strike (the log says why)
     }
     const r = hit(); if (!r.ok) return null;
-    if (r.hit && !r.killed && prone && alive(tgt)) stop(t, tgt, 'prone', { save: ['body'] });
+    const v = r.target || tgt; // the unit really struck (a redirect): the rider follows it
+    if (r.hit && !r.killed && prone && alive(v)) stop(t, v, 'prone', { save: ['body'] });
     return null;
   },
   ai: (t) => (t.tgt ? 6 : 0),
@@ -128,7 +131,8 @@ technique({
   },
   run(t) {
     const tgt = t.tgt!, p = t.line('light', 'hook');
-    const tnAdd = ((t.u as any).dbf?.brain || 0) + (p === 'light' ? t.num('light_save', 2) : 0);
+    // the user's Brain debuff strength: a character's own, a foe's from its caster block or its tier
+    const tnAdd = unitDebuff(t.u, 'brain') + (p === 'light' ? t.num('light_save', 2) : 0);
     if (t.preview) t.note('No damage. ' + tgt.name + ' makes a Brain save; if it fails:');
     if (save(t, tgt, 'brain', tnAdd)) { t.cb.log.push(tgt.name + ' isn\'t fooled by the feint.'); return null; } // it saw through: nothing more
     setUp(t, tgt, { hit: t.num('hit', 3), noAnswer: true, label: 'Feint' });

@@ -77,7 +77,7 @@ technique({
       if (!alive(t.u)) break;
       if (!alive(v)) continue;
       const r = strike(t, { target: v, mult, label: 'Sweep' });
-      if (r.hit && r.crit && !r.killed && p === 'edge') cond(t, v, 'bleeding');
+      if (r.hit && r.crit && !r.killed && p === 'edge') cond(t, r.target || v, 'bleeding'); // the unit really struck
     }
     return null;
   },
@@ -105,16 +105,16 @@ technique({
     const r = strike(t, { mult: p === 'blunt' ? 1 : t.num('mult', 0.5), label: 'Bash' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (p === 'bare') lineDiscount(t, 'bare', t.num('bare_ap_less', 1));
-    const push = p === 'heavy' && t.args.opt === 'push';
+    const push = p === 'heavy' && t.args.opt === 'push', v = r.target || tgt; // riders on the unit really struck
     if (t.preview && p === 'heavy' && !push) t.note('Heavy: on a failed save you may push it ' + t.num('heavy_push', 2) + ' tiles instead of Dazed (choose push).');
-    if (t.preview || (r.hit && !r.killed && alive(tgt))) {
-      if (!save(t, tgt, 'body')) {
+    if (t.preview || (r.hit && !r.killed && alive(v))) {
+      if (!save(t, v, 'body')) {
         if (push) {
-          stop(t, tgt, 'push', { tiles: t.num('heavy_push', 2), save: false });
+          stop(t, v, 'push', { tiles: t.num('heavy_push', 2), save: false });
           // the card shows where the push leaves it (stop's preview only writes a note)
-          if (t.preview && !t.pv.moves?.some((m) => m.unit === tgt.id)) forceMove(t, tgt, 'away', t.num('heavy_push', 2));
+          if (t.preview && !t.pv.moves?.some((m) => m.unit === v.id)) forceMove(t, v, 'away', t.num('heavy_push', 2));
         }
-        else cond(t, tgt, 'dazed');
+        else cond(t, v, 'dazed');
       }
     }
     return null;
@@ -124,6 +124,8 @@ technique({
 
 // 9. Sunder: strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per
 //    attacker). Blunt or Hook: 10 lower. Edge: if the target has no armour left, Bleeding instead.
+//    Reading: while a Break (Blunt) holds the armour at 0, Sunder works on the armour the target will have back (the
+//    break's saved cut), so the mend restores the sundered value; "no armour left" reads that armour too.
 technique({
   id: 'sunder',
   run(t) {
@@ -131,15 +133,17 @@ technique({
     const p = t.line('blunt', 'hook', 'edge');
     const r = strike(t, { mult: t.num('mult', 0.7), label: 'Sunder' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
-    if (!t.preview && (!r.hit || r.killed || !alive(tgt))) return null;
-    if (p === 'edge' && tgt.armour <= 0) { cond(t, tgt, 'bleeding'); return null; }
+    const v = r.target || tgt; // the unit really struck (a redirect): the armour cut follows it
+    if (!t.preview && (!r.hit || r.killed || !alive(v))) return null;
+    const br = v.tech?.break, broken = !!br && br.cut != null, base = broken ? br!.cut : v.armour; // Break holds it at 0 for now
+    if (p === 'edge' && base <= 0) { cond(t, v, 'bleeding'); return null; }
     const st = t.state();
-    if ((st.done || {})[tgt.id]) { t.note(tgt.name + '\'s armour is already sundered by you.'); return null; }
-    const now = Math.max(0, tgt.armour - (p === 'blunt' || p === 'hook' ? t.num('blunt_hook_lower', 10) : t.num('lower', 5)));
-    if (t.preview) { t.note('On a hit: ' + tgt.name + '\'s armour ' + tgt.armour + ' → ' + now + ' for the rest of the fight.'); return null; }
-    st.done = { ...(st.done || {}), [tgt.id]: true };
-    tgt.armour = now;
-    t.cb.log.push(tgt.name + '\'s armour is sundered to ' + now + ' (Sunder).');
+    if ((st.done || {})[v.id]) { t.note(v.name + '\'s armour is already sundered by you.'); return null; }
+    const now = Math.max(0, base - (p === 'blunt' || p === 'hook' ? t.num('blunt_hook_lower', 10) : t.num('lower', 5)));
+    if (t.preview) { t.note('On a hit: ' + v.name + '\'s armour ' + base + ' → ' + now + ' for the rest of the fight' + (broken ? ' (after the Break)' : '') + '.'); return null; }
+    st.done = { ...(st.done || {}), [v.id]: true };
+    if (broken) br!.cut = now; else v.armour = now;
+    t.cb.log.push(v.name + '\'s armour is sundered to ' + now + (broken ? ' once the Break ends' : '') + ' (Sunder).');
     return null;
   },
   ai: (t) => (!t.tgt ? 0 : t.tgt.armour > 0 && !(t.u.tech?.sunder?.done || {})[t.tgt.id] ? 6 : 3),
@@ -163,16 +167,17 @@ technique({
       if (dist(t.u.pos, v.pos) > range) return v.name + ' is out of throwing range (' + range + ' tiles).';
       if (!lineOfSight(t.cb, t.u.pos, v.pos)) return 'No line of sight to ' + v.name + '.';
     }
-    if (t.preview) { previewMomentum(t, n); if (p === 'bare') t.note('Each hit after the first: +' + t.num('bare_bonus', 1) + ' to your next Bind or Throw Down against it this turn.'); }
-    let hits = 0, last: Unit | null = null;
+    if (t.preview) { previewMomentum(t, n); if (p === 'bare') t.note('Each hit after the first: +' + t.num('bare_bonus', 1) + ' to the save your next Bind or Throw Down against it this turn forces.'); }
+    let hits = 0, last: Unit | null = null, lastHit: Unit | null = null;
     for (let i = 0; i < n; i++) {
       let v = targets[i % targets.length];
       if (!t.preview) { if (!alive(t.u)) break; if (!alive(v)) { const o = targets.find((x) => alive(x)); if (!o) break; v = o; } }
       const r = strike(t, { target: v, mult, extra: i ? later : 0, label: 'Flurry', ...(thrown ? { thrown: true } : {}) });
       if (!r.ok) { if (i === 0) return r.why || 'Can\'t attack that.'; continue; }
-      last = v; if (r.hit) hits++;
+      last = v; if (r.hit) { hits++; lastHit = r.target || v; }
     }
-    if (p === 'bare' && hits > 1) setUp(t, targets[0], { hit: (hits - 1) * t.num('bare_bonus', 1), label: 'Flurry', only: ['bind', 'throw_down'] });
+    // the mark goes on the unit really struck (a redirect); Bind and Throw Down read it (melee/shared setUpBonus)
+    if (p === 'bare' && hits > 1 && lastHit) setUp(t, lastHit, { hit: (hits - 1) * t.num('bare_bonus', 1), label: 'Flurry', only: ['bind', 'throw_down'] });
     if (thrown && last) loseWeapon(t, last.pos); // one weapon held: it lands by the last target thrown at
     return null;
   },

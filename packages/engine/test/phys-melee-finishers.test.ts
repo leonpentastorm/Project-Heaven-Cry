@@ -221,11 +221,11 @@ describe('Throw Down (24)', () => {
     const g = one('fists'); grab(g); expect(g.tech('throw_down', { targetId: g.foe.id, tile: 'A5' })).toMatch(/Too far/); expect(g.pc.ap).toBe(6);
     expect(g.tech('throw_down', { targetId: g.foe.id, tile: 'C5' })).toMatch(/own tile/);
   });
-  it('anyone on that tile is struck at half and must save or fall Prone', () => {
+  it('anyone on that tile is struck at half of the slam (Momentum included) and must save or fall Prone', () => {
     const f = one('fists', [{ at: 'D5' }, { at: 'C4' }]); grab(f); saves(f, f.foes[1], -50);
     const pv = f.pv('throw_down', { targetId: f.foe.id, tile: 'C4' });
     expect(pv.attacks.map((a) => a.target)).toEqual([f.foes[0].id, f.foes[1].id]);
-    expect(pv.attacks[1].pv.dmg!.total).toBeCloseTo(pv.attacks[0].pv.dmg!.total / 1.75 / 2, 5);
+    expect(pv.attacks[1].pv.dmg!.total).toBeCloseTo(pv.attacks[0].pv.dmg!.total / 2, 5); // half of the slam, Momentum included
     expect(pv.saves?.map((s) => s.unit)).toEqual([f.foes[1].id]);
     const hp1 = hpOf(f, 1);
     expect(f.tech('throw_down', { targetId: f.foe.id, tile: 'C4' })).toBeNull();
