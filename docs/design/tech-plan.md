@@ -68,7 +68,7 @@
 
 1. **Resolution:** d20 + modifier vs TN, the skill-modifier table, nat 20 and nat 1, combined and opposed checks, help, Echo rerolls. Every roll emits a `DiceRolled` event (formula, faces, modifiers, total, TN, outcome): the transparent dice.
 2. **Character:** the tree (Skill ≤ Attribute ≤ Core ≤ 10), Mastery and perk steps, derived stats (HP formula, AP, movement per AP, carry), traits, equipment slots (the Veil reserved), weapon mastery.
-3. **Creation:** budgets 10 / 10 / 6, the Core-for-Attribute trade, automatic spending, Mind Without Fog, archetype presets, 0–2 traits, lock-in. Port `derive()` and check it against all 46 archetypes (each must spend every point, as `tools/validate.py` already requires).
+3. **Creation:** budgets 10 / 10 / 6 (the Core-for-Attribute trade was removed in rules 1.11, spec item 928), automatic spending, Mind Without Fog, archetype presets, 0–2 traits, lock-in. Port `derive()` and check it against all 46 archetypes (each must spend every point, as `tools/validate.py` already requires).
 4. **Voices:** passive 10 + mod against the Narrator's hidden hooks, at most 2 lines per player per beat, Ask-a-skill once per scene, Overreach (indulge or resist, Echo costs).
 5. **Progression:** XP by source tag, the level table, points per level, class assignment at level 3 (the closest-class rule), ranks, advanced classes, combo perks (skills plus a deed the Narrator records), Ultimates (automatic, secret).
 6. **Effects:** the interpreter for the 50 core ops, the perk AP cap (+3), the turn ceiling and floor (9 / 2). Unknown or unimplemented ops become a `NarratorRuling` event carrying the item's text.

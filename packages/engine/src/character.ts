@@ -10,6 +10,10 @@ import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from '.
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
+  /** The creation rules this sheet was locked in under (SHEET_REV; rules 1.11, item 931). A sheet without it was made
+   * before 1.11 and is read by the budgets of its day (a Core point could buy 2 Attribute points; Mind Without Fog
+   * gave 2 Core points), so characters made then stay legal. */
+  rulesRev?: number;
   /** An uploaded portrait's eye line for the spotlight cut-in's torn strip (y from the top, 0.05–0.70; decision 113).
    * Presentation only; the art library's portraits carry their own (art/catalog.json eye_line). */
   portraitEye?: number;
@@ -179,9 +183,13 @@ export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m)
 export const BUDGET = { skill: 10, attr: 10, core: 6, trade: 0, cap: 10 };
 /** Mind Without Fog's extra Core points at creation (rules 1.11, item 929: 1; it was 2). */
 export const FOG_CORE = 1;
+/** The creation rules' revision a new sheet is stamped with (rules 1.11). */
+export const SHEET_REV = 111;
+/** The budgets before rules 1.11, for sheets locked in then (no rulesRev): item 931. */
+export const LEGACY_BUDGET = { trade: 2, fog: 2 };
 
 /** Port of the prototype's derive(): what a set of skill points and hand-placed stats spend. */
-export function deriveCreation(skills: Record<string, number>, aSet: Record<string, number> = {}, cSet: Record<string, number> = {}, corePts = BUDGET.core) {
+export function deriveCreation(skills: Record<string, number>, aSet: Record<string, number> = {}, cSet: Record<string, number> = {}, corePts = BUDGET.core, trade = BUDGET.trade) {
   const attr: Record<string, number> = {}, core: Record<CoreId, number> = { body: 1, mind: 1, soul: 1 };
   ATTRS.forEach((a) => { attr[a.id] = Math.max(1, aSet[a.id] || 1); });
   SKILLS.forEach((s) => { const p = skills[s.id] || 0; if (p > attr[s.attribute]) attr[s.attribute] = p; });
@@ -189,8 +197,8 @@ export function deriveCreation(skills: Record<string, number>, aSet: Record<stri
   ATTRS.forEach((a) => { if (attr[a.id] > core[a.core]) core[a.core] = attr[a.id]; });
   const spent = Object.values(skills).reduce((x, y) => x + y, 0);
   const attrSpent = ATTRS.reduce((t, a) => t + attr[a.id] - 1, 0), coreSpent = CORES.reduce((t, c) => t + core[c] - 1, 0);
-  const attrOver = Math.max(0, attrSpent - BUDGET.attr), traded = BUDGET.trade > 0 ? Math.ceil(attrOver / BUDGET.trade) : 0;
-  const coreLeft = corePts - coreSpent - traded, attrLeft = BUDGET.attr + traded * BUDGET.trade - attrSpent;
+  const attrOver = Math.max(0, attrSpent - BUDGET.attr), traded = trade > 0 ? Math.ceil(attrOver / trade) : 0;
+  const coreLeft = corePts - coreSpent - traded, attrLeft = BUDGET.attr + traded * trade - attrSpent;
   const ok = coreLeft >= 0 && attrLeft >= 0 && Object.values(attr).every((v) => v <= BUDGET.cap) && Object.values(core).every((v) => v <= BUDGET.cap) && spent <= BUDGET.skill;
   return { attr, core, spent, attrSpent, coreSpent, traded, coreLeft, attrLeft, ok };
 }
@@ -208,6 +216,17 @@ export function traitGainError(have: string[] | null | undefined, id: string): s
 }
 
 /** A sheet is legal to lock in: every budget spent, tree caps hold, 0–2 traits, a name, an origin, a kit. */
+/** A sheet's creation spend by the rules it was made under. A sheet stamped with rules 1.11 (rulesRev) is read by
+ * today's budgets only. One with no stamp was locked in before 1.11: if today's budgets don't fit it, the budgets of
+ * its day are tried (the Core-for-Attribute trade at 2; Mind Without Fog's 2 Core points), so it stays legal (item 931). */
+export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'traits' | 'rulesRev'>) {
+  const fog = (s.traits || []).includes('mind_without_fog');
+  const d = deriveCreation(s.skills, s.attrs, s.cores, BUDGET.core + (fog ? FOG_CORE : 0));
+  const whole = (x: ReturnType<typeof deriveCreation>) => x.ok && x.spent === BUDGET.skill && x.attrLeft === 0 && x.coreLeft === 0;
+  if (whole(d) || (Number(s.rulesRev) || 0) >= SHEET_REV) return d;
+  const old = deriveCreation(s.skills, s.attrs, s.cores, BUDGET.core + (fog ? LEGACY_BUDGET.fog : 0), LEGACY_BUDGET.trade);
+  return whole(old) ? old : d;
+}
 export function validateSheet(s: Sheet): string | null {
   if (!s.name?.trim()) return 'A character needs a name.';
   if (!s.origin) return 'Pick an origin.';
@@ -221,8 +240,7 @@ export function validateSheet(s: Sheet): string | null {
   const whole = (o: Record<string, unknown> = {}) => Object.values(o).every((v) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 10);
   if (!whole(s.skills) || !whole(s.attrs) || !whole(s.cores)) return 'Points must be whole numbers from 0 to 10.';
   for (const [id, p] of Object.entries(s.skills)) { if (!SKILL[id]) return 'Unknown skill ' + id; if (p < 0 || p > 10) return 'Skills run 0–10.'; }
-  const corePts = BUDGET.core + (s.traits.includes('mind_without_fog') ? FOG_CORE : 0);
-  const d = deriveCreation(s.skills, s.attrs, s.cores, corePts);
+  const d = sheetDerive(s);
   if (!d.ok) return 'Those points break the tree or the budgets.';
   if (d.spent !== BUDGET.skill) return 'Spend all 10 Skill points.';
   if (d.attrLeft !== 0 || d.coreLeft !== 0) return 'Place every Attribute and Core point.';
@@ -397,8 +415,7 @@ export function armourCap(c: { traits?: string[] }): number | null {
 }
 /** Turn a locked-in sheet into a level-1 character (spec: Creation; kits from the creation screen). */
 export function newCharacter(id: string, owner: string, s: Sheet): Character {
-  const corePts = BUDGET.core + (s.traits.includes('mind_without_fog') ? FOG_CORE : 0);
-  const d = deriveCreation(s.skills, s.attrs, s.cores, corePts);
+  const d = sheetDerive(s);
   const kit = KITS[s.kit] || KITS.medic;
   const c: Character = {
     ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],

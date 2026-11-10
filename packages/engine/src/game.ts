@@ -428,6 +428,8 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   for (const c of Object.values(g.characters || {})) {
     const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     if (c.classId !== cls0) refreshClassUnits(g, c); // migrated mid-fight: its units' held class and resources follow
+    // rules 1.11 (item 930): a fight saved before the rank needed a level holds the old rank in its units; they follow the sheet
+    else if (c.classId && (g.combat?.units || []).some((u) => u.charId === c.id && !u.companion && u.held && u.held.rank !== classRank(c))) refreshClassUnits(g, c);
     if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n });
   }
   migrateFloor(g); // rules 1.9: an old save's floor becomes piles, once
@@ -445,6 +447,14 @@ export function apply(state: GameState, action: Action, by: string): GameState {
 /** A character's class changed under a fight (a Revision 2 save migrated mid-fight): each of its units in the fight
  * takes the new class and rank (u.held) and the new class's resources (a resource both classes have keeps its count,
  * up to the new maximum; one the new class doesn't have is gone). */
+/** A class rank reached, by the attribute (5, 8) or by the level (6, 12; rules 1.11): say which moves it brings, and
+ * let the character's units in a running fight hold the new rank (their held class is a snapshot). */
+export function rankReached(g: GameState, c: Character, rankBefore: number) {
+  if (!c.classId || !rankBefore || classRank(c) <= rankBefore) return;
+  const r = ['', 'I', 'II', 'III'][classRank(c)], mv = ((CLASS[c.classId] as any).ranks?.[r]?.moves || []).map((m: any) => m.name).join(', ');
+  push(g, { kind: 'system', text: c.name + ' reaches ' + CLASS[c.classId].name + ' ' + r + (mv ? ': ' + mv : '') + '.' });
+  refreshClassUnits(g, c);
+}
 function refreshClassUnits(g: GameState, c: Character) {
   for (const u of g.combat?.units || []) {
     if (u.charId !== c.id || u.companion) continue;
@@ -638,9 +648,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15; }
       if (a.kind === 'core') { (c!.cores as any)[a.id]++; c!.unspent.core--; }
       awardAutomatic(g, c!);
-      // A class rank reached (its attribute at 5 or 8): say which moves it brings (spec: Classes).
-      if (c!.classId && rankBefore && classRank(c!) > rankBefore) { const r = ['', 'I', 'II', 'III'][classRank(c!)], mv = ((CLASS[c!.classId] as any).ranks?.[r]?.moves || []).map((m: any) => m.name).join(', ');
-        push(g, { kind: 'system', text: c!.name + ' reaches ' + CLASS[c!.classId].name + ' ' + r + (mv ? ': ' + mv : '') + '.' }); }
+      rankReached(g, c!, rankBefore);
       return;
     }
     case 'levelup/class': {
@@ -1124,8 +1132,9 @@ function giveXp(g: GameState, c: Character, source: string, amount: number, reas
   if (amount <= 0) return;
   c.xp += amount; c.xpBySource[source] = (c.xpBySource[source] || 0) + amount;
   push(g, { kind: 'xp', charId: c.id, text: c.name + ' +' + amount + ' XP (' + source + (reason ? ': ' + reason : '') + ')' });
-  const before = c.level, gained = applyLevels(c);
+  const before = c.level, rankBefore = c.classId ? classRank(c) : 0, gained = applyLevels(c);
   if (gained) push(g, { kind: 'system', text: c.name + ' reaches level ' + c.level + (c.level >= 3 && before < 3 ? ' and can earn a class.' : '.') });
+  if (gained) rankReached(g, c, rankBefore); // rules 1.11: a rank can come with the level (6, 12)
 }
 
 /** Apply the Narrator's validated turn. Anything that breaks a rule is dropped with a note (the adapter retries first). */

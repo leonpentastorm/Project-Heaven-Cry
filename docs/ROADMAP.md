@@ -86,7 +86,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
   - a mechanic (Proficiency) move for the Infiltrator;
   - more for a Guardian with no patron;
   - a combat capstone for the Bard (Rally Banner instead of Gift).
-- **Provisional numbers to confirm in play:** ranks at attribute 5 and 8, and two moves per rank at level 3.
+- **Provisional numbers to confirm in play:** ranks at attribute 5 and 8 and, since rules 1.11, level 6 and 12 (spec item 930); the rules 1.11 level gains (item 924); two moves per rank at level 3.
 
 ## World Play gaps (from `docs/design/handoffs/world-play-A-HANDOFF.md` and `-B-HANDOFF.md`)
 

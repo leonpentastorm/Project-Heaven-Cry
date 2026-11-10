@@ -15,7 +15,7 @@ Rules numbers are in the spec, [`docs/rules/PHC-Core-Rules-v1.0.md`](rules/PHC-C
 
 **Characters, creation and progression.** The 3 → 9 → 27 tree, budgets, archetypes (`data/archetypes.json`), traits and perks (`data/traits.json`, `data/perks.json`; ops in `data/effect_ops.json`, runtime notes in [`design/perk-runtime.md`](design/perk-runtime.md)), XP and levels. Every perk, trait and class move runs in play (decision 94). Screens: `apps/web/src/screens/` (creation, sheet, level up).
 
-**Classes: Class Roster Revision 3** (decision 100). Nine base classes, one per attribute, earned at level 3 and fixed; ranks II/III at attribute 5/8. The 21 advanced classes are **shelved** (data keeps `kind`/`pair`/`batch`; shelved moves in [`design/move-pool.md`](design/move-pool.md); the return plan in [`design/class-roster-rev3-proposal.md`](design/class-roster-rev3-proposal.md) section 7). Data: `data/classes.json`.
+**Classes: Class Roster Revision 3** (decision 100). Nine base classes, one per attribute, earned at level 3 and fixed; ranks II/III at attribute 5/8 and level 6/12 (rules 1.11). The 21 advanced classes are **shelved** (data keeps `kind`/`pair`/`batch`; shelved moves in [`design/move-pool.md`](design/move-pool.md); the return plan in [`design/class-roster-rev3-proposal.md`](design/class-roster-rev3-proposal.md) section 7). Data: `data/classes.json`.
 
 **Combat.** The tactical grid (1.5 m tiles, 6 AP, reactions, initiative, movement by Agility), enemies and their AI (`data/enemies.json`), the turn card, tabs, map zoom, the adjustable layout. The action panel is greyed until it is really your turn. A magic focus counts only in a hand (decision 103; [`design/handoffs/focus-in-hand-HANDOFF.md`](design/handoffs/focus-in-hand-HANDOFF.md)).
 

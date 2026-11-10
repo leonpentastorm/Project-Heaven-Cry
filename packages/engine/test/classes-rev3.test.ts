@@ -7,7 +7,7 @@ import { describe, expect, it, afterEach } from 'vitest';
 import {
   CLASSES, CLASS, CLASS_MOVE_POOL, ADVANCED, classRank, eligibleClasses, classPickError, classResources, migrateCharacterClass,
   advancedPairError, advancedClassError, advancedActive, _setAdvancedLive, heldOfChar, itemsOf, itemInfo, coverageOf, actionDefs, newCharacter, healingMult, handlerOf,
-  CLASS_REV, type Character,
+  CLASS_REV, rankReached, type Character,
 } from '../src';
 import { fightWith, storyWith, sheetOf, type CharSpec } from './helpers/perkfight';
 
@@ -103,6 +103,13 @@ describe('ranks read the class\'s own attribute', () => {
     const c = s.g.characters[s.chars[0].id]; c.unspent.attr = 1; c.cores.body = Math.max(c.cores.body, 5);
     s.act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: 'strength' });
     expect(s.g.story.entries.at(-1)!.text).toMatch(/Fighter II: Riposte, Lingering Dread/);
+  });
+  it('a rank that comes with the level (rules 1.11) is announced the same way; no rise, no line', () => {
+    const s = storyWith([{ classId: 'fighter', level: 5, attrs: { strength: 5 } }]);
+    const c = s.g.characters[s.chars[0].id]; expect(classRank(c)).toBe(1);
+    const n0 = s.g.story.entries.length; rankReached(s.g, c, 1); expect(s.g.story.entries.length).toBe(n0);
+    c.level = 6; rankReached(s.g, c, 1);
+    expect(s.g.story.entries.at(-1)!.text).toMatch(/reaches Fighter II: Riposte, Lingering Dread/);
   });
 });
 
