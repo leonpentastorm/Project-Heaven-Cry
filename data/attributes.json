@@ -100,8 +100,8 @@
       "name": "Agility",
       "core": "body",
       "skills": {
-        "alpha": "athletics",
-        "beta": "dexterity",
+        "alpha": "dexterity",
+        "beta": "athletics",
         "gamma": "reaction_speed"
       },
       "derived": [
@@ -139,7 +139,7 @@
         },
         {
           "stat": "mult_critical",
-          "formula": "2 + 0.1 × (Perception − 1) + 0.05 × Athletics",
+          "formula": "2 + 0.1 × (Perception − 1) + 0.05 × Dexterity",
           "per_point_above_1": 0.1
         }
       ]

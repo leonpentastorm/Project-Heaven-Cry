@@ -36,15 +36,16 @@ export interface CharPhys {
   rev: number;
 }
 const skillOf = (c: Pick<Character, 'skills'> | null | undefined, id: string) => (c?.skills as any)?.[id] || 0;
-/** What a build starts with (PLAN reading 6): Lunge and Sidestep with a melee skill; Suppress and Shift with Dexterity. */
+/** What a build starts with (PLAN reading 6): Lunge and Sidestep with a melee attack skill (Raw Power, or Dexterity for
+ * light blades); Suppress and Shift with Dexterity. */
 export function defaultTechniques(c: Pick<Character, 'skills'>): { melee: string[]; ranged: string[] } {
   const st = PHYS_RULES.starting;
-  return { melee: skillOf(c, 'raw_power') || skillOf(c, 'athletics') ? [...st.default_melee] : [], ranged: skillOf(c, 'dexterity') ? [...st.default_ranged] : [] };
+  return { melee: skillOf(c, 'raw_power') || skillOf(c, 'dexterity') ? [...st.default_melee] : [], ranged: skillOf(c, 'dexterity') ? [...st.default_ranged] : [] };
 }
 /** How many starting picks a sheet gets in each system (0 without the skill). */
 export function startingTechniqueSlots(c: Pick<Character, 'skills'>): { melee: number; ranged: number } {
   const st = PHYS_RULES.starting;
-  return { melee: skillOf(c, 'raw_power') || skillOf(c, 'athletics') ? st.melee : 0, ranged: skillOf(c, 'dexterity') ? st.ranged : 0 };
+  return { melee: skillOf(c, 'raw_power') || skillOf(c, 'dexterity') ? st.melee : 0, ranged: skillOf(c, 'dexterity') ? st.ranged : 0 };
 }
 /** What the Kit step may offer: every technique of that system that isn't free and isn't a reaction-only rarity. */
 export const startingTechniqueChoices = (system: TechSystem): string[] => TECHNIQUES.filter((t) => t.system === system && !t.free).map((t) => t.id);
@@ -77,10 +78,10 @@ export function ensurePhys(c: Character): CharPhys {
   const p = physOf(c); p.rev = PHYS_REV; (c as any).phys = p; delete (c as any).techniques; return p;
 }
 export const knownTechniques = (c: Character | null | undefined): string[] => [...TECHNIQUES.filter((t) => t.free).map((t) => t.id), ...physOf(c).known.filter((id) => TECHNIQUE[id] && !TECHNIQUE[id].free)];
-/** Ready slots in a system: 3 + half the attack skill (melee: the better of Raw Power and Athletics; ranged: Dexterity). */
+/** Ready slots in a system: 3 + half the attack skill (melee: the better of Raw Power and Dexterity; ranged: Dexterity). */
 export function readyCap(c: Character | null | undefined, system: TechSystem): number {
   if ((c as any)?.phys?.uncapped) return 99; // the Proving Ground's "ready everything"
-  const sk = system === 'melee' ? Math.max(skillOf(c, 'raw_power'), skillOf(c, 'athletics')) : skillOf(c, 'dexterity');
+  const sk = system === 'melee' ? Math.max(skillOf(c, 'raw_power'), skillOf(c, 'dexterity')) : skillOf(c, 'dexterity'); // the alphas that hit with melee weapons (item 953)
   return PHYS_RULES.ready.base + Math.floor(sk * PHYS_RULES.ready.per_skill);
 }
 /** The techniques a character has ready in a system: its ready list cut to the cap, or (none chosen) the first known. */

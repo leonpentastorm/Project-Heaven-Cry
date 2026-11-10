@@ -60,10 +60,10 @@ The proposals leave these open. They are in the spec as provisional items.
 3. **Drill is an XP bar per weapon type.** A kill gives drill for a weapon if you damaged that target with that weapon in this fight: minion 5, soldier 10, elite 25, boss 50. The Body classes (Defender, Fighter, Marksman) earn it at ×3.
 4. **Three marks on each bar,** at 300, 900 and 1,800 drill. Mark I teaches the weapon's signature. Marks II and III each give one pick of any technique of that weapon's system. They replace the three mastery perks a weapon family had.
 5. **What everyone knows:** Cut; Shot, Aimed Shot, Overwatch. Reload is an action, not a technique.
-6. **At creation** a character with Raw Power or Athletics picks 2 melee techniques (one must be an Opener), and one with Dexterity picks 2 ranged techniques. A character from before 1.12 gets Lunge and Sidestep, and Suppress and Shift, on load.
-7. **Ready lists:** one per system, 3 + half the attack skill rounded down (melee: the better of Raw Power and Athletics; ranged: Dexterity). Changed out of a fight only.
+6. **At creation** a character with Raw Power or Dexterity picks 2 melee techniques (one must be an Opener), and one with Dexterity picks 2 ranged techniques. A character from before 1.12 gets Lunge and Sidestep, and Suppress and Shift, on load.
+7. **Ready lists:** one per system, 3 + half the attack skill rounded down (melee: the better of Raw Power and Dexterity; ranged: Dexterity). Changed out of a fight only.
 8. **Off its home.** A technique marked `particular` (Sweep, Cleave, Run Through, Throw Down; Rake, Lob, Mag Dump, Dead Centre) used with a weapon that has none of its `home` properties is at −2 to hit and gets no property line.
-9. **Damage scaling.** A weapon's damage multiplier is 1 + 0.1 × (the `scales_with` Attribute − 1) + 0.05 × the `hits_with` skill. Bare weapons use Strength, and add 0.05 × both Raw Power and Athletics. Bows keep Raw Power in their base damage.
+9. **Damage scaling.** A weapon's damage multiplier is 1 + 0.1 × (the `scales_with` Attribute − 1) + 0.05 × the `hits_with` skill. Bare weapons use Strength, and add 0.05 × both Raw Power and Dexterity. Bows keep Raw Power in their base damage.
 10. **Enemies** have Momentum (cap 3) and can be Pressed, Suppressed and Broken. They use techniques from a short list on their stat block.
 11. **Pressure and Momentum exist in fights only,** not on the area map.
 12. **The quiver** (Leon): a bow's quiver is loaded from a menu out of a fight, up to the weapon's capacity, in any mix of arrow types you carry. In a fight you pick the type for each shot from what is loaded. A bow can't be reloaded in a fight.
@@ -72,6 +72,7 @@ The proposals leave these open. They are in the spec as provisional items.
 15. **A Take's own hit adds no Pressure.** The core lowers the target by 2 after the effect.
 16. **The fall of Pressure at a turn's end is one number, not a sum:** 2 if the unit is in cover and unseen, or ended closer to the nearest enemy than it began; otherwise 1.
 17. **The first melee technique of a turn earns no variety bonus** (there is no last technique to differ from). An off-turn strike (Riposte) starts no chain.
+20. **Alpha, beta, gamma (Leon, 10 Nov 2026; spec item 953).** In every attribute the alpha skill opens the combat playstyle and gates what you deal damage with, the beta carries defence, the gamma is for world play and speech. In rules 1.12 that makes **Dexterity Agility's alpha**: light blades hit with Dexterity (not Athletics), bare hands scale with Raw Power and Dexterity, and a melee ready list reads the better of Raw Power and Dexterity. Athletics is the beta: Dodge, and the save against being stopped (with Guts). It is all in the data (`hits_with`), so no handler changes; a test that gave a blade user Athletics for its attack should give Dexterity.
 19. **The Parlour pistol teaches Crossfire** (confirmed by Leon): Warning Shot can't be used with a Silent weapon. **Weapon mastery is retired** with its attack bonus (confirmed by Leon): drill replaces it.
 18. **A handler that refuses must refuse before it changes anything.** The core runs the preview first and refuses on what it says, so a refusal costs nothing; a `run` that still returns a refusal gets its AP back.
 
