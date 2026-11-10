@@ -1449,7 +1449,7 @@ export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: bool
   if (forbids({ u }, 'reload')) return forbids({ u }, 'reload') + ': no reloading.';
   if (o.tactical && w.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   const tactical = !!o.tactical && !!u.mags && w.reload !== 'loose';
-  const rAp = reloadAp(u) + (tactical ? PILE.tactical_reload_extra_ap : 0);
+  const rAp = !tactical && !o.both && u.freeReload ? 0 : reloadAp(u) + (tactical ? PILE.tactical_reload_extra_ap : 0); // Physical 2.0: Last Round's free speed reload (physical/ranged/takes.ts spends it)
   if (u.ap < rAp) return 'Needs ' + rAp + ' AP.';
   // Every refusal comes before the hook: a refused reload is no reload (Speed Loader's use stays; spec item 564).
   // A full magazine isn't swapped (review fix: a speed reload dropped a full one, a tactical one cost 3 AP for nothing).
