@@ -14,7 +14,7 @@ Alpha opens a combat playstyle and gates what you deal damage with. Beta is defe
 
 1. Physical 2.0 is merged and live; `develop` is at 0.18.0. Branch from `develop`.
 2. Re-anchor the code map against the merged tree (function names, the technique pad and ARMS tab from lane C's result note). Shove, Break, Bind, Bash, Draw Cut and Snap Shot must exist as techniques, because six perk rewrites hang on them.
-3. Leon answers the rulings in section 5. Each has my default; a default is built as written if he says "defaults".
+3. The rulings in section 5 are settled (Leon, 10 Nov 2026); build them as written.
 
 ## 3. Stages
 
@@ -72,9 +72,9 @@ Each stage ends green (`npm test -w @phc/engine`, `npm test -w @phc/web`, `tsc` 
 
 The four missing playstyles (Ingenuity's stealth list and Shadow meter, Visualization's Figments through the Visualizer, Durability's shield-and-guard list, Empathy's tending and songs), tri-scale armour, Call icons, races, and changing class. Each of the four playstyles is its own patch after this one; when they come, they live inside existing tabs where they can.
 
-## 5. Rulings needed from Leon (my default first)
+## 5. Rulings (all settled)
 
-**Confirmed by Leon, 10 Nov 2026:** rulings 1, 3, 6, 8, 9 and 16. The other ten are still my defaults, waiting on his word.
+**Settled, 10 Nov 2026:** Leon confirmed rulings 1, 3, 6, 8, 9 and 16 one by one, and said "do your default" for the other ten. All sixteen are built as written below. The numbers drafted under ruling 15 are still provisional and go in spec section 14.
 
 On ruling 8, Leon's note: a player reading Visualization's bonus (+5% elemental damage a point) will expect the Visualizer to have something to do with the elements. That is a constraint on the Figments design when it is drafted (after Skeleton 2.0): what a Visualizer makes should be elemental, or take a tone.
 
