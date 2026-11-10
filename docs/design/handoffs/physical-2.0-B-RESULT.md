@@ -356,3 +356,20 @@ through a `vi.mock` of the d20. `test/helpers/physfight.ts` is untouched.
 4. `npm test -w @phc/web`: 74 files passed, 1 skipped; 653 tests passed, 2 skipped.
 5. `python3 tools/validate.py data`: 0 errors, 0 warnings.
 6. No version bump, no CHANGELOG change, `protodata.json` not regenerated (only the base's copy came in).
+
+## Handover for the lead
+
+Written 10 Nov 2026, for the lead who integrates Physical 2.0.
+
+1. **Merge this branch first** (`claude/physical-2.0-B-ranged`, head `ad42fb4` before this note). Then merge
+   `claude/physical-2.0-B-ranged-fx`. That branch already holds this one up to `ad42fb4`, plus C's client and the ranged
+   effects.
+2. **Checks at `ad42fb4`:** engine tsc clean; engine vitest 93 files, 2226 passed, 1 skipped; web tsc clean;
+   `npm test -w @phc/web` 74 files, 653 passed, 2 skipped; validator 0 errors, 0 warnings.
+3. **Since the checks above:** `ad42fb4` fixed the log's grammar for plural cover ("the sandbags break"), found in the
+   live check. Test: `phys-ranged-livecheck.test.ts`.
+4. **The full handover** (the live check, the remaining list, the screen items and Leon's rulings) is in
+   `docs/design/handoffs/physical-2.0-B-fx-NOTE.md` on the fx branch, section "Handover for the lead".
+5. **Leon's open rulings, in short:** Snap Shot pack-only or swap (readings 1); Pin Down's nail (readings 2); the
+   Press's +1 Heat jam (requests 8); Rout spending a frag (requests 19); Throw for Lob users (requests 17); the parlour
+   pistol's Silent mismatch (requests 14).
