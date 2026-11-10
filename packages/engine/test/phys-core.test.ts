@@ -181,7 +181,7 @@ describe('ready, picks and creation', () => {
     const ids = f.pad().flatMap((g) => g.entries.map((e) => e.id));
     expect(ids).toContain('cut'); expect(ids).toContain('lunge'); expect(ids).toContain('riposte'); // free, ready, lent by the sabre
     expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'riposte')?.lent).toBe(true);
-    expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'sidestep')?.why).toBe(phys.NOT_BUILT);
+    expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'sidestep')?.built).toBe(true); // every melee technique has a handler since lane A
   });
   it('phys/ready sets the ready list within the cap; phys/pick takes a pick a drill mark gave', () => {
     const f = physFight([{ weapon: 'ork_machete', skills: { raw_power: 2, dexterity: 0 } }], [{}]); const c = f.char(f.pc);

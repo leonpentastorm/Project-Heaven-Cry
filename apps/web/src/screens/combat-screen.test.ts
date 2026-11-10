@@ -40,7 +40,9 @@ function App() {
 const buttons = (el: HTMLElement, re: RegExp) => Array.from(el.querySelectorAll('button')).filter((b) => re.test(b.textContent || '') && !b.closest('[aria-hidden="true"]'));
 
 describe('combat screen', () => {
-  it('Fan the Hammer: pick it, hover and click a hostile, confirm; the volley resolves and the screen keeps working', async () => {
+  // Physical 2.0 (rules 1.12): the old weapon-skill row (Fan the Hammer) is gone; the weapon's plain attack is the Shot
+  // technique, picked from its row in the weapon's block and sent as combat/technique.
+  it('a Shot (Physical 2.0): pick it, hover and click a hostile, confirm; the technique resolves and the screen keeps working', async () => {
     vi.useFakeTimers();
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     let fans = 0;
@@ -51,7 +53,7 @@ describe('combat screen', () => {
       for (let i = 0; i < 8 && G.combat && !G.combat.over; i++) {
         const u = active(G.combat)!; if (u.side !== 'pc') break;
         expect(el.textContent).toContain('YOUR TURN');
-        const pick = buttons(el, /Fan the Hammer/)[0]; expect(pick).toBeTruthy();
+        const pick = buttons(el, /^Shot/)[0]; expect(pick).toBeTruthy();
         await React.act(async () => { pick.click(); });
         const foe = G.combat.units.find((t) => t.side === 'foe' && !t.dead)!;
         const tile = Array.from(el.querySelectorAll('button.phc-tok')).find((b) => (b.getAttribute('aria-label') || '').includes(foe.name)) as HTMLElement | undefined;
@@ -59,7 +61,7 @@ describe('combat screen', () => {
         const n0 = G.combat.log.length;
         const conf = buttons(el, /^Confirm$/)[0];
         await React.act(async () => { conf.click(); });
-        if (G.combat.log.slice(n0).some((l) => /uses Fan the Hammer/.test(l))) fans++;
+        if (G.combat.log.slice(n0).some((l) => /uses Shot/.test(l))) fans++;
         expect(G.combat.log.some((l) => /NaN|undefined/.test(l))).toBe(false);
         await React.act(async () => { vi.advanceTimersByTime(5000); });
         expect(el.querySelector('pre')).toBeNull(); // the screen's error view never shows
@@ -152,7 +154,8 @@ describe('combat screen', () => {
     L.pickAction('reload', u.id); expect(L.state.action).toBe('reload');
     L.pickAction('shot', 'someone-else'); expect(L.state.action).toBe('reload');
     L.pickAction('no-such-action', u.id); expect(L.state.action).toBe('reload');
-    L.pickAction('shot', u.id); expect(L.state.action).toBe('shot');
+    // A pick saved before techniques (the old 'shot') lands on today's row: the weapon's plain Shot technique.
+    L.pickAction('shot', u.id); expect(L.state.action).toBe('tq:main:shot');
   });
 
   it('the Say row is pinned: outside the scrolling You card and the tab panel, right above the turn box, on every turn', async () => {
@@ -229,19 +232,20 @@ describe('combat screen', () => {
     expect(dlg).toBeTruthy();
     expect(dlg.getAttribute('aria-modal')).toBe('true');
     expect(document.activeElement).toBe(dlg.querySelector('[data-slot="1"]'));
-    // Every panel action is on offer (the weapon's tabs: Move, Attack, Utility).
-    for (const a of ['move', 'sprint', 'shot', 'aimed', 'overwatch', 'reload', 'analyze']) expect(dlg.querySelector('[data-cmd="' + a + '"]')).toBeTruthy();
-    // Slot 1 ← Overwatch, then slot 2 (it moves on by itself) ← Analyze; then swap them with the arrows.
-    await React.act(async () => { (dlg.querySelector('[data-cmd="overwatch"]') as HTMLElement).click(); });
+    // Every panel action is on offer (the weapon's tabs: Move, Attack, Utility). Physical 2.0: the Attack tab's rows are
+    // the weapon's plain Shot, its Techniques and Hold a shot.
+    for (const a of ['move', 'sprint', 'tq:main:shot', 'tpad:main', 'twatch', 'reload', 'analyze']) expect(dlg.querySelector('[data-cmd="' + a + '"]')).toBeTruthy();
+    // Slot 1 ← Hold a shot, then slot 2 (it moves on by itself) ← Analyze; then swap them with the arrows.
+    await React.act(async () => { (dlg.querySelector('[data-cmd="twatch"]') as HTMLElement).click(); });
     await React.act(async () => { (dlg.querySelector('[data-cmd="analyze"]') as HTMLElement).click(); });
     await React.act(async () => { (dlg.querySelector('[aria-label="Move slot 2 left"]') as HTMLElement).click(); });
     const save = Array.from(dlg.querySelectorAll('button')).find((b) => b.textContent === 'Save')!;
     await React.act(async () => { save.click(); });
     expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
-    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')['ROOM:' + c.id]).toEqual(['analyze', 'overwatch', null, null]);
+    expect(JSON.parse(localStorage.getItem('phc.cutinCmds') || '{}')['ROOM:' + c.id]).toEqual(['analyze', 'twatch', null, null]);
     const L = new CombatLogic({}) as any; L.togglePanel(true);
     const r = L.renderVals();
-    if (!r.notMine) expect(r.mini.cmds.slice(0, 2).map((x: any) => x.action)).toEqual(['analyze', 'overwatch']);
+    if (!r.notMine) expect(r.mini.cmds.slice(0, 2).map((x: any) => x.action)).toEqual(['analyze', 'twatch']);
     L.togglePanel(false);
     // Reset to smart default, saved: the preference is gone.
     await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
@@ -253,9 +257,9 @@ describe('combat screen', () => {
     await React.act(async () => { window.dispatchEvent(new CustomEvent('phc:customise-cmds', { detail: { charId: c.id } })); });
     const dlgR = document.querySelector('[data-phc-cmds-dialog]') as HTMLElement;
     const slotNames = () => [1, 2, 3, 4].map((i) => (dlgR.querySelector('[data-slot="' + i + '"]')!.textContent || '').replace(/^\d/, ''));
-    expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Reload (speed)', 'Overwatch']);
+    expect(slotNames().map((t) => t.replace(/SMART.*$/, ''))).toEqual(['Shoot', 'Move', 'Reload (speed)', 'Hold a shot']);
     await React.act(async () => { (dlgR.querySelector('[data-cmd="reload"]') as HTMLElement).click(); });
-    expect(slotNames().map((t) => t.replace(/Not now.*$/, ''))).toEqual(['Reload (speed)YOUR PICK', 'ShootSMART', 'MoveSMART', 'OverwatchSMART']);
+    expect(slotNames().map((t) => t.replace(/Not now.*$/, ''))).toEqual(['Reload (speed)YOUR PICK', 'ShootSMART', 'MoveSMART', 'Hold a shotSMART']);
     await React.act(async () => { Array.from(dlgR.querySelectorAll('button')).find((b) => b.textContent === 'Cancel')!.click(); });
     expect(document.querySelector('[data-phc-cmds-dialog]')).toBeNull();
     // Escape closes without saving.

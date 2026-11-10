@@ -43,7 +43,7 @@ describe('turn banners', () => {
     expect(c.hp).toEqual([pc.hp, pc.maxHp]);
     expect(c.cmds).toHaveLength(4);
     expect(c.cmds.map((x) => x.key)).toEqual(['1', '2', '3', '4']);
-    expect(['shot', 'melee', 'clear']).toContain(c.cmds[0].action);
+    expect(['tq:main:shot', 'tq:main:cut', 'clear']).toContain(c.cmds[0].action); // Physical 2.0: the weapon's plain technique
     expect(c.cmds[1].action).toBe('move');
     pc.jammed = true;
     expect(_test.cutFor(g, cb, pc.id)!.cmds[0].action).toBe('clear');
@@ -67,34 +67,37 @@ describe('turn banners', () => {
     const { g, cb, pc } = game();
     const smart = _test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action);
     expect(C.readPrefs(g, 'c1')).toEqual([null, null, null, null]);
-    // Overwatch first, Analyze fourth; slots 2 and 3 take the smart default in its order, skipping the picks.
-    C.writePrefs(g, 'c1', ['overwatch', null, null, 'analyze']);
-    expect(JSON.parse(store['phc.cutinCmds'])).toEqual({ 'ROOMA:c1': ['overwatch', null, null, 'analyze'] });
+    // Hold a shot first, Analyze fourth; slots 2 and 3 take the smart default in its order, skipping the picks.
+    C.writePrefs(g, 'c1', ['twatch', null, null, 'analyze']);
+    expect(JSON.parse(store['phc.cutinCmds'])).toEqual({ 'ROOMA:c1': ['twatch', null, null, 'analyze'] });
     // Another room's c1 is another character: it keeps the smart default.
     expect(C.readPrefs({ code: 'ROOMB' }, 'c1')).toEqual([null, null, null, null]);
     let cmds = _test.cutFor(g, cb, pc.id)!.cmds;
     expect(cmds.map((x) => x.key)).toEqual(['1', '2', '3', '4']);
-    expect(cmds[0]).toMatchObject({ action: 'overwatch', custom: true });
+    expect(cmds[0]).toMatchObject({ action: 'twatch', custom: true });
     expect(cmds[3]).toMatchObject({ action: 'analyze', custom: true });
-    const rest = smart.filter((a) => a !== 'overwatch' && a !== 'analyze');
+    const rest = smart.filter((a) => a !== 'twatch' && a !== 'analyze');
     expect([cmds[1].action, cmds[2].action]).toEqual(rest.slice(0, 2));
     expect(new Set(cmds.map((x) => x.action)).size).toBe(4);
-    // Reload in slot 1: the smart default's Shoot is not lost; it moves along (Reload · Shoot · Move · Overwatch).
-    expect(smart).toEqual(['shot', 'move', 'reload', 'overwatch']);
+    // Reload in slot 1: the smart default's Shoot is not lost; it moves along (Reload · Shoot · Move · Hold a shot).
+    expect(smart).toEqual(['tq:main:shot', 'move', 'reload', 'twatch']);
     C.writePrefs(g, 'c1', ['reload', null, null, null]);
-    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['reload', 'shot', 'move', 'overwatch']);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['reload', 'tq:main:shot', 'move', 'twatch']);
     expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.key)).toEqual(['1', '2', '3', '4']);
     // A pick in a later slot: the smart commands before it keep their order around it.
-    C.writePrefs(g, 'c1', [null, null, 'aimed', null]);
-    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['shot', 'move', 'aimed', 'reload']);
+    C.writePrefs(g, 'c1', [null, null, 'tpad:main', null]);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['tq:main:shot', 'move', 'tpad:main', 'reload']);
+    // A pick saved before techniques lands on today's row: Overwatch → Hold a shot, Aimed shot → the plain Shot.
+    C.writePrefs(g, 'c1', ['overwatch', 'aimed', null, null]);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.slice(0, 2).map((x) => x.action)).toEqual(['twatch', 'tq:main:shot']);
     // Picks that already cover the smart default: spare actions fill in, never a repeat.
-    C.writePrefs(g, 'c1', ['overwatch', 'reload', 'move', null]);
-    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['overwatch', 'reload', 'move', 'shot']);
-    C.writePrefs(g, 'c1', ['overwatch', 'analyze', null, null]);
+    C.writePrefs(g, 'c1', ['twatch', 'reload', 'move', null]);
+    expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(['twatch', 'reload', 'move', 'tq:main:shot']);
+    C.writePrefs(g, 'c1', ['twatch', 'analyze', null, null]);
     // Can't be used now: greyed with the reason (no AP left).
     pc.ap = 0;
     cmds = _test.cutFor(g, cb, pc.id)!.cmds;
-    expect(cmds[0]).toMatchObject({ action: 'overwatch', off: true });
+    expect(cmds[0]).toMatchObject({ action: 'twatch', off: true });
     expect(cmds[0].sub).toMatch(/^Not now: /);
     pc.ap = 6;
     // Not in this unit's kit (no magic): the smart default takes the slot.
@@ -111,21 +114,22 @@ describe('turn banners', () => {
     expect(store['phc.cutinCmds']).toBe('{}');
     expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).toEqual(smart);
   });
-  it('the Proving Ground (no Narrator) offers no action only the Narrator can rule, like Suppressing Fire', () => {
+  it('the Proving Ground (no Narrator) offers no action only the Narrator can rule; the old weapon-skill row is gone', () => {
     const { g, cb, pc } = game();
     pc.weapon = 'hellraiser_service_rifle'; pc.ammo = 24;
     const all = C.catalogue(cb, pc, g.characters.c1), none = C.catalogue(cb, pc, g.characters.c1, { noNarrator: true });
-    expect(all.find((e) => e.action === 'skill')).toMatchObject({ label: 'Suppressing Fire', cost: 'Narrator' });
-    expect(none.find((e) => e.action === 'skill')).toBeUndefined();
+    // Physical 2.0 (rules 1.12): Suppressing Fire is now the rifle's Suppress technique, in its Techniques pad; the old
+    // Narrator-ruled weapon-skill row is gone from both lists.
+    expect(all.find((e) => e.action === 'skill')).toBeUndefined();
+    expect(all.filter((e) => e.cost === 'Narrator')).toEqual([]);
     expect(none.filter((e) => e.cost === 'Narrator')).toEqual([]);
-    expect(none.length).toBe(all.length - 1);
     expect(C.actionGroups(cb, pc, g.characters.c1, { noNarrator: true }).flatMap((gr) => gr[1]).some((it) => it[2] === 'Narrator')).toBe(false);
-    // The cut-in in the Proving Ground: a stored pick of it falls back to the smart default.
+    // A pick of the old row stored before: it maps onto the plain Shot, in or out of the Proving Ground.
     C.writePrefs(g, 'c1', ['skill', null, null, null]);
     g.sandbox = { state: 'fighting' };
     expect(_test.cutFor(g, cb, pc.id)!.cmds.map((x) => x.action)).not.toContain('skill');
     delete g.sandbox;
-    expect(_test.cutFor(g, cb, pc.id)!.cmds[0]).toMatchObject({ action: 'skill', custom: true, off: true });
+    expect(_test.cutFor(g, cb, pc.id)!.cmds[0]).toMatchObject({ action: 'tq:main:shot', custom: true });
     C.writePrefs(g, 'c1', [null, null, null, null]);
   });
 });

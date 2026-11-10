@@ -6,5 +6,6 @@ export const FX_CREDITS: Credit[] = [
   { what: 'Smoke Particles (explosions, fire flashes, smoke, puffs)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/smoke-particles' },
   { what: 'Splat Pack (blood marks)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/splat-pack' },
   { what: 'Tracers, timer rings, Sigil squares, glyph strokes and Soul motes', who: 'drawn in the game (SVG and CSS)' },
+  { what: 'Melee technique effects (arcs, thrown-weapon flights, holds, slams, skids, falls, clash strokes, pins, guards, brackets, shards, cracks, dash trails)', who: 'drawn in the game (SVG and CSS) over the Particle Pack sprites and the weapon icons' },
   { what: 'Element effects (fire, frost, shock, stone, gale, spark, acid: impacts, trails, standing fields), Sigil beams, lobs, chains, traps, turrets, walls and boons', who: 'drawn in the game (SVG and CSS) over the sprites above' },
 ];

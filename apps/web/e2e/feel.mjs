@@ -121,7 +121,7 @@ await clearField();
 s = await st();
 const adj = await spawnNear(s.u.pos, [1]);
 await p.waitForTimeout(300);
-await pickAct(/^(Melee|Strike)/);
+await pickAct(/^(Cut|Melee|Strike)/); // Physical 2.0: a melee weapon's plain attack is Cut
 await tok(adj[0]).click(); await p.waitForTimeout(120);
 r = await catchFx('07-melee', confirm, [60, 140, 260]);
 ok('melee plays an arc: ' + r.events.map((e) => e.k).join(' '), r.events.some((e) => e.k === 'melee') && r.peak > 0);
@@ -201,10 +201,10 @@ for (let i = 0; i < 14 && !ended; i++) {
     if (s.u.ap < 2) { await newRound(); continue; }
     await pickAct(s.u.jammed ? /^Clear/ : /^(Reload|Swap magazine|Speedloader|Swap drum|Feed belt)/); await confirm(); await p.waitForTimeout(900); continue;
   }
-  await pickAct(/^Fan the Hammer/);
-  await tok(foe.pos).click(); await p.waitForTimeout(100);
+  // Physical 2.0: the weapon-skill row is gone from the Attack tab (the revolver's signature, Mag Dump, takes its place
+  // once the ranged lane builds it). The engine still runs the old action, so the volley's effects are checked through it.
   const hp0 = foe.hp;
-  r = await catchFx('12-fan-' + volleys, confirm, [90, 260, 520]);
+  r = await catchFx('12-fan-' + volleys, () => act({ type: 'combat/skill', unitId: s.u.id, targetId: foe.id }), [90, 260, 520]);
   volleys++;
   const shots = r.events.filter((e) => e.k === 'shot'), killedAt = shots.findIndex((e) => e.killed);
   if (killedAt >= 0 && killedAt < shots.length - 1) midDeath = true;

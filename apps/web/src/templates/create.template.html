@@ -296,6 +296,16 @@
 </sc-for>
 </div>
 
+<sc-if value="{{hasTech}}" hint-placeholder-val="{{true}}">
+<h2 style="margin: 12px 0 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Techniques</h2>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">Your build fights with its body. Two techniques are already picked for each kind it can use; change them if you like. You learn more by drilling weapons after creation.</p>
+<sc-for list="{{techSys}}" as="ts"><div data-start-tech="{{ts.key}}" style="{{ts.cardStyle}}">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><span style="{{ts.titleStyle}}">{{ts.title}}</span><button type="button" onClick="{{ts.reset}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{ts.resetLabel}}</button></div>
+<sc-for list="{{ts.groups}}" as="tg"><div role="group" aria-label="{{tg.label}}" style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">{{tg.label}}</span><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{tg.chips}}" as="tc"><button type="button" data-tech="{{tc.key}}" aria-pressed="{{tc.pressed}}" title="{{tc.title}}" onClick="{{tc.pick}}" style="{{tc.style}}">{{tc.label}}</button></sc-for></div></div></sc-for>
+<span style="font-size: 13px; color: #C9D3E3">Picked: <b style="color: #FFFFFF">{{ts.picked}}</b></span>
+</div></sc-for>
+<span role="status" style="{{techVerdictStyle}}">{{techVerdict}}</span>
+</sc-if>
 <sc-if value="{{hasMagic}}" hint-placeholder-val="{{true}}">
 <h2 style="margin: 12px 0 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Magic</h2>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">Your build can cast. The usual first picks are already chosen, so you can leave this as it is. More words and designs come from study and from living, after creation.</p>

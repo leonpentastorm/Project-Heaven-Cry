@@ -1,0 +1,3 @@
+# Physical 2.0, implementer A: the melee technique effects (built)
+
+This note is folded into the hand-off, [`physical-2.0-A-FX.md`](physical-2.0-A-FX.md) (10 Nov 2026): why Leon asked for these effects, what each technique shows, the design, the files touched outside A's own code and why, the requests for the lead, what isn't tested, the runs, and the review fixes (section 9). One correction to what this note said before: `gunOf` was **not** the only behaviour change in `fx/play.ts`; the quick strikes (`_quick`) and the melee pre-pass also change the timing of C's melee and shot beats (hand-off sections 5 and 6).
