@@ -32,12 +32,11 @@ function coverNext(cb: Combat, at: string, kind: 'half' | 'full'): boolean {
 const roundName = (type: string) => type.replace(/_/g, '-').replace('armor', 'armour');
 
 // ---------- 14. Bead ----------
-/** The units beading this target now (alive, the mark on it). The other ranged files don't import this (they end a
- * bead by setting techState(u, 'bead').targetId = null). */
+/** The units beading this target now (alive, the mark on it). */
 export function beadOn(cb: Combat, target: Unit): Unit[] {
   return cb.units.filter((h) => h !== target && alive(h) && techStateOf(h, 'bead').targetId === target.id);
 }
-/** End a unit's bead (it moved, named another). */
+/** End a unit's bead (it moved, named another; smoke, a flashbang or the scrambler landed on it: thrown.ts). */
 export function endBead(cb: Combat, u: Unit, why: string): void {
   const st = techStateOf(u, 'bead'); if (!st.targetId) return;
   const was = st.targetId; techState(u, 'bead').targetId = null;
@@ -229,7 +228,7 @@ strikeRound({
     LIVE.set(t, st.type); return { type: st.type, fromMag: false };
   },
   fired(t, _tgt, type) {
-    if (techStateOf(t.u, 'load_special').type !== type) return; // spent by this technique's first shot already
+    if (!type || techStateOf(t.u, 'load_special').type !== type) return; // spent by this technique's first shot already
     delete t.u.tech!.load_special;
     t.cb.log.push('  ' + t.u.name + ' fires the chambered ' + roundName(type) + ' round.');
   },

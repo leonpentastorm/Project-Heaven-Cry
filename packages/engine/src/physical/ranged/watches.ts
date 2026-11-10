@@ -1,7 +1,7 @@
 // Physical 2.0, ranged Watches: paid for on your turn with holdWatch(); the core calls `react` on the hook for the unit
 // holding it; the handler checks the trigger and calls fireWatch(), which spends the reaction (never while Pressed).
 // Overwatch and Deny are the lead's references; the ranged lane builds Cover Me and Dead to Rights here.
-import { technique, strike, canStrike, holdWatch, fireWatch, stop, spendRounds, addPressure, isPressed, atCover, turnStamp, onHook, type Tech } from './shared';
+import { technique, strike, canStrike, holdWatch, fireWatch, stop, spendRounds, addPressure, isPressed, atCover, turnStamp, onHook, strikingWith, type Tech } from './shared';
 import { alive, dist, lineOfSight, unitSees, sideSees, effectiveRange, xy, key, type Combat, type Unit } from '../../combat';
 import type { HeldWatch } from '../types';
 
@@ -97,6 +97,7 @@ technique({
         const pen = t.num('attack_penalty', 2);
         caught(t.cb, att);
         (att as any).coveredBy = { t: turnStamp(t.cb), tgt: tgt.id, v: pen, by: t.u.id, volley: ctx.volley ?? null };
+        const use = strikingWith(att); if (use) COVERED_USE.set(att, use); else COVERED_USE.delete(att);
         t.cb.log.push('  Covering fire: ' + att.name + '\'s attack on ' + tgt.name + ' is at −' + pen + '.');
         addPressure(t, att, t.num('pressure', 1), 'Cover Me');
         if (shoot && alive(att)) strike(t, { target: att, label: 'Cover Me' }); // a round, Heat and a hit's Pressure, as any shot
@@ -113,13 +114,16 @@ technique({
   },
 });
 // The covering fire's −2, on the attack it caught (each round of it, when it is a volley); spent when that attack rolls.
+// A technique's volley made of separate strikes (fire.ts's Burst and Walking Fire carry no engine volley) is one attack
+// too: every roll of that same use of the technique gets it (COVERED_USE: the use the mark was made on; not saved).
+const COVERED_USE = new WeakMap<Unit, Tech>();
 onHook('attack_preview', (ctx: any, cb) => {
-  const att = ctx.att as Unit, cm = (att as any).coveredBy;
-  if (cm && cm.t === turnStamp(cb) && cm.tgt === ctx.tgt?.id && (ctx.volley ?? null) === cm.volley) ctx.terms.push({ v: -cm.v, label: 'Cover Me' });
+  const att = ctx.att as Unit, cm = (att as any).coveredBy, use = COVERED_USE.get(att);
+  if (cm && cm.t === turnStamp(cb) && cm.tgt === ctx.tgt?.id && (ctx.volley ?? null) === cm.volley && (!use || strikingWith(att) === use)) ctx.terms.push({ v: -cm.v, label: 'Cover Me' });
   // a held shot that felled the attacker as it attacked: the attack doesn't go off
   if ((att as any).caughtFirst === turnStamp(cb) && !alive(att) && !ctx.fail) ctx.fail = att.name + ' is down before the attack goes off.';
 });
-onHook('attack_roll', (ctx: any) => { const cm = (ctx.att as any)?.coveredBy; if (cm && cm.volley == null) delete (ctx.att as any).coveredBy; });
+onHook('attack_roll', (ctx: any) => { const cm = (ctx.att as any)?.coveredBy; if (cm && cm.volley == null && !COVERED_USE.has(ctx.att)) delete (ctx.att as any).coveredBy; });
 onHook('volley_end', (ctx: any) => { if ((ctx.u as any)?.coveredBy) delete (ctx.u as any).coveredBy; });
 onHook('turn_end', (ctx: any) => { if ((ctx.u as any)?.coveredBy) delete (ctx.u as any).coveredBy; });
 

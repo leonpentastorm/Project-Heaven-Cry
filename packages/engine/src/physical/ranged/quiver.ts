@@ -16,7 +16,7 @@ import { AMMO_TYPES, ammoId } from '../../tactics';
 import { type Combat, type Unit, isMelee } from '../../combat';
 import { charOfUnit } from '../../effects/hooks';
 import { physOf, ensurePhys, weaponProps } from '../data';
-import { onHook, strikeWrap, roundsSpent, strikingWith, techState, techStateOf } from './shared';
+import { onHook, strikeRound, strikingWith, techState, techStateOf } from './shared';
 import type { Tech } from './shared';
 
 type Loader = (c: Character, weaponId: string, load: Record<string, number>) => string | null;
@@ -98,28 +98,33 @@ export function armQuiver(u: Unit): void {
 onHook('combat_start', (ctx: any) => { for (const u of (ctx.cb as Combat).units) armQuiver(u); });
 
 // ---------- shots ----------
-// A technique's strike: the arrow it names (args.ammo) goes on the string for that shot, the preview included (so the
-// card shows its rider); a type with none left is refused, unless an earlier shot of the same use emptied it (a volley
-// then goes on with the type with the most left). Afterwards the arrow on the string is the default again.
+// A technique's strike (core strikeRound): the arrow it names (args.ammo) goes on the string for that shot, the preview
+// included (so the card shows its rider); a type with none left is refused, unless an earlier shot of the same use
+// emptied it (a volley then goes on with the type with the most left). Afterwards the arrow on the string is the
+// default again.
 const FAIL = new Map<Unit, string>();
 const WRAPPED = new Set<Unit>();
 const SHOT = new WeakSet<Tech>();
 const NOTED = new WeakSet<Tech>();
-strikeWrap((t) => {
-  const u = t.u; if (t.def.system !== 'ranged' || !isDrawn(u.weapon) || u.infiniteAmmo) return;
-  const q = t.preview ? quiverView(u) : ensureQuiver(u); if (!q) return;
-  const want = arrowId(t.args.ammo);
-  let type = defaultArrow(q), fail: string | null = null;
-  if (t.args.ammo && !want) fail = 'No such arrow.';
-  else if (want && (q[want] || 0) > 0) type = want;
-  else if (want && !SHOT.has(t)) fail = 'No ' + arrowName(want) + ' arrows left in the quiver.';
-  const was = u.ammoType;
-  u.ammoType = asType(type); WRAPPED.add(u); if (fail) FAIL.set(u, fail);
-  if (!fail && quiverTotal(q) > 0 && !NOTED.has(t)) { NOTED.add(t); t.note('Arrow: ' + arrowName(type) + ' (' + (q[type] || 0) + ' in the quiver).'); }
-  return () => {
-    FAIL.delete(u); WRAPPED.delete(u);
-    if (t.preview) u.ammoType = was; else { SHOT.add(t); nock(u); }
-  };
+strikeRound({
+  pick(t) {
+    const u = t.u; if (t.def.system !== 'ranged' || !isDrawn(u.weapon) || u.infiniteAmmo) return null;
+    const q = t.preview ? quiverView(u) : ensureQuiver(u); if (!q) return null;
+    const want = arrowId(t.args.ammo);
+    let type = defaultArrow(q), fail: string | null = null;
+    if (t.args.ammo && !want) fail = 'No such arrow.';
+    else if (want && (q[want] || 0) > 0) type = want;
+    else if (want && !SHOT.has(t)) fail = 'No ' + arrowName(want) + ' arrows left in the quiver.';
+    WRAPPED.add(u); if (fail) FAIL.set(u, fail);
+    if (!fail && quiverTotal(q) > 0 && !NOTED.has(t)) { NOTED.add(t); t.note('Arrow: ' + arrowName(type) + ' (' + (q[type] || 0) + ' in the quiver).'); }
+    return { type: asType(type) };
+  },
+  done(t) {
+    const u = t.u; FAIL.delete(u); WRAPPED.delete(u);
+    if (!t.preview) { SHOT.add(t); nock(u); }
+  },
+  // Rounds a technique burns beyond its roll (Suppress's 3): arrows of the type it names, then the type with the most left.
+  spent(t, n) { if (t.hand === 'main' && t.u.quiver && isDrawn(t.u.weapon) && techStateOf(t.u, QS).w === t.u.weapon) { draw(t.u, n, arrowId(t.args.ammo)); if (!WRAPPED.has(t.u)) nock(t.u); } },
 });
 // Every ranged attack with a Drawn weapon: a named arrow with none left, or an empty quiver, can't be loosed.
 onHook('attack_preview', (ctx: any) => {
@@ -140,8 +145,6 @@ onHook('attack_roll', (ctx: any) => {
 });
 onHook('on_hit', (ctx: any) => { if (ctx.att && !WRAPPED.has(ctx.att)) nock(ctx.att); });
 onHook('on_miss', (ctx: any) => { if (ctx.att && !WRAPPED.has(ctx.att)) nock(ctx.att); });
-// Rounds a technique burns beyond its roll (Suppress's 3): arrows of the type it names, then the type with the most left.
-roundsSpent((t, n) => { if (t.hand === 'main' && t.u.quiver && isDrawn(t.u.weapon) && techStateOf(t.u, QS).w === t.u.weapon) { draw(t.u, n, arrowId(t.args.ammo)); if (!WRAPPED.has(t.u)) nock(t.u); } });
 
 // ---------- no reload in a fight ----------
 onHook('action_refuse', (ctx: any) => {

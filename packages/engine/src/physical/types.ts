@@ -53,7 +53,7 @@ export interface StrikeOpts {
 export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null }
 export type WatchTrigger = 'moves' | 'enters_tile' | 'attacks_ally' | 'acts';
 export interface WatchSpec { trigger: WatchTrigger; tile?: string; tiles?: string[]; allyId?: string; allyIds?: string[]; targetId?: string }
-export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number; /** the property line chosen when it was held */ line?: string }
+export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number; /** the property line chosen when it was held */ line?: string; /** the arrow it names (a quiver) */ ammo?: string }
 
 /** What a handler is given. */
 export interface Tech {

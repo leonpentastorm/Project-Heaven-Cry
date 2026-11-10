@@ -2,9 +2,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, packOf, resolveAttack, type Unit, type TechArgs } from '../src';
 import { physFight, rig } from './helpers/physfight';
+import { unchanged, type PhysF as F } from './helpers/physfight-ranged';
 
-// ---------- helpers (the integrator moves the common ones to helpers/physfight-ranged.ts) ----------
-type F = ReturnType<typeof physFight>;
+// ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 /** One gunner (Dexterity 6 unless given) against a soldier, the gunner's turn. */
 function gunFight(weapon: string, known: string[], o: { at?: string; foeAt?: string; tier?: string; skills?: Record<string, number>; foeWeapon?: string } = {}) {
   const f = physFight([{ weapon, known, skills: { dexterity: 6, ...(o.skills || {}) } }], [{ at: o.foeAt || 'H5', tier: o.tier || 'soldier', weapon: o.foeWeapon }]);
@@ -15,8 +15,6 @@ function squadFight(spotter: string, shooter: string, o: { tier?: string; foeAt?
   const f = physFight([{ weapon: spotter, known: ['spot', 'dead_centre'], skills: { dexterity: 6 } }, { weapon: shooter, known: ['dead_centre'], skills: { dexterity: 6 } }], [{ at: o.foeAt || 'H5', tier: o.tier || 'soldier' }]);
   f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'C7'); f.put(f.foe, o.foeAt || 'H5'); f.turn(f.pcs[0]); return f;
 }
-/** Run fn and check the whole game state is byte for byte the same after. */
-function unchanged(f: F, fn: () => void) { const before = JSON.stringify(f.g); fn(); expect(JSON.stringify(f.g)).toBe(before); }
 /** Put special rounds in the first PC's pack. */
 function give(f: F, type: string, qty: number, u?: Unit) {
   const c = f.char(u || f.pc); c.pack = [...packOf(c), { id: 'ammo_' + type, item: 'ammo_' + type, name: type + ' rounds', qty, kind: 'ammo' } as any];

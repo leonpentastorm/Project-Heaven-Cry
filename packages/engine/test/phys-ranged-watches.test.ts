@@ -4,11 +4,11 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, resolveAttack, previewAttack, toggleProne, reload, enemyTurn, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
+import { type PhysF as F } from './helpers/physfight-ranged';
 
 beforeEach(() => { rig(null); ROLLS.length = 0; });
 
-// ---------- helpers (an integrator may move these into helpers/physfight-ranged.ts) ----------
-type F = ReturnType<typeof physFight>;
+// ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 /** Every attack roll's to-hit, by attacker id (read from the live roll, after every term). */
 const ROLLS: { att: string; tgt: string; toHit: number }[] = [];
 onHook('attack_roll', (ctx: any) => { ROLLS.push({ att: ctx.att.id, tgt: ctx.tgt.id, toHit: ctx.toHit }); });
@@ -50,6 +50,19 @@ describe('Cover Me (29)', () => {
     expect(f.fx('watch_fire').length).toBe(1);
     // once: the next attack on the ally is at its own number again, and nothing fires
     attack(f, f.foe, ally); expect(lastRoll(f.foe)!.toHit).toBe(base); expect(heldShots(f)).toBe(1); expect(f.pressure(f.foe)).toBe(1);
+  });
+  it('a technique volley made of separate strikes (Burst) is one attack: −2 on every roll of it, and on nothing after', () => {
+    const rollsOf = (cover: boolean) => {
+      const f = coverFight(); const ally = f.pcs[1]; f.foe.techs = ['burst'];
+      if (cover) expect(f.tech('cover_me', { allyId: ally.id })).toBeNull();
+      f.turn(f.foe); f.unit(f.foe.id).ap = 9; rig({ hit: false, die: 5 }); ROLLS.length = 0;
+      expect(f.use(f.foe, 'burst', { targetId: ally.id })).toBeNull();
+      const burst = ROLLS.filter((r) => r.att === f.foe.id).map((r) => r.toHit);
+      attack(f, f.foe, ally); return { burst, after: lastRoll(f.foe)!.toHit };
+    };
+    const plain = rollsOf(false), covered = rollsOf(true);
+    expect(plain.burst.length).toBe(2); expect(covered.burst).toEqual(plain.burst.map((v) => v - 2));
+    expect(covered.after).toBe(plain.after);
   });
   it('an attack on someone else does not set it off; nor does an ally attacking', () => {
     const f = coverFight(); const ally = f.pcs[1];

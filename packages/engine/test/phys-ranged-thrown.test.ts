@@ -4,10 +4,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, WEAPON } from '../src';
 import { physFight, rig } from './helpers/physfight';
+import { type PhysF as Fight } from './helpers/physfight-ranged';
 
-// ---------- helpers (the integrator may move the shared ones to helpers/physfight-ranged.ts) ----------
+// ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 const RIFLE = 'hellraiser_service_rifle';
-type Fight = ReturnType<typeof physFight>;
 /** A shooter (Lob known) at C6 (2,5) and, unless `alone`, an ally at M2 (12,1) who sees the foes; one or more foes. */
 function fight(o: { weapon?: string; known?: string[]; foes?: { at?: string; tier?: string; weapon?: string }[]; alone?: boolean } = {}): Fight {
   const pcs = [{ weapon: o.weapon || RIFLE, known: o.known ?? ['lob'], skills: { dexterity: 6 } }, ...(o.alone ? [] : [{ weapon: RIFLE }])];
@@ -180,6 +180,14 @@ describe('Lob: grenades are its ammunition', () => {
     expect(f.tech('shot', { targetId: f.foe.id })).toMatch(/Empty/);
     expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(f.pc.throwables!.frag_grenade).toBe(0);
   });
+  it('an empty quiver doesn\'t stop a grenade either, and the arrows are left alone (quiver.ts)', () => {
+    const f = fight({ weapon: 'recurve_bow', foes: [{ at: '8,5' }] }); f.pc.throwables = { frag_grenade: 1 };
+    f.pc.ammo = 0; f.pc.quiver = {};
+    expect(f.tech('shot', { targetId: f.foe.id })).toMatch(/quiver is empty/);
+    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(f.pc.throwables!.frag_grenade).toBe(0);
+    const g = fight({ weapon: 'recurve_bow', foes: [{ at: '8,5' }] }); g.pc.throwables = { frag_grenade: 1 }; const q = { ...g.pc.quiver }, n = g.pc.ammo;
+    expect(g.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(g.pc.quiver).toEqual(q); expect(g.pc.ammo).toBe(n);
+  });
   it('goes over full cover (a frag has Arc) to a tile an ally sees', () => {
     const f = nades({ frag_grenade: 1 }, { foes: [{ at: '12,6' }] }); f.put(f.pc, '6,6'); f.put(f.pcs[1], '12,2');
     expect(f.tech('lob', { tile: '12,6', ammo: 'frag_grenade' })).toBeNull(); expect(f.pressure(f.foe)).toBe(2);
@@ -225,6 +233,9 @@ describe('smoke, flashbangs and the scrambler act on other people\'s fire', () =
     expect((f.foe as any).watch).toBeUndefined(); expect(f.foe.tech!.bead.targetId).toBeNull();
     expect(f.cb.log.some((l) => /loses the held shot \(smoke grenade\)/.test(l))).toBe(true);
     expect(f.fx('watch_end').some((e: any) => e.unit === f.foe.id && e.why === 'smoke grenade')).toBe(true);
+    // the Bead ends through sets.ts's endBead: its log line and its bead_end fx
+    expect(f.cb.log.some((l) => /loses the bead \(smoke grenade\)/.test(l))).toBe(true);
+    expect(f.fx('bead_end').some((e: any) => e.unit === f.foe.id && e.target === f.pc.id && e.why === 'smoke grenade')).toBe(true);
   });
   it('today\'s Throw does it too (a character who knows no techniques): a flashbang', () => {
     const f = watching({ known: [] }); f.pc.throwables = { flashbang: 1 };

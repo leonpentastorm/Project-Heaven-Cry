@@ -199,6 +199,12 @@ describe('the quiver in a fight', () => {
     f.turn(f.foe); f.walk(f.foe, 'F6');
     expect(f.pc.quiver).toEqual({ standard: 1, incendiary: 3 }); expect(f.pc.ammo).toBe(4);
   });
+  it('a held shot remembers the arrow it named when it was held', () => {
+    const f = bowFight({ standard: 3, incendiary: 2 }); rig({ hit: false, die: 5 });
+    expect(f.tech('overwatch', { ammo: 'incendiary' })).toBeNull(); expect(f.pc.watch?.ammo).toBe('incendiary');
+    f.turn(f.foe); f.walk(f.foe, 'F6');
+    expect(f.pc.quiver).toEqual({ standard: 3, incendiary: 1 }); expect(f.pc.ammo).toBe(4);
+  });
   it('helpers: arrow ids and the default', () => {
     expect(arrowId('ap')).toBe('armor_piercing'); expect(arrowId('standard')).toBe('standard'); expect(arrowId('glass')).toBeNull();
     expect(defaultArrow({})).toBe('standard'); expect(defaultArrow({ incendiary: 2, hollow_point: 2 })).toBe('hollow_point');

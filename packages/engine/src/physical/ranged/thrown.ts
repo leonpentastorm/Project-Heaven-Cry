@@ -14,6 +14,7 @@ import { WEAPON, type WeaponDef } from '../../data';
 import { blast, radiusOf, throwRangeOf, isSilent, reveal } from '../../tactics';
 import { condOn } from '../../magic';
 import { emit } from '../../effects/hooks';
+import { endBead } from './sets';
 
 /** Lob's numbers outside a use (the smoke rule): its data, else the fallback. */
 const lobNum = (k: string, fb: number): number => (typeof TECHNIQUE.lob?.numbers?.[k] === 'number' ? TECHNIQUE.lob.numbers[k] : fb);
@@ -152,7 +153,7 @@ onHook('blast_landed', (ctx: any, cb) => {
     if (!alive(v)) continue;
     endWatch(cb, v, why);
     if (v.overwatch) { v.overwatch = null; v.owShots = 0; cb.log.push(v.name + ' loses the held shot (' + why + ').'); emitFx(cb, 'watch_end', { unit: v.id, at: v.pos, id: 'overwatch', why }); }
-    const b = v.tech?.bead; if (b?.targetId) { b.targetId = null; cb.log.push(v.name + ' loses the bead (' + why + ').'); }
+    endBead(cb, v, why); // sets.ts owns the Bead's state (techState(u, 'bead').targetId) and its bead_end fx
   }
 });
 // Smoke: anyone standing in it at the end of a turn sheds at least 2 Pressure (grenade smoke and VEIL's smoke alike).

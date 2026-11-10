@@ -5,8 +5,9 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, WEAPON, coverOf, weaponDamage, physicalMult, heatLimit, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
+import { unchanged, term } from './helpers/physfight-ranged';
 
-// ---------- helpers (an integrator may move these into helpers/physfight-ranged.ts) ----------
+// ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 const PRESS = ['rake', 'warning_shot', 'flush', 'mag_dump', 'crossfire'];
 interface FoeAt { at: string; tier?: string; weapon?: string }
 /** A fight with the first PC on `at` (C5) and the foes on their tiles, every meter at 0 and nobody hit yet, on the
@@ -25,9 +26,6 @@ const rolledToHit = (f: F, from: number, who: Unit) => f.cb.log.slice(from).filt
 /** The preview's to-hit, roll by roll. */
 const pvToHit = (pv: phys.TechPreview) => pv.attacks.filter((a) => a.pv.ok).map((a) => a.pv.toHit);
 const pressAfter = (pv: phys.TechPreview, u: Unit) => pv.pressure?.filter((x) => x.unit === u.id).reduce((m, x) => Math.max(m, x.after), 0);
-const term = (pv: phys.TechPreview, i: number, label: string) => pv.attacks[i].pv.terms!.find((x) => x.label === label)?.v;
-/** A preview changes nothing in the game state. */
-function unchanged(f: F, fn: () => void) { const before = JSON.stringify(f.g); fn(); expect(JSON.stringify(f.g)).toBe(before); }
 const crateAt = (f: F, ref: string) => coverOf(f.cb)[f.tile(ref)];
 // volley_end, as Spray and Pray hears it
 const VOLLEY_END: any[] = []; onHook('volley_end', (ctx: any) => { VOLLEY_END.push({ u: ctx.u?.id, mode: ctx.mode, hits: (ctx.hits || []).map((v: Unit) => v.id) }); });

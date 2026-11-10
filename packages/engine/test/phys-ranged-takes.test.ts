@@ -8,8 +8,9 @@ const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
 import { phys, type Unit, type TechPreview } from '../src';
 import { physFight, rig, type PhysSpec } from './helpers/physfight';
+import { gameText as snap, term } from './helpers/physfight-ranged';
 
-// ---------- helpers (an integrator may move the common ones to helpers/physfight-ranged.ts) ----------
+// ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 const TAKES = ['pin_down', 'rout', 'stopping_shot', 'storm', 'last_round'];
 interface Foe { at: string; tier?: string; weapon?: string }
 /** A PC (C3 by default, knowing every Take) against foes on row 3 of the yard; extra PCs stand where given. Every
@@ -26,10 +27,7 @@ type F = ReturnType<typeof fight>;
 const fails = () => { D.die = 1; };
 const saves = () => { D.die = 20; };
 const at = (f: F, u: Unit) => f.unit(u.id).pos;
-/** The whole game as text: a preview must leave it exactly as it was. */
-const snap = (f: F) => JSON.stringify(f.g);
 const lastShot = (f: F) => f.fx('shot').slice(-1)[0];
-const termOf = (pv: TechPreview, label: string) => pv.attacks[0]?.pv.terms?.find((t) => t.label === label)?.v;
 const multOf = (pv: TechPreview, label: string) => pv.attacks[0]?.pv.dmg?.mults.find((t) => t.label === label)?.v;
 beforeEach(() => { D.die = null; rig(null); });
 
@@ -78,8 +76,8 @@ describe('Pin Down', () => {
     // the damage the card showed is the damage dealt (less the armour)
     expect(lastShot(f).dmg).toBe(Math.round(pv.attacks[0].pv.dmg!.total - pv.attacks[0].pv.dmg!.armour));
     // Recoil: the Take's shot had none (the first of the turn) and counts toward the next one's
-    expect(termOf(pv, 'recoil')).toBeUndefined(); expect(f.pc.shotsThisTurn).toBe(1);
-    f.pc.dexterity = 0; expect(termOf(f.pv('shot', { targetId: f.foe.id }), 'recoil')).toBe(-1);
+    expect(term(pv, 0, 'recoil')).toBeUndefined(); expect(f.pc.shotsThisTurn).toBe(1);
+    f.pc.dexterity = 0; expect(term(f.pv('shot', { targetId: f.foe.id }), 0, 'recoil')).toBe(-1);
   });
   it('a made save, or a miss, pins nothing (the Pressure still goes)', () => {
     const f = fight(); f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); saves();
@@ -248,14 +246,14 @@ describe('Storm', () => {
     g.tech('storm', { targetId: g.foe.id }); expect(lastShot(g).crit).toBe(false);
   });
   it('Quick: +2 to hit; without it, nothing', () => {
-    const f = fight(); f.press(f.foe, 2, f.pc); expect(termOf(f.pv('storm', { targetId: f.foe.id }), 'Storm')).toBe(2);
-    const g = fight({ weapon: 'hellraiser_service_rifle' }); g.press(g.foe, 2, g.pc); expect(termOf(g.pv('storm', { targetId: g.foe.id }), 'Storm')).toBeUndefined();
+    const f = fight(); f.press(f.foe, 2, f.pc); expect(term(f.pv('storm', { targetId: f.foe.id }), 0, 'Storm')).toBe(2);
+    const g = fight({ weapon: 'hellraiser_service_rifle' }); g.press(g.foe, 2, g.pc); expect(term(g.pv('storm', { targetId: g.foe.id }), 0, 'Storm')).toBeUndefined();
   });
   it('Spread: on a hit, a Body save or Prone', () => {
     const f = fight({ weapon: 'sawn_off' }); f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails();
     expect(f.pv('storm', { targetId: f.foe.id }).saves).toBeUndefined(); // its first line is Quick: the player picks Spread
     const pv = f.pv('storm', { targetId: f.foe.id, line: 'spread' }); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 }]);
-    expect(termOf(pv, 'Storm')).toBeUndefined(); // one line at a time
+    expect(term(pv, 0, 'Storm')).toBeUndefined(); // one line at a time
     expect(f.tech('storm', { targetId: f.foe.id, line: 'spread' })).toBeNull(); expect(f.foe.prone).toBe(true); expect(f.foe.stopped).toBe(1);
     const g = fight({ weapon: 'sawn_off' }); g.press(g.foe, 2, g.pc); rig({ hit: true, die: 12 }); saves();
     g.tech('storm', { targetId: g.foe.id, line: 'spread' }); expect(g.foe.prone).toBeFalsy();
@@ -273,7 +271,7 @@ describe('Last Round', () => {
     const f = fight(); f.press(f.foe, 2, f.pc); f.pc.ammo = 1; f.pc.mags = [12, 12, 12];
     const before = snap(f), pv = f.pv('last_round', { targetId: f.foe.id });
     expect(snap(f)).toBe(before);
-    expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1); expect(termOf(pv, 'Last Round')).toBe(3);
+    expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1); expect(term(pv, 0, 'Last Round')).toBe(3);
     rig({ hit: true, die: 12 }); f.foe.hp = 1;
     expect(f.tech('last_round', { targetId: f.foe.id })).toBeNull();
     expect(f.foe.dead || f.foe.downed).toBe(true); expect(f.pc.ammo).toBe(0); expect(f.pc.freeReload).toBe(true);
@@ -299,9 +297,15 @@ describe('Last Round', () => {
     const g = fight(); g.pc.ammo = 1; g.press(g.foe, 2, g.pc); expect(multOf(g.pv('last_round', { targetId: g.foe.id }), 'Last Round')).toBeUndefined();
   });
   it('Drawn: the last arrow in the quiver counts', () => {
-    const f = fight({ weapon: 'recurve_bow' }); f.press(f.foe, 2, f.pc); f.pc.ammo = 1;
-    f.pc.quiver = { standard: 2, broadhead: 1 }; expect(f.tech('last_round', { targetId: f.foe.id })).toMatch(/last arrow/);
-    f.pc.quiver = { standard: 0, broadhead: 1 }; rig({ hit: true, die: 12 }); expect(f.tech('last_round', { targetId: f.foe.id })).toBeNull();
+    // the quiver's real shape (ranged/quiver.ts): arrow type -> count, and u.ammo is always its total
+    const f = fight({ weapon: 'recurve_bow' }); f.press(f.foe, 2, f.pc);
+    f.pc.ammo = 3; f.pc.quiver = { standard: 2, armor_piercing: 1 }; expect(f.tech('last_round', { targetId: f.foe.id })).toMatch(/last arrow in the quiver/);
+    f.pc.ammo = 1; f.pc.quiver = { armor_piercing: 1 }; rig({ hit: true, die: 12 }); expect(f.tech('last_round', { targetId: f.foe.id })).toBeNull();
+    expect(f.pc.ammo).toBe(0); expect(f.pc.quiver).toEqual({});
+    // a bow can't be reloaded in a fight (the quiver refuses it), so its kill makes no free reload
+    const g = fight({ weapon: 'recurve_bow', foes: [{ at: 'H3' }, { at: 'J3' }] }); g.press(g.foe, 2, g.pc); g.pc.ammo = 1; g.pc.quiver = { standard: 1 }; g.foe.hp = 1; rig({ hit: true, die: 12 });
+    expect(g.tech('last_round', { targetId: g.foe.id })).toBeNull(); expect(g.foe.dead || g.foe.downed).toBe(true); expect(g.pc.freeReload).toBeUndefined();
+    expect(() => g.act({ type: 'combat/reload', unitId: g.pc.id } as any)).toThrow(/quiver is filled before the fight/);
   });
 });
 

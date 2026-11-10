@@ -1,20 +1,15 @@
 // Physical 2.0 (rules 1.12), ranged Fire: Snap Shot, Burst, Called Shot, Walking Fire and Punch Through (fire.ts).
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, WEAPON, coverOf, objectsAt, d20, condOn } from '../src';
+import { phys, coverOf, objectsAt, d20, condOn } from '../src';
 import { physFight, rig } from './helpers/physfight';
+import { unchanged, term, offHand, type PhysF as F } from './helpers/physfight-ranged';
 
-// ---------- helpers (an integrator may move these to helpers/physfight-ranged.ts) ----------
-type F = ReturnType<typeof physFight>;
+// ---------- helpers (the shared ones are in helpers/physfight-ranged.ts) ----------
 /** One gunner at C5 against foes (default: a soldier at H5), on the gunner's turn. */
 function gunner(weapon: string, known: string[] = [], foes: any[] = [{ at: 'H5', tier: 'soldier' }], pc: any = {}): F {
   const f = physFight([{ weapon, known, skills: { dexterity: 6 }, ...pc }], foes);
   f.put(f.pc, 'C5'); foes.forEach((x, i) => { if (x.at) f.put(f.foes[i], x.at); }); f.turn(f.pc);
   return f;
-}
-/** Put a weapon in the off hand of the first PC, on the character and the unit alike (the reducer's swap reads both). */
-function offHand(f: F, weaponId: string) {
-  const c: any = f.char(f.pc), u = f.unit(f.pc.id), n = WEAPON[weaponId].magazine ?? 0;
-  c.offHand = { id: weaponId, loaded: n }; u.offWeapon = weaponId; u.offAmmo = n;
 }
 /** The to-hit totals of the attack lines written to the log since `from` (d20 + total = sum vs Defense). */
 function rolls(f: F, from: number): number[] {
@@ -26,8 +21,6 @@ function nextDie(f: F, lo: number, hi: number, skip = 1) {
 }
 /** The target fails its next save (a low die and a hopeless bonus). */
 const failsSave = (f: F, u: { id: string }) => { (f.unit(u.id) as any).sv = { body: -50, brain: -50, heart: -50 }; nextDie(f, 2, 10); };
-const term = (pv: phys.TechPreview, i: number, label: string) => pv.attacks[i].pv.terms!.find((t) => t.label === label)?.v;
-const same = (f: F, fn: () => void) => { const before = JSON.stringify(f.g); fn(); expect(JSON.stringify(f.g)).toBe(before); };
 
 beforeEach(() => rig(null));
 
@@ -70,7 +63,7 @@ describe('Snap Shot', () => {
   });
   it('the preview matches the action and changes nothing', () => {
     const f = fight(); rig({ die: 12 }); let pv!: phys.TechPreview;
-    same(f, () => { pv = f.pv('snap_shot', { targetId: f.foe.id, hand: 'off' }); });
+    unchanged(f, () => { pv = f.pv('snap_shot', { targetId: f.foe.id, hand: 'off' }); });
     const at = f.cb.log.length; f.tech('snap_shot', { targetId: f.foe.id, hand: 'off' });
     expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
   });
@@ -140,7 +133,7 @@ describe('Burst', () => {
   });
   it('the preview matches the action and changes nothing', () => {
     const f = gunner('hellraiser_service_rifle', [], [{ at: 'H5', tier: 'boss' }]); rig({ hit: false, die: 9 }); f.unit(f.pc.id).heat = 1; let pv!: phys.TechPreview;
-    same(f, () => { pv = f.pv('burst', { targetId: f.foe.id }); });
+    unchanged(f, () => { pv = f.pv('burst', { targetId: f.foe.id }); });
     const at = f.cb.log.length; f.tech('burst', { targetId: f.foe.id });
     expect(rolls(f, at)).toEqual(pv.attacks.map((a) => a.pv.toHit)); // the later rolls see the Heat the earlier ones add
   });
@@ -186,7 +179,7 @@ describe('Called Shot', () => {
   });
   it('the preview matches the action and changes nothing', () => {
     const f = fight(); rig({ die: 11 }); let pv!: phys.TechPreview;
-    same(f, () => { pv = f.pv('called_shot', { targetId: f.foe.id, opt: 'head' }); });
+    unchanged(f, () => { pv = f.pv('called_shot', { targetId: f.foe.id, opt: 'head' }); });
     const at = f.cb.log.length; f.tech('called_shot', { targetId: f.foe.id, opt: 'head' }); expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
   });
 });
@@ -247,7 +240,7 @@ describe('Walking Fire', () => {
   });
   it('the preview matches the action and changes nothing', () => {
     const f = fight(); rig({ die: 11 }); let pv!: phys.TechPreview;
-    same(f, () => { pv = f.pv('walking_fire', { targetId: f.foe.id, tile: f.tile('D7') }); });
+    unchanged(f, () => { pv = f.pv('walking_fire', { targetId: f.foe.id, tile: f.tile('D7') }); });
     const at = f.cb.log.length; f.tech('walking_fire', { targetId: f.foe.id, tile: f.tile('D7') }); expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
   });
 });
@@ -301,7 +294,7 @@ describe('Punch Through', () => {
   });
   it('the preview matches the action and changes nothing', () => {
     const f = fight(); rig({ die: 11 }); let pv!: phys.TechPreview;
-    same(f, () => { pv = f.pv('punch_through', { targetId: f.foe.id }); });
+    unchanged(f, () => { pv = f.pv('punch_through', { targetId: f.foe.id }); });
     const at = f.cb.log.length; f.tech('punch_through', { targetId: f.foe.id }); expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
   });
 });

@@ -185,21 +185,17 @@ technique({
 
 // 26. Last Round: only with the last round in the weapon (the core checks the magazine): +3 to hit. If it takes the target
 //     out, your next speed reload is free (u.freeReload; the reload reads it). Suppressed: it can't be reduced by cover.
-//     Quick and Precise (a revolver): +50% damage. Drawn: the last arrow in the quiver counts.
-const quiverLeft = (u: Unit): number | null => (u.quiver ? Object.values(u.quiver).reduce((n, x) => n + (x || 0), 0) : null);
+//     Quick and Precise (a revolver): +50% damage. Drawn: the last arrow in the quiver counts (u.ammo is the quiver's
+//     total, ranged/quiver.ts, so the core's gate counts arrows); a bow has no reload in a fight, so no free one.
 technique({
   id: 'last_round',
-  check(t) {
-    if (t.holds('drawn')) { const q = quiverLeft(t.u); if (q != null && q !== 1) return 'Only with the last arrow in the quiver.'; }
-    return null;
-  },
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
-    const p = t.line('quick', 'precise', 'drawn'), sup = wasSuppressed(t);
+    const p = t.line('quick', 'precise', 'drawn'), sup = wasSuppressed(t), reloads = !t.holds('drawn');
     const r = strike(t, { extra: t.num('hit', 3), ignoreCover: sup, mult: p === 'quick' || p === 'precise' ? 1 + t.num('damage_pct', 50) / 100 : 1, label: 'Last Round' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
-    if (t.preview) { if (sup) t.note('Suppressed: its cover doesn\'t count.'); t.note('If it takes ' + tgt.name + ' out, your next speed reload is free.'); return null; }
-    if (r.killed || !alive(tgt)) { t.u.freeReload = true; t.note('The next speed reload is free.'); }
+    if (t.preview) { if (sup) t.note('Suppressed: its cover doesn\'t count.'); if (reloads) t.note('If it takes ' + tgt.name + ' out, your next speed reload is free.'); return null; }
+    if (reloads && (r.killed || !alive(tgt))) { t.u.freeReload = true; t.note('The next speed reload is free.'); }
     return null;
   },
   ai: (t) => (t.tgt ? 9 : 0),

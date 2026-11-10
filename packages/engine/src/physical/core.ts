@@ -32,8 +32,8 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
   for (const u of [...cb.units]) {
     if (!alive(u)) continue;
     const w = (u as any).watch as HeldWatch | undefined;
-    // the line chosen when it was held, and every named ally, go with it (Cover Me's Auto names two)
-    if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId, ...(w.allyIds ? { allyIds: w.allyIds } : {}), ...(w.line ? { line: w.line } : {}) }, rng, false)); }
+    // the line chosen when it was held, every named ally (Cover Me's Auto names two) and the arrow it names go with it
+    if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId, ...(w.allyIds ? { allyIds: w.allyIds } : {}), ...(w.line ? { line: w.line } : {}), ...(w.ammo ? { ammo: w.ammo } : {}) }, rng, false)); }
     for (const h of Object.values(HANDLERS)) {
       const def = TECHNIQUE[h.id], fn = h.react?.[name]; if (!fn || def?.group !== 'answer' || !alive(u)) continue;
       const hand = hasUsable(u, 'main', h.id) ? 'main' : hasUsable(u, 'off', h.id) ? 'off' : null; if (!hand) continue;
@@ -179,7 +179,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo && !thrownAmmo) {
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
     if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
-    if (def.needs.last_round && have !== 1) return 'Only with the last round in the weapon.';
+    if (def.needs.last_round && have !== 1) return props.includes('drawn') ? 'Only with the last arrow in the quiver.' : 'Only with the last round in the weapon.'; // a Drawn weapon's u.ammo is its quiver's total (ranged/quiver.ts)
     if (need > 0 && u.jammed && hand === 'main') return 'Jammed: clear it first.';
   }
   return null;
@@ -204,31 +204,24 @@ function inHand<T>(t: Tech, fn: () => T): T {
   if (typeof pts === 'number') u.attack = mod(pts);
   try { return fn(); } finally { if (!t.preview) u.offAmmo = u.ammo; const heat = u.heat; Object.assign(u, keep); if (!t.preview) u.heat = heat; }
 }
-/** What may load a different round for one shot (Load Special's chambered round; an arrow from a quiver): pick returns
- * the ammo type for this strike, or null. It runs in previews too, so it changes no game state. fromMag false: the round
- * doesn't come out of the magazine (the strike's round is given back; a preview doesn't count it). fired: a real strike
- * used it (spend it there). The first registration that picks a round wins. */
-export interface StrikeRound { pick(t: Tech, tgt: Unit): { type: string; fromMag?: boolean } | null; fired?(t: Tech, tgt: Unit, type: string): void }
+/** The rounds a technique uses (the ranged lane: Load Special's chambered round, sets.ts; the quiver's arrows, quiver.ts).
+ * pick: the ammo type this strike fires (null type: standard), or null to leave it alone. It runs in previews too,
+ * where it changes no game state. The first registration that picks a round wins. fromMag false: the round doesn't come out of
+ * the magazine (the strike's round is given back; a preview doesn't count it). fired: a real attack used the round.
+ * done: after every strike it picked for, preview or refusal included, once u.ammoType is put back. spent: after
+ * spendRounds takes n rounds out of the weapon (never in a preview), for every registration. */
+export interface StrikeRound {
+  pick?(t: Tech, tgt: Unit): { type: string | null; fromMag?: boolean } | null;
+  fired?(t: Tech, tgt: Unit, type: string | null): void;
+  done?(t: Tech, tgt: Unit): void;
+  spent?(t: Tech, n: number): void;
+}
 const ROUNDS: StrikeRound[] = [];
 export const strikeRound = (r: StrikeRound) => { ROUNDS.push(r); };
-function roundFor(t: Tech, tgt: Unit): { type: string; fromMag?: boolean; by: StrikeRound } | null {
-  for (const r of ROUNDS) { const p = r.pick(t, tgt); if (p) return { ...p, by: r }; }
+function roundFor(t: Tech, tgt: Unit): { type: string | null; fromMag?: boolean; by: StrikeRound } | null {
+  for (const r of ROUNDS) { const p = r.pick?.(t, tgt); if (p) return { ...p, by: r }; }
   return null;
 }
-/** Code run around every strike, inside the technique's hand, before its attack is previewed or made; what it returns
- * is run after the strike (the quiver: the arrow the shot names, ranged/quiver.ts). Additive (the ranged lane). */
-type StrikeWrap = (t: Tech, tgt: Unit) => (() => void) | void;
-const STRIKE_WRAPS: StrikeWrap[] = [];
-export const strikeWrap = (f: StrikeWrap): void => { STRIKE_WRAPS.push(f); };
-function wrapped<T>(t: Tech, tgt: Unit, fn: () => T): T {
-  const undo = STRIKE_WRAPS.map((f) => f(t, tgt));
-  try { return fn(); } finally { for (let i = undo.length - 1; i >= 0; i--) undo[i]?.(); }
-}
-/** Code run after spendRounds takes rounds out of the weapon, not in a preview (the quiver: which arrows they were).
- * Additive (the ranged lane). */
-type SpendHook = (t: Tech, n: number) => void;
-const SPEND_HOOKS: SpendHook[] = [];
-export const roundsSpent = (f: SpendHook): void => { SPEND_HOOKS.push(f); };
 /** One attack. Melee hits add Momentum (and the variety bonus) and ranged hits add Pressure by the rules: handlers
  * don't. In a preview it records the roll's chance and damage and returns hit: false. */
 export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
@@ -239,7 +232,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
   const a0 = tgt.armour; if (o.ignoreArmour) tgt.armour = o.ignoreArmour === true ? 0 : Math.max(0, a0 - o.ignoreArmour);
   ACTIVE.push({ t, o, tgt });
   try {
-    return inHand(t, () => wrapped(t, tgt, () => {
+    return inHand(t, () => {
       const offTurn = active(t.cb) !== u; // a reaction: no Recoil from the shots of the user's own turn
       const rd = mode === 'melee' ? null : roundFor(t, tgt), type0 = u.ammoType; if (rd) u.ammoType = rd.type;
       try {
@@ -257,8 +250,8 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
           momentumFx(t.cb, u, m0);
         }
         return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: tgt };
-      } finally { if (rd) u.ammoType = type0; }
-    }));
+      } finally { if (rd) { u.ammoType = type0; rd.by.done?.(t, tgt); } }
+    });
   } finally { ACTIVE.pop(); tgt.armour = a0; }
 }
 // The hooks strike shapes the attack through. They read ACTIVE and never run for anyone else's attack.
@@ -383,7 +376,7 @@ export function spendRounds(t: Tech, n: number): boolean {
   const have = t.hand === 'off' ? t.u.offAmmo ?? 0 : t.u.ammo; if (have < n) { t.note('Needs ' + n + ' rounds, ' + have + ' loaded.'); return false; }
   if (t.preview) { t.pv.rounds += n; return true; }
   if (t.hand === 'off') t.u.offAmmo = have - n; else t.u.ammo = have - n;
-  for (const f of SPEND_HOOKS) f(t, n);
+  for (const r of ROUNDS) r.spent?.(t, n);
   return true;
 }
 /** Extra Pressure from a technique (the ordinary +1 for a ranged hit is automatic). Returns what landed. */
@@ -450,7 +443,7 @@ export const swapIn = (cb: Combat, u: Unit, how: Parameters<WeaponSwap>[2], o: {
 export function holdWatch(t: Tech, spec: WatchSpec): void {
   if (t.preview) { t.note('Held until your next turn. Fires as your reaction when ' + (t.def.trigger || 'its trigger happens') + '.'); if (spec.tiles || spec.tile) t.pv.area = spec.tiles || [spec.tile!]; return; }
   endWatch(t.cb, t.u, 'replaced'); t.u.overwatch = null;
-  const w: HeldWatch = { id: t.def.id, hand: t.hand, ap: t.pv.ap, r: t.cb.round, ...(t.args.line ? { line: t.args.line } : {}), ...spec };
+  const w: HeldWatch = { id: t.def.id, hand: t.hand, ap: t.pv.ap, r: t.cb.round, ...(t.args.line ? { line: t.args.line } : {}), ...(t.args.ammo ? { ammo: t.args.ammo } : {}), ...spec };
   (t.u as any).watch = w;
   emitFx(t.cb, 'watch_set', { unit: t.u.id, at: t.u.pos, id: w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), allyId: w.allyId || null, targetId: w.targetId || null });
 }
