@@ -474,24 +474,26 @@ export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat
 /** Damage an object on a tile; at 0 HP cover becomes rubble and barrels explode. Returns a log suffix. */
 export function damageObject(cb: Combat, k: string, dmg: number, depth = 0, by: Unit | null = null): string {
   const o = objectsAt(cb, k).find((x) => x.hp != null && x.hp > 0); if (!o) return '';
-  const name = o.name.toLowerCase();
+  const name = o.name.toLowerCase(), many = pluralName(name);
   o.hp = Math.max(0, o.hp! - Math.max(1, Math.floor(dmg)));
   emitFx(cb, 'object', { at: k, what: o.kind, dmg: Math.max(1, Math.floor(dmg)), broken: o.hp <= 0, hp: o.hp, ...(o.max != null ? { max: o.max } : {}) });
-  if (o.hp > 0) return ' · the ' + name + ' takes ' + Math.floor(dmg) + ' (' + o.hp + '/' + o.max + ')';
+  if (o.hp > 0) return ' · the ' + name + (many ? ' take ' : ' takes ') + Math.floor(dmg) + ' (' + o.hp + '/' + o.max + ')';
   cb.objects = objectsOf(cb).filter((x) => x !== o);
   emit(cb, 'object_destroyed', { obj: o, by, cb });
   const kd = kindOf(o);
   if (kd.explodes && depth < 4) {
-    let out = ' · the ' + name + ' EXPLODES';
+    let out = ' · the ' + name + (many ? ' EXPLODE' : ' EXPLODES');
     emitFx(cb, 'explode', { at: k, radius: kd.explodes.radius, what: o.kind });
     for (const u of cb.units) if (!u.dead && dist(u.pos, k) <= kd.explodes.radius) out += hurtUnit(u, kd.explodes.damage, false, cb, 'explosion', by);
     for (const x of [...objectsOf(cb)]) if (x.pos !== k && dist(x.pos, k) <= kd.explodes.radius) out += damageObject(cb, x.pos, kd.explodes.damage, depth + 1, by);
     cb.objects.push(makeObject('x' + cb.objects.length + '_' + k.replace(',', '_'), 'fire', k));
     return out;
   }
-  if (kd.cover || kd.id === 'barricade') { cb.objects.push(makeObject('r_' + k.replace(',', '_') + '_' + cb.round, 'rubble', k)); return ' · the ' + name + ' breaks into rubble'; }
-  return ' · the ' + name + ' is destroyed';
+  if (kd.cover || kd.id === 'barricade') { cb.objects.push(makeObject('r_' + k.replace(',', '_') + '_' + cb.round, 'rubble', k)); return ' · the ' + name + (many ? ' break' : ' breaks') + ' into rubble'; }
+  return ' · the ' + name + (many ? ' are' : ' is') + ' destroyed';
 }
+/** Is an object's name plural (sandbags, crates): its verb agrees (live check, 10 Nov 2026: "the sandbags breaks"). */
+export const pluralName = (name: string): boolean => /[^s']s$/i.test(name.trim()) && !/(ss|us|is)$/i.test(name.trim());
 export const damageCover = damageObject;
 
 /** Spot hidden traps near a PC: passive Vigilant (10 + modifier) against the trap's TN (spec: Map objects). */
