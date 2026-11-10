@@ -136,6 +136,8 @@ export function riseAt(f: number, rise: number): number {
 /** Is this word one already showing on the same spot (a word, not a number: two hits of −23 are two hits)? */
 export function sameNews(list: FloatBox[], text: string, x: number, y: number, s: number, now: number): boolean {
   if (/\d/.test(text)) return false;
+  // the result of a roll is news every time: three rounds that miss are three misses
+  if (/^(MISS|COVER|FUMBLE|DODGE|DODGED|BLOCKED|PARRIED|GRAZE|CRIT|CRITICAL|SAVED|RESISTED)\b/i.test(text.trim())) return false;
   return list.some((b) => b.text === text && now - b.t0 < 700 && Math.abs((b.l + b.r) / 2 - x) < s * 0.6 && Math.abs(b.y - y) < s * 0.6);
 }
 /** The vertical shift (px, 0 or down a line or more) that keeps a new float of half-width hw, height h at (x, y) clear

@@ -8,20 +8,21 @@
 //   twatch           Hold a shot (selecting it opens the Watches)
 import { WEAPON, phys } from '@engine';
 type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup; type TechPreview = phys.TechPreview;
-const { techniquePad, previewTechnique, physView, weaponSystem, propText, TECHNIQUE } = phys;
+const { techniquePad, packPad, previewTechnique, physView, weaponSystem, propText, TECHNIQUE } = phys;
 import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
 
 export const TQ = 'tq:';
 export const TPAD = 'tpad:';
 export const TWATCH = 'twatch';
 export type Hand = 'main' | 'off';
-export const techAction = (hand: Hand, id: string) => TQ + hand + ':' + id;
+/** `item`: what a technique is used with when it isn't in the hand (a pack entry's index, a carried throwable's id). */
+export const techAction = (hand: Hand, id: string, item?: string | number | null) => TQ + hand + ':' + id + (item != null && item !== '' ? '@' + item : '');
 export const padAction = (hand: Hand) => TPAD + hand;
 /** A technique action's hand and id, or null. */
-export function parseTech(a: string | null | undefined): { hand: Hand; id: string } | null {
+export function parseTech(a: string | null | undefined): { hand: Hand; id: string; item?: string | number } | null {
   if (!a || !a.startsWith(TQ)) return null;
-  const [hand, id] = a.slice(TQ.length).split(':');
-  return (hand === 'main' || hand === 'off') && id ? { hand, id } : null;
+  const [hand, rest] = a.slice(TQ.length).split(':'), [id, it] = (rest || '').split('@');
+  return (hand === 'main' || hand === 'off') && id ? { hand, id, ...(it != null && it !== '' ? { item: /^\d+$/.test(it) ? Number(it) : it } : {}) } : null;
 }
 /** The pad an action belongs to: a Techniques row (its hand), Hold a shot, or none. */
 export function padOf(a: string | null | undefined): { kind: 'tech'; hand: Hand } | { kind: 'watch' } | null {
@@ -49,6 +50,7 @@ export interface TechChip {
   key: string; id: string; name: string; ap: number; apText: string; rounds: string; line: string; ok: boolean; why: string;
   lent: boolean; signature: boolean; built: boolean; mark: string; markTitle: string; title: string; help: string; aim: string;
   choices: { prop: string; text: string }[];
+  /** used with something that isn't in the hand: the pack entry or throwable (the engine's args.item) */ item?: string | number;
 }
 export interface ChipGroup { key: string; label: string; chips: TechChip[] }
 export interface WeaponBlock {
@@ -83,6 +85,11 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
     const all = pad.flatMap((gr) => gr.entries), plainE = all.find((e) => e.plain) || null;
     const groups = pad.filter((gr) => gr.group !== 'watch' && gr.group !== 'answer').map((gr) => ({ key: gr.group, label: gr.label.toUpperCase(), chips: gr.entries.filter((e) => !e.plain).map(chipOf) })).filter((gr) => gr.chips.length);
     const watch = (pad.find((gr) => gr.group === 'watch')?.entries || []).map(chipOf);
+    // what a ready technique can do with a weapon in the pack (Draw Cut, Snap Shot) or a carried throwable (Lob, Rout):
+    // one group per item, on the main hand's pad
+    if (hand === 'main') { let packs: any[] = []; try { packs = packPad(cb, u, g); } catch { packs = []; }
+      for (const pk of packs) groups.push({ key: ('pack-' + pk.item) as any, label: (pk.kind === 'stowed' ? 'DRAW · ' : 'THROW · ') + String(pk.name).toUpperCase() + (pk.count != null ? ' ×' + pk.count : ''),
+        chips: pk.entries.map((e: PadEntry) => ({ ...chipOf(e), key: e.id + '@' + pk.item, item: pk.item })) }); }
     const chips = groups.flatMap((gr) => gr.chips);
     // the header's meter: Momentum for a melee weapon, rounds and Heat for a ranged one
     let meter = '', pips: { key: string; on: boolean }[] = [], meterHint = '';
@@ -119,7 +126,7 @@ export function watchChips(blocks: WeaponBlock[]): (TechChip & { hand: Hand })[]
 
 // ---------- the pad ----------
 /** The chips a pad shows: a weapon's Techniques by group, or Hold a shot's Watches. sel: the technique picked. */
-export function padView(blocks: WeaponBlock[], pad: ReturnType<typeof padOf>, sel: { hand: Hand; id: string } | null) {
+export function padView(blocks: WeaponBlock[], pad: ReturnType<typeof padOf>, sel: { hand: Hand; id: string; item?: string | number } | null) {
   if (!pad) return null;
   if (pad.kind === 'watch') {
     const chips = watchChips(blocks);
@@ -127,7 +134,7 @@ export function padView(blocks: WeaponBlock[], pad: ReturnType<typeof padOf>, se
   }
   const b = blocks.find((x) => x.hand === pad.hand); if (!b) return null;
   return { key: padAction(b.hand), title: b.name.toUpperCase() + ' · PICK A TECHNIQUE, THEN ITS TARGET',
-    groups: b.groups.map((gr) => ({ ...gr, chips: gr.chips.map((c) => ({ ...c, action: techAction(b.hand, c.id), pressed: !!sel && sel.hand === b.hand && sel.id === c.id })) })) };
+    groups: b.groups.map((gr) => ({ ...gr, chips: gr.chips.map((c) => ({ ...c, action: techAction(b.hand, c.id, c.item), pressed: !!sel && sel.hand === b.hand && sel.id === c.id && (sel as any).item == c.item })) })) };
 }
 
 // ---------- the selected technique ----------
@@ -144,8 +151,8 @@ export function techPrompt(id: string, have: { target?: any; tile?: string | nul
   return null;
 }
 /** The engine's preview of the picked technique (null when it can't be asked yet). */
-export function techPreview(g: any, cb: any, u: any, sel: { hand: Hand; id: string }, args: { targetId?: string; tile?: string | null; allyId?: string; line?: string | null }): TechPreview | null {
-  try { return previewTechnique(cb, u, sel.id, { hand: sel.hand, ...(args.targetId ? { targetId: args.targetId } : {}), ...(args.tile ? { tile: args.tile } : {}), ...(args.allyId ? { allyId: args.allyId } : {}), ...(args.line ? { line: args.line } : {}) }, g); }
+export function techPreview(g: any, cb: any, u: any, sel: { hand: Hand; id: string; item?: string | number }, args: { targetId?: string; tile?: string | null; allyId?: string; line?: string | null; opt?: string | null }): TechPreview | null {
+  try { return previewTechnique(cb, u, sel.id, { hand: sel.hand, ...(args.targetId ? { targetId: args.targetId } : {}), ...(args.tile ? { tile: args.tile } : {}), ...(args.allyId ? { allyId: args.allyId } : {}), ...(args.line ? { line: args.line } : {}), ...(args.opt ? { opt: args.opt } : {}), ...(sel.item != null ? { item: sel.item } : {}) }, g); }
   catch (e) { return { ok: false, why: String((e as any)?.message || e), id: sel.id, ap: 0, rounds: 0, attacks: [], notes: [] }; }
 }
 const STATE: Record<string, string> = { pressed: 'Pressed', suppressed: 'Suppressed', broken: 'Broken', under_fire: 'Under fire', '': '' };
@@ -231,3 +238,14 @@ export function lineTiles(a: string, b: string): string[] {
   for (let i = 1; i < n; i++) out.push(Math.round(x0 + ((x1 - x0) * i) / n) + ',' + Math.round(y0 + ((y1 - y0) * i) / n));
   return out;
 }
+
+/** The choices a technique's text offers beyond its property line (the engine's args.opt), for the selected card's
+ * toggles. The first is what is sent when nothing was picked; '' means "send nothing" (the plain use). */
+export const TECH_OPTS: Record<string, [string, string, string][]> = {
+  called_shot: [['leg', 'LEG', 'Slowed on a hit.'], ['arm', 'ARM', 'Its weapon is lowered on a hit.'], ['head', 'HEAD', 'Dazed on a hit.']],
+  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Reach line only: the weapon stays in the target, which is nailed in place until it is pulled out.']],
+  bash: [['', 'DAZE', 'Heavy line: the target is Dazed.'], ['push', 'PUSH', 'Heavy line: the target is pushed 2 tiles instead.']],
+  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'Bare, next to you: it is Grappled as well.']],
+  drag: [['', 'AUTO', 'Pull it to you, or swap places when it is next to you.'], ['pull', 'PULL', 'Pull it toward you.'], ['swap', 'SWAP', 'Change places with it.']],
+};
+export const techOptOf = (id: string, picked: string | null | undefined): string | null => { const o = TECH_OPTS[id]; if (!o) return null; const v = picked != null && o.some((x) => x[0] === picked) ? picked : o[0][0]; return v || null; };

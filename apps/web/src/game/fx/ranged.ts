@@ -305,7 +305,7 @@ export function rangedBeat(e: FxEvent): number | undefined {
     case 'lane_end': case 'routed': return 0;
     case 'save': return e.ok ? 80 : 0;
     case 'free_reload': return 80;
-    case 'carry': return 140;
+    case 'carry': return e.to ? 140 : undefined; // (a carried body is World Play's beat)
     case 'swap_in': return 60;
     default: return undefined;
   }
@@ -852,7 +852,8 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       // its move (next) needn't say it again
       if (r) for (const x of r.after) if (x.k === 'move' && x.unit === e.unit) drawn.add(x);
     },
-    carry(e) {
+    carry(e, base) {
+      if (!e.to) return base(e); // World Play's carry (a body lifted on the area map) is not a round carrying on
       const r = tagOf(e), a = at(e.from), b = at(e.to); if (r) drawn.add(r);
       if (a && b) K.projectile(a, b, 110, 'bullet', b.s * 0.8);
       if (b) burst('flash_star', b, b.s * 0.6, 150, { color: WHITE, from: 0.3, to: 1, delay: 110 });

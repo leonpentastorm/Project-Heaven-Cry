@@ -14,3 +14,16 @@ describe('pullFreeTargets', () => {
     expect(pullFreeTargets({ units: [u('me', 'pc', '5,5'), u('a', 'pc', '6,5')] }, u('me', 'pc', '5,5'))).toEqual([]);
   });
 });
+
+import { techAction, parseTech, techOptOf } from './techView';
+describe('a technique used with something from the pack', () => {
+  it('carries the item in its action id (a pack index as a number, a throwable as its id)', () => {
+    expect(parseTech(techAction('main', 'snap_shot', 3))).toEqual({ hand: 'main', id: 'snap_shot', item: 3 });
+    expect(parseTech(techAction('main', 'lob', 'frag_grenade'))).toEqual({ hand: 'main', id: 'lob', item: 'frag_grenade' });
+    expect(parseTech(techAction('off', 'lunge'))).toEqual({ hand: 'off', id: 'lunge' });
+  });
+  it('a technique with choices sends the first when none was picked, and nothing for the plain use', () => {
+    expect(techOptOf('called_shot', null)).toBe('leg'); expect(techOptOf('called_shot', 'head')).toBe('head');
+    expect(techOptOf('run_through', null)).toBeNull(); expect(techOptOf('run_through', 'leave')).toBe('leave'); expect(techOptOf('cut', 'x')).toBeNull();
+  });
+});

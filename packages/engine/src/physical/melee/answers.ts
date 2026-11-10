@@ -92,7 +92,7 @@ technique({
   react: {
     move_step(ctx, t) {
       const m: Unit | undefined = ctx.u;
-      if (!m || m === t.u || m.side === t.u.side || !alive(m) || ctx.forced || ctx.skipOW || !ctx.from || !ctx.at) return;
+      if (!m || m === t.u || m.side === t.u.side || !alive(m) || ctx.forced || (ctx.skipOW && !ctx.noWatch) || !ctx.from /* a Shift (noWatch) silences held shots only: Keep Back still answers it */ || !ctx.at) return;
       if (active(t.cb) === t.u) return; // an Answer is never on your own turn
       const reach = t.line('reach') ? t.num('reach_tiles', 2) : t.num('reach_base', 1);
       if (dist(t.u.pos, ctx.at) > reach || dist(t.u.pos, ctx.from) <= reach) return; // only the step that enters it

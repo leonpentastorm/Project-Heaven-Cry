@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, heatLimit } from '../combat';
+import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, heatLimit } from '../combat';
 import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -198,6 +198,8 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (!hasUsable(u, hand, def.id, wield)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
   const bad = (def.not_with || []).find((p) => props.includes(p)); if (bad) return 'Not available with ' + (/^[aeiou]/.test(bad) ? 'an ' : 'a ') + bad + ' weapon.';
   if (def.group === 'answer') return def.name + ' is a reaction: it fires on its trigger.';
+  // Disarmed, or the weapon lowered: only the plain attacks (they fall back to fists) and a weapon drawn or thrown fresh
+  if (!def.free && !wield && weaponId !== 'fists' && (condOn(u, 'disarmed') || condOn(u, 'lowered'))) return condOn(u, 'disarmed') ? 'Disarmed: recover your weapon first (2 AP).' : 'Your weapon is lowered: raise it first (1 AP).';
   if (def.system === 'melee') {
     const ch = chainOf(cb, u);
     if (ch.ended) return 'Your chain has ended: a Finisher is the last melee technique of a turn.';
@@ -291,7 +293,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         if (t.preview && pv.ok && mode !== 'melee') (st.far ||= []).push(tgt.id); // a ranged or thrown roll: its hit gives Pressure (the card shows it)
         if (t.preview || !pv.ok) { u.attack = atk0; if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && fires && t.w.magazine != null && !u.infiniteAmmo && rd?.fromMag !== false) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
         const m0 = momentumOf(u), su = (u as any).setUp;
-        if (su && su.t === turnStamp(t.cb) && su.target === tgt.id && (!su.only || su.only.includes(t.def.id))) st.usedSetUp = true; // a mark for other techniques only is not spent by this one
+        if (su && su.t === turnStamp(t.cb) && su.target === tgt.id && (!su.only || su.only.includes(t.def.id))) st.willUseSetUp = true; // a mark for other techniques only is not spent by this one
         st.struck = (st.struck || 0) + 1;
         let r: ReturnType<typeof resolveAttack>;
         // a volley's rounds are numbered and named, as the engine's own burst and full auto are (Fire Discipline, Spray and Pray)
@@ -304,6 +306,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         const roll0 = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, ro), roll = o.chain ? () => asChain(roll0) : roll0;
         try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
         if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
+        if (st.willUseSetUp && !r.refused && !r.cancelled) st.usedSetUp = true; // an attack that never came keeps the mark
         if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
         if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
         if (t.def.system === 'melee') {
@@ -327,7 +330,7 @@ onHook('attack_preview', (ctx: any) => {
     if (offHome(a.t.def, a.t.weaponId)) ctx.terms.push({ v: -PHYS_RULES.off_home_penalty, label: a.t.def.name + ' off its home weapon' });
   }
   // A set-up mark (Feint, Sidestep): the user's next technique against that target this turn.
-  const su = (ctx.att as any).setUp; if (su && su.t === turnStamp(ctx.cb) && su.target === ctx.tgt.id && su.hit && (!a || !su.only || su.only.includes(a.t.def.id))) ctx.terms.push({ v: su.hit, label: su.label || 'set up' });
+  const su = (ctx.att as any).setUp; if (su && su.t === turnStamp(ctx.cb) && su.target === ctx.tgt.id && su.hit && (!su.only || (!!a && su.only.includes(a.t.def.id)))) ctx.terms.push({ v: su.hit, label: su.label || 'set up' });
   // Pressed (rules 1.12): −1 to hit with ranged attacks. Melee swings are not affected.
   if (!ctx.melee && isPressed(ctx.att)) ctx.terms.push({ v: PHYS_RULES.pressure.pressed_ranged_hit, label: 'Pressed' });
 });
@@ -411,7 +414,11 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
     // a push that moved nobody (blocked, or an item held it firm) didn't happen: it isn't logged or counted
     if (h === 'push') { if (forceMove(t, target, 'away', opts.tiles || 1, { from: opts.from }) > 0) took.push(h); continue; }
     took.push(h);
-    if (h === 'pinned' && opts.untilAp) target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : {}) };
+    if (h === 'pinned' && opts.untilAp) {
+      // a weapon an earlier nail left in the target: a second weapon knocks it to the ground, a nail without one keeps it in
+      const old = target.nailed; if (old?.weapon && opts.weapon) dropNailed(t.cb, target);
+      target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : old?.weapon ? { weapon: old.weapon, ...(old.item ? { item: old.item } : {}), by: old.by } : {}) };
+    }
     else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true } as any);
     else if (h === 'prone') { if (!target.prone) { target.prone = true; target.braced = false; emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); } }
   }
@@ -430,6 +437,7 @@ export type StopHow = 'pinned' | 'push' | 'prone' | 'halt';
  * (or opts.from), or a tile to move onto. Returns the tiles moved (0: blocked or it held firm). */
 export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string, tiles: number, opts: { from?: string; how?: string } = {}): number {
   const cb = t.cb, origin = opts.from || t.u.pos;
+  if (target.nailed) { if (t.preview) t.note(target.name + ' is nailed in place and can\'t be moved.'); return 0; } // nailed in place: nothing moves it until it is pulled free
   const stepTo = (from: string): string | null => {
     const [x, y] = xy(from);
     if (dir !== 'away' && dir !== 'toward') { const [dx, dy] = xy(dir); return x === dx && y === dy ? null : key(x + Math.sign(dx - x), y + Math.sign(dy - y)); }
@@ -532,11 +540,12 @@ const HOLDS: { u: Unit; keep: Record<string, any>; out: boolean }[] = [];
 function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
   const c = u.companion ? null : charOfUnit(u), w = WEAPON[wi.weaponId];
   const keep: Record<string, any> = {}; for (const k of HELD_FIELDS) keep[k] = (u as any)[k];
-  let braced: boolean | undefined, disarmed: number | undefined, drew = false;
+  let braced: boolean | undefined, disarmed: number | undefined, lowered: number | undefined, drew = false;
   if (wi.kind === 'stowed' && wi.as) {
     drew = true; braced = u.braced; disarmed = u.conds?.disarmed;
     putFields(u, wi.as); if (wi.as.weapon !== keep.weapon) u.braced = false;
     if (disarmed != null) delete u.conds!.disarmed;
+    lowered = u.conds?.lowered; if (lowered != null) delete u.conds!.lowered;
   } else {
     const pts = (c?.skills as any)?.[w.skill];
     putFields(u, { weapon: w.id, ammo: wi.ammo, maxDur: 0, dur: undefined, mods: wi.entry?.mods || [], ammoType: wi.entry?.ammoType ?? null, jammed: false, dmgMult: 1 });
@@ -545,7 +554,7 @@ function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
   const hold = { u, keep, out: false }; HOLDS.push(hold);
   try { return fn(); } finally {
     HOLDS.splice(HOLDS.indexOf(hold), 1); putFields(u, keep);
-    if (drew) { if (braced === undefined) delete u.braced; else u.braced = braced; if (disarmed != null) (u.conds ||= {}).disarmed = disarmed; }
+    if (drew) { if (braced === undefined) delete u.braced; else u.braced = braced; if (disarmed != null) (u.conds ||= {}).disarmed = disarmed; if (lowered != null) (u.conds ||= {}).lowered = lowered; }
   }
 }
 /** Run fn with a unit's real weapon back in its hand, if it is in the middle of a technique used with something else
