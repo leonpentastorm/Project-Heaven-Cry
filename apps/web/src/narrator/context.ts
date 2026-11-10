@@ -141,7 +141,7 @@ XP (per character, or charId "all")
 - Sources and allowed amounts: dialogue 25-100 (a scene won through talk), discovery 25-75 (a secret, a place, a truth), quest 50-300 (an objective completed). The engine awards combat XP itself. Pacing: session 1 (about one story scene and one fight) should reach about 250 XP per character, so classes arrive at level 3. Award XP when it is earned, with a short reason.
 
 CLASSES
-- One per attribute: ${CLASS_LINE}. Level 3 gives the highest attribute's class (tie: player picks), for good. Rank II at that attribute 5, III at 8. ${ADV_LIVE ? 'Advanced: wiki_lookup class:<id>.' : 'Advanced classes are being rebuilt: never offer one.'}
+- One per attribute: ${CLASS_LINE}. Level 3 gives the highest attribute's class (tie: player picks), for good. Rank II at that attribute 5 and level 6, III at 8 and level 12. ${ADV_LIVE ? 'Advanced: wiki_lookup class:<id>.' : 'Advanced classes are being rebuilt: never offer one.'}
 
 PERKS, TRAITS AND CLASS MOVES
 - Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".

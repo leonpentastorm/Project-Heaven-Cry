@@ -4,7 +4,7 @@ import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAP
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
-  type Character, type Sheet, restockResources, advancedClassError, applyLevels, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
+  type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
@@ -3172,7 +3172,12 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (!CLASS[a.classId]) fail('No such class.');
         c.classId = a.classId;
         const rank = Math.max(1, Math.min(3, Math.round(a.rank || 1)));
-        if (rank >= 2) sbRaiseAttr(c, a.classId, rank === 3 ? 8 : 5);
+        if (rank >= 2) {
+          sbRaiseAttr(c, a.classId, rank === 3 ? 8 : 5);
+          // rules 1.11: a rank needs its level too; the Proving Ground raises the level to it (points and all)
+          const need = rank === 3 ? RANK_LEVEL.III : RANK_LEVEL.II;
+          if (c.level < need) { c.xp = Math.max(c.xp, xpForLevel(need)); applyLevels(c); c.hp = maxHp(c); }
+        }
       });
       const adv = sb.advanced[c.id];
       sbLog(g, c.name + ' is now ' + (adv ? ADVANCED_CLASSES.find((x) => x.id === adv)!.name + ' (with ' + CLASS[c.classId!]?.name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] + ')' : c.classId ? CLASS[c.classId].name + ' rank ' + ['', 'I', 'II', 'III'][classRank(c)] : 'classless') + '.');

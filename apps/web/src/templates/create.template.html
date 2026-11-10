@@ -172,7 +172,7 @@
 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 10px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Skills</h1>
 <sc-for list="{{budgets}}" as="b" hint-placeholder-count="3"><span style="{{b.style}}">{{b.text}}</span></sc-for>
-<span style="font-size: 12px; color: #A3AEC2; max-width: 360px">No caps: a skill spends the Attribute and Core points it needs, and an unspent Core point becomes 2 Attribute points. All 6 Core points in one Core is a 7/1/1 build.</span>
+<span style="font-size: 12px; color: #A3AEC2; max-width: 360px">No caps: a skill spends the Attribute and Core points it needs. Every point is placed. All 6 Core points in one Core is a 7/1/1 build.</span>
 <span style="margin-left: auto; font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">CLASS AT LEVEL 3</span>
 <sc-for list="{{leanList}}" as="l" hint-placeholder-count="2"><span class="phc-lean-chip" style="{{l.chip}}"><sc-if value="{{l.hasIcon}}"><img class="phc-class-emblem" src="{{l.icon}}" alt="" style="width: 16px; height: 16px"></sc-if>{{l.name}} {{l.total}}</span></sc-for>
 <button type="button" onClick="{{resetSkills}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Reset</button>

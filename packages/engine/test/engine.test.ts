@@ -51,6 +51,18 @@ describe('creation', () => {
     expect(validateSheet({ ...sheetFrom(ARCHETYPES[0].id), skills: { durability: 3 } })).toMatch(/Spend all 10/);
     expect(deriveCreation({ durability: 8 }).ok).toBe(false);
   });
+  it('a Core point can\'t be traded for Attribute points (rules 1.11): 6/1/1 with 12 Attribute points is refused', () => {
+    const d = deriveCreation({ durability: 6 }, { endurance: 6, strength: 6, agility: 3 }, { body: 6 });
+    expect(d.attrSpent).toBe(12); expect(d.traded).toBe(0); expect(d.ok).toBe(false);
+    expect(deriveCreation({ durability: 6 }, { endurance: 6, strength: 6 }, { body: 7 }).ok).toBe(true); // 10 Attribute, 6 Core
+  });
+  it('Mind Without Fog gives 1 more Core point at creation (rules 1.11; it was 2)', () => {
+    expect(deriveCreation({ durability: 8 }, {}, {}, 7).ok).toBe(true);  // 8/1/1 with the trait's point
+    const base = sheetFrom(ARCHETYPES.find((x) => x.family === 'all_in')!.id);
+    const fog = { ...base, traits: ['mind_without_fog'], cores: { ...base.cores, mind: 2 } };
+    expect(validateSheet(fog as any)).toBeNull();
+    expect(validateSheet({ ...fog, cores: { ...base.cores, mind: 3 } } as any)).toMatch(/break the tree or the budgets/);
+  });
   it('a 7/1/1 build is legal (no creation caps)', () => {
     const allIn = ARCHETYPES.find((x) => x.family === 'all_in')!;
     expect(validateSheet(sheetFrom(allIn.id))).toBeNull();

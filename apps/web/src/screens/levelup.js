@@ -187,7 +187,7 @@ export class LevelUpLogic extends DCLogic {
       spendHead: left || c.unspent.attr || c.unspent.core ? 'TO SPEND' : 'ALL POINTS SPENT',
       rules: 'A skill can\'t pass its Attribute, an Attribute can\'t pass its Core; 10 is the top. Each Mastery level (3, 5, 7, 9 points) gives one perk step: one of the skill\'s two perks at Tier I, or a Tier I raised to Tier II. 10 points give the skill\'s Mastered perk.',
       stepsHead: owed ? 'PERK STEPS WAITING · ' + owed : '',
-      pointsNote: 'Every level: +1 Skill point. Even levels: +1 Attribute point. Every 5th level: +1 Core point. Unspent points keep.',
+      pointsNote: 'Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Every 3rd level (to 18): +1 Core point. Unspent points keep.',
       done: () => go(g.phase === 'combat' ? 'combat' : 'main', { levelupChar: null }), doneLabel: allDone ? 'Done · back to the story' : 'Back to the story (finish later)',
       doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (allDone ? 'background: #6FEA77; color: #0A0D13' : 'background: #1C2536; color: #E7EBF3'),
     };
