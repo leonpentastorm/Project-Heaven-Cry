@@ -8,14 +8,14 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, saveBonus, debuffStrength, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit } from './combat';
+import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed } from './combat';
 import { type Rng, d20, die } from './rng';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
-import { canReact, useReaction } from './tactics';
+import { canReact, useReaction, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { itemWords, wordCostMods, immune, actionAp } from './effects/core';
@@ -143,10 +143,12 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
  * 1.9: the same sweep rolls each death's drops (loot.ts) on the fight's dice, so it happens exactly once per death; the
  * area map's throwaway fight rolls none (item 697). */
 export function noteDeaths(cb: Combat, rng?: Rng) {
+  for (const u of cb.units) if (u.nailed && u.surrendered) dropNailed(cb, u); // rules 1.12: a unit that gave up (or was subdued, or lifted out) lets go of a weapon left in it
   const seen = new Set(cb.deadSeen || []);
   for (const u of cb.units) if (u.dead && !seen.has(u.id)) {
     seen.add(u.id); cb.deadSeen = [...seen];
     shiftMana(cb, deathMana(u), u.name + ' fell');
+    dropNailed(cb, u); // rules 1.12: a weapon left in it falls where it fell
     if (rng && !cb.overworld) rollDeathDrops(cb, rng, u);
   }
   cb.deadSeen = [...seen];
@@ -275,7 +277,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
     if (id === 'blinded') { t.baseVision ??= t.vision || 12; t.vision = 1; }
     if (id === 'guarded' || id === 'withdrawing') t.def += 2;
     if (id === 'corroded') t.def -= 2;
-    if (id === 'grappled' || id === 'stunned') { t.overwatch = null; }
+    if (id === 'grappled' || id === 'stunned') { dropHeldShot(cb, t, id); }
   }
   emit(cb, 'cond_landed', { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
   const dur = def.noTick && !rounds ? '' : n + ' round' + (n === 1 ? '' : 's');
@@ -1202,7 +1204,7 @@ function pourOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, F: Se
     const v = cb.units.filter((x) => x !== t && !x.dead && x.side === t.side && dist(x.pos, t.pos) <= 1).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0];
     if (v) out += applyCond(cb, rng, u, v, 'bleeding', undefined, undefined, { skipSave: true });
   }
-  if (F.has('dread') && !t.dead) { while (canReact(cb, t)) { if (!useReaction(cb, t)) break; } t.overwatch = null; out += ' · ' + t.name + ' loses its reaction (Dread)'; }
+  if (F.has('dread') && !t.dead) { while (canReact(cb, t)) { if (!useReaction(cb, t)) break; } dropHeldShot(cb, t, 'Dread'); out += ' · ' + t.name + ' loses its reaction (Dread)'; }
   if (F.has('awe') && !t.dead) { apDebt(t, FP('awe').ap_loss ?? 1); out += ' · ' + t.name + ' will lose ' + (FP('awe').ap_loss ?? 1) + ' AP (Awe)'; }
   if (F.has('longing') && !t.dead) out += magicShove(cb, t, u.pos, -(FP('longing').pull ?? 1), u);
   if (F.has('contempt') && !t.dead) out += applyCond(cb, rng, u, t, 'scorned', FP('contempt').rounds ?? 2, undefined, { skipSave: true });

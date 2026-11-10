@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Legion gladius -->
+  <g transform="rotate(-45 32 32)">
+    <path d="M9 29 L17 29 L17 22.5 L22 22.5 L22 26 L46 26 L64 32 L46 38 L22 38 L22 41.5 L17 41.5 L17 35 L9 35
+             A4.5 4.5 0 1 1 9 29 Z"/>
+    <path d="M22 32 L56 32"/>
+  </g>
+</svg>

@@ -6,8 +6,11 @@
 // "tiles toward the target" on Lunge, Interpose on Brace, the three-Mark limit on Mark). Every move runs in combat and,
 // where it has one, in the story; what the engine can't judge goes to the Narrator (note / pendRuling / brief).
 // Recommended fixes from the audit are marked PROVISIONAL and listed in the spec (section 14, tags I…) and docs/design/perk-runtime.md.
+import { isPressed } from '../physical/pressure';
 import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
+import { weaponProps, ensurePhys } from '../physical/data';
+import { loadQuiverWith } from '../physical/ranged/quiver';
 import { strikeFromWorld, apLeft } from '../game';
 import type { Combat, Unit } from '../combat';
 import {
@@ -27,7 +30,7 @@ import {
 } from '../magic';
 import { soulStrike, designRolls } from './soul';
 import { d20, die, type Rng } from '../rng';
-import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal } from '../tactics';
+import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal , dropHeldShot } from '../tactics';
 import { itemWords, wordCostMods } from '../effects/core';
 import { makeObject } from '../objects';
 
@@ -169,6 +172,9 @@ register({
 // (rules.json ammo_types: AP ignores armour at ×0.8, hollow-point ×1.3 with armour doubled, incendiary Burning at ×0.9).
 const SPECIAL = [['armor_piercing', 'armour-piercing'], ['hollow_point', 'hollow-point'], ['incendiary', 'incendiary']] as const;
 export const QUIVER = 12;
+/** A Drawn weapon (a bow) has a quiver, and a quiver can't be refilled in a fight (rules 1.12, Weapons 10). */
+const isDrawn = (wid: string | null | undefined) => !!wid && weaponProps(wid).includes('drawn');
+const QUIVER_WHY = 'A quiver is filled before the fight.';
 const ammoOk = (wid: string): string | null => { const w = WEAPON[wid]; if (!w || isMelee(w)) return 'Your weapon takes no rounds.'; if (w.magazine == null || /flame|launcher|thrown/.test(w.category) || !w.ammo) return 'No special rounds for this weapon.'; return null; };
 register({
   id: 'marksman.special_ammo', claims: 'all',
@@ -176,7 +182,7 @@ register({
     ...SPECIAL.map(([id, name]): ActionDef => ({
       id: 'load_' + id, label: 'Load ' + name, scope: ['combat'], target: 'none', ap: (h) => (h.u ? reloadAp(h.u) : 2),
       text: 'Reload with your ' + name + ' ' + 'magazine (restocked at rest).',
-      available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
+      available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon) || (isDrawn(h.u.weapon) ? QUIVER_WHY : null); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
       run: (h) => {
         const u = h.u!, cb = h.cb!, w = WEAPON[u.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
         // The magazine in the gun goes back to the pouch (a partly spent standard one keeps its rounds; a spent special one is dropped).
@@ -192,12 +198,18 @@ register({
     ...SPECIAL.map(([id, name]): ActionDef => ({
       id: 'story_' + id, label: 'Load ' + name, scope: ['story'], target: 'none', ap: 0,
       available: (h) => { if (!h.c) return false; const e = ammoOk(h.c.weapon); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
-      run: (h) => { const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id); c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, QUIVER) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.'); },
+      run: (h) => {
+        const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
+        // A Drawn weapon's arrows are its quiver (Physical 2.0, rules 1.12: physical/ranged/quiver.ts): what it held goes
+        // back to the pack, and the quiver is the special arrows, typed (review fix: c.loadedType alone was lost).
+        if (isDrawn(c.weapon)) { loadQuiverWith(c, c.weapon, {}); c.loaded = Math.min(w.magazine!, QUIVER); c.loadedType = null; ensurePhys(c).quiver[c.weapon] = { [id]: c.loaded }; postStory(h, c.name + ' fills the quiver with ' + name + ' arrows.'); return; }
+        c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, QUIVER) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.');
+      },
     })),
   ],
   on: {
     // A normal reload after the special magazine: standard rounds again.
-    reload: (ctx, h) => { if (ctx.u !== h.u || ctx.special) return; const u = h.u!, w = WEAPON[u.weapon]; if (!u.ammoType || !stateOf(h).special) return;
+    reload: (ctx, h) => { if (ctx.u !== h.u || ctx.special || ctx.hand === 'off') return; /* the off-hand gun's reload leaves the main gun's rounds alone */ const u = h.u!, w = WEAPON[u.weapon]; if (!u.ammoType || !stateOf(h).special) return;
       if (w?.reload === 'loose' ? (u.loose || 0) > 0 : (u.mags || []).some((n) => n > 0)) { u.ammoType = null; stateOf(h).special = null; } },
   },
   brief: () => null,
@@ -213,7 +225,7 @@ register({
     id: 'overwatch_double' + (mode === 'aimed' ? '_aimed' : ''), label: 'Killzone' + (mode === 'aimed' ? ' (aimed)' : ''), scope: ['combat'], target: 'none',
     ap: (h) => (h.u ? 2 * attackApCost(WEAPON[h.u.weapon], mode) : 4),
     text: 'Hold two ' + (mode === 'aimed' ? 'aimed ' : '') + 'overwatch shots: one each at the first two enemies that move into your line, both +2 to hit.',
-    available: (h) => { const u = h.u; if (!u) return false; const w = WEAPON[u.weapon]; if (!w || isMelee(w)) return 'Killzone needs a ranged weapon.'; if (u.overwatch) return 'Already on overwatch.'; return true; },
+    available: (h) => { const u = h.u; if (!u) return false; const w = WEAPON[u.weapon]; if (!w || isMelee(w)) return 'Killzone needs a ranged weapon.'; if (u.overwatch) return 'Already on overwatch.'; if (isPressed(u)) return 'You are Pressed: you can\'t hold a shot.'; return true; },
     run: (h) => { const u = h.u!; u.overwatch = mode; u.owShots = 1; stateOf(h).kz = { left: 2, hit: [], mode, firing: null }; emitFx(h.cb!, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); say(h.cb, u.name + ' sets a killzone: two shots held.'); },
   })),
   on: {
@@ -1111,7 +1123,7 @@ register({
 // end of its next turn, as Sharpened lasts). Reach: 8 tiles + your Sigil range bonus, in sight (the 1.2 PUSH reach, kept
 // as a number of the move now that PUSH is a cone).
 function flippable(t: Unit): string[] {
-  return [t.overwatch ? 'overwatch' : '', (t.shield || 0) > 0 ? 'shield' : '', t.braced ? 'braced' : '', condOn(t, 'emplaced') ? 'emplaced' : '', condOn(t, 'guarded') ? 'guarded' : '', condOn(t, 'withdrawing') ? 'withdrawing' : '', condOn(t, 'inspired') ? 'inspired' : '', condOn(t, 'quickened') ? 'quickened' : '', condOn(t, 'sharpened') ? 'sharpened' : '', t.hidden ? 'hidden' : ''].filter(Boolean);
+  return [t.overwatch || t.watch ? 'overwatch' : '', (t.shield || 0) > 0 ? 'shield' : '', t.braced ? 'braced' : '', condOn(t, 'emplaced') ? 'emplaced' : '', condOn(t, 'guarded') ? 'guarded' : '', condOn(t, 'withdrawing') ? 'withdrawing' : '', condOn(t, 'inspired') ? 'inspired' : '', condOn(t, 'quickened') ? 'quickened' : '', condOn(t, 'sharpened') ? 'sharpened' : '', t.hidden ? 'hidden' : ''].filter(Boolean);
 }
 register({
   id: 'trickster.rewrite', claims: 'all',
@@ -1129,7 +1141,7 @@ register({
         if (ok) { say(cb, line + ' · resists' + addFlux(cb, u, 1) + '.'); return; }
         const f = flippable(t)[0], st = stateOf(h);
         switch (f) {
-          case 'overwatch': t.overwatch = null; t.owShots = 0; useReaction(cb, t); line += ' · its held shot is gone'; break;
+          case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); useReaction(cb, t); line += ' · its held shot is gone'; break;
           case 'shield': { const n = Math.min(t.shield || 0, Math.floor(30 * (u.mg?.sigilMult || 1))); t.shield = 0; line += ' · the shield turns on it' + harm(cb, r0, u, t, n, 'sigil'); break; }
           case 'braced': case 'emplaced': t.braced = false; endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true }); break;
           case 'guarded': case 'withdrawing': { const left = t.conds![f]; endCond(t, f, cb); t.def -= 2; (st.def ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its guard becomes an opening (−2 Defense, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }

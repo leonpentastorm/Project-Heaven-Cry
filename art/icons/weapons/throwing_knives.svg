@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Throwing knives -->
+  <g transform="rotate(-45 32 32) translate(-4 0)">
+    <circle cx="9.5" cy="32" r="4"/>
+    <path d="M13 30.1 L26.7 32.8 L31.2 30.6 L58.6 41.5 L29.1 41.4 L25.7 37.7 L12.1 35 Z"/>
+    <path d="M12.1 29 L25.7 26.3 L29.1 22.6 L58.6 22.5 L34.7 32"/>
+  </g>
+</svg>

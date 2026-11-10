@@ -21,6 +21,7 @@ import { createPortal } from 'react-dom';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
 import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
 import { OPT_LABEL, optValue } from './actionPickers';
+import { gearIconUri } from './gearIcons';
 import { Groups, GroupList, GroupSearch, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
 import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
@@ -39,7 +40,7 @@ import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
-import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName } from '@engine';
+import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys } from '@engine';
 const ITEMS = Object.values(ITEM);
 import { ART, zoneOf } from '../screens/shared';
 
@@ -473,6 +474,7 @@ const FIND = {
   belief: 'belief faithful atheist patron god ' + names(FAITH_PATRONS), sigils: 'sigil words glyphs learn forget subject reach delivery burst filter ' + names(SIGILS, (w) => w.word),
   soul: 'outbursts outburst lessons schools tones modules feelings practice sound effects test soul ' + names(SCHOOLS) + ' ' + names(MODULES) + ' ' + names(FEELINGS),
   spawn: 'spawn enemy enemies foe drill unit caster ' + names(ENEMIES) + ' ' + names(CASTERS),
+  tech: 'technique techniques learn forget ready drill mark signature momentum pressure meter melee ranged ' + names(phys.TECHNIQUES),
 };
 const cardStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 10, padding: 14, borderRadius: 12, background: C.panel, border: '1px solid ' + C.line, minWidth: 0 };
 /** The head of a card: its title and a ▾/▸ to fold it (open state per browser, workshopGroups.tsx). */
@@ -623,6 +625,9 @@ function equipTo(it: PackIt): ['main' | 'off' | 'worn' | 'mod', string][] {
   if (d?.slot === 'off_hand') return [['off', 'Equip · off hand']];
   return [];
 }
+/** An item's icon (weapons, armour, shields: gearIcons.ts), or nothing for an item with none. */
+const GearIcon = ({ id, size = 24 }: { id?: string | null; size?: number }) => { const src = gearIconUri(id); return src ? <img className="phc-gear-icon" src={src} alt="" width={size} height={size} style={{ flex: 'none', width: size, height: size }} /> : null; };
+const nameCell: React.CSSProperties = { minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 };
 const slotRow: React.CSSProperties = { display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) auto', gap: 8, alignItems: 'center', padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, fontSize: 13 };
 /** Where a focus is (spec: Hands 2, item 630: it counts only in a hand). */
 function focusNow(c: Character, k: 'evoker' | 'emanator'): string {
@@ -646,17 +651,18 @@ function GearTab({ c }: { c: Character }) {
       </span>
     </Section>
     <Section title="EQUIPPED" aria="Equipped">
-      <div style={slotRow}><span style={label}>MAIN HAND</span><span style={{ minWidth: 0 }}><b>{mainName}</b>{c.weaponState?.rarity && c.weaponState.rarity !== 'standard' ? ' (' + c.weaponState.rarity + ')' : ''}{(c.weaponState?.mods || []).length ? <span style={{ color: C.muted }}>{' · ' + c.weaponState!.mods!.map((m) => ITEM[m]?.name || m).join(', ')}</span> : null}</span>
+      <div style={slotRow}><span style={label}>MAIN HAND</span><span style={nameCell}>{c.weapon !== 'fists' && <GearIcon id={c.weapon} />}<span style={{ minWidth: 0 }}><b>{mainName}</b>{c.weaponState?.rarity && c.weaponState.rarity !== 'standard' ? ' (' + c.weaponState.rarity + ')' : ''}{(c.weaponState?.mods || []).length ? <span style={{ color: C.muted }}>{' · ' + c.weaponState!.mods!.map((m) => ITEM[m]?.name || m).join(', ')}</span> : null}</span></span>
         {c.weapon !== 'fists' ? <button type="button" style={small} aria-label={'Unequip ' + mainName} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot: 'main' })}>Unequip</button> : <span />}</div>
-      <div style={slotRow}><span style={label}>OFF HAND</span><span style={{ minWidth: 0, color: c.offHand ? C.text : C.muted }}>{c.offHand ? <b>{WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id}</b> : 'empty'}</span>
+      <div style={slotRow}><span style={label}>OFF HAND</span><span style={{ ...nameCell, color: c.offHand ? C.text : C.muted }}>{c.offHand && <GearIcon id={c.offHand.id} />}{c.offHand ? <b>{WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id}</b> : 'empty'}</span>
         {c.offHand ? <button type="button" style={small} aria-label={'Unequip ' + (WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id)} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot: 'off' })}>Unequip</button> : <span />}</div>
-      {worn.map(([slot, id]) => <div key={slot} style={slotRow}><span style={label}>{slot.replace(/_/g, ' ').toUpperCase()}</span><span style={{ minWidth: 0 }}><b>{ITEM[id]?.name || id}</b></span>
+      {worn.map(([slot, id]) => <div key={slot} style={slotRow}><span style={label}>{slot.replace(/_/g, ' ').toUpperCase()}</span><span style={nameCell}><GearIcon id={id} /><b>{ITEM[id]?.name || id}</b></span>
         <button type="button" style={small} aria-label={'Unequip ' + (ITEM[id]?.name || id)} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot })}>Unequip</button></div>)}
       {!worn.length && <div style={slotRow}><span style={label}>ARMOUR</span><span style={{ color: C.muted }}>no armour pieces worn</span><span /></div>}
       <span style={{ fontSize: 12, color: C.muted }}>Body armour class {c.armourClass ?? 0} (set it on Squad). A weapon taken in hand here comes loaded.</span>
     </Section>
     <Section title={'PACK (' + pack.length + ')'} aria="Pack">
       {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, flexWrap: 'wrap' }}>
+        <GearIcon id={it.mags || it.calibre ? null : it.weapon || it.item || it.id} />
         <span style={{ flex: '1 1 140px', minWidth: 0 }}>{it.name}{it.rarity && it.rarity !== 'standard' ? ' (' + it.rarity + ')' : ''}<span style={{ color: C.muted }}>{it.mags ? ' · ' + it.mags.length + ' × [' + it.mags.join(', ') + ']' : it.qty > 1 ? ' × ' + it.qty : ''}</span></span>
         {equipTo(it).map(([to, name]) => <button key={to} type="button" style={small} aria-label={name + ': ' + it.name} onClick={() => act({ type: 'sandbox/equip', charId: c.id, idx: i, to })}>{name}</button>)}
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Drop ' + it.name} onClick={() => act({ type: 'sandbox/drop', charId: c.id, idx: i })}>✕</button>
@@ -665,6 +671,52 @@ function GearTab({ c }: { c: Character }) {
       <span style={{ fontSize: 12, color: C.muted }}>Stims: {c.stims} <button type="button" style={{ ...small, minHeight: 26 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'stim_injector', qty: 3 })}>+3</button></span>
     </Section>
     <GivePicker c={c} />
+    <ArmsTools c={c} />
+  </>;
+}
+/** Physical 2.0 (rules 1.12) in the Proving Ground: learn or forget any technique (readied past the cap here, so
+ *  everything can be tried), every technique at once, a weapon's drill (marks teach its signature), and, in a fight, any
+ *  unit's Momentum and Pressure. Everything goes through sandbox/technique, sandbox/drill and sandbox/meter. */
+function ArmsTools({ c }: { c: Character }) {
+  const g = getState().game, cb = g && g.phase === 'combat' ? g.combat : null;
+  const [tech, setTech] = React.useState(phys.TECHNIQUES.find((t) => !t.free)!.id), [wid, setWid] = React.useState(c.weapon && WEAPON[c.weapon] ? c.weapon : 'combat_knife'), [uid, setUid] = React.useState('');
+  const known = phys.physOf(c).known.filter((id) => phys.TECHNIQUE[id] && !phys.TECHNIQUE[id].free);
+  const marks = phys.drillMarks(c, wid), d = phys.drillOf(c, wid);
+  const units = cb ? cb.units.filter((u: any) => !u.dead) : [], u: any = units.find((x: any) => x.id === uid) || units.find((x: any) => x.charId === c.id) || units[0];
+  const pv = u && cb ? (() => { try { return phys.physView(cb, u, 'pc', g); } catch { return null; } })() : null;
+  return <>
+    <Section title="TECHNIQUES (READIED PAST THE CAP HERE)" aria="Techniques" keys={FIND.tech}>
+      <div style={row}>
+        <select value={tech} onChange={(e) => setTech(e.target.value)} aria-label="Technique" style={{ ...field, flex: 1 }}>
+          {(['melee', 'ranged'] as const).map((sys) => <optgroup key={sys} label={sys === 'melee' ? 'Melee' : 'Ranged'}>{phys.groupsOf(sys).flatMap((gr) => phys.TECHNIQUES.filter((t) => t.system === sys && t.group === gr && !t.free).map((t) => <option key={t.id} value={t.id}>{phys.groupName(gr)} · {t.name}{phys.handlerOf(t.id) ? '' : ' (not built yet)'}</option>))}</optgroup>)}
+        </select>
+        <button type="button" data-sb-tech="learn" style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id: tech, ready: true })}>Learn + ready</button>
+      </div>
+      <div style={row}>
+        <button type="button" data-sb-tech="all" style={{ ...btn, border: '1px solid ' + C.text }} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id: 'all', ready: true })}>Learn every technique · ready all</button>
+        <button type="button" style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id: 'all', forget: true })}>Forget all</button>
+      </div>
+      {known.length > 0 && <div style={row} aria-label="Known techniques">{known.map((id) => <button key={id} type="button" title="Forget it" style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id, forget: true })}>{phys.TECHNIQUE[id].name} ✕</button>)}</div>}
+      <span style={{ fontSize: 12, color: C.muted }}>Ready lists: melee {phys.readyTechniques(c, 'melee').length} / {phys.readyCap(c, 'melee')}, ranged {phys.readyTechniques(c, 'ranged').length} / {phys.readyCap(c, 'ranged')}. The ARMS tab on the sheet shows them.</span>
+    </Section>
+    <Section title="DRILL" aria="Drill" keys={FIND.tech}>
+      <div style={row}>
+        <select value={wid} onChange={(e) => setWid(e.target.value)} aria-label="Drill weapon" style={{ ...field, flex: 1 }}>{WEAPONS.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
+        {[100, 300, 900].map((n) => <button key={n} type="button" data-sb-drill={n} style={btn} onClick={() => act({ type: 'sandbox/drill', charId: c.id, weaponId: wid, amount: n })}>+{n}</button>)}
+        <button type="button" style={{ ...btn, color: C.muted }} disabled={!d} onClick={() => act({ type: 'sandbox/drill', charId: c.id, weaponId: wid, amount: -d })}>Reset</button>
+      </div>
+      <span style={{ fontSize: 12, color: C.muted }}>{WEAPON[wid]?.name}: {d} drill · {marks.map((m, i) => (m.reached ? '✓ ' : '○ ') + 'mark ' + ['I', 'II', 'III'][i] + ' ' + m.at + (m.gives === 'signature' ? ' (' + (phys.TECHNIQUE[m.id!]?.name || m.id) + ')' : ' (a pick)')).join(' · ')}{phys.picksOwed(c, wid) ? ' · ' + phys.picksOwed(c, wid) + ' pick waiting: the ARMS tab' : ''}</span>
+    </Section>
+    <Section title="MOMENTUM AND PRESSURE (IN A FIGHT, HOST)" aria="Meters" keys={FIND.tech}>
+      {!cb ? <span style={{ fontSize: 12, color: C.muted }}>Start a fight to set a unit's Momentum or Pressure.</span> : <>
+        <select value={u?.id || ''} onChange={(e) => setUid(e.target.value)} aria-label="Meter unit" style={field}>{units.map((x: any) => <option key={x.id} value={x.id}>{x.name}{x.side === 'foe' ? ' (hostile)' : ''}</option>)}</select>
+        {u && <div style={row}>
+          <span style={{ fontSize: 13 }}>Momentum</span><Stepper name="Momentum" value={u.res?.momentum ?? 0} min={0} max={u.resMax?.momentum ?? phys.PHYS_RULES.momentum.max} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, momentum: n })} />
+          <span style={{ fontSize: 13 }}>Pressure</span><Stepper name="Pressure" value={phys.pressureOf(u)} min={0} max={phys.pressureCap(u)} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, pressure: n })} />
+        </div>}
+        {pv && pv.pressure.word && <span style={{ fontSize: 12, color: C.muted }}>{pv.pressure.word}{pv.pressure.cost ? ': ' + pv.pressure.cost : ''}</span>}
+      </>}
+    </Section>
   </>;
 }
 function GivePicker({ c }: { c: Character }) {
@@ -685,6 +737,7 @@ function GivePicker({ c }: { c: Character }) {
     </div>
     <div style={w.wide ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 6, maxHeight: 420, overflowY: 'auto', alignContent: 'start' } : { display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 300, overflowY: 'auto' }}>
       {hits.map((x) => <div key={(x.weapon ? 'w:' : 'i:') + x.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, minWidth: 0 }}>
+        <GearIcon id={x.id} size={32} />
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}><span style={{ fontSize: 13, fontWeight: 600 }}>{x.name}</span><span style={{ fontSize: 11, color: C.muted }}>{x.what}{x.weapon && rarity !== 'standard' ? ' · ' + rarity : ''}</span></span>
         <button type="button" style={{ ...btn, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined })}>Give</button>
         {(x.weapon || /armour|mod|off hand|shield|light|focus/.test(x.what)) && <button type="button" style={{ ...primary, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined, equip: true })}>Give + equip</button>}

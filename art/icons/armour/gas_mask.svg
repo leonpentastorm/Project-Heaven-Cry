@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Gas mask -->
+  <path d="M32 6 C45 6 53 14 53 27 C53 37 47 43 41 46 L40 54 L37 60 L27 60 L24 54 L23 46 C17 43 11 37 11 27 C11 14 19 6 32 6 Z"/>
+  <path d="M16 22 L28 24 L27 33 L18 31 Z"/>
+  <path d="M48 22 L36 24 L37 33 L46 31 Z"/>
+  <path d="M24.5 53 L39.5 53"/>
+</svg>

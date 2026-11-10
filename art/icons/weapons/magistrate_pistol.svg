@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Magistrate heavy pistol -->
+  <path d="M5 14 L50 14 L50 16 L53 16 L53 20 L57 20 L57 16 L60 16 L60 25 L48 25 L48 30 L26 30 L22.5 52 Q22.1 54 20.1 54
+           L9.3 54 Q7.3 54 7.6 52 L11 30 L3.5 27.5 L5 25 Z"/>
+  <path d="M5 25 L48 25"/>
+  <path d="M50 16 L50 25"/>
+  <path d="M36 30 L36 34 Q36 37.5 32.5 37.5 L24.8 37.5"/>
+</svg>

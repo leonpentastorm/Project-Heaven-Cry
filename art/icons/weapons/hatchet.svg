@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Hatchet -->
+  <g transform="translate(0 4) rotate(-45 32 32)">
+    <path d="M6 30 L8 29.5 L38 29.5 L38 25.5 Q36 19.5 26 17 Q41 8 59 14 L51 25.5 L51 38.5 L43 38.5 L43 34.5 L8 34.5 L6 34
+             Z"/>
+    <path d="M32 18 Q42 13 54 17"/>
+  </g>
+</svg>

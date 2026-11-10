@@ -61,6 +61,9 @@ M813 map backgrounds are opaque 1600 × 1100 paintings in a strict top-down orth
 ## Wick trait and perk icons
 Use the exact approved Mind Without Fog icon. Keep the cape, lantern heart, pixel-screen face and lively asymmetry. Traits and perks both use pure white flat ink. This is an independent graphic mode, not a miniature painted skill portrait.
 
+## Weapon icons (rule, Leon, 10 Nov 2026)
+Weapon icons are monoline, like a professional line-icon set: a 64 x 64 viewBox, a 2-unit round stroke in currentColor, no fill, one closed outline for the silhouette and two to four interior lines, gaps never narrower than the stroke, readable at 32 px. Every weapon still looks cool, mechanical and edgy: the edge lives in the silhouette (a bayonet, spikes, a ported brake, a censer) with a faction signature. Invented, never a real model; never the Wick icons' flat-ink mode. The full rule and the reference icons (Hellraiser service rifle, Lumeri censer gun): `art/style-guide/weapon-icons.md`.
+
 ## Reference priority
 Current user brief first. Then the reference for the correct art mode. World documents supply facts. This guide supplies visual defaults. Historical labels and palettes on approved character sheets do not override the current skill palette.
 

@@ -16,6 +16,8 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'burst_smg' | 'burst_rifle' | 'auto_smg' | 'auto_rifle' | 'auto_heavy'
   | 'reload_pistol' | 'reload_mag' | 'reload_rifle' | 'reload_shells' | 'rack' | 'jam_clear' | 'round_in' | 'mag_in' | 'dry_click'
   | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
+  // Physical 2.0 B: spent brass tinkling on the floor under a Mag Dump or a full-auto Rake (fx/ranged.ts).
+  | 'brass'
   | 'explosion' | 'explosion_boom' | 'door_open' | 'door_close' | 'stim'
   // The spotlight cut-in (game/spotlight, decision 113): a tear and a low ring.
   | 'spotlight_tear'
@@ -71,6 +73,7 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   gun_shotgun: CB('shot_shotgun_1', 'shot_shotgun_2'), gun_heavy: CB('shot_heavy'),
   burst_smg: CB('burst_smg'), burst_rifle: CB('burst_rifle'), auto_smg: CB('auto_smg'), auto_rifle: CB('auto_rifle'), auto_heavy: CB('auto_heavy'),
   reload_pistol: CB('reload_pistol'), reload_mag: CB('reload_mag', 'reload_mag_2'), reload_rifle: CB('reload_rifle'), reload_shells: CB('reload_shells'),
+  brass: CB('brass_1', 'brass_2'),
   rack: CB('rack'), jam_clear: CB('jam_clear'), round_in: CB('round_in'), mag_in: CB('mag_in'), dry_click: CB('dry_click'),
   hit_flesh: CB('hit_flesh_1', 'hit_flesh_2'), hit_heavy: CB('hit_heavy'), hit_metal: CB('hit_metal_1', 'hit_metal_2'), hit_wood: CB('hit_wood'), body_fall: CB('body_fall'),
   step: CB('step_1', 'step_2', 'step_3'), swish: CB('swish_1', 'swish_2'), whiz: CB('whiz'), slice: CB('slice'), chop: CB('chop'),
@@ -105,6 +108,7 @@ const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
 /** Combat names fall back to the old synthesised stand-ins until their file has loaded. */
 const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   reload_pistol: 'reload', reload_mag: 'reload', reload_rifle: 'reload', reload_shells: 'reload', rack: 'reload', jam_clear: 'reload', round_in: 'reload', mag_in: 'reload',
+  brass: 'hit',
   hit_flesh: 'hit', hit_heavy: 'hit', hit_metal: 'hit', hit_wood: 'hit', body_fall: 'down', swish: 'melee', slice: 'melee', chop: 'melee', whiz: 'miss',
   explosion: 'shot', explosion_boom: 'hit', sigil_draw: 'draw', sigil_evoke: 'evoke', sigil_overload: 'overload', soul_hold: 'outburst', soul_release: 'release',
   el_fire: 'hit', el_freeze: 'hit', el_shatter: 'miss', el_shock: 'evoke', el_zap: 'draw', el_stone: 'hit', el_stone_rise: 'hit', el_stone_crumble: 'down', el_gale: 'miss', el_spark: 'draw', el_acid: 'hit',
@@ -119,6 +123,7 @@ const MIX: Partial<Record<Sfx, number>> = {
   gun_pistol: 0.5, gun_revolver: 0.55, gun_magnum: 0.6, gun_smg: 0.45, gun_rifle: 0.55, gun_sniper: 0.6, gun_lever: 0.55, gun_shotgun: 0.6, gun_heavy: 0.65,
   burst_smg: 0.5, burst_rifle: 0.55, auto_smg: 0.5, auto_rifle: 0.55, auto_heavy: 0.6,
   reload_pistol: 0.45, reload_mag: 0.45, reload_rifle: 0.45, reload_shells: 0.45, rack: 0.45, jam_clear: 0.5, round_in: 0.35, mag_in: 0.4, dry_click: 0.35,
+  brass: 0.22,
   hit_flesh: 0.45, hit_heavy: 0.5, hit_metal: 0.35, hit_wood: 0.35, body_fall: 0.5, step: 0.2, swish: 0.4, whiz: 0.25, slice: 0.4, chop: 0.45,
   explosion: 0.65, explosion_boom: 0.6, door_open: 0.4, door_close: 0.4, stim: 0.35,
   el_fire: 0.45, el_freeze: 0.4, el_shatter: 0.35, el_shock: 0.4, el_zap: 0.35, el_stone: 0.5, el_stone_rise: 0.45, el_stone_crumble: 0.4, el_gale: 0.35, el_spark: 0.3, el_acid: 0.4,

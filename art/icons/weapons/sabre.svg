@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sabre -->
+  <g transform="translate(0 1) rotate(-45 32 32)">
+    <path d="M0 32 L2.5 30 L13 30 L13 26.5 L15 22.5 L17 26.5 L17 29 Q46 30 67 27 Q50 39 17 37.5 L17 40 L13 40 L13 36
+             L2.5 36 L0 34 Z"/>
+    <path d="M13 40 Q9 46 2.5 36"/>
+  </g>
+</svg>

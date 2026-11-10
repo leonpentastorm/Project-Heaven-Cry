@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Legion bullpup -->
+  <g transform="translate(0 3) rotate(-16 32 32)">
+    <path d="M6 20 L46 20 L43.6 23.5 L56 23.5 L56 22 L59.5 22 L59.5 29 L56 29 L56 27.5 L42 27.5 L40 31 L36.5 31
+             L35 40 L30.5 39.5 L32 31 L25 31 L24 42 L19 41.5 L19.5 31 L6 31 Z"/>
+    <path d="M10 20 L10 31"/>
+    <path d="M35.9 34.5 L40 34.5 L40 31"/>
+  </g>
+</svg>

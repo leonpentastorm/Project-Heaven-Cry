@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Ballistic helmet -->
+  <g transform="translate(0 5)">
+    <path d="M9 46 L9 32 C9 17 19 9 32 9 C45 9 55 17 55 32 L55 46 L48 46 L48 40 Q47 35 41 35 L23 35 Q17 35 16 40 L16 46 Z"/>
+    <path d="M27 35 L27 28 L37 28 L37 35"/>
+    <path d="M9.4 27 L19 27 M44.6 27 L54.6 27"/>
+  </g>
+</svg>

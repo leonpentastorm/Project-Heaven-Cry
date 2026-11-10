@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Combat gloves -->
+  <g transform="translate(5 -5)">
+    <path d="M18 61 L46 61 L46 21 L44 19 L42 19 L40 21 L40 24 L40 17 L38 15 L35 15 L33 17 L33 23 L33 15 L31 13 L28 13 L26 15 L26 23 L26 19 L24 17 L21 17 L19 19 L19 38 L13 31 A3.2 3.2 0 0 0 8 35 L18 49 Z"/>
+    <path d="M19 28 L46 28 M19 35 L46 35"/>
+    <path d="M18 52 L46 52"/>
+  </g>
+</svg>

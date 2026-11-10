@@ -278,7 +278,7 @@ describe('Grand Sigilist under 1.4', () => {
     const s = grand('sharpen', '9,1'); at(s, s.pcs[1], '4,1').ap = 6; const sp = withGame(s.g, () => previewAttack(s.cb, s.unit(s.pcs[1].id), s.unit(s.foe.id), 'shot'));
     const plain = fightWith([{}, {}], [{}]); at(plain, plain.pcs[1], '4,1').ap = 6; at(plain, plain.foe, '9,1');
     const pp = withGame(plain.g, () => previewAttack(plain.cb, plain.unit(plain.pcs[1].id), plain.unit(plain.foe.id), 'shot'));
-    const add = sp.dmg!.total - pp.dmg!.total; expect(add).toBeGreaterThanOrEqual(5); expect(add).toBeLessThan(7); // +5 flat, then the shot's own multipliers
+    const add = sp.dmg!.total - pp.dmg!.total; expect(add).toBeGreaterThanOrEqual(5); expect(add).toBeLessThan(8); // +5 flat, then the shot's own multipliers (rules 1.12: a gun's is Agility and Dexterity)
     const r = grand('raise', '12,1'); const walls = objectsOf(r.cb).filter((o: any) => o.grandWall);
     expect(walls.length).toBeGreaterThan(0); expect(walls.length).toBeLessThanOrEqual(8);
     expect(walls.every((o) => Math.max(Math.abs(+o.pos.split(',')[0] - 4), Math.abs(+o.pos.split(',')[1] - 2)) === 2)).toBe(true);

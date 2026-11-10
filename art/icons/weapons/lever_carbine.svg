@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Lever carbine -->
+  <g transform="translate(2 2) rotate(-16 32 32)">
+    <path d="M3 22.5 L17 21 L60 21 L60 25 L53 25 L53 29 L30 29 L30 30.5 L17 30.5 L2.5 36 Q5.5 29 3 22.5 Z"/>
+    <path d="M19.5 21 L17.5 17"/>
+    <path d="M24 30.5 Q24.5 33 23 34.5"/>
+    <path d="M28.5 30.5 L28.5 34.5 Q28.5 38.5 24.5 38.5 L16.5 38.5 Q12.5 38.5 13 35 L13.4 32.2"/>
+  </g>
+</svg>

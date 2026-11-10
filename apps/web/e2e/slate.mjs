@@ -107,7 +107,8 @@ const card = await p.locator('[data-phc-cutin] button[data-act]').allTextContent
 const first = await p.locator('[data-phc-cutin] button[data-act]').first().getAttribute('data-act');
 ok('the next turn card leads with Reload: ' + card.map((t) => t.replace(/\s+/g, ' ').trim()).join(' | ') + ' (' + first + ')', first === 'reload');
 const acts = await p.locator('[data-phc-cutin] button[data-act]').evaluateAll((bs) => bs.map((b) => b.getAttribute('data-act')));
-ok('the smart default fills the other slots in its order, Shoot kept: ' + acts.join(' | '), acts.length === 4 && acts[1] === 'shot' && acts[2] === 'move' && new Set(acts).size === 4);
+// (Physical 2.0: the plain Shot is the weapon's technique row, tq:main:shot)
+ok('the smart default fills the other slots in its order, Shoot kept: ' + acts.join(' | '), acts.length === 4 && acts[1] === 'tq:main:shot' && acts[2] === 'move' && new Set(acts).size === 4);
 await p.screenshot({ path: OUT + 'slate-combat-cutin-custom.png' });
 // customise from the card (C), then reset
 await p.keyboard.press('c'); await dlg.waitFor({ timeout: 4000 });

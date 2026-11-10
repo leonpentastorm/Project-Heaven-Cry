@@ -16,6 +16,7 @@ export const SFX_CREDITS: Credit[] = [
   { what: '100 CC0 SFX (explosion)', who: 'rubberduck', licence: 'CC0', url: 'https://opengameart.org/content/100-cc0-sfx' },
   { what: 'Impact Sounds (hits, falls, footsteps, metal, glass)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/impact-sounds' },
   { what: 'Impact Sounds (the lock-in stamp: a heavy wood, a soft and a punch impact layered into one thump)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/impact-sounds' },
+  { what: 'Impact Sounds: impactMetal_light (the brass tinkle of spent casings under a Mag Dump or a Rake; pitched up, trimmed, mono)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/impact-sounds' },
   { what: 'Sci-Fi Sounds (explosions, Sigil zaps, cores, Soul swells, vents)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/sci-fi-sounds' },
   { what: 'RPG Audio (doors, knife, chop, metal click)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/rpg-audio' },
   // Sigil rules 1.4: element impacts, field loops and word cues (public/sfx/cb/el_*.ogg and sg_*.ogg; trimmed, mono, levelled).
@@ -24,7 +25,7 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'Fire Crackling (the fire field\'s loop)', who: 'antumdeluge', licence: 'CC0', url: 'https://opengameart.org/content/fire-crackling' },
   { what: 'Ice spells (FREEZE impact)', who: 'bart', licence: 'CC0', url: 'https://opengameart.org/content/ice-spells' },
   { what: 'Freeze Spell (FREEZE impact, second take)', who: 'artisticdude', licence: 'CC0', url: 'https://opengameart.org/content/freeze-spell-0' },
-  { what: 'Ice breaking/shattering (frost shatter, CLEANSE)', who: 'ignasd', licence: 'CC0', url: 'https://opengameart.org/content/ice-breakingshattering' },
+  { what: 'Ice breaking/shattering (frost shatter, CLEANSE, Break\'s shatter)', who: 'ignasd', licence: 'CC0', url: 'https://opengameart.org/content/ice-breakingshattering' },
   { what: 'Electricity Game Sound Pack (SHOCK impacts, the storm field\'s crackle loop, the turret\'s charge)', who: 'faxcorp', licence: 'CC0', url: 'https://opengameart.org/content/electricity-game-sound-pack' },
   { what: '50 CC0 Sci-Fi SFX (zaps, SPARK, STEP\'s blink, MASK, a fizzle, the ice field\'s shimmer)', who: 'rubberduck', licence: 'CC0', url: 'https://opengameart.org/content/50-cc0-sci-fi-sfx' },
   { what: 'Breaking Rock (STONE impact)', who: 'themightyglider', licence: 'CC0', url: 'https://opengameart.org/content/breaking-rock' },
@@ -35,7 +36,7 @@ export const SFX_CREDITS: Credit[] = [
   { what: '40 CC0 water / splash / slime SFX (ACID splash, the acid field\'s bubbling)', who: 'rubberduck', licence: 'CC0', url: 'https://opengameart.org/content/40-cc0-water-splash-slime-sfx' },
   { what: 'Energy Drain (LEECH)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/energy-drain' },
   { what: 'Electricity Game Sound Pack: power down and power up (NULL, QUICKEN)', who: 'faxcorp', licence: 'CC0', url: 'https://opengameart.org/content/electricity-game-sound-pack' },
-  { what: 'RPG Sound Pack: sword unsheathe (SHARPEN)', who: 'artisticdude', licence: 'CC0', url: 'https://opengameart.org/content/rpg-sound-pack' },
+  { what: 'RPG Sound Pack: sword unsheathe (SHARPEN, Draw Cut)', who: 'artisticdude', licence: 'CC0', url: 'https://opengameart.org/content/rpg-sound-pack' },
   { what: 'Spell sounds: healing (MEND)', who: 'haeldb', licence: 'CC0', url: 'https://opengameart.org/content/spell-sounds' },
   { what: 'Magic Spell SFX (WARD, COMMAND, a trap set and sprung, LIGHT, CLEANSE)', who: 'jaggedstone', licence: 'CC0', url: 'https://opengameart.org/content/magic-spell-sfx' },
   // Outburst 2.0 (rules 1.5): the heart (public/sfx/cb/soul_*.ogg; trimmed, mono, levelled). The aura beds reuse the field loops above, slowed and filtered.

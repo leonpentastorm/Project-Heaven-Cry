@@ -73,6 +73,19 @@ describe('Marksman', () => {
     s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'class:marksman.special_ammo', actionId: 'story_incendiary' });
     expect(s.g.characters[s.chars[0].id].loadedType).toBe('incendiary');
   });
+  it('Special Ammo with a bow (Physical 2.0: a quiver can\'t be refilled in a fight): refused in a fight, nothing spent; the story load fills the quiver, typed', () => {
+    const f = fightWith([cls('marksman', 2, { weapon: 'recurve_bow' })], [{}]);
+    const u = f.turn(f.pc); f.unit(u.id).ammo = 3; const q0 = { ...(f.pc.quiver || {}) };
+    expect(() => act(f, u, { type: 'combat/perk', id: 'class:marksman.special_ammo', actionId: 'load_incendiary' })).toThrow(/A quiver is filled before the fight/);
+    expect(f.pc.ammo).toBe(3); expect(f.pc.ap).toBe(6); expect(f.pc.quiver).toEqual(q0);
+    const s = storyWith([cls('marksman', 2, { weapon: 'recurve_bow' })]); const id = s.chars[0].id;
+    const arrows = () => (s.g.characters[id].pack || []).filter((x: any) => x.calibre === 'arrow' && !x.mags).reduce((t: number, x: any) => t + x.qty, 0);
+    const had = s.g.characters[id].loaded ?? WEAPON.recurve_bow.magazine!, a0 = arrows(); // before any load: what the bow holds
+    s.act({ type: 'story/perk', charId: id, id: 'class:marksman.special_ammo', actionId: 'story_incendiary' });
+    expect(arrows()).toBe(a0 + had); // what the bow held goes back to the pack first
+    // the quiver record is what the next fight arms from (review fix: c.loadedType alone came out as standard arrows)
+    const c = s.g.characters[id]; expect(c.loaded).toBe(12); expect(c.loadedType).toBeNull(); expect((c as any).phys.quiver.recurve_bow).toEqual({ incendiary: 12 });
+  });
   it('Killzone: two held shots, one each at the first two enemies who move into the line, +2 to hit', () => {
     const f = fightWith([cls('marksman', 3, { weapon: 'hellraiser_service_rifle' })], [{}, {}]);
     const u = f.turn(f.pc); const [a, b] = f.foes; line(f, [u, 1], [a, 10], [b, 12]);

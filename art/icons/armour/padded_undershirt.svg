@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Padded undershirt -->
+  <path d="M24 5 L40 5 L41 10 L51 14 L60 27 L52 32 L49 28 L49 59 L15 59 L15 28 L12 32 L4 27 L13 14 L23 10 Z"/>
+  <path d="M23 10 Q32 16 41 10"/>
+  <path d="M15 31 L49 31 M15 40 L49 40 M15 49 L49 49"/>
+</svg>

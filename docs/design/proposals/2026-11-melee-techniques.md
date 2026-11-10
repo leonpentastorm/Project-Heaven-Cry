@@ -1,6 +1,6 @@
 # Proposal: melee techniques (Forms)
 
-Status: **draft for Leon.** Nothing here is built. Every number is a placeholder for the balance pass; what matters now is what each piece does and how the pieces combine.
+Status: **direction accepted by Leon, 10 Nov 2026** (his answers are section 10; where they change sections 2, 4 and 5, section 10 wins until the text is rewritten for the build). Nothing here is built. Every number is a placeholder for the balance pass; what matters now is what each piece does and how the pieces combine.
 
 **The aim (Leon, 10 Nov 2026).** Anyone can pick up any melee weapon and mix and match every melee technique they know, with the variety Sigils and Outbursts have. Weapon fantasy should come from the weapon, not from a class per weapon, because the classes are "shapeless".
 
@@ -179,6 +179,7 @@ Techniques are for everyone. A class bends the chain; it doesn't own the list.
 
 ## 7. What a turn looks like on screen
 
+0. **Superseded in part** (Leon, 10 Nov 2026): techniques don't sit flat in the Attack tab. Each held weapon gets one row with its plain attack and one expandable **Techniques** action that opens a pad, as the glyph keyboard does. The full layout is in `2026-11-ranged-techniques.md`, section 10; the points below describe what is inside the pad.
 1. The Attack tab shows your ready techniques as chips, grouped Opener, Strike, Link, Finisher. A chip you can't use is greyed with the reason: "not your first technique", "needs Momentum 2", "needs Point", "the chain has ended".
 2. Each chip shows the property line that applies with the weapon in your hand, so the same chip reads differently when you swap weapons.
 3. Momentum sits under the HP bar as pips for every melee character, with the variety bonus shown as "+1 if different".
@@ -199,3 +200,17 @@ Techniques are for everyone. A class bends the chain; it doesn't own the list.
 4. `hits_with` and `scales_with`, with damage following the Attribute the weapon is aimed with?
 5. Does Bare hit with the better of Raw Power and Athletics?
 6. Start with the 13 in section 8, or all 27?
+
+## 10. Leon's answers (10 Nov 2026)
+
+1. **The chain and Momentum for everyone: yes.**
+2. **Properties on weapons, and signatures as cards: yes.** A weapon's special technique is like a perk card you keep once learned and slot into the weapon you hold. If you like a weapon's technique but not the weapon, learn it, then switch. The most particular techniques (a sword wave, an area slam, an elemental weapon) work a bit worse on a weapon of the wrong class. So each signature names its home weapon class, and off it takes a penalty (the size is for the pass).
+3. **Drill is an XP bar per weapon,** and it replaces section 4, points 4 and 5:
+   - it fills by **kills**, by the same amount as the XP that kill gives, and you get it if you dealt at least 1 damage to the target with that weapon; hitting alone gives nothing;
+   - it is a grind on purpose for anyone who isn't a martial class: about two hours of solid fighting for one signature;
+   - the martial classes learn much faster (a multiplier on drill, by class; the number is for the pass).
+4. **`hits_with` and `scales_with`, with damage following the Attribute a weapon is aimed with: yes.**
+5. **Bare:** a low base damage that scales with **both** Raw Power and Athletics. Later, advanced monk classes add a Soul or Mind skill to the damage as well.
+6. **All 27 techniques,** not the first cut of 13.
+
+Next: the ranged weapons (`2026-11-ranged-techniques.md`).

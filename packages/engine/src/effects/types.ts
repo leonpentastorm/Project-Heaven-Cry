@@ -53,6 +53,8 @@ export type HookName =
   | 'heal_given' | 'heal_in' | 'shield_grant'
   | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'
+  // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
+  | 'stood_up'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release' | 'outburst_after' | 'outburst_plan'
   | 'analyze' | 'action_cost' | 'combat_end'
   // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
@@ -60,7 +62,7 @@ export type HookName =
   | 'evoked' | 'release_cost' | 'outburst_hold' | 'outburst_pump' | 'strain_change' | 'held_turn_start' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
   | 'stim_start' | 'volley_end' | 'weapon_actions'
   // rules 1.3 shared subsystems (lane 0B)
-  | 'path_opts' | 'hide' | 'spot' | 'spotted' | 'on_surrender' | 'parley' | 'throw' | 'blessing_in' | 'trap_sprung'
+  | 'path_opts' | 'hide' | 'spot' | 'spotted' | 'on_surrender' | 'parley' | 'throw' | 'blessing_in' | 'trap_sprung' | 'blast_landed'
   // Sigil rules 1.4 (sigil.ts)
   | 'glyphs_per_tile' | 'evoke_area' | 'spell_mult' | 'glyph_drawn' | 'spell_fizzle' | 'sigil_placed' | 'sigil_trap_sprung' | 'turret_shot' | 'spell_shape' | 'ground_cap'
   // story

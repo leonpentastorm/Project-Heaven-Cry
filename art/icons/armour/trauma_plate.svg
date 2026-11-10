@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Trauma plate insert -->
+  <path d="M22 4 L42 4 L54 14 L54 50 Q54 56 32 61 Q10 56 10 50 L10 14 Z"/>
+  <path d="M23.5 9 L40.5 9 L49 16.5 L49 47.5 Q49 51.5 32 55.5 Q15 51.5 15 47.5 L15 16.5 Z"/>
+  <path d="M30 9 L34 19 L28 27 L35 36 L32 43"/>
+</svg>

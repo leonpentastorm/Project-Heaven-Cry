@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Legion riot shield -->
+  <path d="M21 3 L43 3 L50 10 L50 46 Q50 55 32 61 Q14 55 14 46 L14 10 Z"/>
+  <path d="M20 12 L44 12 L44 19 L20 19 Z"/>
+  <path d="M14 30 L50 30"/>
+</svg>

@@ -3,7 +3,8 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
-import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
+import { gearIconUri } from '../game/gearIcons';
+import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, KITS, WEAPON, ITEM, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
 import { feelingInk, feelingIconSrc } from '../game/feelingsView';
 const FEELING_START = ['rage', 'love'];
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
@@ -160,6 +161,10 @@ const pIdx = (id) => Math.max(0, D.portraits.findIndex((p) => p.id === id));
  * SEEK), else the defaults. */
 export const _draftSigils = (ws) => { if (!Array.isArray(ws) || !ws.length) return [...DEFAULT_SIGILS]; if (!startingWordsError(ws)) return [...ws]; const m = migrateWords(ws).words; return m.length === 2 && !startingWordsError(m) ? m : [...DEFAULT_SIGILS]; };
 const DEFAULT_SIGILS = [...STARTING_DEFAULT], DEFAULT_OB = { name: '', school: 'damage', modules: ['move'], option: '', tone: 'raw' };
+/** The starting technique picks for this build: the player's, else the engine's defaults; none in a system the build
+ *  has no skill for. */
+const techPicksOf = (S) => { const sl = startingTechniqueSlots({ skills: S.skills }), d = defaultTechniques({ skills: S.skills }), t = S.tech || {};
+  return { melee: sl.melee ? (Array.isArray(t.melee) ? t.melee : d.melee) : [], ranged: sl.ranged ? (Array.isArray(t.ranged) ? t.ranged : d.ranged) : [] }; };
 const canSigilOf = (S) => (S.skills.brain_power || 0) >= 1 || S.kit === 'sigil';
 const canSoulOf = (S) => (S.skills.will_power || 0) >= 1 || S.kit === 'soul';
 const slotsOf = (S) => moduleSlots({ skills: S.skills });
@@ -193,14 +198,14 @@ export class CreateLogic extends DCLogic {
       fam: 'all', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: arch ? { ...ARCH[arch].attributes } : {}, cSet: arch ? { ...ARCH[arch].cores } : {}, applied: arch,
       hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
       idv: { gender: '', blood: '', hand: 'Right', association: '', song: '', songTitle: '', songArtist: '', dream: '', history: '' },
-      sigils: [...DEFAULT_SIGILS], ob: { ...DEFAULT_OB },
+      sigils: [...DEFAULT_SIGILS], ob: { ...DEFAULT_OB }, tech: { melee: null, ranged: null },
     };
     const d = getState().draft;
     if (d) {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
       Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, portraitEye: typeof d.portraitEye === 'number' ? d.portraitEye : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) }, cSet: { ...(d.cores || {}) },
         traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
-        sigils: _draftSigils(d.sigils), belief: d.belief && (d.belief.kind === 'atheist' || d.belief.patron) ? { ...d.belief } : null,
+        sigils: _draftSigils(d.sigils), tech: { melee: d.techniques && Array.isArray(d.techniques.melee) ? [...d.techniques.melee] : null, ranged: d.techniques && Array.isArray(d.techniques.ranged) ? [...d.techniques.ranged] : null }, belief: d.belief && (d.belief.kind === 'atheist' || d.belief.patron) ? { ...d.belief } : null,
         ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '', tone: d.outburst.tone || 'raw' } : { ...DEFAULT_OB } });
     }
   }
@@ -347,11 +352,29 @@ export class CreateLogic extends DCLogic {
     const traitChip = picked.length + ' OF 2 PICKED';
 
     // kit
-    const kitCards = D.kits.map((k) => ({ name: k.name, items: k.items.map((x) => ({ text: x })), pick: set({ kit: k.id }), pressed: S.kit === k.id ? 'true' : 'false',
-      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 18px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (S.kit === k.id ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F') }));
+    // The kit's weapons as icons (gearIcons.ts): the one in hand, the focus in the off hand, then any in the pack. Its body armour is an Armour Class
+    // from the kit, not an item, so it has no icon.
+    const kitIcons = (id) => { const K = KITS[id]; if (!K) return [];
+      return [K.weapon, ...(K.offHand ? [K.offHand] : []), ...K.pack.filter((it) => it.weapon).map((it) => it.weapon)].filter((w, i, a) => a.indexOf(w) === i).map((w) => ({ key: w, src: gearIconUri(w), name: WEAPON[w]?.name || ITEM[w]?.name || w })).filter((x) => x.src); };
+    const kitCards = D.kits.map((k) => ({ name: k.name, items: k.items.map((x) => ({ text: x })), icons: kitIcons(k.id), hasIcons: kitIcons(k.id).length > 0, pick: set({ kit: k.id }), pressed: S.kit === k.id ? 'true' : 'false',
+      style: 'position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 18px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (S.kit === k.id ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F') }));
 
     // kit: starting magic (only for a build that can cast)
     const canSigil = canSigilOf(S), canSoul = canSoulOf(S), hasMagic = canSigil || canSoul;
+    // Physical 2.0 (rules 1.12): starting techniques. Raw Power or Athletics picks 2 melee techniques (one an Opener),
+    // Dexterity picks 2 ranged ones. The engine's defaults are picked already (Lunge and Sidestep; Suppress and Shift), so a
+    // new player can just continue; the engine checks the picks (startingTechniquesError).
+    const techPicks = techPicksOf(S), techSlots = startingTechniqueSlots({ skills: S.skills }), techErr = startingTechniquesError({ skills: S.skills, techniques: techPicks });
+    const techSys = [['melee', 'MELEE TECHNIQUES · BODY · PICK ' + techSlots.melee + ' (ONE AN OPENER)', '#F68A38'], ['ranged', 'RANGED TECHNIQUES · BODY · PICK ' + techSlots.ranged, '#E3BF51']].filter(([sys]) => techSlots[sys] > 0).map(([sys, title, ink]) => {
+      const picked = techPicks[sys], n = techSlots[sys];
+      const groups = phys.groupsOf(sys).map((gr) => ({ key: gr, label: phys.groupName(gr).toUpperCase(),
+        chips: startingTechniqueChoices(sys).filter((id) => phys.TECHNIQUE[id].group === gr).map((id) => { const t = phys.TECHNIQUE[id], on = picked.includes(id);
+          return { key: id, label: t.name + (on ? ' ✓' : ''), pressed: on ? 'true' : 'false', title: t.name + ': ' + t.text, style: 'min-height: 34px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid ' + ink + '; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #C9D3E3'),
+            pick: () => { const cur = techPicksOf(this.state)[sys]; this.setState({ tech: { ...this.state.tech, [sys]: on ? cur.filter((x) => x !== id) : cur.length < n ? [...cur, id] : [...cur.slice(1), id] } }); } }; }) })).filter((gr) => gr.chips.length);
+      return { key: sys, title, ink, titleStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink, cardStyle: 'display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ink,
+        groups, picked: picked.map((id) => phys.TECHNIQUE[id]?.name || id).join(' + ') || 'none yet', reset: () => this.setState({ tech: { ...this.state.tech, [sys]: null } }), resetLabel: 'Back to ' + defaultTechniques({ skills: S.skills })[sys].map((id) => phys.TECHNIQUE[id]?.name || id).join(' + ') };
+    });
+    const hasTech = techSys.length > 0, techVerdict = techErr || 'Ready: ' + techSys.map((x) => x.picked).join(' · ') + '.';
     const sig = S.sigils || [], sigErr = sig.length < 2 ? 'Pick ' + (2 - sig.length) + ' more word' + (sig.length === 1 ? '' : 's') + ': one Subject and one Reach word.' : startingMagicError({ sigils: sig, skills: S.skills });
     const pickWord = (w) => () => {
       const cur = this.state.sigils || [];
@@ -412,7 +435,7 @@ export class CreateLogic extends DCLogic {
     const budgets = [[left, 'SKILL'], [der.attrLeft, 'ATTRIBUTE'], [der.coreLeft, 'CORE']].map(([n, k]) => ({ text: n + ' ' + k + ' LEFT', style: chip(n === 0 ? '#6FEA77' : '#FFFFFF') }));
     const statsPlaced = der.attrLeft === 0 && der.coreLeft === 0;
     const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All 10 Skill points spent', left === 0], ['All Attribute and Core points placed', statsPlaced], ['Starting kit', !!S.kit],
-      ...(canSigil ? [['Sigil words: ' + sig.map((w) => SIGIL[w]?.word || w).join(' + '), !sigErr]] : []), ...(canSoul ? [['Outburst: ' + obName, !obErr]] : [])].map(([label, ok]) => ({
+      ...(canSigil ? [['Sigil words: ' + sig.map((w) => SIGIL[w]?.word || w).join(' + '), !sigErr]] : []), ...(hasTech ? [['Techniques: ' + techSys.map((x) => x.picked).join(' · '), !techErr]] : []), ...(canSoul ? [['Outburst: ' + obName, !obErr]] : [])].map(([label, ok]) => ({
       label, mark: ok ? '✓' : '◆', markStyle: 'width: 20px; text-align: center; font-weight: 700; color: ' + (ok ? '#6FEA77' : '#FFFFFF') }));
     const cantLock = checks.some((c) => c.mark !== '✓');
 
@@ -457,7 +480,7 @@ export class CreateLogic extends DCLogic {
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
       budgetText: left + ' OF 10 LEFT', budgetStyle: chip(left === 0 ? '#6FEA77' : '#FFFFFF'), resetSkills: set({ skills: {}, aSet: {}, cSet: {}, applied: null }), coreCols, detail, sideCores, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
-      kitCards, hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
+      kitCards, hasTech, techSys, techVerdict, techVerdictStyle: 'font-size: 13px; font-weight: 700; color: ' + (techErr ? '#FFFFFF' : '#6FEA77'), hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
       schoolCards, obOpts, hasOpts: obOpts.length > 0, obTones, feelChips, feelHint, obToneHint: visOk ? 'Raw ignores armour and has no rider; an element adds a rider that grows with the stage (armour counts half).' : 'An element tone needs Lore Master 1; your Outburst is Raw (it ignores armour).',
       obShapeIcon: obInfo.icon, obShapeLine: obInfo.line, obShapeStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: ' + obInfo.ink, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
       onObName: (e) => this.setState({ ob: { ...obOf(this.state), name: e.target.value.slice(0, 40) } }), obVerdict, obVerdictStyle,
@@ -527,6 +550,7 @@ export class CreateLogic extends DCLogic {
       ...(S.belief ? { belief: { ...S.belief } } : {}),
       // Starting magic goes on the sheet only for a build that can cast; the engine fills in the defaults otherwise.
       ...(canSigilOf(S) ? { sigils: [...(S.sigils || [])] } : {}),
+      ...((() => { const sl = startingTechniqueSlots({ skills: S.skills }); return sl.melee || sl.ranged ? { techniques: techPicksOf(S) } : {}; })()),
       ...(canSoulOf(S) ? { feelings: [...(S.feelings && S.feelings.length === 2 ? S.feelings : FEELING_START)] } : {}),
       ...(canSoulOf(S) ? { outburst: (() => { const ob = obOf(S); return { ...(ob.name.trim() ? { name: ob.name.trim() } : {}), school: ob.school, modules: [...ob.modules], ...(ob.option ? { option: ob.option } : {}), ...(ob.tone && ob.tone !== 'raw' ? { tone: ob.tone } : {}) }; })() } : {}) };
   }

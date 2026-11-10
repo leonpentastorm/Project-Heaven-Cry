@@ -24,6 +24,7 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 | `patrons.json` | 3 | Nerukhan plus 2 invented patrons (flagged); blessings by Faith tier; **provisional numbers** |
 | `effect_ops.json` | 132 | Registry of every effect op: tier (50 core, 82 bespoke), parameters, who uses it, an example |
 | `loot_tables.json` | 5 tables | Drop tables (rules 1.9, World Play 1.1): tables by enemy kind (`person`, `machine`, `caster`, `beast`) and the bosses' `notable`, rolls by tier, the per-fight caps, the worn-weapon range, natural weapons and 20 personal effects; the engine rolls them (`packages/engine/src/loot.ts`); **provisional numbers** |
+| `techniques.json` | 58 techniques | Physical 2.0 (rules 1.12): 27 melee and 31 ranged techniques (`system`, `group`, `ap`, `rounds`, `needs`, `text`, `lines` by weapon property, `free`, `comes_with`, `home` / `particular`, `aim`, `numbers`), and `rules` (Momentum, Pressure, ready slots, drill, starting picks, property texts). Each weapon in `weapons.json` has a `phys` block (`system`, `props`, `hits_with`, `scales_with`, `teaches`). **Every number is provisional** until the balance pass |
 
 ## Loading order
 `rules` → `attributes` → `skills` → `conditions` → `effect_ops` → `weapon_mastery` → `weapons`, `items`, `sigils`, `soul_modules`, `patrons` → `traits`, `perks` → `classes`.

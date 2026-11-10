@@ -521,7 +521,7 @@ function heartbeat(h: Holder, foe: Unit, rng: Rng): boolean {
       err = to && to !== u.pos ? moveUnit(cb, u, to, rng) : 'nowhere to go';
     } else if (mode === 'prone') err = u.prone ? 'already prone' : toggleProne(cb, u);
     else if (mode === 'stim') { const t = unitById(cb, arm?.targetId); const c = h.c; err = !t || !c ? 'no one to stim' : useStim(cb, u, t, c, isMedicChar(c)); }
-    else err = reload(cb, u);
+    else err = reload(cb, u, { free: true });
   } finally { u.ap = keep; }
   if (err) { say(cb, '(Between Heartbeats: ' + err + ')'); return false; }
   say(cb, u.name + ' moves between heartbeats, before ' + foe.name + ' can act (Between Heartbeats).');

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Hellraiser rotary -->
+  <g transform="translate(0 3) rotate(-16 32 32)">
+    <path d="M12 19 L30 19 L30 21 L50 21 L52 16 L54 21 L60 21 L60 33 L54 33 L52 38 L50 33 L30 33 L26 33 L24.5 40.5
+             L20 40 L21.5 33 L12 33 Q5 33 5 26 Q5 19 12 19 Z"/>
+    <path d="M30 25 L60 25 M30 29 L60 29"/>
+    <path d="M12 19 L14 14 L26 14 L28 19"/>
+  </g>
+</svg>
