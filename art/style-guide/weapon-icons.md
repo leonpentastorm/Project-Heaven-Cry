@@ -10,8 +10,8 @@ Two rulings from Leon on 10 Nov 2026:
 
 | Weapon | Icon |
 |---|---|
-| Hellraiser service rifle (`hellraiser_service_rifle`) | [`../../art/icons/weapons/hellraiser_service_rifle.svg`](../../art/icons/weapons/hellraiser_service_rifle.svg) |
-| Lumeri censer gun (`lumeri_censer_gun`) | [`../../art/icons/weapons/lumeri_censer_gun.svg`](../../art/icons/weapons/lumeri_censer_gun.svg) |
+| Hellraiser service rifle (`hellraiser_service_rifle`) | [`../icons/weapons/hellraiser_service_rifle.svg`](../icons/weapons/hellraiser_service_rifle.svg) |
+| Lumeri censer gun (`lumeri_censer_gun`) | [`../icons/weapons/lumeri_censer_gun.svg`](../icons/weapons/lumeri_censer_gun.svg) |
 
 ## The set
 
@@ -19,8 +19,8 @@ Every weapon in `data/weapons.json` (60) and every armour piece and shield in `d
 `art/icons/weapons/<id>.svg` and `art/icons/armour/<id>.svg` (working spec: `art/icons/weapons/README.md`). Contact
 sheets, each icon at 96 px and at 32 px on the panel:
 
-- Weapons: [`weapon-art/weapons-sheet.png`](weapon-art/weapons-sheet.png)
-- Armour and shields: [`weapon-art/armour-sheet.png`](weapon-art/armour-sheet.png)
+- Weapons: [`weapon-icons/weapons-sheet.png`](weapon-icons/weapons-sheet.png)
+- Armour and shields: [`weapon-icons/armour-sheet.png`](weapon-icons/armour-sheet.png)
 
 Leon's follow-up (10 Nov 2026): "Simplify it just a lil bit, avoid floating bits like the bayonet on the rifle." So
 nothing floats: every stroke touches the silhouette (the bayonet shares the barrel's edge; no smoke, sparks or loose

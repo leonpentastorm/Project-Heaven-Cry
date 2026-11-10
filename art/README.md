@@ -27,6 +27,8 @@ art/
     perks/<perk>.png  perks/exports/<px>/<perk>.png   (106)
     prayers/<file>.png             whisper / hymn / miracle icons (38)
     STYLE-LOCK.md                  the Wick icon lock (master: traits/mind-without-fog.png)
+    weapons/<weapon_id>.svg        monoline weapon icons, one per data/weapons.json id (60); README.md is the spec
+    armour/<item_id>.svg           monoline armour and shield icons, one per data/items.json armour/shield id (19)
   emblems/
     ahoc/ahoc-seal-white.png       the AHOC seal used in the UI (+ the red 2020 original)
     patrons/<patron_id>.png        the eight patron marks
@@ -36,7 +38,8 @@ art/
   mascot/wick-welcome.png          the app mark
   mascot/wick-anim/                the five menu clips (a validated package: frames, strips, masters, manifest)
   ui/title-screen/                 the title layers (back, mid, front), the layered PSD, manifest and geometry notes
-  style-guide/                     PHC-Style-Guide.md, palette.json, CHANGELOG.md, reference-index.json, references/
+  style-guide/                     PHC-Style-Guide.md, palette.json, CHANGELOG.md, reference-index.json, references/;
+                                   weapon-icons.md (the weapon icon rule) and weapon-icons/ (its contact sheets)
   briefs/                          art direction for jobs (current and done); m813-tutorial/ holds the queue and map guides
   _archive/                        everything superseded, under its old path (see below)
 ```

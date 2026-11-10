@@ -2,7 +2,7 @@
 
 Monoline icons for every weapon (`data/weapons.json`, here) and every armour piece and shield (`data/items.json`
 categories `armour` and `shield`, in `../armour/`). One file per item, named by its id. The rule is
-`docs/design/weapon-art.md` (Leon, 10 Nov 2026); this is the working spec.
+`art/style-guide/weapon-icons.md` (Leon, 10 Nov 2026); this is the working spec.
 
 ## The line
 - Root exactly: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor"
@@ -39,4 +39,4 @@ References: `hellraiser_service_rifle.svg`, `lumeri_censer_gun.svg`.
 The game loads every file here and in `../armour/` through `apps/web/src/game/gearIcons.ts` (`gearIcon(id)` gives the
 SVG markup or `null`; `hasGearIcon(id)`); screens tint it with CSS `color`. `gearIcons.test.ts` checks every weapon,
 armour piece and shield in the data has an icon that follows the line rule. Contact sheets:
-`docs/design/weapon-art/weapons-sheet.png`, `docs/design/weapon-art/armour-sheet.png`.
+`art/style-guide/weapon-icons/weapons-sheet.png`, `art/style-guide/weapon-icons/armour-sheet.png`.

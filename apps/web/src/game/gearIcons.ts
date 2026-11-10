@@ -1,4 +1,4 @@
-// Weapon and armour icons (docs/design/weapon-art.md; the working spec is art/icons/weapons/README.md): one monoline SVG
+// Weapon and armour icons (art/style-guide/weapon-icons.md; the working spec is art/icons/weapons/README.md): one monoline SVG
 // per item, art/icons/weapons/<id>.svg for every weapon in data/weapons.json and art/icons/armour/<id>.svg for every
 // armour piece and shield in data/items.json. A 64 × 64 box, a 2-unit `currentColor` stroke, no fill: the screen sets
 // the colour (white ink on the panel, or an attribute's ink).
