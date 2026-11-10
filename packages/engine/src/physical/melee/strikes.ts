@@ -20,7 +20,7 @@ import { type Combat, type Unit, alive, xy, key, keyOf, refOf, dist, lineOfSight
 import { throwRangeOf } from '../../tactics';
 import { PHYS_RULES, weaponPhys } from '../data';
 import { save, stop, forceMove, setUp, momentumOf, chainOf, canStrike, loseWeapon } from '../core';
-import { meleeFx, fxMark, movedSince, refuseFx } from './shared';
+import { meleeFx, fxMark, movedSince, refuseFx, upto } from './shared';
 import type { Tech } from './shared';
 
 /** args.tile as a tile key ("x,y"); the reducer already turns a map reference into one, a direct call may not. */
@@ -74,13 +74,14 @@ technique({
       if (struck.some((v) => v.side === t.u.side)) t.note('Allies in the arc are struck too.');
     }
     const mult = t.num('mult', 0.7);
-    meleeFx(t, 'arc', { tiles, struck: struck.map((v) => v.id), dir: dir || null, heavy: p === 'heavy' });
+    const fx = meleeFx(t, 'arc', { tiles, struck: struck.map((v) => v.id), dir: dir || null, heavy: p === 'heavy' });
     for (const v of struck) {
       if (!alive(t.u)) break;
       if (!alive(v)) continue;
       const r = strike(t, { target: v, mult, label: 'Sweep' });
       if (r.hit && r.crit && !r.killed && p === 'edge') cond(t, r.target || v, 'bleeding'); // the unit really struck
     }
+    upto(t, fx);
     return null;
   },
   ai(t) {
@@ -182,6 +183,7 @@ technique({
       if (!r.ok) { if (i === 0) { refuseFx(fx); return r.why || 'Can\'t attack that.'; } continue; }
       last = v; if (r.hit) { hits++; lastHit = r.target || v; }
     }
+    upto(t, fx); if (fx && thrown && last) (fx as any).land = last.pos; // the client flies the weapon on each thrown shot and drops it here
     // the mark goes on the unit really struck (a redirect); Bind and Throw Down read it (melee/shared setUpBonus)
     if (p === 'bare' && hits > 1 && lastHit) setUp(t, lastHit, { hit: (hits - 1) * t.num('bare_bonus', 1), label: 'Flurry', only: ['bind', 'throw_down'] });
     if (thrown && last) loseWeapon(t, last.pos); // one weapon held: it lands by the last target thrown at

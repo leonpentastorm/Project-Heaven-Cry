@@ -3,6 +3,7 @@
 // sight is stamped per side and a view keeps only its own side's stamp.
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { resolveAttack, applyCond, viewFor, type Unit } from '../src';
+import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
 
 // While D20.v is set every d20 the engine rolls is that number (saves fail on 2); attack rolls are rigged with rig().
@@ -153,6 +154,33 @@ describe('each technique\'s beat', () => {
   it('a refused technique leaves no beat to play', () => {
     const f = fight('combat_knife', ['throw'], ['F5']); f.unit(f.pc.id).ap = 0; const n = mark(f);
     expect(f.tech('throw', { targetId: f.foe.id })).toBeTruthy(); expect(since(f, n)).toHaveLength(0);
+  });
+});
+
+// Review fixes (physical-2.0-A-FX.md section 9): the beats the client can't place right without these fields.
+let redirect: string | null = null;
+onHook('attack_target', (ctx: any) => { if (redirect && ctx.att.side === 'pc') ctx.tgt = ctx.cb.units.find((x: any) => x.id === redirect); });
+describe('melee_fx review fixes', () => {
+  it('Sweep, Cleave and Flurry say where their use ends (upto): the last event of the use, so a later plain attack is never quick', () => {
+    const f = fight('sabre', ['sweep'], ['D5', 'D6']); rig({ hit: true, die: 12 });
+    let n = mark(f); expect(f.tech('sweep', { tile: f.tile('D5') })).toBeNull();
+    expect(one(f, n, 'arc').upto).toBe(mark(f));
+    const fl = fight('sabre', ['flurry']); rig({ hit: true, die: 12 }); n = mark(fl); expect(fl.tech('flurry', { targetId: fl.foe.id })).toBeNull();
+    const e = one(fl, n, 'flurry'); expect(e.upto).toBe(mark(fl));
+    // every strike of the use is at or before upto
+    expect(fl.fx('melee').filter((x: any) => x.n > e.n && x.unit === fl.pc.id).every((x: any) => x.n <= e.upto)).toBe(true);
+  });
+  it('Flurry, Thrown: the tile the weapon lands on (the last target thrown at)', () => {
+    const f = fight('throwing_knives', ['flurry'], ['F5', 'F6']); rig({ hit: true, die: 12 });
+    const n = mark(f); expect(f.tech('flurry', { targetIds: f.foes.map((v) => v.id), line: 'thrown' })).toBeNull();
+    const e = one(f, n, 'flurry'); expect(e.thrown).toBe(true); expect([f.tile('F5'), f.tile('F6')]).toContain(e.land);
+    expect(f.fx('shot').filter((x: any) => x.n > e.n && x.unit === f.pc.id && x.thrown).length).toBe(e.strikes);
+  });
+  it('Throw redirected to another unit: the beat flies to (and lands by) the unit really struck', () => {
+    const f = fight('combat_knife', ['throw'], ['F5', 'F7']); rig({ hit: true, die: 12 });
+    const n = mark(f); redirect = f.foes[1].id;
+    try { expect(f.tech('throw', { targetId: f.foes[0].id })).toBeNull(); } finally { redirect = null; }
+    expect(one(f, n, 'throw')).toMatchObject({ to: f.tile('F7'), target: f.foes[1].id });
   });
 });
 export type { Unit };

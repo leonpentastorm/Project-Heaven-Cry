@@ -46,7 +46,7 @@ export const MELEE_BEAT_MAX = 260;
 /** How long a melee_fx holds the stage (ms at Fast), or undefined for any other event. A refused one holds nothing. */
 export function meleeTechBeat(e: Partial<FxEvent> & { k: string }): number | undefined {
   if (e.k !== 'melee_fx') return undefined;
-  if ((e as any).refused) return 0;
+  if ((e as any).refused || (e as any)._early) return 0; // _early: moved to play over its own move (leadMoves)
   const key = e.beat === 'arc' && (e as any).cleave ? 'cleave' : String(e.beat || '');
   return Math.round((MELEE_BEAT_NORMAL[key] ?? 0) * 0.85);
 }
@@ -58,14 +58,53 @@ export function quickStrikes<T extends { k: string; [f: string]: any }>(evs: T[]
   for (let i = 0; i < evs.length; i++) {
     const e = evs[i]; if (e.k !== 'melee_fx' || e.refused || !(e.beat === 'arc' || e.beat === 'flurry')) continue;
     let left = e.beat === 'arc' ? (e.struck?.length || 0) : Number(e.strikes) || 0, first = true;
+    const upto = Number.isFinite(e.upto) ? Number(e.upto) : Infinity; // the engine's own end of this use (melee/shared upto)
     for (let j = i + 1; j < evs.length && left > 0; j++) {
-      const x = evs[j]; if (x.k === 'technique' || (x.k === 'melee_fx' && x.beat !== 'fall')) break; // the next technique
+      const x = evs[j];
+      // the use ends at its upto, the next technique or the next turn: a later plain attack is never quick
+      if (x.k === 'technique' || x.k === 'turn' || (x.k === 'melee_fx' && x.beat !== 'fall') || (Number.isFinite(x.n) && x.n > upto)) break;
       if ((x.k !== 'melee' && !(x.k === 'shot' && x.thrown)) || x.unit !== e.unit) continue;
       left--; if (first) { first = false; continue; }
       if (!out) out = evs.slice(); out[j] = { ...x, _quick: true };
     }
   }
   return out || evs;
+}
+
+/** The movement beats play over the movement they describe (review fix): the engine emits a forced move's `force` skid,
+ *  a `fall` and a `sidestep` after the core's own shove, stance and move events (the path is only known after the move),
+ *  so each is moved to just before the first of those events of its unit in the same use, and marked `_early` (it holds
+ *  no beat of its own: the trail draws while the token slides, the tip with the PRONE word). Copies; never the saved
+ *  events. Pure. */
+export function leadMoves<T extends { k: string; [f: string]: any }>(evs: T[]): T[] {
+  let out: T[] | null = null;
+  for (let i = 0; i < evs.length; i++) {
+    const src: T[] = out || evs, e = src[i];
+    if (e.k !== 'melee_fx' || e.refused || e._early || !(e.beat === 'force' || e.beat === 'fall' || e.beat === 'sidestep')) continue;
+    const who = e.beat === 'sidestep' ? e.unit : e.target, swap = e.beat === 'force' && e.how === 'swap';
+    const first = (x: T) => e.beat === 'force' ? x.k === 'shove' && x.ok && x.target === who
+      : e.beat === 'fall' ? (x.k === 'stance' && x.what === 'prone' && x.unit === who) || (x.k === 'stopped' && x.unit === who)
+        : x.k === 'move' && x.unit === who;
+    let to = -1;
+    for (let j = i - 1; j >= 0; j--) { const x = src[j]; if (x.k === 'technique' || x.k === 'turn') break; if (first(x) || (swap && x.k === 'move' && x.unit === e.unit)) to = j; }
+    if (to < 0) continue;
+    const list: T[] = src.slice(); list.splice(i, 1); list.splice(to, 0, { ...e, _early: true }); out = list;
+  }
+  return out || evs;
+}
+/** Every pre-pass the melee beats need before the queue times a batch: the movement beats over their moves, the quick
+ *  strikes, and a Thrown Flurry's flights on its own thrown shots. Pure. */
+export function meleePrepass<T extends { k: string; [f: string]: any }>(evs: T[]): T[] {
+  let out = quickStrikes(leadMoves(evs));
+  for (let i = 0; i < out.length; i++) {
+    const e = out[i]; if (e.k !== 'melee_fx' || e.beat !== 'flurry' || !e.thrown || e.refused) continue;
+    const upto = Number.isFinite(e.upto) ? Number(e.upto) : Infinity, idx: number[] = [];
+    for (let j = i + 1; j < out.length; j++) { const x = out[j]; if (x.k === 'technique' || x.k === 'turn' || x.n > upto) break; if (x.k === 'shot' && x.thrown && x.unit === e.unit) idx.push(j); }
+    if (!idx.length) continue;
+    if (out === evs) out = evs.slice();
+    idx.forEach((j, q) => { out[j] = { ...out[j], _fly: { weapon: e.weapon, land: q === idx.length - 1 ? (e.land || out[j].to) : null } }; });
+  }
+  return out;
 }
 
 // ---------- the test hook (e2e/melee-fx.mjs) ----------
@@ -192,7 +231,7 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
       return drawn;
     },
     // ----- Throw: the weapon flies to the target and drops into the pile on its tile. -----
-    throw(e) { return flyWeapon(e.weapon, e.from, e.to, 0); },
+    throw(e) { return flyWeapon(e.weapon, e.from, e.to, 0, true); },
     // ----- Bind (and Bare's grapple): the link snaps from the user to the target. -----
     bind(e) {
       const a = at(e.at), b = at(e.to || K.posOf(e.target)); if (!a || !b) return false;
@@ -207,6 +246,7 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
     // ----- Throw Down: the hold tears, the body's path, and the slam on the landing tile (and anyone standing there). -----
     slam(e) {
       const a = at(e.at), from = at(e.from), land = at(e.land); let drawn = false;
+      dropMarks((m) => (m.kind === 'bind' || m.kind === 'grapple') && [m.unit, m.other].includes(e.unit) && [m.unit, m.other].includes(e.target));
       if (a && from && !rm()) { // the link tears: two halves fly apart
         const { s } = overlay([a, from], a.s, 260, 'slam-tear'), m = { x: (a.x + from.x) / 2, y: (a.y + from.y) / 2 }, v = unitVec(a, from);
         const h1 = el('g', {}), h2 = el('g', {}); h1.innerHTML = linkMarkup(a, m, a.s, false); h2.innerHTML = linkMarkup(m, from, a.s, false); s.appendChild(h1); s.appendChild(h2);
@@ -274,12 +314,12 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
         if (rm()) fadeBox(box, 300, 200);
         burst('spark_burst', m, d.s * 1.1, 300, { color: '#FFF3C4', from: 0.4, to: 1.2, blend: 'screen' });
         if (a) { const v = unitVec(a, d); nudge(tokOf(e.ally || e.unit, e.to), v.x * d.s * 0.06, v.y * d.s * 0.06, 200); }
-        floatText('PARRIED', { x: d.x, y: d.y - d.s * 0.5, s: d.s }, WHITE, { small: true, ms: 640 });
+        floatText('PARRIED', { x: d.x, y: d.y + d.s * 0.5, s: d.s }, WHITE, { small: true, ms: 640 });
         play('hit_metal', m, { rate: 1.2 });
       } else {
         const st = el('path', { d: 'M' + (m.x - r) + ' ' + (m.y + r) + ' L' + (m.x + r) + ' ' + (m.y - r), stroke: MUTED, 'stroke-width': w, 'stroke-linecap': 'round', fill: 'none' }); s.appendChild(st);
         fadeBox(box, 420, 100);
-        floatText('THROUGH', { x: d.x, y: d.y - d.s * 0.5, s: d.s }, MUTED, { small: true, ms: 560 });
+        floatText('THROUGH', { x: d.x, y: d.y + d.s * 0.5, s: d.s }, MUTED, { small: true, ms: 560 });
         play('dry_click', m, { gain: 0.6 });
       }
       return true;
@@ -377,11 +417,13 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
       play('hit_metal', b, { rate: 0.75 }); play('el_stone_crumble', b, { gain: 0.4, delay: 40 });
       return true;
     },
-    // ----- Flurry: quick thin cuts across the target; Thrown: the weapon lands in the last target's pile. -----
+    // ----- Flurry: quick thin cuts across the target. Thrown: no cuts; each thrown shot flies the weapon's icon (its
+    // _fly from meleePrepass, played by the shot: thrownShot below) and the last lands in the last target's pile. -----
     flurry(e) {
       const tiles: string[] = e.tiles || [], n = Math.max(1, Math.min(3, Number(e.strikes) || 2));
       let drawn = false;
       const p0 = at(e.at);
+      if (e.thrown) { if (p0 && sawThen(e)) play('swish', p0, { rate: 1.3, gain: 0.5 }); return false; } // its flights draw on the shots
       tiles.forEach((k, ti) => {
         const b = at(k); if (!b) return; drawn = true;
         const { s } = overlay([b], b.s * 0.7, 560, 'flurry');
@@ -394,7 +436,6 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
         }
       });
       for (let i = 0; i < n; i++) play('swish', p0 || at(tiles[0]), { rate: 1.3, gain: 0.5, delay: i * 70 });
-      if (e.thrown && tiles.length) drawn = flyWeapon(e.weapon, e.at, tiles[(n - 1) % tiles.length], n * 200) || drawn;
       return drawn;
     },
     // ----- Draw Cut: the draw flash out of the token's side, a flare at its tip. -----
@@ -450,7 +491,9 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
     // ----- Charge: dash lines along the run behind the runner, a puff of dust where it began. -----
     charge(e) {
       const route: string[] = e.route || [];
-      if (route.length < 2) { const p = at(e.at); if (p && sawThen(e)) { dustAt(p, 0.9); const { box } = overlay([p], p.s * 0.5, 300, 'charge'); fadeBox(box, 300); return true; } return false; }
+      // a Hidden (or unseen) charger gives nothing away: no trail, no dust where it began (its own move shows what is seen)
+      if (!sawThen(e)) return false;
+      if (route.length < 2) { const p = at(e.at); if (p) { dustAt(p, 0.9); const { box } = overlay([p], p.s * 0.5, 300, 'charge'); fadeBox(box, 300); return true; } return false; }
       const runs = seenRuns(at, route); if (!runs.length) return false;
       const p0 = at(route[0]); if (p0) dustAt(p0, 1);
       const per = Math.min(450, 115 * (route.length - 1)) / Math.max(1, route.length - 1);
@@ -500,7 +543,7 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
     return drawn;
   }
   /** The weapon's icon spins along a shallow arc from one tile to another, then drops into the pile there. */
-  function flyWeapon(weapon: string | undefined, fromK: string, toK: string, delay: number): boolean {
+  function flyWeapon(weapon: string | undefined, fromK: string, toK: string, delay: number, land: boolean, quiet = false): boolean {
     const a = at(fromK), b = at(toK); if (!b) return false;
     const size = b.s * 0.95;
     const run = () => {
@@ -517,13 +560,17 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
         frames.push({ transform: 'translate(0,' + (b.s * 0.25).toFixed(1) + 'px) rotate(560deg) scale(.7)', opacity: 0, offset: 1 });
       } else { box.style.transform = 'rotate(-30deg) scale(.85)'; frames.push({ opacity: 1 }, { opacity: 1, offset: 0.4 }, { opacity: 0 }); } // reduced motion: it lies in the pile and fades
       anim(box, frames, { duration: ft + 520, easing: 'linear', fill: 'forwards' });
-      if (a) play('swish', a, { rate: 0.8 });
-      after(() => { dustAt({ x: b.x, y: b.y, s: b.s }, 0.6); play('hit_wood', b, { rate: 1.3, gain: 0.35 }); }, ft + 200);
+      if (a && !quiet) play('swish', a, { rate: 0.8 });
+      if (land) after(() => { dustAt({ x: b.x, y: b.y, s: b.s }, 0.6); play('hit_wood', b, { rate: 1.3, gain: 0.35 }); }, ft + 200);
     };
     if (delay) after(run, delay); else run();
     return true;
   }
   const sawThen = K.sawThen;
+  markTok = K.tokOf;
+  // A Thrown Flurry's flight rides each of its thrown shots (meleePrepass marks them _fly): the shot plays (fx/play.ts
+  // dispatches 'phc-fx' with the event as played), then the weapon flies from the thrower to the tile shot at.
+  flyOnShot = (x: any) => { const f = x?._fly; if (x?.k !== 'shot' || !f) return; const drawn = flyWeapon(f.weapon, x.from, f.land || x.to, 0, !!f.land, true); record('flurry', 'flurry-throw', drawn); }; // quiet: the shot plays its own swish
   return {
     melee_fx(e: any) {
       if (e.refused) return;
@@ -566,9 +613,15 @@ export function meleeMarksOf(g: GameState | null | undefined, seen?: Set<string>
   return out;
 }
 
-interface MarkNode { m: MeleeMark; g: SVGGElement }
+interface MarkNode { m: MeleeMark; g: SVGGElement; sig: string }
 const marks = new Map<string, MarkNode>();
 let root: SVGSVGElement | null = null, raf = 0;
+/** The kit's token finder (fx/play.ts tokOf: a stopped walker's copy, else the token on the unit's tile), set when the
+ *  handlers are built: a mark is drawn where its unit's token is on screen, so a token that moves carries its mark. */
+let markTok: MeleeKit['tokOf'] | null = null;
+/** A Thrown Flurry's flight on each of its shots (set with the handlers). */
+let flyOnShot: ((x: any) => void) | null = null;
+if (typeof window !== 'undefined') window.addEventListener('phc-fx', (ev: Event) => { try { flyOnShot?.((ev as CustomEvent).detail); } catch { /* */ } });
 /** The one SVG the standing marks are drawn in (the whole viewport, in viewport pixels). */
 function rootSvg(): SVGSVGElement | null {
   const layer = layerEl(); if (!layer) return null;
@@ -577,8 +630,22 @@ function rootSvg(): SVGSVGElement | null {
   root.setAttribute('data-melee-marks', ''); root.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;overflow:visible;pointer-events:none;z-index:1;filter:' + CASING;
   layer.appendChild(root); return root;
 }
+/** The ids at a mark's two ends (a Feint's mark stands on its target). */
+const endIds = (m: MeleeMark): [string | undefined, string | undefined] => (m.kind === 'feint' ? [m.other, undefined] : [m.unit, m.other]);
+/** Where a mark's end is on screen: the centre of its unit's token (where it really stands, held or walking), else the
+ *  tile's centre; s is the tile's size either way. */
+function endAt(id: string | undefined, key: string): Pt | null {
+  const c = centre(key), tok = id && markTok ? markTok(id, key) : null;
+  if (!tok || !tok.isConnected) return c;
+  const r = tok.getBoundingClientRect(); if (!(r.width > 0)) return c;
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2, s: c ? c.s : Math.max(18, r.width) };
+}
 function drawMark(n: MarkNode): boolean {
-  const a = centre(n.m.a), b = n.m.b ? centre(n.m.b) : null; if (!a || (n.m.b && !b)) return false;
+  const [ia, ib] = endIds(n.m), a = endAt(ia, n.m.a), b = n.m.b ? endAt(ib, n.m.b) : null; if (!a || (n.m.b && !b)) return false;
+  // Rebuilt only when it moved or changed (review fix: it was rebuilt every frame, the nailed weapon's 7 images with it).
+  const sig = [a.x, a.y, a.s, b?.x, b?.y].map((v) => (v == null ? '' : v.toFixed(1))).join('|') + '|' + n.m.key + '|' + (n.m.ap ?? '') + '|' + (n.m.front || []).join(',') + (n.m.heavy ? 'h' : '') + (n.m.reach ? 'r' : '');
+  if (sig === n.sig) return true;
+  n.sig = sig;
   const s = a.s;
   if (n.m.kind === 'bind' || n.m.kind === 'grapple') n.g.innerHTML = linkMarkup(a, b!, s, n.m.kind === 'grapple');
   else if (n.m.kind === 'guard') n.g.innerHTML = guardMarkup(a, s, n.m.front || [1, 0], { heavy: n.m.heavy, reach: n.m.reach });
@@ -595,31 +662,39 @@ function drawMark(n: MarkNode): boolean {
 }
 function track() {
   raf = 0;
-  for (const n of marks.values()) { const ok = drawMark(n); n.g.style.opacity = ok ? '' : '0'; }
+  for (const n of marks.values()) { const ok = drawMark(n), op = ok ? '' : '0'; if (n.g.style.opacity !== op) n.g.style.opacity = op; }
   if (marks.size) raf = requestAnimationFrame(track);
 }
-/** Keep the standing marks in step with the state: add new ones (they rise in), remove gone ones (a link tears, the rest
- *  fade; a nailed weapon drops into the pile). Never in the effects queue. */
+/** Take a mark away (a link tears, the rest fade; a nailed weapon drops into the pile). */
+function goneMark(k: string, n: MarkNode, animate = true) {
+  marks.delete(k);
+  if (!n.g.isConnected) return;
+  n.g.removeAttribute('data-melee-mark'); n.g.setAttribute('data-melee-gone', n.m.kind);
+  record(k, 'unmark:' + n.m.kind, true);
+  if (!animate) { n.g.remove(); return; }
+  const frames: Keyframe[] = reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }]
+    : n.m.kind === 'nailed' ? [{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(' + ((centre(n.m.a)?.s || 40) * 0.3).toFixed(1) + 'px)', opacity: 0 }]
+      : n.m.kind === 'bind' || n.m.kind === 'grapple' ? [{ opacity: 1, strokeDasharray: 'none' }, { opacity: 0.6, offset: 0.3 }, { opacity: 0 }]
+        : [{ opacity: 1 }, { opacity: 0 }];
+  const a = anim(n.g, frames, { duration: n.m.kind === 'nailed' ? 240 : 200, easing: 'ease-in', fill: 'forwards' });
+  const g = n.g; if (a) a.onfinish = () => g.remove(); else g.remove();
+  setTimeout(() => g.remove(), 1500);
+}
+/** A beat that ends a lasting state as it plays (Throw Down tears the hold it threw from): its mark goes now, with no
+ *  fade of its own (the beat draws the tear). */
+function dropMarks(pred: (m: MeleeMark) => boolean) { for (const [k, n] of [...marks]) if (pred(n.m)) goneMark(k, n, false); }
+/** Keep the standing marks in step with the state: add new ones (they rise in), remove gone ones. Never in the effects
+ *  queue: FxLayer.tsx calls this only once the queue has played what the state already holds (review fix: the marks
+ *  showed with the state, ahead of the beats that make them, and on tiles a held walker hadn't reached). */
 export function syncMeleeMarks(items: MeleeMark[]) {
   const want = new Map(items.map((m) => [m.key, m]));
-  for (const [k, n] of [...marks]) {
-    if (want.has(k) && n.g.isConnected) continue;
-    marks.delete(k);
-    if (!n.g.isConnected) continue;
-    n.g.removeAttribute('data-melee-mark'); n.g.setAttribute('data-melee-gone', n.m.kind);
-    const frames: Keyframe[] = reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }]
-      : n.m.kind === 'nailed' ? [{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(' + ((centre(n.m.a)?.s || 40) * 0.3).toFixed(1) + 'px)', opacity: 0 }]
-        : n.m.kind === 'bind' || n.m.kind === 'grapple' ? [{ opacity: 1, strokeDasharray: 'none' }, { opacity: 0.6, offset: 0.3 }, { opacity: 0 }]
-          : [{ opacity: 1 }, { opacity: 0 }];
-    const a = anim(n.g, frames, { duration: n.m.kind === 'nailed' ? 240 : 200, easing: 'ease-in', fill: 'forwards' });
-    const g = n.g; if (a) a.onfinish = () => g.remove(); else g.remove();
-    setTimeout(() => g.remove(), 1500);
-  }
+  for (const [k, n] of [...marks]) if (!(want.has(k) && n.g.isConnected)) goneMark(k, n);
   const s = want.size ? rootSvg() : root;
   if (s) for (const [k, m] of want) {
     const had = marks.get(k); if (had) { had.m = m; continue; }
     const g = document.createElementNS(NS, 'g') as SVGGElement; g.setAttribute('data-melee-mark', m.kind); g.setAttribute('data-unit', m.unit);
-    s.appendChild(g); const n = { m, g }; marks.set(k, n); drawMark(n);
+    s.appendChild(g); const n: MarkNode = { m, g, sig: '' }; marks.set(k, n); drawMark(n);
+    record(k, 'mark:' + m.kind, true);
     if (!reducedMotion()) anim(g, [{ opacity: 0 }, { opacity: 1 }], { duration: 180, fill: 'backwards' });
   }
   if (marks.size && !raf && typeof requestAnimationFrame === 'function') raf = requestAnimationFrame(track);

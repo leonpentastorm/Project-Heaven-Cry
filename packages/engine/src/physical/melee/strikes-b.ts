@@ -182,6 +182,7 @@ technique({
     const r = strike(t, { thrown: true, extra: thrown ? 0 : -t.num('unthrown_hit', 2), mult: thrown ? 1 : t.num('unthrown_mult', 0.7), label: thrown ? 'Throw' : 'Throw (not a throwing weapon)' });
     if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t throw at that.'; }
     const v = r.target || tgt;
+    if (fx && v !== tgt) Object.assign(fx, { to: v.pos, target: v.id }); // a redirected throw flies to (and lands by) the unit really struck
     if (p === 'heavy' && (t.preview ? (t.note('On a hit:'), true) : r.hit && !r.killed && alive(v))) { const was = !!v.prone; stop(t, v, 'prone', { save: ['body'] }); fallFx(t, v, was); }
     loseWeapon(t, v.pos);
     return null;

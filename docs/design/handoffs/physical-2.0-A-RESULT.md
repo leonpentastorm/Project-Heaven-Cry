@@ -161,4 +161,4 @@ After merging the base at its latest (`29a06d6`, the core services' "thirteen fi
 
 ## Later: the melee technique effects
 
-Leon asked for new effects for the melee techniques (10 Nov 2026). The design is [`physical-2.0-A-FX.md`](physical-2.0-A-FX.md) and the build, with why he asked, is [`physical-2.0-A-FX-RESULT.md`](physical-2.0-A-FX-RESULT.md). The engine side is one new event, `melee_fx`, emitted from `melee/*` only.
+Leon asked for new effects for the melee techniques (10 Nov 2026: "we using new effects for these?"; the lead and B are busy and C is done, so A built them on this branch). The hand-off, with why he asked, what each technique shows, the files touched outside A's own code and the review fixes, is [`physical-2.0-A-FX.md`](physical-2.0-A-FX.md). The engine side is one new event, `melee_fx`, emitted from `melee/*` only.

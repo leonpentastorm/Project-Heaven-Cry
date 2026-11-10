@@ -10,7 +10,7 @@ import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
-import { meleeTechHandlers, meleeTechBeat, quickStrikes } from './melee-techniques';
+import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
@@ -575,7 +575,7 @@ const H: Record<string, Handler> = {
       if (start) {
         if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
         else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
-        else if (g.look !== 'thrown') projectile(start, end, ft, g.look, toP.s, g.color);
+        else if (!(g.look === 'thrown' && e.thrown)) projectile(start, end, ft, g.look === 'thrown' ? 'arrow' : g.look, toP.s, g.color); // a thrown melee weapon's flight is its melee_fx; any other melee-category shot keeps a tracer
       }
       after(() => {
         if (e.object) { burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
@@ -1293,7 +1293,7 @@ export const sameAction = (sp: FxEvent, x: FxEvent) => { const f = Number.isFini
 /** queueFx for a batch with no Miracle in it. from: count the backlog from this time (after a Miracle's hold). */
 function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: number; from?: number }) {
   if (!evs.length) return;
-  evs = quickStrikes(evs); // a multi-strike technique's later strikes play at the chained beat
+  evs = meleePrepass(evs); // the melee techniques' movement beats over their moves, quick later strikes, Thrown Flurry flights
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
   const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), k = fxPace(), room = Math.max(1500 * k, 7000 * k - backlog);

@@ -8,7 +8,7 @@ import { refOf } from '@engine';
 import { setLayer, centre } from './dom';
 import * as sfxMod from '../sfx';
 import { setCombatSpeed, setInBattle } from '../combatSpeed';
-import { meleeTechHandlers, meleeTechBeat, quickStrikes, meleeMarksOf, syncMeleeMarks, clearMeleeMarks, meleeMarkCount, MELEE_BEAT_NORMAL, MELEE_BEAT_MAX, type MeleeKit } from './melee-techniques';
+import { meleeTechHandlers, meleeTechBeat, quickStrikes, leadMoves, meleePrepass, meleeMarksOf, syncMeleeMarks, clearMeleeMarks, meleeMarkCount, MELEE_BEAT_NORMAL, MELEE_BEAT_MAX, type MeleeKit } from './melee-techniques';
 import { physBeat } from './physical';
 
 function grid(w = 12, h = 10) {
@@ -183,5 +183,77 @@ describe('the standing marks', () => {
     expect(meleeMarkCount()).toBe(0); expect(layer.querySelectorAll('[data-melee-mark]').length).toBe(0);
     expect(layer.querySelectorAll('[data-melee-gone]').length).toBe(2); // fading out
     vi.advanceTimersByTime(2000); expect(layer.querySelectorAll('[data-melee-gone]').length).toBe(0);
+  });
+});
+
+// Review fixes (docs/design/handoffs/physical-2.0-A-FX.md section 9).
+describe('review fixes', () => {
+  const game = (units: any[]) => ({ combat: { round: 1, turn: 0, order: units.map((u) => u.id), units } }) as any;
+  it('the movement beats play over their moves: a skid before the first shove, a fall before PRONE, a sidestep before its step (beat 0); saved events untouched', () => {
+    const evs: any[] = [
+      { k: 'technique', n: 1, unit: 'me', id: 'shove' }, { k: 'shove', n: 2, unit: 'me', target: 'foe', ok: true, from: '3,5', to: '4,5' },
+      { k: 'shove', n: 3, unit: 'me', target: 'foe', ok: true, from: '4,5', to: '5,5' }, { k: 'momentum', n: 4, unit: 'me' },
+      { k: 'melee_fx', n: 5, unit: 'me', beat: 'force', target: 'foe', path: ['3,5', '4,5', '5,5'], how: 'push' },
+      { k: 'technique', n: 6, unit: 'me', id: 'trip' }, { k: 'stance', n: 7, unit: 'foe', what: 'prone' }, { k: 'stopped', n: 8, unit: 'foe' },
+      { k: 'melee_fx', n: 9, unit: 'me', beat: 'fall', target: 'foe', to: '5,5' },
+      { k: 'technique', n: 10, unit: 'me', id: 'sidestep' }, { k: 'move', n: 11, unit: 'me', from: '2,5', to: '2,6' },
+      { k: 'melee_fx', n: 12, unit: 'me', beat: 'sidestep', from: '2,5', to: '2,6' },
+    ];
+    const out = leadMoves(evs);
+    expect(out.map((e) => e.n)).toEqual([1, 5, 2, 3, 4, 6, 9, 7, 8, 10, 12, 11]);
+    for (const e of out.filter((x) => x.k === 'melee_fx')) { expect(e._early).toBe(true); expect(meleeTechBeat(e)).toBe(0); }
+    expect(evs.some((e) => e._early)).toBe(false); expect(evs.map((e) => e.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    // never across a use: a skid whose shoves aren't in its own use stays where it is
+    const lone: any[] = [{ k: 'shove', n: 1, target: 'foe', ok: true }, { k: 'technique', n: 2, unit: 'me' }, { k: 'melee_fx', n: 3, beat: 'force', target: 'foe' }];
+    expect(leadMoves(lone)).toBe(lone);
+  });
+  it('quick strikes end at the use\'s upto and at a turn: a later plain attack is never quick', () => {
+    const evs: any[] = [
+      { k: 'technique', n: 1, unit: 'me', id: 'sweep' }, { k: 'melee_fx', n: 2, unit: 'me', beat: 'arc', struck: ['a', 'b', 'c'], upto: 5 },
+      { k: 'melee', n: 3, unit: 'me' }, { k: 'melee', n: 4, unit: 'me' }, { k: 'hurt', n: 5 }, { k: 'melee', n: 6, unit: 'me' },
+    ];
+    expect(quickStrikes(evs).map((e) => !!e._quick)).toEqual([false, false, false, true, false, false]);
+    const t: any[] = [{ k: 'melee_fx', n: 1, unit: 'me', beat: 'arc', struck: ['a', 'b', 'c'] }, { k: 'melee', n: 2, unit: 'me' }, { k: 'turn', n: 3, unit: 'x' }, { k: 'melee', n: 4, unit: 'me' }];
+    expect(quickStrikes(t).map((e) => !!e._quick)).toEqual([false, false, false, false]);
+  });
+  it('a Thrown Flurry: no cut lines; each thrown shot flies the weapon, the last lands in the pile', () => {
+    const evs: any[] = [
+      { k: 'melee_fx', n: 1, unit: 'me', beat: 'flurry', thrown: true, strikes: 2, weapon: 'combat_knife', land: '7,5', upto: 4 },
+      { k: 'shot', n: 2, unit: 'me', thrown: true, from: '2,5', to: '3,5' }, { k: 'shot', n: 3, unit: 'me', thrown: true, from: '2,5', to: '7,5' }, { k: 'hurt', n: 4 },
+      { k: 'shot', n: 5, unit: 'me', thrown: true },
+    ];
+    const out = meleePrepass(evs);
+    expect(out.map((e) => e._fly || null)).toEqual([null, { weapon: 'combat_knife', land: null }, { weapon: 'combat_knife', land: '7,5' }, null, null]);
+    const layer = grid(), H = meleeTechHandlers(kit());
+    H.melee_fx({ ...evs[0] } as any);
+    expect(layer.querySelectorAll('[data-melee-fx="flurry"]').length).toBe(0); // no sword cuts on a target at range
+    window.dispatchEvent(new CustomEvent('phc-fx', { detail: out[1] })); window.dispatchEvent(new CustomEvent('phc-fx', { detail: out[2] }));
+    expect(layer.querySelectorAll('[data-melee-fx="throw"]').length).toBe(2);
+    expect((window as any).__phcMeleeFx.filter((r: any) => r.id === 'flurry' && r.kind === 'flurry-throw' && r.drawn)).toHaveLength(2);
+  });
+  it('Parry\'s word floats below the token (C\'s technique name floats above it)', () => {
+    const layer = grid(), H = meleeTechHandlers(kit());
+    H.melee_fx({ k: 'melee_fx', n: 1, ...EX.parry } as any);
+    const w = [...layer.querySelectorAll('div')].find((d) => d.textContent === 'PARRIED' && !!d.style.top) as HTMLElement;
+    const c = centre('2,5')!, top = parseFloat(w.style.top), h = parseFloat(w.style.height);
+    expect(top + h / 2).toBeGreaterThan(c.y);
+  });
+  it('a Charge by an unseen (Hidden) runner draws no trail and no dust', () => {
+    const layer = grid(), H = meleeTechHandlers(kit(new Set(), false));
+    H.melee_fx({ k: 'melee_fx', n: 1, id: 'charge', beat: 'charge', unit: 'foe', at: '2,5', route: ['6,5', '5,5', '4,5', '3,5'], seen: { pc: 0 } } as any);
+    expect(layer.querySelectorAll('[data-melee-fx]').length).toBe(0); expect(layer.querySelectorAll('img').length).toBe(0);
+  });
+  it('the standing layer redraws a mark only when it moved (not every frame), and Throw Down takes the hold it tears', () => {
+    const layer = grid(), H = meleeTechHandlers(kit());
+    syncMeleeMarks(meleeMarksOf(game([{ id: 'me', side: 'pc', pos: '2,5', tech: { bind: { target: 'foe' } } }, { id: 'foe', side: 'foe', pos: '3,5', nailed: { ap: 2, weapon: 'lance' } }])));
+    const g = layer.querySelector('[data-melee-mark="nailed"]') as SVGGElement, d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!;
+    let sets = 0; Object.defineProperty(g, 'innerHTML', { get() { return d.get!.call(this); }, set(v) { sets++; d.set!.call(this, v); } });
+    vi.advanceTimersByTime(200); // a dozen frames
+    expect(sets).toBe(0);
+    const tile = [...document.querySelectorAll('button')].find((b) => /· open/.test(b.getAttribute('aria-label') || '') && (b as any).getBoundingClientRect().left === 120 && (b as any).getBoundingClientRect().top === 200)!;
+    (tile as any).getBoundingClientRect = () => ({ left: 130, top: 200, width: 40, height: 40, right: 170, bottom: 240 }); // the board scrolled
+    vi.advanceTimersByTime(50); expect(sets).toBe(1);
+    H.melee_fx({ k: 'melee_fx', n: 2, ...EX.slam } as any);
+    expect(layer.querySelectorAll('[data-melee-mark="bind"]').length).toBe(0); expect(meleeMarkCount()).toBe(1);
   });
 });

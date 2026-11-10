@@ -15,7 +15,7 @@
 //     the target is slammed into whoever stands there and stays where it was, and the occupant is struck at half of the
 //     slam (Momentum included), as Run Through's behind-strike is half of its strike. Bare: the slam always hits (no
 //     roll); Flurry's Bare mark then makes the occupant's Prone save harder.
-import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook, setUpBonus, meleeFx, fxMark, movedSince, refuseFx } from './shared';
+import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook, setUpBonus, meleeFx, fxMark, movedSince, refuseFx, upto } from './shared';
 import type { Tech, StrikeResult } from './shared';
 import type { StrikeOpts } from '../types';
 import { strikingWith, loseWeapon } from '../core';
@@ -80,6 +80,7 @@ technique({
     const extras = cleaveExtras(t, tgt, m, within);
     if (t.preview) t.note(extras.length ? 'Then ' + extras.map((v) => v.name).join(', ') + ', each at full damage.' : 'No other enemy close enough to cleave into.');
     for (const v of extras) { const x = also(t, { target: v, noMomentum: true, label: 'Cleave', ...(within > 1 ? { reach: within } : {}) }); if (x.ok) bleed(x); }
+    upto(t, fx);
     spendMomentum(t);
     return null;
   },

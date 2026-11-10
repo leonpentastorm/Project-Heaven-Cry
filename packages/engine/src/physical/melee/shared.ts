@@ -42,3 +42,6 @@ export function fallFx(t: T_, v: U_, wasProne: boolean): void { if (!t.preview &
 /** A beat emitted before the strike that then refused: marked refused (as the core marks its technique event), so the
  * client plays nothing for it. */
 export function refuseFx(ev: Fx_ | null): void { if (ev) (ev as any).refused = true; }
+/** After a multi-strike technique's strikes (Sweep, Cleave, Flurry): the last event of its use, so the client marks only
+ * the strikes of this use as quick (fx/melee-techniques.ts quickStrikes), never a later plain attack in the same batch. */
+export function upto(t: T_, ev: Fx_ | null): void { if (ev && !t.preview) (ev as any).upto = t.cb.fxSeq || 0; }

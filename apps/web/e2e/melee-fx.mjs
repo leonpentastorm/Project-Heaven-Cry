@@ -94,6 +94,21 @@ async function catchBeat(id, kind, tag, since, shotName, delays = [60, 200]) {
 }
 const now = () => p.evaluate(() => Math.round(performance.now()));
 const mfxSince = async (n0) => ((await G()).combat.fx || []).filter((e) => e.n > n0 && e.k === 'melee_fx' && !e.refused);
+/** A standing mark comes only once the queue has played its beat (review fix): wait for it, then check it rose after
+ *  the beat (the hook records 'mark:<kind>' when the layer adds it). */
+async function markAfter(kind, beat, t0, label) {
+  const has = await p.locator('[data-melee-mark="' + kind + '"]').first().waitFor({ timeout: 6000 }).then(() => true).catch(() => false);
+  const r = (await records()).filter((x) => x.at >= t0), b = r.find((x) => x.kind === beat && x.drawn), m = r.find((x) => x.kind === 'mark:' + kind);
+  ok(label + ' (the mark rose after its beat: beat ' + (b ? b.at - t0 : '?') + ' ms, mark ' + (m ? m.at - t0 : '?') + ' ms)', has && !!b && !!m && m.at >= b.at);
+  return has;
+}
+/** The movement beat played with its move, not after it: the effects log (combat speed hook) has the melee_fx no later
+ *  than the first shove, stance or move of the use. */
+async function ledMove(n0, lead, label) {
+  const fx = await p.evaluate(() => (window.__phcCombatTempo ? window.__phcCombatTempo().fx : []));
+  const use = fx.filter((x) => x.n > n0), mf = use.find((x) => x.k === 'melee_fx'), mv = use.find((x) => lead.includes(x.k));
+  ok(label + ' plays over its move (beat at ' + (mf ? mf.at : '?') + ', ' + (mv ? mv.k : 'move') + ' at ' + (mv ? mv.at : '?') + ')', !!mf && !!mv && mf.at <= mv.at);
+}
 const lastN = async () => { const f = (await G()).combat.fx || []; return f.length ? f[f.length - 1].n : 0; };
 
 /**
@@ -113,10 +128,11 @@ async function tryTech(c) {
     if (c.after) await c.after(u, args);
     const got = (await mfxSince(n0)).filter((e) => e.beat === c.kind);
     if (!got.length) { note(c.id + ': no ' + c.kind + ' beat this time (the dice); again'); await idle(); continue; }
-    const r = await catchBeat(c.id, c.kind, c.tag || c.kind, t0, c.shot || c.id, c.delays);
+    const r = await catchBeat(c.id, c.rec || c.kind, c.tag || c.kind, t0, c.shot || c.id, c.delays);
     if (!(r.el && r.drawn) && i < (c.tries || 8) - 1) { note(c.id + ': beat not caught (' + JSON.stringify(r) + ', ' + JSON.stringify((await records()).filter((x) => x.at >= t0)) + '); again'); await idle(); continue; }
     ok(c.label + ': its ' + c.kind + ' beat draws [data-melee-fx="' + (c.tag || c.kind) + '"] and is recorded drawn', r.el && r.drawn);
-    if (c.check) await c.check(u, args);
+    if (c.lead) await ledMove(n0, c.lead, '…' + c.label);
+    if (c.check) await c.check(u, args, t0);
     await idle();
     return true;
   }
@@ -129,26 +145,30 @@ const CASES = [
   { id: 'cleave', kind: 'arc', tag: 'cleave', weapon: 'sabre', momentum: 2, label: 'Cleave', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [1, 1], [0, 1]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); await spawnAt(d.tiles[1], 'elite'); await spawnAt(d.tiles[2], 'elite'); return a ? { targetId: a.id } : null; } },
   { id: 'throw', kind: 'throw', weapon: 'combat_knife', label: 'Throw (the knife\'s icon flies to its pile)', delays: [40, 140, 320], async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[2], 'elite'); return a ? { targetId: a.id } : null; } },
   { id: 'bind', kind: 'bind', weapon: 'sabre', label: 'Bind (the link snaps, then stands)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [-1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id } : null; },
-    async check() { await idle(); await p.waitForTimeout(300); ok('…the Bind stands on the layer while it holds', (await p.locator('[data-melee-mark="bind"]').count()) === 1); await p.screenshot({ path: SHOTS + 'bind-standing.png' }); } },
+    async check(u, args, t0) { await idle(); if (await markAfter('bind', 'bind', t0, '…the Bind stands on the layer while it holds')) ok('…one link', (await p.locator('[data-melee-mark="bind"]').count()) === 1); await p.screenshot({ path: SHOTS + 'bind-standing.png' }); } },
   { id: 'throw_down', kind: 'slam', tag: 'slam', weapon: 'sabre', label: 'Throw Down (slam on the landing tile)', delays: [40, 160, 320], momentum: 2,
     async setup(gg, u) { const d = adj(gg, u, [[1, 0], [0, 1], [1, 1]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); if (!a) return null;
       const e = await act({ type: 'combat/technique', unitId: u.id, id: 'bind', targetId: a.id }); if (e) return null; await idle(); await p.waitForTimeout(200);
       await act({ type: 'sandbox/meter', unitId: u.id, momentum: 2 }); return { targetId: a.id, tile: ref(d.tiles[1]) }; } },
-  { id: 'shove', kind: 'force', weapon: 'sabre', label: 'Shove (the skid along its path)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id } : null; } },
+  { id: 'shove', kind: 'force', lead: ['shove'], weapon: 'sabre', label: 'Shove (the skid along its path)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id } : null; } },
   { id: 'drag', kind: 'force', weapon: 'sabre', shot: 'drag', label: 'Drag (a swap: two crossing arrows)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id, opt: 'swap' } : null; } },
-  { id: 'bash', kind: 'force', weapon: 'maul', shot: 'bash-push', label: 'Bash, Heavy (the push)', tries: 10 /* a hit and a failed Body save */, async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id, opt: 'push', line: 'heavy' } : null; } },
-  { id: 'trip', kind: 'fall', weapon: 'sabre', label: 'Trip (the fall to Prone)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id } : null; } },
+  { id: 'bash', kind: 'force', lead: ['shove'], weapon: 'maul', shot: 'bash-push', label: 'Bash, Heavy (the push)', tries: 10 /* a hit and a failed Body save */, async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id, opt: 'push', line: 'heavy' } : null; } },
+  { id: 'trip', kind: 'fall', lead: ['stance', 'stopped'], weapon: 'sabre', label: 'Trip (the fall to Prone)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id } : null; } },
   { id: 'charge', kind: 'charge', weapon: 'sabre', label: 'Charge (the dash trail along the run)', delays: [80, 260], async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0], [4, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[3], 'elite'); return a ? { targetId: a.id } : null; } },
   { id: 'run_through', kind: 'pin', weapon: 'lance', momentum: 2, label: 'Run Through, Reach, left in (the thrust and the pin)', tries: 6, async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id, line: 'reach', opt: 'leave' } : null; },
-    async check(u, args) { await idle(); await p.waitForTimeout(300); const t = (await G()).combat.units.find((x) => x.id === args.targetId);
-      if (t?.nailed?.weapon) { ok('…the lance stands in the nailed unit on the layer', (await p.locator('[data-melee-mark="nailed"] image').count()) >= 1); await p.screenshot({ path: SHOTS + 'nailed-standing.png' }); } else note('the target wasn\'t left nailed (killed or freed)'); } },
-  { id: 'feint', kind: 'feint', weapon: 'sabre', label: 'Feint (brackets on the target, or NOT FOOLED)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id } : null; } },
+    async check(u, args, t0) { await idle(); const t = (await G()).combat.units.find((x) => x.id === args.targetId);
+      if (t?.nailed?.weapon) { await markAfter('nailed', 'pin', t0, '…the lance stands in the nailed unit on the layer'); ok('…drawn as the weapon\'s icon', (await p.locator('[data-melee-mark="nailed"] image').count()) >= 1); await p.screenshot({ path: SHOTS + 'nailed-standing.png' }); } else note('the target wasn\'t left nailed (killed or freed)'); } },
+  { id: 'feint', kind: 'feint', weapon: 'sabre', label: 'Feint (brackets on the target, or NOT FOOLED)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id } : null; },
+    async check(u, args, t0) { const e = (await G()).combat.fx.filter((x) => x.k === 'melee_fx' && x.beat === 'feint').pop(); if (e?.ok) await markAfter('feint', 'feint', t0, '…the Feint\'s brackets stand on its target'); else note('not fooled: no standing mark'); } },
   { id: 'guard', kind: 'guard', weapon: 'sabre', label: 'Guard (the raised guard)', async setup(gg, u) { const d = adj(gg, u, [[2, 0]]); if (!d) return null; await spawnAt(d.tiles[0], 'elite'); return {}; },
-    async check() { await idle(); await p.waitForTimeout(300); ok('…the guard stays raised on the layer', (await p.locator('[data-melee-mark="guard"]').count()) === 1); await p.screenshot({ path: SHOTS + 'guard-standing.png' }); } },
-  { id: 'sidestep', kind: 'sidestep', weapon: 'maul', label: 'Sidestep (the quick step)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [1, 1], [0, 1]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id, tile: ref(d.tiles[2]) } : null; } },
+    async check(u, args, t0) { await idle(); if (await markAfter('guard', 'guard', t0, '…the guard stays raised on the layer')) ok('…one guard', (await p.locator('[data-melee-mark="guard"]').count()) === 1); await p.screenshot({ path: SHOTS + 'guard-standing.png' }); } },
+  { id: 'sidestep', kind: 'sidestep', lead: ['move'], weapon: 'maul', label: 'Sidestep (the quick step)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [1, 1], [0, 1]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id, tile: ref(d.tiles[2]) } : null; } },
   { id: 'half_sword', kind: 'thrust', weapon: 'sabre', label: 'Half-Sword (the narrow thrust)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id } : null; } },
   { id: 'sunder', kind: 'sunder', weapon: 'maul', label: 'Sunder (armour chips off)', tries: 6, async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'boss', 'sabre'); return a ? { targetId: a.id } : null; } },
   { id: 'flurry', kind: 'flurry', weapon: 'sabre', label: 'Flurry (quick cuts)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'boss'); return a ? { targetId: a.id } : null; } },
+  { id: 'flurry', kind: 'flurry', tag: 'throw', shot: 'flurry-thrown', weapon: 'throwing_knives', label: 'Flurry, Thrown (each throw flies the weapon; no cuts at range)', rec: 'flurry-throw', delays: [40, 160, 320],
+    async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[2], 'boss'); return a ? { targetId: a.id, line: 'thrown' } : null; },
+    async check(u, args, t0) { const r = (await records()).filter((x) => x.at >= t0); ok('…the thrown shots flew the weapon (' + r.filter((x) => x.kind === 'flurry-throw').length + ')', r.some((x) => x.kind === 'flurry-throw' && x.drawn)); ok('…no sword cuts drawn on the target at range', !r.some((x) => x.kind === 'flurry' && x.drawn)); } },
   { id: 'draw_cut', kind: 'draw', weapon: 'sabre', equip: false, label: 'Draw Cut (the draw flash)', async setup(gg, u) {
     await act({ type: 'sandbox/give', charId: cid, item: 'combat_knife', equip: true }); await p.waitForTimeout(150);
     const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'boss'); const pack = (await G()).characters[cid].pack || [];

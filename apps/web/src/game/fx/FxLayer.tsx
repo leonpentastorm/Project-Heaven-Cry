@@ -8,7 +8,7 @@ import type { FxEvent, GameState } from '@engine';
 import { preloadCombatSfx, reducedMotion } from '../sfx';
 import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
-import { canDraw, clearFx, fightStream, forgetSpotlights, holdMovers, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
+import { canDraw, clearFx, fightStream, forgetSpotlights, fxBusyUntil, FX_IDLE, holdMovers, isHeld, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 import { meleeMarksOf, syncMeleeMarks, clearMeleeMarks } from './melee-techniques';
 import { closeKeptBoxes } from '../cutIn';
@@ -46,15 +46,27 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   React.useEffect(() => () => { clearFx(); closeKeptBoxes(); clearAmbient(); clearMeleeMarks(); }, []); // a box the player kept open goes with the room
   // A hidden tab plays nothing: on return it catches up silently.
   React.useEffect(() => {
-    const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); syncMeleeMarks(marksOn(latest.current.game, latest.current.screen)); return; } if (document.hidden) { clearFx(); clearAmbient(); clearMeleeMarks(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) { fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; setProcessed(ck, fight.current.n); } } };
+    const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); syncMarks(); return; } if (document.hidden) { clearFx(); clearAmbient(); clearMeleeMarks(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) { fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; setProcessed(ck, fight.current.n); } } };
     document.addEventListener('visibilitychange', vis); return () => document.removeEventListener('visibilitychange', vis);
   }, []);
   // Where everyone stands now and what the squad sees, for effects already queued as well as new ones (set before the
   // paint, so the units a new batch is about to show can be held where they were: play.ts holdMovers).
   React.useLayoutEffect(() => { setContext(game, screen); }, [game, screen]);
   React.useEffect(() => { if (!document.hidden) syncAmbient(ambientOf(game, screen, seenNow())); }, [game, screen]);
-  // The melee techniques' lasting states (a Bind, a grapple, a weapon left in a nailed unit, a Guard, a Feint's mark).
-  React.useEffect(() => { if (!document.hidden) syncMeleeMarks(marksOn(game, screen)); }, [game, screen]);
+  // The melee techniques' lasting states (a Bind, a grapple, a weapon left in a nailed unit, a Guard, a Feint's mark)
+  // follow the effects queue, not the state (review fix): the state already holds the outcome while its beats are still
+  // to play, so the marks are synced only once the queue has played them (and no unit they stand on is still held where
+  // it was: play.ts holdMovers). Until then a retry, and the queue's idle signal.
+  const marksTimer = React.useRef(0), marksPending = React.useRef(false);
+  const syncMarks = React.useCallback(() => {
+    window.clearTimeout(marksTimer.current);
+    if (document.hidden) return;
+    const { game: g, screen: sc } = latest.current, items = marksOn(g, sc), wait = fxBusyUntil() - performance.now();
+    const held = items.some((m) => isHeld(m.unit) || (!!m.other && isHeld(m.other)));
+    if (marksPending.current || wait > 20 || held) { marksTimer.current = window.setTimeout(syncMarks, Math.max(80, Math.min(wait + 60, 1500))); return; }
+    syncMeleeMarks(items);
+  }, []);
+  React.useEffect(() => { const f = () => syncMarks(); window.addEventListener(FX_IDLE, f); return () => { window.removeEventListener(FX_IDLE, f); window.clearTimeout(marksTimer.current); }; }, []);
   // After the play effect below has read this render's tokens, keep copies of the living ones for the next kill.
   React.useEffect(() => { rememberTokens(); });
   const s = streamOf(game, screen), top = s ? lastN(s.list) : 0;
@@ -95,23 +107,26 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
     seen.current = { key: s.key, n: top, code: game.code };
     if (s.key.startsWith('cb|')) { fight.current = { key: s.key, n: top }; setProcessed(s.key, top); }
     if (!fresh.length) return;
+    marksPending.current = true; // the standing marks wait for these to be queued and played
     // Wait for the grid to be on screen (a screen change may still be sliding in), then play; give up after ~3 s. A new
     // fight's opening also waits out the combat-in transition: until it ends the grid is under the old screen's copy
     // and mid-flip, so the effects would be hidden and drawn in the wrong places.
     const stream = s.key, readyAt = opening ? screenAt.current.at + (reducedMotion() ? 220 : COMBAT_IN_MS) : 0;
     let tries = 0;
     const go = () => {
-      if (latest.current.game?.code !== game.code) return;
+      if (latest.current.game?.code !== game.code) { marksPending.current = false; return; }
       const busy = Date.now() < readyAt || (opening && !!document.querySelector('.phc-combat-in'));
       // A decided fight (won, lost, or every one of the viewer's fighters down): only its last moments play, at normal
       // speed; the steps the engine ran after it was decided aren't replayed.
       const cb = latest.current.game?.combat as any, me = latest.current.game ? Object.values(latest.current.game.characters || {}).filter((c: any) => c.owner === getState().me.id).map((c: any) => c.id) : [];
       const mine = cb ? (cb.units || []).filter((u: any) => u.charId && me.includes(u.charId)) : [];
       const decided = !!cb && (!!cb.over || (mine.length > 0 && mine.every((u: any) => u.dead || u.downed)));
-      if ((!busy && canDraw()) || tries++ > 30) { queueFx(fresh, stream, decided ? { keep: DECIDED_KEEP } : {}); return; }
+      if ((!busy && canDraw()) || tries++ > 30) { queueFx(fresh, stream, decided ? { keep: DECIDED_KEEP } : {}); marksPending.current = false; syncMarks(); return; }
       setTimeout(go, busy ? 60 : 150);
     };
     go();
   }, [s?.key, top, game?.code, ck, ctop]);
+  // After the play effect above (it has queued, or marked pending, this render's events): the standing marks.
+  React.useEffect(() => { syncMarks(); }, [game, screen]);
   return <div ref={ref} aria-hidden="true" className="phc-fx-layer" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 45, overflow: 'hidden', contain: 'strict' }} />;
 }
