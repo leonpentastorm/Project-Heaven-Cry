@@ -61,6 +61,9 @@ M813 map backgrounds are opaque 1600 × 1100 paintings in a strict top-down orth
 ## Wick trait and perk icons
 Use the exact approved Mind Without Fog icon. Keep the cape, lantern heart, pixel-screen face and lively asymmetry. Traits and perks both use pure white flat ink. This is an independent graphic mode, not a miniature painted skill portrait.
 
+## Weapon art (rule, Leon, 10 Nov 2026)
+Every weapon looks cool in a mechanical, edgy, 2009 goth gun-nut way: side profile, muzzle right, over-built plates, bolts and ports, something sharp, painted or hung on it, blackened iron, aged brass and dark wood, a hard rim light and at most one glow, and a faction signature. Invented, never a real model. It is its own graphic mode: never the Wick icons' white flat ink. The full rule and the reference drawings (Hellraiser service rifle, Lumeri censer gun): `docs/design/weapon-art.md`.
+
 ## Reference priority
 Current user brief first. Then the reference for the correct art mode. World documents supply facts. This guide supplies visual defaults. Historical labels and palettes on approved character sheets do not override the current skill palette.
 

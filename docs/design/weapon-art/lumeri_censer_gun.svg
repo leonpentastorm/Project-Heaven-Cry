@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" width="1280" height="480">
+  <!-- Lumeri censer gun: the Lumeri Church's blessed-shell shotgun, its muzzle a caged censer of embers. Weapon art rule
+       (Leon, 10 Nov 2026): mechanical, edgy, goth gun-nut. -->
+  <defs>
+    <linearGradient id="iron" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5d616a"/><stop offset="0.15" stop-color="#3a3d44"/><stop offset="0.6" stop-color="#202227"/><stop offset="1" stop-color="#0b0c0e"/>
+    </linearGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0cf7c"/><stop offset="0.35" stop-color="#b8862f"/><stop offset="0.75" stop-color="#6e4a17"/><stop offset="1" stop-color="#3a260b"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6e3418"/><stop offset="0.5" stop-color="#43190b"/><stop offset="1" stop-color="#1f0a04"/>
+    </linearGradient>
+    <radialGradient id="ember" cx="0.5" cy="0.55" r="0.5">
+      <stop offset="0" stop-color="#fff1c2"/><stop offset="0.35" stop-color="#ffb347"/><stop offset="0.75" stop-color="#c2410c"/><stop offset="1" stop-color="#3a0d02"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#F2C46A" stop-opacity="0.45"/><stop offset="1" stop-color="#F2C46A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151b27"/><stop offset="1" stop-color="#0a0d13"/></linearGradient>
+    <filter id="drop" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000" flood-opacity="0.75"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="1.6"/></filter>
+  </defs>
+  <rect width="640" height="240" rx="14" fill="url(#bg)"/>
+  <rect x="1" y="1" width="638" height="238" rx="13" fill="none" stroke="#232D3F" stroke-width="2"/>
+
+  <!-- the censer's light and its incense -->
+  <circle cx="574" cy="98" r="64" fill="url(#halo)"/>
+  <g fill="none" stroke="#d8c9a8" stroke-linecap="round" filter="url(#soft)" opacity="0.55">
+    <path d="M572 58 C562 44 586 36 574 18" stroke-width="5"/>
+    <path d="M590 62 C584 48 604 44 596 28" stroke-width="4" opacity="0.7"/>
+  </g>
+
+  <g filter="url(#drop)" stroke="#050506" stroke-width="2.2" stroke-linejoin="miter">
+    <!-- prayer beads hanging from the stock, a sun medallion at the end -->
+    <g fill="url(#brass)" stroke-width="1.2">
+      <circle cx="132" cy="134" r="3.4"/><circle cx="134" cy="142" r="3.4"/><circle cx="138" cy="150" r="3.4"/><circle cx="143" cy="157" r="3.4"/>
+      <circle cx="149" cy="163" r="3.4"/><circle cx="156" cy="168" r="3.4"/>
+      <circle cx="160" cy="180" r="8"/>
+    </g>
+    <g stroke="#3a260b" stroke-width="1.4" fill="none">
+      <path d="M160 170 L160 172 M160 188 L160 190 M150 180 L152 180 M168 180 L170 180 M153 173 L154.5 174.5 M165.5 185.5 L167 187 M153 187 L154.5 185.5 M165.5 174.5 L167 173"/>
+    </g>
+
+    <!-- stock: carved, with a brass butt cap and a spike -->
+    <path d="M226 82 L120 92 Q74 98 48 104 L40 106 L40 160 L52 162 Q96 146 132 132 L226 116 Z" fill="url(#wood)"/>
+    <path d="M60 112 Q110 102 210 92 M64 140 Q110 126 214 108" stroke="#f0cf7c" stroke-opacity="0.35" stroke-width="1.4" fill="none"/>
+    <path d="M150 104 Q160 96 170 104 Q160 112 150 104 Z" fill="url(#brass)" stroke-width="1.2"/>
+    <path d="M30 100 L44 104 L44 162 L30 166 Z" fill="url(#brass)"/>
+    <path d="M30 120 L12 133 L30 146 Z" fill="url(#brass)"/>
+    <path d="M108 95 L114 82 L120 94" fill="url(#brass)" stroke-width="1.4"/>
+
+    <!-- receiver: blackened iron, a reliquary with lancet windows on the embers -->
+    <path d="M220 74 L372 74 L384 84 L384 130 L220 130 Z" fill="url(#iron)"/>
+    <path d="M222 75 L370 75 L382 84" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1.4" fill="none"/>
+    <!-- lancet windows -->
+    <path d="M262 124 L262 102 Q262 88 272 82 Q282 88 282 102 L282 124 Z" fill="url(#ember)"/>
+    <path d="M290 124 L290 102 Q290 88 300 82 Q310 88 310 102 L310 124 Z" fill="url(#ember)"/>
+    <path d="M272 82 L272 124 M300 82 L300 124 M262 108 L282 108 M290 108 L310 108" stroke="#2a1a07" stroke-width="2.2" fill="none"/>
+    <!-- brass filigree frame round the windows -->
+    <path d="M256 128 L256 100 Q256 82 272 74 M316 128 L316 100 Q316 82 300 74" stroke="#c8962f" stroke-width="3" fill="none"/>
+    <path d="M286 126 L286 98" stroke="#c8962f" stroke-width="3" fill="none"/>
+    <!-- the Lumeri sun in brass -->
+    <circle cx="344" cy="102" r="10" fill="url(#brass)" stroke-width="1.6"/>
+    <path d="M344 86 L344 90 M344 114 L344 118 M328 102 L332 102 M356 102 L360 102 M333 91 L336 94 M352 110 L355 113 M333 113 L336 110 M352 94 L355 91" stroke="#c8962f" stroke-width="2.4" fill="none"/>
+    <circle cx="344" cy="102" r="3.4" fill="#2a1a07" stroke="none"/>
+    <!-- a spire rear sight -->
+    <path d="M232 74 L240 56 L248 74 Z" fill="url(#iron)"/>
+    <path d="M362 74 L366 62 L370 74 Z" fill="url(#iron)"/>
+    <!-- loading gate, brass -->
+    <path d="M226 122 L250 122 L250 130 L226 130 Z" fill="url(#brass)" stroke-width="1.4"/>
+
+    <!-- barrel and magazine tube, bound in brass -->
+    <rect x="380" y="86" width="164" height="18" fill="url(#iron)"/>
+    <path d="M382 87 L542 87" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1.4" fill="none"/>
+    <rect x="380" y="106" width="150" height="14" fill="url(#iron)"/>
+    <rect x="420" y="84" width="8" height="38" fill="url(#brass)" stroke-width="1.4"/>
+    <rect x="502" y="84" width="8" height="38" fill="url(#brass)" stroke-width="1.4"/>
+    <!-- the pump: carved wood with brass ferrules -->
+    <path d="M436 104 L494 104 L498 126 L432 126 Z" fill="url(#wood)"/>
+    <path d="M444 110 L486 110 M444 116 L488 116 M444 122 L490 122" stroke="#000" stroke-opacity="0.45" stroke-width="1.6" fill="none"/>
+
+    <!-- grip and an ornate trigger guard with a spur -->
+    <path d="M232 128 L264 128 L252 182 Q250 190 242 190 L226 188 Q218 187 220 178 Z" fill="url(#wood)"/>
+    <path d="M236 140 L256 141 M234 152 L254 153 M232 164 L252 165 M230 176 L250 177" stroke="#f0cf7c" stroke-opacity="0.25" stroke-width="1.4" fill="none"/>
+    <path d="M264 128 L266 148 Q268 156 278 156 L296 156 L302 162 L302 128" fill="none" stroke="#c8962f" stroke-width="4.5"/>
+    <path d="M278 130 L276 140 L282 146" fill="none" stroke="#d9dde2" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- the censer: a caged brass orb at the muzzle, chains to the barrel, a spire on top -->
+    <path d="M540 88 C546 70 556 64 566 74 M540 106 C546 124 556 130 566 120" stroke="#c8962f" stroke-width="3" fill="none" stroke-dasharray="5 3"/>
+    <rect x="538" y="84" width="12" height="24" fill="url(#brass)"/>
+    <circle cx="576" cy="98" r="26" fill="url(#ember)"/>
+    <!-- the cage: brass ribs with lancet openings -->
+    <g fill="none" stroke="#c8962f" stroke-width="5">
+      <circle cx="576" cy="98" r="26"/>
+      <path d="M576 72 L576 124"/>
+      <path d="M560 77 Q552 98 560 119"/>
+      <path d="M592 77 Q600 98 592 119"/>
+      <path d="M551 98 L601 98" stroke-width="3.4"/>
+    </g>
+    <circle cx="576" cy="98" r="26" fill="none" stroke="#050506" stroke-width="2"/>
+    <path d="M568 72 L576 50 L584 72 Z" fill="url(#brass)"/>
+    <circle cx="576" cy="48" r="3.2" fill="url(#brass)" stroke-width="1.2"/>
+    <path d="M601 94 L612 94 L634 98 L612 102 L601 102 Z" fill="url(#brass)"/>
+    <path d="M604 98 L630 98" stroke="#fff1c2" stroke-opacity="0.6" stroke-width="1" fill="none"/>
+  </g>
+</svg>
