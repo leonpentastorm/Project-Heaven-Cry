@@ -86,9 +86,12 @@ item and ink, then cached.
 
 - `npm test -w @phc/web`: 649 tests, all pass (647 + 2 skipped). `npx tsc --noEmit` in `apps/web`: clean.
 - `apps/web/e2e/gear-icons.mjs`: 14 / 14.
-- The regression run (`ground.mjs`, `creation-layout.mjs`, `pg-levelup.mjs`, `sandbox.mjs`, `tabs.mjs`,
-  `two-players.mjs`, the engine tests and tsc, `tools/validate.py data`): see the commit that adds this note's
-  "Regression" line.
+- Regression, against a local build: `ground.mjs` 28 / 28, `creation-layout.mjs` 25 / 25, `pg-levelup.mjs` 53 / 53,
+  `sandbox.mjs` 33 / 33, `tabs.mjs` 28 / 28, `two-players.mjs` no errors. `ground.mjs` needed its close-the-tools helper
+  fixed: on this base two buttons start with "Close the tools" (the drawer's ✕ and the centre's "Close the tools and
+  show the story log"), and the old substring match broke; nothing to do with the icons.
+- `npm test -w @phc/engine`: 1,828 tests (1,827 pass, 1 skipped). `npx tsc --noEmit` in `packages/engine`: clean.
+  `python3 tools/validate.py data`: 0 errors, 0 warnings.
 - `tools/validate_art.py`: OK (2,789 checksums).
 
 ## Screenshots (`physical-2.0-shots/`)
