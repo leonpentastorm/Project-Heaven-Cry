@@ -267,7 +267,9 @@ export function smokeTiles(key: string, r: number): string[] {
   return out.sort((a, b) => a.d - b.d).map((o) => o.k);
 }
 /** Does this rec's shots play as one stream (Mag Dump, the 3-target Rake), one recording and chained beats? */
-const streams = (e: any, r: TechRec | null) => !!r && e.cat !== 'bow' && !/bow/.test(String(e.weapon || '')) && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
+/** What a weapon fires, as play.ts draws it (set when the handlers are wrapped): only bullets stream, rattle and spray. */
+let gunLook: (id: string, cat: string) => string = () => 'bullet';
+const streams = (e: any, r: TechRec | null) => !!r && gunLook(String(e.weapon || ''), String(e.cat || '')) === 'bullet' && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
 /** The chambered special round this shot fires (Load Special), or ''. Spends it. */
 function roundOf(r: TechRec | null, e: any): string {
   if (!r || r.group !== 'fire' || !e.unit) return '';
@@ -314,6 +316,7 @@ export function rangedBeat(e: FxEvent): number | undefined {
 // ---------- the handlers ----------
 /** Wrap play.ts's handlers with the ranged ones (each gets the handler it wraps as `base`), and add the new keys. */
 export function wrapRanged(H: Record<string, Handler>, K: RangedKit) {
+  gunLook = (id, cat) => { try { return K.gunOf(id, cat).look; } catch { return 'bullet'; } };
   if (K.seesUnit) { const f = K.seesUnit; seesActor = (id) => { try { return f(id); } catch { return true; } }; }
   const bases: Record<string, Handler> = { ...H };
   const R = rangedHandlers(K, bases);
