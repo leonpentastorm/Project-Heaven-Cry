@@ -318,3 +318,46 @@ describe('review fixes, the core', () => {
     expect(phys.physView(f.cb, f.pc, 'pc', f.g).momentum?.max).toBe(3);
   });
 });
+
+describe('review fixes, beside what already exists', () => {
+  it('the old Overwatch is refused while Pressed, before any AP is paid; a held melee strike is not a held shot', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle' }], [{ at: 'L5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc); f.press(f.pc, 2, f.foe);
+    expect(() => f.act({ type: 'combat/overwatch', unitId: f.pc.id, mode: 'shot' })).toThrow(/Pressed/); expect(f.pc.ap).toBe(6);
+    const g = physFight([{ weapon: 'sabre' }], [{ at: 'L5', tier: 'elite' }]); g.put(g.pc, 'C5'); g.turn(g.pc);
+    g.act({ type: 'combat/overwatch', unitId: g.pc.id, mode: 'melee' }); g.press(g.pc, 2, g.foe); expect(g.pc.overwatch).toBe('melee');
+  });
+  it('what knocks out a held shot knocks out a held Watch too (a grapple)', async () => {
+    const { applyCond } = await import('../src');
+    const f = physFight([{ weapon: 'ccec_marksman_rifle' }], [{ at: 'L5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
+    expect(f.tech('overwatch')).toBeNull(); expect(f.pc.watch?.id).toBe('overwatch');
+    f.bound(() => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'grappled', 1, 'body', { skipSave: true })); expect(f.pc.watch).toBeUndefined();
+    expect(f.fx('watch_end').some((e: any) => e.why === 'grappled')).toBe(true);
+  });
+  it('a technique\'s AP goes through the items that price an attack (Southern Fist: +1 with a weapon)', () => {
+    const f = physFight([{ weapon: 'sabre', traits: ['southern_fist'] }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const ap0 = f.pc.ap; rig({ hit: true, die: 12 });
+    expect(f.pv('cut', { targetId: f.foe.id }).ap).toBe(3); expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'cut')?.ap).toBe(3);
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.pc.ap).toBe(ap0 - 3);
+  });
+  it('a technique\'s free step doesn\'t use up a first-move perk (Glass Runner)', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['lunge'], traits: ['glass_runner'] }], [{ at: 'E5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.pc);
+    rig({ hit: true, die: 12 }); expect(f.tech('lunge', { targetId: f.foe.id })).toBeNull(); expect(f.pc.pos).toBe(f.tile('D5'));
+    expect(f.cb.log.some((l) => /Glass Runner/.test(l))).toBe(false);
+  });
+  it('a Proving Ground rebuild keeps both meters and what was learned shows at once', async () => {
+    const { newGame, apply } = await import('../src');
+    let g = newGame('PHYSPG', { id: 'host', name: 'Host' }, 'seed-phys');
+    g = apply(g, { type: 'sandbox/start' }, 'host');
+    const c = Object.values(g.characters).find((x) => x.owner === 'host')!;
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'sabre', equip: true }, 'host');
+    g = apply(g, { type: 'sandbox/fight' }, 'host');
+    const pc = () => g.combat!.units.find((u) => u.charId === c.id)!;
+    g = apply(g, { type: 'sandbox/meter', unitId: pc().id, momentum: 2, pressure: 2 }, 'host');
+    expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    g = apply(g, { type: 'sandbox/technique', charId: c.id, id: 'coup' }, 'host'); // any tool rebuilds the fighter from its character
+    expect(pc().resMax?.momentum).toBe(3); expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    expect(phys.techniquePad(g.combat!, pc(), 'main', g).flatMap((x) => x.entries.map((e) => e.id))).toContain('coup');
+    g = apply(g, { type: 'sandbox/drill', charId: c.id, weaponId: 'sabre', amount: 300 }, 'host');
+    expect(phys.physOf(g.characters[c.id]).known).toContain('riposte'); // the sabre's signature at mark I
+  });
+});

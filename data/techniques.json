@@ -1278,7 +1278,8 @@
       "number": 2,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "burst"
       },
       "rounds": 3,
       "needs": {},
@@ -1316,7 +1317,8 @@
       "number": 3,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "aimed"
       },
       "rounds": 1,
       "needs": {},
@@ -1575,7 +1577,8 @@
       "number": 9,
       "ap": {
         "base": "flat",
-        "value": 4
+        "value": 4,
+        "mode": "auto"
       },
       "rounds": 6,
       "needs": {},

@@ -13,7 +13,9 @@ export type TechGroup = 'opener' | 'strike' | 'link' | 'finisher' | 'answer' | '
 export interface TechLine { props: string[]; match?: 'any' | 'all'; when?: string; text: string; note?: string; ap?: number; stack?: boolean }
 export interface TechDef {
   id: string; name: string; system: TechSystem; group: TechGroup; number: number;
-  ap: { base: 'weapon' | 'flat' | 'reaction'; add?: number; value?: number };
+  /** mode: the attack the cost is priced as for items that change an attack's AP ('aimed', 'burst', 'auto'); a
+   * weapon-based cost is priced as a melee strike or a shot without it. */
+  ap: { base: 'weapon' | 'flat' | 'reaction'; add?: number; value?: number; mode?: 'melee' | 'shot' | 'aimed' | 'burst' | 'auto' };
   rounds: number | 'all';
   needs: { momentum?: number; pressed?: boolean; hidden?: boolean; held?: boolean; last_round?: boolean; stowed?: boolean };
   text: string; trigger?: string; suppressed?: string; lines: TechLine[];

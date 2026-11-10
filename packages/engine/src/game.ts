@@ -9,7 +9,7 @@ import {
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
+import { isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { unitSees, sideSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -467,9 +467,10 @@ function refreshClassUnits(g: GameState, c: Character) {
     if (u.charId !== c.id || u.companion) continue;
     if (u.held) u.held = heldOfChar(c);
     const r = resourcesFor(c), old = u.res || {};
-    if (!r) { delete u.res; delete u.resMax; continue; }
-    for (const id of Object.keys(r.res)) if (old[id] != null) r.res[id] = Math.min(r.resMax[id], old[id]);
-    u.res = r.res; u.resMax = r.resMax;
+    if (!r) { delete u.res; delete u.resMax; }
+    else { for (const id of Object.keys(r.res)) if (old[id] != null) r.res[id] = Math.min(r.resMax[id], old[id]); u.res = r.res; u.resMax = r.resMax; }
+    // rules 1.12: Momentum is everyone's who holds a melee weapon, whatever the class gives; what was built is kept
+    ensureMomentum(u); if (old.momentum != null && u.resMax?.momentum != null) u.res!.momentum = Math.min(u.resMax.momentum, old.momentum);
   }
 }
 
@@ -1331,9 +1332,11 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (!c || (c.owner !== by && !hostSkip)) fail('Not your unit.');
   if (hostSkip) cb!.log.push((g.players.find((p) => p.id === by)?.name || 'The host') + ' passes ' + u.name + '\'s turn: ' + (g.players.find((p) => p.id === c!.owner)?.name || 'their player') + ' is away.');
   if ((u.companion || pup) && !COMPANION_ACTS.has(a.type)) fail((u.companion ? 'A companion' : 'A puppet') + ' can move, attack, hold Overwatch and end its turn.');
+  if ((u.companion || pup) && a.type === 'combat/technique' && !TECHNIQUE[(a as any).id]?.free) fail((u.companion ? 'A companion' : 'A puppet') + ' makes plain attacks only.'); // rules 1.12: the free techniques
   // A unit with a fixed action list (the drone: move and a plain shot; spec §14 item 370) refuses everything else.
   if (u.allowedActions && a.type !== 'combat/end-turn' && a.type !== 'combat/decline') {
-    const id = a.type === 'combat/attack' ? a.mode || 'shot' : a.type === 'combat/move' ? a.how || 'move' : a.type.slice('combat/'.length);
+    // a free technique is the plain action it stands for (rules 1.12): Shot is 'shot', Aimed Shot 'aimed', Cut 'melee'
+    const id = a.type === 'combat/attack' ? a.mode || 'shot' : a.type === 'combat/move' ? a.how || 'move' : a.type === 'combat/technique' ? ({ shot: 'shot', aimed_shot: 'aimed', cut: 'melee', overwatch: 'overwatch' } as Record<string, string>)[(a as any).id] || 'technique' : a.type.slice('combat/'.length);
     if (!u.allowedActions.includes(id)) fail(u.name + ' can only ' + u.allowedActions.map((x) => ACT_NAME[x] || x).join(', ') + ' and end its turn.');
   }
   const who = u.charId ? c : null; // a companion or puppet fights with its own numbers
@@ -1366,7 +1369,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/gift': err = runGift(g, cb!, g.rng, u, tileKey(g, a.aim)); break;
     case 'combat/repair': err = a.targetId && a.targetId !== u.id ? repairAlly(cb!, u, cb!.units.find((x) => x.id === a.targetId)) : fieldRepair(cb!, u); break;
     case 'combat/paired': { const t = cb!.units.find((x) => x.id === a.targetId), t2 = a.targetId2 ? cb!.units.find((x) => x.id === a.targetId2) || null : null; if (!anyTarget(t, u) || (t2 && !anyTarget(t2, u))) fail('Pick someone else.'); err = pairedAttack(cb!, g.rng, u, t!, t2, c); break; }
-    case 'combat/overwatch': refuseHook(cb!, u, a); err = setOverwatch(cb!, u, a.mode); break;
+    case 'combat/overwatch': if (a.mode !== 'melee' && isPressed(u)) fail('You are Pressed: you can\'t hold a shot.'); refuseHook(cb!, u, a); err = setOverwatch(cb!, u, a.mode); break; // rules 1.12: refused before the AP is paid
     case 'combat/attack': {
       const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.');
       if (pup && t!.id === u.id) fail('A puppet can\'t be made to harm itself.');
@@ -1486,7 +1489,7 @@ function physAction(c: Character, a: Extract<Action, { type: 'phys/ready' | 'phy
 const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead && !t.surrendered;
 /** What a companion or a puppet may do (rules 1.3). */
 const ACT_NAME: Record<string, string> = { move: 'move', sprint: 'sprint', disengage: 'disengage', shot: 'shoot', aimed: 'take an aimed shot', melee: 'strike' };
-const COMPANION_ACTS = new Set(['combat/move', 'combat/attack', 'combat/overwatch', 'combat/end-turn', 'combat/decline', 'combat/reload', 'combat/prone', 'combat/extinguish', 'combat/escape']);
+const COMPANION_ACTS = new Set(['combat/move', 'combat/attack', 'combat/technique', 'combat/overwatch', 'combat/end-turn', 'combat/decline', 'combat/reload', 'combat/prone', 'combat/extinguish', 'combat/escape']);
 /** The PC character who Puppeted this enemy (its player runs the enemy's turn), if the puppeteer is up. */
 function puppeteerOf(g: GameState, cb: Combat, u: Combat['units'][number]): Character | null {
   const by = condSource(u, 'puppeted'); if (!by) return null;
@@ -1528,6 +1531,7 @@ function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base:
   // (core charge, MP) stays with it either way; an Outburst already held stays held (item 632).
   if (fresh.mg) { if (!u.mg) u.mg = fresh.mg; else { u.mg.evoker = fresh.mg.evoker; u.mg.emanator = fresh.mg.emanator; } }
   else if (u.mg) { u.mg.evoker = false; u.mg.emanator = false; }
+  ensureMomentum(u); // rules 1.12: a blade just drawn has its meter at once
 }
 /** A gear change in a fight (rules 1.9, World Play: Gear in a fight; items 684–690): 1 AP a hand, Hot-Swap on the hand
  * rows, light armour 1 AP a piece, heavy armour refused, a drop 0 AP into the pile on the unit's tile. The fighter's
@@ -2763,6 +2767,7 @@ function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
     u.ap = active(cb)?.id === old.id ? Math.max(old.ap, 6) : old.ap;
     u.waitRound = old.waitRound;
   }
+  ensureMomentum(u); // rules 1.12: the rebuilt fighter keeps its meter (resMax comes fresh from the character)
   cb.units[i] = u; syncSong(g);
 }
 /** Change a character in the Proving Ground: in a fight its fighter's state is written onto it first, then rebuilt from it. */

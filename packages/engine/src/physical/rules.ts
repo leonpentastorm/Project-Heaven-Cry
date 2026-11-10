@@ -99,12 +99,13 @@ onHook('turn_end', (ctx: any, cb) => {
 // by canAnswer (the protective ones always work), and the reactions of perks and class moves that protect are untouched.
 onHook('reaction_window', (ctx: any) => {
   const r: Unit = ctx.reactor; if (!r || ctx.cancel) return;
-  if ((ctx.kind === 'overwatch' || ctx.kind === 'watch') && isPressed(r)) ctx.cancel = true;
+  // (a held melee strike, the old "Hold a strike", is not a held shot: Pressed is a ranged penalty)
+  if ((ctx.kind === 'overwatch' || ctx.kind === 'watch') && isPressed(r) && (r.overwatch !== 'melee' || isSuppressed(r))) ctx.cancel = true;
   else if (ctx.kind === 'opportunity' && isSuppressed(r)) ctx.cancel = true;
 });
 // Becoming Pressed drops the shot a unit is holding (the lead's reading: it is how a held lane is taken back).
 onPressureState((cb, u, was, now) => {
   if (was || !now) return;
   endWatch(cb, u, 'Pressed');
-  if (u.overwatch) { u.overwatch = null; u.owShots = 0; cb.log.push(u.name + ' loses the held shot (Pressed).'); emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: 'overwatch', why: 'Pressed' }); }
+  if (u.overwatch && u.overwatch !== 'melee') { u.overwatch = null; u.owShots = 0; cb.log.push(u.name + ' loses the held shot (Pressed).'); emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: 'overwatch', why: 'Pressed' }); }
 });

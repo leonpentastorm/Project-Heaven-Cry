@@ -33,6 +33,15 @@ export const isExplosive = (w: WeaponDef | undefined) => !!w && (!!(w as any).ex
 /** A weapon's blast radius (area_radius_N), or 0. */
 export const radiusOf = (w: WeaponDef | undefined) => { const p = (w?.properties || []).find((x) => /^area_radius_\d+$/.test(x)); return p ? +p.split('_').pop()! : 0; };
 /** Silent weapons don't reveal a Hidden attacker (spec: bows; the suppressor). */
+/** Take away whatever shot a unit is holding: the old Overwatch (u.overwatch) and a held Watch technique (u.watch,
+ * rules 1.12). Everything that knocks a held shot out goes through here (a grapple, a stun, surrender, Dread, Unravel,
+ * Rewrite, a knockback, Extraction). */
+export function dropHeldShot(cb: Combat | null | undefined, u: Unit, why = 'lost'): boolean {
+  const had = !!u.overwatch || !!u.watch, w = u.watch;
+  u.overwatch = null; u.owShots = 0;
+  if (w) { delete u.watch; if (cb) emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why }); }
+  return had;
+}
 export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.properties || []).includes('silent') || !!(w as any)?.phys?.props?.includes('silent') || (u.mods || []).includes('mod_suppressor'); }; // rules 1.12: the Silent property counts
 /** Target-specific damage bonuses stack additively and are capped at ×2.0 in all (plan 6a-1, provisional): True Name,
  * Judgement Day, Case Closed, Weak Point, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel
@@ -135,7 +144,7 @@ export function canSurrender(t: Unit): boolean {
 }
 /** It gives up: out of the fight, not a target, counted as defeated; no kill credit and no mana rise. 'on_surrender'. */
 export function surrender(cb: Combat, t: Unit, by: Unit | null, why: string): string {
-  t.surrendered = true; t.overwatch = null; t.hidden = false; t.ap = 0; (t.tags ||= []).includes('prisoner') || t.tags!.push('prisoner');
+  t.surrendered = true; dropHeldShot(cb, t, 'surrendered'); t.hidden = false; t.ap = 0; (t.tags ||= []).includes('prisoner') || t.tags!.push('prisoner');
   emitFx(cb, 'down', { unit: t.id, at: t.pos, dead: false, surrendered: true });
   emit(cb, 'on_surrender', { t, by, why, cb });
   return ' · ' + t.name + ' SURRENDERS (' + why + ')';

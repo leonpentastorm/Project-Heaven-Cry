@@ -141,8 +141,10 @@ What the core does for you, so a handler doesn't:
 | | |
 |---|---|
 | Who may use it | free, ready, lent by the held weapon (`teaches`), or coming with a property; an enemy uses `u.techs`. `t.c` is the character, **null for an enemy or a companion**: every handler must work with it null |
-| AP | charged before `run` (weapon cost, flat, or 0 for a reaction; plus a line's `ap`). `strike` never charges AP |
+| AP | charged before `run` (weapon cost, flat, or 0 for a reaction; plus a line's `ap`), after the unit's items have priced it as they price an attack (`apFor`; Southern Fist's +1, Fire Discipline's burst: `ap.mode` in the data names the attack a flat cost is priced as). `strike` never charges AP |
+| Companions, puppets, the drone | the free techniques only, and for the drone only the ones its action list allows |
 | Melee | an Opener only first; a Finisher needs Momentum (`needs.momentum`), and ends the chain; +1 Momentum for each strike that hits and +1 once a technique when it differs from the last one this turn |
+| Held shots | anything that knocks out a held shot goes through `dropHeldShot(cb, u, why)` in `tactics.ts` (a grapple, a stun, surrender, Dread…): use it, never `u.overwatch = null` |
 | Ranged | rounds checked against the magazine; a Press adds 1 Heat; a Take needs a Pressed target, is one a turn, and lowers the target's Pressure by 2 after `run`; a Watch is refused while Pressed |
 | A ranged hit | +1 Pressure, the first on each target each turn (+1 more past cover the target is using; 2 when unseen with a Silent weapon, hidden from the target) |
 | Off its home | −2 to hit and `t.line()` / `t.has()` answer no; `t.holds(prop)` still tells the truth |

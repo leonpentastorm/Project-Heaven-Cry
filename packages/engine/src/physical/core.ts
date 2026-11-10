@@ -127,13 +127,24 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
 
 // ---------- cost and who may use what ----------
 /** A technique's AP with this weapon and line. */
-export function techniqueAp(def: TechDef, weaponId: string, choice?: string): number {
+export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?: Unit | null): number {
   const w = WEAPON[weaponId] || WEAPON.fists;
   const fx: any = (w as any).grants?.effect || {};
   const base = def.ap.base === 'reaction' ? 0 : def.id === 'aimed_shot' && fx.op === 'aimed_ap' ? fx.value // the crossbow's Bolt Rest
     : def.ap.base === 'flat' ? def.ap.value || 0 : attackApCost(w, isMelee(w) ? 'melee' : 'shot') + (def.ap.add || 0);
-  const lf = linesFor(def, weaponId, choice);
+  const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));
+}
+/** A technique's AP for this unit now: its own cost, then what the unit's items do to an attack's AP (Southern Fist's
+ * +1 with a weapon, Fire Discipline's first burst), asked the way the engine's own attacks ask ('attack_preview' with
+ * the cost and a mode). Weapon-priced techniques ask as a melee strike or a shot; a flat one asks only when the data
+ * names a mode (`ap.mode`: aimed, burst, auto). The main hand only: the items read the weapon in it. */
+export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', choice?: string, tgt?: Unit | null): number {
+  const weaponId = hand === 'off' && u.offWeapon ? u.offWeapon : u.weapon, own = techniqueAp(def, weaponId, choice, u);
+  const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
+  if (!mode || hand === 'off' || def.ap.base === 'reaction') return own;
+  const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
+  emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
 }
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
  * with a property, or ready. A unit with no character (an enemy, a companion) has the free ones, what its weapon lends
@@ -141,14 +152,18 @@ export function techniqueAp(def: TechDef, weaponId: string, choice?: string): nu
 export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off'): { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] {
   const weaponId = hand === 'off' ? u.offWeapon : u.weapon; if (!weaponId) return [];
   const sys = weaponSystem(weaponId), props = weaponProps(weaponId), c = u.companion ? null : charOfUnit(u);
-  const ready = new Set(c ? readyTechniques(c, sys) : ((u as any).techs as string[]) || []), lent = weaponTeaches(weaponId);
+  // A companion, a puppet or a unit with a fixed action list (the drone) has the free techniques its list allows, and
+  // nothing else: the reducer refuses the rest (game.ts).
+  const plainOnly = !!u.companion || !!u.allowedActions || condOn(u, 'puppeted');
+  const ready = new Set(plainOnly ? [] : c ? readyTechniques(c, sys) : ((u as any).techs as string[]) || []), lent = plainOnly ? null : weaponTeaches(weaponId);
+  const OLD: Record<string, string> = { shot: 'shot', aimed_shot: 'aimed', cut: 'melee', overwatch: 'overwatch' };
   const out: { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] = [];
   for (const d of TECHNIQUES) {
     if (d.system !== sys) continue;
-    if (d.free) out.push({ id: d.id, how: 'free' });
+    if (d.free) { if (!u.allowedActions || u.allowedActions.includes(OLD[d.id])) out.push({ id: d.id, how: 'free' }); }
     else if (ready.has(d.id)) out.push({ id: d.id, how: 'ready' });
     else if (lent === d.id) out.push({ id: d.id, how: 'lent' });
-    else if (d.comes_with.some((p) => props.includes(p))) out.push({ id: d.id, how: 'comes' });
+    else if (!plainOnly && d.comes_with.some((p) => props.includes(p))) out.push({ id: d.id, how: 'comes' });
   }
   return out;
 }
@@ -171,7 +186,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.group === 'watch' && (u as any).noWatch === cb.round) return 'Head down: no held shot this round.';
   if (def.group === 'take' && techStateOf(u, '_take').t === turnStamp(cb)) return 'One Take a turn.';
   if (def.needs.hidden && !u.hidden) return 'Only from Hidden.';
-  const ap = techniqueAp(def, weaponId, args.line); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  const ap = apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const w = WEAPON[weaponId];
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
@@ -401,17 +416,14 @@ export function stepUser(t: Tech, route: string[], how: 'move' | 'disengage' = '
   let n = 0;
   for (const k of route) {
     if (!alive(u) || moveBlock(u)) break;
-    const was = u.pos; STEPPING = u;
-    try { if (moveUnit(cb, u, k, t.rng, 'move', { shortest: true })) break; } finally { STEPPING = null; }
+    const was = u.pos;
+    if (moveUnit(cb, u, k, t.rng, 'move', { shortest: true, free: true })) break; // free: the items are told before they price it
     if (u.pos === was) break; n++;
     if (u.pos !== k) break; // stopped short (a trap, a held shot)
   }
   void how;
   return n;
 }
-// The unit a technique is stepping right now: its walk costs nothing and draws no opportunity attack.
-let STEPPING: Unit | null = null;
-onHook('move_cost', (ctx: any) => { if (STEPPING && ctx.u === STEPPING) { ctx.ap = 0; ctx.free = true; ctx.skipOA = true; } });
 
 // ---------- held shots and Answers ----------
 /** Hold a Watch: paid for now, kept until it fires or the user's next turn. One at a time (a new one replaces it). */
@@ -462,7 +474,7 @@ function prepare(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng, prev
   const g = gate(cb, u, def, args); if (g) return { t: null, why: g, h: null };
   const h = handlerOf(id); if (!h) return { t: null, why: NOT_BUILT, h: null };
   const t = buildTech(cb, u, def, args, rng, preview); (t as any)._p0 = t.tgt ? pressureOf(t.tgt) : 0;
-  t.pv.ap = techniqueAp(def, t.weaponId, args.line);
+  t.pv.ap = apFor(cb, u, def, t.hand, args.line, t.tgt);
   return { t, why: targetGate(t) || h.check?.(t) || null, h };
 }
 /** A handler's own score for the enemy AI: how much this unit wants the technique now (a plain attack is 5; 0: never),
@@ -478,7 +490,7 @@ function withG<T>(g: any, fn: () => T): T { if (!g) return fn(); const was = bin
 /** What the technique would do, changing nothing (the card, the AI). Pass the game (`g`) when none is bound: the screen does. */
 export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}, g?: any): TechPreview {
   if (g) return withG(g, () => previewTechnique(cb, u, id, args));
-  const def = TECHNIQUE[id], blank = (why: string): TechPreview => ({ ok: false, why, id, ap: def ? techniqueAp(def, (args.hand === 'off' && u.offWeapon) || u.weapon, args.line) : 0, rounds: 0, attacks: [], notes: [] });
+  const def = TECHNIQUE[id], blank = (why: string): TechPreview => ({ ok: false, why, id, ap: def ? apFor(cb, u, def, args.hand === 'off' && u.offWeapon ? 'off' : 'main', args.line) : 0, rounds: 0, attacks: [], notes: [] });
   const p = prepare(cb, u, id, args, { state: 1 }, true); if (!p.t) return blank(p.why || 'Not now.');
   const t = p.t; if (p.why) { t.pv.ok = false; t.pv.why = p.why; return t.pv; }
   const m0 = momentumOf(u);
@@ -541,7 +553,7 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
     entries: have.filter((x) => TECHNIQUE[x.id].group === group).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);
       const why = def.group === 'answer' ? null : gate(cb, u, def, { hand }) || (handlerOf(def.id) ? null : NOT_BUILT);
-      return { id: def.id, name: def.name, group, ap: techniqueAp(def, weaponId), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim,
+      return { id: def.id, name: def.name, group, ap: apFor(cb, u, def, hand), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim,
         line: lf.main ? lf.main.text : null, ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: x.how === 'ready' && taught.has(def.id) && knownSig.has(def.id), plain: def.id === 'cut' || def.id === 'shot', built: !!handlerOf(def.id) };
     }),

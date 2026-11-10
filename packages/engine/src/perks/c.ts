@@ -5,6 +5,7 @@
 // Every item runs every tier in combat, on the area map where it applies, and its story part where it has one; what
 // the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit (plan
 // section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
+import { isPressed } from '../physical/pressure';
 import { register, stateOf, uses, note, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
@@ -478,7 +479,7 @@ register({
   actions: [{
     id: 'hold_line', label: 'Hold the line (all AP)', scope: ['combat'], target: 'none', ap: 0,
     text: 'Overwatch with every shot your AP pays for: each enemy that moves in your sight before your next turn draws one.',
-    available: (h) => (!h.u || isMelee(WEAPON[h.u.weapon]) ? false : h.u.overwatch ? 'Already on overwatch.' : h.u.ap < owCost(h.u, 'shot') ? 'Needs ' + owCost(h.u, 'shot') + ' AP.' : true),
+    available: (h) => (!h.u || isMelee(WEAPON[h.u.weapon]) ? false : h.u.overwatch ? 'Already on overwatch.' : isPressed(h.u) ? 'You are Pressed: you can\'t hold a shot.' : h.u.ap < owCost(h.u, 'shot') ? 'Needs ' + owCost(h.u, 'shot') + ' AP.' : true),
     preview: (h, args) => { const u = h.u!, c = owCost(u, args.choice || 'shot'), n = Math.floor(u.ap / c); return n < 1 ? { ok: false, why: 'Needs ' + c + ' AP.' } : { lines: [n + (n === 1 ? ' shot' : ' shots') + ' held (' + c + ' AP each).'] }; },
     run: (h, args) => {
       const u = h.u!, cb = h.cb!, mode = args.choice === 'aimed' ? 'aimed' : 'shot', c = owCost(u, mode), n = Math.floor(u.ap / c); if (n < 1) return 'Needs ' + c + ' AP.';

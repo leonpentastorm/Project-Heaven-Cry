@@ -1172,7 +1172,7 @@ export function moveBlock(u: Unit): string | null {
  * not only at the end. A walk cut short (a trap, a reaction that Downs or Pins you, a handler) keeps the tiles not
  * walked in the turn's bank. Sprint is once per turn. Afraid units can't move closer to what they fear. */
 /** o.shortest: the plain shortest path (the Narrator's own moves; rules 1.9 routes only a player's click-path around hazards). */
-export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> } } = {}): string | null {
+export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> }; /** A step that is part of something already paid for (a technique's step, rules 1.12): 0 AP and no opportunity attacks, told to the items before they price the move. */ free?: boolean } = {}): string | null {
   const blk = moveBlock(u); if (blk) return blk;
   // o.via: paths the caller already chose (the area map's sneak prices its detour with the sneak's extra AP).
   const P = o.via || (o.shortest ? paths(cb, u.pos, u.id) : movePaths(cb, u, to, how)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
@@ -1192,7 +1192,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   const route: string[] = []; for (let k = to; k !== u.pos && P.prev[k]; k = P.prev[k]) route.unshift(k);
   // Items price the move before it is paid: 'move_cost' {u, from, to, route, tiles, how, ap, skipOA, skipOW, free}
   // (ap mutable; free: the tiles are not banked against; skipOA/skipOW: no opportunity attacks / no Overwatch).
-  const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: false, skipOW: false, free: false, cb, mods: cb.mods || [] });
+  if (o.free) ap = 0;
+  const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free, skipOW: false, free: !!o.free, cb, mods: cb.mods || [] });
   ap = Math.max(0, mc.ap);
   if (ap > u.ap) return 'Needs ' + ap + ' AP.';
   const from = u.pos, bank0 = u.bank;
