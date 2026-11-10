@@ -49,7 +49,11 @@ export interface RangedKit {
   dust(p: XY, s: number, color?: string): void;
   explosion(k: string | undefined, radius?: number, kind?: any, point?: Pt): void;
   corners(p: Pt, color: string, ms: number): void;
+  /** Does the viewer's side see this unit now (play.ts seesUnit: a Hidden unit on a tile in sight is not seen)? */
+  seesUnit?(id: string | null | undefined): boolean;
 }
+/** The kit's seesUnit, kept for the beats (a hidden actor's Bead, Heat or lost Watch holds no stage). */
+let seesActor: (id: string | null | undefined) => boolean = () => true;
 
 /** The events (or fields) this file reads that the ranged engine doesn't send yet: the list for the lead
  *  (claude/physical-2.0-B-ranged). Each effect works without its event and gets better with it. */
@@ -74,7 +78,11 @@ export const EVENTS_FOR_THE_LEAD = [
 // ---------- which technique an event belongs to ----------
 export interface TechRec {
   id: string; unit: string; target: string | null; tile: string | null; at: string | null;
-  line: string | null; opt: any; ammo: string | null; with: string | null; group: string;
+  line: string | null; opt: any; ammo: string | null; with: string | null; group: string; hand: string;
+  /** Storm's or Shift's own move was seen (a second move is another action) */
+  moved: boolean;
+  /** the special round this Fire fired (Load Special's, read from the load) */
+  round?: string;
   /** shots tagged to it, in order; the volleys; the objects it struck; what followed (hurts, conditions, stops…) */
   shots: FxEvent[]; volleys: FxEvent[]; objects: FxEvent[]; after: FxEvent[];
   /** how many shots it may own (a plain shot after it, the same turn, isn't its) */
@@ -94,15 +102,39 @@ const tags = new WeakMap<object, TechRec | null>();
 const viOf = new WeakMap<object, number>();
 const OWN = new Set(['shot', 'volley', 'load', 'stance', 'heat', 'bead', 'spot', 'move', 'swap_in', 'free_reload', 'lane', 'carry']);
 const FOLLOW = new Set(['object', 'hurt', 'cond', 'stopped', 'pressure', 'explode', 'shove', 'save', 'routed']);
+/** Events from a technique's user that don't start another action (the rest do: a reload, a melee swing, a cast, a
+ *  pickup… close the technique's record, so nothing after it in the turn is drawn as the technique's). */
+const KEEP = new Set([...OWN, ...FOLLOW, 'technique', 'turn', 'watch_set', 'watch_end', 'watch_fire', 'overwatch', 'bead_end', 'momentum', 'sight', 'down', 'pile', 'miss', 'cover', 'lane_end']);
+/** Techniques whose later rolls are one volley (chained): a shot that isn't chained is another action. */
+const CHAINED = new Set(['burst', 'walking_fire']);
+/** Techniques whose rolls all go at one target: a shot at another is another action. */
+const ONE_TARGET = new Set(['mag_dump', 'overwatch', 'dead_to_rights', 'cover_me', 'deny']);
 const rec = (id: string, e: any, max = SHOTS[id] ?? 1): TechRec => ({
   id, unit: String(e.unit || ''), target: e.target ?? e.targetId ?? null, tile: e.tile ?? null, at: e.at ?? e.from ?? null,
-  line: e.line ?? null, opt: e.opt ?? null, ammo: e.ammo ?? null, with: e.with ?? null, group: e.group || '',
-  shots: [], volleys: [], objects: [], after: [], max,
+  line: e.line ?? null, opt: e.opt ?? null, ammo: e.ammo ?? null, with: e.with ?? null, group: e.group || '', hand: e.hand || 'main',
+  shots: [], volleys: [], objects: [], after: [], max, moved: false,
 });
+/** Close a unit's technique: what it does next is its own action. */
+function closeRec(u: string) { const r = cur.get(u); cur.delete(u); if (last && (last === r || last.unit === u)) last = null; }
+/** Does this shot start another action rather than continue the technique r (fewer rolls than its most, a plain shot
+ *  after it)? The engine sends no action marker yet (E1a `tech` on the shot settles it), so: past its rolls; a Burst's
+ *  later rolls are chained; a Mag Dump's or a Watch's all go at one target; a Rake never rolls twice at one target. */
+function endsAction(r: TechRec, e: any): boolean {
+  const n = r.shots.length;
+  if (n >= r.max) return true;
+  if (!n) return false;
+  if (CHAINED.has(r.id) && !e.chain) return true;
+  const t0 = (r.shots[0] as any).target;
+  if (ONE_TARGET.has(r.id) && t0 && e.target !== t0) return true;
+  if (r.id === 'rake' && e.target && r.shots.some((s: any) => s.target === e.target)) return true;
+  return false;
+}
 /** The queue computes beats on the batch's own events, but plays copies of them (playFx: { n: 0, ...e }): an event is
- *  known by its number, kind, unit and tile, so the copy finds the record its original was tagged with. */
+ *  known by its number, kind, unit, tile and id, so the copy finds the record its original was tagged with. The fight's
+ *  numbering restarts with every fight: rangedBatch() forgets everything when the stream changes or its numbering goes
+ *  back, so a later fight's event never finds an earlier one's. */
 const canonical = new Map<string, object>();
-const keyOf = (e: any) => (e.n ? e.n + '|' + e.k + '|' + (e.unit || '') + '|' + (e.at || e.to || '') + '|' + (e.target || '') : '');
+const keyOf = (e: any) => (e.n ? e.n + '|' + e.k + '|' + (e.unit || '') + '|' + (e.at || e.to || '') + '|' + (e.target || '') + '|' + (e.id || '') : '');
 function canon(e: any): any {
   const k = keyOf(e); if (!k) return e;
   const had = canonical.get(k); if (had) return had;
@@ -118,9 +150,10 @@ export function tagOf(e0: any): TechRec | null {
   let r: TechRec | null = null;
   const u = e.unit ? String(e.unit) : '';
   try {
+    if (batchStart.has(e)) { cur.clear(); last = null; } // another batch: another action (the engine sends one per action)
     if (e.k === 'technique') {
       if (e.system === 'ranged' && !e.refused && u && !e.reaction) { r = rec(String(e.id || ''), e); cur.set(u, r); last = r; }
-      else if (u) { cur.delete(u); if (last?.unit === u) last = null; }
+      else if (u) closeRec(u);
     } else if (e.k === 'watch_fire' || e.k === 'overwatch') {
       // a held shot sprung: the shots that follow from its holder are the Watch's
       if (u) { r = rec(String(e.id || 'overwatch'), { ...e, at: e.from }); r.target = e.target ?? null; cur.set(u, r); last = r; }
@@ -128,20 +161,47 @@ export function tagOf(e0: any): TechRec | null {
       if (u) cur.delete(u); last = null;
     } else if (OWN.has(e.k)) {
       r = (u && cur.get(u)) || null;
+      // what of the unit's own can't be this technique's closes it (a plain load, a second volley, a walk after it)
+      if (r && e.k === 'shot' && !('tech' in e) && endsAction(r, e)) { closeRec(u); r = null; }
+      else if (r && e.k === 'volley' && r.shots.length) { closeRec(u); r = null; }
+      else if (r && e.k === 'move' && e.unit === r.unit) { if ((r.id === 'storm' || r.id === 'shift') && !r.moved && !r.shots.length) r.moved = true; else { closeRec(u); r = null; } }
+      else if (r && (e.k === 'load' && r.id !== 'load_special' || e.k === 'stance' && r.group !== 'set' || e.k === 'bead' && r.id !== 'bead' || e.k === 'spot' && r.id !== 'spot')) { closeRec(u); r = null; }
       if (e.k === 'shot' && 'tech' in e) r = e.tech ? (r && r.id === e.tech ? r : rec(String(e.tech), e)) : null; // E1a: the engine says
-      if (r && e.k === 'shot') { if (r.shots.length >= r.max && !('tech' in e)) r = null; else { viOf.set(e, Number.isFinite(e.vi) ? Number(e.vi) : r.shots.length); r.shots.push(e); } }
+      if (r && e.k === 'shot') { viOf.set(e, Number.isFinite(e.vi) ? Number(e.vi) : r.shots.length); r.shots.push(e); last = r; }
       if (r && e.k === 'volley') r.volleys.push(e);
       if (!r && e.k === 'move' && last && last.unit !== u && (last.id === 'rout')) { r = last; r.after.push(e); } // a routed unit runs
+      else if (!r && u && last && last.unit !== u && (e.k === 'shot' || e.k === 'move' || e.k === 'volley')) last = null; // another unit acts: what follows is its
     } else if (FOLLOW.has(e.k)) {
       r = (e.by && cur.get(String(e.by))) || last;
       if (r) (e.k === 'object' ? r.objects : r.after).push(e);
+    } else if (u && !KEEP.has(e.k)) {
+      // the unit does something else (a reload, a swing, a cast): its technique is over; another unit's action ends `last`
+      if (cur.has(u)) closeRec(u); else if (last && last.unit !== u) last = null;
     }
   } catch { r = null; }
   tags.set(e, r);
   return r;
 }
-/** Forget every technique in flight (a new fight, the tests). */
-export function resetRanged() { canonical.clear(); cur.clear(); last = null; hits.clear(); pstate.clear(); pending.clear(); }
+/** Forget every technique in flight (a new fight, a fight started over, clearFx, the tests). */
+export function resetRanged() { canonical.clear(); cur.clear(); last = null; hits.clear(); pstate.clear(); pending.clear(); bStream = undefined; bTop = 0; }
+/** First events of a batch (a batch is one action, or several: each boundary closes what was open). */
+const batchStart = new WeakSet<object>();
+let bStream: string | undefined, bTop = 0;
+/** play.ts queueFx calls this on every batch, before anything plays: a new stream (another fight, the area map) or a
+ *  numbering that went back (the same fight started over: the engine restarts fxSeq) forgets everything; otherwise the
+ *  batch's first event closes what was open. Then the batch is tagged in the engine's order, whatever order its beats
+ *  are later computed or played in. */
+export function rangedBatch(evs: FxEvent[], stream?: string) {
+  if (!Array.isArray(evs) || !evs.length) return;
+  try {
+    const first: any = evs.find((e: any) => e && e.n), known = !!first && canonical.has(keyOf(first));
+    if (!known && ((stream ?? '') !== (bStream ?? '') || (first && first.n <= bTop))) resetRanged();
+    bStream = stream;
+    for (const e of evs as any[]) if (e && e.n) bTop = Math.max(bTop, Number(e.n) || 0);
+    if (!known && evs[0] && typeof evs[0] === 'object') batchStart.add(canon(evs[0]));
+    for (const e of evs) tagOf(e);
+  } catch { /* the effects never stop the game */ }
+}
 
 // ---------- what the screen remembers ----------
 /** The last hit on each target (Crossfire draws the line from the ally who made it). */
@@ -149,7 +209,7 @@ const hits = new Map<string, { unit: string; n: number }>();
 /** Each unit's last Pressure state (a Take on a Suppressed target says its cover doesn't count). */
 const pstate = new Map<string, string>();
 /** A special round loaded (Load Special) and not fired yet, by unit. */
-const pending = new Map<string, string>();
+const pending = new Map<string, { type: string; hand: string }>();
 /** Objects whose debris a shot already threw (the object event then only says the damage). */
 const thrown = new WeakSet<object>();
 /** Techniques whose carry (Punch Through Heavy) or rout was already drawn from its own event. */
@@ -165,8 +225,9 @@ export function looseKind(e: any): 'warning' | 'rout' | 'covering' | 'arc' | 'fl
   if (e.flush) return e.object ? 'flush' : 'arc';
   return null;
 }
-/** Why a Watch or a Bead ended that says nothing on screen (it fired, it was replaced, the turn came round). */
-export const quietEnd = (why: unknown) => !why || ['replaced', 'fired', 'turn'].includes(String(why));
+/** Why a Watch or a Bead ended that says nothing on screen (it fired, it was replaced, the turn came round, or its holder
+ *  chose to drop it: Head Down, which C's name already says). */
+export const quietEnd = (why: unknown) => !why || ['replaced', 'fired', 'turn', 'head down'].includes(String(why));
 /** The word a special round or arrow shows (E9 `round`, Load Special's `special`). */
 export const ROUND_WORD: Record<string, string> = { armor_piercing: 'AP ROUND', armour_piercing: 'AP ROUND', hollow_point: 'HOLLOW-POINT', broadhead: 'BROADHEAD', incendiary: 'INCENDIARY', enhanced: 'ENHANCED' };
 /** A Burst's step-down per later roll (2 rolls: the second at −2; 3 rolls, Auto: each −1 more). Pure. */
@@ -176,6 +237,7 @@ export function partOf(r: TechRec | null): 'leg' | 'arm' | 'head' | null {
   if (!r) return null;
   if (r.opt === 'leg' || r.opt === 'arm' || r.opt === 'head') return r.opt;
   for (const x of r.after) {
+    if (r.target && (x.target || x.unit) !== r.target) continue; // what happened to someone else isn't the part struck
     if (x.k === 'cond') { const id = String(x.id || x.cond || ''); if (/slow/.test(id)) return 'leg'; if (/lower/.test(id)) return 'arm'; if (/daze/.test(id)) return 'head'; }
     if (x.k === 'stopped' && /prone/.test(String(x.how || ''))) return 'leg';
   }
@@ -189,8 +251,30 @@ export function tilesWithin(key: string, r: number, cap = 12): string[] {
   for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) if (x + dx >= 0 && y + dy >= 0) out.push({ k: x + dx + ',' + (y + dy), d: Math.max(Math.abs(dx), Math.abs(dy)) + Math.hypot(dx, dy) * 0.01 });
   return out.sort((a, b) => a.d - b.d).slice(0, cap).map((o) => o.k);
 }
+/** The puff spacing for a smoke cloud of radius r: every tile at r 1, every other one beyond (each puff covers ~2.7
+ *  tiles), so the cloud covers the radius box without 49 sprites. Pure. */
+export const smokeStride = (r: number) => (Math.round(r) >= 2 ? 2 : 1);
+/** The tiles a smoke cloud puts a puff on: a grid of stride smokeStride(r) over the whole (2r+1)² box, its edges always
+ *  included, centre first. Pure. */
+export function smokeTiles(key: string, r: number): string[] {
+  const [x, y] = String(key).split(',').map(Number); if (!Number.isFinite(x) || !Number.isFinite(y)) return [];
+  const R = Math.max(0, Math.min(4, Math.round(r) || 0)), st = smokeStride(R), offs: number[] = [];
+  for (let d = -R; d <= R; d += st) offs.push(d);
+  if (offs[offs.length - 1] !== R) offs.push(R);
+  const out: { k: string; d: number }[] = [];
+  for (const dy of offs) for (const dx of offs) if (x + dx >= 0 && y + dy >= 0) out.push({ k: x + dx + ',' + (y + dy), d: Math.hypot(dx, dy) });
+  return out.sort((a, b) => a.d - b.d).map((o) => o.k);
+}
 /** Does this rec's shots play as one stream (Mag Dump, the 3-target Rake), one recording and chained beats? */
 const streams = (e: any, r: TechRec | null) => !!r && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
+/** The chambered special round this shot fires (Load Special), or ''. Spends it. */
+function roundOf(r: TechRec | null, e: any): string {
+  if (!r || r.group !== 'fire' || !e.unit) return '';
+  if (r.round) return '';
+  const pd = pending.get(String(e.unit)); if (!pd || pd.hand !== (r.hand || 'main') || r.shots[0] !== canon(e)) return '';
+  pending.delete(String(e.unit)); r.round = pd.type;
+  return pd.type;
+}
 const bowDraw = (e: any) => (!e.ricochet && !reducedMotion() && brassOf(e.weapon || '', e.cat || '').bow === 'bow' ? DRAW_MS : 0);
 
 /** How long each ranged event holds the stage (ms at Fast), or undefined to leave it to the others (physBeat, the base).
@@ -211,9 +295,10 @@ export function rangedBeat(e: FxEvent): number | undefined {
       if (r.id === 'last_round' && !e.chain) return 520 + bowDraw(e);
       return undefined;
     }
-    case 'bead': case 'spot': return 160;
-    case 'bead_end': case 'watch_end': return quietEnd(e.why) ? 0 : 80;
-    case 'heat': return 140;
+    case 'bead': return seesActor(e.unit) ? 160 : 0;
+    case 'spot': return 160;
+    case 'bead_end': case 'watch_end': return quietEnd(e.why) || !seesActor(e.unit) ? 0 : 80;
+    case 'heat': return seesActor(e.unit) ? 140 : 0;
     case 'watch_fire': return e.id === 'dead_to_rights' ? 300 : undefined;
     case 'lane': return 60;
     case 'lane_end': case 'routed': return 0;
@@ -228,6 +313,7 @@ export function rangedBeat(e: FxEvent): number | undefined {
 // ---------- the handlers ----------
 /** Wrap play.ts's handlers with the ranged ones (each gets the handler it wraps as `base`), and add the new keys. */
 export function wrapRanged(H: Record<string, Handler>, K: RangedKit) {
+  if (K.seesUnit) { const f = K.seesUnit; seesActor = (id) => { try { return f(id); } catch { return true; } }; }
   const bases: Record<string, Handler> = { ...H };
   const R = rangedHandlers(K, bases);
   for (const [k, f] of Object.entries(R)) {
@@ -239,6 +325,9 @@ export function wrapRanged(H: Record<string, Handler>, K: RangedKit) {
 export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Record<string, (e: any, base: Handler) => void> {
   const { at, tokOf, posOf, play } = K;
   const posAt = (id: string | null | undefined) => at(posOf(id));
+  /** The actor's own tile, only if the viewer sees the actor (not just the tile: a Hidden unit's Watch, Bead, Heat or
+   *  round never gives away where it is; the engine marks watch_set `only` for the same reason). */
+  const actorAt = (e: any, k: string | null | undefined) => (seesActor(e?.unit) ? at(k) : null);
   const jit = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
   /** The time a base shot's tracer takes (play.ts fire(): px per ms by look, clamped). */
   const flight = (a: XY | null, b: XY | null, look = 'bullet') => {
@@ -250,11 +339,11 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
   const upper = (x: unknown) => String(x || '').replace(/_/g, ' ').toUpperCase();
 
   /** Debris off struck cover: the burst along the shot, dust, the crack that stays, the sound by material. */
-  function coverHit(key: string, ang: number, kind: string | null | undefined, big = 1, quiet = false) {
+  function coverHit(key: string, ang: number, kind: string | null | undefined, big = 1, quiet = false, noDust = false) {
     const p = at(key); if (!p) return;
     const m = P.coverMaterial(kind);
     P.debris(p, ang, m.tint, big);
-    K.dust(p, p.s * (0.8 + 0.3 * big), m.tint);
+    if (!noDust) K.dust(p, p.s * (0.8 + 0.3 * big), m.tint);
     if (m.label === 'metal') burst('spark_burst', p, p.s * 0.7, 240, { color: '#FFD27A', from: 0.4, to: 1.1 });
     P.crack(key, p, ang);
     if (!quiet) play(m.sound, p, { rate: jit(0.1), gain: m.sound === 'el_stone' ? 0.6 : 0.9 });
@@ -268,7 +357,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
   function roundFx(round: string, start: XY, end: Pt, ft: number, hit: boolean) {
     if (!round || round === 'standard') return;
     const steps = 3;
-    if (round === 'incendiary') for (let i = 1; i <= steps; i++) { const t = i / (steps + 1); burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, end.s * 0.45, 360, { color: '#F68A38', from: 0.5, to: 1.1, delay: ft * t, blend: 'screen' }); }
+    if (round === 'incendiary') for (let i = 1; i <= steps + 1; i++) { const t = i / (steps + 2); const q = { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }; burst('fireflash_' + (1 + (i % 2)), q, end.s * 0.95, 520, { from: 0.7, to: 1.1, fade: 0.25, delay: ft * t }); burst('flame', q, end.s * 0.85, 480, { color: '#FFB45A', from: 0.7, to: 1.1, fade: 0.2, delay: ft * t }); }
     else if (round === 'enhanced') for (let i = 1; i <= steps; i++) { const t = i / (steps + 1); burst('glow', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, end.s * 0.4, 260, { color: WHITE, from: 0.5, to: 1, delay: ft * t, blend: 'screen' }); }
     else if (/armou?r_piercing/.test(round)) burst('flash_star', start, end.s * 0.4, Math.max(120, ft), { color: WHITE, from: 0.6, to: 0.8 });
     after(() => {
@@ -281,6 +370,12 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     }, ft);
   }
 
+  /** Dirt kicked up by a round that missed on purpose (a warning shot, suppression, a covering burst): the dirt and
+   *  dust sprites (credited in fxCredits.ts) in a light ground tint, big enough to read on the dark board. */
+  function kick(q: XY, s: number, k = 1) {
+    burst('dust', q, s * 1.05 * k, 520, { color: '#E7EBF3', from: 0.5, to: 1.15, fade: 0.3 });
+    burst('dirt', { x: q.x, y: q.y - s * 0.1 }, s * 0.8 * k, 460, { color: '#E2C394', from: 0.55, to: 1.2, fade: 0.2 });
+  }
   /** A round fired with no attack roll: a tracer that misses on purpose (never MISS), a covering burst, an arc, the
    *  round into the cover (Flush). */
   function loose(e: any, kind: NonNullable<ReturnType<typeof looseKind>>, r: TechRec | null) {
@@ -293,6 +388,8 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     if (from && shooter) { lunge(shooter, -Math.cos(ang) * 3, -Math.sin(ang) * 3, 120); const br = brassOf(e.weapon || '', e.cat || ''); if (br.when === 'shot') ejectShell(whoOf(shooter), br.shell, ang, { delay: br.cycle }); }
     const start: XY = mp || (from ? { x: from.x, y: from.y } : { x: toP.x - Math.cos(ang) * s * 3, y: toP.y - Math.sin(ang) * s * 3 });
     const look = g.look === 'arrow' ? 'arrow' : 'bullet';
+    // the round raised the Heat to the limit: the gun jams, as the base shot says it (JAMMED, the dry click)
+    if (e.jam) { const fp = from || toP; after(() => { floatText('JAMMED', fp, HP, { small: true }); play('dry_click', fp); }, flight(start, toP, look) + 120); }
     const over = (lift: number, past: number): XY => ({ x: toP.x + Math.cos(ang) * s * past, y: toP.y + Math.sin(ang) * s * past - s * lift });
     if (kind === 'warning' || kind === 'rout') {
       // over its head, a fixed side (never random): the dirt kicks up behind it
@@ -300,10 +397,11 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       const ft = flight(start, end, look);
       K.projectile(start, end, ft, look, s, g.color);
       play('whiz', toP, { delay: ft * 0.55, gain: 0.9, rate: kind === 'rout' ? 0.85 : 1 });
-      after(() => { burst('dirt', { x: end.x, y: end.y + s * 0.3 }, s * 0.55, 380, { color: '#7F8BA1', from: 0.5, to: 1.2 }); }, ft);
+      after(() => kick({ x: end.x, y: end.y + s * 0.3 }, s), ft);
       const tp = at(e.to);
       if (tp && (e.loud || r?.line === 'loud')) after(() => ring({ x: tp.x, y: tp.y - s * 0.3, s }, WHITE, 360, { from: 0.4, to: 1.2, width: 2 }), ft * 0.6);
-      if (tp) after(() => P.mark(P.line({ x: tp.x - s * 0.25, y: tp.y - s * (kind === 'rout' ? 0.5 : 0.3) - 6 }, { x: tp.x + s * 0.25, y: tp.y - s * (kind === 'rout' ? 0.5 : 0.3) - 6 }, { color: WHITE, width: 1.2, ms: 260, draw: 80, opacity: 0.6 }), 'over'), ft * 0.5);
+      // the near miss marked: a stroke over the head, drawn the way the round went, on a dark under-stroke
+      if (tp) { const y = tp.y - s * (kind === 'rout' ? 0.62 : 0.55), dir = Math.cos(ang) < 0 ? -1 : 1; after(() => P.mark(P.line({ x: tp.x - dir * s * 0.4, y }, { x: tp.x + dir * s * 0.4, y }, { color: WHITE, width: 2.4, ms: 480, draw: 90, opacity: 1, under: true }), 'over'), ft * 0.5); }
       return;
     }
     if (kind === 'covering') {
@@ -312,7 +410,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       offs.forEach((o, i) => after(() => {
         const end = { x: toP.x + o.x * s, y: toP.y + o.y * s };
         K.projectile(start, end, flight(start, end, look) * 0.8, look, s * 0.7, g.color);
-        burst('dirt', end, s * 0.4, 340, { color: '#7F8BA1', from: 0.5, to: 1.2, delay: 90 });
+        after(() => kick(end, s, 0.8), 90);
       }, i * 55));
       play('whiz', toP, { delay: 110, gain: 0.6, rate: 1.15 });
       const tp = at(e.to); if (tp) word('COVERED −2', tp, WHITE, -0.6, { delay: 160 });
@@ -326,15 +424,22 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       after(() => K.dust(toP, s * 0.6), ft);
       return;
     }
-    // Flush: the round into the cover (the object event throws the debris); then the target flinches away from it
+    // Flush: the round into the cover, which bursts as it lands (the object that follows only says the damage); then the
+    // target flinches away from it
     const ft = flight(start, toP, look);
     K.projectile(start, toP, ft, look, s, g.color);
+    const ob: any = r?.objects.find((o: any) => o.at === e.to) || null;
+    if (ob && Number(ob.dmg) > 0) {
+      thrown.add(ob);
+      const big = ob.broken ? 1.5 : r?.line === 'spread' || r?.line === 'blast' ? 1.3 : 1;
+      after(() => { coverHit(ob.at, ang, ob.what, big); after(() => { const q = at(ob.at); if (q) P.debris(q, ang + 0.5, P.coverMaterial(ob.what).tint, big * 0.85); }, 70); }, ft);
+    }
     after(() => {
-      burst('flash_star', toP, s * 0.8, 150, { color: WHITE, from: 0.3, to: 1.1 });
+      burst('flash_star', toP, s * 1.1, 200, { color: WHITE, from: 0.4, to: 1.2 });
       const tid = r?.target, tk = posOf(tid), tp = at(tk);
       if (tp && tid) {
         const a = angle(toP, tp), tok = tokOf(tid, tk);
-        lunge(tok, Math.cos(a) * s * 0.35, Math.sin(a) * s * 0.35, 160); after(() => shake(tok, 0.5), 140);
+        lunge(tok, Math.cos(a) * s * 0.55, Math.sin(a) * s * 0.55, 200); after(() => shake(tok, 0.7), 160);
       }
     }, ft);
   }
@@ -365,7 +470,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     technique(e, base) {
       base(e);
       const r = tagOf(e); if (!r || e.refused) return;
-      const a = at(e.at), tk = posOf(e.target), b = at(tk);
+      const a = actorAt(e, e.at), tk = posOf(e.target), b = at(tk);
       switch (r.id) {
         case 'aimed_shot':
           if (a && b) { P.line(a, b, { width: 1.2, ms: 460, draw: 140, opacity: 0.8 }); const g = angle(a, b); burst('flash_star', { x: a.x + Math.cos(g) * a.s * 0.5, y: a.y + Math.sin(g) * a.s * 0.5 }, a.s * 0.5, 200, { color: WHITE, delay: 100, from: 0.3, to: 1 }); }
@@ -422,9 +527,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       const id = r?.id || '', vi = viOf.get(canon(e)) ?? 0;
       const from = at(e.from), toP = centre(e.to), g = K.gunOf(e.weapon || '', e.cat || '');
       const ft = flight(from, toP, g.look) + bowDraw(e);
-      // a special round (E9; or the one Load Special put in the chamber)
-      const round = e.round || (e.unit && pending.get(String(e.unit))) || '';
-      if (e.unit && pending.has(String(e.unit))) pending.delete(String(e.unit));
+      // a special round (E9; or the one Load Special put in the chamber, which only a Fire technique's first shot from
+      // the hand it was loaded for fires: a plain shot, a Press, a Take or a Watch leaves it chambered, as the engine does)
+      const round = e.round || roundOf(r, e);
       if (round && from && toP) roundFx(String(round), from, toP, ft, !!e.hit);
       // the streams: one recording for the whole run, the later rolls silent and chained
       if (r && streams(e, r)) {
@@ -447,7 +552,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
           const st = stepDown(vi, r!.shots.length);
           if (st && from) {
             const a = angle(from, toP);
-            word('−' + st, { x: from.x + Math.cos(a) * from.s * 0.5, y: from.y + Math.sin(a) * from.s * 0.5, s: from.s }, MUTED, -0.4, { ms: 420 });
+            word('−' + st, { x: from.x + Math.cos(a) * from.s * 0.5, y: from.y + Math.sin(a) * from.s * 0.5, s: from.s }, WHITE, -0.4, { ms: 480 });
             lunge(tokOf(e.unit, e.from), 0, -2 - vi, 110);
           }
           break;
@@ -460,7 +565,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
             const end = { x: toP.x + Math.cos(a) * s * 0.9 - Math.sin(a) * side * s * 0.42, y: toP.y + Math.sin(a) * s * 0.9 + Math.cos(a) * side * s * 0.42 };
             K.projectile(from, end, flight(from, end), 'bullet', s * 0.8);
             play('whiz', toP, { delay: flight(from, end) * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
-            burst('dirt', { x: toP.x + side * s * 0.3, y: toP.y + s * 0.38 }, s * 0.45, 340, { color: '#7F8BA1', from: 0.5, to: 1.2, delay: flight(from, end) });
+            after(() => kick({ x: toP.x + side * s * 0.42, y: toP.y + s * 0.62 }, s, 0.85), flight(from, end)); // at its feet, below the token
           }, 50 + k * 60);
           break;
         }
@@ -487,10 +592,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         case 'last_round': {
           const sp = from || tp;
           if (sp) after(() => {
-            play('dry_click', sp, { gain: 0.9 });
-            word('LAST ROUND', sp, WHITE, -0.85, { ms: 760 });
+            play('dry_click', sp, { gain: 0.9 }); // C's float already names it: the click and the chip say what it did
             const bow = brassOf(e.weapon || '', e.cat || '').bow;
-            if (e.killed && !bow && !r!.after.some((x) => x.k === 'free_reload') && from) tagChip(e.from, from, 'FREE RELOAD', WHITE, 1000, -1.35);
+            if (e.killed && !bow && !r!.after.some((x) => x.k === 'free_reload') && from) tagChip(e.from, from, 'FREE RELOAD', WHITE, 1000, 0.9);
           }, ft + 60);
           break;
         }
@@ -502,8 +606,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
           }
           break;
         default:
-          // a shot whose miss the cover took (any shot): the cover throws debris
-          if (!e.hit && typeof e.cover === 'string' && from) after(() => coverHit(e.cover, angle(from, toP), null, 0.8, true), ft);
+          // a ranged technique's shot whose miss the cover took: the cover throws debris (a plain Shot is today's; the base
+          // already puts sparks, dust and its sound there)
+          if (r && !e.hit && typeof e.cover === 'string' && from) after(() => coverHit(e.cover, angle(from, toP), null, 0.8, true, true), ft);
       }
     },
 
@@ -516,7 +621,10 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     },
 
     object(e, base) {
-      const r = tagOf(e), p = at(e.at);
+      // only cover a ranged technique's round struck is ours: a melee blow on a crate, the crates in a blast, a plain
+      // shot's object are the base's (and the melee lane's)
+      const r = tagOf(e), p = at(e.at), ours = !!r && r.shots.length > 0 && !r.after.some((x) => x.k === 'explode');
+      if (!ours) { base(e); return; }
       if (p && Number(e.dmg) > 0 && !thrown.has(canon(e))) {
         const flush = r?.id === 'flush', big = e.broken ? 1.5 : flush && (r?.line === 'spread' || r?.line === 'blast') ? 1.3 : 1;
         coverHit(e.at, shotAngle(r, e.at), e.what, big);
@@ -531,7 +639,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       // a grenade lands as what it is (smoke, a flash, the scrambler, fire); the engine sends the item's id
       if (kind && what !== 'fire' && kind !== 'frag') {
         if (kind === 'smoke') {
-          tilesWithin(e.at, rad).forEach((k, i) => { const q = at(k); if (q) burst('puff', q, q.s * 1.7, 1900, { from: 0.3, to: 1.3, fade: 0, delay: Math.min(6, i) * 60 }); });
+          // the whole radius clouds over: fewer, larger puffs spread over every tile of the box
+          const st = smokeStride(rad);
+          smokeTiles(e.at, rad).forEach((k, i) => { const q = at(k); if (q) burst('puff', q, q.s * (st > 1 ? 2.7 : 1.7), 1900, { from: 0.3, to: 1.3, fade: 0, delay: Math.min(8, i) * 50 }); });
           play('vent', p || centre(e.at), { rate: 0.75 });
         } else K.explosion(e.at, rad, kind);
       } else base(e);
@@ -544,8 +654,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       const p = at(e.at); if (!p) return;
       const tok = tokOf(e.unit, e.at);
       if (tok && !reducedMotion()) anim(tok, [{ translate: '0 0', scale: '1 1' }, { translate: '0 3px', scale: '1 .95', offset: 0.3 }, { translate: '0 3px', scale: '1 .95', offset: 0.8 }, { translate: '0 0', scale: '1 1' }], { duration: 360, easing: 'ease-out' });
-      const y = p.y + p.s * 0.42;
-      for (const sx of [-1, 1]) P.line({ x: p.x + sx * p.s * 0.12, y: y - p.s * 0.08 }, { x: p.x + sx * p.s * 0.26, y: y + p.s * 0.06 }, { width: 2, ms: 520, draw: 120 });
+      // the feet planted: two strokes below the token's HP bar, splayed out
+      const y = p.y + p.s * 0.6;
+      for (const sx of [-1, 1]) P.line({ x: p.x + sx * p.s * 0.1, y: y - p.s * 0.05 }, { x: p.x + sx * p.s * 0.3, y: y + p.s * 0.07 }, { width: 2.4, ms: 520, draw: 120, under: true });
       play('hit_heavy', p, { rate: 1.4, gain: 0.3 });
       const r = tagOf(e); if (r?.line === 'auto') word('SUPPRESS +1', p, WHITE, 0.55, { delay: 120 });
     },
@@ -553,32 +664,34 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     load(e, base) {
       base(e);
       if (!e.special) return;
-      const sp = String(e.special); if (e.unit) pending.set(String(e.unit), sp);
-      const p = at(e.at); if (!p) return;
-      word(ROUND_WORD[sp] || upper(sp) + ' ROUND', p, WHITE, -1.25, { big: false, ms: 900 });
+      const sp = String(e.special), lr = tagOf(e);
+      if (e.unit) pending.set(String(e.unit), { type: sp, hand: lr?.id === 'load_special' ? lr.hand : 'main' });
+      const p = actorAt(e, e.at); if (!p) return;
+      // the round's name on a chip under the token: above it are C's name (LOAD SPECIAL) and the base's LOAD timer ring
+      tagChip(e.at, p, ROUND_WORD[sp] || upper(sp) + ' ROUND', WHITE, 640, 0.9);
       ring(p, WHITE, 420, { from: 0.5, to: 1.1, width: 2 });
     },
 
     heat(e) {
-      const p = at(e.at || posOf(e.unit)); if (!p) return;
+      const p = actorAt(e, e.at || posOf(e.unit)); if (!p) return;
       const now = Number(e.now) || 0, was = Number(e.was) || 0, lim = Number(e.limit) || Math.max(6, now, was);
       P.heatBar(p, was, now, lim, e.why === 'dump' ? 'HEAT ' + now + '/' + lim : 'HEAT ' + was + ' → ' + now, 1000);
       if (e.why === 'vent' || now < was) {
-        for (let i = 0; i < 3; i++) burst('puff', { x: p.x + (i - 1) * p.s * 0.22, y: p.y - p.s * 0.2 }, p.s * 0.75, 900, { from: 0.3, to: 1.2, fade: 0, delay: i * 90 });
+        for (let i = 0; i < 3; i++) burst('puff', { x: p.x + (i - 1) * p.s * 0.3, y: p.y - p.s * 0.62 }, p.s * 1.05, 900, { from: 0.4, to: 1.25, fade: 0.1, delay: i * 90 });
         play('vent', p, { rate: 1.15, gain: 0.7 });
       }
     },
 
     bead(e) {
       tagOf(e);
-      const a = at(e.at), b = at(e.to || posOf(e.target)); if (!a) return;
+      const a = actorAt(e, e.at), b = at(e.to || posOf(e.target)); if (!a) return;
       if (b) { P.line(a, b, { width: 1.4, ms: 1000, draw: 220, opacity: 0.85 }); after(() => P.reticle(b, b.s * 1.05, { ms: 700 }), 160); }
-      tagChip(e.at, a, 'BEAD', WHITE, 1000);
+      tagChip(e.at, a, 'SIGHTS HELD', WHITE, 1000, 0.9); // C's float says BEAD over the token; the chip, under it, says what it holds
       play('dry_click', a, { rate: 1.8, gain: 0.25 });
     },
     bead_end(e) {
       if (quietEnd(e.why)) return;
-      const a = at(e.at), b = posAt(e.target);
+      const a = actorAt(e, e.at), b = posAt(e.target);
       if (a && b) P.snapLine(a, b, MUTED);
       if (a) word('BEAD LOST · ' + upper(e.why), a, MUTED, -0.95);
     },
@@ -632,7 +745,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     },
     watch_end(e) {
       if (quietEnd(e.why)) return;
-      const p = at(e.at || posOf(e.unit)); if (!p) return;
+      const p = actorAt(e, e.at || posOf(e.unit)); if (!p) return;
       P.breakRing(p);
       word('WATCH LOST · ' + upper(e.why), p, MUTED, -0.95);
     },
@@ -641,16 +754,14 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       base(e);
       const r = tagOf(e), k = posOf(e.unit), p = at(k); if (!p) return;
       const how = String(e.how || '');
-      if (/pinned/.test(how)) {
+      if (/pinned/.test(how) && r && r.id === 'pin_down') {
         const nailed = !!(e.untilAp || e.nailed || r?.line === 'drawn' || r?.line === 'silent');
         after(() => { P.stakes(p, nailed); play('chop', p, { rate: 0.7, gain: 0.7 }); }, 60);
         if (nailed) word('NAILED · ' + (e.untilAp || 2) + ' AP', p, WHITE, 0.6, { delay: 140 });
       }
-      if (/push/.test(how)) {
-        const by = posAt(e.by), a = by ? angle(by, p) : 0;
-        if (!r || r.id !== 'stopping_shot') P.chevrons(p, a, p.s);
-        word('−1 AP', p, WHITE, 0.55, { delay: 140 });
-      }
+      // a push is only ours when Stopping Shot made it (its chevrons come with the hit, from the shot); a melee opener's
+      // push is the melee lane's. The AP it costs shows only when the engine says (E15 apLoss: the number is data).
+      if (/push/.test(how) && r?.id === 'stopping_shot' && Number(e.apLoss) > 0) word('−' + Number(e.apLoss) + ' AP', p, WHITE, 0.55, { delay: 140 });
     },
     pressure(e, base) {
       base(e);
@@ -675,10 +786,11 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     cond(e, base) {
       base(e);
       const r = tagOf(e);
-      if (r?.id !== 'called_shot') return;
+      if (r?.id !== 'called_shot' || !r.target || (e.target || e.unit) !== r.target) return;
       const p = at(e.at || posOf(e.target || e.unit)), part = partOf(r); if (!p || !part) return;
+      // beside the struck point, clear of the damage number's lane above the token
       const q = P.partPoint(p, part);
-      word(part.toUpperCase(), { x: q.x, y: q.y, s: p.s }, WHITE, -0.2, { delay: 60, ms: 560 });
+      word(part.toUpperCase(), { x: p.x + p.s * 1.05, y: q.y + p.s * 0.35, s: p.s }, WHITE, 0, { delay: 60, ms: 620 });
     },
     move(e, base) {
       base(e);
@@ -704,7 +816,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       tagChip(e.at, p, 'LANE HELD', WHITE, 1000, -0.6);
     },
     lane_end() { /* the ring was a beat, not a standing marker: nothing to take down */ },
-    free_reload(e) { tagOf(e); const p = at(e.at || posOf(e.unit)); if (p) tagChip(e.at || posOf(e.unit) || '', p, 'FREE RELOAD', WHITE, 1000, -1.35); },
+    free_reload(e) { tagOf(e); const p = actorAt(e, e.at || posOf(e.unit)); if (p) tagChip(e.at || posOf(e.unit) || '', p, 'FREE RELOAD', WHITE, 1000, 0.9); },
     routed(e) {
       const r = tagOf(e), a = at(e.from), b = at(e.to); if (!a) return;
       P.streaks(a, b ? angle(a, b) : 0, a.s);
@@ -718,7 +830,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (b) burst('flash_star', b, b.s * 0.6, 150, { color: WHITE, from: 0.3, to: 1, delay: 110 });
     },
     swap_in(e) {
-      const p = at(e.at), tk = cur.get(String(e.unit || ''))?.target, b = posAt(tk); if (!p) return;
+      const p = actorAt(e, e.at), tk = cur.get(String(e.unit || ''))?.target, b = posAt(tk); if (!p) return;
       P.speedArc(p, b ? angle(p, b) : 0); play('swish', p, { rate: 1.8, gain: 0.5 }); play('rack', p, { gain: 0.4, delay: 40 });
     },
   };

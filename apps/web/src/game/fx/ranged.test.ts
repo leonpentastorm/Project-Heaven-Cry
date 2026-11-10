@@ -6,11 +6,11 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { refOf } from '@engine';
+import { refOf, ARCHETYPES, newCharacter, startCombat } from '@engine';
 import { setLayer } from './dom';
 import { playFx, queueFx, setContext, clearFx, combatTempoInfo } from './play';
-import { tagOf, looseKind, stepDown, partOf, tilesWithin, quietEnd, rangedBeat, resetRanged, EVENTS_FOR_THE_LEAD, ROUND_WORD } from './ranged';
-import { coverMaterial, partPoint } from './rangedParts';
+import { tagOf, looseKind, stepDown, partOf, tilesWithin, quietEnd, rangedBeat, resetRanged, rangedBatch, smokeTiles, EVENTS_FOR_THE_LEAD, ROUND_WORD } from './ranged';
+import { coverMaterial, partPoint, HEAT_BAR_PX, SNAP_ARC } from './rangedParts';
 import { FX_CREDITS } from './fxCredits';
 import { SFX_CREDITS } from '../sfxCredits';
 import { SFX_FILES } from '../sfx';
@@ -198,7 +198,7 @@ describe('the effects', () => {
   it('Sets and Watches: the bead held and lost, the spot, the lane, the watch broken by smoke; quiet ends say nothing', () => {
     const layer = grid();
     playFx({ k: 'bead', n: n(), unit: 'pc-a', at: '1,3', target: 'f1', to: '6,3' } as any);
-    expect(text(layer)).toMatch(/BEAD/);
+    expect(text(layer)).toMatch(/SIGHTS HELD/);
     vi.advanceTimersByTime(3000);
     playFx({ k: 'bead_end', n: n(), unit: 'pc-a', at: '1,3', target: 'f1', why: 'replaced' } as any); expect(layer.childElementCount).toBe(0);
     playFx({ k: 'bead_end', n: n(), unit: 'pc-a', at: '1,3', target: 'f1', why: 'Flashbang' } as any); vi.advanceTimersByTime(50); expect(text(layer)).toMatch(/BEAD LOST · FLASHBANG/);
@@ -230,6 +230,237 @@ describe('the effects', () => {
     vi.advanceTimersByTime(5000);
     expect(warn).not.toHaveBeenCalled();
     expect(rangedBeat(null as any)).toBeUndefined();
+  });
+});
+
+// ---------- the review fixes (Physical 2.0 B fx review, 10 Nov 2026) ----------
+const boxesWith = (layer: HTMLElement, needle: string) => [...layer.children].filter((b) => (b as HTMLElement).innerHTML.includes(needle)) as HTMLElement[];
+const boxOfText = (layer: HTMLElement, t: string) => ([...layer.children] as HTMLElement[]).find((b) => b.textContent === t) || null;
+/** Advance ms in 25 ms steps: did the layer's text ever match (a word that came and went counts)? */
+const ever = (layer: HTMLElement, re: RegExp, ms: number) => { let hit = false; for (let t = 0; t < ms; t += 25) { vi.advanceTimersByTime(25); if (re.test(text(layer))) hit = true; } return hit; };
+const cx = (b: HTMLElement) => parseFloat(b.style.left) + parseFloat(b.style.width) / 2;
+const cy = (b: HTMLElement) => parseFloat(b.style.top) + parseFloat(b.style.height) / 2;
+
+describe('review: a technique\'s record ends with its action', () => {
+  it('R1: a Burst of 2 chained rolls, then a plain shot: the shot is not the Burst\'s (no −2, no lift)', () => {
+    tagOf(tech('burst')); tagOf(shot({ chain: true })); tagOf(shot({ chain: true }));
+    expect(tagOf(shot())).toBeNull();
+    const layer = grid();
+    queueFx([tech('burst'), shot({ chain: true }), shot({ chain: true })] as any); vi.advanceTimersByTime(3000);
+    const plain = shot(); queueFx([plain] as any);
+    expect(ever(layer, /−2/, 1200)).toBe(false);
+  });
+  it('R1: fewer rolls than the most, then a plain shot in the same batch (an enemy\'s turn): Walking Fire, Mag Dump, Rake', () => {
+    tagOf(tech('walking_fire', { tile: '2,3' })); tagOf(shot()); expect(tagOf(shot())).toBeNull(); // 1 roll without Auto
+    tagOf(tech('mag_dump', { group: 'press' })); tagOf(shot()); tagOf(shot()); expect(tagOf(shot({ target: 'f2', to: '7,4' }))).toBeNull();
+    tagOf(tech('rake', { group: 'press' })); tagOf(shot()); tagOf(shot({ target: 'f2', to: '7,4' })); expect(tagOf(shot())).toBeNull(); // f1 again
+    tagOf(tech('mag_dump', { group: 'press' })); tagOf(shot()); tagOf({ k: 'reload', n: n(), unit: 'pc-a', at: '1,3', how: 'mag' }); expect(tagOf(shot())).toBeNull();
+    tagOf(tech('rake', { group: 'press' })); tagOf(shot()); tagOf({ k: 'volley', n: n(), ...W, mode: 'burst' }); expect(tagOf(shot({ chain: true }))).toBeNull();
+  });
+  it('R1: a 2-target Rake, then a plain shot next batch: it keeps its own gunshot (not chained into the Rake\'s stream)', () => {
+    const layer = grid();
+    queueFx([tech('rake', { group: 'press' }), shot(), shot({ target: 'f2', to: '7,4' })] as any); vi.advanceTimersByTime(3000);
+    const s = vi.spyOn(sfxMod, 'sfx');
+    const plain = shot(); queueFx([plain] as any); vi.advanceTimersByTime(50);
+    expect(tagOf(plain)).toBeNull(); expect(rangedBeat(plain as any)).toBeUndefined();
+    expect(s.mock.calls.some((c) => /^gun_|rifle/.test(String(c[0])))).toBe(true);
+    expect(layer).toBeTruthy();
+  });
+  it('R2: a Called Shot, then a condition on someone else or from a later action: no part word', () => {
+    const layer = grid();
+    queueFx([tech('called_shot', { opt: 'head' }), shot({ hit: false }), { k: 'cond', n: n(), target: 'f2', at: '7,4', id: 'dazed' }] as any);
+    expect(ever(layer, /HEAD/, 1500)).toBe(false);
+    vi.advanceTimersByTime(3000);
+    queueFx([{ k: 'cond', n: n(), target: 'f1', at: '6,3', id: 'slowed' }] as any);
+    expect(ever(layer, /LEG|HEAD/, 1200)).toBe(false);
+    const c = tech('called_shot'); tagOf(c); tagOf(shot()); tagOf({ k: 'cond', n: n(), target: 'f2', at: '7,4', id: 'slowed' });
+    expect(partOf(tagOf(c))).toBeNull();
+  });
+  it('R2/R8: object damage from a later action, a melee blow or a blast is not ranged cover debris', () => {
+    const layer = grid();
+    queueFx([tech('flush'), shot({ target: null, to: '4,3', hit: false, object: true, flush: true }), { k: 'object', n: n(), at: '4,3', what: 'crate', dmg: 10, hp: 8 }] as any);
+    vi.advanceTimersByTime(3000);
+    queueFx([{ k: 'melee', n: n(), unit: 'pc-a', from: '1,3', to: '2,3', target: null, hit: true }, { k: 'object', n: n(), at: '2,3', what: 'crate', dmg: 6, hp: 4 }] as any);
+    let deb = 0; for (let t = 0; t < 900; t += 25) { vi.advanceTimersByTime(25); deb += rfx(layer, 'debris'); }
+    expect(deb).toBe(0); vi.advanceTimersByTime(100); expect(text(layer)).not.toMatch(/COVER −6/);
+    vi.advanceTimersByTime(3000);
+    queueFx([tech('lob', { tile: '6,3', target: null }), { k: 'shot', n: n(), ...W, weapon: 'frag_grenade', cat: 'thrown', target: null, to: '6,3', hit: true, object: true, technique: 'lob' }, { k: 'explode', n: n(), at: '6,3', radius: 2, what: 'frag_grenade' }, { k: 'object', n: n(), at: '5,3', what: 'crate', dmg: 9, hp: 9 }, { k: 'object', n: n(), at: '7,3', what: 'crate', dmg: 9, hp: 9 }] as any);
+    expect(ever(layer, /COVER −9/, 2500)).toBe(false);
+  });
+  it('R3: a loaded round stays chambered through a Press; the next Fire\'s first shot fires it', () => {
+    const layer = grid();
+    queueFx([tech('load_special', { group: 'set' }), { k: 'load', n: n(), unit: 'pc-a', at: '1,3', rounds: 1, special: 'incendiary', dur: 400 }] as any); vi.advanceTimersByTime(3000);
+    queueFx([tech('suppress', { group: 'press' }), shot({ dmg: 4 })] as any);
+    expect(ever(layer, /INCENDIARY/, 1500)).toBe(false);
+    vi.advanceTimersByTime(3000);
+    queueFx([shot()] as any); expect(ever(layer, /INCENDIARY/, 1500)).toBe(false); // a plain shot
+    vi.advanceTimersByTime(3000);
+    queueFx([tech('snap_shot', { hand: 'off' }), shot()] as any); expect(ever(layer, /INCENDIARY/, 1500)).toBe(false); // the other hand
+    vi.advanceTimersByTime(3000);
+    queueFx([tech('snap_shot'), shot()] as any); vi.advanceTimersByTime(700); expect(text(layer)).toMatch(/INCENDIARY/);
+  });
+  it('R4: a melee opener\'s push gets nothing from the ranged lane; Stopping Shot shows the AP the engine sends', () => {
+    const layer = grid();
+    queueFx([{ k: 'technique', n: n(), unit: 'pc-a', id: 'heavy_opener', group: 'opener', system: 'melee', target: 'f1', at: '1,3' }, { k: 'stopped', n: n(), unit: 'f1', how: 'push', by: 'pc-a' }] as any);
+    let ch = 0, ap = false; for (let t = 0; t < 1000; t += 25) { vi.advanceTimersByTime(25); ch += rfx(layer, 'chevrons'); ap = ap || /AP/.test(text(layer)); }
+    expect(ap).toBe(false); expect(ch).toBe(0);
+    vi.advanceTimersByTime(3000);
+    queueFx([tech('stopping_shot', { group: 'take' }), shot(), { k: 'stopped', n: n(), unit: 'f1', how: 'push', by: 'pc-a', apLoss: 2 }] as any);
+    vi.advanceTimersByTime(800); expect(text(layer)).toMatch(/−2 AP/);
+  });
+  it('R5: a loose round that jams the gun says JAMMED with the dry click', () => {
+    const layer = grid(); const s = vi.spyOn(sfxMod, 'sfx');
+    playFx(tech('warning_shot')); playFx(shot({ target: null, hit: false, dmg: 0, warning: true, jam: true }));
+    vi.advanceTimersByTime(600);
+    expect(text(layer)).toMatch(/JAMMED/); expect(s.mock.calls.some((c) => c[0] === 'dry_click')).toBe(true);
+    expect(text(layer)).not.toMatch(/MISS/);
+  });
+  it('R7/RFX-1: a later fight (or the same one started over) never resolves to an earlier fight\'s events', () => {
+    grid();
+    const a = [{ k: 'technique', n: 5, unit: 'pc-a', id: 'mag_dump', group: 'press', system: 'ranged', target: 'f1', at: '1,3' }, { ...shot(), n: 6 }];
+    queueFx(a as any, 'cb|one'); vi.advanceTimersByTime(4000);
+    const b = [{ k: 'technique', n: 5, unit: 'pc-a', id: 'shot', group: 'fire', system: 'ranged', target: 'f1', at: '1,3' }, { ...shot(), n: 6 }];
+    queueFx(b as any, 'cb|two');
+    expect(tagOf(b[0])?.id).toBe('shot'); expect(tagOf(b[1])?.id).toBe('shot');
+    expect(rangedBeat({ ...b[1] } as any)).toBeUndefined(); // not Mag Dump's 300
+    vi.advanceTimersByTime(4000);
+    // the same stream started over: its numbering went back
+    const c = [{ k: 'technique', n: 5, unit: 'pc-a', id: 'mag_dump', group: 'press', system: 'ranged', target: 'f1', at: '1,3' }, { ...shot(), n: 6 }];
+    queueFx(c as any, 'cb|two'); expect(tagOf(c[1])?.id).toBe('mag_dump');
+    vi.advanceTimersByTime(4000);
+    // a Storm left open at the fight's end: the next walk on the area map draws no streaks
+    queueFx([tech('storm', { group: 'take' })] as any, 'cb|two'); vi.advanceTimersByTime(2000);
+    const walk = { k: 'move', n: 3, unit: 'pc-a', from: '1,3', to: '3,3', path: ['1,3', '2,3', '3,3'] };
+    queueFx([walk] as any, 'st|X'); expect(tagOf(walk)).toBeNull();
+    // clearFx forgets too
+    tagOf(tech('mag_dump')); clearFx(); expect(tagOf(shot())).toBeNull();
+  });
+  it('R6: a Hidden foe on a tile in sight gives nothing away: no lost Watch, no Bead, no Heat at its tile', () => {
+    const layer = grid();
+    const ar = ARCHETYPES[0];
+    const c = newCharacter('a', 'p1', { name: 'Vel', portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...ar.preset }, attrs: { ...ar.attributes }, cores: { ...ar.cores }, identity: {} } as any);
+    const cb = startCombat('t', 'yard', [{ c, pos: '1,3' }], [{ name: 'Raider', tier: 'minion', weapon: 'service_pistol', at: refOf('6,3') }] as any, 'easy', { state: 4 } as any, []);
+    const foe = cb.units.find((u: any) => u.side === 'foe')!; foe.id = 'f1'; foe.pos = '6,3'; (foe as any).hidden = true;
+    setContext({ code: 'X', characters: { a: c }, story: { positions: {}, npcs: [] }, combat: cb } as any, 'combat');
+    const evs = [{ k: 'watch_end', n: n(), unit: 'f1', at: '6,3', id: 'overwatch', why: 'Smoke grenade' }, { k: 'bead', n: n(), unit: 'f1', at: '6,3', target: 'pc-a', to: '1,3' }, { k: 'heat', n: n(), unit: 'f1', at: '6,3', now: 2, was: 6, why: 'vent' }];
+    for (const e of evs) { playFx(e as any); expect(rangedBeat(e as any)).toBe(0); }
+    vi.advanceTimersByTime(300);
+    expect(rfx(layer, 'break')).toBe(0); expect(rfx(layer, 'heat')).toBe(0); expect(text(layer)).not.toMatch(/WATCH LOST|SIGHTS HELD|HEAT/);
+    (foe as any).hidden = false; setContext({ code: 'X', characters: { a: c }, story: { positions: {}, npcs: [] }, combat: cb } as any, 'combat');
+    vi.advanceTimersByTime(3000);
+    playFx(evs[0] as any); vi.advanceTimersByTime(50); expect(rfx(layer, 'break')).toBe(2); // seen: it shows
+  });
+  it('R9: Punch Through Heavy: the round carries on into the next in line, and its hurt waits for it', () => {
+    const layer = grid();
+    const t = tech('punch_through'); tagOf(t); tagOf(shot());
+    const proj = () => ([...layer.children] as HTMLElement[]).filter((b) => b.style.transformOrigin === '100% 50%').length;
+    const before = proj();
+    playFx({ k: 'hurt', n: n(), target: 'f2', at: '7,4', dmg: 6, why: 'weapon' } as any);
+    expect(proj()).toBe(before + 1);
+    vi.advanceTimersByTime(40); expect(text(layer)).not.toMatch(/6/);
+    vi.advanceTimersByTime(200); expect(text(layer)).toMatch(/6/);
+  });
+  it('RFX-2: a plain Shot\'s miss into cover is today\'s (no ranged debris); a technique\'s throws it', () => {
+    const layer = grid();
+    queueFx([shot({ hit: false, cover: '4,3' })] as any); vi.advanceTimersByTime(500); expect(rfx(layer, 'debris')).toBe(0);
+    vi.advanceTimersByTime(3000);
+    queueFx([tech('aimed_shot'), shot({ hit: false, cover: '4,3' })] as any); vi.advanceTimersByTime(700); expect(rfx(layer, 'crack')).toBe(1);
+  });
+});
+
+describe('review: what reads on screen', () => {
+  it('F1: the Heat strip\'s segments have height (10px strip, 2px padding and 1px border each side), under the token', () => {
+    const layer = grid();
+    expect(HEAT_BAR_PX - 2 * 2 - 2 * 1).toBeGreaterThanOrEqual(4);
+    playFx({ k: 'heat', n: n(), unit: 'pc-a', at: '1,3', now: 7, was: 3, why: 'dump', limit: 8 } as any);
+    const box = layer.querySelector('[data-rfx="heat"]') as HTMLElement; expect(box).toBeTruthy();
+    const bar = box.querySelector('[data-phc-heat] > div') as HTMLElement;
+    expect(bar.style.height).toBe(HEAT_BAR_PX + 'px'); expect(bar.style.flex).toMatch(/none|0 0 auto/);
+    expect((bar.firstElementChild as HTMLElement).style.minHeight).toBe('4px');
+    expect(cy(box)).toBeGreaterThan(140 + 20); // below the token (1,3 is centred at y 140; the tile is 40)
+    vi.advanceTimersByTime(800);
+    expect([...bar.children].filter((x) => /242, 165, 74\)$|#F2A54A|rgb\(242, 165, 74\)/i.test((x as HTMLElement).style.background)).length).toBe(7);
+  });
+  it('F2: Snap Shot\'s arc is drawn outside the token\'s rim, on an ink under-stroke', () => {
+    const layer = grid(); playFx(tech('snap_shot'));
+    const box = layer.querySelector('[data-rfx="snap"]') as HTMLElement;
+    expect(parseFloat(box.style.width)).toBeCloseTo(40 * SNAP_ARC, 0);
+    expect((16 / 40) * SNAP_ARC).toBeGreaterThan(0.6); // the arc's radius in tiles, past the rim at 0.5
+    expect(box.querySelectorAll('path')).toHaveLength(2);
+  });
+  it('F3: an incendiary round\'s trail is flame big enough to read (≥ 0.7 of a tile) along the shot', () => {
+    const layer = grid();
+    playFx({ k: 'load', n: n(), unit: 'pc-a', at: '1,3', rounds: 1, special: 'incendiary', dur: 400 } as any);
+    tagOf(tech('snap_shot')); playFx(shot());
+    vi.advanceTimersByTime(260);
+    const fl = boxesWith(layer, '/fx/flame.png'); expect(fl.length).toBeGreaterThan(0);
+    for (const b of fl) expect(parseFloat(b.style.width)).toBeGreaterThanOrEqual(28);
+  });
+  it('F4: a warning shot\'s near miss reads: a 2.4px over-head stroke on an ink stroke, and a light dust kick', () => {
+    const layer = grid();
+    playFx(tech('warning_shot')); playFx(shot({ target: null, hit: false, dmg: 0, warning: true }));
+    vi.advanceTimersByTime(200);
+    const over = layer.querySelector('[data-rfx="over"]') as HTMLElement; const lines = over.querySelectorAll('line');
+    expect(lines).toHaveLength(2); expect(lines[1].getAttribute('stroke-width')).toBe('2.4');
+    vi.advanceTimersByTime(150);
+    const kicks = boxesWith(layer, '/fx/dust.png'); expect(kicks.length).toBeGreaterThan(0);
+    expect(parseFloat(kicks[0].style.width)).toBeGreaterThanOrEqual(28);
+  });
+  it('F5: the Called Shot\'s part word sits beside the token, out of the damage number\'s lane', () => {
+    const layer = grid();
+    tagOf(tech('called_shot', { opt: 'head' })); playFx(shot());
+    playFx({ k: 'cond', n: n(), target: 'f1', at: '6,3', id: 'dazed' } as any); vi.advanceTimersByTime(120);
+    const w = boxOfText(layer, 'HEAD')!; expect(w).toBeTruthy();
+    expect(cx(w) - 260).toBeGreaterThanOrEqual(36); // the token's centre is x 260
+  });
+  it('F6/F9/F8: the loaded round and the Bead say their own word on the chip lane; Last Round leaves C\'s name alone', () => {
+    const layer = grid();
+    playFx({ k: 'load', n: n(), unit: 'pc-a', at: '1,3', rounds: 1, special: 'incendiary', dur: 400 } as any);
+    const chip = layer.querySelector('[data-phc-tag="INCENDIARY"]'); expect(chip).toBeTruthy();
+    expect(cy(chip!.parentElement as HTMLElement)).toBeGreaterThan(140 + 20); // under the token, clear of C's name and the LOAD ring above
+    vi.advanceTimersByTime(3000);
+    playFx({ k: 'bead', n: n(), unit: 'pc-a', at: '1,3', target: 'f1', to: '6,3' } as any);
+    expect(layer.querySelector('[data-phc-tag="SIGHTS HELD"]')).toBeTruthy(); expect(layer.querySelector('[data-phc-tag="BEAD"]')).toBeNull();
+    vi.advanceTimersByTime(3000);
+    tagOf(tech('last_round', { group: 'take' })); playFx(shot({ killed: true })); vi.advanceTimersByTime(700);
+    expect(text(layer)).not.toMatch(/LAST ROUND/); expect(text(layer)).toMatch(/FREE RELOAD/);
+  });
+  it('F7: Head Down drops its Watch quietly (C already names it)', () => {
+    const layer = grid();
+    playFx({ k: 'watch_end', n: n(), unit: 'pc-a', at: '1,3', id: 'overwatch', why: 'head down' } as any); vi.advanceTimersByTime(50);
+    expect(rfx(layer, 'break')).toBe(0); expect(text(layer)).not.toMatch(/WATCH LOST/);
+    expect(quietEnd('head down')).toBe(true);
+  });
+  it('F10/F11: the vent puffs rise above the token; Brace\'s feet are planted below its HP bar', () => {
+    const layer = grid();
+    playFx({ k: 'heat', n: n(), unit: 'pc-a', at: '1,3', now: 2, was: 6, why: 'vent' } as any); vi.advanceTimersByTime(250);
+    const puffs = boxesWith(layer, '/fx/puff.webp'); expect(puffs.length).toBe(3);
+    for (const b of puffs) expect(cy(b)).toBeLessThan(140 - 20);
+    vi.advanceTimersByTime(3000);
+    playFx({ k: 'stance', n: n(), unit: 'pc-a', at: '1,3', what: 'brace' } as any);
+    const feet = [...layer.querySelectorAll('[data-rfx="line"]')] as HTMLElement[]; expect(feet).toHaveLength(2);
+    for (const b of feet) expect(cy(b)).toBeGreaterThan(140 + 20);
+  });
+  it('F12: a Burst\'s step-down reads in white, not the muted failure grey', () => {
+    const layer = grid();
+    tagOf(tech('burst')); playFx(shot({ chain: true })); playFx(shot({ chain: true }));
+    const w = boxOfText(layer, '−2')!; expect(w).toBeTruthy();
+    expect((w.firstElementChild as HTMLElement).style.color).toMatch(/255, 255, 255|#FFFFFF/i);
+  });
+  it('F13: a Flush round bursts the cover as it lands, not a beat later; the target flinches', () => {
+    const layer = grid();
+    const t = tech('flush'), s = shot({ target: null, to: '4,3', hit: false, object: true, flush: true }), o = { k: 'object', n: n(), at: '4,3', what: 'crate', dmg: 10, hp: 8 };
+    rangedBatch([t, s, o] as any);
+    playFx(t); playFx(s); vi.advanceTimersByTime(260);
+    expect(rfx(layer, 'debris')).toBe(8); // the burst and the heavier second one, before the object event plays
+    playFx(o); vi.advanceTimersByTime(20); expect(rfx(layer, 'debris')).toBe(8); // which only says the damage
+  });
+  it('F14: a smoke cloud covers its whole radius box (corners and edges), with fewer, larger puffs', () => {
+    const r2 = smokeTiles('5,5', 2); for (const k of ['3,3', '7,7', '3,7', '7,3', '5,3', '3,5']) expect(r2).toContain(k);
+    expect(r2.length).toBeLessThanOrEqual(9); expect(r2[0]).toBe('5,5');
+    const r3 = smokeTiles('5,5', 3); for (const k of ['2,2', '8,8', '2,8', '8,2']) expect(r3).toContain(k);
+    expect(r3.length).toBeLessThanOrEqual(16);
+    expect(smokeTiles('5,5', 1)).toHaveLength(9);
   });
 });
 

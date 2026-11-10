@@ -25,15 +25,17 @@ const f1 = (n: number) => n.toFixed(1);
 export const mark = <T extends HTMLElement>(box: T, name: string): T => { box.setAttribute('data-rfx', name); return box; };
 
 /** A line from a to b drawn on (dashoffset) over draw ms, held, then faded; dash '' is solid. */
-export function line(a: XY, b: XY, o: { color?: string; width?: number; dash?: string; ms?: number; draw?: number; opacity?: number; glow?: boolean } = {}) {
+export function line(a: XY, b: XY, o: { color?: string; width?: number; dash?: string; ms?: number; draw?: number; opacity?: number; glow?: boolean; under?: boolean } = {}) {
   const ms = o.ms ?? 500, len = Math.hypot(b.x - a.x, b.y - a.y), color = o.color || WHITE;
-  const { box, s } = spanBox([a, b], 6, ms, (q) => '<line class="ln" x1="' + f1(a.x - q.x) + '" y1="' + f1(a.y - q.y) + '" x2="' + f1(b.x - q.x) + '" y2="' + f1(b.y - q.y) + '" stroke="' + color + '" stroke-width="' + (o.width ?? 1.6) + '" stroke-linecap="round"'
+  // under: a dark ink stroke beneath, so a white line reads over the token's own white rim and over pale tiles
+  const { box, s } = spanBox([a, b], 6, ms, (q) => (o.under ? '<line class="ln" x1="' + f1(a.x - q.x) + '" y1="' + f1(a.y - q.y) + '" x2="' + f1(b.x - q.x) + '" y2="' + f1(b.y - q.y) + '" stroke="' + INK + '" stroke-width="' + ((o.width ?? 1.6) + 3) + '" stroke-linecap="round" opacity=".7"' + (o.dash ? ' stroke-dasharray="' + o.dash + '"' : ' stroke-dasharray="' + f1(len) + '"') + ' stroke-dashoffset="' + (o.dash ? '0' : f1(len)) + '"/>' : '') + '<line class="ln" x1="' + f1(a.x - q.x) + '" y1="' + f1(a.y - q.y) + '" x2="' + f1(b.x - q.x) + '" y2="' + f1(b.y - q.y) + '" stroke="' + color + '" stroke-width="' + (o.width ?? 1.6) + '" stroke-linecap="round"'
     + (o.dash ? ' stroke-dasharray="' + o.dash + '"' : ' stroke-dasharray="' + f1(len) + '"') + ' stroke-dashoffset="' + (o.dash ? '0' : f1(len)) + '"' + (o.glow ? ' style="filter:drop-shadow(0 0 3px ' + color + ')"' : '') + '/>');
   const op = o.opacity ?? 0.95;
   anim(box, [{ opacity: 0 }, { opacity: op, offset: 0.12 }, { opacity: op, offset: 0.7 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
-  const ln = s.querySelector('.ln');
-  if (ln && !o.dash && !reducedMotion()) anim(ln, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: o.draw ?? ms * 0.35, easing: 'ease-out', fill: 'forwards' });
-  else if (ln && !o.dash) (ln as SVGElement).setAttribute('stroke-dashoffset', '0');
+  for (const ln of Array.from(s.querySelectorAll('.ln'))) {
+    if (!o.dash && !reducedMotion()) anim(ln, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: o.draw ?? ms * 0.35, easing: 'ease-out', fill: 'forwards' });
+    else if (!o.dash) (ln as SVGElement).setAttribute('stroke-dashoffset', '0');
+  }
   return mark(box, 'line');
 }
 
@@ -128,9 +130,11 @@ export function radiusBox(p: Pt, r: number, color = HP, ms = 520) {
   return mark(box, 'radius');
 }
 
-/** The Heat strip over a token: limit segments, filled to `now` (from `was`), in Body amber, with its words. */
+/** The Heat strip under a token (below its HP bar, clear of C's name rising above it): limit segments, filled to `now`
+ *  (from `was`), in Body amber, with its words under the strip. */
+export const HEAT_BAR_PX = 10;
 export function heatBar(p: Pt, was: number, now: number, limit: number, label: string, ms = 1000) {
-  const n = Math.max(1, Math.min(12, Math.round(limit) || 6)), w = Math.max(64, p.s * 1.5), h = 22;
+  const n = Math.max(1, Math.min(12, Math.round(limit) || 6)), w = Math.max(48, p.s * 1.2), h = 30;
   const el = document.createElement('div');
   el.setAttribute('data-phc-heat', String(now));
   el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:3px;width:100%';
@@ -138,17 +142,18 @@ export function heatBar(p: Pt, was: number, now: number, limit: number, label: s
   word.textContent = label;
   word.style.cssText = "font:700 " + Math.max(9, Math.round(p.s * 0.2)) + "px 'Chakra Petch',sans-serif;letter-spacing:.1em;color:" + AMBER + ';text-shadow:0 0 3px #000,0 1px 0 #000;white-space:nowrap';
   const bar = document.createElement('div');
-  bar.style.cssText = 'display:grid;grid-template-columns:repeat(' + n + ',1fr);gap:2px;width:100%;height:6px;padding:2px;background:rgba(10,13,19,.9);border:1px solid #232D3F;border-radius:3px';
+  // border-box everywhere (main.tsx): the 10px holds 2px padding and 1px border each side, leaving the segments 4px
+  bar.style.cssText = 'display:grid;grid-template-columns:repeat(' + n + ',1fr);grid-template-rows:1fr;gap:2px;flex:none;box-sizing:border-box;width:100%;height:' + HEAT_BAR_PX + 'px;padding:2px;background:rgba(10,13,19,.9);border:1px solid #232D3F;border-radius:3px';
   const segs: HTMLElement[] = [];
-  for (let i = 0; i < n; i++) { const c = document.createElement('i'); c.style.cssText = 'display:block;border-radius:1px;background:' + (i < was ? AMBER : 'rgba(242,165,74,.14)'); bar.appendChild(c); segs.push(c); }
-  el.append(word, bar);
-  const box = put(el, { x: p.x, y: p.y - p.s * 0.95 }, w, h, ms); box.style.zIndex = '4';
+  for (let i = 0; i < n; i++) { const c = document.createElement('i'); c.style.cssText = 'display:block;min-height:4px;border-radius:1px;background:' + (i < was ? AMBER : 'rgba(242,165,74,.18)'); bar.appendChild(c); segs.push(c); }
+  el.append(bar, word);
+  const box = put(el, { x: p.x, y: p.y + p.s * 0.5 + h / 2 + 2 }, w, h, ms); box.style.zIndex = '4';
   anim(box, [{ opacity: 0 }, { opacity: 1, offset: 0.1 }, { opacity: 1, offset: 0.8 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
   // the segments that change light up (rising) or drain (falling) one by one
   const lo = Math.min(was, now), hi = Math.max(was, now), up = now > was;
   for (let i = lo; i < hi && i < n; i++) {
     const k = up ? i - lo : hi - 1 - i;
-    after(() => { segs[i].style.background = up ? AMBER : 'rgba(242,165,74,.14)'; }, 120 + k * 70);
+    after(() => { segs[i].style.background = up ? AMBER : 'rgba(242,165,74,.18)'; }, 120 + k * 70);
   }
   return mark(box, 'heat');
 }
@@ -201,15 +206,21 @@ export function streaks(q: XY, ang: number, s: number, ms = 320, color = WHITE) 
   }
 }
 
-/** A quarter arc of speed swept across a token toward an angle (Snap Shot's draw). */
+/** The Snap Shot arc's box in tiles (its radius is 0.4 of the box: 0.72 of a tile, clear of the token's rim at 0.5). */
+export const SNAP_ARC = 1.8;
+/** A quarter arc of speed swept round a token toward an angle (Snap Shot's draw). */
 export function speedArc(p: Pt, ang: number, ms = 220) {
   const deg = (ang * 180) / Math.PI;
-  const s = svg(40, 40, '<path class="ln" d="M8 30 A16 16 0 0 1 30 8" pathLength="100" fill="none" stroke="' + WHITE + '" stroke-width="3" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="100"/>');
-  const box = mark(put(s, p, p.s * 1.25, p.s * 1.25, ms), 'snap'); box.style.zIndex = '3';
+  // outside the token's rim (r 16 of 40 at 1.8 tiles: 0.72 of a tile from the centre, the rim is at 0.5), on a dark
+  // under-stroke so it parts from the rim and the board
+  const d = 'M8 30 A16 16 0 0 1 30 8';
+  const s = svg(40, 40, '<path class="ln" d="' + d + '" pathLength="100" fill="none" stroke="' + INK + '" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="100" opacity=".75"/><path class="ln" d="' + d + '" pathLength="100" fill="none" stroke="' + WHITE + '" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="100"/>');
+  const box = mark(put(s, p, p.s * SNAP_ARC, p.s * SNAP_ARC, ms), 'snap'); box.style.zIndex = '3';
   box.style.transform = 'rotate(' + f1(deg + 45) + 'deg)';
-  const ln = s.querySelector('.ln');
-  if (ln && !reducedMotion()) anim(ln, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0, offset: 0.55 }, { strokeDashoffset: -100 }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
-  else ln?.setAttribute('stroke-dashoffset', '0');
+  for (const ln of Array.from(s.querySelectorAll('.ln'))) {
+    if (!reducedMotion()) anim(ln, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0, offset: 0.55 }, { strokeDashoffset: -100 }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
+    else ln.setAttribute('stroke-dashoffset', '0');
+  }
   anim(box, [{ opacity: 1 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
 }
 
