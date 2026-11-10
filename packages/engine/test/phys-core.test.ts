@@ -47,7 +47,7 @@ describe('Momentum and the chain', () => {
     expect(f.tech('coup', { targetId: f.foe.id })).toMatch(/Momentum 2/);
     f.tech('cut', { targetId: f.foe.id });
     expect(f.tech('lunge', { targetId: f.foe.id })).toMatch(/Opener/);
-    f.momentum(f.pc, 3);
+    f.momentum(f.pc, 3); f.foe.hp = f.foe.maxHp = 999;
     const pv = f.pv('coup', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ends).toBe(true);
     const base = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(base * 1.75, 0); // +25% a point
@@ -160,6 +160,18 @@ describe('Watches', () => {
   });
   it('the held shot ends at the holder\'s next turn', () => {
     const f = fight(); f.tech('overwatch'); f.turn(f.pc); expect(f.pc.watch).toBeUndefined();
+  });
+});
+
+describe('damage follows what the weapon is aimed with', () => {
+  it('a gun scales with Agility and Dexterity, a heavy blade with Strength and Raw Power, bare hands with Strength and both', async () => {
+    const { weaponMult, weaponMultLabel, newCharacter } = await import('../src');
+    const c = newCharacter('c1', 'host', sheetOf({ archetype: 'sharpshooter' }));
+    c.attrs = { ...c.attrs, strength: 3, agility: 5 }; c.skills = { ...c.skills, raw_power: 2, athletics: 4, dexterity: 6 }; c.perks = []; c.traits = []; c.classId = null;
+    expect(weaponMult(c, 'service_pistol')).toBeCloseTo(1 + 0.4 + 0.3); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
+    expect(weaponMult(c, 'sabre')).toBeCloseTo(1 + 0.4 + 0.2); expect(weaponMultLabel('sabre')).toBe('Agility and Athletics');
+    expect(weaponMult(c, 'maul')).toBeCloseTo(1 + 0.2 + 0.1); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
+    expect(weaponMult(c, 'fists')).toBeCloseTo(1 + 0.2 + 0.1 + 0.2); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Athletics');
   });
 });
 

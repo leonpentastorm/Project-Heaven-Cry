@@ -165,7 +165,8 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Stat | Formula |
 |---|---|
-| Physical | 1 + 0.1 × (Strength − 1) + 0.05 × Raw Power |
+| Weapon attacks (rules 1.12) | 1 + 0.1 × (the weapon's Attribute − 1) + 0.05 × the skill the weapon hits with. Heavy melee: Strength and Raw Power. Light melee: Agility and Athletics. Guns, bows and thrown weapons: Agility and Dexterity. Bare hands: Strength, and 0.05 × both Raw Power and Athletics. Each weapon names its own (`phys.scales_with`, `phys.hits_with`; item 946) |
+| Physical (anything that isn't a weapon attack: a thrown body, a sling stone) | 1 + 0.1 × (Strength − 1) + 0.05 × Raw Power |
 | Elemental | 1 + 0.2 × (Expression − 1) + 0.1 × Visualization |
 | Sigil | 1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power |
 | Soul | 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (rules 1.5; 2.45 maxed) |
@@ -930,7 +931,7 @@ Ranged:
 | **Drawn** | Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight. |
 | **Thrown** | It can leave the hand. |
 
-Each weapon also names the skill its attacks roll (**hits with**) and what its damage **scales with**. A Bare weapon scales with both Raw Power and Athletics.
+Each weapon also names the skill its attacks roll (**hits with**) and what its damage **scales with**: the damage multiplier of a weapon attack is 1 + 0.1 × (that Attribute − 1) + 0.05 × that skill (Derived stats). A Bare weapon scales with Strength and with both Raw Power and Athletics.
 
 #### Knowing, readying and drill
 
@@ -4905,7 +4906,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 943. **Becoming Pressed ends a held Watch** (the lead's reading; the proposal only says one can't be set while Pressed). *Leon to confirm.*
 944. **A technique's own Pressure replaces the ordinary +1** (Suppress: 2 in all on a hit, 1 on a miss), and **a Take's hit adds none** (the lead's readings).
 945. **Every technique's own numbers** (`numbers` on each of the 58 in techniques.json: to-hit bonuses, damage multipliers, tiles, rounds, durations) are placeholders, flagged `provisional: true`, for the balance pass after every Body system is in.
-946. **Damage scaling by `hits_with` and `scales_with`** (multiplier 1 + 0.1 × (the Attribute − 1) + 0.05 × the skill; Bare weapons use Strength and add 0.05 × both Raw Power and Athletics) is the lead's reading and **is not in the engine yet**: attacks still use today's damage rules.
+946. **Damage follows what the weapon is aimed with** (Leon, 10 Nov 2026, melee answer 4): a weapon attack's multiplier is 1 + 0.1 × (the `scales_with` Attribute − 1) + 0.05 × the `hits_with` skill, in place of Strength and Raw Power for every weapon. Bare weapons use Strength and add 0.05 × both Raw Power and Athletics (answer 5). The 0.1 and 0.05 are the old physical multiplier's, kept as placeholders. Perks and traits that raise physical damage apply to every weapon as before. Enemies without a character sheet have no multiplier, as before.
 947. **Weapon mastery** (kills per weapon family, attack bonus +1 / +2, three perks) is replaced by drill. *Leon to confirm that the attack bonus goes too; the engine never applied it.*
 948. **The old Suppressed condition** (item 83: −1 AP and no reactions, from Spray and Pray and other perks) stays beside Pressure until it is moved onto Pressure 3; the two AP losses don't add.
 949. **The quiver** (Leon, 10 Nov 2026): loaded from a menu out of a fight, any mix of arrow types up to capacity, the type named per shot, no reload in a fight. Crossbows keep their reload.
