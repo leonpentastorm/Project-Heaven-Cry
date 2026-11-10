@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Adamantile greatsword -->
+  <g transform="translate(1 -1) rotate(-45 32 32)">
+    <path d="M-8 32 L-5 28.5 L-2 30 L8 30 L8 22 L12 16 L13.5 21 L13.5 29 L19 29 L19 24 L23 26 L58 26 L68 32 L58 38
+             L23 38 L19 40 L19 35 L13.5 35 L13.5 43 L12 48 L8 42 L8 34 L-2 34 L-5 35.5 Z"/>
+    <path d="M24 32 L55 32"/>
+  </g>
+</svg>

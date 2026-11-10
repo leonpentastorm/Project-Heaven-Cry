@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Utility belt -->
+  <g transform="translate(0 -3)">
+    <path d="M3 18 L61 18 L61 26 L56 26 L56 50 L51 58 L46 50 L46 26 L24 26 L24 44 L21 47 L11 47 L8 44 L8 26 L3 26 Z"/>
+    <path d="M27 13 L37 13 L37 31 L27 31 Z"/>
+    <path d="M8 32 L24 32"/>
+  </g>
+</svg>

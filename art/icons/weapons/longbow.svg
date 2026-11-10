@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Longbow -->
+  <g transform="rotate(-45 32 32) translate(2 0)">
+    <path d="M26 3 C39 13 45 22 45.5 27 L49 28 L49 36 L45.5 37 C45 42 39 51 26 61 Z"/>
+    <path d="M26 32 L57 32"/>
+    <path d="M57 29.5 L63 32 L57 34.5 Z"/>
+  </g>
+</svg>

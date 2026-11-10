@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Ork machete -->
+  <g transform="translate(-1 2) rotate(-45 32 32)">
+    <path d="M4 30 L6 29 L20 29 L20 26.5 L23 26.5 L23 29 L28 29 L28 25 L34 29 L34 25 L40 29 L40 25 L46 29 L46 25 L52 28
+             L62 23 L59 37 Q44 41.5 23 36 L23 38.5 L20 38.5 L20 35 L6 35 L4 34 Z"/>
+    <path d="M12 29 L12 35"/>
+  </g>
+</svg>

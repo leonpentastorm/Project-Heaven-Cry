@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Bot-thread banner -->
+  <g transform="rotate(-45 32 32)">
+    <path d="M-6 30 L60 30 L60 27 L70 32 L60 37 L60 34 L48 34 Q45 40 48 45 Q51 50 47 54 L39 48 L30 53 Q33 48 30 43
+             Q27 38 30 34 L-6 34 L-8 32 Z"/>
+    <path d="M30.5 41 L48.5 41"/>
+  </g>
+</svg>

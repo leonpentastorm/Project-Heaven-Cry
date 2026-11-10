@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Heavy boots -->
+  <g transform="translate(-3 0)">
+    <path d="M14 3 L30 3 L36 9 L35 30 Q38 35 46 36 L54 37 Q60 38 60 46 L60 61 L44 61 L42 57 L28 57 L26 61 L10 61 L10 50 Q12 40 13 30 Z"/>
+    <path d="M10 51 L60 51"/>
+    <path d="M46 36 Q46 44 52 51"/>
+    <path d="M13 22 L35 22"/>
+  </g>
+</svg>

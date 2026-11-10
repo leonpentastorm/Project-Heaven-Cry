@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Glaive -->
+  <g transform="rotate(-45 32 32)">
+    <path d="M-6 30 L38 30 L38 28 L46 28 L52 28 L51 21 L57 27 L66 26 Q62 39 46 37 L46 36 L38 36 L38 34 L-6 34 L-8 32 Z"/>
+    <path d="M42 28 L42 36"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Bite and claws -->
+  <g transform="translate(-3 0)">
+    <path d="M12 60 L10 34 L12 26 L16 6 L25 19 L32 19 L56 25 L60 29 L58 32 L52 32 L49 41 L46 33 L30 37 L39 41.5 L41 37.5
+             L44 44 L57 50 Q44 57 30 54 L28 60 Z"/>
+    <path d="M30 26 L38 28"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Prescription glasses -->
+  <path d="M4 22 L29 22 L29 26 L35 26 L35 22 L60 22 L60 28 L58 28 L57 38 Q56 44 50 44 L43 44 Q37 44 36 38 L35 30 L29 30 L28 38 Q27 44 21 44 L14 44 Q8 44 7 38 L6 28 L4 28 Z"/>
+  <path d="M10.5 27 L25.5 27 L24.5 37 Q24 40 21 40 L14 40 Q11 40 10.8 37 Z"/>
+  <path d="M53.5 27 L38.5 27 L39.5 37 Q40 40 43 40 L50 40 Q53 40 53.2 37 Z"/>
+</svg>
