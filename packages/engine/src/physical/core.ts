@@ -233,6 +233,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // Rules 1.13. A technique a skill gives (Interpose at Durability 3) is everyone's who has the points, whatever is in
     // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
     // and that hand offers nothing else. Neither is ever learned, readied or lent.
+    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, 'technique:' + d.id).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.system !== sys) continue;
@@ -258,7 +259,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   const props = shieldHand(u, hand) ? ['shield'] : weaponProps(weaponId);
   const wield = (args as any)._w as 'stowed' | 'throwable' | undefined;
   if (def.needs.shield && !shieldHand(u, hand)) return 'Needs a shield in your off hand.';
-  if (weaponSystem(weaponId) !== def.system && !def.innate) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
+  if (weaponSystem(weaponId) !== def.system && !def.innate && !def.perk) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
   if (def.needs.stowed && wield !== 'stowed') return 'Pick the weapon to draw.';
   if (!hasUsable(u, hand, def.id, wield)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
   const bad = (def.not_with || []).find((p) => props.includes(p)); if (bad) return 'Not available with ' + (/^[aeiou]/.test(bad) ? 'an ' : 'a ') + bad + ' weapon.';

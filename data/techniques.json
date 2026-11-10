@@ -2804,6 +2804,30 @@
       "aim": "self"
     },
     {
+      "id": "grapple",
+      "name": "Grapple",
+      "system": "melee",
+      "group": "link",
+      "number": 33,
+      "ap": {
+        "base": "flat",
+        "value": 1
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "Grab an enemy next to you: it saves (Body) or is Grappled until it breaks free. No damage. Given by the perk Iron Grip.",
+      "lines": [],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {},
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy",
+      "perk": "iron_grip"
+    },
+    {
       "id": "shield_wall",
       "name": "Shield Wall",
       "system": "melee",

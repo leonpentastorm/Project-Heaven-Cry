@@ -595,7 +595,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: a target you have Bound or Grappled can't use Answers or reactions. Attacks aimed at you have a 50% chance to hit it instead. When you move, it comes with you. II: each of your melee techniques that hits a target you hold gives you 1 Momentum, and Throw Down on it needs no Momentum.",
+      "text": "I: Technique: gives you Grapple on the Techniques pad (a Link, 1 AP: an enemy next to you saves or is Grappled). A target you have Bound or Grappled can't use Answers or reactions. Attacks aimed at you have a 50% chance to hit it instead. When you move, it comes with you. II: each of your melee techniques that hits a target you hold gives you 1 Momentum, and Throw Down on it needs no Momentum.",
       "effects": [
         {
           "op": "forbid",
@@ -623,7 +623,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "a target you have Bound or Grappled can't use Answers or reactions. Attacks aimed at you have a 50% chance to hit it instead. When you move, it comes with you.",
+          "text": "Technique: gives you Grapple on the Techniques pad (a Link, 1 AP: an enemy next to you saves or is Grappled). A target you have Bound or Grappled can't use Answers or reactions. Attacks aimed at you have a 50% chance to hit it instead. When you move, it comes with you.",
           "effects": [
             {
               "op": "forbid",

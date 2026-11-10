@@ -219,3 +219,23 @@ technique({
   },
   ai: () => 0,
 });
+
+// ---------- 33. Grapple (a Link; given by the perk Iron Grip; Leon, 10 Nov 2026: "grapple move to the technique column") ----------
+// Grab an enemy next to you: a Body save or it is Grappled until it breaks free. No damage, no Momentum spent. With any
+// weapon in hand (it is the free hand, or the arm, that holds).
+technique({
+  id: 'grapple',
+  check(t) {
+    const v = t.tgt; if (!v) return 'Pick an enemy next to you.';
+    if (v.side === t.u.side) return 'Grapple an enemy.';
+    if (dist(t.u.pos, v.pos) > 1) return 'Stand next to ' + v.name + ' to grab it.';
+    if (condOn(v, 'grappled')) return v.name + ' is already held.';
+    return null;
+  },
+  run(t) {
+    const v = t.tgt!;
+    if (cond(t, v, 'grappled', undefined, { save: true }) && (t.preview || condOn(v, 'grappled'))) meleeFx(t, 'bind', { target: v.id, to: v.pos, kind: 'grapple' });
+    return null;
+  },
+  ai: () => 0,
+});

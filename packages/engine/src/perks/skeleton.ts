@@ -131,7 +131,7 @@ register({
 // =====================================================================================================================
 register({
   id: 'iron_grip', claims: 'all',
-  stat: (h, stat) => (stat === 'momentum_needed:throw_down' && tierII(h) && h.u && h.cb && heldOf(h.cb, h.u).length ? -99 : 0),
+  stat: (h, stat) => (stat === 'technique:grapple' ? 1 : stat === 'momentum_needed:throw_down' && tierII(h) && h.u && h.cb && heldOf(h.cb, h.u).length ? -99 : 0),
   on: {
     reaction_window: (ctx, h) => {
       const r: Unit | undefined = ctx.reactor; if (!h.u || !r || ctx.cancel || !alive(h.u) || !holds(h.u, r)) return;

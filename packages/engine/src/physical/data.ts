@@ -50,7 +50,7 @@ export function startingTechniqueSlots(c: Pick<Character, 'skills'>): { melee: n
 /** What the Kit step may offer: every technique of that system that isn't free and isn't a reaction-only rarity. */
 export const startingTechniqueChoices = (system: TechSystem): string[] => TECHNIQUES.filter((t) => t.system === system && !t.free && !given(t)).map((t) => t.id);
 /** A technique nobody learns, readies or picks: a shield gives it while it is held, or a skill gives it (rules 1.13). */
-export const given = (t: TechDef | null | undefined): boolean => !!t && (!!t.needs?.shield || !!t.innate);
+export const given = (t: TechDef | null | undefined): boolean => !!t && (!!t.needs?.shield || !!t.innate || !!t.perk);
 /** Creation's check on a sheet's picks (Sheet.techniques): the right number, known ids, one melee Opener. */
 export function startingTechniquesError(s: { skills: Record<string, number>; techniques?: { melee?: string[]; ranged?: string[] } }): string | null {
   const pick = s.techniques; if (!pick) return null; // none sent: the defaults

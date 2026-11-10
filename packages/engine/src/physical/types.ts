@@ -21,6 +21,7 @@ export interface TechDef {
     /** a shield's technique (rules 1.13): the off hand holds a shield, and the technique is that hand's */ shield?: boolean };
   /** a technique a skill gives to everyone who has the points (Interpose: Durability 3), whatever is in the hands */
   innate?: { skill: string; min: number };
+  /** a perk gives it (Grapple, from Iron Grip): shown on the pad to a unit whose items answer 'technique:<id>' */ perk?: string;
   text: string; trigger?: string; suppressed?: string; lines: TechLine[];
   /** everyone knows it; no ready slot */ free: boolean;
   /** weapons with one of these properties always offer it */ comes_with: string[];

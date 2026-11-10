@@ -324,3 +324,16 @@ describe('Siege Engine reaches the techniques', () => {
     expect(siege.tech('break', { targetId: siege.foe.id })).toBeNull(); expect(before - siege.pc.ap).toBe(cost);
   });
 });
+
+describe('Grapple is a technique (Leon, 10 Nov 2026): Iron Grip gives it on the pad', () => {
+  it('with Iron Grip the pad lists Grapple, a Link at 1 AP; without it, not', () => {
+    const mk = (perks: any) => { const f = physFight([{ weapon: 'sabre', skills: { raw_power: 4 }, perks } as any], [{ at: 'D7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.turn(f.pc); return f; };
+    const ids = (f: F) => f.pad().flatMap((g: any) => g.entries.map((e: any) => e.id));
+    const yes = mk({ iron_grip: 'I' }), no = mk({});
+    expect(ids(yes)).toContain('grapple'); expect(ids(no)).not.toContain('grapple');
+    const e = yes.pad().flatMap((g: any) => g.entries).find((x: any) => x.id === 'grapple'); expect(e.ap).toBe(1); expect(e.group).toBe('link');
+    const foe = yes.unit(yes.foe.id); foe.sv = { body: -50, brain: 0, heart: 0 } as any;
+    expect(yes.tech('grapple', { targetId: yes.foe.id })).toBeNull();
+    expect(Object.keys(yes.unit(yes.foe.id).conds || {})).toContain('grappled');
+  });
+});
