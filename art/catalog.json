@@ -129,7 +129,7 @@
     "proficiency": {
       "label": "Proficiency",
       "path": "art/icons/skills/proficiency.png",
-      "sha256": "e4b1dc016432ddf34015176597e7515163355bc758b6cfc6b6288caf449fb2b5",
+      "sha256": "905789537f8bf1064a273516f36dd9e9305755e1e2d39b468a8fc2d6a90e309b",
       "attribute": "perception",
       "color": "#40BAA0",
       "width": 800,
@@ -201,7 +201,7 @@
     "analysis": {
       "label": "Analysis",
       "path": "art/icons/skills/analysis.png",
-      "sha256": "9db52954e50c713c4cc8f26f37ac1ca0ad4bc0347c1a2db3e63cde6caa140e42",
+      "sha256": "b746a62dcc588de49be26714f2c634284250813495dfcd1c1b33760ac83fb9ba",
       "attribute": "expression",
       "color": "#075369",
       "width": 800,
