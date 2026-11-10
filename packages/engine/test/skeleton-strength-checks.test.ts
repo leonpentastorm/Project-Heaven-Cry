@@ -242,3 +242,19 @@ describe('a technique\'s save reads the user\'s strength with the weapon\'s skil
     expect(tnOf(f.cb.log.find((l) => /the save against the bind/.test(l))!)).toBe(12 + 2); // a sabre hits with Dexterity: half of strength 4
   });
 });
+
+import { attrCapAt, attrCapLevel, canRaise as canRaise113, newCharacter as newChar113, ARCHETYPES as ARCH113 } from '../src';
+describe('rules 1.13: the attribute ceiling rises with level', () => {
+  it('7 at creation, 8 from level 3, 9 from 6, 10 from 9', () => {
+    expect([1, 2, 3, 5, 6, 8, 9, 20].map(attrCapAt)).toEqual([7, 7, 8, 8, 9, 9, 10, 10]);
+    expect([7, 8, 9, 10].map(attrCapLevel)).toEqual([1, 3, 6, 9]);
+  });
+  it('a raise past the ceiling is refused with the level it opens at', () => {
+    const a = ARCH113.find((x: any) => x.family === 'all_in')!;
+    const c: any = newChar113('c', 'p', { name: 'T', portrait: '', origin: 'Thousand-Planet frontier', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as any);
+    const top = Object.keys(c.attrs).find((k) => c.attrs[k] === 7)!; c.unspent.attr = 3;
+    c.level = 2; expect(canRaise113(c, 'attr', top)).toMatch(/opens at level 3/);
+    c.level = 3; expect(canRaise113(c, 'attr', top)).toBeNull(); c.attrs[top] = 8; expect(canRaise113(c, 'attr', top)).toMatch(/opens at level 6/);
+    c.level = 9; c.attrs[top] = 9; expect(canRaise113(c, 'attr', top)).toBeNull();
+  });
+});

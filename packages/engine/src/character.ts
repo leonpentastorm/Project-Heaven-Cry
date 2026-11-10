@@ -802,6 +802,12 @@ export function applyLevels(c: Character): number {
   return gained;
 }
 
+/** The highest an attribute may be at a level (rules 1.13; Leon, 10 Nov 2026): 7 at creation, 8 from level 3, 9 from 6,
+ * 10 from 9. A skill can't pass its attribute, so the first Mastered perk comes at level 9 at the earliest. */
+const CAP_BY_LEVEL: [number, number][] = Object.entries(((RULES.character.creation?.attributes as any)?.cap_by_level || { 1: 7, 3: 8, 6: 9, 9: 10 }) as Record<string, number>).map(([l, v]) => [Number(l), Number(v)] as [number, number]).sort((x, y) => x[0] - y[0]);
+export const attrCapAt = (level: number): number => CAP_BY_LEVEL.reduce((cap, [l, v]) => (level >= l ? v : cap), CAP_BY_LEVEL[0][1]);
+/** The level at which an attribute may first reach this value. */
+export const attrCapLevel = (value: number): number => (CAP_BY_LEVEL.find(([, v]) => v >= value) || CAP_BY_LEVEL[CAP_BY_LEVEL.length - 1])[0];
 /** After creation the caps work normally: a skill can't pass its Attribute, an Attribute can't pass its Core. */
 export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: string): string | null {
   if (kind === 'skill') {
@@ -815,6 +821,7 @@ export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: stri
     if (c.unspent.attr < 1) return 'No Attribute points to spend.';
     const a = ATTRS.find((x) => x.id === id); if (!a) return 'Unknown attribute.';
     if (A(c, id) >= 10) return 'Already at 10.';
+    { const cap = attrCapAt(c.level); if (A(c, id) + 1 > cap) return a.name + ' ' + (A(c, id) + 1) + ' opens at level ' + attrCapLevel(A(c, id) + 1) + ' (the ceiling is ' + cap + ' at level ' + c.level + ').'; }
     return null;
   }
   return 'Cores are not raised: a Core shows the highest attribute of its family.'; // rules 1.13

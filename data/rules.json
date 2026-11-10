@@ -182,7 +182,13 @@
       "attributes": {
         "start_each": 1,
         "points": 10,
-        "cap_at_creation": 7
+        "cap_at_creation": 7,
+        "cap_by_level": {
+          "1": 7,
+          "3": 8,
+          "6": 9,
+          "9": 10
+        }
       },
       "cores": {
         "start_each": 1,
@@ -201,7 +207,7 @@
         "attributes.points",
         "attributes.cap_at_creation"
       ],
-      "caps": "skill <= attribute <= 10; no attribute above 7 at creation"
+      "caps": "skill <= attribute; an attribute's ceiling is 7 at creation, 8 from level 3, 9 from level 6, 10 from level 9"
     },
     "levels": {
       "min": 1,
