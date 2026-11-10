@@ -18,7 +18,7 @@ import * as sfxMod from './sfx';
 
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
-const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 5, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
+const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 12, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
 const at = (f: any, u: Unit, pos: string) => { f.unit(u.id).pos = pos; return f.unit(u.id); };
 const entries = (f: any, u: Unit) => { const was = bindGame(f.g); try { return perkActionsFor({ u: f.unit(u.id), c: f.g.characters[u.charId!], cb: f.cb, g: f.g }, 'combat'); } finally { bindGame(was); } };
 const ctx = (f: any, u: Unit) => ({ g: f.g, c: f.g.characters[u.charId!], how: 'combat' as const, cb: f.cb, u: f.unit(u.id) });

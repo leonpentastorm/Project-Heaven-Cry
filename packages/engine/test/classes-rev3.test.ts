@@ -7,7 +7,7 @@ import { describe, expect, it, afterEach } from 'vitest';
 import {
   CLASSES, CLASS, CLASS_MOVE_POOL, ADVANCED, classRank, eligibleClasses, classPickError, classResources, migrateCharacterClass,
   advancedPairError, advancedClassError, advancedActive, _setAdvancedLive, heldOfChar, itemsOf, itemInfo, coverageOf, actionDefs, newCharacter, healingMult, handlerOf,
-  CLASS_REV, type Character,
+  CLASS_REV, rankReached, type Character,
 } from '../src';
 import { fightWith, storyWith, sheetOf, type CharSpec } from './helpers/perkfight';
 
@@ -82,21 +82,34 @@ describe('getting a class at level 3', () => {
 
 describe('ranks read the class\'s own attribute', () => {
   it('rank I on gaining, II at 5, III at 8; another attribute growing higher changes nothing', () => {
-    const c = charOf({ endurance: 4 }, { classId: 'defender' });
+    const c = charOf({ endurance: 4 }, { classId: 'defender', level: 12 });
     expect(classRank(c)).toBe(1); c.attrs.endurance = 5; expect(classRank(c)).toBe(2); c.attrs.endurance = 8; expect(classRank(c)).toBe(3);
     c.attrs.endurance = 4; c.attrs.virtue = 10; expect(classRank(c)).toBe(1);
   });
+  it('a rank needs its level too (rules 1.11): II at level 6, III at level 12', () => {
+    const c = charOf({ endurance: 8 }, { classId: 'defender', level: 3 });
+    expect(classRank(c)).toBe(1); c.level = 5; expect(classRank(c)).toBe(1); c.level = 6; expect(classRank(c)).toBe(2);
+    c.level = 11; expect(classRank(c)).toBe(2); c.level = 12; expect(classRank(c)).toBe(3);
+    c.attrs.endurance = 5; expect(classRank(c)).toBe(2); c.attrs.endurance = 4; expect(classRank(c)).toBe(1);
+  });
   it('each rank gives both of its moves', () => {
-    const c = charOf({ insight: 4 }, { classId: 'bard' });
+    const c = charOf({ insight: 4 }, { classId: 'bard', level: 12 });
     expect(classKeys(c)).toEqual(['class:medic.triage', 'class:bard.inspire']);
     c.attrs.insight = 5; expect(classKeys(c)).toEqual(['class:medic.triage', 'class:bard.inspire', 'class:medic.stim_throw', 'class:bard.mend']);
     c.attrs.insight = 8; expect(classKeys(c)).toContain('class:bard.rally'); expect(classKeys(c).length).toBe(6);
   });
   it('raising the attribute to 5 says which moves the rank brings', () => {
-    const s = storyWith([{ classId: 'fighter', level: 5, attrs: { strength: 4 } }]);
+    const s = storyWith([{ classId: 'fighter', level: 6, attrs: { strength: 4 } }]);
     const c = s.g.characters[s.chars[0].id]; c.unspent.attr = 1; c.cores.body = Math.max(c.cores.body, 5);
     s.act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: 'strength' });
     expect(s.g.story.entries.at(-1)!.text).toMatch(/Fighter II: Riposte, Lingering Dread/);
+  });
+  it('a rank that comes with the level (rules 1.11) is announced the same way; no rise, no line', () => {
+    const s = storyWith([{ classId: 'fighter', level: 5, attrs: { strength: 5 } }]);
+    const c = s.g.characters[s.chars[0].id]; expect(classRank(c)).toBe(1);
+    const n0 = s.g.story.entries.length; rankReached(s.g, c, 1); expect(s.g.story.entries.length).toBe(n0);
+    c.level = 6; rankReached(s.g, c, 1);
+    expect(s.g.story.entries.at(-1)!.text).toMatch(/reaches Fighter II: Riposte, Lingering Dread/);
   });
 });
 
@@ -113,8 +126,8 @@ describe('reused moves run their old handlers', () => {
     expect(f.unit(ally.id).bleed).toBe(0);
   });
   it('a Fighter at rank II holds Lingering Dread under its Shade key; a Defender Unbroken under the Knight\'s', () => {
-    expect(classKeys(charOf({ strength: 5 }, { classId: 'fighter' }))).toContain('class:shade.lingering_dread');
-    expect(classKeys(charOf({ endurance: 5 }, { classId: 'defender' }))).toContain('class:adamantile_knight.unbroken');
+    expect(classKeys(charOf({ strength: 5 }, { classId: 'fighter', level: 6 }))).toContain('class:shade.lingering_dread');
+    expect(classKeys(charOf({ endurance: 5 }, { classId: 'defender', level: 6 }))).toContain('class:adamantile_knight.unbroken');
   });
 });
 

@@ -17,11 +17,11 @@ import {
   toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
 } from '../combat';
 import { WEAPON, SKILL } from '../data';
-import { mod, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar } from '../character';
+import { mod, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar, classRank } from '../character';
 import { applyCond, condOn, condSource, unitDebuff, isBoon } from '../magic';
 import { d20 } from '../rng';
 import { HEARING } from '../tactics';
-import { apLeft, positionsOf } from '../game';
+import { apLeft, positionsOf, rankReached } from '../game';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -828,8 +828,10 @@ function rivalOf(h: Holder): Character | null { const id = bondsOf(h, true)[0]; 
 const rivalHolds = (c: Character | null | undefined) => !!c && has(c, RIVAL);
 function showOff(c: Character, skill: string) { const st = charState(c), so = (st.showOff ||= {}); so[skill] = 2; }
 function xpBond(h: Holder, c: Character, n: number) {
+  const rankBefore = c.classId ? classRank(c) : 0;
   c.xp += n; (c.xpBySource ||= {} as any).bond = ((c.xpBySource as any).bond || 0) + n; applyLevels(c);
   postStory(h, c.name + ' +' + n + ' XP (bond: Neck and Neck).', { kind: 'system' });
+  const g = gameOf(h); if (g) rankReached(g, c, rankBefore); // rules 1.11: a rank can come with the level
 }
 register({
   id: 'rival', claims: 'all',

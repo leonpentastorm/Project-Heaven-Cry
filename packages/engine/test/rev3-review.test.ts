@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { CLASS, ADVANCED, viewFor, paths, makeObject, resourcesFor, perkActionsFor, bindGame, reload, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 
-const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 5, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
+const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 12, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
 const open = (cb: Combat) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; };
 
 describe('Sleight: the image swap needs the image\'s tile free (spec item 575)', () => {

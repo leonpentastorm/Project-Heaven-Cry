@@ -77,7 +77,7 @@ function bandAward(h: Holder, ctx: any, b: Band) {
 }
 
 // ---------- Mind Without Fog ----------
-// +2 Core points at creation (character.ts reads the trait). Heart Debuffs never affect it: the generic immunity cancels
+// +1 Core point at creation (rules 1.11, item 929; FOG_CORE in character.ts reads the trait). Heart Debuffs never affect it: the generic immunity cancels
 // Heart-family conditions in a fight; here, a Heart condition carried in is dropped, a story Heart condition never takes
 // (Shaken's −2 is cancelled and the condition removed), and a story Heart save, or a check the Narrator tags
 // 'heart_debuff', succeeds on its own. Unmoving: gear bonuses to Attributes and Skills don't apply (no item grants one

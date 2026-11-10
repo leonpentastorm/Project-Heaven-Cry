@@ -14,7 +14,12 @@
       "II": 5,
       "III": 8
     },
-    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one)",
+    "rank_levels": {
+      "I": 3,
+      "II": 6,
+      "III": 12
+    },
+    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one) and the character's level: rank II needs the attribute at 5 and level 6, rank III the attribute at 8 and level 12 (rules 1.11)",
     "rank_thresholds_provisional": true,
     "moves": "a rank's move is either written in full (a Revision 3 move) or {\"ref\": \"<origin>.<moveId>\"}: a move from the pool or an advanced class, kept under its old key class:<origin>.<moveId>",
     "advanced": {
