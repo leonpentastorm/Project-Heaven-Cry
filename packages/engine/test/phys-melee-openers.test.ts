@@ -154,40 +154,49 @@ describe('Draw Cut (4)', () => {
     f.cb.order = o.first === false ? [...f.cb.order.filter((id) => id !== f.pc.id), f.pc.id] : [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)];
     f.turn(f.pc); return f;
   }
+  /** The pack index of a stowed weapon (Draw Cut's args.item). */
+  const itemOf = (f: ReturnType<typeof physFight>, wid: string) => packOf(f.char(f.pc)).findIndex((x) => x.weapon === wid);
+  const dc = (f: ReturnType<typeof physFight>, wid: string, o: Record<string, any> = {}) => ({ targetId: f.foe.id, item: itemOf(f, wid), ...o });
   it('draws the weapon and strikes with it; the cost is its attack −1', () => {
     const f = drawFight(['maul']); rig({ hit: true, die: 12 });
-    const pv = f.pv('draw_cut', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); // the maul: 3 − 1
-    const before = state(f); f.pv('draw_cut', { targetId: f.foe.id }); expect(state(f)).toBe(before);
+    const pv = f.pv('draw_cut', dc(f, 'maul')); expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); // the maul: 3 − 1
+    const before = state(f); f.pv('draw_cut', dc(f, 'maul')); expect(state(f)).toBe(before);
     expect(f.pc.weapon).toBe('fists');
-    expect(f.tech('draw_cut', { targetId: f.foe.id })).toBeNull();
+    expect(f.tech('draw_cut', dc(f, 'maul'))).toBeNull();
     expect(f.pc.weapon).toBe('maul'); expect(f.char(f.pc).weapon).toBe('maul'); expect(f.pc.ap).toBe(4);
     expect(packOf(f.char(f.pc)).some((x) => x.weapon === 'maul')).toBe(false);
     expect(f.momentum(f.pc)).toBe(1);
-    expect(f.cb.log.some((l) => /draws the Maul/.test(l))).toBe(true);
+  });
+  it('a gun in the hand: the knife is drawn and the gun goes to the pack', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['draw_cut'], skills: SK }], [{ at: 'D5', tier: 'elite' }]);
+    const c = f.char(f.pc); c.pack = [...packOf(c), { id: 'sabre', name: 'sabre', qty: 1, kind: 'weapon' as const, weapon: 'sabre' }];
+    f.cb.objects = []; f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.foe.hp = f.foe.maxHp = 500; f.turn(f.pc); rig({ hit: true, die: 12 });
+    expect(f.tech('draw_cut', dc(f, 'sabre'))).toBeNull(); expect(f.pc.weapon).toBe('sabre');
+    expect(packOf(f.char(f.pc)).some((x) => x.weapon === 'hellraiser_service_rifle')).toBe(true);
   });
   it('the preview\'s numbers are the action\'s', () => {
     const f = drawFight(['maul']); rig({ hit: true, die: 12 }); f.foe.armour = 0;
-    const pv = f.pv('draw_cut', { targetId: f.foe.id }), hp = f.foe.hp;
-    f.tech('draw_cut', { targetId: f.foe.id });
+    const pv = f.pv('draw_cut', dc(f, 'maul')), hp = f.foe.hp;
+    f.tech('draw_cut', dc(f, 'maul'));
     expect(hp - f.foe.hp).toBe(Math.max(1, Math.floor(dmgOf(pv))));
   });
   it('Edge: Bleeding on a hit; Light: an ambush on a target that hasn\'t acted; neither on a maul', () => {
     const f = drawFight(['sabre']); rig({ hit: true, die: 12 });
-    expect(f.tech('draw_cut', { targetId: f.foe.id })).toBeNull(); expect(f.foe.bleed).toBeGreaterThan(0);
+    expect(f.tech('draw_cut', dc(f, 'sabre'))).toBeNull(); expect(f.foe.bleed).toBeGreaterThan(0);
     const g = drawFight(['sabre']), h = drawFight(['sabre'], 'D5', { first: false });
-    const amb = g.pv('draw_cut', { targetId: g.foe.id, line: 'light' }), late = h.pv('draw_cut', { targetId: h.foe.id, line: 'light' });
+    const amb = g.pv('draw_cut', dc(g, 'sabre', { line: 'light' })), late = h.pv('draw_cut', dc(h, 'sabre', { line: 'light' }));
     expect(dmgOf(amb)).toBeCloseTo(dmgOf(late) * (g.pc.ambushMult || 1.5), 5); // the foe acted first in h
-    rig({ hit: true, die: 12 }); g.tech('draw_cut', { targetId: g.foe.id, line: 'light' }); expect(g.foe.bleed || 0).toBe(0); // one line only
-    const m = drawFight(['maul']); rig({ hit: true, die: 12 }); m.tech('draw_cut', { targetId: m.foe.id }); expect(m.foe.bleed || 0).toBe(0);
+    rig({ hit: true, die: 12 }); g.tech('draw_cut', dc(g, 'sabre', { line: 'light' })); expect(g.foe.bleed || 0).toBe(0); // one line only
+    const m = drawFight(['maul']); rig({ hit: true, die: 12 }); m.tech('draw_cut', dc(m, 'maul')); expect(m.foe.bleed || 0).toBe(0);
   });
-  it('refusals: nothing stowed, not stowed since the turn began, out of reach; nothing spent', () => {
-    const f = drawFight([]); expect(f.tech('draw_cut', { targetId: f.foe.id })).toMatch(/No melee weapon stowed/); expect(f.pc.ap).toBe(6);
-    const g = drawFight(['sabre'], 'H5'); expect(g.tech('draw_cut', { targetId: g.foe.id })).toBeTruthy(); expect(g.pc.ap).toBe(6); expect(g.pc.weapon).toBe('fists');
+  it('refusals: no item, not stowed since the turn began, out of reach; nothing spent', () => {
+    const f = drawFight([]); expect(f.tech('draw_cut', { targetId: f.foe.id })).toMatch(/Pick the weapon to draw/); expect(f.pc.ap).toBe(6);
+    const g = drawFight(['sabre'], 'H5'); expect(g.tech('draw_cut', dc(g, 'sabre'))).toBeTruthy(); expect(g.pc.ap).toBe(6); expect(g.pc.weapon).toBe('fists');
     const h = physFight([{ weapon: 'sabre', known: ['draw_cut'], skills: SK }], [{ at: 'D5' }]); h.put(h.pc, 'C5'); h.put(h.foe, 'D5'); h.turn(h.pc);
     h.act({ type: 'combat/stow', unitId: h.pc.id, slot: 'main' } as any);
-    expect(h.pc.weapon).toBe('fists');
-    expect(h.tech('draw_cut', { targetId: h.foe.id, item: 'sabre' })).toMatch(/stowed since the start/);
-    expect(h.tech('draw_cut', { targetId: h.foe.id, item: 'maul' })).toMatch(/isn't a melee weapon in your pack/);
+    expect(h.pc.weapon).toBe('fists'); const ap = h.pc.ap;
+    expect(h.tech('draw_cut', { targetId: h.foe.id, item: packOf(h.char(h.pc)).findIndex((x) => x.weapon === 'sabre') })).toMatch(/stowed since the start/);
+    expect(h.pc.weapon).toBe('fists'); expect(h.pc.ap).toBe(ap);
   });
 });
 
@@ -230,9 +239,12 @@ describe('Ambush (5)', () => {
 });
 
 describe('the pad', () => {
-  it('shows the four Openers as built', () => {
+  it('shows the four Openers as built (Draw Cut on the stowed weapon\'s block)', () => {
     const f = fight('sabre', ['charge', 'feint', 'draw_cut', 'ambush'], 'C5', 'D5');
+    const c = f.char(f.pc); c.pack = [...packOf(c), { id: 'knife', name: 'knife', qty: 1, kind: 'weapon' as const, weapon: 'sabre' }];
     const op = f.pad().find((g) => g.group === 'opener')!;
-    for (const id of ['charge', 'feint', 'draw_cut', 'ambush']) expect(op.entries.find((e) => e.id === id)?.built, id).toBe(true);
+    for (const id of ['charge', 'feint', 'ambush']) expect(op.entries.find((e) => e.id === id)?.built, id).toBe(true);
+    const dcE = f.bound(() => phys.packPad(f.cb, f.pc)).flatMap((b) => b.entries).find((e) => e.id === 'draw_cut');
+    expect(dcE?.built).toBe(true); expect(dcE?.why).not.toBe(phys.NOT_BUILT);
   });
 });

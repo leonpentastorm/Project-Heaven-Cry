@@ -85,11 +85,11 @@ technique({
     const foe = sidestepFoe(t)!, step = sidestepTo(t, foe)!;
     const sh = shieldBonus(foe);
     if (t.preview) {
-      stepUser(t, step.route, 'sidestep');
+      stepUser(t, step.route);
       t.note('No opportunity attack. Your next Strike against ' + foe.name + ' this turn ignores a carried shield' + (sh ? ' (+' + sh + ' to hit)' : '') + ' and counts as flanking.');
       return null;
     }
-    stepUser(t, step.route, 'sidestep');
+    stepUser(t, step.route);
     if (alive(t.u) && alive(foe) && dist(t.u.pos, foe.pos) <= 1) Object.assign(t.state(), { t: turnStamp(t.cb), target: foe.id, n: null });
     return null;
   },
@@ -278,8 +278,8 @@ technique({
     else {
       const from = t.u.pos, to = t.args.tile!, [fx, fy] = xy(from), [x, y] = xy(to), [tx, ty] = xy(tgt.pos);
       const keep = key(tx + x - fx, ty + y - fy), dest = keep !== to && freeTile(t.cb, keep, tgt) ? keep : from; // beside you as it was, else where you stood
-      if (t.preview) { stepUser(t, [to], 'drag'); (t.pv.moves ||= []).push({ unit: tgt.id, to: dest }); worked = true; }
-      else if (stepUser(t, [to], 'drag') && alive(t.u) && alive(tgt)) worked = forceMove(t, tgt, dest, 1) > 0;
+      if (t.preview) { stepUser(t, [to]); (t.pv.moves ||= []).push({ unit: tgt.id, to: dest }); worked = true; }
+      else if (stepUser(t, [to]) && alive(t.u) && alive(tgt)) worked = forceMove(t, tgt, dest, 1) > 0;
     }
     if (worked) landed(t);
     else if (!t.preview) t.cb.log.push(tgt.name + ' doesn\'t move.');

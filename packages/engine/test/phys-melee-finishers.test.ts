@@ -2,6 +2,7 @@
 // Throw Down (24). Coup (20) is the lead's reference (phys-core.test.ts).
 import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, applyCond } from '../src';
+import { pullFree, moveBlock } from '../src/combat';
 import { physFight, rig } from './helpers/physfight';
 
 beforeEach(() => rig(null));
@@ -134,13 +135,14 @@ describe('Run Through (23)', () => {
     rig({ hit: true, die: 12 }); const hp = hpOf(f);
     expect(f.tech('run_through', { targetId: f.foe.id })).toBeNull();
     expect(hpOf(f)).toBe(hp - dealt(pv.attacks[0])); // preview == run
-    expect(f.unit(f.foe.id).conds?.pinned).toBeGreaterThan(1); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(4); chainEnded(f);
-    f.turn(f.foe); // its turn: it pays 2 AP to pull free
-    expect(f.unit(f.foe.id).conds?.pinned || 0).toBe(0); expect(f.unit(f.foe.id).ap).toBe(4);
+    expect(f.unit(f.foe.id).nailed).toMatchObject({ by: f.pc.id, id: 'run_through', ap: 2 }); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(4); chainEnded(f);
+    f.turn(f.foe); const foe = f.unit(f.foe.id); expect(moveBlock(foe)).toMatch(/Nailed/);
+    expect(pullFree(f.cb, foe)).toBeNull(); // its turn: it pays 2 AP to pull free
+    expect(foe.nailed).toBeUndefined(); expect(foe.ap).toBe(4);
   });
   it('a miss pins nothing', () => {
     const f = one('kemizuchi_duelling_blade'); rig({ hit: false, die: 5 });
-    f.tech('run_through', { targetId: f.foe.id }); expect(f.unit(f.foe.id).conds?.pinned || 0).toBe(0); expect(f.momentum(f.pc)).toBe(0);
+    f.tech('run_through', { targetId: f.foe.id }); expect(f.unit(f.foe.id).nailed).toBeUndefined(); expect(f.momentum(f.pc)).toBe(0);
   });
   it('Point: ignores armour, and strikes the enemy directly behind at half', () => {
     const f = one('kemizuchi_duelling_blade', 3, [{ at: 'D5' }, { at: 'E5' }]);
@@ -158,14 +160,15 @@ describe('Run Through (23)', () => {
     const g = one('lance');
     expect(terms(g.pv('run_through', { targetId: g.foe.id, line: 'reach' })).some((x) => x.v === -2)).toBe(false);
   });
-  it('Reach: leave the weapon in. You are unarmed; it lies in the pile on the target\'s tile', () => {
+  it('Reach: leave the weapon in. You are unarmed; it drops into the pile on the target\'s tile when pulled free', () => {
     const f = one('lance'); rig({ hit: true, die: 12 });
     expect(f.tech('run_through', { targetId: f.foe.id, line: 'point', opt: 'leave' })).toMatch(/Reach/);
     expect(f.pc.ap).toBe(6); expect(f.momentum(f.pc)).toBe(3);
     expect(f.tech('run_through', { targetId: f.foe.id, line: 'reach', opt: 'leave' })).toBeNull();
     expect(f.pc.weapon).toBe('fists'); expect(f.char(f.pc).weapon).toBe('fists'); expect(f.pc.ap).toBe(3);
-    const pile = (f.cb.objects || []).find((o: any) => o.pos === f.foe.pos && o.kind === 'pile' && /"lance"/.test(JSON.stringify(o.items)));
-    expect(pile).toBeTruthy(); expect(f.unit(f.foe.id).conds?.pinned).toBeGreaterThan(0);
+    const pileOf = () => (f.cb.objects || []).find((o: any) => o.pos === f.foe.pos && o.kind === 'pile' && /"lance"/.test(JSON.stringify(o.items)));
+    expect(f.unit(f.foe.id).nailed).toMatchObject({ weapon: 'lance' }); expect(pileOf()).toBeFalsy(); // it is in the target
+    f.turn(f.foe); expect(pullFree(f.cb, f.unit(f.foe.id))).toBeNull(); expect(pileOf()).toBeTruthy();
     const g = one('kemizuchi_duelling_blade'); expect(g.tech('run_through', { targetId: g.foe.id, opt: 'leave' })).toMatch(/Reach/);
   });
   it('off its home (no Point or Reach): −2 to hit, no armour ignored', () => {

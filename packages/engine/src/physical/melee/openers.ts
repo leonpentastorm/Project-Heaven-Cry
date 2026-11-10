@@ -1,13 +1,10 @@
 // Physical 2.0, melee Openers: the first melee technique of a turn. Lunge is the lead's reference; the melee lane builds
 // Charge, Feint, Draw Cut and Ambush here.
 import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, landed, momentumOf, onHook, turnStamp, techState, techStateOf } from './shared';
-import { canStrike, linesFor, techniqueAp, usable } from '../core';
-import { weaponProps, PHYS_RULES } from '../data';
+import { canStrike, usable } from '../core';
+import { PHYS_RULES } from '../data';
 import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
 import { ambushReady, reveal } from '../../tactics';
-import { charOfUnit } from '../../effects/hooks';
-import { WEAPON } from '../../data';
-import { drawable, drawInto, asDrawn } from './draw';
 import type { Tech } from './shared';
 
 // 1. Lunge: step 1 tile toward the target, then strike; the step draws no opportunity attack.
@@ -144,12 +141,12 @@ technique({
 
 // 4. Draw Cut: draw this weapon from the pack or a sheath and strike in one action. Only if you started the turn with
 //    it stowed. Edge: Bleeding on a hit. Light: if the target hasn't acted this fight, it counts as an ambush.
-//    Reading: the hand holds what it holds when the turn starts (fists, or another melee weapon); args.item names the
-//    pack entry (its index or weapon id; else the first melee weapon there). The cost is the drawn weapon's attack −1,
-//    and the lines are the drawn weapon's.
+//    Reading: the core draws it (needs.stowed: args.item names the pack entry; the technique is checked and previewed
+//    as if held, then drawn free through the reducer's own gear change), so t.w and the lines are the drawn weapon's
+//    and the cost is its attack −1 (data ap.add). "Stowed since the start of the turn": it was in neither hand when the
+//    turn began (a turn_start listener records the hands).
 onHook('turn_start', (ctx: any, cb) => {
   const u: Unit | undefined = ctx?.u; if (!u || !u.charId || u.companion || !cb) return;
-  const c = charOfUnit(u); if (!c || !((c as any).phys?.ready?.melee || []).includes('draw_cut')) return;
   techState(u, 'draw_cut').start = { t: turnStamp(cb), main: u.weapon, off: u.offWeapon || null };
 });
 /** Has this unit had a turn in this fight? */
@@ -157,33 +154,28 @@ const hasActed = (cb: Tech['cb'], v: Unit) => cb.round > 1 || cb.order.indexOf(v
 technique({
   id: 'draw_cut',
   check(t) {
-    if (!t.c || t.u.companion) return 'Only a character draws from a pack.';
     if (!t.tgt) return 'Pick a target.';
+    const start = techStateOf(t.u, 'draw_cut').start;
+    // in the run the hand holds it now (just drawn): compare with what the hands held when the turn began
+    if (start && start.t === turnStamp(t.cb) && (start.main === t.weaponId || start.off === t.weaponId))
+      return 'You had it in hand this turn: Draw Cut needs it stowed since the start of your turn.';
     return null;
   },
   run(t) {
-    const tgt = t.tgt!, d = drawable(t); if (typeof d === 'string') return d;
-    const start = techStateOf(t.u, 'draw_cut').start;
-    if (start && start.t === turnStamp(t.cb) && (start.main === d.wid || start.off === d.wid)) return 'You had it in hand this turn: Draw Cut needs it stowed since the start of your turn.';
-    const ap = techniqueAp(t.def, d.wid, t.args.line), extra = ap - t.pv.ap;
-    if (t.preview ? t.u.ap < ap : t.u.ap < extra) return 'Needs ' + ap + ' AP.';
-    const lf = linesFor(t.def, d.wid, t.args.line, t.u), props = weaponProps(d.wid);
-    const p = lf.main ? (['edge', 'light'].find((x) => lf.main!.props.includes(x) && props.includes(x)) || null) : null;
+    const tgt = t.tgt!, p = t.line('edge', 'light');
     // an ambush the engine doesn't already give (it does from Hidden): its multiplier and criticals, named on the card
     const amb = p === 'light' && !hasActed(t.cb, tgt) && !ambushReady(t.u);
     const opts = { mult: amb ? t.u.ambushMult || 1.5 : 1, critMin: amb ? 19 : undefined, label: amb ? 'ambush (Draw Cut)' : 'Draw Cut' };
     if (t.preview) {
-      t.pv.ap = ap; t.note('Draws the ' + WEAPON[d.wid].name + ' from the pack.');
-      const r = asDrawn(t, d.idx, () => strike(t, { ...opts, mult: ambushReady(t.u) ? t.u.ambushMult || 1.5 : opts.mult }));
-      if (typeof r === 'string') return r;
+      t.note('Draws the ' + t.w.name + ' from the pack.');
+      const r = strike(t, { ...opts, mult: ambushReady(t.u) ? t.u.ambushMult || 1.5 : opts.mult });
       if (!r.ok) return r.why || 'Can\'t attack that.';
       if (p === 'edge') t.note('On a hit: ' + tgt.name + ' is Bleeding.');
       return null;
     }
-    const err = drawInto(t, d.idx); if (err) return err; // refused before anything changed
-    t.u.ap -= extra; t.pv.ap = ap;
     const r = strike(t, opts); if (!r.ok) return null; // drawn; the strike couldn't follow (the log says why)
-    if (r.hit && !r.killed && p === 'edge' && alive(tgt)) cond(t, tgt, 'bleeding');
+    const v = r.target || tgt;
+    if (r.hit && !r.killed && p === 'edge' && alive(v)) cond(t, v, 'bleeding');
     return null;
   },
   ai: () => 0, // enemies carry no pack

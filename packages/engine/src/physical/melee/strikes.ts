@@ -17,10 +17,9 @@ technique({
 
 // ---------- Sweep, Bash, Sunder, Flurry ----------
 import { type Combat, type Unit, alive, xy, key, keyOf, refOf, dist, lineOfSight, dropToPile } from '../../combat';
-import { handEntry, emptyHand, mod, type PackItem } from '../../character';
 import { throwRangeOf } from '../../tactics';
 import { PHYS_RULES, weaponPhys } from '../data';
-import { save, stop, forceMove, setUp, momentumOf, chainOf, canStrike } from '../core';
+import { save, stop, forceMove, setUp, momentumOf, chainOf, canStrike, loseWeapon } from '../core';
 import type { Tech } from './shared';
 
 /** args.tile as a tile key ("x,y"); the reducer already turns a map reference into one, a direct call may not. */
@@ -41,20 +40,6 @@ function lineDiscount(t: Tech, prop: string, n: number): void {
   const back = Math.min(n, t.pv.ap); if (!back) return;
   t.pv.ap -= back; if (!t.preview) t.u.ap += back;
 }
-/** A weapon that leaves the hand (a throw): it lands in the pile on a tile and the hand is empty (fists in the main
- * hand). A character's pack entry keeps the weapon's wear and mods; an enemy's is the plain weapon. */
-function leaveInPile(t: Tech, tile: string): void {
-  if (t.preview) { t.note('The ' + t.w.name + ' lands in the pile at ' + refOf(tile) + '.'); return; }
-  const u = t.u, c = t.c;
-  let entry: PackItem | null;
-  if (c) { entry = handEntry(c, t.hand); if (entry && t.hand === 'main' && u.maxDur) (entry as any).dur = u.dur; emptyHand(c, t.hand); }
-  else entry = { id: t.weaponId, name: t.w.name, qty: 1, kind: 'weapon', weapon: t.weaponId } as PackItem;
-  if (entry) dropToPile(t.cb, tile, [entry], 'throw');
-  if (t.hand === 'off') { u.offWeapon = null; u.offAmmo = 0; return; }
-  u.weapon = 'fists'; u.ammo = 0; u.maxDur = 0; u.dur = 0; u.mods = []; u.dmgMult = 1;
-  const pts = (c?.skills as any)?.[weaponPhys('fists').hits_with]; if (typeof pts === 'number') u.attack = mod(pts);
-}
-
 // 7. Sweep: strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each. Reach: the arc is 2 tiles
 //    out. Heavy: all adjacent enemies, not just the arc. Edge: each one hit bleeds on a critical. Friendly fire applies:
 //    everyone standing on the swept tiles is struck, allies too. The arc faces the tile picked (or the target).
@@ -173,7 +158,7 @@ technique({
     const ids = thrown ? [...new Set([...(t.args.targetIds || []), ...(t.args.targetId ? [t.args.targetId] : [])])].slice(0, t.num('thrown_targets', 2)) : t.tgt ? [t.tgt.id] : [];
     const targets = ids.map((id) => t.cb.units.find((x) => x.id === id)).filter((v): v is Unit => !!v);
     if (!targets.length || targets.length !== ids.length) return 'Pick a target.';
-    const range: number = thrown ? (t.w as any).thrown_range_tiles ?? throwRangeOf(t.u) : 0;
+    const range: number = thrown ? throwRangeOf(t.u) : 0; // the core's thrown strike checks the same range
     if (thrown) for (const v of targets) {
       if (dist(t.u.pos, v.pos) > range) return v.name + ' is out of throwing range (' + range + ' tiles).';
       if (!lineOfSight(t.cb, t.u.pos, v.pos)) return 'No line of sight to ' + v.name + '.';
@@ -183,12 +168,12 @@ technique({
     for (let i = 0; i < n; i++) {
       let v = targets[i % targets.length];
       if (!t.preview) { if (!alive(t.u)) break; if (!alive(v)) { const o = targets.find((x) => alive(x)); if (!o) break; v = o; } }
-      const r = strike(t, { target: v, mult, extra: i ? later : 0, label: 'Flurry', ...(thrown ? { reach: range } : {}) });
+      const r = strike(t, { target: v, mult, extra: i ? later : 0, label: 'Flurry', ...(thrown ? { thrown: true } : {}) });
       if (!r.ok) { if (i === 0) return r.why || 'Can\'t attack that.'; continue; }
       last = v; if (r.hit) hits++;
     }
     if (p === 'bare' && hits > 1) setUp(t, targets[0], { hit: (hits - 1) * t.num('bare_bonus', 1), label: 'Flurry', only: ['bind', 'throw_down'] });
-    if (thrown && last) leaveInPile(t, last.pos);
+    if (thrown && last) loseWeapon(t, last.pos); // one weapon held: it lands by the last target thrown at
     return null;
   },
   ai: (t) => (t.tgt ? 6 : 0),

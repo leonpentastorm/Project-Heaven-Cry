@@ -229,10 +229,10 @@ describe('Throw', () => {
   it('Thrown: Dexterity to hit, no penalty, full damage; the knife lands in the pile on the target\'s tile', () => {
     const f = fight('combat_knife', { ...far, skills: { dexterity: 8, athletics: 2 } });
     const pv = f.pv('throw', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.ap).toBe(2);
-    const terms = pv.attacks[0].pv.terms!;
-    expect(terms.find((x) => /Dexterity/.test(x.label))?.v).toBe(7 - 1); // Dexterity 8 (+7) in place of Athletics 2 (+1)
-    expect(terms.some((x) => x.v < 0 && /Throw/.test(x.label))).toBe(false); expect(pv.attacks[0].pv.dmg!.mults.some((m) => /Throw/.test(m.label))).toBe(false);
-    expect(pv.notes.some((n) => /lands in the pile on G5/.test(n))).toBe(true);
+    const lo = fight('combat_knife', { ...far, skills: { dexterity: 2, athletics: 2 } }).pv('throw', { targetId: 'foe-0' });
+    expect(pv.attacks[0].pv.toHit - lo.attacks[0].pv.toHit).toBe(7 - 1); // aimed with Dexterity 8 (+7), not 2 (+1)
+    expect(pv.attacks[0].pv.terms!.some((x) => x.v < 0 && /Throw/.test(x.label))).toBe(false); expect(pv.attacks[0].pv.dmg!.mults.some((m) => /Throw/.test(m.label))).toBe(false);
+    expect(pv.notes.some((n) => /lands at G5/.test(n))).toBe(true);
     rig({ hit: true, die: 12 }); const hp = f.foe.hp;
     expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
     expect(hp - f.foe.hp).toBe(hpLost(pv)); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(4);
@@ -256,6 +256,7 @@ describe('Throw', () => {
   });
   it('the off hand: only that hand empties', () => {
     const f = fight('sabre', { ...far, off: 'combat_knife' }); rig({ hit: true, die: 12 });
+    f.char(f.pc).offHand = { id: 'combat_knife' } as any; // the helper puts the off hand on the unit only
     expect(f.tech('throw', { targetId: f.foe.id, hand: 'off' })).toBeNull();
     expect(f.pc.offWeapon).toBeFalsy(); expect(f.pc.weapon).toBe('sabre'); expect(f.char(f.pc).offHand).toBeNull();
     expect(pileAt(f.cb.objects || [], f.foe.pos)!.items!.some((x: any) => (x.item || x.pack?.weapon) === 'combat_knife')).toBe(true);

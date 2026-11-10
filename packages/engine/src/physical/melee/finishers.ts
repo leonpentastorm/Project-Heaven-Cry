@@ -6,15 +6,15 @@
 //     (targetIds, in order), else the nearest to the first target. Enemies only: the text says "enemy".
 //   Break: the Blunt and Hook riders come with the failed save ("also", "as well"), not with every hit. Blunt's armour
 //     0 lasts until the start of the breaker's next turn (break.armour_rounds rounds).
-//   Run Through: the Pin lasts until the pinned unit pays 2 AP to pull free. No action for that exists yet, so the unit
-//     pays it at the start of its own turn when it has the AP (pullFree, exported for the lead to wire to an action).
-//     Reach, opt 'leave': the weapon goes into the pile on the target's tile and your hand is empty (fists).
+//   Run Through: the Pin is the core's nail (stop 'pinned' with untilAp): it holds until the unit, or an ally next to
+//     it, spends 2 AP (combat/pull-free; the enemy AI frees itself). Reach, opt 'leave': the weapon stays in the target
+//     (loseWeapon(t, null), recorded on the nail) and drops into the pile on its tile when it is pulled free.
 //   Throw Down: the tile is next to you (Heavy: within 2 tiles of you); no tile is the target's own. An occupied tile:
 //     the target is slammed into whoever stands there and stays where it was. Bare: the slam always hits (no roll).
 import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook } from './shared';
 import type { Tech, StrikeResult } from './shared';
 import type { StrikeOpts } from '../types';
-import { strikingWith } from '../core';
+import { strikingWith, loseWeapon } from '../core';
 import { weaponPhys, TECHNIQUE } from '../data';
 import { type Combat, type Unit, alive, dist, xy, key, keyOf, refOf, moveBlockers, dropToPile } from '../../combat';
 import { condOn, condSource, endCond } from '../../magic';
@@ -147,50 +147,15 @@ technique({
       if (b) also(t, { target: b, mult: mult * t.num('point_behind_pct', 50) / 100, noMomentum: true, ...pierce, reach: dist(t.u.pos, b.pos), label: 'Run Through, behind' });
     }
     if (pinned) {
-      if (stop(t, tgt, 'pinned', { save: false, rounds: t.num('pin_rounds', 99) }) && !t.preview) {
-        const s = techState(tgt, 'run_through'); s.by = t.u.id; s.left = leave ? t.weaponId : null;
-      }
-      if (t.preview) t.note(tgt.name + ' stays Pinned until it spends ' + t.num('pull_free_ap', 2) + ' AP to pull free.');
-      if (leave) leaveIn(t, tgt);
+      stop(t, tgt, 'pinned', { save: false, untilAp: t.num('pull_free_ap', 2), ...(leave ? { weapon: t.weaponId } : {}) });
+      if (t.preview) t.note(tgt.name + ' stays Pinned until ' + t.num('pull_free_ap', 2) + ' AP is spent to pull free.');
+      if (leave) { if (!t.preview) t.cb.log.push(t.u.name + ' leaves the ' + t.w.name + ' in ' + tgt.name + '.'); loseWeapon(t, null); }
     }
     spendMomentum(t);
     return null;
   },
   ai: (t) => (t.tgt ? 5 + 2 * momentumOf(t.u) : 0),
 });
-/** Reach: the weapon stays in the target. It lands in the pile on the target's tile; the hand is empty (fists). */
-function leaveIn(t: Tech, tgt: Unit): void {
-  if (t.preview) { t.note('You leave the ' + t.w.name + ' in ' + tgt.name + ': you are unarmed, and it lies in the pile at ' + refOf(tgt.pos) + '.'); return; }
-  const u = t.u, c = t.c;
-  let entry: PackItem | null;
-  if (c) { entry = handEntry(c, t.hand); if (entry && t.hand === 'main' && u.maxDur) (entry as any).dur = u.dur; emptyHand(c, t.hand); }
-  else entry = { id: t.weaponId, name: t.w.name, qty: 1, kind: 'weapon', weapon: t.weaponId } as PackItem;
-  if (entry) dropToPile(t.cb, tgt.pos, [entry], 'drop');
-  t.cb.log.push(u.name + ' leaves the ' + t.w.name + ' in ' + tgt.name + '.');
-  if (t.hand === 'off') { u.offWeapon = null; u.offAmmo = 0; return; }
-  u.weapon = 'fists'; u.ammo = 0; u.maxDur = 0; u.dur = 0; u.mods = []; u.dmgMult = 1;
-  const pts = (c?.skills as any)?.[weaponPhys('fists').hits_with]; if (typeof pts === 'number') u.attack = mod(pts);
-}
-/** Pull free of a Run Through (2 AP, paid by `by`: the pinned unit itself, or anyone next to it pulling the weapon
- * out). Returns a refusal or null. Exported for an action the lead may wire (combat/escape). */
-export function pullFree(cb: Combat, u: Unit, by: Unit = u, cost = 2): string | null {
-  const s = u.tech?.run_through; if (!s?.by) return 'Nothing is pinning you.';
-  if (by !== u && dist(by.pos, u.pos) > 1) return 'Stand next to it to pull the weapon out.';
-  if (by.ap < cost) return 'Needs ' + cost + ' AP.';
-  by.ap -= cost;
-  if (condSource(u, 'pinned') === s.by) endCond(u, 'pinned', cb);
-  delete u.tech!.run_through;
-  cb.log.push(by === u ? u.name + ' pulls free (' + cost + ' AP).' : by.name + ' pulls the weapon out of ' + u.name + ' (' + cost + ' AP).');
-  return null;
-}
-// Until an action exists, a pinned unit spends the 2 AP at the start of its own turn when it has them.
-onHook('turn_start', (ctx: any, cb: Combat) => {
-  const u: Unit = ctx.u, s = u?.tech?.run_through; if (!s?.by) return;
-  if (!condOn(u, 'pinned')) { delete u.tech!.run_through; return; }
-  const cost = TECHNIQUE.run_through?.numbers?.pull_free_ap ?? 2;
-  if (u.ap >= cost) pullFree(cb, u, u, cost);
-});
-
 // 24. Throw Down: only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per
 //     Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.
 //     Bare: no roll needed. Heavy: you may throw it 2 tiles.

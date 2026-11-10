@@ -21,7 +21,7 @@ const hp = (f: ReturnType<typeof fight>, u: Unit) => f.unit(u.id).hp;
 /** What a preview's hits would deal, roll by roll (no crit): the engine's max(1, floor(total) − armour). */
 const dealt = (pv: TechPreview, id: string) => pv.attacks.filter((a) => a.target === id).reduce((n, a) => n + Math.max(1, Math.floor(a.pv.dmg!.total) - a.pv.dmg!.armour), 0);
 const label = (pv: TechPreview, i: number, l: string) => pv.attacks[i].pv.terms!.find((t) => t.label === l)?.v;
-const melee = (f: ReturnType<typeof fight>) => f.fx('melee').length;
+const melee = (f: ReturnType<typeof fight>) => f.fx('melee').length + f.fx('shot').filter((e: any) => e.thrown).length; // a thrown strike is a shot marked thrown
 
 describe('the four are built', () => {
   it('registered, and the pad shows none of them as not built', () => {
@@ -241,7 +241,7 @@ describe('Flurry (10)', () => {
     const f = fight('throwing_knives', ['F5', 'G7']);
     const args = { targetIds: [f.foes[0].id, f.foes[1].id], line: 'thrown' };
     const pv = f.pv('flurry', args); expect(pv.ok).toBe(true); expect(pv.attacks.map((a) => a.target)).toEqual([f.foes[0].id, f.foes[1].id]);
-    expect(pv.notes.some((n) => /lands in the pile at G7/.test(n))).toBe(true);
+    expect(pv.notes.some((n) => /lands at G7/.test(n))).toBe(true);
     expect(f.pv('flurry', { targetId: f.foes[0].id }).why).toMatch(/reach/); // Light, the first line: no throws
     rig({ hit: true, die: 12 }); const h = f.foes.map((v) => hp(f, v));
     expect(f.tech('flurry', args)).toBeNull();

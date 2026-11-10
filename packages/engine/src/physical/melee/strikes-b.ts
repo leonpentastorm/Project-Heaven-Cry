@@ -11,13 +11,11 @@
 //   Throw: Dexterity replaces the weapon's skill on the roll, and the weapon goes to the pile on the target's tile.
 import { technique, strike, save, cond, stop, landed, techState, techStateOf, onHook } from './shared';
 import type { Tech } from './shared';
-import { canStrike, strikingWith } from '../core';
+import { canStrike, loseWeapon } from '../core';
 import { PHYS_RULES } from '../data';
-import { type Combat, type Unit, alive, dist, lineOfSight, dropToPile, unitFromCharacter, refOf } from '../../combat';
+import { type Combat, type Unit, alive, dist, lineOfSight } from '../../combat';
 import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
-import { handEntry, emptyHand, mod, type PackItem } from '../../character';
-import { WEAPON } from '../../data';
 import { boundGame } from '../../effects/hooks';
 import { d20, type Rng } from '../../rng';
 
@@ -107,7 +105,7 @@ onHook('move_step', (ctx: any, cb) => {
 // The Bound unit's attacks at anyone but the binder; the binder's Reach (a thrown weapon isn't Reach).
 onHook('attack_preview', (ctx: any, cb) => {
   const att: Unit | undefined = ctx.att; if (!att) return;
-  if (ctx.melee && strikingWith(att)?.def.id !== 'throw' && bindOf(cb, att)) ctx.reach = Math.min(ctx.reach, 1);
+  if (ctx.melee && bindOf(cb, att)) ctx.reach = Math.min(ctx.reach, 1);
   const b = binderOf(cb, att); if (b && ctx.tgt && ctx.tgt.id !== b.id) ctx.terms.push({ v: -bindOf(cb, b)!.pen, label: 'Bound by ' + b.name });
 });
 /** A Body save against the stop TN, rolled outside a technique (the Bound unit tries to walk away). */
@@ -162,35 +160,14 @@ technique({
     if (!lineOfSight(t.cb, t.u.pos, tgt.pos)) return 'No line of sight to throw.';
     // "Without Thrown" reads the weapon, not the chosen line: a throwing weapon never takes the penalty.
     const p = t.line('thrown', 'heavy'), thrown = t.holds('thrown');
-    const r = strike(t, { reach: range, extra: thrown ? 0 : -t.num('unthrown_hit', 2), mult: thrown ? 1 : t.num('unthrown_mult', 0.7), label: thrown ? 'Throw' : 'Throw (not a throwing weapon)' });
+    // the core's thrown strike: a ranged attack at throwing range (sight, cover), aimed with Dexterity, Pressure on a
+    // hit and Momentum for this melee technique; then the weapon leaves the hand for the pile on the target's tile
+    const r = strike(t, { thrown: true, extra: thrown ? 0 : -t.num('unthrown_hit', 2), mult: thrown ? 1 : t.num('unthrown_mult', 0.7), label: thrown ? 'Throw' : 'Throw (not a throwing weapon)' });
     if (!r.ok) return r.why || 'Can\'t throw at that.';
-    if (p === 'heavy' && (t.preview ? (t.note('On a hit:'), true) : r.hit && !r.killed && alive(tgt))) stop(t, tgt, 'prone', { save: ['body'] });
-    t.note('The ' + t.w.name.toLowerCase() + ' lands in the pile on ' + refOf(tgt.pos) + (t.hand === 'main' ? '; your hand is empty after.' : '; that hand is empty after.'));
-    if (!t.preview) letGo(t, tgt.pos);
+    const v = r.target || tgt;
+    if (p === 'heavy' && (t.preview ? (t.note('On a hit:'), true) : r.hit && !r.killed && alive(v))) stop(t, v, 'prone', { save: ['body'] });
+    loseWeapon(t, v.pos);
     return null;
   },
   ai: (t) => (t.tgt && t.holds('thrown') && dist(t.u.pos, t.tgt.pos) > 1 ? 4 : 0),
 });
-/** Dexterity's modifier for a thrown roll: the character's skill, a PC unit's points; null for an enemy (it keeps its attack). */
-const dexOf = (t: Tech): number | null => (t.c ? mod((t.c.skills as any).dexterity || 0) : t.u.dexterity != null ? mod(t.u.dexterity) : null);
-onHook('attack_preview', (ctx: any) => {
-  const t = ctx.att && strikingWith(ctx.att); if (!t || t.def.id !== 'throw') return;
-  const dex = dexOf(t); if (dex == null) return;
-  const v = dex - (ctx.att.attack ?? 0); if (v) ctx.terms.push({ v, label: 'Dexterity, not the weapon\'s skill' });
-});
-const MAIN_KEYS = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'ammoType', 'unarmedBonus'] as const;
-const OFF_KEYS = ['offWeapon', 'offAmmo', 'offAmmoType'] as const;
-/** The thrown weapon leaves the hand for the pile on a tile; the hand is empty after (the main hand holds fists). */
-function letGo(t: Tech, at: string): void {
-  const u = t.u, c = t.c, id = t.weaponId;
-  let e: PackItem | null = null;
-  if (c) {
-    if (t.hand === 'main' && u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur }; // the wear of this fight goes with it
-    e = handEntry(c, t.hand); emptyHand(c, t.hand);
-    const fresh = unitFromCharacter(c, u.pos, { state: t.rng.state }) as any, x = u as any;
-    for (const k of t.hand === 'main' ? MAIN_KEYS : OFF_KEYS) { if (fresh[k] === undefined) delete x[k]; else x[k] = JSON.parse(JSON.stringify(fresh[k])); }
-  } else if (t.hand === 'off') { delete u.offWeapon; delete u.offAmmo; }
-  else { u.weapon = 'fists'; u.ammo = 0; u.maxDur = 0; u.mods = []; }
-  u.jammed = t.hand === 'main' ? false : u.jammed;
-  dropToPile(t.cb, at, [e || ({ id, name: WEAPON[id]?.name || id, qty: 1, kind: 'weapon', weapon: id } as PackItem)], 'drop');
-}
