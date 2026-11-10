@@ -189,3 +189,71 @@ Again the pieces exist: songs, the Bard's Triage, stims, shields given, Camarade
 3. **Saves go to betas: yes.**
 4. **The debuff strengths and what gammas give in a fight:** to be drafted (section 9). They were a 2020 hot-fix: a friend's character with six gamma skills did nothing in a fight during a test, so debuff strength was put on three gammas. A gamma giving combat quality of life, not straight damage, is fine. Skill bonuses may move around.
 5. **Old characters: don't worry about them.** A new save is started every update.
+
+## 9. The draft: what a point gives, all 27 skills
+
+Made from three independent drafts (move existing numbers only; what a player feels at the table; what the engine can already run) and two judges (rule-breaking; whether a six-gamma and an all-beta character are worth playing). **Every number below exists today and has only changed skill, unless it is marked NEW.**
+
+### 9.1 Three rulings the table rests on
+
+1. **The saves:** Body save is Guts (as now). **Brain save is Rumination. Heart save is Lore Master.** All three drafts chose the same two: each skill has just lost its caster-reach number and needs a defence, and each is the "knows better" skill of its Core.
+2. **Debuff strength stops being three skills.** A condition is as strong as the modifier of the skill that delivered it. A blow, shot, spell, song or prayer reads its door's **alpha**. Words spoken in a fight read the **gamma** that spoke them: that is speech, it costs AP, and it deals no damage.
+3. **A gamma adds its full points to a check.** Readings to confirm: 0 points is still −2; this is for skill checks and voice hooks only; Initiative and spoken strengths keep points − 1, so no fight number moves by accident.
+
+### 9.2 The table
+
+| Attribute | Slot | Skill | A point gives | Where it came from |
+|---|---|---|---|---|
+| Endurance | α | Durability | Opens the shield-and-guard list. Brace gives 1 + Durability modifier Guard (meter tops out at 5) | the Defender's Brace, for everyone with a shield |
+| | β | Pain Threshold | −10% elemental damage taken; +2 HP a level; gates heavy armour | HP and the armour gate from Durability |
+| | γ | Sensory | You sense unseen enemies within 1 + Sensory ÷ 3 tiles; may roll to find a safe path through a hazard | both already in the spec, never on the skill |
+| Strength | α | Raw Power | +5% physical damage; Counter bonus; strength of what your heavy and bare techniques inflict | strength from Intimidation |
+| | β | Guts | Body save | kept |
+| | γ | Intimidation | Strength of your Threaten (2 AP) | kept, narrowed to speech |
+| Agility | α | Dexterity | throwing range; less Recoil; +5% Critical multiplier; strength of what your shots and light blades inflict | item 953 |
+| | β | Athletics | Dodge; with Guts, resists being pushed or stopped | kept |
+| | γ | Reaction Speed | adds its modifier to Initiative | kept |
+| Perception | α | Ingenuity | +0.5 Stealth; +5% Ambush damage; strength of what you do unseen (traps, Sabotage) | kept |
+| | β | Proficiency | −5% critical damage taken | from Durability |
+| | γ | Vigilant | +1 Detection range; +1 Vision range; your roll to spot the Hidden | kept |
+| Intelligence | α | Brain Power | +10% Sigil damage; duration; **+0.5 tile Sigil range**; **cheaper Sigils**; strength of what your Sigils inflict | range from Rumination, saving from Proficiency |
+| | β | Rumination | **Brain save** | from Charisma |
+| | γ | Eloquence | Strength of your Persuade (2 AP) | kept, narrowed to speech |
+| Expression | α | Visualization | +10% elemental damage, which becomes your Figments' damage; gates the Visualizer | kept |
+| | β | Analysis | **−10% ambush damage taken**; +1 tile Analyze range | ambush from Reaction Speed |
+| | γ | Charisma | Strength of your offer of terms (Parley, 2 AP: a beaten enemy surrenders) | from Implication |
+| Insight | α | Empathy | **+10% healing and shields given**; opens the tending-and-song list | from Camaraderie |
+| | β | Camaraderie | **+10% healing and shields received** | from Sensory |
+| | γ | Implication | Strength of your Taunt (2 AP: it must attack you) | Taunt is a new way to talk; its numbers all exist |
+| Determination | α | Will Power | Soul damage; Strain limit; module slots; **+0.5 tile Soul range**; **ready designs** | range from Lore Master, designs from Empathy |
+| | β | Lore Master | **Heart save** | from Composure |
+| | γ | Composure | *see 9.3* | |
+| Virtue | α | Faith | +10% Blessing power; prayer cooldown; strength of what your Blessings inflict | kept |
+| | β | Conscience | *see 9.3* | |
+| | γ | Authority | +1 Reputation **and +1 Karma** on every award; Leadership | Karma from Conscience |
+
+### 9.3 Where something new is needed
+
+Two skills are left with nothing once their old point moves, and the talker still has no turn against things that can't be talked to. These are the candidates, all **NEW** and provisional. Leon picks.
+
+| Skill | Candidate | Risk |
+|---|---|---|
+| Conscience (β) | +1 on your death saves for every 2 points | weak: only felt when you are already down |
+| Conscience (β), other | a shield of 5 × Conscience at the start of every fight | a new number with a thin reason |
+| Composure (γ) | keep unspent AP for your next turn: up to half your Composure rounded down, most 2 | AP is the strongest currency in the game; rounded up or with a cap of 3 it becomes the point everyone buys |
+| Authority (γ) | Order (2 AP): an ally who hears you moves up to 1 tile a point, on their reaction | free movement for another player |
+| Eloquence (γ) | Talk Sense (2 AP): an ally rolls again against one Brain condition, adding your points | a judge called this defence on a gamma |
+| Charisma (γ) | Hearten (2 AP): the same for one Heart condition | the same |
+
+The last three are what give a six-gamma character a turn against a machine or a boss: they act on allies. Without them, that character's fight is going first, seeing further, and four ways to talk at an enemy.
+
+### 9.4 What the drafts found wrong in today's data
+
+1. **Will Power's Soul multiplier** is +15% a point in `skills.json` and 10% in the spec and the engine.
+2. **The elemental multiplier** disagrees between the spec, the engine and the data.
+3. **Empathy's data line** ("−0.5 AP Soul cast") is stale: the spec and engine have a flat cost with free Pumps.
+4. **Threaten** sets Shaken, a Heart condition, against a Body save.
+
+### 9.5 Mastery unlocks that break the rule (left for the next pass)
+
+Tuned (Proficiency: weapon damage on a beta), Weak Point (Analysis: squad damage on a beta), Proven Formula (Rumination: Sigil discount), Paint the Field (Visualization: a Sigil rider), Hand-Off (Camaraderie), Second Wind (Durability: a self-heal on an alpha), Stand Still (Composure), and the Soul module gates that sit on Lore Master, Implication and Composure.
