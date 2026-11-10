@@ -168,7 +168,8 @@ describe('the faith effects (Blessing 2.0)', () => {
     expect(faithBeat({ k: 'miracle' } as any)).toBe(3000); // the queue's next events (its effects) play as it lands
     vi.advanceTimersByTime(3050); expect(document.querySelector('[data-phc-miracle]')).toBeNull();
     vi.advanceTimersByTime(500); expect(document.querySelector('[data-phc-cut-box]')?.textContent).toMatch(/The Sky Answers.*Foe takes 40 Storm/);
-    vi.advanceTimersByTime(3000); expect(document.querySelector('[data-phc-cut-box]')).toBeNull();
+    vi.advanceTimersByTime(3000); expect(document.querySelector('[data-phc-cut-box]')).toBeTruthy(); // the box stays a read's worth (12 s)
+    vi.advanceTimersByTime(10000); expect(document.querySelector('[data-phc-cut-box]')).toBeNull();
     const o2 = miracleOverlay({ patron: 'nerukhan', accent: '#F2DFA0' })!; o2.dispatchEvent(new Event('pointerdown')); vi.advanceTimersByTime(260);
     expect(document.querySelector('[data-phc-miracle]')).toBeNull();
   });
