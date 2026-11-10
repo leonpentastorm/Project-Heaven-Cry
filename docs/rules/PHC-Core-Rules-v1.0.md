@@ -8,6 +8,8 @@
 
 > **Revision 1.11 (2026-11-10), level gains:** every level gives two picks (odd levels 2 Skill points; even levels 1 Skill point and 1 Attribute point) and a Core point comes every 3rd level (3, 6, 9, 12, 15, 18), not every 5th. A class rank needs a level as well as the attribute (rank II level 6, rank III level 12). At creation the budgets are unchanged, the Core-for-Attribute trade is gone, and Mind Without Fog gives 1 Core point, not 2. See Characters, Classes and items 924 on. Design: `docs/design/proposals/2026-11-skeleton.md`.
 
+> **Revision 1.12 (2026-11-10), Physical 2.0:** techniques for melee weapons (Momentum, a meter on you, built by chaining different techniques and spent by Finishers) and for ranged weapons (Pressure, a meter on the target, built by fire and spent by Takes); weapon properties; ready lists; drill per weapon in place of weapon mastery; the quiver. See Weapons, Physical techniques, and items 932 on. Design: `docs/design/proposals/2026-11-melee-techniques.md`, `2026-11-ranged-techniques.md`.
+
 2026-11-03 · Leon PT
 
 ## How to use this spec
@@ -852,6 +854,8 @@ Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanc
 
 ### Weapon mastery
 
+> **Rules 1.12:** drill (Physical techniques, below) takes weapon mastery's place: a bar per weapon, three marks, techniques for rewards. The table below is kept until Leon confirms what happens to its attack bonus (item 947).
+
 Weapon mastery is the second way a character grows, beside character level. It's tracked by **kills**, separately for each of ten weapon families:
 
 | Family | Weapons |
@@ -882,6 +886,289 @@ Weapon mastery is the second way a character grows, beside character level. It's
 - **Weapon perks** come automatically at levels 1, 3 and 5: each family has one perk per tier (weapon_mastery.json). They aren't skill perks: they don't count toward Achieved perks, and every AP gain from them obeys the AP ceiling.
 - Changing weapons inside a family keeps your mastery. Evokers and Emanators aren't weapons for mastery.
 - **Pacing:** a character who sticks to one family makes about 4 kills a session, so Blooded comes in session 2, Veteran around session 10 and Master around session 35.
+
+### Physical techniques (rules 1.12, Physical 2.0)
+
+Anyone can pick up any weapon and mix the techniques they know with it, the way Sigil words and Outburst modules mix. There are two systems, and each has its own meter:
+
+- **Melee owns the sequence.** Techniques chain inside your turn and build **Momentum**, a meter on you.
+- **Ranged owns Pressure,** a meter on the target, built by fire and spent by Takes.
+
+Design: `docs/design/proposals/2026-11-melee-techniques.md` and `2026-11-ranged-techniques.md`. Data: `data/techniques.json` (58 techniques and the shared numbers) and the `phys` block on each weapon in `data/weapons.json`. Engine: `packages/engine/src/physical/`. **Every number in this section is a placeholder for the balance pass** (section 14, items 932 on).
+
+#### Weapon properties
+
+A weapon is a set of properties. A technique works with any weapon of its system, and reads the weapon's properties for a bonus line ("with the right weapon"). When a weapon has two properties a technique reads, the player picks one line.
+
+Melee:
+
+| Property | Means |
+|---|---|
+| **Edge** | It cuts. Typical rider: Bleeding. |
+| **Point** | It thrusts. Typical riders: to-hit, armour ignored, pinning. |
+| **Blunt** | It crushes. Typical riders: Prone, Dazed, armour broken. |
+| **Hook** | It catches. Typical riders: pull, trip, disarm. |
+| **Reach** | It strikes 2 tiles away. |
+| **Heavy** | Mass. Melee: 3 AP an attack, knockback, hitting several. Ranged: must be Braced to work well. |
+| **Light** | Fast. 2 AP an attack; extra steps and strikes. |
+| **Bare** | A fist or a glove. Grapples and throws. |
+| **Thrown** | It can leave the hand. |
+
+Ranged:
+
+| Property | Means |
+|---|---|
+| **Quick** | Handy. Firing next to an enemy doesn't provoke; moving costs no accuracy. |
+| **Auto** | Throws many rounds. Pressure on a miss; several targets. Always offers Burst and Rake. |
+| **Precise** | A long barrel or glass. Better when you haven't moved; criticals. |
+| **Spread** | Shot or flame in a cone. Everyone close; breaks cover. |
+| **Heavy** | Mass. Melee: 3 AP an attack, knockback, hitting several. Ranged: must be Braced to work well. |
+| **Blast** | It explodes. Aimed at a tile; Pressure to everyone in the radius. |
+| **Arc** | It flies over. Indirect fire. |
+| **Silent** | No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden. |
+| **Loud** | A cannon in the hand. A miss still gives Pressure; saves against it are harder. |
+| **Drawn** | Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight. |
+| **Thrown** | It can leave the hand. |
+
+Each weapon also names the skill its attacks roll (**hits with**) and what its damage **scales with**. A Bare weapon scales with both Raw Power and Athletics.
+
+#### Knowing, readying and drill
+
+1. **Everyone knows** Cut, Shot, Aimed Shot and Overwatch. They take no ready slot.
+2. **At creation** a character with Raw Power or Athletics picks 2 melee techniques (one must be an Opener), and one with Dexterity picks 2 ranged techniques. With no picks sent, they are Lunge and Sidestep, and Suppress and Shift. A character made before 1.12 gets those defaults.
+3. **Ready lists.** A character has one ready list per system: 3 + half the attack skill, rounded down (melee: the better of Raw Power and Athletics; ranged: Dexterity). Only ready techniques can be used. The lists are changed out of a fight.
+4. **A weapon lends its signature.** Each weapon teaches one technique. While you hold the weapon, that technique is usable without knowing it and without a ready slot.
+5. **Auto weapons always offer Burst and Rake,** known or not.
+6. **Drill** is an XP bar per weapon. When an enemy dies, everyone who hit it in that fight gains drill for the weapon they hit it with: minion 5, soldier 10, elite 25, boss 50. A hit alone gives nothing. Defenders, Fighters and Marksmen earn it at ×3.
+7. **Three marks** on each bar, at 300, 900 and 1,800 drill. Mark I teaches the weapon's signature for good: it becomes a technique you can ready with any weapon. Marks II and III each give one pick of any technique of that weapon's system. A weapon with no signature gives a pick at mark I too.
+8. **Off its home.** A technique marked † is particular to a kind of weapon. With a weapon that has none of its home properties it is at −2 to hit and gets no property line.
+
+#### Melee: Momentum and the chain
+
+1. **Momentum** runs 0 to 3 for everyone holding a melee weapon (a Fighter: 5).
+2. **Each melee strike that hits gives +1.** A technique that works without a damaging strike (a Feint that fools its target, a Link) gives +1 as well.
+3. **Variety:** +1 more, once per technique, when it is a different technique from the last one you used this turn. The first melee technique of a turn earns no variety bonus.
+4. **The chain** is the melee techniques of one turn, in order:
+   - an **Opener** is only the first of them;
+   - **Strikes** and **Links** follow in any order (a Link costs 1 AP and deals no damage);
+   - a **Finisher** needs Momentum 2, spends all of it, and is the last melee technique of the turn;
+   - an **Answer** is a reaction: it fires on its trigger, on anyone's turn.
+5. **Momentum falls to 0** at the end of a turn in which you made no attack and used no melee technique.
+6. **A set-up** (Feint, Sidestep) marks one target for your next technique this turn, and is spent by it.
+
+#### Ranged: Pressure
+
+1. **Pressure** runs 0 to 4 on every combatant.
+
+   | Pressure | State | On an enemy | On a player character |
+   |---|---|---|---|
+   | 1 | Under fire | nothing | nothing |
+   | 2 | **Pressed** | -1 to hit with ranged attacks (melee attacks are not affected); it can't hold a Watch | the same |
+   | 3 | **Suppressed** | −1 AP; no reactions that attack or move it | no reactions that attack or move you; **never an AP loss** |
+   | 4 | **Broken** | −2 AP; its first action must be to reach cover or drop Prone | players stop at 3 |
+
+2. **Tiers.** An elite stops at 3. A boss stops at 2: it can be Pressed, never Suppressed.
+3. **Protective reactions always work.** Suppressed stops the reactions you hit back or move with (a held shot, an opportunity attack, Riposte, Keep Back). It never stops the ones that protect (Parry, Take the Hit, Shrug It Off and the like).
+4. **Gaining it.**
+   - The first ranged hit you land on a target each turn gives it +1.
+   - +1 more if the shot goes past cover the target is standing against. A target in the open gives no extra.
+   - A hit from Hidden with a Silent weapon gives 2 in place of 1, and those pips are hidden from the target's side until a Take is used on it.
+   - A technique that states its own Pressure for a hit gives that in place of the ordinary +1.
+   - When a ranged attack takes someone out, every other combatant of their side within 3 tiles who saw it gains +1.
+5. **Losing it.**
+   - At the end of your own turn: −1; or −2 if you end it against cover and out of every enemy's sight, or closer to the nearest enemy than you began it. (One of these, not a sum.)
+   - Each melee hit of yours removes 1 from you.
+6. **A Take** needs its target Pressed, is one a turn per shooter, and lowers the target's Pressure by 2 after its effect. Its own hit adds none. If the target was Suppressed when the Take began, the Take's stronger line applies.
+7. **A Watch** (a held shot) is paid for on your turn with its trigger, and fires as your reaction with no prompt. It ends when it fires or at the start of your next turn. It can't be set while you are Pressed, and becoming Pressed ends one you hold.
+8. **Stopped once.** A unit that a ranged technique has Pinned, pushed, knocked Prone or halted can't be stopped by another ranged technique until the end of its next turn. Where a stop allows a save it is the better of Guts and Athletics against TN 12. Melee techniques neither set nor check this.
+9. **A Press** adds 1 Heat on top of what it fires. A **Set** costs 1 AP, never fires and adds no Heat. Every technique lists its rounds beside its AP; a technique the magazine can't pay for is refused with the count.
+10. **The quiver.** A Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight.
+
+#### The melee techniques (27)
+
+AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
+
+**Openers**
+
+| # | Technique | AP | What it does | With the right weapon |
+|---|---|---|---|---|
+| 1 | **Lunge** | weapon | Step 1 tile toward the target, then strike. The step draws no opportunity attack. | **Point:** +2 to hit. **Reach:** the step may be 2 tiles. **Heavy:** on a hit the target is pushed 1 tile. |
+| 2 | **Charge** | weapon | After moving 3 or more tiles in a straight line this turn: strike at +10% damage per tile moved, up to +50%. | **Point:** ignores 5 armour. **Blunt or Heavy:** the target makes a Body save or falls Prone. **Reach:** you strike before it can take its Overwatch or Keep Back. |
+| 3 | **Feint** | 1 | No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it works. | **Light:** the save is at −2. **Hook:** on a failed save its weapon is also lowered (1 AP to raise). |
+| 4 | **Draw Cut** | weapon −1 | Draw this weapon from the pack or a sheath and strike in one action. Only if you started the turn with it stowed. | **Edge:** Bleeding on a hit. **Light:** if the target hasn't acted this fight, it counts as an ambush. |
+| 5 | **Ambush** | weapon | Only from Hidden: strike with the Ambush multiplier (today's rule), and gain 2 Momentum instead of 1. | **Point:** crits on 18–20. **Bare:** no damage, the target is Grappled and Silenced for 1 round instead. |
+
+**Strikes**
+
+| # | Technique | AP | What it does | With the right weapon |
+|---|---|---|---|---|
+| 6 | **Cut** (free) | weapon | One strike. Everyone knows it; it never takes a ready slot. | **Edge:** a critical leaves Bleeding. **Point:** +1 to hit. **Blunt:** a critical leaves Dazed. |
+| 7 | **Sweep** † | weapon +1 | Strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each. | **Reach:** the arc is 2 tiles out. **Heavy:** all adjacent enemies, not just the arc. **Edge:** each one hit bleeds on a critical. Friendly fire applies. |
+| 8 | **Bash** | weapon | Strike at ×0.5 with the pommel, haft or fist. The target makes a Body save or is Dazed. | **Blunt:** full damage. **Heavy:** on a failed save it is pushed 2 tiles instead of Dazed, your choice. **Bare:** costs 1 AP less. |
+| 9 | **Sunder** | weapon | Strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per attacker). | **Blunt or Hook:** 10 lower. **Edge:** if the target has no armour left, Bleeding instead. |
+| 10 | **Flurry** | weapon +1 | Two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits. | **Light:** three strikes. **Bare:** each hit after the first adds +1 to the next Bind or Throw Down this turn. **Thrown:** the strikes may go to two targets in throwing range; the weapons land in the pile on their tiles. |
+| 11 | **Hamstring** | weapon | Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. | **Edge:** no save. **Hook:** Prone instead of Slowed. **Point:** it also can't Sprint or Disengage while Slowed. |
+| 12 | **Bind** | weapon | No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding. | **Hook:** Brain save or it is Disarmed. **Bare:** it is Grappled (today's grapple rules). **Heavy:** the −2 becomes −4. |
+| 13 | **Half-Sword** | weapon | A short, driven thrust: ×0.8 damage, ignores 10 armour. | **Point:** ignores all armour. **Heavy:** full damage. **Bare or Blunt:** not available (greyed, with the reason). |
+| 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). It lands in the pile on the target's tile. | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
+
+**Links**
+
+| # | Technique | AP | What it does | With the right weapon |
+|---|---|---|---|---|
+| 15 | **Sidestep** | 1 | Move 1 tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking. | **Light:** 2 tiles. |
+| 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn. | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
+| 17 | **Shove** | 1 | Today's Shove (push 1 tile, or Prone if blocked), at 1 AP as a Link. It gives Momentum when it works. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
+| 18 | **Trip** | 1 | The target makes a Body save or falls Prone. | **Hook or Reach:** the save is at −2. **Bare:** you may go Prone with it and it is Grappled. |
+| 19 | **Drag** | 1 | Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). | **Hook:** 2 tiles, and from 2 tiles away with Reach. **Bare:** you may move 1 tile and bring it with you. |
+
+**Finishers**
+
+| # | Technique | AP | What it does | With the right weapon |
+|---|---|---|---|---|
+| 20 | **Coup** | weapon | Needs Momentum 2. One strike at +25% damage per Momentum spent. (This is the Fighter's Finisher, opened to everyone; see section 6.) | **Edge:** +50% more against a target that is Bleeding, Dazed, Prone or Downed. **Point:** a hit is a critical if the target is at a quarter HP or less. |
+| 21 | **Cleave** † | weapon | Needs Momentum 2. One strike; then the same strike at one more adjacent enemy per Momentum spent, each at full damage. | **Heavy:** the extra targets may be 2 tiles apart. **Edge:** every target hit bleeds. |
+| 22 | **Break** | weapon | Needs Momentum 2. One strike. The target makes a Body save at −1 per Momentum spent or is Stunned (bosses: Dazed). | **Blunt:** its armour is also 0 for a round. **Hook:** it is Disarmed as well. |
+| 23 | **Run Through** † | weapon | Needs Momentum 2. One strike at +20% per Momentum spent. On a hit the target is Pinned where it stands until it spends 2 AP to pull free. | **Point:** ignores armour, and if a second enemy stands directly behind the first it is struck at half. **Reach:** you may leave the weapon in (you are unarmed; the target stays Pinned until someone pulls it out for 2 AP). Without Point: −2 to hit. |
+| 24 | **Throw Down** † | weapon | Needs Momentum 2. Only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone. | **Bare:** no roll needed. **Heavy:** you may throw it 2 tiles. |
+
+**Answers**
+
+| # | Technique | AP | What it does | With the right weapon |
+|---|---|---|---|---|
+| 25 | **Parry** | reaction | *When a melee attack hits you:* Roll your attack skill against the attacker's total. If you win, the hit is halved. | **Light:** and you gain 1 Momentum. **Heavy:** you may parry for an adjacent ally. A shield in the off hand adds +2. |
+| 26 | **Riposte** | reaction | *When a melee attack misses you:* Strike back for 0 AP (today's Sabre skill and Fighter move). | **Edge or Point:** +2 to hit. |
+| 27 | **Keep Back** | reaction | *When an enemy steps into your reach:* Strike it first. If you hit, it makes a Body save or stops where it is. | **Reach:** your reach is 2 tiles, so most enemies never arrive. **Hook:** on a failed save it is also Prone. |
+
+#### The ranged techniques (31)
+
+**Fire**
+
+| # | Technique | AP | Rounds | What it does | With the right weapon |
+|---|---|---|---|---|---|
+| 0 | **Shot** (free) | 2 | 1 | One shot. Everyone knows it; it takes no ready slot. | **Precise:** +1 if you haven't moved this turn. **Loud:** a miss gives +1 Pressure. |
+| 1 | **Snap Shot** | 2 | 1 | Draw or swap to this weapon and fire, at −2. | **Quick:** no penalty. **Heavy:** not available. |
+| 2 | **Burst** | 3 | 3 | Two rolls at one target, the second at −2. | **Auto:** three rolls (today's burst), and it may split between two adjacent targets. **Quick:** no −2. |
+| 3 | **Aimed Shot** (free) | 3 | 1 | +2 to hit (today's rule). | **Precise:** +3, and a critical on 18–20 if you haven't moved. **Drawn:** full draw, +25% damage. |
+| 4 | **Called Shot** | 3 | 1 | −2 to hit. Choose leg (Slowed), arm (weapon lowered) or head (Dazed); the target makes a Body save. | **Precise:** no penalty. **Loud or Heavy:** leg is Prone instead. **Spread:** only within 4 tiles. |
+| 5 | **Walking Fire** | 3 | 1 | Move 2 tiles and fire one shot at any point of the move. | **Quick:** 3 tiles, and no opportunity attacks. **Auto:** the shot is a Burst for 3 rounds. **Heavy:** not available. |
+| 6 | **Punch Through** | 3 | 1 | Half cover counts −2, not −5, and the cover takes the damage as well. | **Heavy:** the round carries on to the next target in line at half. **Blast or Spread:** half cover is destroyed. |
+| 7 | **Lob** † | 3 | 1 | Fire at a target only an ally can see (through smoke or dark), at −4. | **Arc:** over full cover, at −2. **Blast:** you aim at the tile; no penalty, and everyone in the radius gains +2 Pressure. |
+
+**Press**
+
+| # | Technique | AP | Rounds | What it does | With the right weapon |
+|---|---|---|---|---|---|
+| 8 | **Suppress** | 3 | 3 | One roll at +2. A hit is half damage and +2 Pressure; a miss is +1. | **Auto:** enemies within 1 tile of the target also gain +1. **Heavy, Braced:** it holds until your next turn: any enemy that moves or fires inside 3 tiles of the target gains +1 (today's Suppressing Fire). **Silent:** hits only. |
+| 9 | **Rake** † | 4 | 6 | Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit. | **Auto:** today's full-auto cone for 10 rounds; +1 Pressure hit or miss. **Spread:** the cone is 1 wider. |
+| 10 | **Warning Shot** | 1 | 1 | No attack. The target makes a Heart save or gains +1 Pressure. | **Loud:** the save is at −2. **Silent:** not available. |
+| 11 | **Flush** | 3 | 1 | Hit the target's cover (no roll; the cover takes the damage). The target gains +2 Pressure. | **Spread or Blast:** double damage to the cover. **Arc:** the cover is ignored and the target takes half damage as well. |
+| 12 | **Mag Dump** † | 4 | all | Empty the weapon at one target: one roll per 3 rounds left (at most 4 rolls), each at −1 more than the last. +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty. **Spread:** both barrels, one roll at double damage within 4 tiles. **Drawn:** not available. |
+| 13 | **Crossfire** | 2 | 1 | A shot at a target an ally has already hit this round: +2 to hit and +1 extra Pressure. | **Quick:** step 1 tile first, with no opportunity attack. |
+
+**Sets**
+
+| # | Technique | AP | Rounds | What it does | With the right weapon |
+|---|---|---|---|---|---|
+| 14 | **Bead** | 1 | 0 | Name a target. Until you move or name another, your shots at it ignore one range band, and its Pressure doesn't fall while you see it. | **Precise:** +1 to hit it. **Heavy:** you may move 1 tile without losing it. |
+| 15 | **Spot** | 1 | 0 | Name a target for the squad: until your next turn allies have +1 to hit it, and the first ally to hit it adds +1 Pressure more. | **Precise:** allies also ignore one range band. **Silent:** the target isn't told. |
+| 16 | **Brace** | 1 | 0 | Today's Brace, opened to any weapon resting on half cover: Recoil halved. | **Heavy:** removes its penalties (today's rule). **Auto:** Suppress gives +1 more. |
+| 17 | **Load Special** | 1 | 0 | Chamber one special round you carry (armour-piercing, hollow-point, incendiary, enhanced) for your next Fire. The magazine stays as it is. | **Drawn:** not needed (any arrow, every shot). **Spread:** the whole cone gets the round's rider. |
+| 18 | **Shift** | 1 | 0 | Move 1 tile from cover to cover without setting off a Watch. | **Quick:** 2 tiles. **Heavy:** you stay Braced. |
+| 19 | **Vent** | 1 | 0 | −2 Heat now. | **Heavy:** −4 (a barrel swap). **Drawn:** not needed. |
+| 20 | **Head Down** | 1 | 0 | Remove 1 Pressure from yourself, 2 behind full cover. You can't Watch this round. | — |
+
+**Takes**
+
+| # | Technique | AP | Rounds | What it does | With the right weapon |
+|---|---|---|---|---|---|
+| 21 | **Dead Centre** † | 3 | 1 | One shot at +50% damage. *Suppressed:* Its cover doesn't count. | **Precise:** +2 to hit. **Drawn:** ignores 5 armour. |
+| 22 | **Pin Down** | 3 | 1 | A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned (today's condition) for 1 round. *Suppressed:* The save is at −2. | **Auto:** full damage. **Drawn or Silent:** nailed in place until it spends 2 AP. |
+| 23 | **Rout** | 3 | 1 | No damage. The target makes a Heart save or runs its full move away from you, drawing opportunity attacks and Watches. *Suppressed:* The save is at −3. | **Loud:** −2 more. **Blast:** everyone Pressed in the radius. |
+| 24 | **Stopping Shot** | 2 | 1 | A shot. On a hit the target saves (Guts or Athletics, whichever is better) or loses 1 AP next turn and is pushed 1 tile. *Suppressed:* It also falls Prone on a failed save. | **Loud or Heavy:** pushed 2. **Spread:** pushed 2 and Prone either way. |
+| 25 | **Storm** | 3 | 1 | Move up to 3 tiles toward the target without its reaction, then shoot. *Suppressed:* Your shot is a critical on 18–20. | **Quick:** +2 to hit. **Spread:** Body save or Prone. |
+| 26 | **Last Round** | 2 | 1 | Only with the last round in the weapon: +3 to hit. If it takes the target out, your next speed reload is free. *Suppressed:* It can't be reduced by cover. | **Quick and Precise:** +50% damage. **Drawn:** the last arrow in the quiver counts. |
+
+**Hold a shot**
+
+| # | Technique | AP | Rounds | What it does | With the right weapon |
+|---|---|---|---|---|---|
+| 27 | **Overwatch** (free) | weapon | 1 | *When the first enemy to move in your sight (today's rule, unchanged):* the held shot | **Precise:** +2. **Auto:** it is a Burst. **Spread:** anyone coming within 4 tiles. |
+| 28 | **Deny** | 2 | 1 | *When the first enemy to enter a tile you name:* the shot; on a hit it stops there | **Heavy, Braced:** any tile in a straight line of 3. **Blast:** the tile takes the blast. |
+| 29 | **Cover Me** | 2 | 1 | *When the first enemy to attack an ally you name:* that attack is at −2, and the enemy gains +1 Pressure | **Auto:** two allies. **Precise:** you also take the shot. |
+| 30 | **Dead to Rights** | 3 | 1 | *When a Pressed enemy you name attacks, stands up, reloads or leaves cover:* the shot lands first, at +2 | **Precise:** a critical on 18–20. **Silent:** you stay Hidden. |
+
+#### The weapons
+
+Melee:
+
+| Weapon | Properties | Hits with | Damage scales with | Teaches |
+|---|---|---|---|---|
+| Combat knife | Light, Edge, Point, Thrown | Athletics | Agility | Coup |
+| Sabre | Light, Edge | Athletics | Agility | Riposte |
+| Ork machete | Heavy, Edge | Raw Power | Strength | Cleave |
+| Maul | Heavy, Blunt | Raw Power | Strength | Break |
+| Lance | Heavy, Point, Reach | Raw Power | Strength | Charge |
+| Gloves or bare fists | Light, Bare | Raw Power | Strength, Raw Power, Athletics | Bind |
+| Throwing knives | Light, Point, Thrown | Athletics | Agility | Flurry |
+| Hatchet | Light, Edge, Hook, Thrown | Athletics | Agility | Throw |
+| Legion gladius | Light, Point, Edge | Athletics | Agility | Parry |
+| Kemizuchi duelling blade | Light, Point | Athletics | Agility | Lunge |
+| War axe | Heavy, Edge, Hook | Raw Power | Strength | Sunder |
+| Adamantile greatsword | Heavy, Edge, Point | Raw Power | Strength | Sweep |
+| Glaive | Heavy, Edge, Hook, Reach | Raw Power | Strength | Keep Back |
+| Ork rip-saw | Heavy, Edge | Raw Power | Strength | Hamstring |
+| Knuckledusters | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Athletics | Bash |
+| Hellraiser servo-fist | Heavy, Bare, Blunt | Raw Power | Strength, Raw Power, Athletics | Throw Down |
+| Evoker blade | Light, Edge | Athletics | Agility | — |
+| Emanator gauntlet | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Athletics | — |
+| Bot-thread banner | Reach, Blunt | Athletics | Agility | — |
+| Grand staff | Heavy, Blunt, Reach | Athletics | Agility | — |
+| Bite and claws | Light, Bare, Edge | Raw Power | Strength, Raw Power, Athletics | — |
+
+Ranged:
+
+| Weapon | Properties | Hits with | Damage scales with | Teaches |
+|---|---|---|---|---|
+| Service pistol (.32 Decrkm) | Quick | Dexterity | Agility | Snap Shot |
+| Drifter revolver | Quick, Precise | Dexterity | Agility | Mag Dump |
+| Decrkm SMG (.32 Decrkm) | Quick, Auto | Dexterity | Agility | Rake |
+| Hellraiser service rifle | Auto, Precise | Dexterity | Agility | Suppress |
+| Lever carbine | Precise, Quick | Dexterity | Agility | Walking Fire |
+| Lumeri scattergun | Spread, Loud | Dexterity | Agility | Flush |
+| Long rifle | Precise, Loud | Dexterity | Agility | Bead |
+| .700 Blackpoint anti-materiel | Heavy, Precise, Loud | Dexterity | Agility | Dead Centre |
+| Hellraiser LMG | Heavy, Auto | Dexterity | Agility | Brace |
+| Recurve bow | Drawn, Silent, Quick | Dexterity | Agility | Pin Down |
+| Crossbow | Precise, Silent | Dexterity | Agility | — |
+| Frag grenade | Thrown, Blast, Arc | Dexterity | Agility | Rout |
+| Smoke grenade | Thrown, Blast, Arc | Dexterity | Agility | Head Down |
+| Flashbang | Thrown, Blast, Arc | Dexterity | Agility | — |
+| Decrkm auto-pistol | Quick, Auto | Dexterity | Agility | Burst |
+| Parlour pistol | Quick, Silent | Dexterity | Agility | Warning Shot |
+| Magistrate heavy pistol | Quick, Loud | Dexterity | Agility | Stopping Shot |
+| Frontier hand cannon | Loud, Precise | Dexterity | Agility | Last Round |
+| Legion PDW | Quick, Auto | Dexterity | Agility | Storm |
+| Whisper SMG | Auto, Silent | Dexterity | Agility | Spot |
+| Mandestra drum-gun | Auto, Loud | Dexterity | Agility | Rake |
+| Adamantile battle rifle | Precise, Loud | Dexterity | Agility | Punch Through |
+| CCEC marksman rifle | Precise | Dexterity | Agility | Called Shot |
+| Legion bullpup | Auto, Quick | Dexterity | Agility | Shift |
+| Coach gun | Spread, Loud | Dexterity | Agility | Mag Dump |
+| Sawn-off | Spread, Quick | Dexterity | Agility | Storm |
+| Brigade auto-shotgun | Spread, Auto | Dexterity | Agility | Burst |
+| Hellraiser rotary | Heavy, Auto, Loud | Dexterity | Agility | Suppress |
+| Smetanita thumper | Heavy, Blast, Arc | Dexterity | Agility | Lob |
+| Breacher tube | Heavy, Blast, Loud | Dexterity | Agility | Flush |
+| Purifier flamer | Heavy, Spread | Dexterity | Agility | — |
+| Satchel charge | Thrown, Blast, Arc | Dexterity | Agility | — |
+| Longbow | Drawn, Silent, Arc | Dexterity | Agility | Dead to Rights |
+| Repeating crossbow | Silent, Quick | Dexterity | Agility | Burst |
+| Incendiary grenade | Thrown, Blast, Arc | Dexterity | Agility | — |
+| Bot-scrambler | Thrown, Blast, Arc | Dexterity | Agility | — |
+| Science Team core rifle | Precise | Dexterity | Agility | — |
+| Spellslinger's pistol | Quick | Dexterity | Agility | — |
+| Lumeri censer gun | Spread, Loud | Dexterity | Agility | — |
 
 ## Conditions and saves
 
@@ -2602,6 +2889,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | conditions.json | 29 | Debuffs by family (body, brain, heart), helpful states, Downed |
 | weapons.json | 20 | Starter weapons, each with its mastery family |
 | weapon_mastery.json | 10 + 30 | Weapon mastery families and levels, and 30 weapon perks (3 per family) |
+| techniques.json | 58 | Physical techniques (rules 1.12): 27 melee and 31 ranged, each with its group, AP, rounds, text, property lines and placeholder numbers; `rules` holds Momentum, Pressure, ready slots and drill. Each weapon's `phys` block in weapons.json holds its properties, the skill it hits with, what its damage scales with and the technique it teaches |
 | items.json | 1 | Items with rules of their own: Essence of Experience |
 | sigils.json | 40 | Sigil words (five groups), grammar, element identities and the enemy casters' default words (rules 1.4; provisional numbers) |
 | soul_modules.json | 4 + 20 | Soul schools and modules (provisional numbers) |
@@ -4599,3 +4887,22 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 929. **Mind Without Fog gives +1 Core point** at creation (it was +2): `FOG_CORE` in the engine, traits.json `creation_points` value 1. A character made with 8 Core points before 1.11 keeps them (item 931).
 930. **Class ranks need a level too (rules 1.11):** rank II at the class attribute 5 and level 6, rank III at 8 and level 12 (classes.json `assignment.rank_levels`; engine `RANK_LEVEL`, `classRank`). The Proving Ground's rank tool raises the level to the rank's as well as the attribute. A saved character below the level drops to the rank its level allows until it gets there, in a fight saved in progress too. A rank that arrives with a level is announced like one that arrives with an Attribute point ("reaches Fighter II: Riposte, Lingering Dread"), and the character's units in a running fight hold it at once. *Leon to confirm 6 and 12.*
 931. **Characters made before 1.11 stay legal.** A sheet locked in under 1.11 is stamped (`rulesRev`, engine `SHEET_REV`) and must fit today's budgets. A sheet with no stamp was made before: when today's budgets don't fit it, the budgets of its day are used (a Core point for 2 Attribute points; Mind Without Fog's 2 Core points), so a saved character or a character file from before 1.11 can still be brought into a room (engine `sheetDerive`). Reopening one in creation and locking it in again makes it a 1.11 sheet. *Leon to confirm, or ask for old sheets to be refused with a reason instead.*
+932. **Momentum (rules 1.12):** 0 to 3 for everyone holding a melee weapon, 5 for a Fighter; +1 for each melee strike that hits; +1 more once per technique when it differs from the last one this turn; the first technique of a turn earns no variety bonus; a Finisher needs 2 and spends all (techniques.json `rules.momentum`).
+933. **Pressure's states and caps:** 0 to 4; Pressed at 2, Suppressed at 3, Broken at 4 (enemies only); players stop at 3, elites at 3, bosses at 2 (`rules.pressure`).
+934. **What the states cost:** Pressed −1 to hit with ranged attacks only, and no Watch; Suppressed −1 AP for an enemy and never for a player, and no reactions that attack or move; Broken −2 AP. Protective reactions always work (Leon, 10 Nov 2026). *Not built yet: the Broken enemy's forced first action, and the Heart save to leave cover the proposal gives Suppressed.*
+935. **Gaining Pressure:** +1 for the first ranged hit on a target each turn; +1 past cover the target stands against; 2 for an unseen hit with a Silent weapon (hidden pips); +1 to others of the victim's side within 3 tiles who saw a ranged kill.
+936. **Losing Pressure:** 1 at the end of your turn, or 2 when against cover and unseen, or when you end closer to the nearest enemy than you began (one number, not a sum: the lead's reading); 1 for each melee hit you land; 2 from a Take used on you.
+937. **Stopped once** (Leon: "gating 1 pin already did that"): ranged techniques only; until the end of the target's next turn; the save is the better of Guts and Athletics against TN 12.
+938. **Ready slots:** 3 + half the attack skill, rounded down, per system. Changed out of a fight only.
+939. **Drill:** 5, 10, 25 or 50 a kill by tier for everyone who hit the victim, ×3 for Defenders, Fighters and Marksmen; marks at 300, 900 and 1,800 (Leon: about two hours of fighting to a signature for a class that isn't martial). Mark I: the signature; marks II and III: a pick.
+940. **What everyone knows, and creation's picks:** Cut, Shot, Aimed Shot, Overwatch; 2 melee picks (one an Opener) with Raw Power or Athletics, 2 ranged with Dexterity; the defaults are Lunge and Sidestep, Suppress and Shift.
+941. **A weapon lends its signature while held; Auto weapons always offer Burst and Rake** (the lead's readings of Leon's "cards you drag into your weapon").
+942. **Off its home:** −2 to hit and no property line, for the techniques marked particular (Leon: "work a bit worse if not used on the right weapon class").
+943. **Becoming Pressed ends a held Watch** (the lead's reading; the proposal only says one can't be set while Pressed). *Leon to confirm.*
+944. **A technique's own Pressure replaces the ordinary +1** (Suppress: 2 in all on a hit, 1 on a miss), and **a Take's hit adds none** (the lead's readings).
+945. **Every technique's own numbers** (`numbers` on each of the 58 in techniques.json: to-hit bonuses, damage multipliers, tiles, rounds, durations) are placeholders, flagged `provisional: true`, for the balance pass after every Body system is in.
+946. **Damage scaling by `hits_with` and `scales_with`** (multiplier 1 + 0.1 × (the Attribute − 1) + 0.05 × the skill; Bare weapons use Strength and add 0.05 × both Raw Power and Athletics) is the lead's reading and **is not in the engine yet**: attacks still use today's damage rules.
+947. **Weapon mastery** (kills per weapon family, attack bonus +1 / +2, three perks) is replaced by drill. *Leon to confirm that the attack bonus goes too; the engine never applied it.*
+948. **The old Suppressed condition** (item 83: −1 AP and no reactions, from Spray and Pray and other perks) stays beside Pressure until it is moved onto Pressure 3; the two AP losses don't add.
+949. **The quiver** (Leon, 10 Nov 2026): loaded from a menu out of a fight, any mix of arrow types up to capacity, the type named per shot, no reload in a fight. Crossbows keep their reload.
+950. **Enemies** have Momentum and Pressure and use techniques from a list on their stat block. *The lists and the AI step are not built yet.*
