@@ -1533,7 +1533,13 @@
         "blast"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "hit": -4,
+        "arc_hit": -2,
+        "blast_pressure": 2,
+        "blast_range_bands": 3,
+        "smoke_decay": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "tile"

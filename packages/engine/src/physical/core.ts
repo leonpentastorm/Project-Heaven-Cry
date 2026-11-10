@@ -174,7 +174,9 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.needs.hidden && !u.hidden) return 'Only from Hidden.';
   const ap = techniqueAp(def, weaponId, args.line); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const w = WEAPON[weaponId];
-  if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
+  // a grenade thrown through a technique (Lob: args.ammo names a thrown item) spends the grenade, not the gun's rounds
+  const thrownAmmo = !!args.ammo && WEAPON[args.ammo]?.category === 'thrown';
+  if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo && !thrownAmmo) {
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
     if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
     if (def.needs.last_round && have !== 1) return 'Only with the last round in the weapon.';

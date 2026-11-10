@@ -788,7 +788,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0;
   // Items see the attack before it is checked: AP (ctx.ap), reach (ctx.reach), cover (ctx.ignoreCover), extra to-hit
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
-  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
+  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, noLos: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
   emit(cb, 'attack_preview', hk);
   const ap = opts.free ? 0 : Math.max(0, hk.ap);
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
@@ -810,7 +810,8 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (melee && r > hk.reach) return fail('Out of melee reach.');
   if (!melee && att.jammed) return fail('Weapon jammed: clear it (2 AP).');
   if (!melee && w.magazine != null && att.ammo <= 0) return fail('Empty: reload (2 AP).');
-  if (!melee && !lineOfSight(cb, att.pos, tgt.pos, !!hk.seeVeil)) return fail('No line of sight.');
+  // hk.noLos: an indirect shot over full cover (Lob with an Arc weapon, rules 1.12): someone on the side must still see the target
+  if (!melee && !hk.noLos && !lineOfSight(cb, att.pos, tgt.pos, !!hk.seeVeil)) return fail('No line of sight.');
   const eff = effectiveRange(useW), optic = hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0, bands = melee ? 0 : Math.max(0, Math.ceil(r / eff) - 1 - optic - Math.max(0, hk.bandsLess || 0)); // hk.bandsLess: range bands an item or technique ignores (Bead, Spot)
   if (bands > 2) return fail('Out of range.');
   // hk.coverTile: an item names a half-cover tile that protects the target although it doesn't face the shot (Eyes in
