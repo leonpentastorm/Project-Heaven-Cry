@@ -30,11 +30,14 @@ Leon, 10 Nov 2026. **Queued, not designed.** This file records the idea as he ga
 5. **Strength.** After the balance pass melee's ceiling is 125% of the weapon baseline. **Using a unique card puts you at that ceiling at once in raw damage, plus whatever the card itself does**, which may take it higher; that is accepted.
 6. **Enemies.** Elites and bosses can **use** Arts. Killing one **does not drop the card**. The Narrator or the campaign's builder may have it drop **the weapon**, for a player to pick up and master.
 
+7. **A family card can be copied out too**, the same way as a unique one.
+8. **A copy stays inside its system: melee to melee** (and, by the same reading, ranged to ranged; a sword wave never goes on a rifle).
+9. **Every card has two parts.** The first is **the move and the 125% ceiling**: it works in any weapon the copy is set into. The second is **the card's own extra effect**: it only works **in the weapon (or family) the card came from**. A katana's card in a greatsword gives the sword wave at the ceiling and nothing more. Each card is written and scaled as those two parts.
+
 ## Still to decide
 
 1. How many kills each strength of card needs, by enemy tier (drill weighs minion 5, soldier 10, elite 25, boss 50).
-2. What a copy may be set into: any weapon, the same system (melee or ranged), the same hands. Leon's example crosses families (katana to greatsword) inside melee.
-3. Whether a family card can be copied out too, or only a unique one.
+2. Whether "home" for a unique card's extra effect is that one weapon or its whole family.
 4. The list of families and one card for each; the unique cards for Masterwork and better weapons.
 5. Each card's effect on screen (textured effects are sourced under CC BY or CC0; SVG ones are drawn).
 6. Leon's seventh point arrived empty: to ask.
