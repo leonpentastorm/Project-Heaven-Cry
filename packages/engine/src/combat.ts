@@ -278,7 +278,7 @@ export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): F
 
 /** A unit went down or died: one event (the client drops and greys the token). */
 export function fxFell(cb: Combat, u: Unit) { emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
-function chained<T>(f: () => T, volley?: string): T { fxChain++; const was = VOLLEY; if (volley) VOLLEY = volley; try { return f(); } finally { fxChain--; VOLLEY = was; } }
+export function chained<T>(f: () => T, volley?: string): T { fxChain++; const was = VOLLEY; if (volley) VOLLEY = volley; try { return f(); } finally { fxChain--; VOLLEY = was; } }
 /** The volley a shot belongs to ('burst' | 'auto' | 'skill' | 'paired' | 'cone'), or null: attack hooks carry it as
  * ctx.volley (hooks gap C3); 'volley_end' {u, mode, cb, rng} fires when one is over. */
 let VOLLEY: string | null = null;

@@ -1625,7 +1625,18 @@
         "auto"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "hit": -3,
+        "targets": 3,
+        "group_span": 2,
+        "spread_wider": 1,
+        "pressure": 1,
+        "auto_rounds": 10,
+        "auto_hit": -2,
+        "auto_cone_width": 1.5,
+        "auto_heat": 4,
+        "auto_wear": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1661,7 +1672,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "pressure": 1,
+        "loud_save_tn": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy",
@@ -1702,7 +1716,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "pressure": 2,
+        "cover_mult": 2,
+        "arc_damage_mult": 0.5
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1757,7 +1775,15 @@
         "spread"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "per_roll": 3,
+        "max_rolls": 4,
+        "step": 1,
+        "pressure": 1,
+        "heat_under": 1,
+        "spread_mult": 2,
+        "spread_range": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy",
@@ -1790,7 +1816,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 2,
+        "extra_pressure": 1,
+        "quick_step": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
