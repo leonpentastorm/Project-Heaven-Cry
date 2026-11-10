@@ -149,3 +149,108 @@ Not covered:
 - A Spread weapon's Load Special. Every shot of that Fire carries the round, but the client shows it on the first shot only (needs E9).
 - Reduced motion. It was only checked that the effects fade.
 - Two browsers, where events reach the second client late.
+
+## Handover for the lead
+
+Leon asked for this to go to the final implementer, the lead who integrates Physical 2.0. Written 10 Nov 2026.
+
+### The two branches
+
+| Branch | Head | What it holds |
+| --- | --- | --- |
+| `claude/physical-2.0-B-ranged` | `ad42fb4` | The ranged engine: the 25 techniques, the quiver, the thrown rules, the effects events E1–E17, the live-check fix. Full note: `docs/design/handoffs/physical-2.0-B-RESULT.md` on that branch. |
+| `claude/physical-2.0-B-ranged-fx` | the commit that adds this section (its parent is `6435399`) | C's client (`feature/physical-2.0-C-client`), the ranged engine up to `ad42fb4` (merged in `0e798ef`), and the ranged effects. |
+
+The fx branch already contains the engine branch's head. Check: `git merge-base --is-ancestor ad42fb4 HEAD`.
+
+### Merge order
+
+1. Merge `claude/physical-2.0-B-ranged` first.
+2. Then merge `claude/physical-2.0-B-ranged-fx`. It already holds the first branch and C's client, so it adds only the
+   effects and this note on top.
+3. A's melee effects live in their own file. The only shared lines are in `fx/play.ts`, where each lane adds one line.
+
+### What the fx branch adds
+
+1. `apps/web/src/game/fx/ranged.ts`, `fx/rangedParts.ts`: an effect for every ranged technique, the quiver and the
+   thrown weapons (table above).
+2. `fx/ranged.test.ts` and `fx/livecheck.test.ts`: the unit tests.
+3. Additive lines in `fx/play.ts`; small fixes in `fx/dom.ts` and C's `fx/physical.ts` (from the live check).
+4. Two CC0 assets: the debris sprites (Cethiel) and the brass sound (Kenney), both credited.
+5. `EVENTS_FOR_THE_LEAD` is now empty. The engine sends all of E1–E17 (`EVENTS_SENT`).
+
+### Checks (run 10 Nov 2026 at these heads)
+
+| Check | `wt-ranged` (`ad42fb4`) | `wt-rfx` (fx branch) |
+| --- | --- | --- |
+| Engine `npx tsc --noEmit -p .` | clean | clean |
+| Engine `npx vitest run` | 93 files, 2226 passed, 1 skipped | 93 files, 2226 passed, 1 skipped |
+| Web `npx tsc --noEmit -p .` | clean | clean |
+| `npm test -w @phc/web` | 74 files (1 skipped), 653 passed, 2 skipped | 78 files (1 skipped), 726 passed, 2 skipped |
+| `python3 tools/validate.py data` | 0 errors, 0 warnings | 0 errors, 0 warnings |
+
+No version bump, no CHANGELOG change, `protodata.json` not regenerated, `physfight.ts` untouched.
+
+### The live check
+
+The ranged techniques were played in the real game (`wrangler dev`, the Proving Ground, two clients). Neither client
+logged an error. About 1,600 frames were shot, mid-effect, of every technique. They are working files of that session
+and are not committed.
+
+What the live check found, and what was fixed (each with a test):
+1. A smoke Lob was invisible and in the wrong place. Now the whole cloud is drawn (arc, reticle, radius box, puffs) when
+   its thrower or any tile of it is in sight. A hostile cloud out of sight still shows nothing.
+2. The grid ran ahead of the effect. Now struck cover keeps its old look and HP until its last `object` event plays; a
+   smoke tint waits for its grenade; a pushed unit takes the shot on its old tile; a killed unit stays through a
+   takedown cut-in.
+3. Words floated one tile above the shooter. A unit's own words now sit on its own tile; floating words never pile up
+   or run off the screen.
+4. A flashbang whited out the panels too. Now it whites out the map only.
+5. An armour-piercing round now streaks through the target with its own sparks.
+6. Engine (`ad42fb4`): the log said "the sandbags breaks". Cover with a plural name now agrees.
+
+Re-shot after the fixes: walls and sandbags keep their look until BROKEN plays; the smoke tint first shows when the
+grenade lands.
+
+### What remains for the lead
+
+From the engine note's requests (`physical-2.0-B-RESULT.md`, "Requests for the lead"):
+1. Rake's `auto_ap`: the Decrkm SMG's full auto for 3 AP isn't honoured by Rake (it costs 4).
+2. An enemy AI step for holding Watches (Overwatch, Cover Me).
+3. A screen button for pulling free of Pin Down's nail.
+4. A test of Fire Discipline with the Burst technique.
+5. `u.quiver` built in `combat_start`; the Proving Ground's `sandboxOver` skips the write-back.
+6. The catalogue comment in `combat.ts` for the new fx events.
+7. One move helper (`walkFree`, Walking Fire, Shift) and one no-roll shot helper (`looseRound`, the launcher Blast).
+8. Suppress's preview doesn't show Guard or the Defender's wall (previews don't run `pressureFilter`s).
+9. A generic `within_N` property line.
+10. `stop()` and pushes in a preview.
+11. Heart Overwatch doesn't go through `reaction_window`, so a Soul caster can react to Storm's walk.
+12. Arrows in shops and loot need calibre `arrow` stacks; two bows of one id share the quiver breakdown.
+13. The Defender's Head Down rider (a class rule) isn't built.
+14. Enemies don't throw grenades yet (spec item 95).
+
+Screen items for C's side (none is built on this branch):
+1. Bead and Spot marks on the grid between effects.
+2. A chambered Load Special round on the unit.
+3. "No held shot this round" (`u.noWatch`).
+4. The free reload's 0 AP on the reload entry while `u.freeReload` is set.
+5. An arrow picker on bow shots (`args.ammo`, `quiverView(u)`). The ARMS tab's quiver menu already sends `phys/quiver`,
+   which the engine now answers.
+6. Snap Shot's and Lob's pack lists. Snap Shot never shows on the pad without one (the live check saw this), since it
+   needs a stowed weapon.
+7. Walking Fire's fire point and Called Shot's part (`args.opt`) as pickers.
+
+Effects not yet seen live:
+1. A Spread weapon's Load Special (every shot carries `round`; check that each one shows it).
+2. Reduced motion (only checked that the effects fade).
+3. Enemy turns mixing a technique and a plain shot in one batch. E1a should settle it; not seen live.
+
+### Rulings Leon still has to give
+
+1. **Snap Shot:** pack-only (as built), or also the off-hand swap the data text promises ("Draw or swap")?
+2. **Pin Down's nail:** it holds until someone spends 2 AP to pull free. Keep that, or let it pay itself at turn start?
+3. **A Press's +1 Heat:** should it be able to jam the gun? Today it can't.
+4. **Rout with a frag grenade:** does Rout through the grenade spend it?
+5. **Throw for Lob users:** should `combat/throw` stay open to characters who know Lob?
+6. **The parlour pistol:** Silent in `physical/` but not in `tactics.ts`. Which is right?
