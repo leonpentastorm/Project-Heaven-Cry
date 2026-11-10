@@ -16,7 +16,7 @@ Two rulings from Leon on 10 Nov 2026:
 ## The set
 
 Every weapon in `data/weapons.json` (60) and every armour piece and shield in `data/items.json` (19) has an icon:
-`art/icons/weapons/<id>.svg` and `art/icons/armour/<id>.svg` (working spec: `art/icons/weapons/README.md`). Contact
+`art/icons/weapons/<id>.svg` and `art/icons/armour/<id>.svg`, and the two magic foci in `art/icons/focus/<id>.svg` (working spec: `art/icons/weapons/README.md`). Contact
 sheets, each icon at 96 px and at 32 px on the panel:
 
 - Weapons: [`weapon-icons/weapons-sheet.png`](weapon-icons/weapons-sheet.png)
@@ -25,6 +25,20 @@ sheets, each icon at 96 px and at 32 px on the panel:
 Leon's follow-up (10 Nov 2026): "Simplify it just a lil bit, avoid floating bits like the bayonet on the rifle." So
 nothing floats: every stroke touches the silhouette (the bayonet shares the barrel's edge; no smoke, sparks or loose
 beads).
+
+**The magic foci** (Leon, 10 Nov 2026: "their base form are 2 types of gloves"). The Evoker and the Emanator are
+gloves, drawn in the same line:
+
+- **Evoker** (`evoker`, Sigil magic): an angular glove, the back of the hand. Squared, chamfered fingers; the index
+  finger ends in a stylus point that draws the glyphs in the air; a hexagonal core window on the back of the hand,
+  where the mana core is loaded (*clack, clack, RACK*: the Narrator's World Bible); the cuff seam.
+  [`../icons/focus/evoker.svg`](../icons/focus/evoker.svg)
+- **Emanator** (`emanator`, Soul magic): a rounded glove, the open palm, on a long bracer. A round emitter lens in the
+  palm, and the heart link: one line from the lens down the wrist and out of the cuff (the Emanator calls bots and
+  stores them like a battery, linked to the heart). [`../icons/focus/emanator.svg`](../icons/focus/emanator.svg)
+
+Both are **Suggested** until Leon confirms the look. The weapons built on them (`evoker_blade`, `emanator_gauntlet`)
+keep their own icons.
 
 ## The rule
 

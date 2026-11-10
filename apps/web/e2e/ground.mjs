@@ -18,7 +18,7 @@ const key = (x, y) => x + ',' + y;
 p.on('dialog', (d) => d.accept());
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
 const openTools = async () => { if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click(); await drawer.waitFor(); };
-const closeTools = async () => { if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click(); await drawer.waitFor({ state: 'detached' }).catch(() => {}); } };
+const closeTools = async () => { if (await drawer.count()) { await drawer.getByRole('button', { name: /^Close the tools/ }).first().click(); await drawer.waitFor({ state: 'detached' }).catch(() => {}); } };
 const area = p.locator('div[role="dialog"][aria-label="Area map"]');
 const openArea = async () => { if (!(await area.count())) await p.getByRole('button', { name: 'Area map', exact: true }).first().click(); await area.waitFor(); await p.waitForTimeout(250); };
 const closeArea = async () => { if (await area.count()) { await area.getByRole('button', { name: 'Close', exact: true }).first().click(); await area.waitFor({ state: 'hidden' }).catch(() => {}); await p.waitForTimeout(250); } };

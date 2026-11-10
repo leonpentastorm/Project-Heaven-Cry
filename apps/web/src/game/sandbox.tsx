@@ -21,6 +21,7 @@ import { createPortal } from 'react-dom';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
 import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
 import { OPT_LABEL, optValue } from './actionPickers';
+import { gearIconUri } from './gearIcons';
 import { Groups, GroupList, GroupSearch, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
 import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
@@ -623,6 +624,9 @@ function equipTo(it: PackIt): ['main' | 'off' | 'worn' | 'mod', string][] {
   if (d?.slot === 'off_hand') return [['off', 'Equip · off hand']];
   return [];
 }
+/** An item's icon (weapons, armour, shields: gearIcons.ts), or nothing for an item with none. */
+const GearIcon = ({ id, size = 24 }: { id?: string | null; size?: number }) => { const src = gearIconUri(id); return src ? <img className="phc-gear-icon" src={src} alt="" width={size} height={size} style={{ flex: 'none', width: size, height: size }} /> : null; };
+const nameCell: React.CSSProperties = { minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 };
 const slotRow: React.CSSProperties = { display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) auto', gap: 8, alignItems: 'center', padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, fontSize: 13 };
 /** Where a focus is (spec: Hands 2, item 630: it counts only in a hand). */
 function focusNow(c: Character, k: 'evoker' | 'emanator'): string {
@@ -646,17 +650,18 @@ function GearTab({ c }: { c: Character }) {
       </span>
     </Section>
     <Section title="EQUIPPED" aria="Equipped">
-      <div style={slotRow}><span style={label}>MAIN HAND</span><span style={{ minWidth: 0 }}><b>{mainName}</b>{c.weaponState?.rarity && c.weaponState.rarity !== 'standard' ? ' (' + c.weaponState.rarity + ')' : ''}{(c.weaponState?.mods || []).length ? <span style={{ color: C.muted }}>{' · ' + c.weaponState!.mods!.map((m) => ITEM[m]?.name || m).join(', ')}</span> : null}</span>
+      <div style={slotRow}><span style={label}>MAIN HAND</span><span style={nameCell}>{c.weapon !== 'fists' && <GearIcon id={c.weapon} />}<span style={{ minWidth: 0 }}><b>{mainName}</b>{c.weaponState?.rarity && c.weaponState.rarity !== 'standard' ? ' (' + c.weaponState.rarity + ')' : ''}{(c.weaponState?.mods || []).length ? <span style={{ color: C.muted }}>{' · ' + c.weaponState!.mods!.map((m) => ITEM[m]?.name || m).join(', ')}</span> : null}</span></span>
         {c.weapon !== 'fists' ? <button type="button" style={small} aria-label={'Unequip ' + mainName} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot: 'main' })}>Unequip</button> : <span />}</div>
-      <div style={slotRow}><span style={label}>OFF HAND</span><span style={{ minWidth: 0, color: c.offHand ? C.text : C.muted }}>{c.offHand ? <b>{WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id}</b> : 'empty'}</span>
+      <div style={slotRow}><span style={label}>OFF HAND</span><span style={{ ...nameCell, color: c.offHand ? C.text : C.muted }}>{c.offHand && <GearIcon id={c.offHand.id} />}{c.offHand ? <b>{WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id}</b> : 'empty'}</span>
         {c.offHand ? <button type="button" style={small} aria-label={'Unequip ' + (WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id)} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot: 'off' })}>Unequip</button> : <span />}</div>
-      {worn.map(([slot, id]) => <div key={slot} style={slotRow}><span style={label}>{slot.replace(/_/g, ' ').toUpperCase()}</span><span style={{ minWidth: 0 }}><b>{ITEM[id]?.name || id}</b></span>
+      {worn.map(([slot, id]) => <div key={slot} style={slotRow}><span style={label}>{slot.replace(/_/g, ' ').toUpperCase()}</span><span style={nameCell}><GearIcon id={id} /><b>{ITEM[id]?.name || id}</b></span>
         <button type="button" style={small} aria-label={'Unequip ' + (ITEM[id]?.name || id)} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot })}>Unequip</button></div>)}
       {!worn.length && <div style={slotRow}><span style={label}>ARMOUR</span><span style={{ color: C.muted }}>no armour pieces worn</span><span /></div>}
       <span style={{ fontSize: 12, color: C.muted }}>Body armour class {c.armourClass ?? 0} (set it on Squad). A weapon taken in hand here comes loaded.</span>
     </Section>
     <Section title={'PACK (' + pack.length + ')'} aria="Pack">
       {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, flexWrap: 'wrap' }}>
+        <GearIcon id={it.mags || it.calibre ? null : it.weapon || it.item || it.id} />
         <span style={{ flex: '1 1 140px', minWidth: 0 }}>{it.name}{it.rarity && it.rarity !== 'standard' ? ' (' + it.rarity + ')' : ''}<span style={{ color: C.muted }}>{it.mags ? ' · ' + it.mags.length + ' × [' + it.mags.join(', ') + ']' : it.qty > 1 ? ' × ' + it.qty : ''}</span></span>
         {equipTo(it).map(([to, name]) => <button key={to} type="button" style={small} aria-label={name + ': ' + it.name} onClick={() => act({ type: 'sandbox/equip', charId: c.id, idx: i, to })}>{name}</button>)}
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Drop ' + it.name} onClick={() => act({ type: 'sandbox/drop', charId: c.id, idx: i })}>✕</button>
@@ -685,6 +690,7 @@ function GivePicker({ c }: { c: Character }) {
     </div>
     <div style={w.wide ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 6, maxHeight: 420, overflowY: 'auto', alignContent: 'start' } : { display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 300, overflowY: 'auto' }}>
       {hits.map((x) => <div key={(x.weapon ? 'w:' : 'i:') + x.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, minWidth: 0 }}>
+        <GearIcon id={x.id} size={32} />
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}><span style={{ fontSize: 13, fontWeight: 600 }}>{x.name}</span><span style={{ fontSize: 11, color: C.muted }}>{x.what}{x.weapon && rarity !== 'standard' ? ' · ' + rarity : ''}</span></span>
         <button type="button" style={{ ...btn, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined })}>Give</button>
         {(x.weapon || /armour|mod|off hand|shield|light|focus/.test(x.what)) && <button type="button" style={{ ...primary, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined, equip: true })}>Give + equip</button>}
