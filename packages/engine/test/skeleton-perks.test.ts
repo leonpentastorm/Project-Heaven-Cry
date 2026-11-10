@@ -241,14 +241,12 @@ describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
     many.put(many.pcs[1], 'C11'); expect(term(many)).toBe(0);
     const low = fight(3); low.unit(low.pcs[0].id).def = 9; expect(term(low)).toBe(0); // only if yours is higher
   });
-  it('Stand Still: until you first act in a fight your Calls cost 1 AP less; a Call is not acting, a move is', () => {
-    const fight = (pts: number) => { const f = physFight([{ weapon: 'sabre', skills: { composure: pts, charisma: 1 } }, { name: 'Ally' }], [{ at: 'N9' }]); f.put(f.pcs[0], 'C7'); f.put(f.pcs[1], 'C8'); f.turn(f.pc); return f; };
-    const cost = (f: F) => withGame(f.g, () => previewCall(f.cb, f.pc, 'call.rally', { targetId: f.pcs[1].id })).ap;
-    const f = fight(5); expect(cost(f)).toBe(1); expect(cost(fight(4))).toBe(2);
-    f.act({ type: 'combat/call', unitId: f.pc.id, id: 'call.rally', targetId: f.pcs[1].id } as any);
-    expect(f.pc.ap).toBe(5); expect(cost(f)).toBe(1);
-    f.act({ type: 'combat/move', unitId: f.pc.id, to: f.tile('B7') } as any);
-    expect(cost(f)).toBe(2);
+  it('Stand Still (the original, restored): until you first act, enemies are at −2 to hit you; a Call is not acting, a move is', () => {
+    const fight = (pts: number) => { const f = physFight([{ weapon: 'sabre', skills: { composure: pts, charisma: 1 } }, { name: 'Ally' }], [{ at: 'F7', weapon: 'service_pistol' }]); f.put(f.pcs[0], 'C7'); f.put(f.pcs[1], 'C8'); f.put(f.foe, 'F7'); f.turn(f.pc); return f; };
+    const term = (f: F) => { const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(f.foe.id), f.unit(f.pc.id), 'shot', { free: true })); if (!pv.terms) throw new Error('preview: ' + pv.why); return pv.terms.filter((t: any) => t.label === 'Stand Still').reduce((n: number, t: any) => n + t.v, 0); };
+    const f = fight(5); expect(term(f)).toBe(-2); expect(term(fight(4))).toBe(0);
+    f.act({ type: 'combat/call', unitId: f.pc.id, id: 'call.rally', targetId: f.pcs[1].id } as any); expect(term(f)).toBe(-2);
+    f.act({ type: 'combat/move', unitId: f.pc.id, to: f.tile('B7') } as any); expect(term(f)).toBe(0);
   });
 });
 

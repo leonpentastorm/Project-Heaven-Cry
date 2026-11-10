@@ -343,7 +343,8 @@ register({
 // (generic immunity), Breaching Strike; Prone from a blocked shove still lands.
 register({
   id: 'siege_engine', claims: [0, 1],
-  stat: (h, stat, ctx) => ((stat === 'ap_cost:shove' || stat === 'ap_cost:break') && (ctx?.base ?? 2) > 1 ? -1 : 0),
+  // The Break Finisher costs 1 AP less; a Shove that moves its target gives 1 Guard (Leon, 10 Nov 2026: the Shove Link is 1 AP already, so its discount gave nothing)
+  stat: (h, stat, ctx) => ((stat === 'ap_cost:shove' || stat === 'ap_cost:break') && (ctx?.base ?? 2) > 1 ? -1 : stat === 'shove_guard' ? 1 : 0),
   on: { forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel) { ctx.cancel = true; say(h.cb, h.u!.name + ' doesn\'t move an inch (Siege Engine).'); } } },
   brief: () => 'can\'t be knocked back or off their feet in a story scuffle',
 });

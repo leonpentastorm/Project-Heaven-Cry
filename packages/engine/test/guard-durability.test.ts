@@ -208,9 +208,9 @@ describe('6. it is a fight\'s resource', () => {
     const f = fight([{ dur: 4 }]); guard(f, f.pc, 4);
     expect(resourcesFor(f.char(f.pc))).toMatchObject({ res: { guard: 0 }, resMax: { guard: 4 } });
   });
-  it('a hit on a unit holding Guard costs no Momentum', () => {
-    const f = fight([{ dur: 5 }]); f.momentum(f.pc, 2); guard(f, f.pc, 1); f.turn(f.foe);
-    hit(f, f.pc, 'melee'); expect(f.momentum(f.pc)).toBe(2); expect(guard(f)).toBe(1); // the kept point still counts as holding Guard
-    guard(f, f.pc, 0); hit(f, f.pc, 'melee'); expect(f.momentum(f.pc)).toBe(1);
+  it('a hit that Guard soaked part of costs no Momentum; the kept point alone protects nothing', () => {
+    const f = fight([{ dur: 5 }]); f.momentum(f.pc, 2); guard(f, f.pc, 2); f.turn(f.foe);
+    hit(f, f.pc, 'melee'); expect(f.momentum(f.pc)).toBe(2); expect(guard(f)).toBe(1); // one point soaked: the Momentum stays
+    hit(f, f.pc, 'melee'); expect(guard(f)).toBe(1); expect(f.momentum(f.pc)).toBe(1);  // the last point is kept back and soaks nothing: the hit costs Momentum
   });
 });

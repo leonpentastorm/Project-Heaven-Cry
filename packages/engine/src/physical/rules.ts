@@ -61,7 +61,7 @@ export const NOT_A_HIT = new Set(['bleed', 'bleeding', 'burn', 'burning', 'poiso
 onHook('damage_in', (ctx: any, cb) => {
   const u: Unit = ctx.t; if (ctx.phase !== 'after' || !u || !(ctx.dealt > 0) || !momentumOf(u)) return;
   if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;
-  if (guardUp(u) || ctx.parryWon || ctx.guard0 > 0) return;
+  if (guardUp(u) || ctx.parryWon || (ctx.guardSoaked || 0) > 0) return; // Guard points keep Momentum only on a hit they soaked part of (Leon, 10 Nov 2026: a kept point must not protect it for ever)
   loseMomentum(cb, u, M().hit_loss ?? 1);
 });
 

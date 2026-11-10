@@ -183,9 +183,9 @@ describe('5. being hit costs Momentum', () => {
     expect(hitPc(g)).toBeGreaterThan(0); expect(g.cb.log.some((l) => /it gets through/.test(l))).toBe(true); expect(g.momentum(g.pc)).toBe(1);
   });
   it('not while the unit holds Guard points', () => {
-    const f = fight('sabre', [], { m: 2 }); f.pc.resMax!.guard = 5; f.pc.res!.guard = 1; f.turn(f.foe); rig({ hit: true, die: 12 });
-    hitPc(f); expect(f.pc.res!.guard).toBe(1); expect(f.momentum(f.pc)).toBe(2); // the last Guard point is kept back (rules 1.13); holding it kept the Momentum
-    f.pc.res!.guard = 0; expect(hitPc(f)).toBeGreaterThan(0); expect(f.momentum(f.pc)).toBe(1);
+    const f = fight('sabre', [], { m: 2 }); f.pc.resMax!.guard = 5; f.pc.res!.guard = 2; f.turn(f.foe); rig({ hit: true, die: 12 });
+    hitPc(f); expect(f.pc.res!.guard).toBe(1); expect(f.momentum(f.pc)).toBe(2); // a point soaked part of the hit: the Momentum stays
+    expect(hitPc(f)).toBeGreaterThan(0); expect(f.pc.res!.guard).toBe(1); expect(f.momentum(f.pc)).toBe(1); // the kept point soaks nothing: it protects nothing
   });
 });
 

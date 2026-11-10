@@ -12,6 +12,7 @@
 //     Guard with Reach) is the Body family save.
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
+import { statQuery } from '../../effects/hooks';
 import { technique, save, cond, stop, forceMove, pushBlocked, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
 import { strikingWith, techSaveTn, techVia, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
@@ -230,6 +231,8 @@ technique({
     fallFx(t, tgt, wasProne);
     // it works when the target really moved, or went Prone where it was blocked (an item may cancel the push)
     if (!(tgt.pos !== was || (blocked && tgt.prone && !wasProne))) t.cb.log.push(tgt.name + ' holds its ground.');
+    // Siege Engine: a Shove that moves its target gives its holder Guard (the perk answers 'shove_guard')
+    else if (tgt.pos !== was && u.resMax?.guard) { const n = statQuery({ u, cb: t.cb }, 'shove_guard').add; if (n > 0) { u.res ||= {}; u.res.guard = Math.min(u.resMax.guard, (u.res.guard || 0) + n); } }
     return null;
   },
   ai: (t) => (t.tgt && t.tgt.side !== t.u.side && dist(t.u.pos, t.tgt.pos) <= 1 ? 3 : 0),

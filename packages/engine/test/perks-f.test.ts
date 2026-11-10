@@ -159,7 +159,8 @@ describe('Case Closed', () => {
     const ally = f.pcs[1]; ally.pos = '3,6'; ally.ap = 9;
     const pv = withGame(f.g, () => previewAttack(f.cb, ally, f.foe, 'shot'));
     expect(pv.terms!.some((t) => t.label === 'Case Closed')).toBe(false);
-    expect(pv.dmg!.mults.some((x) => x.label.includes('Case Closed') || x.label.includes('Weak Point'))).toBe(false);
+    expect(pv.dmg!.mults.some((x) => x.label.includes('Weak Point'))).toBe(false);
+    expect(pv.dmg!.mults.some((x) => x.label === 'Case Closed' && x.v === 1.2)).toBe(true); // a Mastered perk's weight: +20% damage for the squad (Leon, 10 Nov 2026)
     f.foe.ap = 9;
     for (const t of f.pcs) { const back = withGame(f.g, () => previewAttack(f.cb, f.foe, t, 'shot')); expect(back.terms!.some((x) => x.label === 'Case Closed' && x.v === -2)).toBe(true); }
   });

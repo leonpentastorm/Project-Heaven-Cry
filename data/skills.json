@@ -3589,15 +3589,20 @@
         },
         "5": {
           "name": "Stand Still",
-          "category": "Passive",
+          "category": "Combat Starter",
           "mastery": 2,
-          "text": "Until you first move, attack or use an ability in a combat, your Calls cost 1 AP less.",
+          "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
           "effects": [
             {
-              "op": "cost_mod",
-              "action": "call",
-              "value": -1,
-              "when": "until you first act in a combat"
+              "op": "stat_mod",
+              "stat": "defense_until_first_act",
+              "value": 2
+            },
+            {
+              "op": "grant_action",
+              "action": "stand_still_counter",
+              "ap": 0,
+              "uses": "per_combat"
             }
           ],
           "adjudication": "engine",

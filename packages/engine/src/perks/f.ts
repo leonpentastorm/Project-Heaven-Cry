@@ -318,6 +318,7 @@ register({
   on: {
     analyze: (ctx, h) => { if (ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
     attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: -2, label: 'Case Closed' }); },
+    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.roll?.ok || !ctx.ck.skills?.includes('analysis') || !h.g || !h.c) return;
       pendRuling(h.g, h.c, h.key, 'Case Closed: the Acuity check succeeded; tell ' + h.c.name + ' (a private perkLine) what ' + (ctx.ck.target || 'the subject') + ' wants most.');
