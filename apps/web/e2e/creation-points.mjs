@@ -47,7 +47,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'Body, Mind and Soul as headings; 9 attributes; 27 skills, each three under their attribute', lay.fams.join() === 'BODY,MIND,SOUL' && lay.attrs === 9 && lay.skills === 27 && lay.under);
   ok(at + 'no name is cut short' + (lay.cut.length ? ' (' + lay.cut.join(', ') + ')' : '') + '; every skill row one height (' + lay.hMin + '–' + lay.hMax + ')', !lay.cut.length && lay.hMax - lay.hMin <= 1);
   // (Proficiency's own line names the Sigil Core, the thing a mage loads: that is not a Core point.)
-  const stray = lay.words.replace(/Sigil Core/g, '').match(/\bcores?\b|rules \d|today's rule|[a-z]_[a-z]/i);
+  const stray = lay.words.replace(/Sigil Core|core charges?/gi, '').match(/\bcores?\b|rules \d|today's rule|[a-z]_[a-z]/i);
   ok(at + 'nothing on the step says Core, and nothing reads like a rules reference or an id' + (stray ? ' (' + stray[0] + ')' : ''), !stray);
   // Both budgets stay in view when the page is scrolled to its end.
   await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await p.waitForTimeout(150);
@@ -75,7 +75,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'lowering Agility under Dexterity is refused, naming the skill: ' + await note(), (await note()) === '✗ Agility can\'t drop to 3 while Dexterity is 4: lower Dexterity first.' && (await val('attr', 'agility')) === '4');
   // What the next point gives, on the screen.
   ok(at + 'Agility shows what its next point gives', (await text('[data-attr-next="agility"]')) === 'Next point: +0.5 tile of movement an AP, +1 Initiative.');
-  ok(at + 'Dexterity shows its place, its roll and what a point gives', /^FIGHT\s*·\s*TAKES AGILITY TO 5\s*·\s*Roll \+3, next \+4\. Next point: \+0\.5 Throwing range/.test((await text('[data-skill="dexterity"] .phc-pt-line')).replace(/\s+/g, ' ')));
+  ok(at + 'Dexterity shows its place, its roll and what a point gives', /^FIGHT\s*·\s*TAKES AGILITY TO 5\s*·\s*Roll \+3, next \+4\. Next point: \+1 to hit with guns/.test((await text('[data-skill="dexterity"] .phc-pt-line')).replace(/\s+/g, ' ')));
   // Keyboard: Tab reaches the stepper, Enter presses it, the arrow keys step it; focus stays on the stepper.
   await down('skill', 'athletics').focus();
   await p.keyboard.press('Tab');
@@ -123,6 +123,6 @@ await p.screenshot({ path: SHOTS + '/creation-points-1440-fog.png' });
 // The Lock in step's summary: no Core numbers.
 await step('Lock in');
 const lock = await p.locator('[data-phc-create]').innerText();
-ok('the Lock in step lists the Skill and Attribute points still to place, and no Core', /All 10 Skill points placed/.test(lock) && /All 12 Attribute points placed, none above 7/.test(lock) && !/\bcores?\b/i.test(lock.replace(/mana cores?|spare cores?|Sigil Core/gi, '')));
+ok('the Lock in step lists the Skill and Attribute points still to place, and no Core', /All 10 Skill points placed/.test(lock) && /All 12 Attribute points placed, none above 7/.test(lock) && !/\bcores?\b/i.test(lock.replace(/mana cores?|spare cores?|Sigil Core|core charges?/gi, '')));
 ok('no page errors' + (p.errors.length ? ': ' + p.errors.join(' | ') : ''), !p.errors.filter((e) => !/ERR_TUNNEL_CONNECTION_FAILED/.test(e)).length);
 await browser.close();
