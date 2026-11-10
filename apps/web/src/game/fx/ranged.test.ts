@@ -9,7 +9,7 @@ import { resolve } from 'node:path';
 import { refOf, ARCHETYPES, newCharacter, startCombat } from '@engine';
 import { setLayer } from './dom';
 import { playFx, queueFx, setContext, clearFx, combatTempoInfo } from './play';
-import { tagOf, looseKind, stepDown, partOf, tilesWithin, quietEnd, rangedBeat, resetRanged, rangedBatch, smokeTiles, EVENTS_FOR_THE_LEAD, ROUND_WORD } from './ranged';
+import { tagOf, looseKind, stepDown, partOf, tilesWithin, quietEnd, rangedBeat, resetRanged, rangedBatch, smokeTiles, EVENTS_FOR_THE_LEAD, EVENTS_SENT, ROUND_WORD } from './ranged';
 import { coverMaterial, partPoint, HEAT_BAR_PX, SNAP_ARC } from './rangedParts';
 import { FX_CREDITS } from './fxCredits';
 import { SFX_CREDITS } from '../sfxCredits';
@@ -94,7 +94,8 @@ describe('pure pieces', () => {
     expect(quietEnd('replaced')).toBe(true); expect(quietEnd('fired')).toBe(true); expect(quietEnd('Smoke grenade')).toBe(false);
     expect(coverMaterial('crate').sound).toBe('hit_wood'); expect(coverMaterial('barrel').sound).toBe('hit_metal'); expect(coverMaterial('low_wall').label).toBe('stone');
     expect(ROUND_WORD.armor_piercing).toBe('AP ROUND');
-    expect(EVENTS_FOR_THE_LEAD.length).toBeGreaterThan(10);
+    expect(EVENTS_FOR_THE_LEAD).toEqual([]); // the ranged engine sends all of E1–E17 now
+    expect(EVENTS_SENT).toHaveLength(18);
   });
 });
 
@@ -473,5 +474,61 @@ describe('the new assets are on disk and credited', () => {
     for (const f of files) expect(existsSync(resolve(PUBLIC, f.slice(1))), f).toBe(true);
     const br = SFX_CREDITS.find((c) => /impactMetal_light/.test(c.what));
     expect(br?.licence).toBe('CC0'); expect(br?.url).toMatch(/kenney\.nl/);
+  });
+});
+
+// ---------- keyed on the engine's events (claude/physical-2.0-B-ranged, E1–E17) ----------
+/** A technique event as the ranged engine sends it (E1: weapon, line, opt, ammo). */
+const etech = (id: string, extra: Record<string, unknown> = {}) => tech(id, { weapon: W.weapon, line: null, opt: null, ammo: null, ...extra });
+describe('the engine\'s events', () => {
+  it('E1/E1a: a technique from the ranged engine owns only the shots that carry its `tech`; a plain shot after it is another action', () => {
+    tagOf(etech('mag_dump', { group: 'press' }));
+    expect(tagOf(shot({ tech: 'mag_dump', vi: 0, chain: true }))?.id).toBe('mag_dump');
+    expect(tagOf(shot())).toBeNull(); // no `tech`: not the dump's, even within its rolls
+    tagOf(etech('burst')); const s1 = shot({ tech: 'burst', vi: 0 }), s2 = shot({ tech: 'burst', vi: 1, chain: true });
+    tagOf(s1); tagOf(s2);
+    expect(rangedBeat(s2 as any)).toBeUndefined(); // the burst's beat is C's/the base's
+    tagOf(tech('burst')); expect(tagOf(shot())?.id).toBe('burst'); // an older replay (no `weapon`): the guess stays
+  });
+  it('E2: Snap Shot\'s draw comes before its technique and is drawn toward its target', () => {
+    const layer = grid();
+    const sw = { k: 'swap_in', n: n(), unit: 'pc-a', at: '1,3', weapon: W.weapon, from: 'pack', tech: 'snap_shot' };
+    queueFx([sw, etech('snap_shot'), shot({ tech: 'snap_shot', vi: 0 })] as any);
+    expect(tagOf(sw)?.id).toBe('snap_shot'); expect(tagOf(sw)?.target).toBe('f1');
+    vi.advanceTimersByTime(12000);
+    expect(layer.childElementCount).toBe(0);
+  });
+  it('E4: the Mag Dump\'s volley sets the stream\'s rounds; the Rake\'s targets give the sweep; one recording', () => {
+    const layer = grid();
+    const s = vi.spyOn(sfxMod, 'sfx');
+    const vol = { k: 'volley', n: n(), ...W, target: 'f1', to: '6,3', mode: 'dump', shots: 12, rolls: 4, tech: 'mag_dump' };
+    queueFx([etech('mag_dump', { group: 'press' }), vol, shot({ tech: 'mag_dump', vi: 0, chain: true }), shot({ tech: 'mag_dump', vi: 1, chain: true, hit: false }),
+      { k: 'heat', n: n(), unit: 'pc-a', at: '1,3', now: 7, was: 3, why: 'dump', limit: 8 }] as any);
+    expect(tagOf(vol)?.volleys).toHaveLength(1);
+    vi.advanceTimersByTime(1400);
+    expect(s.mock.calls.filter((c) => c[0] === 'auto_rifle').length).toBe(1); // the volley's recording, not a made-up one too
+    expect(s.mock.calls.some((c) => c[0] === 'dry_click')).toBe(true);
+    expect(text(layer)).toMatch(/HEAT 7\/8/);
+    vi.advanceTimersByTime(3000);
+    const rv = { k: 'volley', n: n(), ...W, target: 'f1', to: '6,3', mode: 'rake', shots: 6, targets: ['f1', 'f2', 'f3'], tech: 'rake' };
+    queueFx([etech('rake', { group: 'press' }), rv, shot({ tech: 'rake', vi: 0, chain: true })] as any); // one roll so far: the sweep still crosses all three
+    vi.advanceTimersByTime(450);
+    expect(rfx(layer, 'sweep')).toBe(1);
+  });
+  it('E9/E16: a Load Special from the engine keeps nothing pending; the shot\'s `round` shows it once, and the next Fire is standard', () => {
+    const layer = grid();
+    queueFx([etech('load_special', { group: 'set' }), { k: 'load', n: n(), unit: 'pc-a', at: '1,3', rounds: 1, special: 'incendiary', dur: 400, weapon: W.weapon, hand: 'main' }] as any);
+    vi.advanceTimersByTime(3000);
+    queueFx([etech('aimed_shot'), shot({ tech: 'aimed_shot', vi: 0, round: 'incendiary' })] as any);
+    expect(ever(layer, /INCENDIARY/, 1500)).toBe(true);
+    vi.advanceTimersByTime(3000);
+    queueFx([etech('aimed_shot'), shot({ tech: 'aimed_shot', vi: 0 })] as any);
+    expect(ever(layer, /INCENDIARY/, 1500)).toBe(false);
+  });
+  it('E11: Last Round\'s free reload chip comes from the event, once', () => {
+    const layer = grid();
+    queueFx([etech('last_round', { group: 'take' }), shot({ tech: 'last_round', vi: 0, killed: true }), { k: 'free_reload', n: n(), unit: 'pc-a', at: '1,3', tech: 'last_round' }] as any);
+    let most = 0; for (let t = 0; t < 2000; t += 25) { vi.advanceTimersByTime(25); most = Math.max(most, (text(layer).match(/FREE RELOAD/g) || []).length); }
+    expect(most).toBe(1);
   });
 });

@@ -13,11 +13,12 @@
 // Which technique a shot belongs to: the engine's 'technique' event comes first, then the action's shots, objects,
 // hurts and conditions. tagOf() reads them in order (the queue computes every beat in order before anything plays, so
 // the tags are ready when the handlers run) and keeps each technique's record with its shots and what followed, so a
-// shot can look ahead (the cover a Punch Through breaks, the targets a Rake sweeps). A shot that carries `tech` (the
-// field asked of the engine, E1a) is tagged by it; a shot from another unit (a held shot sprung mid-walk) never inherits.
-//
-// Events the engine doesn't send yet are handled here as they will arrive (see EVENTS_FOR_THE_LEAD below); until then
-// the effect falls back to what the client can read (a Called Shot's part from the condition it caused).
+// shot can look ahead (the cover a Punch Through breaks, the targets a Rake sweeps). The ranged engine (rules 1.12,
+// claude/physical-2.0-B-ranged, events E1–E17) marks every technique's shot with `tech` and `vi`, so a shot is tagged by
+// what the engine says; a technique event that carries `weapon` comes from that engine, and a shot of its user with no
+// `tech` after it is another action. The guesses (a technique's roll count, chained rolls, one target) stay only for
+// events recorded before those fields (an older replay), as do the fallbacks noted at each handler (a Called Shot's
+// part read from the condition it caused, Load Special's round matched by hand, the Rake's targets from its shots).
 //
 // Asset rule (CLAUDE.md): rings, lines, strokes, pips and words are drawn here (fx/rangedParts.ts); the one textured
 // piece is the cover debris (Cethiel, CC0, credited in fx/fxCredits.ts), and the brass tinkle (Kenney, CC0, credited in
@@ -55,28 +56,12 @@ export interface RangedKit {
 /** The kit's seesUnit, kept for the beats (a hidden actor's Bead, Heat or lost Watch holds no stage). */
 let seesActor: (id: string | null | undefined) => boolean = () => true;
 
-/** The events (or fields) this file reads that the ranged engine doesn't send yet: the list for the lead
- *  (claude/physical-2.0-B-ranged). Each effect works without its event and gets better with it. */
-export const EVENTS_FOR_THE_LEAD = [
-  'E1 technique: line, opt, ammo (Burst auto, Called Shot part, Lob grenade, Brace Auto, Pin Down nailed, Warning Shot Loud)',
-  'E1a shot: tech, vi (a shot tied to its technique and its place in a volley)',
-  'E2 swap_in {unit, at, weapon} (Snap Shot\'s draw; needs the weapon swapper registered)',
-  'E3 carry {unit, from, to, target} (Punch Through Heavy: the round carrying on)',
-  'E4 volley {mode: dump | rake | suppress, shots} with the rolls chained (one recording, chained beats)',
-  'E5 save {unit, at, ok, tech} (HOLDS / STEADY on a passed save)',
-  'E6 lane {unit, at, r} / lane_end {unit} (Suppress Heavy\'s held lane)',
-  'E7 heat {unit, at, now, was, why: dump, limit} (Mag Dump\'s Heat to one under the limit)',
-  'E8 technique: with (Crossfire\'s ally)',
-  'E9 shot: round (the special round or arrow fired)',
-  'E10 routed {unit, from, to, by} (Rout\'s run)',
-  'E11 free_reload {unit, at} (Last Round)',
-  'E12 Cover Me\'s loose round: covering: true, not cover: true (cover is the cover tile\'s key on a shot)',
-  'E13 watch_fire: why (Dead to Rights\' trigger)',
-  'E14 object: max (COVER 12/30)',
-  'E15 stopped: apLoss (Stopping Shot\'s AP loss, a data number; the client shows none without it)',
-  'E16 load: weapon, hand (the chambered round\'s weapon, so only its Fire shows it; the client matches the hand only)',
-  'E17 watch_end, bead, bead_end, heat: only (or seen) for a holder the other side can\'t see, as watch_set has',
-];
+/** The events (or fields) this file reads that the ranged engine doesn't send yet: the list for the lead. E1–E17 are
+ *  all sent now (claude/physical-2.0-B-ranged, 5b626b6; the result note's "The effects events"), so nothing is missing;
+ *  the fallbacks for each stay only for replays recorded before them. */
+export const EVENTS_FOR_THE_LEAD: string[] = [];
+/** The events this file once asked for, now sent by the engine (kept for the tests and the note). */
+export const EVENTS_SENT = ['E1', 'E1a', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10', 'E11', 'E12', 'E13', 'E14', 'E15', 'E16', 'E17'];
 
 // ---------- which technique an event belongs to ----------
 export interface TechRec {
@@ -84,6 +69,8 @@ export interface TechRec {
   line: string | null; opt: any; ammo: string | null; with: string | null; group: string; hand: string;
   /** Storm's or Shift's own move was seen (a second move is another action) */
   moved: boolean;
+  /** the engine marks this technique's shots with `tech` (its event carries `weapon`, E1): a shot without it isn't its */
+  sure: boolean;
   /** the special round this Fire fired (Load Special's, read from the load) */
   round?: string;
   /** shots tagged to it, in order; the volleys; the objects it struck; what followed (hurts, conditions, stops…) */
@@ -103,6 +90,8 @@ const cur = new Map<string, TechRec>();
 let last: TechRec | null = null;
 const tags = new WeakMap<object, TechRec | null>();
 const viOf = new WeakMap<object, number>();
+/** A technique's draw from the pack (E2) comes before its technique event: the draw is tagged with it when it arrives. */
+const swaps = new Map<string, object>();
 const OWN = new Set(['shot', 'volley', 'load', 'stance', 'heat', 'bead', 'spot', 'move', 'swap_in', 'free_reload', 'lane', 'carry']);
 const FOLLOW = new Set(['object', 'hurt', 'cond', 'stopped', 'pressure', 'explode', 'shove', 'save', 'routed']);
 /** Events from a technique's user that don't start another action (the rest do: a reload, a melee swing, a cast, a
@@ -115,7 +104,7 @@ const ONE_TARGET = new Set(['mag_dump', 'overwatch', 'dead_to_rights', 'cover_me
 const rec = (id: string, e: any, max = SHOTS[id] ?? 1): TechRec => ({
   id, unit: String(e.unit || ''), target: e.target ?? e.targetId ?? null, tile: e.tile ?? null, at: e.at ?? e.from ?? null,
   line: e.line ?? null, opt: e.opt ?? null, ammo: e.ammo ?? null, with: e.with ?? null, group: e.group || '', hand: e.hand || 'main',
-  shots: [], volleys: [], objects: [], after: [], max, moved: false,
+  shots: [], volleys: [], objects: [], after: [], max, moved: false, sure: e.k === 'technique' && 'weapon' in e,
 });
 /** Close a unit's technique: what it does next is its own action. */
 function closeRec(u: string) { const r = cur.get(u); cur.delete(u); if (last && (last === r || last.unit === u)) last = null; }
@@ -155,8 +144,11 @@ export function tagOf(e0: any): TechRec | null {
   try {
     if (batchStart.has(e)) { cur.clear(); last = null; } // another batch: another action (the engine sends one per action)
     if (e.k === 'technique') {
-      if (e.system === 'ranged' && !e.refused && u && !e.reaction) { r = rec(String(e.id || ''), e); cur.set(u, r); last = r; }
-      else if (u) closeRec(u);
+      if (e.system === 'ranged' && !e.refused && u && !e.reaction) {
+        r = rec(String(e.id || ''), e); cur.set(u, r); last = r;
+        const sw: any = swaps.get(u); if (sw && sw.tech === r.id) tags.set(sw, r);
+      } else if (u) closeRec(u);
+      if (u) swaps.delete(u);
     } else if (e.k === 'watch_fire' || e.k === 'overwatch') {
       // a held shot sprung: the shots that follow from its holder are the Watch's
       if (u) { r = rec(String(e.id || 'overwatch'), { ...e, at: e.from }); r.target = e.target ?? null; cur.set(u, r); last = r; }
@@ -165,13 +157,15 @@ export function tagOf(e0: any): TechRec | null {
     } else if (OWN.has(e.k)) {
       r = (u && cur.get(u)) || null;
       // what of the unit's own can't be this technique's closes it (a plain load, a second volley, a walk after it)
-      if (r && e.k === 'shot' && !('tech' in e) && endsAction(r, e)) { closeRec(u); r = null; }
-      else if (r && e.k === 'volley' && r.shots.length) { closeRec(u); r = null; }
+      if (r && e.k === 'shot' && !('tech' in e) && (r.sure || endsAction(r, e))) { closeRec(u); r = null; }
+      else if (r && e.k === 'volley' && (r.shots.length || (e.tech && e.tech !== r.id))) { closeRec(u); r = null; }
       else if (r && e.k === 'move' && e.unit === r.unit) { if ((r.id === 'storm' || r.id === 'shift') && !r.moved && !r.shots.length) r.moved = true; else { closeRec(u); r = null; } }
       else if (r && (e.k === 'load' && r.id !== 'load_special' || e.k === 'stance' && r.group !== 'set' || e.k === 'bead' && r.id !== 'bead' || e.k === 'spot' && r.id !== 'spot')) { closeRec(u); r = null; }
       if (e.k === 'shot' && 'tech' in e) r = e.tech ? (r && r.id === e.tech ? r : rec(String(e.tech), e)) : null; // E1a: the engine says
       if (r && e.k === 'shot') { viOf.set(e, Number.isFinite(e.vi) ? Number(e.vi) : r.shots.length); r.shots.push(e); last = r; }
       if (r && e.k === 'volley') r.volleys.push(e);
+      if (r && e.k === 'free_reload') r.after.push(e); // Last Round's chip then comes from the event, once
+      if (e.k === 'swap_in' && u) swaps.set(u, e);
       if (!r && e.k === 'move' && last && last.unit !== u && (last.id === 'rout')) { r = last; r.after.push(e); } // a routed unit runs
       else if (!r && u && last && last.unit !== u && (e.k === 'shot' || e.k === 'move' || e.k === 'volley')) last = null; // another unit acts: what follows is its
     } else if (FOLLOW.has(e.k)) {
@@ -186,7 +180,7 @@ export function tagOf(e0: any): TechRec | null {
   return r;
 }
 /** Forget every technique in flight (a new fight, a fight started over, clearFx, the tests). */
-export function resetRanged() { canonical.clear(); cur.clear(); last = null; hits.clear(); pstate.clear(); pending.clear(); bStream = undefined; bTop = 0; }
+export function resetRanged() { canonical.clear(); cur.clear(); swaps.clear(); last = null; hits.clear(); pstate.clear(); pending.clear(); bStream = undefined; bTop = 0; }
 /** First events of a batch (a batch is one action, or several: each boundary closes what was open). */
 const batchStart = new WeakSet<object>();
 let bStream: string | undefined, bTop = 0;
@@ -211,7 +205,8 @@ export function rangedBatch(evs: FxEvent[], stream?: string) {
 const hits = new Map<string, { unit: string; n: number }>();
 /** Each unit's last Pressure state (a Take on a Suppressed target says its cover doesn't count). */
 const pstate = new Map<string, string>();
-/** A special round loaded (Load Special) and not fired yet, by unit. */
+/** A special round loaded (Load Special) and not fired yet, by unit: only for a load recorded before E16 (one that
+ *  carries `weapon`); the ranged engine puts `round` on the shot that fires it (E9), so nothing is kept for it. */
 const pending = new Map<string, { type: string; hand: string }>();
 /** Objects whose debris a shot already threw (the object event then only says the damage). */
 const thrown = new WeakSet<object>();
@@ -451,7 +446,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
    *  shooter juddering, then the barrel smoking and the dry click. */
   function dumpStream(e: any, r: TechRec) {
     const from = at(e.from), toP = centre(e.to); if (!from || !toP) return;
-    const n = Math.min(12, Math.max(4, r.shots.length * 3)), a = angle(from, toP), s = toP.s;
+    // the rounds the magazine held (E4 volley `shots`); before E4, about three a roll
+    const vol: any = r.volleys.find((v: any) => v.mode === 'dump'), loaded = Number(vol?.shots);
+    const n = Math.min(12, Math.max(4, Number.isFinite(loaded) && loaded > 0 ? loaded : r.shots.length * 3)), a = angle(from, toP), s = toP.s;
     const tok = tokOf(e.unit, e.from), br = brassOf(e.weapon || '', e.cat || ''), who = tok && br.when === 'shot' ? whoOf(tok) : null;
     for (let i = 0; i < n; i++) after(() => {
       const m = i % 2 === 0 ? K.muzzle(from, toP) : { x: from.x + Math.cos(a) * s * 0.42, y: from.y + Math.sin(a) * s * 0.42 };
@@ -532,14 +529,21 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       const ft = flight(from, toP, g.look) + bowDraw(e);
       // a special round (E9; or the one Load Special put in the chamber, which only a Fire technique's first shot from
       // the hand it was loaded for fires: a plain shot, a Press, a Take or a Watch leaves it chambered, as the engine does)
-      const round = e.round || roundOf(r, e);
+      // (E9: the engine's `round` says it; a shot with `tech` and no `round` fired a standard one)
+      if (e.round && e.unit) pending.delete(String(e.unit));
+      const round = e.round || ('tech' in e ? '' : roundOf(r, e));
       if (round && from && toP) roundFx(String(round), from, toP, ft, !!e.hit);
       // the streams: one recording for the whole run, the later rolls silent and chained
       if (r && streams(e, r)) {
         if (vi === 0) {
           if (!r.volleys.length) bases.volley?.({ k: 'volley', n: 0, unit: e.unit, from: e.from, cat: e.cat, weapon: e.weapon, mode: 'auto' } as any);
           if (id === 'mag_dump') dumpStream(e, r);
-          else { const pts = r.shots.map((x: any) => centre(x.to)).filter(Boolean) as Pt[]; if (pts.length >= 2) P.sweep(pts, 250); }
+          else {
+            // the Rake's sweep over its targets (E4 `targets`, in the engine's order); before E4, its shots' targets
+            const vol: any = r.volleys.find((v: any) => v.mode === 'rake'), ids: string[] = Array.isArray(vol?.targets) ? vol.targets : [];
+            const pts = (ids.length ? ids.map((id) => centre(posOf(id))) : r.shots.map((x: any) => centre(x.to))).filter(Boolean) as Pt[];
+            if (pts.length >= 2) P.sweep(pts, 250);
+          }
         }
         base({ ...e, chain: true });
         return;
@@ -668,7 +672,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       base(e);
       if (!e.special) return;
       const sp = String(e.special), lr = tagOf(e);
-      if (e.unit) pending.set(String(e.unit), { type: sp, hand: lr?.id === 'load_special' ? lr.hand : 'main' });
+      if (e.unit && !('weapon' in e)) pending.set(String(e.unit), { type: sp, hand: lr?.id === 'load_special' ? lr.hand : 'main' });
       const p = actorAt(e, e.at); if (!p) return;
       // the round's name on a chip under the token: above it are C's name (LOAD SPECIAL) and the base's LOAD timer ring
       tagChip(e.at, p, ROUND_WORD[sp] || upper(sp) + ' ROUND', WHITE, 640, 0.9);
@@ -806,7 +810,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (r.id === 'shift' && e.unit === r.unit) after(() => P.streaks(a, ang, a.s * 0.6, 260, MUTED), 40);
     },
 
-    // ---------- the events the engine doesn't send yet (EVENTS_FOR_THE_LEAD) ----------
+    // ---------- the ranged engine's effects events (E2, E3, E5, E6, E10, E11) ----------
     save(e) {
       if (!e.ok) return;
       const r = tagOf(e), p = at(e.at || posOf(e.unit)); if (!p) return;
@@ -833,7 +837,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (b) burst('flash_star', b, b.s * 0.6, 150, { color: WHITE, from: 0.3, to: 1, delay: 110 });
     },
     swap_in(e) {
-      const p = actorAt(e, e.at), tk = cur.get(String(e.unit || ''))?.target, b = posAt(tk); if (!p) return;
+      const p = actorAt(e, e.at), tk = tagOf(e)?.target ?? cur.get(String(e.unit || ''))?.target, b = posAt(tk); if (!p) return;
       P.speedArc(p, b ? angle(p, b) : 0); play('swish', p, { rate: 1.8, gain: 0.5 }); play('rack', p, { gain: 0.4, delay: 40 });
     },
   };
