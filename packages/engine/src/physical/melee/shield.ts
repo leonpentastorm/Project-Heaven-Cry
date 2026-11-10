@@ -68,7 +68,7 @@ onHook('turn_start_pre', (ctx: any) => { const g = ctx.u && (ctx.u as any).tech?
 // ---------- Shield Wall ----------
 // The wall covers one attack: every roll of it (a burst's three rounds are one attack). The mark is transient (it lives
 // from the attack being called to its last roll, inside one action), so it is kept here and never saved.
-let WALL: { att: string; tgt: string; by: string; def: number; cover: number; ctx: any } | null = null;
+let WALL: { att: string; tgt: string; by: string; cover: number; ctx: any } | null = null;
 const isRanged = (att: Unit, mode: string) => mode === 'thrown' || !(isMelee(WEAPON[att.weapon]) || mode === 'melee');
 technique({
   id: 'shield_wall',
@@ -82,8 +82,8 @@ technique({
       if (!previewAttack(t.cb, att, v, ctx.mode, { free: true }).ok) return; // an attack that can't be made costs nothing
       answer(t, att, () => {
         spendGuard(t.cb, me, cost);
-        WALL = { att: att.id, tgt: v.id, by: me.id, def: t.num('defense', 2), cover: t.num('half_cover', 5), ctx };
-        t.cb.log.push(me.name + '\'s shield covers ' + v.name + ' (' + cost + ' Guard): −' + WALL.def + ' to hit, and half cover counts.');
+        WALL = { att: att.id, tgt: v.id, by: me.id, cover: t.num('half_cover', 5), ctx };
+        t.cb.log.push(me.name + '\'s shield covers ' + v.name + ' (' + cost + ' Guard): ' + v.name + ' counts as behind half cover against it.');
       });
     },
   },
@@ -105,7 +105,6 @@ onHook('attack_preview', (ctx: any, cb) => {
   const r = raisedOf(tgt); if (r && inFront(r, att.pos, tgt.pos)) ctx.terms.push({ v: -(r.def || 0), label: 'Raised shield' });
   // Shield Wall, for the attack it answered
   const w = WALL; if (!w || w.att !== att.id || w.tgt !== tgt.id) return;
-  ctx.terms.push({ v: -w.def, label: 'Shield Wall' });
   // half cover counts: the −5 of half cover, unless the target already has cover facing the shot or the attack ignores cover
   const ignores = ctx.ignoreCover || (WEAPON[att.weapon]?.properties || []).includes('ignores_half_cover');
   if (w.cover && !ignores && !ctx.coverTile && !coverTileFor(cb, att.pos, tgt.pos)) ctx.terms.push({ v: -w.cover, label: 'half cover (Shield Wall)' });

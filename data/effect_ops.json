@@ -2615,12 +2615,14 @@
       "id": "recoil_mult",
       "tier": "bespoke",
       "summary": "",
-      "count": 0,
+      "count": 3,
       "params": [
         "context",
         "value"
       ],
-      "used_by": [],
+      "used_by": [
+        "perks:both_hands"
+      ],
       "example": {
         "op": "recoil_mult",
         "context": "full_auto",
@@ -2631,20 +2633,20 @@
       "id": "redirect_attack",
       "tier": "bespoke",
       "summary": "",
-      "count": 1,
+      "count": 3,
       "params": [
         "chance",
         "context",
         "to"
       ],
       "used_by": [
-        "perks:grapple"
+        "perks:iron_grip"
       ],
       "example": {
         "op": "redirect_attack",
         "chance": 0.5,
-        "to": "grappled_captive",
-        "context": "attacks aimed at you while grappling"
+        "to": "held_target",
+        "context": "attacks aimed at you while you hold a target"
       }
     },
     {

@@ -1,6 +1,7 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { fxTaps } from './fxtap';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
+import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
@@ -78,11 +79,14 @@ export interface Unit {
   mags?: number[]; loose?: number;
   /** Magazines picked up for a different weapon: carried back to the pack after the fight. */
   extra?: { weapon: string; rounds: number; type?: string | null }[];
-  /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint adds +15% squad damage. */
+  /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint is Read Them's mark (rules 1.13): an
+   * enemy carrying it deals 15% less damage to the other side (effects/damage.ts). It adds no damage any more. */
   analyzedBy?: string; weakPoint?: boolean; analysis?: number; vigilant?: number; overweight?: number;
   /** Stances and reactions (spec: Prone; Brace; Overwatch; reactions). */
   prone?: boolean; braced?: boolean; overwatch?: 'shot' | 'aimed' | 'melee' | null; reactedRound?: number; vision?: number; sensory?: number; noSprint?: boolean; strength?: number;
   /** Weapons v2 (spec): the weapon's condition and mods, gear effects, and per-turn flags. */
+  /** Braced for Guard only, with a weapon that has no Brace of its own: the stance, not the weapon's benefits. */
+  guardBrace?: boolean;
   dmgMult?: number; dur?: number; maxDur?: number; mods?: string[]; offWeapon?: string | null; offAmmo?: number; light?: number; darkSight?: boolean; hazardImmune?: string[];
   ignoreDifficult?: boolean; unarmedBonus?: number; moved?: boolean; firstShotDone?: boolean; proficiency?: number; parts?: number; baseArmour?: number; dexterity?: number; athleticsPts?: number;
   /** Magic (spec: Mana, rules 1.2): what the unit knows and carries; conditions (rounds left); a shield; the base
@@ -877,7 +881,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   // and guns marked no_recoil have none; the compensator takes 1 off each shot.
   const recoil = melee || thrown || mode === 'auto' || opts.noRecoil || hk.noRecoil || (useW.properties || []).includes('no_recoil') ? 0
     : -Math.max(0, (att.shotsThisTurn || 0) * (hasMod(att.mods, 'mod_compensator') ? 0 : 1) - Math.floor((att.dexterity || 0) / 2));
-  const recoilT = att.braced || condOn(att, 'emplaced') ? Math.ceil(recoil / 2) : recoil;
+  const recoilT = weaponBraced(att) || condOn(att, 'emplaced') ? Math.ceil(recoil / 2) : recoil;
   const emplaced = !melee && condOn(att, 'emplaced') ? 2 : 0;
   const skillCond = condSkillMod(att, useW.skill);
   const terms: Term[] = [...T(att.attack, 'skill'), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
@@ -915,7 +919,6 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (o.ambush) M(att.ambushMult || 1.5, 'ambush');
   if (condOn(att, 'weakened')) M(0.75, 'Weakened');
   if (condOn(att, 'sharpened')) M(1.25, 'Sharpened'); // SHARPEN (rules 1.4)
-  if (tgt.weakPoint && att.side === 'pc') vs.push({ v: 0.15, label: 'Weak Point' });
   if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
@@ -995,6 +998,8 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
   const hit = rc.hit ?? (!fumble && (crit || total >= pv.need));
+  // Tuned (Improvisation 5): the main hand's gun never jams, so its natural 1 is only a miss and its Heat only Heat
+  const tuned = !melee && mode !== 'thrown' && canJam(w) && neverJams(cb, att);
   if (mode === 'thrown') { if (fumble) att.stunnedNext = 1; } // a thrown weapon: no round, no Heat, no Recoil for the next shot
   else if (!melee) {
     // A unit with infinite ammo (the drone, item 370) spends no round, takes no Heat and never jams.
@@ -1007,8 +1012,8 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     }
     if (w.heat_limit && !att.infiniteAmmo) att.heat += 1; att.shotsThisTurn++;
     // A weapon that can't jam (no Heat limit: bows, the flamer, the breacher tube) fumbles instead: −1 AP next turn (plan 2.9; provisional).
-    if (canJam(w) && !att.infiniteAmmo) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= heatLimit(att, w))) att.jammed = true; }
-    else if (fumble) att.stunnedNext = 1;
+    if (canJam(w) && !att.infiniteAmmo && !tuned) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= heatLimit(att, w))) att.jammed = true; }
+    else if (fumble && !tuned) att.stunnedNext = 1;
   } else if (fumble) att.stunnedNext = 1;
   // Durability (spec: Weapons v2): every attack wears 1; a jam or fumble 5 more.
   if (att.maxDur && useW === w && !opts.noWear) att.dur = Math.max(0, (att.dur ?? att.maxDur) - 1 - (fumble || att.jammed ? 5 : 0));
@@ -1054,7 +1059,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   if (stopped) injury = ' · stopped by cover' + damageCover(cb, pv.coverTile!, weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) * (who ? weaponMult(who, useW.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1), 0, att);
   const verb = melee ? 'strikes' : mode === 'thrown' ? 'throws the ' + useW.name.toLowerCase() + ' at' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
   const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + (pv.cover ? ' (incl. −5 cover)' : '') + ' = ' + total + ' vs ' + pv.need +
-    (fumble ? (melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
+    (fumble ? (tuned ? ' · natural 1, a miss; the weapon doesn\'t jam (Tuned)' : melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
   cb.log.push(line);
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
   if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, cb, rng, mods: cb.mods || [] });
@@ -1474,13 +1479,26 @@ export function toggleProne(cb: Combat, u: Unit): string | null {
   if (!u.prone) emit(cb, 'stood_up', { u, cb }); // 'stood_up' {u}: after standing (a held shot waits for it: Dead to Rights)
   return null;
 }
+const GUARD_RULES = (): any => (techniquesJ as any).rules?.guard || {};
+/** Is this unit's main-hand weapon one that has the Brace action of its own (a weapon that must be braced, the LMG's
+ * −2, a weapon whose skill is a braced bonus, or one its handling grants Brace to)? What Brace was before rules 1.13. */
+export function weaponBraces(u: Unit): boolean {
+  const w: any = WEAPON[u.weapon]; if (!w) return false; const p: string[] = w.properties || [], hd = w.handling || {};
+  if ((hd.deny || []).includes('brace')) return false;
+  return p.includes('requires_braced_or_prone') || p.includes('minus2_to_hit_unless_emplaced') || w.grants?.effect?.op === 'braced_bonus' || (hd.grant || []).includes('brace');
+}
+/** Braced with the weapon set: what the weapon's own rules read (Recoil halved, a technique's Braced line). A unit that
+ * braced only for Guard (u.guardBrace) is in the braced stance and nothing more. */
+export const weaponBraced = (u: Unit): boolean => !!u.braced && !u.guardBrace;
 /** Durability's Guard (rules 1.13; physical/guard.ts sets f): what a Brace gives a unit that has a Guard pool. */
 export const braceHook: { f: ((cb: Combat, u: Unit) => void) | null } = { f: null };
 export function brace(cb: Combat, u: Unit): string | null {
   if (!weaponActions(u).some((x) => x.id === 'brace')) return 'This weapon has nothing to brace.';
   if (u.braced) return 'Already braced.';
   if (u.ap < 1) return 'Needs 1 AP.';
-  u.ap -= 1; u.braced = true; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
+  // A weapon that has the Brace action of its own is set (Recoil halved, its penalties gone). Any other weapon is not:
+  // its bearer sets only themself, for Guard and for the class moves that ask for the braced stance (rules 1.13).
+  u.ap -= 1; u.braced = true; if (weaponBraces(u)) delete u.guardBrace; else u.guardBrace = true; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
   braceHook.f?.(cb, u); // a unit with a Guard pool gains Guard as it sets itself
   return null;
 }
@@ -1804,7 +1822,7 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
   u.ap -= cost; t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
   emit(cb, 'analyze', { u, t, ap: cost, cb });
-  cb.log.push(u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Weak Point: +15% squad damage' : '') + '.');
+  cb.log.push(u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }
 export function clearJam(cb: Combat, u: Unit): string | null {
@@ -1990,6 +2008,8 @@ export const die6 = (rng: Rng) => die(rng, 6);
 // ---------- weapon-granted actions (plan 2.9) ----------
 /** Can this weapon jam? Guns with a Heat limit can; bows, crossbows, the flamer, the breacher tube and the core rifle
  * can't (a natural 1 fumbles instead). A weapons.json `handling.deny: ['clear']` or `grant: ['clear']` overrides. */
+/** Does nothing jam this unit's main-hand weapon (Tuned, Improvisation 5: the 'never_jams' query)? */
+export const neverJams = (cb: Combat | null, u: Unit): boolean => statQuery({ u, cb }, 'never_jams').add > 0;
 export function canJam(w: WeaponDef | undefined): boolean {
   if (!w || isMelee(w) || w.magazine == null) return false;
   const hd: any = (w as any).handling || {};
@@ -2024,10 +2044,10 @@ export function weaponActions(u: Unit): WeaponAction[] {
     add({ id: 'load', label: unit === 'magazine' ? 'Load a magazine' : 'Fill a ' + unit, ap: 1, why, text: 'Load loose rounds into your fullest part-empty ' + unit + ', 1 AP per ' + ROUNDS_PER_AP + ' rounds.' });
   }
   if (canJam(w) || grant.has('clear')) { const c = actionAp({ u }, 'clear_jam', 2).ap; add({ id: 'clear', label: 'Clear jam', ap: c, why: !u.jammed ? 'Not jammed.' : need(c), text: 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
-  const braces = (w.properties || []).includes('requires_braced_or_prone') || (w.properties || []).includes('minus2_to_hit_unless_emplaced') || w.grants?.effect?.op === 'braced_bonus' || grant.has('brace');
+  const braces = weaponBraces(u);
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;
-  if (braces || pool) add({ id: 'brace', label: 'Brace', ap: 1, why: u.braced ? 'Already braced.' : need(1), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself: Recoil halved.') + (pool ? ' You gain Guard: 1, +1 for each Durability point above 1, +1 with a shield.' : '') + ' Moving ends it.' });
+  if (braces || pool) add({ id: 'brace', label: 'Brace', ap: 1, why: u.braced ? 'Already braced.' : need(1), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
   if (u.maxDur) { const c = actionAp({ u }, 'field_repair', 2).ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs Proficiency 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: 'Proficiency 3+, one spare-parts charge: +10% durability, +5% per Proficiency above 3.' }); }
   const owAp = attackApCost(w, melee ? 'melee' : 'shot');
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });

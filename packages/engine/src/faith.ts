@@ -969,7 +969,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     }
     // The Quartermaster
     case 'resupply': return land(cb, rng, u, one!, e, power, () => { const r = freeReload(cb, one!); const res = (one!.res ||= {}); if (res.supplies != null) res.supplies += 1; return r + (res.supplies != null ? ' · +1 Supply' : ''); });
-    case 'dig_in': return land(cb, rng, u, one!, e, power, () => { fs(one!).dugIn = one!.pos; one!.braced = true; return ' · ' + one!.name + ' digs in (half cover until they move) and is Braced'; });
+    case 'dig_in': return land(cb, rng, u, one!, e, power, () => { fs(one!).dugIn = one!.pos; one!.braced = true; delete one!.guardBrace; return ' · ' + one!.name + ' digs in (half cover until they move) and is Braced'; });
     case 'covering_fire': { let out = ''; for (const v of enemiesIn(cb, u, area3(a.tile!))) out += applyCond(cb, rng, u, v, 'pinned', 1, 'body'); return out || ' · nobody in the area'; }
     case 'requisition_approved': { // rules 1.6.2 (item 728): the whole squad (characters), restocked, repaired, cleared, +3 AP banked
       let out = ''; const squad = cb.units.filter((x) => x.side === u.side && x.charId && !x.companion && !x.dead);

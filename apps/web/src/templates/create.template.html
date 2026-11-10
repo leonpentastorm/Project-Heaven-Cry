@@ -124,7 +124,7 @@
 </div>
 <p style="margin: 0; font-size: 13px; color: #A3AEC2">{{famBlurb}}</p>
 <p style="margin: 0; font-size: 12px; color: #A3AEC2">Portraits here are suggested character icons, not part of the build: you pick yours on the Identity step.</p>
-<div class="phc-cc-grid" data-arch-grid="" style="--n: 2; --min: 400px; --h: 208px; --gap: 12px">
+<div class="phc-cc-grid" data-arch-grid="" style="--n: 2; --min: 400px; --h: 232px; --gap: 12px">
 <sc-for list="{{archCards}}" as="a" hint-placeholder-count="6">
 <button type="button" data-arch="{{a.key}}" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="{{a.style}}">
 <sc-if value="{{a.hasCard}}" hint-placeholder-val="{{false}}"><img src="{{a.card}}" alt="Suggested portrait for {{a.name}}" loading="lazy" style="flex: none; width: 140px; height: 100%; object-fit: cover; object-position: 50% 15%; border-radius: 10px; border: 1px solid #232D3F; background: #000"></sc-if>
@@ -132,8 +132,9 @@
 <sc-if value="{{a.hasKicker}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{a.kicker}}</span></sc-if>
 <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 21px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2; text-align: right">{{a.role}}</span></span>
 <span class="phc-cc-scroll" style="font-family: 'Spectral', serif; font-size: 16px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
-<span style="flex: none; display: flex; gap: 6px; flex-wrap: wrap">
-<sc-for list="{{a.cores}}" as="c" hint-placeholder-count="3"><span style="{{c.style}}">{{c.label}}</span></sc-for>
+<span style="flex: none; display: flex; gap: 10px; align-items: flex-end">
+<span class="phc-arch-attrs" role="img" aria-label="Its nine attributes" style="flex: none; display: grid; grid-template-columns: repeat(3, 58px); gap: 3px"><sc-for list="{{a.grid}}" as="c" hint-placeholder-count="9"><span data-attr="{{c.key}}" data-top="{{c.top}}" title="{{c.title}}" style="{{c.style}}"><span>{{c.abbr}}</span><span>{{c.val}}</span></span></sc-for></span>
+<span class="phc-arch-leads" style="min-width: 0; font-size: 12px; line-height: 1.35; color: #C9D3E3">{{a.leads}}</span>
 </span>
 </span>
 </button>
@@ -143,22 +144,26 @@
 
 <aside class="phc-cc-scroll" data-arch-preview="" style="flex: 1 1 440px; min-width: 0; max-height: calc(100vh - 32px); box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; align-self: flex-start; position: sticky; top: 16px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">PREVIEW</span>
-<sc-if value="{{pv.hasCard}}" hint-placeholder-val="{{false}}"><figure style="margin: 0; display: flex; flex-direction: column; gap: 6px"><button type="button" onClick="{{pv.zoomCard}}" aria-label="Enlarge the suggested portrait" style="{{zoomBtn}}; width: 100%"><img src="{{pv.card}}" alt="Suggested portrait for {{pv.name}}" style="width: 100%; max-height: 420px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button><figcaption style="font-size: 11px; letter-spacing: 0.08em; color: #A3AEC2">SUGGESTED CHARACTER ICON · pick yours on the Identity step</figcaption></figure></sc-if>
+<sc-if value="{{pv.hasCard}}" hint-placeholder-val="{{false}}"><figure style="margin: 0; display: flex; flex-direction: column; gap: 6px"><button type="button" onClick="{{pv.zoomCard}}" aria-label="Enlarge the suggested portrait" style="{{zoomBtn}}; width: 100%"><img src="{{pv.card}}" alt="Suggested portrait for {{pv.name}}" style="width: 100%; max-height: 250px; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 18%; border-radius: 12px; border: 1px solid #232D3F; background: #000"></button><figcaption style="font-size: 11px; letter-spacing: 0.08em; color: #A3AEC2">SUGGESTED CHARACTER ICON · pick yours on the Identity step</figcaption></figure></sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Spectral', serif; font-size: 30px; font-weight: 600">{{pv.name}}</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #A3AEC2">{{pv.role}}</span></div>
-<sc-for list="{{pv.coreRows}}" as="r" hint-placeholder-count="3">
-<div style="display: grid; grid-template-columns: 110px 44px minmax(0, 1fr); gap: 10px; align-items: center">
-<div style="display: flex; flex-direction: column"><span style="{{r.nameStyle}}">{{r.name}}</span><span style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2">{{r.word}}</span></div>
+<div class="phc-arch-pv-attrs" aria-label="Its nine attributes" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{pv.attrFams}}" as="f" hint-placeholder-count="3"><div data-family="{{f.key}}" style="display: flex; flex-direction: column; gap: 3px">
+<span style="{{f.nameStyle}}">{{f.name}}</span>
+<sc-for list="{{f.rows}}" as="r" hint-placeholder-count="3"><div data-attr="{{r.key}}" title="Each point: {{r.gives}}" style="display: grid; grid-template-columns: 124px 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 22px">
+<button type="button" class="phc-arch-attrname" onClick="{{r.open}}" aria-label="{{r.openLabel}}" style="{{r.nameStyle}}">{{r.name}}</button>
 <span style="{{r.valStyle}}">{{r.val}}</span>
-<span style="display: flex; gap: 4px; flex-wrap: wrap"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="10"><span style="{{d.style}}"></span></sc-for></span>
+<span aria-hidden="true" style="display: flex; gap: 4px"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="7"><span style="{{d.style}}"></span></sc-for></span>
+<sc-if value="{{r.top}}" hint-placeholder-val="{{false}}"><span class="phc-arch-top" style="{{r.tagStyle}}">HIGHEST</span></sc-if>
+</div></sc-for>
+</div></sc-for>
 </div>
-</sc-for>
 <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid #232D3F; min-height: 155px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SKILL POINTS</span>
 <sc-for list="{{pv.skills}}" as="k" hint-placeholder-count="4">
 <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="{{k.style}}">{{k.name}}</span><span style="color: #E7EBF3">{{k.pts}}</span></div>
 </sc-for>
 </div>
-<span class="phc-arch-leans" style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font-size: 13px; color: #A3AEC2">Leans toward:<sc-if value="{{pv.hasLeans}}"><sc-for list="{{pv.leanIcons}}" as="li"><span style="{{li.style}}"><img class="phc-class-emblem" src="{{li.icon}}" alt="" style="width: 18px; height: 18px">{{li.name}}</span></sc-for></sc-if><sc-if value="{{pv.noLeans}}"><span style="color: #E7EBF3">{{pv.leans}}</span></sc-if></span>
+<span class="phc-arch-leans" style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font-size: 13px; color: #A3AEC2">Leads to:<sc-if value="{{pv.hasLeans}}"><sc-for list="{{pv.leanIcons}}" as="li"><span style="{{li.style}}"><img class="phc-class-emblem" src="{{li.icon}}" alt="" style="width: 18px; height: 18px">{{li.name}}</span></sc-for></sc-if><sc-if value="{{pv.noLeans}}"><span style="color: #E7EBF3">{{pv.leans}}</span></sc-if></span>
 <span style="font-size: 13px; line-height: 1.4; min-height: 2.8em; color: #A3AEC2">{{pv.budget}}</span>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
 <button type="button" onClick="{{useArch}}" style="min-height: 46px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">{{useLabel}}</button>
@@ -194,7 +199,7 @@
 <sc-for list="{{c.attrs}}" as="a" hint-placeholder-count="3">
 <div data-attr="{{a.key}}" role="group" aria-label="{{a.name}} and its three skills" style="{{a.boxStyle}}">
 <div class="phc-pt-row">
-<span class="phc-pt-name" style="{{a.nameStyle}}">{{a.name}}</span>
+<button type="button" class="phc-pt-name phc-pt-attrname" data-attr-page="{{a.key}}" onClick="{{a.open}}" aria-label="{{a.openLabel}}" title="{{a.openLabel}}" style="{{a.nameStyle}}">{{a.name}}</button>
 <span class="phc-pt-pips" aria-hidden="true"><sc-for list="{{a.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" title="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span>
 <span class="phc-pt-stepper" onKeyDown="{{a.keys}}"><button type="button" class="phc-pt-step" data-attr-down="{{a.key}}" aria-label="{{a.downAria}}" aria-disabled="{{a.downOff}}" title="{{a.downTitle}}" onClick="{{a.down}}">‹</button><span class="phc-pt-val" data-attr-val="{{a.key}}" style="{{a.valStyle}}">{{a.val}}</span><button type="button" class="phc-pt-step" data-attr-up="{{a.key}}" aria-label="{{a.upAria}}" aria-disabled="{{a.upOff}}" title="{{a.upTitle}}" onClick="{{a.up}}">›</button></span>
 <button type="button" class="phc-pt-side phc-pt-step" data-attr-reset="{{a.key}}" aria-label="{{a.resetAria}}" aria-disabled="{{a.resetOff}}" title="{{a.resetAria}}" onClick="{{a.reset}}" style="font-size: 14px">↺</button>
@@ -426,7 +431,7 @@
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">STATS AT LEVEL 1</span>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px">
-<sc-for list="{{stats}}" as="r" hint-placeholder-count="12"><div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 6px 0"><span style="color: #A3AEC2">{{r.k}}</span><span style="font-weight: 700">{{r.v}}</span></div></sc-for>
+<sc-for list="{{stats}}" as="r" hint-placeholder-count="12"><div data-derived="{{r.key}}" style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 6px 0"><span style="display: flex; flex-direction: column; min-width: 0"><span style="color: #A3AEC2">{{r.k}}</span><span data-derived-from="" style="font-size: 10.5px; color: #7F8BA1">{{r.from}}</span></span><span style="font-weight: 700; white-space: nowrap">{{r.v}}</span></div></sc-for>
 </div>
 </div>
 </div>

@@ -6184,7 +6184,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "deed": "break through a wall to win a fight.",
-      "text": "Shove and Break cost 1 AP less, and nothing can knock you back.",
+      "text": "The Shove Link and the Break Finisher cost 1 AP less (never below 1 AP), and nothing can knock you back.",
       "effects": [
         {
           "op": "action_cost",

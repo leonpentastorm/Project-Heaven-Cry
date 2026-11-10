@@ -93,11 +93,11 @@ describe('each technique\'s beat', () => {
   it('Shove, Drag and Bash\'s push: the real path the target was moved along', () => {
     const f = fight('sabre', ['shove']); f.unit(f.foe.id).strength = -50; f.unit(f.pc.id).strength = 20; D20.v = 10;
     const n = mark(f); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
-    expect(one(f, n, 'force')).toMatchObject({ target: f.foe.id, path: [f.tile('D5'), f.tile('E5')], how: 'push' });
+    expect(one(f, n, 'force')).toMatchObject({ target: f.foe.id, path: [f.tile('D5'), f.tile('E5'), f.tile('F5')], how: 'push' });
     const g = fight('sabre', ['drag']); D20.v = 2; const m = mark(g); expect(g.tech('drag', { targetId: g.foe.id, opt: 'swap' })).toBeNull();
     expect(one(g, m, 'force')).toMatchObject({ target: g.foe.id, path: [g.tile('D5'), g.tile('C5')], how: 'swap', user: [g.tile('C5'), g.tile('D5')] });
     const h = fight('maul', ['bash']); D20.v = 2; rig({ hit: true, die: 12 }); const k = mark(h); expect(h.tech('bash', { targetId: h.foe.id, opt: 'push', line: 'heavy' })).toBeNull();
-    const e = one(h, k, 'force'); expect(e.path[0]).toBe(h.tile('D5')); expect(e.path.length).toBe(3);
+    const e = one(h, k, 'force'); expect(e.path[0]).toBe(h.tile('D5')); expect(e.path.length).toBe(4);
   });
   it('Trip, Charge and Hamstring (Hook): a fall when the target really goes down', () => {
     const f = fight('sabre', ['trip']); D20.v = 2; const n = mark(f); expect(f.tech('trip', { targetId: f.foe.id })).toBeNull();

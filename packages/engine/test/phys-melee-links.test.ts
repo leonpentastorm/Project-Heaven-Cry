@@ -135,7 +135,7 @@ describe('Shove (17)', () => {
   it('pushes 1 tile on a failed save, for 1 AP; it neither gives nor spends Momentum', () => {
     const f = fight('sabre'); weakShove(f, f.foe);
     const pv = f.pv('shove', { targetId: f.foe.id });
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('E7') }]);
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('F7') }]);
     expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['raw_power', 'athletics'], tn: 10 }); expect(pv.momentum).toEqual({ now: 1, after: 1 });
     unchanged(f, () => f.pv('shove', { targetId: f.foe.id }));
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
@@ -152,14 +152,14 @@ describe('Shove (17)', () => {
     expect(f.tech('shove', { targetId: f.foes[0].id })).toMatch(/already Prone/);
   });
   it('Blunt or Heavy: 2 tiles; without: 1', () => {
-    const f = fight('maul'); weakShove(f, f.foe); f.tech('shove', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('F7'));
-    const g = fight('knuckledusters'); weakShove(g, g.foe); g.tech('shove', { targetId: g.foe.id }); expect(at(g, g.foe)).toBe(g.tile('F7'));
-    const h = fight('kemizuchi_duelling_blade'); weakShove(h, h.foe); h.tech('shove', { targetId: h.foe.id }); expect(at(h, h.foe)).toBe(h.tile('E7'));
+    const f = fight('maul'); weakShove(f, f.foe); f.tech('shove', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('G7'));
+    const g = fight('knuckledusters'); weakShove(g, g.foe); g.tech('shove', { targetId: g.foe.id }); expect(at(g, g.foe)).toBe(g.tile('G7'));
+    const h = fight('kemizuchi_duelling_blade'); weakShove(h, h.foe); h.tech('shove', { targetId: h.foe.id }); expect(at(h, h.foe)).toBe(h.tile('F7'));
   });
   it('Reach: from 2 tiles away (the line is picked when two apply); without it, next to you only', () => {
     const f = fight('bot_thread_banner', { foes: [{ at: 'E7' }] }); weakShove(f, f.foe);
     expect(f.tech('shove', { targetId: f.foe.id, line: 'blunt' })).toMatch(/next to you/);
-    expect(f.tech('shove', { targetId: f.foe.id, line: 'reach' })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('F7'));
+    expect(f.tech('shove', { targetId: f.foe.id, line: 'reach' })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('G7'));
     const g = fight('sabre', { foes: [{ at: 'E7' }] }); expect(g.tech('shove', { targetId: g.foe.id })).toMatch(/next to you/); expect(g.pc.ap).toBe(6);
   });
   it('refuses an ally, no target, and the dead', () => {
@@ -171,7 +171,7 @@ describe('Shove (17)', () => {
   it('Momentum: a Shove that works gives none, after another technique or after itself (no variety bonus)', () => {
     const f = fight('sabre', { foes: [{ at: 'D7' }, { at: 'D8' }] }); weakShove(f, f.foes[0]); weakShove(f, f.foes[1]); rig({ hit: true, die: 12 }); f.momentum(f.pc, 0);
     f.tech('cut', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1);
-    f.tech('shove', { targetId: f.foes[0].id }); expect(at(f, f.foes[0])).toBe(f.tile('E7')); expect(f.momentum(f.pc)).toBe(1);
+    f.tech('shove', { targetId: f.foes[0].id }); expect(at(f, f.foes[0])).toBe(f.tile('F7')); expect(f.momentum(f.pc)).toBe(1);
     f.tech('shove', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1); // Shove after Shove
   });
   it('a moved enemy sets off a held Watch', () => {
@@ -186,7 +186,7 @@ describe('Shove (17)', () => {
     f.tech('shove', { targetId: f.foe.id });
     expect(at(f, f.foe)).toBe(f.tile('E7')); // 2 tiles, halted on the first by Deny
     expect(f.unit(f.foe.id).stopped).toBeGreaterThan(0);
-    f.put(f.pc, 'D7'); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('G7'));
+    f.put(f.pc, 'D7'); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('H7'));
   });
 });
 

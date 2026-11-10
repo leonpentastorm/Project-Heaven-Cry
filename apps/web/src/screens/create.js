@@ -1,7 +1,7 @@
 // Character creation (EPCCG), ported from design/canvas-build/create.logic.js. Same rules code as the prototype;
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
-import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod } from './shared';
+import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIVES as ATTR_NEXT, SLOT_WORD, SLOT_ORDER, perPoint } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
 import { gearIconUri } from '../game/gearIcons';
 import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, KITS, WEAPON, ITEM, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL } from '@engine';
@@ -13,6 +13,7 @@ import { glyphUri, heartUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/gly
 import { spellSummary } from '../game/sigilView';
 import { sfx, reducedMotion } from '../game/sfx';
 import { emblemOf } from '../game/classView';
+import { derivedLines, previewCharacter } from '../game/derived';
 import { patronCards, BELIEF_TEXT, FAITH_INK } from '../game/faithView';
 import { patronPortrait } from '../game/faithArt';
 
@@ -108,7 +109,6 @@ function shakePage() {
 const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill', 'Mara Voss', 'Tamsin Rook', 'Ilya Brand', 'Juno Pike', 'Corvin Ash', 'Dez Morrow', 'Kestrel 7'];
 const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
 const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['belief', 'Belief'], ['kit', 'Kit'], ['lockin', 'Lock in']];
-const WORDS = ['', 'FEEBLE', 'WEAK', 'AVERAGE', 'GOOD', 'GREAT', 'EXCEPTIONAL', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY', 'LEGENDARY'];
 const CORES = ['body', 'mind', 'soul'];
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
@@ -139,7 +139,6 @@ function derive(skills, aSet, extra = 0) {
 const pts = (n, kind) => n + ' ' + kind + ' point' + (n === 1 ? '' : 's');
 const listOf = (names) => (names.length <= 1 ? names.join('') : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1]);
 const no = (text) => ({ ok: false, text });
-const SLOT_ORDER = { alpha: 0, beta: 1, gamma: 2 };
 const skillsUnder = (attrId) => D.skills.filter((s) => s.attr === attrId).sort((x, y) => SLOT_ORDER[x.slot] - SLOT_ORDER[y.slot]);
 /** Set a skill to v points. Raising it past its attribute spends the Attribute points that takes. Lowering it leaves
  *  the attribute where it is (the text says so). */
@@ -195,18 +194,7 @@ export function _pointsTodo(d) {
   if (place.length) out.push('Still to place: ' + place.join(' and ') + '.');
   return out.join(' ');
 }
-/** What one more point of an attribute gives, in the game's numbers. */
-const ATTR_NEXT = {
-  endurance: '+15 max HP, +10% chance to ignore an injury', strength: '+10% physical damage, +5 kg carried', agility: '+0.5 tile of movement an AP, +1 Initiative',
-  perception: '+2 tiles of vision, +10% critical damage, −10% critical damage taken', intelligence: '+10% Sigil power, a longer Line every 2 points', expression: '+10% elemental damage, glyphs 0.1 AP cheaper',
-  insight: '+10% healing given, Soul magic costs 5% less MP', determination: '+5% Soul power, +10% mana syphoned', virtue: '+100 max MP, prayers come back half a turn sooner',
-};
-/** A skill's place under its attribute, in words: the first is how you fight, the second how you survive, the third how
- *  you talk and notice (the third rolls checks one better than the others, which the roll shown already counts). */
-const SLOT_WORD = { alpha: ['FIGHT', 'How you fight'], beta: ['SURVIVE', 'How you survive'], gamma: ['TALK · NOTICE', 'How you talk and notice (it rolls checks 1 better than other skills)'] };
 const PERK_AT = [3, 5, 7];
-/** What each point of a skill gives, in the game's numbers (the engine's skill data; the screen data has only the summary). */
-const perPoint = (id) => (ENGINE_SKILL[id] && ENGINE_SKILL[id].per_point && ENGINE_SKILL[id].per_point.text) || SK[id].summary;
 const HIST_MAX = 60;
 
 const btn = (on, color) => 'min-height: 40px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; ' +
@@ -328,10 +316,18 @@ export class CreateLogic extends DCLogic {
     const fams = [{ id: 'all', name: 'Show all', blurb: 'Every archetype, all ' + D.arch.items.length + '. Scroll and explore.' }, ...D.arch.families, { id: 'custom', name: 'Custom', blurb: 'Start from zero and place all 10 points yourself.' }];
     const famTabs = fams.map((f) => ({ name: f.name, pick: set({ fam: f.id, arch: f.id === 'custom' ? 'custom' : f.id === 'all' ? (S.arch === 'custom' ? D.arch.items[0].id : S.arch) : (D.arch.items.find((a) => a.family === f.id) || {}).id }), selected: S.fam === f.id ? 'true' : 'false', style: btn(S.fam === f.id, '#E7EBF3') }));
     const famBlurb = (fams.find((f) => f.id === S.fam) || {}).blurb || '';
-    const coreChips = (cores) => CORES.map((c) => ({ label: c.toUpperCase() + ' ' + cores[c], style: 'padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; ' + (cores[c] > 1 ? 'color: #0A0D13; background: ' + D.core[c] : 'color: #A3AEC2; background: #1C2536') }));
+    // A card's nine attributes: three rows (Body, Mind, Soul), each number in its attribute's ink, the highest marked.
+    const ABBR = (n) => n.slice(0, 3).toUpperCase();
+    const attrGrid = (attrs) => { const top = Math.max(...D.attrs.map((x) => attrs[x.id] || 1));
+      return D.attrs.map((x) => { const v = attrs[x.id] || 1, hi = v === top && top > 1;
+        return { key: x.id, abbr: ABBR(x.name), val: v, top: hi ? 'true' : 'false', title: x.name + ' ' + v + (hi ? ' (highest)' : ''),
+          style: 'display: flex; justify-content: space-between; align-items: baseline; gap: 5px; padding: 1px 6px; border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; line-height: 16px; box-sizing: border-box; '
+            + (hi ? 'background: ' + x.ink + '; color: #0A0D13; border: 1px solid ' + x.ink : v > 1 ? 'color: ' + x.ink + '; border: 1px solid ' + x.ink + '66' : 'color: #7F8BA1; border: 1px solid #232D3F') }; }); };
+    const BLANK_ATTRS = {};
+    const leadsOf = (arch) => arch.leans.map((l) => CLASSNAME[l]).join(' or ');
     const archCards = S.fam === 'custom'
-      ? [{ name: 'Custom', role: 'Your call', blurb: 'No preset. Every one of the 10 points is yours to place.', cores: coreChips({ body: 1, mind: 1, soul: 1 }), leans: 'whatever you build', pick: set({ arch: 'custom' }), pressed: S.arch === 'custom' ? 'true' : 'false', style: '' }]
-      : D.arch.items.filter((a) => S.fam === 'all' || a.family === S.fam).map((a) => ({ name: a.name, role: a.role.toUpperCase(), blurb: a.blurb, kicker: S.fam === 'all' ? (D.arch.families.find((f) => f.id === a.family) || {}).name : '', cores: coreChips(a.cores), leans: a.leans.map((l) => CLASSNAME[l]).join(' · '), pick: set({ arch: a.id }), pressed: S.arch === a.id ? 'true' : 'false' }));
+      ? [{ name: 'Custom', role: 'Your call', blurb: 'No preset. Every one of the 10 points is yours to place.', grid: attrGrid(BLANK_ATTRS), leads: 'Leads to: whatever you build', pick: set({ arch: 'custom' }), pressed: S.arch === 'custom' ? 'true' : 'false', style: '' }]
+      : D.arch.items.filter((a) => S.fam === 'all' || a.family === S.fam).map((a) => ({ name: a.name, role: a.role.toUpperCase(), blurb: a.blurb, kicker: S.fam === 'all' ? (D.arch.families.find((f) => f.id === a.family) || {}).name : '', grid: attrGrid(a.attributes), leads: 'Leads to: ' + leadsOf(a), pick: set({ arch: a.id }), pressed: S.arch === a.id ? 'true' : 'false' }));
     // Every archetype spends all three budgets (decision 49); the card lists what it raises.
     const raisedOf = (arch) => D.attrs.filter((x) => arch.attributes[x.id] > 1).map((x) => x.name + ' ' + arch.attributes[x.id]).join(' · ');
     const budgetOf = (arch) => 'Every point placed. Attributes: ' + raisedOf(arch);
@@ -339,14 +335,20 @@ export class CreateLogic extends DCLogic {
     archCards.forEach((c) => { const arch = D.arch.items.find((x) => x.name === c.name); c.budget = arch ? budgetOf(arch) : 'All ' + attrTotal + ' Attribute and ' + SKILL_PTS + ' Skill points are yours to place'; });
     archCards.forEach((c) => { c.key = (D.arch.items.find((x) => x.name === c.name) || { id: 'custom' }).id; c.style = 'display: flex; gap: 14px; align-items: stretch; text-align: left; padding: 12px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (c.pressed === 'true' ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F'); });
     const A = S.arch === 'custom' ? null : ARCH[S.arch];
-    const pvCores = A ? A.cores : { body: 1, mind: 1, soul: 1 };
+    const pvAttrs = A ? A.attributes : BLANK_ATTRS, pvTop = Math.max(...D.attrs.map((x) => pvAttrs[x.id] || 1));
     const pv = {
       card: cardFor(A), hasCard: !!cardFor(A), zoomCard: zoomer(this, cardFor(A), A ? A.name + ': suggested portrait' : '', 'portrait'),
       name: A ? A.name : 'Custom', role: A ? A.role.toUpperCase() : 'YOUR CALL',
-      coreRows: CORES.map((c) => ({ name: c.toUpperCase(), word: WORDS[pvCores[c]], val: pvCores[c], dia: dia(10, pvCores[c], D.core[c], 9),
-        nameStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c], valStyle: 'font-size: 34px; font-weight: 700; color: ' + D.core[c] })),
+      // The nine attributes, three to a family (the family is a heading, nothing more), the highest marked.
+      attrFams: CORES.map((c) => ({ key: c, name: c.toUpperCase(), nameStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + D.core[c],
+        rows: D.attrs.filter((x) => x.core === c).map((x) => { const v = pvAttrs[x.id] || 1, hi = v === pvTop && pvTop > 1;
+          return { key: x.id, name: x.name, val: v, top: hi, dia: dia(ATTR_CAP, v, x.ink, 8), gives: ATTR_NEXT[x.id],
+            open: () => this.setState({ attrPage: x.id }), openLabel: x.name + ': what it gives',
+            nameStyle: 'padding: 0; border: 0; background: none; text-align: left; font-family: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; font-size: 14px; font-weight: 700; color: ' + (v > 1 ? x.ink : '#A3AEC2'),
+            valStyle: 'font-size: 18px; font-weight: 700; line-height: 1; color: ' + (v > 1 ? x.ink : '#A3AEC2'),
+            tagStyle: 'padding: 0 6px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; background: ' + x.ink + '; color: #0A0D13' }; }) })),
       skills: A ? Object.entries(A.preset).map(([id, p]) => ({ name: SK[id].name, pts: p + ' pts', style: 'color: ' + ATTR[SK[id].attr].ink })) : [],
-      leans: A ? A.leans.map((l) => CLASSNAME[l]).join(' · ') : 'whatever you build',
+      leans: A ? leadsOf(A) : 'whatever you build',
       leanIcons: A ? A.leans.map((l) => ({ key: l, name: CLASSNAME[l], icon: emblemOf(l).icon, style: 'display: inline-flex; gap: 4px; align-items: center; font-weight: 700; color: ' + emblemOf(l).ink })) : [], hasLeans: !!A, noLeans: !A,
       budget: A ? budgetOf(A) : 'All ' + attrTotal + ' Attribute and ' + SKILL_PTS + ' Skill points are yours to place',
     };
@@ -368,7 +370,7 @@ export class CreateLogic extends DCLogic {
         const v = der.attr[a.id], up = _setAttr(now, a.id, v + 1, extra), dn = _setAttr(now, a.id, v - 1, extra), rs = _resetAttr(now, a.id, extra);
         const raise = () => this.pointsDo((st, x) => _setAttr(st, a.id, derive(st.skills, st.aSet, x).attr[a.id] + 1, x)), lower = () => this.pointsDo((st, x) => _setAttr(st, a.id, derive(st.skills, st.aSet, x).attr[a.id] - 1, x));
         return {
-          key: a.id, name: a.name.toUpperCase(), val: v,
+          key: a.id, name: a.name.toUpperCase(), val: v, open: () => this.setState({ attrPage: a.id }), openLabel: a.name + ': what it gives and what reads it',
           next: v < ATTR_CAP ? 'Next point: ' + ATTR_NEXT[a.id] + '.' : 'At ' + ATTR_CAP + ', the most at creation. Each point: ' + ATTR_NEXT[a.id] + '.',
           up: raise, down: lower, keys: arrows(raise, lower), upOff: up.ok ? 'false' : 'true', downOff: dn.ok ? 'false' : 'true',
           upAria: up.ok ? 'Raise ' + a.name + ' from ' + v + ' to ' + (v + 1) + ' for 1 Attribute point. Gives ' + ATTR_NEXT[a.id] + '.' : 'Raise ' + a.name + ', now ' + v + '. Not possible: ' + up.text,
@@ -378,7 +380,7 @@ export class CreateLogic extends DCLogic {
           pips: Array.from({ length: ATTR_CAP }, (_, i) => ({ key: i, style: pip(i < v, true, a.ink), title: 'Set ' + a.name + ' to ' + (i + 1),
             set: () => this.pointsDo((st, x) => { const cur = derive(st.skills, st.aSet, x).attr[a.id]; return _setAttr(st, a.id, i + 1 === cur ? i : i + 1, x); }) })),
           boxStyle: 'display: flex; flex-direction: column; gap: 6px; padding: 9px 10px 8px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; border-top: 3px solid ' + a.ink,
-          nameStyle: 'font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink, valStyle: 'color: ' + a.ink,
+          nameStyle: 'padding: 0; border: 0; background: none; text-align: left; font-family: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink, valStyle: 'color: ' + a.ink,
           railStyle: 'display: flex; flex-direction: column; gap: 5px; margin-left: 4px; padding-left: 9px; border-left: 2px solid ' + a.ink,
           cards: skillsUnder(a.id).map((s) => {
             const p = S.skills[s.id] || 0, m = checkMod(s.id, p), m1 = checkMod(s.id, p + 1), up2 = _setSkill(now, s.id, p + 1, extra), dn2 = _setSkill(now, s.id, p - 1, extra);
@@ -541,11 +543,10 @@ export class CreateLogic extends DCLogic {
     const originRows = o ? [['Home', o.Home], ['Upbringing', o.Upbringing], ['You know', o['You know']], [seenKey || 'People see you as', seenKey ? o[seenKey] : ''], ['Suggested skills', o.Skills], ['Hook', o.Hook]]
       .filter(([, v]) => typeof v === 'string' && v).map(([k, v]) => ({ k: k.toUpperCase(), v: v.charAt(0).toUpperCase() + v.slice(1) })) : [];
     const n2 = (x) => (Math.round(x * 100) / 100).toString();
-    const stats = [['Max HP', 100 + 15 * (AV.endurance - 1)], ['HP per level', 5 + 2 * PT('durability')], ['Max MP', 100 + 100 * (AV.virtue - 1)], ['AP per turn', 6],
-      ['Echo', '1 at session start'], ['Initiative', fmt(AV.agility - 1 + MD('reaction_speed'))], ['Movement', (1 + 0.5 * (AV.agility - 1)) + ' tiles per AP'],
-      ['Defense', 10 + pos(MD('athletics'))], ['Carry', (20 + 5 * (AV.strength - 1)) + ' kg'], ['Vision', (12 + 2 * (AV.perception - 1)) + ' tiles'],
-      ['Saves B / Br / H', fmt(MD('guts')) + ' / ' + fmt(MD('rumination')) + ' / ' + fmt(MD('composure'))], ['Healing given', '×' + n2(1 + 0.1 * (AV.insight - 1) + 0.1 * PT('camaraderie'))]]
-      .map(([k, v]) => ({ k, v: String(v) }));
+    // Stats at level 1: the engine's numbers for a character built from these points (game/derived.ts), each with the
+    // attribute and skill behind it.
+    const pc1 = previewCharacter(S.skills, AV, S.traits, S.kit);
+    const stats = pc1 ? [...derivedLines(pc1).map((r) => ({ key: r.key, k: r.k, v: r.v, from: r.from })), { key: 'ap', k: 'AP per turn', v: '6', from: 'Everyone' }, { key: 'echo', k: 'Echo', v: '1 at session start', from: 'Everyone' }] : [];
     const tree = CORES.map((c) => ({ name: c.toUpperCase(), nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c],
       attrs: D.attrs.filter((a) => a.core === c).map((a) => ({ name: a.name, val: AV[a.id], nameStyle: 'font-size: 13px; font-weight: 700; color: ' + a.ink,
         skills: D.skills.filter((sk) => sk.attr === a.id).map((sk) => { const p = PT(sk.id), m = checkMod(sk.id, p);

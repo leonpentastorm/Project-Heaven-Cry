@@ -138,7 +138,7 @@ describe('4. walking costs Momentum', () => {
     const f = fight('sabre', ['shove'], { foes: [{ at: 'D5', weapon: 'sabre' }] }); weak(f.foe); f.pc.strength = 20;
     f.momentum(f.foe, 2); rig({ die: 15 });
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
-    expect(f.foe.pos).toBe(f.tile('E5')); expect(f.momentum(f.foe)).toBe(2);
+    expect(f.foe.pos).toBe(f.tile('F5')); expect(f.momentum(f.foe)).toBe(2);
   });
   it('a Link\'s own move costs none: Sidestep, and Drag\'s step', () => {
     const f = fight('sabre', ['sidestep', 'drag'], { m: 2 }); weak(f.foe);
@@ -184,8 +184,8 @@ describe('5. being hit costs Momentum', () => {
   });
   it('not while the unit holds Guard points', () => {
     const f = fight('sabre', [], { m: 2 }); f.pc.resMax!.guard = 5; f.pc.res!.guard = 1; f.turn(f.foe); rig({ hit: true, die: 12 });
-    hitPc(f); expect(f.pc.res!.guard).toBe(0); expect(f.momentum(f.pc)).toBe(2); // the Guard point soaked the hit (rules 1.13) and kept the Momentum
-    expect(hitPc(f)).toBeGreaterThan(0); expect(f.momentum(f.pc)).toBe(1);
+    hitPc(f); expect(f.pc.res!.guard).toBe(1); expect(f.momentum(f.pc)).toBe(2); // the last Guard point is kept back (rules 1.13); holding it kept the Momentum
+    f.pc.res!.guard = 0; expect(hitPc(f)).toBeGreaterThan(0); expect(f.momentum(f.pc)).toBe(1);
   });
 });
 
@@ -211,7 +211,7 @@ describe('7. no technique gives Momentum by its text, but Parry\'s Light line', 
   it('Feint, Shove, Trip and Drag that work give none; Flurry gives none; no text still promises it', () => {
     const f = fight('sabre', ['feint', 'shove'], { m: 0 }); weak(f.foe); f.pc.strength = 20; rig({ die: 15 });
     expect(f.tech('feint', { targetId: f.foe.id })).toBeNull(); expect(f.pc.setUp).toBeTruthy();
-    expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(f.foe.pos).toBe(f.tile('E5'));
+    expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(f.foe.pos).toBe(f.tile('F5'));
     expect(f.momentum(f.pc)).toBe(0);
     const g = fight('sabre', ['trip', 'drag'], { m: 0 }); weak(g.foe);
     expect(g.tech('drag', { targetId: g.foe.id })).toBeNull(); expect(g.tech('trip', { targetId: g.foe.id })).toBeNull(); // (a natural 20 still saves: either way)

@@ -1,10 +1,11 @@
 // Rules 1.13, Durability's door (docs/design/proposals/2026-11-nine-doors.md, section 19; numbers provisional, in
 // techniques.json rules.guard). Guard is a pool for anyone with Durability (character.ts classResources: its size is
 // the Durability points, 5 at most; the Defender keeps its own, the larger of the two).
-//   gained   by Brace (combat.ts brace, through braceHook) and by the Guard technique (melee/links.ts): 1, +1 for each
-//            Durability point above 1, +1 with a shield in the off hand (core.ts guardGain)
-//   soaks    each point takes 10 off a damaging hit, as many points as the hit needs, on the damage that would reach
-//            HP: after armour, after every other reduction, and after the unit's shield (the listener below)
+//   gained   by the Guard technique (melee/links.ts): 1, +1 for each Durability point above 1, +1 with a shield in the
+//            off hand; and by Brace (combat.ts brace, through braceHook): a flat 2, 3 with a shield (core.ts guardGain)
+//   soaks    each point takes 10 off a damaging hit, as many points as the hit needs but the last one (kept for a
+//            reaction, unless the hit would take the unit down), on the damage that would reach HP: after armour,
+//            after every other reduction, and after the unit's shield (the listener below)
 //   Pressure comes off Guard first, 1 Guard a point (the pressureFilter in melee/links.ts)
 //   Interpose (Durability 3): an Answer everyone with the points has (below)
 //   Momentum a hit on a unit holding Guard points costs none (rules.ts reads ctx.guard0)
@@ -23,7 +24,7 @@ const DEF_PLATE = 'class:defender.reactive_plate', DEF_BRACE = 'class:defender.b
 
 // ---------- gained by Brace ----------
 braceHook.f = (cb: Combat, u: Unit) => {
-  const got = addGuard(cb, u, guardGain(u));
+  const got = addGuard(cb, u, guardGain(u, 'brace'));
   if (got) cb.log.push('  +' + got + ' Guard (' + guardOf(u) + '/' + guardMax(u) + ').');
 };
 
@@ -40,7 +41,13 @@ onHook('damage_in', (ctx: any, cb) => {
   if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;
   if (holds(u, DEF_PLATE)) return; // the Defender's plate spends this unit's Guard, by its own policy
   const reach = Math.floor(ctx.dmg) - (shielded ? Math.max(0, u.shield || 0) : 0); if (reach <= 0) return;
-  const per = G().soak ?? 10, k = Math.min(guardOf(u), Math.ceil(reach / per)), cut = Math.min(reach, k * per);
+  // 1 point is kept back for a reaction (Interpose, Shield Wall, Shrug It Off), unless what gets through would take
+  // the unit down: then every point the hit needs is spent (the lead's tuning, 10 Nov 2026; provisional, keep_back).
+  const per = G().soak ?? 10, have = guardOf(u), needs = Math.ceil(reach / per);
+  let k = Math.min(Math.max(0, have - (G().keep_back ?? 1)), needs);
+  if (reach - k * per >= u.hp) k = Math.min(have, needs);
+  if (k < 1) return;
+  const cut = Math.min(reach, k * per);
   spendGuard(cb, u, k); ctx.dmg = Math.floor(ctx.dmg) - cut; ctx.guardSoaked = (ctx.guardSoaked || 0) + cut;
   cb.log.push(u.name + '\'s Guard takes ' + cut + ' of it (' + k + ' Guard, ' + guardOf(u) + ' left).');
 });

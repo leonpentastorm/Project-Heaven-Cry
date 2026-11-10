@@ -6,7 +6,7 @@
     "preset_points": 10,
     "custom_option": true,
     "leans": "base classes of the preset's highest attribute, every tied one (the level-3 rule, Class Roster Revision 3); recomputed by tools/validate.py",
-    "budgets": "every archetype spends all three creation budgets: its preset places the 10 Skill points, and `attributes` and `cores` place every Attribute and Core point (tools/archetype_fill.py); picking one leaves nothing to spend",
+    "budgets": "every archetype spends both creation budgets: its preset places the 10 Skill points and `attributes` places every Attribute point (tools/archetype_fill.py). Cores are not spent: `cores` is each family's highest attribute, kept for the screens; picking one leaves nothing to spend",
     "preset_style": "presets keep everything at 5 or below as moderate examples; players have no creation cap (a 7/1/1 build is legal from Custom)"
   },
   "families": [
@@ -53,7 +53,7 @@
     {
       "id": "all_in",
       "name": "All-in",
-      "blurb": "Everything in one place: all 6 Core points in one Core, a skill at 7, and nothing else. A 7/1/1 character."
+      "blurb": "Everything in one place: one attribute at 7, its skill at 7, and almost nothing else. A 7/1/1 character."
     }
   ],
   "items": [

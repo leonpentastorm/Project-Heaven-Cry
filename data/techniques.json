@@ -19,7 +19,10 @@
       "gain_base": 1,
       "gain_per_point": 1,
       "shield_gain": 1,
+      "brace_gain": 2,
+      "brace_shield_gain": 1,
       "soak": 10,
+      "keep_back": 1,
       "pressure_per_point": 1,
       "interpose_durability": 3,
       "interpose_cost": 1
@@ -255,7 +258,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer.",
+      "text": "No damage. The target makes a Brain save against 12 + half your strength with the weapon's skill. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer.",
       "lines": [
         {
           "props": [
@@ -2813,7 +2816,7 @@
       "needs": {
         "shield": true
       },
-      "text": "Spend 1 Guard: the attack is at −2 to hit, and your ally counts as behind half cover against it.",
+      "text": "Spend 1 Guard: your ally counts as behind half cover against that attack.",
       "trigger": "an ally next to you is the target of a ranged attack",
       "lines": [],
       "free": false,
@@ -2824,7 +2827,6 @@
       "particular": false,
       "numbers": {
         "guard_cost": 1,
-        "defense": 2,
         "reach": 1,
         "half_cover": 5
       },

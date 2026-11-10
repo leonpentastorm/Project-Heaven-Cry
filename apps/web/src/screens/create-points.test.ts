@@ -135,11 +135,11 @@ describe('the points step: refusals say what is short and what to do', () => {
     expect(JSON.stringify([l.state.skills, l.state.aSet])).toBe(before);
     expect(l.renderVals().points.note).toBe('✗ No Skill points left: lower another skill first.');
     expect(l.state.hist).toHaveLength(0);
-    attrOf(l.renderVals(), 'endurance').down(); // 5 → 4: Durability 4 still fits
+    attrOf(l.renderVals(), 'endurance').down(); // 5 → 4: Pain Threshold 4 still fits
     const a = attrOf(l.renderVals(), 'endurance');
-    expect(a.downOff).toBe('true'); expect(a.downAria).toBe('Lower Endurance, now 4. Not possible: Endurance can\'t drop to 3 while Durability is 4: lower Durability first.');
+    expect(a.downOff).toBe('true'); expect(a.downAria).toBe('Lower Endurance, now 4. Not possible: Endurance can\'t drop to 3 while Pain Threshold is 4: lower Pain Threshold first.');
     a.down();
-    expect(l.renderVals().points.note).toBe('✗ Endurance can\'t drop to 3 while Durability is 4: lower Durability first.');
+    expect(l.renderVals().points.note).toBe('✗ Endurance can\'t drop to 3 while Pain Threshold is 4: lower Pain Threshold first.');
     expect(attrOf(l.renderVals(), 'endurance').val).toBe(4);
   });
 });
@@ -160,7 +160,7 @@ describe('the points step: undo and reset', () => {
     expect(meter(l.renderVals(), 0)).toBe('10 LEFT OF 10'); expect(meter(l.renderVals(), 1)).toBe('10 LEFT OF 10');
   });
   it('one attribute resets: its skills back to 0 and it back to 1, the others untouched; Undo brings it back', () => {
-    const l = screen({ sampleName: 'T', sampleArch: 'bulwark', startStep: 'skills' }); // Endurance 5 (Durability 4, Pain Threshold 3), Strength 5 (Guts 3), Determination 3
+    const l = screen({ sampleName: 'T', sampleArch: 'bulwark', startStep: 'skills' }); // Endurance 5 (Pain Threshold 4, Durability 3), Strength 5 (Guts 3), Determination 3
     attrOf(l.renderVals(), 'endurance').reset();
     expect(l.state.note.text).toBe('Endurance reset: 7 Skill points and 4 Attribute points back.');
     expect(l.state.skills).toEqual({ guts: 3 });
@@ -170,7 +170,7 @@ describe('the points step: undo and reset', () => {
     expect(attrOf(v, 'endurance').resetOff).toBe('true');
     expect(_resetAttr({ skills: {}, aSet: {} }, 'endurance')).toEqual({ ok: false, text: 'Endurance is already at 1 with no points in its skills.' });
     v.points.undo();
-    expect(l.state.skills).toEqual({ durability: 4, pain_threshold: 3, guts: 3 });
+    expect(l.state.skills).toEqual({ durability: 3, pain_threshold: 4, guts: 3 });
     expect(attrOf(l.renderVals(), 'endurance').val).toBe(5);
   });
   it('Reset all clears the sheet and can be undone', () => {

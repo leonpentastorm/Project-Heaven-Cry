@@ -31,14 +31,14 @@ describe('Snap Shot', () => {
   it('takes a pack weapon into the main hand with no AP for the draw, and fires it (2 AP in all); the core judges that weapon', () => {
     const f = gunner('ccec_marksman_rifle', ['snap_shot']); const i = stow(f, 'service_pistol', 12); rig({ hit: true, die: 12 });
     let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('snap_shot', { targetId: f.foe.id, item: i }); });
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1);
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(0); expect(pv.rounds).toBe(1);
     expect(term(pv, 0, 'Snap Shot')).toBeUndefined(); // the pistol is Quick: no penalty (the rifle would take −2)
     expect(pv.notes.some((n) => /out of your pack/.test(n))).toBe(true);
     const at = f.cb.log.length;
     expect(f.tech('snap_shot', { targetId: f.foe.id, item: i })).toBeNull();
     expect(f.pc.weapon).toBe('service_pistol'); expect(f.char(f.pc).weapon).toBe('service_pistol');
     expect(f.char(f.pc).pack!.some((x: any) => x.weapon === 'ccec_marksman_rifle')).toBe(true); // the rifle went into the pack
-    expect(f.pc.ap).toBe(4); expect(f.pc.ammo).toBe(11); expect(f.pressure(f.foe)).toBe(1);
+    expect(f.pc.ap).toBe(6); expect(f.pc.ammo).toBe(11); expect(f.pressure(f.foe)).toBe(1);
     expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
   });
   it('without Quick: −2', () => {

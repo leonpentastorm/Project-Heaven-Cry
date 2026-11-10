@@ -19,7 +19,7 @@
       "II": 6,
       "III": 12
     },
-    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one) and the character's level: rank II needs the attribute at 5 and level 6, rank III the attribute at 8 and level 12 (rules 1.11)",
+    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one) and the character's level: rank II needs the attribute at 5 and level 6, rank III the attribute at 8 and level 12",
     "rank_thresholds_provisional": true,
     "moves": "a rank's move is either written in full (a Revision 3 move) or {\"ref\": \"<origin>.<moveId>\"}: a move from the pool or an advanced class, kept under its old key class:<origin>.<moveId>",
     "advanced": {
@@ -40,7 +40,8 @@
       "hybrid_rule": "a hybrid pairs a base attribute with an attribute of another core",
       "squared_rule": "a squared class pairs a base attribute with itself"
     },
-    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)"
+    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)",
+    "rank_rule_source": "rules 1.11"
   },
   "migration": {
     "from_revision": 2,
@@ -248,7 +249,7 @@
                   "tiles": 1,
                   "target": "target",
                   "save": "body",
-                  "tn": "12+debuff_strength:body",
+                  "tn": "12+strength:raw_power",
                   "alt": "prone"
                 }
               ],

@@ -6,10 +6,10 @@
 //   tq:<hand>:<id>   a technique to use (the plain attack row, or a chip picked from a pad)
 //   tpad:<hand>      a weapon's Techniques row (selecting it opens the pad)
 //   twatch           Hold a shot (selecting it opens the Watches)
-import { WEAPON, phys } from '@engine';
+import { WEAPON, ITEM, phys } from '@engine';
 type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup; type TechPreview = phys.TechPreview;
 import { heatLimit } from '@engine';
-const { techniquePad, packPad, pairedPad, previewTechnique, physView, weaponSystem, propText, TECHNIQUE } = phys;
+const { techniquePad, packPad, pairedPad, previewTechnique, physView, weaponSystem, propText, TECHNIQUE, shieldOf } = phys;
 import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
 
 export const TQ = 'tq:';
@@ -53,6 +53,7 @@ export interface TechChip {
   lent: boolean; signature: boolean; built: boolean; mark: string; markTitle: string; title: string; help: string; aim: string;
   choices: { prop: string; text: string }[];
   /** used with something that isn't in the hand: the pack entry or throwable (the engine's args.item) */ item?: string | number;
+  /** an Answer: it has no button, it happens by itself on its trigger (a shield's Shield Wall, Interpose) */ reaction?: boolean;
 }
 export interface ChipGroup { key: string; label: string; chips: TechChip[] }
 export interface WeaponBlock {
@@ -61,6 +62,8 @@ export interface WeaponBlock {
   meter: string; pips: { key: string; on: boolean }[]; meterHint: string;
   plain: TechChip | null; groups: ChipGroup[]; usable: number; total: number;
   watch: TechChip[];
+  /** the off hand's shield (rules 1.13): its meter is Guard, its pad holds the shield's techniques and its reactions */ shield?: boolean;
+  /** which pool the pips count */ meterKind?: 'momentum' | 'guard';
 }
 /** A technique's requirement as a sentence for its card ("Needs a Pressed target. "), or '' when it has none. */
 export function needsText(id: string): string {
@@ -93,12 +96,33 @@ const chipOf = (e: PadEntry): TechChip => {
   return { key: e.id, id: e.id, name: e.name, ap: e.ap, apText: e.ap + ' AP', rounds, line: e.line || '', ok: e.ok, why, lent: e.lent, signature: e.signature, built: e.built,
     mark, markTitle, title: e.name + ' · ' + e.ap + ' AP' + (rounds ? ' · ' + rounds : '') + '. ' + help + (why ? ' (' + why + ')' : '') + (markTitle ? ' ' + markTitle : ''), help, aim: e.aim, choices: e.choices || [] };
 };
+/** An Answer on a pad: not a button. What it costs and when it happens are in its text; a refusal (no Guard) is kept. */
+const reactionChip = (c: TechChip): TechChip => ({ ...c, reaction: true, apText: 'reaction', title: c.name + ' · a reaction. ' + c.help + (c.why ? ' (' + c.why + ')' : ''), line: c.line || c.help });
 /** The unit's held weapons as blocks, main hand first, then the off hand if it holds a weapon. Pure on the view. */
 export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
   if (!cb || !u) return [];
-  const hands: Hand[] = ['main', ...(u.offWeapon && (WEAPON as any)[u.offWeapon] ? ['off' as Hand] : [])];
+  const shieldId = !u.offWeapon ? (() => { try { return shieldOf(u); } catch { return null; } })() : null;
+  const hands: Hand[] = ['main', ...((u.offWeapon && (WEAPON as any)[u.offWeapon]) || shieldId ? ['off' as Hand] : [])];
   const pv = (() => { try { return physView(cb, u, u.side, g); } catch { return null; } })();
   const blocks = hands.map((hand): WeaponBlock | null => {
+    // A shield in the off hand: its own block. Shield Bash and Raise Shield are chips; Shield Wall and Interpose are
+    // reactions (listed to read: they happen by themselves, for 1 Guard). The meter is the Guard pool.
+    if (hand === 'off' && shieldId) {
+      let pad: PadGroup[] = []; try { pad = techniquePad(cb, u, 'off', g); } catch { pad = []; }
+      // Interpose is a skill's Answer: with a melee weapon in the main hand the engine lists it on that hand's pad, whose
+      // Answers have no row on screen. Everything that spends Guard is read here, on the shield.
+      try { const have = new Set(pad.flatMap((gr) => gr.entries.map((e) => e.id)));
+        const more = (techniquePad(cb, u, 'main', g).find((gr) => gr.group === 'answer')?.entries || []).filter((e) => !have.has(e.id) && (TECHNIQUE[e.id]?.numbers as any)?.guard_cost);
+        if (more.length) { const ans = pad.find((gr) => gr.group === 'answer'); if (ans) pad = pad.map((gr) => (gr === ans ? { ...gr, entries: [...gr.entries, ...more] } : gr)); else pad = [...pad, { group: 'answer' as any, label: 'Answers', entries: more }]; }
+      } catch { /* the shield's own pad stands */ }
+      const groups = pad.filter((gr) => gr.group !== 'watch').map((gr) => ({ key: gr.group, label: gr.group === 'answer' ? 'REACTIONS · THEY HAPPEN BY THEMSELVES' : gr.label.toUpperCase(),
+        chips: gr.entries.filter((e) => !e.plain).map((e) => (gr.group === 'answer' ? reactionChip(chipOf(e)) : chipOf(e))) })).filter((gr) => gr.chips.length);
+      const chips = groups.flatMap((gr) => gr.chips).filter((c) => !c.reaction), gd = pv && pv.guard;
+      return { hand, weaponId: shieldId, name: (ITEM as any)[shieldId]?.name || 'Shield', icon: gearIconUri(shieldId), iconOff: gearIconUri(shieldId, GEAR_INK_OFF), system: 'melee', shield: true, meterKind: 'guard',
+        meter: gd ? 'Guard ' + gd.now + ' / ' + gd.max : 'No Guard pool', pips: gd ? Array.from({ length: gd.max }, (_, i) => ({ key: 'g' + i, on: i < gd.now })) : [],
+        meterHint: gd ? 'Each Guard point takes ' + gd.soak + ' damage off a hit. Brace gives ' + gd.braceGain + ', the Guard technique ' + gd.gain + '; Raise Shield turns Momentum into Guard.' : 'A Guard pool needs a point of Durability.',
+        plain: null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch: [] };
+    }
     const weaponId = hand === 'off' ? u.offWeapon : u.weapon, w: any = (WEAPON as any)[weaponId]; if (!w) return null;
     let pad: PadGroup[] = []; try { pad = techniquePad(cb, u, hand as 'main' | 'off', g); } catch { pad = []; }
     const system = weaponSystem(weaponId) as 'melee' | 'ranged';
@@ -121,12 +145,12 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
       meter = (w.magazine != null ? loaded + ' / ' + w.magazine + ' loaded' : '') + (w.heat_limit ? (w.magazine != null ? ' · ' : '') + 'Heat ' + (u.heat || 0) + ' / ' + heatLimit(u, w) : '');
     }
     return { hand, weaponId, name: (hand === 'main' ? u.weaponName : null) || w.name, icon: gearIconUri(weaponId), iconOff: gearIconUri(weaponId, GEAR_INK_OFF), system, meter, pips, meterHint,
-      plain: plainE ? chipOf(plainE) : null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch };
+      plain: plainE ? chipOf(plainE) : null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch, ...(system === 'melee' && pips.length ? { meterKind: 'momentum' as const } : {}) };
   }).filter((b): b is WeaponBlock => !!b);
   // Two weapons of one kind (two guns, two melee weapons): a third block for what both do together (Leon, 10 Nov 2026):
   // the paired attack, the techniques that can be made with each in turn, and (the screen adds it) reloading both.
   const bm = blocks.find((b) => b.hand === 'main'), bo = blocks.find((b) => b.hand === 'off');
-  if (bm && bo && bm.system === bo.system) {
+  if (bm && bo && !bo.shield && bm.system === bo.system) {
     let pe: PadEntry[] = []; try { pe = pairedPad(cb, u, g); } catch { pe = []; }
     const chips = pe.map(chipOf);
     blocks.push({ hand: 'both', weaponId: bm.weaponId, name: 'Both hands', icon: bm.icon, iconOff: bm.iconOff, system: bm.system, meter: bm.name + ' + ' + bo.name, pips: [], meterHint: 'Main hand −1, off hand −3 (better by 1 for every 3 Dexterity, to −1). The dearer of the two costs, +1 AP.',
@@ -145,6 +169,7 @@ export function blockItems(blocks: WeaponBlock[]): [string, string, string, stri
     if (b.plain) out.push([techAction(b.hand, b.plain.id), b.plain.name, b.plain.apText, b.plain.help, b.plain.ok ? null : b.plain.why]);
     if (b.hand === 'both') out.push(['paired', b.system === 'melee' ? 'Strike with both' : 'Fire both', 'AP +1', 'One attack with each weapon, at one target: the dearer of the two costs + 1 AP. Main hand −1, off hand −3 (better by 1 for every 3 Dexterity, to −1).']);
     if (b.hand === 'both' && !b.total) continue; // no shared technique: only the paired attack
+    if (b.shield) { out.push([padAction(b.hand), 'Shield techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', 'What you can do with the ' + b.name + ': Shield Bash and Raise Shield are picked in the pad; its reactions happen by themselves.', b.total ? null : 'No shield techniques.']); continue; }
     out.push([padAction(b.hand), 'Techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', (b.hand === 'both' ? 'A technique made with each weapon in turn, main hand −1 and off hand −3, for 1 AP more' : 'What you can do with the ' + b.name) + ': pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
   }
   const watch = watchChips(blocks);
@@ -201,6 +226,7 @@ export function previewLines(cb: any, pv: TechPreview | null): { odds: string[];
   }
   out.notes = [...(pv.notes || [])];
   if (pv.momentum) out.meters.push('Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : ''));
+  if ((pv as any).guard) out.meters.push('Guard ' + (pv as any).guard.now + ' → ' + (pv as any).guard.after);
   for (const p of pv.pressure || []) out.meters.push(nameOf(p.unit) + ': Pressure ' + (p.add >= 0 ? '+' : '') + p.add + ' → ' + p.after + (p.state ? ' (' + (STATE[p.state] || p.state) + ')' : '') + (p.onHit ? ' on a hit' : ''));
   for (const s of pv.saves || []) out.saves.push(nameOf(s.unit) + ' saves with ' + s.skills.map((k) => k.replace(/_/g, ' ')).join(' or ') + ' vs TN ' + s.tn);
   return out;
@@ -280,6 +306,9 @@ export const TECH_OPTS: Record<string, [string, string, string][]> = {
   run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Reach line only: the weapon stays in the target, which is nailed in place until it is pulled out.']],
   bash: [['', 'DAZE', 'Heavy line: the target is Dazed.'], ['push', 'PUSH', 'Heavy line: the target is pushed 2 tiles instead.']],
   trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'Bare, next to you: it is Grappled as well.']],
+  // Raise Shield: how much Momentum to turn into Guard (all of it when nothing is picked; the engine caps it at the pool)
+  raise_shield: [['1', 'TURN 1', '1 Momentum becomes 1 Guard.'], ['2', 'TURN 2', '2 Momentum become 2 Guard.'], ['', 'ALL', 'All your Momentum becomes Guard, as much as the pool holds.']],
   drag: [['', 'AUTO', 'Pull it to you, or swap places when it is next to you.'], ['pull', 'PULL', 'Pull it toward you.'], ['swap', 'SWAP', 'Change places with it.']],
 };
-export const techOptOf = (id: string, picked: string | null | undefined): string | null => { const o = TECH_OPTS[id]; if (!o) return null; const v = picked != null && o.some((x) => x[0] === picked) ? picked : o[0][0]; return v || null; };
+/** (What is sent when nothing was picked: the '' choice where there is one, else the first.) */
+export const techOptOf = (id: string, picked: string | null | undefined): string | null => { const o = TECH_OPTS[id]; if (!o) return null; const v = picked != null && o.some((x) => x[0] === picked) ? picked : (o.find((x) => x[0] === '') || o[0])[0]; return v || null; };

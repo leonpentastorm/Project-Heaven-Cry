@@ -3,7 +3,7 @@
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { resourcesOf, resView, RES_CSS } from '../game/resources';
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, mod, checkMod, fmt, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
+import { D, ATTR, SK, IMG, mod, checkMod, fmt, tabNavIndex, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
 import { practiceView, feelingCodex, moduleGroups } from '../game/feelingsView';
@@ -12,6 +12,7 @@ import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '
 import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange, routeHazards, PICKUP_AP } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
+import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
 import { previewPerkAction, bindGame, phys } from '@engine';
@@ -294,7 +295,7 @@ function magicVals(self, g, c) {
       mpText: N.mp + ' / ' + mpMax + ' MP', mpFill: 'height: 100%; width: ' + Math.max(0, Math.min(100, mpPct)) + '%; background: ' + MP_BLUE,
       held: !!N.held, heldText: N.held ? 'HOLDING ' + ((designs.find((d) => d.id === N.held.design) || {}).name || 'an Outburst').toUpperCase() + ' · STAGE ' + N.held.stage + ' · it grows each round, and strains the heart, until you release it' : '', heldImg: heartUri(N.held ? N.held.stage : 1),
       head: 'OUTBURSTS · SOUL · ' + designs.length + (designs.length === 1 ? ' DESIGN' : ' DESIGNS'), canNew, newDesign: () => self.setState({ mgDraft: { id: null, name: '', school: known.schools[0], school2: '', option2: '', tone: 'raw', modules: [], option: optValue((SCHOOL[known.schools[0]]?.options || [''])[0] || '') }, mgSaved: null }),
-      newWhy: fight ? 'Design Outbursts after the fight.' : !known.schools.length ? 'Learn a school first (Will Power, or a teacher).' : designs.length >= readyDesigns(c) ? 'You keep ' + readyDesigns(c) + ' designs ready (Empathy): forget one to make room.' : '',
+      newWhy: fight ? 'Design Outbursts after the fight.' : !known.schools.length ? 'Learn a school first (Will Power, or a teacher).' : designs.length >= readyDesigns(c) ? 'You keep ' + readyDesigns(c) + ' designs ready (' + SKILL.will_power.name + '): forget one to make room.' : '',
       knownText: 'Schools: ' + (known.schools.map((x) => SCHOOL[x]?.name || x).join(', ') || 'none') + ' · Tones: Raw' + (known.tones || []).map((x) => ', ' + (TONE[x]?.name || x)).join('') + ' · Modules: ' + (known.modules.map((x) => MODULE[x]?.name || x).join(', ') || 'none') },
     codex, b, learn: { ally, plates, hasAlly: ally.length > 0, hasPlates: plates.length > 0, any: ally.length + plates.length > 0, locked: learnLocked,
       why: fight ? 'Learn after the fight.' : learnedNow ? 'One new thing a scene: it takes a rest to sink in.' : 'One new thing a scene. Words: ' + words.length + ' / ' + wordsKnownCap(c) + ' known.' },
@@ -371,8 +372,14 @@ export class MainLogic extends DCLogic {
       .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
     const barsA = bars.filter((b) => b.label !== 'XP'), barsB = bars.filter((b) => b.label === 'XP');
     const TAB_IDS = ['skills', 'status', 'perks', 'gear', 'arms', 'magic', 'faith'], tabDir = (to, from) => (TAB_IDS.indexOf(to) < TAB_IDS.indexOf(from) ? 'l' : 'r');
-    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR'], ['arms', 'ARMS'], ['magic', 'MAGIC'], ['faith', 'FAITH']].map(([id, label]) => ({ label, pick: () => { if (this.state.tab !== id) this.setState({ tab: id, tabDir: tabDir(id, this.state.tab), tip: null, gearMenu: null }); }, selected: S.tab === id ? 'true' : 'false',
-      style: 'flex: 1 1 auto; min-height: 38px; padding: 0 3px; border-radius: 8px; font-family: inherit; font-size: 10px; font-weight: 700; letter-spacing: 0; white-space: nowrap; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
+    // The sheet's tabs wrap onto a second line when the seven don't fit (never squeezed, never scrolled sideways); each
+    // tab carries its own frame, so the open one's mark stays with it on either line. Arrow keys follow the order on
+    // screen (Left and Right along the lines, Up and Down between them), Home and End the first and last.
+    const openTab = (id, focus) => { if (this.state.tab !== id) this.setState({ tab: id, tabDir: tabDir(id, this.state.tab), tip: null, gearMenu: null });
+      if (focus && typeof document !== 'undefined') { const el = document.getElementById('phc-sheet-tab-' + id); if (el) el.focus(); } };
+    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR'], ['arms', 'ARMS'], ['magic', 'MAGIC'], ['faith', 'FAITH']].map(([id, label], i) => ({ key: id, id: 'phc-sheet-tab-' + id, label, pick: () => openTab(id), selected: S.tab === id ? 'true' : 'false', tabindex: S.tab === id ? '0' : '-1',
+      onKey: (e) => { const j = tabNavIndex(e, TAB_IDS.length, TAB_IDS.indexOf(this.state.tab)); if (j < 0) return; e.preventDefault(); openTab(TAB_IDS[j], true); },
+      style: 'flex: 1 0 auto; box-sizing: border-box; min-height: 36px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; border-bottom: 3px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; border-bottom: 3px solid #232D3F; background: transparent; color: #A3AEC2') }));
     const CORES = ['body', 'mind', 'soul'];
     const coreTabs = CORES.map((k) => ({ label: k.toUpperCase(), pick: () => { if (this.state.core !== k) this.setState({ core: k, coreDir: CORES.indexOf(k) < CORES.indexOf(this.state.core) ? 'l' : 'r' }); }, pressed: S.core === k ? 'true' : 'false',
       style: 'flex: 1; min-height: 36px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; color: ' + D.core[k] + '; ' + (S.core === k ? 'border: 1px solid ' + D.core[k] + '; background: #1C2536' : 'border: 1px solid #232D3F; background: transparent') }));
@@ -391,9 +398,9 @@ export class MainLogic extends DCLogic {
     });
     const au = P('authority'), lead = au >= 5 ? 'Command' : au >= 3 ? 'Platoon' : au >= 1 ? 'Squad' : 'Unfit';
     const w = c ? WEAPON[c.weapon] : null;
-    const status = c ? [['Defense', String(defense(c))], ['Initiative', fmt(initiativeBonus(c))], ['Movement', movement(c) + ' tiles per AP'], ['Vision', (12 + 2 * (A('perception') - 1)) + ' tiles'],
-      ['Healing given', '×' + (Math.round(healingMult(c) * 100) / 100)], ['Carry', (20 + 5 * (A('strength') - 1)) + ' kg'], ['Body save', fmt(mod(P('guts')))], ['Brain save', fmt(mod(P('rumination')))],
-      ['Heart save', fmt(mod(P('composure')))], ['Cores', 'B' + c.cores.body + ' · M' + c.cores.mind + ' · S' + c.cores.soul], ['Leadership', lead], ['Karma', '0 · Neutral']].map(([k, v]) => ({ k, v })) : [];
+    // The derived lines: the engine's numbers, each with the attribute and skill behind it (game/derived.ts).
+    const status = c ? [...derivedLines(c).filter((r) => r.key !== 'hp' && r.key !== 'mp').map((r) => ({ key: r.key, k: r.k, v: r.v, from: r.from, hasFrom: true })),
+      { key: 'lead', k: 'Leadership', v: lead, from: SKILL.authority.name, hasFrom: true }, { key: 'karma', k: 'Karma', v: '0 · Neutral', from: '', hasFrom: false }] : [];
     const rep = [{ k: 'Factions', v: 'No standing yet' }];
     const inj = c ? c.injuries || [] : [];
     const statusFig = bodyFigure({ injuries: inj, mainSide: side0(c) });

@@ -426,7 +426,6 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   if (att && !hurtWhy) {
     const src: any = { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) };
     const ctx: any = { att, tgt: t, mode: 'spell', melee: false, spell: true, src, base: dmg, add: 0, mults: [], vs: [] as any[], crit: false, preview: false, cb, mods: cb.mods || [] };
-    if (t.weakPoint && att.side === 'pc') ctx.vs.push({ v: 0.15, label: 'Weak Point' }); // the squad's +15% (spec), spells too
     emit(cb, 'damage_out', ctx);
     const vsSum = ctx.vs.reduce((a: number, x: any) => a + x.v, 0); // tactics.ts stackDamage: target bonuses add, capped at +100%
     dmg = Math.floor(Math.max(0, dmg + ctx.add) * ctx.mults.reduce((a: number, m: any) => a * m.v, 1) * (1 + Math.min(1, Math.max(-0.9, vsSum))));

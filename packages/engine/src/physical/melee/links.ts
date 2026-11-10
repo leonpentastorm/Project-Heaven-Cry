@@ -12,7 +12,7 @@
 //     Guard with Reach) is the Body family save.
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
-import { technique, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
+import { technique, save, cond, stop, forceMove, pushBlocked, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
 import { strikingWith, techSaveTn, techVia, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
 import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
@@ -225,6 +225,7 @@ technique({
     if (total < need) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
     const was = tgt.pos, wasProne = !!tgt.prone, mk = fxMark(t);
     stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
+    if (blocked) pushBlocked(t, tgt, to); // shoved against a wall or a body: Breaching Strike's hit again
     const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how: 'push' });
     fallFx(t, tgt, wasProne);
     // it works when the target really moved, or went Prone where it was blocked (an item may cancel the push)

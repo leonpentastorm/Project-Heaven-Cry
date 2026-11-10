@@ -133,14 +133,14 @@ describe('Raise Shield', () => {
 describe('Shield Wall', () => {
   const shoot = (f: F, tgt: Unit) => f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(tgt.id), 'shot', null, { noAp: true }));
   const terms = (f: F, tgt: Unit, mode: 'shot' | 'melee' = 'shot') => f.bound(() => previewAttack(f.cb, f.unit(f.foe.id), f.unit(tgt.id), mode, { free: true })).terms!.map((t) => t.label + ' ' + t.v);
-  it('an ally next to you is shot at: 1 Guard and your reaction; the shot is at −2 and half cover counts', () => {
+  it('an ally next to you is shot at: 1 Guard and your reaction; the ally counts as behind half cover (−5, no extra −2)', () => {
     const f = fight({ ally: true, guard: 2, foeAt: 'G4' }); const ally = f.pcs[1]; f.turn(f.foe);
     const plain = f.bound(() => previewAttack(f.cb, f.unit(f.foe.id), f.unit(ally.id), 'shot', { free: true })).toHit;
     let seen: number | null = null; rig({ die: 10 });
     const r = shoot(f, ally);
     seen = r.total - r.roll;
-    expect(seen).toBe(plain - 2 - 5); expect(guard(f)).toBe(1);
-    expect(f.cb.log.some((l) => /answers with Shield Wall/.test(l))).toBe(true); expect(f.cb.log.some((l) => /shield covers .* \(1 Guard\): −2 to hit, and half cover counts/.test(l))).toBe(true);
+    expect(seen).toBe(plain - 5); expect(guard(f)).toBe(1);
+    expect(f.cb.log.some((l) => /answers with Shield Wall/.test(l))).toBe(true); expect(f.cb.log.some((l) => /shield covers .* \(1 Guard\): .* counts as behind half cover against it/.test(l))).toBe(true);
     // the wall was for that attack: the next one is plain (and the reaction is spent)
     expect(terms(f, ally).some((t) => /Shield Wall/.test(t))).toBe(false);
     const r2 = shoot(f, ally); expect(r2.total - r2.roll).toBe(plain); expect(guard(f)).toBe(1);
@@ -163,7 +163,7 @@ describe('Shield Wall', () => {
     const lines = f.cb.log.slice(before).filter((l) => /fires at/.test(l));
     for (const l of lines) { const m = /d20 10 ([+−])(\d+)/.exec(l); if (m) rolls.push((m[1] === '+' ? 1 : -1) * Number(m[2])); }
     expect(rolls.length).toBeGreaterThanOrEqual(2);
-    for (const r of rolls) expect(r).toBeLessThanOrEqual(plain - 7);
+    for (const r of rolls) expect(r).toBeLessThanOrEqual(plain - 5);
     expect(guard(f)).toBe(2); expect(f.cb.log.filter((l) => /answers with Shield Wall/.test(l)).length).toBe(1);
   });
 });

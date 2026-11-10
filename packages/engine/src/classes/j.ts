@@ -180,7 +180,7 @@ register({
     run: (h, _a, rng) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h);
       say(cb, u.name + ' digs in and emplaces the ' + W(u).name + applyCond(cb, rng, u, u, 'emplaced', undefined, undefined, { skipSave: true }) + ' · +5 armour.');
-      u.braced = true; if (!st.armour) { st.armour = 5; u.armour += 5; }
+      u.braced = true; delete u.guardBrace; if (!st.armour) { st.armour = 5; u.armour += 5; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       return null;
     },
@@ -1123,7 +1123,7 @@ register({
     available: (h) => (!h.u || has(h.u, DEF_BRACE) ? false : true),
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h), n = Math.max(1, 1 + mod(h.c?.skills?.durability || 0)), got = resGain(u, 'guard', n);
-      u.braced = true; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
+      u.braced = true; delete u.guardBrace; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       say(cb, u.name + ' braces behind the plate: +' + got + ' Guard (' + resOf(u, 'guard') + '/5), +2 Defense' + bulwarkShield(h) + '.');
       return null;

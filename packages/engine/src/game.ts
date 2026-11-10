@@ -2824,7 +2824,7 @@ const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is
 const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null);
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
-  'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
+  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
   'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
   'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',

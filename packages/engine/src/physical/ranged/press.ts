@@ -1,7 +1,7 @@
 // Physical 2.0, ranged Press: Pressure with little or no damage (+1 Heat on top of what it fires: the core adds it).
 // Suppress is the lead's reference; the ranged lane builds Rake, Warning Shot, Flush, Mag Dump and Crossfire here.
 import { technique, strike, canStrike, spendRounds, addPressure, addPressureTo, onHook, save, hitByAlly, ownSideOnly, stepsWithin, stepUser, standingAt, turnStamp, atCover, flanksCover, hitPressure, pressureOf, isPressed, type Tech, type StrikeResult } from './shared';
-import { alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, attackApCost, refOf, type Combat, type Unit } from '../../combat';
+import { alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, attackApCost, refOf, type Combat, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { applyDamage } from '../../effects/damage';
 import { reveal } from '../../tactics';
@@ -94,7 +94,7 @@ function inWeapon<T>(t: Tech, fn: () => T): T {
 export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): void {
   if (t.preview) return;
   const u = t.u, w = t.w;
-  if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && u.heat >= heatLimit(u, w)) { u.jammed = true; t.cb.log.push(u.name + '\'s weapon jams (Heat).'); } }
+  if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, w)) { u.jammed = true; t.cb.log.push(u.name + '\'s weapon jams (Heat).'); } }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   if (t.hand === 'main' && u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);
   emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...(u.jammed && t.hand === 'main' ? { jam: true } : {}), tech: t.def.id, vi: 0, ...fx });

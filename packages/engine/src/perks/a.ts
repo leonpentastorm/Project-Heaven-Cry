@@ -338,8 +338,8 @@ register({
 });
 
 // ---------- Siege Engine (Raw Power + Durability, Achieved) ----------
-// Shove costs 1 AP less (min 1); Break (striking or shooting cover or an object) 1 AP less than the attack, min 1 (the
-// stat 'ap_cost:break' answers now; the engine site is a listed gap). Nothing knocks you back: shoves, knockback
+// The Shove Link and the Break Finisher cost 1 AP less, never below 1 (so a 1 AP Shove stays 1): the stat
+// 'ap_cost:shove' / 'ap_cost:break', asked by the technique AP path (physical/core.ts apFor) and by the old Shove. Nothing knocks you back: shoves, knockback
 // (generic immunity), Breaching Strike; Prone from a blocked shove still lands.
 register({
   id: 'siege_engine', claims: [0, 1],

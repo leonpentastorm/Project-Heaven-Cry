@@ -360,7 +360,7 @@ register({
       available: (h) => (h.u ? true : false),
       run: (h) => {
         const u = h.u!, st = stateOf(h), c = h.c, n = Math.max(1, 1 + mod(c?.skills.durability || 0)), got = resGain(u, 'guard', n);
-        u.braced = true; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
+        u.braced = true; delete u.guardBrace; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
         emitFx(h.cb!, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
         say(h.cb, u.name + ' braces and holds the line: +' + got + ' Guard (' + resOf(u, 'guard') + '), +2 Defense until they move.');
         emit(h.cb!, 'braced', { u, cb: h.cb }); // 'braced' {u}: the Defender's Brace landed (Adamantile Knight's Bulwark of Will)

@@ -8,7 +8,20 @@
 
 > **Revision 1.11 (2026-11-10), level gains:** every level gives two picks (odd levels 2 Skill points; even levels 1 Skill point and 1 Attribute point) and a Core point comes every 3rd level (3, 6, 9, 12, 15, 18), not every 5th. A class rank needs a level as well as the attribute (rank II level 6, rank III level 12). At creation the budgets are unchanged, the Core-for-Attribute trade is gone, and Mind Without Fog gives 1 Core point, not 2. See Characters, Classes and items 924 on. Design: `docs/design/proposals/2026-11-skeleton.md`.
 
-> **Revision 1.12 (2026-11-10), Physical 2.0:** techniques for melee weapons (Momentum, a meter on you, built by chaining different techniques and spent by Finishers) and for ranged weapons (Pressure, a meter on the target, built by fire and spent by Takes); weapon properties; ready lists; drill per weapon in place of weapon mastery; the quiver. See Weapons, Physical techniques, and items 932 on. Design: `docs/design/proposals/2026-11-melee-techniques.md`, `2026-11-ranged-techniques.md`.
+> **Revision 1.12 (2026-11-10), Physical 2.0:** techniques for melee weapons (Momentum, a meter on you, built by chaining different techniques and spent by Finishers) and for ranged weapons (Pressure, a meter on the target, built by fire and spent by Takes); weapon properties; ready lists; drill per weapon in place of weapon mastery; the quiver. See Weapons, Physical techniques, and items 932 on. Design: `docs/design/proposals/2026-11-melee-techniques.md`, `2026-11-ranged-techniques.md`. *(Momentum's rule was reworked the same day: it is no longer built by chaining different techniques. Superseded by "Melee: Momentum and the chain" and Revision 1.13.)*
+
+> **Revision 1.13 (2026-11-10), Skeleton 2.0:**
+> - **Cores are not spent.** Body, Mind and Soul are families; a Core shows the highest Attribute of its family. Creation is 10 Skill and 10 Attribute points, and no level gives a Core point. An Attribute's ceiling rises with level: 7 at creation, 8 from level 3, 9 from level 6, 10 from level 9.
+> - **Every slot has a job.** An alpha opens a way of fighting and carries the offence, a beta is a defence, a gamma is world play and speech.
+> - **Numbers moved to the skill whose job they are:** HP per level to Pain Threshold, critical damage taken to Acuity, ambush damage taken to Improvisation, Sigil range and core saving to Brain Power, Soul range and ready designs to Will Power, healing given to Empathy, healing received to Camaraderie, shields received to Conscience, Karma to Authority.
+> - **Saves:** Body with Guts, Brain with Rumination, Heart with Composure (Composure is Determination's beta now; Lore Master its gamma).
+> - **Strength by source:** a condition is as strong as the skill that delivered it (the weapon's skill, Brain Power, Will Power, Faith, the gamma that spoke); a technique's own save adds half of it.
+> - **A gamma adds its full points to a check** (1 better than an alpha or a beta with the same points) and owns one of the nine **Calls**, the only way AP is given or taken inside a turn.
+> - **Momentum reworked:** only the plain attack builds it, a Strike or an Opener spends 1, walking and being hit cost it, a fight starts with 1, and it carries between turns.
+> - **Guard for anyone with Durability** (a pool that soaks hits, Interpose at 3), **shield techniques** (Shield Bash, Raise Shield, Shield Wall), and gear gates by the new skills.
+> - **The perk, unlock and trait pass:** AP gifts on alphas and betas became defences; Grapple is Iron Grip, Origami Hands is Both Hands, Weak Point is Read Them.
+> - **Names:** Analysis is Acuity (Perception), Proficiency is Improvisation (Expression), and Implication, Vigilant and Sensory are Insinuation, Vigilance and Senses; the ids did not change.
+> See Characters, Derived stats, Physical techniques (Momentum, Guard), Calls, Conditions and saves, "The perk, unlock and trait pass", and items 953 on. Design: `docs/design/proposals/2026-11-nine-doors.md`.
 
 2026-11-03 · Leon PT
 
@@ -70,24 +83,42 @@ This is the single source of truth for Project Heaven Cry's rules. Where it disa
 
 **The stat tree.** 3 Cores → 9 Attributes → 27 Skills. Each Core owns three Attributes; each Attribute owns three Skills (one α, one β, one γ). The full tree is in skills.json.
 
-**Caps.** An Attribute can't exceed its Core. A Skill can't exceed its Attribute. Nothing exceeds 10.
+**Caps** (rules 1.13). A Skill can't exceed its Attribute. An Attribute's ceiling rises with level: **7 at creation, 8 from level 3, 9 from level 6, 10 from level 9**. Nothing exceeds 10. **Cores are not spent:** Body, Mind and Soul are families (colours, saves, class groups), and a Core shows the highest Attribute of its family. *(Before rules 1.13 an Attribute couldn't exceed its Core, and Cores were bought with their own points. Older lines below and in section 14 that speak of Core points are superseded by this.)*
 
 **Creation budget**
 
 | Pool | Starts at | At creation |
 |---|---|---|
 | Skills | 0 each | spend **10 Skill points** |
-| Attributes | 1 each | spend **10 Attribute points** |
-| Cores | 1 each | spend **6 Core points** |
+| Attributes | 1 each | spend **10 Attribute points**; no Attribute above 7 at creation |
+| Cores | — | not spent (rules 1.13): a Core shows the highest Attribute of its family. *Before: 6 Core points.* |
 | Traits | none | pick 0–2 |
 
-Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Skill points), so focusing on one Core costs nothing that spreading across three would save. Every point is placed where it belongs: a Core point can't be traded for Attribute points (rules 1.11, item 928; before it, an unspent Core point became 2 Attribute points, which only ever worked for one point and was a loss when it did).
+Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Skill points), so focusing on one Core costs nothing that spreading across three would save. Every point is placed where it belongs: a Core point can't be traded for Attribute points (rules 1.11, item 928; before it, an unspent Core point became 2 Attribute points, which only ever worked for one point and was a loss when it did). *(Rules 1.13: the 6 Core points are gone; the budgets are 10 Skill and 10 Attribute points.)*
 
-**No creation caps.** Only the tree's own caps apply (Skill ≤ Attribute ≤ Core ≤ 10). Put all 6 Core points into Body and you have a 7/1/1 character; the budgets themselves stop a skill at 7 at creation.
+**Creation's only cap** (rules 1.13) is the tree's own: Skill ≤ Attribute, and no Attribute above 7. *(Before: Skill ≤ Attribute ≤ Core ≤ 10, and 6 Core points in one Core made a 7/1/1 character.)*
 
-**Order doesn't matter.** You can raise Cores and Attributes first, or place skills first: when a skill needs a higher Attribute or Core, it spends those points for you, and the preview says so ("−1 skill · −1 Attribute (Endurance 3→4) · −1 Core (Body 3→4)"). A skill can't go up if its Attribute or Core would need points you no longer have. Lock in needs every point of all three budgets spent.
+**Order doesn't matter.** You can raise Attributes first, or place skills first: when a skill needs a higher Attribute, it spends that point for you, and the preview says so ("−1 skill · −1 Attribute (Endurance 3→4)"). A skill can't go up if its Attribute would need points you no longer have. Lock in needs every Skill and Attribute point spent. *(Rules 1.13: no Core step.)*
 
-**Archetypes** (archetypes.json, 46 presets in 9 families, one of them **All-in**: nine 7/1/1 builds, one per Attribute) help new players. **Every archetype spends all three budgets:** picking one places the 10 Skill points and every Attribute and Core point, so there is nothing left to spend; anything can still be changed on the Skills step. An archetype that can't spend them all isn't offered. Regular archetypes spread over at least two Cores; only the All-in family puts everything in one. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point, and to raise an Attribute past its Core you need a Core point, both from levelling.
+**Archetypes** (archetypes.json, 46 presets in 9 families, one of them **All-in**: nine 7/1/1 builds, one per Attribute) help new players. **Every archetype spends all three budgets:** picking one places the 10 Skill points and every Attribute point (rules 1.13: there are no Core points), so there is nothing left to spend; anything can still be changed on the Skills step. An archetype that can't spend them all isn't offered. Regular archetypes spread over at least two Cores; only the All-in family puts everything in one. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point from levelling, and an Attribute stops at the ceiling of your level.
+
+**Archetypes re-pointed (rules 1.13).** Thirteen presets were re-pointed for the new skill jobs; the other 33 are unchanged.
+
+| Archetype | Was | Is |
+|---|---|---|
+| Bulwark | Durability 4, Pain Threshold 3, Guts 3 | Pain Threshold 4, Durability 3, Guts 3 |
+| Bodyguard | Durability 3, Reaction Speed 3, Vigilance 2, Guts 2 (Endurance 3, Strength 3) | Durability 3, Reaction Speed 3, Vigilance 2, Pain Threshold 2 (Endurance 5, Strength 1; it now leans Defender) |
+| Heavy gunner | Dexterity 4, Durability 3, Guts 3 | Dexterity 4, Pain Threshold 3, Guts 3 |
+| Sentinel | Rumination 4, Composure 3, Acuity 3 | Brain Power 4, Composure 3, Acuity 3 |
+| Enchanter | Rumination 4, Improvisation 3, Eloquence 3 | Brain Power 4, Empathy 3, Eloquence 3 |
+| Jinx | Acuity 4, Charisma 3, Eloquence 3 | Acuity 4, Charisma 3, Brain Power 3 |
+| Scholar | Rumination 4, Acuity 3, Brain Power 3 | Lore Master 4, Acuity 3, Brain Power 3 |
+| Mender | Camaraderie 4, Empathy 3, Insinuation 3 | Empathy 4, Camaraderie 3, Insinuation 3 |
+| Confessor | Faith 4, Camaraderie 3, Conscience 3 | Faith 4, Empathy 3, Conscience 3 |
+| Witch | Lore Master 4, Will Power 3, Insinuation 3 | Will Power 4, Lore Master 3, Insinuation 3 |
+| Troubadour | Insinuation 4, Camaraderie 3, Authority 3 | Insinuation 4, Empathy 3, Authority 3 |
+| Crusader | Faith 4, Durability 3, Guts 3 | Faith 4, Durability 3, Pain Threshold 3 |
+| Field medic | Camaraderie 4, Senses 3, Improvisation 2, Empathy 1 | Empathy 4, Camaraderie 3, Improvisation 2, Pain Threshold 1 |
 
 **Levels and XP.** Levels run 1 to 20. XP is cumulative:
 
@@ -104,12 +135,12 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 | Every level | HP rises by your HP-per-level stat |
 | Every odd level (3, 5, … 19) | +2 Skill points |
 | Every even level (2, 4, … 20) | +1 Skill point and +1 Attribute point |
-| Every 3rd level (3, 6, 9, 12, 15, 18) | also +1 Core point |
+| Levels 3, 6 and 9 | the Attribute ceiling rises to 8, 9 and 10 (rules 1.13). *Rules 1.11 to 1.12: every 3rd level gave +1 Core point; none since.* |
 | Level 3 | Your base class (see Classes) |
 
-Rules revision 1.11 (10 Nov 2026; provisional, items 924–927). Over levels 2 to 20 that is **28 Skill points, 10 Attribute points and 6 Core points**, on top of creation's 10, 10 and 6: 38 Skill points in a career. Before 1.11 a level gave 1 Skill point, and a Core point came every 5th level (19 Skill and 4 Core points in a career): raising a capped skill needs a point of each kind, so every character's best skill rose by 1 per 5 levels and no build that started below a Core of 6 could ever reach a Mastered perk. Points you don't spend are kept.
+Rules revision 1.11 (10 Nov 2026; provisional, items 924–927). Over levels 2 to 20 that is **28 Skill points, 10 Attribute points and 6 Core points**, on top of creation's 10, 10 and 6: 38 Skill points in a career. Before 1.11 a level gave 1 Skill point, and a Core point came every 5th level (19 Skill and 4 Core points in a career): raising a capped skill needs a point of each kind, so every character's best skill rose by 1 per 5 levels and no build that started below a Core of 6 could ever reach a Mastered perk. Points you don't spend are kept. *(Rules 1.13: no Core points at creation or from levels; a career is 38 Skill and 20 Attribute points.)*
 
-Skill books and quest rewards can grant extra Skill points. A Legendary Deed, at the Narrator's call, grants an extra Core point.
+Skill books and quest rewards can grant extra Skill points. A Legendary Deed, at the Narrator's call, granted an extra Core point; with Cores no longer spent (rules 1.13), what a deed grants is open (section 14).
 
 **XP sources.** XP is tagged by source, because traits care (Born Performer gets +20% from combat and nothing from conversation).
 
@@ -145,7 +176,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Movement (tiles per AP) | 1 + 0.5 × (Agility − 1); never below 0.5 |
 | Carry weight | 20 kg + 5 kg × (Strength − 1). Over it you are **Overburdened** (a permanent status while it lasts): −1 Movement per started 5 kg over, never below 0.5, and no Sprint (provisional, item 54) |
 | Defense | 10 + Dodge, where Dodge = mod(Athletics), minimum 0 |
-| Guard pool | Durability points, 5 at most; Brace and the Guard technique each give 1 + (Durability − 1), 1 more with a shield |
+| Guard pool | Durability points, 5 at most; the Guard technique gives 1 + (Durability − 1), 1 more with a shield; Brace gives 2, 3 with a shield |
 | Counter bonus | mod(Raw Power), minimum 0 |
 | Injury resistance | 10% × (Endurance − 1) chance to ignore an injury |
 | Critical damage taken | −10% × (Perception − 1) − 5% × Acuity (rules 1.13: it was Durability) |
@@ -206,7 +237,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Skill | Attribute | Slot | A point gives |
 |---|---|---|---|
-| Durability | Endurance | alpha | Your Guard pool holds 1 more (5 at most). Brace and the Guard technique each give you more Guard: 1, plus 1 for every point here after the first. |
+| Durability | Endurance | alpha | Your Guard pool holds 1 more (5 at most). The Guard technique gives you more Guard: 1, plus 1 for every point here after the first (Brace gives a flat 2, whatever your points). |
 | Pain Threshold | Endurance | beta | −10% elemental damage taken. +2 HP every level. |
 | Senses | Endurance | gamma | You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
 | Raw Power | Strength | alpha | +1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks. |
@@ -626,6 +657,13 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 5. **Two guns.** Each gun tracks its own ammo. **Heat is one pool for the pair** (item 956): its limit is the two guns' limits added, either gun's shot adds to it, and it cools 4 at your turn start; at the limit the gun that fires jams. Reloading one gun is 2 AP; reloading both is 3 AP (a tactical reload of both, 4; item 679).
 5a. **The second weapon asks more** (item 956). With a weapon in each hand, the off-hand weapon needs 2 more points of its skill than it does in the main hand; a weapon with no requirement needs 2 of the skill it hits with. Shields, torches and focuses are not weapons.
 5b. **Both hands** (item 956). Two weapons of one kind (two guns, or two melee weapons) get a third block on the Attack tab: the paired attack, reloading both guns, and the techniques that can be made **with each weapon in turn** by the paired attack's rule (main hand −1, off hand −3 less 1 per 3 Dexterity, the dearer of the two costs + 1 AP): Bash, Sunder, Hamstring, Half-Sword; Aimed Shot, Called Shot, Punch Through, Burst, Suppress. Both weapons must be able to use the technique.
+5c. **Gear gates (rules 1.13; provisional, item 1002; techniques.json `rules.gear_gates`).**
+    - **Hellraiser servo-fist:** needs Raw Power 3 (was Proficiency 3).
+    - **Science Team core rifle:** needs Dexterity 3 (was Proficiency 3).
+    - **Bot-thread banner:** needs Empathy 3 (was Camaraderie 3).
+    - **Heavy armour:** outer-torso armour of Class 4 needs Pain Threshold 3; Class 5 needs Pain Threshold 5. Classes 0 to 3 ask nothing.
+    - **Light blades and guns** are gated by Dexterity as before: it is the skill they hit with, and they ask no level.
+    - **The off hand asks what the main hand asks.** A weapon's or an item's requirement is checked in whichever hand it goes to (and for a worn piece). A second weapon still asks 2 more of its skill than it does in the main hand (5a).
 6. **Gun and blade.** A paired attack may mix a shot and a strike: the strike needs an adjacent target, and firing at an adjacent enemy provokes as usual.
 7. **Injured arms.** An arm injury (spec: Injuries) applies to the weapon in that arm.
 8. **Mastery.** A kill counts for the weapon that dealt the final hit. Shield bashes and torch strikes count as Unarmed.
@@ -821,7 +859,7 @@ Weapon skills and lore:
 |---|---|---|---|---|
 | ✓ Gloves or bare fists | 10 | 0 | 40 (gloves) | |
 | Knuckledusters | 16 | 0.3 | 60 | |
-| Hellraiser servo-fist | 30 | 2.5 | 1,200 | Proficiency 3 |
+| Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
 
 - **Fists · Grapple:** 2 AP; the target can't move until it breaks free (its Athletics or Raw Power check against your Raw Power check). *"Everyone's first weapon."*
 - **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."*
@@ -849,12 +887,12 @@ Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. T
 
 | Type | Hands | Dmg | Range | Feeds on | Kg | Price | Needs |
 |---|---|---|---|---|---|---|---|
-| Science Team core rifle | 2H | 32 Elemental, ignores armour | 16 | a mana core: 1 charge a shot | 5 | 2,600 | Proficiency 3 |
+| Science Team core rifle | 2H | 32 Elemental, ignores armour | 16 | a mana core: 1 charge a shot | 5 | 2,600 | Dexterity 3 (rules 1.13; was Proficiency 3) |
 | Spellslinger's pistol | 1H | 22 | 8 | .32 Decrkm, sigil-etched magazines | 1.1 | 1,500 | Brain Power 3 to inscribe |
 | Evoker blade | 1H | 26 | 1 | counts as an Evoker | 1.8 | 2,400 | Brain Power 3 |
 | Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
 | Lumeri censer gun | 2H | 30 / 18 (shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
-| Bot-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Camaraderie 3 |
+| Bot-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
 | Grand staff | 2H | 24 | 1 | counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
 
 Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanced rounds.
@@ -933,7 +971,7 @@ Weapon mastery is the second way a character grows, beside character level. It's
 
 Anyone can pick up any weapon and mix the techniques they know with it, the way Sigil words and Outburst modules mix. There are two systems, and each has its own meter:
 
-- **Melee owns the sequence.** Techniques chain inside your turn and build **Momentum**, a meter on you.
+- **Melee owns the sequence.** Techniques chain inside your turn around **Momentum**, a meter on you: the plain attack builds it, Strikes and Openers spend it, Finishers spend all of it. *(Rules 1.12 built it by chaining different techniques; superseded by the rework in "Melee: Momentum and the chain".)*
 - **Ranged owns Pressure,** a meter on the target, built by fire and spent by Takes.
 
 Design: `docs/design/proposals/2026-11-melee-techniques.md` and `2026-11-ranged-techniques.md`. Data: `data/techniques.json` (58 techniques and the shared numbers) and the `phys` block on each weapon in `data/weapons.json`. Engine: `packages/engine/src/physical/`. **Every number in this section is a placeholder for the balance pass** (section 14, items 932 on).
@@ -990,7 +1028,7 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 *Reworked 10 Nov 2026 (Leon; `docs/design/proposals/2026-11-nine-doors.md` section 20). Enemies follow the same rules.*
 
 1. **Momentum** runs 0 to 3 for everyone holding a melee weapon (a Fighter: 5). **A fight starts with 1.**
-2. **Only the plain attack gives Momentum:** +1 when it hits. That is Cut, a plain swing with any melee weapon, fists included. No other technique's hit gives any, and no technique gives it by its text, with one exception: Parry's Light line (+1).
+2. **Only the plain attack gives Momentum:** +1 when it hits. That is Cut, a plain swing with any melee weapon, fists included. No other technique's hit gives any, and no technique gives it by its text, with two exceptions: Parry's Light line (+1), and Shield Bash's hit (+1), which pays Guard for it.
 3. **A Strike and an Opener each spend 1 Momentum** when used, and can't be used without it. Cut and Pull Out are free and spend none; Ambush costs none. **The first Opener you use in each fight costs no Momentum.** Links and Answers spend none.
 4. **The chain** is the melee techniques of one turn, in order:
    - an **Opener** is only the first of them;
@@ -1002,6 +1040,19 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 7. **Momentum carries from turn to turn.** Nothing drops it at the end of a turn.
 8. **A set-up** (Feint, Sidestep) marks one target for your next technique this turn, and is spent by it.
 9. **A technique's save** (Leon, 10 Nov 2026) is against 12 + **half** your strength with the skill the weapon hits with, rounded up, plus the technique's own step: 10 points in the skill (strength 9) is +5 (TN 17), 6 points +3, 2 points +1; an enemy's tier number is halved the same way (minion 0, soldier +1, elite +1). This is every save a technique itself forces, melee and ranged (Bash, Trip, Feint, Keep Back, Guard with Reach, walking away from a Bind, a Stop, Rout, Pin Down, Stopping Shot). A condition applied with its own save (Bind's grapple) keeps the full strength, as Sigils, Outbursts, prayers and speech do.
+
+#### Guard (rules 1.13, Durability's door)
+
+Guard is a pool of points that takes hits for you. Anyone with Durability has one. Every number here is provisional (techniques.json `rules.guard`; items 991 to 1003).
+
+1. **The pool.** Its size is your Durability points, 5 at most. A fight starts with 0 Guard and what you hold is lost when the fight ends. The Defender's own pool (5) stands when it is the larger, and the Defender's class moves are unchanged.
+2. **Gaining Guard.** The **Guard technique** gives 1 Guard, +1 for each Durability point above the first, +1 more with a shield in the off hand: Durability 1 gives 1, Durability 3 gives 3, Durability 3 with a shield 4 (the pool of 3 holds 3 of it). The **Brace action** (1 AP) gives a flat 2 Guard, 3 with a shield. Never above the pool. With a Guard pool you may Brace with any weapon; Brace is still once until you move.
+3. **Bracing for Guard is not bracing the weapon.** A weapon that had the Brace action before rules 1.13 (one that must be braced, one at −2 unbraced, one whose skill is a braced bonus) is set as before: Recoil halved, its penalties gone, its techniques' Braced lines open. With any other weapon, Brace sets only you: you gain the Guard and stand in the braced stance that class moves ask for, and nothing else. The Brace technique (ranged, 16) still sets such a weapon where its own rule allows.
+4. **Guard soaks.** When a hit would take HP, each Guard point takes 10 damage off it and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
+5. **Pressure comes off Guard first:** each point of Pressure that would land on you costs 1 Guard instead, with no reaction, while you have any.
+6. **Momentum.** A hit on a unit that holds Guard points costs it no Momentum.
+7. **Interpose (Durability 3).** An Answer everyone with Durability 3 has, whatever is in the hands: when an ally next to you is hit by an enemy's attack, spend 1 Guard and your reaction to take the hit instead. The damage is worked out again against you, so your armour applies; your shield and the Guard you have left then soak it. A critical hit's injury follows the hit to you. It works while Suppressed (it protects). You switch it off like any Answer.
+8. **The Defender.** A Defender Interposes by the class move (and that move's policy), not by the Answer. A Defender with Reactive Plate spends Guard through the plate and its policy (spend what it takes, keep 1, off); the soak of rule 4 stands aside for that unit, so Guard is never spent twice on one hit.
 
 #### Ranged: Pressure
 
@@ -1030,7 +1081,7 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 8. **Stopped once.** A unit that a ranged technique has Pinned, pushed, knocked Prone or halted can't be stopped by another ranged technique until the end of its next turn. Where a stop allows a save it is the better of Guts and Athletics against TN 12. Melee techniques neither set nor check this.
 9. **A Press** adds 1 Heat on top of what it fires. A **Set** costs 1 AP, never fires and adds no Heat. Every technique lists its rounds beside its AP; a technique the magazine can't pay for is refused with the count.
 10. **The quiver.** A Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight.
-11. **Thrown weapons.** A technique that throws the held weapon makes a ranged attack at throwing range, with line of sight and cover, aimed with Dexterity whatever the weapon hits with. It burns no rounds and adds no Heat or Recoil. A hit gives Pressure as any ranged hit does (and Momentum when the technique is a melee one). The weapon lands in the pile on the target's tile.
+11. **Thrown weapons.** A technique that throws the held weapon makes a ranged attack at throwing range, with line of sight and cover, aimed with Dexterity whatever the weapon hits with. It burns no rounds and adds no Heat or Recoil. A hit gives Pressure as any ranged hit does. *(Rules 1.12 added "and Momentum when the technique is a melee one"; superseded by the Momentum rework: only the plain attack, Cut, gives Momentum.)* The weapon lands in the pile on the target's tile.
 12. **A weapon that isn't in the hand.** A technique that draws its weapon (Draw Cut, Snap Shot) names a stowed weapon: the draw is part of the technique and costs nothing more, and the weapon that was in the hand goes to the pack. A carried grenade is the weapon of a technique used with it (Lob, Rout): it has the grenade's properties, and one is spent.
 13. **Nailed in place.** Where a technique pins "until it spends 2 AP", the target can't move until it pays 2 AP to pull free, or an ally next to it does. A weapon left in it falls to its tile when it is freed, when it dies or surrenders, or when the fight ends. **A weapon left in it (Run Through, Reach)** may be pulled out by anyone next to it for the same 2 AP, which frees it: the one who left it, or anyone else not on the target's side, takes the weapon into a free hand (no free hand: it falls to the target's tile); an ally of the target frees it as above (Leon, 10 Nov 2026).
 14. **An attack that never comes.** When a held shot answers an attack being called and takes the attacker out, that attack is not made; its AP is spent.
@@ -1049,7 +1100,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 |---|---|---|---|---|
 | 1 | **Lunge** | weapon | Step 1 tile toward the target, then strike. The step draws no opportunity attack. | **Point:** +2 to hit. **Reach:** the step may be 2 tiles. **Heavy:** on a hit the target is pushed 1 tile. |
 | 2 | **Charge** | weapon | After moving 3 or more tiles in a straight line this turn: strike at +10% damage per tile moved, up to +50%. | **Point:** ignores 5 armour. **Blunt or Heavy:** the target makes a Body save or falls Prone. **Reach:** you strike before it can take its Overwatch or Keep Back. |
-| 3 | **Feint** | 1 | No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. | **Light:** the save is at −2. **Hook:** on a failed save its weapon is also lowered (1 AP to raise). |
+| 3 | **Feint** | 1 | No damage. The target makes a Brain save against 12 + half your strength with the weapon's skill (Momentum, rule 9; it was "your Brain debuff strength"). If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. | **Light:** the save is at −2. **Hook:** on a failed save its weapon is also lowered (1 AP to raise). |
 | 4 | **Draw Cut** | weapon −1 | Draw this weapon from the pack or a sheath and strike in one action. Only if you started the turn with it stowed. | **Edge:** Bleeding on a hit. **Light:** if the target hasn't acted this fight, it counts as an ambush. |
 | 5 | **Ambush** | weapon | Only from Hidden: strike with the Ambush multiplier. It costs no Momentum. | **Point:** crits on 18–20. **Bare:** no damage, the target is Grappled and Silenced for 1 round instead. |
 
@@ -1073,7 +1124,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | # | Technique | AP | What it does | With the right weapon |
 |---|---|---|---|---|
 | 15 | **Sidestep** | 1 | Move 1 tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking. | **Light:** 2 tiles. |
-| 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
+| 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard points (Guard, rule 2). | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
 | 17 | **Shove** | 1 | Push an enemy next to you 1 tile, or knock it Prone if it can't move back. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
 | 18 | **Trip** | 1 | The target makes a Body save or falls Prone. | **Hook or Reach:** the save is at −2. **Bare:** you may go Prone with it and it is Grappled. |
 | 19 | **Drag** | 1 | Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). | **Hook:** you pull from 2 tiles away (3 with Reach), up to 2 tiles. **Bare:** you may move 1 tile and bring it with you. |
@@ -1095,6 +1146,19 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 25 | **Parry** | reaction | *When a melee attack hits you:* Roll your attack skill against the attacker's total. If you win, the hit is halved. A shield in the off hand adds +2. | **Light:** and you gain 1 Momentum. **Heavy:** you may parry for an adjacent ally. |
 | 26 | **Riposte** | reaction | *When a melee attack misses you:* Strike back for 0 AP. | **Edge or Point:** +2 to hit. |
 | 27 | **Keep Back** | reaction | *When an enemy steps into your reach:* Strike it first. If you hit, it makes a Body save or stops where it is. | **Reach:** your reach is 2 tiles, so most enemies never arrive. **Hook:** on a failed save it is also Prone. |
+
+**The shield's techniques, and Interpose (rules 1.13)**
+
+A shield (an off-hand item with the **Shield** property: the buckler and the riot shield; a pavise is carried, not held up) has its own techniques. They are the off hand's while it holds the shield, whatever the main hand holds (a melee weapon, a gun, or nothing), and they are never learned, readied or picked: the shield brings them. A shield-bearer has the Momentum meter. The strike is the bare hand behind the shield. They are not counted in the 27.
+
+| # | Technique | Cost | What it does | With the right weapon |
+|---|---|---|---|---|
+| 29 | **Shield Bash** (Strike) | 2 AP, 1 Guard | Strike with the shield: bare-hand damage ×1.5, hitting with Raw Power. It costs 1 Guard in place of the Strike's 1 Momentum. On a hit you gain 1 Momentum, and the target makes a Body save or is pushed 1 tile. | Shield only. |
+| 30 | **Raise Shield** (Link) | 1 AP | Turn Momentum into Guard, 1 for 1, as much as you choose up to your pool (all of it unless you say less). Until your next turn, ranged attacks from the front are at −2 to hit you. Once a turn. | Shield only. |
+| 31 | **Shield Wall** (Answer) | reaction, 1 Guard | *When an ally next to you is the target of a ranged attack:* your ally counts as behind half cover against it (−5, unless they already have cover facing the shot or the attack ignores cover). A burst or a volley is one attack: every round of it is walled. | Shield only. |
+| 32 | **Interpose** (Answer) | reaction, 1 Guard | *When an ally next to you is hit by an attack:* you take the hit instead (Guard, rule 7). | Durability 3, any weapon or none. |
+
+"The front" is as for Guard: the way you faced when you raised the shield, toward the tile you named or else the nearest enemy, three of the eight directions. Shield Bash is a Strike of your melee chain (it can't follow a Finisher, and an Opener can't follow it). Protective reactions that always work, Suppressed or not: Parry, Shield Wall, Interpose.
 
 #### The ranged techniques (31)
 
@@ -1263,7 +1327,7 @@ By the speaker's points in the Call's skill:
 | **Order** | Authority | ally | They reload, stand up or pick up, now | or move their Movement (the tiles 1 AP walks them) | two different things of those |
 | **Rally** | Charisma | ally | They gain 1 AP | 1 AP, and they shed 1 Pressure | 2 AP, and they shed 1 Pressure |
 | **Brief** | Eloquence | ally | Their next action costs 1 AP less | their next two actions cost 1 AP less each | their next action costs 2 AP less, the one after 1 less |
-| **Name It** | Lore Master | ally or self | Cancels 1 AP they would lose next turn | cancels 2 | cancels all of it, and ends Shaken and Afraid |
+| **Name It** | Lore Master | ally or self | +2 on all their saves until your next turn | +3, and a fresh save now against one condition on them | +4, the fresh save, and Shaken and Afraid end |
 | **Cue** | Reaction Speed | ally | One more reaction | or a step of 1 tile now, on that reaction | and they act straight after you in the order |
 | **Spot** | Vigilance | enemy (no save) | The next ally to attack it ignores its cover | and it isn't Hidden to them | the next two allies, at +1 to hit |
 | **Warn** | Senses | ally | They step 1 tile before the next attack on them | up to 2 tiles | and that attack is at −2 to hit |
@@ -1275,11 +1339,11 @@ How each is run:
 - **Order.** The speaker chooses what (`reload`, `stand`, `pickup`, `move`) and, for a move, the tile. The ally does it at once, on their reaction (it is spent) and for none of their AP. Pick up takes everything in the pile under them, or the first pile next to them. An ordered move is a real move: it can draw opportunity attacks and held shots. **An Order never makes an ally attack** (the Mastered perk On My Mark keeps that, and is unchanged).
 - **Rally.** The AP rule above. From 7 points it gives 2 AP for 1: the first number to watch in play.
 - **Brief.** The discount holds until the end of the ally's next turn. An action that costs nothing doesn't use it up; an action that costs less than the discount uses it up all the same. What it saves counts in the turn's +3 of gained AP.
-- **Name It.** At the start of the ally's next turn, AP they would lose is given back, up to the Call's number: penalties first (Suppressed, Nausea, a Threaten), then Stunned's 1, Dazed's 2, then an AP debt. Used or not, it ends at that turn start.
+- **Name It.** You call out what the thing is, so it can't get into their head. The one you call to adds the Call's number (+2, +3, +4) to every save they roll until the start of your next turn. From step 2 they also roll a fresh save at once against one condition on them that allows a save. At step 3 Shaken and Afraid end on them outright (the fresh save goes to another condition). *(Leon, 10 Nov 2026. The first Name It cancelled AP the ally would lose next turn: 1 / 2 / all of it; replaced.)*
 - **Cue.** The extra reaction is used after the ally's own, and lasts until the start of the speaker's next turn. From step 2 the speaker may name a free tile next to the ally in place of the stored reaction: the ally steps there at once, free and with no opportunity attack. At step 3, an ally who has not acted yet this round acts straight after the speaker; the order is put back when the round ends.
 - **Spot.** The mark is used by allies only, never by the speaker; one attack action per ally (a burst is one attack). From step 2 a Spotted unit that is or becomes Hidden shows to the speaker's side and can be attacked by the allies still to use the mark, and the speaker may Spot a Hidden enemy whose tile they can see.
 - **Warn.** When the next weapon attack on the ally is made, they step first: to the tile the speaker named with the Call, if it is still within reach, or else to the nearest tile that takes them out of that attack. If no tile within reach does, they stay. The step is free and draws no opportunity attack. An attack that can no longer reach them is wasted: its AP is spent and nothing is rolled.
-- **Threaten.** On a failed save: Shaken (3 rounds), and the AP comes off its next turn as a penalty (so the turn's floor of 2 holds, and Name It can cancel it). From step 2 it can't move toward the speaker on that turn. `combat/parley` with `threaten` is the same effect on the old Talk action (2 AP, 8 tiles), at the speaker's step, and counts as the target's hindering Call of the round.
+- **Threaten.** On a failed save: Shaken (3 rounds), and the AP comes off its next turn as a penalty (so the turn's floor of 2 holds). From step 2 it can't move toward the speaker on that turn. `combat/parley` with `threaten` is the same effect on the old Talk action (2 AP, 8 tiles), at the speaker's step, and counts as the target's hindering Call of the round.
 - **Taunt.** On a failed save: Taunted (1 round), as the condition has always worked (weapon attacks only). The extra AP is on its first attack at the speaker.
 
 **Persuade and the offer of terms** stay as ways to talk an enemy down (Eloquence and Charisma, the Talk action at 2 AP within 8 tiles). They are not Calls and are outside the one-a-round limits.
@@ -2207,7 +2271,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Prayer** (rules 1.6; see Patrons and prayer): a Whisper 1 AP, a Hymn or a Miracle 3 AP; not while Silenced. A Faithful character's own Hymns need no roll within their Devotion; an overreach, an Atheist's prayer and a kept Hymn roll d20 + Faith modifier (rules 1.6). Effects × Blessing power; what the engine can't run goes to the Narrator with its text. The Hymn cooldown counts rounds.
 
-**Class resources.** Momentum (Fighter, max 5): +1 for each melee hit; it drops to 0 when you end a turn without attacking. Guard (Defender, max 5), Marks (Assassin, max 3) and Charges (Storm Hand, max 3) start each fight at 0 and are spent by the class's moves. Supplies (Medic, 3 + floor(Proficiency ÷ 2)) and toxins (Assassin, 2 + floor(Ingenuity ÷ 3)) carry over between fights and are restocked at a long rest. Heat, Flux and Strain are shared rules every gun, Evoker or Emanator user already has. An advanced class that leans on a parent's resource carries it (Adamantile Knight: Guard; Shade: Marks).
+**Class resources.** Momentum (Fighter, max 5): +1 for each melee hit; it drops to 0 when you end a turn without attacking *(superseded by the Momentum rework in "Melee: Momentum and the chain": everyone with a melee weapon has it, only the plain attack gives it, it carries between turns)*. Guard (Defender, max 5; since rules 1.13 anyone with Durability has a pool, see "Guard"), Marks (Assassin, max 3) and Charges (Storm Hand, max 3) start each fight at 0 and are spent by the class's moves. Supplies (Medic, 3 + floor(Proficiency ÷ 2)) and toxins (Assassin, 2 + floor(Ingenuity ÷ 3)) carry over between fights and are restocked at a long rest. Heat, Flux and Strain are shared rules every gun, Evoker or Emanator user already has. An advanced class that leans on a parent's resource carries it (Adamantile Knight: Guard; Shade: Marks).
 
 **Item modifiers on every d20.** A trait's or perk's bonus to a skill applies to every d20 roll that uses that skill's modifier: checks, passives, saves, weapon attacks, Sigil and Soul strikes, initiative. Never to stats worked out per point. Conditions do the same: the Left Brain Debuff's −2 reaches every Mind skill roll, the Right Brain Debuff's every Expression and Soul skill roll (Brain saves use Charisma, Heart saves Composure).
 
@@ -3189,7 +3253,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 95. **Throwing and blasts:** Throwing range 6 + 0.5 × Dexterity (Derived stats; item 17 settles on it); the six thrown items as listed (an incendiary burns only its centre tile); explosive weapons splash their radius on a hit; the flamer's cone attacks everyone in 3 tiles. Enemies don't throw yet.
 96. **Swaps and companions:** 1 AP a hand (the full table: rules 1.9, items 684–690); a stowed gun keeps its rounds; both guns reload for 3 AP. Drone (HP 30, Defense 12, +3, armour 5, Movement 2, a service pistol with only a plain shot and unlimited ammo) and beast (HP 60, Defense 12, +3, armour 0, Movement 2.5, bite 18) companions act after their owner and are destroyed at 0 HP (HP and the drone's gun settled in item 370). One advanced class at a time, learned with a tutor (c.tutors) from the level-up screen.
 97. **Prayer in the engine:** the cooldown counts rounds; a Blessing's hp numbers heal (positive) or deal Soul damage (negative), its shield numbers shield, all × Blessing power; a Miracle is a guaranteed success at ×3. Out of combat a heard prayer goes to the Narrator. *(The ×3 predates Blessing 2.0 and is not applied: a Miracle is × Blessing power like a Hymn; rules 1.6.2, item 727.)*
-98. **Class resources:** Momentum +1 per melee hit, lost when a turn ends without an attack; Guard, Marks and Charges start each fight at 0; Supplies and toxins persist and restock at a long rest; Adamantile Knight carries Guard, Shade Marks, Storm Hand Charges, Gunslinger and Banner Dancer Momentum, RTC Contractor and Banner Dancer Supplies, CCEC Ballistician Marks.
+98. **Class resources:** Momentum +1 per melee hit, lost when a turn ends without an attack; Guard, Marks and Charges start each fight at 0; Supplies and toxins persist and restock at a long rest; Adamantile Knight carries Guard, Shade Marks, Storm Hand Charges, Gunslinger and Banner Dancer Momentum, RTC Contractor and Banner Dancer Supplies, CCEC Ballistician Marks. *(Momentum: superseded by the rework of 10 Nov 2026, "Melee: Momentum and the chain": only the plain attack gives it, a fight starts with 1, and it is not lost at the end of a turn. Guard: since rules 1.13 anyone with Durability has a pool, see "Guard".)*
 99. **Story plumbing:** Narrator-set conditions on NPCs (scene) and characters (scene, session or arc); Karma awards capped at 30 a turn, Conscience added; rests from the Narrator or the host; the voice cap per character, not per player; private perk lines outside the voice cap; Narrator-set item state (traitState).
 100. **Data fixes:** perk type labels (item 23: Origami Hands active, Hold the Stroke passive, Overruled and Outclassed AP mods, Pattern Lock and Heart Overload passive); Lab Coat II costs 2 AP; Born Performer's −100% is on dialogue XP; Bone Talk's Shaken is a Heart debuff (item 24); Mind Without Fog excludes Symbol of Order and Rogue Element (its Karma lock would contradict theirs); the start items (prescription glasses, smiling mask, prosthetic arm, Central City ID, bank card, contraband, grimoire) and a toolbox, spirits, cigarettes, a drone frame and the four special-ammo items exist now; cameras, alarm panels and emplaced turrets are map objects; terminals and lamps are electronic.
 
@@ -4788,7 +4852,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 560. **Anchor's opportunity attack** is the normal one made to catch a Disengage too: an enemy that started its turn next to you and leaves your reach is struck as it goes. The normal rule already strikes a plain walk away. Items that waive opportunity attacks (Unstoppable, Lunge) still waive it. The Anchor part reads "Braced" as the unit's Braced (the Defender's Brace or a weapon's); it also undoes a hit's knockdown. The enemy AI counts +10 against a tile that walks out of an Anchor's reach (`ai_move_risk`).
 561. **Opportunity attacks land on the tile the mover leaves** (engine fix found while building Anchor): the strike used to be checked a step too late, so a melee opportunity attack was always "out of reach". A blow that drops the mover leaves it there.
 562. **Shove (Fighter)**: push or Prone is the player's choice. A push needs a free tile straight behind the target (else it is refused before anything is spent: knock it Prone instead). A save, a shove or knockback immunity (Heavyworlder, a Braced Anchor) and it holds. The base Shove (2 AP, opposed roll) stays for everyone.
-563. **Unstoppable's "ignore"**: new Fear, Shaken, Slowed and Pinned are refused, and ones you carry are set aside and come back at your next turn start with the rounds they would have had (one tick less). "Until your next turn" ends at your next turn start. Momentum still empties after a turn with no attack.
+563. **Unstoppable's "ignore"**: new Fear, Shaken, Slowed and Pinned are refused, and ones you carry are set aside and come back at your next turn start with the rounds they would have had (one tick less). "Until your next turn" ends at your next turn start. Momentum still empties after a turn with no attack. *(Its last sentence is superseded by the Momentum rework of 10 Nov 2026: Momentum carries from turn to turn.)*
 564. **Speed Loader** discounts the turn's first reload of the main hand (a Special Ammo load counts); the first reload spends it even when it was already 1 AP. The off-hand gun's reload never gets it or spends it, nor does reloading both guns at once (3 AP, its own price); a refused reload (already full, nothing to load) spends nothing.
 565. **Duck and Roll**: only weapon attacks at range (spells aren't), the first shot of a volley; the step is a real 1-tile move for no AP (traps, opportunity attacks and Overwatch apply). Out of sight: the attack has no target, isn't taken, and the attacker keeps its AP. Into cover: −2 for this attack **in place of** half cover's −5 (the step was late), and only when you weren't in cover already. No step that helps: no reaction spent.
 566. **Vanish** is combat-only (the area map keeps its own stay-hidden rules) and refused while Marked.
@@ -5055,7 +5119,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 929. **Mind Without Fog gives +1 Core point** at creation (it was +2): `FOG_CORE` in the engine, traits.json `creation_points` value 1. A character made with 8 Core points before 1.11 keeps them (item 931).
 930. **Class ranks need a level too (rules 1.11):** rank II at the class attribute 5 and level 6, rank III at 8 and level 12 (classes.json `assignment.rank_levels`; engine `RANK_LEVEL`, `classRank`). The Proving Ground's rank tool raises the level to the rank's as well as the attribute. A saved character below the level drops to the rank its level allows until it gets there, in a fight saved in progress too. A rank that arrives with a level is announced like one that arrives with an Attribute point ("reaches Fighter II: Riposte, Lingering Dread"), and the character's units in a running fight hold it at once. *Leon to confirm 6 and 12.*
 931. **Characters made before 1.11 stay legal.** A sheet locked in under 1.11 is stamped (`rulesRev`, engine `SHEET_REV`) and must fit today's budgets. A sheet with no stamp was made before: when today's budgets don't fit it, the budgets of its day are used (a Core point for 2 Attribute points; Mind Without Fog's 2 Core points), so a saved character or a character file from before 1.11 can still be brought into a room (engine `sheetDerive`). Reopening one in creation and locking it in again makes it a 1.11 sheet. *Leon to confirm, or ask for old sheets to be refused with a reason instead.*
-932. **Momentum (rules 1.12):** 0 to 3 for everyone holding a melee weapon, 5 for a Fighter; +1 for each melee strike that hits; +1 more once per technique when it differs from the last one this turn; the first technique of a turn earns no variety bonus; a Finisher needs 2 and spends all (techniques.json `rules.momentum`).
+932. **Momentum (rules 1.12):** 0 to 3 for everyone holding a melee weapon, 5 for a Fighter; +1 for each melee strike that hits; +1 more once per technique when it differs from the last one this turn; the first technique of a turn earns no variety bonus; a Finisher needs 2 and spends all (techniques.json `rules.momentum`). *(Superseded by the rework of 10 Nov 2026, "Melee: Momentum and the chain": only the plain attack gives Momentum; a Strike or an Opener spends 1; there is no variety bonus; a fight starts with 1. The Finisher rule stands.)*
 933. **Pressure's states and caps:** 0 to 4; Pressed at 2, Suppressed at 3, Broken at 4 (enemies only); players stop at 3, elites at 3, bosses at 2 (`rules.pressure`).
 934. **What the states cost:** Pressed −1 to hit with ranged attacks only, and no Watch; Suppressed −1 AP for an enemy and never for a player, and no reactions that attack or move; Broken −2 AP. Protective reactions always work (Leon, 10 Nov 2026). *Not built yet: the Broken enemy's forced first action, and the Heart save to leave cover the proposal gives Suppressed.*
 935. **Gaining Pressure:** +1 for the first ranged hit on a target each turn; +1 past cover the target stands against; 2 for an unseen hit with a Silent weapon (hidden pips); +1 to others of the victim's side within 3 tiles who saw a ranged kill.
@@ -5082,13 +5146,13 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 956. **Two weapons (Leon, 10 Nov 2026; provisional):** the second weapon needs +2 of its skill (`gear.second_weapon_skill_extra`); two guns pool their Heat (limits added, cooling 4); two weapons of one kind have a both-hands block with nine techniques made with each weapon in turn. To settle in play: which techniques belong on that list, whether the −1 per 2 Heat penalty is too hard on a pooled bar, and whether a gun and a blade should get paired techniques of their own.
 957. **Throw and Pull Out (Leon, 10 Nov 2026; provisional):** a thrown melee weapon that hits stays in its target until the target falls (it drops there) or someone next to it uses **Pull Out** (technique 28, free to everyone: 1 AP, no roll, half the weapon's damage, Bleeding, the weapon straight back into a free hand). A miss still lands on the target's tile. Flurry's Thrown line still drops its weapons on the ground.
 958. **The Calls ladder (rules 1.13):** 2 AP; heard within 4 + points tiles; step 2 at 3 points; 1 AP from 5; step 3 at 7; as a reaction once a round from 9; the first Call of a turn free at 10 (calls.json `rules`). One helping and one hindering Call on a unit a round. The save is 12 + the speaker's strength (points − 1, floor 0).
-959. **Each Call's step numbers** (calls.json `steps[].numbers`): Rally 1 / 1 / 2 AP and 0 / 1 / 1 Pressure; Brief −1 / −1, −1 / −2, −1; Name It 1 / 2 / all; Cue 1 reaction, a step from 3 points, the order from 7; Spot 1 / 1 / 2 allies and +1 to hit at 7; Warn 1 / 2 / 2 tiles and −2 to hit at 7; Threaten −1 / −1 / −2 AP; Taunt +0 / +1 / +2 AP. Rally's 2 AP for 1 at 7 points is the first to watch.
+959. **Each Call's step numbers** (calls.json `steps[].numbers`): Rally 1 / 1 / 2 AP and 0 / 1 / 1 Pressure; Brief −1 / −1, −1 / −2, −1; Name It +2 / +3 / +4 on every save, a fresh save from 3 points, Shaken and Afraid ended from 7 (it was 1 / 2 / all AP of loss cancelled); Cue 1 reaction, a step from 3 points, the order from 7; Spot 1 / 1 / 2 allies and +1 to hit at 7; Warn 1 / 2 / 2 tiles and −2 to hit at 7; Threaten −1 / −1 / −2 AP; Taunt +0 / +1 / +2 AP. Rally's 2 AP for 1 at 7 points is the first to watch.
 960. **A Call as a reaction costs the reaction and no AP,** and is sent by the speaker's player during another unit's turn. The engine plays an enemy's whole turn without stopping, so in practice it is made on an ally's turn. The proposal names no trigger and no cost; to settle: whether it should cost its AP, and whether it needs a held form that fires inside an enemy's turn.
 961. **"Your first Call each turn costs 0" is one free Call a turn in all,** when that first Call is in a skill at 10 points. A speaker with two gammas at 10 does not get two free Calls.
 962. **"This round" is read as "until the start of the speaker's next turn"** for what Spot, Warn and Cue leave standing: by the round counter alone, a speaker who acts last would mark nothing. The one-helping and one-hindering limit is by the round counter.
 963. **Order:** the speaker chooses the thing and the tile, not the ally's player; pick up takes the whole pile; "their Movement" is the tiles 1 AP walks them, rounded down, at least 1; the ordered move can draw opportunity attacks; two things are two different things.
 964. **Brief:** holds to the end of the ally's next turn (the proposal's "this round" gave nothing to an ally who had acted); a free action doesn't use it up; what it saves counts in the +3 of AP gained in a turn; it does nothing inside an off-turn window. No enemy tier has it.
-965. **Name It** cancels penalties, then Stunned's 1, then Dazed's 2, then an AP debt, and ends at that turn start whether used or not.
+965. **Name It** cancels penalties, then Stunned's 1, then Dazed's 2, then an AP debt, and ends at that turn start whether used or not. *(Superseded, Leon, 10 Nov 2026: Name It gives +2 / +3 / +4 on every save until the speaker's next turn, a fresh save against one condition from step 2, and ends Shaken and Afraid at step 3. It cancels no AP loss.)*
 966. **Cue:** the second reaction is held, not tied to the round's count, until the speaker's next turn. The step is to a tile the speaker names when Calling (the engine has no reaction that is a move chosen later). The order change applies only to an ally still to act, and is undone when the round ends. A Suppressed ally is refused, nothing spent.
 967. **Spot:** the speaker's own attacks never use the mark; one attack action per ally; from 3 points a Hidden enemy in the speaker's sight can be Spotted and a Spotted Hidden unit shows to the speaker's side, but only the allies still to use the mark can attack it. Speaking doesn't reveal a Hidden speaker.
 968. **Warn:** the tile is named with the Call or chosen by the engine (the nearest tile that takes the ally out of the attack; none: no step). An attack that can't reach after the step is wasted and its AP is spent. Only weapon attacks trigger it: Sigils, Outbursts and prayers do not. This makes step 1 able to cancel one melee attack for 2 AP: to watch.
@@ -5113,4 +5177,20 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 987. **Tuned:** "the weapon you maintain" is read as the weapon in your main hand. A jam is cleared the moment the attack is over, and wear stops at 1 point of Durability.
 988. **Nothing Gets Past** leaves the Spot mark of the holder's own level (at 10 points: two allies, +1 to hit, not Hidden to them), takes no Call slot on the enemy, and doesn't replace a Spot the enemy already carries. Not while the holder is Silenced or Stunned.
 989. **Into the Dark I** is once a fight: from the first walk onto a tile your side hasn't seen until your next turn starts. II is round 1 of a fight in a place that causes Fear. The area-map discount of item 121 is gone with the AP.
-990. **Open after the pass:** Siege Engine still says "Shove and Break cost 1 AP less", and both are techniques now, priced by the technique core (the discount reaches neither). Proven Formula counts conditions only (a spell's damage has no save). You Get Used to It's bonus is for the save against a condition, not a technique's or a story save. Chain Smoker's Light Up (+2 Composure for the scene) is a real Heart save bonus again: to watch.
+990. **Open after the pass:** Siege Engine said "Shove and Break cost 1 AP less" when both had become techniques, priced by the technique core (the discount reached neither; settled in item 1005). Proven Formula counts conditions only (a spell's damage has no save). You Get Used to It's bonus is for the save against a condition, not a technique's or a story save. Chain Smoker's Light Up (+2 Composure for the scene) is a real Heart save bonus again: to watch.
+991. **Guard pool:** Durability points, 5 at most (`rules.guard.max`, `per_durability`).
+992. **Guard gained:** by the Guard technique 1, +1 a Durability point above the first, +1 with a shield (`gain_base`, `gain_per_point`, `shield_gain`); by Brace a flat 2, 3 with a shield (`brace_gain`, `brace_shield_gain`; the lead's tuning of 10 Nov 2026: Brace first gave the scaling gain, and at Durability 5 one Brace for 1 AP filled the pool, 50 damage soaked). Brace is once until you move and the Guard technique once a turn; nothing else limits it.
+993. **Guard soaks 10 a point** (`soak`), after armour and after the shield of HP, with no reaction and no choice. **The last point is kept back** (`keep_back` 1; the lead's tuning) so a reaction is still payable, unless what gets through would take the unit down: then every point the hit needs is spent, whether or not that saves it.
+994. **What a hit is for Guard:** anything that takes HP but a condition's tick and self-harm; friendly fire, traps, hazards and explosions are hits.
+995. **Anyone with a Guard pool may Brace with any weapon** (it was a heavy weapon's action). **The weapon's own benefits stay with the weapons that could brace before:** a unit that braces only for Guard gets the Guard and the braced stance (which class moves and the patron's "hold" tag read), not Recoil halved and not a technique's Braced line (`Unit.guardBrace`). A class move that braces (the Defender's Brace, Dig In) sets the weapon as it did before.
+996. **Interpose at Durability 3, 1 Guard** (`interpose_durability`, `interpose_cost`); a hit is an enemy's weapon attack on an ally within 1 tile; it may be used on your own turn (an enemy's reaction hitting an ally).
+997. **The Defender beside the general rule:** rank I and II Defenders soak by rule 4 like anyone; with Reactive Plate (rank III) the plate does it. Reactive Plate's own text now gives little beyond its policy and the bots it sheds; Shrug It Off, Draw Fire and Interpose compete with the soak for the same Guard (the kept point is for them). The Defender's class Brace (2 AP: the same Guard, and +2 Defense) sits beside the plain Brace (1 AP: the Guard). For the perk and class pass to settle.
+998. **Shield Bash:** 2 AP, ×1.5 bare-hand damage, 1 Guard, +1 Momentum on a hit, Body save or pushed 1 tile. Without Durability there is no Guard pool, so a shield-bearer with no Durability can Raise Shield (for the −2) but can't Bash or Wall.
+999. **Raise Shield:** 1 AP, 1 Momentum for 1 Guard, −2 to ranged attacks from the front until your next turn; it stacks with Guard's Heavy line and with the shield's own Defense.
+1000. **Shield Wall:** 1 Guard and the reaction; the ally counts as behind half cover (−5) for that attack, and nothing more (the lead's tuning: it first added −2 to hit as well, −7 against an ally in the open). The other reading of "half cover counts for them" (cover the ally stands at counts even when it doesn't face the shot) would make it nothing in the open.
+1001. **Which shields:** the buckler and the riot shield carry the Shield property; the pavise doesn't (carried, it does nothing). The riot shield's old text ("half cover against shots from the front", "Shield Wall: an adjacent ally behind you counts as behind half cover") is not an engine rule; the two techniques replace it and the item text should follow.
+1002. **Heavy armour's gate:** Class 4 Pain Threshold 3, Class 5 Pain Threshold 5 (`rules.gear_gates.heavy_armour`). The Armour Class is a number on the sheet, not an item: the gate is asked where the class is set (today the Proving Ground's armour tool; `armourGateWhy`), and by `equip` for any worn piece that carries an `armour_class`.
+1003. **Enemies have no Guard:** a stat block has no Durability. A unit given `resMax.guard` and `durability` by a campaign would use every rule above.
+1004. **The kept Guard point and Momentum.** "A hit on a unit that holds Guard points costs it no Momentum" was written when the soak spent every point. With 1 point kept back, a unit that has Braced once keeps its Momentum against every hit until it spends that point on a reaction or the hit would take it down. To settle: leave it, or protect Momentum only from a hit that Guard soaked part of.
+1005. **The perk hooks wired into the technique core** (after item 990): Heavy Hands adds 1 tile to every push away by a melee technique (Shove, Bash's Heavy line, Lunge's Heavy line, Shield Bash), on the card and in play. Quick Draw zeroes the AP of the first technique of a fight that draws its weapon (Draw Cut, Snap Shot). Iron Grip II lets Throw Down start with no Momentum on a held target (it then deals its base damage). Breaching Strike also answers a push that is blocked at once, where the target stands, including a Shove that knocks Prone because the tile behind is blocked; a push is slammed once. Siege Engine's discount reaches the Shove Link and the Break Finisher, never below 1 AP, so a 1 AP Shove stays 1 AP and in practice only Break is cheaper: to settle whether Shove should be free for its holder. Tuned: a natural 1 with a gun that can jam is only a miss (no jam, and no −1 AP either), and Heat never jams it.
+1006. **A Legendary Deed's Core point** has nothing to raise since rules 1.13 (Cores are not spent). What a deed grants is open: an Attribute point, or a lift of the Attribute ceiling for one Attribute, are the candidates.

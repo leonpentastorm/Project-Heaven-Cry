@@ -141,11 +141,11 @@ describe('Bash (8)', () => {
     const f = fight('ork_machete', ['D5'], { ally: { weapon: 'ccec_marksman_rifle', skills: { dexterity: 6 } } });
     f.put(f.pc, 'C9'); f.put(f.foe, 'D9'); f.unit(f.foe.id).sv = { body: -50, brain: 0, heart: 0 };
     f.turn(f.pcs[1]); expect(f.tech('overwatch')).toBeNull(); f.turn(f.pc);
-    const pv = f.pv('bash', { targetId: f.foe.id, opt: 'push' }); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('F9') }]);
+    const pv = f.pv('bash', { targetId: f.foe.id, opt: 'push' }); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('G9') }]);
     expect(f.pv('bash', { targetId: f.foe.id }).notes.some((n) => /push/.test(n))).toBe(true);
     rig({ hit: true, die: 12 });
     expect(f.tech('bash', { targetId: f.foe.id, opt: 'push' })).toBeNull();
-    expect(f.unit(f.foe.id).pos).toBe(f.tile('F9')); expect(f.unit(f.foe.id).dazedNext || 0).toBe(0);
+    expect(f.unit(f.foe.id).pos).toBe(f.tile('G9')); expect(f.unit(f.foe.id).dazedNext || 0).toBe(0);
     expect(f.unit(f.pcs[1].id).watch).toBeUndefined(); expect(f.fx('overwatch').length).toBe(1); // the held shot fired at the pushed foe
     const g = fight('ork_machete', ['D5']); g.unit(g.foe.id).sv = { body: -50, brain: 0, heart: 0 }; rig({ hit: true, die: 12 });
     g.tech('bash', { targetId: g.foe.id }); expect(g.unit(g.foe.id).pos).toBe(g.tile('D5')); expect(g.unit(g.foe.id).dazedNext).toBe(1);
@@ -155,7 +155,7 @@ describe('Bash (8)', () => {
   it('Stopped once is the ranged techniques\' rule: a melee push still moves a target that is Stopped, and sets none', () => {
     const f = fight('ork_machete', ['D5']); f.put(f.pc, 'C9'); f.put(f.foe, 'D9'); f.unit(f.foe.id).sv = { body: -50, brain: 0, heart: 0 }; f.unit(f.foe.id).stopped = 1;
     rig({ hit: true, die: 12 }); f.tech('bash', { targetId: f.foe.id, opt: 'push' });
-    expect(f.unit(f.foe.id).pos).toBe(f.tile('F9')); expect(f.unit(f.foe.id).stopped).toBe(1);
+    expect(f.unit(f.foe.id).pos).toBe(f.tile('G9')); expect(f.unit(f.foe.id).stopped).toBe(1);
   });
 });
 

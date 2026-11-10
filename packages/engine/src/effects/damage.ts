@@ -12,7 +12,7 @@
 // then 'on_damaged' {t, src, dmg, prevHp} when HP was lost, 'on_downed' {victim, by, src, ownTurn} on a Down or a death,
 // and 'on_kill' {victim, by, src} when kill credit is given.
 import type { Combat, Unit } from '../combat';
-import { emit, onHook } from './hooks';
+import { emit } from './hooks';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
@@ -125,7 +125,3 @@ export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | nu
   return v;
 }
 
-// Rules 1.13: Weak Point's +15% squad damage is gone (an analysed enemy now deals less: Read Them, above). The two
-// places that still add it (combat.ts attackDamage, and spells) label it 'Weak Point': it is taken out here, before the
-// damage is stacked, until those lines are deleted.
-onHook('damage_out', (ctx: any) => { const vs: any[] | undefined = ctx?.vs; if (!vs) return; for (let i = vs.length - 1; i >= 0; i--) if (vs[i]?.label === 'Weak Point') vs.splice(i, 1); });

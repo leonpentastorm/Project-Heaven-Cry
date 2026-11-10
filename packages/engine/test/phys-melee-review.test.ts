@@ -155,7 +155,7 @@ describe('Links', () => {
     const f = fight('sabre'); f.unit(f.foe.id).strength = 50; quiet(f);
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('D7')); expect(f.cb.log.join(' ')).toMatch(/shoves .* vs 60 · holds firm/);
     const g = fight('sabre'); g.unit(g.foe.id).strength = -50; g.unit(g.pc.id).strength = 20; quiet(g);
-    expect(g.tech('shove', { targetId: g.foe.id })).toBeNull(); expect(at(g, g.foe)).toBe(g.tile('E7')); expect(g.momentum(g.pc)).toBe(1);
+    expect(g.tech('shove', { targetId: g.foe.id })).toBeNull(); expect(at(g, g.foe)).toBe(g.tile('F7')); expect(g.momentum(g.pc)).toBe(1);
   });
   it('Guard: +2 Defense against an ally\'s melee too', () => {
     const f = fight('sabre', [{ weapon: 'sabre' }]); f.put(f.pcs[1], 'C8'); expect(f.tech('guard')).toBeNull();

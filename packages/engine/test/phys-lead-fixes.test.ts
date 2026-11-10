@@ -122,7 +122,7 @@ describe('10 and 15. a push through stop()', () => {
   it('the card shows where a push leaves the target, once', () => {
     const f = fight('maul', ['bash', 'shove']); f.unit(f.pc.id).strength = 20;
     const moves = (id: string, args: any) => (f.pv(id, { targetId: f.foe.id, ...args }).moves || []).filter((m) => m.unit === f.foe.id);
-    expect(moves('bash', { line: 'heavy', opt: 'push' })).toEqual([{ unit: f.foe.id, to: f.tile('F7') }]);
+    expect(moves('bash', { line: 'heavy', opt: 'push' })).toEqual([{ unit: f.foe.id, to: f.tile('G7') }]);
     expect(moves('shove', {})).toHaveLength(1);
   });
   it('a push that moves nobody is not logged as one, and stop() says it didn\'t take', () => {
@@ -131,7 +131,7 @@ describe('10 and 15. a push through stop()', () => {
     expect(f.foe.pos).toBe(f.tile('D7')); expect(f.cb.log.some((l) => /is pushed/.test(l))).toBe(false); expect(f.fx('stopped')).toHaveLength(0);
     HOLD = false; const g = fight('maul', ['lunge']); rig({ hit: true, die: 12 });
     expect(g.tech('lunge', { targetId: g.foe.id, line: 'heavy' })).toBeNull();
-    expect(g.foe.pos).toBe(g.tile('E7')); expect(g.cb.log.some((l) => /is pushed \(Lunge\)/.test(l))).toBe(true); expect(g.fx('stopped')).toHaveLength(1);
+    expect(g.foe.pos).toBe(g.tile('F7')); expect(g.cb.log.some((l) => /is pushed \(Lunge\)/.test(l))).toBe(true); expect(g.fx('stopped')).toHaveLength(1);
   });
 });
 

@@ -2,10 +2,11 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, heatLimit } from '../combat';
+import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced } from '../combat';
 import { WEAPON, ITEM } from '../data';
-import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf } from '../effects/hooks';
+import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
+import { actionAp } from '../effects/core';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
@@ -77,11 +78,13 @@ export const unitSkill = (u: Unit, skill: string): number => { const c = u.compa
 const GR = () => PHYS_RULES.guard || {};
 export const guardOf = (u: Unit) => resOf(u, 'guard');
 export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
-/** What a Brace or the Guard technique gives this unit: 1, +1 for each Durability point above 1, +1 with a shield in
- * the off hand (0 for a unit with no Guard pool). The pool's size cuts it. */
-export function guardGain(u: Unit): number {
+/** What gives this unit Guard, and how much (0 for a unit with no Guard pool; the pool's size cuts it). The Guard
+ * technique scales: 1, +1 for each Durability point above 1, +1 with a shield in the off hand. The Brace action is
+ * flat: 2, 3 with a shield (the lead's tuning, 10 Nov 2026; provisional, rules.guard brace_gain / brace_shield_gain). */
+export function guardGain(u: Unit, by: 'guard' | 'brace' = 'guard'): number {
   if (u.resMax?.guard == null) return 0;
-  const g = GR(); return (g.gain_base ?? 1) + Math.max(0, unitSkill(u, 'durability') - 1) * (g.gain_per_point ?? 1) + (shieldOf(u) ? g.shield_gain ?? 1 : 0);
+  const g = GR(); if (by === 'brace') return (g.brace_gain ?? 2) + (shieldOf(u) ? g.brace_shield_gain ?? 1 : 0);
+  return (g.gain_base ?? 1) + Math.max(0, unitSkill(u, 'durability') - 1) * (g.gain_per_point ?? 1) + (shieldOf(u) ? g.shield_gain ?? 1 : 0);
 }
 function guardFx(cb: Combat, u: Unit, was: number) { const now = guardOf(u); if (now !== was) emitFx(cb, 'guard', { unit: u.id, at: u.pos, now, was, max: guardMax(u) }); }
 /** Add Guard to a unit, up to its pool. Returns what it gained. */
@@ -162,7 +165,7 @@ export const offHome = (def: TechDef, weaponId: string) => def.particular && !de
 export function linesFor(def: TechDef, weaponId: string, choice?: string, u?: Unit | null): { main: TechLine | null; stack: TechLine[]; choices: TechLine[] } {
   if (offHome(def, weaponId)) return { main: null, stack: [], choices: [] };
   // a line marked when: 'braced' applies only to a user who is Braced, Prone or Emplaced (asked with a unit)
-  const met = (l: TechLine) => !u || l.when !== 'braced' || !!u.braced || !!u.prone || condOn(u, 'emplaced');
+  const met = (l: TechLine) => !u || l.when !== 'braced' || weaponBraced(u) || !!u.prone || condOn(u, 'emplaced');
   const props = weaponProps(weaponId), all = def.lines.filter((l) => lineMatches(props, l) && met(l));
   const bonus = all.filter((l) => !l.stack), stack = all.filter((l) => l.stack);
   const main = bonus.find((l) => choice && l.props.includes(choice)) || bonus[0] || null;
@@ -199,15 +202,18 @@ export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?:
   const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));
 }
+const AP_BY_NAME = new Set(['shove', 'break']);
 /** A technique's AP for this unit now: its own cost, then what the unit's items do to an attack's AP (Southern Fist's
  * +1 with a weapon, Fire Discipline's first burst), asked the way the engine's own attacks ask ('attack_preview' with
  * the cost and a mode). Weapon-priced techniques ask as a melee strike or a shot; a flat one asks only when the data
  * names a mode (`ap.mode`: aimed, burst, auto). The main hand only: the items read the weapon in it. */
 export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', choice?: string, tgt?: Unit | null): number {
-  const weaponId = hand === 'off' && offHeld(u) ? offHeld(u)! : u.weapon, own = techniqueAp(def, weaponId, choice, u);
+  const weaponId = hand === 'off' && offHeld(u) ? offHeld(u)! : u.weapon, own0 = techniqueAp(def, weaponId, choice, u);
+  // the techniques a perk prices by name (Siege Engine: Shove and Break 1 AP less, never below 1): the old actions' path
+  const own = AP_BY_NAME.has(def.id) ? actionAp({ u }, def.id, own0).ap : own0;
   const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
   if (!mode || hand === 'off' || def.ap.base === 'reaction') return own;
-  const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
+  const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
   emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
 }
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
@@ -243,6 +249,9 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   return out;
 }
 const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' | 'throwable') => usable(null, u, hand, wield).some((x) => x.id === id);
+/** The Momentum a Finisher needs to start (2 unless its data says otherwise), less what the unit's items take off it
+ * ('momentum_needed:<id>': Iron Grip II's Throw Down on a held target needs none). It still spends all there is. */
+export const finisherNeed = (cb: Combat, u: Unit, def: TechDef): number => Math.max(0, (def.needs.momentum || 2) + statQuery({ u, cb }, 'momentum_needed:' + def.id).add);
 /** Why this unit can't start this technique now, before any target is looked at (null: it can). */
 function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null {
   const hand: 'main' | 'off' = args.hand === 'off' && offHeld(u) ? 'off' : 'main', weaponId = hand === 'off' ? offHeld(u)! : u.weapon;
@@ -260,7 +269,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
     const ch = chainOf(cb, u);
     if (ch.ended) return 'Your chain has ended: a Finisher is the last melee technique of a turn.';
     if (def.group === 'opener' && ch.n > 0) return 'An Opener is only the first melee technique of your turn.';
-    if (def.group === 'finisher' && momentumOf(u) < (def.needs.momentum || 2)) return 'Needs Momentum ' + (def.needs.momentum || 2) + '.';
+    if (def.group === 'finisher') { const need = finisherNeed(cb, u, def); if (momentumOf(u) < need) return 'Needs Momentum ' + need + '.'; }
     const cost = momentumCost(u, def, args); if (cost && momentumOf(u) < cost) return 'Needs ' + cost + ' Momentum: land a plain attack first.';
     const gc = guardCost(def); if (gc && guardOf(u) < gc) return 'Needs ' + gc + ' Guard: Brace or take Guard first.';
   }
@@ -351,7 +360,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         if (n) {
           if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n;
           // the earlier rolls reach the Heat limit: the gun jams and the later ones are never fired (the main hand: an off-hand gun's jam isn't kept)
-          if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
+          if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
         }
         let pv: ReturnType<typeof previewAttack>;
         try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil, ambush: !!o.ambush }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
@@ -519,10 +528,16 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
     const [ox, oy] = xy(origin), s = dir === 'away' ? 1 : -1, nx = x + s * Math.sign(x - ox), ny = y + s * Math.sign(y - oy);
     return nx === x && ny === y ? null : key(nx, ny);
   };
+  // Heavy Hands (Raw Power 3): a melee technique's push away goes 1 tile further (the card, the preview and the push agree)
+  if (dir === 'away') tiles += statQuery({ u: t.u, cb }, 'push_tiles', { tech: t.def.id, system: t.def.system }).add;
   if (t.preview) { let at = target.pos, n = 0; const blocked = moveBlockers(cb); for (; n < tiles; n++) { const to = stepTo(at); if (!to || bad(cb, to, blocked, target)) break; at = to; } if (n) (t.pv.moves ||= []).push({ unit: target.id, to: at }); return n; }
   let moved = 0; const blocked = moveBlockers(cb);
   for (let i = 0; i < tiles && alive(target); i++) {
-    const to = stepTo(target.pos); if (!to || bad(cb, to, blocked, target)) break;
+    const to = stepTo(target.pos); if (!to) break;
+    if (bad(cb, to, blocked, target)) { // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
+      if (dir === 'away') pushBlocked(t, target, to, opts.how);
+      break;
+    }
     const fm: any = emit(cb, 'forced_move', { u: target, by: t.u, tiles: 1, to, how: opts.how || t.def.id, cancel: false, cb, rng: t.rng }); if (fm.cancel) break;
     const stopNow = unheld(t.u, () => {
     const was = target.pos; target.pos = to; target.braced = false; moved++;
@@ -536,6 +551,15 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
   }
   if (moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ').');
   return moved;
+}
+/** Breaching Strike's rule for a push that is blocked, bound by perks/skeleton.ts (that file imports this one). */
+let SLAM: ((cb: Combat, by: Unit, target: Unit, into: 'wall' | Unit, how: string) => void) | null = null;
+export const setSlam = (f: typeof SLAM) => { SLAM = f; };
+/** A melee technique's push away that a wall or a body stops at `to` (forceMove's blocked tile; Shove against a blocked
+ * tile, which knocks Prone instead of moving): Breaching Strike's rule is asked. Never in a preview. */
+export function pushBlocked(t: Tech, target: Unit, to: string | null, how?: string): void {
+  if (!SLAM || t.preview || t.def.system !== 'melee' || !alive(target)) return;
+  SLAM(t.cb, t.u, target, (to && t.cb.units.find((v) => v !== target && !v.dead && v.pos === to)) || 'wall', how || t.def.id);
 }
 const bad = (cb: Combat, to: string, blocked: Set<string>, mover: Unit) => { const [x, y] = xy(to); return x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || blocked.has(to) || cb.units.some((v) => v !== mover && !v.dead && v.pos === to); };
 /** Rounds a technique burns beyond its rolls. False (with a note) if the weapon can't pay. */
@@ -863,7 +887,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) {
     u.heat += 1;
     // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does (the main hand's gun)
-    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
+    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
   } // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
   for (const n of t.pv.notes) cb.log.push('  ' + n);
   const st = scratch(t);
@@ -927,7 +951,7 @@ export function physView(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe', g?: any)
 /** The Momentum rule in two plain sentences (the meter's hint on the screen). */
 export const MOMENTUM_HINT = 'A plain attack that hits gives 1. A Strike or an Opener spends 1; each tile you walk and each hit you take costs 1.';
 /** The Guard rule in plain sentences (the pool's hint on the screen). */
-export const GUARD_HINT = 'Brace or the Guard technique gives Guard. Each point takes 10 damage off a hit, and Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
+export const GUARD_HINT = 'Brace gives 2 Guard (3 with a shield); the Guard technique gives 1, +1 for each Durability point above 1, +1 with a shield. Each point takes 10 damage off a hit; the last point is kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
 function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   const max = u.resMax?.momentum;
   const hid = viewerSide === u.side ? Math.min(pressureOf(u), (u as any).pressHidden || 0) : 0, now = pressureOf(u) - hid;
@@ -937,7 +961,7 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   return {
     momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
     // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
-    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), soak: GR().soak ?? 10, shield: !!shieldOf(u), hint: GUARD_HINT } : null,
+    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: GR().soak ?? 10, shield: !!shieldOf(u), hint: GUARD_HINT } : null,
     pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
       cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,

@@ -56,6 +56,16 @@ describe('the data of the pass', () => {
     for (const t of TRAITS as any[]) expect(old.test(JSON.stringify([t.text, t.upsides, t.downsides])), t.id).toBe(false);
     for (const p of PERKS as any[]) expect(old.test(JSON.stringify([p.text, p.tiers?.I?.text, p.tiers?.II?.text])), p.id).toBe(false);
   });
+  it('the EPCCG pages: Acuity speaks with Demitri Kortev, Improvisation with Drava Keel, and every effect line is what a point gives now', () => {
+    const S = SKILL as any;
+    expect(S.analysis.epccg.speaker).toMatch(/^Demitri Kortev/); expect(S.analysis.epccg.intro).toMatch(/^Acuity is your grasp of complex mechanisms/); expect(S.analysis.voice.tone_from).toMatch(/^Demitri Kortev/);
+    expect(S.proficiency.epccg.speaker).toBe('Drava Keel, salvage fitter of the Mandestra lowland yards'); expect(S.proficiency.epccg.portrait_id).toBe('drava-keel');
+    expect(S.proficiency.epccg.note).toMatch(/Suggested/); expect(S.proficiency.epccg.provisional && S.analysis.epccg.provisional).toBe(true);
+    const all = Object.values(S) as any[]; expect(all.length).toBe(27);
+    for (const k of all) expect(k.epccg.effect, k.id).toBe(k.per_point.text);
+    expect(new Set(all.map((k) => k.epccg.speaker)).size).toBe(27); // one character to a skill
+    expect(JSON.stringify(all.map((k) => [k.epccg.speaker, k.epccg.portrait, k.epccg.quote, k.voice.tone_from]))).not.toMatch(/D12\.9\.6|crime scene/); // it left the book (docs/lore/D12-9-6.md)
+  });
   it('every effect of the pass is run by the engine or named for the Narrator (no gap)', () => { expect(coverageGaps()).toEqual([]); });
 });
 
@@ -208,7 +218,8 @@ describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
       return f;
     };
     const tuned = run(5); expect(tuned.pc.jammed).toBe(false); expect(tuned.pc.dur).toBe(1); expect(logHas(tuned, /doesn't jam \(Tuned\)/)).toBe(true);
-    const plain = run(4); expect(plain.pc.jammed).toBe(true); expect(plain.pc.dur).toBe(0);
+    expect(logHas(tuned, /the gun jams/)).toBe(false); expect(tuned.pc.stunnedNext || 0).toBe(0); // the attack's own line never says it jammed
+    const plain = run(4); expect(plain.pc.jammed).toBe(true); expect(plain.pc.dur).toBe(0); expect(logHas(plain, /the gun jams/)).toBe(true);
   });
   it('Hand-Off: once a round an ally next to you uses your Defense against one attack; 3 tiles with Many Hands; no AP moves', () => {
     const fight = (pts: number, perks: any = {}) => {
@@ -246,10 +257,72 @@ describe('Read Them (Acuity 5; was Weak Point)', () => {
     const f = physFight([{ weapon: 'service_pistol', skills: { analysis: 5 } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.turn(f.pc);
     f.act({ type: 'combat/analyze', unitId: f.pc.id, targetId: f.foe.id } as any);
     expect(f.foe.weakPoint).toBe(true);
+    expect(logHas(f, /Read Them: it deals 15% less damage to the squad/)).toBe(true); expect(logHas(f, /Weak Point|\+15%/)).toBe(false);
     const pc = f.unit(f.pc.id); pc.hp = pc.maxHp = 1000;
     withGame(f.g, () => applyDamage(f.cb, pc, 200, { by: f.foe, type: 'weapon', ranged: true }));
     expect(1000 - f.pc.hp).toBe(170);
     const pv = withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'shot', { free: true }));
     expect(pv.dmg!.mults.some((m) => /Weak Point/.test(m.label))).toBe(false);
+  });
+});
+
+describe('the hooks wired into the core (physical/core.ts)', () => {
+  it('Heavy Hands in play: a Shove pushes 2 tiles at Raw Power 3 and 1 tile at 2; the card shows the same tile', () => {
+    const run = (pts: number) => {
+      const f = physFight([{ weapon: 'sabre', known: ['shove'], skills: { raw_power: pts, athletics: 4 } }], [{ at: 'D7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.turn(f.pc); weak(f, f.foe);
+      const pv = f.pv('shove', { targetId: f.foe.id }); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
+      expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.unit(f.foe.id).pos }]);
+      return f.unit(f.foe.id).pos === f.tile('F7') ? 2 : f.unit(f.foe.id).pos === f.tile('E7') ? 1 : 0;
+    };
+    expect(run(3)).toBe(2); expect(run(2)).toBe(1);
+  });
+  it('Quick Draw in play: the first Snap Shot of a fight costs 0 AP on the card and in the charge; the second costs its 2', () => {
+    const fight = (pts: number) => {
+      const f = physFight([{ weapon: 'sabre', known: ['snap_shot'], skills: { dexterity: pts } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 900; f.turn(f.pc);
+      const c: any = f.char(f.pc); c.pack = [...(c.pack || []), { id: 'service_pistol', name: 'service_pistol', qty: 1, kind: 'weapon', weapon: 'service_pistol', loaded: 12 }];
+      return f;
+    };
+    const stowed = (f: F, w: string) => (f.char(f.pc) as any).pack.findIndex((x: any) => x.weapon === w);
+    const f = fight(5); rig({ hit: true, die: 12 });
+    expect(f.pv('snap_shot', { targetId: f.foe.id, item: stowed(f, 'service_pistol') }).ap).toBe(0);
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stowed(f, 'service_pistol') })).toBeNull(); expect(f.pc.ap).toBe(6);
+    expect(f.pv('snap_shot', { targetId: f.foe.id, item: stowed(f, 'sabre') }).ap).toBeGreaterThan(0); // used up for the fight
+    const low = fight(4); expect(low.pv('snap_shot', { targetId: low.foe.id, item: stowed(low, 'service_pistol') }).ap).toBe(2);
+  });
+  it('Iron Grip II in play: Throw Down on a held target starts with no Momentum; tier I still needs 2', () => {
+    const fight = (tier: string) => {
+      const f = physFight([{ weapon: 'fists', known: ['throw_down'], skills: { raw_power: 5, dexterity: 6 }, perks: { iron_grip: tier } }], [{ at: 'D7', weapon: 'fists' }]);
+      f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 500; f.turn(f.pc); hold(f, f.foe); f.momentum(f.pc, 0); return f;
+    };
+    const two = fight('II'); rig({ hit: true });
+    expect(two.pv('throw_down', { targetId: two.foe.id }).ok).toBe(true);
+    expect(two.tech('throw_down', { targetId: two.foe.id })).toBeNull(); expect(two.momentum(two.pc)).toBe(0); // it spends all there is: none
+    const one = fight('I'); expect(one.tech('throw_down', { targetId: one.foe.id })).toMatch(/Needs Momentum 2/);
+  });
+  it('Breaching Strike in play: a push that is blocked at once slams the target where it stands, and once only', () => {
+    const fight = (wall: string, pts = 2, tier: string | null = 'I') => {
+      const f = physFight([{ weapon: 'sabre', known: ['shove'], skills: { raw_power: pts, athletics: 4 }, ...(tier ? { perks: { breaching_strike: tier } } : {}) }], [{ at: 'D7' }]);
+      f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.cb.map = { ...f.cb.map, solid: [...(f.cb.map.solid || []), f.tile(wall)] };
+      f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 500; f.turn(f.pc); weak(f, f.foe); return f;
+    };
+    const slams = (f: F) => f.cb.log.filter((l) => /slammed into the wall \(Breaching Strike\)/.test(l)).length;
+    const f = fight('E7'); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
+    expect(f.unit(f.foe.id).pos).toBe(f.tile('D7')); expect(f.unit(f.foe.id).hp).toBeLessThan(500); expect(slams(f)).toBe(1);
+    // Heavy Hands sends it a second tile, the wall stops that one: still one slam (not one from the core and one at the action's end)
+    const g = fight('F7', 3); expect(g.tech('shove', { targetId: g.foe.id })).toBeNull();
+    expect(g.unit(g.foe.id).pos).toBe(g.tile('E7')); expect(slams(g)).toBe(1);
+    const none = fight('E7', 2, null); expect(none.tech('shove', { targetId: none.foe.id })).toBeNull(); expect(none.unit(none.foe.id).hp).toBe(500);
+  });
+});
+
+describe('Siege Engine reaches the techniques', () => {
+  it('the Break Finisher costs 1 AP less; a 1 AP Shove stays 1 AP (never below 1); without the perk, full price', () => {
+    const fight = (perks: any) => { const f = physFight([{ weapon: 'sabre', known: ['shove', 'break'], skills: { raw_power: 5, durability: 5, dexterity: 6 }, perks }], [{ at: 'D7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.turn(f.pc); f.momentum(f.pc, 3); return f; };
+    const plain = fight({}), siege = fight({ siege_engine: 'I' });
+    const ap = (f: F, id: string) => f.pv(id, { targetId: f.foe.id }).ap;
+    expect(ap(plain, 'break')).toBeGreaterThan(1); expect(ap(siege, 'break')).toBe(ap(plain, 'break') - 1);
+    expect(ap(plain, 'shove')).toBe(1); expect(ap(siege, 'shove')).toBe(1);
+    rig({ hit: true }); const before = siege.pc.ap, cost = ap(siege, 'break');
+    expect(siege.tech('break', { targetId: siege.foe.id })).toBeNull(); expect(before - siege.pc.ap).toBe(cost);
   });
 });

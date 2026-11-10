@@ -10,15 +10,9 @@
 //   Composure 5 · Stand Still      until you first act in a fight, your Calls cost 1 AP less
 // Every number here is PROVISIONAL (spec section 14).
 //
-// TO WIRE in physical/core.ts (that file was not this pass's to edit; each is one line, and the handler here is ready):
-//   W1 Heavy Hands: forceMove(), before its loop (preview and real alike):
-//        if (dir === 'away') tiles += statQuery({ u: t.u, cb }, 'push_tiles', { tech: t.def.id, system: t.def.system }).add;
-//   W2 Quick Draw: apFor() adds `tech: def.id` to its 'attack_preview' payload.
-//   W3 Iron Grip II: gate() lowers a Finisher's Momentum need by statQuery({ u, cb }, 'momentum_needed:' + def.id).add.
-//   W4 Breaching Strike: forceMove() calls slam(cb, t.u, target, blocker, hit) (or emits a hook that does) when its loop
-//        breaks on a blocked tile, so a target already against the wall counts; until then only a push that moved its
-//        target at least 1 tile is seen (settled when the action is done).
-// Until W1 to W3 are in, those three effects do nothing in play; their tests drive the handler through the same payloads.
+// Wired in physical/core.ts: Heavy Hands (forceMove asks 'push_tiles'), Quick Draw (apFor names its technique in
+// 'attack_preview'), Iron Grip II (finisherNeed asks 'momentum_needed:<id>'), and Breaching Strike against a push that
+// is blocked at once (forceMove calls slam through setSlam, below).
 import { register, stateOf, applyDamage, emit, has, tierOf, type Holder } from '../effects';
 import { onHook, charOfUnit } from '../effects/hooks';
 import { type Combat, type Unit, key, xy, dist, alive, moveBlockers, emitFx, attackDamage, checkOver } from '../combat';
@@ -26,7 +20,7 @@ import { resGain, resOf } from '../tactics';
 import { condSource } from '../magic';
 import { die } from '../rng';
 import { TECHNIQUE } from '../physical/data';
-import { strikingWith, ensureMomentum, turnStamp } from '../physical/core';
+import { strikingWith, ensureMomentum, turnStamp, setSlam } from '../physical/core';
 
 const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -95,6 +89,14 @@ export function slam(cb: Combat, by: Unit, t: Unit, into: 'wall' | Unit, hit?: n
   say(cb, t.name + ' is slammed into ' + (into === 'wall' ? 'the wall' : into.name) + ' (Breaching Strike): ' + r.amount + ' damage' + (r.killed ? ' · down' : '') + '.');
   if (tier === 'II' && into !== 'wall' && alive(into)) { const r2 = applyDamage(cb, into, dmg, { ...src }); say(cb, into.name + ' takes the same (Breaching Strike II): ' + r2.amount + ' damage' + (r2.killed ? ' · down' : '') + '.'); }
 }
+// The core's call for a push that a wall or a body stops (physical/core.ts forceMove): the hit that pushed it is this
+// action's hit on it, and the push is settled here, so the end of the action doesn't count it a second time.
+setSlam((cb, by, t, into, how) => {
+  if (NOT_A_PUSH.has(how) || !has(by, BREACH)) return;
+  const hit = ((by as any)._hit as Record<string, number> | undefined)?.[t.id];
+  if ((by as any)._push) delete (by as any)._push[t.id];
+  slam(cb, by, t, into, hit);
+});
 register({ id: BREACH, claims: 'all', brief: () => null });
 
 // ---------- Raw Power · Follow Through (Mastery 2) ----------
@@ -208,8 +210,10 @@ register({
 
 // ---------- Improvisation · Tuned (Mastery 2) ----------
 // The weapon in your main hand never jams and never breaks (PROVISIONAL reading of "the weapon you maintain", spec 14).
-// The engine sets a jam and wear inside the attack with no hook, so both are put right as soon as the attack is over:
-// a jam is cleared at once, and wear stops at 1 point of Durability (the weapon is never broken). The +10% damage went.
+// The engine asks 'never_jams' wherever a shot, a natural 1 or Heat would jam the gun (combat.ts neverJams), so the
+// attack's own line never says it jammed. Wear has no hook, so it is put right as soon as the attack is over: it stops
+// at 1 point of Durability (the weapon is never broken). A jam from anywhere else (a spell, a class move) is cleared at
+// once here. The +10% damage went.
 function tune(h: Holder) {
   const u = h.u; if (!u) return;
   if (u.jammed) { u.jammed = false; say(h.cb, u.name + '\'s weapon doesn\'t jam (Tuned).'); }
@@ -217,6 +221,7 @@ function tune(h: Holder) {
 }
 register({
   id: 'proficiency.5', kind: 'skill', claims: 'all',
+  stat: (_h, stat) => (stat === 'never_jams' ? 1 : 0),
   on: {
     on_hit: (ctx, h) => { if (ctx.att === h.u) tune(h); },
     on_miss: (ctx, h) => { if (ctx.att === h.u) tune(h); },
