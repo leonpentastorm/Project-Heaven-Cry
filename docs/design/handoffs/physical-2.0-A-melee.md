@@ -29,6 +29,10 @@ You are building the 23 melee technique handlers of **Physical 2.0** in Project 
 12. **Tests:** import `physFight` and `rig` from `test/helpers/physfight.ts` (the lead's; don't edit it) and put your own helpers in `test/helpers/physfight-melee.ts`.
 
 
+13. **Since the foundation (merge the base in):** `strike` returns the unit really struck as `r.target` (an attack can be redirected: Confused, a captive held as a shield): put a technique's riders on `r.target`, never on `t.tgt`. A technique's step now goes through the engine's own move (`stepUser`): a Pinned, Grappled or Prone user doesn't step (`stepBlock(t)` gives the reason for a refusal), and traps, hazards and held shots on the way fire. A line's AP change is its `ap` field in the data (Bash's Bare line has `-1`): if a technique of yours changes its cost with a property, ask the lead to set it, don't refund AP in the handler. Drill is paid for every weapon that damaged the victim. A Press's extra Heat lands after its roll.
+
+14. **New in the core for you (merge the base in):** `strike(t, { thrown: true })` throws the held weapon (Throw, Flurry's Thrown line): a ranged attack at throwing range with line of sight and cover, aimed with Dexterity, Pressure to the target and Momentum to you; then `loseWeapon(t, r.target.pos)` puts it in the pile there (`loseWeapon(t, null)` for a weapon left in a target). **Draw Cut** needs nothing from you but its strike: the core draws the weapon named by `args.item` and runs your handler with it in hand (`t.wield === 'drawn'`). **Run Through**'s "Pinned until it spends 2 AP" is `stop(t, target, 'pinned', { save: false, untilAp: 2 })` (add `weapon: t.weaponId` and `loseWeapon(t, null)` for the Reach line). The stand-in handlers in `test/phys-core-gaps.test.ts` show each in a few lines.
+
 ## Your branch
 
 The foundation has landed (the plan's section 3 names the commit). Your session already has its own branch: bring the base in with `git fetch origin claude/charming-gauss-hbq4n0 && git merge origin/claude/charming-gauss-hbq4n0`, and merge it again whenever the lead says the base moved. Push only to your own session branch.

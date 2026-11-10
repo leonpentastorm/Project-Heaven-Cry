@@ -40,7 +40,8 @@ function set(cb: Combat, u: Unit, to: number, by: Unit | null, why: string, hidd
     if (hidden) (u as any).pressHidden = Math.min(to, ((u as any).pressHidden || 0) + (to - was));
   } else if ((u as any).pressHidden) (u as any).pressHidden = Math.min(to, (u as any).pressHidden);
   const s1 = pressureState(u);
-  emitFx(cb, 'pressure', { unit: u.id, at: u.pos, now: to, was, state: s1, by: by?.id || null, why, ...(hidden ? { hidden: true } : {}) });
+  // hidden pips: the event goes to the shooter's side only (viewFor drops an event marked `only` for the other side)
+  emitFx(cb, 'pressure', { unit: u.id, at: u.pos, now: to, was, state: s1, by: by?.id || null, why, ...(hidden && by ? { hidden: true, only: by.side } : {}) });
   if (s1 !== s0) {
     if (to > was && s1) cb.log.push(u.name + ' is ' + s1[0].toUpperCase() + s1.slice(1) + (by ? ' (' + by.name + ': ' + why + ')' : '') + '.');
     for (const f of LISTENERS) f(cb, u, s0, s1);

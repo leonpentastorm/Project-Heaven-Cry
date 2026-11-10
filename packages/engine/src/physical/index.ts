@@ -5,6 +5,7 @@ export * from './data';
 export * from './pressure';
 export * from './core';
 export * from './rules';
+export * from './ai';
 export { loadQuiverWith, quiverLoader } from './ranged/quiver';
 import './melee/index';
 import './ranged/index';

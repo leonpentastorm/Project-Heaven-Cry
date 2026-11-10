@@ -444,7 +444,8 @@
           "props": [
             "bare"
           ],
-          "text": "costs 1 AP less."
+          "text": "costs 1 AP less.",
+          "ap": -1
         }
       ],
       "free": false,
@@ -1241,7 +1242,9 @@
         "value": 2
       },
       "rounds": 1,
-      "needs": {},
+      "needs": {
+        "stowed": true
+      },
       "text": "Draw or swap to this weapon and fire, at −2.",
       "lines": [
         {
@@ -1277,7 +1280,8 @@
       "number": 2,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "burst"
       },
       "rounds": 3,
       "needs": {},
@@ -1315,7 +1319,8 @@
       "number": 3,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "aimed"
       },
       "rounds": 1,
       "needs": {},
@@ -1574,7 +1579,8 @@
       "number": 9,
       "ap": {
         "base": "flat",
-        "value": 4
+        "value": 4,
+        "mode": "auto"
       },
       "rounds": 6,
       "needs": {},
@@ -2049,7 +2055,8 @@
       "free": false,
       "comes_with": [],
       "home": [
-        "precise"
+        "precise",
+        "drawn"
       ],
       "particular": true,
       "numbers": {

@@ -579,6 +579,20 @@ export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 *
 export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
   + (c.offHand && (ITEM[c.offHand.id] as any)?.category === 'shield' && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
 export const physicalMult = (c: Character) => fx(c, 'mult_physical', 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power'));
+/** Rules 1.12: a weapon's damage multiplier follows what it is aimed with: 1 + 0.1 × (each `scales_with` Attribute − 1)
+ * + 0.05 × the skill it hits with (a Bare weapon: both Raw Power and Athletics; weapons.json `phys`). Perks and traits
+ * that raise physical damage apply as before. A weapon with no `phys` block reads as Strength and Raw Power. */
+export function weaponMult(c: Character, weaponId: string | null | undefined): number {
+  const ph: any = (WEAPON[weaponId || ''] as any)?.phys; if (!ph) return physicalMult(c);
+  const skills: string[] = ph.also_scales?.length ? ph.also_scales : [ph.hits_with];
+  return fx(c, 'mult_physical', 1 + (ph.scales_with as string[]).reduce((t, a) => t + 0.1 * (A(c, a) - 1), 0) + skills.reduce((t, k) => t + 0.05 * P(c, k), 0));
+}
+/** What that multiplier is made of, in words ("Agility and Dexterity"): the label on the damage line. */
+export function weaponMultLabel(weaponId: string | null | undefined): string {
+  const ph: any = (WEAPON[weaponId || ''] as any)?.phys; if (!ph) return 'Strength and Raw Power';
+  const nm = (id: string) => (ATTRS.find((a) => a.id === id)?.name || SKILL[id]?.name || id);
+  return [...(ph.scales_with as string[]), ...((ph.also_scales?.length ? ph.also_scales : [ph.hits_with]) as string[])].map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1');
+}
 export const critMult = (c: Character) => fx(c, 'crit_damage', 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'athletics'));
 export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'camaraderie'));
 export const maxMp = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));

@@ -83,6 +83,18 @@ Every rule-bearing item carries both:
   `study` a success gives. Campaign marks give `word` (a sigils.json id) and optional `age` and `damage`; the validator
   checks them.
 
+## Physical techniques (techniques.json, rules 1.12)
+
+- One file for both systems. `system` is `melee` or `ranged`; `group` is one of the system's five (`rules.groups`): opener, strike, link, finisher, answer; fire, press, set, take, watch.
+- `ap`: `{ "base": "weapon", "add": 0 }` (the weapon's attack cost, plus `add`), `{ "base": "flat", "value": 1 }`, or `{ "base": "reaction" }` (Answers only). Optional `mode` (`aimed`, `burst`, `auto`): the attack this cost is priced as for items that change an attack's AP (a weapon-based cost is priced as a melee strike or a shot). `rounds` is what it burns in all (`"all"`: the whole magazine); melee techniques burn 0.
+- `text` is the base effect, which works with any weapon of the system. `lines` are the "with the right weapon" riders: `props` (one or more weapon properties; `match: "all"` when every one is needed), `text`, and optionally `when: "braced"`, `ap` (added cost when the line applies) and `stack: true` (applies as well as the chosen line). When two lines match a weapon the player picks one.
+- `free: true`: everyone knows it and it takes no ready slot. `comes_with`: weapons with one of these properties always offer it. `home` and `particular`: a particular technique used with a weapon that has none of its home properties is weaker (`rules.off_home_penalty`, no line). `not_with`: properties whose weapons can't use it.
+- `aim` is what the player picks: `enemy`, `tile`, `ally`, `self`, `none` (a reaction) or `enemy+tile`.
+- `numbers` holds every number the handler reads (`t.num('key', fallback)` in the engine); the text says the same numbers in words. All of them are placeholders until the balance pass: `provisional: true` on every technique.
+- `rules` holds the shared numbers: `momentum`, `pressure`, `ready`, `drill`, `starting`, the stop save, and `props` (a one-line meaning per property, shown on a "?").
+- Each weapon in `weapons.json` has `phys`: `system`, `props` (melee: edge point blunt hook reach heavy light bare thrown; ranged: quick auto precise spread heavy blast arc silent loud drawn thrown), `hits_with` (a skill), `scales_with` and `also_scales` (attributes or skills), and `teaches` (the technique it lends while held and teaches at drill mark I).
+- Enemy tiers in `enemies.json` list the techniques they have ready: `techniques: { melee: [...], ranged: [...] }`.
+
 ## Requirements
 `requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.
