@@ -14,3 +14,182 @@ technique({
   },
   ai: () => 5,
 });
+
+// ---------- Sweep, Bash, Sunder, Flurry ----------
+import { type Combat, type Unit, alive, xy, key, keyOf, refOf, dist, lineOfSight, dropToPile } from '../../combat';
+import { handEntry, emptyHand, mod, type PackItem } from '../../character';
+import { throwRangeOf } from '../../tactics';
+import { PHYS_RULES, weaponPhys } from '../data';
+import { save, stop, forceMove, setUp, momentumOf, chainOf, canStrike } from '../core';
+import type { Tech } from './shared';
+
+/** args.tile as a tile key ("x,y"); the reducer already turns a map reference into one, a direct call may not. */
+const tileArg = (t: Tech): string | null => (!t.args.tile ? null : /^\d+,\d+$/.test(t.args.tile) ? t.args.tile : keyOf(t.args.tile, t.cb.map));
+/** The eight directions in turning order (neighbours in the list are 45° apart). */
+const DIRS: [number, number][] = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+const unitAt = (cb: Combat, k: string): Unit | null => cb.units.find((v) => alive(v) && v.pos === k) || null;
+/** Momentum as the card shows it if every one of n strikes hits: +1 a hit (the engine's), and the variety bonus once. */
+function previewMomentum(t: Tech, hits: number): void {
+  if (!t.preview || hits <= 0) return;
+  const m0 = momentumOf(t.u), max = t.u.resMax?.momentum ?? PHYS_RULES.momentum.max, ch = chainOf(t.cb, t.u);
+  t.pv.momentum = { now: m0, after: Math.min(max, m0 + hits + (ch.last && ch.last !== t.def.id ? PHYS_RULES.momentum.variety_bonus : 0)) };
+}
+/** A line that says "costs n AP less" but has no `ap` in the data: the handler gives the AP back itself (the core
+ * charged the full cost). Once the data carries the line's `ap`, the core charges it and this does nothing. */
+function lineDiscount(t: Tech, prop: string, n: number): void {
+  const l = t.def.lines.find((x) => x.props.includes(prop)); if (!l || l.ap != null || n <= 0) return;
+  const back = Math.min(n, t.pv.ap); if (!back) return;
+  t.pv.ap -= back; if (!t.preview) t.u.ap += back;
+}
+/** A weapon that leaves the hand (a throw): it lands in the pile on a tile and the hand is empty (fists in the main
+ * hand). A character's pack entry keeps the weapon's wear and mods; an enemy's is the plain weapon. */
+function leaveInPile(t: Tech, tile: string): void {
+  if (t.preview) { t.note('The ' + t.w.name + ' lands in the pile at ' + refOf(tile) + '.'); return; }
+  const u = t.u, c = t.c;
+  let entry: PackItem | null;
+  if (c) { entry = handEntry(c, t.hand); if (entry && t.hand === 'main' && u.maxDur) (entry as any).dur = u.dur; emptyHand(c, t.hand); }
+  else entry = { id: t.weaponId, name: t.w.name, qty: 1, kind: 'weapon', weapon: t.weaponId } as PackItem;
+  if (entry) dropToPile(t.cb, tile, [entry], 'throw');
+  if (t.hand === 'off') { u.offWeapon = null; u.offAmmo = 0; return; }
+  u.weapon = 'fists'; u.ammo = 0; u.maxDur = 0; u.dur = 0; u.mods = []; u.dmgMult = 1;
+  const pts = (c?.skills as any)?.[weaponPhys('fists').hits_with]; if (typeof pts === 'number') u.attack = mod(pts);
+}
+
+// 7. Sweep: strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each. Reach: the arc is 2 tiles
+//    out. Heavy: all adjacent enemies, not just the arc. Edge: each one hit bleeds on a critical. Friendly fire applies:
+//    everyone standing on the swept tiles is struck, allies too. The arc faces the tile picked (or the target).
+function sweepTiles(t: Tech, dir: [number, number] | null, p: string | null): string[] {
+  const [x, y] = xy(t.u.pos), out: string[] = [];
+  const add = (dx: number, dy: number, k: number) => { const nx = x + dx * k, ny = y + dy * k; if (nx >= 0 && ny >= 0 && nx < t.cb.map.w && ny < t.cb.map.h) out.push(key(nx, ny)); };
+  if (p === 'heavy') { for (const [dx, dy] of DIRS) add(dx, dy, 1); return out; }
+  if (!dir) return out;
+  // the three tiles in front (the facing and 45° to each side); Reach moves the whole arc out along the facing
+  const i = DIRS.findIndex(([dx, dy]) => dx === dir[0] && dy === dir[1]), out1 = (p === 'reach' ? t.num('reach_out', 2) : 1) - 1;
+  for (const j of [i, (i + 1) % 8, (i + 7) % 8]) add(DIRS[j][0] + dir[0] * out1, DIRS[j][1] + dir[1] * out1, 1);
+  return out;
+}
+function sweepDir(t: Tech, toward: string | null): [number, number] | null {
+  if (!toward || toward === t.u.pos) return null;
+  const [x, y] = xy(t.u.pos), [tx, ty] = xy(toward); return [Math.sign(tx - x), Math.sign(ty - y)];
+}
+technique({
+  id: 'sweep',
+  run(t) {
+    const p = t.line('reach', 'heavy', 'edge');
+    const dir = sweepDir(t, tileArg(t) || t.tgt?.pos || null);
+    if (!dir && p !== 'heavy') return 'Pick a direction to sweep.';
+    const tiles = sweepTiles(t, dir, p);
+    const struck = tiles.map((k) => unitAt(t.cb, k)).filter((v): v is Unit => !!v && v !== t.u && canStrike(t, v));
+    if (!struck.length) return 'No one to strike in the arc.';
+    if (!struck.some((v) => v.side !== t.u.side)) return 'Only allies in the arc.';
+    if (t.preview) {
+      t.pv.area = tiles; previewMomentum(t, struck.length);
+      if (p === 'edge') t.note('A critical leaves each one hit Bleeding.');
+      if (struck.some((v) => v.side === t.u.side)) t.note('Allies in the arc are struck too.');
+    }
+    const mult = t.num('mult', 0.7);
+    for (const v of struck) {
+      if (!alive(t.u)) break;
+      if (!alive(v)) continue;
+      const r = strike(t, { target: v, mult, label: 'Sweep' });
+      if (r.hit && r.crit && !r.killed && p === 'edge') cond(t, v, 'bleeding');
+    }
+    return null;
+  },
+  ai(t) {
+    // the best direction: the most enemies and no allies; a sweep that finds one is worse than a plain attack
+    const p = t.line('reach', 'heavy', 'edge'), [x, y] = xy(t.u.pos);
+    let best = { score: 0, tile: '' };
+    for (const d of p === 'heavy' ? [DIRS[0]] : DIRS) {
+      const units = sweepTiles(t, d, p).map((k) => unitAt(t.cb, k)).filter((v): v is Unit => !!v && v !== t.u);
+      const foes = units.filter((v) => v.side !== t.u.side).length, allies = units.length - foes;
+      const score = foes < 2 ? (foes ? 3 : 0) : 5 + 2 * (foes - 1) - 5 * allies;
+      if (score > best.score) best = { score, tile: key(x + d[0], y + d[1]) };
+    }
+    return best.score > 0 ? { score: best.score, args: { tile: best.tile } } : 0;
+  },
+});
+
+// 8. Bash: strike at ×0.5 with the pommel, haft or fist. The target makes a Body save or is Dazed. Blunt: full damage.
+//    Heavy: on a failed save it is pushed 2 tiles instead of Dazed, your choice (opt 'push'). Bare: costs 1 AP less.
+technique({
+  id: 'bash',
+  run(t) {
+    const tgt = t.tgt; if (!tgt) return 'Pick a target.';
+    const p = t.line('blunt', 'heavy', 'bare');
+    const r = strike(t, { mult: p === 'blunt' ? 1 : t.num('mult', 0.5), label: 'Bash' });
+    if (!r.ok) return r.why || 'Can\'t attack that.';
+    if (p === 'bare') lineDiscount(t, 'bare', t.num('bare_ap_less', 1));
+    const push = p === 'heavy' && t.args.opt === 'push';
+    if (t.preview && p === 'heavy' && !push) t.note('Heavy: on a failed save you may push it ' + t.num('heavy_push', 2) + ' tiles instead of Dazed (choose push).');
+    if (t.preview || (r.hit && !r.killed && alive(tgt))) {
+      if (!save(t, tgt, 'body')) {
+        if (push) {
+          stop(t, tgt, 'push', { tiles: t.num('heavy_push', 2), save: false });
+          // the card shows where the push leaves it (stop's preview only writes a note)
+          if (t.preview && !t.pv.moves?.some((m) => m.unit === tgt.id)) forceMove(t, tgt, 'away', t.num('heavy_push', 2));
+        }
+        else cond(t, tgt, 'dazed');
+      }
+    }
+    return null;
+  },
+  ai: (t) => (t.tgt ? (t.tgt.dazedNext ? 4 : 6) : 0),
+});
+
+// 9. Sunder: strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per
+//    attacker). Blunt or Hook: 10 lower. Edge: if the target has no armour left, Bleeding instead.
+technique({
+  id: 'sunder',
+  run(t) {
+    const tgt = t.tgt; if (!tgt) return 'Pick a target.';
+    const p = t.line('blunt', 'hook', 'edge');
+    const r = strike(t, { mult: t.num('mult', 0.7), label: 'Sunder' });
+    if (!r.ok) return r.why || 'Can\'t attack that.';
+    if (!t.preview && (!r.hit || r.killed || !alive(tgt))) return null;
+    if (p === 'edge' && tgt.armour <= 0) { cond(t, tgt, 'bleeding'); return null; }
+    const st = t.state();
+    if ((st.done || {})[tgt.id]) { t.note(tgt.name + '\'s armour is already sundered by you.'); return null; }
+    const now = Math.max(0, tgt.armour - (p === 'blunt' || p === 'hook' ? t.num('blunt_hook_lower', 10) : t.num('lower', 5)));
+    if (t.preview) { t.note('On a hit: ' + tgt.name + '\'s armour ' + tgt.armour + ' → ' + now + ' for the rest of the fight.'); return null; }
+    st.done = { ...(st.done || {}), [tgt.id]: true };
+    tgt.armour = now;
+    t.cb.log.push(tgt.name + '\'s armour is sundered to ' + now + ' (Sunder).');
+    return null;
+  },
+  ai: (t) => (!t.tgt ? 0 : t.tgt.armour > 0 && !(t.u.tech?.sunder?.done || {})[t.tgt.id] ? 6 : 3),
+});
+
+// 10. Flurry: two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits (the engine's +1
+//     a melee hit). Light: three strikes (each after the first at −1). Bare: each hit after the first adds +1 to the
+//     next Bind or Throw Down this turn. Thrown: the strikes may go to two targets in throwing range (targetIds); the
+//     weapon lands in the pile on the tile of the last target thrown at.
+technique({
+  id: 'flurry',
+  run(t) {
+    const p = t.line('light', 'bare', 'thrown'), thrown = p === 'thrown';
+    const n = p === 'light' ? t.num('light_strikes', 3) : t.num('strikes', 2);
+    const mult = t.num('mult', 0.6), later = t.num('later_hit', -1);
+    const ids = thrown ? [...new Set([...(t.args.targetIds || []), ...(t.args.targetId ? [t.args.targetId] : [])])].slice(0, t.num('thrown_targets', 2)) : t.tgt ? [t.tgt.id] : [];
+    const targets = ids.map((id) => t.cb.units.find((x) => x.id === id)).filter((v): v is Unit => !!v);
+    if (!targets.length || targets.length !== ids.length) return 'Pick a target.';
+    const range: number = thrown ? (t.w as any).thrown_range_tiles ?? throwRangeOf(t.u) : 0;
+    if (thrown) for (const v of targets) {
+      if (dist(t.u.pos, v.pos) > range) return v.name + ' is out of throwing range (' + range + ' tiles).';
+      if (!lineOfSight(t.cb, t.u.pos, v.pos)) return 'No line of sight to ' + v.name + '.';
+    }
+    if (t.preview) { previewMomentum(t, n); if (p === 'bare') t.note('Each hit after the first: +' + t.num('bare_bonus', 1) + ' to your next Bind or Throw Down against it this turn.'); }
+    let hits = 0, last: Unit | null = null;
+    for (let i = 0; i < n; i++) {
+      let v = targets[i % targets.length];
+      if (!t.preview) { if (!alive(t.u)) break; if (!alive(v)) { const o = targets.find((x) => alive(x)); if (!o) break; v = o; } }
+      const r = strike(t, { target: v, mult, extra: i ? later : 0, label: 'Flurry', ...(thrown ? { reach: range } : {}) });
+      if (!r.ok) { if (i === 0) return r.why || 'Can\'t attack that.'; continue; }
+      last = v; if (r.hit) hits++;
+    }
+    if (p === 'bare' && hits > 1) setUp(t, targets[0], { hit: (hits - 1) * t.num('bare_bonus', 1), label: 'Flurry', only: ['bind', 'throw_down'] });
+    if (thrown && last) leaveInPile(t, last.pos);
+    return null;
+  },
+  ai: (t) => (t.tgt ? 6 : 0),
+});
