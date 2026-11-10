@@ -29,7 +29,7 @@ import { reducedMotion } from '../sfx';
 import { type Pt, after, angle, anim, burst, centre, flash, floatText, lunge, ring, shake, shakeScreen } from './dom';
 import { tagChip } from './sight';
 import { DRAW_MS, brassOf, ejectShell, whoOf } from './brass';
-import { physBeat } from './physical';
+import { physBeat, NAME_DY, NAME_RISE } from './physical';
 import * as P from './rangedParts';
 
 const { WHITE, HP, MUTED } = P;
@@ -86,6 +86,9 @@ const SHOTS: Record<string, number> = {
   dead_centre: 1, pin_down: 1, rout: 1, stopping_shot: 1, storm: 1, last_round: 1,
   overwatch: 3, deny: 1, cover_me: 1, dead_to_rights: 1,
 };
+/** Techniques whose next event names them already (Brace's stance says BRACED; a Watch's watch_set says HOLDING …):
+ *  their own name doesn't float as well. */
+export const SAID_AFTER = new Set(['brace', 'overwatch', 'deny', 'cover_me', 'dead_to_rights']);
 const cur = new Map<string, TechRec>();
 let last: TechRec | null = null;
 const tags = new WeakMap<object, TechRec | null>();
@@ -333,7 +336,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     const sp = look === 'lob' ? 0.55 : look === 'arrow' ? 1.1 : look === 'rocket' ? 0.9 : 2.2;
     return Math.max(60, Math.min(look === 'lob' ? 650 : 320, Math.hypot(b.x - a.x, b.y - a.y) / sp));
   };
-  const word = (text: string, p: Pt, color: string, dy = -0.6, o: { delay?: number; ms?: number; big?: boolean } = {}) => floatText(text, { x: p.x, y: p.y + dy * p.s, s: p.s }, color, { small: !o.big, big: o.big, ms: o.ms ?? 640, delay: o.delay });
+  const word = (text: string, p: Pt, color: string, dy = -0.6, o: { delay?: number; ms?: number; big?: boolean; rise?: number } = {}) => floatText(text, { x: p.x, y: p.y + dy * p.s, s: p.s }, color, { small: !o.big, big: o.big, ms: o.ms ?? 640, delay: o.delay, rise: o.rise });
   const upper = (x: unknown) => String(x || '').replace(/_/g, ' ').toUpperCase();
 
   /** Debris off struck cover: the burst along the shot, dust, the crack that stays, the sound by material. */
@@ -357,10 +360,18 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     const steps = 3;
     if (round === 'incendiary') for (let i = 1; i <= steps + 1; i++) { const t = i / (steps + 2); const q = { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }; burst('fireflash_' + (1 + (i % 2)), q, end.s * 0.95, 520, { from: 0.7, to: 1.1, fade: 0.25, delay: ft * t }); burst('flame', q, end.s * 0.85, 480, { color: '#FFB45A', from: 0.7, to: 1.1, fade: 0.2, delay: ft * t }); }
     else if (round === 'enhanced') for (let i = 1; i <= steps; i++) { const t = i / (steps + 1); burst('glow', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, end.s * 0.4, 260, { color: WHITE, from: 0.5, to: 1, delay: ft * t, blend: 'screen' }); }
-    else if (/armou?r_piercing/.test(round)) burst('flash_star', start, end.s * 0.4, Math.max(120, ft), { color: WHITE, from: 0.6, to: 0.8 });
+    else if (/armou?r_piercing/.test(round)) { burst('flash_star', start, end.s * 0.4, Math.max(120, ft), { color: WHITE, from: 0.6, to: 0.8 }); P.line(start, end, { color: WHITE, width: 1.6, ms: ft + 200, draw: ft, opacity: 0.9 }); }
     after(() => {
       if (!hit) return;
-      if (/armou?r_piercing/.test(round)) { burst('spark_burst', end, end.s * 0.8, 260, { color: '#FFD27A', from: 0.4, to: 1.2 }); play('hit_metal', end, { gain: 0.4, rate: 1.2 }); }
+      if (/armou?r_piercing/.test(round)) {
+        // it goes through: a hard white streak out the far side, and a ring of sparks at the hole (live check: it read as
+        // any plain hit)
+        const g = Math.atan2(end.y - start.y, end.x - start.x), out = { x: end.x + Math.cos(g) * end.s * 1.1, y: end.y + Math.sin(g) * end.s * 1.1 };
+        P.line(end, out, { color: WHITE, width: 2.6, ms: 300, draw: 90 });
+        burst('spark_burst', end, end.s * 1.1, 300, { color: WHITE, from: 0.3, to: 1.3 });
+        burst('flash_star', out, end.s * 0.55, 220, { color: '#FFD27A', from: 0.3, to: 1.1, delay: 60 });
+        play('hit_metal', end, { gain: 0.5, rate: 1.35 });
+      }
       else if (round === 'hollow_point' || round === 'broadhead') { burst('spark_burst_2', end, end.s * 0.9, 300, { color: '#C2272F', from: 0.5, to: 1.3 }); play('hit_heavy', end, { gain: 0.3 }); }
       else if (round === 'incendiary') { burst('flame', end, end.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.2 }); play('el_fire', end, { gain: 0.4 }); }
       else if (round === 'enhanced') { burst('glow', end, end.s * 1.2, 360, { color: WHITE, from: 0.4, to: 1.2, blend: 'screen' }); play('sg_sharpen', end, { gain: 0.3 }); }
@@ -368,6 +379,8 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     }, ft);
   }
 
+  /** Is a smoke cloud seen: a tile of it in sight, or a seen thrower (a Lob's user)? */
+  const cloudSeen = (e: any, r: TechRec | null, tiles: string[]) => tiles.some((k) => !!at(k)) || (!!r && r.id === 'lob' && seesActor(r.unit) && !!at(posOf(r.unit)));
   /** Dirt kicked up by a round that missed on purpose (a warning shot, suppression, a covering burst): the dirt and
    *  dust sprites (credited in fxCredits.ts) in a light ground tint, big enough to read on the dark board. */
   function kick(q: XY, s: number, k = 1) {
@@ -411,7 +424,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         after(() => kick(end, s, 0.8), 90);
       }, i * 55));
       play('whiz', toP, { delay: 110, gain: 0.6, rate: 1.15 });
-      const tp = at(e.to); if (tp) word('COVERED −2', tp, WHITE, -0.6, { delay: 160 });
+      const tp = at(e.to); if (tp) word('COVERED −2', tp, WHITE, 0.75, { delay: 160, rise: 0.2 }); // under the attacker: above it is the ally it went for
       return;
     }
     if (kind === 'arc') {
@@ -468,8 +481,10 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
 
   return {
     technique(e, base) {
-      base(e);
-      const r = tagOf(e); if (!r || e.refused) return;
+      const r = tagOf(e);
+      // the event right after says the name already (Brace's BRACED, a Watch's HOLDING …): said once (live check)
+      if (!(r && !e.refused && SAID_AFTER.has(r.id))) base(e);
+      if (!r || e.refused) return;
       const a = actorAt(e, e.at), tk = posOf(e.target), b = at(tk);
       switch (r.id) {
         case 'aimed_shot':
@@ -486,7 +501,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
           break;
         }
         case 'lob': {
-          const d = at(e.tile) || b;
+          // the thrower knows where it aimed: a seen thrower's arc lands on its tile even where the cloud it makes will
+          // hide it (a smoke grenade: the tiles are out of sight by the time this plays)
+          const d = at(e.tile) || (a && e.tile ? centre(e.tile) : null) || b;
           if (a && d) P.arcPath(a, d, Math.max(26, Math.hypot(d.x - a.x, d.y - a.y) * 0.3), { color: WHITE, ms: 560 });
           if (d && e.tile && !e.target) P.reticle(d, d.s * 0.8, { ms: 460 });
           break;
@@ -500,7 +517,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         }
         case 'shift': {
           const d = at(e.tile); if (a && d) P.route([a, d], { color: MUTED, s: a.s, dash: '3 4' });
-          if (a) word('UNHEARD', a, MUTED, -0.95);
+          if (a) word('UNHEARD', a, MUTED, NAME_DY, { rise: NAME_RISE });
           break;
         }
         case 'head_down': {
@@ -559,7 +576,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
           const st = stepDown(vi, r!.shots.length);
           if (st && from) {
             const a = angle(from, toP);
-            word('−' + st, { x: from.x + Math.cos(a) * from.s * 0.5, y: from.y + Math.sin(a) * from.s * 0.5, s: from.s }, WHITE, -0.4, { ms: 480 });
+            word('−' + st, { x: from.x + Math.cos(a) * from.s * 0.5, y: from.y + Math.sin(a) * from.s * 0.5, s: from.s }, WHITE, 0.3, { ms: 480, rise: 0.2 });
             lunge(tokOf(e.unit, e.from), 0, -2 - vi, 110);
           }
           break;
@@ -646,13 +663,17 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       // a grenade lands as what it is (smoke, a flash, the scrambler, fire); the engine sends the item's id
       if (kind && what !== 'fire' && kind !== 'frag') {
         if (kind === 'smoke') {
-          // the whole radius clouds over: fewer, larger puffs spread over every tile of the box
-          const st = smokeStride(rad);
-          smokeTiles(e.at, rad).forEach((k, i) => { const q = at(k); if (q) burst('puff', q, q.s * (st > 1 ? 2.7 : 1.7), 1900, { from: 0.3, to: 1.3, fade: 0, delay: Math.min(8, i) * 50 }); });
+          // the whole radius clouds over: fewer, larger puffs spread over every tile of the box. The cloud is already in
+          // the state, so its own tiles are out of sight when this plays: a cloud seen at all (a tile of it in sight, or
+          // its thrower) is drawn whole (live check: only its one visible column puffed)
+          const st = smokeStride(rad), tiles = smokeTiles(e.at, rad);
+          const seen = cloudSeen(e, r, tiles);
+          tiles.forEach((k, i) => { const q = seen ? centre(k) : null; if (q) burst('puff', q, q.s * (st > 1 ? 2.7 : 1.7), 1900, { from: 0.3, to: 1.3, fade: 0, delay: Math.min(8, i) * 50 }); });
           play('vent', p || centre(e.at), { rate: 0.75 });
         } else K.explosion(e.at, rad, kind);
       } else base(e);
-      if (p && kind && (r?.id === 'lob' || g.look === 'lob' || g.look === 'rocket')) P.radiusBox(p, rad, kind === 'smoke' || kind === 'flash' || kind === 'zap' ? MUTED : HP, 560);
+      const bp = p || (kind === 'smoke' && cloudSeen(e, r, smokeTiles(e.at, rad)) ? centre(e.at) : null);
+      if (bp && kind && (r?.id === 'lob' || g.look === 'lob' || g.look === 'rocket')) P.radiusBox(bp, rad, kind === 'smoke' || kind === 'flash' || kind === 'zap' ? MUTED : HP, 560);
     },
 
     stance(e, base) {
@@ -700,7 +721,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (quietEnd(e.why)) return;
       const a = actorAt(e, e.at), b = posAt(e.target);
       if (a && b) P.snapLine(a, b, MUTED);
-      if (a) word('BEAD LOST · ' + upper(e.why), a, MUTED, -0.95);
+      if (a) word('BEAD LOST · ' + upper(e.why), a, MUTED, NAME_DY, { rise: NAME_RISE, ms: 900 });
     },
     spot(e) {
       tagOf(e);
@@ -747,14 +768,14 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (e.id === 'dead_to_rights' && q) {
         const tok = tokOf(e.target, e.at);
         if (tok) anim(tok, [{ filter: 'grayscale(.6) brightness(1.2)' }, { filter: 'grayscale(.6) brightness(1.2)', offset: 0.8 }, { filter: 'none' }], { duration: 160 });
-        word('FIRST' + (e.why ? ' · ' + upper(e.why) : ''), q, WHITE, -1.0, { ms: 760 });
+        word('FIRST' + (e.why ? ' · ' + upper(e.why) : ''), q, WHITE, NAME_DY, { ms: 760, rise: NAME_RISE });
       }
     },
     watch_end(e) {
       if (quietEnd(e.why)) return;
       const p = actorAt(e, e.at || posOf(e.unit)); if (!p) return;
       P.breakRing(p);
-      word('WATCH LOST · ' + upper(e.why), p, MUTED, -0.95);
+      word('WATCH LOST · ' + upper(e.why), p, MUTED, NAME_DY, { rise: NAME_RISE, ms: 900 });
     },
 
     stopped(e, base) {
