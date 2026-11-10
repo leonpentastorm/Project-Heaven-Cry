@@ -702,7 +702,7 @@ Correction to what the lead said in the talk: it is not true that only Endurance
 
 1. **Composure and Lore Master swap slots** (as Dexterity and Athletics did). Composure is Determination's beta and the Heart save. Lore Master is its gamma: lore checks with full points, and a Call. This replaces "Heart save: Lore Master" in 13 to 15 and plan ruling 16's wording (the Heart save is still a Soul skill, so the Brain Debuff result stands).
 2. **Lore Master's Call is Name It** (Suggested name): you call out what the thing is, and it stops costing the one you call to. It takes Steady's numbers unchanged (cancels 1 AP they would lose next turn; 2 at step 2; all of it at step 3, and ends Shaken or Fear). Steady as a Call name goes, which also ends its clash with Guts's unlock and the Outburst action. **Still Water**, Composure's Mastered perk, goes back to its old text (immune to Brain debuffs): Composure is a beta again and a defence is its job. Its rewording in 14 and 15 is withdrawn.
-3. **Analyse is an action of the Mind group and reads an attribute, not a skill** (Leon; the lead's swap of Analysis and Proficiency across attributes is withdrawn). The action stays as it is in a fight (today: range 4 + points, 1 AP in place of 2 at 3 points, the weak point at 5); those three read **Perception** from now on (the lead's pick of the Mind attribute whose name fits; Intelligence is the other candidate). Open: the thresholds on an attribute scale.
+3. **Analyse reads Acuity** (Leon, after 17.3.3's first form put it on the attribute: an action with its own perks on an attribute makes Perception feel like four skills). Range 4 + Acuity points, 1 AP in place of 2 at 3 points, the weak point at 5: today's numbers, read from Acuity. The split between the two betas is in section 18.
 4. **Expression's beta is Improvisation** (Leon): the skill called Analysis is re-themed, not cut. The artist's defence, what you do when the plan is gone; ambush damage taken sits on it. Its 8 perks are re-read against the new name in Stage 3.
 5. **Proficiency becomes Acuity** (Leon): a quality of the mind, the person who solves a puzzle cube at speed or sees how a clock's insides fit. Its id stays `proficiency`.
 6. **Implication becomes Insinuation.**
@@ -721,5 +721,80 @@ Leon: with the names changed, the flavour text and the characters may need to ch
 1. **The effect line of all 27 is stale** after the number moves, and it is hand-written. It is rewritten for every skill, and from now on built from the same table the engine reads (plan Stage 1.1), so it cannot go stale again. The quote and intro stay hand-written.
 2. **Acuity keeps its entry as it is.** Demitri Kortev the watchmaker ("someone who sees every piece of the puzzle and joins them into one") is the new name's meaning almost word for word. Only the intro's first word changes.
 3. **Insinuation keeps its entry.** Aleksandr's insults dressed as flowers are insinuation. Vigilance and Senses are grammar only. Composure and Lore Master keep their speakers; only what each gives changes.
-4. **Improvisation needs a new entry**: a speaker, a quote, an intro, a voice card, a character portrait and a skill portrait (the faceless gesture figure in Expression's pigment; today's shows analysis). D12.9.6 and the crime-scene quote are not lost: they become the EPCCG's entry for the **Analyse action** on Perception's page. The lead drafts the new speaker as Suggested (from the `art/portraits/world/` pool, so no new painting is needed for the face); the cast is Leon's, so he approves or replaces it. New art needed: one skill portrait.
+4. **One character and one speech to a skill** (Leon). Acuity keeps Demitri Kortev. Improvisation gets a new speaker (section 18.3). **D12.9.6 leaves the book**: its painting moves from the EPCCG cast to the world pool as an ordinary character portrait, and the crime-scene speech is kept in `docs/lore/` as the character's own text. New art needed: none for the faces; the two skill portraits change pigment only if Leon wants them to (18.4).
 5. **The screen gains attribute pages**: what a point of each attribute gives (17.2) and the actions that read it (Analyse on Perception), reached the same way as a skill's ?.
+
+## 18. The perk and trait pass on the changed skills (Leon, 10 Nov 2026)
+
+Covers what section 17 moved: Acuity, Improvisation, Composure and Lore Master swapped, Insinuation, and the Cores no longer spent. The other 22 skills stand as section 15 left them.
+
+### 18.1 Acuity and Improvisation: who gets what
+
+The line between them: **Acuity is knowing how a thing works** (a clock, a lock, a crime scene, an enemy). **Improvisation is making a thing work now** with what is at hand.
+
+| | Acuity (Perception β) | Improvisation (Expression β) |
+|---|---|---|
+| Action | **Analyse** (range, cost at 3, weak point at 5) | **Field Repair** |
+| Defence number | critical damage taken (you see where it will land) | ambush damage taken (you were never relying on the plan) |
+| Perk | **Detective's Eye** I/II (as written) | **Jury-Rig** I/II (as written: a broken weapon works one more time) |
+| Perk | **Pattern Lock** I/II (as written: Dodge against an attack you have seen; a beta's perk already) | **Hot-Swap** I/II (as written; an own-cost discount, so it stays by 15.8) |
+| Mastered | **Case Closed** (as 15 left it) | **Overhaul** (as written: Field Repair at 1 AP and double; the long-rest mod slot) |
+| Achieved | **Cold Read**; **Dead Signal** (knowing where the wire is) | **Field Surgeon** (Field Repair on the living) |
+| World play | hacking, locks, reading a mechanism or a scene | fixing, fitting, modding, making do |
+| Speaker | Demitri Kortev (kept) | new (18.3) |
+
+1. No perk is cut and none is new, so there is **no new perk art**. Every icon keeps its perk.
+2. **Weak Point / Read** (15) follows Analyse to Acuity.
+3. Build note: the cheapest way to get this result is to leave the perks, traits and actions on their ids and move the two EPCCG entries and names instead (id `analysis` is shown as Acuity under Perception with Demitri's entry; id `proficiency` is shown as Improvisation under Expression). A player never sees an id. This overrides 17.3.9 for these two.
+
+### 18.2 The other changed skills
+
+| Skill | Perk | Ruling |
+|---|---|---|
+| Composure (now β) | Flat Line I/II | **Keep.** An enemy that can see you is −1/−2 to attack: a defence. |
+| | Still Water (Mastered) | **Keep the original** (immune to Brain debuffs; nothing reads you), as 17.3.2. |
+| | You Get Used to It I/II | **Reword.** It gives and takes AP, and Composure is no longer a gamma. Draft: I: the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is +2 (you have seen worse). II: +4, and you may give the bonus to that ally instead. Provisional. Same icon. |
+| | Between Heartbeats, The Voice (Achieved) | **Keep.** Both are once a fight or session and earned. |
+| Lore Master (now γ) | Old Tongue I/II | **Keep.** Reading and speaking the old scripts is a gamma's job exactly. |
+| | Rite in the Field I/II | **Keep** (own-cost discount). |
+| | True Name (Mastered) | **Keep** (15). Name It is its small everyday cousin, which is right. |
+| | Cultured, Twin Souls | **Keep.** Cultured's "+1 Ingenuity and Charisma" stands. |
+| Insinuation (γ) | Sweet Talker, Double Meaning, Their Own Idea, Verse of War | **Keep**; the name is swept in the text. Sweet Talker's AP is on a gamma, as the rule wants. |
+| Vigilance, Senses | all | Name sweep only. |
+
+### 18.3 Traits
+
+No trait spends or gives a Core point, so dropping Cores changes no trait. The three song traits ("+1 to every Body skill") still work: the families keep their names. What changes is which skill an old name means:
+
+| Trait | Line today | Becomes |
+|---|---|---|
+| Bottle Butts for Eyes | +1 / −4 Proficiency and Ingenuity with the glasses | **Acuity** and Ingenuity (it is about seeing) |
+| Slicer | a Proficiency check to take a device | **Acuity** |
+| Factory Made | Proficiency's Field Repair restores your HP | **Improvisation**'s Field Repair |
+| Drone Handler | Proficiency repairs the drone | **Improvisation** |
+| Augmented | maintenance after each rest | **Improvisation** |
+| Ghost Soldier | an arm that Proficiency can mod | **Improvisation** |
+| Oil in My Mind | +1 Visualization, Analysis and Rumination | +1 Visualization, **Acuity** and Rumination |
+| Market Blood | an Analysis check to give a thing away | **Acuity** |
+| Old Timer | one Rumination, Lore Master or Analysis check succeeds | Rumination, Lore Master or **Acuity** |
+| Lunarshine | Wasted: −2 … Proficiency, Vigilant, Analysis … | −2 … **Acuity**, Vigilance, **Improvisation** … |
+| Trench Poet, Sweet Talker, Machine-Faced, Oil in My Soul, Ghost Soldier, Blade Recluse | Implication | **Insinuation** (name only) |
+| The Mask, Chain Smoker, Daggerfall Veteran, Machine-Faced, Born Officer, Trench Poet, Ghost Soldier, Lunarshine | ± Composure | **Now reaches the Heart save again**, because Composure holds it. This undoes the code map's saves trap 3 for Composure; the Charisma half of that trap still stands (Charisma no longer feeds the Brain save). |
+| The Old Blood, Lunarshine | ± Lore Master | Now a gamma: the mod is worth a full point on lore checks and no longer touches a save. |
+
+Chain Smoker's "Light Up: +2 Composure for the scene" becomes a real fight button under this: 2 AP for +2 on the Heart save. Flagged for a playtest, not changed.
+
+### 18.4 Improvisation's entry (Suggested; the cast is Leon's)
+
+**Speaker:** Drava Keel, salvage fitter of the Mandestra lowland yards. **Portrait:** `art/portraits/world/new-faces/drava-keel.png` (grey-haired, goggles pushed up, eyes half shut and smirking while she seats a mechanical hand at a cluttered bench under a green lamp). Second choice: Milo Quill (the curly apprentice catching a canister as it falls).
+
+> "The manual says a servo-hand wants a clean bench, a calibrated driver and four hours. I had a ditch, a soup spoon, and as long as it takes an Ork to cross a field. He still has the hand. Plans are lovely things. I have had hundreds, and every one of them died in the first minute, most of them louder than I did. What you have after that is whatever is in your pockets, and how fast you stop mourning the plan. The spoon is still in there, by the way. Load-bearing. Nobody tell him."
+
+- **Intro:** Improvisation is what you do when the plan is gone: making the thing in front of you work with whatever is at hand, right now, and working out why later.
+- **High levels:** nothing catches you flat and nothing stays broken near you. But you stop making plans at all, and the people who depend on you can never tell what you will do next.
+- **Good for:** field mechanics, ditch medics, smugglers, anyone who performs for a living. **Bad for:** planners, quartermasters, whoever signed for the equipment.
+- **Voice card:** *persona:* a cheerful fixer who trusts her hands more than any plan. *Wants:* to try it now and see. *Style:* quick, practical, amused; counts what is in reach. *Never:* never waits for the right tool. *Notices:* "That strap, that pipe and your belt. That's a splint." *Pushes:* "Stop reading the plan. The plan left ten minutes ago." *Quiet:* "It doesn't have to be right. It has to hold."
+
+**Skill portraits** (the faceless gesture figures): today's `analysis` figure and `proficiency` figure each stay with their id (18.1.3), so the figure that reads as examining sits under Acuity and the one that reads as handling a mechanism under Improvisation. The pigments are then wrong (each carries the other attribute's colour): two recolours, no new drawing. Leon decides whether to recolour or redraw.
+
+**Found on the way:** old Proficiency's 2020 effect line says it "unlocks exploration options and Trio-Scale Equipment". That is the tri-scale armour Leon remembered (section 9); it was a Proficiency unlock. Still not in this patch.
