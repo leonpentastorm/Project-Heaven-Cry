@@ -120,7 +120,7 @@ async function tryTech(c) {
     const gg = await freshTurn(); const u = await me();
     await act({ type: 'sandbox/give', charId: cid, item: c.weapon, equip: c.equip !== false }); await p.waitForTimeout(200);
     const args = await c.setup(gg, u); if (!args) { note(c.id + ': no room for the set-up here (at ' + ref(u.pos) + '; blocked: ' + JSON.stringify(pickDirWhy(await G(), u.pos, [[1, 0], [2, 0], [3, 0], [4, 0]])) + ')'); continue; }
-    if (c.momentum) { await act({ type: 'sandbox/meter', unitId: u.id, momentum: c.momentum }); await p.waitForTimeout(150); }
+    { await act({ type: 'sandbox/meter', unitId: u.id, momentum: c.momentum || 2 }); await p.waitForTimeout(150); } // Strikes and Openers spend Momentum (rules 1.13)
     await idle();
     const n0 = await lastN(), t0 = await now();
     const err = await act({ type: 'combat/technique', unitId: u.id, id: c.id, ...args });
@@ -148,6 +148,7 @@ const CASES = [
     async check(u, args, t0) { await idle(); if (await markAfter('bind', 'bind', t0, '…the Bind stands on the layer while it holds')) ok('…one link', (await p.locator('[data-melee-mark="bind"]').count()) === 1); await p.screenshot({ path: SHOTS + 'bind-standing.png' }); } },
   { id: 'throw_down', kind: 'slam', tag: 'slam', weapon: 'sabre', label: 'Throw Down (slam on the landing tile)', delays: [40, 160, 320], momentum: 2,
     async setup(gg, u) { const d = adj(gg, u, [[1, 0], [0, 1], [1, 1]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); if (!a) return null;
+      await act({ type: 'sandbox/meter', unitId: u.id, momentum: 2 }); // Bind is an Opener: it spends Momentum too
       const e = await act({ type: 'combat/technique', unitId: u.id, id: 'bind', targetId: a.id }); if (e) return null; await idle(); await p.waitForTimeout(200);
       await act({ type: 'sandbox/meter', unitId: u.id, momentum: 2 }); return { targetId: a.id, tile: ref(d.tiles[1]) }; } },
   { id: 'shove', kind: 'force', lead: ['shove'], weapon: 'sabre', label: 'Shove (the skid along its path)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id } : null; } },
