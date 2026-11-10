@@ -35,6 +35,7 @@ import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVa
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
+import { STORY_PANELS, STORY_PANEL_NAME, STORY_PANELS_CSS, readStoryPanels, saveStoryPanels, isDefaultOrder, startStoryDrag, keyMoveStoryPanel, squadMinHeight, SQUAD_SEATS, SQUAD_ROW_PX, SQUAD_GAP_PX } from '../game/storyPanels';
 /** A weapon's line on the GEAR tab (Physical 2.0): its properties and the technique it teaches (drill replaced the
  *  old weapon skill and mastery). */
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
@@ -47,6 +48,7 @@ const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) =
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
 // Main-screen extras: the dice verdict lands after the die does; the area map's planning marks breathe a little.
 ensureStyle('phc-resources', RES_CSS);
+ensureStyle('phc-story-panels', STORY_PANELS_CSS); // the right column's movable modules (game/storyPanels.ts)
 // The UI pass (docs/design/ui-pass-shell.md 3, 4): Echo's flare when one is gained or spent, a new quest row's white
 // flash, and the minimap kept short enough that the quest board keeps its room on a short window.
 ensureStyle('phc-play-pass', '@keyframes phcEchoGain{0%{transform:rotate(45deg) scale(.4);box-shadow:0 0 0 0 #FFFFFF}45%{transform:rotate(45deg) scale(1.5);box-shadow:0 0 14px 4px #FFFFFF}100%{transform:rotate(45deg) scale(1)}}'
@@ -312,9 +314,30 @@ export class MainLogic extends DCLogic {
     if (!fromButton && typeof document !== 'undefined' && document.querySelector('[role="dialog"][aria-modal="true"]')) return;
     this.setState({ area: true, shNarr: false });
   }
+  /** The right column's four modules (game/storyPanels.ts): each one's place (CSS order), its grip's handlers, the
+   *  reset link, and the player card's styles. `seats`: how many the player card keeps room for (four players and the
+   *  Narrator; four in the Proving Ground, which has no Narrator). The order is this browser's, not the game's. */
+  panelVals(seats) {
+    const order = this._rp || (this._rp = readStoryPanels());
+    const set = (o, focus) => { this._rp = o; saveStoryPanels(o); this.setState({});
+      // the keyboard stays on the grip it moved
+      if (focus && typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => { const b = document.querySelector('[data-rp-grip="' + focus + '"]'); if (b) b.focus(); }); };
+    const o = {}, grip = {}, gripKey = {};
+    STORY_PANELS.forEach((id) => { o[id] = order.indexOf(id);
+      grip[id] = (e) => startStoryDrag(e.nativeEvent || e, id, this._rp, (n) => set(n));
+      gripKey[id] = (e) => { const n = keyMoveStoryPanel(e.key, id, this._rp); if (n) { e.preventDefault(); set(n, id); } }; });
+    const last = order[order.length - 1] === 'squad';
+    return { o, grip, gripKey, custom: !isDefaultOrder(order), reset: () => set([...STORY_PANELS]), names: STORY_PANEL_NAME,
+      // Last in the column (its first place), the player card sticks to the bottom so End turn is always in reach;
+      // moved up, it sits in the flow like the others.
+      squadStyle: 'order: ' + o.squad + '; flex: none; display: flex; flex-direction: column; gap: 8px; background: #0A0D13; '
+        + (last ? 'margin-top: auto; position: sticky; bottom: -14px; z-index: 2; padding: 10px 0 0; border-top: 1px solid #232D3F' : 'padding: 10px 0; border-top: 1px solid #232D3F; border-bottom: 1px solid #232D3F'),
+      // Two seats a row; the rows for every seat are kept even when fewer sit (the card never grows or clips mid-game).
+      seatsStyle: 'display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: ' + SQUAD_ROW_PX + 'px; gap: ' + SQUAD_GAP_PX + 'px 10px; align-items: center; min-height: ' + squadMinHeight(seats) + 'px' };
+  }
   renderVals() {
     const S = this.state, st = getState(), g = st.game, me = st.me.id, isHost = st.role === 'host';
-    if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], barsA: [], barsB: [], echoV: { has: false, pips: [], sections: [] }, qb: { has: false, groups: [] }, sfc: { has: false, gauge: [], effects: [], movers: [] }, pc: {} };
+    if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], barsA: [], barsB: [], echoV: { has: false, pips: [], sections: [] }, qb: { has: false, groups: [] }, sfc: { has: false, gauge: [], effects: [], movers: [] }, rp: { o: {}, grip: {}, gripKey: {} }, pc: {} };
     const mine = Object.values(g.characters).filter((c) => c.owner === me);
     const c = mine.find((x) => x.id === S.sel) || mine[0] || null;
     const P = (id) => (c ? c.skills[id] || 0 : 0), A = (id) => (c ? c.attrs[id] || 1 : 1);
@@ -1394,6 +1417,7 @@ export class MainLogic extends DCLogic {
       zoneNoteStyle: 'display: block; padding-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (inFight ? '#F65157' : '#A3AEC2'),
       mini, regions, area: S.area, openArea: () => this.setState({ area: true }), closeArea: () => closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })), order,
       orderTitle: SB ? 'SQUAD' : 'SPEAKING ORDER',
+      rp: this.panelVals(SB ? 4 : SQUAD_SEATS),
       orderNote: SB ? 'Each round: a full turn of AP on the area map, then End turn. Gear up with the tools; start the fight from the map or the tools.' : 'Each round: one Say and a full turn of AP (act on the area map). When everyone has ended their turn, the Narrator answers what needs it.',
       endTitle: 'Done for this round: your AP (and your Say, if unused). ' + (SB ? 'Each round: a full turn of AP on the area map, then End turn.' : 'When everyone has ended their turn, the Narrator answers what needs it.'),
       areaCls: modalCls(this, 'area'), objCls: modalCls(this, 'obj'), rootCls: 'phc-play ' + motionRoot(), tabCls: 'phc-m-tab-' + (S.tabDir || 'r'),
