@@ -31,7 +31,7 @@ describe('weapon-granted actions in the action list', () => {
     expect(labels(gr, 'utility')).toContain('Nock an arrow');
     expect(ids(gr, 'attack')).not.toContain('brace');
   });
-  it('a revolver reloads with a speedloader; an LMG braces; a knife reloads nothing and holds a strike', () => {
+  it('a revolver reloads with a speedloader; an LMG braces; a knife reloads nothing and has its Cut and Techniques', () => {
     const { cb, u, g } = fight(charWith());
     u.weapon = 'drifter_revolver'; u.ammo = 2; u.mags = [6];
     // Rules 1.9: a gun with tracked spares offers the speed and the tactical reload, by its own word.
@@ -41,7 +41,9 @@ describe('weapon-granted actions in the action list', () => {
     u.weapon = 'combat_knife';
     const gr = actionGroups(cb, u, null, { g });
     expect(ids(gr, 'utility')).not.toContain('reload');
-    expect(labels(gr, 'attack')).toContain('Hold a strike');
+    // Physical 2.0 (rules 1.12): a melee weapon's block is its plain Cut and its Techniques; it holds no strike (melee
+    // Answers fire on their triggers), and Hold a shot is for ranged weapons only.
+    expect(labels(gr, 'attack')).toContain('Cut'); expect(ids(gr, 'attack')).toContain('tpad:main'); expect(ids(gr, 'attack')).not.toContain('twatch');
   });
   it('a disabled weapon action carries the engine\'s reason', () => {
     const { cb, u, g } = fight(charWith()); u.weapon = 'service_pistol'; u.jammed = false;

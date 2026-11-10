@@ -29,7 +29,8 @@ const mine = (g) => g.combat.units.find((u) => u.charId === meId);
 const myTurn = () => p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 6; }, meId, { timeout: 15000 });
 const confirmBtn = () => p.locator('.phc-cb-confirm button').first();
 /** Spend a round on something with HP (no hostile needed): the pillar, then the crates. */
-const burn = async () => { for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9']) { const e = await act({ type: 'combat/shoot-cover', unitId: mine(await G()).id, tile: k }); if (!e) return true; } return false; };
+// (a refusal is only a toast, so success is read from the magazine: Physical 2.0's damage breaks the pillar in two shots)
+const burn = async () => { for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9', '12,9']) { const a0 = mine(await G()).ammo; await act({ type: 'combat/shoot-cover', unitId: mine(await G()).id, tile: k }); await p.waitForTimeout(150); if (mine(await G()).ammo < a0) return true; } return false; };
 
 // 1. The Proving Ground, solo, the enemies passing their turns (Enemy AI off); start the fight.
 await p.setViewportSize({ width: 1440, height: 1000 });
