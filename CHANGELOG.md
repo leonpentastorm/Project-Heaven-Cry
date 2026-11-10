@@ -4,9 +4,20 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 - **Every branch merged into `develop` bumps the middle number** (0.0.1 → 0.1.0 → 0.2.0 …). The person who merges bumps `"version"` in the root and every workspace `package.json` and adds an entry here.
 - **The first number becomes 1 at the 1.0 release** (the web game is shipped; Leon calls it).
-- *Reading for Leon to confirm:* a hotfix committed straight to `develop` without a branch bumps the **last** number (0.3.0 → 0.3.1).
+- A hotfix committed straight to `develop` without a branch bumps the **last** number (0.3.0 → 0.3.1).
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
+
+## 0.19.1 — 10 November 2026
+
+A hotfix for 0.19.0.
+
+- **The game crashed on start for a save that held Grapple or Origami Hands.** Rules 1.13 renamed them (Iron Grip, Both Hands) and every screen that lists perks looked the old id up and found nothing. A save is now settled as it loads: renamed perks follow their new id with their tier, and a perk or trait the game no longer has is taken off the sheet. Browser test: `apps/web/e2e/old-save.mjs`.
+- **Trick Shot's Ricochet, Spare, Nonlethal and the class toggles on attacks were missing** since attacks became techniques (0.18.0): they show again with any technique and are sent with it.
+- **Hidden is shown on your own card** (it was in force but nothing said so).
+- **A Legendary Deed** grants 1 Attribute point, and one Attribute point per deed may stand 1 above the level's ceiling (spec item 1006).
+- **Both Hands** has its own icon.
+- The rules spec in the repository is the source of truth; the Claude Doc is frozen at revision 1.1.
 
 ## 0.19.0 — 10 November 2026
 

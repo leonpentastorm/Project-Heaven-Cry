@@ -5509,11 +5509,11 @@
         "40": "art/icons/perks/exports/40/roll-with-it.png"
       }
     },
-    "origami-hands": {
-      "label": "Wick — Origami Hands",
+    "both-hands": {
+      "label": "Wick — Both Hands",
       "collection": "wick-production-v1",
-      "path": "art/icons/perks/origami-hands.png",
-      "sha256": "3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9",
+      "path": "art/icons/perks/both-hands.png",
+      "sha256": "8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -5523,14 +5523,15 @@
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
+      "note": "0.19: the Hot Swap figure with a sword drawn into its open hand (tools/art/both_hands_icon.py); replaces Origami Hands, now in art/_archive/perks/wick/replaced/",
       "exports": {
-        "256": "art/icons/perks/exports/256/origami-hands.png",
-        "128": "art/icons/perks/exports/128/origami-hands.png",
-        "64": "art/icons/perks/exports/64/origami-hands.png",
-        "56": "art/icons/perks/exports/56/origami-hands.png",
-        "48": "art/icons/perks/exports/48/origami-hands.png",
-        "44": "art/icons/perks/exports/44/origami-hands.png",
-        "40": "art/icons/perks/exports/40/origami-hands.png"
+        "256": "art/icons/perks/exports/256/both-hands.png",
+        "128": "art/icons/perks/exports/128/both-hands.png",
+        "64": "art/icons/perks/exports/64/both-hands.png",
+        "56": "art/icons/perks/exports/56/both-hands.png",
+        "48": "art/icons/perks/exports/48/both-hands.png",
+        "44": "art/icons/perks/exports/44/both-hands.png",
+        "40": "art/icons/perks/exports/40/both-hands.png"
       }
     },
     "running-reload": {

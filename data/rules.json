@@ -238,7 +238,7 @@
       },
       "extra": {
         "skill_books_and_quests": "extra skill points (narrator/quest data)",
-        "legendary_deed": "narrator's call. It was +1 core point; Cores are not spent since rules 1.13, so what a deed grants is open (spec section 14, item 1006)"
+        "legendary_deed": "narrator's call: +1 Attribute point, and for each deed one Attribute point may stand 1 above the level's ceiling (never above 10). Rules 1.13, item 1006"
       },
       "hp_per_level_retroactive": null,
       "xp_total": {

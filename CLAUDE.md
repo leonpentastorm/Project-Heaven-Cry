@@ -6,12 +6,12 @@ This file is the hand-off from the design sessions in claude.ai. Read it first, 
 
 ## Source of truth (in this order)
 
-1. **`docs/rules/PHC-Core-Rules-v1.0.md`** — the rules spec, every number. Exported from the living Claude Doc (links below). If the spec and the data disagree, **the spec wins and the data is the bug**.
+1. **`docs/rules/PHC-Core-Rules-v1.0.md`** — the rules spec, every number, and **the source of truth** (Leon, 10 Nov 2026). The Claude Doc it was first exported from stops at revision 1.1 and carries a notice pointing here; rules changes are made in this file only. If the spec and the data disagree, **the spec wins and the data is the bug**.
 2. **`data/*.json`** — machine-readable rules the engine loads. Conventions in `data/CONVENTIONS.md`. Run `python3 tools/validate.py data` after any change; it must print `0 errors`.
 3. **`docs/lore/`** and **`docs/design/`** — world, classes, decisions, UI. **Lore is layered:** the **EPCCG** (`docs/lore/EPCCG-Player-Character-Creation-Guide.md`) is the base for the world's people, factions and voice; the **World Bible** layers the hidden simulation truth on top; MPAT/M813 and Wick build on both. Index: `docs/lore/README.md`.
 4. **`design/canvas/`** — UI prototypes (Design Component `.dc.html` files from the claude.ai design canvas). Reference for layout and interaction, not production code. **Paused until v1.0** (Leon, 6 Nov 2026): the live web game is the reference now; Leon sends screenshots of it, and the canvas is brought back in line from the game when v1.0 is done. Don't update the canvas until then.
 
-Living versions (edit there, then re-export here):
+Living versions of the other docs (edit there, then re-export here; the Core Rules Doc is frozen at revision 1.1, the repo file above is current):
 
 | Doc | Link |
 | --- | --- |
@@ -125,8 +125,10 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - Change the spec first, then the data, then run the validator.
 - Never invent a number silently. Provisional numbers are flagged (`provisional: true`) and listed in spec section 14.
 - Keep text in-universe: no real-Earth names in game text (the Unspoken Name). Recognisable homages through Celestials are fine.
-- Rules revision 1.1 (accepted 5 Nov 2026) is in both the repo spec and the living Doc. Its provisional numbers are spec items 35–42.
-- **Versioning** (Leon, 9 Nov 2026; current version in `package.json`, history in `CHANGELOG.md`): **0.MINOR.PATCH** until the 1.0 release. Every branch merged into `develop` bumps the middle number; the first number becomes 1 at the 1.0 release. *Reading, for Leon to confirm:* a hotfix committed straight to `develop` without a branch bumps the last number. **Whoever merges a branch** bumps `"version"` in the root and every workspace `package.json` (all four stay equal) and adds a `CHANGELOG.md` entry in the same merge. The title screen and the Report a problem bundle show it.
+- Rules revision 1.1 (accepted 5 Nov 2026) is the last one in the living Doc; every later revision (to 1.13) is in the repo spec only. Its provisional numbers are spec items 35–42.
+- **Versioning** (Leon, 9 Nov 2026; current version in `package.json`, history in `CHANGELOG.md`): **0.MINOR.PATCH** until the 1.0 release. Every branch merged into `develop` bumps the middle number; the first number becomes 1 at the 1.0 release. A hotfix committed straight to `develop` without a branch bumps the last number (confirmed by Leon, 10 Nov 2026). **Whoever merges a branch** bumps `"version"` in the root and every workspace `package.json` (all four stay equal) and adds a `CHANGELOG.md` entry in the same merge. The title screen and the Report a problem bundle show it.
+- **Live backups** (Leon, 10 Nov 2026): every deploy to live gets a `backup/live-<version>` branch at the deployed `main` commit. Always keep the backups of at least the two latest live versions; an older one is deleted only when a newer deploy makes it the third.
+- **Balance before content** (Leon, 10 Nov 2026): the number balance pass comes before any new system (Weapon Arts, armour, the open playstyles), so that everything added afterwards has a ceiling to balance to.
 - **Sound and VFX assets** (Leon, 9 Nov 2026): go and find openly licensed assets: **CC BY 4.0** (or CC0) sound effects, music and VFX sprites/particle sheets. Credit every one in the game's credits (`apps/web/src/game/sfxCredits.ts` / `credits.ts`) exactly as the author asks, with source URL and licence. Never NC, ND or "personal use" licences. Only make an effect yourself when it looks good as pure SVG or CSS (rings, lines, glyph strokes, tints); anything that needs texture (fire, smoke, sparks, magic bursts, impacts) comes from a sourced asset.
 - **New collaborators** (human or AI) read this file, then `docs/HANDOFF.md` (how to pick the project up) and `docs/ROADMAP.md` (what's next).
 

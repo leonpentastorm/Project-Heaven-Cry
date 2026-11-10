@@ -56,7 +56,7 @@ export interface Character extends Sheet {
   hp: number; echo: number; classId: string | null;
   perks: { id: string; tier: 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' }[];
   unspent: { skill: number; attr: number; core: number };
-  deeds: string[]; weapon: string; armourClass: number; stims: number; essence: number;
+  deeds: string[]; /** Legendary Deeds done (item 1006): each lets one Attribute point stand 1 above the level's ceiling. */ legends?: number; weapon: string; armourClass: number; stims: number; essence: number;
   weaponKills: Record<string, number>; dead: boolean;
   /** Lasting arm and leg injuries (spec: Injuries); cleared when the story treats them. */
   injuries?: Injury[];
@@ -810,6 +810,12 @@ export const attrCapAt = (level: number): number => CAP_BY_LEVEL.reduce((cap, [l
 /** The level at which an attribute may first reach this value. */
 export const attrCapLevel = (value: number): number => (CAP_BY_LEVEL.find(([, v]) => v >= value) || CAP_BY_LEVEL[CAP_BY_LEVEL.length - 1])[0];
 /** After creation the caps work normally: a skill can't pass its Attribute, an Attribute can't pass its Core. */
+/** A Legendary Deed (rules 1.13, item 1006): each one lets one Attribute point stand 1 above the level's ceiling (never above
+ * 10). Room left = deeds held minus the points standing above the ceiling now (a ceiling that rises frees the room again). */
+export function legendRoom(c: Character): number {
+  const cap = attrCapAt(c.level);
+  return (c.legends || 0) - ATTRS.reduce((n, a) => n + Math.max(0, A(c, a.id) - cap), 0);
+}
 export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: string): string | null {
   if (kind === 'skill') {
     if (c.unspent.skill < 1) return 'No Skill points to spend.';
@@ -822,7 +828,7 @@ export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: stri
     if (c.unspent.attr < 1) return 'No Attribute points to spend.';
     const a = ATTRS.find((x) => x.id === id); if (!a) return 'Unknown attribute.';
     if (A(c, id) >= 10) return 'Already at 10.';
-    { const cap = attrCapAt(c.level); if (A(c, id) + 1 > cap) return a.name + ' ' + (A(c, id) + 1) + ' opens at level ' + attrCapLevel(A(c, id) + 1) + ' (the ceiling is ' + cap + ' at level ' + c.level + ').'; }
+    { const cap = attrCapAt(c.level); if (A(c, id) + 1 > cap && !(A(c, id) === cap && legendRoom(c) > 0)) return a.name + ' ' + (A(c, id) + 1) + ' opens at level ' + attrCapLevel(A(c, id) + 1) + ' (the ceiling is ' + cap + ' at level ' + c.level + ').'; }
     return null;
   }
   return 'Cores are not raised: a Core shows the highest attribute of its family.'; // rules 1.13
@@ -877,6 +883,25 @@ export const FOCUS_REV = 1;
 /** A save from when a carried focus counted (item 77): a focus only in the pack goes to a free off hand (the Evoker
  * first, for a character with Sigil words; else the Emanator), so nobody loses their magic to the new rule. A two-handed
  * weapon or a full off hand leaves it in the pack, with a note. Runs once (c.focusRev). Returns notes. */
+/** Perks that changed id (rules 1.13: Grapple became Iron Grip, Origami Hands became Both Hands). */
+export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', origami_hands: 'both_hands' };
+/** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept), and an
+ * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
+export function migrateCharacterItems(c: Character): string[] {
+  const notes: string[] = [];
+  if ((c.perks || []).some((x) => !PERK[x.id])) {
+    const out: Character['perks'] = [];
+    for (const x of c.perks) {
+      const to = PERK[x.id] ? x.id : PERK_RENAMED[x.id];
+      if (!to || !PERK[to]) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
+      if (to !== x.id) notes.push(c.name + ': ' + PERK[to].name + ' replaces an older perk.');
+      if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });
+    }
+    c.perks = out;
+  }
+  if ((c.traits || []).some((t) => !TRAITS.some((d) => d.id === t))) c.traits = c.traits.filter((t) => TRAITS.some((d) => d.id === t));
+  return notes;
+}
 export function migrateCharacterFocus(c: Character): string[] {
   if (c.focusRev === FOCUS_REV) return [];
   c.focusRev = FOCUS_REV;
