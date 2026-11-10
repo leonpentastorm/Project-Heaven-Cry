@@ -24,8 +24,10 @@ Status: **draft for Leon.** Nothing here is built. Every number is a placeholder
    |---|---|---|---|
    | 1 | Under fire | nothing | nothing |
    | 2 | **Pressed** | −1 to hit; no Watch techniques | the same |
-   | 3 | **Suppressed** (today's status, item 83) | −1 AP, no reactions (so no Parry, Riposte or Keep Back); a Heart save to leave cover | no reactions, and the Heart save to leave cover; **never an AP loss** |
+   | 3 | **Suppressed** (today's status, item 83) | −1 AP; no reactions that attack or move it (no Watch, opportunity attack, Riposte or Keep Back); a Heart save to leave cover | no reactions that attack or move you, and the Heart save to leave cover; **never an AP loss** |
    | 4 | **Broken** | −2 AP; its first action must be to reach cover or drop Prone | players stop at 3 |
+
+   **Protective reactions always work** (Leon, 10 Nov 2026: "wouldn't this megafuck the tanks?"). Suppressed stops the reactions you hit back or reposition with. It never stops the ones that protect: Take the Hit, Shrug It Off, Parry, Interpose and the like. The character who gets shot most is the tank, and their kit is reactions; a rule that switched it off would punish them for doing the job.
 
 2. **Gaining it.**
    - The first ranged hit you land on a target each turn gives it +1.
@@ -203,7 +205,7 @@ Where a weapon has two matching properties, the player picks one. "Rounds" is ho
 
 1. **The two meters don't convert.** A ranged technique never breaks a melee chain and never adds Momentum. A melee hit never adds Pressure.
 2. **They help each other through the target.**
-   - A Suppressed enemy has no reactions, so no Parry, Riposte or Keep Back: the gunner opens the door for the Fighter.
+   - A Suppressed enemy can't Riposte, Keep Back or take an opportunity attack: the gunner opens the door for the Fighter. (It can still Parry.)
    - A melee Link that moves an enemy sets off a held Watch.
    - A Bash that knocks a target Prone makes it an easy Take.
 3. **One Take and one Finisher** are both allowed in a turn.
@@ -213,7 +215,7 @@ Where a weapon has two matching properties, the player picks one. "Rounds" is ho
    | Class | Twist |
    |---|---|
    | **Marksman** | A Take lowers Pressure by 1, not 2. |
-   | **Defender** | Ignores the first Pressure put on them each round. Head Down also covers an adjacent ally. |
+   | **Defender** | Pressure comes off Guard first: each point that would land costs 1 Guard instead, with no reaction, while they have any. A Braced Defender never goes above Pressed. Head Down also covers an adjacent ally. Drawing fire is their job, so fire feeds their own resource game instead of breaking it. |
    | **Infiltrator** | An unseen Silent hit gives +3. |
    | **Fighter** | Their Finisher counts a Suppressed target as one Momentum higher. |
    | **Bard** | Triage and Inspire also remove 1 Pressure. |
