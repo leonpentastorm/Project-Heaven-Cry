@@ -32,7 +32,8 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - a trigger where an ambush belongs.
 
    Objective-givers speak plainly. Spec: `docs/design/world-play-spec.md`. Campaign: `data/campaigns/m813.json`.
-4. **The damage balance pass**, against `docs/design/balance-targets.md`:
+4. **The balance pass** (next up; the full draft with every angle, the AP economy included, is
+   `docs/design/proposals/2026-11-balance-pass.md`), against `docs/design/balance-targets.md`:
    - weapons are the 100% baseline;
    - Sigil is about 150% at most;
    - Outburst is about 125% steady;
@@ -41,9 +42,10 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
    Weapons already go over the caps (spec item 591), so a damage simulator would help. Every number in section 14
    is provisional.
-4a. **Skeleton 2.0** (rules 1.13, to be 0.19.0): the skill-web pass. Plan `docs/design/handoffs/skeleton-2.0-PLAN.md`;
-   design `docs/design/proposals/2026-11-nine-doors.md` sections 13 to 18. Next up.
-4b. **Queued behind it, with the equipment pass ("Equipment 2.0"):**
+4a. ~~**Skeleton 2.0**~~ (rules 1.13): live as 0.19.0 on 10 Nov 2026. Plan and log `docs/design/handoffs/skeleton-2.0-PLAN.md`.
+   **Next up is item 4, the number balance pass** (Leon, 10 Nov 2026: balance first, so everything added later has a
+   ceiling to balance to). After it: effects and icons for the nine Calls, then 4b.
+4b. **Queued behind the balance pass, with the equipment pass ("Equipment 2.0"):**
    - **Weapon Arts** (Leon, 10 Nov 2026): a weapon's own special action as a card, charged by kills, on its own row of
      the Attack tab, movable to another weapon at drill mark III; one a weapon, two for a special martial class, one
      for each weapon when dual wielding. Recorded in `docs/design/proposals/2026-11-weapon-arts.md`; not designed yet.

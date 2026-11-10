@@ -157,6 +157,7 @@ PERKS, TRAITS AND CLASS MOVES
 ${PERK_GUIDANCE ? PERK_GUIDANCE + '\n' : ''}
 COMBO PERKS (deeds)
 - When a character with 5+ points in every listed skill actually does a perk's deed in the story, add deeds[] with that perkId. The list of combo perks is below. Never mention perks the party doesn't hold, and never mention Ultimate perks at all: they are a secret.
+- A Legendary Deed is rarer still: an act the campaign will be remembered for, not a good roll or a won fight. Add legends[] (character, the deed in one sentence); the engine gives +1 Attribute point. Most sessions see none.
 
 FIGHTS
 - When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier (minion, soldier, elite, boss) and a weapon id. The engine runs the whole fight on the grid and tells you how it ended; you then narrate the aftermath.
@@ -469,6 +470,7 @@ export function turnSchema(g: GameState) {
     overreach: { type: 'array', items: obj({ charId, skill: skill, push: { type: 'string' } }) },
     xp: { type: 'array', items: obj({ charId: { type: 'string', enum: [...charIds, 'all'] }, source: { type: 'string', enum: ['dialogue', 'discovery', 'quest'] }, amount: { type: 'integer' }, reason: { type: 'string' } }) },
     deeds: { type: 'array', items: obj({ charId, perkId: { type: 'string' }, deed: { type: 'string' } }) },
+    legends: { type: 'array', items: obj({ charId, deed: { type: 'string' } }) },
     combat: { anyOf: [{ type: 'null' }, obj({
       name: { type: 'string' }, map: { type: 'string', enum: [...(campaignOf(g)?.zones.map((z) => z.id) || []), 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
       enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string' }, at: { type: 'string' } }) },

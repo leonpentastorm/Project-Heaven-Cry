@@ -37,7 +37,8 @@ const myTurn = async () => {
   await p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.id === id && u.ap >= 6; }, me.id, { timeout: 15000 });
   await p.waitForFunction(() => performance.now() > window.__phcHold(), null, { timeout: 15000 });
 };
-const burn = async () => { for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9']) { const e = await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if (!e) return true; } return false; };
+// a refused action doesn't throw (it toasts), so a round is spent only when the magazine says so: cover that broke is skipped
+const burn = async () => { const left = async () => (await G()).combat.units.find((x) => x.id === me.id).ammo; const a0 = await left(); for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9']) { await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if ((await left()) < a0) return true; } return false; };
 const settle = () => p.waitForFunction(() => !document.querySelector('[data-fx="reload"]'), null, { timeout: 8000 }).catch(() => {});
 /** Start something (a game action, or an effect by hand) and sample the reload card every step ms: its box, its mode
  *  and title, the count, the old magazine's centre, the pack and pile glyphs, and (once, at probeAt ms) what is on top
