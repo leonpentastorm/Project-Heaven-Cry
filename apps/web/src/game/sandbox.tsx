@@ -40,7 +40,7 @@ import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
-import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName } from '@engine';
+import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys } from '@engine';
 const ITEMS = Object.values(ITEM);
 import { ART, zoneOf } from '../screens/shared';
 
@@ -474,6 +474,7 @@ const FIND = {
   belief: 'belief faithful atheist patron god ' + names(FAITH_PATRONS), sigils: 'sigil words glyphs learn forget subject reach delivery burst filter ' + names(SIGILS, (w) => w.word),
   soul: 'outbursts outburst lessons schools tones modules feelings practice sound effects test soul ' + names(SCHOOLS) + ' ' + names(MODULES) + ' ' + names(FEELINGS),
   spawn: 'spawn enemy enemies foe drill unit caster ' + names(ENEMIES) + ' ' + names(CASTERS),
+  tech: 'technique techniques learn forget ready drill mark signature momentum pressure meter melee ranged ' + names(phys.TECHNIQUES),
 };
 const cardStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 10, padding: 14, borderRadius: 12, background: C.panel, border: '1px solid ' + C.line, minWidth: 0 };
 /** The head of a card: its title and a ▾/▸ to fold it (open state per browser, workshopGroups.tsx). */
@@ -670,6 +671,52 @@ function GearTab({ c }: { c: Character }) {
       <span style={{ fontSize: 12, color: C.muted }}>Stims: {c.stims} <button type="button" style={{ ...small, minHeight: 26 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'stim_injector', qty: 3 })}>+3</button></span>
     </Section>
     <GivePicker c={c} />
+    <ArmsTools c={c} />
+  </>;
+}
+/** Physical 2.0 (rules 1.12) in the Proving Ground: learn or forget any technique (readied past the cap here, so
+ *  everything can be tried), every technique at once, a weapon's drill (marks teach its signature), and, in a fight, any
+ *  unit's Momentum and Pressure. Everything goes through sandbox/technique, sandbox/drill and sandbox/meter. */
+function ArmsTools({ c }: { c: Character }) {
+  const g = getState().game, cb = g && g.phase === 'combat' ? g.combat : null;
+  const [tech, setTech] = React.useState(phys.TECHNIQUES.find((t) => !t.free)!.id), [wid, setWid] = React.useState(c.weapon && WEAPON[c.weapon] ? c.weapon : 'combat_knife'), [uid, setUid] = React.useState('');
+  const known = phys.physOf(c).known.filter((id) => phys.TECHNIQUE[id] && !phys.TECHNIQUE[id].free);
+  const marks = phys.drillMarks(c, wid), d = phys.drillOf(c, wid);
+  const units = cb ? cb.units.filter((u: any) => !u.dead) : [], u: any = units.find((x: any) => x.id === uid) || units.find((x: any) => x.charId === c.id) || units[0];
+  const pv = u && cb ? (() => { try { return phys.physView(cb, u, 'pc', g); } catch { return null; } })() : null;
+  return <>
+    <Section title="TECHNIQUES (READIED PAST THE CAP HERE)" aria="Techniques" keys={FIND.tech}>
+      <div style={row}>
+        <select value={tech} onChange={(e) => setTech(e.target.value)} aria-label="Technique" style={{ ...field, flex: 1 }}>
+          {(['melee', 'ranged'] as const).map((sys) => <optgroup key={sys} label={sys === 'melee' ? 'Melee' : 'Ranged'}>{phys.groupsOf(sys).flatMap((gr) => phys.TECHNIQUES.filter((t) => t.system === sys && t.group === gr && !t.free).map((t) => <option key={t.id} value={t.id}>{phys.groupName(gr)} · {t.name}{phys.handlerOf(t.id) ? '' : ' (not built yet)'}</option>))}</optgroup>)}
+        </select>
+        <button type="button" data-sb-tech="learn" style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id: tech, ready: true })}>Learn + ready</button>
+      </div>
+      <div style={row}>
+        <button type="button" data-sb-tech="all" style={{ ...btn, border: '1px solid ' + C.text }} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id: 'all', ready: true })}>Learn every technique · ready all</button>
+        <button type="button" style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id: 'all', forget: true })}>Forget all</button>
+      </div>
+      {known.length > 0 && <div style={row} aria-label="Known techniques">{known.map((id) => <button key={id} type="button" title="Forget it" style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id, forget: true })}>{phys.TECHNIQUE[id].name} ✕</button>)}</div>}
+      <span style={{ fontSize: 12, color: C.muted }}>Ready lists: melee {phys.readyTechniques(c, 'melee').length} / {phys.readyCap(c, 'melee')}, ranged {phys.readyTechniques(c, 'ranged').length} / {phys.readyCap(c, 'ranged')}. The ARMS tab on the sheet shows them.</span>
+    </Section>
+    <Section title="DRILL" aria="Drill" keys={FIND.tech}>
+      <div style={row}>
+        <select value={wid} onChange={(e) => setWid(e.target.value)} aria-label="Drill weapon" style={{ ...field, flex: 1 }}>{WEAPONS.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
+        {[100, 300, 900].map((n) => <button key={n} type="button" data-sb-drill={n} style={btn} onClick={() => act({ type: 'sandbox/drill', charId: c.id, weaponId: wid, amount: n })}>+{n}</button>)}
+        <button type="button" style={{ ...btn, color: C.muted }} disabled={!d} onClick={() => act({ type: 'sandbox/drill', charId: c.id, weaponId: wid, amount: -d })}>Reset</button>
+      </div>
+      <span style={{ fontSize: 12, color: C.muted }}>{WEAPON[wid]?.name}: {d} drill · {marks.map((m, i) => (m.reached ? '✓ ' : '○ ') + 'mark ' + ['I', 'II', 'III'][i] + ' ' + m.at + (m.gives === 'signature' ? ' (' + (phys.TECHNIQUE[m.id!]?.name || m.id) + ')' : ' (a pick)')).join(' · ')}{phys.picksOwed(c, wid) ? ' · ' + phys.picksOwed(c, wid) + ' pick waiting: the ARMS tab' : ''}</span>
+    </Section>
+    <Section title="MOMENTUM AND PRESSURE (IN A FIGHT, HOST)" aria="Meters" keys={FIND.tech}>
+      {!cb ? <span style={{ fontSize: 12, color: C.muted }}>Start a fight to set a unit's Momentum or Pressure.</span> : <>
+        <select value={u?.id || ''} onChange={(e) => setUid(e.target.value)} aria-label="Meter unit" style={field}>{units.map((x: any) => <option key={x.id} value={x.id}>{x.name}{x.side === 'foe' ? ' (hostile)' : ''}</option>)}</select>
+        {u && <div style={row}>
+          <span style={{ fontSize: 13 }}>Momentum</span><Stepper name="Momentum" value={u.res?.momentum ?? 0} min={0} max={u.resMax?.momentum ?? phys.PHYS_RULES.momentum.max} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, momentum: n })} />
+          <span style={{ fontSize: 13 }}>Pressure</span><Stepper name="Pressure" value={phys.pressureOf(u)} min={0} max={phys.pressureCap(u)} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, pressure: n })} />
+        </div>}
+        {pv && pv.pressure.word && <span style={{ fontSize: 12, color: C.muted }}>{pv.pressure.word}{pv.pressure.cost ? ': ' + pv.pressure.cost : ''}</span>}
+      </>}
+    </Section>
   </>;
 }
 function GivePicker({ c }: { c: Character }) {

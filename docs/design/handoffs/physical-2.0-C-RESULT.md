@@ -1,11 +1,124 @@
 # Physical 2.0, implementer C: result note
 
-Branch: **`feature/physical-2.0-C-client`**, from `origin/claude/charming-gauss-hbq4n0` at `a098d07`. Written 10 Nov 2026.
+Branch: **`feature/physical-2.0-C-client`**, from `origin/claude/charming-gauss-hbq4n0`. Written 10 Nov 2026. The base is
+merged in up to `fde0bbe` (the foundation, `9851b9f`, and the lead's fixes after it).
 
-**Status: part 1 (item icons) is done. Parts 2 to 9 have not started,** because the foundation has not landed: the
-plan's line still reads "Foundation: not landed yet", and `packages/engine/src/physical/` does not exist. The brief
-allows part 1 before the foundation and nothing else. When the lead fills in that line, I merge the base and go on with
-part 2.
+**Status: every part of the brief is on screen.** Part 1 (item icons) came first. Parts 2 to 9 were built once the
+foundation landed: the Attack tab with technique pads, Momentum and Pressure pips, held Watches, the effects, the ARMS
+tab, the starting picks at creation, the Proving Ground tools, the help text, and the tests. Nothing on screen is keyed
+to a technique id: the pads, the ARMS tab and creation list whatever the engine's data and handlers hold, so the
+techniques A and B are still building show up greyed as "Not built yet." now and work when they land.
+
+## What is done: parts 2 to 9
+
+**Part 2, the Attack tab** (`apps/web/src/game/techView.ts`, `screens/combat.js`, `templates/combat.template.html`,
+`game/commands.ts`).
+- One block per held weapon, main hand first. Its header has the weapon's icon and name, and its meter: Momentum pips
+  for a melee weapon, with the engine's hint ("+1 more if your next technique isn't Lunge"); rounds loaded and Heat for a
+  ranged one.
+- In each block, the plain attack row (Cut or Shot) and a Techniques row ("Techniques · 4"; its cost column says "4 of 6
+  now"). Selecting the Techniques row opens the weapon's pad inside the row, as the glyph keyboard does. One pad is open
+  at a time.
+- Hold a shot (under the ranged block) opens the Watches. Melee Answers are in no pad: they fire on their triggers.
+- The pad shows `techniquePad` by group. Each chip has its name, AP, rounds, and the property line for this weapon. A chip
+  the engine refuses is greyed and says why. A lent signature is marked ◇ and a learned one ◆, with the meaning on hover.
+- Picking a chip closes the pad to the selected card ("Lunge · 2 AP"). The card asks for what the technique still needs
+  (an enemy, a tile, an ally), then shows `previewTechnique` in words:
+  - each roll's hit chance, the number needed and the damage, with the full to-hit terms on the target card;
+  - the engine's notes;
+  - Momentum now → after;
+  - each unit's Pressure change and the state it reaches;
+  - any save and its TN.
+
+  The tiles it covers or moves someone to are drawn on the grid, the way Sigil previews are. Confirm is disabled while
+  the preview says no.
+- A weapon with two of the properties a technique reads shows both lines as chips under the selected line. The pick goes
+  as `line` (the engine's name for the brief's `choice`).
+- Confirm sends `combat/technique { id, hand, targetId?, tile?, allyId?, line? }`. A pad row or a technique never falls
+  through to a plain attack (code map, trap 1).
+- The old attack ids live in one shared list (`ATTACK_MODES` in techView.ts). The places that listed them by hand use it.
+- Customise, the turn card and the mini-bar use the same list. A pick saved before techniques maps onto the new row
+  (`mapLegacy`): Shot, Aimed shot, Burst, Full auto, Melee and the weapon skill go to the plain attack; Overwatch goes to
+  Hold a shot. A pick that no longer exists falls back to the smart default without an error.
+
+**Part 3, Momentum, Pressure and states.**
+- Pressure pips (up to 4) over every token with Pressure, enemies and allies alike: white, then amber at Pressed and red
+  at Suppressed or Broken, always with the word. The state word is in the token's hover card and its aria-label.
+- What the engine's view hides (a Silent weapon's pips) is never drawn.
+- The You card has chips for your Pressure (its state, what it costs you in words, and who put it there), your held Watch
+  ("DENY · F6") and Stopped once. Any unit that can't be stopped again says so in its hover card.
+- Held Watches are drawn on the map: the tiles tinted (red for an enemy's, white for your side's), a dotted line of tiles
+  from the watcher to the nearest watched tile, and a chip on the watcher ("◎ DENY").
+
+**Part 4, effects** (`game/fx/physical.ts`, registered in `fx/play.ts` in the two places the code map names).
+- `technique` floats the technique's name over the unit. Its own shot or swing still plays as before, from the attack
+  events that follow. A Finisher or a Take gets one stronger beat (a ring and a low hit).
+- `pressure` pulses the pips, and names Suppressed or Broken once per unit.
+- `watch_set` rings the holder. `watch_fire` puts a crosshair on the target.
+- `stopped` and `drill` float their words; `momentum` floats when it rises.
+- The beats are short (60–260 ms at Fast) and follow the combat speed setting. A gunner's turn is not slower: a plain
+  technique adds 120 ms.
+- Everything is SVG or CSS (rings, words, a pulse), so no sourced asset was needed.
+
+**Part 5, the sheet's ARMS tab** (`screens/armsTab.js`, between GEAR and MAGIC, computed only while open).
+- Techniques you know, melee and ranged, by kind. Each shows its text and every property line (the hover explains the
+  property from the engine's glossary). A signature names the weapon that teaches it.
+- The two ready lists with their caps ("MELEE · READY 3 / 8"). Toggling a technique in or out sends `phys/ready`; at the
+  cap the chip says to take one out first.
+- One drill bar per weapon drilled or held: its icon, properties, the bar with the three marks, what each mark gives
+  ("Coup (its signature)", "a pick of any melee technique"), and the drill to the next mark. When picks are owed, a
+  chooser lists `pickable` and sends `phys/pick`.
+- The quiver menu for each bow carried: the capacity, a stepper per arrow type you carry, the total, and Load the quiver
+  (`phys/quiver`). It says plainly that a quiver can't be refilled in a fight.
+- All of it is locked in a fight, with the reason shown.
+- WEAPON MASTERY is gone from GEAR. The weapon rows there print the weapon's properties and the technique it teaches.
+
+**Part 6, creation.** The Kit step has a Techniques section: Raw Power or Athletics picks 2 melee (one an Opener),
+Dexterity picks 2 ranged. The engine's defaults are already picked, chips swap them, and "Back to …" resets. The engine's
+`startingTechniquesError` is the verdict, and it is a line in the Lock-in checklist. The picks go on the sheet as
+`techniques` (drafts keep them).
+
+**Part 7, the Proving Ground tools** (the Gear tab).
+- Learn and ready any technique; it is readied past the cap here, and a technique with no handler is marked "not built
+  yet". Learn every technique and ready all. Forget one or all.
+- A weapon's drill: +100, +300, +900, or reset (`sandbox/drill`).
+- In a fight (host), any unit's Momentum and Pressure (`sandbox/meter`).
+- Search words added.
+
+**Part 8, help.** Every chip's hover gives the technique's text, the line for this weapon and the property explained from
+the glossary. The ARMS tab's lines and the Kit chips do the same.
+
+**Part 9, tests.**
+- New unit tests: `apps/web/src/game/techView.test.ts` (9: the ids, the blocks and pads from a real fight, the preview in
+  words, the pips, a held Watch's marks, the effects' words, the ARMS tab's values).
+- Updated, because they asserted the removed rows: `combat-screen.test.ts`, `turnIntro.test.ts`,
+  `commands-perks.test.ts`, and `e2e/slate.mjs`.
+- New browser test: `apps/web/e2e/physical.mjs` (32 checks). It covers:
+  - the Kit step's picks;
+  - the ARMS tab: a ready list toggled, drill to mark I with the tools, Coup learned, the quiver menu;
+  - two blocks, the pads one at a time, the grid and Confirm in view at 1440 × 900 and 1280 × 720;
+  - Lunge then Coup with the Momentum pips;
+  - Suppress then Dead Centre (Pressure to Pressed, then −2);
+  - Deny held, drawn, and fired when a drill unit walks in;
+  - icons in the backpack.
+
+  Two steps depend on dice. If the Lunge misses, the test sets Momentum with the tools and still checks Coup. If
+  Suppress misses (+1 only), the Take is skipped. It prints a `note` line, never a failure.
+
+**Read differently from the brief:**
+1. **Number keys.** Inside the Attack tab, 1–5 act on the blocks (1 the first weapon's plain attack, 2 its Techniques, 3
+   and 4 the second weapon's, 5 Hold a shot) when a pad is open or the keyboard is in the tab's panel. Otherwise they
+   switch tabs as before, so a player who isn't in the Attack tab loses nothing.
+2. **Rows don't repeat the hand.** The block header names the weapon and its hand.
+3. **Companions, puppets and the drone keep the old attack rows.** The engine refuses `combat/technique` for them
+   (`COMPANION_ACTS` and the `allowedActions` gate), so a technique row would only fail. See request 1.
+4. **The old weapon-skill row is gone** (Fan the Hammer, Suppressing Fire…). The weapon's signature technique replaces
+   it, in its pad.
+5. **A melee weapon no longer "holds a strike".** Hold a shot is ranged only; melee Answers fire on their triggers.
+6. **The Watch's line is drawn as a dotted line of tiles** from the watcher to the nearest watched tile, not an SVG
+   stroke. It reads the same and needs no new overlay.
+
+## What is done: part 1, item icons
 
 ## What is done: part 1, item icons
 
@@ -74,34 +187,57 @@ item and ink, then cached.
 
 ## Requests for the lead
 
-1. **The two focus icons are under `art/`,** which my brief keeps out of my lane. I made them because Leon asked
-   directly. If you'd rather own them, take the five art files and the checksum lines as they are; the web side only
-   needs the `focus` folder in the loader's glob.
-2. **A look for the kit armours**, if they should show: an item id (or an icon id) for each kit armour.
-3. **Not mine, seen in passing:** on this base, the Proving Ground's Practice card shows a broken image with the alt text
-   "The Proving Ground: the drill yard" on a local build (screenshot `c1-icons-pg-1440.png`). I did not run
-   `npm run assets`, so it may be a local missing asset rather than a bug.
+1. **Companions, puppets and the drone can't use techniques.** The reducer's gates (`COMPANION_ACTS`, the drone's
+   `allowedActions`) refuse `combat/technique`. The screen keeps the old rows for them. Say whether they should get
+   techniques; the screen then needs no change beyond dropping that branch (`isLegacyUnit` in `game/commands.ts`).
+2. **The quiver loader isn't built yet** (implementer B). The ARMS tab's menu sends `phys/quiver` and today shows the
+   engine's "The quiver isn't built yet.". Refusing a bow's reload in a fight is B's too; the screen shows whatever the
+   engine answers.
+3. **Answers' priority** (`phys/answers`) has no screen yet: the brief didn't ask for one. If players should order
+   their Answers, the ARMS tab is the place.
+4. **`protodata.json` still carries `wm`** (weapon mastery). Nothing on screen reads it now; drop it at your next
+   regeneration.
+5. **The two focus icons are under `art/`** (part 1, Leon's request), outside my lane. Take them as they are, or move
+   them.
+6. **A look for the kit armours**, if they should have icons.
+7. **Not mine, seen in passing:** the Proving Ground's Practice card shows a broken image ("The Proving Ground: the
+   drill yard") on a local build without `npm run assets`.
 
-## Checks
+## Checks (against a local build, after merging the base at `fde0bbe`)
 
-- `npm test -w @phc/web`: 649 tests, all pass (647 + 2 skipped). `npx tsc --noEmit` in `apps/web`: clean.
-- `apps/web/e2e/gear-icons.mjs`: 14 / 14.
-- Regression, against a local build: `ground.mjs` 28 / 28, `creation-layout.mjs` 25 / 25, `pg-levelup.mjs` 53 / 53,
-  `sandbox.mjs` 33 / 33, `tabs.mjs` 28 / 28, `two-players.mjs` no errors. `ground.mjs` needed its close-the-tools helper
-  fixed: on this base two buttons start with "Close the tools" (the drawer's ✕ and the centre's "Close the tools and
-  show the story log"), and the old substring match broke; nothing to do with the icons.
-- `npm test -w @phc/engine`: 1,828 tests (1,827 pass, 1 skipped). `npx tsc --noEmit` in `packages/engine`: clean.
-  `python3 tools/validate.py data`: 0 errors, 0 warnings.
-- `tools/validate_art.py`: OK (2,789 checksums).
+- `npm test -w @phc/engine`: 1,868 tests (1,867 pass, 1 skipped). `npm test -w @phc/web`: 658 tests (656 pass, 2
+  skipped). `npx tsc --noEmit` in `packages/engine` and `apps/web`: clean. `python3 tools/validate.py data`: 0 errors,
+  0 warnings.
+- Browser tests: `physical.mjs` 32 / 32 (three runs in a row, no failure). `gear-icons.mjs` 14 / 14.
+  `tabs.mjs` 28 / 28. `classes.mjs` 34 / 34. `slate.mjs`: updated for the new plain-Shot id.
+- The other suites' results: see "Regression" below.
+- `tools/validate_art.py`: OK.
 
 ## Screenshots (`physical-2.0-shots/`)
 
-`c1-icons-kit-1440.png`, `c1-icons-kit-1280.png`, `c1-icons-pg-1440.png`, `c1-icons-pg-1280.png`,
-`c1-icons-sheet-gear-1440.png`, `c1-icons-sheet-gear-1280.png`, `c1-icons-backpack-1440.png`,
-`c1-icons-backpack-1280.png`, `c1-icons-reload-1440.png`, `c1-icons-pile-hover-1440.png`, `c1-icons-pickup-1440.png`,
-`c1-icons-pickup-1280.png`, `c1-focus-gloves-sheet.png`.
+- Part 1:
+  - `c1-icons-kit-1440.png`, `c1-icons-kit-1280.png`
+  - `c1-icons-pg-1440.png`, `c1-icons-pg-1280.png`
+  - `c1-icons-sheet-gear-1440.png`, `c1-icons-sheet-gear-1280.png`
+  - `c1-icons-backpack-1440.png`, `c1-icons-backpack-1280.png`
+  - `c1-icons-reload-1440.png`
+  - `c1-icons-pile-hover-1440.png`
+  - `c1-icons-pickup-1440.png`, `c1-icons-pickup-1280.png`
+  - `c1-focus-gloves-sheet.png`
+- Parts 2 to 9:
+  - `c2-pad-main-1440.png`, `c2-pad-main-1280.png` (a weapon's pad open)
+  - `c2-pad-watch-1440.png` (Hold a shot)
+  - `c2-lunge-preview-1440.png`, `c2-suppress-preview-1440.png` (the selected card with the engine's preview)
+  - `c2-coup-1440.png`
+  - `c2-pressure-1440.png` (pips over a token)
+  - `c2-deny-1440.png` (a held Deny drawn on the map)
+  - `c2-arms-1440.png`, `c2-arms-1280.png` (the ARMS tab)
+  - `c2-kit-1440.png`, `c2-kit-1280.png` (starting techniques)
 
 ## Not tested
 
-- Phone widths for the new icon rows (the e2e covers 1440 × 900 and 1280 × 720).
-- A two-gun reload card in the browser (the code path is the same as the single-gun card; the e2e reloads one pistol).
+- Phone widths for the new rows and pads (the browser tests cover 1440 × 900 and 1280 × 720).
+- A two-gun reload card in the browser.
+- Techniques whose handlers aren't built yet (A's and B's): they show greyed with "Not built yet." and their previews will
+  come from the engine when they land. Nothing on screen names them.
+- A guest's view of the pads in a two-player room (two-players.mjs plays the story and one fight, not techniques).

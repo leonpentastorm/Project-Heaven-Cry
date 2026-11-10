@@ -62,8 +62,12 @@ const chipOf = (e: PadEntry): TechChip => {
   const rounds = e.rounds === 'all' ? 'all rounds' : e.rounds ? e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
   const mark = e.signature ? '◆' : e.lent ? '◇' : '';
   const markTitle = e.signature ? 'A signature you learned: yours with any weapon that can use it.' : e.lent ? 'This weapon\'s signature: lent while you hold it (drill it to keep it).' : '';
-  const why = e.ok ? '' : e.why || 'Not now.';
-  const help = e.text + (e.line ? ' With this weapon: ' + e.line : '');
+  const why = e.ok ? '' : (e.why || 'Not now.').replace(/\.+$/, '') + '.';
+  // the property behind the line, explained in the engine's own words (its glossary): "Point: …"
+  const ln = e.line ? (TECHNIQUE[e.id]?.lines || []).find((l: any) => l.text === e.line) : null;
+  const why1 = ln ? ln.props.map((p: string) => (propText(p) ? p.charAt(0).toUpperCase() + p.slice(1) + ': ' + propText(p) : '')).filter(Boolean).join(' ') : '';
+  const full = (t: string) => (/[.!?:)]$/.test(t.trim()) ? t.trim() : t.trim() + '.');
+  const help = full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
   return { key: e.id, id: e.id, name: e.name, ap: e.ap, apText: e.ap + ' AP', rounds, line: e.line || '', ok: e.ok, why, lent: e.lent, signature: e.signature, built: e.built,
     mark, markTitle, title: e.name + ' · ' + e.ap + ' AP' + (rounds ? ' · ' + rounds : '') + '. ' + help + (why ? ' (' + why + ')' : '') + (markTitle ? ' ' + markTitle : ''), help, aim: e.aim, choices: e.choices || [] };
 };

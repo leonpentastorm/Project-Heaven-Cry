@@ -780,7 +780,7 @@ export class CombatLogic extends DCLogic {
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
     const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, pkPv, cur.side) : null;
-    const tTiles = tPv && ((tPv.area || []).length || (tPv.moves || []).length || (tPv.pressure || []).length) ? actionPreviewTiles(cb, { tiles: [...(tPv.area || []), ...(tPv.moves || []).map((m) => m.to)], targets: [...new Set([...(tPv.attacks || []).map((a) => a.target), ...(tPv.pressure || []).map((p) => p.unit)])] }, cur.side) : null;
+    const tTiles = tPv && ((tPv.area || []).length || (tPv.moves || []).length || new Set([...(tPv.attacks || []).map((a) => a.target), ...(tPv.pressure || []).map((p) => p.unit)]).size > 1) ? actionPreviewTiles(cb, { tiles: [...(tPv.area || []), ...(tPv.moves || []).map((m) => m.to)], targets: (() => { const ids = [...new Set([...(tPv.attacks || []).map((a) => a.target), ...(tPv.pressure || []).map((p) => p.unit)])]; return ids.length > 1 ? ids : []; })() }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
     const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : tTiles ? mergeTiles(placed.tiles, tTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
       if (hz.on) { if (u && hz.marks.has(u.id)) return overlayRingStyle({ ...hz, ink: hz.marks.get(u.id).ink }); const st = overlayTileStyle(hz, k); if (st) return st; }
@@ -989,7 +989,7 @@ export class CombatLogic extends DCLogic {
       const L = previewLines(cb, tPv), nm = tChip ? tChip.name : tId, ap = tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0;
       sel.name = nm + ' · ' + ap + ' AP' + (tChip && tChip.rounds ? ' · ' + tChip.rounds : '');
       sel.text = tAsk ? tAsk + (tChip ? ' ' + tChip.help : '') : tPv && !tPv.ok ? (tPv.why || 'Not now.') : [...L.odds, ...L.notes].join(' · ') || (tChip ? tChip.help : '');
-      sel.extra = tAsk && tPv && !tPv.ok && tPv.why && !/pick|click/i.test(tPv.why) ? tPv.why : [...L.meters, ...L.saves].join(' · ');
+      sel.extra = tAsk ? '' : [...L.meters, ...L.saves].join(' · '); // (while asking for a pick, the engine's "Name a tile." says the same)
     }
     if (tpadOpen) {
       const n = tpadOpen.kind === 'watch' ? 'Hold a shot' : 'Techniques · ' + ((blocks.find((b) => b.hand === tpadOpen.hand) || {}).name || '');
@@ -1123,7 +1123,7 @@ export class CombatLogic extends DCLogic {
     const padTV = padView(blocks, tpadOpen, null), CHIP = (c) => 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 6px; align-items: baseline; min-height: 44px; padding: 5px 8px; border-radius: 8px; text-align: left; font-family: inherit; cursor: ' + (c.ok ? 'pointer' : 'default') + '; '
       + (c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1');
     const pt = this.pres('padT', padTV ? { ...padTV, groups: padTV.groups.map((gr) => ({ ...gr, chips: gr.chips.map((c) => ({ ...c, style: CHIP(c), disabled: c.ok ? 'false' : 'true', hasWhy: !c.ok, hasLine: !!c.line, hasMark: !!c.mark, hasRounds: !!c.rounds,
-      aria: c.name + ', ' + c.apText + (c.rounds ? ', ' + c.rounds : '') + (c.ok ? '' : ', not now: ' + c.why) + (c.markTitle ? '. ' + c.markTitle : ''), onKey: glyphKeyNav,
+      aria: c.name + ', ' + c.apText + (c.rounds ? ', ' + c.rounds : '') + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')) + (c.markTitle ? '. ' + c.markTitle : ''), onKey: glyphKeyNav,
       pick: () => { if (!c.ok) return toast(c.why); sfx('toggle'); this.setState({ action: c.action, techLine: null, tile: null, target: needsAlly(c.id) ? null : this.state.target }); this.revealAction(); } })) })) } : null);
     // A reload row the engine refuses (already full, no spare, AP short) can be read but not confirmed (review fix: a
     // full magazine was dropped for 2 AP, or put back for 3).
@@ -1149,7 +1149,7 @@ export class CombatLogic extends DCLogic {
     if (tsel && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
     // Each weapon block's header (on its plain attack's row): the weapon's icon and name, and its meter.
     const headOf = {}; blocks.forEach((b) => { if (!b.plain) return; headOf[techAction(b.hand, b.plain.id)] = { hand: b.hand, name: b.name.toUpperCase() + (blocks.length > 1 ? ' · ' + (b.hand === 'main' ? 'MAIN HAND' : 'OFF HAND') : ''), icon: b.icon, hasIcon: !!b.icon,
-      meter: b.meter, hint: b.meterHint, hasHint: !!b.meterHint, pips: b.pips.map((p) => ({ key: p.key, style: 'width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); ' + (p.on ? 'background: #F68A38' : 'border: 1px solid #5B6577') })), hasPips: b.pips.length > 0 }; });
+      meter: b.meter, hint: b.meterHint, hasHint: !!b.meterHint, pips: b.pips.map((p) => ({ key: p.key, on: p.on ? 'true' : 'false', style: 'width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); ' + (p.on ? 'background: #F68A38' : 'border: 1px solid #5B6577') })), hasPips: b.pips.length > 0 }; });
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
       const seenHostile = foes.some((u) => !u.downed && vis.seen.has(u.id));
