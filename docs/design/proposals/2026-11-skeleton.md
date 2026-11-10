@@ -190,3 +190,10 @@ You said the Body classes get their own tools next. I read "weapon attack skills
 8. By "weapon attack skills", do you mean techniques, or new skills in the tree?
 
 If you accept 1 to 5, the change is small: the level table in the spec, `levels.gains` and `assignment.rank_thresholds` in the data, three lines in the engine's level-up (`character.ts`), the trade removed from creation, and the tests built from the spec's tables. Spec first, then data, then the validator.
+
+## 8. Leon's answers (10 Nov 2026)
+
+1. **The end-state target.** A fully optimised character rolls at +0 or better in every skill they use (at least 1 point each), and has enough points to Master two skills (an All-in build) or to Master one and hold several at 7.
+2. **Checked against section 4.** 38 Skill points cover it: two at 10 and 18 single points, or one at 10, three at 7 and 7 single points. The caps allow it only inside one Core (a second Core can't reach 7 while the first reaches 10: that would take 15 Core points and a career has 12). The next limit is Attribute points: a second Mastered skill in a *different* Attribute needs that Attribute at 10 too, and with 1 Attribute point per even level a 7/1/1 build gets there only at level 20. In the same Attribute it comes at about level 12. If two Mastered skills in two Attributes should arrive earlier, the lever is Attribute points, not Core.
+3. **"Weapon attack skills" are techniques** performed with a melee weapon, not new skills in the tree. The aim: anyone can pick up any melee weapon and mix and match the techniques they know, with the variety Sigils and Outbursts have. Section 5 stands.
+4. **Attack rolls are unclear to testers** (melee, Sigil and Soul hit chances), and weapons have no "scales with" field. This is section 5, point 2: it needs one stated rule for every attack and a field on each weapon.
