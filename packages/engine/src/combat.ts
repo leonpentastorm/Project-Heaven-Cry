@@ -888,7 +888,7 @@ export function noteCrit(cb: Combat, by: Unit | null | undefined, tgt: Unit | nu
   notes.push({ unit: by.id, target: tgt.id, via, n: cb.fxSeq || 0 });
 }
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string }
-export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean } = {}): AttackResult {
+export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean; quiet?: boolean } = {}): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
   // Confused (spec): each attack has a 50% chance to go at someone at random (anyone else it could attack).
   if (condOn(att, 'confused') && die(rng, 2) === 1) {
@@ -961,7 +961,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   // Momentum (the Fighter's resource, spec: Classes): +1 for each melee hit (the class moves spend it).
   if (hit && melee && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
-  if (att.hidden && !isSilent(att)) injury += reveal(cb, att, 'attacked');
+  if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
   if (condOn(att, 'sharpened')) endCond(att, 'sharpened', cb); // spent on this attack
   // A shot that misses only because of half cover's −5 hits the cover (spec: Cover).
@@ -1338,7 +1338,9 @@ export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
 }
 export function toggleProne(cb: Combat, u: Unit): string | null {
   if (u.ap < 1) return 'Needs 1 AP.';
-  u.ap -= 1; u.prone = !u.prone; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.')); return null;
+  u.ap -= 1; u.prone = !u.prone; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.'));
+  if (!u.prone) emit(cb, 'stood_up', { u, cb }); // 'stood_up' {u}: after standing (a held shot waits for it: Dead to Rights)
+  return null;
 }
 export function brace(cb: Combat, u: Unit): string | null {
   if (!weaponActions(u).some((x) => x.id === 'brace')) return 'This weapon has nothing to brace.';
@@ -1457,6 +1459,7 @@ export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: bool
   if (u.mags && w.reload === 'loose') { if (w.magazine - u.ammo <= 0) return 'Already full.'; if (!Math.min(w.magazine - u.ammo, u.loose || 0)) return 'No rounds left to load.'; }
   else if (u.mags && !u.mags.some((n) => n > 0)) return 'No loaded spare ' + (w.reload_unit || 'magazine') + 's.' + (u.mags.length && u.loose ? ' Load one first.' : '');
   emit(cb, 'reload', { u, ap: rAp, cb, ...(o.both ? { both: true } : {}), ...(tactical ? { tactical: true } : {}) });
+  if (u.dead || u.downed) return null; // a held shot felled it as it reached for the magazine (Dead to Rights): no reload
   const rDur = (how: string) => (rAp === 1 ? 800 : how === 'loose' ? 1400 : 1200);
   // The event's counts are for the picture only (the reload card, fx/reload.ts): what was in the gun, what is in it now, its size.
   // Unlimited spares (a companion's, a twin's: no mags) drop nothing in the pile: noDrop tells the card and the portrait not to show one falling.

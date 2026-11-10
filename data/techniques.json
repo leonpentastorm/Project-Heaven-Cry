@@ -2477,7 +2477,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "attack_penalty": 2,
+        "pressure": 1,
+        "auto_allies": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "ally"
@@ -2514,7 +2518,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 2,
+        "precise_crit_min": 18
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"

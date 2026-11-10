@@ -48,11 +48,12 @@ export interface StrikeOpts {
   /** flat to-hit, shown under the technique's name */ extra?: number;
   critMin?: number; /** a roll that hits is a critical */ critOnHit?: boolean; ignoreArmour?: number | true; ignoreCover?: boolean; reach?: number;
   label?: string; noMomentum?: boolean; noPressure?: boolean;
+  /** a Hidden user stays Hidden after this attack (Dead to Rights, Silent) */ quiet?: boolean;
 }
 export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null }
 export type WatchTrigger = 'moves' | 'enters_tile' | 'attacks_ally' | 'acts';
 export interface WatchSpec { trigger: WatchTrigger; tile?: string; tiles?: string[]; allyId?: string; allyIds?: string[]; targetId?: string }
-export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number }
+export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number; /** the property line chosen when it was held */ line?: string }
 
 /** What a handler is given. */
 export interface Tech {

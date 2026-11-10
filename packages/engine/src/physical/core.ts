@@ -31,8 +31,9 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
   const rng: Rng | undefined = ctx.rng || boundGame()?.rng; if (!rng) return;
   for (const u of [...cb.units]) {
     if (!alive(u)) continue;
-    const w = (u as any).watch as { id: string; hand: 'main' | 'off'; tile?: string; allyId?: string; targetId?: string } | undefined;
-    if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId }, rng, false)); }
+    const w = (u as any).watch as HeldWatch | undefined;
+    // the line chosen when it was held, and every named ally, go with it (Cover Me's Auto names two)
+    if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId, ...(w.allyIds ? { allyIds: w.allyIds } : {}), ...(w.line ? { line: w.line } : {}) }, rng, false)); }
     for (const h of Object.values(HANDLERS)) {
       const def = TECHNIQUE[h.id], fn = h.react?.[name]; if (!fn || def?.group !== 'answer' || !alive(u)) continue;
       const hand = hasUsable(u, 'main', h.id) ? 'main' : hasUsable(u, 'off', h.id) ? 'off' : null; if (!hand) continue;
@@ -231,7 +232,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         const m0 = momentumOf(u), su = (u as any).setUp;
         if (su && su.t === turnStamp(t.cb) && su.target === tgt.id) st.usedSetUp = true;
         st.struck = (st.struck || 0) + 1;
-        const r = resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, offTurn ? { noAp: true } : { free: true });
+        const r = resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, { ...(offTurn ? { noAp: true } : { free: true }), ...(o.quiet ? { quiet: true } : {}) });
         if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
         if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
         if (t.def.system === 'melee') {
@@ -431,7 +432,7 @@ export const swapIn = (cb: Combat, u: Unit, how: Parameters<WeaponSwap>[2], o: {
 export function holdWatch(t: Tech, spec: WatchSpec): void {
   if (t.preview) { t.note('Held until your next turn. Fires as your reaction when ' + (t.def.trigger || 'its trigger happens') + '.'); if (spec.tiles || spec.tile) t.pv.area = spec.tiles || [spec.tile!]; return; }
   endWatch(t.cb, t.u, 'replaced'); t.u.overwatch = null;
-  const w: HeldWatch = { id: t.def.id, hand: t.hand, ap: t.pv.ap, r: t.cb.round, ...spec };
+  const w: HeldWatch = { id: t.def.id, hand: t.hand, ap: t.pv.ap, r: t.cb.round, ...(t.args.line ? { line: t.args.line } : {}), ...spec };
   (t.u as any).watch = w;
   emitFx(t.cb, 'watch_set', { unit: t.u.id, at: t.u.pos, id: w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), allyId: w.allyId || null, targetId: w.targetId || null });
 }
