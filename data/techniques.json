@@ -1856,7 +1856,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "range_bands": 1,
+        "precise_hit": 1,
+        "heavy_move_tiles": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1892,7 +1896,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 1,
+        "first_hit_pressure": 1,
+        "precise_range_bands": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1928,7 +1936,9 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "auto_suppress_pressure": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "self"
@@ -2003,7 +2013,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "tiles": 1,
+        "quick_tiles": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "tile"
@@ -2039,7 +2052,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "heat": 2,
+        "heavy_heat": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "self",
@@ -2065,7 +2081,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "pressure": 1,
+        "full_cover_pressure": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "self"

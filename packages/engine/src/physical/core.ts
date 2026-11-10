@@ -32,7 +32,7 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
   for (const u of [...cb.units]) {
     if (!alive(u)) continue;
     const w = (u as any).watch as { id: string; hand: 'main' | 'off'; tile?: string; allyId?: string; targetId?: string } | undefined;
-    if (w && TECHNIQUE[w.id]) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId }, rng, false)); }
+    if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId }, rng, false)); }
     for (const h of Object.values(HANDLERS)) {
       const def = TECHNIQUE[h.id], fn = h.react?.[name]; if (!fn || def?.group !== 'answer' || !alive(u)) continue;
       const hand = hasUsable(u, 'main', h.id) ? 'main' : hasUsable(u, 'off', h.id) ? 'off' : null; if (!hand) continue;
@@ -201,6 +201,17 @@ function inHand<T>(t: Tech, fn: () => T): T {
   if (typeof pts === 'number') u.attack = mod(pts);
   try { return fn(); } finally { if (!t.preview) u.offAmmo = u.ammo; const heat = u.heat; Object.assign(u, keep); if (!t.preview) u.heat = heat; }
 }
+/** What may load a different round for one shot (Load Special's chambered round; an arrow from a quiver): pick returns
+ * the ammo type for this strike, or null. It runs in previews too, so it changes no game state. fromMag false: the round
+ * doesn't come out of the magazine (the strike's round is given back; a preview doesn't count it). fired: a real strike
+ * used it (spend it there). The first registration that picks a round wins. */
+export interface StrikeRound { pick(t: Tech, tgt: Unit): { type: string; fromMag?: boolean } | null; fired?(t: Tech, tgt: Unit, type: string): void }
+const ROUNDS: StrikeRound[] = [];
+export const strikeRound = (r: StrikeRound) => { ROUNDS.push(r); };
+function roundFor(t: Tech, tgt: Unit): { type: string; fromMag?: boolean; by: StrikeRound } | null {
+  for (const r of ROUNDS) { const p = r.pick(t, tgt); if (p) return { ...p, by: r }; }
+  return null;
+}
 /** One attack. Melee hits add Momentum (and the variety bonus) and ranged hits add Pressure by the rules: handlers
  * don't. In a preview it records the roll's chance and damage and returns hit: false. */
 export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
@@ -213,19 +224,23 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
   try {
     return inHand(t, () => {
       const offTurn = active(t.cb) !== u; // a reaction: no Recoil from the shots of the user's own turn
-      const pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil: offTurn });
-      if (t.preview || !pv.ok) { if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && mode !== 'melee' && t.w.magazine != null && !u.infiniteAmmo) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
-      const m0 = momentumOf(u), su = (u as any).setUp;
-      if (su && su.t === turnStamp(t.cb) && su.target === tgt.id) st.usedSetUp = true;
-      st.struck = (st.struck || 0) + 1;
-      const r = resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, offTurn ? { noAp: true } : { free: true });
-      if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
-      if (t.def.system === 'melee') {
-        if (o.noMomentum) { if (u.res) u.res.momentum = m0; }
-        else if (r.hit) { ensureMomentum(u); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); }
-        momentumFx(t.cb, u, m0);
-      }
-      return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: tgt };
+      const rd = mode === 'melee' ? null : roundFor(t, tgt), type0 = u.ammoType; if (rd) u.ammoType = rd.type;
+      try {
+        const pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil: offTurn });
+        if (t.preview || !pv.ok) { if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && mode !== 'melee' && t.w.magazine != null && !u.infiniteAmmo && rd?.fromMag !== false) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
+        const m0 = momentumOf(u), su = (u as any).setUp;
+        if (su && su.t === turnStamp(t.cb) && su.target === tgt.id) st.usedSetUp = true;
+        st.struck = (st.struck || 0) + 1;
+        const r = resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, offTurn ? { noAp: true } : { free: true });
+        if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
+        if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
+        if (t.def.system === 'melee') {
+          if (o.noMomentum) { if (u.res) u.res.momentum = m0; }
+          else if (r.hit) { ensureMomentum(u); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); }
+          momentumFx(t.cb, u, m0);
+        }
+        return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: tgt };
+      } finally { if (rd) u.ammoType = type0; }
     });
   } finally { ACTIVE.pop(); tgt.armour = a0; }
 }
@@ -387,15 +402,15 @@ export function approach(t: Tech, target: Unit, max: number, mode: 'melee' | 'sh
 /** Move the user along a route as part of a technique: no AP, no opportunity attacks (the technique's text says when a
  * step is free of them; a step that isn't goes through the engine's own move). Held shots still see each tile. Returns
  * the tiles walked. In a preview it only records where the user ends. */
-export function stepUser(t: Tech, route: string[], how = 'move'): number {
+export function stepUser(t: Tech, route: string[], how = 'move', opts: { noWatch?: boolean } = {}): number {
   const u = t.u, cb = t.cb; if (!route.length) return 0;
   if (t.preview) { (t.pv.moves ||= []).push({ unit: u.id, to: route[route.length - 1] }); return route.length; }
   let seg = [u.pos], n = 0; const flush = () => { if (seg.length > 1) moveFx(cb, u, seg, how); seg = [u.pos]; };
   for (const k of route) {
     if (!alive(u) || cb.units.some((v) => v !== u && !v.dead && v.pos === k)) break;
     const was = u.pos; u.pos = k; u.braced = false; u.moved = true; seg.push(k); n++;
-    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i: n - 1, route, how, stop: false, cb, rng: t.rng, flush, technique: t.def.id });
-    if (alive(u) && !u.hidden) { const before = cb.log.length; triggerOverwatch(cb, t.rng, u, seg); if (cb.log.length !== before) seg = [u.pos]; }
+    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i: n - 1, route, how, stop: false, cb, rng: t.rng, flush, technique: t.def.id, ...(opts.noWatch ? { noWatch: true, skipOW: true } : {}) });
+    if (alive(u) && !u.hidden && !opts.noWatch) { const before = cb.log.length; triggerOverwatch(cb, t.rng, u, seg); if (cb.log.length !== before) seg = [u.pos]; }
     if (ms.stop || !alive(u)) break;
   }
   flush();
