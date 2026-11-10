@@ -6,10 +6,8 @@ import type { physFight } from './physfight';
 import { armQuiver, isDrawn } from '../../src/physical/ranged/quiver';
 
 export type PhysF = ReturnType<typeof physFight>;
-/** The whole game as text, keys sorted: a preview must leave it exactly as it was (the order a field was put back in
- * is not a change: the base's core holds a weapon that isn't in the hand by swapping the unit's fields and back). */
-const sorted = (v: any): any => (Array.isArray(v) ? v.map(sorted) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, sorted(v[k])])) : v);
-export const gameText = (f: PhysF) => JSON.stringify(sorted(f.g));
+/** The whole game as text: a preview must leave it exactly as it was. */
+export const gameText = (f: PhysF) => JSON.stringify(f.g);
 /** Run fn and check the whole game state is byte for byte the same after (a preview changes nothing). */
 export function unchanged(f: PhysF, fn: () => void) { const before = gameText(f); fn(); expect(gameText(f)).toBe(before); }
 /** A to-hit term of the i-th attack in a technique's preview, by its label (undefined: no such term). */

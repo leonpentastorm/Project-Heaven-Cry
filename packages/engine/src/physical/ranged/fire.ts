@@ -82,7 +82,10 @@ const unitById = (t: Tech, id: string) => t.cb.units.find((x) => x.id === id) ||
 //    The base's contract (needs.stowed): Snap Shot is used with a weapon in the pack (args.item names the entry; the
 //    screen lists them in packPad). The core judges and previews that weapon as if held, then draws it for real
 //    through the reducer's own gear change, its AP waived (what the main hand held goes into the pack), and runs this:
-//    the shot alone.
+//    the shot alone. Under that contract the draw is the only use: a weapon already in either hand fires with Shot
+//    (the spec's Pressure rules, item 12: "A weapon that isn't in the hand"). The ai score below is kept for when the
+//    enemy AI offers techniques that draw: physical/ai.ts asks usable() without a stowed weapon, and an enemy has no
+//    character pack (stowedOf), so today no enemy uses Snap Shot.
 technique({
   id: 'snap_shot',
   run(t) {

@@ -56,7 +56,7 @@ describe('Snap Shot', () => {
     const f = gunner('ccec_marksman_rifle', ['snap_shot']);
     expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'hellraiser_lmg', 100) })).toBe('Not available with a heavy weapon.');
     expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'service_pistol', 0) })).toBe('Empty: reload first.');
-    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'sabre') })).toBe('Needs a ranged weapon in that hand.');
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'sabre') })).toBe('That isn\'t a ranged weapon.');
     expect(f.tech('snap_shot', { targetId: f.foe.id, item: 99 })).toMatch(/isn't a stowed weapon/);
     expect(f.pc.ap).toBe(6); expect(f.pc.weapon).toBe('ccec_marksman_rifle');
   });
