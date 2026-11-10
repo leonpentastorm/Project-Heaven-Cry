@@ -16,6 +16,11 @@ Fixes after 0.18.0, straight on the base branch (Leon's playtest notes and his r
 - **The area map:** the turn column (the actions) scrolls on its own and the map stays in view. Before, the whole card scrolled and the map left the screen.
 - **A gun in hand has a "Strike (weapon's butt)" row** on the Attack tab and on the area map (the bare-hand strike's numbers).
 - **A Press's own +1 Heat can jam the gun** (ruling).
+- **With a gun in a hand, Reload (both kinds) and Clear jam are on the Attack tab,** with the shots. Other weapons keep them under Utility.
+- **A bow's volley is arrows:** Burst, Suppress and Rake with a bow draw and loose each arrow with its own sound; the gun rattle, the tracer spray and the brass are for guns only.
+- **A pushed unit stays where it was until the push plays.** A unit held for its moment was let go after 9 seconds whatever was still to play, so late in a long enemy phase (or after a cut-in) you stood on the tile you were pushed to before the blow landed. It now waits for its queue (60 seconds at most). Not reproduced in a test: the push hold itself measures right in the browser.
+- **A blade and a gun together:** the Heat bar shows for the off-hand gun (it only showed for a main-hand gun), and the gun's block shows its Heat.
+- **A learned signature's chip** no longer says "A signature you learned…" in its text (the ◆ stays).
 - **Rulings confirmed as built:** Snap Shot draws from the pack only; Pin Down holds until 2 AP is spent; Rout through a grenade spends it; Throw stays open to characters who know Lob; the parlour pistol is Silent; a weapon pulled out by the wielder's ally stays in that ally's hand.
 
 ## 0.18.0 — 10 November 2026

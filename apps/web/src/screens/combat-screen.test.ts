@@ -123,7 +123,7 @@ describe('combat screen', () => {
     expect(T.tabPanel).toHaveLength(1);
     expect(T.tabPanel[0].items.map((a: any) => a.key)).toEqual(r.groups.find((g: any) => g.id === sel(r)).items.map((a: any) => a.key));
     // Picking an action anywhere opens its tab; flipping tabs keeps the chosen action (the footer still shows it).
-    L.setState({ action: 'reload' }); r = L.renderVals(); expect(sel(r)).toBe('attack'); // a gun's reload is on the Attack tab since 0.18.2
+    L.setState({ action: 'reload' }); r = L.renderVals(); expect(sel(r)).toBe('attack'); // a gun's reload is on the Attack tab since 0.18.1
     L.setTab('move'); r = L.renderVals(); expect(sel(r)).toBe('move'); expect(r.turnPanels[0].sel.name).toMatch(/^Reload/);
     expect(r.turnPanels[0].tabs.find((t: any) => t.key === 'attack').holds).toBe(true);
     L.pickAction('shot'); r = L.renderVals(); expect(sel(r)).toBe('attack');
@@ -290,7 +290,7 @@ describe('combat screen', () => {
     G.combat!.units.find((x) => x.id === u.id)!.ammo = 5; G.combat!.units.find((x) => x.id === u.id)!.mags = [12, 9]; snap = view();
     let r = L.renderVals();
     const util = r.turnPanels[0].groups.find((gr: any) => gr.id === 'utility').items;
-    const atk = r.turnPanels[0].groups.find((gr: any) => gr.id === 'attack').items.filter((i: any) => /^reload/.test(i.key)); // with the shots since 0.18.2
+    const atk = r.turnPanels[0].groups.find((gr: any) => gr.id === 'attack').items.filter((i: any) => /^reload/.test(i.key)); // with the shots since 0.18.1
     expect(atk.slice(0, 2).map((i: any) => [i.key, i.name, i.cost])).toEqual([['reload', 'Reload (speed)', '2 AP · the magazine drops'], ['reload-tac', 'Reload (tactical)', '3 AP · the magazine goes in your pack']]);
     L.setState({ action: 'reload-tac' }); r = L.renderVals();
     expect(r.turnPanels[0].sel.text).toMatch(/tactical reload, 3 AP\. The magazine in the gun \(5 rounds\) goes back in your pack/);

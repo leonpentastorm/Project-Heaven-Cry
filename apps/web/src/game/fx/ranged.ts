@@ -267,7 +267,7 @@ export function smokeTiles(key: string, r: number): string[] {
   return out.sort((a, b) => a.d - b.d).map((o) => o.k);
 }
 /** Does this rec's shots play as one stream (Mag Dump, the 3-target Rake), one recording and chained beats? */
-const streams = (e: any, r: TechRec | null) => !!r && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
+const streams = (e: any, r: TechRec | null) => !!r && e.cat !== 'bow' && !/bow/.test(String(e.weapon || '')) && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
 /** The chambered special round this shot fires (Load Special), or ''. Spends it. */
 function roundOf(r: TechRec | null, e: any): string {
   if (!r || r.group !== 'fire' || !e.unit) return '';
@@ -641,7 +641,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (e.mode === 'dump' || e.mode === 'rake') base({ ...e, mode: 'auto', to: undefined }); // E4: one recording; the stream draws the rounds
       else if (e.mode === 'suppress') base({ ...e, mode: 'burst', to: undefined });
       else base(e);
-      if (e.mode === 'auto') { const p = at(e.from); for (let k = 0; k < 3; k++) play('brass', p, { delay: 260 + k * 180, gain: 0.5, rate: jit(0.12) }); }
+      if (e.mode === 'auto' && K.gunOf(e.weapon || '', e.cat || '').look === 'bullet') { const p = at(e.from); for (let k = 0; k < 3; k++) play('brass', p, { delay: 260 + k * 180, gain: 0.5, rate: jit(0.12) }); }
     },
 
     object(e, base) {

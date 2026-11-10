@@ -28,7 +28,7 @@ describe('weapon-granted actions in the action list', () => {
     const { cb, u, g } = fight(charWith()); u.weapon = 'recurve_bow'; u.mags = []; u.loose = 10; u.ammo = 0;
     const gr = actionGroups(cb, u, null, { g });
     expect(ids(gr, 'utility')).not.toContain('clear'); expect(ids(gr, 'utility')).not.toContain('load');
-    expect(labels(gr, 'attack')).toContain('Nock an arrow'); // (with the shots since 0.18.2)
+    expect(labels(gr, 'attack')).toContain('Nock an arrow'); // (with the shots since 0.18.1)
     expect(ids(gr, 'attack')).not.toContain('brace');
   });
   it('a revolver reloads with a speedloader; an LMG braces; a knife reloads nothing and has its Cut and Techniques', () => {
