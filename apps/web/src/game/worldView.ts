@@ -10,6 +10,7 @@ import { type GameState, type Character, type TalkOption, type Marker, type Haza
   hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable, SIGIL, MARK, markTn, dayOf,
   pileEntries, PICKUP_AP } from '@engine';
 import { markUri, SIGIL_INK } from './glyphs';
+import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
 
 // ---------- kinds: a robot looks like a robot ----------
 export const KIND_WORD: Record<string, string> = { human: 'HUMAN', robot: 'ROBOT', drone: 'DRONE', crawler: 'CRAWLER', beast: 'BEAST', machine: 'MACHINE' };
@@ -114,17 +115,25 @@ const STACK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><
 export const PILE_ICON = 'data:image/svg+xml,' + encodeURIComponent(STACK_SVG);
 /** How many entry lines a hover shows before "+N more". */
 export const PILE_TIP_LINES = 8;
-export interface PileLook { id: string; tile: string; n: number; lines: string[]; title: string; tip: string; style: string; iconStyle: string; count: string; countStyle: string; tipStyle: string }
+/** One line of a pile's hover: its words and, for a weapon, armour piece or shield, the item's icon. */
+export interface PileTipRow { key: string; text: string; icon: string; hasIcon: boolean; style: string }
+export interface PileLook { id: string; tile: string; n: number; lines: string[]; title: string; tip: string; tipRows: PileTipRow[]; style: string; iconStyle: string; count: string; countStyle: string; tipStyle: string }
+/** The item id a pile entry holds (a pack-shaped entry keeps it inside), for its icon. */
+// (a magazine or rounds carry their gun's id: they are not the gun, so they get none)
+export const pileEntryId = (e: any): string => (e && !e.pack?.mags && !e.pack?.calibre && (e.item || e.pack?.weapon || e.pack?.item || e.pack?.id)) || '';
+const TIP_ROW = 'display: flex; gap: 6px; align-items: center; min-height: 24px', TIP_HEAD = 'display: block; padding-bottom: 2px';
 /** What a pile draws on a tile, and the lines its hover lists (one per entry, from the engine's pileEntries). */
 export function pileLook(o: MapObject, big = true): PileLook {
   const lines = pileEntries(o).map((e) => e.label), n = lines.length, shown = lines.slice(0, PILE_TIP_LINES);
   if (n > PILE_TIP_LINES) shown.push('+' + (n - PILE_TIP_LINES) + ' more');
   const head = 'Pile at ' + refOf(o.pos) + ' · ' + n + (n === 1 ? ' thing' : ' things');
-  return { id: o.id, tile: o.pos, n, lines, title: head + ':\n' + shown.join('\n'), tip: [head.toUpperCase(), ...shown].join('\n'), count: String(n),
+  const tipRows: PileTipRow[] = [{ key: 'head', text: head.toUpperCase(), icon: '', hasIcon: false, style: TIP_HEAD },
+    ...shown.map((t, i) => { const icon = i < PILE_TIP_LINES ? gearIconUri(pileEntryId((o.items || [])[i])) : ''; return { key: 'e' + i, text: t, icon, hasIcon: !!icon, style: TIP_ROW }; })];
+  return { id: o.id, tile: o.pos, n, lines, title: head + ':\n' + shown.join('\n'), tip: [head.toUpperCase(), ...shown].join('\n'), tipRows, count: String(n),
     style: 'position: absolute; left: ' + (big ? 1 : 0) + 'px; bottom: ' + (big ? 6 : 0) + 'px; z-index: 5; display: flex; align-items: center; gap: ' + (big ? 2 : 0) + 'px; padding: ' + (big ? '1px 3px 1px 2px' : '0 1px 0 0') + '; border-radius: 3px; pointer-events: none; background: rgba(10, 13, 19, 0.85); box-shadow: 0 0 0 1px #3B475D',
     iconStyle: 'display: block; width: ' + (big ? 12 : 5) + 'px; height: ' + (big ? 12 : 5) + 'px; background: url("' + PILE_ICON + '") center / contain no-repeat',
     countStyle: 'font-size: ' + (big ? 10 : 5) + 'px; font-weight: 700; line-height: 1; color: #E7EBF3',
-    tipStyle: 'position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); z-index: 8; padding: 5px 8px; border-radius: 6px; white-space: pre; text-align: left; font-size: 11px; line-height: 1.4; font-weight: 600; pointer-events: none; background: #1C2536; border: 1px solid #3B475D; color: #E7EBF3; box-shadow: 0 4px 12px rgba(5, 7, 11, 0.6)' };
+    tipStyle: 'position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); z-index: 8; padding: 5px 8px; border-radius: 6px; white-space: nowrap; text-align: left; font-size: 11px; line-height: 1.4; font-weight: 600; pointer-events: none; background: #1C2536; border: 1px solid #3B475D; color: #E7EBF3; box-shadow: 0 4px 12px rgba(5, 7, 11, 0.6)' };
 }
 /** The hover's place by the tile, kept inside the map: below the tile on the top two rows, flush left on the first two
  *  columns, flush right on the last two. */
@@ -147,10 +156,12 @@ export function pilesIn(objs: MapObject[] | undefined | null): Map<string, MapOb
 }
 /** The Pick up checklist: one row per entry, ticked unless the player unticked it (`untick`: keys, so a new entry
  *  arrives ticked). */
-export interface PileRow { key: string; label: string; checked: boolean; kind: string }
+export interface PileRow { key: string; label: string; checked: boolean; kind: string; icon: string; iconOff: string; hasIcon: boolean }
 export function pileRows(o: MapObject | null | undefined, untick: string[] = []): PileRow[] {
   if (!o) return []; const off = new Set(untick);
-  return pileEntries(o).map((e) => ({ key: e.key, label: e.label, checked: !off.has(e.key), kind: e.kind }));
+  // The item's icon (weapons, armour, shields), in white and, for a row out of reach, muted: the screen picks one.
+  return pileEntries(o).map((e, i) => { const id = pileEntryId((o.items || [])[i]), icon = gearIconUri(id);
+    return { key: e.key, label: e.label, checked: !off.has(e.key), kind: e.kind, icon, iconOff: icon && gearIconUri(id, GEAR_INK_OFF), hasIcon: !!icon }; });
 }
 /** What a pick-up sends: undefined for everything (all ticked), else the ticked keys ([] when nothing is ticked). */
 export function pileTake(o: MapObject | null | undefined, untick: string[] = []): string[] | undefined {

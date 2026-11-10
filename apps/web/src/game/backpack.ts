@@ -9,7 +9,8 @@
 import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, bindGame } from '@engine';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
-export interface BpRow { key: string; tag: string; name: string; sub: string; acts: BpAct[]; note: string }
+/** item: the weapon, armour or shield the row is (its icon, gearIcons.ts); absent for ammo, stims and the rest. */
+export interface BpRow { key: string; tag: string; name: string; sub: string; acts: BpAct[]; note: string; item?: string }
 export interface BpSection { key: string; title: string; rows: BpRow[]; empty: string }
 export interface Backpack { who: string; ap: number; sections: BpSection[]; reason: string }
 
@@ -47,18 +48,18 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
     disarmed ? 'On the ground (Disarmed): Recover it, or draw another' : '',
     w && w.magazine != null ? (u.ammo ?? 0) + '/' + w.magazine + ' loaded' : '',
     two ? 'both hands' : '', focusOf(c.weapon) ? 'counts as your ' + focusOf(c.weapon) : ''].filter(Boolean).join(' · ');
-  const main: BpRow = { key: 'main', tag: two ? 'BOTH HANDS' : 'MAIN HAND', name: mainEmpty ? 'Empty' : (c.weaponState?.name || nameOf(c.weapon)), sub: mainSub, note: '',
+  const main: BpRow = { key: 'main', tag: two ? 'BOTH HANDS' : 'MAIN HAND', name: mainEmpty ? 'Empty' : (c.weaponState?.name || nameOf(c.weapon)), sub: mainSub, note: '', item: mainEmpty ? undefined : c.weapon,
     acts: mainEmpty ? [] : [act('stow-main', 'Put away', { op: 'stow', slot: 'main' }, { type: 'combat/stow', unitId: uid, slot: 'main' }),
       act('drop-main', 'Drop', { op: 'drop', slot: 'main' }, { type: 'combat/drop', unitId: uid, slot: 'main' })] };
   const offId = !two && c.offHand ? c.offHand.id : null, ow: any = offId ? (WEAPON as any)[offId] : null;
-  const off: BpRow = { key: 'off', tag: 'OFF HAND', name: two ? 'Both hands: ' + nameOf(c.weapon) : offId ? (c.offHand.name || nameOf(offId)) : 'Empty', note: '',
+  const off: BpRow = { key: 'off', tag: 'OFF HAND', name: two ? 'Both hands: ' + nameOf(c.weapon) : offId ? (c.offHand.name || nameOf(offId)) : 'Empty', note: '', item: offId || undefined,
     sub: two ? '' : offId ? [ow && ow.magazine != null ? (u.offAmmo ?? c.offHand.loaded ?? 0) + '/' + ow.magazine + ' loaded' : '', focusOf(offId) ? 'counts as your ' + focusOf(offId) : ''].filter(Boolean).join(' · ') : 'A one-handed weapon, a shield, a torch or a focus.',
     acts: offId ? [...(ow && ow.hands === '1H' ? [act('swap', 'Swap hands', { op: 'swap' }, { type: 'combat/swap', unitId: uid, from: 'off' })] : []),
       act('stow-off', 'Put away', { op: 'stow', slot: 'off' }, { type: 'combat/stow', unitId: uid, slot: 'off' }),
       act('drop-off', 'Drop', { op: 'drop', slot: 'off' }, { type: 'combat/drop', unitId: uid, slot: 'off' })] : [] };
   // ---------- armour ----------
   const armour: BpRow[] = Object.entries(c.worn || {}).filter(([, id]) => !!id).map(([slot, id]: [string, any]) => ({
-    key: 'worn-' + slot, tag: slot.replace(/_/g, ' ').toUpperCase(), name: nameOf(id), sub: ((ITEM as any)[id]?.weight_kg ?? 0) + ' kg', note: '',
+    key: 'worn-' + slot, tag: slot.replace(/_/g, ' ').toUpperCase(), name: nameOf(id), sub: ((ITEM as any)[id]?.weight_kg ?? 0) + ' kg', note: '', item: id,
     acts: isLightArmour(id) ? [act('off-' + slot, 'Take off', { op: 'stow', slot }, { type: 'combat/stow', unitId: uid, slot })] : [{ key: 'heavy', label: HEAVY_ROW, cost: '', off: true, why: HEAVY_ROW + '.', action: null }] }));
   if (c.armourClass) armour.unshift({ key: 'body', tag: 'BODY ARMOUR', name: 'Armour Class ' + c.armourClass, sub: 'From your kit.', note: '', acts: [{ key: 'heavy', label: HEAVY_ROW, cost: '', off: true, why: HEAVY_ROW + '.', action: null }] });
   // ---------- the pack (weapons, focuses, shields, armour, mods, the rest) ----------
@@ -83,7 +84,7 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
     }
     rows.push({ key: 'pack-' + i, tag, name: (it.qty > 1 ? it.qty + ' × ' : '') + (it.name || nameOf(wid || it.item || it.id)) + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''),
       sub: wd ? [typeof wd.damage === 'number' ? wd.damage + ' dmg' : '', wd.hands, wd.magazine != null && it.loaded != null ? it.loaded + '/' + wd.magazine + ' loaded' : ''].filter(Boolean).join(' · ') : isPlotItem(it) ? (it.text || 'From the story.') : (it.note || def.text || '').slice(0, 90),
-      note: fk ? FOCUS_NOTE : '', acts });
+      note: fk ? FOCUS_NOTE : '', acts, item: isPlotItem(it) ? undefined : wid || it.item || it.id }); // (ammo rows are skipped above)
   });
   // ---------- ammo and throwables, from the unit ----------
   const ammo: BpRow[] = [];
@@ -103,7 +104,7 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
       ammo.push({ key: 'prounds-' + i, tag: 'ROUNDS', name: it.qty + ' × ' + calName(it.calibre) + (it.ammoType ? ' ' + (TYPE[it.ammoType] || it.ammoType) : ''), sub: 'In the pack.', note: '', acts: [] });
   });
   if (offCal) ammo.push({ key: 'offloose', tag: 'OFF-HAND ROUNDS', name: (u.offLoose ?? 0) + ' × ' + calName(offCal), sub: 'Loaded round by round into the off-hand gun.', note: '', acts: [] });
-  for (const [id, n] of Object.entries(u.throwables || {})) if ((n as number) > 0) ammo.push({ key: 'thr-' + id, tag: 'THROWABLE', name: n + ' × ' + nameOf(id), sub: 'Throw it from the Attack tab.', note: '', acts: [] });
+  for (const [id, n] of Object.entries(u.throwables || {})) if ((n as number) > 0) ammo.push({ key: 'thr-' + id, tag: 'THROWABLE', name: n + ' × ' + nameOf(id), sub: 'Throw it from the Attack tab.', note: '', acts: [], item: id });
   if ((u.parts ?? 0) > 0) ammo.push({ key: 'parts', tag: 'PARTS', name: u.parts + ' spare parts', sub: 'Field Repair uses one.', note: '', acts: [] });
   if (u.mg && (u.mg.cores ?? 0) > 0) ammo.push({ key: 'cores', tag: 'CORES', name: u.mg.cores + ' mana ' + (u.mg.cores === 1 ? 'core' : 'cores'), sub: 'Swap a core from the Sigils tab.', note: '', acts: [] });
   if ((c.stims ?? 0) > 0) ammo.push({ key: 'stims', tag: 'STIMS', name: c.stims + ' stim ' + (c.stims === 1 ? 'injector' : 'injectors'), sub: 'Stim an ally from the Utility tab.', note: '', acts: [] });
