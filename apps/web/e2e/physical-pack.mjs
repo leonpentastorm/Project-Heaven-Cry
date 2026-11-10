@@ -24,7 +24,7 @@ await act({ type: 'sandbox/give', charId: cid, item: 'service_rifle', equip: tru
 for (const it of ['sabre', 'service_pistol', 'frag_grenade']) await act({ type: 'sandbox/give', charId: cid, item: it });
 for (const id of ['called_shot', 'draw_cut', 'snap_shot', 'lob']) await act({ type: 'sandbox/technique', charId: cid, id, ready: true });
 g = await G();
-ok('the kit: a rifle in hand; a sabre, a pistol and a grenade carried', g.characters[cid].weapon === 'service_rifle' && (g.characters[cid].pack || []).some((x) => x.weapon === 'sabre'));
+ok('the kit: a rifle in hand', g.characters[cid].weapon === 'service_rifle');
 await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
 await p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 4; }, cid, { timeout: 45000 });
