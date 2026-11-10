@@ -77,7 +77,7 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   const prevHp = t.hp; res.amount = ctx.dmg;
   t.hp = Math.max(0, t.hp - ctx.dmg); res.dealt = prevHp - t.hp;
   if (src.by) { t.lastHitBy = src.by.id; const d = (t.damagedBy ||= []); if (!d.includes(src.by.id)) d.push(src.by.id); }
-  if (t.hidden && res.dealt > 0) t.hidden = false; // damage reveals a Hidden unit (rules 1.3)
+  if (t.hidden && res.dealt > 0) { t.hidden = false; if (cb) (cb.sightWhy ||= {})[t.id] = 'reveal'; } // damage reveals a Hidden unit (rules 1.3; presentation: a reveal, not a plain entry)
   if (t.hp === 0) {
     if (src.nonlethal && t.side === 'foe' && !t.companion) { t.surrendered = true; t.subdued = true; res.killed = false; if (cb) { emit(cb, 'on_surrender', { t, by: src.by || null, why: 'subdued', cb }); cb.log.push(t.name + ' is subdued, not killed.'); } }
     else { if (t.side === 'foe' || t.companion) t.dead = true; else t.downed = true; res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }

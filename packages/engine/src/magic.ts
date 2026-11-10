@@ -260,7 +260,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
     if (ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); emit(cb, 'cond_resisted', { by, t, id, cb }); return ' · ' + t.name + ' resists (' + f + ' save ' + (r + m) + ' vs ' + tn + ')'; }
     saved = f + ' save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '');
   }
-  if (id === 'marked' && t.hidden) { t.hidden = false; delete t.hideEntry; }
+  if (id === 'marked' && t.hidden) { t.hidden = false; delete t.hideEntry; (cb.sightWhy ||= {})[t.id] = 'reveal'; }
   const n = ca.rounds || rounds || def.rounds, had = condOn(t, id);
   emitFx(cb, 'cond', { target: t.id, at: t.pos, id, ...(FX_ELEMENT ? { element: FX_ELEMENT } : {}) });
   (t.condAt ||= {})[id] = (cb.condSeq = (cb.condSeq || 0) + 1); // CLEANSE ends the newest
@@ -296,7 +296,7 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, ro
   if (id === 'dazed') { t.dazedNext = 1; emit(cb, 'cond_landed', { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
   if (id === 'prone') { t.prone = true; t.braced = false; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
   if (id === 'bleeding') { t.bleed = Math.max(t.bleed || 0, ca.rounds || 3); if (by) t.lastHitBy = by.id; emit(cb, 'cond_landed', { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
-  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; return ' · ' + t.name + ' is Hidden'; }
+  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; (cb.sightWhy ||= {})[t.id] = 'hide'; return ' · ' + t.name + ' is Hidden'; }
   if (id === 'injured') { const inj = injureUnit(rng, t); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return inj; }
   return '';
 }
@@ -313,7 +313,7 @@ function injureUnit(rng: Rng, t: Unit): string {
 /** End a condition now (its effects undone). 'cond_end' {u, id} when a fight is given. */
 export function endCond(u: Unit, id: string, cb?: Combat) {
   id = condId(id);
-  if (id === 'hidden') { u.hidden = false; return; }
+  if (id === 'hidden') { if (u.hidden && cb) (cb.sightWhy ||= {})[u.id] = 'reveal'; u.hidden = false; return; }
   if (id === 'prone') { u.prone = false; return; }
   if (id === 'bleeding') { u.bleed = 0; return; }
   if (id === 'dazed') { u.dazedNext = 0; return; }
@@ -337,7 +337,7 @@ function endCondRaw(u: Unit, id: string) {
 export function condTurnEnd(cb: Combat, u: Unit, rng?: Rng | null) {
   if (u.dead) return;
   // MASK (rules 1.4): Hidden for 2 of the bearer's turn ends, or until it attacks (then it is no longer Hidden).
-  if (u.maskLeft) { if (!u.hidden) delete u.maskLeft; else if (u.maskFresh) u.maskFresh = false; else if (--u.maskLeft <= 0) { delete u.maskLeft; u.hidden = false; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id]; emitFx(cb, 'mask', { target: u.id, at: u.pos, fade: true }); cb.log.push(u.name + "'s MASK fades: no longer Hidden."); } }
+  if (u.maskLeft) { if (!u.hidden) delete u.maskLeft; else if (u.maskFresh) u.maskFresh = false; else if (--u.maskLeft <= 0) { delete u.maskLeft; u.hidden = false; (cb.sightWhy ||= {})[u.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id]; emitFx(cb, 'mask', { target: u.id, at: u.pos, fade: true }); cb.log.push(u.name + "'s MASK fades: no longer Hidden."); } }
   if (!u.conds) return;
   const fresh = new Set(u.condFresh || []); u.condFresh = [];
   // Corroded (rules 1.4): a Body save at the end of each of the bearer's turns ends it early (against 12 + the caster's
@@ -1131,7 +1131,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   if (!wild) { noteRelease(cb, u); if (F.has('belonging')) noteRelease(cb, u); } // Belonging counts twice for allies' Resonance
   if (res.with.length) emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: res.with, bonus: res.bonus });
   // Silent (rules 1.8): a hostile release reveals a Hidden caster, as a harmful Sigil does; Silent keeps you hidden.
-  if (u.hidden && hostile && !has('silent') && !wild) { u.hidden = false; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id]; cb.log.push(u.name + ' is revealed (released an Outburst).'); emit(cb, 'spotted', { u, why: 'released an Outburst', cb }); }
+  if (u.hidden && hostile && !has('silent') && !wild) { u.hidden = false; (cb.sightWhy ||= {})[u.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id]; cb.log.push(u.name + ' is revealed (released an Outburst).'); emit(cb, 'spotted', { u, why: 'released an Outburst', cb }); }
   const does = felt.map((f) => feelingWord(d, f)).filter(Boolean);
   emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, design: d.id, school: d.school, school2: d.school2 || null, option: d.option || null, form, tone, element: toneElement(tone), stage, mult: Math.round(sm * 100) / 100,
     riderStage: rs, wild, reaction, resonance: res.bonus, area: tiles, targets: [...targets, ...loved].map((t) => t.id), felt, ...(does.length ? { does: [...new Set(does)] } : {}) });
@@ -1229,7 +1229,7 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
   if (F.has('shame') && !u.dead) out.push(u.name + ' pays' + harmFor('shame', () => harm(cb, rng, null, u, FP('shame').self_damage ?? 5, 'true')));
   if (F.has('jealousy')) { const t = hits.find((v) => v.side !== u.side); if (t) { const boon = Object.keys(t.conds || {}).find((c) => condOn(t, c) && isBoon(c) && c !== 'hidden'); if (boon) { const n = t.conds![boon]; endCond(t, boon, cb); (u.conds ||= {})[boon] = Math.max(u.conds[boon] || 0, Math.min(n, 3)); out.push(u.name + ' steals ' + condName(boon) + ' from ' + t.name + ' (Jealousy)'); } else if ((t.shield || 0) > 0) { const n = t.shield!; t.shield = 0; out.push(clean(grantShield(cb, u, n, u) + '') + ' ' + u.name + ' steals ' + t.name + "'s shield (Jealousy)"); } } }
   if (F.has('wonder')) {
-    for (const v of cb.units) if (v.hidden && v.side !== u.side && set.has(v.pos)) { v.hidden = false; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][v.id]; out.push(v.name + ' is revealed (Wonder)'); }
+    for (const v of cb.units) if (v.hidden && v.side !== u.side && set.has(v.pos)) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][v.id]; out.push(v.name + ' is revealed (Wonder)'); }
     for (const z of cb.zones || []) { const zz: any = z; if (z.side !== u.side && (z.kind === 'trap' || (z.kind === 'turret' && zz.hidden)) && z.tiles.some((k) => set.has(k)) && !(zz.spotted ||= []).includes(u.side)) { zz.spotted.push(u.side); emitFx(cb, 'trap_spotted', { id: z.id, tile: z.tiles[0], by: u.id, side: u.side, only: u.side, kind: z.kind }); out.push('a trap shows at ' + refOf(z.tiles[0]) + ' (Wonder)'); } }
     for (const h of (cb.hazards || []) as any[]) if (h.hidden && h.tiles.some((k: string) => set.has(k))) { h.hidden = false; emitFx(cb, 'hazard_spotted', { id: h.id, kind: h.kind, at: h.tiles[0], tiles: [...h.tiles], by: u.id, how: 'wonder' }); out.push('a hazard shows (Wonder)'); }
   }
@@ -1278,7 +1278,7 @@ export function residueTick(cb: Combat, rng: Rng, u: Unit, when: 'turn' | 'entry
   if (r.condition) line.push(applyCond(cb, rng, by, u, r.condition, r.rounds, undefined, { skipSave: !r.save }));
   if (r.random) { const pick = r.random[die(rng, r.random.length) - 1]; line.push(applyCond(cb, rng, by, u, pick, r.rounds ?? 1, undefined, { skipSave: true })); }
   if (r.strain && u.mg && r.strain < 0) { const n = easeStrain(cb, u, -r.strain, 'residue'); if (n) line.push(' · ' + u.name + "'s Strain −" + n); }
-  if (r.reveal_radius) for (const v of cb.units) if (v.hidden && v.side !== u.side && dist(v.pos, u.pos) <= r.reveal_radius) { v.hidden = false; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][v.id]; line.push(' · ' + v.name + ' is revealed'); }
+  if (r.reveal_radius) for (const v of cb.units) if (v.hidden && v.side !== u.side && dist(v.pos, u.pos) <= r.reveal_radius) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][v.id]; line.push(' · ' + v.name + ' is revealed'); }
   const txt = line.filter(Boolean).join('');
   if (txt) { emitFx(cb, 'residue_tick', { unit: u.id, at: u.pos, feeling: f.id, kind: r.kind, when }); cb.log.push(f.name + ' residue at ' + refOf(u.pos) + ' (' + u.name + ')' + txt + '.'); }
 }

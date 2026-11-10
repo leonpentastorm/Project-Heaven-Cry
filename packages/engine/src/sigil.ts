@@ -14,7 +14,7 @@ import {
 } from './sigilwords';
 export * from './sigilwords';
 import {
-  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit,
+  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost,
 } from './combat';
 import { type Rng, d20 } from './rng';
@@ -37,13 +37,13 @@ const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 
 /** Hidden (tactics.ts hide/reveal, the same steps): not while Marked; each entry gives one ambush. */
 function hideUnit(cb: Combat, u: Unit, why: string): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
-  if (!u.hidden) { u.hidden = true; u.hideEntry = (u.hideEntry || 0) + 1; for (const side of ['pc', 'foe']) if (side !== u.side) ((cb.lastSeen ||= {})[side] ||= {})[u.id] = u.pos; emit(cb, 'hide', { u, why, cb }); }
+  if (!u.hidden) { u.hidden = true; u.hideEntry = (u.hideEntry || 0) + 1; for (const side of ['pc', 'foe']) if (side !== u.side) ((cb.lastSeen ||= {})[side] ||= {})[u.id] = u.pos; emit(cb, 'hide', { u, why, cb }); sightFx(cb, null, { [u.id]: 'hide' }); }
   return ' · ' + u.name + ' is Hidden (' + why + ')';
 }
 function revealUnit(cb: Combat, u: Unit, why: string): string {
   if (!u.hidden) return '';
   u.hidden = false; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id];
-  cb.log.push(u.name + ' is revealed (' + why + ').'); emit(cb, 'spotted', { u, why, cb }); return ' · revealed';
+  cb.log.push(u.name + ' is revealed (' + why + ').'); emit(cb, 'spotted', { u, why, cb }); sightFx(cb, null, { [u.id]: 'reveal' }); return ' · revealed';
 }
 // ---------- ready, costs ----------
 const canCast = (u: Unit): string | null => (u.dead || u.downed ? 'Downed.' : condOn(u, 'silenced') ? 'Silenced: no magic this round.' : null);

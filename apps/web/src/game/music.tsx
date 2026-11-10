@@ -10,7 +10,7 @@ import { musicLevel, onUiPrefs, uiPrefs, setUiPrefs } from './sfx';
 import { ostPlay, ostVolume, ostPause, ostResume, ostRunning, ostPreload } from './ost';
 import { onVoice, voiceState } from './voice';
 import { openSettings } from './settings';
-import { useFloatStyle } from './floaters';
+import { useFloatStyle, onFloatOut, floatOut } from './floaters';
 import { COMBAT_IN_MS, usePresence, presenceCls } from './presence';
 
 declare global { interface Window { YT?: any; onYouTubeIframeAPIReady?: () => void } }
@@ -196,13 +196,18 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   React.useEffect(() => onUiPrefs(() => applyLevel()), []);
   // The floating button: see-through at rest, solid when the pointer is near or the panel is open (UI pass 7).
   const btnRef = React.useRef<HTMLButtonElement>(null), [hover, setHover] = React.useState(false);
-  const floatStyle = useFloatStyle(btnRef, open);
-  if (!game || game.phase === 'lobby') return null;
-  const track = want?.track || null;
   // Bottom left on every screen (on the right it covered End turn), as its icon only: the title in its tooltip and on
   // hover, so it keeps off the combat log, the sheet's skill rows and the room's text (review of the UI pass). Only a
-  // blocked start keeps its words: it is the one time the button asks for a click.
-  const side = 'left', iconOnly = !blocked && !hover && !open;
+  // blocked start keeps its words: it is the one time the button asks for a click. While its title shows or its panel is
+  // open the ◈ Memory button slides away (they share the dock: floaters.ts), and the Memory opening closes this panel.
+  // Only the pointer or the panel puts it "out" (the ◈ slides away); a blocked start's label is wide on its own, so the
+  // ◈ steps up above it instead and stays clickable (floaters.ts 'lifted').
+  const iconOnly = !blocked && !hover && !open, onScreen = !!game && game.phase !== 'lobby';
+  const { place, ...floatStyle } = useFloatStyle(btnRef, open, 'music', (hover || open) && onScreen, blocked && !hover && !open && onScreen);
+  React.useEffect(() => onFloatOut(() => { if (floatOut() === 'memory') setOpen(false); }), []);
+  if (!game || game.phase === 'lobby') return null;
+  const track = want?.track || null;
+  const side = 'left';
   const btnText = blocked ? 'Click to start the music' : p.paused ? 'Music paused' : track ? track.title : 'No music';
   const mine = Object.values(game.characters).filter((c) => c.owner === meId && !c.dead && musicTraitOf(c) && songOf(c));
   const btn: React.CSSProperties = { minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid #2E3A50', background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer' };
@@ -248,7 +253,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
             );
           })}
       </div>
-      <button ref={btnRef} data-phc-float="music" onClick={() => { setOpen(!open); if (blocked) setPrefs({ paused: false }); }} aria-expanded={open} aria-label={'Music: ' + (track ? track.title + ' by ' + track.artist : 'nothing playing')}
+      <button ref={btnRef} data-phc-float="music" data-phc-float-place={place} onClick={() => { setOpen(!open); if (blocked) setPrefs({ paused: false }); }} aria-expanded={open} aria-label={'Music: ' + (track ? track.title + ' by ' + track.artist : 'nothing playing')}
         title={iconOnly ? btnText : undefined} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
         style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 9, maxWidth: 300, minHeight: 40, minWidth: 40, padding: iconOnly ? 0 : '0 14px', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
         <span aria-hidden style={{ fontSize: 16, color: hostCol || '#FFFFFF' }}>♪</span>

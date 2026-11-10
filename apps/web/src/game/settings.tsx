@@ -114,6 +114,7 @@ function DisplayTab() {
     <span style={lab}>THE ♪ MUSIC AND ◈ MEMORY BUTTONS</span>
     <Volume id="float" name="OPACITY" what="How solid the floating buttons are at rest. They come up to full when the pointer is near or their panel is open." value={p.float} onChange={(x) => setUiPrefs({ float: Math.max(20, x) })} />
     <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" data-phc-float-fade="" checked={p.floatFade} onChange={(e) => setUiPrefs({ floatFade: e.target.checked })} /> Fade them when the pointer is away (off: they stay at the opacity above)</label>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" data-phc-float-slide="" checked={p.floatSlide !== false} onChange={(e) => setUiPrefs({ floatSlide: e.target.checked })} /> Slide them down to a tab at the screen's edge when the pointer is away (never under Reduce motion)</label>
     <span style={lab}>COMFORT</span>
     <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
     <div><button type="button" onClick={() => { resetTips(); setTips(true); }} style={btn(tips)}>{tips ? 'Tips will show again ✓' : 'Show tips again'}</button></div>
