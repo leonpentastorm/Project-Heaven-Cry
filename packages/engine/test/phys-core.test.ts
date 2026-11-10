@@ -9,11 +9,11 @@ const BUILT = ['cut', 'lunge', 'coup', 'riposte', 'shot', 'aimed_shot', 'suppres
 beforeEach(() => rig(null));
 
 describe('the data', () => {
-  it('has 58 techniques, 27 melee and 31 ranged, each in a group of its system', () => {
-    expect(TECHNIQUES.length).toBe(58);
-    expect(TECHNIQUES.filter((t) => t.system === 'melee').length).toBe(27);
+  it('has 60 techniques, 28 melee and 32 ranged, each in a group of its system', () => {
+    expect(TECHNIQUES.length).toBe(60);
+    expect(TECHNIQUES.filter((t) => t.system === 'melee').length).toBe(28);
     for (const t of TECHNIQUES) expect(PHYS_RULES.groups[t.system], t.id).toContain(t.group);
-    expect(TECHNIQUES.filter((t) => t.free).map((t) => t.id).sort()).toEqual(['aimed_shot', 'cut', 'overwatch', 'shot']);
+    expect(TECHNIQUES.filter((t) => t.free).map((t) => t.id).sort()).toEqual(['aimed_shot', 'cut', 'overwatch', 'pull_out', 'shot']);
   });
   it('every weapon has its properties, and what it teaches is a technique of its system', () => {
     for (const w of Object.values(WEAPON)) {

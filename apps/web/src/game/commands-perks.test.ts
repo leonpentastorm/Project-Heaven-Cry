@@ -28,15 +28,15 @@ describe('weapon-granted actions in the action list', () => {
     const { cb, u, g } = fight(charWith()); u.weapon = 'recurve_bow'; u.mags = []; u.loose = 10; u.ammo = 0;
     const gr = actionGroups(cb, u, null, { g });
     expect(ids(gr, 'utility')).not.toContain('clear'); expect(ids(gr, 'utility')).not.toContain('load');
-    expect(labels(gr, 'utility')).toContain('Nock an arrow');
+    expect(labels(gr, 'attack')).toContain('Nock an arrow'); // (with the shots since 0.18.1)
     expect(ids(gr, 'attack')).not.toContain('brace');
   });
   it('a revolver reloads with a speedloader; an LMG braces; a knife reloads nothing and has its Cut and Techniques', () => {
     const { cb, u, g } = fight(charWith());
     u.weapon = 'drifter_revolver'; u.ammo = 2; u.mags = [6];
     // Rules 1.9: a gun with tracked spares offers the speed and the tactical reload, by its own word.
-    expect(labels(actionGroups(cb, u, null, { g }), 'utility')).toContain('Speedloader (speed)');
-    expect(labels(actionGroups(cb, u, null, { g }), 'utility')).toContain('Speedloader (tactical)');
+    expect(labels(actionGroups(cb, u, null, { g }), 'attack')).toContain('Speedloader (speed)');
+    expect(labels(actionGroups(cb, u, null, { g }), 'attack')).toContain('Speedloader (tactical)');
     u.weapon = 'hellraiser_lmg'; expect(ids(actionGroups(cb, u, null, { g }), 'attack')).toContain('brace');
     u.weapon = 'combat_knife';
     const gr = actionGroups(cb, u, null, { g });

@@ -5,6 +5,8 @@ import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS,
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
 import feelJ from '../../../data/feelings.json';
+import worldPlayJ from '../../../data/world_play.json';
+const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
@@ -948,6 +950,16 @@ const equipBanWhy = (c: Character, ctx: any): string => {
 /** A pack entry that is ammunition (a magazine stack, loose rounds), never a thing for a hand (review fix). */
 export const isAmmoEntry = (it: PackItem) => !!(it.mags || it.calibre || it.kind === 'ammo' && !ITEM[it.item || it.id]);
 export const AMMO_WHY = 'That is ammunition, not a weapon.';
+/** A weapon in each hand (Leon, 10 Nov 2026): the second weapon asks 2 more of its skill than it does in the main hand
+ * (a weapon with no requirement asks 2 of the skill it hits with). Shields, torches and focuses are not weapons. Returns
+ * the refusal, or null. */
+export function secondWeaponWhy(c: Character, offId: string | null | undefined, mainId: string | null | undefined): string | null {
+  const ow: any = offId ? WEAPON[offId] : null, mw: any = mainId ? WEAPON[mainId] : null;
+  if (!ow || ow.id === 'fists' || !mw || mw.id === 'fists') return null;
+  const extra = (wpGear as any)?.second_weapon_skill_extra ?? 2, req = ow.requires && Object.keys(ow.requires).length ? ow.requires : { [ow.skill || 'dexterity']: 0 };
+  for (const [sk, n] of Object.entries(req)) { const need = (n as number) + extra; if ((c.skills[sk] || 0) < need) return 'A second weapon asks more: the ' + ow.name.toLowerCase() + ' in the off hand needs ' + (SKILL[sk]?.name || sk.replace('_', ' ')) + ' ' + need + '.'; }
+  return null;
+}
 export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
   if (isPlotItem(it)) return 'A plot item can\'t be equipped.';
@@ -962,6 +974,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (!wid) return 'Only weapons go in the main hand.';
     const need = (WEAPON[wid] as any).requires || {}; for (const [sk, n] of Object.entries(need)) if ((c.skills[sk] || 0) < (n as number)) return 'Needs ' + sk.replace('_', ' ') + ' ' + n + '.';
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
+    if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid); if (sw) return sw; }
     take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType); // a stowed gun keeps the rounds in it (rules 1.3), and their type
     if (twoHands(c, wid) && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
     c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = it.loaded ?? 0;
@@ -970,6 +983,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (twoHands(c, c.weapon)) return 'Your main-hand weapon needs both hands.';
     if (wid) { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
+    if (wid) { const sw = secondWeaponWhy(c, wid, c.weapon); if (sw) return sw; }
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
     // An off-hand gun holds what its pack entry held, as the main hand does (rules 1.9, item 688).
     c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };

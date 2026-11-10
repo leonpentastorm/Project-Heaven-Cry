@@ -240,6 +240,22 @@ function carriedHit(t: Tech, next: Unit, dmg: number): string {
   if (!pt.ids.includes(next.id)) { pt.ids.push(next.id); if (alive(next)) addPressure(t, next, t.num('heavy_carry_pressure', 1), 'a round through ' + (t.tgt?.name || 'cover')); }
   return line;
 }
+// 31. Heavy Bolt (the crossbow's signature; Leon, 10 Nov 2026): one bolt at +50% damage that ignores 10 armour; on a
+//     hit, a Body save or pushed 1 tile. Precise: +2 to hit. Quick (the repeating crossbow): 1 AP less (the data line).
+technique({
+  id: 'heavy_bolt',
+  run(t) {
+    const tgt = t.tgt; if (!tgt) return 'Pick a target.';
+    const precise = t.line('precise', 'quick') === 'precise';
+    const r = strike(t, { mult: 1 + t.num('damage_pct', 50) / 100, ignoreArmour: t.num('pierce', 10), extra: precise ? t.num('precise_hit', 2) : 0, label: 'Heavy Bolt' });
+    if (!r.ok) return r.why || 'Can\'t attack that.';
+    const v = r.target || tgt;
+    if (t.preview) t.note('On a hit: a Body save or pushed ' + t.num('push', 1) + ' tile.');
+    if (t.preview || (r.hit && alive(v))) stop(t, v, 'push', { tiles: t.num('push', 1) });
+    return null;
+  },
+  ai(t) { return t.tgt && t.tgt.armour >= 5 ? 7 : 0; }, // worth its AP against armour; a plain shot otherwise
+});
 technique({
   id: 'punch_through',
   run(t) {

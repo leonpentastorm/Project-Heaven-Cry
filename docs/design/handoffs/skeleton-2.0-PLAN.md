@@ -61,6 +61,17 @@ Each stage ends green (`npm test -w @phc/engine`, `npm test -w @phc/web`, `tsc` 
 4. Creation and level-up: saves, HP and ranges preview from the engine functions, not from copies.
 5. Screenshots for Leon in `docs/design/handoffs/skeleton-2.0-shots/`.
 
+6. **Scope added after the plan was written** (proposal sections 17 and 18; Leon, 10 Nov 2026: "EVERYTHING in our discussion of skeleton 2.0 is going in"): Core points dropped; Composure and Lore Master swapped; Acuity and Improvisation; the perk and trait pass of section 18; the EPCCG screen (17.5); the archetype cards showing nine attributes (17.4). Stages 1 and 3 carry the engine and data side of these; this stage carries the screens.
+7. **The attributes are shown everywhere a point is spent or read** (Leon): creation, **the level-up menu**, the character sheet, the archetype cards. Each attribute shows what a point gives (17.2) beside its stepper, with the change previewed before the point is placed.
+8. **The creation skill screen is the main thing to fix** (Leon: "the main painpoint of that feature… people need me to sit in discord with screen share and explain how to get the character they want"). With Cores gone the screen has one gate, Skill ≤ Attribute, and has to explain itself with nobody beside the player:
+   - one screen, nine attribute columns (or rows), each with its three skills under it, so the gate is visible as layout: a skill can't rise past the attribute it sits under;
+   - **click the skill you want and the attribute follows**: raising a skill past its attribute spends the attribute point for you and says so ("Dexterity 4 needs Agility 4: 1 Attribute point spent"); when the budget can't cover it, the refusal says exactly what is short and what to lower;
+   - both budgets always in view (Skill points left, Attribute points left), and what must still be placed before Lock in;
+   - every stepper shows what the next point gives, in the game's own numbers;
+   - an "I want to be…" entry (the archetype cards) that fills the sheet and can then be edited, so nobody starts from nothing;
+   - undo for the last point, and a reset per attribute.
+   Leon reviews a screenshot of this screen before the rest of Stage 4 is built.
+
 ### Stage 5: review and ship
 
 1. Stage 0's tool again: the before-and-after table for all 46 archetypes, in the hand-off.

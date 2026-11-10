@@ -8,13 +8,15 @@
 //   twatch           Hold a shot (selecting it opens the Watches)
 import { WEAPON, phys } from '@engine';
 type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup; type TechPreview = phys.TechPreview;
-const { techniquePad, packPad, previewTechnique, physView, weaponSystem, propText, TECHNIQUE } = phys;
+import { heatLimit } from '@engine';
+const { techniquePad, packPad, pairedPad, previewTechnique, physView, weaponSystem, propText, TECHNIQUE } = phys;
 import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
 
 export const TQ = 'tq:';
 export const TPAD = 'tpad:';
 export const TWATCH = 'twatch';
-export type Hand = 'main' | 'off';
+/** 'both': two weapons of one kind, a technique made with each in turn (the third block of the Attack tab) */
+export type Hand = 'main' | 'off' | 'both';
 /** `item`: what a technique is used with when it isn't in the hand (a pack entry's index, a carried throwable's id). */
 export const techAction = (hand: Hand, id: string, item?: string | number | null) => TQ + hand + ':' + id + (item != null && item !== '' ? '@' + item : '');
 export const padAction = (hand: Hand) => TPAD + hand;
@@ -22,13 +24,13 @@ export const padAction = (hand: Hand) => TPAD + hand;
 export function parseTech(a: string | null | undefined): { hand: Hand; id: string; item?: string | number } | null {
   if (!a || !a.startsWith(TQ)) return null;
   const [hand, rest] = a.slice(TQ.length).split(':'), [id, it] = (rest || '').split('@');
-  return (hand === 'main' || hand === 'off') && id ? { hand, id, ...(it != null && it !== '' ? { item: /^\d+$/.test(it) ? Number(it) : it } : {}) } : null;
+  return (hand === 'main' || hand === 'off' || hand === 'both') && id ? { hand, id, ...(it != null && it !== '' ? { item: /^\d+$/.test(it) ? Number(it) : it } : {}) } : null;
 }
 /** The pad an action belongs to: a Techniques row (its hand), Hold a shot, or none. */
 export function padOf(a: string | null | undefined): { kind: 'tech'; hand: Hand } | { kind: 'watch' } | null {
   if (!a) return null;
   if (a === TWATCH) return { kind: 'watch' };
-  if (a.startsWith(TPAD)) { const h = a.slice(TPAD.length); return h === 'main' || h === 'off' ? { kind: 'tech', hand: h } : null; }
+  if (a.startsWith(TPAD)) { const h = a.slice(TPAD.length); return h === 'main' || h === 'off' || h === 'both' ? { kind: 'tech', hand: h } : null; }
   return null;
 }
 /** Whether this id is one of the Attack tab's technique rows or chips. */
@@ -60,16 +62,30 @@ export interface WeaponBlock {
   plain: TechChip | null; groups: ChipGroup[]; usable: number; total: number;
   watch: TechChip[];
 }
+/** A technique's requirement as a sentence for its card ("Needs a Pressed target. "), or '' when it has none. */
+export function needsText(id: string): string {
+  const d: any = TECHNIQUE[id]; if (!d) return '';
+  const n = d.needs || {}, out: string[] = [];
+  if (d.group === 'opener') out.push('An Opener: only as your first melee technique of the turn.');
+  if (n.momentum) out.push('Needs ' + n.momentum + ' Momentum or more, and spends all of it. It ends your chain for the turn.');
+  if (n.held && !/^Only on a target/.test(d.text || '')) out.push('Needs a target you have Grappled or Bound.');
+  if (n.pressed) out.push('Needs a Pressed target (Pressure 2 or more); it lowers that Pressure by 2. One Take a turn.');
+  if (n.hidden) out.push('Only while you are Hidden.');
+  if (n.last_round && !/^Only with the last/.test(d.text || '')) out.push('Only with the last round in the weapon.');
+  if (n.stowed) out.push('Used with a weapon in your pack, not the one in your hand.');
+  return out.length ? out.join(' ') + ' ' : '';
+}
 const chipOf = (e: PadEntry): TechChip => {
   const rounds = e.rounds === 'all' ? 'all rounds' : e.rounds ? e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
   const mark = e.signature ? '◆' : e.lent ? '◇' : '';
-  const markTitle = e.signature ? 'A signature you learned: yours with any weapon that can use it.' : e.lent ? 'This weapon\'s signature: lent while you hold it (drill it to keep it).' : '';
+  const markTitle = e.signature ? '' : e.lent ? 'This weapon\'s signature: lent while you hold it (drill it to keep it).' : '';
   const why = e.ok ? '' : (e.why || 'Not now.').replace(/\.+$/, '') + '.';
   // the property behind the line, explained in the engine's own words (its glossary): "Point: …"
   const ln = e.line ? (TECHNIQUE[e.id]?.lines || []).find((l: any) => l.text === e.line) : null;
   const why1 = ln ? ln.props.map((p: string) => (propText(p) ? p.charAt(0).toUpperCase() + p.slice(1) + ': ' + propText(p) : '')).filter(Boolean).join(' ') : '';
   const full = (t: string) => (/[.!?:)]$/.test(t.trim()) ? t.trim() : t.trim() + '.');
-  const help = full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
+  // what it needs before it can be used at all, said first and in plain words (Leon, 10 Nov 2026)
+  const help = needsText(e.id) + full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
   return { key: e.id, id: e.id, name: e.name, ap: e.ap, apText: e.ap + ' AP', rounds, line: e.line || '', ok: e.ok, why, lent: e.lent, signature: e.signature, built: e.built,
     mark, markTitle, title: e.name + ' · ' + e.ap + ' AP' + (rounds ? ' · ' + rounds : '') + '. ' + help + (why ? ' (' + why + ')' : '') + (markTitle ? ' ' + markTitle : ''), help, aim: e.aim, choices: e.choices || [] };
 };
@@ -78,9 +94,9 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
   if (!cb || !u) return [];
   const hands: Hand[] = ['main', ...(u.offWeapon && (WEAPON as any)[u.offWeapon] ? ['off' as Hand] : [])];
   const pv = (() => { try { return physView(cb, u, u.side, g); } catch { return null; } })();
-  return hands.map((hand): WeaponBlock | null => {
+  const blocks = hands.map((hand): WeaponBlock | null => {
     const weaponId = hand === 'off' ? u.offWeapon : u.weapon, w: any = (WEAPON as any)[weaponId]; if (!w) return null;
-    let pad: PadGroup[] = []; try { pad = techniquePad(cb, u, hand, g); } catch { pad = []; }
+    let pad: PadGroup[] = []; try { pad = techniquePad(cb, u, hand as 'main' | 'off', g); } catch { pad = []; }
     const system = weaponSystem(weaponId) as 'melee' | 'ranged';
     const all = pad.flatMap((gr) => gr.entries), plainE = all.find((e) => e.plain) || null;
     const groups = pad.filter((gr) => gr.group !== 'watch' && gr.group !== 'answer').map((gr) => ({ key: gr.group, label: gr.label.toUpperCase(), chips: gr.entries.filter((e) => !e.plain).map(chipOf) })).filter((gr) => gr.chips.length);
@@ -98,12 +114,24 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
       pips = Array.from({ length: pv.momentum.max }, (_, i) => ({ key: 'm' + i, on: i < pv.momentum!.now }));
     } else if (system === 'ranged') {
       const loaded = hand === 'off' ? u.offAmmo ?? 0 : u.ammo ?? 0;
-      meter = (w.magazine != null ? loaded + ' / ' + w.magazine + ' loaded' : '') + (w.heat_limit ? (w.magazine != null ? ' · ' : '') + 'Heat ' + (hand === 'main' ? u.heat || 0 : 0) + ' / ' + w.heat_limit : '');
+      meter = (w.magazine != null ? loaded + ' / ' + w.magazine + ' loaded' : '') + (w.heat_limit ? (w.magazine != null ? ' · ' : '') + 'Heat ' + (u.heat || 0) + ' / ' + heatLimit(u, w) : '');
     }
     return { hand, weaponId, name: (hand === 'main' ? u.weaponName : null) || w.name, icon: gearIconUri(weaponId), iconOff: gearIconUri(weaponId, GEAR_INK_OFF), system, meter, pips, meterHint,
       plain: plainE ? chipOf(plainE) : null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch };
   }).filter((b): b is WeaponBlock => !!b);
+  // Two weapons of one kind (two guns, two melee weapons): a third block for what both do together (Leon, 10 Nov 2026):
+  // the paired attack, the techniques that can be made with each in turn, and (the screen adds it) reloading both.
+  const bm = blocks.find((b) => b.hand === 'main'), bo = blocks.find((b) => b.hand === 'off');
+  if (bm && bo && bm.system === bo.system) {
+    let pe: PadEntry[] = []; try { pe = pairedPad(cb, u, g); } catch { pe = []; }
+    const chips = pe.map(chipOf);
+    blocks.push({ hand: 'both', weaponId: bm.weaponId, name: 'Both hands', icon: bm.icon, iconOff: bm.iconOff, system: bm.system, meter: bm.name + ' + ' + bo.name, pips: [], meterHint: 'Main hand −1, off hand −3 (better by 1 for every 3 Dexterity, to −1). The dearer of the two costs, +1 AP.',
+      plain: null, groups: chips.length ? [{ key: 'paired' as any, label: 'WITH BOTH WEAPONS · EACH IN TURN', chips }] : [], usable: chips.filter((c) => c.ok).length, total: chips.length, watch: [] });
+  }
+  return blocks;
 }
+/** The row of the paired attack (the engine's combat/paired), the first row of the both-hands block. */
+export const PAIRED = 'paired';
 
 /** The Attack tab's rows for the blocks: [id, label, cost, text, why] as the action list wants them. */
 export function blockItems(blocks: WeaponBlock[]): [string, string, string, string, (string | null)?][] {
@@ -111,7 +139,9 @@ export function blockItems(blocks: WeaponBlock[]): [string, string, string, stri
   // (each block's header names the weapon and its hand, so the rows don't repeat it)
   for (const b of blocks) {
     if (b.plain) out.push([techAction(b.hand, b.plain.id), b.plain.name, b.plain.apText, b.plain.help, b.plain.ok ? null : b.plain.why]);
-    out.push([padAction(b.hand), 'Techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', 'What you can do with the ' + b.name + ': pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
+    if (b.hand === 'both') out.push(['paired', b.system === 'melee' ? 'Strike with both' : 'Fire both', 'AP +1', 'One attack with each weapon, at one target: the dearer of the two costs + 1 AP. Main hand −1, off hand −3 (better by 1 for every 3 Dexterity, to −1).']);
+    if (b.hand === 'both' && !b.total) continue; // no shared technique: only the paired attack
+    out.push([padAction(b.hand), 'Techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', (b.hand === 'both' ? 'A technique made with each weapon in turn, main hand −1 and off hand −3, for 1 AP more' : 'What you can do with the ' + b.name) + ': pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
   }
   const watch = watchChips(blocks);
   if (watch.length) out.push([TWATCH, 'Hold a shot', '', 'Hold a shot until its trigger: Overwatch, Deny, Cover Me, Dead to Rights. It fires on the enemy\'s turn.', watch.some((c) => c.ok) ? null : watch[0].why]);

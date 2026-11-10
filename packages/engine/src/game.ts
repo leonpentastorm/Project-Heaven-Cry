@@ -10,7 +10,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { unitSees, sideSees, pullFree, dropNailed, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -30,7 +30,7 @@ import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emit
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -1362,7 +1362,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     }
     case 'combat/technique': {
       // Physical 2.0: the technique checks its own targets and tiles (an ally, a tile, several enemies); a tile may come as a map reference.
-      const { type: _t, unitId: _u, id, _w: _internal, ...rest } = a as any; const args: TechArgs = { ...rest }; // _w is the core's own mark: never taken from a client
+      const { type: _t, unitId: _u, id, _w: _internal, _pair: _internal2, ...rest } = a as any; const args: TechArgs = { ...rest }; // _w is the core's own mark: never taken from a client
       if (typeof args.tile === 'string') args.tile = tileKey(g, args.tile);
       if (args.targetId && !anyTarget(cb!.units.find((x) => x.id === args.targetId), u)) fail('Pick someone else.');
       if (!TECHNIQUE[id]) fail('No such technique.');
@@ -1566,6 +1566,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
     case 'wear': err = equip(c, idx, 'worn'); break; // a light piece already there comes off into the pack (item 685)
     case 'mod': err = fitMod(c, idx); break;
     case 'swap': {
+      { const sw = secondWeaponWhy(c, c.weapon, c.offHand?.id); if (sw) return sw; } // the main-hand weapon becomes the second one
       if (disarmed) leaveDowned();
       const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
       c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods, ...(off.name ? { name: off.name } : {}) };
@@ -1613,6 +1614,7 @@ setGearService({
     if (!gearInFight(g, cb, u, c, { op: 'drop', slot: hand }, { free: true, at, out }) && id && WEAPON[id]) cb.log.push(c.name + '\'s ' + WEAPON[id].name.toLowerCase() + (at ? ' lands at ' + refOf(at) + '.' : ' stays where it struck.'));
     return out[0] || null;
   },
+  take(cb, u, it) { const g: GameState | null = boundGame(); return !!g && takeIntoHand(g, cb, u, it); },
   // The unit as the draw would leave it (the same plan, equip and rebuild the real draw runs, on a copy of the
   // character): the weapon fields for the card, or the draw's own refusal. Nothing is changed.
   asDrawn(cb, u, item) {
@@ -1659,7 +1661,7 @@ function finishCombat(g: GameState) {
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
-  for (const u of cb.units) if (u.nailed) dropNailed(cb, u); // rules 1.12: a weapon left in someone falls where they stand when the fight ends
+  for (const u of cb.units) { if (u.nailed) dropNailed(cb, u); if (u.stuck) dropStuck(cb, u); } // rules 1.12: a weapon left in someone falls where they stand when the fight ends
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
   noteDeaths(cb, g.rng); magicOut(g, cb, true);
   const won = cb.over === 'win';

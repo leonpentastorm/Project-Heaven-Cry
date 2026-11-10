@@ -9,11 +9,12 @@
 //   Hamstring with Point: the target's u.tech.hamstring = { lame } (the Slowed it was given): no Sprint or Disengage
 //     while that Slowed lasts.
 //   Throw: Dexterity replaces the weapon's skill on the roll, and the weapon goes to the pile on the target's tile.
-import { technique, strike, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
+import { technique, strike, loseWeaponInto, takeWeapon, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
 import type { Tech } from './shared';
 import { canStrike, loseWeapon } from '../core';
 import { PHYS_RULES } from '../data';
-import { type Combat, type Unit, alive, dist, lineOfSight } from '../../combat';
+import { type Combat, type Unit, alive, dist, lineOfSight, refOf, weaponDamage, dropToPile, hurtUnit } from '../../combat';
+import { WEAPON } from '../../data';
 import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
 import { boundGame } from '../../effects/hooks';
@@ -184,8 +185,40 @@ technique({
     const v = r.target || tgt;
     if (fx && v !== tgt) Object.assign(fx, { to: v.pos, target: v.id }); // a redirected throw flies to (and lands by) the unit really struck
     if (p === 'heavy' && (t.preview ? (t.note('On a hit:'), true) : r.hit && !r.killed && alive(v))) { const was = !!v.prone; stop(t, v, 'prone', { save: ['body'] }); fallFx(t, v, was); }
-    loseWeapon(t, v.pos);
+    // A hit leaves the weapon in the target (Leon, 10 Nov 2026): it falls when the target does, or comes back with Pull Out
+    // from next to it. A miss, or a throw that fells the target, lands on its tile as before.
+    if (t.preview) { t.note('On a hit the weapon stays in the target: Pull Out from next to it brings it back (1 AP), or it falls when the target does. On a miss it lands at ' + refOf(v.pos) + '.'); return null; }
+    if (r.hit && !r.killed && alive(v)) loseWeaponInto(t, v); else loseWeapon(t, v.pos);
     return null;
   },
   ai: (t) => (t.tgt && t.holds('thrown') && dist(t.u.pos, t.tgt.pos) > 1 ? 4 : 0),
+});
+
+// ---------- 28. Pull Out (free; Leon, 10 Nov 2026) ----------
+// Next to a unit with a thrown weapon stuck in it: wrench it out. The weapon comes straight back into a free hand, the
+// target takes half the weapon's damage (armour counts) and Bleeds. No roll. 1 AP. It counts as a hit for Momentum.
+const stuckFor = (t: any, v: any) => { const l: any[] = v?.stuck || []; return l.find((x) => x.by === t.u.id) || l[0] || null; };
+technique({
+  id: 'pull_out',
+  check(t) {
+    const v = t.tgt; if (!v) return 'Pick the one your weapon is stuck in.';
+    if (!stuckFor(t, v)) return 'No weapon is stuck in ' + v.name + '.';
+    if (dist(t.u.pos, v.pos) > 1) return 'Stand next to ' + v.name + ' to pull the weapon out.';
+    const mainFree = t.u.weapon === 'fists' || !WEAPON[t.u.weapon];
+    if (!mainFree && t.u.offWeapon) return 'Free a hand first.';
+    return null;
+  },
+  run(t) {
+    const v = t.tgt!, e = stuckFor(t, v), w = WEAPON[e.weapon];
+    const dmg = Math.max(1, Math.round(weaponDamage(w, 1, t.c?.skills.raw_power || 0) * t.num('damage_pct', 50) / 100));
+    if (t.preview) { t.note('The ' + w.name.toLowerCase() + ' comes back to your hand. ' + v.name + ' takes ' + dmg + ' (before armour) and is Bleeding. No roll.'); landed(t, 1); return null; }
+    v.stuck = (v.stuck || []).filter((x: any) => x !== e); if (!v.stuck!.length) delete v.stuck;
+    if (!takeWeapon(t.cb, t.u, e.weapon, e.item)) dropToPile(t.cb, t.u.pos, [e.item || { id: e.weapon, name: w.name, qty: 1, kind: 'weapon', weapon: e.weapon } as any], 'drop');
+    meleeFx(t, 'throw', { from: v.pos, to: t.u.pos, target: v.id, weapon: e.weapon, back: true });
+    t.cb.log.push('  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + hurtUnit(v, dmg, false, t.cb, 'weapon', t.u) + '.');
+    if (alive(v)) cond(t, v, 'bleeding');
+    landed(t, 1);
+    return null;
+  },
+  ai: () => 0,
 });

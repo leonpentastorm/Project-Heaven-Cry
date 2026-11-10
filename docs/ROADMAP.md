@@ -41,6 +41,14 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
    Weapons already go over the caps (spec item 591), so a damage simulator would help. Every number in section 14
    is provisional.
+4a. **Skeleton 2.0** (rules 1.13, to be 0.19.0): the skill-web pass. Plan `docs/design/handoffs/skeleton-2.0-PLAN.md`;
+   design `docs/design/proposals/2026-11-nine-doors.md` sections 13 to 18. Next up.
+4b. **Queued behind it, with the equipment pass ("Equipment 2.0"):**
+   - **Weapon Arts** (Leon, 10 Nov 2026): a weapon's own special action as a card, charged by kills, on its own row of
+     the Attack tab, movable to another weapon at drill mark III; one a weapon, two for a special martial class, one
+     for each weapon when dual wielding. Recorded in `docs/design/proposals/2026-11-weapon-arts.md`; not designed yet.
+   - **Tri-scale armour** (hybrid armour gated by two or three beta skills, with its own mechanics).
+   - The four playstyles Skeleton 2.0 leaves open (Ingenuity, Visualization, Durability, Empathy).
 5. **Advanced classes, batch 1: the 9 squared classes.** Juggernaut, Berserker, Gunslinger, Ghost, Grand Sigilist,
    Mirage, Heartbinder, Heartfed, Saint. Roadmap: `docs/design/class-roster-rev3-proposal.md` section 7. Shelved
    moves to bring back are listed in `docs/design/move-pool.md`. The data already carries `kind`/`pair`/`batch`, so

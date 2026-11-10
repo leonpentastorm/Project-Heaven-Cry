@@ -155,12 +155,17 @@ describe('a whole fight with every Soul caster', () => {
     const t0 = Date.now();
     for (let r = 1; r <= 10; r++) {
       cb.round = r;
-      for (const e of es) if (!e.dead && !e.downed) turn(cb, e, seed(80, 300 + r * 13 + es.indexOf(e)));
+      for (const e of es) if (!e.dead && !e.downed) {
+        const n0 = cb.log.length, start = e.pos; turn(cb, e, seed(80, 300 + r * 13 + es.indexOf(e)));
+        // 0.18.1 (Leon's log: "Heart adept moves to P3, P2, P3, P2"): nobody walks back onto a tile it stood on this turn
+        const went = [start, ...cb.log.slice(n0).map((l) => (l.startsWith(e.name + ' moves to ') ? l.split(' moves to ')[1].split(' ')[0] : '')).filter(Boolean)];
+        const refs = went.slice(1); expect(new Set(refs).size, e.name + ' round ' + r + ': ' + refs.join(' → ')).toBe(refs.length);
+      }
       for (const p of ps) if (!p.dead && !p.downed) { cb.turn = cb.order.indexOf(p.id); p.ap = 6; const [x, y] = p.pos.split(',').map(Number); moveUnit(cb, p, Math.min(19, x + 1) + ',' + y, seed()); }
     }
     expect(Date.now() - t0).toBeLessThan(8000);
     expect(cb.log.some((l) => /MANA SHORT/.test(l))).toBe(false);
-    for (const e of es.slice(0, 3)) { expect(fx(cb, 'burn', e), e.name).toHaveLength(0); expect(fx(cb, 'release', e).length, e.name).toBeGreaterThan(0); }
+    for (const e of es.slice(0, 3)) { expect(fx(cb, 'burn', e), e.name).toHaveLength(0); expect(cb.log.some((l) => l.startsWith(e.name + ' releases ')), e.name).toBe(true); } // (the log, not the effects list: that one is capped, and a long fight drops its early events)
     expect(ps.some((p) => p.hp < 500)).toBe(true);
   });
 });

@@ -152,6 +152,8 @@ export interface Unit {
   tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
   techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean;
   /** Rules 1.12: held where it stands until someone spends the AP to free it (Run Through, a nailing arrow): who did it, with which technique, the AP, and a weapon left in it. */
+  /** weapons thrown into this unit and still in it (rules 1.12, Throw): they fall where it falls; Pull Out takes one back */
+  stuck?: { by: string; weapon: string; item?: PackItem }[];
   nailed?: { by: string; id: string; ap: number; weapon?: string; /** the weapon's own entry (rarity, wear, mods, name), kept so it comes back as it was */ item?: PackItem }; pressedThis?: { t: string; ids: string[] }; nearFoe0?: number; noWatch?: number;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
@@ -975,6 +977,12 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   else if (!melee) {
     // A unit with infinite ammo (the drone, item 370) spends no round, takes no Heat and never jams.
     if (w.magazine != null && !att.infiniteAmmo) att.ammo = Math.max(0, att.ammo - 1);
+    // A crossbow's shot loads the next bolt as part of it (the "autoload" property; Leon, 10 Nov 2026): from the bolts
+    // carried, or freely for a unit whose spares aren't counted. With none left it stays empty.
+    if (w.magazine != null && !att.infiniteAmmo && (w.properties || []).includes('autoload') && att.ammo < w.magazine) {
+      if (!att.mags) att.ammo = w.magazine;
+      else { const take = Math.min(w.magazine - att.ammo, att.loose || 0); if (take > 0) { att.loose = (att.loose || 0) - take; att.ammo += take; } }
+    }
     if (w.heat_limit && !att.infiniteAmmo) att.heat += 1; att.shotsThisTurn++;
     // A weapon that can't jam (no Heat limit: bows, the flamer, the breacher tube) fumbles instead: −1 AP next turn (plan 2.9; provisional).
     if (canJam(w) && !att.infiniteAmmo) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= heatLimit(att, w))) att.jammed = true; }
@@ -1049,7 +1057,10 @@ function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): 
   return out;
 }
 /** A gun's Heat limit for this unit: the weapon's, + items (stat 'heat_limit'; Belt Discipline: hooks gap J1). */
-export const heatLimit = (u: Unit, w: WeaponDef) => (w.heat_limit || 0) + (u.charId || u.held ? statQuery({ u }, 'heat_limit').add : 0);
+/** Two guns that build Heat share one pool (Leon, 10 Nov 2026): one bar, its limit the two limits added, so there is
+ * one number to watch. Either gun's shot adds to it; it cools 2 a turn for each of the two. */
+const heatPair = (u: Unit): WeaponDef | null => { const m = WEAPON[u.weapon], o = u.offWeapon ? WEAPON[u.offWeapon] : null; return m && o && m.heat_limit && o.heat_limit ? o : null; };
+export const heatLimit = (u: Unit, w: WeaponDef) => { const o = heatPair(u), m = WEAPON[u.weapon]; return (o && (w === m || w === o) ? (m.heat_limit || 0) + (o.heat_limit || 0) : w.heat_limit || 0) + (u.charId || u.held ? statQuery({ u }, 'heat_limit').add : 0); };
 /** After a critical: Injury resistance (d100), then a d6 for the location (spec: Injuries). Returns the log suffix.
  * 'injury' {t, d, loc, side, cancel, noDaze, noHalve} fires before it lands (cb given; hooks gap A9): cancel stops
  * it, noDaze/noHalve keep the injury but not its AP or Movement cost. */
@@ -1118,7 +1129,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
   u.ap = t.ap; for (const l of t.lines) cb.log.push(l);
   if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
-  u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - 2); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
+  u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
   // Stunned (spec): the turn is lost; the engine passes it (endTurn).
   if (condOn(u, 'stunned') && !u.downed) { u.ap = 0; u.skipTurn = true; cb.log.push(u.name + ' is Stunned and loses the turn.'); }
   emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round });
@@ -1209,6 +1220,12 @@ export function endTurn(cb: Combat, rng: Rng) {
 /** Why a unit can't move at all right now (Downed, prone, Pinned, Grappled, Commanded to halt), or null. */
 /** What nails a unit lets go (pulled free, the unit dead, the fight over): a weapon left in it falls into the pile on its
  * tile as the weapon it was. */
+/** Every weapon stuck in a unit (a Throw that hit) falls into the pile on its tile: it died, gave up, or the fight ended. */
+export function dropStuck(cb: Combat, target: Unit): void {
+  const list = target.stuck; if (!list || !list.length) return; delete target.stuck;
+  const items = list.map((x) => x.item || (WEAPON[x.weapon] ? gearEntry(x.weapon) : null)).filter(Boolean) as PackItem[];
+  if (items.length) dropToPile(cb, target.pos, items, 'drop');
+}
 export function dropNailed(cb: Combat, target: Unit): void {
   const n = target.nailed; if (!n) return; delete target.nailed;
   const it = n.item || (n.weapon && WEAPON[n.weapon] ? gearEntry(n.weapon) : null);
@@ -1805,7 +1822,9 @@ export const enemyStep = (s: EnemyStep) => { ENEMY_STEPS.push(s); };
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
+  const stood = new Set<string>([u.pos]); // the tiles it has stood on this turn: it doesn't pace between them
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
+    stood.add(u.pos);
     // 'enemy_action_start' {u, step}: before each enemy action; an item may open a window (Between Heartbeats) or set
     // ctx.skip to make the enemy lose the action. A window pauses the enemy until it closes.
     const ea: any = emit(cb, 'enemy_action_start', { u, step, skip: false, cb, rng });
@@ -1833,7 +1852,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
     if (!pcs.length) break;
-    const best = enemyCloseTile(cb, u, mode, order, pcs, w);
+    const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);
     if (!best || moveUnit(cb, u, best.tile, rng)) break;
   }
 }
@@ -1852,21 +1871,34 @@ function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string
 /** Where an enemy closes in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never
  * nearer the source; fleeing: the tile farthest from every PC). 'ai_move_risk' {u, from, to, risk} lets items add to a
  * tile's cost (Anchor: walking away from a Defender who will strike), only while someone listens. Pure. */
-function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon]): { tile: string; near: Unit | null } | null {
+function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon], stood?: Set<string>): { tile: string; near: Unit | null } | null {
   const P = paths(cb, u.pos, u.id);
   const fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
   const risky = anyOn(cb, 'ai_move_risk');
   // A False Image it was fooled by is someone standing there, as far as it knows (spec item 573): never a tile to end on.
   const imaged = new Set(pcs.filter((t) => isGhost(t)).map((t) => t.pos));
-  let best: string | null = null, bestScore = Infinity;
-  for (const [k, tiles] of Object.entries(P.dist)) {
-    if (k === u.pos || imaged.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
-    if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
-    const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
+  // Where it stands is the tile to beat: a move that gains nothing is not made (it used to take the best OTHER tile
+  // every step, so an enemy with nothing to attack walked back and forth between two equal tiles), and it never walks
+  // back onto a tile it already stood on this turn.
+  const score0 = (k: string, tiles: number) => { const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
     const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));
-    let score = (order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100) + near + tiles * 0.1) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
+    // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
+    return order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100 + near) + tiles * 0.1; };
+  let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05;
+  for (const [k, tiles] of Object.entries(P.dist)) {
+    if (k === u.pos || imaged.has(k) || stood?.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
+    if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
+    let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
     if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
     if (score < bestScore) { bestScore = score; best = k; }
+  }
+  // Nothing nearer or in sight within this turn's reach, and it sees nobody from here: head for the nearest tile anywhere
+  // that has a line on someone (around a wall, not up against it), one turn's walk at a time.
+  if (!best && order !== 'flee' && !risky && score0(u.pos, 0) >= 100) { // (not when an item prices the walk: Anchor's blow is weighed tile by tile above)
+    let goal: string | null = null, gd = Infinity;
+    for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || tiles >= gd || score0(k, 0) >= 100) continue; if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue; gd = tiles; goal = k; }
+    if (goal) { const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity;
+      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; } } }
   }
   if (!best) return null;
   const b = best;
