@@ -11,6 +11,7 @@ import sigilsJ from '../../../data/sigils.json';
 import enemiesJ from '../../../data/enemies.json';
 import lootJ from '../../../data/loot_tables.json';
 import feelingsJ from '../../../data/feelings.json';
+import techniquesJ from '../../../data/techniques.json';
 import { verdictFor } from './effects/coverage';
 
 export interface WikiEntry { key: string; name: string; text: string }
@@ -28,7 +29,8 @@ function build(): WikiEntry[] {
   for (const t of TRAITS as any[]) add('trait:' + t.id, t.name, line(t.name + '.', who('trait:' + t.id), t.text, t.narrator_hook ? 'Hooks: ' + t.narrator_hook : ''));
   for (const p of PERKS as any[]) if (p.tier !== 'ultimate') add('perk:' + p.id, p.name, line(p.name + ' (' + p.tier + (p.skills?.length ? ', ' + p.skills.map((x: string) => SKILL[x]?.name || x).join(' + ') : '') + ').', who('perk:' + p.id, p.tier === 'acquired' ? 'II' : p.tier), p.text, p.deed ? 'Deed: ' + p.deed : ''));
   for (const w of WEAPONS as any[]) add('weapon:' + w.id, w.name, line(w.name + ': a ' + (w.hands || '') + ' ' + w.category + (w.ammo ? ' firing ' + w.ammo : '') + ', used with ' + (SKILL[w.skill]?.name || w.skill) + '.',
-    w.grants ? 'Grants ' + w.grants.name + ': ' + w.grants.text : '', w.text, w.lore ? 'Lore: ' + w.lore : '', w.price_credits ? 'Price ' + w.price_credits + ' credits.' : ''));
+    w.grants ? 'Grants ' + w.grants.name + ': ' + w.grants.text : '',
+    w.phys ? 'Properties: ' + (w.phys.props.join(', ') || 'none') + '.' + (w.phys.teaches ? ' Lends the technique ' + (TQ.find((t: any) => t.id === w.phys.teaches)?.name || w.phys.teaches) + ' while held, and teaches it at drill mark I.' : '') : '', w.text, w.lore ? 'Lore: ' + w.lore : '', w.price_credits ? 'Price ' + w.price_credits + ' credits.' : ''));
   for (const [id, it] of Object.entries(ITEM) as [string, any][]) add('item:' + id, it.name, line(it.name + ' (' + (it.category || 'item') + (it.slot ? ', ' + it.slot.replace(/_/g, ' ') : '') + ').', it.text, it.price_credits ? 'Price ' + it.price_credits + ' credits.' : ''));
   for (const c of (conditionsJ as any).items) add('condition:' + c.id, c.name, line(c.name + ' (' + c.kind + ').', c.text));
   // Class Roster Revision 3: one base class per attribute; advanced classes are shelved (being rebuilt).
@@ -94,8 +96,22 @@ function build(): WikiEntry[] {
   for (const t of lt.items as any[]) add('loot:' + t.id, t.name, line(t.name + ' (drop table).', t.text, t.entries.length ? 'Can drop: ' + t.entries.map((e: any) => nm(e.item) + (e.rarity ? ' (' + e.rarity + ')' : '')).join(', ') + '.' : 'Nothing by default.', t.none ? 'Often nothing.' : 'Always something.'));
   add('form:bolt', 'Bolt', line('Bolt (Outburst shape, the default): one target at the aim, 4 tiles (Far: 8) + the Soul range bonus, in sight; rolls Will Power against Defense; damage ×1.'));
   for (const m of (MODULES as any[]).filter((x) => x.form)) add('form:' + m.id, m.name, line(m.name + ' (Outburst shape; a module, +' + m.cost + ' MP).', m.text));
+  // Physical 2.0 (rules 1.12): the two meters, the weapon properties and every technique. The engine runs all of them;
+  // the entries are for telling what happened.
+  const pr = TR.pressure, cap = (x: string) => x[0].toUpperCase() + x.slice(1);
+  add('physical:momentum', 'Momentum', line('Momentum (melee, rules 1.12): a meter on the fighter, 0 to ' + TR.momentum.max + ' (a Fighter: ' + TR.momentum.fighter_max + ').',
+    'Each melee strike that hits gives 1, and 1 more when the technique differs from the last one used that turn. A turn\'s melee techniques are a chain: an Opener first, Strikes and 1 AP Links in any order, a Finisher last (it needs 2 and spends all). Answers are reactions.',
+    'Describe a chain as one continuous exchange, not as separate swings. The engine tracks it.'));
+  add('physical:pressure', 'Pressure', line('Pressure (ranged, rules 1.12): a meter on the one being shot at, 0 to ' + pr.max + '. Pressed at ' + pr.pressed + ': worse aim with ranged weapons, and it can hold no shot. Suppressed at ' + pr.suppressed + ': an enemy loses 1 AP, and nobody Suppressed makes reactions that attack or move (protective ones still work). Broken at ' + pr.broken + ' (enemies only): it loses 2 AP and wants cover.',
+    'Players stop at ' + pr.player_max + ', elites at ' + pr.elite_max + ', bosses at ' + pr.boss_max + '. It rises with the first ranged hit a shooter lands on a target each turn, with Press techniques, and when a comrade is shot down nearby; it falls each turn, faster behind cover unseen or when closing in, and with each melee hit landed. A Take needs a Pressed target and spends 2 of its Pressure.',
+    'Tell it as fire keeping heads down, never as a number. The engine tracks it.'));
+  for (const [id, text] of Object.entries(TR.props as Record<string, string>)) add('property:' + id, cap(id), line(cap(id) + ' (a weapon property, rules 1.12).', text));
+  for (const t of TQ) add('technique:' + t.id, t.name, line(t.name + ' (' + t.system + ' technique, ' + String(TR.group_names[t.group] || t.group).replace(/s$/, '').toLowerCase() + '; ' + (t.ap.base === 'reaction' ? 'a reaction' : t.ap.base === 'flat' ? t.ap.value + ' AP' : 'the weapon\'s attack AP' + (t.ap.add ? ' +' + t.ap.add : '')) + (t.rounds ? ', ' + t.rounds + (t.rounds === 1 ? ' round' : ' rounds') : '') + ').', '[engine]',
+    t.trigger ? 'When ' + t.trigger + ':' : '', t.text, t.suppressed ? 'Against a Suppressed target: ' + t.suppressed : '',
+    t.lines.length ? 'With the right weapon: ' + t.lines.map((l: any) => l.props.map(cap).join(l.match === 'all' ? ' and ' : ' or ') + ': ' + l.text).join(' ') : '', t.free ? 'Everyone knows it.' : ''));
   return out;
 }
+const TQ: any[] = (techniquesJ as any).items, TR: any = (techniquesJ as any).rules;
 let cache: WikiEntry[] | null = null;
 export const wikiEntries = () => (cache ||= build());
 export function wikiLookup(key: string): WikiEntry | null {
