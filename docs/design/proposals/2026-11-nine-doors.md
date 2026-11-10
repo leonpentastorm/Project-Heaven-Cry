@@ -257,3 +257,50 @@ The last three are what give a six-gamma character a turn against a machine or a
 ### 9.5 Mastery unlocks that break the rule (left for the next pass)
 
 Tuned (Proficiency: weapon damage on a beta), Weak Point (Analysis: squad damage on a beta), Proven Formula (Rumination: Sigil discount), Paint the Field (Visualization: a Sigil rider), Hand-Off (Camaraderie), Second Wind (Durability: a self-heal on an alpha), Stand Still (Composure), and the Soul module gates that sit on Lore Master, Implication and Composure.
+
+## 10. Gamma in a fight: Calls *(Suggested name)*
+
+Leon, 10 Nov 2026: the fight-start shield and the banked AP of 9.3 would dwarf what the other gammas give; drop them. Maybe every gamma has a social action in a fight that works on AP: give AP, order a reload that costs the other player none, support.
+
+**Why the two were broken.** Banked AP cost nothing and paid its owner up to 2 AP every turn it was used; every other gamma line costs 2 AP to use. The shield gave raw protection from level 1, where the other betas give a percentage or a save.
+
+### 10.1 One frame for all nine
+
+Every gamma gets exactly one Call. All nine obey the same limits, so none can outgrow the others:
+
+1. A Call is spoken: 2 AP, to someone who can hear you (8 tiles, as Talk is today).
+2. One Call a turn.
+3. A unit can be helped by one Call a round, and hindered by one.
+4. A Call never deals damage, and never hands out more AP than it cost.
+5. A Call on an enemy is saved against 12 + the skill's modifier. A Call on an ally just works.
+6. The skill's points buy the same three steps for every Call: usable at 1 point; at 5 it costs 1 AP; at 7 its effect is one step stronger (noted per Call).
+
+### 10.2 The nine Calls
+
+All NEW and provisional. Names are suggestions.
+
+| Skill | Call | On | What it does | At 7 |
+|---|---|---|---|---|
+| Authority | **Order** | ally | They do one thing now, on their reaction and for none of their AP: reload, stand up, pick up, or move their Movement | two things |
+| Charisma | **Rally** | ally | They gain 1 AP now | and shed 1 Pressure |
+| Eloquence | **Brief** | ally | Their next action this round costs 1 AP less | their next two |
+| Composure | **Steady** | ally or self | Cancels 1 AP they would lose next turn (Dazed, Suppressed, an AP debt) | cancels 2 |
+| Reaction Speed | **Cue** | ally | They get a second reaction this round | and act straight after you in the order |
+| Vigilant | **Spot** | enemy (no save) | Points it out: the next ally to attack it this round ignores its cover, and it is no longer Hidden to them | the next two allies |
+| Sensory | **Warn** | ally | The next attack on them this round, they may step 1 tile first, free | 2 tiles |
+| Intimidation | **Threaten** | enemy (Body save) | Today's Shaken, and it loses 1 AP next turn | 2 AP |
+| Implication | **Taunt** | enemy (Heart save) | It must attack you; its first attack on you costs it 1 AP more | 2 AP more |
+
+**What the six-gamma character does now:** two Calls of AP's worth each turn, on allies when the enemy can't be talked to. It never adds AP to the squad in total (2 spent, at most 1 given), but it moves AP to where it matters: the gunner who needed one more shot, the downed medic who needed to stand.
+
+**Persuade and the offer of terms** stay as ways to talk an enemy down (Eloquence and Charisma); they are not Calls and don't use the one-a-turn limit.
+
+### 10.3 Conscience (a beta) without a new number
+
+Split the line that is moving anyway: **Camaraderie gives +10% healing received; Conscience gives +10% shields received.** Shields come mostly from Blessings, which is Virtue's own door, so the defence sits where its attribute plays.
+
+### 10.4 Questions
+
+1. Is "2 spent, at most 1 given" the right ceiling, or should a Call be allowed to break even?
+2. One Call a turn, or as many as your AP pays for?
+3. Should Order be able to make an ally **attack**? I left it out: it would be a second attack a round for the squad's best gun.
