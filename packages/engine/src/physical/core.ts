@@ -146,6 +146,7 @@ export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?:
   const w = WEAPON[weaponId] || WEAPON.fists;
   const fx: any = (w as any).grants?.effect || {};
   const base = def.ap.base === 'reaction' ? 0 : def.id === 'aimed_shot' && fx.op === 'aimed_ap' ? fx.value // the crossbow's Bolt Rest
+    : def.id === 'shot' ? Math.max(def.ap.value || 0, attackApCost(w, 'shot')) // a weapon whose shot costs more than 2 (the crossbow: 3, the next bolt loaded with it)
     : def.ap.base === 'flat' ? def.ap.value || 0 : attackApCost(w, isMelee(w) ? 'melee' : 'shot') + (def.ap.add || 0);
   const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));

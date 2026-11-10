@@ -975,6 +975,12 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   else if (!melee) {
     // A unit with infinite ammo (the drone, item 370) spends no round, takes no Heat and never jams.
     if (w.magazine != null && !att.infiniteAmmo) att.ammo = Math.max(0, att.ammo - 1);
+    // A crossbow's shot loads the next bolt as part of it (the "autoload" property; Leon, 10 Nov 2026): from the bolts
+    // carried, or freely for a unit whose spares aren't counted. With none left it stays empty.
+    if (w.magazine != null && !att.infiniteAmmo && (w.properties || []).includes('autoload') && att.ammo < w.magazine) {
+      if (!att.mags) att.ammo = w.magazine;
+      else { const take = Math.min(w.magazine - att.ammo, att.loose || 0); if (take > 0) { att.loose = (att.loose || 0) - take; att.ammo += take; } }
+    }
     if (w.heat_limit && !att.infiniteAmmo) att.heat += 1; att.shotsThisTurn++;
     // A weapon that can't jam (no Heat limit: bows, the flamer, the breacher tube) fumbles instead: −1 AP next turn (plan 2.9; provisional).
     if (canJam(w) && !att.infiniteAmmo) { if (fumble || (worn && roll <= 2) || (w.heat_limit && att.heat >= heatLimit(att, w))) att.jammed = true; }

@@ -84,7 +84,7 @@ describe('enemies holding every ranged technique', () => {
 
 describe('the ranged lane is complete', () => {
   it('every ranged technique in the data has a handler (the pad shows none as not built)', () => {
-    expect(RANGED.length).toBe(31);
+    expect(RANGED.length).toBe(32);
     for (const id of RANGED) expect(phys.handlerOf(id), id).toBeTruthy();
     const f = fight('decrkm_smg', 'ai-pad'); const c = f.char(f.pc);
     phys.ensurePhys(c).known = [...RANGED]; phys.ensurePhys(c).ready = { melee: [], ranged: [...RANGED] }; (phys.ensurePhys(c) as any).uncapped = true;

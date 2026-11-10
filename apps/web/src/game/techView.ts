@@ -60,6 +60,19 @@ export interface WeaponBlock {
   plain: TechChip | null; groups: ChipGroup[]; usable: number; total: number;
   watch: TechChip[];
 }
+/** A technique's requirement as a sentence for its card ("Needs a Pressed target. "), or '' when it has none. */
+export function needsText(id: string): string {
+  const d: any = TECHNIQUE[id]; if (!d) return '';
+  const n = d.needs || {}, out: string[] = [];
+  if (d.group === 'opener') out.push('An Opener: only as your first melee technique of the turn.');
+  if (n.momentum) out.push('Needs ' + n.momentum + ' Momentum or more, and spends all of it. It ends your chain for the turn.');
+  if (n.held && !/^Only on a target/.test(d.text || '')) out.push('Needs a target you have Grappled or Bound.');
+  if (n.pressed) out.push('Needs a Pressed target (Pressure 2 or more); it lowers that Pressure by 2. One Take a turn.');
+  if (n.hidden) out.push('Only while you are Hidden.');
+  if (n.last_round && !/^Only with the last/.test(d.text || '')) out.push('Only with the last round in the weapon.');
+  if (n.stowed) out.push('Used with a weapon in your pack, not the one in your hand.');
+  return out.length ? out.join(' ') + ' ' : '';
+}
 const chipOf = (e: PadEntry): TechChip => {
   const rounds = e.rounds === 'all' ? 'all rounds' : e.rounds ? e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
   const mark = e.signature ? '◆' : e.lent ? '◇' : '';
@@ -69,7 +82,8 @@ const chipOf = (e: PadEntry): TechChip => {
   const ln = e.line ? (TECHNIQUE[e.id]?.lines || []).find((l: any) => l.text === e.line) : null;
   const why1 = ln ? ln.props.map((p: string) => (propText(p) ? p.charAt(0).toUpperCase() + p.slice(1) + ': ' + propText(p) : '')).filter(Boolean).join(' ') : '';
   const full = (t: string) => (/[.!?:)]$/.test(t.trim()) ? t.trim() : t.trim() + '.');
-  const help = full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
+  // what it needs before it can be used at all, said first and in plain words (Leon, 10 Nov 2026)
+  const help = needsText(e.id) + full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
   return { key: e.id, id: e.id, name: e.name, ap: e.ap, apText: e.ap + ' AP', rounds, line: e.line || '', ok: e.ok, why, lent: e.lent, signature: e.signature, built: e.built,
     mark, markTitle, title: e.name + ' · ' + e.ap + ' AP' + (rounds ? ' · ' + rounds : '') + '. ' + help + (why ? ' (' + why + ')' : '') + (markTitle ? ' ' + markTitle : ''), help, aim: e.aim, choices: e.choices || [] };
 };

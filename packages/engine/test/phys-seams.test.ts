@@ -79,3 +79,27 @@ describe('rulings of 10 Nov 2026', () => {
     const a = f.unit(f.pc.id); expect(a.heat).toBeGreaterThanOrEqual(heatLimitOf(a)); expect(a.jammed).toBe(true);
   });
 });
+
+describe('the crossbow (0.18.1)', () => {
+  it('a Shot costs 3 AP and loads the next bolt as part of it; with no bolts left it stays empty', () => {
+    const f = physFight([{ weapon: 'crossbow', skills: SK }], [{ tier: 'soldier' }], { seed: 'X1' });
+    f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'H5'); foe.hp = foe.maxHp = 9000;
+    f.turn(f.pc); rig({ hit: true, die: 12 });
+    const u = f.unit(f.pc.id); u.maxDur = 100; u.dur = 100; u.ammo = 1; u.mags = []; u.loose = 1;
+    expect(f.pv('shot', { targetId: f.foe.id }).ap).toBe(3);
+    expect(f.tech('shot', { targetId: f.foe.id })).toBeNull();
+    expect([f.unit(f.pc.id).ammo, f.unit(f.pc.id).loose]).toEqual([1, 0]); // the next bolt is on
+    expect(f.tech('shot', { targetId: f.foe.id })).toBeNull();
+    expect(f.unit(f.pc.id).ammo).toBe(0); // the last one: nothing left to load
+  });
+  it('Heavy Bolt is its signature: 4 AP, +50% damage through 10 armour', () => {
+    expect(WEAPON.crossbow.damage).toBe(55); expect((WEAPON.crossbow as any).phys.teaches).toBe('heavy_bolt');
+    const f = physFight([{ weapon: 'crossbow', known: ['heavy_bolt'], skills: SK }], [{ tier: 'soldier' }], { seed: 'X2' });
+    f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'H5'); foe.hp = foe.maxHp = 9000; foe.armour = 10;
+    f.turn(f.pc); const u = f.unit(f.pc.id); u.maxDur = 100; u.dur = 100; u.ammo = 1;
+    const plain = f.pv('shot', { targetId: f.foe.id }), heavy = f.pv('heavy_bolt', { targetId: f.foe.id });
+    expect(heavy.ok).toBe(true); expect(heavy.ap).toBe(4);
+    expect(heavy.attacks[0].pv.pct).toBeGreaterThan(plain.attacks[0].pv.pct); // Precise: +2
+    expect((heavy.attacks[0].pv as any).dmg.total ?? 0).toBeGreaterThan(((plain.attacks[0].pv as any).dmg.total ?? 0) * 1.4);
+  });
+});

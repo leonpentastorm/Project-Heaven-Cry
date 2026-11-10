@@ -534,7 +534,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | .700 Blackpoint anti-materiel | Heavy | 90, ignores 10 armour | 40 | 3 | 3 | single; must be braced or prone | 15 kg |
 | Hellraiser LMG | Heavy | 25 | 18 | 100 | 14 | burst, auto; −2 to hit unless emplaced | 10 kg |
 | Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 20 | none | single | 1.5 kg |
-| Crossbow | Bow | 35 | 16 | 1 | none | single | 4 kg |
+| Crossbow | Bow | 55 | 16 | 1 | none | single | 4 kg |
 | Combat knife | Light melee | 15 (thrown: 6 tiles) | 1 | none | none | none | 0.5 kg |
 | Sabre | Light melee | 28 | 1 | none | none | none | 1.5 kg |
 | Ork machete | Heavy melee | 35 | 1 | none | none | none | 3 kg |
@@ -728,12 +728,12 @@ Weapon skills and lore:
 |---|---|---|---|---|---|---|
 | ✓ Recurve bow | 20 + 5 × Raw Power | 14 | quiver of 20 | 1.5 | 300 | |
 | Longbow | 25 + 6 × Raw Power | 20 | quiver of 20 | 2 | 450 | Raw Power 3 |
-| ✓ Crossbow | 35 | 16 | 1 bolt | 4 | 500 | |
+| ✓ Crossbow | 55 | 16 | 1 bolt | 4 | 500 | |
 | Repeating crossbow | 22 | 10 | 6 bolts | 3.5 | 700 | |
 
 - **Recurve · Nock and Loose:** if you haven't moved this turn, your second arrow costs 1 AP. *"Quiet, cheap, and it never jams."*
 - **Longbow · Arc:** indirect shot at −2, like Lob. *"Over the wall and through the roof."*
-- **Crossbow · Bolt Rest:** aimed shots cost 2 AP. *"Patience, cranked."*
+- **Crossbow · Bolt Rest:** a Shot costs 3 AP and loads the next bolt as part of it (no separate reload while bolts are carried); an Aimed Shot costs no more than a Shot. Its signature is **Heavy Bolt**. Provisional (item 955). *"Patience, cranked."*
 - **Repeating crossbow · Volley:** 3 AP; two bolts, each with its own roll. *"An Arkvelton toy that got out of hand."*
 
 ##### 7.7 Light blades: 6 types (1H, Dexterity)
@@ -1005,7 +1005,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 2 | **Charge** | weapon | After moving 3 or more tiles in a straight line this turn: strike at +10% damage per tile moved, up to +50%. | **Point:** ignores 5 armour. **Blunt or Heavy:** the target makes a Body save or falls Prone. **Reach:** you strike before it can take its Overwatch or Keep Back. |
 | 3 | **Feint** | 1 | No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it works. | **Light:** the save is at −2. **Hook:** on a failed save its weapon is also lowered (1 AP to raise). |
 | 4 | **Draw Cut** | weapon −1 | Draw this weapon from the pack or a sheath and strike in one action. Only if you started the turn with it stowed. | **Edge:** Bleeding on a hit. **Light:** if the target hasn't acted this fight, it counts as an ambush. |
-| 5 | **Ambush** | weapon | Only from Hidden: strike with the Ambush multiplier (today's rule), and gain 2 Momentum instead of 1. | **Point:** crits on 18–20. **Bare:** no damage, the target is Grappled and Silenced for 1 round instead. |
+| 5 | **Ambush** | weapon | Only from Hidden: strike with the Ambush multiplier, and gain 2 Momentum instead of 1. | **Point:** crits on 18–20. **Bare:** no damage, the target is Grappled and Silenced for 1 round instead. |
 
 **Strikes**
 
@@ -1017,7 +1017,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 9 | **Sunder** | weapon | Strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per attacker). | **Blunt or Hook:** 10 lower. **Edge:** if the target has no armour left, Bleeding instead. |
 | 10 | **Flurry** | weapon +1 | Two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits. | **Light:** three strikes. **Bare:** each hit after the first adds +1 to the next Bind or Throw Down this turn. **Thrown:** the strikes may go to two targets in throwing range; the weapons land in the pile on their tiles. |
 | 11 | **Hamstring** | weapon | Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. | **Edge:** no save. **Hook:** Prone instead of Slowed. **Point:** it also can't Sprint or Disengage while Slowed. |
-| 12 | **Bind** | weapon | No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding. | **Hook:** Brain save or it is Disarmed. **Bare:** it is Grappled (today's grapple rules). **Heavy:** the −2 becomes −4. |
+| 12 | **Bind** | weapon | No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding. | **Hook:** Brain save or it is Disarmed. **Bare:** it is Grappled. **Heavy:** the −2 becomes −4. |
 | 13 | **Half-Sword** | weapon | A short, driven thrust: ×0.8 damage, ignores 10 armour. | **Point:** ignores all armour. **Heavy:** full damage. **Bare or Blunt:** not available (greyed, with the reason). |
 | 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). It lands in the pile on the target's tile. | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
 
@@ -1027,7 +1027,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 |---|---|---|---|---|
 | 15 | **Sidestep** | 1 | Move 1 tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking. | **Light:** 2 tiles. |
 | 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn. | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
-| 17 | **Shove** | 1 | Today's Shove (push 1 tile, or Prone if blocked), at 1 AP as a Link. It gives Momentum when it works. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
+| 17 | **Shove** | 1 | Push an enemy next to you 1 tile, or knock it Prone if it can't move back. It gives Momentum when it works. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
 | 18 | **Trip** | 1 | The target makes a Body save or falls Prone. | **Hook or Reach:** the save is at −2. **Bare:** you may go Prone with it and it is Grappled. |
 | 19 | **Drag** | 1 | Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). | **Hook:** you pull from 2 tiles away (3 with Reach), up to 2 tiles. **Bare:** you may move 1 tile and bring it with you. |
 
@@ -1046,7 +1046,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | # | Technique | AP | What it does | With the right weapon |
 |---|---|---|---|---|
 | 25 | **Parry** | reaction | *When a melee attack hits you:* Roll your attack skill against the attacker's total. If you win, the hit is halved. A shield in the off hand adds +2. | **Light:** and you gain 1 Momentum. **Heavy:** you may parry for an adjacent ally. |
-| 26 | **Riposte** | reaction | *When a melee attack misses you:* Strike back for 0 AP (today's Sabre skill and Fighter move). | **Edge or Point:** +2 to hit. |
+| 26 | **Riposte** | reaction | *When a melee attack misses you:* Strike back for 0 AP. | **Edge or Point:** +2 to hit. |
 | 27 | **Keep Back** | reaction | *When an enemy steps into your reach:* Strike it first. If you hit, it makes a Body save or stops where it is. | **Reach:** your reach is 2 tiles, so most enemies never arrive. **Hook:** on a failed save it is also Prone. |
 
 #### The ranged techniques (31)
@@ -1057,19 +1057,20 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 |---|---|---|---|---|---|
 | 0 | **Shot** (free) | 2 | 1 | One shot. Everyone knows it; it takes no ready slot. | **Precise:** +1 if you haven't moved this turn. **Loud:** a miss gives +1 Pressure. |
 | 1 | **Snap Shot** | 2 | 1 | Draw or swap to this weapon and fire, at −2. | **Quick:** no penalty. **Heavy:** not available. |
-| 2 | **Burst** | 3 | 3 | Two rolls at one target, the second at −2. | **Auto:** three rolls (today's burst), and it may split between two adjacent targets. **Quick:** no −2. |
-| 3 | **Aimed Shot** (free) | 3 | 1 | +2 to hit (today's rule). | **Precise:** +3, and a critical on 18–20 if you haven't moved. **Drawn:** full draw, +25% damage. |
+| 2 | **Burst** | 3 | 3 | Two rolls at one target, the second at −2. | **Auto:** three rolls, and it may split between two adjacent targets. **Quick:** no −2. |
+| 3 | **Aimed Shot** (free) | 3 | 1 | +2 to hit. | **Precise:** +3, and a critical on 18–20 if you haven't moved. **Drawn:** full draw, +25% damage. |
 | 4 | **Called Shot** | 3 | 1 | −2 to hit. Choose leg (Slowed), arm (weapon lowered) or head (Dazed); the target makes a Body save. | **Precise:** no penalty. **Loud or Heavy:** leg is Prone instead. **Spread:** only within 4 tiles. |
 | 5 | **Walking Fire** | 3 | 1 | Move 2 tiles and fire one shot at any point of the move. | **Quick:** 3 tiles, and no opportunity attacks. **Auto:** the shot is a Burst for 3 rounds. **Heavy:** not available. |
 | 6 | **Punch Through** | 3 | 1 | Half cover counts −2, not −5, and the cover takes the damage as well. | **Heavy:** the round carries on to the next target in line at half. **Blast or Spread:** half cover is destroyed. |
 | 7 | **Lob** † | 3 | 1 | Fire at a target only an ally can see (through smoke or dark), at −4. | **Arc:** over full cover, at −2. **Blast:** you aim at the tile; no penalty, and everyone in the radius gains +2 Pressure. |
+| 31 | **Heavy Bolt** | 4 | 1 | One bolt at +50% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile. | **Precise:** +2 to hit. **Quick:** 1 AP less. |
 
 **Press**
 
 | # | Technique | AP | Rounds | What it does | With the right weapon |
 |---|---|---|---|---|---|
-| 8 | **Suppress** | 3 | 3 | One roll at +2. A hit is half damage and +2 Pressure; a miss is +1. | **Auto:** enemies within 1 tile of the target also gain +1. **Heavy, Braced:** it holds until your next turn: any enemy that moves or fires inside 3 tiles of the target gains +1 (today's Suppressing Fire). **Silent:** hits only. |
-| 9 | **Rake** † | 4 | 6 | Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit. | **Auto:** today's full-auto cone for 10 rounds; +1 Pressure hit or miss. **Spread:** the cone is 1 wider. |
+| 8 | **Suppress** | 3 | 3 | One roll at +2. A hit is half damage and +2 Pressure; a miss is +1. | **Auto:** enemies within 1 tile of the target also gain +1. **Heavy, Braced:** it holds until your next turn: any enemy that moves or fires inside 3 tiles of the target gains +1 Pressure. **Silent:** hits only. |
+| 9 | **Rake** † | 4 | 6 | Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit. | **Auto:** a full-auto cone for 10 rounds (one roll at −2 against every enemy near the line); +1 Pressure hit or miss. **Spread:** the cone is 1 wider. |
 | 10 | **Warning Shot** | 1 | 1 | No attack. The target makes a Heart save or gains +1 Pressure. | **Loud:** the save is at −2. **Silent:** not available. |
 | 11 | **Flush** | 3 | 1 | Hit the target's cover (no roll; the cover takes the damage). The target gains +2 Pressure. | **Spread or Blast:** double damage to the cover. **Arc:** the cover is ignored and the target takes half damage as well. |
 | 12 | **Mag Dump** † | 4 | all | Empty the weapon at one target: one roll per 3 rounds left (at most 4 rolls), each at −1 more than the last. +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty. **Spread:** both barrels, one roll at double damage within 4 tiles. **Drawn:** not available. |
@@ -1081,7 +1082,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 |---|---|---|---|---|---|
 | 14 | **Bead** | 1 | 0 | Name a target. Until you move or name another, your shots at it ignore one range band, and its Pressure doesn't fall while you see it. | **Precise:** +1 to hit it. **Heavy:** you may move 1 tile without losing it. |
 | 15 | **Spot** | 1 | 0 | Name a target for the squad: until your next turn allies have +1 to hit it, and the first ally to hit it adds +1 Pressure more. | **Precise:** allies also ignore one range band. **Silent:** the target isn't told. |
-| 16 | **Brace** | 1 | 0 | Today's Brace, opened to any weapon resting on half cover: Recoil halved. | **Heavy:** removes its penalties (today's rule). **Auto:** Suppress gives +1 more. |
+| 16 | **Brace** | 1 | 0 | Rest the weapon on half cover (a weapon with a bipod braces anywhere): Recoil halved until you move. | **Heavy:** removes its penalties. **Auto:** Suppress gives +1 more. |
 | 17 | **Load Special** | 1 | 0 | Chamber one special round you carry (armour-piercing, hollow-point, incendiary, enhanced) for your next Fire. The magazine stays as it is. | **Drawn:** not needed (any arrow, every shot). **Spread:** the whole cone gets the round's rider. |
 | 18 | **Shift** | 1 | 0 | Move 1 tile from cover to cover without setting off a Watch. | **Quick:** 2 tiles. **Heavy:** you stay Braced. |
 | 19 | **Vent** | 1 | 0 | −2 Heat now. | **Heavy:** −4 (a barrel swap). **Drawn:** not needed. |
@@ -1092,7 +1093,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | # | Technique | AP | Rounds | What it does | With the right weapon |
 |---|---|---|---|---|---|
 | 21 | **Dead Centre** † | 3 | 1 | One shot at +50% damage. *Suppressed:* Its cover doesn't count. | **Precise:** +2 to hit. **Drawn:** ignores 5 armour. |
-| 22 | **Pin Down** | 3 | 1 | A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned (today's condition) for 1 round. *Suppressed:* The save is at −2. | **Auto:** full damage. **Drawn or Silent:** nailed in place until it spends 2 AP. |
+| 22 | **Pin Down** | 3 | 1 | A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned for 1 round. *Suppressed:* The save is at −2. | **Auto:** full damage. **Drawn or Silent:** nailed in place until it spends 2 AP. |
 | 23 | **Rout** | 3 | 1 | No damage. The target makes a Heart save or runs its full move away from you, drawing opportunity attacks and Watches. *Suppressed:* The save is at −3. | **Loud:** −2 more. **Blast:** everyone Pressed in the radius. |
 | 24 | **Stopping Shot** | 2 | 1 | A shot. On a hit the target saves (Guts or Athletics, whichever is better) or loses 1 AP next turn and is pushed 1 tile. *Suppressed:* It also falls Prone on a failed save. | **Loud or Heavy:** pushed 2. **Spread:** pushed 2 and Prone either way. |
 | 25 | **Storm** | 3 | 1 | Move up to 3 tiles toward the target without its reaction, then shoot. *Suppressed:* Your shot is a critical on 18–20. | **Quick:** +2 to hit. **Spread:** Body save or Prone. |
@@ -1102,7 +1103,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 
 | # | Technique | AP | Rounds | What it does | With the right weapon |
 |---|---|---|---|---|---|
-| 27 | **Overwatch** (free) | weapon | 1 | *When the first enemy to move in your sight (today's rule, unchanged):* the held shot | **Precise:** +2. **Auto:** it is a Burst. **Spread:** anyone coming within 4 tiles. |
+| 27 | **Overwatch** (free) | weapon | 1 | *When the first enemy to move in your sight:* the held shot | **Precise:** +2. **Auto:** it is a Burst. **Spread:** anyone coming within 4 tiles. |
 | 28 | **Deny** | 2 | 1 | *When the first enemy to enter a tile you name:* the shot; on a hit it stops there | **Heavy, Braced:** any tile in a straight line of 3. **Blast:** the tile takes the blast. |
 | 29 | **Cover Me** | 2 | 1 | *When the first enemy to attack an ally you name:* that attack is at −2, and the enemy gains +1 Pressure | **Auto:** two allies. **Precise:** you also take the shot. |
 | 30 | **Dead to Rights** | 3 | 1 | *When a Pressed enemy you name attacks, stands up, reloads or leaves cover:* the shot lands first, at +2 | **Precise:** a critical on 18–20. **Silent:** you stay Hidden. |
@@ -1149,7 +1150,7 @@ Ranged:
 | .700 Blackpoint anti-materiel | Heavy, Precise, Loud | Dexterity | Agility | Dead Centre |
 | Hellraiser LMG | Heavy, Auto | Dexterity | Agility | Brace |
 | Recurve bow | Drawn, Silent, Quick | Dexterity | Agility | Pin Down |
-| Crossbow | Precise, Silent | Dexterity | Agility | — |
+| Crossbow | Precise, Silent | Dexterity | Agility | Heavy Bolt |
 | Frag grenade | Thrown, Blast, Arc | Dexterity | Agility | Rout |
 | Smoke grenade | Thrown, Blast, Arc | Dexterity | Agility | Head Down |
 | Flashbang | Thrown, Blast, Arc | Dexterity | Agility | — |
@@ -4919,3 +4920,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 952. **Readings made while building the core (rules 1.12):** a technique's AP is priced by the user's items as an attack's is (Southern Fist, Fire Discipline); companions, puppets and the drone use the free techniques only; a held melee strike is not a held shot (Pressed leaves it); a technique's step is the engine's own move, free and without opportunity attacks, so a Pinned, Grappled, Prone or nailed user doesn't step and traps and held shots on the way fire; Draw Cut needs the weapon stowed now (the proposal's "at the start of the turn" isn't tracked: stowing and drawing in one turn gains nothing); pulling free costs 2 AP (placeholder).
 953. **Alpha, beta, gamma (Leon, 10 Nov 2026; "rules are rules").** In every attribute the **alpha** skill opens the combat playstyle and gates what you deal damage with; the **beta** skill carries defence and gates armour; the **gamma** skill is for world play and speech, and weighs more in skill checks. First application, in rules 1.12: **Agility's alpha is Dexterity and its beta is Athletics** (they were the other way round). Light blades hit with Dexterity; bare hands scale with Raw Power and Dexterity; the Critical multiplier reads Dexterity; a melee ready list and creation's melee picks read the better of Raw Power and Dexterity. Athletics keeps Dodge, its unlocks, and the saves and contests that resist being moved or stopped (with Guts, also a beta). The 0.05 a point is the old number, moved. **Characters made before this are not changed:** a light-blade build made on Athletics now attacks with Dexterity. *Leon to say whether old characters get a one-time swap of the two skills.*
 954. **Still to bring under item 953** (`docs/design/proposals/2026-11-nine-doors.md`): the other skills whose points give the wrong kind of thing for their slot; the four alphas that open no playstyle yet (Durability, Ingenuity, Visualization, Empathy); gear gates (weapons and foci by the alpha, armour by the beta, tri-scale armour by two or three betas); and how much more a gamma skill weighs in a check.
+955. **The crossbow (Leon, 10 Nov 2026; provisional numbers):** damage 55 (was 35); a Shot costs 3 AP and loads the next bolt as part of it; Bolt Rest makes an Aimed Shot cost the same 3. Its signature is the new technique **Heavy Bolt** (31): 4 AP, +50% damage, ignores 10 armour, a Body save or pushed 1 tile; the repeating crossbow can ready it at 1 AP less. To settle in play: 55 against the service rifle's 30 at 2 AP, and whether the other flat-cost techniques should also cost a crossbow 1 more.

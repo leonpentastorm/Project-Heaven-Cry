@@ -308,7 +308,7 @@
       "needs": {
         "hidden": true
       },
-      "text": "Only from Hidden: strike with the Ambush multiplier (today's rule), and gain 2 Momentum instead of 1.",
+      "text": "Strike as an ambush: the ambush's extra damage, and a critical on 19 or 20. You gain 2 Momentum instead of 1.",
       "lines": [
         {
           "props": [
@@ -635,7 +635,7 @@
           "props": [
             "bare"
           ],
-          "text": "it is Grappled (today's grapple rules)."
+          "text": "it is Grappled."
         },
         {
           "props": [
@@ -830,7 +830,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Today's Shove (push 1 tile, or Prone if blocked), at 1 AP as a Link. It gives Momentum when it works.",
+      "text": "Push an enemy next to you 1 tile, or knock it Prone if it can't move back. It gives Momentum when it works.",
       "lines": [
         {
           "props": [
@@ -955,7 +955,7 @@
       "needs": {
         "momentum": 2
       },
-      "text": "One strike at +25% damage per Momentum spent. (This is the Fighter's Finisher, opened to everyone; see section 6.)",
+      "text": "One strike at +25% damage per Momentum spent.",
       "lines": [
         {
           "props": [
@@ -1213,7 +1213,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Strike back for 0 AP (today's Sabre skill and Fighter move).",
+      "text": "Strike back for 0 AP.",
       "trigger": "a melee attack misses you",
       "lines": [
         {
@@ -1378,7 +1378,7 @@
           "props": [
             "auto"
           ],
-          "text": "three rolls (today's burst), and it may split between two adjacent targets."
+          "text": "three rolls, and it may split between two adjacent targets."
         },
         {
           "props": [
@@ -1419,7 +1419,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "+2 to hit (today's rule).",
+      "text": "+2 to hit.",
       "lines": [
         {
           "props": [
@@ -1638,6 +1638,52 @@
       "aim": "tile"
     },
     {
+      "id": "heavy_bolt",
+      "name": "Heavy Bolt",
+      "system": "ranged",
+      "group": "fire",
+      "number": 31,
+      "ap": {
+        "base": "flat",
+        "value": 4,
+        "mode": "shot"
+      },
+      "rounds": 1,
+      "needs": {},
+      "text": "One bolt at +50% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile.",
+      "lines": [
+        {
+          "props": [
+            "precise"
+          ],
+          "text": "+2 to hit."
+        },
+        {
+          "props": [
+            "quick"
+          ],
+          "text": "costs 1 AP less.",
+          "ap": -1
+        }
+      ],
+      "free": false,
+      "comes_with": [],
+      "home": [
+        "precise",
+        "quick"
+      ],
+      "particular": false,
+      "numbers": {
+        "damage_pct": 50,
+        "pierce": 10,
+        "push": 1,
+        "precise_hit": 2
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
+    },
+    {
       "id": "suppress",
       "name": "Suppress",
       "system": "ranged",
@@ -1662,7 +1708,7 @@
           "props": [
             "heavy"
           ],
-          "text": "it holds until your next turn: any enemy that moves or fires inside 3 tiles of the target gains +1 (today's Suppressing Fire).",
+          "text": "it holds until your next turn: any enemy that moves or fires inside 3 tiles of the target gains +1 Pressure.",
           "when": "braced"
         },
         {
@@ -1709,7 +1755,7 @@
           "props": [
             "auto"
           ],
-          "text": "today's full-auto cone for 10 rounds; +1 Pressure hit or miss."
+          "text": "a full-auto cone for 10 rounds: one roll at −2 against every enemy near the line to your target; +1 Pressure hit or miss."
         },
         {
           "props": [
@@ -2022,13 +2068,13 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Today's Brace, opened to any weapon resting on half cover: Recoil halved.",
+      "text": "Rest the weapon on half cover (a weapon with a bipod braces anywhere): Recoil halved until you move.",
       "lines": [
         {
           "props": [
             "heavy"
           ],
-          "text": "removes its penalties (today's rule)."
+          "text": "removes the penalties it has when fired unbraced."
         },
         {
           "props": [
@@ -2256,7 +2302,7 @@
       "needs": {
         "pressed": true
       },
-      "text": "A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned (today's condition) for 1 round.",
+      "text": "A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned for 1 round.",
       "suppressed": "The save is at −2.",
       "lines": [
         {
@@ -2483,7 +2529,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "trigger": "the first enemy to move in your sight (today's rule, unchanged)",
+      "trigger": "the first enemy to move in your sight",
       "text": "the held shot",
       "lines": [
         {

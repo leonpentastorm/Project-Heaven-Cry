@@ -586,7 +586,7 @@
       "id": "crossbow",
       "name": "Crossbow",
       "category": "bow",
-      "damage": 35,
+      "damage": 55,
       "damage_type": "physical",
       "range_tiles": 16,
       "magazine": 1,
@@ -595,7 +595,7 @@
         "single"
       ],
       "ap_cost": {
-        "single": 2,
+        "single": 3,
         "aimed": 3
       },
       "ammo": "bolt",
@@ -606,7 +606,8 @@
       "properties": [
         "silent",
         "no_heat",
-        "no_recoil"
+        "no_recoil",
+        "autoload"
       ],
       "text": "",
       "mastery_family": "bows",
@@ -618,10 +619,10 @@
       ],
       "grants": {
         "name": "Bolt Rest",
-        "text": "Aimed shots cost 2 AP.",
+        "text": "Every shot is cranked and rested: a Shot costs 3 AP and loads the next bolt as part of it, and an Aimed Shot costs no more than a Shot.",
         "effect": {
           "op": "aimed_ap",
-          "value": 2
+          "value": 3
         }
       },
       "lore": "Patience, cranked.",
@@ -635,8 +636,10 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ]
-      }
+        ],
+        "teaches": "heavy_bolt"
+      },
+      "provisional": true
     },
     {
       "id": "combat_knife",
