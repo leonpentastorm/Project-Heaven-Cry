@@ -1,6 +1,6 @@
 # PHC Core Rules v1.0 (Game Spec)
 
-> Exported from the living Claude Doc https://claude.ai/artifact/Mm2PsQVYuBKoFybSUTFii5 on 2026-11-05. The Doc is the source of truth; re-export after edits.
+> Exported from the living Claude Doc https://claude.ai/artifact/Mm2PsQVYuBKoFybSUTFii5 on 2026-11-05. Since 10 Nov 2026 **this file is the source of truth**: the Doc stops at revision 1.1 and carries a notice pointing here.
 >
 > **Revision 1.1 (2026-11-05), synced to the living Doc:** skill modifier = points − 1; skill Voices replace Inner Voice; Overreach is indulge-or-resist; creation is 10 skill points; new XP table; HP rescale; class rank thresholds 13/18 (superseded by Class Roster Revision 3: ranks II and III at the class's attribute 5 and 8, items 551–552; see Classes). Rationale: `docs/design/proposals/2026-11-gameplay-fixes.md`.
 
