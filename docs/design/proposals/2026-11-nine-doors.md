@@ -269,11 +269,11 @@ Leon, 10 Nov 2026: the fight-start shield and the banked AP of 9.3 would dwarf w
 Every gamma gets exactly one Call. All nine obey the same limits, so none can outgrow the others:
 
 1. A Call is spoken: 2 AP, to someone who can hear you (8 tiles, as Talk is today).
-2. One Call a turn.
+2. As many Calls a turn as your AP pays for (Leon).
 3. A unit can be helped by one Call a round, and hindered by one.
 4. A Call never deals damage, and never hands out more AP than it cost.
 5. A Call on an enemy is saved against 12 + the skill's modifier. A Call on an ally just works.
-6. The skill's points buy the same three steps for every Call: usable at 1 point; at 5 it costs 1 AP; at 7 its effect is one step stronger (noted per Call).
+6. Every Call grows over all 10 points of its skill, on one shared ladder (10.5).
 
 ### 10.2 The nine Calls
 
@@ -304,3 +304,39 @@ Split the line that is moving anyway: **Camaraderie gives +10% healing received;
 1. Is "2 spent, at most 1 given" the right ceiling, or should a Call be allowed to break even?
 2. One Call a turn, or as many as your AP pays for?
 3. Should Order be able to make an ally **attack**? I left it out: it would be a second attack a round for the squad's best gun.
+
+### 10.5 Leon's answers, and the ten levels (10 Nov 2026)
+
+1. **Every Call has 10 levels and grows with its skill.**
+2. **As many Calls as you have AP for.**
+3. **Order never makes an ally attack.**
+
+**The shared ladder** (the same for all nine, so they stay comparable). All NEW and provisional.
+
+| Points | What every Call gains |
+|---|---|
+| 1 | usable: 2 AP, heard within 5 tiles |
+| each point | +1 tile of voice (5 at 1 point, 14 at 10); against an enemy, the save is 12 + your modifier |
+| 3 | effect step 2 |
+| 5 | costs 1 AP |
+| 7 | effect step 3 |
+| 9 | may be made as a reaction, once a round |
+| 10 | your first Call each turn costs 0 AP |
+
+**The effect steps of each Call:**
+
+| Call | Step 1 (1 point) | Step 2 (3 points) | Step 3 (7 points) |
+|---|---|---|---|
+| Order (Authority) | reload, stand up or pick up | or move their Movement | two of those |
+| Rally (Charisma) | 1 AP | 1 AP, and they shed 1 Pressure | 2 AP, and they shed 1 Pressure |
+| Brief (Eloquence) | next action −1 AP | next two actions −1 AP each | next action −2 AP, the one after −1 |
+| Steady (Composure) | cancels 1 AP of loss next turn | cancels 2 | cancels all of it, and ends Shaken or Fear |
+| Cue (Reaction Speed) | a second reaction this round | and it may be a move of 1 tile | and they act straight after you in the order |
+| Spot (Vigilant) | the next ally ignores its cover | and it isn't Hidden to them | the next two allies, and +1 to hit |
+| Warn (Sensory) | step 1 tile before the next attack on them | 2 tiles | and that attack is at −2 |
+| Threaten (Intimidation) | Shaken, −1 AP next turn | −1 AP, and it can't move toward you | −2 AP |
+| Taunt (Implication) | it must attack you | and that attack costs it +1 AP | +2 AP |
+
+**The limits that stay:** one helping Call and one hindering Call on a unit each round; no damage; the AP ceiling of 9 on any turn.
+
+**Where it can run hot.** From 7 points Rally gives 2 AP for 1: a specialist with three allies turns 3 AP into 6 each round. That is the reward for seven points in a gamma, and the one-per-unit limit and the ceiling of 9 hold it, but it is the first number to watch in play.
