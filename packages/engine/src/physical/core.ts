@@ -745,7 +745,11 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (err) { // a handler must refuse before it changes anything: the cost comes back
     u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true; return err;
   }
-  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) u.heat += 1; // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
+  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) {
+    u.heat += 1;
+    // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does (the main hand's gun)
+    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
+  } // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
   for (const n of t.pv.notes) cb.log.push('  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique

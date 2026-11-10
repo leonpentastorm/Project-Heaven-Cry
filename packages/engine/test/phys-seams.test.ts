@@ -1,6 +1,7 @@
 // Physical 2.0: where the melee lane, the ranged lane and the core meet (the pre-release review's findings).
 import { describe, it, expect, beforeEach } from 'vitest';
-import { applyCond, objectsOf } from '../src';
+import { applyCond, objectsOf, heatLimit, WEAPON, phys } from '../src';
+const heatLimitOf = (u: any) => heatLimit(u, WEAPON[u.weapon]);
 import { physFight, rig } from './helpers/physfight';
 beforeEach(() => rig(null));
 const SK = { athletics: 6, raw_power: 4, dexterity: 6 };
@@ -64,5 +65,17 @@ describe('the enemy AI does not pace', () => {
         expect(moves.length, seed + ' round ' + r).toBe(0);
       }
     }
+  });
+});
+
+describe('rulings of 10 Nov 2026', () => {
+  it('a Press\'s own +1 Heat can jam the gun', () => {
+    const f = physFight([{ weapon: 'service_rifle', known: ['suppress'], skills: SK }], [{ tier: 'soldier' }], { seed: 'H1' });
+    f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'H5'); foe.hp = foe.maxHp = 9000;
+    f.turn(f.pc); rig({ hit: true, die: 12 });
+    const u = f.unit(f.pc.id), w = (phys as any), lim = 6;
+    void w; u.maxDur = 100; u.dur = 100; u.ammo = WEAPON[u.weapon].magazine || 24; u.heat = Math.max(0, (heatLimitOf(u) ?? lim) - 2); // the roll's +1 and the Press's +1: exactly the limit, reached by the Press's own Heat
+    expect(f.tech('suppress', { targetId: f.foe.id })).toBeNull();
+    const a = f.unit(f.pc.id); expect(a.heat).toBeGreaterThanOrEqual(heatLimitOf(a)); expect(a.jammed).toBe(true);
   });
 });

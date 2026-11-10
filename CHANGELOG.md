@@ -8,6 +8,16 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.18.1 — 10 November 2026
+
+Fixes after 0.18.0, straight on the base branch (Leon's playtest notes and his rulings on lane B's open points).
+
+- **Enemies no longer pace in place.** An enemy with nothing to attack used to take the best *other* tile every step, so with spare AP it shuffled to the next tile and back each turn. Where it stands is now the tile to beat; a shooter with a line on someone doesn't creep with spare AP; it never walks back onto a tile it stood on this turn; one that sees nobody heads for the nearest tile with a line on someone.
+- **The area map:** the turn column (the actions) scrolls on its own and the map stays in view. Before, the whole card scrolled and the map left the screen.
+- **A gun in hand has a "Strike (weapon's butt)" row** on the Attack tab and on the area map (the bare-hand strike's numbers).
+- **A Press's own +1 Heat can jam the gun** (ruling).
+- **Rulings confirmed as built:** Snap Shot draws from the pack only; Pin Down holds until 2 AP is spent; Rout through a grenade spends it; Throw stays open to characters who know Lob; the parlour pistol is Silent; a weapon pulled out by the wielder's ally stays in that ally's hand.
+
 ## 0.18.0 — 10 November 2026
 
 Branch `claude/charming-gauss-hbq4n0`: **Physical 2.0** (rules 1.12). Weapons fight with techniques. Built by the lead (foundation, core, integration) and three implementers: A (`claude/awesome-babbage-8gngk8`, melee), B (`claude/physical-2.0-B-ranged` and `-fx`, ranged), C (`feature/physical-2.0-C-client`, the screens). Plan and hand-offs: `docs/design/handoffs/physical-2.0-*.md`.

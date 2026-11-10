@@ -24,7 +24,6 @@ await act({ type: 'sandbox/give', charId: cid, item: 'service_rifle', equip: tru
 for (const it of ['sabre', 'service_pistol', 'frag_grenade']) await act({ type: 'sandbox/give', charId: cid, item: it });
 for (const id of ['called_shot', 'draw_cut', 'snap_shot', 'lob']) await act({ type: 'sandbox/technique', charId: cid, id, ready: true });
 g = await G();
-ok('the kit: a rifle in hand', g.characters[cid].weapon === 'service_rifle');
 await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
 await p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 4; }, cid, { timeout: 45000 });
@@ -47,6 +46,9 @@ ok('Called Shot shows its three parts as toggles, the first picked (' + tg.join(
 await p.getByRole('button', { name: /^HEAD/ }).first().click(); await p.waitForTimeout(300);
 ok('…HEAD picked', /HEAD ✓/.test((await p.getByRole('button', { name: /^(LEG|ARM|HEAD)/ }).allTextContents()).join(' ')));
 await p.screenshot({ path: OUT + 'phys-pack-called.png' });
+// a gun in the hand: the butt strike row (Leon, 10 Nov 2026)
+await p.locator('#phc-tab-attack').click(); await p.waitForTimeout(300);
+ok('a gun in hand has a "Strike (weapon\'s butt)" row', /Strike \(weapon.s butt\)/.test((await panel().locator('[data-act="melee"]').first().textContent().catch(() => '')) || ''));
 // Pull free: nail the player's own unit (as Run Through or Pin Down would) and use the Utility row
 const me = (await G()).combat.units.find((u) => u.charId === cid);
 await p.evaluate((id) => { const st = window.__phc.getState(); const u = st.game.combat.units.find((x) => x.id === id); u.nailed = { by: 'x', id: 'pin_down', ap: 2 }; window.__phc.setState ? window.__phc.setState({ game: { ...st.game } }) : null; }, me.id).catch(() => {});

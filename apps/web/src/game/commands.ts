@@ -160,7 +160,9 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
           ...(modes.includes('burst') ? [['burst', 'Burst', '3 AP', '3 rounds at one target, each later round −1 more.'] as ActionItem] : []),
           ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', '10 rounds: one roll at −2 against every enemy near the line to your target.'] as ActionItem] : [])]),
         ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : [])]
-        : blockItems(weaponBlocks(opts.g, cb, cur)) as ActionItem[]),
+        : [...blockItems(weaponBlocks(opts.g, cb, cur)) as ActionItem[],
+          // a gun in the hand still hits: the butt of the weapon (the engine's bare-hand strike; Leon, 10 Nov 2026)
+          ...(w && !melee ? [['melee', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee') + ' AP', 'An enemy next to you: d20 + Raw Power vs Defense, the damage of a bare-hand strike. No round spent, no Heat.'] as ActionItem] : [])]),
       ...(offW ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).'] as ActionItem] : []),
       ['shove', 'Shove', '2 AP', 'An adjacent enemy: d20 + Raw Power vs 10 + its best of Raw Power and Athletics. Pushed 1 tile, or prone if blocked. Shove them into fire.'],
       ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
