@@ -9,7 +9,7 @@ import {
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
+import { useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, weaponSwapper, type TechArgs, type TechSystem } from './physical';
 import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -26,7 +26,7 @@ import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
-import { advancedActive, bindGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
@@ -1533,11 +1533,11 @@ function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base:
  * rows, light armour 1 AP a piece, heavy armour refused, a drop 0 AP into the pile on the unit's tile. The fighter's
  * state is written back to the character first, the change is made there, and the fighter is rebuilt from it. The pack
  * entry is marked before the write-back (which may drop used-up entries) and found again after it (item 684). */
-function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, op: GearOp): string | null {
+function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Character, op: GearOp, free = false): string | null {
   if (u.companion) return 'A companion has no pack.';
   if (!u.charId || u.charId !== c.id) return 'Only a character changes gear.';
   const disarmed = condOn(u, 'disarmed'), plan = gearPlan(c, op, { disarmed }); if (plan.why) return plan.why;
-  let ap = plan.ap;
+  let ap = free ? 0 : plan.ap; // free: a technique that changes gear as part of it (Snap Shot)
   if (plan.hand && ap > 0) { const ctx: any = emitHook(cb, 'swap', { u, c, from: op.op === 'swap' ? 'off' : (op as any).item, mod: op.op === 'mod' ? op.item : undefined, ap, cb }); ap = Math.max(0, ctx.ap); }
   if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   if (plan.idx != null) { c.pack = packOf(c).map((x) => ({ ...x })); (c.pack[plan.idx] as any)._pick = 1; }
@@ -1576,6 +1576,14 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   syncSong(g);
   return null;
 }
+
+// Physical 2.0: a technique that swaps or draws as part of it (Snap Shot) makes the same gear change, its AP waived.
+weaponSwapper((cb, u, how, o) => {
+  const g = boundGame() as GameState | null, c = g && u.charId && !u.companion ? g.characters[u.charId] : null;
+  if (!g || !c) return o.dry ? null : 'Only a character changes gear.'; // a preview with no game bound: the action decides
+  const op: GearOp = 'from' in how ? { op: 'swap' } : { op: 'draw', item: how.item, to: how.to === 'off' ? 'off' : 'main' };
+  return o.dry ? gearPlan(c, op, { disarmed: condOn(u, 'disarmed') }).why : gearInFight(g, cb, u, c, op, !!o.free);
+});
 
 /** After a swap: which focuses the hands hold now (item 630). */
 function focusLine(c: Character): string {

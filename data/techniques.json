@@ -1261,7 +1261,9 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "penalty": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy",
@@ -1302,7 +1304,15 @@
       ],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "rolls": 2,
+        "later_penalty": 2,
+        "auto_rolls": 3,
+        "auto_step": 1,
+        "auto_heat_cool": 1,
+        "auto_split_targets": 2,
+        "auto_split_range": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1387,7 +1397,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "penalty": 2,
+        "spread_range": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1429,7 +1442,14 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "tiles": 2,
+        "quick_tiles": 3,
+        "auto_rolls": 3,
+        "auto_step": 1,
+        "auto_rounds": 3,
+        "auto_heat_cool": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy+tile",
@@ -1470,7 +1490,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "half_cover": 2,
+        "heavy_carry_mult": 0.5,
+        "heavy_carry_pressure": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"

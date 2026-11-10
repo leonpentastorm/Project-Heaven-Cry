@@ -402,6 +402,15 @@ export function stepUser(t: Tech, route: string[], how = 'move'): number {
   return n;
 }
 
+// ---------- a gear change inside a technique (Snap Shot) ----------
+/** A gear change rebuilds the fighter from the character, so it lives in game.ts, which registers it here. how: the
+ * off-hand weapon to the main hand, or a pack item into a hand. o.dry: only say whether it could be done; o.free: no AP.
+ * Returns a refusal or null. */
+export type WeaponSwap = (cb: Combat, u: Unit, how: { from: 'off' } | { item: string | number; to?: 'main' | 'off' }, o: { dry?: boolean; free?: boolean }) => string | null;
+let SWAP: WeaponSwap | null = null;
+export const weaponSwapper = (f: WeaponSwap) => { SWAP = f; };
+export const swapIn = (cb: Combat, u: Unit, how: Parameters<WeaponSwap>[2], o: { dry?: boolean; free?: boolean } = {}): string | null => (SWAP ? SWAP(cb, u, how, o) : 'You can\'t change weapons here.');
+
 // ---------- held shots and Answers ----------
 /** Hold a Watch: paid for now, kept until it fires or the user's next turn. One at a time (a new one replaces it). */
 export function holdWatch(t: Tech, spec: WatchSpec): void {
