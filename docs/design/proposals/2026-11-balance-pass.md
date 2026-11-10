@@ -153,7 +153,7 @@ perks, no techniques, no class. What it shows:
 
 1. **A new character already kills a boss in a turn.** With 7 in the skill and attribute (legal at creation), a coach
    gun or a maul deals 78 to a boss (200 HP) at 65% to hit: three hits. The breacher tube deals 205: one hit.
-2. **Criticals alone pass the ceilings.** The critical multiplier is about 2.6 to 2.8. At 10 points a long rifle's
+2. **Criticals alone pass the ceilings.** The critical multiplier is about 2.5 to 2.8 at 10 points. There a long rifle's
    critical is 336, a recurve bow's 470 and a breacher tube's 739, with standard gear and no perks.
 3. **The bow is the strongest plain weapon in the game.** Its damage adds Raw Power before the multipliers: 168 a
    shot at 2 AP at 10 points (a long rifle: 120). It costs two attributes, which is not enough to explain it.
