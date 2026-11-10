@@ -8,6 +8,24 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.17.0 — 10 November 2026
+
+Branch `claude/charming-gauss-hbq4n0`: **the skeleton** (rules 1.11; Leon: "apply everything you recommend with the skeleton"). The creation budgets stay 10 / 10 / 6. What a level gives changed, so builds other than 7/1/1 can reach the end of their own class and skills. Design: `docs/design/proposals/2026-11-skeleton.md`. Every number is provisional (spec items 924–931).
+
+- **Every level gives two picks:** odd levels 2 Skill points; even levels 1 Skill point and 1 Attribute point. That is 38 Skill points in a career, where it was 29.
+- **A Core point every 3rd level** (3, 6, 9, 12, 15, 18), where it was every 5th. A build that starts with a Core of 4 or 5 can now reach a Mastered perk, around level 16 to 18. Before, only a 7/1/1 build could.
+- **Class ranks need a level too:** rank II at the class attribute 5 and level 6, rank III at 8 and level 12. A 7/1/1 build no longer takes ranks I and II at once. The class panel, the picker and the Proving Ground's help say so. A rank that arrives with a level is announced in the log with its two moves.
+- **Creation:** a Core point can no longer be traded for 2 Attribute points. Mind Without Fog gives 1 Core point, where it gave 2.
+- **Old characters and saves:**
+  - a character made before 0.17.0 that used the trade or Mind Without Fog's second point stays legal and can still be brought into a room;
+  - a character already past a level keeps the points it got then: there is no back-pay;
+  - a character with the attribute for a rank but not the level drops to the rank its level allows until it gets there, in a fight saved in progress too.
+- **The Proving Ground's rank tool** raises the level to the rank's (6 or 12) as well as the attribute, with that level's points.
+- **Proposals, not built:** `docs/design/proposals/2026-11-melee-techniques.md` (melee techniques, weapon properties, and `hits_with` / `scales_with` on every weapon).
+- **Known:**
+  - the advanced class gates are unchanged and are now reachable near level 7 to 9; advanced classes themselves are still shelved;
+  - the XP table is unchanged, so levels still come every 2 to 4 sessions after level 5.
+
 ## 0.16.0 — 10 November 2026
 
 Branch `claude/awesome-babbage-8gngk8`: **combat clarity** (Leon: "I want the movement in combat to be more clear").
