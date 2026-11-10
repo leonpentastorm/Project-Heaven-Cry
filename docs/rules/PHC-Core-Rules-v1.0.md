@@ -1150,7 +1150,7 @@ Ranged:
 | Smoke grenade | Thrown, Blast, Arc | Dexterity | Agility | Head Down |
 | Flashbang | Thrown, Blast, Arc | Dexterity | Agility | — |
 | Decrkm auto-pistol | Quick, Auto | Dexterity | Agility | Burst |
-| Parlour pistol | Quick, Silent | Dexterity | Agility | Warning Shot |
+| Parlour pistol | Quick, Silent | Dexterity | Agility | Crossfire |
 | Magistrate heavy pistol | Quick, Loud | Dexterity | Agility | Stopping Shot |
 | Frontier hand cannon | Loud, Precise | Dexterity | Agility | Last Round |
 | Legion PDW | Quick, Auto | Dexterity | Agility | Storm |
@@ -4911,3 +4911,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 948. **The old Suppressed condition** (item 83: −1 AP and no reactions, from Spray and Pray and other perks) stays beside Pressure until it is moved onto Pressure 3; the two AP losses don't add.
 949. **The quiver** (Leon, 10 Nov 2026): loaded from a menu out of a fight, any mix of arrow types up to capacity, the type named per shot, no reload in a fight. Crossbows keep their reload.
 950. **Enemies** have Momentum and Pressure and use techniques: the free ones, what their weapon lends, and their tier's list (enemies.json `techniques`). First lists, to grow as the techniques are built: a minion none (plain attacks only, whatever its weapon lends); a soldier Lunge, Suppress; an elite Lunge, Coup, Riposte, Suppress, Dead Centre; a boss the elite's and Deny. Where an enemy would make a plain attack it uses the technique its handler scores highest, if that beats a plain attack (5); the scores are in the handlers (`ai`). Analyze reads the technique as the intent.
+951. **The Parlour pistol teaches Crossfire,** not Warning Shot as the ranged proposal's table had it: Warning Shot is not available with a Silent weapon, so the pistol could never use its own signature (found in review, 10 Nov 2026). *Leon to confirm the pick.* **Dead Centre's home is Precise or Drawn** (the proposal names bows the best at Takes; with Precise alone its Drawn line could never apply). The validator now refuses both kinds of conflict.

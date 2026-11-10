@@ -247,3 +247,38 @@ describe('what each side sees', () => {
     const v = viewFor(f.g, 'host').combat!.units.find((u) => u.id === f.pc.id)!; expect(v.pressure).toBeUndefined(); expect(v.pressHidden).toBeUndefined();
   });
 });
+
+describe('review fixes', () => {
+  it('a mana arm that is a melee weapon strikes as itself in a technique, not as fists', () => {
+    const f = physFight([{ weapon: 'evoker_blade' }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const pv = f.pv('cut', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.attacks[0].pv.dmg!.base).toBe(WEAPON.evoker_blade.damage);
+    const g = physFight([{ weapon: 'bot_thread_banner' }], [{ at: 'E5', tier: 'elite' }]); g.put(g.pc, 'C5'); g.put(g.foe, 'E5'); g.turn(g.pc);
+    expect(g.pv('cut', { targetId: g.foe.id }).ok).toBe(true); // Reach: 2 tiles
+  });
+  it('a kill gives drill for every weapon that damaged the victim', () => {
+    const f = physFight([{ weapon: 'sabre', off: 'service_pistol', skills: { dexterity: 4, athletics: 4 } }], [{ at: 'D5', tier: 'soldier' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    rig({ hit: true, die: 12 }); f.foe.hp = f.foe.maxHp = 500;
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); f.unit(f.foe.id).hp = 1;
+    expect(f.tech('shot', { targetId: f.foe.id, hand: 'off' })).toBeNull(); expect(f.foe.dead).toBe(true);
+    expect(phys.physOf(f.char(f.pc)).drill).toEqual({ sabre: 10, service_pistol: 10 });
+  });
+  it('Riposte keeps the reaction when the attacker is out of reach', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['riposte'] }], [{ at: 'E5', tier: 'elite', weapon: 'glaive' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.foe);
+    rig({ hit: false, die: 5 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.foe, f.pc, 'melee', null, { noAp: true }));
+    expect(f.cb.log.some((l) => /answers with Riposte/.test(l))).toBe(false); expect(f.pc.reactUsed).toBeUndefined();
+  });
+  it('a Press rolls at the to-hit its card shows, and its extra Heat lands after', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['suppress'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.turn(f.pc);
+    f.pc.heat = 1; rig({ die: 10 });
+    const pv = f.pv('suppress', { targetId: f.foe.id }).attacks[0].pv;
+    expect(f.tech('suppress', { targetId: f.foe.id })).toBeNull();
+    expect(f.cb.log.some((l) => l.includes('d20 10 ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + ' '))).toBe(true); expect(f.pc.heat).toBe(3);
+  });
+  it('a line\'s AP change is charged: Bash with bare hands costs 1 less', () => {
+    expect(phys.techniqueAp(TECHNIQUE.bash, 'fists')).toBe(phys.techniqueAp(TECHNIQUE.cut, 'fists') - 1);
+    expect(phys.techniqueAp(TECHNIQUE.bash, 'maul')).toBe(phys.techniqueAp(TECHNIQUE.cut, 'maul'));
+  });
+  it('Dead Centre is at home with a bow, and its Drawn line applies', () => {
+    expect(phys.offHome(TECHNIQUE.dead_centre, 'longbow')).toBe(false); expect(phys.linesFor(TECHNIQUE.dead_centre, 'longbow').main?.props).toEqual(['drawn']);
+  });
+});

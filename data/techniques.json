@@ -444,7 +444,8 @@
           "props": [
             "bare"
           ],
-          "text": "costs 1 AP less."
+          "text": "costs 1 AP less.",
+          "ap": -1
         }
       ],
       "free": false,
@@ -2049,7 +2050,8 @@
       "free": false,
       "comes_with": [],
       "home": [
-        "precise"
+        "precise",
+        "drawn"
       ],
       "particular": true,
       "numbers": {

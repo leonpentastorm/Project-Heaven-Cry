@@ -497,7 +497,6 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const t = p.t, ap = t.pv.ap, heat0 = u.heat;
   ensureMomentum(u);
   u.ap -= ap;
-  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo) u.heat += 1; // a Press costs +1 Heat on top of what it fires
   if (def.group === 'take' && t.tgt) showPressure(cb, t.tgt);
   const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos });
   const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
@@ -505,6 +504,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (err) { // a handler must refuse before it changes anything: the cost comes back
     u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true; return err;
   }
+  if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo) u.heat += 1; // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
   for (const n of t.pv.notes) cb.log.push('  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique

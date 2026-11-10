@@ -6,7 +6,7 @@
 //   a turn's start: the held Watch ends; an enemy Suppressed loses 1 AP, Broken 2
 //   a turn's end: Pressure falls by 1 (2 in cover and unseen, or closer to the nearest enemy than the turn began)
 //   reactions: Pressed holds no Watch; Suppressed takes no opportunity attack either
-import { type Combat, type Unit, alive, dist, coverOf, coverTileFor, unitSees, emitFx, xy, key } from '../combat';
+import { type Combat, type Unit, alive, dist, coverOf, coverTileFor, unitSees, emitFx, xy, key, meleeArm } from '../combat';
 import { onHook, charOfUnit } from '../effects/hooks';
 import { condOn } from '../magic';
 import { isSilent } from '../tactics';
@@ -29,6 +29,8 @@ export const flanksCover = (cb: Combat, att: Unit, tgt: Unit): boolean => atCove
 /** In cover and out of every enemy's sight. */
 export const coveredUnseen = (cb: Combat, u: Unit): boolean => atCover(cb, u) && !foesOf(cb, u).some((v) => unitSees(cb, v, u.pos));
 
+/** Every weapon an attacker has damaged a unit with this fight (drill is paid for each on the kill). */
+function hitWith(tgt: Unit, attId: string, weaponId: string) { const l = ((tgt.hitWith ||= {})[attId] ||= []); if (!l.includes(weaponId)) l.push(weaponId); }
 /** What may change the fall of Pressure at a turn's end (a Bead holds it; smoke drops 2): given the fall, returns the fall. */
 type DecayRule = (cb: Combat, u: Unit, fall: number) => number;
 const DECAY: DecayRule[] = [];
@@ -37,7 +39,8 @@ export const pressureDecay = (f: DecayRule) => { DECAY.push(f); };
 onHook('on_hit', (ctx: any, cb) => {
   const att: Unit = ctx.att, tgt: Unit = ctx.tgt; if (!att || !tgt || att.side === tgt.side) return;
   // who hit whom this round and with what (Crossfire; drill credit on the kill)
-  ((tgt as any).hitRound ||= {})[att.id] = cb.round; ((tgt as any).hitWith ||= {})[att.id] = ctx.mode === 'melee' && !/melee|unarmed/.test(WEAPON[att.weapon]?.category || '') ? 'fists' : att.weapon;
+  (tgt.hitRound ||= {})[att.id] = cb.round;
+  if (ctx.dmg > 0) hitWith(tgt, att.id, ctx.mode === 'melee' && WEAPON[att.weapon] && !meleeArm(WEAPON[att.weapon]) ? 'fists' : att.weapon);
   if (ctx.melee) { if (pressureOf(att)) lowerPressureOf(cb, att, P().melee_hit_sheds, 'fighting it out'); return; }
   // the first ranged hit on this target this turn (a technique that gives its own Pressure for the hit still uses it up)
   const stamp = turnStamp(cb), pt = att.pressedThis?.t === stamp ? att.pressedThis : (att.pressedThis = { t: stamp, ids: [] as string[] });
@@ -51,7 +54,7 @@ onHook('on_hit', (ctx: any, cb) => {
 
 onHook('on_kill', (ctx: any, cb) => {
   const victim: Unit = ctx.victim, by: Unit = ctx.by, src = ctx.src || {}; if (!victim || !by) return;
-  if (src.type === 'weapon') ((victim as any).hitWith ||= {})[by.id] = src.weapon || by.weapon;
+  if (src.type === 'weapon') hitWith(victim, by.id, src.weapon || by.weapon); // the killing blow's on_hit comes after this
   if (src.type === 'weapon' && !src.melee) for (const v of cb.units) {
     if (v === victim || v.side !== victim.side || !alive(v) || dist(v.pos, victim.pos) > P().kill_spill_range || !unitSees(cb, v, victim.pos)) continue;
     addPressureTo(cb, v, P().kill_spill, by, 'saw ' + victim.name + ' fall');
@@ -59,7 +62,7 @@ onHook('on_kill', (ctx: any, cb) => {
   // Drill (Leon): a kill gives it to everyone who hit the victim, for the weapon they hit with; a hit alone gives none.
   if (victim.side !== 'foe' || victim.companion) return;
   const base = PHYS_RULES.drill.per_kill[victim.tier || 'minion'] ?? PHYS_RULES.drill.per_kill.minion;
-  for (const [id, weaponId] of Object.entries(((victim as any).hitWith || {}) as Record<string, string>)) {
+  for (const [id, list] of Object.entries(victim.hitWith || {})) for (const weaponId of list) {
     const u = cb.units.find((x) => x.id === id), c = u && !u.companion && u.side === 'pc' ? charOfUnit(u) : null; if (!u || !c || !WEAPON[weaponId]) continue;
     const r = addDrill(c, weaponId, base * drillMult(c));
     emitFx(cb, 'drill', { unit: u.id, at: u.pos, weapon: weaponId, add: r.add, total: r.total, mark: r.mark, learned: r.learned });
