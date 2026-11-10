@@ -661,3 +661,8 @@ This overrides 15.5's verdict on the Camaraderie perks. Counted against today's 
 1. **"Changes AP" means AP given or taken in the turn.** Making your own skill's action cheaper or dearer does not count: the eleven cost discounts stay where they are.
 2. **Still Standing stays.**
 3. **The Raw Power replacements and the mirrored analyst: yes.** Iron Grip was too weak for a perk and is strengthened above: tier I takes the old Grapple's best part and adds dragging the held target; tier II makes a held target the centre of a chain.
+
+## 16. Who builds Skeleton 2.0, and the screen (Leon, 10 Nov 2026)
+
+1. **One session builds all of it** (this lead session, after Physical 2.0 is merged and live), the screen included. Section 14.5's split into three implementers is withdrawn.
+2. **The tab rows wrap.** With ARMS joining the character panel's tabs (SKILLS, STATUS, PERKS, GEAR, ARMS, MAGIC, FAITH) and CALLS joining the fight panel's (MOVE, ATTACK, UTILITY, SIGILS, OUTBURSTS, FAITH, CALLS), each row has too many to click on one line. Both rows must wrap onto a second line when the tabs don't fit, with nothing cut off and nothing to scroll sideways. To check: the number keys that switch tabs still work across both lines; the fight panel's height rule still holds (the grid and Confirm on screen with no page scroll at 1440 × 900 and 1280 × 720, `e2e/tabs.mjs`); a character with every tab showing (a caster with a patron) at both sizes.
