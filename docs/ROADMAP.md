@@ -32,7 +32,8 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - a trigger where an ambush belongs.
 
    Objective-givers speak plainly. Spec: `docs/design/world-play-spec.md`. Campaign: `data/campaigns/m813.json`.
-4. **The damage balance pass**, against `docs/design/balance-targets.md`:
+4. **The balance pass** (next up; the full draft with every angle, the AP economy included, is
+   `docs/design/proposals/2026-11-balance-pass.md`), against `docs/design/balance-targets.md`:
    - weapons are the 100% baseline;
    - Sigil is about 150% at most;
    - Outburst is about 125% steady;
