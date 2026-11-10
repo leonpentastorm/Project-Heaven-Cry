@@ -1,7 +1,7 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, WEAPON, visibility } from '@engine';
+import { type FxEvent, type GameState, SIGIL, WEAPON, visibility, phys } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
@@ -9,6 +9,7 @@ import { soulHandlers, soulBeat, discharge } from './soul';
 import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
+import { physHandlers, physBeat } from './physical';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
@@ -1132,6 +1133,8 @@ function chipShatter(p: Pt, word: string) {
 Object.assign(H, worldHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play }));
 // Class Roster Revision 3's moves (fx/classes.ts): the same kit as the Soul handlers, plus a few particles from here.
 Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, dust, corners, glitch, condWord }));
+// Physical 2.0 (fx/physical.ts): techniques, Momentum, Pressure, held Watches, Stopped, drill.
+Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, nameOf: (id) => (phys.TECHNIQUE as any)[id]?.name || id }));
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
@@ -1143,6 +1146,7 @@ function baseBeat(e: FxEvent): number {
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
+  const pb = physBeat(e); if (pb !== undefined) return pb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
   const wb = worldBeat(e); if (wb !== undefined) return wb;
   if (e.k === 'explode' && e.what === 'discharge') return 520;

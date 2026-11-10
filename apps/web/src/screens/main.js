@@ -14,7 +14,7 @@ import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '..
 import { openReport, openSpend } from '../game/report';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, bindGame } from '@engine';
+import { previewPerkAction, bindGame, phys } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
@@ -34,6 +34,10 @@ import { shellVals, narratorVals } from './shell';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
+import { armsTabVals } from './armsTab';
+/** A weapon's line on the GEAR tab (Physical 2.0): its properties and the technique it teaches (drill replaced the
+ *  old weapon skill and mastery). */
+const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { approachOptions, sigilGrowthView } from '@engine';
@@ -343,9 +347,9 @@ export class MainLogic extends DCLogic {
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
       .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
     const barsA = bars.filter((b) => b.label !== 'XP'), barsB = bars.filter((b) => b.label === 'XP');
-    const TAB_IDS = ['skills', 'status', 'perks', 'gear', 'magic', 'faith'], tabDir = (to, from) => (TAB_IDS.indexOf(to) < TAB_IDS.indexOf(from) ? 'l' : 'r');
-    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR'], ['magic', 'MAGIC'], ['faith', 'FAITH']].map(([id, label]) => ({ label, pick: () => { if (this.state.tab !== id) this.setState({ tab: id, tabDir: tabDir(id, this.state.tab), tip: null, gearMenu: null }); }, selected: S.tab === id ? 'true' : 'false',
-      style: 'flex: 1 1 auto; min-height: 38px; padding: 0 4px; border-radius: 8px; font-family: inherit; font-size: 10.5px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
+    const TAB_IDS = ['skills', 'status', 'perks', 'gear', 'arms', 'magic', 'faith'], tabDir = (to, from) => (TAB_IDS.indexOf(to) < TAB_IDS.indexOf(from) ? 'l' : 'r');
+    const tabs = [['skills', 'SKILLS'], ['status', 'STATUS'], ['perks', 'PERKS'], ['gear', 'GEAR'], ['arms', 'ARMS'], ['magic', 'MAGIC'], ['faith', 'FAITH']].map(([id, label]) => ({ label, pick: () => { if (this.state.tab !== id) this.setState({ tab: id, tabDir: tabDir(id, this.state.tab), tip: null, gearMenu: null }); }, selected: S.tab === id ? 'true' : 'false',
+      style: 'flex: 1 1 auto; min-height: 38px; padding: 0 3px; border-radius: 8px; font-family: inherit; font-size: 10px; font-weight: 700; letter-spacing: 0; white-space: nowrap; cursor: pointer; ' + (S.tab === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
     const CORES = ['body', 'mind', 'soul'];
     const coreTabs = CORES.map((k) => ({ label: k.toUpperCase(), pick: () => { if (this.state.core !== k) this.setState({ core: k, coreDir: CORES.indexOf(k) < CORES.indexOf(this.state.core) ? 'l' : 'r' }); }, pressed: S.core === k ? 'true' : 'false',
       style: 'flex: 1; min-height: 36px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; color: ' + D.core[k] + '; ' + (S.core === k ? 'border: 1px solid ' + D.core[k] + '; background: #1C2536' : 'border: 1px solid #232D3F; background: transparent') }));
@@ -402,9 +406,9 @@ export class MainLogic extends DCLogic {
     const wear = (d, m) => (m ? (d <= 0 ? 'BROKEN' : d <= m * 0.25 ? 'worn ' + d + '/' + m : 'durability ' + d + '/' + m) : '');
     const worn = c ? { main: [(ws.name || (w.name === WEAPON[kitDef.weapon]?.name && kitDef.weaponName ? kitDef.weaponName : w.name)) + (ws.rarity && ws.rarity !== 'standard' ? ' · ' + ws.rarity.toUpperCase() : ''),
         [(typeof w.damage === 'number' ? w.damage + ' dmg' : 'damage varies') + (typeof w.range_tiles === 'number' ? ' · ' + w.range_tiles + ' tiles' : '') + (w.magazine ? ' · ' + loadedOf(c) + '/' + w.magazine + ' loaded' : ''), wear(wd, wmax),
-          (ws.mods || []).map((m) => ITEM[m]?.name).filter(Boolean).join(', '), w.grants ? 'Skill: ' + w.grants.name : ''].filter(Boolean).join(' · ')],
+          (ws.mods || []).map((m) => ITEM[m]?.name).filter(Boolean).join(', '), armsLine(c.weapon)].filter(Boolean).join(' · ')],
       outer: c.armourClass ? [kitDef.armourName + ' (Class ' + ROMAN[c.armourClass] + ')', 'Armour ' + (ARMOUR[c.armourClass]?.value || 0)] : null,
-      off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] ? 'Paired attacks · ' + (WEAPON[c.offHand.id].grants?.name || '') : (ITEM[c.offHand.id]?.text || '').slice(0, 80)] : null } : {};
+      off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] ? 'Paired attacks · ' + armsLine(c.offHand.id) : (ITEM[c.offHand.id]?.text || '').slice(0, 80)] : null } : {};
     if (c) for (const [slot, id] of Object.entries(c.worn || {})) if (WORN_SLOT[slot]) worn[WORN_SLOT[slot]] = [ITEM[id]?.name || id, (ITEM[id]?.text || '').replace(/^[^:]+: /, '')];
     const pack = c ? [...(c.stims ? [{ id: 'stim', item: 'stim_injector', name: 'Stim injector', qty: c.stims, kind: 'med', note: 'Heals 30 × Healing given; stabilises the Downed; stops Bleeding' }] : []), ...packOf(c),
       ...(c.essence ? [{ id: 'eoe', item: 'essence_of_experience', name: 'Essence of Experience', qty: c.essence, kind: 'loot', note: 'Sells for 300' }] : [])] : [];
@@ -434,7 +438,7 @@ export class MainLogic extends DCLogic {
         }
         const tag = wdef ? 'WEAPON' : def.category === 'armour' ? 'ARMOUR' : def.category === 'mod' ? 'MOD' : def.slot === 'off_hand' ? 'OFF HAND' : KIND[it.kind] || 'ITEM';
         return [{ key: it.id + ':' + pi, tag, name: it.name + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''), qty: '×' + it.qty, kg: kg(itemKg(it)),
-          note: (focusKindOf(it.weapon || it.item || it.id) ? 'In the pack: it counts only in a hand (Off hand). ' : '') + (wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, wdef.grants ? wdef.grants.name + ': ' + wdef.grants.text : ''].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || ''), acts, hasActs: acts.length > 0, src: it }]; }
+          note: (focusKindOf(it.weapon || it.item || it.id) ? 'In the pack: it counts only in a hand (Off hand). ' : '') + (wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, armsLine(wdef.id)].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || ''), acts, hasActs: acts.length > 0, src: it }]; }
       const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
       it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
       return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
@@ -456,7 +460,7 @@ export class MainLogic extends DCLogic {
       return { title: st.name || wd.name, sub: (RW(r) + ' ' + marks(r)).trim() + ' · ' + (wd.hands || '') + ' · ' + wd.category.replace('_', ' '), img: artOf(id), glyph: glyphOf(id),
         lines: [colIds.includes(id) ? 'Collection (Gun Nut): parting with it takes a Dexterity check.' : '', (typeof wd.damage === 'number' ? wd.damage : typeof wd.damage === 'object' && wd.damage ? Object.values(wd.damage).join(' / ') : wd.damage) + ' damage' + (typeof wd.range_tiles === 'number' && wd.range_tiles > 1 ? ' · ' + wd.range_tiles + ' tiles' : '') + (wd.magazine ? ' · ' + wd.magazine + ' rounds' + (wd.ammo ? ' (' + wd.ammo + ')' : '') : ''),
           m ? 'Durability ' + d + ' / ' + m + (d <= 0 ? ' · BROKEN' : d <= m * 0.25 ? ' · worn' : '') : '', (st.mods || []).length ? 'Mods: ' + st.mods.map((x) => ITEM[x]?.name || x).join(', ') : '', wd.mod_slots && wd.mod_slots.length ? 'Mod slots: ' + wd.mod_slots.join(', ') : '',
-          wd.grants ? wd.grants.name + ': ' + wd.grants.text : '', wd.requires ? 'Needs ' + Object.entries(wd.requires).map(([k, v]) => SK[k]?.name + ' ' + v).join(', ') : '',
+          armsLine(id), wd.requires ? 'Needs ' + Object.entries(wd.requires).map(([k, v]) => SK[k]?.name + ' ' + v).join(', ') : '',
           wd.weight_kg + ' kg · ' + Math.round((wd.price_credits || 0) * (RARITY[r]?.price || 1)) + ' credits'].filter(Boolean), lore: wd.lore || '' }; };
     const itemTip = (id, extra = {}) => { const it = ITEM[id]; if (!it) return null;
       return { title: it.name, sub: (it.slot ? it.slot.replace('_', ' ') : it.category || 'item'), img: artOf(id), glyph: glyphOf(id), lines: [it.text, it.weight_kg + ' kg' + (it.price_credits ? ' · ' + it.price_credits + ' credits' : '')].filter(Boolean), lore: '', ...extra }; };
@@ -509,14 +513,6 @@ export class MainLogic extends DCLogic {
     const tipCard = TIP ? { ...TIP, lines: TIP.lines.map((t, i) => ({ key: i, t })), hasImg: !!TIP.img, noImg: !TIP.img, hasLore: !!TIP.lore,
       style: 'position: fixed; z-index: 40; left: ' + S.tip.x + 'px; ' + (S.tip.b != null ? 'bottom: ' + S.tip.b + 'px; max-height: calc(100vh - ' + (S.tip.b + 8) + 'px)' : 'top: ' + S.tip.y + 'px; max-height: calc(100vh - ' + ((S.tip.y || 0) + 8) + 'px)') + '; overflow: hidden; box-sizing: border-box; width: 260px; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); pointer-events: none' } : null;
 
-    const lvlOf = (k) => { let l = D.wm.levels[0]; D.wm.levels.forEach((x) => { if (k >= x.kills) l = x; }); return l; };
-    const mastery = c ? Object.entries(c.weaponKills).filter(([, k]) => k > 0).map(([fid, kills]) => {
-      const fam = D.wm.families.find((f) => f.id === fid) || { name: fid }, lv = lvlOf(kills), nx = D.wm.levels[lv.level + 1];
-      const pk = D.wm.perks.filter((p) => p.family === fid && p.mastery_level <= lv.level).map((p) => p.name);
-      return { key: fid, name: fam.name, level: 'L' + lv.level + ' ' + lv.name, kills: kills + (kills === 1 ? ' kill' : ' kills') + (nx ? ' · ' + nx.name + ' at ' + nx.kills : ''),
-        bonus: '+' + (lv.attack_bonus || 0) + ' to hit', perk: pk.length ? 'Perk: ' + pk.join(', ') : 'Perk at ' + D.wm.levels[1].kills + ' kills',
-        fill: 'height: 100%; border-radius: 99px; background: #E7EBF3; width: ' + (nx ? Math.round((kills - lv.kills) / (nx.kills - lv.kills) * 100) : 100) + '%' };
-    }) : [];
     const kit = c ? (D.kits.find((k) => k.id === c.kit) || {}).name : '';
     const I = (c && c.identity) || {};
     const bio = c ? [['Origin', c.origin], ['Kit', kit], ['Gender', I.gender], ['Blood type', I.blood], ['Main hand', I.hand], ['Association', I.association], ['Favourite song', I.songTitle ? I.songTitle + (I.songArtist ? ' · ' + I.songArtist : '') : I.song], ['Last dream', I.dream], ['History', I.history]]
@@ -1285,12 +1281,12 @@ export class MainLogic extends DCLogic {
       isHost, toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'),
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
-      echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
+      echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? c.hp + ' / ' + hpMax + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
-      load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' }, mastery, noMastery: !mastery.length, bio,
+      load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' },  bio,
       hero, stream, pushes,
       hasChecks: actions.length > 0, actions, waitRolls, hasWaitRolls: waitRolls.length > 0,
       dice: !!ck, roll, diceCls: modalCls(this, 'dice'),

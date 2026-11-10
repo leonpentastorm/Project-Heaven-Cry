@@ -31,7 +31,7 @@ import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
-import { weaponBlocks, padView, padOf, parseTech, padAction, techAction, TWATCH, TPAD, techPreview, previewLines, techPrompt, needsEnemy, needsTile, needsAlly, aimOf, ATTACK_MODES, isAttackMode } from '../game/techView';
+import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, parseTech, padAction, techAction, TWATCH, TPAD, techPreview, previewLines, techPrompt, needsEnemy, needsTile, needsAlly, aimOf, ATTACK_MODES, isAttackMode } from '../game/techView';
 import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, perkInfoEntries, perkInfoCost, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
@@ -796,6 +796,7 @@ export class CombatLogic extends DCLogic {
     const myCharC = (cur && cur.charId && g.characters[cur.charId]?.owner === me ? cur.charId : Object.values(g.characters).find((x) => x.owner === me)?.id), WLc = worldLayer(g, true, myCharC), dropAt = {}; (cb.dropped || []).forEach((d) => { dropAt[d.at] = d; });
     const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text });
     tiles.push(axis('h-', '')); for (let x = 0; x < cb.map.w; x++) tiles.push(axis('h' + x, refOf(x + ',0').replace(/\d+$/, '')));
+    const WMk = watchMarks(g, cb, 'pc');
     for (let y = 0; y < cb.map.h; y++) for (let x = -1; x < cb.map.w; x++) {
       if (x < 0) { tiles.push(axis('r' + y, String(y + 1))); continue; }
       const k = x + ',' + y, u = at[k], inRange = isMove && !u && reach(k), note = notesAt(cb.map, k)[0];
@@ -811,6 +812,9 @@ export class CombatLogic extends DCLogic {
       if (ob && kindOf(ob).door && !ob.open) { bg = '#3A2E1A'; }
       if (diff.has(k) && !u) { bg = '#161C28'; }
       const aTag = u && seenFoe(u) ? atkTag(k, u) : null;
+      // Physical 2.0 (part 3): Pressure pips over every token (public), Stopped once and a held Watch in its hover card
+      // and aria-label; held Watches your side can see, tinted on their tiles with a dotted line from the watcher.
+      const uPhys = u && seenFoe(u) ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
       const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' && seenFoe(u) ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
       const pileHere = pileReach.some((o) => o.pos === k);
       const planStyle = inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
@@ -819,7 +823,9 @@ export class CombatLogic extends DCLogic {
       const sel = u && tgtUnit && u.id === tgtUnit.id;
       const isCur = u && cur && u.id === cur.id;
       tiles.push({
-        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.downed ? ' · Downed' : '') : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
+        hasPress: pLook.has && !isHeld, press: pLook.pips, pressStyle: pLook.style, pressTitle: pLook.title,
+        hasWatchT: !!wT, watchTStyle: wT ? wT.style : '', watchTTitle: wT ? wT.title : '', hasWatchChip: !!wChip && !isHeld, watchChip: wChip ? wChip.text : '', watchChipStyle: wChip ? wChip.style : '', watchChipTitle: wChip ? wChip.title : '',
+        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.downed ? ' · Downed' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
         hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, cb.map.w, !!u) : '',
@@ -829,7 +835,7 @@ export class CombatLogic extends DCLogic {
         hasCache: !!wc.cache && !u, hasCacheGlyph: !!wc.cache && !u && !spr, cacheGlyph: wc.cache ? wc.cache.glyph : '', cacheStyle: wc.cache ? wc.cache.style : '', cacheChip: wc.cache ? wc.cache.chip : '', cacheChipStyle: wc.cache ? wc.cache.chipStyle : '',
         hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',
-        hasTok: !!u, t: u ? tokenVals(u, tokOpt(u, x, y)) : null, hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
+        hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines }) : null, hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
         click: () => this.tileClick(k), hover: () => { if (this.state.hover !== k) this.setState({ hover: k }); },
         hasArrow: !!route[k] && k !== (cur && cur.pos), arrow: route[k] || '', hasCost: k === hv || !!mTag || !!aTag, cost: mTag || (aTag ? aTag.text : (moveAp ? '−' + moveAp + ' AP' : 'Paid') + ' · ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') + (crossing.length ? ' · ⚠ HAZARD' : '')),
         costStyle: 'position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 4; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; '
@@ -1043,7 +1049,7 @@ export class CombatLogic extends DCLogic {
       // The one-line summary that stands in for the card on short windows (the bar at the top of the column); the most
       // urgent resources sit in their own row under it (me.res.urgent).
       miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (effectsOf(myU).length || condChips(myU, g).length ? ' · ' + [...effectsOf(myU).map(([k]) => k), ...condChips(myU, g).map((c) => c.k)].join(' · ') : ''),
-      fx: [...effectsOf(myU).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...condChips(myU, g)], noFx: !effectsOf(myU).length && !condChips(myU, g).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
+      fx: [...effectsOf(myU).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...condChips(myU, g), ...physChips(physOf(g, cb, myU, 'pc'), refOf, FX_CHIP)], noFx: !effectsOf(myU).length && !condChips(myU, g).length && !physChips(physOf(g, cb, myU, 'pc'), refOf, FX_CHIP).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
     const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u, g).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
       return { key: u.id, name: u.name, img: faceOf(u), hasImg: !!faceOf(u), short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : u.hp + ' / ' + u.maxHp, hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),
         fx: fx.map((f) => f[0]).join(' · '), hasFx: fx.length > 0, t: tokenVals(u, { ally: true, player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#7FD4FF', inFight: true, right: false, up: false }),

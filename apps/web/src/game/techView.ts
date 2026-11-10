@@ -96,11 +96,11 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
 
 /** The Attack tab's rows for the blocks: [id, label, cost, text, why] as the action list wants them. */
 export function blockItems(blocks: WeaponBlock[]): [string, string, string, string, (string | null)?][] {
-  const two = blocks.length > 1, out: [string, string, string, string, (string | null)?][] = [];
+  const out: [string, string, string, string, (string | null)?][] = [];
+  // (each block's header names the weapon and its hand, so the rows don't repeat it)
   for (const b of blocks) {
-    const tag = two ? ' · ' + (b.hand === 'main' ? 'main' : 'off') : '';
-    if (b.plain) out.push([techAction(b.hand, b.plain.id), b.plain.name + tag, b.plain.apText, b.plain.help, b.plain.ok ? null : b.plain.why]);
-    out.push([padAction(b.hand), 'Techniques · ' + b.usable + tag, b.total ? b.usable + ' / ' + b.total : '', 'What you can do with the ' + b.name + ': pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
+    if (b.plain) out.push([techAction(b.hand, b.plain.id), b.plain.name, b.plain.apText, b.plain.help, b.plain.ok ? null : b.plain.why]);
+    out.push([padAction(b.hand), 'Techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', 'What you can do with the ' + b.name + ': pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
   }
   const watch = watchChips(blocks);
   if (watch.length) out.push([TWATCH, 'Hold a shot', '', 'Hold a shot until its trigger: Overwatch, Deny, Cover Me, Dead to Rights. It fires on the enemy\'s turn.', watch.some((c) => c.ok) ? null : watch[0].why]);
@@ -162,3 +162,68 @@ export function previewLines(cb: any, pv: TechPreview | null): { odds: string[];
 }
 /** A property's explanation (the engine's glossary), for the chips' and the help's hover. */
 export const propHelp = (prop: string) => propText(prop);
+
+// ---------- Pressure, Watches and Stopped on the map and the You card (part 3) ----------
+type PhysView = ReturnType<typeof phys.physView>;
+/** A unit's meters as this side may see them (null when the engine has none for it). */
+export function physOf(g: any, cb: any, u: any, side: 'pc' | 'foe' = 'pc'): PhysView | null {
+  try { return physView(cb, u, side, g); } catch { return null; }
+}
+const PRESS_INK: Record<string, string> = { '': '#E7EBF3', pressed: '#F2A54A', suppressed: '#F65157', broken: '#F65157' };
+/** The pips over a token: up to the unit's cap, filled to its Pressure (public: no Analyze needed), and the state word
+ *  for its hover card and aria-label. Pips a Silent weapon put on a unit are already left out of its own side's view. */
+export function pressureLook(v: PhysView | null): { has: boolean; pips: { key: string; style: string }[]; word: string; title: string; style: string } {
+  const p = v?.pressure; if (!p || !p.now) return { has: false, pips: [], word: '', title: '', style: '' };
+  const ink = PRESS_INK[p.state] || '#E7EBF3', n = Math.min(4, p.max);
+  const pips = Array.from({ length: n }, (_, i) => ({ key: 'p' + i, style: 'width: 6px; height: 6px; border-radius: 50%; box-sizing: border-box; ' + (i < p.now ? 'background: ' + ink : 'border: 1px solid rgba(231, 235, 243, 0.55); background: rgba(5, 7, 11, 0.7)') }));
+  const word = p.word || 'Under fire';
+  return { has: true, pips, word, title: 'Pressure ' + p.now + ' / ' + p.max + ' · ' + word + (p.cost ? ': ' + p.cost : ''),
+    style: 'position: absolute; left: 50%; top: 0; transform: translateX(-50%); z-index: 4; display: flex; gap: 2px; padding: 1px 2px; border-radius: 4px; pointer-events: none; background: rgba(5, 7, 11, 0.6)' };
+}
+/** The hover card's lines for a unit: its Pressure and state, and that it can't be stopped again this round. */
+export function physLines(v: PhysView | null): string[] {
+  if (!v) return [];
+  const out: string[] = [];
+  if (v.pressure && v.pressure.now) out.push((v.pressure.word || 'Under fire') + ' (Pressure ' + v.pressure.now + ' / ' + v.pressure.max + ')' + (v.pressure.cost ? ': ' + v.pressure.cost : ''));
+  if (v.stopped) out.push('Stopped once: ' + v.stopped.text.charAt(0).toLowerCase() + v.stopped.text.slice(1));
+  if (v.watch) out.push('Holding ' + v.watch.name + (v.watch.tile ? ' on ' + v.watch.tile : ''));
+  return out;
+}
+/** The You card's chips (key, k: the short word, t: what it means, style): your Pressure with its state, cost and who
+ *  put it there; your held Watch with its trigger; Stopped once. */
+export function physChips(v: PhysView | null, refOf: (k: string) => string, style: string): { key: string; k: string; t: string; style: string }[] {
+  if (!v) return [];
+  const out: { key: string; k: string; t: string; style: string }[] = [];
+  const p = v.pressure;
+  if (p && p.now) out.push({ key: 'pressure', k: (p.word || 'Under fire').toUpperCase() + ' · ' + p.now + '/' + p.max, style,
+    t: 'Pressure ' + p.now + ' of ' + p.max + (p.cost ? '. ' + p.cost + '.' : '.') + (p.by && p.by.length ? ' From ' + p.by.map((b) => b.name).join(', ') + '.' : '') });
+  if (v.watch && v.watch.mine) out.push({ key: 'watch', k: v.watch.name.toUpperCase() + (v.watch.tile ? ' · ' + refOf(v.watch.tile) : ''), style,
+    t: 'Holding ' + v.watch.name + ': it fires when ' + ({ moves: 'an enemy moves in your sight', enters_tile: 'someone steps onto the tile', attacks_ally: 'someone attacks the ally you cover', acts: 'the target acts' } as Record<string, string>)[v.watch.trigger] + '.' });
+  if (v.stopped) out.push({ key: 'stopped', k: 'STOPPED ONCE', style, t: v.stopped.text + '.' });
+  return out;
+}
+/** Every held Watch your side can see, on the map: its tiles tinted (red for an enemy's, white for your side's), a
+ *  dotted line from the watcher to them, and a chip on the watcher. */
+export function watchMarks(g: any, cb: any, side: 'pc' | 'foe' = 'pc'): { tiles: Map<string, { style: string; title: string }>; chips: Map<string, { text: string; title: string; style: string }> } {
+  const tiles = new Map<string, { style: string; title: string }>(), chips = new Map<string, { text: string; title: string; style: string }>();
+  for (const u of cb?.units || []) {
+    if (u.dead || u.downed) continue;
+    const v = physOf(g, cb, u, side), w = v && v.watch; if (!w) continue;
+    const ours = u.side === side, ink = ours ? '#E7EBF3' : '#F65157', rgb = ours ? '231, 235, 243' : '246, 81, 87';
+    const title = (ours ? '' : 'Enemy ') + w.name + ' held by ' + u.name;
+    chips.set(u.id, { text: '◎ ' + w.name.toUpperCase(), title, style: 'position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); z-index: 5; padding: 0 4px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + ink + '; border: 1px solid ' + ink });
+    for (const k of w.tiles) tiles.set(k, { title, style: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; border-radius: 4px; background: rgba(' + rgb + ', ' + (ours ? 0.08 : 0.16) + '); border: 1px dashed rgba(' + rgb + ', 0.85)' });
+    // the line: the tiles between the watcher and the nearest watched tile, a dot on each
+    const to = w.tiles.length ? w.tiles.reduce((a: string, b: string) => (dist2(u.pos, b) < dist2(u.pos, a) ? b : a), w.tiles[0]) : null;
+    if (to) for (const k of lineTiles(u.pos, to)) if (!tiles.has(k) && k !== u.pos) tiles.set(k, { title, style: 'position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; z-index: 1; border-radius: 50%; pointer-events: none; background: ' + ink + '; opacity: 0.7' });
+  }
+  return { tiles, chips };
+}
+const xy = (k: string) => k.split(',').map(Number);
+const dist2 = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by] = xy(b); return (ax - bx) ** 2 + (ay - by) ** 2; };
+/** The tiles on a straight line between two tiles (both ends left out). */
+export function lineTiles(a: string, b: string): string[] {
+  const [x0, y0] = xy(a), [x1, y1] = xy(b), n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), out: string[] = [];
+  for (let i = 1; i < n; i++) out.push(Math.round(x0 + ((x1 - x0) * i) / n) + ',' + Math.round(y0 + ((y1 - y0) * i) / n));
+  return out;
+}
