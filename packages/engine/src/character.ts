@@ -571,7 +571,8 @@ const A = (c: Character, id: string) => c.attrs[id] || 1;
 /** A derived stat after items (plan 2.4): + the items' adds, × their multipliers (effects/hooks.ts statQuery). */
 const fx = (c: Character, stat: string, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
 export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
-export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'durability'));
+// Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
+export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
 export const maxHp = (c: Character) => Math.max(1, Math.round(fx(c, 'hp', 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
 export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed')) + skillRollMod({ c }, 'reaction_speed', { roll: 'initiative' }).add);
 /** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
@@ -596,7 +597,7 @@ export function weaponMultLabel(weaponId: string | null | undefined): string {
   return [...(ph.scales_with as string[]), ...((ph.also_scales?.length ? ph.also_scales : [ph.hits_with]) as string[])].map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1');
 }
 export const critMult = (c: Character) => fx(c, 'crit_damage', 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'dexterity')); // rules 1.12 (item 953): offence reads the alpha (it was Athletics)
-export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'camaraderie'));
+export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'empathy')); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
 export const maxMp = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
 // ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
 export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
@@ -606,8 +607,9 @@ export const soulMult = (c: Character) => 1 + 0.05 * (A(c, 'determination') - 1)
 export const elementalMult = (c: Character) => 1 + 0.1 * (A(c, 'expression') - 1) + 0.05 * P(c, 'visualization');
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
-export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'proficiency') / 3);
-export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'rumination'));
+// rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
+export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'brain_power') / 3);
+export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 /** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
  * cap, so it never fills an ordinary slot, now or after Brain Power rises). */
@@ -618,11 +620,11 @@ export const soulCastAp = (c: Character) => { void c; return 2; };
 /** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
 export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', P(c, 'empathy') >= 7 ? 2 : P(c, 'empathy') >= 3 ? 1 : 0)));
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
-export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'lore_master')));
+export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
 export const strainLimit = (c: Character) => fx(c, 'strain_limit', 3 + Math.floor(P(c, 'will_power') / 2));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
-export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'empathy') / 2)));
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'will_power') / 2))); // rules 1.13: ready designs are Will Power's (they were Empathy's)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
 const PR = (): any => (SOUL_RULES as any).practice || {};
 const GATES = (): any => (SOUL_RULES as any).gates || {};
@@ -685,7 +687,9 @@ export function soulPickError(c: Character, id: string, via: string): string | n
   return moduleGateError(c, id);
 }
 /** Save bonuses and debuff strength (spec: Conditions and saves). */
-export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = fam === 'body' ? 'guts' : fam === 'brain' ? 'charisma' : 'composure'; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
+/** The skill behind each save (rules 1.13): the betas. Body Guts, Brain Rumination (it was Charisma), Heart Composure. */
+export const SAVE_SKILL_OF: Record<'body' | 'brain' | 'heart', string> = { body: 'guts', brain: 'rumination', heart: 'composure' };
+export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = SAVE_SKILL_OF[fam]; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
 export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, fx(c, 'debuff_' + fam, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication'))));
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
 /** What counts as each focus: the focus items, and the mana arms that count as one. */
@@ -721,14 +725,16 @@ export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'pa
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
 /** Critical damage taken: −10% × (Perception − 1) − 5% × Durability. */
-export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'durability')));
+export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
 export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(0.6, fx(c, 'elemental_taken', 0.1 * P(c, 'pain_threshold'))));
-/** Ambush damage taken: −10% × Reaction Speed. */
-export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'reaction_speed')));
-/** Healing and shields received: +10% × Sensory. */
-export const healReceivedMult = (c: Character) => fx(c, 'heal_received', 1 + 0.1 * P(c, 'sensory'));
+/** Ambush damage taken: −10% × Improvisation (rules 1.13; the skill with the id 'proficiency'; it was Reaction Speed). */
+export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'proficiency')));
+/** Healing received: +10% × Camaraderie (rules 1.13; it was Sensory, and covered shields too). */
+export const healReceivedMult = (c: Character) => fx(c, 'heal_received', 1 + 0.1 * P(c, 'camaraderie'));
+/** Shields received, whatever made them: +10% × Conscience (rules 1.13). */
+export const shieldReceivedMult = (c: Character) => fx(c, 'shield_received', 1 + 0.1 * P(c, 'conscience'));
 /** Counter bonus: mod(Raw Power), minimum 0. */
 export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P(c, 'raw_power'))));
 /** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */

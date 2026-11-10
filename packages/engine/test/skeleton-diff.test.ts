@@ -1,3 +1,4 @@
+// @ts-nocheck (a tool run by hand: it reads the engine by name and writes a file)
 // Skeleton 2.0, Stage 0: the check tool. Every derived number for all 46 archetypes at levels 1, 6, 12 and 20, written
 // as JSON so the pass can be compared before and after:
 //   SKELETON_DIFF=/path/out.json npx vitest run --root packages/engine test/skeleton-diff.test.ts

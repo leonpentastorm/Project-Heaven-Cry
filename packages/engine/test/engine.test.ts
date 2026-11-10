@@ -19,7 +19,7 @@ describe('spec tables', () => {
   });
   it('HP and movement (Derived stats)', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    c.attrs.endurance = 3; c.skills.durability = 2; c.level = 3;
+    c.attrs.endurance = 3; c.skills.pain_threshold = 2; c.level = 3; // rules 1.13: HP a level reads Pain Threshold
     expect(maxHp(c)).toBe(100 + 15 * 2 + 2 * (5 + 4));
     c.attrs.agility = 3; c.armourClass = 0; expect(movement(c)).toBe(2);
     c.armourClass = 5; expect(movement(c)).toBe(1);

@@ -889,7 +889,7 @@ register({
 // three saves (u.sv), kept in step with the song before each roll. A shield of 30+ you give starts your song, like a
 // big heal (spec: "land a big heal or shield").
 // =====================================================================================================================
-const SAVE_SKILL: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', charisma: 'brain', composure: 'heart' };
+const SAVE_SKILL: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', rumination: 'brain', composure: 'heart' }; // rules 1.13: the save skills
 function songSync(h: Holder) {
   const u = h.u, c = charOf(h), g = gameOf(h); if (!u || !c || !g || musicTraitOf(c)?.id !== h.itemId) return;
   const had: Record<string, number> = ((u as any).songSk ||= {}), sk = (u.sk ||= {});

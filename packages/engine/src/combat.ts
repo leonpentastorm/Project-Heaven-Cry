@@ -2,7 +2,7 @@
 import { fxTaps } from './fxtap';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
-  saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
+  saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
@@ -123,7 +123,7 @@ export interface Unit {
   /** Derived stats (spec: Derived stats) the damage chain reads: percent of critical, elemental and ambush damage not
    * taken, healing and shields received multiplier, Counter bonus, Throwing range, Ambush multiplier, Blessing power,
    * the Ingenuity modifier (spotting), and Stealth. */
-  critTaken?: number; elemTaken?: number; ambushTaken?: number; healRecv?: number; counter?: number; throwRange?: number; ambushMult?: number; blessPower?: number; ingMod?: number; stealth?: number;
+  critTaken?: number; elemTaken?: number; ambushTaken?: number; healRecv?: number; /** shields received (rules 1.13: Conscience) */ shieldRecv?: number; counter?: number; throwRange?: number; ambushMult?: number; blessPower?: number; ingMod?: number; stealth?: number;
   /** The ammo type loaded now (armour_piercing, hollow_point, incendiary, enhanced; null standard) and in each spare. */
   ammoType?: string | null; magTypes?: (string | null)[];
   /** Throwables carried (grenades, satchels): item id → count. Written back after the fight. */
@@ -391,7 +391,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   return {
     sv: Object.fromEntries(fams.map((f) => [f, saveBonus(c, f)])) as any, dbf: Object.fromEntries(fams.map((f) => [f, debuffStrength(c, f)])) as any,
     ...(Object.keys(sk).length ? { sk } : {}),
-    critTaken: critTakenPct(c), elemTaken: elementalTakenPct(c), ambushTaken: ambushTakenPct(c), healRecv: healReceivedMult(c), counter: counterBonus(c),
+    critTaken: critTakenPct(c), elemTaken: elementalTakenPct(c), ambushTaken: ambushTakenPct(c), healRecv: healReceivedMult(c), shieldRecv: shieldReceivedMult(c), counter: counterBonus(c),
     throwRange: throwRange(c), ambushMult: ambushMult(c), blessPower: blessingPower(c), ingMod: mod(c.skills.ingenuity || 0), stealth: stealthOf(c),
     kind, tags: ['humanoid', ...((c as any).tags || [])],
     ammoType: c.loadedType || null, ...(spare?.magTypes ? { magTypes: [...spare.magTypes] } : {}),

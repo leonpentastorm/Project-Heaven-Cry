@@ -784,7 +784,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at >= 0 && g.story.magic?.[c!.id]?.held?.design === d.id) fail('You are holding that Outburst: release it or let it go first.');
       const r = checkOutburstDesign(c!, d, moduleSlots(c!), at >= 0 ? d.id : 'o' + (g.seq + 1)); if (typeof r === 'string') fail(r);
       const { design: clean, learnTone } = r as Exclude<typeof r, string>;
-      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Empathy): forget one first.');
+      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Will Power): forget one first.');
       if (at < 0) g.seq++;
       if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
       if (at >= 0) list[at] = clean; else list.push(clean);
@@ -1020,7 +1020,7 @@ export function setStoryCond(g: GameState, c: Character, id: string, scope: 'sce
  * leaving their band. Returns the change made. */
 export function applyKarma(g: GameState, c: Character, amount: number, opts: { unlawful?: boolean; why?: string } = {}): number {
   if (!amount) return 0;
-  const consc = (c.skills.conscience || 0) * Math.sign(amount);
+  const consc = (c.skills.authority || 0) * Math.sign(amount); // rules 1.13: the Karma award reads Authority (it was Conscience)
   const ctx: any = emitStory(g, 'karma_award', { c, amount: amount + consc, unlawful: !!opts.unlawful, mult: 1, why: opts.why || '', g }, [c]);
   const was = c.karma || 0; c.karma = Math.max(-100, Math.min(100, Math.round(was + ctx.amount * (ctx.mult || 1))));
   const d = c.karma - was; if (d) push(g, { kind: 'system', text: c.name + ' ' + (d > 0 ? '+' : '') + d + ' Karma (' + karmaBand(c.karma) + (opts.why ? ': ' + opts.why : '') + ').', ooc: true });
@@ -1524,7 +1524,7 @@ function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'ge
 /** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
  * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
 const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
-  'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'stealth', 'injResist'] as const;
+  'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'shieldRecv', 'stealth', 'injResist'] as const;
 /** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
  * a slow, a blind or a guard on them stays; HP, AP, conditions, Flux, Strain and a held Outburst are kept. */

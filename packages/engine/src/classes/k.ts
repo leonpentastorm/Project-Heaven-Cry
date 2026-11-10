@@ -17,7 +17,7 @@ import {
   checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
-import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign } from '../character';
+import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
@@ -509,7 +509,7 @@ register({
       text: 'Make a Beloved design with one module more than your slots (the design itself: a school and its modules).',
       run: (h, a) => {
         const c = h.c!, list: string[] = cs(c).beloved || []; if (list.length >= 3) return 'Three designs are Beloved already.';
-        if ((c.outbursts || []).length >= (2 + Math.floor((c.skills.empathy || 0) / 2))) return 'Your ready designs are full: forget one first.';
+        if ((c.outbursts || []).length >= readyDesigns(c)) return 'Your ready designs are full: forget one first.';
         const g = h.g, d = checkDesign(c, parseDesign(a.text), 1, 'o' + (g ? ++g.seq : Date.now())); if (typeof d === 'string') return d;
         (c.outbursts ||= []).push(d); (charState(c).beloved ||= []).push(d.id);
         const line = c.name + ' shapes a Beloved spell: ' + d.name + ' (' + d.school + (d.modules.length ? ': ' + d.modules.join(', ') : '') + ').';

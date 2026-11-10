@@ -101,7 +101,7 @@ function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, 
  * actually restored (a Downed unit is brought back up at max(1, n)). */
 export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string): { restored: number; revived: boolean } {
   if (t.dead) return { restored: 0, revived: false };
-  // Healing received: +10% × Sensory (spec: Derived stats).
+  // Healing received: +10% × Camaraderie (rules 1.13).
   const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), kind, cb };
   if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }
   let restored = 0, revived = false;
@@ -113,7 +113,7 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
 }
 /** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
 export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {
-  const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx);
+  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
   const v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? (t.shield || 0) + v : Math.max(t.shield || 0, v);
   if (cb && by && v > 0) tendHook.f?.(cb, by, t);
   return v;

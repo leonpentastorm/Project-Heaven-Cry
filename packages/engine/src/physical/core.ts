@@ -383,7 +383,7 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   const tn = (PHYS_RULES.stop_tn || 12) + tnAdd, skills = Array.isArray(skillsOrFam) ? skillsOrFam : [skillsOrFam];
   if (t.preview) { (t.pv.saves ||= []).push({ unit: target.id, skills, tn }); return false; }
   const c = target.companion ? null : charOfUnit(target);
-  const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', charisma: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
+  const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', rumination: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
   const r = d20(t.rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
   t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + skills.join(' or ') + ' ' + (r + bonus) + ' vs ' + tn + ').');
