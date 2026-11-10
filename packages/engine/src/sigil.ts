@@ -23,9 +23,9 @@ import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTI
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { AP_MAX } from './effects/ap';
-import { NEEDS_EVOKER } from './character';
+import { NEEDS_EVOKER, passiveVigilance } from './character';
 import {
-  type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitDebuff,
+  type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, strengthFor, withVia,
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
 } from './magic';
 import { makeObject, OBJ } from './objects';
@@ -394,8 +394,8 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
   const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') : 0;
   const saves: Affected['saves'] = [];
-  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + (caster ? unitDebuff(caster, SAVES[a.save]) : 0) + iv(sp, w, 'save_tn') }); }
-  if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitDebuff(caster, 'body') });
+  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + unitStrength(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
+  if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitStrength(caster, 'brain_power') });
   return { dmg: E + S, dmgAfterArmour: arm, heal: Math.round(hook('heal', hl * m * sm * hm)), shield: Math.round(hook('shield', sh * m * sm * hm)),
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
@@ -961,7 +961,11 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
 }
 /** Apply one Subject set to one creature: one hit roll for the damage, saves for the Afflictions, Boons and the creature
  * Workings. Returns the log and the direct damage dealt (after armour). */
-function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, t: Unit, a: Affected, o: { roll: boolean; origin: string; opts: EvokeOpts; skipHarm?: boolean }): { line: string; dealt: number; missed?: boolean } {
+/** Everything a Sigil spell puts on someone is delivered by Brain Power (rules 1.13); `str` is a zone's stored strength. */
+function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, t: Unit, a: Affected, o: { roll: boolean; origin: string; opts: EvokeOpts; skipHarm?: boolean; str?: number }): { line: string; dealt: number; missed?: boolean } {
+  return withVia(by, 'brain_power', () => applyToInner(cb, rng, by, side, sp, t, a, o), o.str);
+}
+function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, t: Unit, a: Affected, o: { roll: boolean; origin: string; opts: EvokeOpts; skipHarm?: boolean }): { line: string; dealt: number; missed?: boolean } {
   let line = '', dealt = 0; const harmOk = !(t.downed || t.surrendered);
   if (sp.damaging && harmOk) {
     let crit = false, r = 0;
@@ -1032,7 +1036,10 @@ function nonDamage(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp
 /** CLEANSE's pick: the newest condition on the creature (a debuff; boons and states stay). */
 export function newestCondition(t: Unit): string | null { return cleanseList(t, 1)[0] || null; }
 /** A missile that strikes: every affected creature, then the chain, pull and step, then the Workings on the ground. */
-function strike(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, mp: MissilePlan, aff: Affected[], o: { roll: boolean; source: string; opts: EvokeOpts }): { line: string; dealt: number; hit: string[]; struck: string[] } {
+function strike(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, mp: MissilePlan, aff: Affected[], o: { roll: boolean; source: string; opts: EvokeOpts; str?: number }): { line: string; dealt: number; hit: string[]; struck: string[] } {
+  return withVia(by, 'brain_power', () => strikeInner(cb, rng, by, side, sp, mp, aff, o), o.str);
+}
+function strikeInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, mp: MissilePlan, aff: Affected[], o: { roll: boolean; source: string; opts: EvokeOpts }): { line: string; dealt: number; hit: string[]; struck: string[] } {
   let line = '', dealt = 0; const hit: string[] = [], struck: string[] = [];
   for (const a of aff) {
     const t = cb.units.find((x) => x.id === a.unit); if (!t || t.dead) continue;
@@ -1062,13 +1069,14 @@ function teleportSave(cb: Combat, rng: Rng, by: Unit, t: Unit): { held: boolean;
   const ca: any = emit(cb, 'cond_apply', { by, t, id: 'teleport', fam: 'body', rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
   if (ca.cancel) return { held: true, line: ' · ' + t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '') };
   if (ca.skipSave) return { held: false, line: '' };
-  const r = d20(rng), m = unitSave(t, 'body') + (ca.saveAdd || 0), tn = 12 + unitDebuff(by, 'body') + (ca.tnAdd || 0);
+  const r = d20(rng), m = unitSave(t, 'body') + (ca.saveAdd || 0), tn = 12 + strengthFor(by, null) + (ca.tnAdd || 0);
   return r === 20 || (r !== 1 && r + m >= tn) ? { held: true, line: ' · ' + t.name + ' holds its place (body save ' + (r + m) + ' vs ' + tn + ')' }
     : { held: false, line: ' (body save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '') + ')' };
 }
 
 // ---------- what stays: fields, traps, turrets, walls ----------
-function addZone(cb: Combat, z: Omit<Zone, 'id'> & Record<string, any>): Zone { const full = { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), ...z } as Zone; cb.zones = [...(cb.zones || []), full]; return full; }
+/** A zone keeps the Brain Power strength of whoever laid it (rules 1.13): its conditions read that, whatever becomes of the caster. */
+function addZone(cb: Combat, z: Omit<Zone, 'id'> & Record<string, any>): Zone { const full = { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), ...z, str: unitStrength(cb.units.find((x) => x.id === z.by) || null, 'brain_power') } as Zone; cb.zones = [...(cb.zones || []), full]; return full; }
 /** Place a missile's field, trap or turret (spec: Delivery, what stays), with the caster's limits. */
 function place(cb: Combat, u: Unit, sp: Spell, mp: MissilePlan, struck: string[] = []): string {
   const dur = Math.floor(u.mg?.durBonus || 0), el = sp.element;
@@ -1135,7 +1143,7 @@ function fieldBite(cb: Combat, rng: Rng, z: Zone, t: Unit) {
   const again = !!(zz.ever ||= {})[t.id]; zz.ever[t.id] = true;
   const by = ownerOf(cb, z), m = (zz.tileMult?.[t.pos] ?? 1) * (again ? z.mult ?? 0.5 : zz.first ?? 1) * (zz.reachMult ?? 1) * sp.repMult;
   const a: Affected = { unit: t.id, name: t.name, at: t.pos, ally: t.side === z.side, enemy: t.side !== z.side, self: by === t, mult: m, via: 'field', missile: 0, ...numbersFor(cb, by, sp, t, m, false, null) };
-  const r = applyTo(cb, rng, by, z.side, sp, t, a, { roll: false, origin: z.tiles[0], opts: {} });
+  const r = applyTo(cb, rng, by, z.side, sp, t, a, { roll: false, origin: z.tiles[0], opts: {}, str: zz.str });
   let line = r.line;
   if (sp.pull && by && !by.dead && t !== by) line += magicShove(cb, t, by.pos, -sp.pull, by);
   emitFx(cb, 'field_tick', { id: z.id, target: t.id, at: t.pos, element: sp.element, side: z.side });
@@ -1154,7 +1162,7 @@ function springTrap(cb: Combat, rng: Rng, z: Zone, t: Unit) {
     const src = by && !by.dead ? by.pos : z.tiles[0]; // PULL and CHAIN measure from the trap's owner (Snare: dragged toward you)
     const mp = missileEffects(cb, by, z.side, sp, { i: 0, aim: z.tiles[0], origin: z.tiles[0], impact: z.tiles[0], f, self: false, kind: sp.missile, source: src, deliveryMult: 1, roll: !!by, hops: [], path: [], blockedAt: null, stoppedBy: null, arc: null, opts: {}, reachMult: zz.reachMult ?? 1, via: 'trap', victim: t });
     let struck: string[] = [];
-    if (typeof mp !== 'string') { const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: !!by, source: src, opts: {} })); struck = r.struck; cb.log.push(head + (r.line || ': it finds no one') + (sp.stay ? ' · a field springs up' : '') + '.'); }
+    if (typeof mp !== 'string') { const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: !!by, source: src, opts: {}, str: zz.str })); struck = r.struck; cb.log.push(head + (r.line || ': it finds no one') + (sp.stay ? ' · a field springs up' : '') + '.'); }
     if (sp.stay) { const bt = typeof mp !== 'string' ? mp.plan.burst : burstTiles(cb, sp, z.tiles[0], f); placeField(cb, z.by, z.who, z.side, sp, bt, f, Math.floor(by?.mg?.durBonus || 0), zz.reachMult ?? 1, struck); }
   }
   if (zz.triggers <= 0) cb.zones = (cb.zones || []).filter((x) => x !== z);
@@ -1174,7 +1182,7 @@ function turretFire(cb: Combat, rng: Rng, z: Zone) {
     if (typeof mp === 'string') continue;
     emitFx(cb, 'turret_shot', { id: z.id, from: at, to: impact, target: v.id, element: sp.element, side: z.side, path, kind: sp.missile, burst: mp.plan.burst.tiles, chain: mp.plan.chain });
     emit(cb, 'turret_shot', { turret: z, owner: by, target: v, cb, rng });
-    const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: true, source: at, opts: {} }));
+    const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: true, source: at, opts: {}, str: zz.str }));
     line += r.line;
     if (sp.leech && r.dealt > 0 && !by.dead) { const h = healUnit(cb, by, Math.floor(r.dealt * sp.leech), by, 'leech'); line += ' · ' + by.name + ' drinks ' + h.restored + ' HP'; }
   }
@@ -1257,7 +1265,7 @@ const x2fx = (k: string) => (k === 'turret' ? 'turret_destroyed' : k === 'trap' 
 export function sigilSpot(cb: Combat, u: Unit) {
   if (u.dead || u.downed) return;
   const td = OBJ.trap?.trap, tr = { range: td?.detect_range ?? 2, tn: td?.detect_tn ?? 12 }; // the trap object's numbers (objects.json)
-  const passive = u.side === 'pc' ? 10 + ((u.vigilant || 0) <= 0 ? -2 : (u.vigilant || 0) - 1) : 10 + (NOTICE[u.tier || 'minion'] || 0);
+  const passive = u.side === 'pc' ? passiveVigilance(u.vigilant || 0) : 10 + (NOTICE[u.tier || 'minion'] || 0);
   for (const z of cb.zones || []) {
     const zz: any = z; if (z.side === u.side || !(z.kind === 'trap' || (z.kind === 'turret' && zz.hidden))) continue;
     if ((zz.spotted ||= []).includes(u.side) || dist(z.tiles[0], u.pos) > tr.range || passive < tr.tn) continue;
@@ -1349,7 +1357,7 @@ export function enemyMagic(u: Unit, words: string[] | true): NonNullable<Unit['m
   const s = TIER_SAVE[tier] ?? 0, d = TIER_DEBUFF[tier] ?? 0;
   return { words: list, designs: [], evoker: true, emanator: false, charge: CORE_CHARGE, cores: 2, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false,
     brain: u.attack || 0, will: 0, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: ENEMY_MAX_WORDS[tier] ?? 2, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0,
-    soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5, saves: { body: s, brain: s, heart: s }, debuff: { body: d, brain: d, heart: d } } as any;
+    soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5, saves: { body: s, brain: s, heart: s }, debuff: { '*': d } } as any;
 }
 function combos(words: string[], max: number): string[][] {
   const out: string[][] = [], w = [...new Set(words)];

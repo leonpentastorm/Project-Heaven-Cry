@@ -52,7 +52,7 @@ export function heartMagic(u: Unit, c: HeartCasterDef): MagicUnit {
     brain: 0, will: u.attack || 0, sigilMult: 1, soulMult: c.soul_mult || 1, elemMult: 1, healMult: 1,
     maxWords: 0, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0,
     soulAp: SOUL_AP.begin, costSave: 0, soulRange: c.reach_bonus || 0, syphon: 1, strainLimit: c.strain_limit || 5,
-    saves: { body: s, brain: s, heart: s }, debuff: { body: d, brain: d, heart: d },
+    saves: { body: s, brain: s, heart: s }, debuff: { '*': d },
   };
 }
 /** Arm a fight's foe with its heart (startCombat, after armFoe): a foe whose `caster` names a Soul caster archetype. */

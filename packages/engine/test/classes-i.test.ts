@@ -326,13 +326,13 @@ describe('Scribe', () => {
 
 // ======================================================================================================== TRICKSTER
 describe('Trickster', () => {
-  it('Bind: BIND is known and costs 1; its Pin saves against 14 + debuff strength', () => {
+  it('Bind: BIND is known and costs 1; its Pin saves against 14 + Brain Power strength', () => {
     const f = fightWith([cls('trickster', 1, MIND)], [{}]);
     expect(f.pc.mg!.words).toContain('bind');
     expect(withGame(f.g, () => glyphCost(f.cb, f.pc, 'bind', true)).charge).toBe(1);
-    const dbf = f.pc.dbf?.body ?? 0;
+    const dbf = f.pc.dbf?.brain_power ?? 0; // rules 1.13: a Sigil's conditions read Brain Power
     let line0 = '';
-    withGame(f.g, () => { for (let i = 1; i < 40 && !line0; i++) { const s = applyCond(f.cb, rng(i), f.unit(f.pc.id), f.unit(f.foe.id), 'pinned'); if (/resists/.test(s)) line0 = s; } });
+    withGame(f.g, () => { for (let i = 1; i < 40 && !line0; i++) { const s = applyCond(f.cb, rng(i), f.unit(f.pc.id), f.unit(f.foe.id), 'pinned', undefined, undefined, { via: 'brain_power' }); if (/resists/.test(s)) line0 = s; } });
     expect(line0).toMatch(new RegExp('vs ' + (14 + dbf)));
   });
   it('Blind and Slow: BLIND, SLOW and MUDDLE are known; BLIND and SLOW still cost 1, MUDDLE 1', () => {
@@ -496,7 +496,7 @@ describe('Hexer', () => {
       const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 5]);
       const d = designOf(f.unit(u.id), 'status', 'shaken');
       act(f, f.unit(u.id), { type: 'combat/outburst', design: d, aim: '5,2' });
-      const l = f.cb.log.find((x) => /resists \(heart save \d+ vs \d+\)/.test(x)); if (l) seen = l.match(/vs (\d+)\)/)![1] + '|' + (12 + (f.pc.dbf?.heart ?? 0) + 2);
+      const l = f.cb.log.find((x) => /resists \(heart save \d+ vs \d+\)/.test(x)); if (l) seen = l.match(/vs (\d+)\)/)![1] + '|' + (12 + (f.pc.dbf?.will_power ?? 0) + 2); // rules 1.13: an Outburst's conditions read Will Power
     }
     const [got, want] = seen.split('|'); expect(got).toBe(want);
   });

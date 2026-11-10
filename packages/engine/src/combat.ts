@@ -2,9 +2,9 @@
 import { fxTaps } from './fxtap';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
-  saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
+  saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
-import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
+import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
@@ -96,11 +96,11 @@ export interface Unit {
   /** Who hit this unit last, and everyone who has (kill attribution: bleed from your crits, barrels you broke). */
   lastHitBy?: string; damagedBy?: string[];
   // ---------- shared subsystems (rules 1.3, lane 0B; every field optional so old saves load) ----------
-  /** PC saves and debuff strength by family, and item modifiers to d20 rolls by skill (the global ruling: item skill
+  /** PC saves by family, debuff strength by delivering skill (rules 1.13), and item modifiers to d20 rolls by skill (the global ruling: item skill
    * mods reach every d20 that uses the skill), fixed when the unit is built. */
-  sv?: Record<'body' | 'brain' | 'heart', number>; dbf?: Record<'body' | 'brain' | 'heart', number>; sk?: Record<string, number>;
+  sv?: Record<'body' | 'brain' | 'heart', number>; /** Debuff strength by delivering skill (rules 1.13; a PC's, a skill not listed reads 0). */ dbf?: Record<string, number>; sk?: Record<string, number>;
   /** Conditions' sources (unit ids), orders (Commanded) and the ones put on during the bearer's own turn. */
-  condBy?: Record<string, string>; condArg?: Record<string, string>; condFresh?: string[];
+  condBy?: Record<string, string>; /** The skill that delivered each condition (rules 1.13: its strength). */ condVia?: Record<string, string>; condArg?: Record<string, string>; condFresh?: string[];
   /** Combat Hidden (spec: Helpful states): hidden now; how many times it has hidden this fight (each entry gives one
    * ambush); the entry whose ambush was used. */
   hidden?: boolean; hideEntry?: number; ambushUsed?: number;
@@ -389,7 +389,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   const kind = (c as any).kind || ((c.traits || []).includes('factory_made') ? 'machine' : 'human');
   const res = resourcesFor(c);
   return {
-    sv: Object.fromEntries(fams.map((f) => [f, saveBonus(c, f)])) as any, dbf: Object.fromEntries(fams.map((f) => [f, debuffStrength(c, f)])) as any,
+    sv: Object.fromEntries(fams.map((f) => [f, saveBonus(c, f)])) as any, dbf: strengthTable(c),
     ...(Object.keys(sk).length ? { sk } : {}),
     critTaken: critTakenPct(c), elemTaken: elementalTakenPct(c), ambushTaken: ambushTakenPct(c), healRecv: healReceivedMult(c), shieldRecv: shieldReceivedMult(c), counter: counterBonus(c),
     throwRange: throwRange(c), ambushMult: ambushMult(c), blessPower: blessingPower(c), ingMod: mod(c.skills.ingenuity || 0), stealth: stealthOf(c),
@@ -504,12 +504,12 @@ export const damageCover = damageObject;
 /** Spot hidden traps near a PC: passive Vigilant (10 + modifier) against the trap's TN (spec: Map objects). */
 export function spotTraps(objs: MapObject[], pos: string, vigilant: number, name: string, log: (s: string) => void) {
   for (const o of objs) if (o.hidden && isTrap(o)) {
-    const t = kindOf(o).trap!, passive = 10 + (vigilant <= 0 ? -2 : vigilant - 1);
+    const t = kindOf(o).trap!, passive = passiveVigilance(vigilant);
     if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots a trap at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
   }
   // Rules 1.9: a hidden pile (the Narrator's) falls to the same passive Vigilant, by its kind's spot TN and range (item 677).
   for (const o of objs) if (o.hidden && !isTrap(o) && kindOf(o).spot) {
-    const t = kindOf(o).spot!, passive = 10 + (vigilant <= 0 ? -2 : vigilant - 1);
+    const t = kindOf(o).spot!, passive = passiveVigilance(vigilant);
     if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots something on the ground at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
   }
 }
@@ -928,10 +928,18 @@ export function noteCrit(cb: Combat, by: Unit | null | undefined, tgt: Unit | nu
 }
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string;
   /** The attack was called and paid for but never made: a reaction to it took the attacker out, or cancelled it (a held shot that lands first, rules 1.12). */ cancelled?: boolean }
-export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean; quiet?: boolean;
+export type AttackOpts = { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean; quiet?: boolean;
   /** an ambush whatever the attacker's Hidden state (rules 1.12: Draw Cut's Light line, Ambush): criticals on 19-20, the Ambush multiplier, and everything that reads an ambush */ ambush?: boolean;
   /** the technique this attack is a strike of, when it isn't one of the plain attacks (physical/core.ts leaves the free ones out: Cut, Shot, Aimed Shot, Overwatch). A weapon's old on-hit grant fires only on a plain attack */ tech?: string;
-  /** fields added to the shot's effects event (a technique's id and roll index: presentation only) */ fx?: Record<string, any> } = {}): AttackResult {
+  /** fields added to the shot's effects event (a technique's id and roll index: presentation only) */ fx?: Record<string, any> };
+/** The skill a weapon's conditions are delivered by (rules 1.13): the skill it hits with. Melee blows Raw Power; shots,
+ * light blades and throws Dexterity. */
+export const weaponVia = (att: Unit, mode: string): string => strikeWeapon(att, mode)?.skill || 'raw_power';
+export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: AttackOpts = {}): AttackResult {
+  // Whatever this attack puts on someone (a weapon's rider, a perk's on-hit) is delivered by the weapon's skill.
+  return withVia(att, weaponVia(att, mode), () => resolveAttackInner(cb, rng, att, tgt0, mode, who, opts));
+}
+function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: AttackOpts): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
   // Confused (spec): each attack has a 50% chance to go at someone at random (anyone else it could attack).
   if (condOn(att, 'confused') && die(rng, 2) === 1) {

@@ -8,11 +8,15 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
+import { checkModOf } from '@engine';
 
 export const D = PD;
 export const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 export const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
 export const mod = (p) => (p <= 0 ? -2 : p - 1);
+/** A skill's modifier on a CHECK, as the engine rolls it (rules 1.13: a gamma skill counts its full points; the slot is
+ * read from the engine's data, never from the screen data). Saves, attacks and Initiative keep mod(). */
+export const checkMod = (skillId, p) => checkModOf(skillId, p || 0);
 export const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 export const IMG = D.img;
 /** Any built asset by name (tools/build_web_assets.py): campaign maps, sprites, banners, portraits. URLs pass through. */

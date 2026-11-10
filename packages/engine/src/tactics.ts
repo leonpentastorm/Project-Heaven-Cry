@@ -9,7 +9,7 @@ import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
 import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy } from './combat';
 import { type Rng, d20 } from './rng';
-import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitDebuff } from './magic';
+import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength } from './magic';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
 import { actionAp } from './effects/core';
@@ -149,14 +149,15 @@ export function surrender(cb: Combat, t: Unit, by: Unit | null, why: string): st
   emit(cb, 'on_surrender', { t, by, why, cb });
   return ' · ' + t.name + ' SURRENDERS (' + why + ')';
 }
-/** The surrender save (plan 6a-3: one per enemy a fight): a Heart save against 12 + the speaker's Heart debuff
- * strength, only for an enemy at half HP or less, or with every ally down. A failed save surrenders. */
-export function trySurrender(cb: Combat, rng: Rng, by: Unit, t: Unit, tnAdd = 0): string {
+/** The surrender save (plan 6a-3: one per enemy a fight): a Heart save against 12 + the strength of the gamma that
+ * spoke (rules 1.13: the offer of terms reads Charisma; a perk names its own), only for an enemy at half HP or less,
+ * or with every ally down. A failed save surrenders. */
+export function trySurrender(cb: Combat, rng: Rng, by: Unit, t: Unit, tnAdd = 0, via = 'charisma'): string {
   if (!canSurrender(t)) return ' · ' + t.name + (t.surrenderTried ? ' has already refused' : ' won\'t surrender');
   const alone = !cb.units.some((v) => v !== t && v.side === t.side && alive(v));
   if (t.hp > t.maxHp / 2 && !alone) return ' · ' + t.name + ' isn\'t beaten enough to listen';
   t.surrenderTried = true;
-  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitDebuff(by, 'heart') + tnAdd, held = r === 20 || (r !== 1 && r + m >= tn);
+  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitStrength(by, via) + tnAdd, held = r === 20 || (r !== 1 && r + m >= tn);
   const roll = ' (Heart save d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ')';
   return held ? ' · ' + t.name + ' refuses' + roll : surrender(cb, t, by, 'talked down' + roll);
 }
@@ -166,20 +167,22 @@ export function subdue(cb: Combat | null, t: Unit) { t.subdued = true; t.surrend
 // ---------- persuade, threaten, parley mid-fight (spec action table: 2 AP) ----------
 export const HEARING = 8;
 /** Talk in a fight: Persuade (Eloquence: a Left Brain Debuff against a Brain save), Threaten (Intimidation: Shaken
- * against a Body save), Parley (offer terms: the surrender save, and the words go to the Narrator). 'parley' {u, t,
- * kind, text, tnAdd, cancel, result} lets items change it (Overruled, Crowd-Pleaser, Lay Down Arms…). */
+ * against a Heart save, rules 1.13), Parley (offer terms, Charisma: the surrender save, and the words go to the
+ * Narrator). The strength is the gamma that spoke. 'parley' {u, t, kind, text, tnAdd, via, cancel, result} lets items
+ * change it (Overruled, Crowd-Pleaser, Lay Down Arms…; a perk that speaks with another gamma sets `via`). */
+export const PARLEY_VIA: Record<string, string> = { persuade: 'eloquence', threaten: 'intimidation', parley: 'charisma' };
 export function parley(cb: Combat, rng: Rng, u: Unit, t: Unit, kind: 'persuade' | 'threaten' | 'parley', text = ''): string | null {
   if (!t || t.dead || t.surrendered || t.side === u.side) return 'Pick an enemy who can hear you.';
   if (dist(u.pos, t.pos) > HEARING) return 'Too far to be heard (' + HEARING + ' tiles).';
   const ap = actionAp({ u }, 'parley', 2).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  const ctx: any = emit(cb, 'parley', { u, t, kind, text, tnAdd: 0, cancel: null as string | null, result: '', cb, rng });
+  const ctx: any = emit(cb, 'parley', { u, t, kind, text, tnAdd: 0, via: PARLEY_VIA[kind], cancel: null as string | null, result: '', cb, rng });
   if (ctx.cancel) return ctx.cancel;
   u.ap -= ap;
   const said = text ? ' "' + text.slice(0, 200) + '"' : '';
   let out = '';
-  if (kind === 'persuade') out = applyCond(cb, rng, u, t, 'ldebuff', undefined, 'brain', { tnAdd: ctx.tnAdd });
-  else if (kind === 'threaten') out = applyCond(cb, rng, u, t, 'shaken', undefined, 'body', { tnAdd: ctx.tnAdd });
-  else out = trySurrender(cb, rng, u, t, ctx.tnAdd);
+  if (kind === 'persuade') out = applyCond(cb, rng, u, t, 'ldebuff', undefined, 'brain', { tnAdd: ctx.tnAdd, via: ctx.via });
+  else if (kind === 'threaten') out = applyCond(cb, rng, u, t, 'shaken', undefined, 'heart', { tnAdd: ctx.tnAdd, via: ctx.via });
+  else out = trySurrender(cb, rng, u, t, ctx.tnAdd, ctx.via);
   cb.log.push(u.name + (kind === 'persuade' ? ' works on ' : kind === 'threaten' ? ' threatens ' : ' offers terms to ') + t.name + said + out + (ctx.result || '') + '.');
   if (text) (cb.notes ||= []).push(u.name + ' (round ' + cb.round + ', ' + kind + ' at ' + t.name + '):' + said);
   return null;
@@ -219,10 +222,10 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
       cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'veil', tiles: tilesWithin(cb, tile, radius), words: ['smoke'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
       return ' · smoke fills ' + radius + ' tiles around ' + refOf(tile) + ' for 2 rounds';
     }
-    case 'flashbang': for (const v of who) out += applyCond(cb, rng, by, v, 'blinded', 1, 'body'); return out || ' · nobody caught in it';
+    case 'flashbang': for (const v of who) out += applyCond(cb, rng, by, v, 'blinded', 1, 'body', { via: 'dexterity' }); return out || ' · nobody caught in it';
     case 'bot_scrambler': {
       for (const v of who) {
-        if (['robot', 'machine', 'turret', 'drone'].includes(v.kind || '') || v.companion === 'drone') out += applyCond(cb, rng, by, v, 'stunned', 1, 'body', { skipSave: true });
+        if (['robot', 'machine', 'turret', 'drone'].includes(v.kind || '') || v.companion === 'drone') out += applyCond(cb, rng, by, v, 'stunned', 1, 'body', { skipSave: true, via: 'dexterity' });
         if (WEAPON[v.weapon]?.category === 'mana') { v.jammed = true; out += ' · ' + v.name + '\'s mana arm jams'; }
       }
       cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'scramble' as any, tiles: tilesWithin(cb, tile, radius), words: ['scramble'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
@@ -230,7 +233,7 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
     }
     default: {
       const dmg = typeof w?.damage === 'number' ? w.damage : 0;
-      for (const v of who) { out += hurtUnit(v, dmg, false, cb, 'explosion', by); if (!v.dead && (w?.properties || []).includes('applies_burning')) out += applyCond(cb, rng, by, v, 'burning', undefined, 'body', { skipSave: true }); }
+      for (const v of who) { out += hurtUnit(v, dmg, false, cb, 'explosion', by); if (!v.dead && (w?.properties || []).includes('applies_burning')) out += applyCond(cb, rng, by, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && dist(o.pos, tile) <= radius) out += damageObject(cb, o.pos, dmg, 0, by);
       if ((w?.properties || []).includes('applies_burning') && standable(cb.map, tile)) cb.objects = [...objectsOf(cb), makeObject('fire_' + tile.replace(',', '_') + '_' + cb.round, 'fire', tile)];
       return out || ' · it goes off and finds no one';
@@ -258,7 +261,7 @@ export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power:
     else if (e.op === 'heal' && typeof e.value === 'number') out += heal(t, e.value * power, cb, u, 'blessing'); // rules 1.6 data
     else if (e.op === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
     else if (e.op === 'stat_mod' && e.stat === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
-    else if (e.op === 'condition' && isCondition(e.condition || e.id)) out += applyCond(cb, rng, u, t, e.condition || e.id, e.rounds, undefined, { skipSave: t.side === u.side });
+    else if (e.op === 'condition' && isCondition(e.condition || e.id)) out += applyCond(cb, rng, u, t, e.condition || e.id, e.rounds, undefined, { skipSave: t.side === u.side, via: 'faith' });
     else if (e.op === 'cleanse') { const ids = Object.keys(t.conds || {}); for (const id of ids) endCond(t, id, cb); out += ' · ' + t.name + ' is cleansed'; if (ids.length) tendHook.f?.(cb, u, t); } // tending others (rules 1.5, 3.3)
     else left = true;
   }
@@ -312,7 +315,8 @@ export function companionUnits(cb: Combat | null, c: Character, owner: Unit, tak
     if (!at) continue; taken.add(at);
     const u = unitFromEnemy('cp-' + c.id + '-' + comp.id, comp.name || k.name, 'minion', k.weapon || 'fists', at, rng);
     Object.assign(u, { side: 'pc', tier: undefined, hp: Math.min(k.hp, comp.hp ?? k.hp), maxHp: k.hp, def: k.defense, armour: k.armour, attack: k.attack_bonus, movement: k.movement, strength: k.attack_bonus,
-      init: owner.init - 0.5, agility: 1, ctrl: c.id, companion: comp.kind, kind: k.kind || comp.kind, tags: [...(k.tags || [])], short: (comp.name || k.name).slice(0, 2).toUpperCase(), img: comp.img || k.portrait || undefined }); // its own portrait first (the cut-in and the HUD show it)
+      init: owner.init - 0.5, agility: 1, ctrl: c.id, companion: comp.kind, dbf: { '*': unitStrength(owner, 'empathy') }, // rules 1.13: a companion's conditions read its handler's Empathy
+       kind: k.kind || comp.kind, tags: [...(k.tags || [])], short: (comp.name || k.name).slice(0, 2).toUpperCase(), img: comp.img || k.portrait || undefined }); // its own portrait first (the cut-in and the HUD show it)
     u.mags = undefined; // unlimited spares, as enemies carry
     // A fixed action list and a gun that never runs dry (the drone: move and shoot, no reload, no Heat or jams; spec §14
     // item 370), from the stat block.

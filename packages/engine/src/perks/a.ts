@@ -13,7 +13,7 @@ import type { Character } from '../character';
 import { key, xy, dist, alive, unitSees, litAt, moveBlockers, objectsOf, damageObject, resolveAttack, attackDamage, isMelee, refOf, keyOf as refKey, emitFx, fxFell, checkOver, previewAttack } from '../combat';
 import { ARMOUR, mod, packOf, maxHp as maxHpOf } from '../character';
 import { WEAPON, SKILL } from '../data';
-import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily } from '../magic';
+import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitStrength } from '../magic';
 import { die, d20, type Rng } from '../rng';
 import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON , dropHeldShot } from '../tactics';
@@ -182,12 +182,12 @@ register({
 });
 
 // ---------- Grapple (Raw Power α) ----------
-// I: 2 AP, grab an adjacent enemy: Grappled (Body save vs 12 + your Body debuff strength). It can't move and attacks
+// I: 2 AP, grab an adjacent enemy: Grappled (Body save vs 12 + your Raw Power strength). It can't move and attacks
 // anyone but you at −2 (the condition). It breaks free with 2 AP (combat/escape). The hold ends if you move or go down.
 // II: an attack aimed at you has a 50% chance to hit your captive instead. No free hand needed (PROVISIONAL, plan 6
 // Grapple 3). Story: holding an NPC marks it Grappled for the scene and asks the Narrator if the hold is plausible.
 function grabUnit(cb: Combat, u: Unit, t: Unit, r0: Rng): string | null {
-  const r = applyCond(cb, r0, u, t, 'grappled');
+  const r = applyCond(cb, r0, u, t, 'grappled', undefined, undefined, { via: 'raw_power' });
   emitFx(cb, 'melee', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: 'fists', cat: 'unarmed', mode: 'grapple', hit: condOn(t, 'grappled'), crit: false, fumble: false, dmg: 0, killed: false });
   say(cb, u.name + ' grabs for ' + t.name + ' (Grapple)' + r + '.'); return null;
 }
@@ -200,7 +200,7 @@ register({
       // it as an ambush) with the grab as the opening move (PROVISIONAL, spec 14).
       id: 'grapple', label: 'Grapple', scope: ['combat', 'world'], target: 'enemy', range: 1, ap: 2,
       available: (h) => (h.u && condOn(h.u, 'grappled') ? 'You are held yourself.' : true),
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && condOn(t, 'grappled')) return { ok: false, why: t.name + ' is already held.' }; if (t && h.u && dist(t.pos, h.u.pos) > 1) return { ok: false, why: 'Walk up to them first.' }; return { lines: ['Grappled: Body save vs ' + (12 + (h.u?.dbf?.body || 0)) + '.' + (ow(h.cb) ? ' Starts a fight.' : '')] }; },
+      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && condOn(t, 'grappled')) return { ok: false, why: t.name + ' is already held.' }; if (t && h.u && dist(t.pos, h.u.pos) > 1) return { ok: false, why: 'Walk up to them first.' }; return { lines: ['Grappled: Body save vs ' + (12 + unitStrength(h.u, 'raw_power')) + '.' + (ow(h.cb) ? ' Starts a fight.' : '')] }; },
       run: (h, a, rng) => {
         if (ow(h.cb)) { const g = h.g; strikeFromWorld(a.targetId!, 2, (cbx, att, tt) => grabUnit(cbx, att, tt, g.rng)); return null; }
         return grabUnit(h.cb!, h.u!, h.cb!.units.find((x) => x.id === a.targetId)!, rng);
@@ -328,7 +328,7 @@ register({
           const r = applyDamage(cb, v, dmg, { ...(d.src as any), shield: true, downedFails: 1, credit: 'all' });
           out += r.downedHit ? ' · ' + v.name + ' (Downed) takes a death-save failure' : ' · ' + v.name + ' takes ' + r.amount;
           emitFx(cb, 'hurt', { target: v.id, at: v.pos, dmg: r.dealt, why: 'earthbreaker', killed: v.dead || v.hp === 0 }); if (r.killed) fxFell(cb, v);
-          if (!v.dead && !v.downed) out += applyCond(cb, rng, u, v, 'prone');
+          if (!v.dead && !v.downed) out += applyCond(cb, rng, u, v, 'prone', undefined, undefined, { via: 'raw_power' });
         }
         for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && ar.includes(o.pos)) out += damageObject(cb, o.pos, o.hp, 0, u);
         const w = WEAPON[u.weapon]; if (u.maxDur && w && isMelee(w)) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);

@@ -19,7 +19,7 @@ import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
-import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitDebuff, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
+import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, withVia, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
@@ -723,7 +723,7 @@ export function registerFaithHooks() {
   // falls Prone, no save. In a volley the first missed shot fires it.
   onHook('on_miss', (ctx, cb) => {
     const att: Unit = ctx.att, tgt: Unit = ctx.tgt; if (!att || !tgt || att.side === tgt.side || ctx.stopped) return;
-    for (const f of intervening(cb, 'the_laughing_mask')) { if (f !== tgt) continue; intervene(cb, f, 'enemy_misses_you', att, null, () => applyCond(cb, ctx.rng || rngOf(), f, att, 'prone', undefined, undefined, { skipSave: true })); break; }
+    for (const f of intervening(cb, 'the_laughing_mask')) { if (f !== tgt) continue; intervene(cb, f, 'enemy_misses_you', att, null, () => applyCond(cb, ctx.rng || rngOf(), f, att, 'prone', undefined, undefined, { skipSave: true, via: 'faith' })); break; }
   });
   onHook('glyph_drawn', (ctx, cb) => { if (vowOn(ctx.u, 'unarmed_faith')) breakVow(cb, ctx.u, 'drew a glyph'); });
   onHook('evoked', (ctx, cb) => { if (vowOn(ctx.u, 'unarmed_faith')) breakVow(cb, ctx.u, 'Evoked a spell'); if (vowOn(ctx.u, 'bare')) breakVow(cb, ctx.u, 'attacked with a spell'); });
@@ -826,7 +826,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   // Witnessed (Faith 5): after your own patron's Hymn or a Miracle (item 604), until the fight ends or the patron
   // intervenes (rules 1.6.3, item 738: the condition doesn't tick).
   if (kind !== 'whisper' && beliefOf(c).kind === 'faithful' && patron?.id === patronOf(c)?.id && faithOf(c) >= WITNESS_FAITH) {
-    applyCond(cb, rng, u, u, 'witnessed', undefined, undefined, { skipSave: true });
+    applyCond(cb, rng, u, u, 'witnessed', undefined, undefined, { skipSave: true, via: 'faith' });
     emitFx(cb, FAITH_FX.witnessed, { unit: u.id, patron: patron.id, at: u.pos });
     speak(g, cb, rng, c, patron, 'witnessed');
   }
@@ -869,7 +869,7 @@ function land(cb: Combat, rng: Rng, u: Unit, t: Unit, entry: any, power: number,
 }
 const enemiesIn = (cb: Combat, u: Unit, tiles: string[]) => cb.units.filter((v) => v.side !== u.side && !v.dead && !v.surrendered && tiles.includes(v.pos));
 function rollSaveVs(rng: Rng, by: Unit, t: Unit, fam: 'body' | 'brain' | 'heart'): { ok: boolean; text: string } {
-  const r = d20(rng), m = unitSave(t, fam), tn = 12 + unitDebuff(by, fam), ok = r === 20 || (r !== 1 && r + m >= tn);
+  const r = d20(rng), m = unitSave(t, fam), tn = 12 + unitStrength(by, 'faith'), ok = r === 20 || (r !== 1 && r + m >= tn);
   return { ok, text: fam + ' save ' + (r + m) + ' vs ' + tn };
 }
 /** Enemies the praying unit sees (not Hidden, not out of the fight): a Miracle's "every enemy in sight". */
@@ -932,7 +932,11 @@ export function encoreAfter(cb: Combat, u: Unit, x: { credit: number; before: nu
   cb.log.push('Encore: ' + u.name + ' repeats ' + actionWords(key) + (spent > x.credit ? ' (' + (spent - x.credit) + ' AP more than before)' : ', free') + '.');
 }
 /** Run a Whisper, Hymn or Miracle's effect (spec 1.6 §3 and §8; items 607-617; rules 1.6.2's Miracles, items 727-734). */
+/** What a prayer puts on someone is delivered by Faith (rules 1.13). */
 function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: any; patron: any }, t: Target, a: CombatPrayArgs, power: number): string {
+  return withVia(u, 'faith', () => runEntryInner(cb, rng, u, kind, pe, t, a, power));
+}
+function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: any; patron: any }, t: Target, a: CombatPrayArgs, power: number): string {
   const e = pe.entry, id = e.id, one = t && !('units' in (t as any)) ? (t as Unit) : null, two = t && 'units' in (t as any) ? (t as any).units as Unit[] : [];
   const allies = cb.units.filter((v) => v.side === u.side && !v.dead && !v.companion);
   const P = (n: number) => Math.round(n * power);

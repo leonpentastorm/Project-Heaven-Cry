@@ -13,7 +13,7 @@
 // waiting: one click takes it), locked (until the next step), and the Mastered perk. Every number is the engine's
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, mod } from './shared';
+import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod } from './shared';
 import { CLASS, PERK, PERKS, canRaise, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
@@ -115,7 +115,7 @@ export class LevelUpLogic extends DCLogic {
       const p = c.skills[s.id] || 0, ink = ATTR[s.attr].ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], free = x ? x.free || 1 : 0;
       const m = MASTERED[s.id], mh = m ? held(m.id) : null, un = (SKILL[s.id] && SKILL[s.id].unlocks) || {}, np = p + 1;
       const brings = np > 10 ? '' : [STEP_AT.includes(np) ? 'M' + (STEP_AT.indexOf(np) + 1) + ': a perk step' : np === 10 ? 'Mastered: ' + (m ? m.name : 'its Mastered perk') : '', un[np] && un[np].name && np <= 5 ? 'unlocks ' + un[np].name : ''].filter(Boolean).join(' · ');
-      return { key: s.id, img: s.img, name: s.name, pts: p, mod: (mod(p) >= 0 ? '+' : '') + mod(p),
+      return { key: s.id, img: s.img, name: s.name, pts: p, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (free ? ' phc-lu-step' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }), raiseStyle: raiseStyle(!why, ink), raiseLabel: 'Raise ' + s.name,
         hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!(c.unspent.skill && !why && brings), next: 'Next point (' + np + '): ' + brings,

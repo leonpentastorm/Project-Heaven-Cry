@@ -11,7 +11,7 @@
 import { register, stateOf, uses, note, pendRuling, postStory, modOn, boundGame, type Holder } from '../effects';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
-import { mod, debuffStrength } from '../character';
+import { mod, strengthOf } from '../character';
 import { alive, dist, isMelee, canJam, objectsOf, trapKnown } from '../combat';
 import { isTrap } from '../objects';
 import { HEARING } from '../tactics';
@@ -201,13 +201,15 @@ register({
       ctx.result = (ctx.result || '') + ' · Crowd Pleaser: one roll for all ' + crowd.length + ' who hear it (+2)';
       // The others hear the same words: each rolls the same save (game.ts applies the main target's after this hook).
       const rng = ctx.rng; if (!rng) return;
-      for (const t of crowd) if (t !== ctx.t) crowdHit(h.cb, rng, h.u!, t, ctx.kind, ctx.tnAdd);
+      for (const t of crowd) if (t !== ctx.t) crowdHit(h.cb, rng, h.u!, t, ctx.kind, ctx.tnAdd, ctx.via);
     },
   },
   brief: (h) => 'call one crowd check, tags crowd' + (tierII(h) ? '; on success they may turn it on one person' : ''),
 });
-function crowdHit(cb: Combat, rng: { state: number }, u: Unit, t: Unit, kind: string, tnAdd: number) {
-  const r = kind === 'persuade' ? applyCond(cb, rng, u, t, 'ldebuff', undefined, 'brain', { tnAdd }) : applyCond(cb, rng, u, t, 'shaken', undefined, 'body', { tnAdd });
+/** The same words on the rest of the crowd: the same save as tactics.ts parley (Persuade a Brain save, Threaten a Heart save, rules 1.13). */
+function crowdHit(cb: Combat, rng: { state: number }, u: Unit, t: Unit, kind: string, tnAdd: number, via0?: string) {
+  const via = via0 || (kind === 'persuade' ? 'eloquence' : 'intimidation');
+  const r = kind === 'persuade' ? applyCond(cb, rng, u, t, 'ldebuff', undefined, 'brain', { tnAdd, via }) : applyCond(cb, rng, u, t, 'shaken', undefined, 'heart', { tnAdd, via });
   if (r) say(cb, t.name + ' hears it too' + r + '.');
 }
 
@@ -421,7 +423,7 @@ register({
 // ---------- Their Own Idea (Implication Mastered): once per scene, a hidden suggestion the listener takes as their own ----------
 // The suggestion is private (only the player and the Narrator see it). PROVISIONAL (plan 6, Leon to set the numbers):
 // a named, important or supernatural listener on the map (an elite or boss, or upper-realm or cursed) makes a Heart save,
-// d20 + its tier's save vs 12 + your Heart debuff strength, rolled by the engine; Celestials are immune (the Accords).
+// d20 + its tier's save vs 12 + your Insinuation strength, rolled by the engine; Celestials are immune (the Accords).
 // A directly self-harmful suggestion is refused (the use comes back).
 const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 register({
@@ -443,7 +445,7 @@ register({
       const who = t ? t.name : r!.name, n: any = t ? { tier: t.tier, kind: t.kind } : r!.npc;
       let save = '';
       if (n && (['elite', 'boss'].includes(n.tier) || ['upper_realm', 'cursed'].includes(n.kind || ''))) {
-        const die = d20(rng), m = TIER_SAVE[n.tier] ?? 0, tn = 12 + (h.c ? debuffStrength(h.c, 'heart') : 0), ok = die === 20 || (die !== 1 && die + m >= tn);
+        const die = d20(rng), m = TIER_SAVE[n.tier] ?? 0, tn = 12 + (h.c ? strengthOf(h.c, 'implication') : 0), ok = die === 20 || (die !== 1 && die + m >= tn);
         save = ' · ' + who + ' HEART SAVE d20 ' + die + ' +' + m + ' = ' + (die + m) + ' vs ' + tn + (ok ? ': resists' : ': takes it');
         if (ok) { if (inFight(h)) say(h.cb, h.u!.name + ' plants an idea in ' + who + save + '.'); else entry(g, { kind: 'check', charId: h.c!.id, ok: false, to: h.c!.owner, head: 'THEIR OWN IDEA · ' + save.slice(3).toUpperCase(), text: who + ' doesn\'t take the bait.' }); return; }
       }

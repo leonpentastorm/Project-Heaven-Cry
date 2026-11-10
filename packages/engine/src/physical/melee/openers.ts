@@ -1,11 +1,11 @@
 // Physical 2.0, melee Openers: the first melee technique of a turn. Lunge is the lead's reference; the melee lane builds
 // Charge, Feint, Draw Cut and Ambush here.
 import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, landed, momentumOf, onHook, turnStamp, techState, techStateOf, meleeFx, fxMark, movedSince, fallFx, refuseFx } from './shared';
-import { canStrike } from '../core';
+import { canStrike, techVia } from '../core';
+import { unitStrength } from '../../magic';
 import { PHYS_RULES } from '../data';
 import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
 import { ambushReady, reveal } from '../../tactics';
-import { unitDebuff } from '../../magic';
 import type { Tech } from './shared';
 
 // 1. Lunge: step 1 tile toward the target, then strike; the step draws no opportunity attack.
@@ -122,7 +122,7 @@ technique({
   ai: (t) => (t.tgt ? 6 : 0),
 });
 
-// 3. Feint: no damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next
+// 3. Feint: no damage. The target makes a Brain save against the strength of the skill your weapon hits with. If it fails, your next
 //    technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it
 //    works. Light: the save is at −2. Hook: on a failed save its weapon is also lowered (1 AP to raise).
 technique({
@@ -135,8 +135,8 @@ technique({
   },
   run(t) {
     const tgt = t.tgt!, p = t.line('light', 'hook');
-    // the user's Brain debuff strength: a character's own, a foe's from its caster block or its tier
-    const tnAdd = unitDebuff(t.u, 'brain') + (p === 'light' ? t.num('light_save', 2) : 0);
+    // the user's strength with the skill the weapon hits with (rules 1.13: Dexterity or Raw Power; a foe's tier)
+    const tnAdd = unitStrength(t.u, techVia(t)) + (p === 'light' ? t.num('light_save', 2) : 0);
     if (t.preview) t.note('No damage. ' + tgt.name + ' makes a Brain save; if it fails:');
     if (save(t, tgt, 'brain', tnAdd)) { t.cb.log.push(tgt.name + ' isn\'t fooled by the feint.'); meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: false }); return null; } // it saw through: nothing more
     meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: true, lowered: p === 'hook' });

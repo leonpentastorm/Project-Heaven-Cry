@@ -11,7 +11,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
 import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
-import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitDebuff } from '../magic';
+import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength } from '../magic';
 import { d20 } from '../rng';
 import { tendHook } from '../effects/damage';
 import { WEAPON } from '../data';
@@ -68,7 +68,7 @@ function carryStoryCond(h: Holder, ctx: any, id: string) {
 // answer, and reports a refusal through conditions [{target, id:'shaken'}]. An NPC that is Shaken this scene gives
 // every character +2 on social checks against it (the NPC's −2; the TN ladder is fixed), and starts a fight in the
 // same scene Shaken.
-// Combat (PROVISIONAL): 2 AP, an enemy within hearing (8 tiles) who can see you: a Heart save (12 + your Heart debuff
+// Combat (PROVISIONAL): 2 AP, an enemy within hearing (8 tiles) who can see you: a Heart save (12 + your Intimidation
 // strength) or Shaken; Tier II: every enemy within hearing who sees you rolls. What it answers goes to the Narrator.
 const shakenNpc = (g: any, ref: any) => !!ref && (npcConds(g, ref).includes('shaken') || npcConds(g, String(ref).toLowerCase()).includes('shaken'));
 register({
@@ -80,14 +80,14 @@ register({
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
         if (!unitSees(h.cb!, t, h.u.pos)) return { ok: false, why: t.name + ' has to see you.' };
-        const tn = 12 + unitDebuff(h.u, 'heart');
+        const tn = 12 + unitStrength(h.u, 'intimidation');
         return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '; the whole group in earshot rolls.' : '.')] };
       },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
         const group = tierII(h) ? cb.units.filter((v) => v.side === t.side && up(v) && dist(v.pos, u.pos) <= HEARING && unitSees(cb, v, u.pos)) : [t];
         if (!group.includes(t)) group.unshift(t);
-        let out = ''; for (const v of group) out += applyCond(cb, rng, u, v, 'shaken', undefined, 'heart');
+        let out = ''; for (const v of group) out += applyCond(cb, rng, u, v, 'shaken', undefined, 'heart', { via: 'intimidation' });
         say(cb, u.name + ' leans in (Bone Talk' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + ')' + out + '.');
         note(h, u.name + ' threatened ' + (group.length > 1 ? 'the group led by ' : '') + t.name + (a.text ? ' ("' + a.text.slice(0, 120) + '")' : '') + ': voice what they blurt out, if anything, in the report.');
       },
@@ -105,7 +105,7 @@ register({
     combat_start: (ctx, h) => {
       const sc = h.g?.story?.scene?.npcConds; if (!sc || !h.cb) return;
       for (const v of h.cb.units) if (v.side !== h.u?.side && !condOn(v, 'shaken') && (shakenNpc(h.g, v.npcId) || shakenNpc(h.g, v.name)))
-        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx) || { state: 1 }, h.u || null, v, 'shaken', 99, 'heart', { skipSave: true }) + '.');
+        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx) || { state: 1 }, h.u || null, v, 'shaken', 99, 'heart', { skipSave: true, via: 'intimidation' }) + '.');
     },
   },
   brief: (h) => 'Narrator: does the threat name a real detail; the true answer, or Shaken (conditions)' + (tierII(h) ? '; the group leader answers' : ''),
@@ -114,22 +114,21 @@ register({
 // ---------- The Name They Whisper (Intimidation Mastered) ----------
 // When a fight starts, every enemy not marked unaware saves (Heart) or is Afraid of you for 2 rounds. An enemy at half
 // HP or less that can see you, at the end of its own turn, makes a Heart save or surrenders: once per enemy a fight,
-// only while you're up, never a Boss (plan 6, The Name They Whisper: GAMEBREAKING fix; PROVISIONAL). The TN uses the
-// better of your Intimidation and Implication modifiers (plan 6; PROVISIONAL).
-const nameTnAdd = (h: Holder) => (h.u && h.c ? Math.max(0, mod(h.c.skills.intimidation || 0) - unitDebuff(h.u, 'heart')) : 0);
+// only while you're up, never a Boss (plan 6, The Name They Whisper: GAMEBREAKING fix; PROVISIONAL). The TN is 12 +
+// your Intimidation strength (rules 1.13: a perk that speaks reads the gamma it belongs to).
 register({
   id: 'the_name_they_whisper', claims: 'all', narrator: (e: any) => e?.op === 'narrator',
   on: {
     combat_start: (ctx, h) => {
       const cb = h.cb!, u = h.u; if (!up(u) || !oncePerFight(h, 'started')) return;
-      const rng = rngOf(h, ctx) || { state: 1 }, add = nameTnAdd(h); let out = '';
-      for (const v of cb.units) if (v.side !== u.side && up(v) && !(v.tags || []).includes('unaware')) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { tnAdd: add });
+      const rng = rngOf(h, ctx) || { state: 1 }; let out = '';
+      for (const v of cb.units) if (v.side !== u.side && up(v) && !(v.tags || []).includes('unaware')) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { via: 'intimidation' });
       if (out) say(cb, 'They know the name ' + u.name + ' (The Name They Whisper)' + out + '.');
     },
     turn_end: (ctx, h) => {
       const cb = h.cb!, u = h.u, t: Unit = ctx.u;
       if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos)) return;
-      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, ctx.rng || rngOf(h) || { state: 1 }, u, t, nameTnAdd(h)) + '.');
+      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, ctx.rng || rngOf(h) || { state: 1 }, u, t, 0, 'intimidation') + '.');
     },
   },
   brief: () => 'Narrator: NPCs who know the name react; mark strangers unaware when a fight starts',
@@ -137,14 +136,14 @@ register({
 
 // ---------- Open Hand (Empathy Mastered) ----------
 // When an enemy you can see drops to a quarter of its HP or less (from above, still standing), mercy is offered as a
-// free action: it makes a Heart save (12 + your Heart debuff strength) or surrenders for the rest of the fight. One
+// free action: it makes a Heart save (12 + your Empathy strength, rules 1.13) or surrenders for the rest of the fight. One
 // offer per enemy, its own (not the general surrender save; PROVISIONAL). Bosses, machines and no_surrender foes never
 // take it. The setting (always / ask / never) is yours: 'ask' leaves the free Offer mercy action for your turn.
 function mercyOk(t: Unit) { const was = t.surrenderTried; t.surrenderTried = false; const ok = canSurrender(t); t.surrenderTried = was; return ok; }
 const offered = (h: Holder): string[] => (stateOf(h).offered ||= []);
 function offerMercy(h: Holder, t: Unit, rng: Rng): string {
   offered(h).push(t.id);
-  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitDebuff(h.u!, 'heart'), held = r === 20 || (r !== 1 && r + m >= tn);
+  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitStrength(h.u!, 'empathy'), held = r === 20 || (r !== 1 && r + m >= tn);
   const roll = ' (Heart save d20 ' + r + ' ' + sgn(m) + ' vs ' + tn + ')';
   return held ? ' · ' + t.name + ' won\'t take it' + roll : surrender(h.cb!, t, h.u!, 'mercy accepted' + roll);
 }
@@ -170,7 +169,7 @@ register({
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
         if (!unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' };
-        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitDebuff(h.u, 'heart')) + ' or it surrenders.'] };
+        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'empathy')) + ' or it surrenders.'] };
       },
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
     },
@@ -560,8 +559,8 @@ register({
 
 // ---------- Trench Poet ----------
 // Verse, once per scene (a fight is the scene): answer in metaphor at one listener within hearing (8 tiles, no sight).
-// The spec's debuff rule instead of an opposed roll NPCs can't make: the listener's Heart save against 12 + your Heart
-// debuff strength (Implication), Confused on a fail (Confused is Brain in the spec; landed through the Heart save here
+// The spec's debuff rule instead of an opposed roll NPCs can't make: the listener's Heart save against 12 + your
+// Insinuation strength (id implication), Confused on a fail (Confused is Brain in the spec; landed through the Heart save here
 // as the trait says; plan 6, Trench Poet 2; PROVISIONAL). 1 AP in a fight (PROVISIONAL). Allies who hear you get +1
 // Composure for the scene (Heart saves in a fight). Nothing Straight: the Narrator calls the Eloquence check.
 const verse = (h: Holder) => { const v = ro(h.c).verse; return v && v.scene === sceneN(h) ? (v.allies as string[]) : []; };
@@ -571,12 +570,12 @@ register({
     {
       id: 'verse', label: 'Verse', scope: ['combat'], target: 'enemy', ap: 1, range: HEARING, uses: { per: 'per_scene', n: 1 },
       text: 'Answer in metaphor: the listener saves (Heart) or is Confused; allies in earshot get +1 Composure this scene.',
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitDebuff(h.u, 'heart')) + ' or Confused.'] }; },
+      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'implication')) + ' or Confused.'] }; },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
         const allies = cb.units.filter((v) => v.side === u.side && v !== u && !v.dead && v.charId && dist(v.pos, u.pos) <= HEARING).map((v) => v.charId!);
         cst(h.c).verse = { scene: sceneN(h), allies };
-        say(cb, u.name + ' answers in verse' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + applyCond(cb, rng, u, t, 'confused', undefined, 'heart') + (allies.length ? ' · allies +1 Composure this scene' : '') + '.');
+        say(cb, u.name + ' answers in verse' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + applyCond(cb, rng, u, t, 'confused', undefined, 'heart', { via: 'implication' }) + (allies.length ? ' · allies +1 Composure this scene' : '') + '.');
       },
     },
     {
@@ -907,7 +906,7 @@ register({
       // Every bite carries the grapple (PROVISIONAL, spec 14): the beast's turns have no attack-mod chip to pick (its
       // instinct bite runs inside the owner's end-turn; the client has no companion orders), so a toggle never reached it.
       if (ctx.tgt.side === ctx.att.side || condOn(ctx.tgt, 'grappled')) return;
-      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, ctx.rng || rngOf(h) || { state: 1 }, ctx.att, ctx.tgt, 'grappled', undefined, 'body') + '.');
+      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, ctx.rng || rngOf(h) || { state: 1 }, ctx.att, ctx.tgt, 'grappled', undefined, 'body', { via: 'empathy', str: unitStrength(h.u, 'empathy') }) + '.');
     },
     on_downed: (ctx, h) => { if (myComp(h, ctx.victim, 'beast') && ctx.victim.dead) lost(h, ctx, 'beast'); },
     combat_start: (ctx, h) => carryStoryCond(h, ctx, 'shaken'),

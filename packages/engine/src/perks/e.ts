@@ -17,8 +17,8 @@ import {
   toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
 } from '../combat';
 import { WEAPON, SKILL } from '../data';
-import { mod, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar, classRank } from '../character';
-import { applyCond, condOn, condSource, unitDebuff, isBoon } from '../magic';
+import { mod, strengthOf, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar, classRank } from '../character';
+import { applyCond, condOn, condSource, unitStrength, isBoon } from '../magic';
 import { d20 } from '../rng';
 import { HEARING } from '../tactics';
 import { apLeft, positionsOf, rankReached } from '../game';
@@ -122,7 +122,7 @@ export function pettyGate(h: Holder, target: Unit | Character | null | undefined
 // ---------- Grim Reaper (Intimidation γ) ----------
 // I: −1 AP on your first turn of each fight; a kill or a KO (a subdued foe) of an enemy on your own turn gives +2 AP at
 // once, once per turn (the +3 cap and the 9 ceiling hold). II: no first-turn penalty; same +2; every enemy who sees
-// the kill saves (Heart, vs 12 + your Heart debuff strength) against Fear, with you as its source. A kill on someone
+// the kill saves (Heart, vs 12 + your Intimidation strength) against Fear, with you as its source. A kill on someone
 // else's turn (Overwatch, a reaction) gives nothing. Area map fights count the same (the first-turn penalty is a fight's).
 function reaperKill(h: Holder, victim: Unit, rng: Rng) {
   const u = h.u, cb = h.cb; if (!u || !cb || victim.side === u.side) return;
@@ -130,7 +130,7 @@ function reaperKill(h: Holder, victim: Unit, rng: Rng) {
     if (overworld(cb)) { u.ap += 2; say(cb, u.name + ' +2 AP (Grim Reaper).'); } else grantPerkAp(cb, u, 2, 'Grim Reaper');
   }
   if (tierII(h) && !overworld(cb)) {
-    for (const f of cb.units) if (f.side !== u.side && alive(f) && f !== victim && unitSees(cb, f, victim.pos)) say(cb, u.name + '\'s kill (Grim Reaper)' + applyCond(cb, rng, u, f, 'fear', undefined, 'heart') + '.');
+    for (const f of cb.units) if (f.side !== u.side && alive(f) && f !== victim && unitSees(cb, f, victim.pos)) say(cb, u.name + '\'s kill (Grim Reaper)' + applyCond(cb, rng, u, f, 'fear', undefined, 'heart', { via: 'intimidation' }) + '.');
   }
 }
 register({
@@ -481,16 +481,15 @@ register({
       const order = ORDERS[String(args.choice || '').trim().toLowerCase()] || (args.text ? 'other' : '');
       if (!order) return { ok: false, why: 'Pick an order: halt, hold fire, drop it, kneel, fall back, or say one.' };
       const n = cb.units.filter((t) => t.side !== u.side && alive(t) && ['minion', 'soldier'].includes(t.tier || 'minion') && dist(t.pos, u.pos) <= HEARING).length;
-      return n ? { lines: [n + ' enemies hear you (Heart save vs ' + (12 + mod(h.c?.skills?.authority || 0)) + ').'] } : { ok: false, why: 'No rank-and-file enemy within ' + HEARING + ' tiles.' };
+      return n ? { lines: [n + ' enemies hear you (Heart save vs ' + (12 + unitStrength(u, 'authority')) + ').'] } : { ok: false, why: 'No rank-and-file enemy within ' + HEARING + ' tiles.' };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, order = ORDERS[String(args.choice || '').trim().toLowerCase()] || 'other';
-      const tnAdd = mod(h.c?.skills?.authority || 0) - unitDebuff(u, 'heart');
       const said = args.text ? ' "' + String(args.text).slice(0, 120) + '"' : '';
       const out: string[] = [];
       for (const t of cb.units) {
         if (t.side === u.side || !alive(t) || !['minion', 'soldier'].includes(t.tier || 'minion') || dist(t.pos, u.pos) > HEARING) continue;
-        out.push(applyCond(cb, rng, u, t, 'commanded', 1, 'heart', { tnAdd, arg: order === 'other' ? 'halt' : order }).replace(/^ · /, ''));
+        out.push(applyCond(cb, rng, u, t, 'commanded', 1, 'heart', { via: 'authority', arg: order === 'other' ? 'halt' : order }).replace(/^ · /, ''));
       }
       say(cb, u.name + ' gives an order' + said + ' (The Voice: ' + (order === 'other' ? 'the Narrator rules it' : order) + '): ' + out.join('; ') + '.');
       if (order === 'other') note(h, 'order' + said + ': enemies who failed the save (Commanded) obey it for one action; the engine held them in place (halt)');
@@ -641,7 +640,7 @@ function patSee(ctx: any, h: Holder) {
 
 // ---------- Lay Down Arms (Empathy α) ----------
 // 2 AP, at will: plead with one humanoid enemy who can hear you (8 tiles; not a robot, machine, turret, drone or
-// beast); II: up to three (targetIds). Each makes a Heart save (vs 12 + your Heart debuff strength, i.e. Implication);
+// beast); II: up to three (targetIds). Each makes a Heart save (vs 12 + your Empathy strength: the perk's own skill, rules 1.13);
 // on a failure it lowers its weapon: no attacks on its next turn (PROVISIONAL, plan 6: the engine's Commanded "hold
 // fire", which ticks at the end of its own turn; the data's Disarmed would cost it 2 AP to recover, not in the text).
 // Area map and story: the same plea to a hostile person; the engine rolls the save (d20 + its tier save vs 12 +
@@ -650,7 +649,7 @@ const humanoid = (t: Unit) => !['robot', 'machine', 'turret', 'drone', 'beast'].
 const NPC_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 function storyPlea(h: Holder, who: { name: string; tier?: string } | null, rng: Rng, text?: string): string | null {
   if (!who) return 'Name who you plead with.';
-  const r = d20(rng), m = NPC_SAVE[who.tier || 'soldier'] ?? 1, tn = 12 + mod(h.c?.skills?.implication || 0), saved = r === 20 || (r !== 1 && r + m >= tn);
+  const r = d20(rng), m = NPC_SAVE[who.tier || 'soldier'] ?? 1, tn = 12 + (h.c ? strengthOf(h.c, 'empathy') : 0), saved = r === 20 || (r !== 1 && r + m >= tn);
   const line = who.name + ' Heart save d20 ' + r + ' +' + m + ' = ' + (r + m) + ' vs ' + tn + ' · ' + (saved ? 'holds their weapon' : 'lowers their weapon');
   say(h.cb, (h.c?.name || '') + ' pleads with ' + who.name + (text ? ' "' + text.slice(0, 120) + '"' : '') + ' (Lay Down Arms): ' + line + '.');
   const g = gameOf(h); if (g && h.c) pendRuling(g, h.c, h.key, 'Lay Down Arms on ' + who.name + (text ? ' ("' + text.slice(0, 100) + '")' : '') + ': ' + line + (saved ? '.' : ': play them standing down for the moment.'));
@@ -665,12 +664,12 @@ register({
         const cb = h.cb; if (!cb) return {};
         const ids = [...new Set([args.targetId, ...(args.targetIds || [])].filter(Boolean) as string[])].slice(0, tierII(h) ? 3 : 1);
         for (const id of ids) { const t = unitById(cb, id); if (!t || t.side === h.u!.side || !alive(t)) return { ok: false, why: 'Pick enemies.' }; if (!humanoid(t)) return { ok: false, why: t.name + ' doesn\'t listen to pleas.' }; if (dist(t.pos, h.u!.pos) > HEARING) return { ok: false, why: t.name + ' can\'t hear you (' + HEARING + ' tiles).' }; }
-        return { lines: [ids.length + ' Heart save' + (ids.length === 1 ? '' : 's') + ' vs ' + (12 + unitDebuff(h.u!, 'heart')) + '.'] };
+        return { lines: [ids.length + ' Heart save' + (ids.length === 1 ? '' : 's') + ' vs ' + (12 + unitStrength(h.u!, 'empathy')) + '.'] };
       },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!;
         const ids = [...new Set([args.targetId, ...(args.targetIds || [])].filter(Boolean) as string[])].slice(0, tierII(h) ? 3 : 1);
-        const out = ids.map((id) => unitById(cb, id)!).map((t) => applyCond(cb, rng, u, t, 'commanded', 1, 'heart', { arg: 'hold' }).replace(/^ · /, '').replace(/is Commanded/, 'lowers its weapon'));
+        const out = ids.map((id) => unitById(cb, id)!).map((t) => applyCond(cb, rng, u, t, 'commanded', 1, 'heart', { arg: 'hold', via: 'empathy' }).replace(/^ · /, '').replace(/is Commanded/, 'lowers its weapon'));
         say(cb, u.name + ' pleads with them to lay down their arms' + (args.text ? ' "' + String(args.text).slice(0, 120) + '"' : '') + ': ' + out.join('; ') + '.');
         return null;
       } },

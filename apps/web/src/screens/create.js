@@ -1,7 +1,7 @@
 // Character creation (EPCCG), ported from design/canvas-build/create.logic.js. Same rules code as the prototype;
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
-import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle } from './shared';
+import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
 import { gearIconUri } from '../game/gearIcons';
 import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, KITS, WEAPON, ITEM, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS } from '@engine';
@@ -312,7 +312,7 @@ export class CreateLogic extends DCLogic {
         nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + a.ink + '; white-space: nowrap',
         barStyle: 'position: absolute; left: -14px; right: 0; top: 0; height: 2px; background: ' + a.ink + '; opacity: 0.6',
         cards: D.skills.filter((s) => s.attr === a.id).map((s) => {
-          const p = S.skills[s.id] || 0, m = mod(p);
+          const p = S.skills[s.id] || 0, m = checkMod(s.id, p);
           return { ...s, pts: p, modShort: fmt(m) + (p >= 5 ? ' M2' : p >= 3 ? ' M1' : ''),
             modStyle: 'font-size: 11px; white-space: nowrap; color: ' + (m < 0 ? '#7F8BA1' : a.ink),
             nameStyle: 'display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 12px; font-weight: 700; line-height: 1.2; height: 29px; color: ' + (p ? a.ink : '#C9D3E3'),
@@ -323,7 +323,7 @@ export class CreateLogic extends DCLogic {
       })),
     }));
     const hv = SK[S.hover] || D.skills[0], hp = S.skills[hv.id] || 0;
-    const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill'), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: fmt(mod(hp)) + (hp === 0 ? ' untrained' : ''), summary: hv.summary, quiet: hv.quiet,
+    const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill'), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: fmt(checkMod(hv.id, hp)) + (hp === 0 ? ' untrained' : ''), summary: hv.summary, quiet: hv.quiet,
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
       style: 'display: flex; align-items: center; gap: 14px; height: 100px; box-sizing: border-box; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     const sideCores = CORES.map((c) => ({ name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]], nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c] }));
@@ -452,11 +452,11 @@ export class CreateLogic extends DCLogic {
     const stats = [['Max HP', 100 + 15 * (AV.endurance - 1)], ['HP per level', 5 + 2 * PT('durability')], ['Max MP', 100 + 100 * (AV.virtue - 1)], ['AP per turn', 6],
       ['Echo', '1 at session start'], ['Initiative', fmt(AV.agility - 1 + MD('reaction_speed'))], ['Movement', (1 + 0.5 * (AV.agility - 1)) + ' tiles per AP'],
       ['Defense', 10 + pos(MD('athletics'))], ['Carry', (20 + 5 * (AV.strength - 1)) + ' kg'], ['Vision', (12 + 2 * (AV.perception - 1)) + ' tiles'],
-      ['Saves B / Br / H', fmt(MD('guts')) + ' / ' + fmt(MD('charisma')) + ' / ' + fmt(MD('composure'))], ['Healing given', '×' + n2(1 + 0.1 * (AV.insight - 1) + 0.1 * PT('camaraderie'))]]
+      ['Saves B / Br / H', fmt(MD('guts')) + ' / ' + fmt(MD('rumination')) + ' / ' + fmt(MD('composure'))], ['Healing given', '×' + n2(1 + 0.1 * (AV.insight - 1) + 0.1 * PT('camaraderie'))]]
       .map(([k, v]) => ({ k, v: String(v) }));
     const tree = CORES.map((c) => ({ name: c.toUpperCase(), val: der.core[c], word: WORDS[der.core[c]], nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c],
       attrs: D.attrs.filter((a) => a.core === c).map((a) => ({ name: a.name, val: AV[a.id], nameStyle: 'font-size: 13px; font-weight: 700; color: ' + a.ink,
-        skills: D.skills.filter((sk) => sk.attr === a.id).map((sk) => { const p = PT(sk.id), m = mod(p);
+        skills: D.skills.filter((sk) => sk.attr === a.id).map((sk) => { const p = PT(sk.id), m = checkMod(sk.id, p);
           return { name: sk.name, pts: p, mod: fmt(m) + (p >= 10 ? ' · Mastered' : p >= 9 ? ' · M4' : p >= 7 ? ' · M3' : p >= 5 ? ' · M2' : p >= 3 ? ' · M1' : ''),
             style: 'display: flex; justify-content: space-between; gap: 6px; font-size: 13px; color: ' + (p ? '#E7EBF3' : '#7F8BA1') }; }) })) }));
     const traitFull = picked.map((id) => D.traits.find((t) => t.id === id)).filter(Boolean).map((t) => ({ zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, cat: t.cat.toUpperCase(), icon: t.icon, flavour: t.flavour,

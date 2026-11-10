@@ -4,7 +4,7 @@ import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAP
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
-  type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, newCharacter,
+  type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
@@ -115,7 +115,7 @@ export interface GameState {
     /** The last id number given to placed Sigil magic on the area map (glyphs 'gl', zones 'z', RAISE walls 'sw'): kept
      * so ids never repeat between area-map actions (an Evoke uses its glyphs up, a wall outlives them). */
     glyphSeq?: number;
-    magic?: Record<string, { flux: number; strain: number; held: HeldOutburst | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string>;
+    magic?: Record<string, { flux: number; strain: number; held: HeldOutburst | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string>; condVia?: Record<string, string>;
       /** Rules 1.5: free Pumps left this round, the calming ways used this round. */ freePumps?: number; calmFight?: boolean; calmTend?: boolean }>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
@@ -628,7 +628,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (asked.filter((x) => x === a.skill).length >= al.limit) fail(al.limit === 1 ? 'Once per scene per skill.' : al.limit + ' times per scene per skill.');
       asked.push(a.skill);
       const hook = g.story.scene.hooks.filter((h) => h.skill === a.skill && !g.story.scene.revealed.includes(c!.id + ':' + h.id)).sort((x, y) => x.tn - y.tn)[0];
-      const m = mod(c!.skills[a.skill] || 0) + songMod(g, c!, a.skill) + skillRollMod({ c: c! }, a.skill, { roll: 'ask', tags: zoneTags(g) }).add, die = d20(g.rng), total = die + m, ok = !!hook && total >= hook.tn;
+      const m = checkMod(c!, a.skill) + songMod(g, c!, a.skill) + skillRollMod({ c: c! }, a.skill, { roll: 'ask', tags: zoneTags(g) }).add, die = d20(g.rng), total = die + m, ok = !!hook && total >= hook.tn;
       const head = sk.name.toUpperCase() + ' · YOU ASKED · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + total + (hook ? ' vs ' + hook.tn : '') + ' · ' + (ok ? '✓ SPEAKS' : '✕ NOTHING TO SAY');
       if (ok) g.story.scene.revealed.push(c!.id + ':' + hook!.id);
       push(g, { kind: 'voice', skill: a.skill, charId: c!.id, to: by, head, text: ok ? hook!.line : sk.name + ' has nothing to say about this.', ok });
@@ -948,8 +948,12 @@ function closeRoundIfDone(g: GameState) {
 function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
   // Combined checks (spec): the lowest modifier among the skills, +2 for each other skill with at least 1 point. Items'
   // skill mods go into each skill's own modifier (plan 6a-15: every d20 that uses the skill); whole-check mods after.
+  // Rules 1.13: on a check a gamma skill counts its full points (each gamma first, then the lowest is taken). A story
+  // save is not a check: it rolls the family's save skill (Guts, Rumination, Composure) whatever skills were listed,
+  // on the plain modifier.
+  const isSave = ck.kind === 'save'; if (isSave && ck.family && SAVE_SKILL_OF[ck.family]) ck.skills = [SAVE_SKILL_OF[ck.family]];
   const tags = [...(ck.tags || []), ...zoneTags(g)], cctx = { tags, check: ck, target: ck.target, applies: ck.applies || [], roll: 'check' };
-  const sk = ck.skills.map((s) => ({ s, m: mod(c.skills[s] || 0) + songMod(g, c, s), it: skillRollMod({ c }, s, cctx) }));
+  const sk = ck.skills.map((s) => ({ s, m: (isSave ? mod(c.skills[s] || 0) : checkMod(c, s)) + songMod(g, c, s), it: skillRollMod({ c }, s, cctx) }));
   const mods = sk.map((x) => x.m + x.it.add), low = Math.min(...mods), lowIx = mods.indexOf(low);
   const whole = [...checkQuery({ c }, ck, cctx), ...storyCondMods(g, c, ck)];
   // 'check_mod' {c, ck, tags, add: CheckMod[], tn}: handlers push { add, label } or change tn (tn_mod, in the ladder).
@@ -1007,7 +1011,7 @@ function storyCondMods(g: GameState, c: Character, ck: Check): { add: number; la
  * mods and the story Brain debuffs (spec: Item modifiers on every d20). Whole-check mods (check_mod) aren't included. */
 export function sideRollMod(g: GameState, c: Character, skill: string, roll = 'check'): number {
   const debuff = storyCondMods(g, c, { skills: [skill], tags: [] } as any).filter((x) => /Brain Debuff/.test(x.label)).reduce((t, x) => t + x.add, 0);
-  return mod(c.skills[skill] || 0) + songMod(g, c, skill) + skillRollMod({ c }, skill, { roll, tags: zoneTags(g) }).add + debuff;
+  return checkMod(c, skill) + songMod(g, c, skill) + skillRollMod({ c }, skill, { roll, tags: zoneTags(g) }).add + debuff;
 }
 /** Put a condition on a character for the scene, session or arc (or take it off). */
 export function setStoryCond(g: GameState, c: Character, id: string, scope: 'scene' | 'session' | 'arc' = 'scene', end = false, by?: string) {
@@ -1193,12 +1197,14 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
   }
   // Checks the Narrator asks for: the engine rolls them when the player clicks.
   for (const ck of t.checks || []) {
-    const c = g.characters[ck.charId], skills = (ck.skills || []).filter((s) => SKILL[s]).slice(0, 3);
+    // a story save rolls its family's save skill, whatever the Narrator listed (rules 1.13)
+    const fam = ck.kind === 'save' && ['body', 'brain', 'heart'].includes(ck.family || '') ? ck.family! : null;
+    const c = g.characters[ck.charId], skills = fam ? [SAVE_SKILL_OF[fam]] : (ck.skills || []).filter((s) => SKILL[s]).slice(0, 3);
     if (!c || c.dead || !skills.length || !TN_LADDER.includes(ck.tn)) continue;
     const tags = Array.isArray(ck.tags) ? ck.tags.filter((x) => typeof x === 'string').slice(0, 8).map((x) => x.slice(0, 40)) : undefined;
     const applies = Array.isArray(ck.applies) ? ck.applies.filter((x) => typeof x === 'string').slice(0, 6) : undefined;
     const nc: Check = { id: id(g, 'k'), charId: c.id, skills, tn: ck.tn, stakes: ck.stakes || 'The Narrator calls for a check.', done: false, ...(tags?.length ? { tags } : {}), ...(ck.target ? { target: String(ck.target).slice(0, 40) } : {}), ...(applies?.length ? { applies } : {}),
-      ...(ck.kind === 'save' ? { kind: 'save' as const, ...(['body', 'brain', 'heart'].includes(ck.family || '') ? { family: ck.family } : {}) } : {}), ...(ck.footnote && g.characters[ck.footnote] ? { footnote: ck.footnote } : {}),
+      ...(ck.kind === 'save' ? { kind: 'save' as const, ...(fam ? { family: fam } : {}) } : {}), ...(ck.footnote && g.characters[ck.footnote] ? { footnote: ck.footnote } : {}),
       ...(ck.double ? { double: true } : {}), ...(ck.auto === 'success' || ck.auto === 'fail' ? { auto: ck.auto } : {}) };
     emitStory(g, 'check_build', { c, ck: nc, g }); // 'check_build' {c, ck}: items may add tags or flags to a new check
     g.checks.push(nc);
@@ -2060,6 +2066,7 @@ function magicIn(g: GameState, cb: Combat) {
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held ? migrateHeld(s.held, u.mg.designs.find((d) => d.id === s.held!.design)) : null; u.mg.cast = !!s.cast;
       if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; if ((s as any).pumps) u.mg.pumps = JSON.parse(JSON.stringify((s as any).pumps)); }
     if (s.condBy) u.condBy = { ...s.condBy };
+    if (s.condVia) u.condVia = { ...s.condVia };
     // Merged with what the fight's start put on (a grudge's condition, item 723): the longer of the two stays.
     if (s.conds && Object.keys(s.conds).length) { const at0 = u.conds || {}; u.conds = { ...s.conds }; for (const [k, n] of Object.entries(at0)) u.conds[k] = Math.max(u.conds[k] || 0, n as number); if (u.conds.slowed && !at0.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded && !at0.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded && !at0.guarded) u.def += 2; }
     if (s.shield) u.shield = s.shield;
@@ -2095,7 +2102,8 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
     const conds = afterFight ? {} : { ...(u.conds || {}) };
     m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast,
       ...(!afterFight && u.mg && u.mg.freePumps != null ? { freePumps: u.mg.freePumps } : {}), ...(!afterFight && u.mg?.pumps?.length ? { pumps: u.mg.pumps } : {}), ...(!afterFight && u.mg?.calmFight ? { calmFight: true } : {}), ...(!afterFight && u.mg?.calmTend ? { calmTend: true } : {}),
-      ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}) };
+      ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}),
+      ...(!afterFight && u.condVia && Object.keys(u.condVia).length ? { condVia: { ...u.condVia } } : {}) };
     // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
     // A grudge's Shaken (item 723) is the fight's only: it isn't carried.
     if (afterFight && (u.conds?.shaken ?? 0) > 0 && u.faith?.grudgeCond !== 'shaken') { const c = g.characters[u.charId]; if (c && !storyConds(g, c).includes('shaken')) setStoryCond(g, c, 'shaken', 'scene'); } // a longer Shaken stays as it was
@@ -2791,7 +2799,7 @@ const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.co
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
   'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
-  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
+  'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
   'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed'] as const;
 

@@ -689,7 +689,11 @@ export function soulPickError(c: Character, id: string, via: string): string | n
 /** The skill behind each save (rules 1.13): the betas. Body Guts, Brain Rumination (it was Charisma), Heart Composure. */
 export const SAVE_SKILL_OF: Record<'body' | 'brain' | 'heart', string> = { body: 'guts', brain: 'rumination', heart: 'composure' };
 export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = SAVE_SKILL_OF[fam]; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
-export const debuffStrength = (c: Character, fam: 'body' | 'brain' | 'heart') => Math.max(0, fx(c, 'debuff_' + fam, mod(P(c, fam === 'body' ? 'intimidation' : fam === 'brain' ? 'eloquence' : 'implication'))));
+/** Debuff strength (rules 1.13, Skeleton 2.0): how hard a condition is to save against is the modifier of the skill
+ * that delivered it (`via`), floor 0. Always points − 1: a gamma that sets a TN never counts its full points. */
+export const strengthOf = (c: Character, via: string) => Math.max(0, mod(P(c, via)));
+/** Every strength above 0, by skill id: what a unit carries into a fight (Unit.dbf; a missing skill reads 0). */
+export const strengthTable = (c: Character): Record<string, number> => Object.fromEntries(SKILLS.map((s) => [s.id, strengthOf(c, s.id)] as [string, number]).filter(([, n]) => n > 0));
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
 /** What counts as each focus: the focus items, and the mana arms that count as one. */
 export const FOCUS_IDS: Record<'evoker' | 'emanator', string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'] };
@@ -719,7 +723,14 @@ export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item ||
 export const mpNow = (c: Character) => (carriesEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
 export const evoChargeNow = (c: Character) => (carriesEvoker(c) ? c.evoCharge ?? 10 : 0);
-export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + mod(P(c, skill)) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
+/** The modifier on a skill CHECK (rules 1.13): a gamma-slot skill adds its full points, every other skill points − 1;
+ * 0 points is −2 either way. Only for checks, Ask and passives: attacks, saves, Initiative and debuff TNs keep mod(). */
+export const checkModOf = (skill: string, p: number) => (p <= 0 ? -2 : SKILL[skill]?.slot === 'gamma' ? p : p - 1);
+export const checkMod = (c: Character, skill: string) => checkModOf(skill, P(c, skill));
+/** Passive Vigilance from a unit's points (traps, hidden piles, hazards, Sigil traps): 10 + the check modifier, the same
+ * rule as a voice hook's passive (rules 1.13, ruling 5). The opposed roll to spot the Hidden in a fight is not this. */
+export const passiveVigilance = (points: number) => 10 + checkModOf('vigilant', points || 0);
+export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + checkMod(c, skill) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
 // ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));

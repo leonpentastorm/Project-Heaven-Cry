@@ -209,7 +209,7 @@ function suppressShot(h: Holder, t: Unit, why: string, rng: Rng) {
   z.struck.push(t.id);
   say(cb, u.name + '\'s suppressing fire catches ' + t.name + ' ' + why + '.');
   const r = quiet(u, () => resolveAttack(cb, rng, u, t, 'shot', null, { noAp: true, noWear: true }));
-  if (r.hit && alive(t)) say(cb, t.name + applyCond(cb, rng, u, t, 'pinned') + '.');
+  if (r.hit && alive(t)) say(cb, t.name + applyCond(cb, rng, u, t, 'pinned', undefined, undefined, { via: 'dexterity' }) + '.');
   checkOver(cb);
 }
 register({
@@ -864,14 +864,14 @@ register({
 // its type (FIRE 15, SHOCK 15, FREEZE 12, SPARK 7, ACID 7 Elemental; STONE 17, GALE 7 Sigil) and its listed rider
 // (FREEZE: Slowed, Body save; ACID: Corroded, no save, a Body save ends it; FIRE's Burning needs a critical spell and
 // GALE's shove a spell, so neither rides a bullet: PROVISIONAL, lane classes-j); an Affliction applies its condition
-// with its own save (against 12 + your debuff strength; COMMAND's order is halt). The hit releases bots (+1 on the
+// with its own save (against 12 + your Brain Power strength; COMMAND's order is halt). The hit releases bots (+1 on the
 // meter). PROVISIONAL (audit 1). The pack shows them on the sheet as state.
 const inscribable = (w: string) => { const k = (SIGIL[w] as any)?.class; return k === 'subject_element' || k === 'subject_affliction'; };
 const insOf = (h: Holder) => cs(h.c)['class:spellslinger.inscribed_rounds'] as { word: string; n: number } | undefined;
 /** A word's condition rider on one creature (sigils.json applies): its save family, rounds, and COMMAND's halt. */
 function rider(cb: Combat, rng: Rng, u: Unit, t: Unit, word: string): string {
   const ap: any = (SIGIL[word] as any)?.applies; if (!ap?.condition || t.dead) return '';
-  return withElement(SIGIL[word].class === 'subject_element' ? word : null, () => applyCond(cb, rng as any, u, t, condKey(ap.condition), ap.rounds, (ap.save || undefined) as any, { skipSave: !ap.save, ...(word === 'command' ? { arg: 'halt' } : {}) } as any));
+  return withElement(SIGIL[word].class === 'subject_element' ? word : null, () => applyCond(cb, rng as any, u, t, condKey(ap.condition), ap.rounds, (ap.save || undefined) as any, { skipSave: !ap.save, via: 'brain_power', ...(word === 'command' ? { arg: 'halt' } : {}) } as any));
 }
 register({
   id: 'spellslinger.inscribed_rounds', claims: 'all',
@@ -1045,8 +1045,8 @@ register({
       const cb = h.cb!, rng = rngOf(h, ctx) as any, t = ctx.tgt, fireExtra = el === 'fire' && !ctx.crit ? 5 : 0;
       let line = 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + withElement(el, () => harm(cb, rng, u, t, (10 + fireExtra) * (u.mg!.elemMult || 1), 'elemental', DMG_T[el]));
       emitFx(cb, 'infusion', { unit: u.id, target: t.id, at: t.pos, element: el });
-      if (el === 'fire' && ctx.crit && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'burning', 1, undefined, { skipSave: true }));
-      if (el === 'freeze' && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'slowed', undefined, undefined));
+      if (el === 'fire' && ctx.crit && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'burning', 1, undefined, { skipSave: true, via: 'brain_power' }));
+      if (el === 'freeze' && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'slowed', undefined, undefined, { via: 'brain_power' }));
       if (el === 'shock') { const v = cb.units.find((x) => x !== t && x !== u && x.side !== u.side && alive(x) && adj(x.pos, t.pos)); if (v) { emitFx(cb, 'chain', { unit: u.id, from: t.pos, to: v.pos, target: v.id, element: 'shock' }); line += ' · it arcs to ' + v.name + withElement(el, () => harm(cb, rng, u, v, 5 * (u.mg!.elemMult || 1), 'elemental', DMG_T[el])); } }
       if (el === 'spark' && (t.dead || ctx.killed) && u.ap < 9) { u.ap = Math.min(9, u.ap + 1); line += ' · +1 AP (Spark)'; }
       say(cb, line + '.');

@@ -12,7 +12,7 @@ import { SKILL, WEAPON, ITEM } from '../data';
 import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
 import { applyCond, condOn } from '../magic';
-import { type Character, ARMOUR, gearBonus, packOf, mod } from '../character';
+import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../character';
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
 import { d20, die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
@@ -863,7 +863,7 @@ register({
     turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.pen) { pushAp(ctx, -s.pen, 'stealth broken (Ghost Soldier)'); s.pen = 0; } },
     rest: (ctx, h) => {
       if (!ctx.settlement || !h.c || !ctx.chars.includes(h.c)) return; const g = gameOf(h) || ctx.g; if (!g) return;
-      const d = d20(g.rng), m = mod(h.c.skills.vigilant || 0) + skillRollMod({ c: h.c }, 'vigilant', { roll: 'check', tags: (() => { try { return zoneTags(g); } catch { return []; } })() }).add, ok = d === 20 || (d !== 1 && d + m >= 12);
+      const d = d20(g.rng), m = checkMod(h.c, 'vigilant') + skillRollMod({ c: h.c }, 'vigilant', { roll: 'check', tags: (() => { try { return zoneTags(g); } catch { return []; } })() }).add, ok = d === 20 || (d !== 1 && d + m >= 12);
       postStory(h, 'VIGILANT · d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (d + m) + ' vs 12 · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
       if (!ok) { const i = ctx.chars.indexOf(h.c); if (i >= 0) ctx.chars.splice(i, 1); }
     },

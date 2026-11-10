@@ -32,7 +32,7 @@ function arm(u: Unit) {
   if (!u.mg) throw new Error('no magic');
   // firstUsed: rules 1.8's free first Pump of the fight is spent, so these 1.5 tests price every Pump (outburst40.test.ts covers it).
   Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, debuff: { body: 0, brain: 0, heart: 0 } });
-  u.sk = {}; u.dbf = { body: 0, brain: 0, heart: 0 };
+  u.sk = {}; u.dbf = {};
 }
 type F = ReturnType<typeof rig>;
 /** Add a design to the unit's ready list; returns its id. */

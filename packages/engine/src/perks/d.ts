@@ -512,7 +512,7 @@ register({
 // =====================================================================================================================
 // Fire Sermon (Achieved: Faith 5 + Eloquence 5; deed: convert an enemy mid-fight). Preach (2 AP): until the start of
 // your next turn, every Blessing you are granted also tries to leave enemies within 4 tiles (provisional; they hear
-// you) Shaken (Heart save against 12 + your Heart debuff strength). Story: preaching is roleplay; a Blessing gained
+// you) Shaken (Heart save against 12 + your Faith strength: the perk's first skill, rules 1.13). Story: preaching is roleplay; a Blessing gained
 // while preaching leaves hostile listeners Shaken for the scene (the Narrator rules who).
 // =====================================================================================================================
 register({
@@ -540,7 +540,7 @@ register({
     blessing_in: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb; if (!u || !me(h, ctx.u) || !stateOf(h).preach) return;
       let line = '';
-      for (const e of foesOf(cb, u)) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken');
+      for (const e of foesOf(cb, u)) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken', undefined, undefined, { via: 'faith' });
       if (line) log(cb, 'The sermon burns (Fire Sermon)' + line + '.');
     },
   },
@@ -972,7 +972,7 @@ register({
       const full = t.conds?.[ctx.id] ?? ctx.rounds, timed = full < 99, half = timed ? Math.max(1, Math.ceil(full / 2)) : undefined;
       if (timed && t.conds) t.conds[ctx.id] = half!;
       s.busy = true;
-      try { log(cb, 'Shared Breath: ' + t.name + ' and ' + p.name + ' share it' + (half ? ' (' + half + ' round' + (half === 1 ? '' : 's') + ' each)' : '') + applyCond(cb, rngOf(h, ctx), ctx.by || null, p, ctx.id, half, undefined, { skipSave: true }) + '.'); }
+      try { log(cb, 'Shared Breath: ' + t.name + ' and ' + p.name + ' share it' + (half ? ' (' + half + ' round' + (half === 1 ? '' : 's') + ' each)' : '') + applyCond(cb, rngOf(h, ctx), ctx.by || null, p, ctx.id, half, undefined, { skipSave: true, ...(ctx.via ? { via: ctx.via } : {}) }) + '.'); }
       finally { s.busy = false; }
       if (--s.link.left <= 0) s.link = null;
     },

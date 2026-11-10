@@ -7,7 +7,7 @@ import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
 import type { HookName } from '../effects/types';
-import { applyCond, condOn, unitSave } from '../magic';
+import { applyCond, condOn, unitSave, withVia } from '../magic';
 import { resOf, resGain, canReact, useReaction } from '../tactics';
 import { d20, type Rng } from '../rng';
 import { mod } from '../character';
@@ -15,7 +15,7 @@ import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
-import { TECHNIQUE, TECHNIQUES, PHYS_RULES, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
+import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 
 // ---------- the registry ----------
@@ -391,10 +391,12 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
 }
+/** The skill a technique's conditions and saves are delivered by (rules 1.13): the one its weapon hits with. */
+export const techVia = (t: Tech): string => hitsWith(t.weaponId) || 'raw_power';
 /** Put a condition on a target with the technique as its source. No save unless opts.save. True: it took. */
 export function cond(t: Tech, target: Unit, id: string, rounds?: number, opts: { save?: boolean; tnAdd?: number; arg?: any } = {}): boolean {
   if (t.preview) { t.note(target.name + ': ' + id.replace(/_/g, ' ') + (rounds ? ' ' + rounds + (rounds === 1 ? ' round' : ' rounds') : '') + (opts.save ? ' (save)' : '') + '.'); return true; }
-  const s = applyCond(t.cb, t.rng, t.u, target, id, rounds, undefined, { skipSave: !opts.save, tnAdd: opts.tnAdd, arg: opts.arg } as any);
+  const s = applyCond(t.cb, t.rng, t.u, target, id, rounds, undefined, { skipSave: !opts.save, tnAdd: opts.tnAdd, arg: opts.arg, via: techVia(t) });
   if (s) t.cb.log.push(target.name + s.replace(/^ · /, ': ') + '.');
   return !/resists|untouched|shrugs/.test(s);
 }
@@ -423,7 +425,7 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
       const old = target.nailed; if (old?.weapon && opts.weapon) dropNailed(t.cb, target);
       target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : old?.weapon ? { weapon: old.weapon, ...(old.item ? { item: old.item } : {}), by: old.by } : {}) };
     }
-    else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true } as any);
+    else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true, via: techVia(t) });
     else if (h === 'prone') { if (!target.prone) { target.prone = true; target.braced = false; emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); } }
   }
   if (opts.apLoss) apDebt(target, opts.apLoss);
@@ -721,7 +723,7 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
   const p = prepare(cb, u, id, args, { state: 1 }, true); if (!p.t) return blank(p.why || 'Not now.');
   const t = p.t; if (p.why) { t.pv.ok = false; t.pv.why = p.why; return t.pv; }
   const m0 = momentumOf(u);
-  const err = p.h!.run(t);
+  const err = withVia(u, techVia(t), () => p.h!.run(t));
   if (err) { t.pv.ok = false; t.pv.why = err; return t.pv; }
   // one attack and it can't be made: the technique can't be used (a volley with some refused targets still can)
   if (t.pv.attacks.length === 1 && !t.pv.attacks[0].pv.ok) { t.pv.ok = false; t.pv.why = t.pv.attacks[0].pv.why || 'Can\'t attack that.'; }
@@ -767,7 +769,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos,
     line: lineProp(def, t.weaponId, args.line, u), opt: args.opt ?? null, ammo: args.ammo ?? (t.wield === 'throwable' && args.item != null ? String(args.item) : null), weapon: t.weaponId, ...more });
   const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
-  const err = p.h!.run(t);
+  const err = withVia(u, techVia(t), () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost comes back
     u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true; return err;
   }

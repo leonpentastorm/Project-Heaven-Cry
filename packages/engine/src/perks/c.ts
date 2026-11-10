@@ -199,7 +199,7 @@ register({
           return null;
         }
         if (h.c && p.idx != null) takeOne(h.c, p.idx);
-        if (p.kind === 'tracker' && !overworld(cb)) { const r = applyCond(cb, rng, u, t, 'marked', undefined, undefined, { skipSave: true }); say(cb, u.name + ' plants a tracker on ' + t.name + r + '.'); return null; }
+        if (p.kind === 'tracker' && !overworld(cb)) { const r = applyCond(cb, rng, u, t, 'marked', undefined, undefined, { skipSave: true, via: 'ingenuity' }); say(cb, u.name + ' plants a tracker on ' + t.name + r + '.'); return null; }
         say(cb, u.name + ' slips something onto ' + t.name + '.');
         note(h, 'planted ' + p.item + ' on ' + t.name + ' (unseen): rule what it means when it matters');
         return null;
@@ -657,7 +657,7 @@ function autoRound(cb: Combat, att: Unit, includeCurrent: boolean): boolean {
     if (e.k === 'shot' || e.k === 'melee') { if (!e.chain) return false; if (!includeCurrent) continue; } }
   return false;
 }
-const suppress = (cb: Combat, rng: Rng, by: Unit, t: Unit) => { if (!t || t.dead || t.side === by.side || condOn(t, 'suppressed')) return; say(cb, '(Suppression on ' + t.name + applyCond(cb, rng, by, t, 'suppressed') + ')'); };
+const suppress = (cb: Combat, rng: Rng, by: Unit, t: Unit) => { if (!t || t.dead || t.side === by.side || condOn(t, 'suppressed')) return; say(cb, '(Suppression on ' + t.name + applyCond(cb, rng, by, t, 'suppressed', undefined, undefined, { via: 'dexterity' }) + ')'); };
 /** Charge Ammo Hog's second round for every round fired since the last charge (fx since then), and Suppress the auto
  * targets cover stopped (they reach neither on_hit nor on_miss). */
 function ammoHog(h: Holder, rng: Rng): number {
@@ -828,7 +828,7 @@ function detonate(h: Holder, rng: Rng, ch: { at: string; from: string; shape: st
   const cb = h.cb!, u = h.u!, w: any = WEAPON[ch.item], r = radiusOf(w), tiles = shapeTiles(cb, ch.from, ch.at, ch.shape, r), dmg = typeof w?.damage === 'number' ? w.damage : 0;
   emitFx(cb, 'explode', { at: ch.at, radius: r, what: ch.item, tiles });
   let out = '';
-  for (const v of cb.units) if (!v.dead && !v.surrendered && tiles.includes(v.pos)) { out += hurtUnit(v, dmg, false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true }); }
+  for (const v of cb.units) if (!v.dead && !v.surrendered && tiles.includes(v.pos)) { out += hurtUnit(v, dmg, false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) out += damageObject(cb, o.pos, dmg * DEMO, 0, u);
   return out || ' · it finds no one';
 }
@@ -935,7 +935,7 @@ register({
         let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs ' + d.tn;
         if (!ok) { say(cb, line + ' · locked out (Slicer).'); return null; }
         const st = stateOf(h), list: any[] = (st.devices ||= []);
-        if (d.unit) { line += ' · it\'s yours until your next turn' + applyCond(cb, rng, u, d.unit, 'puppeted', 1, undefined, { skipSave: true }); say(cb, line + '.'); return null; }
+        if (d.unit) { line += ' · it\'s yours until your next turn' + applyCond(cb, rng, u, d.unit, 'puppeted', 1, undefined, { skipSave: true, via: 'ingenuity' }); say(cb, line + '.'); return null; }
         const o = d.obj;
         if (kindOf(o).door) {
           const want = args.choice === 'lock' ? 'lock' : args.choice === 'close' ? 'close' : args.choice === 'open' ? 'open' : o.open ? 'close' : 'open';

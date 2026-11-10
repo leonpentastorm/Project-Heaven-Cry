@@ -30,7 +30,7 @@ function row(a: any, level: number) {
   const out: Record<string, any> = { id: a.id, level };
   for (const f of ['maxHp', 'hpPerLevel', 'initiativeBonus', 'movement', 'carryLimit', 'physicalMult', 'critMult', 'healingMult', 'healReceivedMult', 'shieldReceivedMult', 'maxMp', 'sigilMult', 'soulMult', 'elementalMult',
     'sigilCoreSaving', 'sigilRangeBonus', 'soulRangeBonus', 'readyDesigns', 'critTakenPct', 'ambushTakenPct', 'maxSigilWords', 'glyphAp', 'soulCostSaving', 'syphonMult', 'prayerCooldown', 'injuryResistPct']) out[f] = call(f, c);
-  for (const fam of ['body', 'brain', 'heart']) { out['save_' + fam] = call('saveBonus', c, fam); out['debuff_' + fam] = call('debuffStrength', c, fam); }
+  for (const fam of ['body', 'brain', 'heart']) { out['save_' + fam] = call('saveBonus', c, fam); } // debuff_<family> is gone (rules 1.13): strengths are by source, below
   // strengths by source (Skeleton 2.0's strengthOf), once it exists
   for (const s of SKILLS) if (s.slot === 'alpha' || s.slot === 'gamma') { const v = call('strengthOf', c, s.id); if (v != null) out['strength_' + s.id] = v; }
   for (const s of SKILLS) { out['mod_' + s.id] = call('mod', c.skills[s.id] || 0); const cm = call('checkMod', c, s.id); if (cm != null) out['check_' + s.id] = cm; out['passive_' + s.id] = call('passive', c, s.id); }

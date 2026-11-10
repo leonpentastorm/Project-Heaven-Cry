@@ -102,7 +102,7 @@ describe('Feint (3)', () => {
   it('a failed Brain save: no damage, +3 and no Answer on the next technique, +1 Momentum; 1 AP', () => {
     const f = fight('maul', ['feint'], 'C5', 'D5'); saves(f.foe, -30); const hp = f.foe.hp;
     const pv = f.pv('feint', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.attacks.length).toBe(0);
-    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['brain'], tn: 12 + ((f.pc as any).dbf?.brain || 0) });
+    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['brain'], tn: 12 + ((f.pc as any).dbf?.raw_power || 0) }); // rules 1.13: the skill the maul hits with
     expect(pv.momentum).toEqual({ now: 0, after: 1 });
     const before = state(f); f.pv('feint', { targetId: f.foe.id }); expect(state(f)).toBe(before);
     expect(f.tech('feint', { targetId: f.foe.id })).toBeNull();
@@ -121,9 +121,9 @@ describe('Feint (3)', () => {
   });
   it('Light: the save is at −2; Hook: a failed save also lowers its weapon', () => {
     const f = fight('sabre', ['feint'], 'C5', 'D5');
-    expect(f.pv('feint', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + ((f.pc as any).dbf?.brain || 0));
+    expect(f.pv('feint', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + ((f.pc as any).dbf?.dexterity || 0)); // a sabre hits with Dexterity
     const g = fight('hatchet', ['feint'], 'C5', 'D5'); saves(g.foe, -30);
-    expect(g.pv('feint', { targetId: g.foe.id, line: 'hook' }).saves?.[0].tn).toBe(12 + ((g.pc as any).dbf?.brain || 0));
+    expect(g.pv('feint', { targetId: g.foe.id, line: 'hook' }).saves?.[0].tn).toBe(12 + ((g.pc as any).dbf?.dexterity || 0)); // a hatchet too
     expect(g.tech('feint', { targetId: g.foe.id, line: 'hook' })).toBeNull();
     expect(g.foe.conds?.lowered).toBeTruthy();
     const h = fight('sabre', ['feint'], 'C5', 'D5'); saves(h.foe, -30); h.tech('feint', { targetId: h.foe.id });

@@ -286,9 +286,9 @@ describe('Trench Poet', () => {
 describe('Grudge Bearer', () => {
   it('Spite: debuffs you inflict last a round longer, and the first one each fight skips the save', () => {
     const f = fight([{ traits: ['grudge_bearer'] }], [{}, {}]); tough(f.foes[0]); tough(f.foes[1]);
-    withGame(f.g, () => applyCond(f.cb, f.g.rng, f.pc, f.foes[0], 'shaken', 2, 'heart'));
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, f.pc, f.foes[0], 'shaken', 2, 'heart', { via: 'intimidation' }));
     expect(f.foes[0].conds!.shaken).toBe(3);
-    expect(withGame(f.g, () => applyCond(f.cb, rngFor(5), f.pc, f.foes[1], 'shaken', 2, 'heart'))).toMatch(/resists/);
+    expect(withGame(f.g, () => applyCond(f.cb, rngFor(5), f.pc, f.foes[1], 'shaken', 2, 'heart', { via: 'intimidation' }))).toMatch(/resists/);
   });
   it('Never Forgive: with a grudge open, −2 on attacks at anyone else and on story checks not aimed at the mark', () => {
     const s = storyWith([{ traits: ['grudge_bearer'] }]); const c = s.chars[0];

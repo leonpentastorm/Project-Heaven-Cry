@@ -104,7 +104,8 @@ describe('Flurry (Bare): the +1 lands on the save the next Bind or Throw Down fo
   it('Bind (Bare): the grapple save is 1 harder, and the mark is spent', () => {
     const f = mk(); expect(f.pv('bind', { targetId: f.foes[0].id }).notes.join(' ')).toMatch(/Flurry: the save is 1 harder/);
     saves(f, f.foes[0], 50); expect(f.tech('bind', { targetId: f.foes[0].id })).toBeNull();
-    expect(f.cb.log.slice(-3).join(' ')).toMatch(/vs 13\)/); expect((f.unit(f.pc.id) as any).setUp).toBeUndefined();
+    // rules 1.13: a bare-handed grapple is saved against 12 + Raw Power strength (Raw Power 4 = 3), and Flurry's +1
+    expect(f.cb.log.slice(-3).join(' ')).toMatch(/vs 16\)/); expect((f.unit(f.pc.id) as any).setUp).toBeUndefined();
   });
   it('Throw Down (Bare): the occupant\'s Prone save is 1 harder', () => {
     const f = mk(); f.bound(() => applyCond(f.cb, f.g.rng, f.unit(f.pc.id), f.unit(f.foes[0].id), 'grappled', undefined, undefined, { skipSave: true } as any));

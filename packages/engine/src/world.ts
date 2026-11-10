@@ -4,7 +4,7 @@
 // things and writes their choices; the engine runs every roll, cost and effect here, deterministically (g.rng).
 // The reducer (game.ts) calls in; game.ts's private helpers come through its `_world` object at call time.
 import { SKILL, TN_LADDER, WEAPON, SIGIL } from './data';
-import { type Character, mod, packOf, carriedKg, carryLimit, overweightKg, wordsKnownCap } from './character';
+import { type Character, mod, checkMod, packOf, carriedKg, carryLimit, overweightKg, wordsKnownCap } from './character';
 import { copyWord, growthOf, knowsWord, learnedElsewhere } from './sigilgrowth';
 import { type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
 import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './containers';
@@ -433,7 +433,8 @@ const rangeOf = (t: Target) => (t.kind === 'npc' ? TALK_RANGE : 1);
 function bestSkill(g: GameState, c: Character, skills: string[]): string {
   return [...skills].sort((a, b) => skillMod(g, c, b) - skillMod(g, c, a))[0];
 }
-const skillMod = (g: GameState, c: Character, s: string) => mod(c.skills[s] || 0) + songMod(g, c, s) + skillRollMod({ c }, s, { roll: 'check' }).add;
+/** A skill's modifier on a check (rules 1.13: a gamma counts its full points). */
+const skillMod = (g: GameState, c: Character, s: string) => checkMod(c, s) + songMod(g, c, s) + skillRollMod({ c }, s, { roll: 'check' }).add;
 /** The odds a character passes a check (d20 + modifier vs TN; a natural 20 passes, a natural 1 fails): a preview,
  * without the per-check items the roll itself may add. */
 export function previewOdds(g: GameState, c: Character, skills: string[], tn: number, pick?: 'best'): { skills: string[]; mod: number; chance: number } {

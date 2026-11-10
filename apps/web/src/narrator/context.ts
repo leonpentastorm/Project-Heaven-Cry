@@ -6,7 +6,7 @@ import { recentNarrationBlock, recentIds, lastTurnAudit } from './craft';
 import { beliefOf, devotionNow, devotionXpOf, faithView, dayOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, NARRATOR_XP, PACT_COOLDOWN_DAYS, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS } from '@engine';
 import { zoneHazards, zoneTriggers, carriedOf, type Approach } from '@engine';
 import { TECHNIQUE, readyTechniques, physOf, weaponTeaches } from '@engine';
-import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, FEELING, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf, pileEntries } from '@engine';
+import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, FEELING, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, checkMod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf, pileEntries } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
 import cast from '../../../../docs/lore/EPCCG-Cast-and-Factions.md?raw';
@@ -115,6 +115,9 @@ export const MAP_TRUTH = `THE MAP IS THE TRUTH (check before you call submit_tur
 7. Loot sits in caches and piles; dangers are hazards; ambushes are triggers.
 8. Every NPC you place has wants (and talk when they matter); every objective you open has where.`;
 
+/** The nine gamma skills, read from the data (rules 1.13: the skills for talk, counting full points on a check). */
+const GAMMA_IDS = SKILLS.filter((s) => s.slot === 'gamma').map((s) => s.id).join(', ');
+
 export const RULES_PROMPT = `You are the Narrator (game master) of Project Heaven Cry, a tactical RPG played in the browser by up to four players. You own judgement; a rules engine owns every number.
 
 ${CRAFT}
@@ -129,7 +132,7 @@ TURNS
 - Story mode uses a speaking order: each player acts once per round, then you answer everyone together. Answer every player's action through its consequence (CRAFT); keep each player's character at the centre of their own beat.
 - Names: speak to and about the characters by their character names only. You are never told the players' real names; never invent, guess or use one, and never call anyone "player" in the story.
 - narration: second person when addressing the party, present tense, specific. Length and ending as CRAFT says. No headings, no lists, no dice talk, no meta commentary.
-- When an action's outcome is uncertain and interesting, don't resolve it: request a check (checks[]) and narrate the lead-up only. The engine rolls when the player clicks, then you get the results next turn and narrate the outcome. Use 1 to 3 skills per check (combined checks are allowed). TN is one of 8 Easy, 12 Standard, 16 Hard, 20 Heroic. Ask for at most one check per character per turn; skip checks for trivial or impossible actions.
+- When an action's outcome is uncertain and interesting, don't resolve it: request a check (checks[]) and narrate the lead-up only. The engine rolls when the player clicks, then you get the results next turn and narrate the outcome. Use 1 to 3 skills per check (combined checks are allowed). When a character talks to a sentient being, call a gamma skill first (${GAMMA_IDS}: these add full points). TN is one of 8 Easy, 12 Standard, 16 Hard, 20 Heroic. Ask for at most one check per character per turn; skip checks for trivial or impossible actions.
 - On a natural 20 add a benefit; on a natural 1 add a complication.
 
 VOICES (the heart of the game)
@@ -297,7 +300,7 @@ function techniqueBrief(c: Character): string {
 }
 const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
 export function characterBrief(g: GameState, c: Character): string {
-  const skills = pts(c).map(([id, n]) => `${SKILL[id].name} (${id}) ${n} [${mod(n) >= 0 ? '+' : ''}${mod(n)}]`).join(', ');
+  const skills = pts(c).map(([id, n]) => `${SKILL[id].name} (${id}) ${n} [${checkMod(c, id) >= 0 ? '+' : ''}${checkMod(c, id)}]`).join(', ');
   // Items by id (plan 4.3): the engine runs their numbers; "*" marks a part that is yours to rule (wiki_lookup the id for
   // the full text); a lane's brief() gives the remainder in a few words. Held Ultimates are listed too (never unheld ones).
   const items = holdersOf({ c }), tag = (h: any) => { const b = briefOf(h); return b == null ? '' : b ? '*: ' + b : '*'; };
@@ -560,7 +563,7 @@ export function submitTool(g: GameState) {
   const S = { type: 'string' }, I = { type: 'integer' }, B = { type: 'boolean' };
   const opt = (props: Record<string, any>, req: string[]) => ({ type: 'array', items: { type: 'object', properties: props, required: req } });
   Object.assign(schema.properties.checks.items.properties, { target: { type: 'string', description: 'The NPC id or name the check is against' }, applies: { type: 'array', items: S, description: 'Item ids you rule apply to this check' },
-    kind: { type: 'string', description: '"save" for a save, else omit' }, family: { type: 'string', description: 'save family: body, brain, heart' }, footnote: { type: 'string', description: 'charId of an ally who helps' }, double: B, auto: { type: 'string', description: 'success or fail when the fiction settles it (an item said so)' } });
+    kind: { type: 'string', description: '"save" for a save, else omit' }, family: { type: 'string', description: 'save family: body (Guts), brain (Rumination), heart (Composure)' }, footnote: { type: 'string', description: 'charId of an ally who helps' }, double: B, auto: { type: 'string', description: 'success or fail when the fiction settles it (an item said so)' } });
   Object.assign(schema.properties.combat.anyOf[1].properties, { fear: { type: 'boolean', description: 'The place itself is frightening' }, fromTalk: { type: 'boolean', description: 'The fight broke out of the talk just had (a parley gone wrong)' } });
   Object.assign(schema.properties.combat.anyOf[1].properties.enemies.items.properties, { kind: { type: 'string', description: 'human (default), robot, crawler, ork, upper_realm, cursed, beast, machine, turret' }, tags: { type: 'array', items: S, description: 'military, hunter, lawful, no_surrender, underworld, official…' }, unaware: B, no_surrender: B, hidden: B });
   Object.assign(schema.properties.npcs.items.properties, { kind: S, tags: { type: 'array', items: S } });

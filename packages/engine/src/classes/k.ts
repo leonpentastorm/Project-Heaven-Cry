@@ -22,7 +22,7 @@ import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
   flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
-  pumpOutburst, formOf, MAX_STAGE, SOUL_AP,
+  pumpOutburst, formOf, MAX_STAGE, SOUL_AP, unitSave, unitStrength, strengthFor, withVia,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
 import { castAt, compileSpell, evokeMarks, strokePick, tidyStrokes, fadePattern } from '../sigil';
@@ -131,7 +131,7 @@ register({
 });
 
 // Nightmare Mark (K2, PROVISIONAL, audit 1-4): a Shade who isn't an Assassin gets the Mark (1 AP, no save, 3 at most,
-// the oldest lifts). A marked enemy makes a Heart save (12 + your Heart debuff strength) at the start of each of its turns
+// the oldest lifts). A marked enemy makes a Heart save (12 + your Will Power strength) at the start of each of its turns
 // or is Afraid of you for that turn only (the Fear ends when its turn ends). Hexer's Dread doesn't lengthen it. Bosses
 // save at their tier (+3). Story: the Narrator plays a marked NPC haunted by its fear.
 function markIt(h: Holder, t: Unit, rng: Rng): string {
@@ -140,7 +140,7 @@ function markIt(h: Holder, t: Unit, rng: Rng): string {
   let lifted = '';
   if (!list.includes(t.id) && list.length >= 3) { const old = unitById(cb, list.shift()!); if (old) { endCond(old, 'marked', cb); lifted = ' (the Mark on ' + old.name + ' lifts: 3 at most)'; } }
   if (!list.includes(t.id)) list.push(t.id); st.marks = list;
-  return applyCond(cb, rng, u, t, 'marked', undefined, undefined, { skipSave: true }) + lifted;
+  return applyCond(cb, rng, u, t, 'marked', undefined, undefined, { skipSave: true, via: 'will_power' }) + lifted;
 }
 register({
   id: 'shade.nightmare_mark', claims: 'all',
@@ -154,7 +154,7 @@ register({
     turn_start: (ctx, h) => {
       const u = h.u, t: Unit = ctx.u, cb = h.cb!; if (!u || !inFight(h) || t.side === u.side || !alive(u) || t.dead) return;
       if (!condOn(t, 'marked') || t.condBy?.marked !== u.id) return;
-      const line = applyCond(cb, rngOf(h, ctx), u, t, 'fear', 1, 'heart');
+      const line = applyCond(cb, rngOf(h, ctx), u, t, 'fear', 1, 'heart', { via: 'will_power' });
       if (condOn(t, 'fear') && t.condBy?.fear === u.id) (stateOf(h).nm ||= {})[t.id] = cb.round;
       say(cb, t.name + ' sees its nightmare in ' + u.name + ' (Nightmare Mark)' + line + '.');
     },
@@ -178,7 +178,7 @@ register({
       let line = '';
       for (const t of foesOf(cb, u)) {
         if (t === v || dist(t.pos, v.pos) > 3 || condOn(t, 'blinded') || !lineOfSight(cb, t.pos, v.pos)) continue;
-        line += applyCond(cb, rngOf(h, ctx), u, t, 'shaken', undefined, 'heart');
+        line += applyCond(cb, rngOf(h, ctx), u, t, 'shaken', undefined, 'heart', { via: 'will_power' });
       }
       if (line) say(cb, 'Dread lingers over ' + v.name + '\'s body (Lingering Dread)' + line + '.');
     },
@@ -866,11 +866,14 @@ function clearGrand(h: Holder) {
   for (const u of cb.units) restoreFog(u);
   delete st.staff;
 }
+/** A Grand form's save: the target's save (unitSave: Shaken, residue and all) against 12 + the Brain Power strength
+ * the form was laid with (rules 1.13; the caller's withVia holds it). */
 function bodySave(rng: Rng, o: Unit, t: Unit, fam: 'body' | 'brain' | 'heart' = 'body'): boolean {
-  const r = d20(rng), m = t.sv ? t.sv[fam] : t.mg ? t.mg.saves[fam] : ({ minion: 0, soldier: 1, elite: 2, boss: 3 } as Record<string, number>)[t.tier || 'minion'] ?? 0;
-  const tn = 12 + (o.dbf ? o.dbf[fam] : o.mg ? o.mg.debuff[fam] : 1);
+  const r = d20(rng), m = unitSave(t, fam), tn = 12 + strengthFor(o, null);
   return r === 20 || (r !== 1 && r + m >= tn);
 }
+/** Everything a Grand form does is a Sigil's, at the strength stored when it was laid. */
+const inGrand = <T,>(o: Unit, z: Zone, fn: () => T): T => withVia(o, 'brain_power', fn, (z as any).str ?? undefined);
 function restoreFog(u: Unit) { const f = (u as any).fogVision; if (f != null) { u.vision = f; delete (u as any).fogVision; } }
 function fogSync(cb: Combat) {
   for (const u of cb.units) {
@@ -986,7 +989,7 @@ register({
         m.charge -= 3; m.cast = true;
         const tiles = around(t, 2).filter((k) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; });
         const seq = () => 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
-        const z: any = { id: seq(), kind: 'grand', tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name, centre: t };
+        const z: any = { id: seq(), kind: 'grand', tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name, centre: t, str: unitStrength(u, 'brain_power') };
         const extra: string[] = []; cb.zones = [...(cb.zones || []), z];
         if (w === 'veil' || w === 'light') { const x: any = { id: seq(), kind: w, tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name, grandOf: z.id }; cb.zones.push(x); extra.push(x.id); }
         stateOf(h).staff = { at: t, zone: z.id, extra };
@@ -1038,7 +1041,7 @@ register({
         if (zWord(z) === 'sense') { for (const x of cb.units) if (x.hidden && !x.dead && x.side !== o.side && dist(x.pos, zCentre(z)) <= 4) line += reveal(cb, x, 'Second sight'); continue; }
         if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, 15, 'sigil'); } } continue; }
         if (zWord(z) === 'arc') { if (t === o) line += mortar(cb, rngOf(h, ctx), o, z); continue; }
-        if (inZ(z, t.pos)) line += grandTurnStart(cb, rngOf(h, ctx), o, z, t, h.g);
+        if (inZ(z, t.pos)) line += inGrand(o, z, () => grandTurnStart(cb, rngOf(h, ctx), o, z, t, h.g));
       }
       if (line) say(cb, SIGIL[zWord(grandZones(cb, o)[0])]?.word + ' (Grand)' + line + '.');
       fogSync(cb);
@@ -1046,7 +1049,7 @@ register({
     move_step: (ctx, h) => {
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff) return;
       let line = '';
-      for (const z of grandZones(cb, o)) if (inZ(z, ctx.at) && !inZ(z, ctx.from)) line += grandEnter(cb, rngOf(h, ctx), o, z, t, ctx);
+      for (const z of grandZones(cb, o)) if (inZ(z, ctx.at) && !inZ(z, ctx.from)) line += inGrand(o, z, () => grandEnter(cb, rngOf(h, ctx), o, z, t, ctx));
       // WATCH (Sentinel): an enemy leaving the zone takes a 10 strike from the staff, once a round each.
       for (const z of grandZones(cb, o)) if (zWord(z) === 'watch' && t.side !== o.side && inZ(z, ctx.from) && !inZ(z, ctx.at)) {
         const left = ((z as any).left_hit ||= {}); if (left[t.id] === cb.round) continue; left[t.id] = cb.round;
@@ -1060,7 +1063,7 @@ register({
       fogSync(cb);
       // FREEZE (ice sheet): a Body save each move through it, or fall Prone.
       if (earthed(o, t)) return;
-      for (const z of grandZones(cb, o)) if (zWord(z) === 'freeze' && (ctx.route || []).some((k: string) => inZ(z, k)) && !t.prone) { if (!bodySave(rngOf(h, ctx), o, t)) say(cb, t.name + ' slips on the ice' + applyCond(cb, rngOf(h, ctx), o, t, 'prone') + '.'); }
+      for (const z of grandZones(cb, o)) if (zWord(z) === 'freeze' && (ctx.route || []).some((k: string) => inZ(z, k)) && !t.prone) inGrand(o, z, () => { if (!bodySave(rngOf(h, ctx), o, t)) say(cb, t.name + ' slips on the ice' + applyCond(cb, rngOf(h, ctx), o, t, 'prone') + '.'); });
     },
     move_cost: (ctx, h) => {
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff) return;
@@ -1202,9 +1205,9 @@ register({
     on_hit: (ctx, h) => {
       const u = h.u; if (ctx.att !== u || !u || !h.cb || !unarmed(u, ctx.mode) || ctx.tgt.dead) return;
       const z = formsAt(h.cb, u, u.pos).find((x) => EARTH_EL[zWord(x)]); if (!z) return; const rng = rngOf(h, ctx);
-      if (zWord(z) === 'fire' && ctx.crit) say(h.cb, 'Earthed fire' + applyCond(h.cb, rng, u, ctx.tgt, 'burning', undefined, 'body', { skipSave: true }) + '.');
-      if (zWord(z) === 'freeze') say(h.cb, 'Earthed frost' + applyCond(h.cb, rng, u, ctx.tgt, 'slowed') + '.');
-      if (zWord(z) === 'acid') say(h.cb, 'Earthed acid' + applyCond(h.cb, rng, u, ctx.tgt, 'corroded', undefined, 'body') + '.');
+      if (zWord(z) === 'fire' && ctx.crit) say(h.cb, 'Earthed fire' + applyCond(h.cb, rng, u, ctx.tgt, 'burning', undefined, 'body', { skipSave: true, via: 'brain_power' }) + '.');
+      if (zWord(z) === 'freeze') say(h.cb, 'Earthed frost' + applyCond(h.cb, rng, u, ctx.tgt, 'slowed', undefined, undefined, { via: 'brain_power' }) + '.');
+      if (zWord(z) === 'acid') say(h.cb, 'Earthed acid' + applyCond(h.cb, rng, u, ctx.tgt, 'corroded', undefined, 'body', { via: 'brain_power' }) + '.');
     },
   },
   brief: () => 'Earthed: rule what a non-element Grand form adds to the Sigilist\'s fists, if asked.',
@@ -1404,7 +1407,7 @@ register({
     shield_grant: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link, ' + x.name + ' is shielded (' + grantShield(ctx.cb, x, Math.floor(ctx.n / 2), ctx.by) + ').'); } finally { MIRROR = false; } },
     cond_landed: (ctx, h) => {
       if (MIRROR || ctx.t !== h.u || !['guarded', 'inspired'].includes(ctx.id) || !onGrid(h)) return; MIRROR = true;
-      try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + applyCond(ctx.cb, rngOf(h, ctx), ctx.by || h.u!, x, ctx.id, Math.max(1, Math.floor((ctx.rounds || 2) / 2)), undefined, { skipSave: true }) + '.'); } finally { MIRROR = false; }
+      try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + applyCond(ctx.cb, rngOf(h, ctx), ctx.by || h.u!, x, ctx.id, Math.max(1, Math.floor((ctx.rounds || 2) / 2)), undefined, { skipSave: true, ...(ctx.via ? { via: ctx.via } : {}) }) + '.'); } finally { MIRROR = false; }
     },
   },
   brief: () => null,

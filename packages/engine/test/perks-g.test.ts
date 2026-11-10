@@ -471,7 +471,7 @@ describe('Born Performer', () => {
     expect(storyCheck(s, c.id, ['charisma']).roll(10)).toMatch(/\+2 Born Performer: Charisma/);
     perk(s, c, 'born_performer', { choice: 'eloquence' });
     const k = storyCheck(s, c.id, ['eloquence']); k.roll(10);
-    expect(k.now().roll!.mod).toBe(0 + 2); // 1 point = +0, and +2
+    expect(k.now().roll!.mod).toBe(1 + 2); // rules 1.13: a gamma counts its full points on a check (1 point = +1), and +2
     expect(storyCheck(s, c.id, ['charisma']).roll(10)).not.toMatch(/Born Performer/);
     expect(() => perk(s, c, 'born_performer', { choice: 'charisma' })).toThrow();
     turn(s, { sceneTitle: 'A new stage' });
