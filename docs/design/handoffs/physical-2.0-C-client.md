@@ -31,6 +31,7 @@ You are building everything a player sees of **Physical 2.0** in Project Heaven 
 9. **The ARMS tab** may also let the player choose which Answers they use and in what order (`phys/answers { charId, ids | null }`); `c.phys.answers` holds it. Build it last; it is small.
 10. **Icons in templates.** If a template needs an image address and not inline markup, add a `gearIconUri(id, ink)` beside `gearIcon` in `gearIcons.ts` (yours to change).
 11. **Don't touch `apps/web/src/narrator/`** (the Narrator's glossary, brief and fight report are the lead's), except to fix a test your change breaks.
+13. **Weapons that aren't in the hand** (merge the base in): `packPad(cb, u, g)` returns one block per stowed weapon a ready technique can draw (Draw Cut, Snap Shot) and one per kind of grenade a technique can be used with (Lob, Rout), each with its entries and the `item` to send (`combat/technique { id, item, … }`). Draw them as extra blocks under the held weapons, with the item's icon and, for grenades, the count. `physView(...).nailed` says a unit is held in place until AP is spent: show it on the token's card, and give the player a **Pull free** row (`combat/pull-free { unitId }`, or `targetId` for an ally next to them) when they or an adjacent ally are nailed.
 12. **Events:** the plan's section 5.5. A held Overwatch still fires as today's `overwatch` event (now with an `id`); the other Watches fire as `watch_fire`; `watch_end` says why a held shot was lost.
 
 ## What you own

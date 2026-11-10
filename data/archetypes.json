@@ -194,10 +194,10 @@
       "role": "Finesse duellist",
       "blurb": "Blade or pistol, the same rule: be somewhere else when they swing.",
       "preset": {
-        "athletics": 4,
+        "athletics": 2,
         "guts": 2,
         "reaction_speed": 2,
-        "dexterity": 2
+        "dexterity": 4
       },
       "cores": {
         "body": 5,
@@ -1067,8 +1067,8 @@
       "blurb": "Draws Sigils with the sword tip. Three slashes, then a storm opens in the enemy's head.",
       "preset": {
         "brain_power": 4,
-        "athletics": 3,
-        "visualization": 3
+        "visualization": 3,
+        "dexterity": 3
       },
       "cores": {
         "body": 3,

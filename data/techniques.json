@@ -1200,7 +1200,8 @@
       "number": 0,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1239,10 +1240,13 @@
       "number": 1,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
-      "needs": {},
+      "needs": {
+        "stowed": true
+      },
       "text": "Draw or swap to this weapon and fire, at −2.",
       "lines": [
         {
@@ -1262,7 +1266,9 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "penalty": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy",
@@ -1278,7 +1284,8 @@
       "number": 2,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "burst"
       },
       "rounds": 3,
       "needs": {},
@@ -1303,7 +1310,15 @@
       ],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "rolls": 2,
+        "later_penalty": 2,
+        "auto_rolls": 3,
+        "auto_step": 1,
+        "auto_heat_cool": 1,
+        "auto_split_targets": 2,
+        "auto_split_range": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1316,7 +1331,8 @@
       "number": 3,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "aimed"
       },
       "rounds": 1,
       "needs": {},
@@ -1357,7 +1373,8 @@
       "number": 4,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1388,7 +1405,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "penalty": 2,
+        "spread_range": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1401,7 +1421,8 @@
       "number": 5,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1430,7 +1451,14 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "tiles": 2,
+        "quick_tiles": 3,
+        "auto_rolls": 3,
+        "auto_step": 1,
+        "auto_rounds": 3,
+        "auto_heat_cool": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy+tile",
@@ -1446,7 +1474,8 @@
       "number": 6,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1471,7 +1500,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "half_cover": 2,
+        "heavy_carry_mult": 0.5,
+        "heavy_carry_pressure": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1510,7 +1543,13 @@
         "blast"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "hit": -4,
+        "arc_hit": -2,
+        "blast_pressure": 2,
+        "blast_range_bands": 3,
+        "smoke_decay": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "tile"
@@ -1523,7 +1562,8 @@
       "number": 8,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 3,
       "needs": {},
@@ -1575,7 +1615,8 @@
       "number": 9,
       "ap": {
         "base": "flat",
-        "value": 4
+        "value": 4,
+        "mode": "auto"
       },
       "rounds": 6,
       "needs": {},
@@ -1602,7 +1643,18 @@
         "auto"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "hit": -3,
+        "targets": 3,
+        "group_span": 2,
+        "spread_wider": 1,
+        "pressure": 1,
+        "auto_rounds": 10,
+        "auto_hit": -2,
+        "auto_cone_width": 1.5,
+        "auto_heat": 4,
+        "auto_wear": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1615,7 +1667,8 @@
       "number": 10,
       "ap": {
         "base": "flat",
-        "value": 1
+        "value": 1,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1638,7 +1691,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "pressure": 1,
+        "loud_save_tn": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy",
@@ -1654,7 +1710,8 @@
       "number": 11,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1679,7 +1736,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "pressure": 2,
+        "cover_mult": 2,
+        "arc_damage_mult": 0.5
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1692,7 +1753,8 @@
       "number": 12,
       "ap": {
         "base": "flat",
-        "value": 4
+        "value": 4,
+        "mode": "shot"
       },
       "rounds": "all",
       "needs": {},
@@ -1734,7 +1796,15 @@
         "spread"
       ],
       "particular": true,
-      "numbers": {},
+      "numbers": {
+        "per_roll": 3,
+        "max_rolls": 4,
+        "step": 1,
+        "pressure": 1,
+        "heat_under": 1,
+        "spread_mult": 2,
+        "spread_range": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy",
@@ -1750,7 +1820,8 @@
       "number": 13,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1767,7 +1838,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 2,
+        "extra_pressure": 1,
+        "quick_step": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1803,7 +1878,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "range_bands": 1,
+        "precise_hit": 1,
+        "heavy_move_tiles": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1839,7 +1918,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 1,
+        "first_hit_pressure": 1,
+        "precise_range_bands": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -1875,7 +1958,9 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "auto_suppress_pressure": 1
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "self"
@@ -1950,7 +2035,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "tiles": 1,
+        "quick_tiles": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "tile"
@@ -1986,7 +2074,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "heat": 2,
+        "heavy_heat": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "self",
@@ -2012,7 +2103,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "pressure": 1,
+        "full_cover_pressure": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "self"
@@ -2025,7 +2119,8 @@
       "number": 21,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2071,7 +2166,8 @@
       "number": 22,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2099,7 +2195,12 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "damage_mult": 0.7,
+        "pinned_rounds": 1,
+        "suppressed_save": 2,
+        "nailed_ap": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -2112,7 +2213,8 @@
       "number": 23,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2138,7 +2240,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "suppressed_save": 3,
+        "loud_save": 2,
+        "run_ap": 6
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -2151,7 +2257,8 @@
       "number": 24,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2180,7 +2287,12 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "push": 1,
+        "push_more": 2,
+        "ap_loss": 1,
+        "spread_range": 4
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -2193,7 +2305,8 @@
       "number": 25,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2219,7 +2332,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "move": 3,
+        "quick_hit": 2,
+        "suppressed_crit_min": 18
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -2232,7 +2349,8 @@
       "number": 26,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2262,7 +2380,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 3,
+        "damage_pct": 50
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"
@@ -2321,7 +2442,8 @@
       "number": 28,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -2361,7 +2483,8 @@
       "number": 29,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -2385,7 +2508,11 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "attack_penalty": 2,
+        "pressure": 1,
+        "auto_allies": 2
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "ally"
@@ -2398,7 +2525,8 @@
       "number": 30,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -2422,7 +2550,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
-      "numbers": {},
+      "numbers": {
+        "hit": 2,
+        "precise_crit_min": 18
+      },
       "adjudication": "engine",
       "provisional": true,
       "aim": "enemy"

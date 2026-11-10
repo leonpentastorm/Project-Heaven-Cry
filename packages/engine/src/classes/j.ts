@@ -20,7 +20,7 @@ import { mod, healingMult, magazineSize } from '../character';
 import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE, applyToneRiders } from '../magic';
 import { castAt, glyphCost, sigilReady } from '../sigil';
 import { d20, die } from '../rng';
-import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
+import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
 
 // ---------- small helpers ----------
@@ -588,7 +588,7 @@ register({
       const at = st.lz.at; st.lz = null;
       const pcs = cb.units.filter((v) => v.side === u.side && !v.companion && !v.dead && !(v as any).extracted);
       const lifted = pcs.filter((v) => dist(v.pos, at) <= 2 && (!v.downed || pcs.some((o) => o !== v && alive(o) && dist(o.pos, v.pos) <= 1)));
-      for (const v of lifted) { (v as any).extracted = true; v.surrendered = true; v.overwatch = null; }
+      for (const v of lifted) { (v as any).extracted = true; v.surrendered = true; dropHeldShot(cb, v, 'lifted out'); }
       say(cb, 'The Company flyer touches down at ' + refOf(at) + (lifted.length ? ' and lifts out ' + lifted.map((v) => v.name).join(', ') : ' and finds nobody to lift') + '.');
       (cb.notes ||= []).push('EXTRACTED: ' + (lifted.map((v) => v.name).join(', ') || 'nobody') + ' left the fight by Company flyer (not a defeat; no win).');
       if (pcs.every((v) => (v as any).extracted || v.dead || v.downed) && lifted.length) { cb.over = 'extracted'; }

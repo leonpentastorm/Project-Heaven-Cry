@@ -10,6 +10,7 @@ import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
 import { canDraw, clearFx, fightStream, forgetSpotlights, holdMovers, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
+import { closeKeptBoxes } from '../cutIn';
 import { getState } from '../store';
 
 /** A decided fight plays only its last few effects (fx/play.ts queueFx keep). */
@@ -39,7 +40,7 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   const screenAt = React.useRef({ screen, at: 0 }); if (screenAt.current.screen !== screen) screenAt.current = { screen, at: Date.now() };
   React.useEffect(() => { setLayer(ref.current); if (game) preloadCombatSfx(); return () => setLayer(null); }, [!!game]);
   // Leaving the room unmounts the layer in the same render that drops the game: nothing queued may play on the title.
-  React.useEffect(() => () => { clearFx(); clearAmbient(); }, []);
+  React.useEffect(() => () => { clearFx(); closeKeptBoxes(); clearAmbient(); }, []); // a box the player kept open goes with the room
   // A hidden tab plays nothing: on return it catches up silently.
   React.useEffect(() => {
     const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); return; } if (document.hidden) { clearFx(); clearAmbient(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) { fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; setProcessed(ck, fight.current.n); } } };
@@ -67,9 +68,9 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   }, [s?.key, top, game?.code]);
   React.useEffect(() => {
     const h = seen.current;
-    if (!game) { clearFx(); seen.current = { key: null, n: 0, code: null }; fight.current = null; return; }
+    if (!game) { clearFx(); closeKeptBoxes(); seen.current = { key: null, n: 0, code: null }; fight.current = null; return; }
     if (h.code !== game.code) { // a new or loaded game: sync silently
-      clearFx(); seen.current = { key: s?.key ?? null, n: top, code: game.code }; fight.current = ck ? { key: ck, n: ctop } : null; setProcessed(ck, ctop); return;
+      clearFx(); closeKeptBoxes(); seen.current = { key: s?.key ?? null, n: top, code: game.code }; fight.current = ck ? { key: ck, n: ctop } : null; setProcessed(ck, ctop); return;
     }
     // Not watching the fight we know (another screen, the story tab): keep up with it silently.
     if (ck && fight.current?.key === ck && (!s || s.key !== ck)) { fight.current = { key: ck, n: ctop }; setProcessed(ck, ctop); }

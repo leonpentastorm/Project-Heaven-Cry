@@ -1034,6 +1034,8 @@ if isinstance(tq, dict):
         ap = t.get("ap") or {}
         if ap.get("base") not in ("weapon", "flat", "reaction") or (ap.get("base") == "flat" and not isinstance(ap.get("value"), int)):
             errors.append(f"{where}: ap needs base weapon | flat (with a value) | reaction")
+        if ap.get("mode") not in (None, "melee", "shot", "aimed", "burst", "auto"):
+            errors.append(f"{where}: ap.mode must be melee | shot | aimed | burst | auto")
         if (t.get("group") == "answer") != (ap.get("base") == "reaction"):
             errors.append(f"{where}: an Answer (and only an Answer) costs a reaction")
         if not (t.get("rounds") == "all" or (isinstance(t.get("rounds"), int) and t.get("rounds") >= 0)):

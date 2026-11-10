@@ -164,27 +164,27 @@ describe('Watches', () => {
 });
 
 describe('damage follows what the weapon is aimed with', () => {
-  it('a gun scales with Agility and Dexterity, a heavy blade with Strength and Raw Power, bare hands with Strength and both', async () => {
+  it('a gun and a light blade scale with Agility and Dexterity, a heavy blade with Strength and Raw Power, bare hands with Strength and both alphas', async () => {
     const { weaponMult, weaponMultLabel, newCharacter } = await import('../src');
     const c = newCharacter('c1', 'host', sheetOf({ archetype: 'sharpshooter' }));
     c.attrs = { ...c.attrs, strength: 3, agility: 5 }; c.skills = { ...c.skills, raw_power: 2, athletics: 4, dexterity: 6 }; c.perks = []; c.traits = []; c.classId = null;
     expect(weaponMult(c, 'service_pistol')).toBeCloseTo(1 + 0.4 + 0.3); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
-    expect(weaponMult(c, 'sabre')).toBeCloseTo(1 + 0.4 + 0.2); expect(weaponMultLabel('sabre')).toBe('Agility and Athletics');
+    expect(weaponMult(c, 'sabre')).toBeCloseTo(1 + 0.4 + 0.3); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
     expect(weaponMult(c, 'maul')).toBeCloseTo(1 + 0.2 + 0.1); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
-    expect(weaponMult(c, 'fists')).toBeCloseTo(1 + 0.2 + 0.1 + 0.2); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Athletics');
+    expect(weaponMult(c, 'fists')).toBeCloseTo(1 + 0.2 + 0.1 + 0.3); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Dexterity');
   });
 });
 
 describe('ready, picks and creation', () => {
   it('a new character knows the defaults for its skills; the pad lists free, ready and lent techniques', () => {
-    const f = physFight([{ weapon: 'sabre', skills: { athletics: 3, dexterity: 0 } }], [{ at: 'D5' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
+    const f = physFight([{ weapon: 'sabre', skills: { dexterity: 3 } }], [{ at: 'D5' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
     const ids = f.pad().flatMap((g) => g.entries.map((e) => e.id));
     expect(ids).toContain('cut'); expect(ids).toContain('lunge'); expect(ids).toContain('riposte'); // free, ready, lent by the sabre
     expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'riposte')?.lent).toBe(true);
     expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'sidestep')?.why).toBe(phys.NOT_BUILT);
   });
   it('phys/ready sets the ready list within the cap; phys/pick takes a pick a drill mark gave', () => {
-    const f = physFight([{ weapon: 'ork_machete', skills: { athletics: 2 } }], [{}]); const c = f.char(f.pc);
+    const f = physFight([{ weapon: 'ork_machete', skills: { raw_power: 2, dexterity: 0 } }], [{}]); const c = f.char(f.pc);
     phys.ensurePhys(c).known.push('coup', 'sweep', 'bash');
     f.g.combat!.over = 'win';
     expect(() => f.act({ type: 'phys/ready', charId: c.id, system: 'melee', ids: ['lunge', 'coup', 'sweep', 'bash', 'sidestep'] })).toThrow(/can ready 4/);
@@ -198,11 +198,11 @@ describe('ready, picks and creation', () => {
   });
   it('a sheet\'s starting picks are checked: two of a system it has the skill for, one melee Opener', () => {
     const s: any = { ...sheetOf({ archetype: 'sharpshooter' }) }; expect(validateSheet(s)).toBeNull();
-    const melee = (s.skills.raw_power || s.skills.athletics) ? 2 : 0, ranged = s.skills.dexterity ? 2 : 0;
+    const melee = (s.skills.raw_power || s.skills.dexterity) ? 2 : 0, ranged = s.skills.dexterity ? 2 : 0; // the alphas (item 953)
     expect(phys.startingTechniqueSlots(s)).toEqual({ melee, ranged });
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['bash', 'sweep'], ranged: [] } })).toMatch(/Opener/);
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'sweep'], ranged: [] } })).toBeNull();
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'cut'], ranged: [] } })).toMatch(/can't be picked/);
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['bash', 'sweep'], ranged: [] } })).toMatch(/Opener/);
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['lunge', 'sweep'], ranged: [] } })).toBeNull();
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['lunge', 'cut'], ranged: [] } })).toMatch(/can't be picked/);
   });
 });
 
@@ -316,5 +316,48 @@ describe('review fixes, the core', () => {
     expect(ids).toEqual(expect.arrayContaining(['lunge', 'cut', 'coup', 'riposte']));
     expect(phys.previewTechnique(f.cb, f.pc, 'lunge', { targetId: f.foe.id }, f.g).ok).toBe(true);
     expect(phys.physView(f.cb, f.pc, 'pc', f.g).momentum?.max).toBe(3);
+  });
+});
+
+describe('review fixes, beside what already exists', () => {
+  it('the old Overwatch is refused while Pressed, before any AP is paid; a held melee strike is not a held shot', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle' }], [{ at: 'L5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc); f.press(f.pc, 2, f.foe);
+    expect(() => f.act({ type: 'combat/overwatch', unitId: f.pc.id, mode: 'shot' })).toThrow(/Pressed/); expect(f.pc.ap).toBe(6);
+    const g = physFight([{ weapon: 'sabre' }], [{ at: 'L5', tier: 'elite' }]); g.put(g.pc, 'C5'); g.turn(g.pc);
+    g.act({ type: 'combat/overwatch', unitId: g.pc.id, mode: 'melee' }); g.press(g.pc, 2, g.foe); expect(g.pc.overwatch).toBe('melee');
+  });
+  it('what knocks out a held shot knocks out a held Watch too (a grapple)', async () => {
+    const { applyCond } = await import('../src');
+    const f = physFight([{ weapon: 'ccec_marksman_rifle' }], [{ at: 'L5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
+    expect(f.tech('overwatch')).toBeNull(); expect(f.pc.watch?.id).toBe('overwatch');
+    f.bound(() => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'grappled', 1, 'body', { skipSave: true })); expect(f.pc.watch).toBeUndefined();
+    expect(f.fx('watch_end').some((e: any) => e.why === 'grappled')).toBe(true);
+  });
+  it('a technique\'s AP goes through the items that price an attack (Southern Fist: +1 with a weapon)', () => {
+    const f = physFight([{ weapon: 'sabre', traits: ['southern_fist'] }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const ap0 = f.pc.ap; rig({ hit: true, die: 12 });
+    expect(f.pv('cut', { targetId: f.foe.id }).ap).toBe(3); expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'cut')?.ap).toBe(3);
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.pc.ap).toBe(ap0 - 3);
+  });
+  it('a technique\'s free step doesn\'t use up a first-move perk (Glass Runner)', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['lunge'], traits: ['glass_runner'] }], [{ at: 'E5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.pc);
+    rig({ hit: true, die: 12 }); expect(f.tech('lunge', { targetId: f.foe.id })).toBeNull(); expect(f.pc.pos).toBe(f.tile('D5'));
+    expect(f.cb.log.some((l) => /Glass Runner/.test(l))).toBe(false);
+  });
+  it('a Proving Ground rebuild keeps both meters and what was learned shows at once', async () => {
+    const { newGame, apply } = await import('../src');
+    let g = newGame('PHYSPG', { id: 'host', name: 'Host' }, 'seed-phys');
+    g = apply(g, { type: 'sandbox/start' }, 'host');
+    const c = Object.values(g.characters).find((x) => x.owner === 'host')!;
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'sabre', equip: true }, 'host');
+    g = apply(g, { type: 'sandbox/fight' }, 'host');
+    const pc = () => g.combat!.units.find((u) => u.charId === c.id)!;
+    g = apply(g, { type: 'sandbox/meter', unitId: pc().id, momentum: 2, pressure: 2 }, 'host');
+    expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    g = apply(g, { type: 'sandbox/technique', charId: c.id, id: 'coup' }, 'host'); // any tool rebuilds the fighter from its character
+    expect(pc().resMax?.momentum).toBe(3); expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    expect(phys.techniquePad(g.combat!, pc(), 'main', g).flatMap((x) => x.entries.map((e) => e.id))).toContain('coup');
+    g = apply(g, { type: 'sandbox/drill', charId: c.id, weaponId: 'sabre', amount: 300 }, 'host');
+    expect(phys.physOf(g.characters[c.id]).known).toContain('riposte'); // the sabre's signature at mark I
   });
 });

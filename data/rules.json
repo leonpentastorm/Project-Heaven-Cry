@@ -333,7 +333,7 @@
       "sigil": "1 + 0.1*(intelligence-1) + 0.1*brain_power",
       "soul": "1 + 0.05*(determination-1) + 0.1*will_power",
       "healing_given": "1 + 0.1*(insight-1) + 0.1*camaraderie",
-      "critical": "2 + 0.1*(perception-1) + 0.05*athletics",
+      "critical": "2 + 0.1*(perception-1) + 0.05*dexterity",
       "ambush": "1.5 + 0.05*ingenuity",
       "blessing_power": "1 + 0.1*faith"
     },
@@ -652,7 +652,7 @@
         "thrown": "dexterity",
         "heavy_melee": "raw_power",
         "unarmed": "raw_power",
-        "light_melee": "athletics",
+        "light_melee": "dexterity",
         "sigil_strike": "brain_power",
         "soul_strike": "will_power"
       },
@@ -867,7 +867,7 @@
       "heavy_ap": 3,
       "heavy_skill": "raw_power",
       "light_ap": 2,
-      "light_skill": "athletics"
+      "light_skill": "dexterity"
     },
     "ammo_types": [
       {
