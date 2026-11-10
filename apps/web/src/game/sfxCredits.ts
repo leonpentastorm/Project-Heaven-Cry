@@ -16,6 +16,7 @@ export const SFX_CREDITS: Credit[] = [
   { what: '100 CC0 SFX (explosion)', who: 'rubberduck', licence: 'CC0', url: 'https://opengameart.org/content/100-cc0-sfx' },
   { what: 'Impact Sounds (hits, falls, footsteps, metal, glass)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/impact-sounds' },
   { what: 'Impact Sounds (the lock-in stamp: a heavy wood, a soft and a punch impact layered into one thump)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/impact-sounds' },
+  { what: 'Impact Sounds: impactMetal_light (the brass tinkle of spent casings under a Mag Dump or a Rake; pitched up, trimmed, mono)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/impact-sounds' },
   { what: 'Sci-Fi Sounds (explosions, Sigil zaps, cores, Soul swells, vents)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/sci-fi-sounds' },
   { what: 'RPG Audio (doors, knife, chop, metal click)', who: 'Kenney (www.kenney.nl)', licence: 'CC0', url: 'https://kenney.nl/assets/rpg-audio' },
   // Sigil rules 1.4: element impacts, field loops and word cues (public/sfx/cb/el_*.ogg and sg_*.ogg; trimmed, mono, levelled).

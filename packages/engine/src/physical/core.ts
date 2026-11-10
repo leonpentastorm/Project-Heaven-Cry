@@ -33,9 +33,11 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
   const rng: Rng | undefined = ctx.rng || boundGame()?.rng; if (!rng) return;
   for (const u of [...cb.units]) {
     if (!alive(u)) continue;
-    const w = (u as any).watch as { id: string; hand: 'main' | 'off'; tile?: string; allyId?: string; targetId?: string } | undefined;
-    // unheld: a unit in the middle of a technique used with a grenade reacts with the weapon really in its hand
-    if (w && TECHNIQUE[w.id]) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) unheld(u, () => fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId }, rng, false))); }
+    const w = (u as any).watch as HeldWatch | undefined;
+    // unheld: a unit in the middle of a technique used with a grenade reacts with the weapon really in its hand. The line
+    // chosen when it was held, every named ally (Cover Me's Auto names two) and the arrow it names go with it; a step no
+    // held Watch hears (ctx.noWatch: Shift) wakes none.
+    if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) unheld(u, () => fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId, ...(w.allyIds ? { allyIds: w.allyIds } : {}), ...(w.line ? { line: w.line } : {}), ...(w.ammo ? { ammo: w.ammo } : {}) }, rng, false))); }
     for (const h of Object.values(HANDLERS)) {
       const def = TECHNIQUE[h.id], fn = h.react?.[name]; if (!fn || def?.group !== 'answer' || !alive(u)) continue;
       const hand = hasUsable(u, 'main', h.id) ? 'main' : hasUsable(u, 'off', h.id) ? 'off' : null; if (!hand) continue;
@@ -94,6 +96,15 @@ export function holdMomentum(t: Tech): void { if (!t.preview) t.u.attackedTurn =
 
 /** Scratch notes for one use of a technique (never saved). */
 const scratch = (t: Tech): Record<string, any> => (t as any)._s || ((t as any)._s = {});
+/** For an effects event about a unit the other side can't see now (a Hidden holder, one in the fog): `only` keeps the
+ * event to the unit's own side (viewFor drops it for the other side), as watch_set has it. Presentation only. */
+export const ownSideOnly = (cb: Combat, u: Unit): { only?: string } => (sideSees(cb, u.side === 'pc' ? 'foe' : 'pc', u) ? {} : { only: u.side });
+/** The property line that applies with this weapon, as the pad shows it (the player's choice when it is held). */
+function lineProp(def: TechDef, weaponId: string, choice: string | undefined, u: Unit): string | null {
+  const m = linesFor(def, weaponId, choice, u).main; if (!m) return null;
+  const props = weaponProps(weaponId);
+  return (choice && m.props.includes(choice) && props.includes(choice) ? choice : m.props.find((p) => props.includes(p))) || m.props[0] || null;
+}
 
 // ---------- the Tech a handler gets ----------
 const lineMatches = (props: string[], l: TechLine) => (l.match === 'all' ? l.props.every((p) => props.includes(p)) : l.props.some((p) => props.includes(p)));
@@ -181,8 +192,8 @@ const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' |
 function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null {
   const hand: 'main' | 'off' = args.hand === 'off' && u.offWeapon ? 'off' : 'main', weaponId = hand === 'off' ? u.offWeapon! : u.weapon;
   const props = weaponProps(weaponId);
-  if (weaponSystem(weaponId) !== def.system) return def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.';
   const wield = (args as any)._w as 'stowed' | 'throwable' | undefined;
+  if (weaponSystem(weaponId) !== def.system) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
   if (def.needs.stowed && wield !== 'stowed') return 'Pick the weapon to draw.';
   if (!hasUsable(u, hand, def.id, wield)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
   const bad = (def.not_with || []).find((p) => props.includes(p)); if (bad) return 'Not available with ' + (/^[aeiou]/.test(bad) ? 'an ' : 'a ') + bad + ' weapon.';
@@ -203,8 +214,8 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
-    if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : 'Empty: reload first.';
-    if (def.needs.last_round && have !== 1) return 'Only with the last round in the weapon.';
+    if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
+    if (def.needs.last_round && have !== 1) return props.includes('drawn') ? 'Only with the last arrow in the quiver.' : 'Only with the last round in the weapon.'; // a Drawn weapon's u.ammo is its quiver's total (ranged/quiver.ts)
     if (need > 0 && u.jammed && hand === 'main') return 'Jammed: clear it first.';
   }
   return null;
@@ -229,6 +240,24 @@ function inHand<T>(t: Tech, fn: () => T): T {
   if (typeof pts === 'number') u.attack = mod(pts);
   try { return fn(); } finally { if (!t.preview) u.offAmmo = u.ammo; const heat = u.heat; Object.assign(u, keep); if (!t.preview) u.heat = heat; }
 }
+/** The rounds a technique uses (the ranged lane: Load Special's chambered round, sets.ts; the quiver's arrows, quiver.ts).
+ * pick: the ammo type this strike fires (null type: standard), or null to leave it alone. It runs in previews too,
+ * where it changes no game state. The first registration that picks a round wins. fromMag false: the round doesn't come out of
+ * the magazine (the strike's round is given back; a preview doesn't count it). fired: a real attack used the round.
+ * done: after every strike it picked for, preview or refusal included, once u.ammoType is put back. spent: after
+ * spendRounds takes n rounds out of the weapon (never in a preview), for every registration. */
+export interface StrikeRound {
+  pick?(t: Tech, tgt: Unit): { type: string | null; fromMag?: boolean } | null;
+  fired?(t: Tech, tgt: Unit, type: string | null): void;
+  done?(t: Tech, tgt: Unit): void;
+  spent?(t: Tech, n: number): void;
+}
+const ROUNDS: StrikeRound[] = [];
+export const strikeRound = (r: StrikeRound) => { ROUNDS.push(r); };
+function roundFor(t: Tech, tgt: Unit): { type: string | null; fromMag?: boolean; by: StrikeRound } | null {
+  for (const r of ROUNDS) { const p = r.pick?.(t, tgt); if (p) return { ...p, by: r }; }
+  return null;
+}
 /** One attack. Melee hits add Momentum (and the variety bonus) and ranged hits add Pressure by the rules: handlers
  * don't. In a preview it records the roll's chance and damage and returns hit: false. */
 export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
@@ -242,41 +271,49 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
   try {
     return inHand(t, () => {
       const offTurn = active(t.cb) !== u; // a reaction: no Recoil from the shots of the user's own turn
-      const noRecoil = offTurn || !!o.volley, fires = mode !== 'melee' && mode !== 'thrown';
-      // A thrown weapon is aimed with Dexterity, whatever the weapon hits with (a unit with no sheet uses its own bonus).
-      const atk0 = u.attack; if (o.thrown && t.c) u.attack = mod((t.c.skills as any).dexterity || 0);
-      // In a preview nothing has been spent yet: the rolls this technique has already shown count as fired (rounds,
-      // Heat, and Recoil unless the technique is one volley), so each later roll's card is the roll it will be.
-      const n = t.preview && fires ? st.rolls || 0 : 0, keep = { ammo: u.ammo, heat: u.heat, shots: u.shotsThisTurn, jammed: u.jammed };
-      if (n) {
-        if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n;
-        // the earlier rolls reach the Heat limit: the gun jams and the later ones are never fired (the main hand: an off-hand gun's jam isn't kept)
-        if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
-      }
-      let pv: ReturnType<typeof previewAttack>;
-      try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil, ambush: !!o.ambush }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
-      if (pv.ok && fires) st.rolls = (st.rolls || 0) + 1;
-      if (t.preview && pv.ok && mode !== 'melee') (st.far ||= []).push(tgt.id); // a ranged or thrown roll: its hit gives Pressure (the card shows it)
-      if (t.preview || !pv.ok) { u.attack = atk0; if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && fires && t.w.magazine != null && !u.infiniteAmmo) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
-      const m0 = momentumOf(u), su = (u as any).setUp;
-      if (su && su.t === turnStamp(t.cb) && su.target === tgt.id && (!su.only || su.only.includes(t.def.id))) st.usedSetUp = true; // a mark for other techniques only is not spent by this one
-      st.struck = (st.struck || 0) + 1;
-      let r: ReturnType<typeof resolveAttack>;
-      // a volley's rounds are numbered and named, as the engine's own burst and full auto are (Fire Discipline, Spray and Pray)
-      // tech: the weapon's old on-hit grant stays with the plain attacks (the free techniques); ambush: the engine's own
-      const how = { ...(o.ambush ? { ambush: true } : {}), ...(t.def.free ? {} : { tech: t.def.id }) };
-      const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : 0, roll0 = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, noRecoil ? ({ noAp: true, vi, ...how } as any) : { free: true, ...how });
-      const roll = o.chain ? () => asChain(roll0) : roll0;
-      try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
-      if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
-      if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
-      if (t.def.system === 'melee') {
-        if (o.noMomentum) { if (u.res) u.res.momentum = m0; }
-        else if (r.hit) { ensureMomentum(u); if (o.thrown) resGain(u, 'momentum', 1); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); } // the engine adds the +1 for a melee hit; a thrown weapon's is added here
-        momentumFx(t.cb, u, m0);
-      }
-      // the unit the attack was really made against (Confused, a captive held as a shield, Duck and Roll): riders follow it
-      return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: act.real || tgt };
+      const noRecoil = offTurn || !!o.volley || !!o.noRecoil, fires = mode !== 'melee' && mode !== 'thrown';
+      // the round this strike fires (Load Special, the quiver): on the gun for the roll, put back after
+      const rd = fires ? roundFor(t, tgt) : null, type0 = u.ammoType; if (rd) u.ammoType = rd.type;
+      try {
+        // A thrown weapon is aimed with Dexterity, whatever the weapon hits with (a unit with no sheet uses its own bonus).
+        const atk0 = u.attack; if (o.thrown && t.c) u.attack = mod((t.c.skills as any).dexterity || 0);
+        // In a preview nothing has been spent yet: the rolls this technique has already shown count as fired (rounds,
+        // Heat, and Recoil unless the technique is one volley), so each later roll's card is the roll it will be.
+        const n = t.preview && fires ? st.rolls || 0 : 0, keep = { ammo: u.ammo, heat: u.heat, shots: u.shotsThisTurn, jammed: u.jammed };
+        if (n) {
+          if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n;
+          // the earlier rolls reach the Heat limit: the gun jams and the later ones are never fired (the main hand: an off-hand gun's jam isn't kept)
+          if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
+        }
+        let pv: ReturnType<typeof previewAttack>;
+        try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil, ambush: !!o.ambush }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
+        if (pv.ok && fires) st.rolls = (st.rolls || 0) + 1;
+        if (t.preview && pv.ok && mode !== 'melee') (st.far ||= []).push(tgt.id); // a ranged or thrown roll: its hit gives Pressure (the card shows it)
+        if (t.preview || !pv.ok) { u.attack = atk0; if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && fires && t.w.magazine != null && !u.infiniteAmmo && rd?.fromMag !== false) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
+        const m0 = momentumOf(u), su = (u as any).setUp;
+        if (su && su.t === turnStamp(t.cb) && su.target === tgt.id && (!su.only || su.only.includes(t.def.id))) st.usedSetUp = true; // a mark for other techniques only is not spent by this one
+        st.struck = (st.struck || 0) + 1;
+        let r: ReturnType<typeof resolveAttack>;
+        // a volley's rounds are numbered and named, as the engine's own burst and full auto are (Fire Discipline, Spray and Pray)
+        // (o.vi: a handler that runs its own volley numbers it; quiet: a Hidden user stays Hidden; noWear: a later roll of one attack action)
+        const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : o.vi ?? 0, ro: any = { ...(noRecoil ? { noAp: true } : { free: true }), vi, ...(o.quiet ? { quiet: true } : {}), ...(o.noWear ? { noWear: true } : {}),
+          // tech: the weapon's old on-hit grant stays with the plain attacks (the free techniques); ambush: the engine's own
+          ...(o.ambush ? { ambush: true } : {}), ...(t.def.free ? {} : { tech: t.def.id }) };
+        // the shot's effects event says which technique fired it and its place among this use's rolls (presentation only)
+        ro.fx = { tech: t.def.id, vi: st.struck - 1 };
+        const roll0 = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, ro), roll = o.chain ? () => asChain(roll0) : roll0;
+        try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
+        if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
+        if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
+        if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
+        if (t.def.system === 'melee') {
+          if (o.noMomentum) { if (u.res) u.res.momentum = m0; }
+          else if (r.hit) { ensureMomentum(u); if (o.thrown) resGain(u, 'momentum', 1); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); } // the engine adds the +1 for a melee hit; a thrown weapon's is added here
+          momentumFx(t.cb, u, m0);
+        }
+        // the unit the attack was really made against (Confused, a captive held as a shield, Duck and Roll): riders follow it
+        return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: act.real || tgt };
+      } finally { if (rd) { u.ammoType = type0; rd.by.done?.(t, tgt); } }
     });
   } finally { ACTIVE.pop(); }
 }
@@ -343,6 +380,8 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
   const r = d20(t.rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
   t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + skills.join(' or ') + ' ' + (r + bonus) + ' vs ' + tn + ').');
+  // the save for the screen (HOLDS / STEADY); kept to the target's side when the user's side can't see it
+  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
 }
 /** Put a condition on a target with the technique as its source. No save unless opts.save. True: it took. */
@@ -382,7 +421,7 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
   // its own turn by a Watch, this turn's end is the first tick).
   if (ranged) (target as any).stopped = active(t.cb) === target ? 2 : 1;
   if (!took.length) return true; // only the AP loss landed
-  emitFx(t.cb, 'stopped', { unit: target.id, how: took.join('+'), by: t.u.id });
+  emitFx(t.cb, 'stopped', { unit: target.id, how: took.join('+'), by: t.u.id, ...(opts.apLoss ? { apLoss: opts.apLoss } : {}), ...(opts.untilAp && took.includes('pinned') ? { untilAp: opts.untilAp } : {}) });
   t.cb.log.push(target.name + ' is ' + took.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
   return true;
 }
@@ -426,7 +465,9 @@ export function spendRounds(t: Tech, n: number): boolean {
   if (t.u.infiniteAmmo || t.w.magazine == null || n <= 0) return true;
   const have = t.hand === 'off' ? t.u.offAmmo ?? 0 : t.u.ammo; if (have < n) { t.note('Needs ' + n + ' rounds, ' + have + ' loaded.'); return false; }
   if (t.preview) { t.pv.rounds += n; return true; }
-  if (t.hand === 'off') t.u.offAmmo = have - n; else t.u.ammo = have - n; return true;
+  if (t.hand === 'off') t.u.offAmmo = have - n; else t.u.ammo = have - n;
+  for (const r of ROUNDS) r.spent?.(t, n);
+  return true;
 }
 /** Extra Pressure from a technique (the ordinary +1 for a ranged hit is automatic). Returns what landed. */
 export function addPressure(t: Tech, target: Unit, n: number, why: string, opts: { hidden?: boolean } = {}): number {
@@ -577,28 +618,28 @@ export function stepUser(t: Tech, route: string[], opts: { /** move this unit, n
 export function holdWatch(t: Tech, spec: WatchSpec): void {
   if (t.preview) { t.note('Held until your next turn. Fires as your reaction when ' + (t.def.trigger || 'its trigger happens') + '.'); if (spec.tiles || spec.tile) t.pv.area = spec.tiles || [spec.tile!]; return; }
   endWatch(t.cb, t.u, 'replaced'); t.u.overwatch = null;
-  const w: HeldWatch = { id: t.def.id, hand: t.hand, ap: t.pv.ap, r: t.cb.round, ...spec };
+  const w: HeldWatch = { id: t.def.id, hand: t.hand, ap: t.pv.ap, r: t.cb.round, ...(t.args.line ? { line: t.args.line } : {}), ...(t.args.ammo ? { ammo: t.args.ammo } : {}), ...spec };
   (t.u as any).watch = w;
   // a held shot the other side can't see being set is its holder's side's to know (viewFor drops an event marked `only`)
   emitFx(t.cb, 'watch_set', { unit: t.u.id, at: t.u.pos, id: w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), allyId: w.allyId || null, targetId: w.targetId || null,
-    ...(sideSees(t.cb, t.u.side === 'pc' ? 'foe' : 'pc', t.u) ? {} : { only: t.u.side }) });
+    ...ownSideOnly(t.cb, t.u) });
 }
 /** Drop a held Watch (the user's next turn, Pressed, smoke, a flashbang). */
 export function endWatch(cb: Combat, u: Unit, why: string): void {
   const w = (u as any).watch as HeldWatch | undefined; if (!w) return;
-  delete (u as any).watch; emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why });
+  delete (u as any).watch; emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why, ...ownSideOnly(cb, u) });
   if (why !== 'replaced' && why !== 'fired' && why !== 'turn') cb.log.push(u.name + ' loses the held shot (' + why + ').');
 }
 /** A held Watch's trigger has happened: spend the reaction and run fn (the strikes). False when the user can't react
  * now (Pressed, no reaction left, an item cancels it): the Watch stays held. kind 'overwatch' keeps the old Overwatch's
  * reaction window and event, so every perk written for it still applies. */
-export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind: 'watch' | 'overwatch' = 'watch'): boolean {
+export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind: 'watch' | 'overwatch' = 'watch', fx: Record<string, any> = {}): boolean {
   const u = t.u, cb = t.cb, w = (u as any).watch as HeldWatch | undefined;
   if (t.preview || !w || w.id !== t.def.id || !alive(u) || isPressed(u) || !canReact(cb, u)) return false;
   const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: target, kind, id: w.id, cancel: false, at: target.pos, cb, rng: t.rng }); if (rw.cancel) return false;
   ctx?.flush?.(); // the mover's walk so far plays before the shot
   useReaction(cb, u); delete (u as any).watch;
-  emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot' });
+  emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot', ...fx });
   cb.log.push(u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
   fn(); checkOver(cb);
   return true;
@@ -676,6 +717,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (wi?.kind === 'stowed') { // check it as if drawn, then draw it for real (free: the technique's AP pays), then use it
     const pv0 = previewTechnique(cb, u, id, args); if (!pv0.ok) return pv0.why || 'Not now.';
     const e = GEAR ? GEAR.draw(cb, u, wi.item) : 'Nothing to draw it with here.'; if (e) return e;
+    emitFx(cb, 'swap_in', { unit: u.id, at: u.pos, weapon: wi.weaponId, from: 'pack', tech: id, ...ownSideOnly(cb, u) });
     return useTechnique(cb, u, id, { ...args, item: undefined, hand: 'main', _w: 'stowed' } as TechArgs, rng);
   }
   if (wi?.kind === 'throwable') return holding(u, wi, () => useTechnique(cb, u, id, { ...args, hand: 'main', _w: 'throwable' } as TechArgs, rng));
@@ -685,7 +727,10 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   ensureMomentum(u);
   u.ap -= ap;
   if (def.group === 'take' && t.tgt) showPressure(cb, t.tgt);
-  const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos });
+  // line, opt, ammo (and a handler's own fields: Crossfire's ally) tell the screen which version of the technique this is
+  const more = p.h!.fx?.(t) || {};
+  const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos,
+    line: lineProp(def, t.weaponId, args.line, u), opt: args.opt ?? null, ammo: args.ammo ?? (t.wield === 'throwable' && args.item != null ? String(args.item) : null), weapon: t.weaponId, ...more });
   const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
   const err = p.h!.run(t);
   if (err) { // a handler must refuse before it changes anything: the cost comes back

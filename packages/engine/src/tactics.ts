@@ -210,6 +210,9 @@ const tilesWithin = (cb: Combat, at: string, r: number) => { const [x0, y0] = xy
 export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item: string, radius = radiusOf(WEAPON[item])): string {
   const w = WEAPON[item], who = cb.units.filter((v) => !v.dead && !v.surrendered && dist(v.pos, tile) <= radius);
   emitFx(cb, 'explode', { at: tile, radius, what: item });
+  // 'blast_landed' {by, tile, item, radius, who}: a thrown item goes off (rules 1.12: smoke, a flashbang or the scrambler
+  // ends the held Watch and the Bead of everyone it lands on: physical/ranged/thrown.ts)
+  emit(cb, 'blast_landed', { by, tile, item, radius, who, cb, rng });
   let out = '';
   switch (item) {
     case 'smoke_grenade': {

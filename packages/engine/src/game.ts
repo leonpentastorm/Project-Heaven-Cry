@@ -1384,6 +1384,7 @@ function combatAction(g: GameState, a: Action, by: string) {
       resolveAttack(cb!, g.rng, u, t!, mode, who); break;
     }
     case 'combat/reload': {
+      refuseHook(cb!, u, a); // an item or rule may refuse it (Physical 2.0: a Drawn weapon's quiver is filled before the fight)
       const ap0 = u.ap; err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical });
       if (!err) faithReloaded(cb!, u, ap0 - u.ap); // the Quartermaster's intervention (rules 1.6.3, item 742)
       break;
@@ -1694,7 +1695,7 @@ function finishCombat(g: GameState) {
 
 /** The one Narrator call a fight costs gets this: the result, the moments that mattered, who's left where, and anything said mid-fight. */
 export function combatReport(cb: Combat): string {
-  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns| drops: /;
+  const key = /CRITICAL|INJURY|Downed|down for good|dies|stabilises|breaks? into rubble|stims|analyzes|picks up|Fan|Overcharge|evokes|releases|MANA SHORT|OVERLOAD|stands as|The air turns| drops: /;
   const moments = cb.log.filter((l) => key.test(l)).slice(-14);
   const where = cb.units.map((u) => u.name + (u.side === 'foe' ? ' (enemy)' : '') + ': ' + (u.dead ? 'dead' : u.surrendered ? (u.subdued ? 'subdued' : 'surrendered') + ' (a prisoner) at ' + refOf(u.pos) : (u.downed ? 'Downed, ' : '') + u.hp + '/' + u.maxHp + ' HP at ' + refOf(u.pos))
     + ((u.injuries || []).length ? ', injured ' + u.injuries!.map((i) => (i.side ? i.side + ' ' : '') + i.loc).join(' and ') : ''));

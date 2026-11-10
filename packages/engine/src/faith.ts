@@ -777,7 +777,7 @@ function healLine(cb: Combat, by: Unit | null, t: Unit, n: number): string {
 /** Reload a fighter's weapon at no AP (Resupply). */
 function freeReload(cb: Combat, u: Unit): string {
   const w = WEAPON[u.weapon]; if (!w || w.magazine == null) return ': nothing to reload';
-  const was = u.ap; u.ap = 99; const err = reload(cb, u); u.ap = was;
+  const was = u.ap; u.ap = 99; const err = reload(cb, u, { free: true }); u.ap = was;
   return err ? ': ' + err : ': ' + u.name + ' reloads, free';
 }
 

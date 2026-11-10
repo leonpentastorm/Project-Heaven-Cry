@@ -52,6 +52,11 @@ export interface StrikeOpts {
   /** flat to-hit, shown under the technique's name */ extra?: number;
   critMin?: number; /** a roll that hits is a critical */ critOnHit?: boolean; ignoreArmour?: number | true; ignoreCover?: boolean; reach?: number;
   label?: string; noMomentum?: boolean; noPressure?: boolean;
+  /** a Hidden user stays Hidden after this attack (Dead to Rights, Silent) */ quiet?: boolean;
+  /** no Recoil on this roll: a roll after the first of one volley (rules 1.12: a volley's own penalty replaces Recoil) */ noRecoil?: boolean;
+  /** this roll doesn't wear the weapon: a roll after the first of one attack action ("an attack action wears 1") */ noWear?: boolean;
+  /** the roll's place in its volley (0 the first), for the hooks that read ctx.vi, when the handler runs its own volley
+   * (with `volley` the core numbers the rolls itself) */ vi?: number;
   /** the held weapon is thrown: a ranged attack at throwing range (line of sight, cover), aimed with Dexterity; the hit
    * gives Pressure as any ranged hit does, and Momentum when the technique is a melee one. The handler then takes the
    * weapon out of the hand (loseWeapon). */
@@ -71,7 +76,7 @@ export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: b
   /** the attack was answered before it was made and never came (not a miss): return at once, with no riders */ cancelled?: boolean }
 export type WatchTrigger = 'moves' | 'enters_tile' | 'attacks_ally' | 'acts';
 export interface WatchSpec { trigger: WatchTrigger; tile?: string; tiles?: string[]; allyId?: string; allyIds?: string[]; targetId?: string }
-export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number }
+export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number; /** the property line chosen when it was held */ line?: string; /** the arrow it names (a quiver) */ ammo?: string }
 
 /** What a handler is given. */
 export interface Tech {
@@ -101,6 +106,8 @@ export interface TechHandler {
   react?: Partial<Record<HookName, (ctx: any, t: Tech) => void>>;
   /** enemy AI: how much it wants this against t.tgt now (0: never; a plain attack scores 5). Pure: no dice, no state. */
   ai?(t: Tech): number | { score: number; args: TechArgs };
+  /** extra fields for the technique's effects event (presentation only; never changes anything) */
+  fx?(t: Tech): Record<string, any> | null;
 }
 export interface PadEntry {
   id: string; name: string; group: TechGroup; ap: number; rounds: number | 'all'; ok: boolean; why: string | null;

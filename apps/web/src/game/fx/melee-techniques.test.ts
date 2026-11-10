@@ -5,14 +5,14 @@
 // follow the saved state.
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf } from '@engine';
-import { setLayer, centre } from './dom';
+import { setLayer, centre, resetFloats } from './dom';
 import * as sfxMod from '../sfx';
 import { setCombatSpeed, setInBattle } from '../combatSpeed';
 import { meleeTechHandlers, meleeTechBeat, quickStrikes, leadMoves, meleePrepass, meleeMarksOf, syncMeleeMarks, clearMeleeMarks, meleeMarkCount, MELEE_BEAT_NORMAL, MELEE_BEAT_MAX, type MeleeKit } from './melee-techniques';
 import { physBeat } from './physical';
 
 function grid(w = 12, h = 10) {
-  document.body.innerHTML = '';
+  document.body.innerHTML = ''; resetFloats(); // a float of the same word from an earlier test is not "the same news"
   const root = document.createElement('div'); root.id = 'root'; const scr = document.createElement('div'); root.appendChild(scr); document.body.appendChild(root);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const b = document.createElement('button'); b.className = 'phc-tok'; b.setAttribute('aria-label', refOf(x + ',' + y) + ' · open');

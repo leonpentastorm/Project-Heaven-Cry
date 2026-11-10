@@ -9,6 +9,8 @@
 import { isPressed } from '../physical/pressure';
 import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
+import { weaponProps, ensurePhys } from '../physical/data';
+import { loadQuiverWith } from '../physical/ranged/quiver';
 import { strikeFromWorld, apLeft } from '../game';
 import type { Combat, Unit } from '../combat';
 import {
@@ -170,6 +172,9 @@ register({
 // (rules.json ammo_types: AP ignores armour at ×0.8, hollow-point ×1.3 with armour doubled, incendiary Burning at ×0.9).
 const SPECIAL = [['armor_piercing', 'armour-piercing'], ['hollow_point', 'hollow-point'], ['incendiary', 'incendiary']] as const;
 export const QUIVER = 12;
+/** A Drawn weapon (a bow) has a quiver, and a quiver can't be refilled in a fight (rules 1.12, Weapons 10). */
+const isDrawn = (wid: string | null | undefined) => !!wid && weaponProps(wid).includes('drawn');
+const QUIVER_WHY = 'A quiver is filled before the fight.';
 const ammoOk = (wid: string): string | null => { const w = WEAPON[wid]; if (!w || isMelee(w)) return 'Your weapon takes no rounds.'; if (w.magazine == null || /flame|launcher|thrown/.test(w.category) || !w.ammo) return 'No special rounds for this weapon.'; return null; };
 register({
   id: 'marksman.special_ammo', claims: 'all',
@@ -177,7 +182,7 @@ register({
     ...SPECIAL.map(([id, name]): ActionDef => ({
       id: 'load_' + id, label: 'Load ' + name, scope: ['combat'], target: 'none', ap: (h) => (h.u ? reloadAp(h.u) : 2),
       text: 'Reload with your ' + name + ' ' + 'magazine (restocked at rest).',
-      available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
+      available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon) || (isDrawn(h.u.weapon) ? QUIVER_WHY : null); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
       run: (h) => {
         const u = h.u!, cb = h.cb!, w = WEAPON[u.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
         // The magazine in the gun goes back to the pouch (a partly spent standard one keeps its rounds; a spent special one is dropped).
@@ -193,12 +198,18 @@ register({
     ...SPECIAL.map(([id, name]): ActionDef => ({
       id: 'story_' + id, label: 'Load ' + name, scope: ['story'], target: 'none', ap: 0,
       available: (h) => { if (!h.c) return false; const e = ammoOk(h.c.weapon); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
-      run: (h) => { const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id); c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, QUIVER) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.'); },
+      run: (h) => {
+        const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
+        // A Drawn weapon's arrows are its quiver (Physical 2.0, rules 1.12: physical/ranged/quiver.ts): what it held goes
+        // back to the pack, and the quiver is the special arrows, typed (review fix: c.loadedType alone was lost).
+        if (isDrawn(c.weapon)) { loadQuiverWith(c, c.weapon, {}); c.loaded = Math.min(w.magazine!, QUIVER); c.loadedType = null; ensurePhys(c).quiver[c.weapon] = { [id]: c.loaded }; postStory(h, c.name + ' fills the quiver with ' + name + ' arrows.'); return; }
+        c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, QUIVER) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.');
+      },
     })),
   ],
   on: {
     // A normal reload after the special magazine: standard rounds again.
-    reload: (ctx, h) => { if (ctx.u !== h.u || ctx.special) return; const u = h.u!, w = WEAPON[u.weapon]; if (!u.ammoType || !stateOf(h).special) return;
+    reload: (ctx, h) => { if (ctx.u !== h.u || ctx.special || ctx.hand === 'off') return; /* the off-hand gun's reload leaves the main gun's rounds alone */ const u = h.u!, w = WEAPON[u.weapon]; if (!u.ammoType || !stateOf(h).special) return;
       if (w?.reload === 'loose' ? (u.loose || 0) > 0 : (u.mags || []).some((n) => n > 0)) { u.ammoType = null; stateOf(h).special = null; } },
   },
   brief: () => null,

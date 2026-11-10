@@ -59,7 +59,7 @@ function runningReload(h: Holder, u: Unit, cb: Combat, wantReload: boolean, want
     const e = free(u, () => clearJam(cb, u)); if (e) uses(h).refund('per_turn', h.key + RR_CLEAR); else did.push('clears the jam');
   }
   if (wantReload && canReloadNow(u) && uses(h).take('per_turn', 1, h.key + RR_RELOAD)) {
-    const e = free(u, () => reload(cb, u)); if (e) { uses(h).refund('per_turn', h.key + RR_RELOAD); say(cb, '(Running Reload: ' + e + ')'); } else did.push('reloads');
+    const e = free(u, () => reload(cb, u, { free: true })); if (e) { uses(h).refund('per_turn', h.key + RR_RELOAD); say(cb, '(Running Reload: ' + e + ')'); } else did.push('reloads');
   }
   if (did.length) say(cb, u.name + ' ' + did.join(' and ') + ' on the move (Running Reload: no extra AP).');
   return did.join(', ');
@@ -565,7 +565,7 @@ register({
       const b = ctx.att?.ps?.[BLESS]; if (!b || !b.loaded || ctx.melee || ctx.spell || ctx._holy || !holyFoe(ctx.tgt)) return;
       ctx.vs.push({ v: Math.round((b.mult - 1) * 100) / 100, label: 'Holy Ordnance' }); ctx._holy = true;
     },
-    reload: (ctx) => { const b = ctx.u?.ps?.[BLESS]; if (!b) return; b.loaded = false; if (b.spare > 0) { b.spare--; b.loaded = true; } if (!b.loaded && !b.spare) delete ctx.u.ps[BLESS]; },
+    reload: (ctx) => { const b = ctx.u?.ps?.[BLESS]; if (!b || ctx.hand === 'off') return; /* the blessed magazines are the main gun's */ b.loaded = false; if (b.spare > 0) { b.spare--; b.loaded = true; } if (!b.loaded && !b.spare) delete ctx.u.ps[BLESS]; },
     combat_end: (ctx, h) => {
       const g = h.g, cb = h.cb; if (!g || !cb) return;
       for (const v of cb.units) { const b = v.ps?.[BLESS], c = v.charId ? g.characters?.[v.charId] : null; if (b && c && (b.loaded || b.spare)) charState(c).holyBless = { mult: b.mult, mags: (b.loaded ? 1 : 0) + b.spare }; if (b) delete v.ps![BLESS]; }

@@ -119,25 +119,71 @@ export function clampCentre(x: number, w: number, lo: number, hi: number): numbe
   if (hi - lo <= w) return (lo + hi) / 2;
   return Math.max(lo + w / 2, Math.min(hi - w / 2, x));
 }
-/** Floating text over a point: damage numbers, MISS, a condition. */
-export function floatText(text: string, p: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean } = {}) {
+// ---------- floating words that never pile up ----------
+// Every float on the layer is kept here while it lives, so a new one never lands on top of another: the same word on
+// the same spot within a moment is the same news said twice (a condition and the stop that caused it) and shows once;
+// anything else that would overlap a float still on screen moves down a line (the older one is rising away), so three
+// rolls' damage, MISS over a number, or BROKEN on three wall tiles in a row all read. Pure parts exported (tests).
+export interface FloatBox { l: number; r: number; y: number; h: number; t0: number; ms: number; rise: number; text: string }
+const floats: FloatBox[] = [];
+/** How far a float has risen (px, up is negative) a fraction f of the way through its life (the keyframes below). */
+export function riseAt(f: number, rise: number): number {
+  if (f <= 0) return 6;
+  if (f < 0.15) return 6 - 10 * (f / 0.15);
+  if (f < 0.7) return -4 - (rise * 0.62 - 4) * ((f - 0.15) / 0.55);
+  return -rise * 0.62 - rise * 0.38 * Math.min(1, (f - 0.7) / 0.3);
+}
+/** Is this word one already showing on the same spot (a word, not a number: two hits of −23 are two hits)? */
+export function sameNews(list: FloatBox[], text: string, x: number, y: number, s: number, now: number): boolean {
+  if (/\d/.test(text)) return false;
+  return list.some((b) => b.text === text && now - b.t0 < 700 && Math.abs((b.l + b.r) / 2 - x) < s * 0.6 && Math.abs(b.y - y) < s * 0.6);
+}
+/** The vertical shift (px, 0 or down a line or more) that keeps a new float of half-width hw, height h at (x, y) clear
+ *  of every float still showing (where each is now, as it rises); up a line as a last resort. */
+export function clearShift(list: FloatBox[], x: number, y: number, hw: number, h: number, now: number): number {
+  const live = list.filter((b) => now - b.t0 < b.ms * 0.85);
+  const hits = (dy: number) => live.some((b) => {
+    if (b.r < x - hw + 2 || b.l > x + hw - 2) return false;
+    const by = b.y + riseAt((now - b.t0) / b.ms, b.rise);
+    return Math.abs(by - (y + dy + riseAt(0, 0))) < (b.h + h) / 2 - 1; // the new one starts where every float starts
+  });
+  for (const k of [0, 1, 2, 3, 4, -1, -2]) { const dy = k * (h + 1); if (!hits(dy)) return dy; }
+  return 0;
+}
+/** Floating text over a point: damage numbers, MISS, a condition. rise: how far it drifts up over its life (in tiles;
+ *  0.5 by default, so it fades before it reaches the unit in the tile above). */
+export function floatText(text: string, p: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean; rise?: number } = {}) {
   const run = () => {
     const t = document.createElement('div'), fs = o.big ? Math.round(p.s * 0.62) : o.small ? Math.max(10, Math.round(p.s * 0.26)) : Math.round(p.s * 0.42);
-    t.textContent = text;
+    const ms = o.ms || (o.big ? 1300 : 1000), now = performance.now(), rise = p.s * (o.rise ?? 0.5), h = fs * 1.4;
+    for (let i = floats.length - 1; i >= 0; i--) if (now - floats[i].t0 > floats[i].ms * fxScale() + 50) floats.splice(i, 1);
+    const y0 = p.y - p.s * 0.35;
+    if (sameNews(floats, text, p.x, y0, p.s, now)) return;
+    const span = document.createElement('span');
+    span.textContent = text;
+    t.appendChild(span);
     t.style.cssText = "font-family:'Chakra Petch',sans-serif;font-weight:700;white-space:nowrap;text-align:center;line-height:1;letter-spacing:.04em;font-size:" + fs + 'px;color:' + color +
       ';text-shadow:0 0 3px #000,0 2px 0 #000,0 0 10px rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;width:100%;height:100%';
-    const ms = o.ms || (o.big ? 1300 : 1000), box = put(t, { x: p.x, y: p.y - p.s * 0.35 }, p.s * 3, fs * 1.4, ms);
+    const box = put(t, { x: p.x, y: y0 }, p.s * 3, h, ms);
     box.style.zIndex = '3';
     // A long float near an edge of the layer shifts inward, so its words are never cut off (the text is measured once
-    // it is on the layer; the box widens to fit it).
-    const room = layer?.clientWidth || (typeof innerWidth === 'number' ? innerWidth : 0), need = Math.max(p.s * 3, (t.scrollWidth || 0) + 8);
-    if (room > 0) { box.style.width = need + 'px'; box.style.left = (clampCentre(p.x, need, 4, room - 4) - need / 2) + 'px'; }
+    // it is on the layer, by its own span: a flex box's scrollWidth misses what overflows on the left; the box widens
+    // to fit it).
+    const room = layer?.clientWidth || (typeof innerWidth === 'number' ? innerWidth : 0), textW = span.getBoundingClientRect?.().width || span.offsetWidth || text.length * fs * 0.62;
+    const need = Math.max(p.s * 3, textW + 8);
+    let cx = p.x;
+    if (room > 0) { cx = clampCentre(p.x, need, 4, room - 4); box.style.width = need + 'px'; box.style.left = (cx - need / 2) + 'px'; }
+    const hw = Math.max(textW, fs) / 2 + 2, dy = clearShift(floats, cx, y0, hw, h, now);
+    if (dy) box.style.top = (y0 + dy - h / 2) + 'px';
+    floats.push({ l: cx - hw, r: cx + hw, y: y0 + dy, h, t0: now, ms: ms * fxScale(), rise, text });
     anim(box, reducedMotion() ? [{ opacity: 0 }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }]
-      : [{ transform: 'translateY(6px) scale(' + (o.big ? 1.8 : 0.7) + ')', opacity: 0 }, { transform: 'translateY(-4px) scale(1)', opacity: 1, offset: 0.15 }, { transform: 'translateY(-' + p.s * 0.5 + 'px) scale(1)', opacity: 1, offset: 0.7 }, { transform: 'translateY(-' + p.s * 0.8 + 'px) scale(.95)', opacity: 0 }],
+      : [{ transform: 'translateY(6px) scale(' + (o.big ? 1.8 : 0.7) + ')', opacity: 0 }, { transform: 'translateY(-4px) scale(1)', opacity: 1, offset: 0.15 }, { transform: 'translateY(-' + rise * 0.62 + 'px) scale(1)', opacity: 1, offset: 0.7 }, { transform: 'translateY(-' + rise + 'px) scale(.95)', opacity: 0 }],
       { duration: ms, easing: 'ease-out', fill: 'forwards' });
   };
   if (o.delay) after(run, o.delay); else run();
 }
+/** Forget the floats on screen (clearFx; the tests). */
+export function resetFloats() { floats.length = 0; }
 
 /** One small particle at a point: a box of size px styled by css, animated through frames over ms (after delay). */
 export function particle(p: { x: number; y: number }, size: number, css: string, frames: Keyframe[], ms: number, delay = 0, easing = 'ease-out') {
@@ -165,6 +211,11 @@ function track() {
 export function anchor(box: HTMLElement, key: string, ms: number, dy = 0) {
   anchored.push({ box, key, until: performance.now() + slow(ms), dy });
   if (!raf) raf = requestAnimationFrame(track);
+}
+/** Move an anchored node to another tile (a pushed unit's stand-in, step by step). */
+export function reanchor(box: HTMLElement, key: string) {
+  for (const a of anchored) if (a.box === box) a.key = key;
+  if (!raf && anchored.length) raf = requestAnimationFrame(track);
 }
 /** anchor, off the tile's centre by dx and dy (in tiles). */
 export function anchorAt(box: HTMLElement, key: string, ms: number, dx: number, dy: number) {

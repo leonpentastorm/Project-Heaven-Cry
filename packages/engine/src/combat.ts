@@ -280,7 +280,7 @@ export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): F
 
 /** A unit went down or died: one event (the client drops and greys the token). */
 export function fxFell(cb: Combat, u: Unit) { emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
-function chained<T>(f: () => T, volley?: string): T { fxChain++; const was = VOLLEY; if (volley) VOLLEY = volley; try { return f(); } finally { fxChain--; VOLLEY = was; } }
+export function chained<T>(f: () => T, volley?: string): T { fxChain++; const was = VOLLEY; if (volley) VOLLEY = volley; try { return f(); } finally { fxChain--; VOLLEY = was; } }
 /** The volley a shot belongs to ('burst' | 'auto' | 'skill' | 'paired' | 'cone'), or null: attack hooks carry it as
  * ctx.volley (hooks gap C3); 'volley_end' {u, mode, cb, rng} fires when one is over. */
 let VOLLEY: string | null = null;
@@ -477,24 +477,26 @@ export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat
 /** Damage an object on a tile; at 0 HP cover becomes rubble and barrels explode. Returns a log suffix. */
 export function damageObject(cb: Combat, k: string, dmg: number, depth = 0, by: Unit | null = null): string {
   const o = objectsAt(cb, k).find((x) => x.hp != null && x.hp > 0); if (!o) return '';
-  const name = o.name.toLowerCase();
+  const name = o.name.toLowerCase(), many = pluralName(name);
   o.hp = Math.max(0, o.hp! - Math.max(1, Math.floor(dmg)));
-  emitFx(cb, 'object', { at: k, what: o.kind, dmg: Math.max(1, Math.floor(dmg)), broken: o.hp <= 0, hp: o.hp });
-  if (o.hp > 0) return ' · the ' + name + ' takes ' + Math.floor(dmg) + ' (' + o.hp + '/' + o.max + ')';
+  emitFx(cb, 'object', { at: k, what: o.kind, dmg: Math.max(1, Math.floor(dmg)), broken: o.hp <= 0, hp: o.hp, ...(o.max != null ? { max: o.max } : {}) });
+  if (o.hp > 0) return ' · the ' + name + (many ? ' take ' : ' takes ') + Math.floor(dmg) + ' (' + o.hp + '/' + o.max + ')';
   cb.objects = objectsOf(cb).filter((x) => x !== o);
   emit(cb, 'object_destroyed', { obj: o, by, cb });
   const kd = kindOf(o);
   if (kd.explodes && depth < 4) {
-    let out = ' · the ' + name + ' EXPLODES';
+    let out = ' · the ' + name + (many ? ' EXPLODE' : ' EXPLODES');
     emitFx(cb, 'explode', { at: k, radius: kd.explodes.radius, what: o.kind });
     for (const u of cb.units) if (!u.dead && dist(u.pos, k) <= kd.explodes.radius) out += hurtUnit(u, kd.explodes.damage, false, cb, 'explosion', by);
     for (const x of [...objectsOf(cb)]) if (x.pos !== k && dist(x.pos, k) <= kd.explodes.radius) out += damageObject(cb, x.pos, kd.explodes.damage, depth + 1, by);
     cb.objects.push(makeObject('x' + cb.objects.length + '_' + k.replace(',', '_'), 'fire', k));
     return out;
   }
-  if (kd.cover || kd.id === 'barricade') { cb.objects.push(makeObject('r_' + k.replace(',', '_') + '_' + cb.round, 'rubble', k)); return ' · the ' + name + ' breaks into rubble'; }
-  return ' · the ' + name + ' is destroyed';
+  if (kd.cover || kd.id === 'barricade') { cb.objects.push(makeObject('r_' + k.replace(',', '_') + '_' + cb.round, 'rubble', k)); return ' · the ' + name + (many ? ' break' : ' breaks') + ' into rubble'; }
+  return ' · the ' + name + (many ? ' are' : ' is') + ' destroyed';
 }
+/** Is an object's name plural (sandbags, crates): its verb agrees (live check, 10 Nov 2026: "the sandbags breaks"). */
+export const pluralName = (name: string): boolean => /[^s']s$/i.test(name.trim()) && !/(ss|us|is)$/i.test(name.trim());
 export const damageCover = damageObject;
 
 /** Spot hidden traps near a PC: passive Vigilant (10 + modifier) against the trap's TN (spec: Map objects). */
@@ -819,7 +821,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0; // rules 1.12: the Reach property, for a melee strike
   // Items see the attack before it is checked: AP (ctx.ap), reach (ctx.reach), cover (ctx.ignoreCover), extra to-hit
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
-  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false };
+  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, noLos: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
   emit(cb, 'attack_preview', hk);
   const ap = opts.free ? 0 : Math.max(0, hk.ap);
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
@@ -843,8 +845,9 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (!melee && !thrown && att.jammed) return fail('Weapon jammed: clear it (2 AP).');
   if (!melee && !thrown && w.magazine != null && att.ammo <= 0) return fail('Empty: reload (2 AP).');
   if (thrown && r > throwRangeOf(att)) return fail('Out of throwing range (' + throwRangeOf(att) + ' tiles).');
-  if (!melee && !lineOfSight(cb, att.pos, tgt.pos, !!hk.seeVeil)) return fail('No line of sight.');
-  const eff = effectiveRange(useW), optic = hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0, bands = melee || thrown ? 0 : Math.max(0, Math.ceil(r / eff) - 1 - optic);
+  // hk.noLos: an indirect shot over full cover (Lob with an Arc weapon, rules 1.12): someone on the side must still see the target
+  if (!melee && !hk.noLos && !lineOfSight(cb, att.pos, tgt.pos, !!hk.seeVeil)) return fail('No line of sight.');
+  const eff = effectiveRange(useW), optic = hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0, bands = melee || thrown ? 0 : Math.max(0, Math.ceil(r / eff) - 1 - optic - Math.max(0, hk.bandsLess || 0)); // hk.bandsLess: range bands an item or technique ignores (Bead, Spot)
   if (bands > 2) return fail('Out of range.');
   // hk.coverTile: an item names a half-cover tile that protects the target although it doesn't face the shot (Eyes in
   // the Back): it counts as the cover, so a miss by its margin hits it.
@@ -923,9 +926,10 @@ export function noteCrit(cb: Combat, by: Unit | null | undefined, tgt: Unit | nu
 }
 export interface AttackResult { roll: number; total: number; vs: number; hit: boolean; crit: boolean; fumble: boolean; damage: number; line: string; killed: boolean; refused?: string;
   /** The attack was called and paid for but never made: a reaction to it took the attacker out, or cancelled it (a held shot that lands first, rules 1.12). */ cancelled?: boolean }
-export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean;
+export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean; quiet?: boolean;
   /** an ambush whatever the attacker's Hidden state (rules 1.12: Draw Cut's Light line, Ambush): criticals on 19-20, the Ambush multiplier, and everything that reads an ambush */ ambush?: boolean;
-  /** the technique this attack is a strike of, when it isn't one of the plain attacks (physical/core.ts leaves the free ones out: Cut, Shot, Aimed Shot, Overwatch). A weapon's old on-hit grant fires only on a plain attack */ tech?: string } = {}): AttackResult {
+  /** the technique this attack is a strike of, when it isn't one of the plain attacks (physical/core.ts leaves the free ones out: Cut, Shot, Aimed Shot, Overwatch). A weapon's old on-hit grant fires only on a plain attack */ tech?: string;
+  /** fields added to the shot's effects event (a technique's id and roll index: presentation only) */ fx?: Record<string, any> } = {}): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
   // Confused (spec): each attack has a 50% chance to go at someone at random (anyone else it could attack).
   if (condOn(att, 'confused') && die(rng, 2) === 1) {
@@ -981,7 +985,9 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   att.firstShotDone = true; att.firstShotTurn = true; att.attackedTurn = true;
   // The event goes out before the hit's consequences (knockback, conditions) so the client plays them in order.
   const ev = emitFx(cb, melee ? 'melee' : 'shot', { unit: att.id, target: tgt.id, from: attAt, to: tgtAt, weapon: useW.id, cat: useW.category, mode, hit, crit, fumble, dmg: 0, killed: false,
-    ...(!melee && att.jammed ? { jam: true } : {}), ...(fxChain ? { chain: true } : {}), ...(mode === 'thrown' ? { thrown: true } : {}) });
+    ...(!melee && att.jammed ? { jam: true } : {}), ...(fxChain ? { chain: true } : {}), ...(mode === 'thrown' ? { thrown: true } : {}),
+    // the special round or arrow fired (Load Special's, a quiver's): its look on screen
+    ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}), ...(opts.fx || {}) });
   let damage = 0, killed = false, injury = '';
   if (hit) {
     const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush });
@@ -1007,7 +1013,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   // Momentum (the Fighter's resource, spec: Classes): +1 for each melee hit (the class moves spend it).
   if (hit && melee && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
-  if (att.hidden && !isSilent(att)) injury += reveal(cb, att, 'attacked');
+  if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
   if (condOn(att, 'sharpened')) endCond(att, 'sharpened', cb); // spent on this attack
   // A shot that misses only because of half cover's −5 hits the cover (spec: Cover).
@@ -1023,7 +1029,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, cb, rng, mods: cb.mods || [] });
   else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
   // The flamer's cone (cone_3): everyone else in a 3-tile cone toward the target gets the same attack, each its own roll.
-  if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of coneUnits(cb, att.pos, tgtAt, 3)) if (v !== tgt && v !== att && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true }), 'cone');
+  if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of coneUnits(cb, att.pos, tgtAt, 3)) if (v !== tgt && v !== att && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true, ...(opts.fx ? { fx: opts.fx } : {}) }), 'cone');
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
 }
 
@@ -1293,7 +1299,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
     if (!stopped && rng && (cb.zones || []).length && zoneEnter(cb, rng, u, k)) { stopped = 'trap'; flush(); }
     // Rules 1.7: hazards fire on every tile entered, at any speed (the area map's moves roll on cb.worldRng).
     if (!stopped && cb.hazards?.some((h) => hazardLiveAt(h, k, u.side))) { flush(); const hz = hazardStep(cb, rng || cb.worldRng, u, k); if (hz) stopped = hz; }
-    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first
+    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, ...(mc.noWatch ? { noWatch: true } : {}), flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first; noWatch (set on move_cost): no held Watch hears the step (Shift)
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
     if (reacts && !u.dead && !u.downed) {
       // Opportunity attacks (spec): leaving an enemy's melee reach without Disengaging, checked at each step.
@@ -1419,7 +1425,9 @@ export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
 }
 export function toggleProne(cb: Combat, u: Unit): string | null {
   if (u.ap < 1) return 'Needs 1 AP.';
-  u.ap -= 1; u.prone = !u.prone; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.')); return null;
+  u.ap -= 1; u.prone = !u.prone; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.'));
+  if (!u.prone) emit(cb, 'stood_up', { u, cb }); // 'stood_up' {u}: after standing (a held shot waits for it: Dead to Rights)
+  return null;
 }
 export function brace(cb: Combat, u: Unit): string | null {
   if (!weaponActions(u).some((x) => x.id === 'brace')) return 'This weapon has nothing to brace.';
@@ -1525,15 +1533,30 @@ const typesFor = (types: (string | null)[] | undefined, n: number) => Array.from
  * one in the gun into the pile on the unit's tile, rounds and type kept; a tactical reload (+1 AP, item 679) puts it
  * back with the spares. A weapon loaded round by round tops up from loose rounds and has one reload. Enemies carry
  * their tier's spares and always speed-reload. */
-/** Rules 1.12 (Last Round): a unit owed a free reload pays nothing for its next speed reload. */
-export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean } = {}): string | null {
-  const free = !!u.freeReload && !o.tactical && !o.both, err = reloadPaid(cb, u, o, free); // a both-hands reload is its own action: the free one stays owed
-  if (!err && free) { delete u.freeReload; cb.log.push('  (' + u.name + '\'s reload is free.)'); }
+/** Rules that refuse the plain reload of a weapon (Physical 2.0: a Drawn weapon's quiver is filled only from its own
+ * menu, out of a fight: physical/ranged/quiver.ts). Each returns a refusal or null; reload(), reloadHands() and the
+ * reload entry of weaponActions() all ask, so no path (the Reload action, the area map, Running Reload, Between
+ * Heartbeats, Resupply) reloads past them. cb is null when the caller has no fight at hand (weaponActions). */
+type ReloadRefuser = (u: Unit, weaponId: string, cb: Combat | null) => string | null;
+const RELOAD_REFUSERS: ReloadRefuser[] = [];
+export const reloadRefuser = (f: ReloadRefuser) => { RELOAD_REFUSERS.push(f); };
+export function reloadRefused(u: Unit, weaponId: string | null | undefined, cb: Combat | null): string | null {
+  if (!weaponId) return null;
+  for (const f of RELOAD_REFUSERS) { const r = f(u, weaponId, cb); if (r) return r; }
+  return null;
+}
+/** Rules 1.12 (Last Round): a unit owed a free reload pays nothing for its next speed reload. o.free: a reload whose AP
+ * something else waives (Resupply, Running Reload, Between Heartbeats): it costs 0 and leaves the owed free reload for a
+ * reload that would cost AP. */
+export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean; free?: boolean } = {}): string | null {
+  const owed = !!u.freeReload && !o.tactical && !o.both && !o.free, err = reloadPaid(cb, u, o, owed || !!o.free); // a both-hands reload is its own action: the free one stays owed
+  if (!err && owed && !u.dead && !u.downed) { delete u.freeReload; cb.log.push('  (' + u.name + '\'s reload is free.)'); }
   return err;
 }
 function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean }, free: boolean): string | null {
   const w = WEAPON[u.weapon];
   if (w.magazine == null) return 'Nothing to reload.';
+  { const no = reloadRefused(u, u.weapon, cb); if (no) return no; }
   if (!weaponActions(u).some((x) => x.id === 'reload')) return 'This weapon doesn\'t reload.';
   if (forbids({ u }, 'reload')) return forbids({ u }, 'reload') + ': no reloading.';
   if (o.tactical && w.reload === 'loose') return 'Loaded round by round: there is only one reload.';
@@ -1546,6 +1569,7 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   if (u.mags && w.reload === 'loose') { if (w.magazine - u.ammo <= 0) return 'Already full.'; if (!Math.min(w.magazine - u.ammo, u.loose || 0)) return 'No rounds left to load.'; }
   else if (u.mags && !u.mags.some((n) => n > 0)) return 'No loaded spare ' + (w.reload_unit || 'magazine') + 's.' + (u.mags.length && u.loose ? ' Load one first.' : '');
   emit(cb, 'reload', { u, ap: rAp, cb, ...(o.both ? { both: true } : {}), ...(tactical ? { tactical: true } : {}) });
+  if (u.dead || u.downed) return null; // a held shot felled it as it reached for the magazine (Dead to Rights): no reload
   const rDur = (how: string) => (rAp === 1 ? 800 : how === 'loose' ? 1400 : 1200);
   // The event's counts are for the picture only (the reload card, fx/reload.ts): what was in the gun, what is in it now, its size.
   // Unlimited spares (a companion's, a twin's: no mags) drop nothing in the pile: noDrop tells the card and the portrait not to show one falling.
@@ -1577,6 +1601,7 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
 /** Reload both guns' speed price (Two guns: 3 AP, items may change it); the tactical one is this + 1. */
 export const reloadBothAp = (u: Unit) => actionAp({ u }, 'reload_both', 3).ap;
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical = false): string | null {
+  { const no = (hand === 'both' ? reloadRefused(u, u.weapon, cb) : null) || reloadRefused(u, u.offWeapon, cb); if (no) return no; }
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
   if (tactical && ow.reload === 'loose') return 'Loaded round by round: there is only one reload.';
@@ -1597,6 +1622,7 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
     if (u.ammo >= w.magazine && w.reload === 'magazine') return 'The main gun is full: reload the off-hand gun alone.';
     // The main gun first, as before (a refusal throws in the reducer, so nothing it did stays).
     const keep = u.ap, seq = cb.fxSeq || 0; u.ap = 99; const e = reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' }); u.ap = keep; if (e && e !== 'Already full.') return e;
+    if (u.dead || u.downed) return null; // a held shot felled it as it reached for the magazines (Dead to Rights): no reload, nothing spent
     mainFx = (cb.fx || []).find((f) => f.n > seq && f.k === 'reload' && f.unit === u.id) || null;
   }
   // What goes in: a loose gun takes rounds (a character's from its loose rounds of that calibre); a magazine gun its
@@ -1608,6 +1634,13 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   } else if (!pool) fresh = ow.magazine;
   else if (pool.length && Math.max(...pool) > 0) { const i = pool.indexOf(Math.max(...pool)); fresh = pool[i]; freshType = takeType(u, shared, i, pool.length); pool.splice(i, 1); }
   if (fresh == null) return ow.reload === 'loose' ? 'No rounds left to load.' : 'No loaded spare for the off-hand gun.';
+  if (hand === 'off') {
+    // The same moment the main reload has ('reload' {u, ap, hand: 'off'}): a held shot waiting for a reload fires first
+    // (Dead to Rights); listeners for the main gun's reload skip hand 'off'. Nothing is spent yet: put back what the
+    // pool gave if the shot fells it.
+    emit(cb, 'reload', { u, ap, cb, hand: 'off', ...(tactical ? { tactical: true } : {}) });
+    if (u.dead || u.downed) { if (fresh != null && pool && ow.reload !== 'loose') { pool.push(fresh); pushType(u, shared, freshType, pool.length - 1); } return null; }
+  }
   const left = have, leftType = u.offAmmoType ?? null, unit = ow.reload_unit || 'magazine';
   if (ow.reload === 'loose' && pc) { if (ow.ammo === WEAPON[u.weapon]?.ammo) u.loose = (u.loose || 0) - looseTake; else u.offLoose = (u.offLoose || 0) - looseTake; }
   u.offAmmo = fresh; u.offAmmoType = ow.reload === 'loose' ? leftType : freshType; u.ap -= ap;
@@ -1912,7 +1945,7 @@ export function weaponActions(u: Unit): WeaponAction[] {
   if (w.magazine != null && w.reload) {
     const r = reloadAp(u), unit = w.reload_unit || 'magazine';
     const label = w.reload === 'loose' ? LOOSE_LABEL[w.ammo] || 'Load rounds' : RELOAD_LABEL[w.reload_unit] || 'Reload';
-    const why = u.jammed ? 'Jammed: clear it first.' : u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) ? 'Already full.' : u.mags && w.reload !== 'loose' && !u.mags.some((n) => n > 0) ? 'No loaded spare ' + unit + 's.' : w.reload === 'loose' && u.mags && !(u.loose || 0) ? 'No rounds left to load.' : need(r);
+    const why = reloadRefused(u, w.id, null) || (u.jammed ? 'Jammed: clear it first.' : u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) ? 'Already full.' : u.mags && w.reload !== 'loose' && !u.mags.some((n) => n > 0) ? 'No loaded spare ' + unit + 's.' : w.reload === 'loose' && u.mags && !(u.loose || 0) ? 'No rounds left to load.' : need(r));
     // Rules 1.9 (item 679): a magazine weapon with tracked spares also offers the tactical reload (+1 AP; the old one goes back in the pack).
     const tac = w.reload !== 'loose' && u.mags ? { ap: r + PILE.tactical_reload_extra_ap, why: why && /^Needs/.test(why) || !why ? need(r + PILE.tactical_reload_extra_ap) : why } : undefined;
     add({ id: 'reload', label, ap: r, why, text: w.reload === 'loose' ? 'Top up from loose rounds (' + (u.loose ?? 0) + ' carried). Nothing drops.' : 'Swap in your fullest spare ' + unit + ' (' + (u.mags ? u.mags.length + ' left' : 'unlimited') + '). Speed: the one in the gun drops into the pile on your tile, rounds still in it. Tactical (+' + PILE.tactical_reload_extra_ap + ' AP): it goes back in your pack.', ...(tac ? { tactical: tac } : {}) });

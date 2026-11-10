@@ -12,6 +12,10 @@ import { type Pt, after, anim, floatText, ring, shake } from './dom';
 
 const WHITE = '#FFFFFF', AMBER = '#F2A54A', HP = '#F65157', MUTED = '#A3AEC2';
 const STATE_WORD: Record<string, string> = { pressed: 'PRESSED', suppressed: 'SUPPRESSED', broken: 'BROKEN' };
+/** A unit's own word (a technique's name, a held Watch, a stop) sits on the top of its own token and barely rises (live
+ *  check, 10 Nov 2026: a tile higher it read as the word of the unit standing above). floatText centres it 0.35 tile
+ *  above the point given. */
+export const NAME_DY = 0.05, NAME_RISE = 0.25;
 const STOP_WORD: Record<string, string> = { pinned: 'PINNED', push: 'PUSHED', prone: 'KNOCKED DOWN', halt: 'HALTED' };
 
 export interface PhysKit {
@@ -61,7 +65,7 @@ export function physHandlers(K: PhysKit): Record<string, (e: FxEvent) => void> {
       if (e.refused) return;
       const p = at(e.at); if (!p) return;
       const big = isBigTechnique(e), word = physWord(e, nameOf(e.id));
-      floatText(word, { x: p.x, y: p.y - p.s * 0.55, s: p.s }, big ? WHITE : AMBER, { small: !big, ms: big ? 760 : 560 });
+      floatText(word, { x: p.x, y: p.y + p.s * NAME_DY, s: p.s }, big ? WHITE : AMBER, { small: !big, ms: big ? 760 : 560, rise: NAME_RISE });
       if (big) { ring(p, e.group === 'take' ? HP : WHITE, 420, { from: 1.4, to: 0.8, width: 3 }); play(e.group === 'take' ? 'hit_metal' : 'hit_heavy', p, { rate: 0.85, gain: 0.45, delay: 60 }); }
     },
     momentum(e: any) {
@@ -82,17 +86,17 @@ export function physHandlers(K: PhysKit): Record<string, (e: FxEvent) => void> {
     watch_set(e: any) {
       const p = at(e.at || K.posOf(e.unit)); if (!p) return;
       ring(p, WHITE, 520, { from: 1.6, to: 0.9, width: 2 });
-      floatText(physWord(e, nameOf(e.id)), { x: p.x, y: p.y - p.s * 0.6, s: p.s }, WHITE, { small: true, ms: 640 });
+      floatText(physWord(e, nameOf(e.id)), { x: p.x, y: p.y + p.s * NAME_DY, s: p.s }, WHITE, { small: true, ms: 640, rise: NAME_RISE });
       play('hit_metal', p, { rate: 1.6, gain: 0.3 });
     },
     watch_fire(e: any) {
       const p = at(e.from || K.posOf(e.unit)), q = at(e.at || K.posOf(e.target));
       if (q) { ring(q, HP, 360, { from: 1.5, to: 0.6, width: 3 }); after(() => ring(q, HP, 280, { from: 0.9, to: 0.4, width: 2 }), 90); }
-      if (p) floatText(physWord(e, nameOf(e.id)), { x: p.x, y: p.y - p.s * 0.6, s: p.s }, HP, { small: true, ms: 560 });
+      if (p) floatText(physWord(e, nameOf(e.id)), { x: p.x, y: p.y + p.s * NAME_DY, s: p.s }, HP, { small: true, ms: 560, rise: NAME_RISE });
     },
     stopped(e: any) {
       const pos = K.posOf(e.unit), p = at(pos); if (!p) return;
-      floatText(physWord(e), { x: p.x, y: p.y - p.s * 0.6, s: p.s }, MUTED, { small: true, ms: 620 });
+      floatText(physWord(e), { x: p.x, y: p.y + p.s * NAME_DY, s: p.s }, MUTED, { small: true, ms: 620, rise: NAME_RISE });
       shake(tokOf(e.unit, pos), 0.4);
     },
     drill(e: any) {
