@@ -302,6 +302,7 @@ b71e42bd3cc4dffd58412bf61aa0ffb1cd4a27023b72a84f6ecd1753f608ece6  art/_archive/p
 eef2990b20860d6efec69b2d6fd7baf71592b933dc09edeee821dc48c1a3a665  art/_archive/perks/wick/production-v1/previews/batch-g-light-dark-64px.png
 0e3b90d4770da4d243f3c9ae118344088aa148bc470b21241f98667e9e4763b0  art/_archive/perks/wick/production-v1/previews/latest.png
 ae09863e7ae14c7f19d23d21480be66c19f051d4fc1e7d240687222d65048cbb  art/_archive/perks/wick/production-v1/verse-of-war.png
+3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
 913e777dd59440282c65e02d72b6d6b54670a0ed67959614ea00d99729ec9846  art/_archive/skills/poc4-palette-v3/README.md
 f2378cba014d8bf49dd90a127189b471157bfaacb53aee2f30e1dff08375712e  art/_archive/skills/poc4-palette-v3/generation-briefs.json
 dce5d7fb8be4f153780e3144c12f0c82d117da4d2dea8516f0f4f374210076d8  art/_archive/skills/poc4-palette-v3/manifest.json
@@ -837,7 +838,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 fd9fd865d5891d7e7880b1def9c8b3fb60cbe6697d91b5afe36cc91a20af0961  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-f8b4b3060039791c2d8fb0ad649159baf374fd54f68fce4e9f20b43bc3145a90  art/catalog.json
+b849d033e349d19a4d461d1ab23c32d8d03dbb8481cf7cef276486b72b544f4d  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -877,6 +878,7 @@ ae83c21110ccff715cae106a9dbfbd19d2ce283fbed804326a8bdb9066a8f6c6  art/icons/perk
 7eeeee539d0e962b68d8b5be28c1406084ce6a114ef49b2e5b332f6ac98e6ac4  art/icons/perks/bite-the-bullet.png
 c8502dd54eab14e50b0d65f5c055863cb886eb5c526500733c5d9ce5ab86cc3e  art/icons/perks/blueprint.png
 00576be483b0cc19ce0caa8e0f4168cf27e9dc987b8ccb476df5ecf4b3d18ff4  art/icons/perks/bone-talk.png
+8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/icons/perks/both-hands.png
 dc64b9b975d5ad5e7d8d2e5cea0e5f36a9366ca72b672969356dce6e7be149b5  art/icons/perks/breaching-strike.png
 cfd23b5e5064c3acbadc95e2adf1c1fdaa82054e704752ea36c1655075780902  art/icons/perks/bulwark.png
 3ddae6b09d2c6a3a650ef861a5e54bcf1368b47603b6fde8582c19bd05962369  art/icons/perks/burden-of-proof.png
@@ -904,6 +906,7 @@ e3341fb661b2846f22d694e4120f48874ea11f24cc6344e3ff270820ef79ee60  art/icons/perk
 8f54d005d1797582e8334c35f0f4a4935e57c772a3c366a23f65c6ff3d17f61f  art/icons/perks/exports/128/bite-the-bullet.png
 fdff6811e0f6ee40e5656760bd5c6d3c51fbae334311c1cef9704da6090bfff1  art/icons/perks/exports/128/blueprint.png
 64ed2289abe1b5a9b380a083478d4d1af1531a41ac5bc16b2305a57f88ef6c46  art/icons/perks/exports/128/bone-talk.png
+bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/icons/perks/exports/128/both-hands.png
 bd073b3a09aa12c5ef4a99c2d90fe1b370118ebb0bd4e6a91027e35fdf96c2fd  art/icons/perks/exports/128/breaching-strike.png
 6b74892ec64df4547dc775cca95bd4f50f00bfeec1897eac9fc38dad31a61678  art/icons/perks/exports/128/bulwark.png
 f7852fd8538d514d765880248f7d09008ffef98aeb1d5fcbed95f9332674c7aa  art/icons/perks/exports/128/burden-of-proof.png
@@ -956,7 +959,6 @@ f7abe1c4d3e97c0fadfd8dc11bdecea17d8d5c101dde04e49820568686bf1b14  art/icons/perk
 cb37e00d84d1b0ae853a370cb11fcb7a310235f754ca85c1ab22cd3c15247105  art/icons/perks/exports/128/old-tongue.png
 b55c3f997aa9fbab22db0060d79c9c54e2819f2fd4dd94058db29887cf0acda7  art/icons/perks/exports/128/on-my-mark.png
 b3cf54ff95509c1faf2b100614e5cc7fe5cca5f5f0f1b487f984e0d345d6856d  art/icons/perks/exports/128/open-hand.png
-5a35430f2caaba3265bc0cd3762250d52f42bf1beefafc14973a7b7426f8b8ac  art/icons/perks/exports/128/origami-hands.png
 d3959a75a7d525c0623058aa4ae713e44744c4f691336e171f3aac5b1fea0bd0  art/icons/perks/exports/128/outclassed.png
 0c0fd73a1ffe3343d3c7ffd6758e915f44a10395ae2ede462377abbe8ff1e0e0  art/icons/perks/exports/128/overhaul.png
 d7481fc144b69e45bdc6c1e1b61ccbfde29e2e21e8cb76f44170ed91569bf1ff  art/icons/perks/exports/128/overruled.png
@@ -1010,6 +1012,7 @@ fe5c1b552fb7489a24ac3b8eb0b376a793f1b3f1aef88cb09b5ffa38493d5e92  art/icons/perk
 8383184fd1c0b59bcfeababcb72cc53d554d41473eda124a20dbb3f653184619  art/icons/perks/exports/256/bite-the-bullet.png
 23852cdaafebc42334786947b21703dfa99c07011d5a595f33bef5ccd8c9355a  art/icons/perks/exports/256/blueprint.png
 5cb299c1daabe5e7184b5a14a268602eb1ec8abf02e5572e48585f79b1eb7992  art/icons/perks/exports/256/bone-talk.png
+97cd6b0da1b3ba216fd374b114e5c0d403031407319cf465fc28e3ca1b39e4f6  art/icons/perks/exports/256/both-hands.png
 05497304988d59fbcc484abf29cc2bea4f91f0b6416d80605699f99fb05cacf5  art/icons/perks/exports/256/breaching-strike.png
 c1d386aaf4833fa3c7620e55b3f78801cc10216ff982392a9fb0ac66089e1974  art/icons/perks/exports/256/bulwark.png
 7bc09d2402a630358517ad513a4ecd58d3813a5a65f9f39511f4026361f85193  art/icons/perks/exports/256/burden-of-proof.png
@@ -1062,7 +1065,6 @@ d7211eae2f289489da20c600a085eb201b82e9043294d23a15d689a7a4db99e4  art/icons/perk
 276b2fe8228027b47c6a53f2436fac969df9fd98c2c41d795f3a81d5479dc522  art/icons/perks/exports/256/old-tongue.png
 7c5177102b2b55cdc2a68d988f37e612699cef4ce76216eb65402c79c405ad4d  art/icons/perks/exports/256/on-my-mark.png
 f2397053711f7f40aea4dac4b26fc958e77df34fa87a8e9c5a1fb04449191680  art/icons/perks/exports/256/open-hand.png
-908528e0514e54e3909d186c7d24136bc19b87acced2aea964b4807e4ccb611d  art/icons/perks/exports/256/origami-hands.png
 25a922847f2806195a29cb5111a424472e2397522b3a07ea734c34e9c2cc6b1a  art/icons/perks/exports/256/outclassed.png
 0606ccf2143e023278e5a63339f7e06309356288097a5076db3d6c91fc433d96  art/icons/perks/exports/256/overhaul.png
 4a38f6cb9407e3f1400d69e16f37c24014eac727c1a8156e8310c193b56fa6cd  art/icons/perks/exports/256/overruled.png
@@ -1116,6 +1118,7 @@ eaa2fcacb7568683ad199954099189844604106cf5d636ef51c22d99f11819de  art/icons/perk
 b676f2410619cb3f3398a1b403390dd0a62f3f47e6d6ab639c00b14686207166  art/icons/perks/exports/40/bite-the-bullet.png
 14d239dc4c7d19c77de5a6fff3b8b988e86b707e616400a6b4ee9424a280105c  art/icons/perks/exports/40/blueprint.png
 bb7ddd726cf4f99e8c779eb1a39f6c6e5c6e9b9fe31f07414af39588e06be301  art/icons/perks/exports/40/bone-talk.png
+ca9bc6fbd2d0fa58cf3dad7fcc41ebfa24c85824d8749ca314dead43cc5a7af6  art/icons/perks/exports/40/both-hands.png
 b54db3006b6d723a2a88ad5cd691bc94406cf0be47fa206cc85e99397e196f46  art/icons/perks/exports/40/breaching-strike.png
 aa950f200f0102fb9484f7fccacf86f96dd59d9c1982eb01e18a22bde3a8eecb  art/icons/perks/exports/40/bulwark.png
 7f934bdb381474771409a15a0ca979b0e9d6b4a52698949cd080e3998e50d3b6  art/icons/perks/exports/40/burden-of-proof.png
@@ -1168,7 +1171,6 @@ b50a4e67570b5f198133293bf93cb15d3963a982f34b2c5838152a83ea7fcc3c  art/icons/perk
 10ea1e6d14c4c4aaf48c418d2df20b321fcb5527ace9e7b26ebba4e160a2af98  art/icons/perks/exports/40/old-tongue.png
 65267e95c7c93b3524c0538b826565a5bae37b8ed4114ac8e60dbcdb8fc3ad4f  art/icons/perks/exports/40/on-my-mark.png
 f28b90f0179f35ef88690b4a69cc4af6a61ae62eecd62e240efef99af27d5600  art/icons/perks/exports/40/open-hand.png
-f60979c391813453fd93c90dc0baad5c651f9aa5312ea92d5b63c473d630d1e0  art/icons/perks/exports/40/origami-hands.png
 d35c35ac8485052dfad3f03e15f38ff7f9b62666617e601e01b26dcb822d1c68  art/icons/perks/exports/40/outclassed.png
 4491df08c93ebe5e66f02b22060675100eb07e351e5691eb2061ba17593a6d41  art/icons/perks/exports/40/overhaul.png
 17a918c77d59a5f33132b0455ada509a735e7dd9b35c7d325fc995b183f3de60  art/icons/perks/exports/40/overruled.png
@@ -1222,6 +1224,7 @@ c6d22da5f755eeb8f42cd788c9d6eba2c95815524e1bf7c922ed1219c7258150  art/icons/perk
 7f8015f711275851acb2bdf58da1bd728af64e58cd909475a4875c1026732d4e  art/icons/perks/exports/44/bite-the-bullet.png
 760d564cd79d769efc3e8545c02de49def406e5973b56efb03acf3ba28fe5e34  art/icons/perks/exports/44/blueprint.png
 7801b94c45784abe846e649ff90dace88b16c28607e82b554535f92e9ea28e7d  art/icons/perks/exports/44/bone-talk.png
+45e482b5e39220d7324c0e923700fd1c400a6f562574ccf7631e62194b1e2704  art/icons/perks/exports/44/both-hands.png
 042570742a54957f0bb1067ebdc2af8b574a0553e1a18873e93f1ce44cd3e9c6  art/icons/perks/exports/44/breaching-strike.png
 146b43a22e883051b1b90151d2262142072c9f50f2c833bd377a8d5acca96fc9  art/icons/perks/exports/44/bulwark.png
 20e14b1544374848484fe3d7529378f85f7d42354db497ec1939daf1363e5d78  art/icons/perks/exports/44/burden-of-proof.png
@@ -1274,7 +1277,6 @@ d24d707b5a26f81ed13dd5eb0a8364171234248ab5196f1b575df43f70e09f23  art/icons/perk
 c6df28ad51d81a7a5f142789f83c98ea8e6dac6f760fbe2e976954db77d564a3  art/icons/perks/exports/44/old-tongue.png
 dfc4567a1e6ffe712695c4777d9c691484ad105b805019175648fbeaa325f64c  art/icons/perks/exports/44/on-my-mark.png
 2e637ee49aff7d552f425d968f8c49a475e38cb9299e9e69e0b29ba61073a02b  art/icons/perks/exports/44/open-hand.png
-c2c0bd9a6822457bd31423eb9590c8dfebf124b6c75c6827941212fb3535a886  art/icons/perks/exports/44/origami-hands.png
 a4f19165ea3f355347cde981a5ea38b9e45a93d8ca855758421c820f9eca107d  art/icons/perks/exports/44/outclassed.png
 97363b25fdda93d7afee65bd1bcafbce51da1ac4e5926aec51ece035fa5dff0e  art/icons/perks/exports/44/overhaul.png
 4f82306b78150e10d50ce52289dab9db62ebe8e4867327d7bc02f408a9a8c2a1  art/icons/perks/exports/44/overruled.png
@@ -1328,6 +1330,7 @@ a0a2d046e1293c6ca6bfcac3ba4ed404ab3042405c5d441a293b687dcbd9c6d9  art/icons/perk
 7472fec74ec0ea0eb41a3d8e4ecf7840290579a346b1b267978a6d53309bdb0c  art/icons/perks/exports/48/bite-the-bullet.png
 53e1ef6c79f95ca0dfbfd3d52664d5f9b0f3dd7ede98e982859787de72764f5d  art/icons/perks/exports/48/blueprint.png
 567a48a3efd4d2bf0b4e8f009c4e0fca3e132a52ffed3008b6834f55336557dd  art/icons/perks/exports/48/bone-talk.png
+82edea8aafdaaba59a06d1038183cf8f8ade6e0a9afc88b00a411e62146579ed  art/icons/perks/exports/48/both-hands.png
 5ca7d9209b62d17251a05964cedbbf6317b86d9d4f0b96bc3bfa2fee38eb9877  art/icons/perks/exports/48/breaching-strike.png
 4090ebb0a587c21a39a2b7f19e3960a52b765be56fb2cbd9e844bec1ad5c4c6e  art/icons/perks/exports/48/bulwark.png
 84ee77604e0ace21cc56e62156180841372019b464eb129571156c412998646a  art/icons/perks/exports/48/burden-of-proof.png
@@ -1380,7 +1383,6 @@ c7d2dda2fc3c8cb2212626b7937bb48bbf6c8d4349a42289ff13ab88406d6b8c  art/icons/perk
 7a21085eafd292b1756080b8ba361b261c5f463022f9d02181a4bce46c3f68a2  art/icons/perks/exports/48/old-tongue.png
 a895f240bf117dcc06aa1f9f3f3fe8ad8260f962ccb2e665185cdee6452f0d80  art/icons/perks/exports/48/on-my-mark.png
 32b3d6fb8cd19ba64aea03f1252c6b8ecea1bd4373d09ccc8bc154cc6ea771d4  art/icons/perks/exports/48/open-hand.png
-5a00580a42598e4efe5e288e59111eb1257f274cf1337514dda8dc8d77bf0b3b  art/icons/perks/exports/48/origami-hands.png
 9a29add4c2bfe5a2c4a2945b18d6310d3a1c68fcf0a35fde7c14fbe5dee45d80  art/icons/perks/exports/48/outclassed.png
 e77514fe0b5814cc469cde33c3e0981230d407c873d1f7954844acbd1f422412  art/icons/perks/exports/48/overhaul.png
 47733a12c088d9741b57295280593b0e8710bb9a138582770cae40733f003d50  art/icons/perks/exports/48/overruled.png
@@ -1434,6 +1436,7 @@ e404f581a72ec8ce0a2b923b71a8c369a9d239955ee4c986d4df1dd605866cae  art/icons/perk
 1658d8e4db106ac971fa7a59b6cc6a4e4c23b8e54e4089f593488af8e49231a0  art/icons/perks/exports/56/bite-the-bullet.png
 5862e7cacda7eedf59d504886fae89792c1465ba42ed3d70f5aac2da2e4288ef  art/icons/perks/exports/56/blueprint.png
 368bf3d2c5d1310d9fa78d6749944ec429825dbfaf556c24d199861b9ccd7163  art/icons/perks/exports/56/bone-talk.png
+8f3fe7d6af111a5002f82c040f731efb42cc137579985cbf276352672ac1c13b  art/icons/perks/exports/56/both-hands.png
 bd0e78b3c212c218ecdfa2d4c3e502565e4722f152d844ddc88bd5e08f19a4c2  art/icons/perks/exports/56/breaching-strike.png
 b8f51dbb5053025cc5473c041ddb360cf0c71dae8d0089092bcc6c43f184bd91  art/icons/perks/exports/56/bulwark.png
 f6af9c4897769080aadec076c6c16e650990cd5f7df93a190c4b8eb17b0edffc  art/icons/perks/exports/56/burden-of-proof.png
@@ -1486,7 +1489,6 @@ eada07131ec571c0297deafaba9abdc36c0b26b91642ddc1ea9f1b66fe327e6a  art/icons/perk
 cc39344d51739282f2d882026d832021fd6dd61436522fcb247d878140c602a6  art/icons/perks/exports/56/old-tongue.png
 dbe20d7949d4fb642e8a4e7d5f5d83422e96a821baa827d7a4f3f08bed454b6c  art/icons/perks/exports/56/on-my-mark.png
 54a1ffe0a941053d812f120ad40c55ca8f6202c4c12d383cbbdb61fb5a53f7c0  art/icons/perks/exports/56/open-hand.png
-d1b991413f391705aaf111ef81e8edcccea4c9b400df5195cd609ccb23de7555  art/icons/perks/exports/56/origami-hands.png
 1f98e76936ca2d3bf2f4c4a85574c533b7db7363046638e4293c47377d128b82  art/icons/perks/exports/56/outclassed.png
 e76bb87f51db5d9ae46b7450bb2e6b7a882c08655756a66395d9fabba53466fa  art/icons/perks/exports/56/overhaul.png
 24ed6a67ea6c54eb818aa0bbd529349c8ec92679541bb8a9f34df42f538a4ee0  art/icons/perks/exports/56/overruled.png
@@ -1540,6 +1542,7 @@ d04eb203739b45d1826113f9cd50fe9bafa743f17a21e8d9c960cbdaa0caf45b  art/icons/perk
 b9e2e4eb0bc66b1ccca02cea39c12c349b5bdf01fa5e565fa9ffbef15d1f0e9f  art/icons/perks/exports/64/bite-the-bullet.png
 ef7705894fc3bd14505474a6c628997993e24507fdc705ffafae2cddbdf458d7  art/icons/perks/exports/64/blueprint.png
 dd921e89ea1d82b2b35833a1d2e2cd81052345f6b1bcb9ca4064110a018048e0  art/icons/perks/exports/64/bone-talk.png
+960c20516b5036012a86cf7c2746d3b4c768cc3bafbff1392f2f720fff0009e7  art/icons/perks/exports/64/both-hands.png
 a28202b02c998a9f89083a29bcdd3a3cfb9a9b724874a11831c4fc3443d9fe20  art/icons/perks/exports/64/breaching-strike.png
 cf3145a1462daceebaac4ffdbcedada2d206bffa11d41baa63b5e74a3e95f17e  art/icons/perks/exports/64/bulwark.png
 e76e526f6bba2229d3c2eefbd9bdd319b26151266fb1f1bb39ae883bf9f24612  art/icons/perks/exports/64/burden-of-proof.png
@@ -1592,7 +1595,6 @@ cdb49a7e07d6f5ac7a9ac0a7d03f38e1a66047728270428a309d1682f63d3501  art/icons/perk
 f3d6ff29d57b57e7bd694487a9b11d95c799ec3131bd66e26c5f048f856a8680  art/icons/perks/exports/64/old-tongue.png
 8ae1b22c60d870e087aec880e5140aa9bd55ee8e5e042c4634efe9cf1ba01aab  art/icons/perks/exports/64/on-my-mark.png
 7bac3cdf3e45e5a65e02dbd4c8d105c0138c4b871f183c22003460082029d095  art/icons/perks/exports/64/open-hand.png
-626cc3059c778d95ed130a57a07e72f8d19a4c08e71a9be79db126089871a482  art/icons/perks/exports/64/origami-hands.png
 cbef469ab890c0b455c4200af2c122a9e2d2bfb602c580a32af8c09496fa969b  art/icons/perks/exports/64/outclassed.png
 581591a26f61b5bcd0d40161b2d97f1d47d8eb848a603a7b9a928923de836708  art/icons/perks/exports/64/overhaul.png
 a3d1efb97d81dfe84ee927428a9f9701c81b1e70f028c4e3a91dad3fb1b7013f  art/icons/perks/exports/64/overruled.png
@@ -1671,7 +1673,6 @@ cac47e09783c2fff00d502ce4063b2ef3affdad166896c72749fb1198bf6c1e2  art/icons/perk
 32fa00cd9e1aae4c922128f2e6aa7e020cb16a3b7f3248add612c34cfa882771  art/icons/perks/old-tongue.png
 c9952624a72210b380606191a65eaad883e394c57998325ac91cd6c1de62a83a  art/icons/perks/on-my-mark.png
 6c9a26b30225ad912ab1ac238a066b3769d57cd58321fecc79a258d1e8ec21a2  art/icons/perks/open-hand.png
-3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/icons/perks/origami-hands.png
 33026562cc74514b7d1b75eef19d14b582d16210717d70449822ea2317bc599c  art/icons/perks/outclassed.png
 d58532bab2303a3d81f343b554697deaea7bf19aba1eaf53060e083c3e5dbf67  art/icons/perks/overhaul.png
 e7d456d30e7c19875de90047ecfd1940a5e025c97eb779aa32f74c673c3040b6  art/icons/perks/overruled.png
