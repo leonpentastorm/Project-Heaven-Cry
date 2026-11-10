@@ -8,7 +8,7 @@ import type { FxEvent, GameState } from '@engine';
 import { preloadCombatSfx, reducedMotion } from '../sfx';
 import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
-import { canDraw, clearFx, forgetSpotlights, queueFx, rememberTokens, setContext, seenNow } from './play';
+import { canDraw, clearFx, fightStream, forgetSpotlights, holdMovers, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 import { getState } from '../store';
 
@@ -18,8 +18,7 @@ const DECIDED_KEEP = 6;
 export { playFx, queueFx, fxBusyUntil, FX_EVENT, FX_IDLE } from './play';
 
 /** The fight's effects stream key (its numbering restarts with every fight): the turn intro matches 'phc:fx-at' on it. */
-export const combatStreamKey = (g: GameState | null | undefined): string | null =>
-  g && g.combat ? 'cb|' + g.code + '|' + g.combat.name + '|' + (g.combat.log[0] || '') : null;
+export const combatStreamKey = fightStream;
 /** Which event stream is on screen: the fight's (named by the fight) or the area map's (named by the game). */
 function streamOf(g: GameState | null, screen: string): { key: string; list: FxEvent[] } | null {
   if (!g) return null;
@@ -43,25 +42,39 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   React.useEffect(() => () => { clearFx(); clearAmbient(); }, []);
   // A hidden tab plays nothing: on return it catches up silently.
   React.useEffect(() => {
-    const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); return; } if (document.hidden) { clearFx(); clearAmbient(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; } };
+    const vis = () => { if (!document.hidden) { syncAmbient(ambientOf(latest.current.game, latest.current.screen, seenNow())); return; } if (document.hidden) { clearFx(); clearAmbient(); const s = streamOf(latest.current.game, latest.current.screen); if (s) seen.current = { ...seen.current, key: s.key, n: lastN(s.list) }; const ck = combatStreamKey(latest.current.game); if (ck) { fight.current = { key: ck, n: lastN(latest.current.game!.combat!.fx || []) }; setProcessed(ck, fight.current.n); } } };
     document.addEventListener('visibilitychange', vis); return () => document.removeEventListener('visibilitychange', vis);
   }, []);
-  // Where everyone stands now and what the squad sees, for effects already queued as well as new ones.
-  React.useEffect(() => { setContext(game, screen); if (!document.hidden) syncAmbient(ambientOf(game, screen, seenNow())); }, [game, screen]);
+  // Where everyone stands now and what the squad sees, for effects already queued as well as new ones (set before the
+  // paint, so the units a new batch is about to show can be held where they were: play.ts holdMovers).
+  React.useLayoutEffect(() => { setContext(game, screen); }, [game, screen]);
+  React.useEffect(() => { if (!document.hidden) syncAmbient(ambientOf(game, screen, seenNow())); }, [game, screen]);
   // After the play effect below has read this render's tokens, keep copies of the living ones for the next kill.
   React.useEffect(() => { rememberTokens(); });
   const s = streamOf(game, screen), top = s ? lastN(s.list) : 0;
   const ck = combatStreamKey(game), ctop = game?.combat ? lastN(game.combat.fx || []) : 0;
+  // Combat clarity: before this render is painted, hold the units the new events are about to show (a token stays where
+  // it was until its own walk plays; a hostile coming into sight stays hidden until its moment). The same events the
+  // effect below will queue: new ones in the fight on screen, a fight come back to, or a fight's opening.
+  React.useLayoutEffect(() => {
+    const h = seen.current;
+    if (!game || !s || !s.key.startsWith('cb|') || document.hidden || h.code !== game.code) return;
+    let fresh: FxEvent[] = [];
+    if (h.key === s.key) fresh = top < h.n ? s.list.slice(-24) : s.list.filter((e) => e.n > h.n);
+    else if (fight.current?.key === s.key) fresh = s.list.filter((e) => e.n > fight.current!.n);
+    else if ((game.combat?.round || 1) <= 1 && s.list.length <= 40 && (s.list[0]?.n || 1) <= 1) fresh = s.list.slice(-24);
+    if (fresh.length) holdMovers(fresh);
+  }, [s?.key, top, game?.code]);
   React.useEffect(() => {
     const h = seen.current;
     if (!game) { clearFx(); seen.current = { key: null, n: 0, code: null }; fight.current = null; return; }
     if (h.code !== game.code) { // a new or loaded game: sync silently
-      clearFx(); seen.current = { key: s?.key ?? null, n: top, code: game.code }; fight.current = ck ? { key: ck, n: ctop } : null; return;
+      clearFx(); seen.current = { key: s?.key ?? null, n: top, code: game.code }; fight.current = ck ? { key: ck, n: ctop } : null; setProcessed(ck, ctop); return;
     }
     // Not watching the fight we know (another screen, the story tab): keep up with it silently.
-    if (ck && fight.current?.key === ck && (!s || s.key !== ck)) fight.current = { key: ck, n: ctop };
+    if (ck && fight.current?.key === ck && (!s || s.key !== ck)) { fight.current = { key: ck, n: ctop }; setProcessed(ck, ctop); }
     if (!s) return;
-    if (document.hidden) { seen.current = { ...h, key: s.key, n: top }; if (ck) fight.current = { key: ck, n: ctop }; return; }
+    if (document.hidden) { seen.current = { ...h, key: s.key, n: top }; if (ck) { fight.current = { key: ck, n: ctop }; setProcessed(ck, ctop); } return; }
     let fresh: FxEvent[], opening = false;
     if (h.key !== s.key) {
       if (s.key.startsWith('cb|') && fight.current?.key === s.key) fresh = s.list.filter((e) => e.n > fight.current!.n); // back to a fight already seen
@@ -74,7 +87,7 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
     } else if (s.key.startsWith('cb|') && top < h.n) { opening = true; forgetSpotlights(s.key); fresh = s.list.slice(-24); } // the same fight started over (its numbering restarted)
     else fresh = s.list.filter((e) => e.n > h.n);
     seen.current = { key: s.key, n: top, code: game.code };
-    if (s.key.startsWith('cb|')) fight.current = { key: s.key, n: top };
+    if (s.key.startsWith('cb|')) { fight.current = { key: s.key, n: top }; setProcessed(s.key, top); }
     if (!fresh.length) return;
     // Wait for the grid to be on screen (a screen change may still be sliding in), then play; give up after ~3 s. A new
     // fight's opening also waits out the combat-in transition: until it ends the grid is under the old screen's copy

@@ -9,7 +9,7 @@ import {
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -437,6 +437,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
+  if (g.combat && g.phase === 'combat') sightFx(g.combat); // presentation: a hostile that came into a side's sight (a reveal, a death that left a side blind…)
   g.v++;
   return g;
 }
@@ -1549,6 +1550,7 @@ function runEnemies(g: GameState) {
     if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     critMoment(g); // a party reaction's crit in the enemy's turn (decision 113)
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
+    sightFx(cb); // presentation: what came into sight in its turn (its walks carry their own)
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
   clearAction(cb);
@@ -1732,13 +1734,23 @@ export function viewFor(g: GameState, playerId: string): GameState {
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden && !((o as any).rig && (o as any).side && (o as any).side !== me)) }; // another side's rigged tile (Sabotage) too
   // Sigil traps and hidden turrets (rules 1.4) show to their own side only, until spotted; so do their fx.
-  if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, me)), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === me) };
+  if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, me)), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === me).map((e) => sightOwn(e, me)) };
+  // Each side's sight records are presentation the engine keeps for itself: never sent (they say where the other side
+  // has eyes). A move's per-tile sight and a turn's or stance's seen keep the viewer's own side only.
+  if (v.combat) { v.combat = { ...v.combat }; delete v.combat.sightSeen; delete v.combat.sightPos; delete v.combat.sightWhy; }
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
   pileFog(g, v, me); // rules 1.9: a pile shows only on a tile the viewer's party sees now (item 676)
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;
+}
+
+/** An fx event with only the viewer's side of its sight (a move's per-tile sight, a turn's or a stance's seen). */
+function sightOwn(e: FxEvent, me: 'pc' | 'foe'): FxEvent {
+  const x = e as FxEvent & { sight?: Record<string, unknown>; seen?: Record<string, unknown> };
+  if (!x.sight && !x.seen) return e;
+  return { ...e, ...(x.sight ? { sight: { [me]: x.sight[me] } } : {}), ...(x.seen ? { seen: { [me]: x.seen[me] } } : {}) } as FxEvent;
 }
 
 export const archetypes = ARCHETYPES;
@@ -1997,7 +2009,9 @@ function storyMagicRound(g: GameState) {
 function storyFx(g: GameState, cb: Combat) {
   if (!cb.fx?.length) return;
   const list = (g.story.fx ||= []);
-  for (const e of cb.fx) list.push({ ...e, n: (g.story.fxSeq = (g.story.fxSeq || 0) + 1) });
+  // The throwaway fight's sight is not the map's (the area map shows the tokens it has; a lurker stays the Narrator's):
+  // its sight events and each side's per-tile sight stay behind.
+  for (const e of cb.fx) { if (e.k === 'sight') continue; const { sight: _s, seen: _w, ...rest } = e as FxEvent & { sight?: unknown; seen?: unknown }; void _s; void _w; list.push({ ...rest, n: (g.story.fxSeq = (g.story.fxSeq || 0) + 1) } as FxEvent); }
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
 }
 /** Learn a word, a school, a module or a tone (spec: The Magic panel). */
@@ -2302,16 +2316,20 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
   g.combat = startCombat(fightName, zoneMap(g), pcs, encounterDrops(g, fightName, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster, drops: n.drops }))), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
-  cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || n.avatar || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } });
+  // Who starts Hidden is set up quietly (no 'sight' event: a lurker the party could have seen must not fade out where it
+  // lurks, which would give the ambush away); each side's sight is recorded afresh after it.
+  sightQuietly(cbx, () => cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || n.avatar || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } }));
   if (!wasHostile) cbx.noXp = true;
   const att = cbx.units.find((x) => x.charId === c.id)!, tgt = cbx.units.find((x) => x.npcId === npc.id)!;
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
   push(g, { kind: 'combat', text: 'Combat: ' + fightName + (hidden ? ' (' + c.name + ' strikes unseen)' : '') });
   // What each player said this overworld round carries into the fight it opens, as their round-1 line (Verse of War).
   for (const x of cbx.units) { const pc = x.charId ? g.characters[x.charId] : null, t = pc ? g.story.spoken?.[pc.owner] : null; if (pc && t) (cbx.notes ||= []).push(pc.name + ' (round 1): "' + String(t).slice(0, 400) + '"'); }
-  if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
-  // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
-  for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');
+  sightQuietly(cbx, () => {
+    if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
+    // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
+    for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');
+  });
   if (!hidden) { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
   // The opening strike is an action of the fight like any other (spotlight.ts): its fx start here, so a crit, a takedown,
   // a revive or an intervention in it cuts in and slows its playback (decision 113).
@@ -2811,7 +2829,7 @@ function sbPlace(g: GameState, n: number) {
   });
 }
 /** Begin a fight on the Proving Ground map: the squad where it stands (pos), these foes, everyone on the fight's clock. */
-function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string }[], pos: Record<string, string>, objects?: MapObject[]) {
+function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string; hidden?: boolean }[], pos: Record<string, string>, objects?: MapObject[]) {
   const sb = sbOf(g), wasLive = !!liveFight(g), map = zoneMap(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
   if (!pcs.length) fail('Lock in a character first.');
@@ -2987,7 +3005,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const foes = npcsOf(g).filter((x) => x.side === 'hostile'), stay = npcsOf(g).filter((x) => x.side !== 'hostile');
       sbAttempt(sb, n);
       g.story.npcs = stay;
-      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster })), { ...positionsOf(g) }, storyObjects(g));
+      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster, ...(x.hidden ? { hidden: true } : {}) })), { ...positionsOf(g) }, storyObjects(g)); // a hostile placed Hidden starts the fight Hidden (as in a Narrator's fight)
       return;
     }
     case 'sandbox/stage': {
@@ -3483,6 +3501,7 @@ function sbBeginTeams(g: GameState) {
   const bIds = new Set(B.map((c) => c.id));
   for (const u of cb.units) if ((u.charId && bIds.has(u.charId)) || (u.ctrl && bIds.has(u.ctrl))) u.side = 'foe';
   for (const e of cb.fx || []) if (e.unit && e.side) { const u = cb.units.find((x) => x.id === e.unit); if (u) e.side = u.side; }
+  delete cb.sightSeen; sightFx(cb); // the sides changed: record each team's opening sight again
   magicIn(g, cb);
   cb.noXp = true;
   cb.log.unshift('TEAM FIGHT · Team A (' + A.map((c) => c.name).join(', ') + ') against Team B (' + B.map((c) => c.name).join(', ') + '). Downed is out.');
@@ -3533,7 +3552,7 @@ function sandboxView(g: GameState, v: GameState, playerId: string) {
   v.combat = { ...cb, units: cb.units.map(flip), glyphs: cb.glyphs?.map(flip), zones: cb.zones?.map((z) => { const f = flip(z) as any; return f.spotted ? { ...f, spotted: f.spotted.map(other) } : f; }),
     ...(cb.objects ? { objects: cb.objects.map((o) => flip(o as { side?: any }) as typeof o) } : {}),
     ...(cb.images ? { images: cb.images.map(flip) } : {}),
-    fx: cb.fx?.map((e) => { const f = flip(e as { side?: any; only?: any }); return (f.only ? { ...f, only: other(f.only) } : f) as typeof e; }),
+    fx: cb.fx?.map((e) => { const f = flip(e as { side?: any; only?: any; sight?: any; seen?: any }); const o = (f.only ? { ...f, only: other(f.only) } : f) as any; return { ...o, ...(o.sight ? { sight: { pc: o.sight.foe, foe: o.sight.pc } } : {}), ...(o.seen ? { seen: { pc: o.seen.foe, foe: o.seen.pc } } : {}) } as typeof e; }),
     over: cb.over === 'win' ? 'loss' : cb.over === 'loss' ? 'win' : cb.over,
     ...(cb.lastSeen ? { lastSeen: { pc: cb.lastSeen.foe, foe: cb.lastSeen.pc } as any } : {}),
     ...(cb.sightWas ? { sightWas: { pc: cb.sightWas.foe, foe: cb.sightWas.pc } as any } : {}) };

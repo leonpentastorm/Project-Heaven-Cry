@@ -62,7 +62,8 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
   const btnRef = React.useRef<HTMLButtonElement>(null), [hover, setHover] = React.useState(false);
   const [open, setOpen] = React.useState(false), [tab, setTab] = React.useState<Tab>('story'), [q, setQ] = React.useState(''), [adding, setAdding] = React.useState('');
   const pres = usePresence(open); // fades in with the card popping up; out the same way
-  const floatStyle = useFloatStyle(btnRef, open);
+  // The music shares the dock (floaters.ts): while this one's name shows or its dialog is open, the ♪ button slides away.
+  const { place, ...floatStyle } = useFloatStyle(btnRef, open, 'memory', compact && hover && isHost && !!game && game.phase !== 'lobby');
   React.useEffect(() => { openFromAfar = () => setOpen(true); return () => { openFromAfar = null; }; }, []);
   if (!isHost || !game || game.phase === 'lobby') return null;
   const m = game.memory || { people: [], threads: [], facts: [], factions: [], scenes: [], chapters: [], saga: '', pins: [] } as any;
@@ -71,7 +72,7 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
   const add = (kind: string, patch: Record<string, any>) => { edit({ kind, patch } as MemEdit); setAdding(''); };
   return (
     <>
-      <button ref={btnRef} type="button" data-phc-float="memory" onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" title={compact && !hover ? 'The Narrator\'s memory' : undefined}
+      <button ref={btnRef} type="button" data-phc-float="memory" data-phc-float-place={place} onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" title={compact && !hover ? 'The Narrator\'s memory' : undefined}
         onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
         style={{ position: 'fixed', [side]: compact ? 64 : 16, bottom: compact ? 16 : 64, zIndex: 9, minHeight: 40, minWidth: 40, padding: compact && !hover ? 0 : '0 14px', borderRadius: 999, border: '1px solid #3B475D', background: ink.panel, color: ink.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
         {compact && !hover ? '◈' : '◈ Memory'}

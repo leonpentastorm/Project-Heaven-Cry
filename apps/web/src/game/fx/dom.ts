@@ -146,7 +146,7 @@ export function particle(p: { x: number; y: number }, size: number, css: string,
 }
 
 // ---------- effects that follow a tile (rings, decals) ----------
-interface Anchored { box: HTMLElement; key: string; until: number; dy: number }
+interface Anchored { box: HTMLElement; key: string; until: number; dy: number; dx?: number }
 const anchored: Anchored[] = [];
 let raf = 0;
 function track() {
@@ -157,13 +157,18 @@ function track() {
     if (now > a.until || !a.box.isConnected) { anchored.splice(i, 1); continue; }
     const p = centre(a.key);
     if (!p) { a.box.style.opacity = '0'; continue; }
-    a.box.style.left = (p.x - a.box.offsetWidth / 2) + 'px'; a.box.style.top = (p.y + a.dy * p.s - a.box.offsetHeight / 2) + 'px';
+    a.box.style.left = (p.x + (a.dx || 0) * p.s - a.box.offsetWidth / 2) + 'px'; a.box.style.top = (p.y + a.dy * p.s - a.box.offsetHeight / 2) + 'px';
   }
   if (anchored.length) raf = requestAnimationFrame(track);
 }
 /** Keep a node centred over a tile (dy in tiles) while it lives, so it follows scrolling and re-layouts. */
 export function anchor(box: HTMLElement, key: string, ms: number, dy = 0) {
   anchored.push({ box, key, until: performance.now() + slow(ms), dy });
+  if (!raf) raf = requestAnimationFrame(track);
+}
+/** anchor, off the tile's centre by dx and dy (in tiles). */
+export function anchorAt(box: HTMLElement, key: string, ms: number, dx: number, dy: number) {
+  anchored.push({ box, key, until: performance.now() + slow(ms), dy, dx });
   if (!raf) raf = requestAnimationFrame(track);
 }
 

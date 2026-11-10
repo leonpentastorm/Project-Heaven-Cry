@@ -1046,7 +1046,7 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
     }
     // The Counting Weaver
     case 'foreknowing': fs(one!).foreknown = true; return ' · the next attack on ' + one!.name + ' will miss';
-    case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; v.braced = false; v.overwatch = null; if (v.hidden) v.hidden = false; return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
+    case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; v.braced = false; v.overwatch = null; if (v.hidden) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; } return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
     case 'cut_short': { const v = one!; if (v.tier === 'boss') { apDebt(v, 2); return ' · ' + v.name + ' loses 2 AP on its next turn (a boss)'; } return applyCond(cb, rng, u, v, 'stunned', 1, 'heart'); }
     case 'rewoven': { // rules 1.6.2 (item 734): HP back to the round's start where that was higher (the Downed stand), then a full turn each
       const x: any = cb, snap: Record<string, number> = x.faithRoundHp || {}; let out = '';
