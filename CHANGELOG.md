@@ -8,6 +8,33 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.18.0 — 10 November 2026
+
+Branch `claude/charming-gauss-hbq4n0`: **Physical 2.0** (rules 1.12). Weapons fight with techniques. Built by the lead (foundation, core, integration) and three implementers: A (`claude/awesome-babbage-8gngk8`, melee), B (`claude/physical-2.0-B-ranged` and `-fx`, ranged), C (`feature/physical-2.0-C-client`, the screens). Plan and hand-offs: `docs/design/handoffs/physical-2.0-*.md`.
+
+- **58 techniques** in two systems (`data/techniques.json`). Melee runs on **Momentum** (on you; Openers, Strikes, Links, Finishers, Answers). Ranged runs on **Pressure** (on the target, 0 to 4: Pressed at 2, Suppressed at 3, Broken at 4 for enemies; Fire, Press, Set, Take, Watch).
+- **Weapon properties** (Edge, Point, Blunt, Hook, Heavy, Light, Reach, Bare, Thrown, Auto, Spread, Precise, Silent and others) decide which techniques a weapon offers and which line of a technique applies. Every weapon has a `phys` block.
+- **Drill:** a kill gives drill to everyone who hit the victim, for the weapon they hit with; drill marks teach a weapon's signature or give a pick. The old weapon-mastery attack bonus is retired.
+- **Dexterity is Agility's alpha and Athletics its beta** (item 953). Light blades hit with Dexterity.
+- **The Attack tab** is one block per held weapon: its plain attack (Cut, Shot), its Techniques pad, and Hold a shot for the Watches. A technique's choices (Called Shot's part, Run Through's weapon left in, and the like) are toggles on its card. Weapons in the pack and carried throwables have their own groups on the pad (Draw Cut, Snap Shot, Lob, Rout).
+- **Watches and Answers** replace Overwatch and the held strike: Overwatch, Deny, Cover Me, Dead to Rights; Riposte, Parry, Keep Back. Becoming Pressed drops a held shot.
+- **Nailed in place:** Run Through and Pin Down hold a unit until 2 AP is spent to pull free (the unit, or an ally next to it; the Utility tab's **Pull free**). Anyone next to the target may pull out a weapon Run Through left in it.
+- **Enemies use techniques** (lists by tier in `data/enemies.json`).
+- **Effects** for every melee and ranged technique (lanes A and B), mostly drawn in SVG; two CC0 assets are credited.
+- **Item icons:** every weapon and armour has its monoline icon on screen (backpack, gear, the pads).
+- **The story screen's right column** is four modules you can drag into any order (mana forecast, map, quest board, player card); the order is kept per browser.
+- **The Miracle box** (what a Miracle did) stays longer, has a Keep-open button and a clear close button.
+- **Rulings by Leon in this version:** the parlour pistol gives Crossfire; Pressed drops a held Watch; Drag with a Hook weapon reaches 2 tiles (3 with Reach); a carried shield's +2 on Parry applies with any weapon.
+- **Old weapon effects** (the war axe's armour break, the maul's Prone, and the like) fire on the plain attacks only, not on a technique's hit.
+- **Known** (`docs/design/known-issues.md`, and the hand-off notes' request lists):
+  - Walking Fire's fire point, the arrow type on a bow shot, the round for Load Special, and split targets for Burst and Rake can't be picked on screen yet: the engine picks.
+  - Companions, puppets and the drone keep the old attack rows.
+  - A gun in hand has no bare-hand strike row.
+  - The enemy AI doesn't hold Watches, doesn't throw grenades, and frees only itself from a nail.
+  - Rake with an item that makes full auto cheaper still costs 4 AP.
+  - The browser test `reload.mjs` fails two tactical-reload card checks (it did before the lanes merged; the reload itself is covered by the engine's tests).
+  - Six rulings from lane B wait on Leon (in `physical-2.0-B-RESULT.md`).
+
 ## 0.17.0 — 10 November 2026
 
 Branch `claude/charming-gauss-hbq4n0`: **the skeleton** (rules 1.11; Leon: "apply everything you recommend with the skeleton"). The creation budgets stay 10 / 10 / 6. What a level gives changed, so builds other than 7/1/1 can reach the end of their own class and skills. Design: `docs/design/proposals/2026-11-skeleton.md`. Every number is provisional (spec items 924–931).
