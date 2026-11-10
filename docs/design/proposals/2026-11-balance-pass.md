@@ -143,3 +143,26 @@ Out of this pass: prices, loot and gear tiers (Equipment 2.0), XP pacing (settle
 4. The AP rules in angle B, above all the cap on conditional AP swings.
 5. Attrition or fresh fights (angle L).
 6. Anything on this list he wants dropped, or an angle that is missing.
+
+## 6. The first baseline (10 Nov 2026)
+
+Instrument 1 exists: `packages/engine/test/balance-baseline.test.ts` asks the engine for the plain attack of 17 sample
+weapons at four levels of investment against the four enemy tiers, and writes
+`docs/design/handoffs/balance-baseline.md`. Only the weapon's skill and its attribute are set: no gear quality, no
+perks, no techniques, no class. What it shows:
+
+1. **A new character already kills a boss in a turn.** With 7 in the skill and attribute (legal at creation), a coach
+   gun or a maul deals 78 to a boss (200 HP) at 65% to hit: three hits. The breacher tube deals 205: one hit.
+2. **Criticals alone pass the ceilings.** The critical multiplier is about 2.6 to 2.8. At 10 points a long rifle's
+   critical is 336, a recurve bow's 470 and a breacher tube's 739, with standard gear and no perks.
+3. **The bow is the strongest plain weapon in the game.** Its damage adds Raw Power before the multipliers: 168 a
+   shot at 2 AP at 10 points (a long rifle: 120). It costs two attributes, which is not enough to explain it.
+4. **Damage per AP differs sevenfold at the same investment.** At creation, all in: combat knife 13, service pistol
+   18, sabre 25, maul 27, long rifle 45, bow 49, breacher tube 99.
+5. **Heavy melee's third AP buys nothing on a plain attack.** A maul at 3 AP does less per AP than a servo fist at 2.
+6. **Hit chance starts high and tops out early.** 85% against a minion and 65% against a boss at creation; 95% and
+   80% at 10 points. Defense (10 to 14) doesn't move with level, so accuracy is settled at level 1.
+7. **Enemy armour (0, 5, 10, 10) is flat.** It halves a knife and is invisible to a rifle.
+
+Not measured yet: techniques, perks, gear quality, magic, enemies' damage against characters, AP sources. Those need
+the fight simulator (instrument 1 in section 3).
