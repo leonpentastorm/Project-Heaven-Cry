@@ -11,8 +11,7 @@
 //   Throw: Dexterity replaces the weapon's skill on the roll, and the weapon goes to the pile on the target's tile.
 import { technique, strike, loseWeaponInto, takeWeapon, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
 import type { Tech } from './shared';
-import { canStrike, loseWeapon } from '../core';
-import { PHYS_RULES } from '../data';
+import { canStrike, loseWeapon, techSaveTn, techVia } from '../core';
 import { type Combat, type Unit, alive, dist, lineOfSight, refOf, weaponDamage, dropToPile, hurtUnit } from '../../combat';
 import { WEAPON } from '../../data';
 import { throwRangeOf } from '../../tactics';
@@ -73,7 +72,7 @@ technique({
     }
     const pen = p === 'heavy' ? t.num('heavy_penalty', 4) : t.num('penalty', 2);
     t.note(tgt.name + ' is Bound until your next turn: −' + pen + ' to attack anyone but you, and a Body save to move away. You can\'t use Reach while binding.');
-    if (!t.preview) Object.assign(t.state(), { target: tgt.id, pen, r: t.cb.round });
+    if (!t.preview) Object.assign(t.state(), { target: tgt.id, pen, r: t.cb.round, via: techVia(t) });
     meleeFx(t, 'bind', { target: tgt.id, to: tgt.pos, kind: 'bind', pen });
     if (p === 'hook' && !save(t, tgt, 'brain', harder)) cond(t, tgt, 'disarmed');
     landed(t);
@@ -114,9 +113,9 @@ onHook('attack_preview', (ctx: any, cb) => {
   if (ctx.melee && bindOf(cb, att)) ctx.reach = Math.min(ctx.reach, 1);
   const b = binderOf(cb, att); if (b && ctx.tgt && ctx.tgt.id !== b.id) ctx.terms.push({ v: -bindOf(cb, b)!.pen, label: 'Bound by ' + b.name });
 });
-/** A Body save against the stop TN, rolled outside a technique (the Bound unit tries to walk away). */
-function bodySave(cb: Combat, rng: Rng, u: Unit, why: string): boolean {
-  const tn = PHYS_RULES.stop_tn || 12, bonus = unitSave(u, 'body'), r = d20(rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
+/** A Body save rolled outside a technique (the Bound unit tries to walk away). tn: techSaveTn of the binder (rules 1.13). */
+function bodySave(cb: Combat, rng: Rng, u: Unit, why: string, tn: number): boolean {
+  const bonus = unitSave(u, 'body'), r = d20(rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
   cb.log.push(u.name + (ok ? ' saves' : ' fails the save') + ' against ' + why + ' (body ' + (r + bonus) + ' vs ' + tn + ').');
   return ok;
 }
@@ -132,7 +131,7 @@ onHook('move_cost', (ctx: any, cb) => {
   // can't be tried again for a fresh roll)
   const s = techState(b, 'bind'), stamp = turnStamp(cb), failed = s.failed === stamp + ':' + u.id;
   const rng = boundGame()?.rng;
-  if (!failed && rng && bodySave(cb, rng, u, 'the bind')) return; // it breaks away; the step out of reach ends the bind
+  if (!failed && rng && bodySave(cb, rng, u, 'the bind', techSaveTn(b, s.via || 'raw_power'))) return; // it breaks away; the step out of reach ends the bind
   if (!failed) s.failed = stamp + ':' + u.id;
   route.length = i; // the walk the engine takes is this route: it stops before the first tile out of reach
   cb.log.push(u.name + ' is Bound by ' + b.name + ' and can\'t move away.');

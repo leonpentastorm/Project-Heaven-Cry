@@ -110,7 +110,7 @@ describe('Flurry (Bare): the +1 lands on the save the next Bind or Throw Down fo
   it('Throw Down (Bare): the occupant\'s Prone save is 1 harder', () => {
     const f = mk(); f.bound(() => applyCond(f.cb, f.g.rng, f.unit(f.pc.id), f.unit(f.foes[0].id), 'grappled', undefined, undefined, { skipSave: true } as any));
     const pv = f.pv('throw_down', { targetId: f.foes[0].id, tile: f.tile('C4') }); expect(pv.ok).toBe(true);
-    expect(pv.saves?.find((s) => s.unit === f.foes[1].id)?.tn).toBe(13);
+    expect(pv.saves?.find((s) => s.unit === f.foes[1].id)?.tn).toBe(13 + 3);
   });
 });
 

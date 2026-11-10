@@ -1,8 +1,7 @@
 // Physical 2.0, melee Openers: the first melee technique of a turn. Lunge is the lead's reference; the melee lane builds
 // Charge, Feint, Draw Cut and Ambush here.
 import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, landed, momentumOf, onHook, turnStamp, techState, techStateOf, meleeFx, fxMark, movedSince, fallFx, refuseFx } from './shared';
-import { canStrike, techVia } from '../core';
-import { unitStrength } from '../../magic';
+import { canStrike } from '../core';
 import { PHYS_RULES } from '../data';
 import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
 import { ambushReady, reveal } from '../../tactics';
@@ -135,8 +134,8 @@ technique({
   },
   run(t) {
     const tgt = t.tgt!, p = t.line('light', 'hook');
-    // the user's strength with the skill the weapon hits with (rules 1.13: Dexterity or Raw Power; a foe's tier)
-    const tnAdd = unitStrength(t.u, techVia(t)) + (p === 'light' ? t.num('light_save', 2) : 0);
+    // save() adds the user's strength with the skill the weapon hits with (rules 1.13), as for every technique's save
+    const tnAdd = p === 'light' ? t.num('light_save', 2) : 0;
     if (t.preview) t.note('No damage. ' + tgt.name + ' makes a Brain save; if it fails:');
     if (save(t, tgt, 'brain', tnAdd)) { t.cb.log.push(tgt.name + ' isn\'t fooled by the feint.'); meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: false }); return null; } // it saw through: nothing more
     meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: true, lowered: p === 'hook' });

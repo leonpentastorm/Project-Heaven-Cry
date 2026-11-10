@@ -9,6 +9,7 @@ import {
   applyCond, endCond, condOn, condTurnEnd, unitStrength, strengthFor, withVia, STRICT_VIA, previewOdds, d20, type Unit, type Combat,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { physFight } from './helpers/physfight';
 
 type F = ReturnType<typeof fightWith>;
 type S = ReturnType<typeof storyWith>;
@@ -192,5 +193,51 @@ describe('gamma skills add their full points to checks (rules 1.13)', () => {
     expect(check(s, c.id, ['intimidation'], { kind: 'save' }).roll!.mod).toBe(6);
     // and a save with no usable skill listed still happens when the family is named
     expect(check(s, c.id, [], { kind: 'save', family: 'body' }).skills).toEqual(['guts']);
+  });
+});
+
+// Rules 1.13 (owner's ruling): every save a weapon technique forces is 12 + the user's strength with the skill that
+// weapon hits with (+ the technique's own step). The preview's `saves` entry is the TN the roll uses.
+describe('a technique\'s save reads the user\'s strength with the weapon\'s skill (rules 1.13)', () => {
+  const duel = (weapon: string, known: string[], skills: Record<string, number>, foe: Record<string, any> = {}) => {
+    const f = physFight([{ weapon, known, skills }], [{ at: 'D5', tier: 'soldier', ...foe }]);
+    f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.foe.sv = { body: 0, brain: 0, heart: 0 }; f.turn(f.pc);
+    return f;
+  };
+  const tn = (f: ReturnType<typeof duel>, id: string, args: any = {}, by?: Unit) => f.pv(id, { targetId: (by ? f.pc : f.foe).id, ...args }, by).saves![0].tn;
+  it('Bash with a maul (Raw Power): Raw Power 8 is 6 harder to save against than Raw Power 2, and the roll uses the previewed TN', () => {
+    const strong = duel('maul', ['bash'], { raw_power: 8 }), weak = duel('maul', ['bash'], { raw_power: 2 });
+    expect(tn(weak, 'bash')).toBe(12 + 1); expect(tn(strong, 'bash')).toBe(12 + 7);
+    expect(tn(strong, 'bash') - tn(weak, 'bash')).toBe(unitStrength(strong.pc, 'raw_power') - unitStrength(weak.pc, 'raw_power'));
+    Object.assign(strong.unit(strong.foe.id), { hp: 999, maxHp: 999, injResist: 100 });
+    for (let i = 0; i < 12 && !strong.cb.log.some((l) => /the save against Bash/.test(l)); i++) { strong.pc.ap = 9; strong.tech('bash', { targetId: strong.foe.id }); }
+    expect(tnOf(strong.cb.log.find((l) => /the save against Bash/.test(l))!)).toBe(19);
+  });
+  it('Stopping Shot with a pistol reads Dexterity, not Raw Power', () => {
+    const f = duel('service_pistol', ['stopping_shot'], { dexterity: 4, raw_power: 8 }); f.put(f.foe, 'H5'); f.press(f.foe, 2, f.pc);
+    expect(tn(f, 'stopping_shot')).toBe(12 + 3);
+    const g = duel('service_pistol', ['stopping_shot'], { dexterity: 1, raw_power: 8 }); g.put(g.foe, 'H5'); g.press(g.foe, 2, g.pc);
+    expect(tn(g, 'stopping_shot')).toBe(12);
+  });
+  it('an enemy has no sheet: its technique\'s save is 12 + its tier\'s number, whatever the weapon', () => {
+    for (const [tier, n] of [['minion', 0], ['soldier', 1], ['elite', 2]] as const) for (const weapon of ['sabre', 'maul']) {
+      const f = duel('sabre', [], {}, { tier, weapon }); f.unit(f.foe.id).techs = ['bash']; f.turn(f.foe);
+      expect(tn(f, 'bash', {}, f.foe), tier + ' ' + weapon).toBe(12 + n);
+    }
+  });
+  it('Feint and Bind are as they were: the strength is counted once', () => {
+    const f = duel('kemizuchi_duelling_blade', ['feint'], { dexterity: 6, raw_power: 3 });
+    expect(tn(f, 'feint')).toBe(12 + 5 + 2); // a light blade: Dexterity strength 5, and Light's +2
+    const h = duel('maul', ['feint'], { dexterity: 6, raw_power: 3 });
+    expect(tn(h, 'feint')).toBe(12 + 2); // Raw Power strength 2; no Light step
+    const b = duel('fists', ['bind'], { raw_power: 6, dexterity: 2 }); b.g.rng = rngFor(10);
+    expect(b.tech('bind', { targetId: b.foe.id })).toBeNull(); // Bare: the grapple's Body save
+    expect(tnOf(b.cb.log.find((l) => /body save \d+ vs/.test(l))!)).toBe(12 + 5);
+  });
+  it('a save rolled after the technique\'s own use (walking away from a Bind) reads the binder\'s strength with the weapon it was set with', () => {
+    const f = duel('sabre', ['bind'], { dexterity: 5, raw_power: 8 });
+    expect(f.tech('bind', { targetId: f.foe.id })).toBeNull(); f.pass();
+    try { f.walk(f.foe, 'G5'); } catch { /* a refused walk */ }
+    expect(tnOf(f.cb.log.find((l) => /the save against the bind/.test(l))!)).toBe(12 + 4); // a sabre hits with Dexterity
   });
 });

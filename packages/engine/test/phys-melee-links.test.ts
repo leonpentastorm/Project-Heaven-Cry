@@ -187,7 +187,7 @@ describe('Shove (17)', () => {
 describe('Trip (18)', () => {
   it('a failed Body save: Prone, Momentum, 1 AP', () => {
     const f = fight('sabre'); weak(f, f.foe);
-    const pv = f.pv('trip', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.saves?.[0]).toMatchObject({ skills: ['body'], tn: 12 }); expect(pv.momentum?.after).toBe(1);
+    const pv = f.pv('trip', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.saves?.[0]).toMatchObject({ skills: ['body'], tn: 12 + 3 }); expect(pv.momentum?.after).toBe(1);
     unchanged(f, () => f.pv('trip', { targetId: f.foe.id }));
     expect(f.tech('trip', { targetId: f.foe.id })).toBeNull(); expect(f.unit(f.foe.id).prone).toBe(true); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(5);
     expect(f.tech('trip', { targetId: f.foe.id })).toMatch(/already Prone/);
@@ -197,9 +197,9 @@ describe('Trip (18)', () => {
   });
   it('Hook or Reach: the save is at −2; without either, at the plain TN', () => {
     expect(fight('war_axe').pv('trip', { targetId: '' }).ok).toBe(false);
-    const f = fight('war_axe'); expect(f.pv('trip', { targetId: f.foe.id }).saves?.[0].tn).toBe(14);
-    const g = fight('glaive', { foes: [{ at: 'E7' }] }); expect(g.pv('trip', { targetId: g.foe.id, line: 'reach' }).saves?.[0].tn).toBe(14); // and from 2 tiles with a Reach weapon
-    const h = fight('maul'); expect(h.pv('trip', { targetId: h.foe.id }).saves?.[0].tn).toBe(12);
+    const f = fight('war_axe'); expect(f.pv('trip', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + 3);
+    const g = fight('glaive', { foes: [{ at: 'E7' }] }); expect(g.pv('trip', { targetId: g.foe.id, line: 'reach' }).saves?.[0].tn).toBe(14 + 3); // and from 2 tiles with a Reach weapon
+    const h = fight('maul'); expect(h.pv('trip', { targetId: h.foe.id }).saves?.[0].tn).toBe(12 + 3);
   });
   it('Bare: you may go Prone with it, and then it is Grappled', () => {
     const f = fight('fists'); weak(f, f.foe);

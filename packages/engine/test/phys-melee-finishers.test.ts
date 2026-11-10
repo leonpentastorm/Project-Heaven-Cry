@@ -87,7 +87,7 @@ describe('Break (22)', () => {
   it('one strike; a Body save at −1 per Momentum spent, failed: Stunned. Spends all, ends the chain', () => {
     const f = one('sabre'); saves(f, f.foe, -50);
     const pv = f.pv('break', { targetId: f.foe.id }); expect(pv.ok).toBe(true);
-    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 3 }]); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ap).toBe(2);
+    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 3 + 5 }]); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ap).toBe(2);
     rig({ hit: true, die: 12 }); const hp = hpOf(f);
     expect(f.tech('break', { targetId: f.foe.id })).toBeNull();
     expect(hpOf(f)).toBe(hp - dealt(pv.attacks[0])); // preview == run

@@ -49,7 +49,7 @@ describe('Hamstring', () => {
     const pv = f.pv('hamstring', { targetId: f.foe.id });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(hasMult(pv, 0.7)).toBe(true);
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cutDmg(f).total * 0.7, 5);
-    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 }]);
+    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 3 }]);
     expect(pv.notes.some((n) => /slowed 2 rounds/.test(n))).toBe(true);
     rig({ hit: true, die: 12 }); const hp = f.foe.hp;
     expect(f.tech('hamstring', { targetId: f.foe.id })).toBeNull();

@@ -13,8 +13,7 @@
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
 import { technique, landed, holdMomentum, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
-import { strikingWith } from '../core';
-import { PHYS_RULES } from '../data';
+import { strikingWith, techSaveTn, techVia } from '../core';
 import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
 import { mod } from '../../character';
 import { zoneEnter } from '../../magic';
@@ -52,9 +51,10 @@ function shieldBonus(u: Unit): number {
   if (!it || it.category !== 'shield') return 0;
   return (it.effects || []).filter((e: any) => e.op === 'defense_bonus' && typeof e.value === 'number').reduce((n: number, e: any) => n + e.value, 0);
 }
-/** A Body save outside a technique's own use (Guard with Reach, on the mover's step): the core's save, with the hook's dice. */
-function bodySave(cb: Combat, rng: Rng, who: Unit, against: string, tnAdd = 0): boolean {
-  const tn = (PHYS_RULES.stop_tn || 12) + tnAdd, bonus = unitSave(who, 'body'), r = d20(rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
+/** A Body save outside a technique's own use (Guard with Reach, on the mover's step): the core's save, with the hook's
+ * dice. tn: techSaveTn of the unit that forces it (rules 1.13). */
+function bodySave(cb: Combat, rng: Rng, who: Unit, against: string, tn: number): boolean {
+  const bonus = unitSave(who, 'body'), r = d20(rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
   cb.log.push(who.name + (ok ? ' saves' : ' fails the save') + ' against ' + against + ' (body ' + (r + bonus) + ' vs ' + tn + ').');
   return ok;
 }
@@ -141,7 +141,7 @@ technique({
       if (p === 'reach') t.note('Enemies must make a Body save to step next to you.');
       return null;
     }
-    Object.assign(t.state(), { on: true, t: turnStamp(t.cb), def, reach: p === 'reach', heavy: p === 'heavy', front });
+    Object.assign(t.state(), { on: true, t: turnStamp(t.cb), def, reach: p === 'reach', heavy: p === 'heavy', front, via: techVia(t) });
     holdMomentum(t);
     meleeFx(t, 'guard', { front, reach: p === 'reach', heavy: p === 'heavy' });
     t.cb.log.push(t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ').');
@@ -164,7 +164,7 @@ onHook('move_step', (ctx: any, cb) => {
   if (cb.units.some((v) => v !== m && alive(v) && v.pos === ctx.from)) return;
   for (const h of cb.units) {
     const g = guardOf(h); if (!g?.reach || h.side === m.side || !alive(h) || dist(h.pos, ctx.at) > 1 || dist(h.pos, ctx.from) <= 1) continue;
-    if (bodySave(cb, ctx.rng, m, h.name + '\'s Guard')) continue;
+    if (bodySave(cb, ctx.rng, m, h.name + '\'s Guard', techSaveTn(h, g.via || 'raw_power'))) continue; // the guard's strength with the weapon it was set with
     m.pos = ctx.from; ctx.stop = 'guard';
     cb.log.push(m.name + ' can\'t get past ' + h.name + '\'s guard and stops at ' + refOf(m.pos) + '.');
     return;

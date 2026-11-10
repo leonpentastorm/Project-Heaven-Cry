@@ -108,7 +108,7 @@ describe('Bash (8)', () => {
   it('base (a sabre): ×0.5, then a Body save or Dazed; AP is the weapon\'s', () => {
     const f = fight('sabre', ['D5']); f.unit(f.foe.id).sv = { body: -50, brain: 0, heart: 0 };
     const pv = f.pv('bash', { targetId: f.foe.id });
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 }]);
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 3 }]);
     const cut = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * 0.5, 1);
     rig({ hit: true, die: 12 }); const h = hp(f, f.foe);

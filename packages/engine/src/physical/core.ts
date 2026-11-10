@@ -7,7 +7,7 @@ import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
 import type { HookName } from '../effects/types';
-import { applyCond, condOn, unitSave, withVia } from '../magic';
+import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, canReact, useReaction } from '../tactics';
 import { d20, type Rng } from '../rng';
 import { mod } from '../character';
@@ -377,10 +377,15 @@ export function canAnswer(cb: Combat, u: Unit, id: string, against?: Unit): bool
   const order = (charOfUnit(u) as any)?.phys?.answers as string[] | undefined; if (order && !order.includes(id)) return false;
   return true;
 }
+/** The TN of a save a technique forces (rules 1.13): the stop TN + the user's strength with the skill the weapon hits
+ * with (a unit with no sheet: its tier's number) + tnAdd. `via` is for a save rolled after the technique's own use
+ * (Guard with Reach, a Bind walked away from), which kept the skill it was set with. */
+export const techSaveTn = (u: Unit, via: string, tnAdd = 0): number => (PHYS_RULES.stop_tn || 12) + unitStrength(u, via) + tnAdd;
 /** A save by the target with the better of some skills (or a family: 'body' | 'brain' | 'heart'). True: it saved. In a
- * preview nothing is rolled: the save is listed and the target is taken to fail. tnAdd: positive is harder. */
+ * preview nothing is rolled: the save is listed and the target is taken to fail. The TN is techSaveTn: 12 + the user's
+ * strength + tnAdd (positive is harder). */
 export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'brain' | 'heart', tnAdd = 0): boolean {
-  const tn = (PHYS_RULES.stop_tn || 12) + tnAdd, skills = Array.isArray(skillsOrFam) ? skillsOrFam : [skillsOrFam];
+  const tn = techSaveTn(t.u, techVia(t), tnAdd), skills = Array.isArray(skillsOrFam) ? skillsOrFam : [skillsOrFam];
   if (t.preview) { (t.pv.saves ||= []).push({ unit: target.id, skills, tn }); return false; }
   const c = target.companion ? null : charOfUnit(target);
   const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', rumination: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
