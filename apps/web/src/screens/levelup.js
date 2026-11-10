@@ -14,7 +14,7 @@
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, perPoint, ceilingLine } from './shared';
-import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
+import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 
@@ -187,7 +187,7 @@ export class LevelUpLogic extends DCLogic {
       choosing, classCards, pick, cls,
       tree, steps, hasSteps: steps.length > 0,
       spend: [left ? left + ' Skill point' + (left > 1 ? 's' : '') : '', c.unspent.attr ? c.unspent.attr + ' Attribute point' + (c.unspent.attr > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Nothing to spend',
-      ceil: 'Attributes: ' + ceil + (cap < 10 ? ' (' + [8, 9, 10].filter((n) => n > cap).map((n) => n + ' from level ' + attrCapLevel(n)).join(', ') + ')' : ''),
+      ceil: 'Attributes: ' + ceil + (cap < 10 ? ' (' + [8, 9, 10].filter((n) => n > cap).map((n) => n + ' from level ' + attrCapLevel(n)).join(', ') + ')' : '') + (cap < 10 && legendRoom(c) > 0 ? ' · your Legendary Deed lets one Attribute go 1 above it' : ''),
       spendHead: left || c.unspent.attr ? 'TO SPEND' : 'ALL POINTS SPENT',
       rules: 'A skill can\'t be higher than the attribute above it, and an attribute can\'t pass the ceiling for your level; 10 is the top. Each Mastery level (3, 5, 7, 9 points) gives one perk step: one of the skill\'s two perks at Tier I, or a Tier I raised to Tier II. 10 points give the skill\'s Mastered perk.',
       stepsHead: owed ? 'PERK STEPS WAITING · ' + owed : '',

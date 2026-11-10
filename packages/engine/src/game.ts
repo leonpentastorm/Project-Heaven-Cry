@@ -223,6 +223,8 @@ export type NarratorTurn = {
   overreach?: { charId: string; skill: string; push: string }[];
   xp?: { charId: string; source: string; amount: number; reason?: string }[];
   deeds?: { charId: string; perkId: string; deed: string }[];
+  /** A Legendary Deed (item 1006): +1 Attribute point, and one Attribute point may stand 1 above the level's ceiling. */
+  legends?: { charId: string; deed: string }[];
   /** A story moment to show (an illustration), by id; only those open in this zone count. */
   moment?: string;
   /** Mechanical actions a player declared in words ("I move to A15 and shoot the guard"), run by the engine as that
@@ -1234,6 +1236,14 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const song = startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
     spotlight(g, { kind: 'legend', char: c.id, unit: unitOfChar(g, c.id), reason: 'a legendary deed', perk: d.perkId, line: String(d.deed || '').slice(0, 200), song });
     awardAutomatic(g, c);
+  }
+  for (const d of t.legends || []) {
+    const c = g.characters[d.charId]; if (!c || c.dead || !String(d.deed || '').trim()) continue;
+    c.legends = (c.legends || 0) + 1; c.unspent.attr++; c.deeds.push(d.deed);
+    push(g, { kind: 'system', text: c.name + ' has done a Legendary Deed: ' + d.deed + ' +1 Attribute point, and it may go 1 above the ceiling.' });
+    canon(g, c.name + ' did a Legendary Deed: ' + d.deed, [c.name], 5);
+    const song = startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
+    spotlight(g, { kind: 'legend', char: c.id, unit: unitOfChar(g, c.id), reason: 'a legendary deed', line: String(d.deed).slice(0, 200), song });
   }
   for (const x of t.treat || []) {
     const c = g.characters[x.charId]; if (c && !c.dead && c.hp <= 0 && x.loc === 'all') { c.hp = 1; c.downedFails = 0; push(g, { kind: 'system', text: c.name + ' is stabilised at 1 HP.' }); }
