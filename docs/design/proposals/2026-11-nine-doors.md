@@ -73,7 +73,7 @@ Two patterns stand out:
 | Determination | Will Power | Outbursts | built |
 | Virtue | Faith | Blessings | built |
 | Perception | Ingenuity | stealth | **new**, on pieces that exist (section 5.1) |
-| Expression | Visualization | Figments *(Suggested)* | **new** (section 5.2) |
+| Expression | Visualization | Figments *(Suggested)*, through the Visualizer | **new** (section 5.2) |
 | Endurance | Durability | the shield and the wall | **pull together** (section 5.3) |
 | Insight | Empathy | tending and song | **pull together** (section 5.4) |
 
@@ -103,7 +103,7 @@ Leon: Visualization is weak and has no base; maybe an in-world system with its o
 
 **Why it belongs to Visualization.** The skill's text is "shapes thought into images". Mana is nanobots. So: you picture a thing, and the bots build it. And the 2020 skill web already expected gear for this: Visualization's gear gates in `skills.json` are `gear:projector` and `gear:illusion`, which nothing uses yet.
 
-1. **The instrument: the Envisor *(Suggested)*.** A third focus beside the Evoker and the Emanator. The two gloves are worn on the hand; this one is worn over the eye. Gated by Visualization.
+1. **The instrument: the Visualizer** (Leon: it is already in the lore, an Evoker for artists). The 2020 EPCCG's Visualization entry names "Projector Gear®" users and says the skill decides whether you can use gear that calls up images. A third focus beside the Evoker and the Emanator, gated by Visualization. What it looks like and where it is worn is Leon's to say.
 2. **What it makes: Figments *(Suggested)*.** Solid constructs of bots, each a unit on the grid.
 3. **The forms** (five to start):
    - **Double:** a copy of you that draws attacks. (Today's Afterimage, made a body.)
@@ -181,3 +181,11 @@ Again the pieces exist: songs, the Bard's Triage, stims, shields given, Camarade
 6. **Order.** My suggestion: ship Physical 2.0; then the cheap moves in section 3 (numbers that only change skill); then stealth; then Figments; then the two pull-togethers. The balance pass comes after the ninth door, as you said it would after every Body system.
 7. **Old characters and item 953:** a blade build made on Athletics now attacks with Dexterity. One-time swap of the two skills on load, or leave them?
 8. **Tri-scale:** send me the 2020 notes, or tell me the real pieces, and I will replace the sketches.
+
+## 8. Leon's answers (10 Nov 2026)
+
+1. **Gamma in checks: yes.** A gamma skill adds its full points to a check, not points − 1. Gamma skills are also the ones called most when talking to sentient beings.
+2. **Figments: yes.** The instrument is the **Visualizer**, already in the lore: an Evoker for artists.
+3. **Saves go to betas: yes.**
+4. **The debuff strengths and what gammas give in a fight:** to be drafted (section 9). They were a 2020 hot-fix: a friend's character with six gamma skills did nothing in a fight during a test, so debuff strength was put on three gammas. A gamma giving combat quality of life, not straight damage, is fine. Skill bonuses may move around.
+5. **Old characters: don't worry about them.** A new save is started every update.
