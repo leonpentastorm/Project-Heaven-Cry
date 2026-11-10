@@ -31,7 +31,9 @@ export interface TechDef {
  * round type; `opt` an optional outcome the text offers ('push', 'swap', 'leg'…); `item` a pack reference. */
 export interface TechArgs {
   hand?: 'main' | 'off'; targetId?: string; targetIds?: string[]; tile?: string; allyId?: string; allyIds?: string[];
-  line?: string; ammo?: string; opt?: string; item?: string | number; mods?: string[];
+  line?: string; ammo?: string; opt?: string;
+  /** a weapon that isn't in the hand: a pack entry (index or id) for a technique that draws, or a carried throwable's id */
+  item?: string | number; mods?: string[];
 }
 export interface TechPreview {
   ok: boolean; why: string | null; id: string; ap: number; rounds: number;
@@ -50,6 +52,13 @@ export interface StrikeOpts {
   /** flat to-hit, shown under the technique's name */ extra?: number;
   critMin?: number; /** a roll that hits is a critical */ critOnHit?: boolean; ignoreArmour?: number | true; ignoreCover?: boolean; reach?: number;
   label?: string; noMomentum?: boolean; noPressure?: boolean;
+  /** the held weapon is thrown: a ranged attack at throwing range (line of sight, cover), aimed with Dexterity; the hit
+   * gives Pressure as any ranged hit does, and Momentum when the technique is a melee one. The handler then takes the
+   * weapon out of the hand (loseWeapon). */
+  thrown?: boolean;
+  /** this roll is one of a volley: no Recoil on it (the technique's own penalty per round stands in). Named 'burst' or
+   * 'auto', the items written for the engine's burst and full auto see it as one (ctx.volley, ctx.vi) */
+  volley?: boolean | 'burst' | 'auto';
 }
 export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null }
 export type WatchTrigger = 'moves' | 'enters_tile' | 'attacks_ally' | 'acts';
@@ -60,6 +69,9 @@ export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off';
 export interface Tech {
   cb: Combat; u: Unit; c: Character | null; def: TechDef; w: WeaponDef; weaponId: string; hand: 'main' | 'off';
   args: TechArgs; tgt: Unit | null; rng: Rng;
+  /** what the technique is used with: the weapon in a hand, one just drawn for it ('drawn'), or a carried throwable
+   * (weaponId is then the throwable's id; spendRounds takes one from what is carried) */
+  wield: 'main' | 'off' | 'drawn' | 'throwable';
   /** true: change nothing, roll nothing (the card and the AI ask this way) */ preview: boolean;
   /** the preview being built (handlers add through the helpers, or note()) */ pv: TechPreview;
   /** does the held weapon have this property, for a bonus line (false off its home when the technique is particular) */

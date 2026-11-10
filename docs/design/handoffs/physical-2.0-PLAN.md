@@ -155,17 +155,24 @@ The helpers (all in `core.ts`, all honour `t.preview`):
 ```ts
 strike(t, opts?): StrikeResult        // one attack through the engine's pipeline: { ok, why, hit, crit, dmg, killed, pct, target }
                                       // target is the unit really struck (an attack can be redirected): put riders on r.target, not on t.tgt
-                                      // opts: target, mode ('aimed'), mult, extra, critMin, critOnHit, ignoreArmour, ignoreCover, reach, label, noMomentum, noPressure
+                                      // opts: target, mode ('aimed'), mult, extra, critMin, critOnHit, ignoreArmour, ignoreCover, reach, label, noMomentum, noPressure,
+                                      //   thrown (the held weapon is thrown: a ranged attack at throwing range, aimed with Dexterity; then loseWeapon),
+                                      //   volley (true | 'burst' | 'auto': one round of a volley, no Recoil; named, the items written for burst and full auto see it)
+                                      // several rolls in one technique: the card shows each as it will be rolled (rounds, Heat and Recoil of the earlier ones)
 canStrike(t, target, mode?)           // could the attack be made now (range, sight, ammunition)
 landed(t, n?)                         // a technique that worked without a damaging strike (Feint, a Link): Momentum +n and the variety bonus
 spendMomentum(t)  momentumOf(u)  holdMomentum(t)
 setUp(t, target, { hit?, noAnswer?, label?, only? })      // a mark on the user's next technique against that target this turn
 save(t, target, skills | 'body' | 'brain' | 'heart', tnAdd?)   // true: it saved (TN rules.stop_tn; the better of the skills)
 cond(t, target, id, rounds?, { save? })                  // a condition with the technique as its source
-stop(t, target, 'pinned' | 'push' | 'prone' | 'halt' | [...], { tiles, rounds, save, tnAdd, apLoss, from })
+stop(t, target, 'pinned' | 'push' | 'prone' | 'halt' | [...], { tiles, rounds, save, tnAdd, apLoss, from, untilAp, weapon })
+                                      // untilAp: 2 = "Pinned until it spends 2 AP": held until the unit, or an ally next to it, pulls free (the engine has
+                                      // the action, the enemy AI does it, physView shows it); weapon: one left in the target, dropped when it is freed
                                       // one call = one save (Guts or Athletics unless save: false or a list) and, from a ranged technique, Stopped once
 forceMove(t, target, 'away' | 'toward' | tile, tiles, { from })   // tile by tile: held Watches and Overwatch fire
-stepUser(t, route)  stepsWithin(t, n)  approach(t, target, maxTiles)  standingAt(t, tile, fn)  stepBlock(t)   // moving the user inside a technique
+stepUser(t, route, { unit?, oa? })  stepsWithin(t, n)  approach(t, target, maxTiles)  standingAt(t, tile, fn)  stepBlock(t)   // moving the user inside a technique
+                                      // unit: make another unit run as its own movement (Rout); oa: the walk draws opportunity attacks
+loseWeapon(t, tile | null)            // the weapon leaves the hand (thrown: into the pile on that tile; null: left in a target). The user is unarmed
                                       // (the engine's own move, free and without opportunity attacks: a Pinned user doesn't step, traps and held shots fire)
 holdWatch(t, spec)  fireWatch(t, ctx, target, fn, kind?)  endWatch(cb, u, why)   // Watches
 answer(t, against, fn)  canAnswer(cb, u, id, against?)                           // Answers; Parry is protective (works while Suppressed)
@@ -176,11 +183,20 @@ techState(u, id) / t.state()          // per-technique state on a unit, plain JS
 
 For rules that stand outside one use of a technique (a held lane, a Bead, smoke): listen on the fight's hooks with `onHook(name, (ctx, cb) => …)` from your own file, as `ranged/press.ts` does for Suppress's lane, and keep the state on the unit with `techState`. Two registries take the place of the questions the first draft had the core ask: `pressureDecay((cb, u, fall) => fall)` (a Bead holding Pressure: return 0; smoke: return 2) and `pressureFilter((cb, target, n, by, why) => n)` (Guard, the Defender's wall: return what still lands).
 
+**A weapon that isn't in the hand.** Two kinds of technique are used with something the unit doesn't hold, and the core handles both: the handler sees the weapon as held (`t.weaponId`, `t.w`, `t.line()`, AP, `strike`) and `t.wield` says which case it is.
+
+- **A technique that draws its weapon** (`needs.stowed`: Draw Cut, Snap Shot). `args.item` names the pack entry. The card is worked out as if the weapon were held; on use the core draws it for free (the same change a player's draw makes: the weapon in hand goes to the pack) and then runs the handler with `t.wield === 'drawn'`. It is never offered for the weapon already in the hand.
+- **A technique used with a carried throwable** (a grenade through Lob or Rout). `args.item` is the throwable's id. The handler runs with the grenade as the weapon (`t.wield === 'throwable'`, its Blast, Arc and Thrown lines apply, Lob is at home); `spendRounds(t, 1)` takes one from what is carried. Offered: what the throwable lends, and ready techniques that have a line for one of its properties.
+- `packPad(cb, u, g)` lists both for the screen: one block per stowed weapon or kind of throwable, with its entries and the `item` to send.
+
+**An attack that never comes.** A Watch on `attack_target` that takes the attacker out (or sets `ctx.cancel`) ends that attack: its AP is spent and nothing is rolled ("the shot lands first").
+
 ### 5.3 Actions
 
 | Action | |
 |---|---|
 | `combat/technique { unitId, id, hand?, targetId?, targetIds?, tile?, allyId?, allyIds?, line?, ammo?, opt?, item? }` | a technique in a fight. `line`: the property to use when two lines match; `ammo`: an arrow or special round type; `opt`: an outcome the text offers; `tile` may be a map reference ("C5") or "x,y" |
+| `combat/pull-free { unitId, targetId? }` | spend the AP to free yourself, or an ally next to you, from what nails them in place |
 | `phys/ready { charId, system, ids }` | the ready list of a system (out of a fight; cap `readyCap`) |
 | `phys/pick { charId, weaponId, id }` | take a pick a drill mark gave |
 | `phys/quiver { charId, weaponId, load }` | fill a bow's quiver (B writes the loader and registers it with `quiverLoader`) |
@@ -193,7 +209,7 @@ A sheet may carry `techniques: { melee: [..], ranged: [..] }` (creation's picks;
 
 **Pass the game as the last argument** to the three screen functions (`techniquePad(cb, u, hand, g)`, `previewTechnique(cb, u, id, args, g)`, `physView(cb, u, side, g)`): the character behind a unit is found through the game, and the screen calls the engine with none bound. Without it a player's unit reads as an enemy (a short pad, wrong off-hand numbers) and nothing errors.
 
-`techniquePad(cb, u, hand, g)`: the groups and entries for one held weapon (`ok`, `why`, `ap`, `rounds`, `line`, `choices`, `lent`, `signature`, `plain`, `built`). `previewTechnique(cb, u, id, args)`: the card (`attacks[]` with each roll's `AttackPreview`, `momentum`, `pressure[]`, `moves[]`, `saves[]`, `area`, `notes[]`, `ends`). `physView(cb, u, viewerSide)`: a unit's Momentum, Pressure pips as that side may see them, its state word and cost, who is pressing it, Stopped once, and the Watch it holds. Character side: `physOf`, `knownTechniques`, `readyTechniques`, `readyCap`, `drillOf`, `drillMark`, `drillMarks`, `picksOwed`, `pickable`, `startingTechniqueSlots`, `startingTechniqueChoices`, `weaponProps`, `propText`, `groupsOf`, `groupName`. All exported from `@phc/engine` (and everything under `phys`).
+`techniquePad(cb, u, hand, g)`: the groups and entries for one held weapon (`ok`, `why`, `ap`, `rounds`, `line`, `choices`, `lent`, `signature`, `plain`, `built`). `previewTechnique(cb, u, id, args)`: the card (`attacks[]` with each roll's `AttackPreview`, `momentum`, `pressure[]`, `moves[]`, `saves[]`, `area`, `notes[]`, `ends`). `physView(cb, u, viewerSide)`: a unit's Momentum, Pressure pips as that side may see them, its state word and cost, who is pressing it, Stopped once, whether it is nailed in place (`nailed: { ap, by, text }`), and the Watch it holds. `packPad(cb, u, g)`: the blocks for stowed weapons and throwables (above). Character side: `physOf`, `knownTechniques`, `readyTechniques`, `readyCap`, `drillOf`, `drillMark`, `drillMarks`, `picksOwed`, `pickable`, `startingTechniqueSlots`, `startingTechniqueChoices`, `weaponProps`, `propText`, `groupsOf`, `groupName`. All exported from `@phc/engine` (and everything under `phys`).
 
 State (all optional, plain JSON): on the character `phys: { known, ready: { melee, ranged }, drill, picked, quiver, answers?, rev }`; on the unit `res.momentum` / `resMax.momentum` (now for everyone holding a melee weapon), `pressure`, `pressHidden`, `pressBy`, `hitRound`, `hitWith`, `stopped`, `watch`, `chain`, `tech`, `setUp`, `techs`, `quiver`, `freeReload`.
 
@@ -208,6 +224,8 @@ State (all optional, plain JSON): on the character `phys: { known, ready: { mele
 | `watch_fire` | `{ unit, target, from, at, id }` (Overwatch fires as today's `overwatch` event instead, with `id`) |
 | `watch_end` | `{ unit, at, id, why }` (`turn`, `Pressed`, `replaced`, …) |
 | `stopped` | `{ unit, how, by }` |
+| `pull_free` | `{ unit, target, at }` |
+| `shot` with `thrown: true` | a thrown weapon (the engine's shot event, `mode: 'thrown'`) |
 | `drill` | `{ unit, at, weapon, add, total, mark, learned }` |
 
 The strikes inside a technique are the engine's ordinary `melee` and `shot` events.

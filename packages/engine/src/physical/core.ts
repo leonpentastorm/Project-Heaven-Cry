@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, previewAttack, resolveAttack, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock } from '../combat';
+import { type Combat, type Unit, previewAttack, resolveAttack, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley } from '../combat';
 import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -12,6 +12,8 @@ import { resOf, resGain, canReact, useReaction } from '../tactics';
 import { d20, type Rng } from '../rng';
 import { mod } from '../character';
 import type { Character } from '../character';
+import { packOf } from '../character';
+import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
 import { TECHNIQUE, TECHNIQUES, PHYS_RULES, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure } from './pressure';
@@ -115,6 +117,7 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
   const pv = newPreview(def);
   const t: Tech = {
     cb, u, c: u.companion ? null : charOfUnit(u), def, w, weaponId, hand, args, tgt, rng, preview, pv,
+    wield: (args as any)._w === 'throwable' ? 'throwable' : (args as any)._w === 'stowed' ? 'drawn' : hand,
     has: (p) => !off && props.includes(p) && applying.some((l) => l.props.includes(p)),
     holds: (p) => props.includes(p),
     line: (...ps) => (off ? null : ps.find((p) => applying.some((l) => l.props.includes(p)) && props.includes(p)) || null),
@@ -149,7 +152,7 @@ export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', c
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
  * with a property, or ready. A unit with no character (an enemy, a companion) has the free ones, what its weapon lends
  * and gives, and its stat block's list (u.techs). */
-export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off'): { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] {
+export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?: 'stowed' | 'throwable'): { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] {
   const weaponId = hand === 'off' ? u.offWeapon : u.weapon; if (!weaponId) return [];
   const sys = weaponSystem(weaponId), props = weaponProps(weaponId), c = u.companion ? null : charOfUnit(u);
   // A companion, a puppet or a unit with a fixed action list (the drone) has the free techniques its list allows, and
@@ -160,6 +163,10 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off'): { id: 
   const out: { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] = [];
   for (const d of TECHNIQUES) {
     if (d.system !== sys) continue;
+    // A technique that draws its weapon is used with a stowed one, never with the one in the hand; with a carried
+    // throwable as the weapon, only what the throwable lends and what has a line for one of its properties.
+    if (!!d.needs.stowed !== (wield === 'stowed')) continue;
+    if (wield === 'throwable' && (d.free || !(lent === d.id || d.home.some((p) => props.includes(p)) || d.lines.some((l) => l.props.some((p) => props.includes(p)))))) continue;
     if (d.free) { if (!u.allowedActions || u.allowedActions.includes(OLD[d.id])) out.push({ id: d.id, how: 'free' }); }
     else if (ready.has(d.id)) out.push({ id: d.id, how: 'ready' });
     else if (lent === d.id) out.push({ id: d.id, how: 'lent' });
@@ -167,13 +174,15 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off'): { id: 
   }
   return out;
 }
-const hasUsable = (u: Unit, hand: 'main' | 'off', id: string) => usable(null, u, hand).some((x) => x.id === id);
+const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' | 'throwable') => usable(null, u, hand, wield).some((x) => x.id === id);
 /** Why this unit can't start this technique now, before any target is looked at (null: it can). */
 function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null {
   const hand: 'main' | 'off' = args.hand === 'off' && u.offWeapon ? 'off' : 'main', weaponId = hand === 'off' ? u.offWeapon! : u.weapon;
   const props = weaponProps(weaponId);
   if (weaponSystem(weaponId) !== def.system) return def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.';
-  if (!hasUsable(u, hand, def.id)) return 'You don\'t have ' + def.name + ' ready.';
+  const wield = (args as any)._w as 'stowed' | 'throwable' | undefined;
+  if (def.needs.stowed && wield !== 'stowed') return 'Pick the weapon to draw.';
+  if (!hasUsable(u, hand, def.id, wield)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
   const bad = (def.not_with || []).find((p) => props.includes(p)); if (bad) return 'Not available with ' + (/^[aeiou]/.test(bad) ? 'an ' : 'a ') + bad + ' weapon.';
   if (def.group === 'answer') return def.name + ' is a reaction: it fires on its trigger.';
   if (def.system === 'melee') {
@@ -188,6 +197,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.needs.hidden && !u.hidden) return 'Only from Hidden.';
   const ap = apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null); if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   const w = WEAPON[weaponId];
+  if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
     if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : 'Empty: reload first.';
@@ -220,33 +230,44 @@ function inHand<T>(t: Tech, fn: () => T): T {
  * don't. In a preview it records the roll's chance and damage and returns hit: false. */
 export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
   const tgt = o.target || t.tgt; if (!tgt) return { ok: false, why: 'Pick a target.', hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: null };
-  const mode = o.mode || (t.def.system === 'melee' ? 'melee' : 'shot'), u = t.u, st = scratch(t);
+  const mode: 'melee' | 'shot' | 'aimed' | 'thrown' = o.thrown ? 'thrown' : o.mode || (t.def.system === 'melee' ? 'melee' : 'shot'), u = t.u, st = scratch(t);
   if (t.def.group === 'take') o = { ...o, noPressure: true }; // a Take spends Pressure; its hit adds none
   if (o.noMomentum) st.noMomentum = true; if (o.noPressure) st.noPressure = true;
   if (!alive(u)) return { ok: false, why: 'Out of the fight.', hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
-  // armour ignored for this strike: taken off and put back exactly (anything the hit itself does to armour stays)
-  const cut = o.ignoreArmour ? (o.ignoreArmour === true ? tgt.armour : Math.min(tgt.armour, o.ignoreArmour)) : 0; tgt.armour -= cut;
   const act: Active = { t, o, tgt, real: null };
   ACTIVE.push(act);
   try {
     return inHand(t, () => {
       const offTurn = active(t.cb) !== u; // a reaction: no Recoil from the shots of the user's own turn
-      const pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil: offTurn });
-      if (t.preview || !pv.ok) { if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && mode !== 'melee' && t.w.magazine != null && !u.infiniteAmmo) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
+      const noRecoil = offTurn || !!o.volley, fires = mode !== 'melee' && mode !== 'thrown';
+      // A thrown weapon is aimed with Dexterity, whatever the weapon hits with (a unit with no sheet uses its own bonus).
+      const atk0 = u.attack; if (o.thrown && t.c) u.attack = mod((t.c.skills as any).dexterity || 0);
+      // In a preview nothing has been spent yet: the rolls this technique has already shown count as fired (rounds,
+      // Heat, and Recoil unless the technique is one volley), so each later roll's card is the roll it will be.
+      const n = t.preview && fires ? st.rolls || 0 : 0, keep = { ammo: u.ammo, heat: u.heat, shots: u.shotsThisTurn };
+      if (n) { if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n; }
+      let pv: ReturnType<typeof previewAttack>;
+      try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; } if (t.preview) u.attack = atk0; }
+      if (pv.ok && fires) st.rolls = (st.rolls || 0) + 1;
+      if (t.preview || !pv.ok) { u.attack = atk0; if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && fires && t.w.magazine != null && !u.infiniteAmmo) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
       const m0 = momentumOf(u), su = (u as any).setUp;
       if (su && su.t === turnStamp(t.cb) && su.target === tgt.id) st.usedSetUp = true;
       st.struck = (st.struck || 0) + 1;
-      const r = resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, offTurn ? { noAp: true } : { free: true });
+      let r: ReturnType<typeof resolveAttack>;
+      // a volley's rounds are numbered and named, as the engine's own burst and full auto are (Fire Discipline, Spray and Pray)
+      const vi = o.volley ? (st.vol = (st.vol ?? -1) + 1) : 0, roll = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, noRecoil ? ({ noAp: true, vi } as any) : { free: true });
+      try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
       if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
+      if (r.cancelled) return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt }; // a reaction ended it before the roll
       if (t.def.system === 'melee') {
         if (o.noMomentum) { if (u.res) u.res.momentum = m0; }
-        else if (r.hit) { ensureMomentum(u); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); }
+        else if (r.hit) { ensureMomentum(u); if (o.thrown) resGain(u, 'momentum', 1); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); } // the engine adds the +1 for a melee hit; a thrown weapon's is added here
         momentumFx(t.cb, u, m0);
       }
       // the unit the attack was really made against (Confused, a captive held as a shield, Duck and Roll): riders follow it
       return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: act.real || tgt };
     });
-  } finally { ACTIVE.pop(); tgt.armour += cut; }
+  } finally { ACTIVE.pop(); }
 }
 // The hooks strike shapes the attack through. They read ACTIVE and never run for anyone else's attack.
 onHook('attack_preview', (ctx: any) => {
@@ -269,7 +290,12 @@ onHook('attack_roll', (ctx: any) => {
   // "a hit is a critical": only a roll that would hit anyway is raised
   if (a.o.critOnHit && ctx.die !== 1 && ctx.die + ctx.toHit >= ctx.need) ctx.critMin = Math.min(ctx.critMin, ctx.die);
 });
-onHook('damage_out', (ctx: any) => { const a = cur(ctx.att); if (a?.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name }); });
+onHook('damage_out', (ctx: any) => {
+  const a = cur(ctx.att); if (!a) return;
+  if (a.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name });
+  // armour this strike ignores, against the unit really struck (nobody's armour is changed)
+  if (a.o.ignoreArmour === true) ctx.ignoreArmour = true; else if (a.o.ignoreArmour) ctx.pierce = (ctx.pierce || 0) + a.o.ignoreArmour;
+});
 /** Could the user make this attack now (range, sight, ammunition)? Nothing is rolled or recorded. */
 export function canStrike(t: Tech, target: Unit, mode?: 'melee' | 'shot' | 'aimed'): boolean {
   ACTIVE.push({ t, o: {}, tgt: target, real: null });
@@ -319,14 +345,16 @@ const stoppedNow = (u: Unit) => ((u as any).stopped || 0) > 0;
 /** Pinned, pushed, knocked Prone or halted. One call is one save and one Stopped once, whatever the list holds.
  * Stopped once (Leon): set and checked only by ranged techniques. opts.save: false (none; the caller rolled, or the
  * text says no save), 'default' (Guts or Athletics, the better), or a skill list. Returns true if it took. */
-export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { tiles?: number; rounds?: number; save?: false | 'default' | string[]; tnAdd?: number; apLoss?: number; from?: string } = {}): boolean {
+export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { tiles?: number; rounds?: number; save?: false | 'default' | string[]; tnAdd?: number; apLoss?: number; from?: string;
+  /** 'pinned' holds until AP is spent to pull free (pullFree: the unit, or an ally next to it), not for rounds */ untilAp?: number; /** a weapon left in the target, dropped when it is freed */ weapon?: string } = {}): boolean {
   const list = Array.isArray(how) ? how : [how], ranged = t.def.system === 'ranged';
   if (ranged && stoppedNow(target)) { t.note(target.name + ' can\'t be stopped again this round.'); return false; }
   const sv = opts.save === undefined ? 'default' : opts.save;
   if (sv !== false && save(t, target, sv === 'default' ? PHYS_RULES.stop_save : sv, opts.tnAdd || 0)) return false;
   if (t.preview) { t.note(target.name + ': ' + list.map((h) => (h === 'push' ? 'pushed ' + (opts.tiles || 1) : h === 'halt' ? 'stopped' : h)).join(', ') + (opts.apLoss ? ', −' + opts.apLoss + ' AP next turn' : '') + '.'); return true; }
   for (const h of list) {
-    if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true } as any);
+    if (h === 'pinned' && opts.untilAp) target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : {}) };
+    else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true } as any);
     else if (h === 'prone') { if (!target.prone) { target.prone = true; target.braced = false; emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); } }
     else if (h === 'push') forceMove(t, target, 'away', opts.tiles || 1, { from: opts.from });
   }
@@ -367,6 +395,11 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
 const bad = (cb: Combat, to: string, blocked: Set<string>, mover: Unit) => { const [x, y] = xy(to); return x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || blocked.has(to) || cb.units.some((v) => v !== mover && !v.dead && v.pos === to); };
 /** Rounds a technique burns beyond its rolls. False (with a note) if the weapon can't pay. */
 export function spendRounds(t: Tech, n: number): boolean {
+  if (t.wield === 'throwable' && n > 0) { // a grenade is the ammunition: one from what the user carries
+    const have = t.u.throwables?.[t.weaponId] ?? 0; if (have < n) { t.note('Needs ' + n + ', you carry ' + have + '.'); return false; }
+    if (t.preview) { t.pv.rounds += n; return true; }
+    t.u.throwables![t.weaponId] = have - n; t.u.ammo = have - n; return true;
+  }
   if (t.u.infiniteAmmo || t.w.magazine == null || n <= 0) return true;
   const have = t.hand === 'off' ? t.u.offAmmo ?? 0 : t.u.ammo; if (have < n) { t.note('Needs ' + n + ' rounds, ' + have + ' loaded.'); return false; }
   if (t.preview) { t.pv.rounds += n; return true; }
@@ -383,6 +416,58 @@ export function lowerPressure(t: Tech, target: Unit, n: number): void { if (!t.p
 export const wasSuppressed = (t: Tech): boolean => !!t.tgt && wasSuppressedAt(t.tgt, (t as any)._p0);
 /** Has an ally of the user hit this target this round (Crossfire). */
 export const hitByAlly = (t: Tech, target: Unit): boolean => Object.entries(((target as any).hitRound || {}) as Record<string, number>).some(([id, r]) => r === t.cb.round && id !== t.u.id && t.cb.units.find((x) => x.id === id)?.side === t.u.side);
+
+// ---------- a weapon that isn't in the hand ----------
+// Two kinds of technique are used with something the unit doesn't hold: one that draws its weapon (needs.stowed: Draw
+// Cut, Snap Shot; args.item names the pack entry) and one used with a carried throwable as the weapon (a grenade through
+// Lob or Rout; args.item is the throwable's id). For both, the unit is shown holding that weapon while the technique
+// is checked, previewed and run, so every helper reads the right properties, AP and numbers. A real draw goes through
+// the gear service the reducer registers (the same change a player's draw makes, free of AP).
+export interface Wield { kind: 'stowed' | 'throwable'; item: string | number; weaponId: string; ammo: number; entry?: any }
+export interface GearService { draw(cb: Combat, u: Unit, item: string | number): string | null; lose(cb: Combat, u: Unit, hand: 'main' | 'off', at: string | null): void }
+let GEAR: GearService | null = null;
+/** game.ts gives the core its gear changes (drawing from the pack, a weapon leaving the hand for a pile). */
+export const setGearService = (s: GearService) => { GEAR = s; };
+/** The weapons a unit has stowed (pack entries; not throwables), for techniques that draw. */
+export function stowedOf(u: Unit): { item: number; weaponId: string; name: string }[] {
+  const c = u.companion ? null : charOfUnit(u); if (!c) return [];
+  return packOf(c).map((x, i) => ({ x, i })).filter(({ x }) => x.qty > 0 && !x.mags && !!x.weapon && !!WEAPON[x.weapon] && WEAPON[x.weapon].category !== 'thrown').map(({ x, i }) => ({ item: i, weaponId: x.weapon!, name: x.name || WEAPON[x.weapon!].name }));
+}
+function wieldOf(u: Unit, def: TechDef, args: TechArgs): Wield | null | string {
+  if ((args as any)._w) return null; // already holding it (inside the swap, or after the draw)
+  const c = u.companion ? null : charOfUnit(u);
+  if (def.needs.stowed) {
+    if (args.item == null) return 'Pick the weapon to draw.';
+    if (!c) return 'Nothing stowed to draw.';
+    const idx = packRef(c, args.item), it = packOf(c)[idx];
+    if (!it || !it.weapon || !WEAPON[it.weapon] || WEAPON[it.weapon].category === 'thrown' || it.mags) return 'That isn\'t a stowed weapon.';
+    return { kind: 'stowed', item: idx, weaponId: it.weapon, ammo: it.loaded ?? 0, entry: it };
+  }
+  if (args.item == null) return null;
+  const id = String(args.item), w = WEAPON[id];
+  if (!w || w.category !== 'thrown') return 'That can\'t be used with a technique.';
+  const n = u.throwables?.[id] ?? 0; if (n < 1) return 'You carry no ' + w.name.toLowerCase() + '.';
+  return { kind: 'throwable', item: id, weaponId: id, ammo: n };
+}
+/** Run fn with the unit holding the wielded weapon in its main hand; everything is put back after. */
+function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
+  const c = u.companion ? null : charOfUnit(u), w = WEAPON[wi.weaponId];
+  const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, braced: u.braced, dmgMult: u.dmgMult };
+  const pts = (c?.skills as any)?.[w.skill];
+  u.weapon = w.id; u.ammo = wi.ammo; u.maxDur = 0; u.dur = undefined; u.mods = wi.entry?.mods || []; u.ammoType = wi.entry?.ammoType ?? null; u.jammed = false; u.dmgMult = 1;
+  if (typeof pts === 'number') u.attack = mod(pts);
+  try { return fn(); } finally { Object.assign(u, keep); if (keep.dur === undefined) delete u.dur; if (keep.dmgMult === undefined) delete u.dmgMult; if (keep.mods === undefined) delete u.mods; if (keep.ammoType === undefined) delete u.ammoType; if (keep.braced === undefined) delete u.braced; }
+}
+/** The weapon leaves the user's hand as part of the technique (thrown, or left in a target): into the pile on a tile, or
+ * nowhere (at: null; whoever holds it now keeps track of it). The user is then unarmed in that hand. */
+export function loseWeapon(t: Tech, at: string | null): void {
+  if (t.wield === 'throwable') return; // a throwable is spent with spendRounds
+  if (t.preview) { t.note(at ? 'The weapon lands at ' + refOf(at) + ': you are unarmed until you pick it up.' : 'The weapon stays there: you are unarmed.'); return; }
+  const u = t.u, id = t.hand === 'off' ? u.offWeapon : u.weapon; if (!id || id === 'fists') return;
+  if (t.c && GEAR) { GEAR.lose(t.cb, u, t.hand, at); return; }
+  if (at) dropToPile(t.cb, at, [{ id, name: WEAPON[id]?.name || id, qty: 1, kind: 'weapon', weapon: id } as any], 'drop');
+  if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; }
+}
 
 // ---------- moving the user ----------
 /** Tiles the user could step to within n tiles of movement, nearest first, each with its route. */
@@ -410,18 +495,17 @@ export const stepBlock = (t: Tech): string | null => moveBlock(t.u);
  * a step is free of them), but otherwise the engine's own move: a Pinned, Grappled or Prone user doesn't step, traps,
  * hazards and Sigil fields on the way go off, and held shots see each tile. Returns the tiles walked. In a preview it
  * only records where the user would end. */
-export function stepUser(t: Tech, route: string[], how: 'move' | 'disengage' = 'move'): number {
-  const u = t.u, cb = t.cb; if (!route.length) return 0;
+export function stepUser(t: Tech, route: string[], opts: { /** move this unit, not the user: it runs as its own movement (Rout) */ unit?: Unit; /** the walk draws opportunity attacks */ oa?: boolean } = {}): number {
+  const u = opts.unit || t.u, cb = t.cb; if (!route.length) return 0;
   if (t.preview) { if (moveBlock(u)) return 0; (t.pv.moves ||= []).push({ unit: u.id, to: route[route.length - 1] }); return route.length; }
   let n = 0;
   for (const k of route) {
     if (!alive(u) || moveBlock(u)) break;
     const was = u.pos;
-    if (moveUnit(cb, u, k, t.rng, 'move', { shortest: true, free: true })) break; // free: the items are told before they price it
+    if (moveUnit(cb, u, k, t.rng, 'move', { shortest: true, free: true, oa: !!opts.oa })) break; // free: the items are told before they price it
     if (u.pos === was) break; n++;
     if (u.pos !== k) break; // stopped short (a trap, a held shot)
   }
-  void how;
   return n;
 }
 
@@ -490,6 +574,11 @@ function withG<T>(g: any, fn: () => T): T { if (!g) return fn(); const was = bin
 /** What the technique would do, changing nothing (the card, the AI). Pass the game (`g`) when none is bound: the screen does. */
 export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}, g?: any): TechPreview {
   if (g) return withG(g, () => previewTechnique(cb, u, id, args));
+  { // a weapon that isn't in the hand: the card is worked out as if it were
+    const def0 = TECHNIQUE[id], wi = def0 ? wieldOf(u, def0, args) : null;
+    if (typeof wi === 'string') return { ok: false, why: wi, id, ap: 0, rounds: 0, attacks: [], notes: [] };
+    if (wi) return holding(u, wi, () => previewTechnique(cb, u, id, { ...args, hand: 'main', _w: wi.kind } as TechArgs));
+  }
   const def = TECHNIQUE[id], blank = (why: string): TechPreview => ({ ok: false, why, id, ap: def ? apFor(cb, u, def, args.hand === 'off' && u.offWeapon ? 'off' : 'main', args.line) : 0, rounds: 0, attacks: [], notes: [] });
   const p = prepare(cb, u, id, args, { state: 1 }, true); if (!p.t) return blank(p.why || 'Not now.');
   const t = p.t; if (p.why) { t.pv.ok = false; t.pv.why = p.why; return t.pv; }
@@ -519,6 +608,13 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
 /** Use a technique. Returns a refusal in plain words, or null. Nothing is spent on a refusal. */
 export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
   const def = TECHNIQUE[id]; if (!def) return 'No such technique.';
+  const wi = wieldOf(u, def, args); if (typeof wi === 'string') return wi;
+  if (wi?.kind === 'stowed') { // check it as if drawn, then draw it for real (free: the technique's AP pays), then use it
+    const pv0 = previewTechnique(cb, u, id, args); if (!pv0.ok) return pv0.why || 'Not now.';
+    const e = GEAR ? GEAR.draw(cb, u, wi.item) : 'Nothing to draw it with here.'; if (e) return e;
+    return useTechnique(cb, u, id, { ...args, item: undefined, hand: 'main', _w: 'stowed' } as TechArgs, rng);
+  }
+  if (wi?.kind === 'throwable') return holding(u, wi, () => useTechnique(cb, u, id, { ...args, hand: 'main', _w: 'throwable' } as TechArgs, rng));
   const pv = previewTechnique(cb, u, id, args); if (!pv.ok) return pv.why || 'Not now.';
   const p = prepare(cb, u, id, args, rng, false); if (!p.t || p.why) return p.why || 'Not now.';
   const t = p.t, ap = t.pv.ap, heat0 = u.heat;
@@ -559,6 +655,27 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
     }),
   })).filter((g) => g.entries.length);
 }
+/** The pad for what the unit doesn't hold: one block per stowed weapon that a ready technique can draw, and one per kind
+ * of throwable carried that a technique can be used with. The screen sends the entry's technique with the block's
+ * `item` (combat/technique { id, item }). */
+export interface PackPad { item: string | number; kind: 'stowed' | 'throwable'; weapon: string; name: string; count?: number; entries: PadEntry[] }
+export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
+  if (g) return withG(g, () => packPad(cb, u));
+  const out: PackPad[] = [];
+  const block = (wi: Wield, name: string, count?: number) => holding(u, wi, () => {
+    const entries = usable(cb, u, 'main', wi.kind).map((x): PadEntry => {
+      const def = TECHNIQUE[x.id], lf = linesFor(def, wi.weaponId, undefined, u), why = gate(cb, u, def, { hand: 'main', _w: wi.kind } as TechArgs) || (handlerOf(def.id) ? null : NOT_BUILT);
+      return { id: def.id, name: def.name, group: def.group, ap: apFor(cb, u, def, 'main'), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
+        ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(wi.weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
+        lent: x.how === 'lent', signature: false, plain: false, built: !!handlerOf(def.id) };
+    });
+    if (entries.length) out.push({ item: wi.item, kind: wi.kind, weapon: wi.weaponId, name, ...(count != null ? { count } : {}), entries });
+  });
+  const c = u.companion ? null : charOfUnit(u);
+  if (c) for (const s of stowedOf(u)) { const it = packOf(c)[s.item]; block({ kind: 'stowed', item: s.item, weaponId: s.weaponId, ammo: it.loaded ?? 0, entry: it }, s.name); }
+  for (const [id, n] of Object.entries(u.throwables || {})) if (n > 0 && WEAPON[id]?.category === 'thrown') block({ kind: 'throwable', item: id, weaponId: id, ammo: n }, WEAPON[id].name, n);
+  return out;
+}
 /** A unit's meters as one side may see them (the screen draws this; it compares nothing itself). Pips a Silent weapon
  * put on a unit are hidden from that unit's own side. */
 export function physView(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe', g?: any): ReturnType<typeof physViewOf> { return g ? withG(g, () => physViewOf(cb, u, viewerSide)) : physViewOf(cb, u, viewerSide); }
@@ -573,6 +690,7 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
     pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
       cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,
+    nailed: u.nailed ? { ap: u.nailed.ap, by: cb.units.find((x) => x.id === u.nailed!.by)?.name || '', text: 'Nailed in place until ' + u.nailed.ap + ' AP is spent to pull free' } : null,
     watch: w && (viewerSide === u.side || sideSees(cb, viewerSide, u)) ? { id: w.id, name: TECHNIQUE[w.id]?.name || w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), mine: viewerSide === u.side } : null,
   };
 }

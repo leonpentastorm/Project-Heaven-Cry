@@ -1242,7 +1242,9 @@
         "value": 2
       },
       "rounds": 1,
-      "needs": {},
+      "needs": {
+        "stowed": true
+      },
       "text": "Draw or swap to this weapon and fire, at −2.",
       "lines": [
         {

@@ -493,7 +493,7 @@ register({
     move_step: (ctx, h) => {
       const u = h.u, st = stateOf(h), cb = h.cb; if (!u || !cb || st.pool == null || ctx.u.side === u.side || !alive(u)) return;
       if (ctx.i === 0) (st.shot ||= {})[ctx.u.id] = false; // a new move: this mover can draw a shot again
-      if (u.overwatch || st.shot?.[ctx.u.id] || st.pool < st.cost) return;
+      if (u.overwatch || isPressed(u) || st.shot?.[ctx.u.id] || st.pool < st.cost) return; // rules 1.12: Pressed holds no shot
       u.overwatch = st.mode; st.pool -= st.cost;
       if (st.owUsed === cb.round) refundReaction(cb, u); // the chain runs on the one reaction its first shot used
     },
