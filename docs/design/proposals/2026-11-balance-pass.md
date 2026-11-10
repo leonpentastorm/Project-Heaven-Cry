@@ -237,3 +237,23 @@ word.
 18. **What he plays and reports.** The simulator can't feel a turn. After each step he plays one Proving Ground fight
     and answers three questions: did the fight end when it should have, was there a turn with no real choice, did
     anything die or survive in a way that felt wrong.
+
+## 8. Leon's answers to section 7 (10 Nov 2026)
+
+1. Fight length: **standard 4 to 6 rounds, elite 6 to 8, boss 8 to 10.**
+2. Attacks to kill at equal level: as recommended (minion 2, soldier 3 to 4, elite 6 to 8, boss about 20; the boss
+   figure follows from item 1 and is re-derived for 8 to 10 rounds).
+3. Level gap: as recommended. 4. A vermin tier: yes.
+5. Going down: as recommended, **except for tanks** (a tank survives longer; how much is angle E).
+6. Weapon families: as drafted, **and hybrids too, through the tag system** (a weapon with two families' tags gets
+   part of each family's strength and price).
+7. Criticals ×1.5, to ×2 with perks and gear. 8. About 65% to hit at equal level. 9. "Optimised" as defined.
+10. The Sigil's 150% is an average over the fight. 11. AP perks: a 3-turn cooldown. 12. The 9 AP ceiling stays.
+13. A gamma point is worth about half an alpha point in direct effect. 14. Never two lost turns in a row.
+15. Solo: an encounter budget, **but enemies are not cut too far (it gets lonely); solo play earns more XP by a
+    percentage instead.**
+16. **HP and MP do not come back between fights** unless healed or siphoned. **Strain resets**, like Momentum.
+    (This changes ruling 5 of section 5: fights are fresh in their special meters, not in HP and MP.)
+17. The four legacy numbers stay. 18. Leon playtests; each request for a playtest comes with what to test.
+
+**Also to investigate (Leon):** how good or bad dual wielding is.
