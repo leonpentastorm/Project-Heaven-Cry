@@ -105,6 +105,17 @@ the glossary. The ARMS tab's lines and the Kit chips do the same.
   Two steps depend on dice. If the Lunge misses, the test sets Momentum with the tools and still checks Coup. If
   Suppress misses (+1 only), the Take is skipped. It prints a `note` line, never a failure.
 
+**Also on this branch, at Leon's request** (10 Nov 2026, while the suites ran): the story screen's right column is four
+movable modules, built the way the combat screen's panels are (`apps/web/src/game/storyPanels.ts`, `screens/main.js`,
+`templates/main.template.html`).
+- The mana forecast, the map (with Near you), the quest board and the player card each have a grip. Drag it up or down
+  the column, or focus it and use the arrow keys (Home first, End last). Escape cancels a drag.
+- The order is kept per browser (`phc.storyPanels`). "Reset the panels" shows once it was changed.
+- The player card sticks to the bottom of the column only while it is last, its first place.
+- The player card always has room for five seats (four players and the Narrator): a two-a-row grid that keeps three rows.
+  The Proving Ground has no Narrator, so it keeps two rows there.
+- Tests: `storyPanels.test.ts` (6) and `e2e/right-panels.mjs` (18 checks). Screenshots: `rp-*.png`.
+
 **Read differently from the brief:**
 1. **Number keys.** Inside the Attack tab, 1–5 act on the blocks (1 the first weapon's plain attack, 2 its Techniques, 3
    and 4 the second weapon's, 5 Hold a shot) when a pad is open or the keyboard is in the tab's panel. Otherwise they
@@ -114,8 +125,10 @@ the glossary. The ARMS tab's lines and the Kit chips do the same.
    (`COMPANION_ACTS` and the `allowedActions` gate), so a technique row would only fail. See request 1.
 4. **The old weapon-skill row is gone** (Fan the Hammer, Suppressing Fire…). The weapon's signature technique replaces
    it, in its pad.
-5. **A melee weapon no longer "holds a strike".** Hold a shot is ranged only; melee Answers fire on their triggers.
-6. **The Watch's line is drawn as a dotted line of tiles** from the watcher to the nearest watched tile, not an SVG
+5. **A gun in hand has no "Melee (fists)" row any more** (the brief removes the Melee row). Until the lead's "dry gun
+   as a club" lands, a gunner strikes in melee by putting a blade in a hand. Say if a punch row should stay.
+6. **A melee weapon no longer "holds a strike".** Hold a shot is ranged only; melee Answers fire on their triggers.
+7. **The Watch's line is drawn as a dotted line of tiles** from the watcher to the nearest watched tile, not an SVG
    stroke. It reads the same and needs no new overlay.
 
 ## What is done: part 1, item icons
@@ -205,13 +218,21 @@ item and ink, then cached.
 
 ## Checks (against a local build, after merging the base at `fde0bbe`)
 
-- `npm test -w @phc/engine`: 1,868 tests (1,867 pass, 1 skipped). `npm test -w @phc/web`: 658 tests (656 pass, 2
+- `npm test -w @phc/engine`: 1,868 tests (1,867 pass, 1 skipped). `npm test -w @phc/web`: 664 tests (662 pass, 2
   skipped). `npx tsc --noEmit` in `packages/engine` and `apps/web`: clean. `python3 tools/validate.py data`: 0 errors,
-  0 warnings.
-- Browser tests: `physical.mjs` 32 / 32 (three runs in a row, no failure). `gear-icons.mjs` 14 / 14.
-  `tabs.mjs` 28 / 28. `classes.mjs` 34 / 34. `slate.mjs`: updated for the new plain-Shot id.
-- The other suites' results: see "Regression" below.
-- `tools/validate_art.py`: OK.
+  0 warnings. `tools/validate_art.py`: OK.
+- Browser tests: see "Browser test results" below.
+
+**Browser tests I changed because the new engine or the new rows broke them** (none of these is a screen bug):
+- `slate.mjs`: the plain Shot's id is now `tq:main:shot`.
+- `feel.mjs`:
+  - the knife's row is Cut, not Strike;
+  - the Fan the Hammer volley is sent as the old `combat/skill` action (its row is gone and Mag Dump isn't built yet).
+    Switch it to the pad when B lands Mag Dump.
+- `perks.mjs`: a Fighter now answers a miss with Riposte, so the lone drill unit fell and the wave ended before anything
+  hit. The test spawns a champion first, so Used to the Pain gets its hit.
+- `ground.mjs`: weapons hit harder under the new damage rule (the rifle does 45 to an object, not 30), so the pillar the
+  test shoots breaks in two shots. Its "spend a round" helper now checks the magazine really went down.
 
 ## Screenshots (`physical-2.0-shots/`)
 
@@ -233,6 +254,10 @@ item and ink, then cached.
   - `c2-deny-1440.png` (a held Deny drawn on the map)
   - `c2-arms-1440.png`, `c2-arms-1280.png` (the ARMS tab)
   - `c2-kit-1440.png`, `c2-kit-1280.png` (starting techniques)
+- The right column's modules:
+  - `rp-default-1440.png`, `rp-default-1280.png`
+  - `rp-moved-1440.png`, `rp-dragging-1440.png`
+  - `rp-five-seats-1440.png`, `rp-five-seats-1280.png`
 
 ## Not tested
 
