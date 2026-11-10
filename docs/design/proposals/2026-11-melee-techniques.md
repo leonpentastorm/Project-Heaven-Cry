@@ -179,6 +179,7 @@ Techniques are for everyone. A class bends the chain; it doesn't own the list.
 
 ## 7. What a turn looks like on screen
 
+0. **Superseded in part** (Leon, 10 Nov 2026): techniques don't sit flat in the Attack tab. Each held weapon gets one row with its plain attack and one expandable **Techniques** action that opens a pad, as the glyph keyboard does. The full layout is in `2026-11-ranged-techniques.md`, section 10; the points below describe what is inside the pad.
 1. The Attack tab shows your ready techniques as chips, grouped Opener, Strike, Link, Finisher. A chip you can't use is greyed with the reason: "not your first technique", "needs Momentum 2", "needs Point", "the chain has ended".
 2. Each chip shows the property line that applies with the weapon in your hand, so the same chip reads differently when you swap weapons.
 3. Momentum sits under the HP bar as pips for every melee character, with the variety bonus shown as "+1 if different".

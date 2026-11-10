@@ -246,7 +246,25 @@ Where a weapon has two matching properties, the player picks one. "Rounds" is ho
 4. **Solo play loses the squad half.** Spot, Crossfire and Cover Me need allies. A solo gunner still has Suppress into a Take, which risks becoming a fixed rotation.
 5. **Enemy Pressure on players** is softened (no AP loss, a cap of 3), but three machine guns can still take a party's reactions away. Smoke and Head Down are the answers; the Narrator's brief should say not to stack it.
 
-## 10. Decisions for Leon
+
+## 10. The panel (Leon, 10 Nov 2026)
+
+Leon: with a blade in one hand and a gun in the other, one flat Attack list would need scrolling for days. Gun techniques and melee techniques each need **their own expandable action**, the way "Draw a glyph" opens the glyph keyboard and "Outburst" opens the design cards.
+
+1. **One ready list per system.** Melee and ranged are separate lists with separate caps (3 + half the attack skill each). A character who uses both isn't squeezed, and nothing from one list ever shows under the other.
+2. **The Attack tab shows one row per held weapon,** main hand first:
+   - the weapon's name, its plain attack as a one-click button (**Cut** or **Shot**, with AP and hit chance), and its meter beside it (Momentum pips, or loaded rounds and Heat);
+   - one expandable action under it: **Techniques ▸**, with a count of how many can be used right now.
+3. **Opening it shows that weapon's pad** in the same place the glyph keyboard and the design cards open, and only one pad is open at a time:
+   - chips grouped by kind (melee: Opener, Strike, Link, Finisher; ranged: Fire, Press, Set, Take);
+   - a chip that can't be used is greyed with its reason ("not your first technique", "target isn't Pressed", "needs Point");
+   - each chip carries the property line that applies to this weapon;
+   - picking a chip closes the pad to one line ("Lunge · 2 AP · 65%") above Confirm, so the grid and Confirm stay on screen.
+4. **Answers and Watches don't sit in the pad.** A Watch is chosen from its own row ("Hold a shot ▸": Overwatch, Deny, Cover Me, Dead to Rights). Melee Answers are set once, out of the way, like the reaction policies the Defender already has, and fire on their triggers.
+5. **Number keys:** the Attack tab's key, then 1 for the plain attack and 2 for Techniques on the first weapon, 3 and 4 on the second, so a turn can be played from the keyboard.
+6. **Height.** With two weapons the tab is two rows and at most one open pad: no more than the Sigils tab takes today.
+
+## 11. Decisions for Leon
 
 1. Pressure as what ranged owns: a meter on the target, built by the squad, used by Takes?
 2. The softer table for players (Suppressed costs reactions, never AP; players stop at 3)?
@@ -255,3 +273,5 @@ Where a weapon has two matching properties, the player picks one. "Rounds" is ho
 5. A dry gun usable as a club for Bash?
 6. All 30, as with melee?
 7. One ready list per system (melee and ranged separate), or one shared list for a character who uses both?
+
+**Leon's answers so far (10 Nov 2026):** 1 yes, with the changes made the same day (Pressure doesn't debuff a melee charge; protective reactions always work; stopped once). 3 yes. 7: one list per system, each behind its own expandable action (section 10). 2, 4, 5 and 6 are open.
