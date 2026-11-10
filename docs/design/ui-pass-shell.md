@@ -519,6 +519,13 @@ The Music panel loses its VOICE section (it gets a one-line *Voice settings ⚙*
 - **In a fight they shrink to icons** (♪ and ◈, 40 × 40), the track name in the tooltip; hovering widens the music one
   to show the title.
 - Memory stays host-only and is also in the Narrator chip's menu (1.3).
+- **Slide (combat clarity, 0.16; Leon: "make the button slide in and out, memory and song display hide each other"):**
+  at rest both slide down to a tab at the screen's edge (36 px, the top 20 px of each still showing) and slide back up
+  (240 ms) when the pointer comes within the same 120 px, on focus, on a tap, or while open. Display › *Slide them down
+  to a tab* turns it off; Reduce motion never slides (opacity only). They share one dock (`game/floaters.ts`): while one
+  is out (the song's title on hover, a blocked start's words, its panel open) the other slides away and takes no
+  clicks, so the title never runs under the ◈; the memory opening closes the music panel. `data-phc-float-place` says
+  where each is (tucked / out / away).
 
 ---
 

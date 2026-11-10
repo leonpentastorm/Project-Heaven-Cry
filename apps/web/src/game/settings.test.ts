@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { busOf, busLevel, musicLevel, parseUiPrefs, DEFAULT_UI_PREFS, SFX_FILES, LIMIT, CEIL, type Sfx } from './sfx';
 import { getCombatSpeed, setCombatSpeed, COMBAT_SPEED_EVENT } from './combatSpeed';
-import { floatOpacity, distToRect } from './floaters';
+import { floatOpacity, distToRect, floatPlace, floatMotion, setFloatOut, floatOut, onFloatOut, TUCK_PX } from './floaters';
 
 describe('the two effect buses', () => {
   it('every sound name the game knows sits on a bus; interface sounds on ui, the world on combat', () => {
@@ -94,5 +94,30 @@ describe('the floating buttons', () => {
     expect(distToRect(20, 20, r)).toBe(0);
     expect(distToRect(53, 54, r)).toBe(5);
     expect(distToRect(10, 0, r)).toBe(10);
+  });
+  it('slide: tucked to a tab at rest, out when near, focused, open or showing its name; away while the other is out', () => {
+    expect(floatPlace('music', null, true, false, false, false, false)).toBe('tucked');
+    for (const [near, focused, open, expanded] of [[true, false, false, false], [false, true, false, false], [false, false, true, false], [false, false, false, true]] as const)
+      expect(floatPlace('music', null, true, near, focused, open, expanded)).toBe('out');
+    expect(floatPlace('music', null, false, false, false, false, false)).toBe('out'); // sliding off: they stay up
+    expect(floatPlace('memory', 'music', true, true, false, false, false)).toBe('away'); // the song's title is showing
+    expect(floatPlace('music', 'memory', true, false, false, false, false)).toBe('away');
+    expect(floatPlace('music', 'music', true, false, false, false, true)).toBe('out');
+    expect(floatMotion('tucked', false).transform).toBe('translateY(' + TUCK_PX + 'px)');
+    expect(floatMotion('out', false).transform).toBe('translateY(0px)');
+    expect(floatMotion('away', false).transform).not.toBe('translateY(0px)');
+    expect(floatMotion('tucked', true)).toEqual({ transform: 'none', transition: 'opacity 150ms ease' }); // reduced motion: no slide
+  });
+  it('one dock: the last one out wins, going in clears only its own, listeners hear each change', () => {
+    let heard = 0; const off = onFloatOut(() => heard++);
+    setFloatOut('music', true); expect(floatOut()).toBe('music');
+    setFloatOut('memory', true); expect(floatOut()).toBe('memory');
+    setFloatOut('music', false); expect(floatOut()).toBe('memory');
+    setFloatOut('memory', false); expect(floatOut()).toBeNull();
+    expect(heard).toBe(3); off();
+  });
+  it('the slide setting is saved and defaults on', () => {
+    expect(parseUiPrefs('{}').floatSlide).toBe(true);
+    expect(parseUiPrefs(JSON.stringify({ floatSlide: false })).floatSlide).toBe(false);
   });
 });

@@ -9,7 +9,7 @@ import {
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -437,6 +437,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
+  if (g.combat && g.phase === 'combat') sightFx(g.combat); // presentation: a hostile that came into a side's sight (a reveal, a death that left a side blind…)
   g.v++;
   return g;
 }
@@ -1549,6 +1550,7 @@ function runEnemies(g: GameState) {
     if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     critMoment(g); // a party reaction's crit in the enemy's turn (decision 113)
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
+    sightFx(cb); // presentation: what came into sight in its turn (its walks carry their own)
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
   clearAction(cb);
@@ -2811,7 +2813,7 @@ function sbPlace(g: GameState, n: number) {
   });
 }
 /** Begin a fight on the Proving Ground map: the squad where it stands (pos), these foes, everyone on the fight's clock. */
-function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string }[], pos: Record<string, string>, objects?: MapObject[]) {
+function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string; hidden?: boolean }[], pos: Record<string, string>, objects?: MapObject[]) {
   const sb = sbOf(g), wasLive = !!liveFight(g), map = zoneMap(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
   if (!pcs.length) fail('Lock in a character first.');
@@ -2987,7 +2989,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const foes = npcsOf(g).filter((x) => x.side === 'hostile'), stay = npcsOf(g).filter((x) => x.side !== 'hostile');
       sbAttempt(sb, n);
       g.story.npcs = stay;
-      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster })), { ...positionsOf(g) }, storyObjects(g));
+      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster, ...(x.hidden ? { hidden: true } : {}) })), { ...positionsOf(g) }, storyObjects(g)); // a hostile placed Hidden starts the fight Hidden (as in a Narrator's fight)
       return;
     }
     case 'sandbox/stage': {
@@ -3483,6 +3485,7 @@ function sbBeginTeams(g: GameState) {
   const bIds = new Set(B.map((c) => c.id));
   for (const u of cb.units) if ((u.charId && bIds.has(u.charId)) || (u.ctrl && bIds.has(u.ctrl))) u.side = 'foe';
   for (const e of cb.fx || []) if (e.unit && e.side) { const u = cb.units.find((x) => x.id === e.unit); if (u) e.side = u.side; }
+  delete cb.sightSeen; sightFx(cb); // the sides changed: record each team's opening sight again
   magicIn(g, cb);
   cb.noXp = true;
   cb.log.unshift('TEAM FIGHT · Team A (' + A.map((c) => c.name).join(', ') + ') against Team B (' + B.map((c) => c.name).join(', ') + '). Downed is out.');
@@ -3533,10 +3536,11 @@ function sandboxView(g: GameState, v: GameState, playerId: string) {
   v.combat = { ...cb, units: cb.units.map(flip), glyphs: cb.glyphs?.map(flip), zones: cb.zones?.map((z) => { const f = flip(z) as any; return f.spotted ? { ...f, spotted: f.spotted.map(other) } : f; }),
     ...(cb.objects ? { objects: cb.objects.map((o) => flip(o as { side?: any }) as typeof o) } : {}),
     ...(cb.images ? { images: cb.images.map(flip) } : {}),
-    fx: cb.fx?.map((e) => { const f = flip(e as { side?: any; only?: any }); return (f.only ? { ...f, only: other(f.only) } : f) as typeof e; }),
+    fx: cb.fx?.map((e) => { const f = flip(e as { side?: any; only?: any; sight?: any }); const o = (f.only ? { ...f, only: other(f.only) } : f) as typeof e; return (o.sight ? { ...o, sight: { pc: o.sight.foe, foe: o.sight.pc } } : o) as typeof e; }),
     over: cb.over === 'win' ? 'loss' : cb.over === 'loss' ? 'win' : cb.over,
     ...(cb.lastSeen ? { lastSeen: { pc: cb.lastSeen.foe, foe: cb.lastSeen.pc } as any } : {}),
-    ...(cb.sightWas ? { sightWas: { pc: cb.sightWas.foe, foe: cb.sightWas.pc } as any } : {}) };
+    ...(cb.sightWas ? { sightWas: { pc: cb.sightWas.foe, foe: cb.sightWas.pc } as any } : {}),
+    ...(cb.sightSeen ? { sightSeen: { pc: cb.sightSeen.foe, foe: cb.sightSeen.pc } as any } : {}) };
 }
 
 /** In the Proving Ground an attempt or an ask rolls at once and AP is always full (there are no rounds, no Narrator). */

@@ -191,6 +191,11 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   overworld?: boolean;
   /** Each side's sight at the last check, for the sight_change hook (only kept while someone listens). */
   sightWas?: Record<string, string[]>;
+  /** Presentation only (sightFx): the hostiles each side saw at the last check, so a unit coming into a side's sight
+   * (or being revealed, or going Hidden) gets one 'sight' event for that side's eyes. Never read by a rule. */
+  sightSeen?: Record<string, string[]>;
+  /** Why a unit's sight is about to change (a Hidden condition from a spell): consumed by the next sightFx. */
+  sightWhy?: Record<string, 'hide' | 'reveal'>;
   /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id. */
   lastSeen?: Record<string, Record<string, string>>;
   /** The Narrator's start_fight flag: the place itself is frightening (dark, a nightmare; perks read it). */
@@ -212,7 +217,11 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
 
 /** A presentation event: what just happened, precisely enough to animate (the client plays new ones by n). Tiles are
  * "x,y" keys; unit fields are unit ids. Kinds and fields:
- *  turn {unit, side, at, round} · move {unit, from, to, path, how} · shot {unit, target, from, to, weapon, cat, mode,
+ *  turn {unit, side, at, round} · move {unit, from, to, path, how, sight: {pc, foe}} (sight: per path tile, '1' where
+ *  that side sees the mover there, '0' where it doesn't: the client walks a hostile in from the fog edge and out into it) ·
+ *  sight {unit, at, how: 'enter'|'reveal'|'hide', only} (a hostile came into the `only` side's sight, was revealed, or
+ *  went Hidden from it: sightFx) · overwatch {unit, target, from, at, mode} (a held shot is triggered: the mover stops
+ *  at `at` for it) · shot {unit, target, from, to, weapon, cat, mode,
  *  hit, crit, fumble, dmg, killed, cover?, jam?, chain?} · melee {unit, target, from, to, weapon, cat, hit, crit, fumble,
  *  dmg, killed, chain?} · volley {unit, target?, from, to?, weapon, cat, mode: 'burst'|'auto'|'skill'|'paired'|'sweep',
  *  name?, shots?} · reload {unit, at, weapon, cat, how: 'mag'|'loose'|'swap', dur} · load {unit, at, rounds, dur} ·
@@ -640,6 +649,48 @@ function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen
   const r: any = emit(cb, 'sees', { cb, side, t, by, seen, sensed });
   return { seen: !!r.seen, sensed: !!r.sensed };
 }
+/** Does this side see the unit t where it stands now? The same answer as visibility(cb, side).seen.has(t.id) (its own
+ * side always sees it), for one unit, without walking the map. */
+export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit): boolean {
+  if (t.side === side) return true;
+  if (t.dead) return false;
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed);
+  let isSeen = !t.hidden && eyes.some((u) => unitSees(cb, u, t.pos));
+  if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
+  return isSeen;
+}
+/** A walk's sight, per side: '1' at each path tile where that side sees the mover, '0' where it doesn't (presentation
+ * only: the client walks a hostile in from the fog edge and out into it, and never draws it where it was unseen). */
+export function pathSight(cb: Combat, u: Unit, path: string[]): { pc: string; foe: string } {
+  const at = u.pos, out = { pc: '', foe: '' };
+  try {
+    for (const k of path) { u.pos = k; for (const side of ['pc', 'foe'] as const) out[side] += sideSeesUnit(cb, side, u) ? '1' : '0'; }
+  } finally { u.pos = at; }
+  return out;
+}
+/** One 'move' event for a walk (or the part of it before a reaction), with its sight. */
+export function moveFx(cb: Combat, u: Unit, path: string[], how: string) {
+  emitFx(cb, 'move', { unit: u.id, from: path[0], to: path[path.length - 1], path: [...path], how, sight: pathSight(cb, u, path) });
+}
+const seenIds = (cb: Combat, side: 'pc' | 'foe') => cb.units.filter((t) => t.side !== side && !t.dead && sideSeesUnit(cb, side, t)).map((t) => t.id);
+/**
+ * Presentation only: the hostiles each side sees now against the last check (cb.sightSeen). Each one that came into a
+ * side's sight gets a 'sight' event for that side's eyes alone ({unit, at, how: 'enter' | 'reveal', only}); one that went
+ * Hidden from a side that saw it gets {how: 'hide'}. skip: the unit whose walk carries its own sight (moveFx). why: the
+ * reason for a unit's change (a reveal or a hide; cb.sightWhy for changes made where this can't be called). The first
+ * check of a fight (or an old save) only records. Never reads or changes a rule; no dice.
+ */
+export function sightFx(cb: Combat, skip?: string | null, why: Record<string, 'hide' | 'reveal'> = {}) {
+  const was = cb.sightSeen, now = { pc: seenIds(cb, 'pc'), foe: seenIds(cb, 'foe') };
+  const because = { ...(cb.sightWhy || {}), ...why }; delete cb.sightWhy;
+  cb.sightSeen = now;
+  if (!was || cb.over) return;
+  for (const side of ['pc', 'foe'] as const) {
+    const before = new Set(was[side] || []), after = new Set(now[side]);
+    for (const id of now[side]) if (!before.has(id) && id !== skip) { const t = cb.units.find((x) => x.id === id)!; emitFx(cb, 'sight', { unit: id, at: t.pos, how: because[id] === 'reveal' ? 'reveal' : 'enter', only: side }); }
+    for (const id of before) if (!after.has(id) && because[id] === 'hide') { const t = cb.units.find((x) => x.id === id); if (t && !t.dead) emitFx(cb, 'sight', { unit: id, at: t.pos, how: 'hide', only: side }); }
+  }
+}
 /** Note every hostile the party sees now in cb.sighted (it only grows; old saves start it here). */
 export function noteSighted(cb: Combat) {
   if (cb.over) return;
@@ -947,6 +998,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
   noteFallbacks(cb);
+  sightFx(cb); // presentation: who each side sees as the fight opens (recorded; nothing comes "into" sight yet)
   beginTurn(cb, rng);
   { const u0 = active(cb); if (u0 && (u0.skipTurn || (u0.waitRound && cb.round < u0.waitRound))) endTurn(cb, rng); }
   return cb;
@@ -1097,7 +1149,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   // A Hidden mover draws no reactions (nobody sees it go).
   const reacts = !!rng && !u.hidden;
   let seg: string[] = [from], stopped = '', sprung = '';
-  const flush = () => { if (seg.length > 1) emitFx(cb, 'move', { unit: u.id, from: seg[0], to: seg[seg.length - 1], path: [...seg], how }); seg = [u.pos]; };
+  const flush = () => { if (seg.length > 1) moveFx(cb, u, seg, how); seg = [u.pos]; };
   for (let i = 0; i < route.length; i++) {
     const k = route[i], was = u.pos;
     u.pos = k; seg.push(k);
@@ -1135,6 +1187,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   // 'moved' {u, from, to, tiles, how, forced:false, route}
   emit(cb, 'moved', { u, from, to: end, tiles: walked, how, forced: false, route: route.slice(0, route.indexOf(end) + 1), stopped: stopped || null, cb, rng });
   sightCheck(cb);
+  sightFx(cb, u.id); // presentation: what came into each side's sight (the walker's own sight rides on its move events)
   return null;
 }
 /** 'sight_change' {side, lost[], gained[]}: units each side stopped or started seeing, after a move. Only computed
@@ -1169,8 +1222,10 @@ export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string
     const pv = previewAttack(cb, h, mover, h.overwatch, { free: true }); if (!pv.ok) continue;
     if (!canReact(cb, h)) continue;
     const rw: any = emit(cb, 'reaction_window', { reactor: h, mover, kind: 'overwatch', cancel: false, at: mover.pos, cb, rng }); if (rw.cancel) continue;
-    if (seg && seg.length > 1) { emitFx(cb, 'move', { unit: mover.id, from: seg[0], to: seg[seg.length - 1], path: [...seg], how: 'move' }); seg.splice(0, seg.length - 1); }
+    if (seg && seg.length > 1) { moveFx(cb, mover, seg, 'move'); seg.splice(0, seg.length - 1); }
     useReaction(cb, h); const mode = h.overwatch, shots = Math.max(1, h.owShots || 1); h.overwatch = null; h.owShots = 0;
+    // Presentation: the held shot is sprung here (the client stops the mover's walk on this tile for it).
+    emitFx(cb, 'overwatch', { unit: h.id, target: mover.id, from: h.pos, at: mover.pos, mode });
     cb.log.push(h.name + ' fires from overwatch.');
     for (let i = 0; i < shots && !mover.dead && !mover.downed; i++) { if (i && !previewAttack(cb, h, mover, mode, { free: true }).ok) break; resolveAttack(cb, rng, h, mover, mode, null, { noAp: true }); }
     checkOver(cb);
