@@ -158,10 +158,10 @@ Leon asked for this to go to the final implementer, the lead who integrates Phys
 
 | Branch | Head | What it holds |
 | --- | --- | --- |
-| `claude/physical-2.0-B-ranged` | `ad42fb4` | The ranged engine: the 25 techniques, the quiver, the thrown rules, the effects events E1–E17, the live-check fix. Full note: `docs/design/handoffs/physical-2.0-B-RESULT.md` on that branch. |
-| `claude/physical-2.0-B-ranged-fx` | the commit that adds this section (its parent is `6435399`) | C's client (`feature/physical-2.0-C-client`), the ranged engine up to `ad42fb4` (merged in `0e798ef`), and the ranged effects. |
+| `claude/physical-2.0-B-ranged` | `37fc95c` (code as of `ad42fb4`; `37fc95c` adds only the handover pointer to its note) | The ranged engine: the 25 techniques, the quiver, the thrown rules, the effects events E1–E17, the live-check fix. Full note: `docs/design/handoffs/physical-2.0-B-RESULT.md` on that branch. |
+| `claude/physical-2.0-B-ranged-fx` | the last commit, which merges `37fc95c` (code as of `6435399`) | C's client (`feature/physical-2.0-C-client`), the ranged engine up to `ad42fb4` (merged in `0e798ef`), and the ranged effects. |
 
-The fx branch already contains the engine branch's head. Check: `git merge-base --is-ancestor ad42fb4 HEAD`.
+The fx branch already contains the engine branch's head. Check: `git merge-base --is-ancestor 37fc95c HEAD`.
 
 ### Merge order
 
