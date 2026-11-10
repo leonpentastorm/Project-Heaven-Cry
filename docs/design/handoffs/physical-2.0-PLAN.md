@@ -43,7 +43,7 @@ Written 10 Nov 2026 by the lead session (the merger and checker). For Leon and f
 
 ## 3. Order of work
 
-1. **Foundation (lead).** The spec section, `data/techniques.json` with all 57 techniques written out, the new weapon fields, the engine core in `packages/engine/src/physical/`, and six reference techniques that work end to end (Cut, Lunge, Coup, Riposte; Shot and Aimed Shot, Suppress, Dead Centre, Deny, Overwatch). When it is pushed, the line below is filled in.
+1. **Foundation (lead).** The spec section, `data/techniques.json` with all 58 techniques written out (27 melee, 31 ranged), the new weapon fields, the engine core in `packages/engine/src/physical/`, and six reference techniques that work end to end (Cut, Lunge, Coup, Riposte; Shot and Aimed Shot, Suppress, Dead Centre, Deny, Overwatch). When it is pushed, the line below is filled in.
 
    > **Foundation: not landed yet.** (The lead replaces this line with the commit when it is.)
 
@@ -207,7 +207,7 @@ The engine emits these; C draws and sounds them.
 ## 6. The lead's own work
 
 1. **Spec:** rules revision 1.12 in `docs/rules/PHC-Core-Rules-v1.0.md`, with every placeholder number listed in section 14.
-2. **Data:** `techniques.json` (all 57), the `phys` block on all 60 weapons, the validator, what happens to each weapon's old `grants`, and to `weapon_mastery.json`.
+2. **Data:** `techniques.json` (all 58), the `phys` block on all 60 weapons, the validator, what happens to each weapon's old `grants`, and to `weapon_mastery.json`.
 3. **Core:** the registry, `strike`, Momentum for everyone, the chain rules, Pressure and its states, Stopped once, protective reactions, the Watch framework (including Overwatch moved onto it without changing how wide it is), forced moves that set off Watches, `hits_with` and `scales_with`, drill and marks, known and ready lists, the pad, the reducer actions, the migration.
 4. **The reference techniques** listed in section 3.
 5. **Existing content that changes:** the Fighter's Lunge, Riposte and Finisher; Suppressed becoming Pressure 3 (Spray and Pray, and the two lines that make Suppressed cost AP and all reactions today); One Blade; the dry gun as a club.
