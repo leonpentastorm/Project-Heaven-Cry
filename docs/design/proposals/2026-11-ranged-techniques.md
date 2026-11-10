@@ -169,11 +169,13 @@ Where a weapon has two matching properties, the player picks one. "Rounds" is ho
 | # | Technique | AP · rounds | Base | If the target was Suppressed | With the right weapon |
 |---|---|---|---|---|---|
 | 21 | **Dead Centre** | 3 · 1 | One shot at +50% damage. | Its cover doesn't count. | **Precise:** +2 to hit. **Drawn:** ignores 5 armour. |
-| 22 | **Pin Down** | 3 · 1 | A shot at ×0.7. The target is Pinned (today's condition) for 1 round. | No save, and 2 rounds. | **Auto:** full damage. **Drawn or Silent:** nailed in place until it spends 2 AP. |
+| 22 | **Pin Down** | 3 · 1 | A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned (today's condition) for 1 round. | The save is at −2. | **Auto:** full damage. **Drawn or Silent:** nailed in place until it spends 2 AP. |
 | 23 | **Rout** | 3 · 1 | No damage. The target makes a Heart save or runs its full move away from you, drawing opportunity attacks and Watches. | The save is at −3. | **Loud:** −2 more. **Blast:** everyone Pressed in the radius. |
-| 24 | **Stopping Shot** | 2 · 1 | A shot. The target loses 1 AP next turn and is pushed 1 tile. | It also falls Prone. | **Loud or Heavy:** pushed 2. **Spread, within 4 tiles:** pushed 2 and Prone either way. |
+| 24 | **Stopping Shot** | 2 · 1 | A shot. On a hit the target saves (Guts or Athletics, whichever is better) or loses 1 AP next turn and is pushed 1 tile. | It also falls Prone on a failed save. | **Loud or Heavy:** pushed 2. **Spread, within 4 tiles:** pushed 2 and Prone either way. |
 | 25 | **Storm** | 3 · 1 | Move up to 3 tiles toward the target without its reaction, then shoot. | Your shot is a critical on 18–20. | **Quick:** +2 to hit. **Spread:** Body save or Prone. |
 | 26 | **Last Round** | 2 · 1 | Only with the last round in the weapon: +3 to hit. If it takes the target out, your next speed reload is free. | It can't be reduced by cover. | **Quick, Precise** (a revolver): +50% damage. **Drawn:** the last arrow in the quiver counts. |
+
+**Stopped once** (Leon, 10 Nov 2026: a damage-built melee character with no Durability, Pinned twice in the open, is finished). A target that a ranged technique has Pinned, pushed, knocked Prone or stopped can't be Pinned, pushed, knocked Prone or stopped by another ranged technique until the end of its own next turn. A whole squad of gunners can cost a charger one turn of approach, never two in a row. Both stopping Takes also allow a save that an agile fighter can make with Athletics, so a dodge build has its own defence against them and doesn't need Guts.
 
 ### Watch (paid on your turn; the engine fires it; not while you are Pressed)
 
@@ -240,7 +242,7 @@ Where a weapon has two matching properties, the player picks one. "Rounds" is ho
 
 1. **Pips on every token** are the most on-screen state of the five systems, even though it is one number each.
 2. **It is thinnest at the ends.** Bosses stop at 2, and minions die before Pressure matters. The kill carry-over helps the second; the first needs bosses whose guards carry the Pressure game.
-3. **Gunners against a melee squad.** Pressure no longer debuffs a charge (section 2, point 3), but four gunners still get four Takes a round, and Pin Down and Stopping Shot both stop a runner. If playtests show a melee squad never arriving, the first lever is that a target that ends its turn closer can't be Pressed above 1; the second is the Charge opener shedding all Pressure.
+3. **Gunners against a melee squad.** Pressure no longer debuffs a charge (section 2, point 3), but four gunners still get four Takes a round, and Pin Down and Stopping Shot both stop a runner. Stopped once (section 5) caps that at one lost turn per charger. If playtests still show a melee squad never arriving, the next lever is that a target that ends its turn closer can't be Pressed above 1; then the Charge opener shedding all Pressure.
 4. **Solo play loses the squad half.** Spot, Crossfire and Cover Me need allies. A solo gunner still has Suppress into a Take, which risks becoming a fixed rotation.
 5. **Enemy Pressure on players** is softened (no AP loss, a cap of 3), but three machine guns can still take a party's reactions away. Smoke and Head Down are the answers; the Narrator's brief should say not to stack it.
 
