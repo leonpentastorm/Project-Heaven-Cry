@@ -268,7 +268,7 @@ describe('Trickster', () => {
     expect(f.unit(u.id).ap).toBe(5);
     const it0 = f.unit(foe.id).readIntent!; expect(it0).toMatchObject({ kind: 'attack', targetId: u.id, by: u.id });
     expect(fx(f, 'intent')[0]).toMatchObject({ target: foe.id, kind: 'attack' });
-    expect(logHas(f.cb, /Read: .* means to shoot/)).toBe(true);
+    expect(logHas(f.cb, /Read: .* means to (shoot|use Suppress on)/)).toBe(true); // rules 1.12: a soldier opens with Suppress
     const n = f.cb.log.length; act(f, f.unit(u.id), { type: 'combat/end-turn' });
     expect(f.cb.log.slice(n).some((l) => l.startsWith(foe.name + ' fires at ' + u.name))).toBe(true);
     expect(f.unit(foe.id).readIntent).toBeUndefined(); // cleared when its turn ended

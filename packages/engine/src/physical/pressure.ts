@@ -1,0 +1,68 @@
+// Physical 2.0 (rules 1.12): Pressure, the ranged meter. It sits on the target (0 to 4): Pressed at 2, Suppressed at 3,
+// Broken at 4 (enemies only). The meter's own arithmetic lives here; what raises and lowers it by the rules (a first
+// ranged hit, a kill nearby, the end of a turn) is in rules.ts, and techniques add through core's addPressure().
+import { type Combat, type Unit, emitFx, alive } from '../combat';
+import { PHYS_RULES } from './data';
+
+export type PressState = '' | 'pressed' | 'suppressed' | 'broken';
+const P = () => PHYS_RULES.pressure;
+export const pressureOf = (u: Unit | null | undefined): number => (u as any)?.pressure || 0;
+/** Where a unit's Pressure stops: players at 3 (never Broken), elites at 3, bosses at 2 (Pressed, never Suppressed). */
+export function pressureCap(u: Unit): number {
+  const p = P();
+  return u.side === 'pc' ? p.player_max : u.tier === 'boss' ? p.boss_max : u.tier === 'elite' ? p.elite_max : p.max;
+}
+export function pressureState(u: Unit | null | undefined): PressState {
+  const n = pressureOf(u), p = P();
+  return n >= p.broken ? 'broken' : n >= p.suppressed ? 'suppressed' : n >= p.pressed ? 'pressed' : '';
+}
+export const isPressed = (u: Unit | null | undefined): boolean => pressureOf(u) >= P().pressed;
+export const isSuppressed = (u: Unit | null | undefined): boolean => pressureOf(u) >= P().suppressed;
+export const wasSuppressedAt = (_target: Unit, before: number): boolean => before >= P().suppressed;
+
+/** What may change Pressure as it is added (Guard, a Defender's wall: the lead's and the melee lane's handlers). Each is
+ * given the amount and returns the amount that still lands on the target. */
+type PressFilter = (cb: Combat, target: Unit, n: number, by: Unit | null, why: string) => number;
+const FILTERS: PressFilter[] = [];
+export const pressureFilter = (f: PressFilter) => { FILTERS.push(f); };
+/** What happens when a unit's state changes (a held Watch ends at Pressed): rules.ts and watch.ts listen. */
+type StateListener = (cb: Combat, u: Unit, was: PressState, now: PressState) => void;
+const LISTENERS: StateListener[] = [];
+export const onPressureState = (f: StateListener) => { LISTENERS.push(f); };
+
+function set(cb: Combat, u: Unit, to: number, by: Unit | null, why: string, hidden: boolean) {
+  const was = pressureOf(u), s0 = pressureState(u);
+  if (to === was) return;
+  (u as any).pressure = to; if (!to) { delete (u as any).pressure; delete (u as any).pressBy; delete (u as any).pressHidden; }
+  if (to > was) {
+    if (by) ((u as any).pressBy ||= {})[by.id] = why;
+    // A Silent weapon's pips are hidden from the target until it is used on them (a Take shows them).
+    if (hidden) (u as any).pressHidden = Math.min(to, ((u as any).pressHidden || 0) + (to - was));
+  } else if ((u as any).pressHidden) (u as any).pressHidden = Math.min(to, (u as any).pressHidden);
+  const s1 = pressureState(u);
+  // hidden pips: the event goes to the shooter's side only (viewFor drops an event marked `only` for the other side)
+  emitFx(cb, 'pressure', { unit: u.id, at: u.pos, now: to, was, state: s1, by: by?.id || null, why, ...(hidden && by ? { hidden: true, only: by.side } : {}) });
+  if (s1 !== s0) {
+    if (to > was && s1) cb.log.push(u.name + ' is ' + s1[0].toUpperCase() + s1.slice(1) + (by ? ' (' + by.name + ': ' + why + ')' : '') + '.');
+    for (const f of LISTENERS) f(cb, u, s0, s1);
+  }
+}
+/** Add Pressure to a unit. Returns what landed (0 at the cap, on the dead, or on the adder's own side). */
+export function addPressureTo(cb: Combat, target: Unit, n: number, by: Unit | null, why: string, opts: { hidden?: boolean } = {}): number {
+  if (n <= 0 || !alive(target) || (by && by.side === target.side)) return 0;
+  let left = n; for (const f of FILTERS) { left = f(cb, target, left, by, why); if (left <= 0) return 0; }
+  const was = pressureOf(target), to = Math.min(pressureCap(target), was + left);
+  set(cb, target, to, by, why, !!opts.hidden);
+  return to - was;
+}
+/** Lower a unit's Pressure (a Take, the end of a turn, a melee hit of its own). Using Pressure shows hidden pips. */
+export function lowerPressureOf(cb: Combat, target: Unit, n: number, why: string, by: Unit | null = null): number {
+  const was = pressureOf(target); if (n <= 0 || !was) return 0;
+  set(cb, target, Math.max(0, was - n), by, why, false);
+  return was - pressureOf(target);
+}
+/** Show a unit's hidden pips (a Take on it, the shooter revealed). */
+export function showPressure(cb: Combat, target: Unit): void {
+  if (!(target as any).pressHidden) return;
+  delete (target as any).pressHidden; emitFx(cb, 'pressure', { unit: target.id, at: target.pos, now: pressureOf(target), was: pressureOf(target), state: pressureState(target), by: null, why: 'shown' });
+}

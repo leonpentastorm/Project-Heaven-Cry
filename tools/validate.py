@@ -1008,6 +1008,119 @@ if lt is not None:
     if bt and (bt.get("none") or not bt.get("entries")):
         errors.append("loot_tables: the boss table always drops something (no weight for nothing, at least one entry)")
 
+# Rules 1.12, Physical 2.0: data/techniques.json and the weapons' phys blocks (docs/design/handoffs/physical-2.0-PLAN.md)
+tq = data.get("techniques")
+if isinstance(tq, dict):
+    MELEE_PROPS = {"edge", "point", "blunt", "hook", "reach", "heavy", "light", "bare", "thrown"}
+    RANGED_PROPS = {"quick", "auto", "precise", "spread", "heavy", "blast", "arc", "silent", "loud", "drawn", "thrown"}
+    GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer"}, "ranged": {"fire", "press", "set", "take", "watch"}}
+    AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
+    trules = tq.get("rules") or {}
+    techs = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
+    if len(techs) != len(items("techniques")):
+        errors.append("techniques: ids must be present and unique")
+    for k in ("momentum", "pressure", "ready", "drill", "starting", "groups", "group_names", "props"):
+        if k not in trules:
+            errors.append(f"techniques: rules.{k} is missing")
+    for tid, t in techs.items():
+        where = f"techniques:{tid}"
+        sysm = t.get("system")
+        if sysm not in GROUPS:
+            errors.append(f"{where}: system must be melee or ranged")
+            continue
+        props_ok = MELEE_PROPS if sysm == "melee" else RANGED_PROPS
+        if t.get("group") not in GROUPS[sysm]:
+            errors.append(f"{where}: group '{t.get('group')}' is not a {sysm} group")
+        ap = t.get("ap") or {}
+        if ap.get("base") not in ("weapon", "flat", "reaction") or (ap.get("base") == "flat" and not isinstance(ap.get("value"), int)):
+            errors.append(f"{where}: ap needs base weapon | flat (with a value) | reaction")
+        if (t.get("group") == "answer") != (ap.get("base") == "reaction"):
+            errors.append(f"{where}: an Answer (and only an Answer) costs a reaction")
+        if not (t.get("rounds") == "all" or (isinstance(t.get("rounds"), int) and t.get("rounds") >= 0)):
+            errors.append(f"{where}: rounds must be a whole number or 'all'")
+        if sysm == "melee" and t.get("rounds") not in (0, None):
+            errors.append(f"{where}: a melee technique burns no rounds")
+        if t.get("aim") not in AIMS:
+            errors.append(f"{where}: aim '{t.get('aim')}' is not one of {sorted(AIMS)}")
+        if not t.get("name") or not isinstance(t.get("text"), str):
+            errors.append(f"{where}: needs a name and a text")
+        if t.get("adjudication") not in ("engine", "hybrid", "narrator"):
+            errors.append(f"{where}: adjudication must be engine | hybrid | narrator")
+        for key in ("comes_with", "home", "not_with"):
+            for pr in t.get(key) or []:
+                if pr not in props_ok:
+                    errors.append(f"{where}: {key} names '{pr}', not a {sysm} property")
+        if t.get("particular") and not t.get("home"):
+            errors.append(f"{where}: a particular technique needs a home property")
+        for i, l in enumerate(t.get("lines") or []):
+            if not l.get("props") or not isinstance(l.get("text"), str):
+                errors.append(f"{where}: line {i} needs props and a text")
+            for pr in l.get("props") or []:
+                if pr not in props_ok:
+                    errors.append(f"{where}: line {i} names '{pr}', not a {sysm} property")
+        for k, v in (t.get("numbers") or {}).items():
+            if not isinstance(v, (int, float)) or isinstance(v, bool):
+                errors.append(f"{where}: numbers.{k} must be a number")
+        if (t.get("numbers") or t.get("free")) and t.get("provisional") is not True:
+            errors.append(f"{where}: its numbers are provisional until the balance pass (provisional: true)")
+    # every line of a particular technique must be reachable from a weapon that has one of its home properties
+    wprops = [(w.get("phys") or {}) for w in items("weapons") if isinstance(w, dict)]
+    for tid, t in techs.items():
+        if not t.get("particular"):
+            continue
+        for i, l in enumerate(t.get("lines") or []):
+            need = l.get("props") or []
+            fits = lambda pr: (all(x in pr for x in need) if l.get("match") == "all" else any(x in pr for x in need))
+            if not any(ph.get("system") == t.get("system") and set(t.get("home") or []) & set(ph.get("props") or []) and fits(ph.get("props") or []) for ph in wprops):
+                errors.append(f"techniques:{tid}: line {i} ({', '.join(need)}) can never apply: no weapon has it with one of the home properties {t.get('home')}")
+    st = trules.get("starting") or {}
+    for sysm, key in (("melee", "default_melee"), ("ranged", "default_ranged")):
+        for tid in st.get(key) or []:
+            if techs.get(tid, {}).get("system") != sysm or techs.get(tid, {}).get("free"):
+                errors.append(f"techniques: starting.{key} names '{tid}', not a {sysm} technique that can be picked")
+    if st.get("default_melee") and not any(techs.get(tid, {}).get("group") == "opener" for tid in st.get("default_melee")):
+        errors.append("techniques: starting.default_melee needs an Opener")
+    for pr in MELEE_PROPS | RANGED_PROPS:
+        if pr not in (trules.get("props") or {}):
+            errors.append(f"techniques: rules.props has no text for '{pr}'")
+    wtiers = {e.get("id") for e in items("enemies") if isinstance(e, dict)}
+    for tier in ((trules.get("drill") or {}).get("per_kill") or {}):
+        if tier not in wtiers:
+            errors.append(f"techniques: drill.per_kill names unknown tier {tier}")
+    for e in items("enemies"):
+        for sysm in ("melee", "ranged"):
+            for tid in ((e.get("techniques") or {}).get(sysm) or []) if isinstance(e, dict) else []:
+                if techs.get(tid, {}).get("system") != sysm or techs.get(tid, {}).get("free"):
+                    errors.append(f"enemies:{e.get('id')}: techniques.{sysm} names '{tid}', not a {sysm} technique to list")
+    skill_ids = {s_.get("id") for s_ in items("skills") if isinstance(s_, dict)}
+    attr_ids = {a_.get("id") for a_ in items("attributes") if isinstance(a_, dict)}
+    for w in items("weapons"):
+        if not isinstance(w, dict):
+            continue
+        ph, where = w.get("phys"), f"weapons:{w.get('id')}"
+        if not isinstance(ph, dict):
+            errors.append(f"{where}: no phys block (rules 1.12: system, props, hits_with, scales_with)")
+            continue
+        sysm = ph.get("system")
+        if sysm not in GROUPS:
+            errors.append(f"{where}: phys.system must be melee or ranged")
+            continue
+        for pr in ph.get("props") or []:
+            if pr not in (MELEE_PROPS if sysm == "melee" else RANGED_PROPS):
+                errors.append(f"{where}: phys.props names '{pr}', not a {sysm} property")
+        if ph.get("hits_with") not in skill_ids:
+            errors.append(f"{where}: phys.hits_with '{ph.get('hits_with')}' is not a skill")
+        for sc in (ph.get("scales_with") or []) + (ph.get("also_scales") or []):
+            if sc not in skill_ids and sc not in attr_ids:
+                errors.append(f"{where}: phys scales with '{sc}', not a skill or an attribute")
+        tch = ph.get("teaches")
+        if tch and techs.get(tch, {}).get("system") != sysm:
+            errors.append(f"{where}: phys.teaches '{tch}' is not a {sysm} technique")
+        if tch and set(techs.get(tch, {}).get("not_with") or []) & set(ph.get("props") or []):
+            errors.append(f"{where}: teaches '{tch}', which a weapon with its properties can't use (not_with)")
+        if tch and techs.get(tch, {}).get("free"):
+            warns.append(f"{where}: teaches '{tch}', which everyone already knows")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 

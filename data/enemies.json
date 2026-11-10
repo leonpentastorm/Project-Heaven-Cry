@@ -1,7 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "enemies",
-  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52); Endurance and spare magazines added for injuries, ammo and stealing (provisional)",
+  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52); Endurance and spare magazines added for injuries, ammo and stealing (provisional); technique lists by tier (rules 1.12, provisional, item 950)",
   "items": [
     {
       "id": "minion",
@@ -15,7 +15,11 @@
       "kills": 1,
       "provisional": true,
       "endurance": 1,
-      "spare_mags": 1
+      "spare_mags": 1,
+      "techniques": {
+        "melee": [],
+        "ranged": []
+      }
     },
     {
       "id": "soldier",
@@ -29,7 +33,15 @@
       "kills": 1,
       "provisional": true,
       "endurance": 3,
-      "spare_mags": 2
+      "spare_mags": 2,
+      "techniques": {
+        "melee": [
+          "lunge"
+        ],
+        "ranged": [
+          "suppress"
+        ]
+      }
     },
     {
       "id": "elite",
@@ -43,7 +55,18 @@
       "kills": 1,
       "provisional": true,
       "endurance": 5,
-      "spare_mags": 3
+      "spare_mags": 3,
+      "techniques": {
+        "melee": [
+          "lunge",
+          "coup",
+          "riposte"
+        ],
+        "ranged": [
+          "suppress",
+          "dead_centre"
+        ]
+      }
     },
     {
       "id": "boss",
@@ -57,7 +80,19 @@
       "kills": 3,
       "provisional": true,
       "endurance": 7,
-      "spare_mags": 4
+      "spare_mags": 4,
+      "techniques": {
+        "melee": [
+          "lunge",
+          "coup",
+          "riposte"
+        ],
+        "ranged": [
+          "suppress",
+          "dead_centre",
+          "deny"
+        ]
+      }
     }
   ],
   "companions": [

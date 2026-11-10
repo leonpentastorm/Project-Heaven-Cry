@@ -13,9 +13,27 @@ You are building the 23 melee technique handlers of **Physical 2.0** in Project 
 5. `data/techniques.json`: every technique's text, property lines and placeholder numbers. This is what you implement, word for word.
 6. `packages/engine/src/physical/`: the core, and the reference techniques the lead wrote (`melee/openers.ts` has Lunge, `melee/finishers.ts` has Coup, `melee/answers.ts` has Riposte). Copy their shape.
 
+## What the foundation settled (read before the rest; it wins where the two differ)
+
+1. **The code is the contract:** `physical/types.ts`, then `core.ts`, then the reference handlers. `melee/shared.ts` re-exports everything a handler imports.
+2. **Shared engine files take small additive edits from you** (the plan's rule 5): a field on a hook's context, an optional field on `Unit`, a new hook, a helper option that defaults to today's behaviour. Never a change to what existing code does. List each one in your result note. **Fill in the `numbers` of your own techniques in `data/techniques.json`** as you build them; change nothing else there.
+3. **`t.c` is null for an enemy or a companion.** Every handler must work with it null (skills come from the unit: `t.u.attack`, `t.u.strength`).
+4. **Give every handler an `ai(t)`** where an enemy could want it: a number (a plain attack is 5; 0: never), pure, no dice, no state.
+5. **Moving the user** inside a technique (Charge, Sidestep, Draw Cut's step): `approach(t, target, maxTiles)` finds the step, `stepUser(t, route)` takes it (held shots see each tile), `standingAt(t, tile, fn)` previews a strike from where the user will stand. Lunge shows all three. **Charge's run-up:** the core doesn't track a walk before the technique; make the run part of Charge (it moves the user itself, up to its tiles, in a straight line), or add a small counter on `Unit` in `moved` (an additive edit).
+6. **Technique state lives in `t.state()`** (`u.tech[id]`, saved with the fight; a copy in a preview), not `t.u.ps`. A set-up mark for "your next technique against this target" is `setUp(t, target, { hit, noAnswer })`: the core applies and spends it (Feint, Sidestep).
+7. **A technique that works without a damaging strike** (Feint when the save fails, a Link) calls `landed(t)` for its Momentum.
+8. **Several targets (Sweep, Cleave, Flurry):** call `strike(t, { target })` once per target. There is no volley wrapper to call; the core gives the variety bonus once per technique whatever the count.
+9. **Answers:** `react: { hookName(ctx, t) { … answer(t, attacker, () => { … }) } }`. `answer` checks `canAnswer` (Parry is protective and works while Suppressed; the others don't), spends the reaction and emits the event. Parry needs a hook before the damage of a melee hit lands: `attack_roll` (set `ctx.hit = false` to turn a hit into a miss) or `damage_in`; pick the one that fits its text and say which in your note.
+10. **Guard and Pressure:** "the Defender takes Pressure on Guard" is a `pressureFilter` you register from `links.ts` (it returns what still lands on the target).
+11. **New conditions** a technique needs (Bound, Guarding): keep them as technique state on the unit and listen on the hooks with `onHook`, as `ranged/press.ts` does for Suppress's held lane. Don't add to `magic.ts`'s condition table (ask the lead if a real condition is needed).
+12. **Tests:** import `physFight` and `rig` from `test/helpers/physfight.ts` (the lead's; don't edit it) and put your own helpers in `test/helpers/physfight-melee.ts`.
+
+
+13. **Since the foundation (merge the base in):** `strike` returns the unit really struck as `r.target` (an attack can be redirected: Confused, a captive held as a shield): put a technique's riders on `r.target`, never on `t.tgt`. A technique's step now goes through the engine's own move (`stepUser`): a Pinned, Grappled or Prone user doesn't step (`stepBlock(t)` gives the reason for a refusal), and traps, hazards and held shots on the way fire. A line's AP change is its `ap` field in the data (Bash's Bare line has `-1`): if a technique of yours changes its cost with a property, ask the lead to set it, don't refund AP in the handler. Drill is paid for every weapon that damaged the victim. A Press's extra Heat lands after its roll.
+
 ## Your branch
 
-Start from `origin/claude/charming-gauss-hbq4n0` once `physical-2.0-PLAN.md` says the foundation has landed. Push only to your own session branch.
+The foundation has landed (the plan's section 3 names the commit). Your session already has its own branch: bring the base in with `git fetch origin claude/charming-gauss-hbq4n0 && git merge origin/claude/charming-gauss-hbq4n0`, and merge it again whenever the lead says the base moved. Push only to your own session branch.
 
 ## What you own
 
@@ -23,10 +41,11 @@ Start from `origin/claude/charming-gauss-hbq4n0` once `physical-2.0-PLAN.md` say
 |---|---|
 | `packages/engine/src/physical/melee/openers.ts`, `strikes.ts`, `links.ts`, `finishers.ts`, `answers.ts`, `index.ts` | the handlers |
 | new files under `packages/engine/src/physical/melee/` | helpers only melee needs |
-| `packages/engine/test/phys-melee-*.test.ts` (new) and `packages/engine/test/helpers/physfight.ts` if the lead's helper lacks something (add, don't change) | tests |
+| `packages/engine/test/phys-melee-*.test.ts` and `packages/engine/test/helpers/physfight-melee.ts` (new) | tests |
+| the `numbers` of your 23 techniques in `data/techniques.json` | placeholder numbers |
 | `docs/design/handoffs/physical-2.0-A-RESULT.md` (new) | your result note |
 
-Everything else is someone else's: `combat.ts`, `game.ts`, `character.ts`, `physical/*.ts` outside `melee/`, every `data/` file, the spec, `apps/web/`. If you need something there, put it under "Requests for the lead" and work around it.
+Everything else is shared or someone else's. Shared engine files take small additive edits (the plan's rule 5, and point 2 below); the spec, the rest of `data/`, `physical/ranged/` and `apps/web/` you don't touch. Anything bigger goes under "Requests for the lead".
 
 ## The work list
 
@@ -63,16 +82,16 @@ You don't re-check these; the core refuses before your handler runs.
 
 ## Points that need care
 
-1. **Feint (3)** deals no damage but counts as a hit for Momentum when the target fails its save. It marks the target so your next technique against it this turn has +3 and it can't use an Answer: keep that mark on the unit's technique state (`t.u.ps`), not in a module variable. Module variables are not saved and break replays.
+1. **Feint (3)** deals no damage but counts as a hit for Momentum when the target fails its save (`landed(t)`). It marks the target so your next technique against it this turn has +3 and it can't use an Answer: that is `setUp(t, target, { hit: 3, noAnswer: true })`. Never keep state in a module variable: it is not saved and breaks replays.
 2. **Draw Cut (4)** needs the weapon stowed at the start of the turn (`needs.stowed`). Use the existing gear functions to draw; the code map lists them.
 3. **Ambush (5)** needs Hidden. With Bare it does no damage and applies Grappled and Silenced: reuse today's Grapple.
-4. **Sweep (7) and Cleave (21)** hit several targets: wrap the strikes the way `fireBurst` does (`chained()` and a `volley_end`), which the reference Coup shows for one target. Allies in the arc are hit (friendly fire, as Sigil bursts do).
+4. **Sweep (7) and Cleave (21)** hit several targets: one `strike(t, { target })` each. Allies in the arc are hit (friendly fire, as Sigil bursts do).
 5. **Bind (12)** lasts until your next turn and ends if either of you is moved away. With Bare it becomes today's Grapple. Throw Down (24) needs a target you have Bound or Grappled.
 6. **Throw (14)** always hits with Dexterity, whatever the weapon says, and leaves the weapon in the pile on the target's tile. Use the existing pile functions.
-7. **Guard (16)** keeps Momentum over the end of the turn. The core reads a flag for that; set it through the helper the reference shows, don't touch `closeTurn`.
+7. **Guard (16)** keeps Momentum over the end of the turn: `holdMomentum(t)`. Don't touch `closeTurn`.
 8. **Run Through (23)** with Reach lets the player leave the weapon in: the user is then unarmed (the weapon goes to the target's tile as a pile entry tied to the Pinned state). If that is not reachable from your files, build the rest and put this line in your requests.
-9. **Parry (25)** is a protective reaction: it works while the user is Suppressed. Riposte and Keep Back are not. The core's `canAnswer(u, id)` knows; call it.
-10. **Keep Back (27)** fires on an enemy stepping into reach: hook `move_step` through `react`, as the lead's Deny does for ranged.
+9. **Parry (25)** is a protective reaction: it works while the user is Suppressed. Riposte and Keep Back are not. `answer()` asks the core's `canAnswer` for you.
+10. **Keep Back (27)** fires on an enemy stepping into reach: hook `move_step` through `react` (`ctx.u` is the mover, `ctx.at` the tile, `ctx.stop` halts the walk), as the lead's Deny does for ranged.
 11. **Name clashes.** The Fighter already has class moves called Lunge, Riposte and Finisher, and there is a base Shove action and a Fighter Shove. The lead rewires those. Your handler ids are the technique ids in the data (`shove` the Link is the technique); don't register anything under a `class:` key.
 
 ## Tests

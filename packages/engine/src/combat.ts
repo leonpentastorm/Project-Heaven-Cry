@@ -1,7 +1,7 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { fxTaps } from './fxtap';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
-import { type Character, type PackItem, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult,
+import { type Character, type PackItem, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   saveBonus, debuffStrength, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
@@ -143,6 +143,14 @@ export interface Unit {
   infiniteAmmo?: boolean;
   /** Class resources (Momentum, Guard, Marks, Charges, Supplies…): current values, and maxima. */
   res?: Record<string, number>; resMax?: Record<string, number>;
+  /** Physical 2.0 (rules 1.12; src/physical). Pressure 0–4 on this unit, how many of its pips its own side can't see (a
+   * Silent weapon's), who put it there, who hit it in which round and with which weapon (Crossfire; drill on the kill),
+   * turns left of Stopped once, the Watch it holds, its melee chain this turn, per-technique state, a set-up mark, an
+   * enemy's technique list, a Drawn weapon's quiver, and a free speed reload owed (Last Round). */
+  pressure?: number; pressHidden?: number; pressBy?: Record<string, string>; hitRound?: Record<string, number>; hitWith?: Record<string, string[]>;
+  stopped?: number; watch?: import('./physical/types').HeldWatch; chain?: { t: string; n: number; last: string | null; ended: boolean };
+  tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
+  techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean; pressedThis?: { t: string; ids: string[] }; nearFoe0?: number; noWatch?: number;
   /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
   prayedRound?: number;
   /** Rules 1.6 (faith.ts): the vow sworn for this fight, and the faith state of the fight (tags seen per action, the
@@ -404,6 +412,7 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: t.attack_bonus,
     mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
+    ...(t.techniques && (t.techniques.melee?.length || t.techniques.ranged?.length) ? { techs: [...(t.techniques.melee || []), ...(t.techniques.ranged || [])] } : {}),
   };
 }
 
@@ -745,6 +754,9 @@ export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | 
 
 // ---------- attacks ----------
 export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
+/** A weapon a melee strike is made with: a melee weapon, or one whose rules 1.12 system is melee though its category isn't
+ * (the Evoker blade, the Emanator gauntlet, the banner, the grand staff). Any other weapon strikes in melee as fists. */
+export const meleeArm = (w: WeaponDef) => isMelee(w) || (w as any).phys?.system === 'melee';
 export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
   typeof w.damage === 'number' ? w.damage : w.damage?.within_4 ? (range <= 4 ? w.damage.within_4 : w.damage.within_8) : w.id === 'recurve_bow' ? 20 + 5 * rawPower : 20;
 export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? 3 : (w.ap_cost.single ?? 2));
@@ -773,10 +785,10 @@ export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: n
   dmg?: { base: number; terms: Term[]; mults: Term[]; total: number; crit: number; pierce: number; armour: number } }
 export type AttackMode = 'shot' | 'aimed' | 'melee' | 'burst' | 'auto';
 export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, opts: { extra?: number; free?: boolean; noRecoil?: boolean } = {}): AttackPreview {
-  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
+  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !meleeArm(w) ? WEAPON.fists : w;
   const fx: any = (w as any).grants?.effect || {};
   const ap0 = opts.free ? 0 : mode === 'burst' ? 3 : mode === 'auto' ? (fx.op === 'auto_ap' ? fx.value : 4) : mode === 'aimed' && fx.op === 'aimed_ap' ? fx.value : attackApCost(useW, mode === 'aimed' ? 'aimed' : mode === 'melee' ? 'melee' : 'shot');
-  const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0;
+  const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0; // rules 1.12: the Reach property, for a melee strike
   // Items see the attack before it is checked: AP (ctx.ap), reach (ctx.reach), cover (ctx.ignoreCover), extra to-hit
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
   const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false };
@@ -839,7 +851,7 @@ const charFor = (u: Unit): Character | null => { const G = boundGameRef(); retur
  * together and are capped at +100%, plan 6a-1; stackDamage). Special ammo (rules.json ammo_types), the Ambush
  * multiplier, Weakened and the target's Critical damage taken are applied here. */
 export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean } = {}) {
-  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
+  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !meleeArm(w) ? WEAPON.fists : w;
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? (att.dur ?? att.maxDur) <= att.maxDur * 0.25 : false;
   const bayonet = melee && useW === WEAPON.fists && hasMod(att.mods, 'mod_bayonet');
@@ -847,7 +859,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const base = bayonet ? 15 : weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) + (useW.category === 'unarmed' ? att.unarmedBonus || 0 : 0) + (melee && useW === w && hasMod(att.mods, 'mod_weighted') ? 3 : 0) - (!melee && hasMod(att.mods, 'mod_suppressor') ? 2 : 0);
   const mults: Term[] = [], vs: Term[] = [];
   const M = (v: number, label: string) => { if (v !== 1) mults.push({ v, label }); };
-  M(who ? physicalMult(who) : 1, 'Strength and Raw Power'); M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill');
+  M(who ? weaponMult(who, useW.id) : 1, weaponMultLabel(useW.id)); M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill'); // rules 1.12: the first multiplier follows the weapon's scales_with
   if (melee && useW === w && att.maxDur) M((att.dur ?? 1) <= 0 ? 0.5 : worn ? 0.9 : 1, (att.dur ?? 1) <= 0 ? 'broken' : 'worn');
   if (ammo?.damage_mult) M(ammo.damage_mult, ammo.id.replace(/_/g, '-') + ' rounds');
   const critM0 = who ? critMult(who) : 2, critM = 1 + (critM0 - 1) * (1 - (tgt.critTaken || 0));
@@ -887,7 +899,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     if (pool.length) { const pick = pool[die(rng, pool.length) - 1]; cb.log.push(att.name + ' is Confused: the attack goes at ' + pick.name + ' instead.'); tgt0 = pick; }
   }
   // ctx.locked: an item that keeps the attack on its first target whatever redirects it (Rabbit's Foot's hunters).
-  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, mods: cb.mods || [], locked: null }), tgt: Unit = at.locked || at.tgt || tgt0;
+  const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, cb, rng, mods: cb.mods || [], locked: null }), tgt: Unit = at.locked || at.tgt || tgt0;
   if (!who) who = charFor(att);
   if (att.companion) who = null; // a companion fights with its own numbers
   const pv = previewAttack(cb, att, tgt, mode, { extra: opts.extra, free: opts.free || opts.noAp, noRecoil: !!opts.noAp });
@@ -898,7 +910,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     cb.log.push(line);
     return { roll: 0, total: 0, vs: 0, hit: false, crit: false, fumble: false, damage: 0, line, killed: false, refused: pv.why };
   }
-  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !isMelee(w) ? WEAPON.fists : w;
+  const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee', useW = mode === 'melee' && !meleeArm(w) ? WEAPON.fists : w;
   const attAt = att.pos, tgtAt = tgt.pos;
   att.ap -= pv.ap;
   if (att.mg) calmFight(cb, att); // rules 1.5, calming the heart: the first weapon attack of your turn eases 1 Strain
@@ -946,7 +958,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
     // Riders (rules 1.3): incendiary rounds and burning weapons set the target Burning (a hit's rider: no save);
     // enhanced rounds and mana arms release bots (+1 on the meter); explosives splash; the flamer's cone.
     if (!tgt.dead && !tgt.surrendered && (AMMO_TYPES[ammoId(att.ammoType) || '']?.applies === 'burning' && !melee || (useW.properties || []).includes('applies_burning'))) injury += applyCond(cb, rng, att, tgt, 'burning', undefined, 'body', { skipSave: true });
-    if (!melee && (AMMO_TYPES[ammoId(att.ammoType) || '']?.meter_per_hit || useW.category === 'mana' || (useW.properties || []).includes('mana_meter_on_hit'))) shiftMana(cb, 1, 'bots released by a hit');
+    if ((!melee && (AMMO_TYPES[ammoId(att.ammoType) || '']?.meter_per_hit || useW.category === 'mana' || (useW.properties || []).includes('mana_meter_on_hit'))) || (melee && useW === w && useW.category === 'mana')) shiftMana(cb, 1, 'bots released by a hit'); // a mana arm releases bots on a melee technique's hit too
   }
   if (hit && radiusOf(useW) && useW.category !== 'thrown') injury += splash(cb, att, tgt, useW, damage);
   // Momentum (the Fighter's resource, spec: Classes): +1 for each melee hit (the class moves spend it).
@@ -959,7 +971,7 @@ export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode:
   const stopped = !hit && !fumble && !!pv.coverTile && total + pv.cover >= pv.need;
   ev.dmg = damage; ev.killed = killed; if (stopped) ev.cover = pv.coverTile;
   if (hit && tgt.downed && !killed) ev.downedHit = true;
-  if (stopped) injury = ' · stopped by cover' + damageCover(cb, pv.coverTile!, weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) * (who ? physicalMult(who) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1), 0, att);
+  if (stopped) injury = ' · stopped by cover' + damageCover(cb, pv.coverTile!, weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) * (who ? weaponMult(who, useW.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1), 0, att);
   const verb = melee ? 'strikes' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
   const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + (pv.cover ? ' (incl. −5 cover)' : '') + ' = ' + total + ' vs ' + pv.need +
     (fumble ? (melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
@@ -1203,7 +1215,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
     if (!stopped && rng && (cb.zones || []).length && zoneEnter(cb, rng, u, k)) { stopped = 'trap'; flush(); }
     // Rules 1.7: hazards fire on every tile entered, at any speed (the area map's moves roll on cb.worldRng).
     if (!stopped && cb.hazards?.some((h) => hazardLiveAt(h, k, u.side))) { flush(); const hz = hazardStep(cb, rng || cb.worldRng, u, k); if (hz) stopped = hz; }
-    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng });
+    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
     if (reacts && !u.dead && !u.downed) {
       // Opportunity attacks (spec): leaving an enemy's melee reach without Disengaging, checked at each step.
@@ -1610,7 +1622,7 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1); // an attack action wears 1 (spec: Weapons v2)
   const fx: any = (w as any).grants?.effect || {};
   emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
-  cb.log.push(u.name + (melee ? ' smashes' : ' shoots') + ' the ' + c.name.toLowerCase() + ' at ' + refOf(tile) + damageObject(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? physicalMult(who) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1)) + '.');
+  cb.log.push(u.name + (melee ? ' smashes' : ' shoots') + ' the ' + c.name.toLowerCase() + ' at ' + refOf(tile) + damageObject(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? weaponMult(who, w.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1)) + '.');
   return null;
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
@@ -1666,6 +1678,11 @@ export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? action
  * ignores Hidden PCs (it doesn't know where they are). An enemy a False Image fooled sees the image where its owner
  * stands (illusion.ts: it attacks and closes on the image instead). enemyIntent below reads the same choices without
  * acting (the Trickster's Read). */
+/** Steps an engine system outside this file gives the enemy AI (physical/ai.ts: a technique), tried where the plain
+ * attack would be. plan says what it would do now, changing nothing (the intent line); act does it and returns true. */
+export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
+const ENEMY_STEPS: EnemyStep[] = [];
+export const enemyStep = (s: EnemyStep) => { ENEMY_STEPS.push(s); };
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
@@ -1689,6 +1706,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
     if (enemyNeedsReload(u) && u.ap >= 2) { reload(cb, u); continue; }
+    if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
     if (targets.length) { const t = targets[0].t; if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
@@ -1760,7 +1778,9 @@ function intentInner(cb: Combat, u: Unit): Intent {
   if (enemyNeedsReload(u)) return { kind: 'reload', text: 'reload' };
   const mode = enemyMode(u), pcs = perceivedFoes(cb, u), targets = enemyTargets(cb, u, mode, order, pcs);
   let out: Intent;
-  if (targets.length) {
+  const step = ENEMY_STEPS.map((s) => s.plan(cb, u)).find(Boolean);
+  if (step) out = { kind: 'attack', text: step.text, ...(step.targetId ? { targetId: step.targetId } : {}) };
+  else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
     out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name), targetId: owner!.id, ...(ghost ? { image: t.id } : {}) };
   } else if (moveBlock(u) || !pcs.length) out = { kind: 'wait', text: 'hold where it is' };

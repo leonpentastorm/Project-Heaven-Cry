@@ -15,15 +15,29 @@ You are building everything a player sees of **Physical 2.0** in Project Heaven 
 
 ## Your branch
 
-- **Part 1 (item icons) can start now,** from `origin/claude/charming-gauss-hbq4n0` as it is: the icons and their loader are already merged there.
-- **Parts 2 to 9 start once `physical-2.0-PLAN.md` says the foundation has landed.** Merge the base into your branch then.
+- **The foundation has landed** (the plan's section 3 names the commit). Your session already has its own branch: bring the base in with `git fetch origin claude/charming-gauss-hbq4n0 && git merge origin/claude/charming-gauss-hbq4n0`, and merge it again whenever the lead says the base moved.
 - Push only to your own session branch.
+
+## What the foundation settled (read before the rest; it wins where the two differ)
+
+1. **The code is the contract.** Read `packages/engine/src/physical/types.ts` (`PadGroup`, `PadEntry`, `TechPreview`, `TechArgs`) and the bottom of `core.ts` (`techniquePad`, `previewTechnique`, `physView`). The plan's sections 5.3 to 5.5 list the actions, what the screen reads, and the events. Everything is exported from `@phc/engine`.
+2. **The engine keeps every old action working** until integration. So: the **plain row** of each weapon block sends `combat/technique` with `cut` or `shot`; Aimed Shot is a chip in the ranged pad and Overwatch a chip under "Hold a shot" (both are free techniques). The rows the engine still offers through `weaponActions(u)` (Burst, Full auto, the weapon skill, and Shove and Brace) **stay as they are today, under the blocks,** drawn from that list and not from a list of your own: the lead removes them from the data at integration and they then disappear by themselves. Nothing on screen is keyed to a technique id or to a weapon id.
+3. **The player's choice between two property lines** is `entry.choices` (`[{ prop, text }]`) and is sent as `line: prop`. There is no `choice` argument. A bow's arrow type is `ammo`; an optional outcome a technique's text offers is `opt`.
+4. **Pass the game to the engine's screen functions:** `techniquePad(cb, u, hand, g)`, `previewTechnique(cb, u, id, args, g)`, `physView(cb, u, mySide, g)`, where `g` is the room state the screen already has. They find the character behind a unit through it; without it a player's unit reads as an enemy and the pad comes back short. **A unit's meters come from `physView`:** Momentum with its hint, Pressure pips as your side may see them, the state word and what it costs, who is pressing it, Stopped once, and the Watch it holds with its tiles. Draw what it returns and compare nothing yourself. (The whole fight still travels to every client today; hiding a Silent weapon's pips in the room's view is the lead's job later. Use `physView` and the screen is already right.)
+5. **"Not built yet"** is `entry.built === false` (and `entry.why` says it). Grey those chips; don't hide them.
+6. **A property's one-line meaning** for a "?" is `propText(prop)`. A technique's text is `TECHNIQUE[id].text`, its lines `TECHNIQUE[id].lines`, a Take's stronger line `.suppressed`, an Answer's or Watch's trigger `.trigger`.
+7. **Creation** sends the picks on the sheet: `techniques: { melee: [..], ranged: [..] }`. `startingTechniqueSlots(sheet)` says how many of each, `startingTechniqueChoices(system)` what may be picked, `defaultTechniques(sheet)` the defaults, `startingTechniquesError(sheet)` checks them (the engine runs it at `char/add` too).
+8. **The Proving Ground's actions:** `sandbox/technique { charId, id | 'all', forget?, ready? }` (`'all'` with `ready: true` readies everything past the cap), `sandbox/drill { charId, weaponId, amount }`, `sandbox/meter { unitId, momentum?, pressure? }`.
+9. **The ARMS tab** may also let the player choose which Answers they use and in what order (`phys/answers { charId, ids | null }`); `c.phys.answers` holds it. Build it last; it is small.
+10. **Icons in templates.** If a template needs an image address and not inline markup, add a `gearIconUri(id, ink)` beside `gearIcon` in `gearIcons.ts` (yours to change).
+11. **Don't touch `apps/web/src/narrator/`** (the Narrator's glossary, brief and fight report are the lead's), except to fix a test your change breaks.
+12. **Events:** the plan's section 5.5. A held Overwatch still fires as today's `overwatch` event (now with an `id`); the other Watches fire as `watch_fire`; `watch_end` says why a held shot was lost.
 
 ## What you own
 
 Everything under `apps/web/`, except `apps/web/src/game/protodata.json` (never regenerate or edit it). You also write `docs/design/handoffs/physical-2.0-C-RESULT.md` and may add screenshots under `docs/design/handoffs/physical-2.0-shots/`.
 
-You don't edit `packages/engine/`, `data/`, the spec or `art/`. The engine gives you everything as values: **the screen never works a number out itself.** If a value you need is missing from `techniquePad`, `previewTechnique` or the character helpers, put it under "Requests for the lead" and show a plain placeholder meanwhile.
+You don't edit `data/`, the spec or `art/`. The engine gives you everything as values: **the screen never works a number out itself.** If a value you need is missing from `techniquePad`, `previewTechnique`, `physView` or the character helpers, you may add it to the engine yourself when it is a small additive field on what those functions return (the plan's rule 5: never a change to a rule, and list it in your result note); anything bigger goes under "Requests for the lead", with a plain placeholder meanwhile.
 
 ## Part 1: item icons
 
@@ -48,7 +62,7 @@ Rules:
 
 ## Part 2: the Attack tab
 
-This replaces today's attack rows (Shot, Aimed shot, Burst, Full auto, Overwatch, the weapon skill row, Melee). Leon's ruling: gun techniques and melee techniques each get **their own expandable action**, the way "Draw a glyph" opens the glyph keyboard and "Outburst" opens the design cards.
+This replaces today's Shot, Aimed shot, Overwatch and Melee rows (Burst, Full auto and the weapon skill row stay for now: point 2 of "What the foundation settled"). Leon's ruling: gun techniques and melee techniques each get **their own expandable action**, the way "Draw a glyph" opens the glyph keyboard and "Outburst" opens the design cards.
 
 1. **One block per held weapon,** main hand first, then the off hand if it holds a weapon. Each block has:
    - a header: the weapon's icon and name, and its meter (melee: Momentum pips; ranged: rounds loaded and Heat);
@@ -62,8 +76,8 @@ This replaces today's attack rows (Shot, Aimed shot, Burst, Full auto, Overwatch
    - a lent technique (`entry.lent`: the weapon's own signature, not yet learned) and a learned signature (`entry.signature`) each get a small mark, with the meaning in words on hover.
 4. **Picking a chip** selects it and closes the pad to one line in the selected-action card ("Lunge · 2 AP"). Then the usual flow: pick a target or a tile on the grid, read the preview, Confirm.
 5. **The preview** is `previewTechnique(cb, u, id, args)`. Show, in the selected card: the hit chance and number needed for each attack roll in it, the damage, every note the engine returns, Momentum now and after, each unit's Pressure change and the state it would reach, any save with its TN, and the tiles it covers or moves someone to (drawn on the grid like Sigil previews). If `ok` is false, show `why` and disable Confirm.
-6. **A choice.** When the held weapon has two properties a technique reads, the engine's entry lists both lines; show them as two small chips under the selected line and send the pick as `choice`.
-7. **Confirm** sends `combat/technique { id, hand, targetId?, tile?, allyId?, choice? }`. Read trap 1 in the code map first: `confirm()` falls through to a plain shot for an unknown action id. A technique must never do that.
+6. **A choice.** When the held weapon has two properties a technique reads, the engine's entry lists both lines; show them as two small chips under the selected line (`entry.choices`) and send the pick as `line`.
+7. **Confirm** sends `combat/technique { unitId, id, hand, targetId?, tile?, allyId?, line?, ammo?, opt? }`. Read trap 1 in the code map first: `confirm()` falls through to a plain shot for an unknown action id. A technique must never do that.
 8. **Keys.** Inside the Attack tab: 1 selects the first weapon's plain attack, 2 opens its Techniques; 3 and 4 the second weapon's; 5 opens Hold a shot. In an open pad, arrow keys move between chips and Enter picks, as on the glyph keyboard. The tab-switching number keys work as today when no pad is open; say in your result note how you resolved the overlap.
 9. **Height.** `e2e/tabs.mjs` requires the grid and Confirm on screen with no page scroll at 1440 × 900 and 1280 × 720 with a pad open. That stays true with two weapons held and the longest pad open.
 10. **What is not built yet.** Until implementers A and B hand back, most techniques answer "not built yet" from the engine. Show them greyed with that reason. Don't hide them and don't special-case them.
@@ -72,16 +86,16 @@ This replaces today's attack rows (Shot, Aimed shot, Burst, Full auto, Overwatch
 
 ## Part 3: Momentum, Pressure and states
 
-1. **Momentum** already draws under the HP bar for a Fighter. It is now on every unit that holds a melee weapon. Add the hint the engine gives ("+1 if different") beside the pips.
+1. **Momentum** already draws under the HP bar for a Fighter. It is now on every unit that holds a melee weapon. Add the hint the engine gives (`physView(...).momentum.hint`) beside the pips.
 2. **Pressure pips on tokens.** Up to 4 pips above every token whose Pressure is above 0, enemies and allies alike. They are public: they don't need Analyze. The state word (Pressed, Suppressed, Broken) goes in the token's hover card and its aria-label. Pair the colour with the word (the colour rules).
-3. **Hidden pips.** Pressure from a Silent weapon is hidden from its target's side until it is used. The engine's view for each player already leaves it out; draw what you are given.
+3. **Hidden pips.** Pressure from a Silent weapon is hidden from its target's side until it is used. `physView(cb, u, mySide)` leaves it out; draw what it gives.
 4. **On the You card:** your own Pressure with its state and what it costs you in words, and who put it there when the engine says ("the sharpshooter has you Pressed").
 5. **Held Watches.** Your own held Watch shows on the You card with its trigger ("Deny · F6"). An enemy's held Watch that your side can see is drawn on the map: the tiles it covers in a red tint and a line from the watcher, so players can plan around it. Your own and allies' Watches use your side's tint.
 6. **Stopped once.** A unit that can't be stopped again this round shows it in its hover card, so a gunner doesn't waste a Take.
 
 ## Part 4: effects and sounds
 
-The engine emits `technique`, `momentum`, `pressure`, `watch_set`, `watch_fire`, `stopped` and `drill` (the plan, section 5.4). Add one handler family file beside the others (`fx/classes.ts` is the model) and register it in the two places the code map names.
+The engine emits `technique`, `momentum`, `pressure`, `watch_set`, `watch_fire`, `watch_end`, `stopped` and `drill` (the plan, section 5.5). Add one handler family file beside the others (`fx/classes.ts` is the model) and register it in the two places the code map names.
 
 - Keep them short. A gunner's turn must not get slower than it is today. They follow the combat speed setting.
 - `technique` reuses the shot and melee effects that already play, plus the technique's name over the unit. A Finisher and a Take get one stronger beat each.
@@ -103,11 +117,11 @@ On the Kit step, under the kit: a character with Raw Power or Athletics picks 2 
 
 ## Part 7: the Proving Ground tools
 
-A new section in the tools panel: grant or remove any technique, set a weapon's drill, fill the ready lists, and set a unit's Momentum or Pressure for testing. The actions are `sandbox/technique` and `sandbox/drill`; ask the lead for any other you need. Add its search words.
+A new section in the tools panel: grant or remove any technique, set a weapon's drill, fill the ready lists, and set a unit's Momentum or Pressure for testing. The actions are `sandbox/technique`, `sandbox/drill` and `sandbox/meter`; ask the lead for any other you need. Add its search words.
 
 ## Part 8: the "?" and the Narrator's words
 
-Each technique chip and each property name has a "?" or hover that explains it in one or two plain sentences, from the data's text. The property explanations come from the engine's glossary entries (the lead adds them).
+Each technique chip and each property name has a "?" or hover that explains it in one or two plain sentences, from the data's text. The property explanations come from the engine (`propText(prop)`).
 
 ## Part 9: tests
 

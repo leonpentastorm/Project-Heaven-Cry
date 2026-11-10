@@ -9,7 +9,8 @@ import {
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { unitSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
+import { unitSees, sideSees, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -348,6 +349,12 @@ export type Action =
   // Perks, traits and class moves (effects/actions.ts): id is the item key ("perk:earthbreaker") or a bare id.
   | ({ type: 'combat/perk'; unitId: string; id: string; actionId?: string } & ActionArgs) | { type: 'combat/decline'; unitId: string }
   | ({ type: 'story/perk'; charId: string; id: string; actionId?: string } & ActionArgs)
+  // Physical 2.0 (rules 1.12; src/physical): a technique in a fight (its arguments are TechArgs: hand, targetId, tile,
+  // allyId, line, ammo, opt…); out of a fight, the ready list of a system, a drill pick for a weapon, a bow's quiver
+  // (arrows per type), and the Answers this character will use, in order (null: every ready Answer).
+  | ({ type: 'combat/technique'; unitId: string; id: string } & TechArgs)
+  | { type: 'phys/ready'; charId: string; system: TechSystem; ids: string[] } | { type: 'phys/pick'; charId: string; weaponId: string; id: string }
+  | { type: 'phys/quiver'; charId: string; weaponId: string; load: Record<string, number> } | { type: 'phys/answers'; charId: string; ids: string[] | null }
   | SandboxAction
   // Blessing 2.0 (rules 1.6): prayers, vows, rites, and the Narrator's pacts, pieces, Devotion and apostasy (faith.ts).
   | FaithAction;
@@ -404,7 +411,7 @@ export const SHEET_MAX = 30_000;
 /** Why this room refuses this sheet from this player (char/add's checks, also run by the creation screen before it
  * stamps a record), or null. */
 export function roomSheetError(g: GameState, by: string, sheet: Sheet): string | null {
-  const err = validateSheet(sheet); if (err) return err;
+  const err = validateSheet(sheet) || startingTechniquesError(sheet as any); if (err) return err;
   // Rooms carry only the small copy of an uploaded portrait (spec: Character files); the full one stays in the file.
   if (typeof sheet.portrait === 'string' && sheet.portrait.length > PORTRAIT_MAX) return 'That portrait is too big for a room. Re-upload it on the creation screen.';
   if (JSON.stringify({ ...sheet, portrait: '' }).length > SHEET_MAX) return 'That character carries too much text for a room.';
@@ -875,6 +882,13 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase === 'story') canon(g, c!.name + (to ? ' gave ' + to.name + ' ' : ' dropped ') + it!.name + ' (scene ' + g.story.scene.n + ').', [], 1);
       return;
     }
+    case 'phys/ready': case 'phys/pick': case 'phys/quiver': case 'phys/answers': {
+      // Physical 2.0 (rules 1.12): what a character has ready, picks from a drill mark, loads in a quiver. Out of a fight.
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat' && g.combat && !g.combat.over) fail(a.type === 'phys/quiver' ? 'A quiver is filled before the fight.' : 'Change your techniques out of a fight.');
+      const e = physAction(c!, a); if (e) fail(e);
+      return;
+    }
     case 'gear/load': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase === 'combat') fail('In a fight, load magazines from the combat screen (1 AP per 5 rounds).');
@@ -1339,6 +1353,14 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/move': err = moveUnit(cb!, u, a.to, g.rng, a.how || 'move'); break;
     case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.'); refuseHook(cb!, u, a); err = shove(cb!, g.rng, u, t!); break; }
     case 'combat/prone': err = toggleProne(cb!, u); break;
+    case 'combat/technique': {
+      // Physical 2.0: the technique checks its own targets and tiles (an ally, a tile, several enemies); a tile may come as a map reference.
+      const { type: _t, unitId: _u, id, ...rest } = a as any; const args: TechArgs = { ...rest };
+      if (typeof args.tile === 'string') args.tile = tileKey(g, args.tile);
+      if (args.targetId && !anyTarget(cb!.units.find((x) => x.id === args.targetId), u)) fail('Pick someone else.');
+      if (!TECHNIQUE[id]) fail('No such technique.');
+      refuseHook(cb!, u, a); err = useTechnique(cb!, u, id, args, g.rng); break;
+    }
     case 'combat/brace': err = brace(cb!, u); break;
     case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, who); break; }
     case 'combat/gift': err = runGift(g, cb!, g.rng, u, tileKey(g, a.aim)); break;
@@ -1443,6 +1465,24 @@ function syncSong(g: GameState) {
 }
 
 /** Anyone and anything is a target (spec: Anyone is a target): any unit but yourself, alive. */
+/** The phys/* actions on a character (the Proving Ground runs them in a fight too). A refusal in plain words, or null. */
+function physAction(c: Character, a: Extract<Action, { type: 'phys/ready' | 'phys/pick' | 'phys/quiver' | 'phys/answers' }>): string | null {
+  switch (a.type) {
+    case 'phys/ready': {
+      if (a.system !== 'melee' && a.system !== 'ranged') return 'Melee or ranged.';
+      const ids = (Array.isArray(a.ids) ? a.ids : []).filter((x) => typeof x === 'string'), e = readyError(c, a.system, ids); if (e) return e;
+      if (ids.some((id) => TECHNIQUE[id]?.free)) return 'That one is always ready.';
+      ensurePhys(c).ready[a.system] = ids; return null;
+    }
+    case 'phys/pick': return takePick(c, a.weaponId, a.id);
+    case 'phys/quiver': return loadQuiverWith(c, a.weaponId, a.load || {});
+    case 'phys/answers': {
+      if (a.ids == null) { delete ensurePhys(c).answers; return null; }
+      const ids = (Array.isArray(a.ids) ? a.ids : []).filter((x) => TECHNIQUE[x]?.group === 'answer'); if (new Set(ids).size !== ids.length) return 'Each Answer once.';
+      ensurePhys(c).answers = ids; return null;
+    }
+  }
+}
 const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead && !t.surrendered;
 /** What a companion or a puppet may do (rules 1.3). */
 const ACT_NAME: Record<string, string> = { move: 'move', sprint: 'sprint', disengage: 'disengage', shot: 'shoot', aimed: 'take an aimed shot', melee: 'strike' };
@@ -1729,6 +1769,15 @@ export const DRONE_ROUND_AP = COMPANION_ROUND_AP.drone;
 
 // ---------- views ----------
 /** What one player may see: no hooks, no one else's voices or Overreach. */
+/** One unit as a side may see its Physical 2.0 state (viewFor). The unit is copied only when something is taken out. */
+function physFog(cb: Combat, u: Combat['units'][number], me: 'pc' | 'foe'): Combat['units'][number] {
+  const hid = u.side === me ? Math.min(u.pressure || 0, u.pressHidden || 0) : 0, blind = u.side !== me && !!u.watch && !sideSees(cb, me, u);
+  if (!hid && !blind) return u;
+  const x = { ...u };
+  if (hid) { const left = (u.pressure || 0) - hid; if (left > 0) x.pressure = left; else { delete x.pressure; delete x.pressBy; } delete x.pressHidden; }
+  if (blind) delete x.watch;
+  return x;
+}
 export function viewFor(g: GameState, playerId: string): GameState {
   // The skill panel shows Ask only where a voice has something (Silent elsewhere): which skills, never the hooks themselves.
   const sc = g.story.scene, voiced: Record<string, string[]> = {};
@@ -1748,6 +1797,9 @@ export function viewFor(g: GameState, playerId: string): GameState {
   // has eyes). A move's per-tile sight and a turn's or stance's seen keep the viewer's own side only.
   if (v.combat) { v.combat = { ...v.combat }; delete v.combat.sightSeen; delete v.combat.sightPos; delete v.combat.sightWhy; }
   if (g.story.zones) v.story.zones = g.story.zones.filter((z: any) => !secretFrom(z, me));
+  // Physical 2.0 (rules 1.12): a Silent weapon's pips are hidden from the side they are on; a held shot shows to its
+  // own side, and to the other side only while it sees the holder.
+  if (v.combat && g.combat) { const cb0 = g.combat; v.combat = { ...v.combat, units: v.combat.units.map((u) => physFog(cb0, u, me)) }; }
   pileFog(g, v, me); // rules 1.9: a pile shows only on a tile the viewer's party sees now (item 676)
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
@@ -2617,6 +2669,9 @@ export type SandboxAction =
   | { type: 'sandbox/hazard'; kind?: string; severity?: 'light' | 'heavy'; tiles?: string[]; rect?: { from: string; to: string }; hidden?: boolean; name?: string; remove?: string }
   | { type: 'sandbox/trigger'; when: 'enter' | 'examine' | 'objective'; tiles?: string[]; rect?: { from: string; to: string }; objId?: string; objective?: string; then: 'spawn' | 'fight' | 'reveal'; spawn?: NonNullable<NarratorTurn['npcs']>; difficulty?: string; name?: string; reveal?: string[]; text?: string; remove?: string }
   | { type: 'sandbox/npc'; name: string; at: string; side?: 'hostile' | 'neutral'; kind?: string; avatar?: string; tier?: string; weapon?: string; hidden?: boolean; wants?: string; knows?: { objective: string; hint: string; at?: string }; talk?: NarratorApproach[]; prisoner?: boolean }
+  // Physical 2.0: learn or forget a technique ('all': every one), and ready it; drill on a weapon's bar; a unit's meters.
+  | { type: 'sandbox/technique'; charId: string; id: string; forget?: boolean; ready?: boolean } | { type: 'sandbox/drill'; charId: string; weaponId: string; amount: number }
+  | { type: 'sandbox/meter'; unitId: string; momentum?: number; pressure?: number }
   | { type: 'sandbox/objective'; id: string; text?: string; where?: Where; status?: 'done' | 'failed' | 'open' };
 
 /** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */
@@ -2684,7 +2739,9 @@ const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.co
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
   'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
-  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes'] as const;
+  'condBy', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
+  // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
+  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload'] as const;
 
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
@@ -3266,6 +3323,33 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       sbLog(g, c.name + ' learns ' + [a.word && SIGIL[a.word].word, a.school && SCHOOL[a.school].name + ' (school)', a.module && MODULE[a.module].name + ' (module)', a.tone && TONE[a.tone].name + ' (tone)'].filter(Boolean).join(', ') + '.');
       return;
     }
+    case 'sandbox/technique': {
+      const c = mine(a.charId), ids = a.id === 'all' ? TECHNIQUES.filter((t) => !t.free).map((t) => t.id) : [a.id];
+      if (ids.some((id) => !TECHNIQUE[id] || TECHNIQUE[id].free)) fail('No such technique to learn.');
+      sbChange(g, c, () => {
+        const p = ensurePhys(c);
+        for (const id of ids) {
+          const sys = TECHNIQUE[id].system;
+          if (a.forget) { p.known = p.known.filter((x) => x !== id); p.ready[sys] = p.ready[sys].filter((x) => x !== id); continue; }
+          if (!p.known.includes(id)) p.known.push(id);
+          // the Proving Ground readies past the cap when asked to (ready: true), so every technique can be tried
+          if (a.ready !== false && !p.ready[sys].includes(id) && (a.ready || a.id !== 'all')) p.ready[sys].push(id);
+        }
+        if (a.id === 'all' && a.ready) (p as any).uncapped = true; else if (a.forget && a.id === 'all') delete (p as any).uncapped;
+      });
+      sbLog(g, c.name + (a.forget ? ' forgets ' : ' learns ') + (a.id === 'all' ? 'every technique' : TECHNIQUE[a.id].name) + '.'); return;
+    }
+    case 'sandbox/drill': {
+      const c = mine(a.charId), n = Math.round(Number(a.amount) || 0); if (!WEAPON[a.weaponId]) fail('No such weapon.'); if (!n) fail('How much drill?');
+      let r: ReturnType<typeof addDrill> | null = null; sbChange(g, c, () => { r = addDrill(c, a.weaponId, n); });
+      sbLog(g, c.name + ': drill with the ' + WEAPON[a.weaponId].name + ' ' + r!.total + (r!.learned ? ' (' + TECHNIQUE[r!.learned]?.name + ' learned)' : '') + '.'); return;
+    }
+    case 'sandbox/meter': {
+      hostOnly(); const cb = liveFight(g), u = cb?.units.find((x) => x.id === a.unitId); if (!cb || !u) fail('No such fighter.');
+      if (a.momentum != null) { ensureMomentum(u!); if (u!.resMax?.momentum != null) u!.res!.momentum = Math.max(0, Math.min(u!.resMax.momentum, Math.round(a.momentum))); }
+      if (a.pressure != null) { const to = Math.max(0, Math.round(a.pressure)), now = pressureOf(u!); if (to > now) addPressureTo(cb!, u!, to - now, null, 'the Proving Ground'); else lowerPressureOf(cb!, u!, now - to, 'the Proving Ground'); }
+      return;
+    }
     case 'sandbox/practice': {
       const c = mine(a.charId), n = Math.round(Number(a.n) || 0); if (!n) fail('How much practice?');
       sbChange(g, c, () => { c.soulPractice = Math.max(0, (c.soulPractice || 0) + n); });
@@ -3480,7 +3564,7 @@ function sandboxMp(g: GameState, a: SandboxMpAction, by: string) {
       const temps = Object.values(g.characters).filter((c) => c.owner === by && sb.temp.includes(c.id));
       const keep = Object.values(g.characters).filter((c) => c.owner === by && !sb.temp.includes(c.id));
       if (keep.length >= 2) fail('Two characters per player at most.');
-      const err = validateSheet(a.sheet) || (typeof a.sheet.portrait === 'string' && a.sheet.portrait.length > PORTRAIT_MAX ? 'That portrait is too big for a room.' : null)
+      const err = validateSheet(a.sheet) || startingTechniquesError(a.sheet as any) || (typeof a.sheet.portrait === 'string' && a.sheet.portrait.length > PORTRAIT_MAX ? 'That portrait is too big for a room.' : null)
         || (JSON.stringify({ ...a.sheet, portrait: '' }).length > SHEET_MAX ? 'That character carries too much text for a room.' : null);
       if (err) fail(err);
       if (temps.length) sbRemoveChars(g, temps.map((c) => c.id));

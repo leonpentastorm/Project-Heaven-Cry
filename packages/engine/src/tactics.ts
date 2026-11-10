@@ -33,7 +33,7 @@ export const isExplosive = (w: WeaponDef | undefined) => !!w && (!!(w as any).ex
 /** A weapon's blast radius (area_radius_N), or 0. */
 export const radiusOf = (w: WeaponDef | undefined) => { const p = (w?.properties || []).find((x) => /^area_radius_\d+$/.test(x)); return p ? +p.split('_').pop()! : 0; };
 /** Silent weapons don't reveal a Hidden attacker (spec: bows; the suppressor). */
-export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.properties || []).includes('silent') || (u.mods || []).includes('mod_suppressor'); };
+export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.properties || []).includes('silent') || !!(w as any)?.phys?.props?.includes('silent') || (u.mods || []).includes('mod_suppressor'); }; // rules 1.12: the Silent property counts
 /** Target-specific damage bonuses stack additively and are capped at ×2.0 in all (plan 6a-1, provisional): True Name,
  * Judgement Day, Case Closed, Weak Point, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel
  * each push {v: 0.15, label} (the bonus as a fraction) into ctx.vs on 'damage_out'. Situational self-multipliers
