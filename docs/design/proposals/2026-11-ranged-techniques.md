@@ -23,7 +23,7 @@ Status: **draft for Leon.** Nothing here is built. Every number is a placeholder
    | Pressure | State | On an enemy | On a player character |
    |---|---|---|---|
    | 1 | Under fire | nothing | nothing |
-   | 2 | **Pressed** | −1 to hit; no Watch techniques | the same |
+   | 2 | **Pressed** | −1 to hit **with ranged attacks**; no Watch techniques. Melee attacks are not affected | the same |
    | 3 | **Suppressed** (today's status, item 83) | −1 AP; no reactions that attack or move it (no Watch, opportunity attack, Riposte or Keep Back); a Heart save to leave cover | no reactions that attack or move you, and the Heart save to leave cover; **never an AP loss** |
    | 4 | **Broken** | −2 AP; its first action must be to reach cover or drop Prone | players stop at 3 |
 
@@ -31,10 +31,15 @@ Status: **draft for Leon.** Nothing here is built. Every number is a placeholder
 
 2. **Gaining it.**
    - The first ranged hit you land on a target each turn gives it +1.
-   - If that target is flanked or has no cover from you, +1 more. Position makes Pressure through rules that already exist.
+   - If you flank the cover it is using, +1 more. A target crossing open ground gets no extra: it has nothing to be driven out of.
    - **Press** techniques give more, some of them on a miss.
    - When a ranged attack takes an enemy out, every other enemy within 3 tiles that saw it gains +1. Weak enemies dying feeds the meter instead of wasting it.
-3. **Losing it.** −1 at the end of your own turn; −2 if you end it in cover and out of every enemy's sight.
+3. **Losing it.**
+   - −1 at the end of your own turn; −2 if you end it in cover and out of every enemy's sight.
+   - **Closing sheds it:** −2 as well if you end your turn closer to the nearest enemy than you began it.
+   - **Fighting it out:** each melee technique of yours that hits removes 1 from you.
+
+   **Pressure is a gunfight's currency** (Leon, 10 Nov 2026: a squad of gunners against a squad of fighters and tanks would have half of them debuffed before they reach the line). It degrades shooting and it holds people behind cover. It does very little to someone already running at you with a sword: their swings are not penalised, open ground gives no bonus against them, and advancing and hitting both burn it off. What still bites a charger is damage, and the two Takes that stop movement (Pin Down, Stopping Shot): those are the gunner's real answers to a charge, one a turn each, and they need the target Pressed first.
 4. **Tiers.** Elites stop at 3. Bosses stop at 2: they can be Pressed, never Suppressed.
 5. **Using it: Takes.** A Take needs its target **Pressed**. It lowers the target's Pressure by 2 and does a fixed thing, with a better line if the target was **Suppressed**. One Take a turn per shooter. A Take is not "spend everything for a bigger number": that is melee's Finisher.
 6. **Why "Shot, Shot, Shot" stops.** A second plain Shot at the same target adds no Pressure and takes Recoil. A Press and then a Take do more for the same AP, and the 1 AP Sets fill the odd points.
@@ -235,8 +240,9 @@ Where a weapon has two matching properties, the player picks one. "Rounds" is ho
 
 1. **Pips on every token** are the most on-screen state of the five systems, even though it is one number each.
 2. **It is thinnest at the ends.** Bosses stop at 2, and minions die before Pressure matters. The kill carry-over helps the second; the first needs bosses whose guards carry the Pressure game.
-3. **Solo play loses the squad half.** Spot, Crossfire and Cover Me need allies. A solo gunner still has Suppress into a Take, which risks becoming a fixed rotation.
-4. **Enemy Pressure on players** is softened (no AP loss, a cap of 3), but three machine guns can still take a party's reactions away. Smoke and Head Down are the answers; the Narrator's brief should say not to stack it.
+3. **Gunners against a melee squad.** Pressure no longer debuffs a charge (section 2, point 3), but four gunners still get four Takes a round, and Pin Down and Stopping Shot both stop a runner. If playtests show a melee squad never arriving, the first lever is that a target that ends its turn closer can't be Pressed above 1; the second is the Charge opener shedding all Pressure.
+4. **Solo play loses the squad half.** Spot, Crossfire and Cover Me need allies. A solo gunner still has Suppress into a Take, which risks becoming a fixed rotation.
+5. **Enemy Pressure on players** is softened (no AP loss, a cap of 3), but three machine guns can still take a party's reactions away. Smoke and Head Down are the answers; the Narrator's brief should say not to stack it.
 
 ## 10. Decisions for Leon
 
