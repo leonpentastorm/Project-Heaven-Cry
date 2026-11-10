@@ -28,8 +28,8 @@ Each angle has a question, a measure, and a target. Targets marked *(Leon)* are 
 - **Question:** does each way to fight sit where the targets put it, at equal investment?
 - **Measure:** sustained damage per turn and the biggest single hit, for reference builds at levels 1, 3, 6, 9, 12 and
   20 (the levels where the attribute ceiling moves, plus the start and the end).
-- **Target:** the table in `balance-targets.md` *(Leon)*. One enforced ceiling for every source of damage, not only
-  Sigils *(proposed)*.
+- **Target:** the table in `balance-targets.md` *(Leon)*. The ceilings are targets for the maths, not a clamp in the
+  engine *(Leon, section 5)*.
 
 ### B. The AP economy
 - **Question:** what is 1 AP worth, and does every action pay about that much?
@@ -135,14 +135,19 @@ Out of this pass: prices, loot and gear tiers (Equipment 2.0), XP pacing (settle
 7. Spec first, then data, then validator and tests; every changed number flagged provisional in section 14; one
    release, with the before-and-after tables.
 
-## 5. Decisions for Leon
+## 5. Leon's rulings (10 Nov 2026)
 
-1. Enemies scale with level (tier × level table): yes or no.
-2. The time-to-kill targets in angle C.
-3. One damage ceiling for every source, enforced by the engine.
-4. The AP rules in angle B, above all the cap on conditional AP swings.
-5. Attrition or fresh fights (angle L).
-6. Anything on this list he wants dropped, or an angle that is missing.
+1. **Enemies scale with level.** A tier-by-level table.
+2. **Two attacks at least.** Every enemy at your level takes a minimum of 2 attacks to kill. One-hit kills are for
+   enemies you drastically out-level, and for small vermin.
+3. **No hard damage cap.** 350 a hit and 500 on a mega critical are the targets the maths is balanced around; the
+   engine does not clamp damage. (The clamp inside Sigils, `SIGIL_CAP`, is now the odd one out: see section 7, item 7.)
+4. **AP swings are not capped.** Capping them takes value from the gamma (talk and notice) builds. They get a
+   cooldown in turns instead.
+5. **Fresh fights.** Each fight is its own puzzle; damage and resources are not meant to grind a squad down across a
+   session.
+
+These replace the proposed targets in angles A (no enforced ceiling), B (target 4), C (the kill counts) and L.
 
 ## 6. The first baseline (10 Nov 2026)
 
@@ -166,3 +171,69 @@ perks, no techniques, no class. What it shows:
 
 Not measured yet: techniques, perks, gear quality, magic, enemies' damage against characters, AP sources. Those need
 the fight simulator (instrument 1 in section 3).
+
+## 7. What only Leon can settle
+
+A simulator can say what the numbers are. It can't say what they should be. These are the calls a lead designer
+makes before the numbers move, in the order they block the work. Each has my recommendation so he can answer in a
+word.
+
+**Blocking the enemy table (step 3 of the order of work)**
+
+1. **How long a fight lasts.** In rounds, for a standard fight and for a boss. Everything else is derived from this.
+   *Recommendation: 4 to 6 rounds standard, 6 to 8 for a boss.*
+2. **How many attacks each tier takes at equal level.** The ruling gives the floor (2). The rest is taste.
+   *Recommendation: minion 2, soldier 3 to 4, elite 6 to 8, boss about 20 (a squad of four for 5 rounds).* "Attacks"
+   needs a yardstick weapon: *the service rifle in the hands of a character who put a normal share of points in it,
+   not an all-in one.*
+3. **What a level gap does.** How many levels above an enemy before one hit kills it, and how many below before the
+   fight is hopeless. *Recommendation: one-hit kills from 5 levels above; 3 levels below is "run".*
+4. **A tier under minion.** The ruling names small vermin as one-hit enemies; the data has no such tier.
+   *Recommendation: add "vermin" (one hit, comes in swarms).*
+5. **How often a character goes down.** In a standard fight at equal level, how many enemy turns of focused fire a
+   character survives, and how often a squad member should hit 0 HP. *Recommendation: 3 turns of focus; someone goes
+   down in about one fight in three.*
+
+**Blocking the damage work (step 4)**
+
+6. **What each weapon family is for.** Equal damage per AP for everything would make weapons the same; unequal needs a
+   reason. One line per family: what it is best at and what it pays. *My draft: pistol (one hand, cheap, weak),
+   revolver (few big shots), SMG (volume up close), rifle (the all-rounder and the yardstick), long rifle (range and
+   one big shot, slow), shotgun (most damage inside 4 tiles, nothing beyond 8), heavy (area and suppression, must
+   brace), bow (silent, no Heat, two attributes), light melee (Momentum and techniques), heavy melee (knockback and
+   breaking, 3 AP), unarmed (always there, weakest).* He should strike out or rewrite any line.
+7. **How big a critical is.** His two targets (350 a hit, 500 on a mega critical) put a critical at about ×1.4. The
+   engine's critical is ×2.5 to ×2.8 at 10 points. One of the two has to give. *Recommendation: criticals at ×1.5,
+   rising to ×2 only with perks and gear; the Sigil clamp is removed once the maths holds without it.*
+8. **How often an attack should hit.** Today 65% to 85% at creation and 95% by level 9. *Recommendation: about 65% at
+   equal level for the whole career, by letting enemy Defense grow with level.* The other school is "always hit,
+   balance by damage"; it reads better in a grid game but makes cover and range matter less.
+9. **What "optimised" means.** The 150% target for an optimised physical build needs a definition of the 100% it is
+   measured from. *Recommendation: 100% is the plain attack with a standard weapon and a normal share of points;
+   150% is the best technique rotation with perks and a Masterwork weapon.*
+10. **Is the Sigil's 150% a peak or an average?** A Line takes turns to draw. *Recommendation: an average over the
+    fight, counting the drawing turns, so the peak turn is higher.*
+
+**Blocking the AP work (step 4)**
+
+11. **The cooldown for the AP perks.** His ruling: a cooldown in turns, not a cap. *Recommendation: 3 turns.*
+12. **What a 9 AP turn is allowed to be.** The ceiling is 9. Is that 4 plain attacks, or should the last points pay
+    less? *Recommendation: leave it; price the sources so 9 is rare.*
+13. **What a fight gives the talk and notice skills.** The Calls are the answer today. What should a point of a gamma
+    skill be worth beside a point of an alpha? *Recommendation: about half in direct effect, the rest in what it
+    does for the squad.*
+
+**Later, but his**
+
+14. **How unkillable a tank may be**, and how many turns a character may lose to control in a row
+    (*recommendation: never two*).
+15. **Solo.** Same fights scaled down, or is one character meant to feel outnumbered?
+    *Recommendation: scaled by an encounter budget per character.*
+16. **What "fresh fights" resets.** HP, MP, Strain, ammunition, Echo, injuries, Devotion: which come back between
+    fights and which only at a rest. *Recommendation: HP, MP and Strain come back; ammunition, Echo, injuries and
+    Devotion don't.*
+17. **Numbers that must not move.** The 2020 legacy he wants kept whatever the maths says (6 AP a turn, 100 base HP,
+    the 10-point budgets, d20 against 8/12/16/20). *Recommendation: all four stay.*
+18. **What he plays and reports.** The simulator can't feel a turn. After each step he plays one Proving Ground fight
+    and answers three questions: did the fight end when it should have, was there a turn with no real choice, did
+    anything die or survive in a way that felt wrong.
