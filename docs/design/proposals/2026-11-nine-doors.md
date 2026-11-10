@@ -633,3 +633,25 @@ Everything not named in 15.2 to 15.5 fits the build that buys it and stays as it
 | **Skeleton 2.0 total** | **2** |
 
 Origami Hands' icon is kept for the stealth list.
+
+### 15.7 Anything that changes AP is gamma (Leon, 10 Nov 2026)
+
+This overrides 15.5's verdict on the Camaraderie perks. Counted against today's alphas and betas, 20 unlocks and perks touch AP, in two kinds.
+
+**Kind 1: AP gained, given or taken (9).** These leave. Each keeps its name and gets an effect of its own slot; the AP idea lives on in the Calls and the gamma perks.
+
+| Entry | Skill | Today | Proposal |
+|---|---|---|---|
+| Hand-Off (unlock) | Camaraderie β | give 1 AP to an adjacent ally | once a round, an adjacent ally uses your Defense against one attack |
+| Rally Cry | Camaraderie β | +1 or +2 AP to all when an ally drops | when an ally drops, the others take less damage until their next turn |
+| Many Hands (mastered) | Camaraderie β | give any AP to allies; share your reaction | the shared reaction stays; the AP gift goes |
+| Used to the Pain | Pain Threshold β | ±AP after the first hit of a fight | a light first hit hardens you against the next; a heavy one doesn't |
+| Walking Wounded (mastered) | Pain Threshold β | +1 AP a turn below half HP | injuries cost nothing (kept); below half HP you take less damage |
+| Into the Dark | Guts β | a free first move into the unknown; +1 AP in a place of Fear | you can't be ambushed on your first move into the unknown; no Fear on your first turn there |
+| Clean Hands | Conscience β | +2 or +3 AP after sparing someone | a shield after sparing someone |
+| Blueprint, tier II | Visualization α | +1 AP to allies who saw the sketch | +1 more Movement |
+| Still Standing (unlock) | Pain Threshold β | one more turn with 3 AP at 0 HP | **keep?** It is a last stand, not an AP bonus. Leon to say |
+
+**Kind 2: a cheaper cost on the skill's own action (11).** Speed Load and Quick Draw (Dexterity), Hot-Swap and Overhaul (Proficiency), Twin Draw and Parallel Thought (Brain Power), Proven Formula (Rumination), Quick Read (Analysis), Rite in the Field (Lore Master), Righteous (Conscience), Shrug It Off's tier II.
+
+**The question:** does "anything that changes AP" include Kind 2? A gunner reloading faster reads to me as the gunner's own craft, not the talker's. If Kind 2 also goes, Dexterity, Proficiency and Brain Power each lose two of their five entries and need new ones. My lean: Kind 1 is gamma only; Kind 2 stays where the action lives.
