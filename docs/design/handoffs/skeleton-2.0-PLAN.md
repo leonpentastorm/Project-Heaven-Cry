@@ -74,6 +74,10 @@ The four missing playstyles (Ingenuity's stealth list and Shadow meter, Visualiz
 
 ## 5. Rulings needed from Leon (my default first)
 
+**Confirmed by Leon, 10 Nov 2026:** rulings 1, 3, 6, 8, 9 and 16. The other ten are still my defaults, waiting on his word.
+
+On ruling 8, Leon's note: a player reading Visualization's bonus (+5% elemental damage a point) will expect the Visualizer to have something to do with the elements. That is a constraint on the Figments design when it is drafted (after Skeleton 2.0): what a Visualizer makes should be elemental, or take a tone.
+
 1. **Which modifier sets a TN.** A Call's save, a spoken condition and the four perk TNs are "12 + the skill's modifier". Default: **points − 1**, never the full-points check number. With full points a 10-point talker sets TN 22 against enemy saves of +0 to +3, which nothing passes.
 2. **Strength has a floor of 0**, as today. Without it a fighter with no Raw Power is easier to shrug off than a minion.
 3. **Threaten is a Heart save.** Section 10.2 says Body, 13.4 says the condition's own save, and Shaken is a Heart condition. Default: Heart.
