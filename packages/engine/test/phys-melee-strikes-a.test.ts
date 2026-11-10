@@ -86,16 +86,16 @@ describe('Sweep (7)', () => {
     rig({ hit: true, die: 12 }); const a0 = hp(f, f.pcs[1]);
     expect(f.tech('sweep', { tile: 'D5' })).toBeNull(); expect(hp(f, f.pcs[1])).toBeLessThan(a0);
   });
-  it('Momentum: +1 a hit and the variety bonus once; the card shows it', () => {
-    const f = fight('sabre', ['D4', 'D5']); rig({ hit: true, die: 12 });
-    expect(f.pv('sweep', { tile: f.tile('D5') }).momentum).toEqual({ now: 0, after: 2 }); // the first technique: no bonus
-    expect(f.tech('sweep', { tile: 'D5' })).toBeNull(); expect(f.momentum(f.pc)).toBe(2);
-    f.momentum(f.pc, 0);
-    expect(f.tech('sweep', { tile: 'D5' })).toBeNull(); expect(f.momentum(f.pc)).toBe(2); // a repeat: no bonus
+  it('Momentum: a Strike spends 1, its hits give none, and it is refused at 0; the card shows it', () => {
+    const f = fight('sabre', ['D4', 'D5']); rig({ hit: true, die: 12 }); f.momentum(f.pc, 2);
+    expect(f.pv('sweep', { tile: f.tile('D5') }).momentum).toEqual({ now: 2, after: 1 });
+    expect(f.tech('sweep', { tile: 'D5' })).toBeNull(); expect(f.momentum(f.pc)).toBe(1); // two hits: none gained
+    expect(f.tech('sweep', { tile: 'D5' })).toBeNull(); expect(f.momentum(f.pc)).toBe(0); // a repeat spends 1 again
+    f.pc.ap = 6; expect(f.tech('sweep', { tile: 'D5' })).toBe('Needs 1 Momentum: land a plain attack first.'); expect(f.pc.ap).toBe(6);
     const g = fight('sabre', ['D4', 'D5']); rig({ hit: true, die: 12 });
-    g.tech('cut', { targetId: g.foes[0].id }); g.momentum(g.pc, 0);
-    expect(g.pv('sweep', { tile: g.tile('D5') }).momentum).toEqual({ now: 0, after: 3 });
-    expect(g.tech('sweep', { tile: 'D5' })).toBeNull(); expect(g.momentum(g.pc)).toBe(3); // 2 hits + 1 for the change
+    g.momentum(g.pc, 0); g.tech('cut', { targetId: g.foes[0].id }); expect(g.momentum(g.pc)).toBe(1); // the plain attack gives the 1
+    expect(g.pv('sweep', { tile: g.tile('D5') }).momentum).toEqual({ now: 1, after: 0 });
+    expect(g.tech('sweep', { tile: 'D5' })).toBeNull(); expect(g.momentum(g.pc)).toBe(0); // no bonus for the change
   });
   it('the enemy AI wants it against two or more, and names the direction', () => {
     const f = fight('sabre', ['D4', 'D5']);
@@ -108,7 +108,7 @@ describe('Bash (8)', () => {
   it('base (a sabre): ×0.5, then a Body save or Dazed; AP is the weapon\'s', () => {
     const f = fight('sabre', ['D5']); f.unit(f.foe.id).sv = { body: -50, brain: 0, heart: 0 };
     const pv = f.pv('bash', { targetId: f.foe.id });
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 3 }]);
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 2 }]);
     const cut = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * 0.5, 1);
     rig({ hit: true, die: 12 }); const h = hp(f, f.foe);
@@ -166,7 +166,7 @@ describe('Sunder (9)', () => {
     expect(pv.notes.some((n) => /12 → 7/.test(n))).toBe(true);
     const cut = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * 0.7, 1);
-    rig({ hit: true, die: 12 }); const h = hp(f, f.foe);
+    rig({ hit: true, die: 12 }); const h = hp(f, f.foe); f.momentum(f.pc, 2); // two Sunders: 1 Momentum each
     expect(f.tech('sunder', { targetId: f.foe.id })).toBeNull();
     expect(hp(f, f.foe)).toBe(h - dealt(pv, f.foe.id)); expect(f.unit(f.foe.id).armour).toBe(7);
     expect(f.tech('sunder', { targetId: f.foe.id })).toBeNull(); expect(f.unit(f.foe.id).armour).toBe(7); // once per attacker
@@ -174,6 +174,7 @@ describe('Sunder (9)', () => {
   });
   it('a miss takes nothing; another attacker may sunder the same target', () => {
     const f = fight('throwing_knives', ['D5'], { armour: 12, ally: { weapon: 'throwing_knives', known: ['sunder'] } }); f.put(f.pcs[1], 'D6');
+    f.momentum(f.pc, 2); // two Sunders: 1 Momentum each
     rig({ hit: false, die: 5 }); f.tech('sunder', { targetId: f.foe.id }); expect(f.unit(f.foe.id).armour).toBe(12);
     rig({ hit: true, die: 12 }); f.tech('sunder', { targetId: f.foe.id }); expect(f.unit(f.foe.id).armour).toBe(7);
     f.turn(f.pcs[1]); expect(f.tech('sunder', { targetId: f.foe.id })).toBeNull(); expect(f.unit(f.foe.id).armour).toBe(2);
@@ -202,37 +203,37 @@ describe('Sunder (9)', () => {
 });
 
 describe('Flurry (10)', () => {
-  it('base (a machete): two strikes at ×0.6, the second at −1; AP is the weapon\'s + 1; Momentum for each hit', () => {
-    const f = fight('ork_machete', ['D5']);
+  it('base (a machete): two strikes at ×0.6, the second at −1; AP is the weapon\'s + 1; it spends 1 Momentum and its hits give none', () => {
+    const f = fight('ork_machete', ['D5']); f.momentum(f.pc, 1);
     const pv = f.pv('flurry', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.ap).toBe(4); expect(pv.attacks.length).toBe(2);
     expect(label(pv, 0, 'Flurry')).toBeUndefined(); expect(label(pv, 1, 'Flurry')).toBe(-1);
     const cut = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * 0.6, 1);
-    expect(pv.momentum).toEqual({ now: 0, after: 2 });
+    expect(pv.momentum).toEqual({ now: 1, after: 0 });
     rig({ hit: true, die: 12 }); const h = hp(f, f.foe);
     expect(f.tech('flurry', { targetId: f.foe.id })).toBeNull();
-    expect(melee(f)).toBe(2); expect(hp(f, f.foe)).toBe(h - dealt(pv, f.foe.id)); expect(f.pc.ap).toBe(2); expect(f.momentum(f.pc)).toBe(2);
+    expect(melee(f)).toBe(2); expect(hp(f, f.foe)).toBe(h - dealt(pv, f.foe.id)); expect(f.pc.ap).toBe(2); expect(f.momentum(f.pc)).toBe(0);
   });
   it('Light: three strikes (a sabre), each after the first at −1', () => {
-    const f = fight('sabre', ['D5']); const pv = f.pv('flurry', { targetId: f.foe.id });
+    const f = fight('sabre', ['D5']); f.momentum(f.pc, 1); const pv = f.pv('flurry', { targetId: f.foe.id });
     expect(pv.attacks.length).toBe(3); expect(pv.ap).toBe(3); expect(label(pv, 2, 'Flurry')).toBe(-1);
-    rig({ hit: true, die: 12 }); f.tech('flurry', { targetId: f.foe.id }); expect(melee(f)).toBe(3); expect(f.momentum(f.pc)).toBe(3);
+    rig({ hit: true, die: 12 }); f.tech('flurry', { targetId: f.foe.id }); expect(melee(f)).toBe(3); expect(f.momentum(f.pc)).toBe(0); // three hits, no Momentum from them
   });
-  it('the variety bonus once after a different technique; none on a repeat; a miss gives none', () => {
+  it('no variety bonus after a different technique; a repeat spends 1 again; a miss spends it all the same', () => {
     const f = fight('knuckledusters', ['D5']); rig({ hit: true, die: 12 });
-    f.tech('cut', { targetId: f.foe.id }); f.momentum(f.pc, 0);
-    expect(f.pv('flurry', { targetId: f.foe.id, line: 'bare' }).momentum).toEqual({ now: 0, after: 3 });
-    f.tech('flurry', { targetId: f.foe.id, line: 'bare' }); expect(f.momentum(f.pc)).toBe(3);
-    const g = fight('knuckledusters', ['D5']); rig({ hit: true, die: 12 });
-    g.tech('flurry', { targetId: g.foe.id, line: 'bare' }); expect(g.momentum(g.pc)).toBe(2); g.momentum(g.pc, 0);
-    g.tech('flurry', { targetId: g.foe.id, line: 'bare' }); expect(g.momentum(g.pc)).toBe(2);
-    const m = fight('knuckledusters', ['D5']); rig({ hit: false, die: 5 }); m.tech('flurry', { targetId: m.foe.id, line: 'bare' }); expect(m.momentum(m.pc)).toBe(0);
+    f.tech('cut', { targetId: f.foe.id }); f.momentum(f.pc, 3);
+    expect(f.pv('flurry', { targetId: f.foe.id, line: 'bare' }).momentum).toEqual({ now: 3, after: 2 });
+    f.tech('flurry', { targetId: f.foe.id, line: 'bare' }); expect(f.momentum(f.pc)).toBe(2);
+    const g = fight('knuckledusters', ['D5']); rig({ hit: true, die: 12 }); g.momentum(g.pc, 2);
+    g.tech('flurry', { targetId: g.foe.id, line: 'bare' }); expect(g.momentum(g.pc)).toBe(1);
+    g.tech('flurry', { targetId: g.foe.id, line: 'bare' }); expect(g.momentum(g.pc)).toBe(0);
+    const m = fight('knuckledusters', ['D5']); rig({ hit: false, die: 5 }); m.momentum(m.pc, 1); m.tech('flurry', { targetId: m.foe.id, line: 'bare' }); expect(m.momentum(m.pc)).toBe(0);
   });
   it('Bare: each hit after the first marks the next Bind or Throw Down against the target this turn; without Bare, no mark', () => {
-    const f = fight('fists', ['D5']); rig({ hit: true, die: 12 });
+    const f = fight('fists', ['D5']); rig({ hit: true, die: 12 }); f.momentum(f.pc, 1);
     expect(f.tech('flurry', { targetId: f.foe.id })).toBeNull(); // fists: Light is first, so the player picks Bare
     expect(f.pc.setUp).toBeUndefined();
-    f.momentum(f.pc, 0); f.pc.ap = 6;
+    f.momentum(f.pc, 1); f.pc.ap = 6;
     expect(f.tech('flurry', { targetId: f.foe.id, line: 'bare' })).toBeNull();
     expect(f.pc.setUp).toMatchObject({ target: f.foe.id, hit: 1, only: ['bind', 'throw_down'] });
     expect(f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.terms!.some((t) => t.label === 'Flurry')).toBe(false); // not for a Cut

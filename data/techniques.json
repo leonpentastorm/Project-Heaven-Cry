@@ -6,7 +6,12 @@
     "momentum": {
       "max": 3,
       "fighter_max": 5,
-      "variety_bonus": 1
+      "start": 1,
+      "strike_cost": 1,
+      "opener_cost": 1,
+      "first_opener_free": true,
+      "step_loss": 1,
+      "hit_loss": 1
     },
     "pressure": {
       "max": 4,
@@ -229,7 +234,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it works.",
+      "text": "No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer.",
       "lines": [
         {
           "props": [
@@ -308,7 +313,7 @@
       "needs": {
         "hidden": true
       },
-      "text": "Strike as an ambush: the ambush's extra damage, and a critical on 19 or 20. You gain 2 Momentum instead of 1.",
+      "text": "Strike as an ambush: the ambush's extra damage, and a critical on 19 or 20. It costs no Momentum.",
       "lines": [
         {
           "props": [
@@ -328,7 +333,7 @@
       "home": [],
       "particular": false,
       "numbers": {
-        "momentum": 2,
+        "momentum_cost": 0,
         "point_crit_min": 18,
         "bare_rounds": 1
       },
@@ -529,7 +534,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits.",
+      "text": "Two strikes at ×0.6 at one target, the second at −1 to hit.",
       "lines": [
         {
           "props": [
@@ -759,7 +764,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It counts as a hit for Momentum.",
+      "text": "Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum.",
       "lines": [],
       "free": true,
       "comes_with": [],
@@ -817,7 +822,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn.",
+      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit.",
       "lines": [
         {
           "props": [
@@ -855,7 +860,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Push an enemy next to you 1 tile, or knock it Prone if it can't move back. It gives Momentum when it works.",
+      "text": "Push an enemy next to you 1 tile, or knock it Prone if it can't move back.",
       "lines": [
         {
           "props": [

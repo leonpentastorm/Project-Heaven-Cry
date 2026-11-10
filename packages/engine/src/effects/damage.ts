@@ -49,7 +49,8 @@ export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
   if (t.dead) return res;
-  const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb };
+  const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb,
+    /** the Guard points the unit had as the hit arrived, before any soak spends them (physical/rules.ts: a guard keeps Momentum) */ guard0: t.res?.guard || 0 };
   // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
   // (−10% × Reaction Speed), each capped at 60%, before items.
   if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));

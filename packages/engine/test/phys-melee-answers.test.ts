@@ -25,13 +25,14 @@ describe('Parry', () => {
   const swing = (f: any, at = f.pc) => { const hp = f.unit(at.id).hp; f.bound(() => resolveAttack(f.cb, f.g.rng, f.foe, f.unit(at.id), 'melee', null, { noAp: true })); return hp - f.unit(at.id).hp; };
   const full = (weapon: string) => swing(fight(weapon, []));
 
-  it('base (a weapon with neither Light nor Heavy): a won parry halves the hit, as the reaction, for 0 AP and no Momentum', () => {
+  it('base (a weapon with neither Light nor Heavy): a won parry halves the hit, as the reaction, for 0 AP; it gives no Momentum and the Parried hit costs none', () => {
     const d = full('bot_thread_banner'); expect(d).toBeGreaterThan(1);
-    const f = fight('bot_thread_banner'); const ap = f.pc.ap;
+    const f = fight('bot_thread_banner'); const ap = f.pc.ap; f.momentum(f.pc, 1);
     expect(swing(f)).toBe(Math.floor(d / 2));
     expect(answered(f, 'Parry')).toBe(1); expect(f.pc.reactUsed?.n).toBe(1); expect(f.pc.ap).toBe(ap);
-    expect(f.momentum(f.pc)).toBe(0);
+    expect(f.momentum(f.pc)).toBe(1); // none gained, and none lost to a Parried hit
     expect(swing(f)).toBe(d); // the reaction is spent: the second hit lands whole
+    expect(f.momentum(f.pc)).toBe(0); // and that one costs 1
   });
   it('a lost parry still spends the reaction and the hit lands whole', () => {
     const d = full('bot_thread_banner'), f = fight('bot_thread_banner', ['parry'], 100);
@@ -43,8 +44,8 @@ describe('Parry', () => {
     g.bound(() => resolveAttack(g.cb, g.g.rng, g.foe, g.pc, 'shot', null, { noAp: true })); expect(answered(g, 'Parry')).toBe(0);
   });
   it('Light: a won parry gives 1 Momentum (and none without Light)', () => {
-    const f = fight('sabre'); swing(f); expect(f.momentum(f.pc)).toBe(1);
-    const g = fight('maul'); swing(g); expect(g.momentum(g.pc)).toBe(0);
+    const f = fight('sabre'); f.momentum(f.pc, 0); swing(f); expect(f.momentum(f.pc)).toBe(1);
+    const g = fight('maul'); g.momentum(g.pc, 0); swing(g); expect(g.momentum(g.pc)).toBe(0);
   });
   it('Heavy: parries for an adjacent ally; without Heavy it does not', () => {
     const ally = { weapon: 'bot_thread_banner', skills: { athletics: 4 } };

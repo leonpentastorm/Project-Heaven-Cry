@@ -1,4 +1,4 @@
-// Physical 2.0, melee Finishers: they need Momentum 2, spend all of it and end the chain. Coup is the lead's reference;
+// Physical 2.0, melee Finishers: they need Momentum 2, spend all of it and end the chain (unchanged by the rework). Coup is the lead's reference;
 // the melee lane builds Cleave, Break, Run Through and Throw Down here.
 //
 // Readings (the result note lists them):

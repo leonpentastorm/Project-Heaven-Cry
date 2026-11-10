@@ -116,6 +116,7 @@ export interface Unit {
   reactUsed?: { r: number; n: number }; owShots?: number;
   /** The first shot of this turn (per turn) and Sprint this turn (spec: once per turn, rules 1.3). */
   firstShotTurn?: boolean; sprinted?: boolean; attackedTurn?: boolean;
+  /** This unit has used an Opener this fight: the first one costs no Momentum (physical/core.ts). */ openerUsed?: boolean;
   /** The Evoker blade's Edge Word (item 487): a hit this turn left a free glyph (0 AP; charge and Flux as usual). */
   edgeWord?: boolean;
   /** This turn is lost (Stunned): the engine passes it. */
@@ -404,7 +405,8 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   };
   void w;
 }
-/** Class resources (spec: Classes; rules 1.3 shared subsystems): a fight starts with Momentum 0, Guard 0, Marks 0 and
+/** Class resources (spec: Classes; rules 1.3 shared subsystems): a fight starts with Guard 0, Marks 0 and (before the
+ * fight's opening gives everyone with the meter 1 Momentum: physical/rules.ts) Momentum 0, and
  * Charges 0 (maxima from classes.json resource.max, else 5 / 5 / 3 / 3), and the character's Supplies and toxins. */
 export function resourcesFor(c: Character): { res: Record<string, number>; resMax: Record<string, number> } | null {
   const ids = classResources(c); if (!ids.length) return null;
@@ -931,6 +933,7 @@ export interface AttackResult { roll: number; total: number; vs: number; hit: bo
 export type AttackOpts = { extra?: number; free?: boolean; noAp?: boolean; dmgMult?: number; noWear?: boolean; noCone?: boolean; quiet?: boolean;
   /** an ambush whatever the attacker's Hidden state (rules 1.12: Draw Cut's Light line, Ambush): criticals on 19-20, the Ambush multiplier, and everything that reads an ambush */ ambush?: boolean;
   /** the technique this attack is a strike of, when it isn't one of the plain attacks (physical/core.ts leaves the free ones out: Cut, Shot, Aimed Shot, Overwatch). A weapon's old on-hit grant fires only on a plain attack */ tech?: string;
+  /** this hit gives the attacker no Momentum: a technique's strike that isn't the plain attack (the rework, 10 Nov 2026: only a plain melee attack's hit gives 1) */ noMomentum?: boolean;
   /** fields added to the shot's effects event (a technique's id and roll index: presentation only) */ fx?: Record<string, any> };
 /** The skill a weapon's conditions are delivered by (rules 1.13): the skill it hits with. Melee blows Raw Power; shots,
  * light blades and throws Dexterity. */
@@ -1026,8 +1029,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     if ((!melee && (AMMO_TYPES[ammoId(att.ammoType) || '']?.meter_per_hit || useW.category === 'mana' || (useW.properties || []).includes('mana_meter_on_hit'))) || (melee && useW === w && useW.category === 'mana')) shiftMana(cb, 1, 'bots released by a hit'); // a mana arm releases bots on a melee technique's hit too
   }
   if (hit && radiusOf(useW) && useW.category !== 'thrown') injury += splash(cb, att, tgt, useW, damage);
-  // Momentum (the Fighter's resource, spec: Classes): +1 for each melee hit (the class moves spend it).
-  if (hit && melee && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
+  // Momentum (spec: Melee): +1 for a plain melee attack that hits (a swing with any melee weapon, fists included). A
+  // technique's strike gives none (opts.noMomentum, from physical/core.ts): Strikes and Openers spend it.
+  if (hit && melee && !opts.noMomentum && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
   if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
@@ -1186,13 +1190,12 @@ export function beginTurn(cb: Combat, rng: Rng) {
   if (!u.dead) emit(cb, 'turn_start', { u, cb, rng });
 }
 /** What happens as a unit's turn ends (rules 1.3): its timed conditions tick, it looks for Hidden enemies, and a Fighter
- * who didn't attack this turn loses its Momentum. */
+ * (rules 1.12, the Momentum rework) Momentum carries from turn to turn: nothing drops it here. */
 export function closeTurn(cb: Combat, rng: Rng | null, u: Unit) {
   if (u.mg) magicTurnEnd(cb, rng, u); // rules 1.5: the Strain burn, then stillness
   condTurnEnd(cb, u, rng);
   if (rng && !u.skipTurn) spotHidden(cb, rng, u);
   if ((cb.zones || []).length) sigilSpot(cb, u); // hidden Sigil traps and turrets nearby (rules 1.4)
-  if (u.res && u.res.momentum && !u.shotsThisTurn && !u.attackedTurn) u.res.momentum = 0;
   u.attackedTurn = false; delete u.skipTurn; delete u.edgeWord;
 }
 
@@ -1280,7 +1283,7 @@ export function moveBlock(u: Unit): string | null {
  * not only at the end. A walk cut short (a trap, a reaction that Downs or Pins you, a handler) keeps the tiles not
  * walked in the turn's bank. Sprint is once per turn. Afraid units can't move closer to what they fear. */
 /** o.shortest: the plain shortest path (the Narrator's own moves; rules 1.9 routes only a player's click-path around hazards). */
-export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> }; /** A step that is part of something already paid for (a technique's step, rules 1.12): 0 AP and no opportunity attacks (unless oa), told to the items before they price the move. */ free?: boolean; oa?: boolean } = {}): string | null {
+export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> }; /** A step that is part of something already paid for (a technique's step, rules 1.12): 0 AP and no opportunity attacks (unless oa), told to the items before they price the move. */ free?: boolean; oa?: boolean; /** A paid walk that is a technique's own run (Charge's): priced and walked as any move, but it costs no Momentum. */ part?: boolean } = {}): string | null {
   const blk = moveBlock(u); if (blk) return blk;
   // o.via: paths the caller already chose (the area map's sneak prices its detour with the sneak's extra AP).
   const P = o.via || (o.shortest ? paths(cb, u.pos, u.id) : movePaths(cb, u, to, how)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
@@ -1300,6 +1303,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   const route: string[] = []; for (let k = to; k !== u.pos && P.prev[k]; k = P.prev[k]) route.unshift(k);
   // Items price the move before it is paid: 'move_cost' {u, from, to, route, tiles, how, ap, skipOA, skipOW, free}
   // (ap mutable; free: the tiles are not banked against; skipOA/skipOW: no opportunity attacks / no Overwatch).
+  const ap0 = ap; // the move's own price, before a free step or an item changes it
   if (o.free) ap = 0;
   const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [] });
   ap = o.free ? 0 : Math.max(0, mc.ap); // a free step stays free whatever the ground adds (the items were told it is free before they priced it)
@@ -1351,7 +1355,10 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   if (u.side === 'pc' && !u.dead) { spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l)); spotHazards(cb, u); }
   if (!u.dead && (cb.zones || []).length) sigilSpot(cb, u);
   // 'moved' {u, from, to, tiles, how, forced:false, route}
-  emit(cb, 'moved', { u, from, to: end, tiles: walked, how, forced: false, route: route.slice(0, route.indexOf(end) + 1), stopped: stopped || null, cb, rng });
+  // part: a step that is part of something else (a technique's own step or run: o.free or o.part; a class move's or a
+  // perk's free step: an item's move_cost made it free, or priced a paid move at 0 AP). Such a step costs no Momentum
+  // (physical/rules.ts); a walk, a Sprint and a Disengage do.
+  emit(cb, 'moved', { u, from, to: end, tiles: walked, how, forced: false, part: !!o.free || !!o.part || !!mc.free || (ap0 > 0 && ap === 0), route: route.slice(0, route.indexOf(end) + 1), stopped: stopped || null, cb, rng });
   sightCheck(cb);
   sightFx(cb, u.id, {}, eyes); // presentation: what came into or out of each side's sight (the walker's own rides on its move events)
   return null;

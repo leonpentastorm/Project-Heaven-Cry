@@ -64,7 +64,7 @@ describe('Pin Down', () => {
     const before = snap(f), pv = f.pv('pin_down', { targetId: f.foe.id });
     expect(snap(f)).toBe(before);
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(1);
-    expect(multOf(pv, 'Pin Down')).toBe(0.7); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['guts', 'athletics'], tn: 12 + 5 }]);
+    expect(multOf(pv, 'Pin Down')).toBe(0.7); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['guts', 'athletics'], tn: 12 + 3 }]);
     expect(pv.pressure?.find((x) => x.unit === f.foe.id)?.after).toBe(0);
     const a0 = f.pc.ammo, h0 = f.pc.heat;
     expect(f.tech('pin_down', { targetId: f.foe.id })).toBeNull();
@@ -87,7 +87,7 @@ describe('Pin Down', () => {
   });
   it('Suppressed: the save is at −2', () => {
     const f = fight(); f.press(f.foe, 3, f.pc);
-    expect(f.pv('pin_down', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + 5);
+    expect(f.pv('pin_down', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + 3);
   });
   it('Auto: full damage; without it, ×0.7', () => {
     const f = fight({ weapon: 'decrkm_smg' }); f.press(f.foe, 2, f.pc);
@@ -135,7 +135,7 @@ describe('Rout', () => {
     const before = snap(f), pv = f.pv('rout', { targetId: f.foe.id });
     expect(snap(f)).toBe(before);
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(1); expect(pv.attacks).toEqual([]);
-    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['heart'], tn: 12 + 5 }]);
+    expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['heart'], tn: 12 + 3 }]);
     const to = pv.moves![0].to; expect(pv.moves![0].unit).toBe(f.foe.id);
     const hp = f.foe.hp, a0 = f.pc.ammo, fap = f.foe.ap;
     expect(f.tech('rout', { targetId: f.foe.id })).toBeNull();
@@ -150,9 +150,9 @@ describe('Rout', () => {
     f.tech('rout', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('H3')); expect(f.pressure(f.foe)).toBe(0);
   });
   it('Suppressed: the save is at −3; Loud: −2 more', () => {
-    const f = fight(); f.press(f.foe, 3, f.pc); expect(f.pv('rout', { targetId: f.foe.id }).saves?.[0].tn).toBe(15 + 5);
-    const l = fight({ weapon: 'magistrate_pistol' }); l.press(l.foe, 2, l.pc); expect(l.pv('rout', { targetId: l.foe.id }).saves?.[0].tn).toBe(14 + 5);
-    l.press(l.foe, 3, l.pc); expect(l.pv('rout', { targetId: l.foe.id }).saves?.[0].tn).toBe(17 + 5);
+    const f = fight(); f.press(f.foe, 3, f.pc); expect(f.pv('rout', { targetId: f.foe.id }).saves?.[0].tn).toBe(15 + 3);
+    const l = fight({ weapon: 'magistrate_pistol' }); l.press(l.foe, 2, l.pc); expect(l.pv('rout', { targetId: l.foe.id }).saves?.[0].tn).toBe(14 + 3);
+    l.press(l.foe, 3, l.pc); expect(l.pv('rout', { targetId: l.foe.id }).saves?.[0].tn).toBe(17 + 3);
   });
   it('the run draws opportunity attacks and held shots', () => {
     const f = fight({ pcs: [{ at: 'I3', weapon: 'sabre' }, { at: 'C8', weapon: 'service_pistol' }] });
@@ -174,7 +174,7 @@ describe('Rout', () => {
     const f = fight({ weapon: 'smetanita_thumper', foes: [{ at: 'H3' }, { at: 'I4' }, { at: 'H5' }, { at: 'L3' }] });
     const [a, b, c, d] = f.foes; f.press(a, 3, f.pc); f.press(b, 2, f.pc); f.press(d, 3, f.pc); fails();
     const pv = f.pv('rout', { targetId: a.id });
-    expect(pv.saves?.map((s) => s.unit)).toEqual([a.id, b.id]); expect(pv.saves?.map((s) => s.tn)).toEqual([15 + 5, 12 + 5]);
+    expect(pv.saves?.map((s) => s.unit)).toEqual([a.id, b.id]); expect(pv.saves?.map((s) => s.tn)).toEqual([15 + 3, 12 + 3]);
     expect(pv.pressure?.find((x) => x.unit === b.id)?.after).toBe(0);
     expect(f.tech('rout', { targetId: a.id })).toBeNull();
     expect(at(f, a)).not.toBe(f.tile('H3')); expect(at(f, b)).not.toBe(f.tile('I4'));
@@ -190,7 +190,7 @@ describe('Stopping Shot', () => {
     const f = fight(); f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails();
     const before = snap(f), pv = f.pv('stopping_shot', { targetId: f.foe.id });
     expect(snap(f)).toBe(before);
-    expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1); expect(pv.saves?.[0].tn).toBe(12 + 5);
+    expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1); expect(pv.saves?.[0].tn).toBe(12 + 3);
     expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('I3') }]);
     expect(f.tech('stopping_shot', { targetId: f.foe.id })).toBeNull();
     expect(at(f, f.foe)).toBe(f.tile('I3')); expect(f.foe.apDebt).toBe(1); expect(f.foe.prone).toBeFalsy(); expect(f.foe.stopped).toBe(1);
@@ -269,7 +269,7 @@ describe('Storm', () => {
   it('Spread: on a hit, a Body save or Prone', () => {
     const f = fight({ weapon: 'sawn_off' }); f.foe.hp = f.foe.maxHp = 999; f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails(); // it lives (the base's damage scales with Agility and Dexterity)
     expect(f.pv('storm', { targetId: f.foe.id }).saves).toBeUndefined(); // its first line is Quick: the player picks Spread
-    const pv = f.pv('storm', { targetId: f.foe.id, line: 'spread' }); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 5 }]);
+    const pv = f.pv('storm', { targetId: f.foe.id, line: 'spread' }); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 + 3 }]);
     expect(term(pv, 0, 'Storm')).toBeUndefined(); // one line at a time
     expect(f.tech('storm', { targetId: f.foe.id, line: 'spread' })).toBeNull(); expect(f.foe.prone).toBe(true); expect(f.foe.stopped).toBe(1);
     const g = fight({ weapon: 'sawn_off' }); g.foe.hp = g.foe.maxHp = 999; g.press(g.foe, 2, g.pc); rig({ hit: true, die: 12 }); saves();

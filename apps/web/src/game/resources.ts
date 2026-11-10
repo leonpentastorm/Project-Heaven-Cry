@@ -273,13 +273,13 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const ink = (RES_INK as any)[info.core] || RES_INK.body;
     const rule = info.rule;
     const spend = info.spend.length ? ' Spent by ' + info.spend.join(', ') + '.' : '';
-    // Physical 2.0 (rules 1.12): Momentum is on every unit holding a melee weapon; the engine's hint ("+1 more if your
-    // next technique isn't Lunge") sits beside the pips.
+    // Physical 2.0 (rules 1.12): Momentum is on every unit holding a melee weapon; the engine's hint (the rule in two
+    // sentences) sits beside the pips.
     const mHint = id === 'momentum' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.momentum?.hint || ''; } catch { return ''; } })() : '';
     // Momentum belongs to everyone with a melee weapon, not to a class: its rule is said here (it read "Momentum ()." for
-    // anyone but a Fighter).
-    const mRule = id === 'momentum' ? 'Momentum: +1 for each melee hit, and +1 more when the technique is a different one from your last this turn. A Finisher needs 2 and spends all of it. Nothing else lowers it, except a turn in which you make no attack: then it falls to 0.' : '';
-    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: ink, sub: mHint || info.source || (id === 'momentum' ? 'Built by melee hits; a Finisher spends it all.' : ''),
+    // anyone but a Fighter). The rework (Leon, 10 Nov 2026).
+    const mRule = id === 'momentum' ? 'Momentum: a fight starts with 1, and a plain attack that hits gives 1. A Strike or an Opener spends 1 (your first Opener of a fight is free); a Finisher needs 2 and spends all of it. Each tile you walk costs 1, and so does each hit you take unless you are guarding (Guard, a Parry that wins, Guard points); a Link\'s move costs none. It carries from turn to turn.' : '';
+    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: ink, sub: mHint || info.source || (id === 'momentum' ? 'Built by plain attacks; Strikes and Openers spend 1, a Finisher all of it.' : ''),
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),
       hint: (mRule || rule || (info.source ? info.label + ' (' + info.source + ').' : info.label + '.')) + spend });
   }

@@ -19,7 +19,7 @@ function fight(weapon: string, known: string[], foes: string[] = ['D5'], m = 0) 
   f.cb.objects = [];
   f.put(f.pc, 'C5'); foes.forEach((at, i) => { const u = f.put(f.foes[i], at); u.hp = u.maxHp = 500; u.sv = { body: -50, brain: -50, heart: -50 } as any; });
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
-  f.turn(f.pc); if (m) f.momentum(f.pc, m);
+  f.turn(f.pc); f.momentum(f.pc, m || 1); // 1 at least: a Strike spends 1 Momentum (what the fight's opening left is the seed's)
   return f;
 }
 const mfx = (f: F) => f.fx('melee_fx').filter((e: any) => !e.refused);

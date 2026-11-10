@@ -1,6 +1,6 @@
 // Physical 2.0, melee Openers: the first melee technique of a turn. Lunge is the lead's reference; the melee lane builds
 // Charge, Feint, Draw Cut and Ambush here.
-import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, landed, momentumOf, onHook, turnStamp, techState, techStateOf, meleeFx, fxMark, movedSince, fallFx, refuseFx } from './shared';
+import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, onHook, turnStamp, techState, techStateOf, meleeFx, fxMark, movedSince, fallFx, refuseFx } from './shared';
 import { canStrike } from '../core';
 import { PHYS_RULES } from '../data';
 import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
@@ -109,7 +109,7 @@ technique({
       plan.route.forEach((k, i) => { P.dist[k] = i + 1; P.prev[k] = i ? plan.route[i - 1] : t.u.pos; });
       PREEMPT = p === 'reach' ? { by: t.u.id, target: tgt.id } : null;
       let err: string | null;
-      try { err = moveUnit(t.cb, t.u, plan.to, t.rng, 'move', { via: P }); } finally { PREEMPT = null; }
+      try { err = moveUnit(t.cb, t.u, plan.to, t.rng, 'move', { via: P, part: true }); } finally { PREEMPT = null; } // part: Charge's own run costs no Momentum
       if (err) { refuseFx(fx); return err; } // refused before anything moved: the technique's AP comes back
       if (!alive(t.u) || t.u.pos !== plan.to) return null; // the run was cut short: no strike (the log says why)
     }
@@ -122,8 +122,8 @@ technique({
 });
 
 // 3. Feint: no damage. The target makes a Brain save against the strength of the skill your weapon hits with. If it fails, your next
-//    technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it
-//    works. Light: the save is at −2. Hook: on a failed save its weapon is also lowered (1 AP to raise).
+//    technique against it this turn has +3 to hit and it can't use an Answer.
+//    Light: the save is at −2. Hook: on a failed save its weapon is also lowered (1 AP to raise).
 technique({
   id: 'feint',
   check(t) {
@@ -141,10 +141,9 @@ technique({
     meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: true, lowered: p === 'hook' });
     setUp(t, tgt, { hit: t.num('hit', 3), noAnswer: true, label: 'Feint' });
     if (p === 'hook') cond(t, tgt, 'lowered');
-    landed(t);
     return null;
   },
-  ai: (t) => (t.tgt && momentumOf(t.u) < 2 ? 3 : 0),
+  ai: (t) => (t.tgt ? 3 : 0),
 });
 
 // 4. Draw Cut: draw this weapon from the pack or a sheath and strike in one action. Only if you started the turn with
@@ -190,7 +189,8 @@ technique({
   ai: () => 0, // enemies carry no pack
 });
 
-// 5. Ambush: only from Hidden: strike with the Ambush multiplier (today's rule), and gain 2 Momentum instead of 1.
+// 5. Ambush: only from Hidden: strike with the Ambush multiplier (today's rule). It costs no Momentum (the data's
+//    numbers.momentum_cost 0: the core's momentumCost), where another Opener spends 1.
 //    Point: crits on 18–20. Bare: no damage, the target is Grappled and Silenced for 1 round instead.
 //    Reading: the engine's ambush (the first attack of each Hidden entry) gives the multiplier and criticals on 19–20;
 //    when it is already spent, Ambush applies the same itself. Bare rolls nothing: the grab lands within reach.
@@ -198,24 +198,21 @@ technique({
   id: 'ambush',
   check(t) { if (!t.tgt) return 'Pick a target.'; if (t.tgt.side === t.u.side) return 'Ambush an enemy.'; return null; },
   run(t) {
-    const tgt = t.tgt!, p = t.line('point', 'bare'), gain = t.num('momentum', 2);
+    const tgt = t.tgt!, p = t.line('point', 'bare');
     if (p === 'bare') {
       if (!canStrike(t, tgt)) return 'Walk up to them first.';
-      if (t.preview) { cond(t, tgt, 'grappled', t.num('bare_rounds', 1)); cond(t, tgt, 'silenced', t.num('bare_rounds', 1)); t.note('No damage.'); landed(t, gain); return null; }
+      if (t.preview) { cond(t, tgt, 'grappled', t.num('bare_rounds', 1)); cond(t, tgt, 'silenced', t.num('bare_rounds', 1)); t.note('No damage.'); return null; }
       t.u.ambushUsed = t.u.hideEntry || 1;
       meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: true });
       emitFx(t.cb, 'melee', { unit: t.u.id, target: tgt.id, from: t.u.pos, to: tgt.pos, weapon: t.weaponId, cat: 'unarmed', mode: 'grapple', hit: true, crit: false, fumble: false, dmg: 0, killed: false });
       cond(t, tgt, 'grappled', t.num('bare_rounds', 1)); cond(t, tgt, 'silenced', t.num('bare_rounds', 1));
       const rv = reveal(t.cb, t.u, 'attacked'); if (rv) t.cb.log.push(t.u.name + rv.replace(/^ · /, ': ') + '.');
-      landed(t, gain);
       return null;
     }
     const fx = meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: false });
     // the engine's own ambush, also when this Hidden entry's is already spent (only a fresh one is used up)
     const r = strike(t, { ambush: true, critMin: p === 'point' ? t.num('point_crit_min', 18) : undefined, label: 'ambush' });
     if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t attack that.'; }
-    if (t.preview) { const max = t.u.resMax?.momentum ?? PHYS_RULES.momentum.max, now = momentumOf(t.u); t.pv.momentum = { now, after: Math.min(max, now + gain) }; t.note('On a hit: +' + gain + ' Momentum.'); return null; }
-    if (r.hit) landed(t, gain - 1); // the hit gave the first
     return null;
   },
   ai: (t) => (t.tgt && t.u.hidden ? 8 : 0),

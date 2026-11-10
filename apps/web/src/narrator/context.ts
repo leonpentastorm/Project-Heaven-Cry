@@ -148,7 +148,7 @@ CLASSES
 - One per attribute: ${CLASS_LINE}. Level 3 gives the highest attribute's class (tie: player picks), for good. Rank II at that attribute 5 and level 6, III at 8 and level 12. ${ADV_LIVE ? 'Advanced: wiki_lookup class:<id>.' : 'Advanced classes are being rebuilt: never offer one.'}
 
 WEAPON TECHNIQUES
-- The engine runs them, for enemies too: melee techniques chain in a turn and build Momentum; ranged fire builds Pressure on its target (Pressed, Suppressed, Broken), and a Take spends it. Never set either meter. Tell a chain as one exchange and Pressure as fire keeping heads down, not as numbers. wiki_lookup technique:<id>, physical:momentum, physical:pressure.
+- The engine runs them, for enemies too: melee techniques chain in a turn and spend Momentum; ranged fire builds Pressure on its target (Pressed, Suppressed, Broken), and a Take spends it. Never set either meter. Tell a chain as one exchange and Pressure as fire keeping heads down, not as numbers. wiki_lookup technique:<id>, physical:momentum, physical:pressure.
 
 PERKS, TRAITS AND CLASS MOVES
 - Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".

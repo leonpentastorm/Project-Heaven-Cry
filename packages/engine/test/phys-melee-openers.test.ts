@@ -36,7 +36,7 @@ describe('Charge (2)', () => {
     expect(f.tech('charge', { targetId: f.foe.id })).toBeNull();
     expect(f.pc.pos).toBe(f.tile('E5')); expect(f.pc.ap).toBe(6 - pv.ap);
     expect(hp - f.foe.hp).toBe(Math.max(1, Math.floor(a.total) - a.armour)); // the card's damage is the action's
-    expect(f.momentum(f.pc)).toBe(1); // an Opener: no variety bonus
+    expect(f.momentum(f.pc)).toBe(1); // the 1 the fight began with: the first Opener is free, its own run costs none and its hit gives none
   });
   it('a run walked before it this turn counts; the bonus stops at +50%', () => {
     const f = fight('sabre', ['charge'], 'A5', 'H5');
@@ -99,11 +99,11 @@ describe('Charge (2)', () => {
 });
 
 describe('Feint (3)', () => {
-  it('a failed Brain save: no damage, +3 and no Answer on the next technique, +1 Momentum; 1 AP', () => {
+  it('a failed Brain save: no damage, +3 and no Answer on the next technique, no Momentum; 1 AP', () => {
     const f = fight('maul', ['feint'], 'C5', 'D5'); saves(f.foe, -30); const hp = f.foe.hp;
     const pv = f.pv('feint', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.attacks.length).toBe(0);
-    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['brain'], tn: 12 + ((f.pc as any).dbf?.raw_power || 0) }); // rules 1.13: the skill the maul hits with
-    expect(pv.momentum).toEqual({ now: 0, after: 1 });
+    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['brain'], tn: 12 + Math.ceil(((f.pc as any).dbf?.raw_power || 0) / 2) }); // rules 1.13: the skill the maul hits with, halved and rounded up
+    expect(pv.momentum).toEqual({ now: 1, after: 1 }); // the fight's first Opener is free, and Feint gives none
     const before = state(f); f.pv('feint', { targetId: f.foe.id }); expect(state(f)).toBe(before);
     expect(f.tech('feint', { targetId: f.foe.id })).toBeNull();
     expect(f.pc.ap).toBe(5); expect(f.foe.hp).toBe(hp); expect(f.momentum(f.pc)).toBe(1);
@@ -111,19 +111,19 @@ describe('Feint (3)', () => {
     expect(terms.find((x) => x.label === 'Feint')?.v).toBe(3);
     expect(phys.canAnswer(f.cb, f.foe, 'riposte', f.pc)).toBe(false);
     rig({ hit: true, die: 12 }); f.tech('cut', { targetId: f.foe.id });
-    expect(f.momentum(f.pc)).toBe(3); // +1 the hit, +1 a different technique
+    expect(f.momentum(f.pc)).toBe(2); // +1 the plain attack's hit; no variety bonus
     expect((f.pc as any).setUp).toBeUndefined(); // spent on that technique
   });
   it('a save that holds: nothing but the AP', () => {
     const f = fight('maul', ['feint'], 'C5', 'D5'); saves(f.foe, 30);
     expect(f.tech('feint', { targetId: f.foe.id })).toBeNull();
-    expect(f.pc.ap).toBe(5); expect(f.momentum(f.pc)).toBe(0); expect((f.pc as any).setUp).toBeUndefined();
+    expect(f.pc.ap).toBe(5); expect(f.momentum(f.pc)).toBe(1); expect((f.pc as any).setUp).toBeUndefined();
   });
   it('Light: the save is at −2; Hook: a failed save also lowers its weapon', () => {
     const f = fight('sabre', ['feint'], 'C5', 'D5');
-    expect(f.pv('feint', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + ((f.pc as any).dbf?.dexterity || 0)); // a sabre hits with Dexterity
+    expect(f.pv('feint', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + Math.ceil(((f.pc as any).dbf?.dexterity || 0) / 2)); // a sabre hits with Dexterity (half its strength, rounded up)
     const g = fight('hatchet', ['feint'], 'C5', 'D5'); saves(g.foe, -30);
-    expect(g.pv('feint', { targetId: g.foe.id, line: 'hook' }).saves?.[0].tn).toBe(12 + ((g.pc as any).dbf?.dexterity || 0)); // a hatchet too
+    expect(g.pv('feint', { targetId: g.foe.id, line: 'hook' }).saves?.[0].tn).toBe(12 + Math.ceil(((g.pc as any).dbf?.dexterity || 0) / 2)); // a hatchet too
     expect(g.tech('feint', { targetId: g.foe.id, line: 'hook' })).toBeNull();
     expect(g.foe.conds?.lowered).toBeTruthy();
     const h = fight('sabre', ['feint'], 'C5', 'D5'); saves(h.foe, -30); h.tech('feint', { targetId: h.foe.id });
@@ -135,13 +135,15 @@ describe('Feint (3)', () => {
     const g = fight('sabre', ['feint'], 'C5', 'D5'); rig({ hit: true, die: 12 }); g.tech('cut', { targetId: g.foe.id });
     expect(g.tech('feint', { targetId: g.foe.id })).toMatch(/Opener/);
   });
-  it('a repeat next turn earns no variety bonus (the first technique of a turn never does)', () => {
+  it('the first Opener of a fight is free; a second one next turn spends 1 Momentum and is refused without it', () => {
     const f = fight('maul', ['feint'], 'C5', 'D5'); saves(f.foe, -30);
-    f.tech('feint', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1);
+    f.tech('feint', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1); // free: the 1 the fight began with is kept
     f.cb.round = 2; f.turn(f.pc); f.momentum(f.pc, 0);
-    expect(f.pv('feint', { targetId: f.foe.id }).momentum).toEqual({ now: 0, after: 1 });
-    f.tech('feint', { targetId: f.foe.id });
-    expect(f.momentum(f.pc)).toBe(/saves against Feint/.test(f.cb.log[f.cb.log.length - 2]) ? 0 : 1); // a natural 20 saves
+    expect(f.pv('feint', { targetId: f.foe.id })).toMatchObject({ ok: false, why: 'Needs 1 Momentum: land a plain attack first.' });
+    expect(f.tech('feint', { targetId: f.foe.id })).toMatch(/Needs 1 Momentum/); expect(f.pc.ap).toBe(6);
+    f.momentum(f.pc, 2);
+    expect(f.pv('feint', { targetId: f.foe.id }).momentum).toEqual({ now: 2, after: 1 });
+    expect(f.tech('feint', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1); // spent whether or not the save held
   });
 });
 
@@ -202,16 +204,16 @@ describe('Draw Cut (4)', () => {
 
 describe('Ambush (5)', () => {
   const hide = (u: Unit) => { u.hidden = true; u.hideEntry = 1; u.ambushUsed = 0; };
-  it('only from Hidden: the Ambush multiplier, and 2 Momentum on a hit', () => {
+  it('only from Hidden: the Ambush multiplier; it costs no Momentum and gives none', () => {
     const f = fight('sabre', ['ambush'], 'C5', 'D5'); hide(f.pc); rig({ hit: true, die: 12 });
     const pv = f.pv('ambush', { targetId: f.foe.id }), cut = f.pv('cut', { targetId: f.foe.id });
-    expect(dmgOf(pv)).toBeCloseTo(dmgOf(cut) * (f.pc.ambushMult || 1.5), 5); expect(pv.momentum).toEqual({ now: 0, after: 2 }); expect(pv.ap).toBe(2);
+    expect(dmgOf(pv)).toBeCloseTo(dmgOf(cut) * (f.pc.ambushMult || 1.5), 5); expect(pv.momentum).toEqual({ now: 1, after: 1 }); expect(pv.ap).toBe(2);
     const before = state(f); f.pv('ambush', { targetId: f.foe.id }); expect(state(f)).toBe(before);
     expect(f.tech('ambush', { targetId: f.foe.id })).toBeNull();
-    expect(f.momentum(f.pc)).toBe(2); expect(f.pc.ap).toBe(4);
+    expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(4);
     expect(f.cb.log.some((l) => /AMBUSH/.test(l))).toBe(true);
     const g = fight('sabre', ['ambush'], 'C5', 'D5'); expect(g.tech('ambush', { targetId: g.foe.id })).toMatch(/Hidden/); expect(g.pc.ap).toBe(6);
-    const m = fight('sabre', ['ambush'], 'C5', 'D5'); hide(m.pc); rig({ hit: false, die: 5 }); m.tech('ambush', { targetId: m.foe.id }); expect(m.momentum(m.pc)).toBe(0);
+    const m = fight('sabre', ['ambush'], 'C5', 'D5'); hide(m.pc); rig({ hit: false, die: 5 }); m.tech('ambush', { targetId: m.foe.id }); expect(m.momentum(m.pc)).toBe(1);
   });
   it('the card\'s damage is the action\'s, from a fresh Hidden entry and from one whose ambush is spent', () => {
     for (const spent of [false, true]) {
@@ -228,12 +230,12 @@ describe('Ambush (5)', () => {
     const g = fight('sabre', ['ambush'], 'C5', 'D5'); hide(g.pc); rig({ die: 18 });
     g.tech('ambush', { targetId: g.foe.id }); expect(g.cb.log.some((l) => /CRITICAL/.test(l))).toBe(false);
   });
-  it('Bare: no damage; Grappled and Silenced for 1 round; 2 Momentum; the grab reveals you', () => {
+  it('Bare: no damage; Grappled and Silenced for 1 round; no Momentum given or spent; the grab reveals you', () => {
     const f = fight('fists', ['ambush'], 'C5', 'D5'); hide(f.pc); const hp = f.foe.hp;
-    const pv = f.pv('ambush', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.attacks.length).toBe(0); expect(pv.momentum?.after).toBe(2);
+    const pv = f.pv('ambush', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.attacks.length).toBe(0); expect(pv.momentum).toEqual({ now: 1, after: 1 });
     expect(f.tech('ambush', { targetId: f.foe.id })).toBeNull();
     expect(f.foe.hp).toBe(hp); expect(f.foe.conds?.grappled).toBe(1); expect(f.foe.conds?.silenced).toBe(1);
-    expect(f.momentum(f.pc)).toBe(2); expect(f.pc.hidden).toBe(false);
+    expect(f.momentum(f.pc)).toBe(1); expect(f.pc.hidden).toBe(false);
     const g = fight('fists', ['ambush'], 'A5', 'D5'); hide(g.pc); expect(g.tech('ambush', { targetId: g.foe.id })).toMatch(/Walk up/);
   });
 });

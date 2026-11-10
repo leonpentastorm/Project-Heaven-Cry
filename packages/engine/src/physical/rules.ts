@@ -1,5 +1,8 @@
 // Physical 2.0 (rules 1.12): the standing rules of Momentum and Pressure, as listeners on the fight's hooks (they run
 // for every unit, after the items). Nothing in combat.ts calls into this file.
+//   Momentum (the rework, Leon, 10 Nov 2026): a fight starts with 1; −1 a tile walked (a walk, a Sprint, a Disengage:
+//   never a forced move, a Link's or a technique's own step, a free step); −1 a damaging hit taken, unless guarding
+//   (the Guard technique up, the hit Parried, Guard points held); it carries from turn to turn
 //   a ranged hit: +1 Pressure, the first on each target each turn (+1 more past cover it is using; +2 unseen and Silent)
 //   a melee hit: the attacker sheds 1 Pressure
 //   a kill by a ranged attack: +1 to every other enemy within 3 tiles that saw it; drill for everyone who hit the victim
@@ -12,7 +15,7 @@ import { condOn } from '../magic';
 import { WEAPON } from '../data';
 import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
 import { pressureOf, pressureState, addPressureTo, lowerPressureOf, isPressed, isSuppressed, onPressureState, hitPressure, coveredUnseen } from './pressure';
-import { ensureMomentum, strikeNoPressure, turnStamp, endWatch } from './core';
+import { ensureMomentum, momentumOf, loseMomentum, guardUp, strikeNoPressure, turnStamp, endWatch } from './core';
 
 const P = () => PHYS_RULES.pressure;
 const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
@@ -36,6 +39,30 @@ onHook('on_hit', (ctx: any, cb) => {
   if (strikeNoPressure(att) || !alive(tgt)) return;
   const hp = hitPressure(cb, att, tgt);
   addPressureTo(cb, tgt, hp.n, att, hp.why, { hidden: hp.hidden });
+});
+
+// ---------- Momentum: what starts it and what wears it off ----------
+const M = () => PHYS_RULES.momentum;
+// A fight starts with 1 Momentum for every unit that has the meter.
+onHook('combat_start', (_ctx: any, cb) => {
+  for (const u of cb.units) { ensureMomentum(u); delete u.openerUsed; if (u.resMax?.momentum != null && u.res) u.res.momentum = Math.max(u.res.momentum || 0, Math.min(u.resMax.momentum, M().start ?? 1)); }
+});
+// Walking: −1 for each tile of a walk, a Sprint or a Disengage. A step that is part of something else (ctx.part: a
+// technique's own step or run, a Link's move, a class move's or a perk's free step) costs none; forced moves never
+// come here (they are 'forced_move').
+onHook('moved', (ctx: any, cb) => {
+  const u: Unit = ctx.u; if (!u || ctx.forced || ctx.part || !['move', 'sprint', 'disengage'].includes(ctx.how) || !(ctx.tiles > 0) || !momentumOf(u)) return;
+  loseMomentum(cb, u, ctx.tiles * (M().step_loss ?? 1));
+});
+// Being hit: −1 for each damaging hit taken, from any source. Not while guarding: the Guard technique is up, the hit
+// was Parried, or the unit held Guard points as it arrived. A condition's own tick (Bleeding, Burning) and the harm a
+// unit does itself (Strain, a Mana Short) are not hits.
+const NOT_A_HIT = new Set(['bleed', 'bleeding', 'burn', 'burning', 'poison', 'strain', 'overload', 'short', 'heart', 'shame', 'shared']);
+onHook('damage_in', (ctx: any, cb) => {
+  const u: Unit = ctx.t; if (ctx.phase !== 'after' || !u || !(ctx.dealt > 0) || !momentumOf(u)) return;
+  if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;
+  if (guardUp(u) || ctx.parryWon || ctx.guard0 > 0) return;
+  loseMomentum(cb, u, M().hit_loss ?? 1);
 });
 
 onHook('on_kill', (ctx: any, cb) => {

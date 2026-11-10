@@ -67,7 +67,7 @@ technique({
     const harder = p === 'bare' || p === 'hook' ? su : 0;
     if (p === 'bare') { // today's Grapple: a Body save, then held until it breaks free
       if (condOn(tgt, 'grappled')) return tgt.name + ' is already held.';
-      if (cond(t, tgt, 'grappled', undefined, { save: true, tnAdd: harder || undefined }) && (t.preview || condOn(tgt, 'grappled'))) { landed(t); meleeFx(t, 'bind', { target: tgt.id, to: tgt.pos, kind: 'grapple' }); }
+      if (cond(t, tgt, 'grappled', undefined, { save: true, tnAdd: harder || undefined }) && (t.preview || condOn(tgt, 'grappled'))) meleeFx(t, 'bind', { target: tgt.id, to: tgt.pos, kind: 'grapple' });
       return null;
     }
     const pen = p === 'heavy' ? t.num('heavy_penalty', 4) : t.num('penalty', 2);
@@ -75,7 +75,6 @@ technique({
     if (!t.preview) Object.assign(t.state(), { target: tgt.id, pen, r: t.cb.round, via: techVia(t) });
     meleeFx(t, 'bind', { target: tgt.id, to: tgt.pos, kind: 'bind', pen });
     if (p === 'hook' && !save(t, tgt, 'brain', harder)) cond(t, tgt, 'disarmed');
-    landed(t);
     return null;
   },
   ai: (t) => (t.tgt && dist(t.u.pos, t.tgt.pos) <= 1 && !condOn(t.tgt, 'grappled') ? 4 : 0),
@@ -178,7 +177,7 @@ technique({
     const p = t.line('thrown', 'heavy'), thrown = t.holds('thrown');
     const fx = meleeFx(t, 'throw', { from: t.u.pos, to: tgt.pos, target: tgt.id, weapon: t.weaponId });
     // the core's thrown strike: a ranged attack at throwing range (sight, cover), aimed with Dexterity, Pressure on a
-    // hit and Momentum for this melee technique; then the weapon leaves the hand for the pile on the target's tile
+    // hit; then the weapon leaves the hand for the pile on the target's tile
     const r = strike(t, { thrown: true, extra: thrown ? 0 : -t.num('unthrown_hit', 2), mult: thrown ? 1 : t.num('unthrown_mult', 0.7), label: thrown ? 'Throw' : 'Throw (not a throwing weapon)' });
     if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t throw at that.'; }
     const v = r.target || tgt;
@@ -195,7 +194,7 @@ technique({
 
 // ---------- 28. Pull Out (free; Leon, 10 Nov 2026) ----------
 // Next to a unit with a thrown weapon stuck in it: wrench it out. The weapon comes straight back into a free hand, the
-// target takes half the weapon's damage (armour counts) and Bleeds. No roll. 1 AP. It counts as a hit for Momentum.
+// target takes half the weapon's damage (armour counts) and Bleeds. No roll. 1 AP. It neither gives nor spends Momentum.
 const stuckFor = (t: any, v: any) => { const l: any[] = v?.stuck || []; return l.find((x) => x.by === t.u.id) || l[0] || null; };
 technique({
   id: 'pull_out',
@@ -210,13 +209,12 @@ technique({
   run(t) {
     const v = t.tgt!, e = stuckFor(t, v), w = WEAPON[e.weapon];
     const dmg = Math.max(1, Math.round(weaponDamage(w, 1, t.c?.skills.raw_power || 0) * t.num('damage_pct', 50) / 100));
-    if (t.preview) { t.note('The ' + w.name.toLowerCase() + ' comes back to your hand. ' + v.name + ' takes ' + dmg + ' (before armour) and is Bleeding. No roll.'); landed(t, 1); return null; }
+    if (t.preview) { t.note('The ' + w.name.toLowerCase() + ' comes back to your hand. ' + v.name + ' takes ' + dmg + ' (before armour) and is Bleeding. No roll.'); return null; }
     v.stuck = (v.stuck || []).filter((x: any) => x !== e); if (!v.stuck!.length) delete v.stuck;
     if (!takeWeapon(t.cb, t.u, e.weapon, e.item)) dropToPile(t.cb, t.u.pos, [e.item || { id: e.weapon, name: w.name, qty: 1, kind: 'weapon', weapon: e.weapon } as any], 'drop');
     meleeFx(t, 'throw', { from: v.pos, to: t.u.pos, target: v.id, weapon: e.weapon, back: true });
     t.cb.log.push('  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + hurtUnit(v, dmg, false, t.cb, 'weapon', t.u) + '.');
     if (alive(v)) cond(t, v, 'bleeding');
-    landed(t, 1);
     return null;
   },
   ai: () => 0,

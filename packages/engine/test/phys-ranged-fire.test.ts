@@ -144,7 +144,7 @@ describe('Called Shot', () => {
   it('needs a part named; −2 to hit; 3 AP and a round', () => {
     const f = fight(); expect(f.tech('called_shot', { targetId: f.foe.id })).toMatch(/leg, arm or head/); expect(f.pc.ap).toBe(6);
     const pv = f.pv('called_shot', { targetId: f.foe.id, opt: 'head' }); expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(1);
-    expect(term(pv, 0, 'Called Shot')).toBe(-2); expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['body'], tn: 12 + 5 });
+    expect(term(pv, 0, 'Called Shot')).toBe(-2); expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['body'], tn: 12 + 3 });
   });
   it('a hit: leg Slowed, arm weapon lowered, head Dazed, unless the Body save holds', () => {
     for (const [part, id] of [['leg', 'slowed'], ['arm', 'lowered'], ['head', 'dazed']] as const) {

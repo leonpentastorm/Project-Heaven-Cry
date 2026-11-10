@@ -2,17 +2,17 @@
 // (the core charges the 1 AP). Sidestep, Guard, Shove, Trip and Drag.
 //
 // Readings (the result note lists them):
-//   - A Link that works on an enemy (Shove, Trip, Drag: its save failed) gives Momentum through landed(). Sidestep and
-//     Guard act on nobody and give none; they still count as the last technique, so the next one earns the variety bonus.
+//   - No Link gives or spends Momentum (the rework, Leon, 10 Nov 2026), and a Link's own move (Sidestep's step, Drag's)
+//     costs none: it is how to move and keep it. Guard keeps Momentum when its user is hit.
 //   - Shove, Trip and Drag act on an enemy; Shove at 1 tile (Reach: 2), Trip and Drag within the weapon's reach (2 with
 //     a Reach weapon, else 1).
 //   - Shove is today's Shove: d20 + Strength + Raw Power against 10 + the target's better of Raw Power and Athletics
-//     (combat.ts shove), then the push or Prone through stop() with no second save. It works (Momentum) only when the
-//     target really moved or went Prone: a push an item cancels (Siege Engine) gives none. "Body save" (Trip, Drag,
+//     (combat.ts shove), then the push or Prone through stop() with no second save. It works only when the
+//     target really moved or went Prone: a push an item cancels (Siege Engine) doesn't. "Body save" (Trip, Drag,
 //     Guard with Reach) is the Body family save.
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
-import { technique, landed, holdMomentum, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
+import { technique, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { strikingWith, techSaveTn, techVia } from '../core';
 import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
 import { mod } from '../../character';
@@ -117,7 +117,8 @@ onHook('attack_preview', (ctx: any, cb) => {
 onHook('attack_roll', (ctx: any, cb) => { if (ctx.att && ctx.tgt) { const s = sidestepMark(cb, ctx.att, ctx.tgt); if (s && s.n == null) s.n = chainOf(cb, ctx.att).n; } });
 
 // ---------- 16. Guard ----------
-// +2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn. Reach: enemies
+// +2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit (the core's guardUp
+// reads this state; physical/rules.ts keeps the Momentum). Reach: enemies
 // must make a Body save to step next to you. Heavy: the +2 also applies to ranged attacks from the front.
 // The front is the way the user faced when it took Guard: toward args.tile if named, else toward the nearest enemy.
 const guardOf = (u: Unit): Record<string, any> | null => { const g = (u as any).tech?.guard; return g?.on ? g : null; };
@@ -137,12 +138,11 @@ technique({
     const face = t.args.tile && t.args.tile !== t.u.pos ? t.args.tile : foes[0]?.pos || null;
     const [ux, uy] = xy(t.u.pos), front = face ? (() => { const [x, y] = xy(face); return [x - ux, y - uy]; })() : [0, 0];
     if (t.preview) {
-      t.note('+' + def + ' Defense against melee until your next turn' + (p === 'heavy' ? ', and against ranged attacks from the front' : '') + '. Your Momentum doesn\'t drop at the end of this turn.');
+      t.note('+' + def + ' Defense against melee until your next turn' + (p === 'heavy' ? ', and against ranged attacks from the front' : '') + '. Your Momentum doesn\'t drop when you are hit.');
       if (p === 'reach') t.note('Enemies must make a Body save to step next to you.');
       return null;
     }
     Object.assign(t.state(), { on: true, t: turnStamp(t.cb), def, reach: p === 'reach', heavy: p === 'heavy', front, via: techVia(t) });
-    holdMomentum(t);
     meleeFx(t, 'guard', { front, reach: p === 'reach', heavy: p === 'heavy' });
     t.cb.log.push(t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ').');
     return null;
@@ -188,7 +188,7 @@ pressureFilter((cb, target, n) => {
 });
 
 // ---------- 17. Shove ----------
-// Today's Shove (push 1 tile, or Prone if blocked), at 1 AP as a Link. It gives Momentum when it works.
+// Today's Shove (push 1 tile, or Prone if blocked), at 1 AP as a Link.
 // Blunt or Heavy: 2 tiles. Reach: from 2 tiles away.
 function shoveLine(t: Tech) { const p = t.line('blunt', 'heavy', 'reach'); return { p, range: p === 'reach' ? t.num('reach_range', 2) : t.num('range', 1), tiles: p === 'blunt' || p === 'heavy' ? t.num('heavy_tiles', 2) : t.num('tiles', 1) }; }
 technique({
@@ -213,7 +213,6 @@ technique({
       t.note('Shove: d20 ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + ' (Strength and Raw Power) against ' + need + '.');
       (t.pv.saves ||= []).push({ unit: tgt.id, skills: ['raw_power', 'athletics'], tn: need }); // its defence, as a save the card can show
       stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false }); // a push records where it would leave it
-      landed(t); // the card shows the Momentum it gives when it works
       return null;
     }
     const roll = d20(t.rng), total = roll + bonus;
@@ -224,8 +223,7 @@ technique({
     const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how: 'push' });
     fallFx(t, tgt, wasProne);
     // it works when the target really moved, or went Prone where it was blocked (an item may cancel the push)
-    if (tgt.pos !== was || (blocked && tgt.prone && !wasProne)) landed(t);
-    else t.cb.log.push(tgt.name + ' holds its ground.');
+    if (!(tgt.pos !== was || (blocked && tgt.prone && !wasProne))) t.cb.log.push(tgt.name + ' holds its ground.');
     return null;
   },
   ai: (t) => (t.tgt && t.tgt.side !== t.u.side && dist(t.u.pos, t.tgt.pos) <= 1 ? 3 : 0),
@@ -251,7 +249,6 @@ technique({
     const wasProne = !!tgt.prone, ok = stop(t, tgt, 'prone', { save: ['body'], tnAdd: harder });
     if (!ok) return null;
     fallFx(t, tgt, wasProne);
-    landed(t);
     if (grapple) {
       if (t.preview) t.note('You go Prone with it.');
       else if (!t.u.prone) { t.u.prone = true; t.u.braced = false; emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'prone' }); t.cb.log.push(t.u.name + ' goes down with ' + tgt.name + '.'); }
@@ -316,7 +313,7 @@ technique({
   },
   run(t) {
     const tgt = t.tgt!, { how } = dragPlan(t), p = t.line('hook', 'bare');
-    if (save(t, tgt, ['body'])) return null; // it holds firm: no Momentum
+    if (save(t, tgt, ['body'])) return null; // it holds firm
     let worked = false; const mk = fxMark(t), from = t.u.pos;
     if (how === 'pull') worked = forceMove(t, tgt, 'toward', p === 'hook' ? t.num('hook_tiles', 2) : t.num('tiles', 1)) > 0;
     else if (how === 'swap') worked = swap(t, tgt);
@@ -326,7 +323,7 @@ technique({
       if (t.preview) { stepUser(t, [to]); (t.pv.moves ||= []).push({ unit: tgt.id, to: dest }); worked = true; }
       else if (stepUser(t, [to]) && alive(t.u) && alive(tgt)) worked = forceMove(t, tgt, dest, 1) > 0;
     }
-    if (worked) { landed(t); const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how, ...(how !== 'pull' ? { user: [from, t.u.pos] } : {}) }); }
+    if (worked) { const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how, ...(how !== 'pull' ? { user: [from, t.u.pos] } : {}) }); }
     else if (!t.preview) t.cb.log.push(tgt.name + ' doesn\'t move.');
     return null;
   },

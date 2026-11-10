@@ -29,18 +29,18 @@ describe('the data', () => {
 describe('Momentum and the chain', () => {
   const fight = () => { const f = physFight([{ weapon: 'sabre', known: ['lunge', 'coup', 'riposte'], skills: { athletics: 6, raw_power: 4 } }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc); return f; };
   it('everyone holding a melee weapon has Momentum to 3', () => {
-    const f = fight(); expect(f.pc.resMax?.momentum).toBe(3); expect(f.momentum(f.pc)).toBe(0);
+    const f = fight(); expect(f.pc.resMax?.momentum).toBe(3); expect(f.momentum(f.pc)).toBe(1); // a fight starts with 1 (the Momentum rework)
   });
-  it('a hit gives 1; a different technique next gives 1 more; the same one does not', () => {
+  it('only the plain attack\'s hit gives 1; another technique\'s hit gives none, and there is no variety bonus', () => {
     const f = fight(); rig({ hit: true, die: 12 });
-    expect(f.tech('lunge', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1); // the first technique: no variety bonus
-    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(3);   // +1, and +1 for the change
+    expect(f.tech('lunge', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1); // the fight's first Opener is free, and its hit gives none
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(2);   // +1 for the plain attack, nothing for the change
     f.momentum(f.pc, 0);
-    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1);   // Cut after Cut: +1 only
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1);   // Cut after Cut: +1
   });
   it('a miss gives none', () => {
     const f = fight(); rig({ hit: false, die: 5 });
-    f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(0);
+    f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1); // the 1 the fight began with
   });
   it('an Opener is only the first technique; a Finisher needs 2, spends all and ends the chain', () => {
     const f = fight(); rig({ hit: true, die: 12 });

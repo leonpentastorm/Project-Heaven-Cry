@@ -130,7 +130,7 @@ describe('Fighter', () => {
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'pinned', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'slowed', 3, undefined, { skipSave: true }); });
     expect(() => act(f, u, { type: 'combat/move', to: '2,2' })).toThrow(/Pinned/);
     perk(f, u, 'class:fighter.unstoppable');
-    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(2); expect(fx(f, 'unstoppable').length).toBe(1);
+    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(3); // the 1 a fight starts with, +2 expect(fx(f, 'unstoppable').length).toBe(1);
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'fear', 2, undefined, { skipSave: true }));
     expect(condOn(f.unit(u.id), 'fear')).toBe(false);
     const n = f.cb.log.length; act(f, u, { type: 'combat/move', to: '2,2' });

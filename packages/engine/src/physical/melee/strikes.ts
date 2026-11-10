@@ -28,12 +28,6 @@ const tileArg = (t: Tech): string | null => (!t.args.tile ? null : /^\d+,\d+$/.t
 /** The eight directions in turning order (neighbours in the list are 45° apart). */
 const DIRS: [number, number][] = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
 const unitAt = (cb: Combat, k: string): Unit | null => cb.units.find((v) => alive(v) && v.pos === k) || null;
-/** Momentum as the card shows it if every one of n strikes hits: +1 a hit (the engine's), and the variety bonus once. */
-function previewMomentum(t: Tech, hits: number): void {
-  if (!t.preview || hits <= 0) return;
-  const m0 = momentumOf(t.u), max = t.u.resMax?.momentum ?? PHYS_RULES.momentum.max, ch = chainOf(t.cb, t.u);
-  t.pv.momentum = { now: m0, after: Math.min(max, m0 + hits + (ch.last && ch.last !== t.def.id ? PHYS_RULES.momentum.variety_bonus : 0)) };
-}
 /** A line that says "costs n AP less" but has no `ap` in the data: the handler gives the AP back itself (the core
  * charged the full cost). Once the data carries the line's `ap`, the core charges it and this does nothing. */
 function lineDiscount(t: Tech, prop: string, n: number): void {
@@ -69,7 +63,7 @@ technique({
     if (!struck.length) return 'No one to strike in the arc.';
     if (!struck.some((v) => v.side !== t.u.side)) return 'Only allies in the arc.';
     if (t.preview) {
-      t.pv.area = tiles; previewMomentum(t, struck.length);
+      t.pv.area = tiles;
       if (p === 'edge') t.note('A critical leaves each one hit Bleeding.');
       if (struck.some((v) => v.side === t.u.side)) t.note('Allies in the arc are struck too.');
     }
@@ -154,8 +148,8 @@ technique({
   ai: (t) => (!t.tgt ? 0 : t.tgt.armour > 0 && !(t.u.tech?.sunder?.done || {})[t.tgt.id] ? 6 : 3),
 });
 
-// 10. Flurry: two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits (the engine's +1
-//     a melee hit). Light: three strikes (each after the first at −1). Bare: each hit after the first adds +1 to the
+// 10. Flurry: two strikes at ×0.6 at one target, the second at −1 to hit. Its hits give no Momentum (a Strike
+//     spends 1). Light: three strikes (each after the first at −1). Bare: each hit after the first adds +1 to the
 //     next Bind or Throw Down this turn. Thrown: the strikes may go to two targets in throwing range (targetIds); the
 //     weapon lands in the pile on the tile of the last target thrown at.
 technique({
@@ -172,7 +166,7 @@ technique({
       if (dist(t.u.pos, v.pos) > range) return v.name + ' is out of throwing range (' + range + ' tiles).';
       if (!lineOfSight(t.cb, t.u.pos, v.pos)) return 'No line of sight to ' + v.name + '.';
     }
-    if (t.preview) { previewMomentum(t, n); if (p === 'bare') t.note('Each hit after the first: +' + t.num('bare_bonus', 1) + ' to the save your next Bind or Throw Down against it this turn forces.'); }
+    if (t.preview) { if (p === 'bare') t.note('Each hit after the first: +' + t.num('bare_bonus', 1) + ' to the save your next Bind or Throw Down against it this turn forces.'); }
     let hits = 0, last: Unit | null = null, lastHit: Unit | null = null;
     const fx = meleeFx(t, 'flurry', { targets: targets.map((v) => v.id), tiles: targets.map((v) => v.pos), strikes: n, thrown, weapon: t.weaponId });
     for (let i = 0; i < n; i++) {

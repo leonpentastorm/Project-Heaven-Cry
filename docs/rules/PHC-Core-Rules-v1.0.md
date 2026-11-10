@@ -948,16 +948,21 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 
 #### Melee: Momentum and the chain
 
-1. **Momentum** runs 0 to 3 for everyone holding a melee weapon (a Fighter: 5).
-2. **Each melee strike that hits gives +1.** A technique that works without a damaging strike (a Feint that fools its target, a Link) gives +1 as well.
-3. **Variety:** +1 more, once per technique, when it is a different technique from the last one you used this turn. The first melee technique of a turn earns no variety bonus.
+*Reworked 10 Nov 2026 (Leon; `docs/design/proposals/2026-11-nine-doors.md` section 20). Enemies follow the same rules.*
+
+1. **Momentum** runs 0 to 3 for everyone holding a melee weapon (a Fighter: 5). **A fight starts with 1.**
+2. **Only the plain attack gives Momentum:** +1 when it hits. That is Cut, a plain swing with any melee weapon, fists included. No other technique's hit gives any, and no technique gives it by its text, with one exception: Parry's Light line (+1).
+3. **A Strike and an Opener each spend 1 Momentum** when used, and can't be used without it. Cut and Pull Out are free and spend none; Ambush costs none. **The first Opener you use in each fight costs no Momentum.** Links and Answers spend none.
 4. **The chain** is the melee techniques of one turn, in order:
    - an **Opener** is only the first of them;
    - **Strikes** and **Links** follow in any order (a Link costs 1 AP and deals no damage);
    - a **Finisher** needs Momentum 2, spends all of it, and is the last melee technique of the turn;
    - an **Answer** is a reaction: it fires on its trigger, on anyone's turn.
-5. **Momentum falls to 0** at the end of a turn in which you made no attack and used no melee technique.
-6. **A set-up** (Feint, Sidestep) marks one target for your next technique this turn, and is spent by it.
+5. **Walking costs Momentum:** −1 for each tile you move by a walk, a Sprint or a Disengage. A forced move (a push, a pull, a throw) costs none; neither does a Link's own move (Sidestep, Drag's step), a technique's own step or run (Lunge's step, Charge's run when the run is part of Charge), or a free step from a perk or a class move. Move with a Link to keep your Momentum.
+6. **Being hit costs Momentum:** −1 each time you take a damaging hit, from any source. Not while you are guarding: the Guard technique is up, the hit was Parried, or you hold Guard points.
+7. **Momentum carries from turn to turn.** Nothing drops it at the end of a turn.
+8. **A set-up** (Feint, Sidestep) marks one target for your next technique this turn, and is spent by it.
+9. **A technique's save** (Leon, 10 Nov 2026) is against 12 + **half** your strength with the skill the weapon hits with, rounded up, plus the technique's own step: 10 points in the skill (strength 9) is +5 (TN 17), 6 points +3, 2 points +1; an enemy's tier number is halved the same way (minion 0, soldier +1, elite +1). This is every save a technique itself forces, melee and ranged (Bash, Trip, Feint, Keep Back, Guard with Reach, walking away from a Bind, a Stop, Rout, Pin Down, Stopping Shot). A condition applied with its own save (Bind's grapple) keeps the full strength, as Sigils, Outbursts, prayers and speech do.
 
 #### Ranged: Pressure
 
@@ -1005,9 +1010,9 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 |---|---|---|---|---|
 | 1 | **Lunge** | weapon | Step 1 tile toward the target, then strike. The step draws no opportunity attack. | **Point:** +2 to hit. **Reach:** the step may be 2 tiles. **Heavy:** on a hit the target is pushed 1 tile. |
 | 2 | **Charge** | weapon | After moving 3 or more tiles in a straight line this turn: strike at +10% damage per tile moved, up to +50%. | **Point:** ignores 5 armour. **Blunt or Heavy:** the target makes a Body save or falls Prone. **Reach:** you strike before it can take its Overwatch or Keep Back. |
-| 3 | **Feint** | 1 | No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. Counts as a hit for Momentum when it works. | **Light:** the save is at −2. **Hook:** on a failed save its weapon is also lowered (1 AP to raise). |
+| 3 | **Feint** | 1 | No damage. The target makes a Brain save against your Brain debuff strength. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer. | **Light:** the save is at −2. **Hook:** on a failed save its weapon is also lowered (1 AP to raise). |
 | 4 | **Draw Cut** | weapon −1 | Draw this weapon from the pack or a sheath and strike in one action. Only if you started the turn with it stowed. | **Edge:** Bleeding on a hit. **Light:** if the target hasn't acted this fight, it counts as an ambush. |
-| 5 | **Ambush** | weapon | Only from Hidden: strike with the Ambush multiplier, and gain 2 Momentum instead of 1. | **Point:** crits on 18–20. **Bare:** no damage, the target is Grappled and Silenced for 1 round instead. |
+| 5 | **Ambush** | weapon | Only from Hidden: strike with the Ambush multiplier. It costs no Momentum. | **Point:** crits on 18–20. **Bare:** no damage, the target is Grappled and Silenced for 1 round instead. |
 
 **Strikes**
 
@@ -1017,20 +1022,20 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 7 | **Sweep** † | weapon +1 | Strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each. | **Reach:** the arc is 2 tiles out. **Heavy:** all adjacent enemies, not just the arc. **Edge:** each one hit bleeds on a critical. Friendly fire applies. |
 | 8 | **Bash** | weapon | Strike at ×0.5 with the pommel, haft or fist. The target makes a Body save or is Dazed. | **Blunt:** full damage. **Heavy:** on a failed save it is pushed 2 tiles instead of Dazed, your choice. **Bare:** costs 1 AP less. |
 | 9 | **Sunder** | weapon | Strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per attacker). | **Blunt or Hook:** 10 lower. **Edge:** if the target has no armour left, Bleeding instead. |
-| 10 | **Flurry** | weapon +1 | Two strikes at ×0.6 at one target, the second at −1 to hit. Momentum for each that hits. | **Light:** three strikes. **Bare:** each hit after the first adds +1 to the next Bind or Throw Down this turn. **Thrown:** the strikes may go to two targets in throwing range; the weapons land in the pile on their tiles. |
+| 10 | **Flurry** | weapon +1 | Two strikes at ×0.6 at one target, the second at −1 to hit. | **Light:** three strikes. **Bare:** each hit after the first adds +1 to the next Bind or Throw Down this turn. **Thrown:** the strikes may go to two targets in throwing range; the weapons land in the pile on their tiles. |
 | 11 | **Hamstring** | weapon | Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. | **Edge:** no save. **Hook:** Prone instead of Slowed. **Point:** it also can't Sprint or Disengage while Slowed. |
 | 12 | **Bind** | weapon | No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding. | **Hook:** Brain save or it is Disarmed. **Bare:** it is Grappled. **Heavy:** the −2 becomes −4. |
 | 13 | **Half-Sword** | weapon | A short, driven thrust: ×0.8 damage, ignores 10 armour. | **Point:** ignores all armour. **Heavy:** full damage. **Bare or Blunt:** not available (greyed, with the reason). |
 | 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or **Pull Out** from next to it brings it back. On a miss it lands on the target's tile. | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
-| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It counts as a hit for Momentum. Everyone knows it. | |
+| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum. Everyone knows it. | |
 
 **Links**
 
 | # | Technique | AP | What it does | With the right weapon |
 |---|---|---|---|---|
 | 15 | **Sidestep** | 1 | Move 1 tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking. | **Light:** 2 tiles. |
-| 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop at the end of this turn. | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
-| 17 | **Shove** | 1 | Push an enemy next to you 1 tile, or knock it Prone if it can't move back. It gives Momentum when it works. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
+| 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
+| 17 | **Shove** | 1 | Push an enemy next to you 1 tile, or knock it Prone if it can't move back. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
 | 18 | **Trip** | 1 | The target makes a Body save or falls Prone. | **Hook or Reach:** the save is at −2. **Bare:** you may go Prone with it and it is Grappled. |
 | 19 | **Drag** | 1 | Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). | **Hook:** you pull from 2 tiles away (3 with Reach), up to 2 tiles. **Bare:** you may move 1 tile and bring it with you. |
 

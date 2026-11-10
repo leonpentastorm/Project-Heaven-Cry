@@ -2801,7 +2801,7 @@ const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed'
   'prone', 'braced', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
   'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
-  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed'] as const;
+  'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed'] as const;
 
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */

@@ -66,7 +66,11 @@ export interface WeaponBlock {
 export function needsText(id: string): string {
   const d: any = TECHNIQUE[id]; if (!d) return '';
   const n = d.needs || {}, out: string[] = [];
-  if (d.group === 'opener') out.push('An Opener: only as your first melee technique of the turn.');
+  // the Momentum rework (Leon, 10 Nov 2026): a Strike and an Opener spend 1 each; the free ones (Cut, Pull Out) and a
+  // technique whose data says it costs none (Ambush) don't
+  const spends = d.system === 'melee' && !d.free && d.numbers?.momentum_cost !== 0;
+  if (d.group === 'opener') out.push('An Opener: only as your first melee technique of the turn.' + (spends ? ' It spends 1 Momentum; your first Opener of a fight is free.' : ''));
+  if (d.group === 'strike' && spends) out.push('A Strike: it spends 1 Momentum.');
   if (n.momentum) out.push('Needs ' + n.momentum + ' Momentum or more, and spends all of it. It ends your chain for the turn.');
   if (n.held && !/^Only on a target/.test(d.text || '')) out.push('Needs a target you have Grappled or Bound.');
   if (n.pressed) out.push('Needs a Pressed target (Pressure 2 or more); it lowers that Pressure by 2. One Take a turn.');

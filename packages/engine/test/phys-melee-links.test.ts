@@ -1,6 +1,6 @@
 // Physical 2.0 (rules 1.12), the melee Links: Sidestep, Guard, Shove, Trip and Drag.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, previewAttack, type Unit } from '../src';
+import { phys, previewAttack, resolveAttack, type Unit } from '../src';
 import { condOn } from '../src/magic';
 import { d20 } from '../src/rng';
 import { physFight, rig } from './helpers/physfight';
@@ -34,13 +34,13 @@ describe('the Links are built', () => {
 });
 
 describe('Sidestep (15)', () => {
-  it('moves 1 tile to another tile next to the same enemy, for 1 AP, with no opportunity attack and no Momentum', () => {
+  it('moves 1 tile to another tile next to the same enemy, for 1 AP, with no opportunity attack; its step costs no Momentum', () => {
     const f = fight('maul', { foes: [{ at: 'D7' }, { at: 'B7' }] });
     const pv = f.pv('sidestep', { targetId: f.foe.id, tile: f.tile('D6') });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.moves).toEqual([{ unit: f.pc.id, to: f.tile('D6') }]);
     unchanged(f, () => f.pv('sidestep', { targetId: f.foe.id, tile: f.tile('D6') }));
     expect(f.tech('sidestep', { targetId: f.foe.id, tile: f.tile('D6') })).toBeNull();
-    expect(at(f, f.pc)).toBe(f.tile('D6')); expect(f.pc.ap).toBe(5); expect(f.momentum(f.pc)).toBe(0);
+    expect(at(f, f.pc)).toBe(f.tile('D6')); expect(f.pc.ap).toBe(5); expect(f.momentum(f.pc)).toBe(1); // the 1 the fight began with: a Link's move keeps it
     expect(f.foes[1].reactUsed?.n || 0).toBe(0); // B7 saw the PC leave its reach: no opportunity attack
   });
   it('is 1 tile without Light and 2 with it', () => {
@@ -65,7 +65,7 @@ describe('Sidestep (15)', () => {
     expect(f.tech('sidestep', { targetId: s.id, tile: f.tile('D6') })).toBeNull();
     expect(term(f.pv('cut', { targetId: s.id }))?.v).toBe(2);
     expect(f.tech('cut', { targetId: s.id })).toBeNull();
-    expect(f.momentum(f.pc)).toBe(2); // the hit, and +1: Cut differs from the last technique (Sidestep)
+    expect(f.momentum(f.pc)).toBe(2); // the 1 the fight began with, and the plain attack's hit (no variety bonus)
     expect(term(f.pv('cut', { targetId: s.id }))).toBeUndefined(); // spent
   });
   it('a held Watch sees the step', () => {
@@ -88,14 +88,20 @@ describe('Guard (16)', () => {
     f.pass(); f.turn(f.foes[0]); expect(guardTerm(swing(f, f.foes[0], f.pc))).toBe(-2); // still on through the enemy's turn
     f.turn(f.pc); expect(guardTerm(swing(f, f.foes[0], f.pc))).toBeUndefined();      // ends at your next turn
   });
-  it('Momentum doesn\'t drop at the end of the turn', () => {
+  it('Momentum doesn\'t drop when you are hit (and never at the end of a turn)', () => {
     const f = fight('sabre'); f.momentum(f.pc, 2); f.tech('guard'); f.pass(); expect(f.momentum(f.pc)).toBe(2);
-    const g = fight('sabre'); g.momentum(g.pc, 2); g.pass(); expect(g.momentum(g.pc)).toBe(0); // no melee technique: it drops
+    f.turn(f.foe); rig({ hit: true, die: 12 }); const hp = f.pc.hp;
+    f.bound(() => resolveAttack(f.cb, f.g.rng, f.foe, f.pc, 'melee', null, { noAp: true }));
+    expect(f.pc.hp).toBeLessThan(hp); expect(f.momentum(f.pc)).toBe(2); // hit on Guard: kept
+    const g = fight('sabre'); g.momentum(g.pc, 2); g.pass(); expect(g.momentum(g.pc)).toBe(2); // a turn with no attack: it carries
+    g.turn(g.foe); rig({ hit: true, die: 12 });
+    g.bound(() => resolveAttack(g.cb, g.g.rng, g.foe, g.pc, 'melee', null, { noAp: true }));
+    expect(g.momentum(g.pc)).toBe(1); // no Guard: the hit costs 1
   });
-  it('gives no Momentum itself, and the next technique earns the variety bonus', () => {
-    const f = fight('sabre'); rig({ hit: true, die: 12 });
+  it('gives no Momentum itself, and there is no variety bonus after it', () => {
+    const f = fight('sabre'); rig({ hit: true, die: 12 }); f.momentum(f.pc, 0);
     f.tech('guard'); expect(f.momentum(f.pc)).toBe(0);
-    f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(2);
+    f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(1);
   });
   it('Heavy: the +2 also applies to shots from the front, not from behind', () => {
     const f = fight('maul', { foes: [{ at: 'H7' }, { at: 'A7' }] });
@@ -116,7 +122,7 @@ describe('Guard (16)', () => {
   });
   it('a preview changes nothing', () => {
     const f = fight('maul'); unchanged(f, () => f.pv('guard'));
-    const pv = f.pv('guard'); expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.momentum).toEqual({ now: 0, after: 0 });
+    const pv = f.pv('guard'); expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.momentum).toEqual({ now: 1, after: 1 }); // a Link spends none
   });
   it('the Defender takes Pressure on its Guard first', () => {
     const f = physFight([{ weapon: 'sabre', classId: 'defender' }], [{ at: 'H7' }]); f.turn(f.pc);
@@ -126,17 +132,17 @@ describe('Guard (16)', () => {
 });
 
 describe('Shove (17)', () => {
-  it('pushes 1 tile on a failed save, for 1 AP, and gives Momentum', () => {
+  it('pushes 1 tile on a failed save, for 1 AP; it neither gives nor spends Momentum', () => {
     const f = fight('sabre'); weakShove(f, f.foe);
     const pv = f.pv('shove', { targetId: f.foe.id });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('E7') }]);
-    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['raw_power', 'athletics'], tn: 10 }); expect(pv.momentum).toEqual({ now: 0, after: 1 });
+    expect(pv.saves?.[0]).toMatchObject({ unit: f.foe.id, skills: ['raw_power', 'athletics'], tn: 10 }); expect(pv.momentum).toEqual({ now: 1, after: 1 });
     unchanged(f, () => f.pv('shove', { targetId: f.foe.id }));
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
     expect(at(f, f.foe)).toBe(pv.moves![0].to); expect(f.pc.ap).toBe(5); expect(f.momentum(f.pc)).toBe(pv.momentum!.after);
   });
   it('a save holds it: no move, no Momentum, the AP is spent', () => {
-    const f = fight('sabre'); strong(f, f.foe);
+    const f = fight('sabre'); strong(f, f.foe); f.momentum(f.pc, 0);
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(5);
   });
   it('blocked, it falls Prone', () => {
@@ -162,11 +168,11 @@ describe('Shove (17)', () => {
     expect(f.tech('shove')).toMatch(/Pick a target/);
     f.unit(f.foe.id).dead = true; expect(f.tech('shove', { targetId: f.foe.id })).toMatch(/out of the fight|Pick a target|Pick someone else/);
   });
-  it('Momentum: the variety bonus after another technique; a repeat earns only its own 1', () => {
-    const f = fight('sabre', { foes: [{ at: 'D7' }, { at: 'D8' }] }); weakShove(f, f.foes[0]); weakShove(f, f.foes[1]); rig({ hit: true, die: 12 });
+  it('Momentum: a Shove that works gives none, after another technique or after itself (no variety bonus)', () => {
+    const f = fight('sabre', { foes: [{ at: 'D7' }, { at: 'D8' }] }); weakShove(f, f.foes[0]); weakShove(f, f.foes[1]); rig({ hit: true, die: 12 }); f.momentum(f.pc, 0);
     f.tech('cut', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1);
-    f.tech('shove', { targetId: f.foes[0].id }); expect(f.momentum(f.pc)).toBe(3);
-    f.momentum(f.pc, 0); f.tech('shove', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1); // Shove after Shove
+    f.tech('shove', { targetId: f.foes[0].id }); expect(at(f, f.foes[0])).toBe(f.tile('E7')); expect(f.momentum(f.pc)).toBe(1);
+    f.tech('shove', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1); // Shove after Shove
   });
   it('a moved enemy sets off a held Watch', () => {
     const f = fight('sabre', { pcs: [{ weapon: 'hellraiser_service_rifle' }] }); f.put(f.pcs[1], 'C10'); weakShove(f, f.foe);
@@ -185,21 +191,21 @@ describe('Shove (17)', () => {
 });
 
 describe('Trip (18)', () => {
-  it('a failed Body save: Prone, Momentum, 1 AP', () => {
+  it('a failed Body save: Prone, 1 AP, no Momentum given or spent', () => {
     const f = fight('sabre'); weak(f, f.foe);
-    const pv = f.pv('trip', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.saves?.[0]).toMatchObject({ skills: ['body'], tn: 12 + 3 }); expect(pv.momentum?.after).toBe(1);
+    const pv = f.pv('trip', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.saves?.[0]).toMatchObject({ skills: ['body'], tn: 12 + 2 }); /* half of strength 3, rounded up */ expect(pv.momentum).toEqual({ now: 1, after: 1 });
     unchanged(f, () => f.pv('trip', { targetId: f.foe.id }));
     expect(f.tech('trip', { targetId: f.foe.id })).toBeNull(); expect(f.unit(f.foe.id).prone).toBe(true); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(5);
     expect(f.tech('trip', { targetId: f.foe.id })).toMatch(/already Prone/);
   });
   it('a save: nothing, no Momentum', () => {
-    const f = fight('sabre'); strong(f, f.foe); f.tech('trip', { targetId: f.foe.id }); expect(f.unit(f.foe.id).prone).toBeFalsy(); expect(f.momentum(f.pc)).toBe(0);
+    const f = fight('sabre'); strong(f, f.foe); f.momentum(f.pc, 0); f.tech('trip', { targetId: f.foe.id }); expect(f.unit(f.foe.id).prone).toBeFalsy(); expect(f.momentum(f.pc)).toBe(0);
   });
   it('Hook or Reach: the save is at −2; without either, at the plain TN', () => {
     expect(fight('war_axe').pv('trip', { targetId: '' }).ok).toBe(false);
-    const f = fight('war_axe'); expect(f.pv('trip', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + 3);
-    const g = fight('glaive', { foes: [{ at: 'E7' }] }); expect(g.pv('trip', { targetId: g.foe.id, line: 'reach' }).saves?.[0].tn).toBe(14 + 3); // and from 2 tiles with a Reach weapon
-    const h = fight('maul'); expect(h.pv('trip', { targetId: h.foe.id }).saves?.[0].tn).toBe(12 + 3);
+    const f = fight('war_axe'); expect(f.pv('trip', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + 2);
+    const g = fight('glaive', { foes: [{ at: 'E7' }] }); expect(g.pv('trip', { targetId: g.foe.id, line: 'reach' }).saves?.[0].tn).toBe(14 + 2); // and from 2 tiles with a Reach weapon
+    const h = fight('maul'); expect(h.pv('trip', { targetId: h.foe.id }).saves?.[0].tn).toBe(12 + 2);
   });
   it('Bare: you may go Prone with it, and then it is Grappled', () => {
     const f = fight('fists'); weak(f, f.foe);
@@ -217,7 +223,7 @@ describe('Trip (18)', () => {
 });
 
 describe('Drag (19)', () => {
-  it('pulls a reached target 1 tile toward you on a failed Body save, and gives Momentum', () => {
+  it('pulls a reached target 1 tile toward you on a failed Body save; no Momentum given or spent', () => {
     const f = fight('bot_thread_banner', { foes: [{ at: 'E7' }] }); weak(f, f.foe);
     const pv = f.pv('drag', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('D7') }]); expect(pv.saves?.[0].skills).toEqual(['body']);
     unchanged(f, () => f.pv('drag', { targetId: f.foe.id }));
@@ -227,10 +233,10 @@ describe('Drag (19)', () => {
     const f = fight('sabre'); weak(f, f.foe);
     expect(f.tech('drag', { targetId: f.foe.id, opt: 'pull' })).toMatch(/already next to you/);
     const pv = f.pv('drag', { targetId: f.foe.id }); expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('C7') }, { unit: f.pc.id, to: f.tile('D7') }]);
-    expect(f.tech('drag', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('C7')); expect(at(f, f.pc)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(1);
+    expect(f.tech('drag', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('C7')); expect(at(f, f.pc)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(1); // Drag gives none, and its own step costs none: the 1 the fight began with
   });
   it('a save holds it', () => {
-    const f = fight('sabre'); strong(f, f.foe); f.tech('drag', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(0);
+    const f = fight('sabre'); strong(f, f.foe); f.momentum(f.pc, 0); f.tech('drag', { targetId: f.foe.id }); expect(at(f, f.foe)).toBe(f.tile('D7')); expect(f.momentum(f.pc)).toBe(0);
   });
   it('Hook: pulls from 2 tiles away, from 3 with Reach, up to 2 tiles; it stops beside you (Leon\'s ruling, 10 Nov 2026)', () => {
     const f = fight('glaive', { foes: [{ at: 'E7' }] }); weak(f, f.foe);

@@ -46,6 +46,7 @@ const shieldInOffHand = (t: Tech) => !!t.c?.offHand && (ITEM as any)[t.c.offHand
 // 25. Parry: a melee attack hits you: roll your attack skill against the attacker's total. If you win, the hit is halved.
 //     A shield in the off hand adds +2 (with any weapon). Light: and you gain 1 Momentum. Heavy: you may parry for an
 //     adjacent ally.
+//     The Light line's Momentum is the one a technique still gives by its text (the rework, Leon, 10 Nov 2026).
 //     The hook is damage_in, phase 'reduce' (the hit has landed, its damage not yet taken): the halving is on the damage
 //     after the attacker's multipliers and armour, before the shield. A protective reaction: it works while Suppressed
 //     (the core's canAnswer). "Win" is a higher total; a tie goes to the attacker.
@@ -73,6 +74,7 @@ technique({
         t.cb.log.push(t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': d20 ' + r + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + (shield ? ' (incl. +' + shield + ' shield)' : '') + ' = ' + total + ' vs ' + vs + (won ? ' · the hit is halved' : ' · it gets through') + '.');
         meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won });
         if (!won) return;
+        ctx.parryWon = true; // a Parried hit costs the one it lands on no Momentum (physical/rules.ts)
         ctx.dmg = ctx.dmg * t.num('halve', 0.5);
         if (t.line('light')) landed(t, t.num('light_momentum', 1));
       });
