@@ -197,7 +197,18 @@ const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, b
 export const condIsBoon = (id: string) => !!CONDS[condId(id)]?.boon;
 export function unitSave(u: Unit, fam: Fam): number {
   const base = u.sv ? u.sv[fam] : u.mg ? u.mg.saves[fam] : TIER_SAVE[u.tier || 'minion'] ?? 0;
-  return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'rumination') : fam === 'heart' ? condSkillMod(u, 'composure') : 0) /* rules 1.13: the Brain save's skill is Rumination, so only the Left Brain Debuff lowers it */ + residueStand(liveCb(), u, 'save');
+  return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'rumination') : fam === 'heart' ? condSkillMod(u, 'composure') : 0) /* rules 1.13: the Brain save's skill is Rumination, so only the Left Brain Debuff lowers it */ + residueStand(liveCb(), u, 'save')
+    + ((u as any).call?.saves?.n || 0); // Name It (a Call, rules 1.13): + on every save until the speaker's next turn
+}
+/** The save family of a condition (null: it has none). */
+export const condFam = (id: string): Fam | null => (CONDS[condId(id)]?.fam as Fam) || null;
+/** A fresh save against a condition already on a unit (Name It, step 2): against 12 + the strength of what delivered
+ * it. Ends the condition on a success. Returns the line for the log, or '' when there was nothing to roll. */
+export function freshSave(cb: Combat, rng: Rng, u: Unit, id: string): string {
+  const fam = condFam(id); if (!fam || !condOn(u, id)) return '';
+  const by = condSource(u, id), src = by ? cb.units.find((x) => x.id === by) : null, r = d20(rng), m = unitSave(u, fam), tn = 12 + unitStrength(src || null, (u.condVia as any)?.[condId(id)] || 'raw_power');
+  const ok = r === 20 || (r !== 1 && r + m >= tn); if (ok) endCond(u, id, cb);
+  return u.name + (ok ? ' shakes off ' : ' can\'t shake off ') + (CONDS[condId(id)]?.name || id) + ' (' + fam + ' save ' + (r + m) + ' vs ' + tn + ')';
 }
 /** Conditions on skill rolls (spec): Left Brain Debuff −2 on Mind skills, Right Brain Debuff −2 on Expression and Soul
  * skills. Reaches every d20 that uses the skill (attacks, Sigil and Soul strikes, saves). */

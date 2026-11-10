@@ -92,7 +92,7 @@ onHook('sees', (ctx: any, cb) => {
 onHook('turn_start_pre', (ctx: any, cb) => {
   const u: Unit = ctx.u; if (!u) return;
   // the speaker's turn has come round: its Spot, Warn and Cue end
-  for (const v of cb.units) { const c = v.call; if (!c) continue; if (c.spot?.by === u.id) delete c.spot; if (c.warn?.by === u.id) delete c.warn; if (c.cue?.by === u.id) delete c.cue; }
+  for (const v of cb.units) { const c = v.call; if (!c) continue; if (c.spot?.by === u.id) delete c.spot; if (c.warn?.by === u.id) delete c.warn; if (c.cue?.by === u.id) delete c.cue; if (c.saves?.by === u.id) delete c.saves; }
   for (const v of cb.units) { const c = v.call; if (!c) continue; if (c.spot && !stands(cb, c.spot)) delete c.spot; if (c.warn && !stands(cb, c.warn)) delete c.warn; if (c.cue && !stands(cb, c.cue)) delete c.cue; }
   // Threaten: the AP it loses this turn (a penalty before the floor of 2; Name It can cancel it)
   const loss = u.call?.apLoss; if (loss) { ctx.penalties.push({ n: loss.n, why: 'Threatened' }); delete u.call!.apLoss; }

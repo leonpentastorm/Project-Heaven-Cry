@@ -143,32 +143,32 @@
       "skill": "lore_master",
       "kind": "helping",
       "aim": "self-or-ally",
-      "text": "You call out what the thing is, and it stops costing the one you call to: AP they would lose at the start of their next turn (Dazed, Stunned, Suppressed, a penalty, an AP debt) is cancelled.",
+      "text": "You call out what the thing is, so it can't get into their head: the one you call to is harder to break until your next turn.",
       "steps": [
         {
           "at": 1,
-          "text": "Cancels 1 AP they would lose next turn.",
+          "text": "+2 on all their saves until your next turn.",
           "numbers": {
-            "cancel": 1,
-            "all": 0,
+            "saves": 2,
+            "fresh_save": 0,
             "ends_fear": 0
           }
         },
         {
           "at": 3,
-          "text": "Cancels 2 AP they would lose next turn.",
+          "text": "+3 on all their saves, and a fresh save now against one condition on them.",
           "numbers": {
-            "cancel": 2,
-            "all": 0,
+            "saves": 3,
+            "fresh_save": 1,
             "ends_fear": 0
           }
         },
         {
           "at": 7,
-          "text": "Cancels all the AP they would lose next turn, and ends Shaken and Afraid on them.",
+          "text": "+4 on all their saves, a fresh save against one condition, and Shaken and Afraid end on them.",
           "numbers": {
-            "cancel": 0,
-            "all": 1,
+            "saves": 4,
+            "fresh_save": 1,
             "ends_fear": 1
           }
         }

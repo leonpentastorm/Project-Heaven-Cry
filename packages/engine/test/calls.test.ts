@@ -1,5 +1,6 @@
 // Calls (rules 1.13, Skeleton 2.0): the nine gamma skills' speech actions in a fight. The ladder, each Call's three
 // steps, the limits, the AP rule, preview purity, the parley alias, the enemy AI and the view.
+import { unitSave } from '../src';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CALLS, CALL, CALL_RULES, SKILL, calls, previewCall, callPad, callView, viewFor, previewAttack, resolveAttack, moveUnit, enemyIntent, enemyTurn, endTurn, parley,
   canReact, useReaction, condOn, condSource, unitStrength, WEAPON, dropToPile, type Unit, type CallArgs } from '../src';
@@ -233,24 +234,22 @@ describe('Brief (Eloquence)', () => {
 });
 
 describe('Name It (Lore Master)', () => {
-  it('step 1 cancels 1 AP of loss next turn, step 2 cancels 2, step 3 all of it and ends Shaken and Afraid', () => {
-    for (const [pts, ap] of [[1, 5], [3, 6], [7, 6]] as const) {
-      const f = fight([speaker('lore_master', pts), {}]), a = f.pcs[1]; f.unit(a.id).dazedNext = 1; // Dazed: −2 AP
-      expect(f.call('call.name_it', { targetId: a.id })).toBeNull(); f.next();
-      expect(f.unit(a.id).ap, 'points ' + pts).toBe(ap); expect(f.unit(a.id).call?.cancel).toBeUndefined();
+  it('+2, +3, +4 on every save until the speaker\'s next turn; step 3 ends Shaken and Afraid', () => {
+    for (const [pts, n] of [[1, 2], [3, 3], [7, 4]] as const) {
+      const f = fight([speaker('lore_master', pts), {}]), a = f.pcs[1], before = unitSave(f.unit(a.id), 'body');
+      expect(f.call('call.name_it', { targetId: a.id })).toBeNull();
+      expect(unitSave(f.unit(a.id), 'body') - before, 'points ' + pts).toBe(n);
+      expect(unitSave(f.unit(a.id), 'heart') - unitSave({ ...f.unit(a.id), call: {} } as any, 'heart')).toBe(n);
     }
     const f = fight([speaker('lore_master', 7), {}]), a = f.pcs[1];
-    Object.assign(f.unit(a.id), { dazedNext: 1, apDebt: 3, conds: { shaken: 2, fear: 2, suppressed: 1 } });
+    Object.assign(f.unit(a.id), { conds: { shaken: 2, fear: 2 } });
     expect(f.cpv('call.name_it', { targetId: a.id }).notes.join(' ')).toMatch(/Ends Shaken and Afraid/);
     expect(f.call('call.name_it', { targetId: a.id })).toBeNull();
     expect(condOn(f.unit(a.id), 'shaken')).toBe(false); expect(condOn(f.unit(a.id), 'fear')).toBe(false);
-    f.next(); expect(f.unit(a.id).ap).toBe(6); expect(f.cb.log.some((l) => /keeps 6 AP it would have lost \(Name It\)/.test(l))).toBe(true);
-    const g = fight([speaker('lore_master', 3), {}]); Object.assign(g.unit(g.pcs[1].id), { dazedNext: 1, apDebt: 3 });
-    g.call('call.name_it', { targetId: g.pcs[1].id }); g.next(); expect(g.pcs[1].ap).toBe(3); // 2 of the 5 cancelled
   });
   it('may be called to yourself', () => {
     const f = fight([speaker('lore_master', 1), {}]);
-    expect(f.call('call.name_it')).toBeNull(); expect(f.pc.call?.cancel?.n).toBe(1); expect(f.pc.call?.helped?.id).toBe('call.name_it');
+    expect(f.call('call.name_it')).toBeNull(); expect(f.pc.call?.saves?.n).toBe(2); expect(f.pc.call?.helped?.id).toBe('call.name_it');
   });
 });
 
@@ -378,9 +377,9 @@ describe('Threaten (Intimidation)', () => {
       withGame(f.g, () => endTurn(f.cb, f.g.rng)); expect(f.foe.call?.cowed).toBeUndefined(); // that turn only
     }
   });
-  it('Name It cancels the AP a Threaten took', () => {
-    const f = fight([speaker('lore_master', 1), {}]); (f.unit(f.pcs[1].id).call ||= {}).apLoss = { by: f.foe.id, side: 'foe', n: 1 };
-    f.call('call.name_it', { targetId: f.pcs[1].id }); f.next(); expect(f.pcs[1].ap).toBe(6);
+  it('Name It makes a Threaten harder to land (+2 on the Heart save)', () => {
+    const f = fight([speaker('lore_master', 1), {}]), a = f.pcs[1], was = unitSave(f.unit(a.id), 'heart');
+    f.call('call.name_it', { targetId: a.id }); expect(unitSave(f.unit(a.id), 'heart')).toBe(was + 2);
   });
 });
 

@@ -6,7 +6,7 @@ import { WEAPON } from '../data';
 import { magazineSize } from '../character';
 import { pileAt } from '../containers';
 import { charOfUnit } from '../effects/hooks';
-import { condOn, endCond, applyCond } from '../magic';
+import { condOn, endCond, applyCond, condFam, freshSave } from '../magic';
 import { canReact, useReaction, maxReactions, setThreaten } from '../tactics';
 import { lowerPressureOf, pressureOf, isSuppressed, isPressed } from '../physical/pressure';
 import type { Combat } from '../combat';
@@ -117,16 +117,22 @@ call({
 // ---------- Name It (Lore Master): cancels AP the unit would lose next turn ----------
 call({
   id: 'call.name_it',
+  // You tell them what it is, so it can't get into their head (Leon, 10 Nov 2026: a Call that just gives the ally
+  // something): + on all their saves until your next turn; from step 2 a fresh save now against one condition on
+  // them; at step 3 Shaken and Afraid end outright.
   run(t) {
-    const all = !!t.num('all'), n = all ? 99 : t.num('cancel', 1), ends = !!t.num('ends_fear');
+    const n = t.num('saves', 2), fresh = !!t.num('fresh_save'), ends = !!t.num('ends_fear');
     const fears = ends ? ['shaken', 'fear'].filter((c) => condOn(t.tgt, c)) : [];
+    const again = fresh ? Object.keys(t.tgt.conds || {}).find((c) => condOn(t.tgt, c) && !!condFam(c) && !!(t.tgt.condBy as any)?.[c] && !fears.includes(c)) : undefined;
     if (t.preview) {
-      t.note((all ? 'All the AP ' : 'Up to ' + n + ' AP ') + t.tgt.name + ' would lose at the start of their next turn is cancelled.');
+      t.note(t.tgt.name + ': +' + n + ' on every save until your next turn.');
+      if (again) t.note('A fresh save now against one condition on them.');
       if (fears.length) t.note('Ends ' + fears.map((c) => (c === 'fear' ? 'Afraid' : 'Shaken')).join(' and ') + ' on ' + t.tgt.name + '.');
       return null;
     }
-    const m = callMarks(t.tgt); m.cancel = { by: t.u.id, side: t.u.side, n: Math.max(m.cancel?.n || 0, n) };
+    const m = callMarks(t.tgt); m.saves = { by: t.u.id, side: t.u.side, n: Math.max(m.saves?.n || 0, n) };
     for (const c of fears) { endCond(t.tgt, c, t.cb); t.note(t.tgt.name + ' is no longer ' + (c === 'fear' ? 'Afraid' : 'Shaken') + '.'); }
+    if (again) { const line = freshSave(t.cb, t.rng, t.tgt, again); if (line) t.note(line + '.'); }
     return null;
   },
 });

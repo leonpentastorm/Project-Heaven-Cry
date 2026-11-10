@@ -59,7 +59,8 @@ export interface CallMarks {
   /** the round the speaker Called as a reaction */ react?: number;
   /** the one helping and one hindering Call a round */ helped?: { r: number; id: string; side: string }; hindered?: { r: number; id: string; side: string };
   /** Brief: AP off the next actions, first first */ brief?: { by: string; side: string; cuts: number[] };
-  /** Name It: AP of loss cancelled at the next turn start (99: all of it) */ cancel?: { by: string; side: string; n: number };
+  /** Name It: + on every save until the speaker's next turn */ saves?: { by: string; side: string; n: number };
+  /** (the first Name It; unused since Leon's ruling of 10 Nov 2026) AP of loss cancelled at the next turn start (99: all of it) */ cancel?: { by: string; side: string; n: number };
   /** Cue: one more reaction */ cue?: { by: string; side: string; r: number };
   /** Spot: allies still to use it, who has, and who is using it now */ spot?: { by: string; side: string; r: number; left: number; users: string[]; live: string | null; hit: number; unhide: boolean };
   /** Warn: the step before the next attack */ warn?: { by: string; side: string; r: number; tiles: number; hit: number; to?: string; used?: boolean; live?: string | null };
