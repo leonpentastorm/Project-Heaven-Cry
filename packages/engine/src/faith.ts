@@ -26,7 +26,7 @@ import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
-import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing } from './tactics';
+import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing , dropHeldShot } from './tactics';
 import { d20, die, type Rng } from './rng';
 import { spotlight } from './spotlight';
 import { WEAPON, SKILL, ITEM } from './data';
@@ -660,7 +660,7 @@ export function registerFaithHooks() {
     const u: Unit = ctx.u;
     if (u.faith?.encore?.started) { delete u.faith.encore; cb.log.push('Encore: ' + u.name + '\'s repeat is gone.'); }
     if (!u.charId) return;
-    if (u.braced || u.overwatch || condOn(u, 'anchored')) faithTag(cb, u, 'hold');
+    if (u.braced || u.overwatch || u.watch || condOn(u, 'anchored')) faithTag(cb, u, 'hold'); // a held Watch technique is holding too (rules 1.12)
     if (u.hidden && cb.units.some((v) => v.side === u.side && v !== u && v.downed && !v.dead)) faithTag(cb, u, 'cower');
     if (u.vow?.state === 'sworn' && u.vow.id === 'stand' && fs(u).standFrom != null && nearestEnemy(cb, u) > fs(u).standFrom) breakVow(cb, u, 'ended the turn farther from the enemy');
   });
@@ -1046,7 +1046,7 @@ function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: 
     }
     // The Counting Weaver
     case 'foreknowing': fs(one!).foreknown = true; return ' · the next attack on ' + one!.name + ' will miss';
-    case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; v.braced = false; v.overwatch = null; if (v.hidden) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; } return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
+    case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; v.braced = false; dropHeldShot(cb, v, 'Unravel'); if (v.hidden) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; } return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
     case 'cut_short': { const v = one!; if (v.tier === 'boss') { apDebt(v, 2); return ' · ' + v.name + ' loses 2 AP on its next turn (a boss)'; } return applyCond(cb, rng, u, v, 'stunned', 1, 'heart'); }
     case 'rewoven': { // rules 1.6.2 (item 734): HP back to the round's start where that was higher (the Downed stand), then a full turn each
       const x: any = cb, snap: Record<string, number> = x.faithRoundHp || {}; let out = '';

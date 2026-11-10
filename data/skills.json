@@ -950,21 +950,16 @@
       "name": "Athletics",
       "attribute": "agility",
       "core": "body",
-      "slot": "alpha",
+      "slot": "beta",
       "summary": "Armour just slows you down.",
       "per_point": {
-        "text": "Dodge (Defense) = your Athletics modifier (minimum 0); +5% to the Critical multiplier. Attack skill for light melee.",
+        "text": "Dodge (Defense) = your Athletics modifier (minimum 0). The better of Athletics and Guts resists being pushed, pinned or stopped.",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "dodge",
             "basis": "skill_mod",
             "min": 0
-          },
-          {
-            "op": "stat_mod",
-            "stat": "mult_critical",
-            "value": 0.05
           }
         ]
       },
@@ -1059,12 +1054,12 @@
         "fighter"
       ],
       "tags": [
-        "alpha",
+        "beta",
         "core:body",
         "attr:agility",
         "combat",
         "mobility",
-        "melee"
+        "defense"
       ],
       "number": 7,
       "voice": {
@@ -1102,10 +1097,10 @@
       "name": "Dexterity",
       "attribute": "agility",
       "core": "body",
-      "slot": "beta",
-      "summary": "The gun hand. Reloads, recoil, quick-draw, throws. Attack skill for guns, bows and thrown weapons.",
+      "slot": "alpha",
+      "summary": "The quick hand. Guns, bows, thrown weapons and light blades; reloads, recoil, quick-draw.",
       "per_point": {
-        "text": "+0.5 Throwing range. Recoil penalty reduced by floor(Dexterity ÷ 2).",
+        "text": "+0.5 Throwing range. Recoil penalty reduced by floor(Dexterity ÷ 2). +5% to the Critical multiplier. Attack skill for guns, bows, thrown weapons and light melee.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1121,7 +1116,8 @@
       },
       "gates": [
         "weapon:guns",
-        "weapon:thrown"
+        "weapon:thrown",
+        "weapon:light_melee"
       ],
       "unlocks": {
         "3": {
@@ -1210,12 +1206,13 @@
         "marksman"
       ],
       "tags": [
-        "beta",
+        "alpha",
         "core:body",
         "attr:agility",
         "combat",
         "offense",
-        "ranged"
+        "ranged",
+        "melee"
       ],
       "number": 8,
       "voice": {

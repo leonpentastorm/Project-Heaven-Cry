@@ -1034,6 +1034,8 @@ if isinstance(tq, dict):
         ap = t.get("ap") or {}
         if ap.get("base") not in ("weapon", "flat", "reaction") or (ap.get("base") == "flat" and not isinstance(ap.get("value"), int)):
             errors.append(f"{where}: ap needs base weapon | flat (with a value) | reaction")
+        if ap.get("mode") not in (None, "melee", "shot", "aimed", "burst", "auto"):
+            errors.append(f"{where}: ap.mode must be melee | shot | aimed | burst | auto")
         if (t.get("group") == "answer") != (ap.get("base") == "reaction"):
             errors.append(f"{where}: an Answer (and only an Answer) costs a reaction")
         if not (t.get("rounds") == "all" or (isinstance(t.get("rounds"), int) and t.get("rounds") >= 0)):
@@ -1063,6 +1065,16 @@ if isinstance(tq, dict):
                 errors.append(f"{where}: numbers.{k} must be a number")
         if (t.get("numbers") or t.get("free")) and t.get("provisional") is not True:
             errors.append(f"{where}: its numbers are provisional until the balance pass (provisional: true)")
+    # every line of a particular technique must be reachable from a weapon that has one of its home properties
+    wprops = [(w.get("phys") or {}) for w in items("weapons") if isinstance(w, dict)]
+    for tid, t in techs.items():
+        if not t.get("particular"):
+            continue
+        for i, l in enumerate(t.get("lines") or []):
+            need = l.get("props") or []
+            fits = lambda pr: (all(x in pr for x in need) if l.get("match") == "all" else any(x in pr for x in need))
+            if not any(ph.get("system") == t.get("system") and set(t.get("home") or []) & set(ph.get("props") or []) and fits(ph.get("props") or []) for ph in wprops):
+                errors.append(f"techniques:{tid}: line {i} ({', '.join(need)}) can never apply: no weapon has it with one of the home properties {t.get('home')}")
     st = trules.get("starting") or {}
     for sysm, key in (("melee", "default_melee"), ("ranged", "default_ranged")):
         for tid in st.get(key) or []:
@@ -1106,6 +1118,8 @@ if isinstance(tq, dict):
         tch = ph.get("teaches")
         if tch and techs.get(tch, {}).get("system") != sysm:
             errors.append(f"{where}: phys.teaches '{tch}' is not a {sysm} technique")
+        if tch and set(techs.get(tch, {}).get("not_with") or []) & set(ph.get("props") or []):
+            errors.append(f"{where}: teaches '{tch}', which a weapon with its properties can't use (not_with)")
         if tch and techs.get(tch, {}).get("free"):
             warns.append(f"{where}: teaches '{tch}', which everyone already knows")
 

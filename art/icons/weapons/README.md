@@ -1,7 +1,8 @@
 # Weapon and armour icons
 
 Monoline icons for every weapon (`data/weapons.json`, here) and every armour piece and shield (`data/items.json`
-categories `armour` and `shield`, in `../armour/`). One file per item, named by its id. The rule is
+categories `armour` and `shield`, in `../armour/`), and the magic foci (`category: focus`: the Evoker and the Emanator,
+both gloves, in `../focus/`). One file per item, named by its id. The rule is
 `art/style-guide/weapon-icons.md` (Leon, 10 Nov 2026); this is the working spec.
 
 ## The line

@@ -59,6 +59,11 @@ export function cutInTiming(size: CutInSize = 'full', rm = reducedMotion()): Cut
   return rm ? { inMs: 250, pull: 2000, land: 2250, boxAt: 2450, boxMs: 3000, total: 5450 } : { inMs: 450, pull: 2300, land: 3000, boxAt: 3500, boxMs: 2400, total: 5900 };
 }
 
+/** How long the box that says what happened stays up by itself (ms; Leon, 10 Nov 2026: long enough to read, with a
+ *  button to keep it). Its own clock: not one of the cut-in's beats, and not sped up by the combat speed (reading
+ *  takes the time it takes). "Keep open" stops the clock until the player closes the box. */
+export const CUT_BOX_READ_MS: Record<CutInSize, number> = { full: 12000, small: 6000 };
+
 /** The line in parts, the called name marked wherever it appears (any case), so it can take the faith light. Pure. */
 export function lineParts(line: string, name?: string | null): { text: string; name: boolean }[] {
   const n = String(name || '').trim();
@@ -144,14 +149,22 @@ function ensureCss() {
     '[data-phc-cut] *{box-sizing:border-box}',
     // The box: over the map, never over the action column or the composer; clicks go through it (only its × takes one);
     // under the dialogs (the Wave-cleared modal is 48) and over the effects layer (45).
-    '[data-phc-cut-box]{position:fixed;left:50%;transform:translateX(-50%);z-index:46;width:min(560px,92vw);padding:14px 34px 14px 20px;background:rgba(16,21,31,.96);border:1px solid #2E3A50;border-left-width:4px;box-shadow:0 18px 50px rgba(0,0,0,.7);font-family:\'Chakra Petch\',sans-serif;color:#E7EBF3;pointer-events:none}',
-    '[data-phc-cut-box] .c{position:absolute;top:4px;right:4px;width:26px;height:26px;display:grid;place-items:center;border:0;background:transparent;color:#A3AEC2;font:700 16px/1 \'Chakra Petch\',sans-serif;cursor:pointer;pointer-events:auto}',
-    '[data-phc-cut-box] .c:hover,[data-phc-cut-box] .c:focus-visible{color:#FFFFFF;outline:1px solid #2E3A50}',
+    '[data-phc-cut-box]{position:fixed;left:50%;transform:translateX(-50%);z-index:46;width:min(560px,92vw);padding:14px 46px 14px 20px;background:rgba(16,21,31,.96);border:1px solid #2E3A50;border-left-width:4px;box-shadow:0 18px 50px rgba(0,0,0,.7);font-family:\'Chakra Petch\',sans-serif;color:#E7EBF3;pointer-events:none}',
+    // The ×: a real button, easy to see and to hit (Leon, 10 Nov 2026).
+    '[data-phc-cut-box] .c{position:absolute;top:8px;right:8px;width:28px;height:28px;display:grid;place-items:center;border:1px solid #2E3A50;background:#1C2536;color:#E7EBF3;font:700 18px/1 \'Chakra Petch\',sans-serif;cursor:pointer;pointer-events:auto}',
+    '[data-phc-cut-box] .c:hover,[data-phc-cut-box] .c:focus-visible{color:#FFFFFF;border-color:#A3AEC2;outline:none}',
     '[data-phc-cut-box] .k{font-size:11px;font-weight:700;letter-spacing:.28em;color:' + FAITH_INK + '}',
     '[data-phc-cut-box] .t{font-family:\'Spectral\',serif;font-size:24px;font-weight:600;line-height:1.15;color:#FFFFFF;margin-top:2px}',
     '[data-phc-cut-box] .x{font-size:13px;line-height:1.45;color:#A3AEC2;margin-top:6px}',
     '[data-phc-cut-box] .d{font-size:14px;line-height:1.45;color:#E7EBF3;margin-top:8px;padding-top:8px;border-top:1px solid #232D3F}',
     '[data-phc-cut-box] .d b{font-weight:700;letter-spacing:.16em;font-size:10px;color:#A3AEC2;margin-right:8px}',
+    // The foot: how long it stays, and the button that keeps it. Only the buttons take clicks.
+    '[data-phc-cut-box] .f{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}',
+    '[data-phc-cut-box] .f span{font-size:11px;letter-spacing:.06em;color:#A3AEC2}',
+    '[data-phc-cut-box] .p{pointer-events:auto;cursor:pointer;height:26px;padding:0 10px;border:1px solid #2E3A50;background:#1C2536;color:#E7EBF3;font:700 11px/1 \'Chakra Petch\',sans-serif;letter-spacing:.12em;white-space:nowrap}',
+    '[data-phc-cut-box] .p:hover,[data-phc-cut-box] .p:focus-visible{border-color:#A3AEC2;outline:none}',
+    '[data-phc-cut-box] .p[aria-pressed="true"]{background:#FFFFFF;border-color:#FFFFFF;color:#0A0D13}',
+    '[data-phc-cut-box] .bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:#A3AEC2;transform-origin:left center;opacity:.8}',
   ].join('');
   document.head.appendChild(s);
 }
@@ -200,8 +213,13 @@ let current: CutInHandle | null = null;
 const smallQueue: CutInOpts[] = [];
 let smallOn = false;
 const live = new Set<() => void>();
-/** Close every cut-in and box now (fx/play.ts clearFx: the game changed, the room was left, the tab hidden). */
+/** The box on screen (one at a time): how to close it, and whether the player has kept it. */
+let boxUp: { shut: () => void; kept: boolean } | null = null;
+/** Close every cut-in and box now (fx/play.ts clearFx: the game changed, the room was left, the tab hidden). A box the
+ *  player has kept open stays: it is theirs to close (closeKeptBoxes takes it when the room is left or the game changes). */
 export function closeCutIns() { for (const f of [...live]) f(); live.clear(); smallQueue.length = 0; smallOn = false; current = null; }
+/** Close a box the player kept open (the room was left, another game was loaded). */
+export function closeKeptBoxes() { if (boxUp?.kept) boxUp.shut(); }
 
 /** Show a cut-in. Returns a handle (skip, close, its timing), or null outside a browser. A new full cut-in ends one
  *  already up (it lands at once, or its box closes); small ones wait their turn. */
@@ -210,6 +228,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
   const size: CutInSize = o.size || 'full';
   if (size === 'small' && smallOn) { smallQueue.push(o); return { el: null, timing: cutInTiming('small'), skip: () => {}, close: () => { const i = smallQueue.indexOf(o); if (i >= 0) smallQueue.splice(i, 1); } }; }
   if (size === 'full' && current) current.skip();
+  if (size === 'full' && boxUp && !boxUp.kept) boxUp.shut(); // the last one's box goes; one the player kept waits for the new box
   ensureCss();
   const rm = reducedMotion(), T = cutInTiming(size, rm), t0 = Date.now();
   // In a fight every beat follows the combat speed (game/combatSpeed.ts): T stays in Fast's numbers (the effects queue
@@ -233,6 +252,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
     if (!o.box) return;
     at(() => {
       if (closed) return;
+      if (boxUp) boxUp.shut(); // one box at a time: a new one takes the place of the last, kept or not
       const b = el('div', boxPlace(o.focus) + 'border-left-color:' + o.accent);
       b.dataset.phcCutBox = o.id || ''; b.setAttribute('role', 'status'); b.setAttribute('aria-live', 'polite');
       const x = el('button', '', '×') as HTMLButtonElement; x.type = 'button'; x.className = 'c'; x.setAttribute('aria-label', 'Close'); x.title = 'Close'; b.appendChild(x);
@@ -240,12 +260,43 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
       b.appendChild(el('div', '', o.box!.title)).className = 't';
       if (o.box!.text) b.appendChild(el('div', '', o.box!.text)).className = 'x';
       if (o.box!.did) { const d = el('div', ''); d.className = 'd'; d.appendChild(el('b', '', 'WHAT IT DID')); d.appendChild(document.createTextNode(o.box!.did)); b.appendChild(d); }
-      document.body.appendChild(b); nodes.push(b);
+      // The foot: it closes by itself after a read (the line at the bottom runs down); Keep open stops that until the
+      // player closes it with ×.
+      const readMs = CUT_BOX_READ_MS[size], foot = el('div', ''); foot.className = 'f';
+      const note = el('span', '', 'Closes by itself in ' + Math.round(readMs / 1000) + ' seconds'); foot.appendChild(note);
+      const keep = el('button', '', 'KEEP OPEN') as HTMLButtonElement; keep.type = 'button'; keep.className = 'p'; keep.setAttribute('aria-pressed', 'false'); keep.title = 'Keep this open until you close it'; foot.appendChild(keep);
+      b.appendChild(foot);
+      const bar = el('div', ''); bar.className = 'bar'; b.appendChild(bar);
+      document.body.appendChild(b); // not one of the cut-in's own nodes: the box outlives the cut-in that brought it
       anim(b, rm ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(14px)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0)' }], { duration: rm ? 150 : 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
-      let gone = false, unstage = () => {};
-      const shut = () => { if (gone) return; gone = true; live.delete(shut); unstage(); anim(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' }); window.setTimeout(() => b.remove(), 230 * k); };
-      live.add(shut); unstage = stageBox(shut); // a spotlight cut-in that starts while the box is up closes it first
-      x.addEventListener('click', shut); at(shut, o.box ? T.boxMs : 0);
+      let gone = false, unstage = () => {}, timer = 0, run: Animation | null = null;
+      const me = { shut: () => {}, kept: false };
+      // Closed by the game (a cleared queue, a spotlight, a new cut-in or box) it goes at once; closed by its own clock
+      // or by the player it fades.
+      const end = (fade: boolean) => {
+        if (gone) return; gone = true; live.delete(shut); unstage(); window.clearTimeout(timer); if (boxUp === me) boxUp = null;
+        if (!fade) { b.remove(); return; }
+        anim(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' }); window.setTimeout(() => b.remove(), 230);
+      };
+      const shut = () => end(false), fadeOut = () => end(true);
+      me.shut = shut; boxUp = me;
+      // The clock: real time, whatever the combat speed. The line at the bottom shows what is left of it.
+      const start = () => {
+        timer = window.setTimeout(fadeOut, readMs);
+        try { run = typeof bar.animate === 'function' ? bar.animate([{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }], { duration: readMs, easing: 'linear', fill: 'forwards' }) : null; } catch { run = null; }
+        bar.style.display = '';
+        live.add(shut); unstage = stageBox(shut); // a cleared queue or a spotlight cut-in closes a box that is on the clock
+      };
+      const hold = () => { window.clearTimeout(timer); try { run?.cancel(); } catch { /* */ } bar.style.display = 'none'; live.delete(shut); unstage(); unstage = () => {}; }; // kept: only the player (or a new box) closes it
+      start();
+      keep.addEventListener('click', () => {
+        if (gone) return; me.kept = !me.kept;
+        keep.setAttribute('aria-pressed', me.kept ? 'true' : 'false'); keep.textContent = me.kept ? '✓ KEPT OPEN' : 'KEEP OPEN';
+        keep.title = me.kept ? 'Let it close by itself again' : 'Keep this open until you close it';
+        note.textContent = me.kept ? 'Stays until you close it (×)' : 'Closes by itself in ' + Math.round(readMs / 1000) + ' seconds';
+        if (me.kept) { b.dataset.kept = '1'; hold(); } else { delete b.dataset.kept; start(); }
+      });
+      x.addEventListener('click', fadeOut);
     }, delay);
   };
 

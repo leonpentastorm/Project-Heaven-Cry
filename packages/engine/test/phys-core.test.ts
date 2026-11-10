@@ -47,7 +47,7 @@ describe('Momentum and the chain', () => {
     expect(f.tech('coup', { targetId: f.foe.id })).toMatch(/Momentum 2/);
     f.tech('cut', { targetId: f.foe.id });
     expect(f.tech('lunge', { targetId: f.foe.id })).toMatch(/Opener/);
-    f.momentum(f.pc, 3);
+    f.momentum(f.pc, 3); f.foe.hp = f.foe.maxHp = 999;
     const pv = f.pv('coup', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ends).toBe(true);
     const base = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
     expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(base * 1.75, 0); // +25% a point
@@ -163,16 +163,28 @@ describe('Watches', () => {
   });
 });
 
+describe('damage follows what the weapon is aimed with', () => {
+  it('a gun and a light blade scale with Agility and Dexterity, a heavy blade with Strength and Raw Power, bare hands with Strength and both alphas', async () => {
+    const { weaponMult, weaponMultLabel, newCharacter } = await import('../src');
+    const c = newCharacter('c1', 'host', sheetOf({ archetype: 'sharpshooter' }));
+    c.attrs = { ...c.attrs, strength: 3, agility: 5 }; c.skills = { ...c.skills, raw_power: 2, athletics: 4, dexterity: 6 }; c.perks = []; c.traits = []; c.classId = null;
+    expect(weaponMult(c, 'service_pistol')).toBeCloseTo(1 + 0.4 + 0.3); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
+    expect(weaponMult(c, 'sabre')).toBeCloseTo(1 + 0.4 + 0.3); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
+    expect(weaponMult(c, 'maul')).toBeCloseTo(1 + 0.2 + 0.1); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
+    expect(weaponMult(c, 'fists')).toBeCloseTo(1 + 0.2 + 0.1 + 0.3); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Dexterity');
+  });
+});
+
 describe('ready, picks and creation', () => {
   it('a new character knows the defaults for its skills; the pad lists free, ready and lent techniques', () => {
-    const f = physFight([{ weapon: 'sabre', skills: { athletics: 3, dexterity: 0 } }], [{ at: 'D5' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
+    const f = physFight([{ weapon: 'sabre', skills: { dexterity: 3 } }], [{ at: 'D5' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
     const ids = f.pad().flatMap((g) => g.entries.map((e) => e.id));
     expect(ids).toContain('cut'); expect(ids).toContain('lunge'); expect(ids).toContain('riposte'); // free, ready, lent by the sabre
     expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'riposte')?.lent).toBe(true);
     expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'sidestep')?.why).toBe(phys.NOT_BUILT);
   });
   it('phys/ready sets the ready list within the cap; phys/pick takes a pick a drill mark gave', () => {
-    const f = physFight([{ weapon: 'ork_machete', skills: { athletics: 2 } }], [{}]); const c = f.char(f.pc);
+    const f = physFight([{ weapon: 'ork_machete', skills: { raw_power: 2, dexterity: 0 } }], [{}]); const c = f.char(f.pc);
     phys.ensurePhys(c).known.push('coup', 'sweep', 'bash');
     f.g.combat!.over = 'win';
     expect(() => f.act({ type: 'phys/ready', charId: c.id, system: 'melee', ids: ['lunge', 'coup', 'sweep', 'bash', 'sidestep'] })).toThrow(/can ready 4/);
@@ -186,11 +198,11 @@ describe('ready, picks and creation', () => {
   });
   it('a sheet\'s starting picks are checked: two of a system it has the skill for, one melee Opener', () => {
     const s: any = { ...sheetOf({ archetype: 'sharpshooter' }) }; expect(validateSheet(s)).toBeNull();
-    const melee = (s.skills.raw_power || s.skills.athletics) ? 2 : 0, ranged = s.skills.dexterity ? 2 : 0;
+    const melee = (s.skills.raw_power || s.skills.dexterity) ? 2 : 0, ranged = s.skills.dexterity ? 2 : 0; // the alphas (item 953)
     expect(phys.startingTechniqueSlots(s)).toEqual({ melee, ranged });
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['bash', 'sweep'], ranged: [] } })).toMatch(/Opener/);
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'sweep'], ranged: [] } })).toBeNull();
-    expect(phys.startingTechniquesError({ ...s, skills: { athletics: 2 }, techniques: { melee: ['lunge', 'cut'], ranged: [] } })).toMatch(/can't be picked/);
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['bash', 'sweep'], ranged: [] } })).toMatch(/Opener/);
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['lunge', 'sweep'], ranged: [] } })).toBeNull();
+    expect(phys.startingTechniquesError({ ...s, skills: { raw_power: 2 }, techniques: { melee: ['lunge', 'cut'], ranged: [] } })).toMatch(/can't be picked/);
   });
 });
 
@@ -217,5 +229,135 @@ describe('enemies', () => {
     f.bound(() => enemyTurn(f.cb, f.g.rng));
     const used = f.cb.log.filter((l) => l.startsWith(f.foe.name + ' uses ')).map((l) => l.split(' uses ')[1].split(' on ')[0]);
     expect(used[0]).toBe('Lunge'); expect(used).toContain('Coup'); expect(f.foe.pos).toBe(f.tile('D5'));
+  });
+});
+
+describe('what each side sees', () => {
+  it('a Silent weapon\'s unseen hit hides its pips from the target\'s side, in the meters and in the room\'s view', async () => {
+    const { viewFor } = await import('../src');
+    const f = physFight([{ weapon: 'parlour_pistol', skills: { dexterity: 6 } }], [{ at: 'H8', tier: 'soldier' }]); f.put(f.pc, 'D8'); f.put(f.foe, 'H8'); f.turn(f.pc);
+    f.pc.hidden = true; rig({ hit: true, die: 12 });
+    expect(f.tech('shot', { targetId: f.foe.id })).toBeNull();
+    expect(f.pressure(f.foe)).toBe(2); expect(f.foe.pressHidden).toBe(2);
+    const mine = f.bound(() => phys.physView(f.cb, f.foe, 'pc')), theirs = f.bound(() => phys.physView(f.cb, f.foe, 'foe'));
+    expect(mine.pressure.now).toBe(2); expect(theirs.pressure.now).toBe(0); expect(theirs.pressure.by).toEqual([]);
+    expect(viewFor(f.g, 'host').combat!.units.find((u) => u.id === f.foe.id)!.pressure).toBe(2); // the shooter's side sees them
+    expect(f.pc.hidden).toBe(true); // a Silent weapon never reveals its user
+    f.press(f.pc, 2, f.foe); f.unit(f.pc.id).pressHidden = 2; // the other way round: pips on a player that their side can't see
+    const v = viewFor(f.g, 'host').combat!.units.find((u) => u.id === f.pc.id)!; expect(v.pressure).toBeUndefined(); expect(v.pressHidden).toBeUndefined();
+  });
+});
+
+describe('review fixes', () => {
+  it('a mana arm that is a melee weapon strikes as itself in a technique, not as fists', () => {
+    const f = physFight([{ weapon: 'evoker_blade' }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const pv = f.pv('cut', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.attacks[0].pv.dmg!.base).toBe(WEAPON.evoker_blade.damage);
+    const g = physFight([{ weapon: 'bot_thread_banner' }], [{ at: 'E5', tier: 'elite' }]); g.put(g.pc, 'C5'); g.put(g.foe, 'E5'); g.turn(g.pc);
+    expect(g.pv('cut', { targetId: g.foe.id }).ok).toBe(true); // Reach: 2 tiles
+  });
+  it('a kill gives drill for every weapon that damaged the victim', () => {
+    const f = physFight([{ weapon: 'sabre', off: 'service_pistol', skills: { dexterity: 4, athletics: 4 } }], [{ at: 'D5', tier: 'soldier' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    rig({ hit: true, die: 12 }); f.foe.hp = f.foe.maxHp = 500;
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); f.unit(f.foe.id).hp = 1;
+    expect(f.tech('shot', { targetId: f.foe.id, hand: 'off' })).toBeNull(); expect(f.foe.dead).toBe(true);
+    expect(phys.physOf(f.char(f.pc)).drill).toEqual({ sabre: 10, service_pistol: 10 });
+  });
+  it('Riposte keeps the reaction when the attacker is out of reach', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['riposte'] }], [{ at: 'E5', tier: 'elite', weapon: 'glaive' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.foe);
+    rig({ hit: false, die: 5 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.foe, f.pc, 'melee', null, { noAp: true }));
+    expect(f.cb.log.some((l) => /answers with Riposte/.test(l))).toBe(false); expect(f.pc.reactUsed).toBeUndefined();
+  });
+  it('a Press rolls at the to-hit its card shows, and its extra Heat lands after', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['suppress'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.turn(f.pc);
+    f.pc.heat = 1; rig({ die: 10 });
+    const pv = f.pv('suppress', { targetId: f.foe.id }).attacks[0].pv;
+    expect(f.tech('suppress', { targetId: f.foe.id })).toBeNull();
+    expect(f.cb.log.some((l) => l.includes('d20 10 ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + ' '))).toBe(true); expect(f.pc.heat).toBe(3);
+  });
+  it('a line\'s AP change is charged: Bash with bare hands costs 1 less', () => {
+    expect(phys.techniqueAp(TECHNIQUE.bash, 'fists')).toBe(phys.techniqueAp(TECHNIQUE.cut, 'fists') - 1);
+    expect(phys.techniqueAp(TECHNIQUE.bash, 'maul')).toBe(phys.techniqueAp(TECHNIQUE.cut, 'maul'));
+  });
+  it('Dead Centre is at home with a bow, and its Drawn line applies', () => {
+    expect(phys.offHome(TECHNIQUE.dead_centre, 'longbow')).toBe(false); expect(phys.linesFor(TECHNIQUE.dead_centre, 'longbow').main?.props).toEqual(['drawn']);
+  });
+});
+
+describe('review fixes, the core', () => {
+  it('a strike leaves what the hit itself did to armour (the war axe breaks plate)', () => {
+    const f = physFight([{ weapon: 'war_axe', skills: { raw_power: 4 } }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    f.foe.hp = f.foe.maxHp = 999; const a0 = f.foe.armour; rig({ hit: true, die: 12 });
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.foe.armour).toBeLessThan(a0);
+  });
+  it('a technique\'s step is the engine\'s own move: a Pinned user doesn\'t lunge out of reach, and a strike in reach still works', async () => {
+    const { applyCond } = await import('../src');
+    const f = physFight([{ weapon: 'sabre', known: ['lunge'] }], [{ at: 'E5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.pc);
+    f.bound(() => applyCond(f.cb, f.g.rng, null, f.pc, 'pinned', 1, 'body', { skipSave: true }));
+    expect(f.tech('lunge', { targetId: f.foe.id })).toMatch(/Pinned/); expect(f.pc.pos).toBe(f.tile('C5')); expect(f.pc.ap).toBe(6);
+    f.put(f.foe, 'D5'); rig({ hit: true, die: 12 }); expect(f.tech('lunge', { targetId: f.foe.id })).toBeNull();
+  });
+  it('riders follow a redirected strike to the unit really shot at', async () => {
+    const { onHook } = await import('../src/effects/hooks');
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['suppress'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'elite' }, { at: 'H7', tier: 'elite' }]);
+    f.put(f.pc, 'C5'); f.put(f.foes[0], 'H5'); f.put(f.foes[1], 'H7'); f.turn(f.pc); rig({ hit: true, die: 12 });
+    const other = f.foes[1].id; let on = true; onHook('attack_target', (ctx: any) => { if (on && ctx.att.side === 'pc') ctx.tgt = ctx.cb.units.find((x: any) => x.id === other); }); // the action's own copy of the fight
+    try { expect(f.tech('suppress', { targetId: f.foes[0].id })).toBeNull(); } finally { on = false; }
+    expect(f.pressure(f.foes[0])).toBe(0); expect(f.pressure(f.foes[1])).toBe(2);
+  });
+  it('the weapon-skill multiplier still applies to an attack (dmgMult)', async () => {
+    const { attackDamage } = await import('../src');
+    const f = physFight([{ weapon: 'sabre' }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const full = f.bound(() => attackDamage(f.cb, f.pc, f.foe, 'melee', f.char(f.pc), { preview: true })).total;
+    expect(f.bound(() => attackDamage(f.cb, f.pc, f.foe, 'melee', f.char(f.pc), { preview: true, dmgMult: 0.5 })).total).toBeCloseTo(full / 2);
+  });
+  it('the screen\'s functions find the character when the game is passed (no game bound)', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['lunge', 'coup'] }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const ids = phys.techniquePad(f.cb, f.pc, 'main', f.g).flatMap((g) => g.entries.map((e) => e.id));
+    expect(ids).toEqual(expect.arrayContaining(['lunge', 'cut', 'coup', 'riposte']));
+    expect(phys.previewTechnique(f.cb, f.pc, 'lunge', { targetId: f.foe.id }, f.g).ok).toBe(true);
+    expect(phys.physView(f.cb, f.pc, 'pc', f.g).momentum?.max).toBe(3);
+  });
+});
+
+describe('review fixes, beside what already exists', () => {
+  it('the old Overwatch is refused while Pressed, before any AP is paid; a held melee strike is not a held shot', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle' }], [{ at: 'L5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc); f.press(f.pc, 2, f.foe);
+    expect(() => f.act({ type: 'combat/overwatch', unitId: f.pc.id, mode: 'shot' })).toThrow(/Pressed/); expect(f.pc.ap).toBe(6);
+    const g = physFight([{ weapon: 'sabre' }], [{ at: 'L5', tier: 'elite' }]); g.put(g.pc, 'C5'); g.turn(g.pc);
+    g.act({ type: 'combat/overwatch', unitId: g.pc.id, mode: 'melee' }); g.press(g.pc, 2, g.foe); expect(g.pc.overwatch).toBe('melee');
+  });
+  it('what knocks out a held shot knocks out a held Watch too (a grapple)', async () => {
+    const { applyCond } = await import('../src');
+    const f = physFight([{ weapon: 'ccec_marksman_rifle' }], [{ at: 'L5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc);
+    expect(f.tech('overwatch')).toBeNull(); expect(f.pc.watch?.id).toBe('overwatch');
+    f.bound(() => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'grappled', 1, 'body', { skipSave: true })); expect(f.pc.watch).toBeUndefined();
+    expect(f.fx('watch_end').some((e: any) => e.why === 'grappled')).toBe(true);
+  });
+  it('a technique\'s AP goes through the items that price an attack (Southern Fist: +1 with a weapon)', () => {
+    const f = physFight([{ weapon: 'sabre', traits: ['southern_fist'] }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const ap0 = f.pc.ap; rig({ hit: true, die: 12 });
+    expect(f.pv('cut', { targetId: f.foe.id }).ap).toBe(3); expect(f.pad().flatMap((g) => g.entries).find((e) => e.id === 'cut')?.ap).toBe(3);
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.pc.ap).toBe(ap0 - 3);
+  });
+  it('a technique\'s free step doesn\'t use up a first-move perk (Glass Runner)', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['lunge'], traits: ['glass_runner'] }], [{ at: 'E5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.pc);
+    rig({ hit: true, die: 12 }); expect(f.tech('lunge', { targetId: f.foe.id })).toBeNull(); expect(f.pc.pos).toBe(f.tile('D5'));
+    expect(f.cb.log.some((l) => /Glass Runner/.test(l))).toBe(false);
+  });
+  it('a Proving Ground rebuild keeps both meters and what was learned shows at once', async () => {
+    const { newGame, apply } = await import('../src');
+    let g = newGame('PHYSPG', { id: 'host', name: 'Host' }, 'seed-phys');
+    g = apply(g, { type: 'sandbox/start' }, 'host');
+    const c = Object.values(g.characters).find((x) => x.owner === 'host')!;
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'sabre', equip: true }, 'host');
+    g = apply(g, { type: 'sandbox/fight' }, 'host');
+    const pc = () => g.combat!.units.find((u) => u.charId === c.id)!;
+    g = apply(g, { type: 'sandbox/meter', unitId: pc().id, momentum: 2, pressure: 2 }, 'host');
+    expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    g = apply(g, { type: 'sandbox/technique', charId: c.id, id: 'coup' }, 'host'); // any tool rebuilds the fighter from its character
+    expect(pc().resMax?.momentum).toBe(3); expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    expect(phys.techniquePad(g.combat!, pc(), 'main', g).flatMap((x) => x.entries.map((e) => e.id))).toContain('coup');
+    g = apply(g, { type: 'sandbox/drill', charId: c.id, weaponId: 'sabre', amount: 300 }, 'host');
+    expect(phys.physOf(g.characters[c.id]).known).toContain('riposte'); // the sabre's signature at mark I
   });
 });

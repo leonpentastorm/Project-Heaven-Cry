@@ -13,7 +13,9 @@ export type TechGroup = 'opener' | 'strike' | 'link' | 'finisher' | 'answer' | '
 export interface TechLine { props: string[]; match?: 'any' | 'all'; when?: string; text: string; note?: string; ap?: number; stack?: boolean }
 export interface TechDef {
   id: string; name: string; system: TechSystem; group: TechGroup; number: number;
-  ap: { base: 'weapon' | 'flat' | 'reaction'; add?: number; value?: number };
+  /** mode: the attack the cost is priced as for items that change an attack's AP ('aimed', 'burst', 'auto'); a
+   * weapon-based cost is priced as a melee strike or a shot without it. */
+  ap: { base: 'weapon' | 'flat' | 'reaction'; add?: number; value?: number; mode?: 'melee' | 'shot' | 'aimed' | 'burst' | 'auto' };
   rounds: number | 'all';
   needs: { momentum?: number; pressed?: boolean; hidden?: boolean; held?: boolean; last_round?: boolean; stowed?: boolean };
   text: string; trigger?: string; suppressed?: string; lines: TechLine[];
@@ -29,7 +31,9 @@ export interface TechDef {
  * round type; `opt` an optional outcome the text offers ('push', 'swap', 'leg'…); `item` a pack reference. */
 export interface TechArgs {
   hand?: 'main' | 'off'; targetId?: string; targetIds?: string[]; tile?: string; allyId?: string; allyIds?: string[];
-  line?: string; ammo?: string; opt?: string; item?: string | number; mods?: string[];
+  line?: string; ammo?: string; opt?: string;
+  /** a weapon that isn't in the hand: a pack entry (index or id) for a technique that draws, or a carried throwable's id */
+  item?: string | number; mods?: string[];
 }
 export interface TechPreview {
   ok: boolean; why: string | null; id: string; ap: number; rounds: number;
@@ -51,9 +55,18 @@ export interface StrikeOpts {
   /** a Hidden user stays Hidden after this attack (Dead to Rights, Silent) */ quiet?: boolean;
   /** no Recoil on this roll: a roll after the first of one volley (rules 1.12: a volley's own penalty replaces Recoil) */ noRecoil?: boolean;
   /** this roll doesn't wear the weapon: a roll after the first of one attack action ("an attack action wears 1") */ noWear?: boolean;
-  /** the roll's place in its volley (0 the first), for the hooks that read ctx.vi (today's burst passes it) */ vi?: number;
+  /** the roll's place in its volley (0 the first), for the hooks that read ctx.vi, when the handler runs its own volley
+   * (with `volley` the core numbers the rolls itself) */ vi?: number;
+  /** the held weapon is thrown: a ranged attack at throwing range (line of sight, cover), aimed with Dexterity; the hit
+   * gives Pressure as any ranged hit does, and Momentum when the technique is a melee one. The handler then takes the
+   * weapon out of the hand (loseWeapon). */
+  thrown?: boolean;
+  /** this roll is one of a volley: no Recoil on it (the technique's own penalty per round stands in). Named 'burst' or
+   * 'auto', the items written for the engine's burst and full auto see it as one (ctx.volley, ctx.vi) */
+  volley?: boolean | 'burst' | 'auto';
 }
-export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null }
+export interface StrikeResult { ok: boolean; why?: string; hit: boolean; crit: boolean; dmg: number; killed: boolean; pct: number; target: Unit | null;
+  /** the attack was answered before it was made and never came (not a miss): return at once, with no riders */ cancelled?: boolean }
 export type WatchTrigger = 'moves' | 'enters_tile' | 'attacks_ally' | 'acts';
 export interface WatchSpec { trigger: WatchTrigger; tile?: string; tiles?: string[]; allyId?: string; allyIds?: string[]; targetId?: string }
 export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off'; ap: number; r: number; /** the property line chosen when it was held */ line?: string; /** the arrow it names (a quiver) */ ammo?: string }
@@ -62,6 +75,9 @@ export interface HeldWatch extends WatchSpec { id: string; hand: 'main' | 'off';
 export interface Tech {
   cb: Combat; u: Unit; c: Character | null; def: TechDef; w: WeaponDef; weaponId: string; hand: 'main' | 'off';
   args: TechArgs; tgt: Unit | null; rng: Rng;
+  /** what the technique is used with: the weapon in a hand, one just drawn for it ('drawn'), or a carried throwable
+   * (weaponId is then the throwable's id; spendRounds takes one from what is carried) */
+  wield: 'main' | 'off' | 'drawn' | 'throwable';
   /** true: change nothing, roll nothing (the card and the AI ask this way) */ preview: boolean;
   /** the preview being built (handlers add through the helpers, or note()) */ pv: TechPreview;
   /** does the held weapon have this property, for a bonus line (false off its home when the technique is particular) */
@@ -73,11 +89,7 @@ export interface Tech {
   /** def.numbers[key], else the fallback */ num(key: string, fallback?: number): number;
   /** a line for the preview card and, when it happens, the log */ note(text: string): void;
   /** per-technique state on the user, plain JSON, kept across the fight: u.tech[def.id] */ state(): Record<string, any>;
-  /** the pack weapon this use takes into the main hand (Snap Shot with args.item), until the handler has drawn it:
-   * the core judges and previews that weapon */ draw?: PackDraw | null;
 }
-/** A weapon a technique takes out of the pack (args.item): its pack reference and what it holds. */
-export interface PackDraw { item: string | number; weaponId: string; loaded: number; ammoType: string | null; mods: string[] }
 export interface TechHandler {
   id: string;
   /** a refusal in plain words, or null */ check?(t: Tech): string | null;
@@ -97,7 +109,5 @@ export interface PadEntry {
   /** a learned signature card */ signature: boolean;
   /** the weapon's one-row attack (Cut, Shot): never a chip */ plain: boolean;
   /** no handler yet */ built: boolean;
-  /** a technique that can draw its weapon from the pack (Snap Shot): each pack weapon it could take (args.item) */
-  draws?: { item: number; weapon: string; name: string; ok: boolean; why: string | null }[];
 }
 export interface PadGroup { group: TechGroup; label: string; entries: PadEntry[] }

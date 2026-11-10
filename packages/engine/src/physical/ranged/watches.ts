@@ -47,7 +47,7 @@ technique({
   react: {
     move_step(ctx, t) {
       const m = ctx.u, w = (t.u as any).watch; if (!m || m.side === t.u.side || !alive(m) || !(w.tiles || [w.tile]).includes(ctx.at) || !canStrike(t, m)) return;
-      fireWatch(t, ctx, m, () => { const r = strike(t, { target: m }); if (r.hit && alive(m) && stop(t, m, 'halt', { save: false })) ctx.stop = 'denied'; });
+      fireWatch(t, ctx, m, () => { const r = strike(t, { target: m }); if (r.hit && r.target === m && alive(m) && stop(t, m, 'halt', { save: false })) ctx.stop = 'denied'; });
     },
   },
   ai: () => 0,

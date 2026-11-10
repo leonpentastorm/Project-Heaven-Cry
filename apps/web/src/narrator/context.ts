@@ -5,6 +5,7 @@ import { PERK_GUIDANCE } from './perk-guidance';
 import { recentNarrationBlock, recentIds, lastTurnAudit } from './craft';
 import { beliefOf, devotionNow, devotionXpOf, faithView, dayOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, NARRATOR_XP, PACT_COOLDOWN_DAYS, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS } from '@engine';
 import { zoneHazards, zoneTriggers, carriedOf, type Approach } from '@engine';
+import { TECHNIQUE, readyTechniques, physOf, weaponTeaches } from '@engine';
 import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, FEELING, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf, pileEntries } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
@@ -143,6 +144,9 @@ XP (per character, or charId "all")
 CLASSES
 - One per attribute: ${CLASS_LINE}. Level 3 gives the highest attribute's class (tie: player picks), for good. Rank II at that attribute 5 and level 6, III at 8 and level 12. ${ADV_LIVE ? 'Advanced: wiki_lookup class:<id>.' : 'Advanced classes are being rebuilt: never offer one.'}
 
+WEAPON TECHNIQUES
+- The engine runs them, for enemies too: melee techniques chain in a turn and build Momentum; ranged fire builds Pressure on its target (Pressed, Suppressed, Broken), and a Take spends it. Never set either meter. Tell a chain as one exchange and Pressure as fire keeping heads down, not as numbers. wiki_lookup technique:<id>, physical:momentum, physical:pressure.
+
 PERKS, TRAITS AND CLASS MOVES
 - Each character lists them by id ([perk:id], [trait:id], [class:id.move]). The engine runs their numbers in checks, combat and the map. A "*" marks a part that is yours to rule: wiki_lookup the id when it matters. Things the engine couldn't run in a fight come back in the fight report as lines ending "yours to rule".
 - Tag checks (tags) when perks or traits care what kind of check it is. Tags: ${[...TAG_VOCAB].join(', ')}. Answer every PENDING RULINGS line in perkRulings (accepted true or false); a story use you refuse is refunded. Never narrate a number the engine didn't report.
@@ -245,7 +249,7 @@ FAITH (rules 1.6.1)
 - Each character's belief, Devotion, vow and pieces are in THE PARTY. A patron's likes, taboos and rites: wiki_lookup patron:<id>.
 
 THE WIKI (wiki_lookup)
-- You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, sigil:<word>, school:<id>, module:<id>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
+- You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, technique:<id>, property:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, sigil:<word>, school:<id>, module:<id>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
 - Conditions: ${wikiKinds().condition.join(', ')}.${ADV_LIVE ? ' Advanced classes: ' + wikiClasses().filter((id: string) => !(CLASS as any)[id]).join(', ') + '.' : ''} Patrons: ${wikiKinds().patron.join(', ')}.\n- Soul schools: ${wikiKinds().school.join(', ')}. Soul modules: ${wikiKinds().module.join(', ')}.
 - Lore keys (beyond what the campaign block already gives you): ${loreKeys().join(', ')}.
 - Looked-up lore is still Narrator-only: never reveal its truths outright.
@@ -284,6 +288,13 @@ function magicBrief(c: Character): string {
   if (!words.length && !designs.length) return '';
   return `\n  Magic: ${words.length ? 'Sigil words ' + words.join(', ') + (hasEvoker(c) ? '' : carriesEvoker(c) ? ' (Evoker in the pack, not in hand: no Sigils until held)' : ' (no Evoker carried)') : 'no Sigil words'}; ${designs.length ? 'Outburst designs ' + designs.join('; ') + (hasEmanator(c) ? '' : carriesEmanator(c) ? ' (Emanator in the pack, not in hand: Outbursts draw on the air)' : ' (no Emanator carried)') : 'no Outbursts'}.`;
 }
+/** Physical 2.0 (rules 1.12): what a character has ready with weapons, by name (the engine runs every technique). */
+function techniqueBrief(c: Character): string {
+  const nm = (ids: string[]) => ids.map((id) => TECHNIQUE[id]?.name || id).join(', ');
+  const melee = readyTechniques(c, 'melee'), ranged = readyTechniques(c, 'ranged'), lent = weaponTeaches(c.weapon), rest = physOf(c).known.filter((id) => !melee.includes(id) && !ranged.includes(id));
+  if (!melee.length && !ranged.length && !lent) return '';
+  return `\n  Techniques (engine-run; wiki_lookup technique:<id>): ${[melee.length ? 'melee ' + nm(melee) : '', ranged.length ? 'ranged ' + nm(ranged) : '', lent && !melee.includes(lent) && !ranged.includes(lent) ? 'lent by the weapon: ' + nm([lent]) : '', rest.length ? 'known, not ready: ' + nm(rest) : ''].filter(Boolean).join('; ')}.`;
+}
 const pts = (c: Character) => Object.entries(c.skills).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
 export function characterBrief(g: GameState, c: Character): string {
   const skills = pts(c).map(([id, n]) => `${SKILL[id].name} (${id}) ${n} [${mod(n) >= 0 ? '+' : ''}${mod(n)}]`).join(', ');
@@ -304,7 +315,7 @@ export function characterBrief(g: GameState, c: Character): string {
   Max HP ${maxHp(c)}. Weapon: ${c.weapon}. Identity: ${Object.entries(id).filter(([k, v]) => v && !/^song/.test(k)).map(([k, v]) => k + ' ' + v).join('; ') || 'not given'}${songOf(c) ? '; has a favourite song (never name it)' : ''}.
   Skills: ${skills}.
   Traits: ${traits}
-  Perks: ${perks}.${unlocks ? ' Skill unlocks (engine-run): ' + unlocks + '.' : ''} Overreach triggers: ${over}${magicBrief(c)}${standingBrief(g, c)}
+  Perks: ${perks}.${unlocks ? ' Skill unlocks (engine-run): ' + unlocks + '.' : ''} Overreach triggers: ${over}${techniqueBrief(c)}${magicBrief(c)}${standingBrief(g, c)}
   Voices:
 ${voices}`;
 }

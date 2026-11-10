@@ -444,7 +444,8 @@
           "props": [
             "bare"
           ],
-          "text": "costs 1 AP less."
+          "text": "costs 1 AP less.",
+          "ap": -1
         }
       ],
       "free": false,
@@ -1199,7 +1200,8 @@
       "number": 0,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1238,10 +1240,13 @@
       "number": 1,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
-      "needs": {},
+      "needs": {
+        "stowed": true
+      },
       "text": "Draw or swap to this weapon and fire, at −2.",
       "lines": [
         {
@@ -1279,7 +1284,8 @@
       "number": 2,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "burst"
       },
       "rounds": 3,
       "needs": {},
@@ -1325,7 +1331,8 @@
       "number": 3,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "aimed"
       },
       "rounds": 1,
       "needs": {},
@@ -1366,7 +1373,8 @@
       "number": 4,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1413,7 +1421,8 @@
       "number": 5,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1465,7 +1474,8 @@
       "number": 6,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1552,7 +1562,8 @@
       "number": 8,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 3,
       "needs": {},
@@ -1604,7 +1615,8 @@
       "number": 9,
       "ap": {
         "base": "flat",
-        "value": 4
+        "value": 4,
+        "mode": "auto"
       },
       "rounds": 6,
       "needs": {},
@@ -1655,7 +1667,8 @@
       "number": 10,
       "ap": {
         "base": "flat",
-        "value": 1
+        "value": 1,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1697,7 +1710,8 @@
       "number": 11,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -1739,7 +1753,8 @@
       "number": 12,
       "ap": {
         "base": "flat",
-        "value": 4
+        "value": 4,
+        "mode": "shot"
       },
       "rounds": "all",
       "needs": {},
@@ -1805,7 +1820,8 @@
       "number": 13,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -2103,7 +2119,8 @@
       "number": 21,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2128,7 +2145,8 @@
       "free": false,
       "comes_with": [],
       "home": [
-        "precise"
+        "precise",
+        "drawn"
       ],
       "particular": true,
       "numbers": {
@@ -2148,7 +2166,8 @@
       "number": 22,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2194,7 +2213,8 @@
       "number": 23,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2237,7 +2257,8 @@
       "number": 24,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2284,7 +2305,8 @@
       "number": 25,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2327,7 +2349,8 @@
       "number": 26,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {
@@ -2419,7 +2442,8 @@
       "number": 28,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -2459,7 +2483,8 @@
       "number": 29,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 2,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},
@@ -2500,7 +2525,8 @@
       "number": 30,
       "ap": {
         "base": "flat",
-        "value": 3
+        "value": 3,
+        "mode": "shot"
       },
       "rounds": 1,
       "needs": {},

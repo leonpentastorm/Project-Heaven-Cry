@@ -12,7 +12,7 @@ technique({
     const p = t.line('precise', 'loud');
     const r = strike(t, { extra: p === 'precise' && !t.u.moved ? t.num('precise_still_hit', 1) : 0 });
     if (!r.ok) return r.why || 'Can\'t attack that.';
-    if (p === 'loud') { if (t.preview) t.note('A miss still gives +' + t.num('loud_miss_pressure', 1) + ' Pressure.'); else if (!r.hit && r.target) addPressure(t, r.target, t.num('loud_miss_pressure', 1), 'a loud miss'); }
+    if (p === 'loud') { if (t.preview) t.note('A miss still gives +' + t.num('loud_miss_pressure', 1) + ' Pressure.'); else if (!r.hit && !r.cancelled && r.target) addPressure(t, r.target, t.num('loud_miss_pressure', 1), 'a loud miss'); }
     return null;
   },
   ai: () => 5,

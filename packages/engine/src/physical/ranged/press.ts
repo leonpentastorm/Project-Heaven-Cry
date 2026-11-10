@@ -23,17 +23,19 @@ technique({
     // the roll spends 1 round and the technique burns the rest; its Pressure replaces the ordinary +1 for a hit
     const r = strike(t, { extra: t.num('hit', 2), mult: t.num('damage_mult', 0.5), noPressure: true });
     if (!r.ok) return r.why || 'Can\'t attack that.';
+    if (r.cancelled) return null; // answered before it was fired: no rounds burned, no Pressure
     spendRounds(t, Math.max(0, (t.def.rounds as number) - 1));
-    const near = p === 'auto' ? t.cb.units.filter((v) => v !== tgt && v.side !== t.u.side && alive(v) && dist(v.pos, tgt.pos) <= t.num('auto_spill_range', 1)) : [];
+    const struck = r.target || tgt; // the unit the shot was really made at (a redirect: a captive held as a shield)
+    const near = p === 'auto' ? t.cb.units.filter((v) => v !== struck && v.side !== t.u.side && alive(v) && dist(v.pos, struck.pos) <= t.num('auto_spill_range', 1)) : [];
     if (t.preview) {
       addPressure(t, tgt, onHit, 'Suppress'); t.note('A hit: half damage and ' + onHit + ' Pressure.' + (onMiss ? ' A miss: ' + onMiss + '.' : ' A miss gives none (Silent).') + (brace ? ' (Braced: +' + brace + '.)' : ''));
       for (const v of near) addPressure(t, v, t.num('auto_spill', 1), 'Suppress');
       if (p === 'heavy') t.note('Holds until your next turn: any enemy that moves or fires within ' + t.num('heavy_lane', 3) + ' tiles of the target gains ' + t.num('heavy_lane_pressure', 1) + '.');
       return null;
     }
-    if (alive(tgt)) addPressure(t, tgt, r.hit ? onHit : onMiss, 'Suppress');
+    if (alive(struck)) addPressure(t, struck, r.hit ? onHit : onMiss, 'Suppress');
     for (const v of near) addPressure(t, v, t.num('auto_spill', 1), 'Suppress');
-    if (p === 'heavy') Object.assign(t.state(), { lane: tgt.pos, r: t.num('heavy_lane', 3), n: t.num('heavy_lane_pressure', 1), got: {} });
+    if (p === 'heavy') Object.assign(t.state(), { lane: struck.pos, r: t.num('heavy_lane', 3), n: t.num('heavy_lane_pressure', 1), got: {} });
     return null;
   },
   ai: (t) => (t.tgt && !t.tgt.pressure ? 7 : 3),

@@ -102,8 +102,18 @@ const boxShown = await box.waitFor({ timeout: 2500 }).then(() => true, () => fal
 const boxText = boxShown ? (await box.textContent()) || '' : '';
 ok('then a box says what happened (' + boxText.slice(0, 120) + ')', boxShown && /MIRACLE · MOTHER EMBER/.test(boxText) && /WHAT IT DID/.test(boxText));
 if (boxShown && SHOTS) await p.screenshot({ path: SHOTS + '/faith-miracle-box.png' });
-await box.waitFor({ state: 'detached', timeout: 4000 }).catch(() => {});
-ok('and closes itself; all in about 6 s (' + (Date.now() - tCut) + ' ms)', (await box.count()) === 0 && Date.now() - tCut < 7000);
+// The box stays a read's worth (12 s; it was 2.4 s), can be kept, and is the player's to close (Leon, 10 Nov 2026).
+await p.waitForTimeout(4500);
+ok('the box is still up 4.5 s later, and says how long it stays', (await box.count()) === 1 && /Closes by itself in 12 seconds/.test((await box.textContent()) || ''));
+const keep = box.getByRole('button', { name: /KEEP OPEN/ });
+await keep.click();
+ok('Keep open holds it: the button reads as pressed and the box says it stays', (await box.locator('button.p').getAttribute('aria-pressed')) === 'true' && /Stays until you close it/.test((await box.textContent()) || ''));
+if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-miracle-box-kept.png' });
+await p.waitForTimeout(9000);
+ok('kept, it outlasts its 12 seconds', (await box.count()) === 1);
+await box.getByRole('button', { name: 'Close' }).click();
+await box.waitFor({ state: 'detached', timeout: 2000 }).catch(() => {});
+ok('and × closes it', (await box.count()) === 0);
 c = await me();
 ok('the Miracle lowers Devotion by 5 levels (10 → 5, 102 XP: rules 1.6.2; now ' + c.devotion + ' · ' + c.devotionXp + ' XP)', c.devotion === 5 && c.devotionXp === 102);
 ok('and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')));
