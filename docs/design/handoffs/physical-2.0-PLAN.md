@@ -151,6 +151,7 @@ The helpers (all in `core.ts`, all honour `t.preview`):
 
 ```ts
 strike(t, opts?): StrikeResult        // one attack through the engine's pipeline: { ok, why, hit, crit, dmg, killed, pct, target }
+                                      // target is the unit really struck (an attack can be redirected): put riders on r.target, not on t.tgt
                                       // opts: target, mode ('aimed'), mult, extra, critMin, critOnHit, ignoreArmour, ignoreCover, reach, label, noMomentum, noPressure
 canStrike(t, target, mode?)           // could the attack be made now (range, sight, ammunition)
 landed(t, n?)                         // a technique that worked without a damaging strike (Feint, a Link): Momentum +n and the variety bonus
@@ -161,7 +162,8 @@ cond(t, target, id, rounds?, { save? })                  // a condition with the
 stop(t, target, 'pinned' | 'push' | 'prone' | 'halt' | [...], { tiles, rounds, save, tnAdd, apLoss, from })
                                       // one call = one save (Guts or Athletics unless save: false or a list) and, from a ranged technique, Stopped once
 forceMove(t, target, 'away' | 'toward' | tile, tiles, { from })   // tile by tile: held Watches and Overwatch fire
-stepUser(t, route)  stepsWithin(t, n)  approach(t, target, maxTiles)  standingAt(t, tile, fn)   // moving the user inside a technique
+stepUser(t, route)  stepsWithin(t, n)  approach(t, target, maxTiles)  standingAt(t, tile, fn)  stepBlock(t)   // moving the user inside a technique
+                                      // (the engine's own move, free and without opportunity attacks: a Pinned user doesn't step, traps and held shots fire)
 holdWatch(t, spec)  fireWatch(t, ctx, target, fn, kind?)  endWatch(cb, u, why)   // Watches
 answer(t, against, fn)  canAnswer(cb, u, id, against?)                           // Answers; Parry is protective (works while Suppressed)
 spendRounds(t, n)                     // rounds burned beyond the rolls (strike spends one a roll)
@@ -186,7 +188,9 @@ A sheet may carry `techniques: { melee: [..], ranged: [..] }` (creation's picks;
 
 ### 5.4 What the screen reads
 
-`techniquePad(cb, u, hand)`: the groups and entries for one held weapon (`ok`, `why`, `ap`, `rounds`, `line`, `choices`, `lent`, `signature`, `plain`, `built`). `previewTechnique(cb, u, id, args)`: the card (`attacks[]` with each roll's `AttackPreview`, `momentum`, `pressure[]`, `moves[]`, `saves[]`, `area`, `notes[]`, `ends`). `physView(cb, u, viewerSide)`: a unit's Momentum, Pressure pips as that side may see them, its state word and cost, who is pressing it, Stopped once, and the Watch it holds. Character side: `physOf`, `knownTechniques`, `readyTechniques`, `readyCap`, `drillOf`, `drillMark`, `drillMarks`, `picksOwed`, `pickable`, `startingTechniqueSlots`, `startingTechniqueChoices`, `weaponProps`, `propText`, `groupsOf`, `groupName`. All exported from `@phc/engine` (and everything under `phys`).
+**Pass the game as the last argument** to the three screen functions (`techniquePad(cb, u, hand, g)`, `previewTechnique(cb, u, id, args, g)`, `physView(cb, u, side, g)`): the character behind a unit is found through the game, and the screen calls the engine with none bound. Without it a player's unit reads as an enemy (a short pad, wrong off-hand numbers) and nothing errors.
+
+`techniquePad(cb, u, hand, g)`: the groups and entries for one held weapon (`ok`, `why`, `ap`, `rounds`, `line`, `choices`, `lent`, `signature`, `plain`, `built`). `previewTechnique(cb, u, id, args)`: the card (`attacks[]` with each roll's `AttackPreview`, `momentum`, `pressure[]`, `moves[]`, `saves[]`, `area`, `notes[]`, `ends`). `physView(cb, u, viewerSide)`: a unit's Momentum, Pressure pips as that side may see them, its state word and cost, who is pressing it, Stopped once, and the Watch it holds. Character side: `physOf`, `knownTechniques`, `readyTechniques`, `readyCap`, `drillOf`, `drillMark`, `drillMarks`, `picksOwed`, `pickable`, `startingTechniqueSlots`, `startingTechniqueChoices`, `weaponProps`, `propText`, `groupsOf`, `groupName`. All exported from `@phc/engine` (and everything under `phys`).
 
 State (all optional, plain JSON): on the character `phys: { known, ready: { melee, ranged }, drill, picked, quiver, answers?, rev }`; on the unit `res.momentum` / `resMax.momentum` (now for everyone holding a melee weapon), `pressure`, `pressHidden`, `pressBy`, `hitRound`, `hitWith`, `stopped`, `watch`, `chain`, `tech`, `setUp`, `techs`, `quiver`, `freeReload`.
 

@@ -859,7 +859,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const base = bayonet ? 15 : weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) + (useW.category === 'unarmed' ? att.unarmedBonus || 0 : 0) + (melee && useW === w && hasMod(att.mods, 'mod_weighted') ? 3 : 0) - (!melee && hasMod(att.mods, 'mod_suppressor') ? 2 : 0);
   const mults: Term[] = [], vs: Term[] = [];
   const M = (v: number, label: string) => { if (v !== 1) mults.push({ v, label }); };
-  M(who ? weaponMult(who, useW.id) : 1, weaponMultLabel(useW.id)); M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); // rules 1.12: damage follows the weapon's scales_with M(o.dmgMult || 1, 'weapon skill');
+  M(who ? weaponMult(who, useW.id) : 1, weaponMultLabel(useW.id)); M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill'); // rules 1.12: the first multiplier follows the weapon's scales_with
   if (melee && useW === w && att.maxDur) M((att.dur ?? 1) <= 0 ? 0.5 : worn ? 0.9 : 1, (att.dur ?? 1) <= 0 ? 'broken' : 'worn');
   if (ammo?.damage_mult) M(ammo.damage_mult, ammo.id.replace(/_/g, '-') + ' rounds');
   const critM0 = who ? critMult(who) : 2, critM = 1 + (critM0 - 1) * (1 - (tgt.critTaken || 0));

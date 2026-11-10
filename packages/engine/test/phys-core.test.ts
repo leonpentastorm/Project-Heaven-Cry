@@ -282,3 +282,39 @@ describe('review fixes', () => {
     expect(phys.offHome(TECHNIQUE.dead_centre, 'longbow')).toBe(false); expect(phys.linesFor(TECHNIQUE.dead_centre, 'longbow').main?.props).toEqual(['drawn']);
   });
 });
+
+describe('review fixes, the core', () => {
+  it('a strike leaves what the hit itself did to armour (the war axe breaks plate)', () => {
+    const f = physFight([{ weapon: 'war_axe', skills: { raw_power: 4 } }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    f.foe.hp = f.foe.maxHp = 999; const a0 = f.foe.armour; rig({ hit: true, die: 12 });
+    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.foe.armour).toBeLessThan(a0);
+  });
+  it('a technique\'s step is the engine\'s own move: a Pinned user doesn\'t lunge out of reach, and a strike in reach still works', async () => {
+    const { applyCond } = await import('../src');
+    const f = physFight([{ weapon: 'sabre', known: ['lunge'] }], [{ at: 'E5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.pc);
+    f.bound(() => applyCond(f.cb, f.g.rng, null, f.pc, 'pinned', 1, 'body', { skipSave: true }));
+    expect(f.tech('lunge', { targetId: f.foe.id })).toMatch(/Pinned/); expect(f.pc.pos).toBe(f.tile('C5')); expect(f.pc.ap).toBe(6);
+    f.put(f.foe, 'D5'); rig({ hit: true, die: 12 }); expect(f.tech('lunge', { targetId: f.foe.id })).toBeNull();
+  });
+  it('riders follow a redirected strike to the unit really shot at', async () => {
+    const { onHook } = await import('../src/effects/hooks');
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['suppress'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'elite' }, { at: 'H7', tier: 'elite' }]);
+    f.put(f.pc, 'C5'); f.put(f.foes[0], 'H5'); f.put(f.foes[1], 'H7'); f.turn(f.pc); rig({ hit: true, die: 12 });
+    const other = f.foes[1].id; let on = true; onHook('attack_target', (ctx: any) => { if (on && ctx.att.side === 'pc') ctx.tgt = ctx.cb.units.find((x: any) => x.id === other); }); // the action's own copy of the fight
+    try { expect(f.tech('suppress', { targetId: f.foes[0].id })).toBeNull(); } finally { on = false; }
+    expect(f.pressure(f.foes[0])).toBe(0); expect(f.pressure(f.foes[1])).toBe(2);
+  });
+  it('the weapon-skill multiplier still applies to an attack (dmgMult)', async () => {
+    const { attackDamage } = await import('../src');
+    const f = physFight([{ weapon: 'sabre' }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const full = f.bound(() => attackDamage(f.cb, f.pc, f.foe, 'melee', f.char(f.pc), { preview: true })).total;
+    expect(f.bound(() => attackDamage(f.cb, f.pc, f.foe, 'melee', f.char(f.pc), { preview: true, dmgMult: 0.5 })).total).toBeCloseTo(full / 2);
+  });
+  it('the screen\'s functions find the character when the game is passed (no game bound)', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['lunge', 'coup'] }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const ids = phys.techniquePad(f.cb, f.pc, 'main', f.g).flatMap((g) => g.entries.map((e) => e.id));
+    expect(ids).toEqual(expect.arrayContaining(['lunge', 'cut', 'coup', 'riposte']));
+    expect(phys.previewTechnique(f.cb, f.pc, 'lunge', { targetId: f.foe.id }, f.g).ok).toBe(true);
+    expect(phys.physView(f.cb, f.pc, 'pc', f.g).momentum?.max).toBe(3);
+  });
+});

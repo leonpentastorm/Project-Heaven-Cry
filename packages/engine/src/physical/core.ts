@@ -2,9 +2,9 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, previewAttack, resolveAttack, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, moveFx, sideSees, active } from '../combat';
+import { type Combat, type Unit, previewAttack, resolveAttack, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock } from '../combat';
 import { WEAPON } from '../data';
-import { onHook, charOfUnit, emit, boundGame } from '../effects/hooks';
+import { onHook, charOfUnit, emit, boundGame, bindGame } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave } from '../magic';
@@ -189,7 +189,7 @@ function targetGate(t: Tech): string | null {
 }
 
 // ---------- strike: one attack through the engine's attack pipeline ----------
-interface Active { t: Tech; o: StrikeOpts; tgt: Unit }
+interface Active { t: Tech; o: StrikeOpts; tgt: Unit; real: Unit | null }
 const ACTIVE: Active[] = [];
 const cur = (att?: Unit) => { const a = ACTIVE[ACTIVE.length - 1]; return a && (!att || a.t.u === att) ? a : null; };
 /** Run fn with the technique's hand as the unit's weapon (the off hand is swapped in, as a paired attack does). */
@@ -208,8 +208,11 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
   const mode = o.mode || (t.def.system === 'melee' ? 'melee' : 'shot'), u = t.u, st = scratch(t);
   if (t.def.group === 'take') o = { ...o, noPressure: true }; // a Take spends Pressure; its hit adds none
   if (o.noMomentum) st.noMomentum = true; if (o.noPressure) st.noPressure = true;
-  const a0 = tgt.armour; if (o.ignoreArmour) tgt.armour = o.ignoreArmour === true ? 0 : Math.max(0, a0 - o.ignoreArmour);
-  ACTIVE.push({ t, o, tgt });
+  if (!alive(u)) return { ok: false, why: 'Out of the fight.', hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
+  // armour ignored for this strike: taken off and put back exactly (anything the hit itself does to armour stays)
+  const cut = o.ignoreArmour ? (o.ignoreArmour === true ? tgt.armour : Math.min(tgt.armour, o.ignoreArmour)) : 0; tgt.armour -= cut;
+  const act: Active = { t, o, tgt, real: null };
+  ACTIVE.push(act);
   try {
     return inHand(t, () => {
       const offTurn = active(t.cb) !== u; // a reaction: no Recoil from the shots of the user's own turn
@@ -225,9 +228,10 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         else if (r.hit) { ensureMomentum(u); const b = varietyBonus(t); if (b) resGain(u, 'momentum', b); }
         momentumFx(t.cb, u, m0);
       }
-      return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: tgt };
+      // the unit the attack was really made against (Confused, a captive held as a shield, Duck and Roll): riders follow it
+      return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: act.real || tgt };
     });
-  } finally { ACTIVE.pop(); tgt.armour = a0; }
+  } finally { ACTIVE.pop(); tgt.armour += cut; }
 }
 // The hooks strike shapes the attack through. They read ACTIVE and never run for anyone else's attack.
 onHook('attack_preview', (ctx: any) => {
@@ -245,6 +249,7 @@ onHook('attack_preview', (ctx: any) => {
 });
 onHook('attack_roll', (ctx: any) => {
   const a = cur(ctx.att); if (!a) return;
+  a.real = ctx.tgt; // after any redirect
   if (a.o.critMin) ctx.critMin = Math.min(ctx.critMin, a.o.critMin);
   // "a hit is a critical": only a roll that would hit anyway is raised
   if (a.o.critOnHit && ctx.die !== 1 && ctx.die + ctx.toHit >= ctx.need) ctx.critMin = Math.min(ctx.critMin, ctx.die);
@@ -252,7 +257,7 @@ onHook('attack_roll', (ctx: any) => {
 onHook('damage_out', (ctx: any) => { const a = cur(ctx.att); if (a?.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name }); });
 /** Could the user make this attack now (range, sight, ammunition)? Nothing is rolled or recorded. */
 export function canStrike(t: Tech, target: Unit, mode?: 'melee' | 'shot' | 'aimed'): boolean {
-  ACTIVE.push({ t, o: {}, tgt: target });
+  ACTIVE.push({ t, o: {}, tgt: target, real: null });
   try { return inHand(t, () => previewAttack(t.cb, t.u, target, mode || (t.def.system === 'melee' ? 'melee' : 'shot'), { free: true }).ok); } finally { ACTIVE.pop(); }
 }
 /** True while a strike of this unit asked for no Pressure (pressure.ts reads it in its on_hit). */
@@ -377,30 +382,36 @@ export function standingAt<T>(t: Tech, tile: string, fn: () => T): T { const was
  * nearest tile within `max` tiles from which the attack can be made. null: no step is needed; false: none works. */
 export function approach(t: Tech, target: Unit, max: number, mode: 'melee' | 'shot' = 'melee'): { to: string; route: string[]; d: number } | null | false {
   const can = (tile: string) => standingAt(t, tile, () => inHand(t, () => previewAttack(t.cb, t.u, target, mode, { free: true }).ok));
-  const steps = stepsWithin(t, max);
+  const steps = moveBlock(t.u) ? [] : stepsWithin(t, max); // a user who can't move may still strike what is in reach
   if (t.args.tile && t.args.tile !== t.u.pos) { const s = steps.find((x) => x.to === t.args.tile); return s && can(s.to) ? s : false; }
   if (can(t.u.pos)) return null;
   // the fewest tiles; among those, the tile nearest the target in a straight line (a lunge goes straight in)
   const [tx, ty] = xy(target.pos), far = (k: string) => { const [x, y] = xy(k); return Math.hypot(x - tx, y - ty); };
   return [...steps].sort((a, b) => a.d - b.d || far(a.to) - far(b.to) || (a.to < b.to ? -1 : 1)).find((x) => can(x.to)) || false;
 }
-/** Move the user along a route as part of a technique: no AP, no opportunity attacks (the technique's text says when a
- * step is free of them; a step that isn't goes through the engine's own move). Held shots still see each tile. Returns
- * the tiles walked. In a preview it only records where the user ends. */
-export function stepUser(t: Tech, route: string[], how = 'move'): number {
+/** Why the user can't take a step now (Pinned, Grappled, Prone…), or null. */
+export const stepBlock = (t: Tech): string | null => moveBlock(t.u);
+/** Move the user along a route as part of a technique: no AP and no opportunity attacks (the technique's text says when
+ * a step is free of them), but otherwise the engine's own move: a Pinned, Grappled or Prone user doesn't step, traps,
+ * hazards and Sigil fields on the way go off, and held shots see each tile. Returns the tiles walked. In a preview it
+ * only records where the user would end. */
+export function stepUser(t: Tech, route: string[], how: 'move' | 'disengage' = 'move'): number {
   const u = t.u, cb = t.cb; if (!route.length) return 0;
-  if (t.preview) { (t.pv.moves ||= []).push({ unit: u.id, to: route[route.length - 1] }); return route.length; }
-  let seg = [u.pos], n = 0; const flush = () => { if (seg.length > 1) moveFx(cb, u, seg, how); seg = [u.pos]; };
+  if (t.preview) { if (moveBlock(u)) return 0; (t.pv.moves ||= []).push({ unit: u.id, to: route[route.length - 1] }); return route.length; }
+  let n = 0;
   for (const k of route) {
-    if (!alive(u) || cb.units.some((v) => v !== u && !v.dead && v.pos === k)) break;
-    const was = u.pos; u.pos = k; u.braced = false; u.moved = true; seg.push(k); n++;
-    const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i: n - 1, route, how, stop: false, cb, rng: t.rng, flush, technique: t.def.id });
-    if (alive(u) && !u.hidden) { const before = cb.log.length; triggerOverwatch(cb, t.rng, u, seg); if (cb.log.length !== before) seg = [u.pos]; }
-    if (ms.stop || !alive(u)) break;
+    if (!alive(u) || moveBlock(u)) break;
+    const was = u.pos; STEPPING = u;
+    try { if (moveUnit(cb, u, k, t.rng, 'move', { shortest: true })) break; } finally { STEPPING = null; }
+    if (u.pos === was) break; n++;
+    if (u.pos !== k) break; // stopped short (a trap, a held shot)
   }
-  flush();
+  void how;
   return n;
 }
+// The unit a technique is stepping right now: its walk costs nothing and draws no opportunity attack.
+let STEPPING: Unit | null = null;
+onHook('move_cost', (ctx: any) => { if (STEPPING && ctx.u === STEPPING) { ctx.ap = 0; ctx.free = true; ctx.skipOA = true; } });
 
 // ---------- held shots and Answers ----------
 /** Hold a Watch: paid for now, kept until it fires or the user's next turn. One at a time (a new one replaces it). */
@@ -461,8 +472,12 @@ export function aiScore(cb: Combat, u: Unit, id: string, args: TechArgs): { scor
   const r = h.ai(buildTech(cb, u, def, args, { state: 1 }, true));
   return typeof r === 'number' ? { score: r, args } : { score: r.score, args: { ...args, ...r.args } };
 }
-/** What the technique would do, changing nothing (the card, the AI). */
-export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}): TechPreview {
+/** Run fn with a game bound, when one is given (the client calls the screen's functions with its view of the room: the
+ * character behind a unit is found through the bound game). */
+function withG<T>(g: any, fn: () => T): T { if (!g) return fn(); const was = bindGame(g); try { return fn(); } finally { bindGame(was); } }
+/** What the technique would do, changing nothing (the card, the AI). Pass the game (`g`) when none is bound: the screen does. */
+export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}, g?: any): TechPreview {
+  if (g) return withG(g, () => previewTechnique(cb, u, id, args));
   const def = TECHNIQUE[id], blank = (why: string): TechPreview => ({ ok: false, why, id, ap: def ? techniqueAp(def, (args.hand === 'off' && u.offWeapon) || u.weapon, args.line) : 0, rounds: 0, attacks: [], notes: [] });
   const p = prepare(cb, u, id, args, { state: 1 }, true); if (!p.t) return blank(p.why || 'Not now.');
   const t = p.t; if (p.why) { t.pv.ok = false; t.pv.why = p.why; return t.pv; }
@@ -516,7 +531,8 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
 }
 /** What the Attack tab's pad draws for the weapon in a hand: every usable technique by group, with its cost and the
  * line that applies. The screen never works a number out itself. */
-export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off'): PadGroup[] {
+export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any): PadGroup[] {
+  if (g) return withG(g, () => techniquePad(cb, u, hand));
   const weaponId = hand === 'off' ? u.offWeapon : u.weapon; if (!weaponId) return [];
   const sys = weaponSystem(weaponId), have = usable(cb, u, hand), c = u.companion ? null : charOfUnit(u), knownSig = new Set(((c as any)?.phys?.known as string[]) || []);
   const taught = new Set(Object.values(WEAPON).map((w) => weaponTeaches(w.id)).filter(Boolean) as string[]);
@@ -533,7 +549,8 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off'): PadGrou
 }
 /** A unit's meters as one side may see them (the screen draws this; it compares nothing itself). Pips a Silent weapon
  * put on a unit are hidden from that unit's own side. */
-export function physView(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
+export function physView(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe', g?: any): ReturnType<typeof physViewOf> { return g ? withG(g, () => physViewOf(cb, u, viewerSide)) : physViewOf(cb, u, viewerSide); }
+function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   const max = u.resMax?.momentum, ch = chainOf(cb, u);
   const hid = viewerSide === u.side ? Math.min(pressureOf(u), (u as any).pressHidden || 0) : 0, now = pressureOf(u) - hid;
   const state = pressureState({ pressure: now } as any);
