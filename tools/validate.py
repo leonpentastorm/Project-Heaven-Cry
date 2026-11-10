@@ -455,21 +455,19 @@ if isinstance(arch, dict):
             for s, v in preset.items():
                 if s in skill_attr and at[skill_attr[s]] < v:
                     errors.append(f"archetype {aid}: {s} {v} is above its attribute")
+            # rules 1.13 (Skeleton 2.0): Cores are group names, not points. An attribute runs 1 to 7 at creation, every
+            # Attribute point is spent, and a Core shows the highest attribute of its family.
+            A_CAP = cb.get("attributes", {}).get("cap_at_creation", 7)
             for x, v in at.items():
-                if v > co[attr_core[x]] or v > CAPC or v < 1:
-                    errors.append(f"archetype {aid}: attribute {x} {v} breaks a cap")
-            if a.get("family") != "all_in" and sum(1 for v in co.values() if v > 1) < 2:
-                errors.append(f"archetype {aid}: regular presets spread over at least two Cores (only All-in goes single-Core)")
+                if v > A_CAP or v < 1:
+                    errors.append(f"archetype {aid}: attribute {x} {v} is outside 1-{A_CAP}")
             for c, v in co.items():
                 top_attr = max([at[x] for x in at if attr_core[x] == c] + [1])
                 if v != top_attr:
-                    errors.append(f"archetype {aid}: core {c} {v} is raised for nothing (its attributes need {top_attr})")
-            if any(v > CAPC or v < 1 for v in co.values()):
-                errors.append(f"archetype {aid}: a core is outside 1-10")
-            a_sp, c_sp = sum(v - 1 for v in at.values()), sum(v - 1 for v in co.values())
-            traded = -(-max(0, a_sp - A_PTS) // TR) if TR else 0  # rules 1.11: no Core-for-Attribute trade
-            if C_PTS - c_sp - traded != 0 or A_PTS + traded * TR - a_sp != 0:
-                errors.append(f"archetype {aid}: doesn't spend every creation point (core left {C_PTS - c_sp - traded}, attribute left {A_PTS + traded * TR - a_sp})")
+                    errors.append(f"archetype {aid}: core {c} should read {top_attr} (the highest attribute of its family)")
+            a_sp = sum(v - 1 for v in at.values())
+            if A_PTS - a_sp != 0:
+                errors.append(f"archetype {aid}: doesn't spend every Attribute point (left {A_PTS - a_sp})")
         # leans: the class of the highest attribute, every tied one (Class Roster Revision 3)
         top_at = max(at.values()) if at else 0
         leans = sorted(b["id"] for b in base if at.get(b.get("attribute")) == top_at)

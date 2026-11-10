@@ -109,7 +109,7 @@
       "cost": null,
       "flavour": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.",
       "upsides": [
-        "Still Water: gain 1 Core point at creation, to raise any Core above what your skills need. Heart Debuffs never affect you."
+        "Still Water: gain 1 Attribute point at creation (11 in place of 10). Heart Debuffs never affect you."
       ],
       "downsides": [
         "Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change."
@@ -118,7 +118,7 @@
         "Mechanical note: 'Karma can never change' locks Karma at its starting value."
       ],
       "narrator_hook": "every faction wants to convert the one recruit who can't be converted.",
-      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: gain 1 Core point at creation, to raise any Core above what your skills need. Heart Debuffs never affect you.\n− Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.",
+      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: gain 1 Attribute point at creation (11 in place of 10). Heart Debuffs never affect you.\n− Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.",
       "effects": [
         {
           "op": "creation_points",

@@ -230,7 +230,7 @@ describe('practice, gates and picks (section 5)', () => {
     expect(s.g.characters[c.id].soulKnown!.modules).toContain('quiet'); expect(soulPicksLeft(s.g.characters[c.id]).practice).toBe(0);
     expect(() => s.act({ type: 'magic/pick', charId: c.id, module: 'size' } as any, c.owner)).toThrow(/No practice pick/);
     s.g.characters[c.id].skills.implication = 10;
-    expect(() => s.act({ type: 'magic/pick', charId: c.id, module: 'swift', via: 'implication' } as any, c.owner)).toThrow(/not a Implication module/);
+    expect(() => s.act({ type: 'magic/pick', charId: c.id, module: 'swift', via: 'implication' } as any, c.owner)).toThrow(/not a Insinuation module/);
     s.act({ type: 'magic/pick', charId: c.id, module: 'anchor', via: 'implication' } as any, c.owner);
     expect(soulPicksLeft(s.g.characters[c.id]).mastered).toEqual([]);
   });

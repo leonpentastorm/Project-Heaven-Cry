@@ -365,20 +365,19 @@
       },
       "cores": {
         "body": 4,
-        "mind": 4,
+        "mind": 3,
         "soul": 1
       },
       "leans": [
-        "infiltrator",
         "marksman"
       ],
       "attributes": {
         "endurance": 3,
         "strength": 3,
         "agility": 4,
-        "perception": 4,
+        "perception": 3,
         "intelligence": 1,
-        "expression": 1,
+        "expression": 2,
         "insight": 1,
         "determination": 1,
         "virtue": 1
@@ -467,17 +466,16 @@
         "soul": 1
       },
       "leans": [
-        "defender",
         "infiltrator",
         "marksman"
       ],
       "attributes": {
-        "endurance": 4,
+        "endurance": 2,
         "strength": 2,
         "agility": 4,
         "perception": 4,
         "intelligence": 1,
-        "expression": 1,
+        "expression": 3,
         "insight": 1,
         "determination": 1,
         "virtue": 1
@@ -564,16 +562,15 @@
         "soul": 3
       },
       "leans": [
-        "mage",
-        "trickster"
+        "mage"
       ],
       "attributes": {
         "endurance": 1,
         "strength": 1,
         "agility": 1,
-        "perception": 1,
+        "perception": 3,
         "intelligence": 5,
-        "expression": 5,
+        "expression": 3,
         "insight": 1,
         "determination": 3,
         "virtue": 1
@@ -624,10 +621,11 @@
       },
       "cores": {
         "body": 1,
-        "mind": 5,
-        "soul": 3
+        "mind": 4,
+        "soul": 2
       },
       "leans": [
+        "infiltrator",
         "mage",
         "trickster"
       ],
@@ -635,10 +633,10 @@
         "endurance": 1,
         "strength": 1,
         "agility": 1,
-        "perception": 1,
-        "intelligence": 5,
-        "expression": 5,
-        "insight": 3,
+        "perception": 4,
+        "intelligence": 4,
+        "expression": 4,
+        "insight": 2,
         "determination": 1,
         "virtue": 1
       }
@@ -657,20 +655,20 @@
       "cores": {
         "body": 1,
         "mind": 4,
-        "soul": 4
+        "soul": 3
       },
       "leans": [
-        "bard",
+        "infiltrator",
         "trickster"
       ],
       "attributes": {
         "endurance": 1,
         "strength": 1,
         "agility": 1,
-        "perception": 3,
+        "perception": 4,
         "intelligence": 3,
         "expression": 4,
-        "insight": 4,
+        "insight": 3,
         "determination": 1,
         "virtue": 1
       }
@@ -692,15 +690,15 @@
         "soul": 1
       },
       "leans": [
-        "infiltrator"
+        "trickster"
       ],
       "attributes": {
         "endurance": 1,
         "strength": 1,
         "agility": 3,
-        "perception": 5,
-        "intelligence": 3,
-        "expression": 3,
+        "perception": 4,
+        "intelligence": 2,
+        "expression": 5,
         "insight": 1,
         "determination": 1,
         "virtue": 1
@@ -1179,11 +1177,11 @@
       ],
       "attributes": {
         "endurance": 3,
-        "strength": 3,
+        "strength": 2,
         "agility": 3,
         "perception": 2,
         "intelligence": 1,
-        "expression": 1,
+        "expression": 2,
         "insight": 4,
         "determination": 1,
         "virtue": 1

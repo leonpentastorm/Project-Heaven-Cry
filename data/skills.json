@@ -336,7 +336,7 @@
     },
     {
       "id": "sensory",
-      "name": "Sensory",
+      "name": "Senses",
       "attribute": "endurance",
       "core": "body",
       "slot": "gamma",
@@ -1561,8 +1561,8 @@
     },
     {
       "id": "proficiency",
-      "name": "Proficiency",
-      "attribute": "perception",
+      "name": "Improvisation",
+      "attribute": "expression",
       "core": "mind",
       "slot": "beta",
       "summary": "The mechanic. Fixes guns, gear and machines in the field, robot squadmates included.",
@@ -1711,7 +1711,7 @@
     },
     {
       "id": "vigilant",
-      "name": "Vigilant",
+      "name": "Vigilance",
       "attribute": "perception",
       "core": "mind",
       "slot": "gamma",
@@ -2468,8 +2468,8 @@
     },
     {
       "id": "analysis",
-      "name": "Analysis",
-      "attribute": "expression",
+      "name": "Acuity",
+      "attribute": "perception",
       "core": "mind",
       "slot": "beta",
       "summary": "Detective work and target analysis. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
@@ -3064,7 +3064,7 @@
     },
     {
       "id": "implication",
-      "name": "Implication",
+      "name": "Insinuation",
       "attribute": "insight",
       "core": "soul",
       "slot": "gamma",
@@ -3387,7 +3387,7 @@
       "name": "Lore Master",
       "attribute": "determination",
       "core": "soul",
-      "slot": "beta",
+      "slot": "gamma",
       "summary": "The occultist's library. Mirrors Rumination.",
       "per_point": {
         "text": "+0.5 tile Soul range.",
@@ -3539,7 +3539,7 @@
       "name": "Composure",
       "attribute": "determination",
       "core": "soul",
-      "slot": "gamma",
+      "slot": "beta",
       "summary": "A face that never moves.",
       "per_point": {
         "text": "Heart save = your Composure modifier.",

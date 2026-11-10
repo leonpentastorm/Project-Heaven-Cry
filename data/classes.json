@@ -470,7 +470,7 @@
       "core": "mind",
       "skills": [
         "ingenuity",
-        "proficiency",
+        "analysis",
         "vigilant"
       ],
       "role": "debuff",
@@ -769,7 +769,7 @@
       "core": "mind",
       "skills": [
         "visualization",
-        "analysis",
+        "proficiency",
         "charisma"
       ],
       "role": "debuff",

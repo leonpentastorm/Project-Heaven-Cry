@@ -127,8 +127,7 @@ describe('level-up screen', () => {
     expect(dex2.querySelector('.phc-lu-perk[data-perk="' + taken + '"]')!.textContent).toMatch(/✓ TIER I/);
     // points: the raise buttons spend through the engine (core, then attribute, then skill)
     const raise = (sel: string) => el.querySelector(sel) as HTMLButtonElement;
-    await React.act(async () => { raise('.phc-lu-core[data-core="mind"] button[data-raise="core"]').click(); });
-    expect(G.characters[c0.id].unspent.core).toBe(0);
+    // (rules 1.13: no Core points; an attribute is raised straight away)
     await React.act(async () => { raise('.phc-lu-attrcol[data-attr="perception"] button[data-raise="attr"]').click(); });
     expect(G.characters[c0.id].unspent.attr).toBe(0);
     const before = G.characters[c0.id].skills.vigilant || 0;

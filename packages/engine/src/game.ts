@@ -653,7 +653,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const why = canRaise(c!, a.kind, a.id); if (why) fail(why);
       const rankBefore = c!.classId ? classRank(c!) : 0;
       if (a.kind === 'skill') { c!.skills[a.id] = (c!.skills[a.id] || 0) + 1; c!.unspent.skill--; }
-      if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15; }
+      if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15;  const fam = ATTRS.find((x) => x.id === a.id)!.core as keyof Character['cores']; if ((c!.cores[fam] || 1) < c!.attrs[a.id]) c!.cores = { ...c!.cores, [fam]: c!.attrs[a.id] }; }
       if (a.kind === 'core') { (c!.cores as any)[a.id]++; c!.unspent.core--; }
       awardAutomatic(g, c!);
       rankReached(g, c!, rankBefore);
