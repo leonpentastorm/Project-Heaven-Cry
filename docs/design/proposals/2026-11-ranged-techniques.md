@@ -274,4 +274,6 @@ Leon: with a blade in one hand and a gun in the other, one flat Attack list woul
 6. All 30, as with melee?
 7. One ready list per system (melee and ranged separate), or one shared list for a character who uses both?
 
-**Leon's answers so far (10 Nov 2026):** 1 yes, with the changes made the same day (Pressure doesn't debuff a melee charge; protective reactions always work; stopped once). 3 yes. 7: one list per system, each behind its own expandable action (section 10). 2, 4, 5 and 6 are open.
+**Leon's answers so far (10 Nov 2026):** 1 yes, with the changes made the same day (Pressure doesn't debuff a melee charge; protective reactions always work; stopped once). 3 yes. 7: one list per system, each behind its own expandable action (section 10). 
+
+**Leon's remaining answers (10 Nov 2026), in this section's numbering:** 2 ok, to balance later. 4 yes, with a change: **a quiver gets its own loading menu and can't be reloaded in a fight.** 5 yes ("bash is cool"). 6 all 30. 7 one list per system. The build is **Physical 2.0**: [](../handoffs/physical-2.0-PLAN.md).
