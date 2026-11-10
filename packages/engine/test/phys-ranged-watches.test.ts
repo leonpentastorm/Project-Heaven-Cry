@@ -144,7 +144,7 @@ describe('Cover Me (29)', () => {
     const f = coverFight('ccec_marksman_rifle'); const ally = f.pcs[1]; f.tech('cover_me', { allyId: ally.id });
     f.turn(f.foe); f.unit(f.foe.id).hp = 1; const ahp = f.unit(ally.id).hp; rig({ hit: true, die: 12 });
     const r = attack(f, f.foe, ally);
-    expect(r.refused).toMatch(/down before the attack/); expect(f.unit(ally.id).hp).toBe(ahp);
+    expect(r.cancelled).toBe(true); expect(r.refused).toBeUndefined(); expect(f.unit(ally.id).hp).toBe(ahp); // the base: an attack that never comes is not a miss
   });
   it('a weapon with Auto and Precise: the line chosen when it was held is the one that fires', () => {
     const f = coverFight('hellraiser_service_rifle'); const ally = f.pcs[1];
@@ -211,7 +211,7 @@ describe('Dead to Rights (30)', () => {
   it('a shot that fells the attacker stops its attack', () => {
     const f = rightsFight(); f.press(f.foe, 2); f.tech('dead_to_rights', { targetId: f.foe.id });
     f.turn(f.foe); f.unit(f.foe.id).hp = 1; const ahp = f.unit(f.pcs[1].id).hp; rig({ hit: true, die: 12 });
-    expect(attack(f, f.foe, f.pcs[1]).refused).toMatch(/down before the attack/); expect(f.unit(f.pcs[1].id).hp).toBe(ahp);
+    const r = attack(f, f.foe, f.pcs[1]); expect(r.cancelled).toBe(true); expect(f.unit(f.pcs[1].id).hp).toBe(ahp); // the base: it never comes
   });
   it('stands up: the hook fires after a prone enemy stands', () => {
     const f = rightsFight(); f.press(f.foe, 2); f.tech('dead_to_rights', { targetId: f.foe.id });

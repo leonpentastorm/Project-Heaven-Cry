@@ -3,7 +3,8 @@
 //        Blast: aim at the tile; no roll, today's blast damage and radius, +2 Pressure to everyone in the radius. A
 //        Blast from something that also has Arc (the thumper, every grenade) goes over full cover ("Lob a frag over the
 //        wall"); without Arc (the breacher tube) its path must be clear of walls. Smoke and dark never stop Lob.
-//   Explosive grenades are ammunition for it (args.ammo names the grenade: frag, incendiary): the grenade's own Blast.
+//   A carried grenade is the weapon of a Lob (the base's throwable wield: args.item names it, the screen's packPad lists
+//   it; the core holds it in the hand while Lob runs, so t.w is the grenade): the grenade's own Blast.
 //   Smoke, a flashbang or the bot-scrambler landing on a unit (thrown through Lob or today's Throw) ends its held Watch
 //   and its Bead; anyone standing in smoke at the end of a turn sheds 2 Pressure (a pressureDecay rule).
 // Today's Throw (tactics.ts throwItem) is untouched: it stays for a character who knows no techniques, and keeps every
@@ -68,22 +69,22 @@ function lobbing<T>(by: Unit, weapon: string, fn: () => T): T { const was = LOBB
 onHook('damage_in', (ctx: any, cb) => {
   const L = LOBBING, v: Unit = ctx.t, src = ctx.src || {}; if (!L || !v || src.by !== L.by || src.type !== 'explosion' || v.side === L.by.side) return;
   if (ctx.phase !== 'would_drop_to_0' && !(ctx.phase === 'after' && ctx.dealt > 0)) return;
-  ((v as any).hitRound ||= {})[L.by.id] = cb.round; ((v as any).hitWith ||= {})[L.by.id] = L.weapon;
+  (v.hitRound ||= {})[L.by.id] = cb.round;
+  const l = ((v.hitWith ||= {})[L.by.id] ||= []); if (!l.includes(L.weapon)) l.push(L.weapon); // every weapon that damaged it (the base's drill list)
 });
 
-// ---------- Lob, a grenade (args.ammo): the grenade's own Blast, in throwing range ----------
+// ---------- Lob, a grenade (args.item, the base's throwable wield): the grenade's own Blast, in throwing range ----------
 function lobGrenade(t: Tech, id: string): string | null {
   const u = t.u, cb = t.cb, w = WEAPON[id];
   if ((w.properties || []).includes('placed')) return an(nameOf(w)) + ' is placed, not lobbed: use Throw.';
-  if (!((u.throwables?.[id] ?? 0) > 0)) return 'You carry no ' + nameOf(w) + '.';
   const tile = aimTile(t), range = throwRangeOf(u);
   const why = blastCheck(t, tile, range, 'Out of throwing range (' + range + ' tiles).', propsOf(id).includes('arc')); if (why) return why;
   const explosive = hurts(w);
+  if (!spendRounds(t, 1)) return 'You carry no ' + nameOf(w) + '.'; // the grenade (the base's spendRounds counts what is carried; a preview only counts it)
   if (t.preview) { previewBlast(t, tile!, radiusOf(w), w, explosive); return null; }
   // The same 'throw' moment today's Throw has (Catch takes it out of the air; Jacked In; the shell-shocked veteran).
   // Its AP is the technique's, already paid.
   const ctx: any = emit(cb, 'throw', { u, item: id, tile, ap: t.pv.ap, radius: radiusOf(w), cancel: false, caughtBy: null, preview: false, cb, rng: t.rng, technique: t.def.id });
-  u.throwables![id]--;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: id, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id });
   cb.log.push(u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : lobbing(u, id, () => blast(cb, t.rng, u, tile!, id, ctx.radius))) + '.');
   if (!ctx.cancel && explosive) blastPressure(t, tile!, ctx.radius);
@@ -134,8 +135,8 @@ onHook('attack_preview', (ctx: any) => {
 technique({
   id: 'lob',
   run(t) {
-    if (isGrenade(t.args.ammo)) return lobGrenade(t, t.args.ammo!);
-    if (t.args.ammo && WEAPON[t.args.ammo]?.category === 'thrown') return 'That isn\'t something to lob.';
+    if (t.wield === 'throwable') return isGrenade(t.weaponId) ? lobGrenade(t, t.weaponId) : 'That isn\'t something to lob.';
+    if (t.args.ammo && WEAPON[t.args.ammo]?.category === 'thrown') return 'Pick the ' + nameOf(WEAPON[t.args.ammo]) + ' itself to lob it.'; // the base: a grenade is the weapon (args.item), not a round
     return t.line('blast', 'arc') === 'blast' ? lobBlast(t) : lobShot(t);
   },
   // An enemy lobs a launcher round where it catches the most of the squad and none of its own side; otherwise it lobs

@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // 1 always fails a save, 20 always makes it. The real roll is still drawn, so the seeded stream doesn't move.
 const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
-import { phys, type Unit, type TechPreview } from '../src';
+import { phys, pullFree, type Unit, type TechPreview } from '../src';
 import { physFight, rig, type PhysSpec } from './helpers/physfight';
 import { gameText as snap, term, calm } from './helpers/physfight-ranged';
 
@@ -93,15 +93,15 @@ describe('Pin Down', () => {
     const f = fight({ weapon: 'decrkm_smg' }); f.press(f.foe, 2, f.pc);
     expect(multOf(f.pv('pin_down', { targetId: f.foe.id }), 'Pin Down')).toBeUndefined();
   });
-  it('Drawn or Silent: nailed in place until it spends 2 AP: it pays them as its next turn starts, and is then free to move (review fix)', () => {
+  it('Drawn or Silent: nailed in place until it spends 2 AP to pull free (the base\'s nail): the enemy pulls free on its turn, then may move', () => {
     for (const weapon of ['parlour_pistol', 'recurve_bow']) {
       const f = fight({ weapon }); f.pc.ammo = 2; f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails();
-      expect(f.pv('pin_down', { targetId: f.foe.id }).notes.some((n) => /nailed in place until it spends 2 AP/.test(n)), weapon).toBe(true);
+      expect(f.pv('pin_down', { targetId: f.foe.id }).notes.some((n) => /nailed in place until it spends 2 AP to pull free/.test(n)), weapon).toBe(true);
       expect(f.tech('pin_down', { targetId: f.foe.id }), weapon).toBeNull();
-      expect(f.foe.conds?.pinned, weapon).toBe(1); expect(f.foe.apDebt, weapon).toBe(2);
-      expect(f.walk(f.foe, 'H4'), weapon).toMatch(/^Pinned/); // nailed until it pays
-      f.turn(f.foe); expect(f.foe.ap, weapon).toBe(4); expect(f.foe.conds?.pinned, weapon).toBeFalsy();
-      expect(f.cb.log.some((l) => /tears free of the pin \(2 AP\)/.test(l)), weapon).toBe(true);
+      expect(f.foe.nailed, weapon).toMatchObject({ ap: 2, id: 'pin_down', by: f.pc.id }); expect(f.foe.conds?.pinned, weapon).toBeFalsy();
+      expect(f.walk(f.foe, 'H4'), weapon).toMatch(/^Nailed in place/); // nailed until it pays
+      f.turn(f.foe); expect(f.bound(() => pullFree(f.cb, f.foe)), weapon).toBeNull(); expect(f.foe.ap, weapon).toBe(4);
+      expect(f.cb.log.some((l) => /pulls free \(2 AP\)/.test(l)), weapon).toBe(true);
       expect(f.walk(f.foe, 'H4'), weapon).toBeNull(); // paid: it moves
     }
     // the base pin holds through the target's whole next turn, with no AP to pay
@@ -214,9 +214,9 @@ describe('Stopping Shot', () => {
     }
   });
   it('Spread: within 4 tiles, pushed 2 and Prone though not Suppressed; farther, the plain push', () => {
-    const f = fight({ weapon: 'sawn_off', foes: [{ at: 'G3' }] }); f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails();
+    const f = fight({ weapon: 'sawn_off', foes: [{ at: 'G3' }] }); f.foe.hp = f.foe.maxHp = 999; f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails(); // it lives (the base's damage scales with Agility and Dexterity)
     expect(f.tech('stopping_shot', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('I3')); expect(f.foe.prone).toBe(true);
-    const g = fight({ weapon: 'sawn_off', foes: [{ at: 'H3' }] }); g.press(g.foe, 2, g.pc); rig({ hit: true, die: 12 }); fails();
+    const g = fight({ weapon: 'sawn_off', foes: [{ at: 'H3' }] }); g.foe.hp = g.foe.maxHp = 999; g.press(g.foe, 2, g.pc); rig({ hit: true, die: 12 }); fails();
     expect(g.tech('stopping_shot', { targetId: g.foe.id })).toBeNull(); expect(at(g, g.foe)).toBe(g.tile('I3')); expect(g.foe.prone).toBeFalsy();
   });
 });
@@ -267,12 +267,12 @@ describe('Storm', () => {
     const g = fight({ weapon: 'hellraiser_service_rifle' }); g.press(g.foe, 2, g.pc); expect(term(g.pv('storm', { targetId: g.foe.id }), 0, 'Storm')).toBeUndefined();
   });
   it('Spread: on a hit, a Body save or Prone', () => {
-    const f = fight({ weapon: 'sawn_off' }); f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails();
+    const f = fight({ weapon: 'sawn_off' }); f.foe.hp = f.foe.maxHp = 999; f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails(); // it lives (the base's damage scales with Agility and Dexterity)
     expect(f.pv('storm', { targetId: f.foe.id }).saves).toBeUndefined(); // its first line is Quick: the player picks Spread
     const pv = f.pv('storm', { targetId: f.foe.id, line: 'spread' }); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['body'], tn: 12 }]);
     expect(term(pv, 0, 'Storm')).toBeUndefined(); // one line at a time
     expect(f.tech('storm', { targetId: f.foe.id, line: 'spread' })).toBeNull(); expect(f.foe.prone).toBe(true); expect(f.foe.stopped).toBe(1);
-    const g = fight({ weapon: 'sawn_off' }); g.press(g.foe, 2, g.pc); rig({ hit: true, die: 12 }); saves();
+    const g = fight({ weapon: 'sawn_off' }); g.foe.hp = g.foe.maxHp = 999; g.press(g.foe, 2, g.pc); rig({ hit: true, die: 12 }); saves();
     g.tech('storm', { targetId: g.foe.id, line: 'spread' }); expect(g.foe.prone).toBeFalsy();
     const s = fight(); s.press(s.foe, 2, s.pc); rig({ hit: true, die: 12 }); fails();
     s.tech('storm', { targetId: s.foe.id }); expect(s.foe.prone).toBeFalsy(); // no Spread, no knock-down

@@ -248,7 +248,8 @@ describe('Flush', () => {
     expect(f.pc.ap).toBe(6); expect(f.pc.ammo).toBe(12); expect(f.pc.heat).toBe(0);
   });
   it('Heat at the limit jams the weapon, as a shot does', () => {
-    const f = fight('service_pistol', [{ at: 'G6' }], { at: 'C6' }); f.pc.heat = heatLimit(f.pc, WEAPON.service_pistol) - 2;
+    // the round's own Heat reaches the limit (the base adds a Press's +1 after the run, and that +1 jams nothing)
+    const f = fight('service_pistol', [{ at: 'G6' }], { at: 'C6' }); f.pc.heat = heatLimit(f.pc, WEAPON.service_pistol) - 1;
     f.tech('flush', { targetId: f.foe.id }); expect(f.pc.jammed).toBe(true);
   });
   it('caps: an elite stops at 3, a boss at 2, a player at 3; a preview changes nothing', () => {
@@ -396,14 +397,15 @@ describe('every Press', () => {
 });
 
 // ---------- the core's gates (review fixes) ----------
-describe('a grenade named as ammunition', () => {
-  it('only Lob throws one: any other technique still needs its rounds (and a jam still stops it)', () => {
-    const f = fight('hellraiser_service_rifle'); f.pc.ammo = 1;
+describe('a grenade named as a technique\'s weapon (the base\'s throwable wield)', () => {
+  it('a technique the grenade doesn\'t lend or fit can\'t be used with it, and a gun\'s own technique still needs its rounds (and a jam still stops it)', () => {
+    const f = fight('hellraiser_service_rifle'); f.pc.ammo = 1; f.pc.throwables = { frag_grenade: 1 };
     expect(f.tech('suppress', { targetId: f.foe.id })).toBe('Needs 3 rounds, 1 loaded.');
-    expect(f.tech('suppress', { targetId: f.foe.id, ammo: 'frag_grenade' })).toBe('Needs 3 rounds, 1 loaded.');
-    f.pc.ammo = 0; expect(f.tech('mag_dump', { targetId: f.foe.id, ammo: 'frag_grenade' })).toBe('Empty: reload first.');
+    expect(f.tech('suppress', { targetId: f.foe.id, item: 'frag_grenade' })).toBe('Suppress can\'t be used with that.');
+    expect(f.tech('suppress', { targetId: f.foe.id, ammo: 'frag_grenade' })).toBe('Needs 3 rounds, 1 loaded.'); // a round type isn't a grenade
+    f.pc.ammo = 0; expect(f.tech('mag_dump', { targetId: f.foe.id })).toBe('Empty: reload first.');
     f.pc.ammo = 24; f.pc.jammed = true;
-    expect(f.tech('suppress', { targetId: f.foe.id, ammo: 'frag_grenade' })).toBe('Jammed: clear it first.');
-    expect(f.pc.ap).toBe(6); expect(f.pressure(f.foe)).toBe(0);
+    expect(f.tech('suppress', { targetId: f.foe.id })).toBe('Jammed: clear it first.');
+    expect(f.pc.ap).toBe(6); expect(f.pressure(f.foe)).toBe(0); expect(f.pc.throwables).toEqual({ frag_grenade: 1 });
   });
 });

@@ -26,47 +26,45 @@ const makesSave = (f: F, u: { id: string }) => { (f.unit(u.id) as any).sv = { bo
 beforeEach(() => { rig(null); D.die = null; });
 
 describe('Snap Shot', () => {
-  const fight = (main = 'sabre', off = 'service_pistol') => { const f = gunner(main, ['snap_shot']); offHand(f, off); return f; };
-  it('swaps the off-hand gun to the main hand with no AP for the swap, then fires (2 AP in all)', () => {
-    const f = fight(); rig({ hit: true, die: 12 });
-    const pv = f.pv('snap_shot', { targetId: f.foe.id, hand: 'off' });
+  /** A gunner holding `main`, with `weapon` (by default a loaded service pistol) in the pack; returns its pack index. */
+  const stow = (f: F, weapon: string, loaded?: number) => { const c: any = f.char(f.pc); c.pack = [...(c.pack || []), { id: weapon, name: weapon, qty: 1, kind: 'weapon', weapon, ...(loaded != null ? { loaded } : {}) }]; return c.pack.length - 1; };
+  it('takes a pack weapon into the main hand with no AP for the draw, and fires it (2 AP in all); the core judges that weapon', () => {
+    const f = gunner('ccec_marksman_rifle', ['snap_shot']); const i = stow(f, 'service_pistol', 12); rig({ hit: true, die: 12 });
+    let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('snap_shot', { targetId: f.foe.id, item: i }); });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1);
-    expect(f.tech('snap_shot', { targetId: f.foe.id, hand: 'off' })).toBeNull();
-    expect(f.pc.weapon).toBe('service_pistol'); expect(f.pc.offWeapon).toBe('sabre'); expect(f.char(f.pc).weapon).toBe('service_pistol');
+    expect(term(pv, 0, 'Snap Shot')).toBeUndefined(); // the pistol is Quick: no penalty (the rifle would take −2)
+    expect(pv.notes.some((n) => /out of your pack/.test(n))).toBe(true);
+    const at = f.cb.log.length;
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: i })).toBeNull();
+    expect(f.pc.weapon).toBe('service_pistol'); expect(f.char(f.pc).weapon).toBe('service_pistol');
+    expect(f.char(f.pc).pack!.some((x: any) => x.weapon === 'ccec_marksman_rifle')).toBe(true); // the rifle went into the pack
     expect(f.pc.ap).toBe(4); expect(f.pc.ammo).toBe(11); expect(f.pressure(f.foe)).toBe(1);
-  });
-  it('Quick: no penalty; without Quick: −2', () => {
-    const f = fight(); const pv = f.pv('snap_shot', { targetId: f.foe.id, hand: 'off' });
-    expect(term(pv, 0, 'Snap Shot')).toBeUndefined();
-    const g = fight('sabre', 'frontier_hand_cannon'); const gv = g.pv('snap_shot', { targetId: g.foe.id, hand: 'off' });
-    expect(gv.ok).toBe(true); expect(term(gv, 0, 'Snap Shot')).toBe(-2);
-  });
-  it('Heavy: not available', () => {
-    const f = gunner('hellraiser_lmg', ['snap_shot']);
-    expect(f.tech('snap_shot', { targetId: f.foe.id })).toMatch(/Not available with a heavy weapon/);
-    expect(f.pc.ap).toBe(6);
-  });
-  it('a swap the gear rules refuse is refused, and nothing is spent', () => {
-    const f = gunner('hellraiser_service_rifle', ['snap_shot']); offHand(f, 'service_pistol'); // a two-handed rifle in the main hand
-    expect(f.tech('snap_shot', { targetId: f.foe.id, hand: 'off' })).toMatch(/needs both hands/);
-    expect(f.pc.ap).toBe(6); expect(f.pc.weapon).toBe('hellraiser_service_rifle');
-  });
-  it('in the main hand already it is the shot alone, at −2 without Quick', () => {
-    const f = gunner('ccec_marksman_rifle', ['snap_shot']); rig({ hit: false, die: 5 });
-    const pv = f.pv('snap_shot', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(term(pv, 0, 'Snap Shot')).toBe(-2);
-    expect(f.tech('snap_shot', { targetId: f.foe.id })).toBeNull(); expect(f.pc.ap).toBe(4); expect(f.pressure(f.foe)).toBe(0); // a miss: no Pressure
-  });
-  it('an enemy fires its off-hand gun with no swap', () => {
-    const f = gunner('sabre', [], [{ at: 'H5', tier: 'elite', weapon: 'sabre' }]); const foe = f.unit(f.foe.id);
-    foe.offWeapon = 'service_pistol'; foe.offAmmo = 12; (foe as any).techs = ['snap_shot']; f.turn(f.foe); rig({ hit: true, die: 12 });
-    expect(f.use(f.foe, 'snap_shot', { targetId: f.pc.id, hand: 'off' })).toBeNull();
-    expect(f.foe.weapon).toBe('sabre'); expect(f.foe.offAmmo).toBe(11); expect(f.pressure(f.pc)).toBe(1);
-  });
-  it('the preview matches the action and changes nothing', () => {
-    const f = fight(); rig({ die: 12 }); let pv!: phys.TechPreview;
-    unchanged(f, () => { pv = f.pv('snap_shot', { targetId: f.foe.id, hand: 'off' }); });
-    const at = f.cb.log.length; f.tech('snap_shot', { targetId: f.foe.id, hand: 'off' });
     expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
+  });
+  it('without Quick: −2', () => {
+    const f = gunner('sabre', ['snap_shot']); const i = stow(f, 'frontier_hand_cannon', 6);
+    const pv = f.pv('snap_shot', { targetId: f.foe.id, item: i }); expect(pv.ok).toBe(true); expect(term(pv, 0, 'Snap Shot')).toBe(-2);
+  });
+  it('is only used with a stowed weapon (the base: needs.stowed), never the one in a hand', () => {
+    const f = gunner('ccec_marksman_rifle', ['snap_shot']); offHand(f, 'service_pistol');
+    expect(f.tech('snap_shot', { targetId: f.foe.id })).toMatch(/Pick the weapon to draw/);
+    expect(f.tech('snap_shot', { targetId: f.foe.id, hand: 'off' })).toMatch(/Pick the weapon to draw/);
+    expect(f.pad().flatMap((g) => g.entries.map((e) => e.id))).not.toContain('snap_shot');
+    expect(f.pc.ap).toBe(6); expect(f.pc.weapon).toBe('ccec_marksman_rifle');
+  });
+  it('the pack weapon\'s own rules: Heavy is not available, an empty one has no round, a melee weapon or a non-weapon is no draw; nothing spent', () => {
+    const f = gunner('ccec_marksman_rifle', ['snap_shot']);
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'hellraiser_lmg', 100) })).toBe('Not available with a heavy weapon.');
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'service_pistol', 0) })).toBe('Empty: reload first.');
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'sabre') })).toBe('Needs a ranged weapon in that hand.');
+    expect(f.tech('snap_shot', { targetId: f.foe.id, item: 99 })).toMatch(/isn't a stowed weapon/);
+    expect(f.pc.ap).toBe(6); expect(f.pc.weapon).toBe('ccec_marksman_rifle');
+  });
+  it('the pack pad lists what Snap Shot could draw, each judged', () => {
+    const f = gunner('ccec_marksman_rifle', ['snap_shot']); const ok = stow(f, 'service_pistol', 12), heavy = stow(f, 'hellraiser_lmg', 100);
+    const pad = f.bound(() => phys.packPad(f.cb, f.pc));
+    expect(pad.find((b) => b.item === ok)?.entries.find((e) => e.id === 'snap_shot')).toMatchObject({ ok: true, why: null });
+    expect(pad.find((b) => b.item === heavy)?.entries.find((e) => e.id === 'snap_shot')).toMatchObject({ ok: false, why: 'Not available with a heavy weapon.' });
   });
 });
 
@@ -105,6 +103,7 @@ describe('Burst', () => {
   });
   it('Auto: splits between two adjacent targets; not two apart, and not without Auto', () => {
     const f = gunner('hellraiser_service_rifle', [], [{ at: 'H5' }, { at: 'H6' }, { at: 'H8' }]); rig({ hit: true, die: 12 });
+    f.foes.forEach((x) => { f.unit(x.id).hp = f.unit(x.id).maxHp = 999; }); // nobody falls (a kill would spill Pressure on the other: the base's damage scales with Agility and Dexterity now)
     const [a, b, c] = f.foes.map((x) => x.id);
     expect(f.pv('burst', { targetIds: [a, c] }).why).toMatch(/next to each other/);
     const pv = f.pv('burst', { targetIds: [a, b] }); expect(pv.attacks.map((x) => x.target)).toEqual([a, b, b]);
@@ -304,7 +303,8 @@ describe('Punch Through', () => {
 describe('the pad and the AI', () => {
   it('none of them say "not built yet"', () => {
     const f = gunner('hellraiser_service_rifle', ['snap_shot', 'called_shot', 'walking_fire', 'punch_through']);
-    const e = f.pad().flatMap((g) => g.entries).filter((x) => ['snap_shot', 'burst', 'called_shot', 'walking_fire', 'punch_through'].includes(x.id));
+    const c: any = f.char(f.pc); c.pack = [...(c.pack || []), { id: 'service_pistol', name: 'service_pistol', qty: 1, kind: 'weapon', weapon: 'service_pistol', loaded: 12 }];
+    const e = [...f.pad().flatMap((g) => g.entries), ...f.bound(() => phys.packPad(f.cb, f.pc)).flatMap((b) => b.entries)].filter((x) => ['snap_shot', 'burst', 'called_shot', 'walking_fire', 'punch_through'].includes(x.id));
     expect(e.length).toBe(5); for (const x of e) expect(x.built, x.id).toBe(true);
   });
   it('the AI scores are pure and pick a part for Called Shot', () => {
@@ -316,39 +316,6 @@ describe('the pad and the AI', () => {
 });
 
 // ---------- review fixes ----------
-describe('Snap Shot: draw from the pack (review fix: "Draw or swap to this weapon")', () => {
-  /** A rifleman with a weapon (by default a loaded service pistol) in the pack; returns its pack index. */
-  const stow = (f: F, weapon: string, loaded?: number) => { const c: any = f.char(f.pc); c.pack = [...(c.pack || []), { id: weapon, name: weapon, qty: 1, kind: 'weapon', weapon, ...(loaded != null ? { loaded } : {}) }]; return c.pack.length - 1; };
-  it('takes a pack weapon into the main hand with no AP for the draw, and fires it; the core judges that weapon', () => {
-    const f = gunner('ccec_marksman_rifle', ['snap_shot']); const i = stow(f, 'service_pistol', 12); rig({ hit: true, die: 12 });
-    let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('snap_shot', { targetId: f.foe.id, item: i }); });
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1);
-    expect(term(pv, 0, 'Snap Shot')).toBeUndefined(); // the pistol is Quick: no penalty (the rifle would take −2)
-    expect(pv.notes.some((n) => /out of your pack/.test(n))).toBe(true);
-    const at = f.cb.log.length;
-    expect(f.tech('snap_shot', { targetId: f.foe.id, item: i })).toBeNull();
-    expect(f.pc.weapon).toBe('service_pistol'); expect(f.char(f.pc).weapon).toBe('service_pistol');
-    expect(f.char(f.pc).pack!.some((x: any) => x.weapon === 'ccec_marksman_rifle')).toBe(true); // the rifle went into the pack
-    expect(f.pc.ap).toBe(4); expect(f.pc.ammo).toBe(11); expect(f.pressure(f.foe)).toBe(1);
-    expect(rolls(f, at)).toEqual([pv.attacks[0].pv.toHit]);
-  });
-  it('the pack weapon\'s own rules: Heavy is not available, an empty one has no round, a melee weapon or a non-weapon is no draw; nothing spent', () => {
-    const f = gunner('ccec_marksman_rifle', ['snap_shot']);
-    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'hellraiser_lmg', 100) })).toBe('Not available with a heavy weapon.');
-    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'service_pistol', 0) })).toBe('Empty: reload first.');
-    expect(f.tech('snap_shot', { targetId: f.foe.id, item: stow(f, 'sabre') })).toBe('That isn\'t a ranged weapon.');
-    expect(f.tech('snap_shot', { targetId: f.foe.id, item: 99 })).toBe('Nothing there in your pack.');
-    expect(f.tech('shot', { targetId: f.foe.id, item: stow(f, 'service_pistol', 12) })).toBe('Shot doesn\'t draw from the pack.');
-    expect(f.pc.ap).toBe(6); expect(f.pc.weapon).toBe('ccec_marksman_rifle');
-  });
-  it('the pad lists what Snap Shot could draw, each judged', () => {
-    const f = gunner('ccec_marksman_rifle', ['snap_shot']); const ok = stow(f, 'service_pistol', 12), heavy = stow(f, 'hellraiser_lmg', 100);
-    const e = f.pad().flatMap((g) => g.entries).find((x) => x.id === 'snap_shot')!;
-    expect(e.draws?.find((d) => d.item === ok)).toMatchObject({ weapon: 'service_pistol', ok: true, why: null });
-    expect(e.draws?.find((d) => d.item === heavy)).toMatchObject({ ok: false, why: 'Not available with a heavy weapon.' });
-  });
-});
-
 describe('Burst is one attack action (review fixes)', () => {
   it('wears the weapon 1 in all, Auto or not, and Walking Fire\'s Auto burst too (today\'s fireBurst)', () => {
     const f = gunner('hellraiser_service_rifle'); rig({ hit: false, die: 5 }); const d0 = f.pc.dur!; expect(f.pc.maxDur).toBeGreaterThan(0);

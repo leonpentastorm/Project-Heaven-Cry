@@ -19,7 +19,9 @@ function fight(o: { weapon?: string; known?: string[]; foes?: { at?: string; tie
 /** Smoke on these tiles (a VEIL zone, as a smoke grenade lays). */
 function smoke(f: Fight, tiles: string[]) { f.cb.zones = [...(f.cb.zones || []), { id: 'zt' + (f.cb.zones || []).length, kind: 'veil', tiles, words: ['smoke'], by: '', side: 'pc', left: 2, mult: 1, who: '' } as any]; }
 /** Everything a preview must leave alone: the fight and the dice. */
-const snap = (f: Fight) => JSON.stringify(f.cb) + JSON.stringify(f.g.rng);
+/** The fight and the dice as text, keys sorted (the order the base's core puts a held weapon's fields back in is no change). */
+const sorted = (v: any): any => (Array.isArray(v) ? v.map(sorted) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, sorted(v[k])])) : v);
+const snap = (f: Fight) => JSON.stringify(sorted(f.cb)) + JSON.stringify(f.g.rng);
 const blastDmg = (item: string, armour: number) => Math.max(1, (WEAPON[item].damage as number) - armour);
 const signed = (n: number) => (n >= 0 ? '+' : '−') + Math.abs(n);
 const lastLog = (f: Fight, re: RegExp) => [...f.cb.log].reverse().find((l) => re.test(l)) || '';
@@ -160,16 +162,16 @@ describe('Lob: Blast with a launcher', () => {
   });
 });
 
-describe('Lob: grenades are its ammunition', () => {
+describe('Lob: a carried grenade is its weapon', () => {
   const nades = (load: Record<string, number>, o: { foes?: { at?: string; tier?: string }[] } = {}) => { const f = fight({ foes: o.foes || [{ at: '8,5' }] }); f.pc.throwables = { ...load }; return f; };
   it('a frag through Lob: no roll, 40 to everyone within 2, +2 Pressure; the grenade is spent, not the rifle\'s rounds', () => {
     const f = nades({ frag_grenade: 2 }); rig({ hit: false, die: 1 });
-    const before = snap(f), pv = f.pv('lob', { tile: '8,5', ammo: 'frag_grenade' });
+    const before = snap(f), pv = f.pv('lob', { tile: '8,5', item: 'frag_grenade' });
     expect(snap(f)).toBe(before);
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(0); expect(pv.area!.length).toBe(25);
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(1); expect(pv.area!.length).toBe(25); // the round is the grenade (the base's throwable wield)
     expect(pv.pressure).toEqual([expect.objectContaining({ unit: f.foe.id, add: 2, after: 2 })]);
     const hp = f.foe.hp, ammo = f.pc.ammo, heat = f.pc.heat;
-    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull();
+    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull();
     expect(f.foe.hp).toBe(hp - blastDmg('frag_grenade', f.foe.armour)); expect(f.pressure(f.foe)).toBe(2);
     expect(f.pc.throwables!.frag_grenade).toBe(1); expect(f.pc.ammo).toBe(ammo); expect(f.pc.heat).toBe(heat);
     expect(f.pc.shotsThisTurn).toBe(0); expect(f.pc.ap).toBe(3);
@@ -178,43 +180,43 @@ describe('Lob: grenades are its ammunition', () => {
   it('an empty rifle doesn\'t stop a grenade', () => {
     const f = nades({ frag_grenade: 1 }); f.pc.ammo = 0;
     expect(f.tech('shot', { targetId: f.foe.id })).toMatch(/Empty/);
-    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(f.pc.throwables!.frag_grenade).toBe(0);
+    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull(); expect(f.pc.throwables!.frag_grenade).toBe(0);
   });
   it('an empty quiver doesn\'t stop a grenade either, and the arrows are left alone (quiver.ts)', () => {
     const f = fight({ weapon: 'recurve_bow', foes: [{ at: '8,5' }] }); f.pc.throwables = { frag_grenade: 1 };
     f.pc.ammo = 0; f.pc.quiver = {};
     expect(f.tech('shot', { targetId: f.foe.id })).toMatch(/quiver is empty/);
-    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(f.pc.throwables!.frag_grenade).toBe(0);
+    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull(); expect(f.pc.throwables!.frag_grenade).toBe(0);
     const g = fight({ weapon: 'recurve_bow', foes: [{ at: '8,5' }] }); g.pc.throwables = { frag_grenade: 1 }; const q = { ...g.pc.quiver }, n = g.pc.ammo;
-    expect(g.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(g.pc.quiver).toEqual(q); expect(g.pc.ammo).toBe(n);
+    expect(g.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull(); expect(g.pc.quiver).toEqual(q); expect(g.pc.ammo).toBe(n);
   });
   it('goes over full cover (a frag has Arc) to a tile an ally sees', () => {
     const f = nades({ frag_grenade: 1 }, { foes: [{ at: '12,6' }] }); f.put(f.pc, '6,6'); f.put(f.pcs[1], '12,2');
-    expect(f.tech('lob', { tile: '12,6', ammo: 'frag_grenade' })).toBeNull(); expect(f.pressure(f.foe)).toBe(2);
+    expect(f.tech('lob', { tile: '12,6', item: 'frag_grenade' })).toBeNull(); expect(f.pressure(f.foe)).toBe(2);
   });
   it('refusals: none carried, out of throwing range, a satchel, no tile, off the map', () => {
     const f = nades({ frag_grenade: 1, satchel_charge: 1 }), range = f.pc.throwRange!;
-    expect(f.tech('lob', { tile: '8,5', ammo: 'incendiary_grenade' })).toMatch(/carry no incendiary grenade/);
-    expect(f.tech('lob', { tile: (2 + range + 1) + ',5', ammo: 'frag_grenade' })).toMatch(new RegExp('Out of throwing range \\(' + range + ' tiles\\)'));
-    expect(f.tech('lob', { tile: '3,5', ammo: 'satchel_charge' })).toMatch(/placed, not lobbed/);
-    expect(f.tech('lob', { ammo: 'frag_grenade' })).toMatch(/Name a tile/);
-    expect(f.tech('lob', { tile: '-1,5', ammo: 'frag_grenade' })).toMatch(/Off the map/);
+    expect(f.tech('lob', { tile: '8,5', item: 'incendiary_grenade' })).toMatch(/carry no incendiary grenade/);
+    expect(f.tech('lob', { tile: (2 + range + 1) + ',5', item: 'frag_grenade' })).toMatch(new RegExp('Out of throwing range \\(' + range + ' tiles\\)'));
+    expect(f.tech('lob', { tile: '3,5', item: 'satchel_charge' })).toMatch(/placed, not lobbed/);
+    expect(f.tech('lob', { item: 'frag_grenade' })).toMatch(/Name a tile/);
+    expect(f.tech('lob', { tile: '-1,5', item: 'frag_grenade' })).toMatch(/Off the map/);
     expect(f.pc.ap).toBe(6); expect(f.pc.throwables!.frag_grenade).toBe(1);
   });
   it('an incendiary keeps today\'s effect: Burning and a burning tile, and +2 Pressure', () => {
     const f = nades({ incendiary_grenade: 1 });
-    expect(f.tech('lob', { tile: '8,5', ammo: 'incendiary_grenade' })).toBeNull();
+    expect(f.tech('lob', { tile: '8,5', item: 'incendiary_grenade' })).toBeNull();
     expect(f.foe.conds?.burning).toBeTruthy(); expect((f.cb.objects || []).some((o) => o.kind === 'fire' && o.pos === '8,5')).toBe(true);
     expect(f.pressure(f.foe)).toBe(2);
   });
   it('a Hidden thrower is revealed, as by today\'s Throw', () => {
     const f = nades({ frag_grenade: 1 }); f.pc.hidden = true;
-    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(f.pc.hidden).toBeFalsy();
+    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull(); expect(f.pc.hidden).toBeFalsy();
   });
   it('smoke through Lob lays today\'s smoke and gives no Pressure', () => {
-    const f = nades({ smoke_grenade: 1 }); const pv = f.pv('lob', { tile: '8,5', ammo: 'smoke_grenade' });
+    const f = nades({ smoke_grenade: 1 }); const pv = f.pv('lob', { tile: '8,5', item: 'smoke_grenade' });
     expect(pv.pressure || []).toEqual([]); expect(pv.area!.length).toBe(49);
-    expect(f.tech('lob', { tile: '8,5', ammo: 'smoke_grenade' })).toBeNull();
+    expect(f.tech('lob', { tile: '8,5', item: 'smoke_grenade' })).toBeNull();
     expect((f.cb.zones || []).some((z) => z.kind === 'veil' && z.tiles.includes('8,5'))).toBe(true); expect(f.pressure(f.foe)).toBe(0);
   });
 });
@@ -229,7 +231,7 @@ describe('smoke, flashbangs and the scrambler act on other people\'s fire', () =
   };
   it('a smoke grenade lobbed onto a unit ends its held Watch and its Bead', () => {
     const f = watching(); f.pc.throwables = { smoke_grenade: 1 };
-    expect(f.tech('lob', { tile: '8,5', ammo: 'smoke_grenade' })).toBeNull();
+    expect(f.tech('lob', { tile: '8,5', item: 'smoke_grenade' })).toBeNull();
     expect((f.foe as any).watch).toBeUndefined(); expect(f.foe.tech!.bead.targetId).toBeNull();
     expect(f.cb.log.some((l) => /loses the held shot \(smoke grenade\)/.test(l))).toBe(true);
     expect(f.fx('watch_end').some((e: any) => e.unit === f.foe.id && e.why === 'smoke grenade')).toBe(true);
@@ -245,25 +247,25 @@ describe('smoke, flashbangs and the scrambler act on other people\'s fire', () =
   });
   it('the bot-scrambler ends them, and still Stuns a machine', () => {
     const f = watching(); f.foe.kind = 'robot'; f.pc.throwables = { bot_scrambler: 1 };
-    expect(f.tech('lob', { tile: '8,5', ammo: 'bot_scrambler' })).toBeNull();
+    expect(f.tech('lob', { tile: '8,5', item: 'bot_scrambler' })).toBeNull();
     expect((f.foe as any).watch).toBeUndefined(); expect(f.foe.conds?.stunned).toBeTruthy();
   });
   it('a frag ends the Watch only by the Pressure it gives (Pressed drops a held shot), and leaves the Bead', () => {
     const f = watching(); f.pc.throwables = { frag_grenade: 1 };
-    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull();
+    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull();
     expect(f.foe.dead).toBe(false); expect((f.foe as any).watch).toBeUndefined();
     expect(f.fx('watch_end').filter((e: any) => e.unit === f.foe.id).map((e: any) => e.why)).toEqual(['Pressed']);
     expect(f.foe.tech!.bead.targetId).toBe(f.pc.id);
   });
   it('a unit outside the radius keeps its Watch and its Bead', () => {
     const f = watching(); f.pc.throwables = { smoke_grenade: 1 };
-    expect(f.tech('lob', { tile: '8,1', ammo: 'smoke_grenade' })).toBeNull(); // 4 tiles off: smoke radius 3
+    expect(f.tech('lob', { tile: '8,1', item: 'smoke_grenade' })).toBeNull(); // 4 tiles off: smoke radius 3
     expect((f.foe as any).watch?.id).toBe('overwatch'); expect(f.foe.tech!.bead.targetId).toBe(f.pc.id);
   });
   it('it lands on either side: the thrower\'s own ally loses its held shot too', () => {
     const f = fight({ foes: [{ at: '14,9' }] }); f.put(f.pcs[1], '8,5'); f.turn(f.pcs[1]);
     expect(f.use(f.pcs[1], 'overwatch')).toBeNull(); f.turn(f.pc); f.pc.throwables = { smoke_grenade: 1 };
-    expect(f.tech('lob', { tile: '8,5', ammo: 'smoke_grenade' })).toBeNull(); expect((f.pcs[1] as any).watch).toBeUndefined();
+    expect(f.tech('lob', { tile: '8,5', item: 'smoke_grenade' })).toBeNull(); expect((f.pcs[1] as any).watch).toBeUndefined();
   });
 });
 
@@ -278,12 +280,12 @@ describe('a Blast\'s hits (review fix: they counted as no one\'s)', () => {
   it('a Blast that leaves them standing marks each enemy hit this round with the weapon (Crossfire, the drill of a later kill); an ally isn\'t marked', () => {
     const f = thumper(); f.foes.forEach((v) => { f.unit(v.id).hp = f.unit(v.id).maxHp = 999; }); f.put(f.pcs[1], '11,5');
     expect(f.tech('lob', { tile: '12,6', line: 'blast' })).toBeNull();
-    for (const v of f.foes) { expect(f.unit(v.id).hitRound?.[f.pc.id]).toBe(f.cb.round); expect(f.unit(v.id).hitWith?.[f.pc.id]).toBe('smetanita_thumper'); }
+    for (const v of f.foes) { expect(f.unit(v.id).hitRound?.[f.pc.id]).toBe(f.cb.round); expect(f.unit(v.id).hitWith?.[f.pc.id]).toContain('smetanita_thumper'); }
     expect(f.unit(f.pcs[1].id).hitRound).toBeUndefined();
   });
   it('a grenade lobbed: a kill gives drill for that grenade', () => {
     const f = fight({ foes: [{ at: '8,5', tier: 'minion' }] }); f.pc.throwables = { frag_grenade: 1 }; f.unit(f.foe.id).hp = 1;
-    expect(f.tech('lob', { tile: '8,5', ammo: 'frag_grenade' })).toBeNull(); expect(f.foe.dead).toBe(true);
+    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull(); expect(f.foe.dead).toBe(true);
     expect(phys.drillOf(f.char(f.pc), 'frag_grenade')).toBeGreaterThan(0);
   });
 });
@@ -303,7 +305,7 @@ describe('smoke lets Pressure fall by 2', () => {
   });
   it('an enemy standing in smoke at the end of its turn sheds 2; in the open, 1', () => {
     const run = (inSmoke: boolean) => {
-      const f = fight({ foes: [{ at: '8,5' }] }); if (inSmoke) { f.pc.throwables = { smoke_grenade: 1 }; expect(f.tech('lob', { tile: '8,5', ammo: 'smoke_grenade' })).toBeNull(); }
+      const f = fight({ foes: [{ at: '8,5' }] }); if (inSmoke) { f.pc.throwables = { smoke_grenade: 1 }; expect(f.tech('lob', { tile: '8,5', item: 'smoke_grenade' })).toBeNull(); }
       f.press(f.foe, 3, f.pc); f.turn(f.foe); f.pass(); return f.pressure(f.foe);
     };
     expect(run(false)).toBe(2); expect(run(true)).toBe(1);

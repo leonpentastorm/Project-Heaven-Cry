@@ -3,7 +3,6 @@
 // ranged lane builds Pin Down, Rout, Stopping Shot, Storm and Last Round here.
 import { technique, strike, canStrike, save, stop, forceMove, spendRounds, lowerPressure, wasSuppressed, isPressed, isSuppressed, pressureOf, pressureState, onHook, TECHNIQUE, type Tech } from './shared';
 import { looseRound } from './press';
-import { condOn, endCond } from '../../magic';
 import { alive, dist, xy, paths, moveUnit, moveBlock, type Combat, type Unit } from '../../combat';
 import { radiusOf } from '../../tactics';
 import { AP_BASE } from '../../effects/ap';
@@ -34,9 +33,8 @@ const occupied = (cb: Combat, u: Unit, k: string) => cb.units.some((x) => x !== 
 
 // 22. Pin Down: a shot at ×0.7. On a hit the target saves (Guts or Athletics, the better) or is Pinned for 1 round.
 //     Suppressed: the save is at −2. Auto: full damage. Drawn or Silent: nailed in place until it spends 2 AP.
-//     Reading (review fix; for Leon): the nail's end is the 2 AP, not the round. The target pays them as its next turn
-//     starts (an AP debt: it tears free first thing), and the pin ends there: it may move with what is left. Unpaid, it
-//     stays nailed. Before, it paid the 2 AP and stayed Pinned all turn anyway, so the AP bought nothing.
+//     The nail is the base's (stop with untilAp): it holds until the unit, or an ally next to it, spends the AP to pull
+//     free (combat/pull-free; an enemy does it on its turn).
 technique({
   id: 'pin_down',
   run(t) {
@@ -44,20 +42,13 @@ technique({
     const p = t.line('auto', 'drawn', 'silent'), sup = wasSuppressed(t), nailed = p === 'drawn' || p === 'silent', ap = t.num('nailed_ap', 2);
     const r = strike(t, { mult: p === 'auto' ? 1 : t.num('damage_mult', 0.7), label: 'Pin Down' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
-    if (t.preview) t.note('On a hit: a save (Guts or Athletics' + (sup ? ', at −' + t.num('suppressed_save', 2) : '') + ') or ' + (nailed ? 'nailed in place until it spends ' + ap + ' AP (it tears free as its next turn starts, then may move)' : 'Pinned for ' + t.num('pinned_rounds', 1) + ' round') + '.');
-    if (t.preview || (r.hit && alive(tgt))) {
-      const took = stop(t, tgt, 'pinned', { rounds: t.num('pinned_rounds', 1), tnAdd: sup ? t.num('suppressed_save', 2) : 0, apLoss: nailed ? ap : undefined });
-      if (took && nailed && !t.preview) (tgt as any).nailed = true;
-    }
+    if (r.cancelled) return null;
+    if (t.preview) t.note('On a hit: a save (Guts or Athletics' + (sup ? ', at −' + t.num('suppressed_save', 2) : '') + ') or ' + (nailed ? 'nailed in place until it spends ' + ap + ' AP to pull free' : 'Pinned for ' + t.num('pinned_rounds', 1) + ' round') + '.');
+    const v = r.target || tgt;
+    if (t.preview || (r.hit && alive(v))) stop(t, v, 'pinned', { tnAdd: sup ? t.num('suppressed_save', 2) : 0, ...(nailed ? { untilAp: ap } : { rounds: t.num('pinned_rounds', 1) }) });
     return null;
   },
   ai: (t) => (t.tgt ? 7 : 0),
-});
-// The nail: its 2 AP were taken as the turn's AP was counted (turn_start_pre's debt); paid, it is free to move.
-onHook('turn_start', (ctx: any, cb) => {
-  const u: Unit = ctx.u; if (!u || !(u as any).nailed) return;
-  delete (u as any).nailed;
-  if (condOn(u, 'pinned')) { endCond(u, 'pinned', cb); cb.log.push(u.name + ' tears free of the pin (' + num('pin_down', 'nailed_ap', 2) + ' AP).'); }
 });
 const num = (id: string, k: string, fb: number) => { const v = TECHNIQUE[id]?.numbers?.[k]; return typeof v === 'number' ? v : fb; };
 
@@ -130,7 +121,8 @@ technique({
       t.note('On a hit: a save (Guts or Athletics) or −' + t.num('ap_loss', 1) + ' AP next turn and pushed ' + tiles + (prone ? ', and Prone' : '') + '.');
       if (!(tgt as any).stopped) forceMove(t, tgt, 'away', tiles); // where the push would put it (stop() only notes it in a preview)
     }
-    if (t.preview || (r.hit && alive(tgt))) stop(t, tgt, prone ? ['push', 'prone'] : 'push', { tiles, apLoss: t.num('ap_loss', 1) });
+    const v = r.target || tgt; // riders follow the unit really struck (a redirect)
+    if (t.preview || (r.hit && alive(v))) stop(t, v, prone ? ['push', 'prone'] : 'push', { tiles, apLoss: t.num('ap_loss', 1) });
     return null;
   },
   ai: (t) => (t.tgt ? 7 : 0),
@@ -193,7 +185,7 @@ technique({
     if (!alive(t.u) || !alive(tgt)) return null; // the walk was answered by someone else: the AP stays spent
     if (!canStrike(t, tgt)) { t.note('No shot at ' + tgt.name + ' from here.'); return null; }
     const r = strike(t, o);
-    if (r.ok && r.hit && p === 'spread' && alive(tgt)) stop(t, tgt, 'prone', { save: ['body'] });
+    if (r.ok && r.hit && p === 'spread' && alive(r.target || tgt)) stop(t, r.target || tgt, 'prone', { save: ['body'] }); // the unit really struck
     return null;
   },
   ai: (t) => (t.tgt ? 6 : 0),
@@ -211,12 +203,10 @@ technique({
     const r = strike(t, { extra: t.num('hit', 3), ignoreCover: sup, mult: p === 'quick' || p === 'precise' ? 1 + t.num('damage_pct', 50) / 100 : 1, label: 'Last Round' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (t.preview) { if (sup) t.note('Suppressed: its cover doesn\'t count.'); if (reloads) t.note('If it takes ' + tgt.name + ' out, your next speed reload is free.'); return null; }
-    if (reloads && (r.killed || !alive(tgt))) { t.u.freeReload = true; t.note('The next speed reload is free.'); }
+    if (reloads && !r.cancelled && (r.killed || !alive(tgt))) { t.u.freeReload = true; t.note('The next speed reload is free.'); }
     return null;
   },
   ai: (t) => (t.tgt ? 9 : 0),
 });
-// The free speed reload goes on the next speed reload of the main hand (a tactical one keeps it): spent only by the
-// reload that took it (reload() marks it ctx.freeReload; review fix: the Marksman's special load and free reloads
-// such as Resupply spent it without using it).
-onHook('reload', (ctx: any) => { if (ctx.u?.freeReload && ctx.freeReload) delete ctx.u.freeReload; });
+// The free speed reload goes on the next speed reload of the main hand (a tactical one keeps it): reload() spends it
+// (the base), and a reload whose AP something else waives (Resupply, Running Reload) leaves it owed.

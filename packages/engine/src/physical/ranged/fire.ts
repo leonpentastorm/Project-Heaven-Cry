@@ -1,6 +1,6 @@
 // Physical 2.0, ranged Fire: damage. Shot and Aimed Shot are the lead's references; the ranged lane builds Snap Shot,
 // Burst, Called Shot, Walking Fire and Punch Through here (Lob lives in thrown.ts: its Blast line is the grenade code).
-import { technique, strike, addPressure, spendRounds, save, cond, stop, stepsWithin, standingAt, stepUser, swapIn, turnStamp, onHook, type Tech } from './shared';
+import { technique, strike, addPressure, spendRounds, save, cond, stop, stepsWithin, standingAt, stepUser, turnStamp, onHook, type Tech } from './shared';
 import { alive, dist, xy, key, emitFx, chained, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { physicalMult } from '../../character';
@@ -38,14 +38,6 @@ technique({
 // ---------- what this file's volleys share ----------
 const loaded = (t: Tech) => (t.hand === 'off' ? t.u.offAmmo ?? 0 : t.u.ammo);
 const usesRounds = (t: Tech) => t.w.magazine != null && !t.u.infiniteAmmo;
-/** A preview of a later roll sees the rounds and Heat the earlier rolls will have spent (put back after). */
-function asIfFired<T>(t: Tech, n: number, fn: () => T): T {
-  if (!t.preview || n <= 0) return fn();
-  const u = t.u, h0 = u.heat, a0 = u.ammo, o0 = u.offAmmo;
-  if (t.w.heat_limit && !u.infiniteAmmo) u.heat = h0 + n;
-  if (usesRounds(t)) { if (t.hand === 'off') u.offAmmo = (o0 ?? 0) - n; else u.ammo = a0 - n; }
-  try { return fn(); } finally { u.heat = h0; u.ammo = a0; if (o0 === undefined) delete u.offAmmo; else u.offAmmo = o0; }
-}
 interface Roll { target: Unit; extra: number }
 /** A burst: the rolls in order, then the rounds it burns beyond them, then the barrel cooling (today's burst cools 1).
  * It is one attack action, as today's fireBurst makes it: the rolls run as one 'burst' volley (ctx.volley, ctx.vi:
@@ -58,7 +50,7 @@ function volley(t: Tech, rolls: Roll[], o: { burn: number; cool: number }): stri
   const roll = (i: number, later: boolean) => strike(t, { target: rolls[i].target, extra: rolls[i].extra, label: t.def.name, vi: i, ...(later ? { noRecoil: true, noWear: true } : {}) });
   if (t.preview) {
     const why = chained(() => {
-      for (let i = 0; i < rolls.length; i++) { const r = asIfFired(t, i, () => roll(i, i > 0)); if (!r.ok) return rolls[i].target.name + ': ' + (r.why || 'can\'t attack that.'); }
+      for (let i = 0; i < rolls.length; i++) { const r = roll(i, i > 0); /* the core shows each later roll as it will be (the earlier ones' rounds and Heat) */ if (!r.ok) return rolls[i].target.name + ': ' + (r.why || 'can\'t attack that.'); }
       return null;
     }, 'burst');
     if (why) return why;
@@ -75,7 +67,7 @@ function volley(t: Tech, rolls: Roll[], o: { burn: number; cool: number }): stri
       if ((t.hand === 'main' && u.jammed) || (usesRounds(t) && loaded(t) <= 0) || !alive(u)) break;
       if (!alive(tg)) continue;
       const r = roll(i, made > 0);
-      if (!r.ok) break; // the preview refuses it now (pushed out of sight, the gun broke): the burst ends
+      if (!r.ok || r.cancelled) break; // the preview refuses it now (pushed out of sight, the gun broke), or it was answered before it came: the burst ends
       made++; if (!aimed.includes(tg)) aimed.push(tg);
     }
   }, 'burst');
@@ -87,30 +79,19 @@ function volley(t: Tech, rolls: Roll[], o: { burn: number; cool: number }): stri
 const unitById = (t: Tech, id: string) => t.cb.units.find((x) => x.id === id) || null;
 
 // 1. Snap Shot: draw or swap to this weapon and fire, at −2. Quick: no penalty. Heavy: not available (data: not_with).
-//    Draw: args.item names a weapon in the pack; it comes out into the main hand (today's draw, its AP waived; what
-//    the main hand held goes into the pack) and fires. The core judges that weapon (the gate, its lines, its rounds)
-//    and previews the shot as if it were already in the hand. Swap: used with the off-hand weapon, it comes to the main
-//    hand first (today's swap, its AP waived); an enemy or a companion has no pack to rebuild from and fires it from
-//    the off hand. In the main hand already it is the shot alone.
+//    The base's contract (needs.stowed): Snap Shot is used with a weapon in the pack (args.item names the entry; the
+//    screen lists them in packPad). The core judges and previews that weapon as if held, then draws it for real
+//    through the reducer's own gear change, its AP waived (what the main hand held goes into the pack), and runs this:
+//    the shot alone.
 technique({
   id: 'snap_shot',
-  check(t) {
-    if (t.draw) return swapIn(t.cb, t.u, { item: t.draw.item, to: 'main' }, { dry: true });
-    return t.hand === 'off' && t.c ? swapIn(t.cb, t.u, { from: 'off' }, { dry: true }) : null;
-  },
   run(t) {
-    const extra = t.line('quick') ? 0 : -t.num('penalty', 2), draw = t.draw || null, swap = !draw && t.hand === 'off' && !!t.c;
-    if (t.preview) {
-      t.note(draw ? 'The ' + t.w.name + ' comes out of your pack into your main hand first (no AP for the draw).' : swap ? 'The ' + t.w.name + ' comes to your main hand first (no AP for the swap).' : t.hand === 'off' ? 'Fired from the off hand.' : 'Already in your main hand: the shot alone.');
-      const r = strike(t, { extra }); return r.ok ? null : r.why || 'Can\'t attack that.';
-    }
-    if (draw) { const err = swapIn(t.cb, t.u, { item: draw.item, to: 'main' }, { free: true }); if (err) return err; t.draw = null; }
-    else if (swap) { const err = swapIn(t.cb, t.u, { from: 'off' }, { free: true }); if (err) return err; t.hand = 'main'; }
-    const r = strike(t, { extra });
-    if (!r.ok && !swap && !draw) return r.why || 'Can\'t attack that.';
-    return null; // drawn or swapped: the change stands even if the shot couldn't follow (the log says why)
+    if (t.preview) t.note('The ' + t.w.name + ' comes out of your pack into your main hand first (no AP for the draw).');
+    const r = strike(t, { extra: t.line('quick') ? 0 : -t.num('penalty', 2) });
+    if (t.preview) return r.ok ? null : r.why || 'Can\'t attack that.';
+    return null; // drawn: the draw stands even if the shot couldn't follow (the log says why)
   },
-  ai: (t) => (t.tgt && t.hand === 'off' ? 5 : 0),
+  ai: (t) => (t.tgt ? 5 : 0),
 });
 
 // 2. Burst: two rolls at one target, the second at −2 (3 rounds). Auto: three rolls (today's burst: each later one −1
@@ -156,9 +137,10 @@ technique({
     const r = strike(t, { extra: p === 'precise' ? 0 : -t.num('penalty', 2) });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (t.preview) t.note('On a hit: a Body save or ' + (prone ? 'Prone' : part === 'leg' ? 'Slowed' : part === 'arm' ? 'its weapon lowered' : 'Dazed') + '.');
-    if (!t.preview && (!r.hit || r.killed || !alive(tgt))) return null;
-    if (prone) { stop(t, tgt, 'prone', { save: ['body'] }); return null; }
-    if (!save(t, tgt, 'body')) cond(t, tgt, part === 'leg' ? 'slowed' : part === 'arm' ? 'lowered' : 'dazed');
+    const v = r.target || tgt; // riders follow the unit really struck (a redirect)
+    if (!t.preview && (!r.hit || r.killed || !alive(v))) return null;
+    if (prone) { stop(t, v, 'prone', { save: ['body'] }); return null; }
+    if (!save(t, v, 'body')) cond(t, v, part === 'leg' ? 'slowed' : part === 'arm' ? 'lowered' : 'dazed');
     return null;
   },
   ai: (t) => (t.tgt ? { score: 4, args: { opt: t.line('loud', 'heavy') ? 'leg' : 'head' } } : 0),
@@ -249,7 +231,7 @@ function carryDamage(t: Tech, next: Unit, crit: boolean): number {
  * using that turn's slot up as a hit does. */
 function carriedHit(t: Tech, next: Unit, dmg: number): string {
   const u = t.u, cb = t.cb, stamp = turnStamp(cb);
-  ((next as any).hitRound ||= {})[u.id] = cb.round; ((next as any).hitWith ||= {})[u.id] = t.weaponId; // before the damage: a kill reads them
+  (next.hitRound ||= {})[u.id] = cb.round; { const l = ((next.hitWith ||= {})[u.id] ||= []); if (!l.includes(t.weaponId)) l.push(t.weaponId); } // before the damage: a kill reads them (every weapon that damaged it, the base's drill list)
   const line = hurtUnit(next, dmg, true, cb, 'weapon', u); // armour already taken off
   const pt = u.pressedThis?.t === stamp ? u.pressedThis : (u.pressedThis = { t: stamp, ids: [] as string[] });
   if (!pt.ids.includes(next.id)) { pt.ids.push(next.id); if (alive(next)) addPressure(t, next, t.num('heavy_carry_pressure', 1), 'a round through ' + (t.tgt?.name || 'cover')); }
