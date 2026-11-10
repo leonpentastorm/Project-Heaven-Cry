@@ -883,6 +883,25 @@ export const FOCUS_REV = 1;
 /** A save from when a carried focus counted (item 77): a focus only in the pack goes to a free off hand (the Evoker
  * first, for a character with Sigil words; else the Emanator), so nobody loses their magic to the new rule. A two-handed
  * weapon or a full off hand leaves it in the pack, with a note. Runs once (c.focusRev). Returns notes. */
+/** Perks that changed id (rules 1.13: Grapple became Iron Grip, Origami Hands became Both Hands). */
+export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', origami_hands: 'both_hands' };
+/** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept), and an
+ * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
+export function migrateCharacterItems(c: Character): string[] {
+  const notes: string[] = [];
+  if ((c.perks || []).some((x) => !PERK[x.id])) {
+    const out: Character['perks'] = [];
+    for (const x of c.perks) {
+      const to = PERK[x.id] ? x.id : PERK_RENAMED[x.id];
+      if (!to || !PERK[to]) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
+      if (to !== x.id) notes.push(c.name + ': ' + PERK[to].name + ' replaces an older perk.');
+      if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });
+    }
+    c.perks = out;
+  }
+  if ((c.traits || []).some((t) => !TRAITS.some((d) => d.id === t))) c.traits = c.traits.filter((t) => TRAITS.some((d) => d.id === t));
+  return notes;
+}
 export function migrateCharacterFocus(c: Character): string[] {
   if (c.focusRev === FOCUS_REV) return [];
   c.focusRev = FOCUS_REV;

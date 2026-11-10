@@ -1,7 +1,7 @@
 // Client store. The host's browser holds the authoritative GameState, applies every action through the engine,
 // runs the AI Narrator with the host's key, and sends each player their filtered view through the room relay.
 // Guests send actions to the host and render the view they get back.
-import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom } from '@engine';
+import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded } from '@engine';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, type Conn } from './net';
@@ -80,14 +80,14 @@ export function setNarrator(patch: Partial<ClientState['narrator']>) {
 // ---------- rooms ----------
 export function hostRoom(code = roomCode()) {
   if (!S.me.name) return toast('Enter your name first.');
-  const saved: GameState | null = read(LS.game(code), null);
+  const saved: GameState | null = migrateLoaded(read(LS.game(code), null));
   hostState = saved || newGame(code, { id: S.me.id, name: S.me.name });
   befores = {}; loadBefores(code);
   // The full save (with the archive) comes back from IndexedDB a moment later.
   idbGet(code).then((full) => {
     if (!full || !hostState || hostState.code !== code) return;
     // localStorage lost it (full, or cleared): the IndexedDB save is the whole game.
-    if (!saved && full.v > hostState.v) { hostState = full; set({ game: viewFor(hostState, S.me.id), screen: screenFor(hostState) }); broadcast(true); return; }
+    if (!saved && full.v > hostState.v) { hostState = migrateLoaded(full); set({ game: viewFor(hostState, S.me.id), screen: screenFor(hostState) }); broadcast(true); return; }
     if (full.archive && !hostState.archive) hostState.archive = full.archive;
   });
   write(LS.room, { code, role: 'host' });
@@ -143,14 +143,14 @@ function onConn(state: Conn['state'], note = '') {
 
 function onMessage(m: any) {
   if (S.role === 'host') {
-    if (m.t === 'snapshot' && m.state && (!hostState || m.state.v > hostState.v) && m.state.code === S.code) { hostState = m.state; set({ game: viewFor(hostState!, S.me.id), screen: screenFor(hostState!) }); }
+    if (m.t === 'snapshot' && m.state && (!hostState || m.state.v > hostState.v) && m.state.code === S.code) { hostState = migrateLoaded(m.state); set({ game: viewFor(hostState!, S.me.id), screen: screenFor(hostState!) }); }
     if (m.t === 'presence') {
       if (m.online && m.pid !== S.me.id) runHost({ type: 'player/join', id: m.pid, name: m.name }, S.me.id, null);
       else if (!m.online && hostState?.players.some((p) => p.id === m.pid)) runHost({ type: 'player/online', id: m.pid, online: false }, S.me.id, null);
     }
     if (m.t === 'act') runHost(m.action, m.from, m.nonce);
   } else {
-    if (m.t === 'view') { const prev = S.game; set({ game: m.state, conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
+    if (m.t === 'view') { const prev = S.game; set({ game: migrateLoaded(m.state), conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
     if (m.t === 'err') toast(m.message);
     if (m.t === 'host') set({ conn: m.online ? 'online' : 'host-away' });
   }

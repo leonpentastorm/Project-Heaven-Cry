@@ -229,6 +229,7 @@ export function effectsOf(u) {
   const fx = [];
   if (u.dead) fx.push(['DEAD', 'Out of the fight for good.']);
   else if (u.downed) fx.push(['DOWNED', 'Death saves ' + (u.saves ? u.saves.ok + ' ✓ / ' + u.saves.fail + ' ✕' : '') + '. A stim stabilises.']);
+  if (u.hidden) fx.push(['HIDDEN', 'Enemies can\'t see you or aim at you, and your next attack is an ambush. Attacking, being hit, or an enemy ending its move next to you gives you away.']);
   if (u.bleed) fx.push(['BLEEDING', '5 damage at the start of each turn, ' + u.bleed + (u.bleed === 1 ? ' round' : ' rounds') + ' left. A stim stops it.']);
   if (u.dazedNext) fx.push(['DAZED', '−2 AP next turn.']);
   if (u.stunnedNext) fx.push(['OFF BALANCE', '−1 AP next turn (fumbled a strike).']);

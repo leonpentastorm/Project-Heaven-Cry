@@ -8,7 +8,7 @@ import {
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
+import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
@@ -433,12 +433,18 @@ function migrateFloor(g: GameState) {
   for (const f of list) dropOnTile(objectsOf(cb), f.pos, [magItem(f.weapon!, f.rounds || 0)]);
   if (cb.over && g.phase !== 'combat' && zoneMap(g).id === cb.map.id) for (const f of list) dropOnTile(storyObjects(g), f.pos, [magItem(f.weapon!, f.rounds || 0)]);
 }
+/** A save as it comes off the disk or the wire, before any screen draws it: renamed and removed perks and traits are
+ * settled on every sheet (the other migrations wait for the first action, as before). */
+export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
+  try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
+  return g;
+}
 export function apply(state: GameState, action: Action, by: string): GameState {
   const g: GameState = JSON.parse(JSON.stringify(state));
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
-    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
+    const cls0 = c.classId, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     if (c.classId !== cls0) refreshClassUnits(g, c); // migrated mid-fight: its units' held class and resources follow
     // rules 1.11 (item 930): a fight saved before the rank needed a level holds the old rank in its units; they follow the sheet
     else if (c.classId && (g.combat?.units || []).some((u) => u.charId === c.id && !u.companion && u.held && u.held.rank !== classRank(c))) refreshClassUnits(g, c);
