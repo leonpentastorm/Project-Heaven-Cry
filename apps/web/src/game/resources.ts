@@ -202,8 +202,10 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     rows.push({ key: 'off', label: 'Off-hand', value: n + ' / ' + cap + ' loaded' + (u.offMags ? ' · ' + plural(u.offMags.filter((x: number) => x > 0).length, 'spare') : ''), now: n, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body, sub: ow.name,
       ...(n <= 0 ? { warn: 'RELOAD' as ResWarn, level: 'alert' as const } : {}), hint: 'Rounds in the off-hand ' + (ow.name || 'gun').toLowerCase() + '. Reload both: one action.' });
   }
-  if (u && w && w.heat_limit && !infinite) {
-    const lim = heatLimit(u, w), h = u.heat || 0;
+  // (a blade in the main hand and a gun in the other: the gun's Heat is still yours to watch)
+  const offGun: any = u?.offWeapon ? (WEAPON as any)[u.offWeapon] : null, hw: any = w && w.heat_limit ? w : offGun && offGun.heat_limit ? offGun : null;
+  if (u && hw && !infinite) {
+    const lim = heatLimit(u, hw), h = u.heat || 0;
     const row: ResRow = { key: 'heat', label: 'Heat', value: h + ' / ' + lim, now: h, max: lim, kind: 'bar', colour: RES_INK.body,
       hint: 'Each shot heats the gun (single +1, burst +2, auto +4): −1 to hit per 2 Heat; it cools 2 at your turn start. At ' + lim + ' it jams.' };
     if (u.jammed) Object.assign(row, { warn: 'JAMMED', level: 'alert', hint: 'Jammed: Clear it (2 AP) before it fires again.' });

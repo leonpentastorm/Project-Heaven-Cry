@@ -138,6 +138,9 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   const wa = cur ? weaponActions(cur) : [], W = (id: string) => wa.find((x: any) => x.id === id);
   const offW: any = cur && cur.offWeapon ? (WEAPON as any)[cur.offWeapon] : null;
   const legacy = isLegacyUnit(cur);
+  // a gun in either hand: Reload and Clear jam are listed with the shots, on the Attack tab
+  const gunTab = !!cur && ((!!w && !melee && w.id !== 'fists') || (!!offW && !isMelee(offW)));
+  const clearItems: ActionItem[] = W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : [];
   const loadInfo = (() => { if (!cur || !w || w.reload !== 'magazine' || !cur.mags) return null; const cap = w.magazine || 0, open = cur.mags.filter((n: number) => n < cap).sort((a: number, b: number) => b - a); if (!open.length || !cur.loose) return null; const r = Math.min(cap - open[0], cur.loose, cur.ap * ROUNDS_PER_AP); return { rounds: r, ap: Math.ceil(r / ROUNDS_PER_AP) }; })();
   const mg = cur && cur.mg, words = mg ? mg.words || [] : [], designs = mg ? mg.designs || [] : [];
   const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator));
@@ -164,15 +167,17 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
           // a gun in the hand still hits: the butt of the weapon (the engine's bare-hand strike; Leon, 10 Nov 2026)
           ...(w && !melee ? [['melee', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee') + ' AP', 'An enemy next to you: d20 + Raw Power vs Defense, the damage of a bare-hand strike. No round spent, no Heat.'] as ActionItem] : [])]),
       ...(offW ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).'] as ActionItem] : []),
+      // with a gun in a hand, reloading and clearing a jam sit with the shots (Leon, 10 Nov 2026: no tab switch mid-fight)
+      ...(gunTab ? [...reloadItems(cur), ...clearItems] : []),
       ['shove', 'Shove', '2 AP', 'An adjacent enemy: d20 + Raw Power vs 10 + its best of Raw Power and Athletics. Pushed 1 tile, or prone if blocked. Shove them into fire.'],
       ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
       ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
     ['UTILITY', [
       // rules 1.12: what nails a unit in place (Run Through's pin) holds until 2 AP is spent to pull free
       ...pullFreeItems(cb, cur),
-      ...reloadItems(cur),
+      ...(gunTab ? [] : reloadItems(cur)),
       ...(W('load') ? [['load', W('load')!.label, loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : W('load')!.text, W('load')!.why] as ActionItem] : []),
-      ...(W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : []),
+      ...(gunTab ? [] : clearItems),
       ...(W('repair') ? [['repair', 'Field Repair', W('repair')!.ap + ' AP', 'Proficiency 3+, one spare-parts charge (' + (cur && cur.parts || 0) + ' left): +10% durability, +5% per Proficiency above 3. Weapon ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.', W('repair')!.why] as ActionItem] : []),
       ['pickup', 'Pick up', PICKUP_AP + ' AP', 'Take what you tick from the pile on your tile or next to it (the stack with a count): magazines with their rounds, loose rounds, weapons, whatever was dropped. Everything is ticked to start.', cur && cur.side === 'pc' && !cur.charId ? 'Only a character picks things up.' : cb && cur && !pileInReach(cb, cur) ? 'Nothing on the ground next to you.' : undefined],
       ['door', 'Open or close a door', '1 AP', 'An adjacent door. Closed, it blocks movement and sight. Locked doors need a check after the fight, or enough damage.'],

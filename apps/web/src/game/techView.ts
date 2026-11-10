@@ -63,7 +63,7 @@ export interface WeaponBlock {
 const chipOf = (e: PadEntry): TechChip => {
   const rounds = e.rounds === 'all' ? 'all rounds' : e.rounds ? e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
   const mark = e.signature ? '◆' : e.lent ? '◇' : '';
-  const markTitle = e.signature ? 'A signature you learned: yours with any weapon that can use it.' : e.lent ? 'This weapon\'s signature: lent while you hold it (drill it to keep it).' : '';
+  const markTitle = e.signature ? '' : e.lent ? 'This weapon\'s signature: lent while you hold it (drill it to keep it).' : '';
   const why = e.ok ? '' : (e.why || 'Not now.').replace(/\.+$/, '') + '.';
   // the property behind the line, explained in the engine's own words (its glossary): "Point: …"
   const ln = e.line ? (TECHNIQUE[e.id]?.lines || []).find((l: any) => l.text === e.line) : null;
@@ -98,7 +98,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
       pips = Array.from({ length: pv.momentum.max }, (_, i) => ({ key: 'm' + i, on: i < pv.momentum!.now }));
     } else if (system === 'ranged') {
       const loaded = hand === 'off' ? u.offAmmo ?? 0 : u.ammo ?? 0;
-      meter = (w.magazine != null ? loaded + ' / ' + w.magazine + ' loaded' : '') + (w.heat_limit ? (w.magazine != null ? ' · ' : '') + 'Heat ' + (hand === 'main' ? u.heat || 0 : 0) + ' / ' + w.heat_limit : '');
+      meter = (w.magazine != null ? loaded + ' / ' + w.magazine + ' loaded' : '') + (w.heat_limit ? (w.magazine != null ? ' · ' : '') + 'Heat ' + (hand === 'main' || !(WEAPON as any)[u.weapon]?.heat_limit ? u.heat || 0 : 0) + ' / ' + w.heat_limit : '');
     }
     return { hand, weaponId, name: (hand === 'main' ? u.weaponName : null) || w.name, icon: gearIconUri(weaponId), iconOff: gearIconUri(weaponId, GEAR_INK_OFF), system, meter, pips, meterHint,
       plain: plainE ? chipOf(plainE) : null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch };
