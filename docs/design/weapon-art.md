@@ -10,8 +10,8 @@ Two rulings from Leon on 10 Nov 2026:
 
 | Weapon | Icon |
 |---|---|
-| Hellraiser service rifle (`hellraiser_service_rifle`) | [`weapon-art/hellraiser_service_rifle.svg`](weapon-art/hellraiser_service_rifle.svg) |
-| Lumeri censer gun (`lumeri_censer_gun`) | [`weapon-art/lumeri_censer_gun.svg`](weapon-art/lumeri_censer_gun.svg) |
+| Hellraiser service rifle (`hellraiser_service_rifle`) | [`../../art/icons/weapons/hellraiser_service_rifle.svg`](../../art/icons/weapons/hellraiser_service_rifle.svg) |
+| Lumeri censer gun (`lumeri_censer_gun`) | [`../../art/icons/weapons/lumeri_censer_gun.svg`](../../art/icons/weapons/lumeri_censer_gun.svg) |
 
 ## The set
 
@@ -22,8 +22,9 @@ sheets, each icon at 96 px and at 32 px on the panel:
 - Weapons: [`weapon-art/weapons-sheet.png`](weapon-art/weapons-sheet.png)
 - Armour and shields: [`weapon-art/armour-sheet.png`](weapon-art/armour-sheet.png)
 
-The two reference drawings above are the first drafts; the shipped icons are the simplified versions in
-`art/icons/weapons/` (no floating parts: the bayonet shares the barrel's edge).
+Leon's follow-up (10 Nov 2026): "Simplify it just a lil bit, avoid floating bits like the bayonet on the rifle." So
+nothing floats: every stroke touches the silhouette (the bayonet shares the barrel's edge; no smoke, sparks or loose
+beads).
 
 ## The rule
 

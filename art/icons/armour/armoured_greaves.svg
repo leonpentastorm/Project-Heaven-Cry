@@ -1,9 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Armoured greaves -->
-  <g transform="translate(-5 0)">
-    <path d="M20 3 L35 3 L36 17 Q44 17 46 23 L52 26 L45 30 Q43 34 38 35 L39 48 L51 55 Q55 57 55 61 L28 61 L28 52 Q24 42 25 34 Q20 28 21 18 Z"/>
-    <path d="M36 17 Q31 26 38 35"/>
-    <path d="M25 34 L34.9 29.6"/>
-    <path d="M28 52 L44 52"/>
-  </g>
+  <!-- Armoured greaves: a shin plate in front view, a pointed knee cop and a flared ankle guard -->
+  <path d="M22 9 L32 3 L42 9 L43 17 Q32 21 21 17 Z"/>
+  <path d="M21 19 Q32 22 43 19 L41 49 L23 49 Z"/>
+  <path d="M32 21.5 L32 49"/>
+  <path d="M23 49 L18 58 L46 58 L41 49"/>
 </svg>

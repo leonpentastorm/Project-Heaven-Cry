@@ -1,9 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Hellraiser servo-fist -->
-  <g transform="translate(-1 -2)">
-    <path d="M12 24 L12 17 L14 17 L18.5 8 L22 17 L26 17 L30.5 8 L34 17 L38 17 L42.5 8 L46 17 L48 17 L48 20 L55 20 L55 50
-             L53 50 L53 61 L49 61 L49 50 L48 50 L42 53 L42 59 L20 59 L20 48 Q12 44 12 36 Z"/>
-    <path d="M12 24 L48 24 M48 20 L48 50"/>
-    <path d="M12 30 L32 30 Q37 30 37 35 Q37 40 32 40 L24 40 Q19 40 17 44"/>
-  </g>
+  <!-- Hellraiser servo-fist: an armoured fist in side view, punching right, a piston along the forearm and a spiked knuckle ram -->
+  <path d="M4 26 L24 24 L28 18 L48 18 L52 22 L52 46 L48 50 L28 50 L24 44 L4 42 Z"/>
+  <path d="M52 24 L59 27 L52 30 M52 33 L59 36 L52 39 M52 42 L59 45 L52 48"/>
+  <path d="M10 25.5 L10 18 L30 18"/>
+  <path d="M28 34 L44 34 L44 42"/>
+  <path d="M14 26 L14 42"/>
 </svg>
