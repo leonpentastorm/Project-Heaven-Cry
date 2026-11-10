@@ -34,7 +34,7 @@ import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, parseTech, padAction, techAction, TWATCH, TPAD, techPreview, previewLines, techPrompt, needsEnemy, needsTile, needsAlly, aimOf, ATTACK_MODES, isAttackMode } from '../game/techView';
 import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, perkInfoEntries, perkInfoCost, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, pullFreeTargets, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, perkInfoEntries, perkInfoCost, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { prayerView, vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD } from '../game/faithView';
@@ -1385,6 +1385,7 @@ export class CombatLogic extends DCLogic {
     if (a === 'repair') return act({ type: 'combat/repair', unitId: cur.id });
     if (a === 'song') return act({ type: 'combat/song', unitId: cur.id });
     if (a === 'brace') return act({ type: 'combat/brace', unitId: cur.id });
+    if (a === 'pullfree') { const ts = pullFreeTargets(cb, cur), t = (tgt && ts.find((x) => x.id === tgt.id)) || ts[0]; return t && act({ type: 'combat/pull-free', unitId: cur.id, targetId: t.id }); }
     if (a === 'overwatch') { const w = WEAPON[cur.weapon]; return act({ type: 'combat/overwatch', unitId: cur.id, mode: isMelee(w) ? 'melee' : 'shot' }); }
     if (a === 'shove') return tgt && act({ type: 'combat/shove', unitId: cur.id, targetId: tgt.id });
     if (a === 'clear') return act({ type: 'combat/clear', unitId: cur.id });

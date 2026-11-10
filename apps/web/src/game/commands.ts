@@ -166,6 +166,8 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
       ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
     ['UTILITY', [
+      // rules 1.12: what nails a unit in place (Run Through's pin) holds until 2 AP is spent to pull free
+      ...pullFreeItems(cb, cur),
       ...reloadItems(cur),
       ...(W('load') ? [['load', W('load')!.label, loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : W('load')!.text, W('load')!.why] as ActionItem] : []),
       ...(W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : []),
@@ -406,4 +408,19 @@ export function pickChoice(e: { options?: { id: string; label: string }[]; pickM
 /** Does this action want a detail (a pick, words, a name, what you say)? */
 export function wantsDetail(e: { options?: unknown[]; pickLabel?: string; target?: string }, pv?: { ok: boolean; why?: string } | null): boolean {
   return !!((e.options && e.options.length) || e.pickLabel || ['text', 'npc'].includes(e.target || '') || (pv && !pv.ok && /\b(name|pick|choose|type|say|word)/i.test(pv.why || '')));
+}
+
+/** Whom the unit could pull free now (rules 1.12): itself, an ally next to it, or a weapon left in someone next to it. */
+export function pullFreeTargets(cb: any, cur: any): any[] {
+  if (!cb || !cur) return [];
+  const near = (v: any) => { const [ax, ay] = cur.pos.split(',').map(Number), [bx, by] = v.pos.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)) <= 1; };
+  return (cb.units as any[]).filter((v) => v.nailed && v.hp > 0 && (v.id === cur.id || (near(v) && (v.side === cur.side || v.nailed.weapon))));
+}
+function pullFreeItems(cb: any, cur: any): ActionItem[] {
+  const ts = pullFreeTargets(cb, cur); if (!ts.length) return [];
+  const t = ts[0], ap = t.nailed.ap, self = t.id === cur.id;
+  const text = self ? 'You are nailed in place. Pull free: you can move again, and a weapon left in you drops at your feet.'
+    : t.side === cur.side ? 'Pull ' + t.name + ' free of what nails them in place. Pick them as the target if more than one is held.'
+      : 'Pull the weapon out of ' + t.name + ': it goes to a free hand, else to the ground. This frees them.';
+  return [['pullfree', self ? 'Pull free' : t.side === cur.side ? 'Pull an ally free' : 'Pull the weapon out', ap + ' AP', text, cur.ap < ap ? 'Needs ' + ap + ' AP.' : null] as ActionItem];
 }
