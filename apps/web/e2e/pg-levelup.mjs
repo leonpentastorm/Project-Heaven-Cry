@@ -5,7 +5,7 @@
 //    starts, and in it the tools are the floating drawer again;
 //  · level up as the character tree: a Core, an Attribute and a skill point spent with the +1 buttons, a perk step taken
 //    from the skill's own card, and the perk then reads as yours;
-//  · the Perks tab: Overdraw, Pure Heart and The Twin Pays (used from Pump, automatic, used from Begin) are rows to read,
+//  · the Perks tab: Overdraw, Pure Heart and The Twin Pays (a switch on a Pump, a passive, a switch on Begin) are rows to read,
 //    with no Confirm.
 // Screenshots: e2e/shots/pgl-*.png.
 import { chromium, player, click, BASE, OUT } from './lib.mjs';
@@ -129,13 +129,15 @@ ok('the Perks tab is there', (await perkTab.count()) === 1);
 await perkTab.click(); await p.waitForTimeout(300);
 const rows = await p.locator('[role="tabpanel"] button').allTextContents();
 const has = (re) => rows.some((t) => re.test(t.replace(/\s+/g, ' ')));
-ok('Overdraw, Pure Heart and The Twin Pays are listed to read (on Pump · automatic · on Begin)', has(/Overdraw.*on Pump/) && has(/Pure Heart.*automatic/) && has(/The Twin Pays.*on Begin/));
+// Rules 1.14, the perk card in a fight: a switch on another action says where it is; a passive shows a live line.
+ok('Overdraw, Pure Heart and The Twin Pays are listed to read (on a Pump · a live line · on Begin)', has(/Overdraw.*on a Pump/) && has(/Pure Heart.*(Ready|Waiting: |Used |Last: |Active all fight|Its button appears)/) && has(/The Twin Pays.*on Begin/));
+ok('the shelves are labelled, in order', (await p.locator('[role="tabpanel"] [data-shelf]').evaluateAll((els) => els.map((e) => e.getAttribute('data-shelf')).join(','))).replace(/^use,/, '') === 'rides,always');
 { const lab = await perkTab.getAttribute('aria-label'), m = /, (\d+) actions?, (\d+) to read/.exec(lab || ''), badge = (await perkTab.locator('span').last().textContent()).trim();
   ok('the Perks tab counts actions apart from rows to read (' + lab + '; badge ' + badge + ')', !!m && +m[2] >= 3 && badge === m[1]); }
 await p.locator('[role="tabpanel"] button', { hasText: 'Overdraw' }).first().click(); await p.waitForTimeout(300);
 const conf = p.getByRole('button', { name: /^Confirm/ });
 ok('picking Overdraw: no Confirm (hidden), End turn stays', (await conf.count()) === 0 || !(await conf.first().isVisible()));
-ok('…and the footer says where it is used', (await p.getByText(/Used from Pump: its chip is there/).count()) >= 1);
+ok('…and the footer says where its switch is', (await p.getByText(/is on a Pump: pick that action and the switch shows under it/).count()) >= 1);
 await snap('perks-tab');
 
 // ---------- 2. Level up: the character tree ----------

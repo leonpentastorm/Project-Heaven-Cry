@@ -348,6 +348,9 @@ describe('Occultist', () => {
     expect(s.g.story.rulings!.some((r) => /Ward Area/.test(r.text))).toBe(true);
     const f = fight([{ traits: ['occultist'] }]);
     f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'occultist', actionId: 'weakness', targetId: f.foe.id } as any);
+    // rules 1.14: in a fight it is the turn's attempt; the Narrator answers at once and the fight notes keep the answer
+    const r = (f.cb as any).ruling; expect(r.perk.key).toBe('trait:occultist'); expect(r.text).toMatch(/weakness/);
+    f.act({ type: 'narrator/fight-ruling', id: r.id, lines: ['Salt, and running water.'] } as any);
     expect((f.cb.notes || []).some((n) => /weakness/.test(n))).toBe(true);
     expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'occultist', actionId: 'ward_area' } as any)).toThrow();
   });

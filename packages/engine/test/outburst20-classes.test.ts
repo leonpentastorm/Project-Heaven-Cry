@@ -288,12 +288,12 @@ describe('Storm Hand: Infusion riders and Discharge (rules 1.5 section 8)', () =
 
 // =================================================================================================== Will Power unlocks
 describe('Will Power: Overdraw (item 539) and Pure Heart (item 540)', () => {
-  it('Overdraw: once a fight, a Pump adds 2 stages, and +1 Strain lands after it', () => {
+  it('Overdraw: a Pump adds 2 stages for its own AP (rules 1.14: once a turn, the first of a fight free of Strain; test/rules114-will-power.test.ts)', () => {
     const f = fightWith([{ ...SOUL, skills: { will_power: 3 } }], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 9;
     const d = give(f.unit(u.id), {}); A(f, f.unit(u.id), { type: 'combat/outburst', design: d }); const s0 = f.pc.mg!.strain;
     A(f, f.unit(u.id), { type: 'combat/pump', mods: ['skill:will_power.3#overdraw'] });
-    expect(f.pc.mg!.held!.stage).toBe(2); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.strain).toBe(s0 + 1); // rules 1.8: the fight's first Pump is free
-    A(f, f.unit(u.id), { type: 'combat/pump', mods: ['skill:will_power.3#overdraw'] }); expect(f.pc.mg!.held!.stage).toBe(3);
+    expect(f.pc.mg!.held!.stage).toBe(2); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.strain).toBe(s0); // rules 1.8: the fight's first Pump is free
+    A(f, f.unit(u.id), { type: 'combat/pump', mods: ['skill:will_power.3#overdraw'] }); expect(f.pc.mg!.held!.stage).toBe(3); // once a turn
   });
   it('Pure Heart: the first Strain that would short you this fight is refused; the Strain falls to the limit, no Stun', () => {
     const f = fightWith([{ ...SOUL, skills: { will_power: 5 } }], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 9;

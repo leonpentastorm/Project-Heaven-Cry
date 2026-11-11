@@ -72,7 +72,7 @@ describe('the Perks and Class tabs', () => {
   });
 });
 
-describe('the Perks tab: items used from another action are read-only (Leon, 9 Nov 2026)', () => {
+describe('the Perks tab: items used from another action are read-only (Leon, 9 Nov 2026; rules 1.14: the perk card in a fight)', () => {
   it('Overdraw, Pure Heart and The Twin Pays have no Confirm (no pk: action) but a row to read, and never become turn-card commands', () => {
     const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' }] }), f = fight(c);
     const gr = actionGroups(f.cb, f.u, c, { g: f.g }), rows = (gr.find((x) => x[3] === 'perks')?.[1] || []) as any[];
@@ -81,10 +81,28 @@ describe('the Perks tab: items used from another action are read-only (Leon, 9 N
     for (const k of keys) expect(rows.some((r) => r[0].startsWith(PK + k + '#'))).toBe(false);
     const ro = rows.filter((r) => r[0].startsWith(PKI));
     expect(ro.map((r) => r[0]).sort()).toEqual(keys.map((k) => PKI + k).sort());
-    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.3')).toMatchObject({ 1: 'Overdraw', 2: 'on Pump · 1/1 combat' });
-    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.5')![2]).toMatch(/^automatic/);
-    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![3]).toMatch(/^Used from Begin\. /);
+    // a switch on another action: where the switch is, and its uses (rules 1.14: Overdraw is once a turn)
+    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.3')).toMatchObject({ 1: 'Overdraw', 2: 'on a Pump · 1/1 turn' });
+    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![2]).toMatch(/^on Begin/);
+    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![3]).toMatch(/^No button here\. Its switch “[^”]+” is on Begin: pick that action and the switch shows under it\. /);
+    // a passive: a live line, never a cost
+    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.5')![2]).toMatch(/^(Ready|Waiting: |Used |Last: |Active all fight)/);
     expect(catalogue(f.cb, f.u, c, { g: f.g }).some((e) => e.action.startsWith(PKI))).toBe(false);
+  });
+  it('the rows come after the buttons, switches before passives (the shelves\' order)', () => {
+    const c = charWith({ perks: [{ id: 'used_to_the_pain', tier: 'I' }, { id: 'running_reload', tier: 'I' }, { id: 'earthbreaker', tier: 'mastered' }] }), f = fight(c);
+    const rows = (actionGroups(f.cb, f.u, c, { g: f.g }).find((x) => x[3] === 'perks')?.[1] || []) as any[];
+    expect(rows.map((r) => r[0])).toEqual([pkId({ id: 'perk:earthbreaker', actionId: 'earthbreaker' }), PKI + 'perk:running_reload', PKI + 'perk:used_to_the_pain']);
+  });
+  it('on an enemy\'s turn the list is that enemy\'s, and its passives are not shown: no Perks tab to read', () => {
+    const c = charWith({ perks: [{ id: 'used_to_the_pain', tier: 'I' }] }), f = fight(c), foe: any = f.cb.units.find((x: any) => x.side === 'foe');
+    foe.held = { perks: [{ id: 'last_wall', tier: 'mastered' }, { id: 'used_to_the_pain', tier: 'I' }], traits: ['pain_eater'] };
+    f.cb.turn = f.cb.order.indexOf(foe.id);
+    expect(actionGroups(f.cb, foe, null, { g: f.g }).some((x) => x[3] === 'perks')).toBe(false);
+  });
+  it('an item that only matters in the story is not on the fight\'s card', () => {
+    const c = charWith({ perks: [{ id: 'cultured', tier: 'achieved' }] }), f = fight(c);
+    expect(actionGroups(f.cb, f.u, c, { g: f.g }).some((x) => x[3] === 'perks')).toBe(false);
   });
 });
 

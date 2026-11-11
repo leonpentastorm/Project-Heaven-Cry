@@ -8,6 +8,18 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.21.0 — 11 November 2026
+
+Rules 1.14.
+
+- **Speaking in a fight does something.** Say is free and goes to the Narrator. **Attempt** (1 AP, once a turn) is for words that want something to happen: the Narrator answers at once in the log and may ask the game for exactly one thing: a check, one condition for a round (Shaken, Taunted, weapon lowered, Hesitates), a surrender, or a yes or no on a perk. The game checks the answer and keeps every number. With no Narrator connected the button is off and says why. Established Fact, Closing Argument, Their Own Idea and the Occultist's Look it up now go through this in a fight (they used to take their use and change nothing).
+- **Overdraw** is once a turn: a Pump adds 2 stages; the first of a fight costs no Strain, each one after it 1.
+- **Heart Overload** is rebuilt: once a turn, right after a Release at stage 2 or higher, Begin the same design again for 0 AP (tier II: it starts at stage 1). Short of mana, that Begin can be paid in HP. The Outburst row says when it is waiting.
+- **Resonance** is rebuilt: each Release makes your next one 10% stronger, to +20% (tier II: +30%, and an ally's Release you can see adds a step). The Release preview shows it.
+- **The perk card in a fight** has three shelves: Use now (buttons), Rides an action (where its switch is), Always on (with a live line: ready, used, waiting, or what it last did). Story-only perks are off the fight's card, and the tab counts only what you can press. Wall Run's strike and Company Man's extraction show the AP they really cost.
+- What the builders chose where the rules were silent: `docs/design/handoffs/rules-1.14-as-built.md`.
+- **Tools:** `npm run check`, `npm run try`, `npm run e2e`; `docs/TESTING.md` says which to use when.
+
 ## 0.20.0 — 11 November 2026
 
 The playtest pass. It goes live together with 0.19.1 below, which was merged but never deployed on its own.

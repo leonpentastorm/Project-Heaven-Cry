@@ -3524,14 +3524,14 @@
       ],
       "excludes": [],
       "ap_cost": null,
-      "uses": "at_will",
-      "text": "I: When you Begin an Outburst with an Emanator, you can choose Pay with HP: you pay its mana cost in HP instead, at 2 HP per point of mana. You can still hold and Pump it, but an Outburst paid for in blood can't heal or shield. II: When you Begin an Outburst with an Emanator, you can choose Pay with HP: you pay its mana cost in HP instead, at 1 HP per point of mana. You can still hold and Pump it, but an Outburst paid for in blood can't heal or shield.",
+      "uses": "per_turn",
+      "text": "I: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 0. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand. II: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
       "effects": [
         {
           "op": "alt_cost",
           "action": "soul_cast",
           "pay": "hp",
-          "rate": 2
+          "rate": 1
         }
       ],
       "tiers": {
@@ -3543,13 +3543,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "When you Begin an Outburst with an Emanator, you can choose Pay with HP: you pay its mana cost in HP instead, at 2 HP per point of mana. You can still hold and Pump it, but an Outburst paid for in blood can't heal or shield.",
+          "text": "Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 0. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
           "effects": [
             {
               "op": "alt_cost",
               "action": "soul_cast",
               "pay": "hp",
-              "rate": 2
+              "rate": 1
             }
           ]
         },
@@ -3561,7 +3561,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "When you Begin an Outburst with an Emanator, you can choose Pay with HP: you pay its mana cost in HP instead, at 1 HP per point of mana. You can still hold and Pump it, but an Outburst paid for in blood can't heal or shield.",
+          "text": "Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
           "effects": [
             {
               "op": "alt_cost",
@@ -3600,13 +3600,14 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Resonance adds +0.2 to your Outburst's release multiplier for each ally who released one earlier in the same round, up to +0.4. For you, allies who released in the round before count as well. II: Resonance adds +0.2 to your Outburst's release multiplier for each ally who released one earlier in the same round, up to +0.4. For you, allies who released in the round before count as well. Your own releases also count for your allies' Resonance in the round after.",
+      "text": "I: Each Outburst you Release gives your next Release in this fight +10% to its effect, building up to +20%. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round. II: Each Outburst you Release gives your next Release in this fight +10% to its effect, building up to +30%. An ally's Release that you can see adds a step too. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
       "effects": [
         {
           "op": "stat_mod",
-          "stat": "resonance_window_rounds",
-          "value": 1,
-          "context": "your releases"
+          "stat": "release_mult_pct",
+          "value": 10,
+          "limit": 20,
+          "context": "your next Release, for each Outburst you Release this fight"
         }
       ],
       "tiers": {
@@ -3618,13 +3619,14 @@
             }
           ],
           "ap_cost": null,
-          "text": "Resonance adds +0.2 to your Outburst's release multiplier for each ally who released one earlier in the same round, up to +0.4. For you, allies who released in the round before count as well.",
+          "text": "Each Outburst you Release gives your next Release in this fight +10% to its effect, building up to +20%. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
           "effects": [
             {
               "op": "stat_mod",
-              "stat": "resonance_window_rounds",
-              "value": 1,
-              "context": "your releases"
+              "stat": "release_mult_pct",
+              "value": 10,
+              "limit": 20,
+              "context": "your next Release, for each Outburst you Release this fight"
             }
           ]
         },
@@ -3636,13 +3638,14 @@
             }
           ],
           "ap_cost": null,
-          "text": "Resonance adds +0.2 to your Outburst's release multiplier for each ally who released one earlier in the same round, up to +0.4. For you, allies who released in the round before count as well. Your own releases also count for your allies' Resonance in the round after.",
+          "text": "Each Outburst you Release gives your next Release in this fight +10% to its effect, building up to +30%. An ally's Release that you can see adds a step too. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
           "effects": [
             {
               "op": "stat_mod",
-              "stat": "resonance_window_rounds",
-              "value": 1,
-              "context": "your releases and allies'"
+              "stat": "release_mult_pct",
+              "value": 10,
+              "limit": 30,
+              "context": "your next Release, for each Outburst you or an ally you can see Release this fight"
             }
           ],
           "replaces_tier_I": true,

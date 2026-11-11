@@ -8,7 +8,8 @@ import { fightPace } from '../game/combatSpeed';
 import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
-  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions, routeHazards, reloadBothAp, PILE, PICKUP_AP, STAGE_MULT, encoreCredit, FAITH_PATRON } from '@engine';
+  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions, routeHazards, reloadBothAp, PILE, PICKUP_AP, STAGE_MULT, encoreCredit, FAITH_PATRON,
+  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
@@ -35,8 +36,9 @@ import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, p
 import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { parseCall, callChips, callTile, callTakes, callPrompt, callPreviewOf, callLines, callReach, ORDER_THINGS, orderOpt, orderPicks, orderToggle, orderMax, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, pullFreeTargets, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, perkInfoEntries, perkInfoCost, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, pullFreeTargets, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
+import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { prayerView, vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
@@ -241,6 +243,25 @@ let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hi
 /** About how tall the hidden-panel turn mini-bar is (the grid keeps clear of it). */
 const MINI_H = 196;
 const CHIP = (on) => 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2');
+/** The Perks tab's shelves (rules 1.14, the perk card in a fight; game/perkShelves.ts). USE NOW is the tab's buttons,
+ *  so here it is only its heading; RIDES AN ACTION and ALWAYS ON are lists of rows to read: a name and one line (where
+ *  the switch is, or the live state), opening to the whole card when picked. Never a Confirm. items: the tab's own
+ *  rows (they carry the pick handler and the lock); sel: the row picked now. Empty shelves are left out.
+ *  Colour is meaning (docs/design/colour-system.md), always with the word: Ready green, Used muted, the rest text. */
+const SHELF_HEAD = 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2';
+const STATE_INK = { ready: '#6FEA77', used: '#A3AEC2', last: '#FFFFFF', waiting: '#C9D3E3', active: '#C9D3E3' };
+export function perkShelfVals(sh, items, sel) {
+  const byKey = {}; for (const a of items) byKey[a.key] = a;
+  const rowOf = (r) => { const a = byKey[PKI + r.key]; if (!a) return null; const on = sel === a.key;
+    return { key: a.key, name: r.name, line: r.line, text: r.detail, state: r.state || 'rides', open: on ? 'true' : 'false', isOpen: on, locked: a.locked, pick: a.pick, title: r.name + ': ' + r.line + (/[.!?…]$/.test(r.line) ? ' ' : '. ') + 'Pick it to read its card.',
+      style: 'display: flex; flex-direction: column; gap: 3px; padding: 5px 8px 5px 10px; border-left: 2px solid ' + (on ? '#FFFFFF' : '#232D3F') + '; border-radius: 0 6px 6px 0; background: ' + (on ? '#10151F' : 'transparent'),
+      btnStyle: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 32px; padding: 0; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer',
+      lineStyle: 'font-size: 11.5px; line-height: 1.3; font-weight: ' + (r.state === 'ready' || r.state === 'last' ? '700' : '500') + '; color: ' + (STATE_INK[r.state] || '#C9D3E3'),
+      textStyle: 'font-size: 12px; line-height: 1.4; color: #C9D3E3' }; };
+  const shelves = ['rides', 'always'].map((id) => ({ key: id, label: SHELF_LABEL[id], help: SHELF_HELP[id], headId: 'phc-shelf-' + id, headStyle: SHELF_HEAD, rows: sh[id].map(rowOf).filter(Boolean) })).filter((x) => x.rows.length > 0);
+  const hasUse = items.some((a) => !isPerkInfo(a.key));
+  return { hasUse, useLabel: SHELF_LABEL.use, useHelp: SHELF_HELP.use, useStyle: SHELF_HEAD, shelves };
+}
 /** The chosen perk or class move's picker in the combat footer (game/actionPickers.ts): option chips, a second pick on
  *  the grid (shown as chips you can clear), and a prose box only where the move needs words. Never a typed detail. */
 function pickerVals(self, cb, P, V, whyOpt) {
@@ -289,6 +310,44 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
   : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + n, t: condName(id) + ': ' + (condText(id) ? condText(id).replace(/\.?$/, '. ') : '') + n + (n === 1 ? ' round' : ' rounds') + ' left.',
     style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
   ...(u.shield > 0 ? [{ key: 'shield', k: '+' + u.shield + ' SHIELD', t: 'A shield of ' + u.shield + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
+
+/** Rules 1.14: the wait for the Narrator's answer to an attempt, as the fight screen shows it. Everyone sees who spoke
+ *  and the words; the host can end the wait (everything spent comes back); a human Narrator (the host, in "I'll narrate")
+ *  gets the four answers: a check with a skill and a TN, a condition on an enemy, a surrender, and yes or no on a perk,
+ *  each with a line of their own. The game checks every answer again before anything happens. */
+function fightTalkVals(self, g, cb, fr, who, hostMe, act) {
+  const name = who ? who.name : 'Someone', st = self.state.fr && self.state.fr.id === fr.id ? self.state.fr : { id: fr.id };
+  const set = (p) => self.setState({ fr: { ...st, ...p } });
+  const human = g.settings.mode === 'human';
+  const out = { show: true, id: fr.id, head: human && hostMe ? 'Your answer, Narrator' : 'The Narrator is deciding…',
+    words: name + (fr.perk ? ' · ' + fr.perk.name : ' attempts') + (fr.text ? ': “' + fr.text + '”' : ' (their words are hidden).'),
+    canSkip: hostMe, skip: () => act({ type: 'narrator/fight-skip', id: fr.id, note: 'The host ended the wait.' }),
+    skipTitle: 'End the wait with no answer. ' + name + ' gets back what this cost' + (fr.perk ? ' (the AP and the use)' : ' (' + fr.ap + ' AP)') + ' and may try again.', gm: { show: false } };
+  if (!human || !hostMe) return out;
+  const foes = cb.units.filter((x) => who && x.side !== who.side && !x.dead && !x.surrendered);
+  const tgt = foes.find((x) => x.id === st.target) || foes[0] || null, skill = st.skill || 'charisma', tn = Number(st.tn || 12), cond = st.cond || 'shaken', win = st.win || 'none', line = st.line || '';
+  const never = tgt && (tgt.tier === 'boss' || ['machine', 'robot', 'turret', 'drone'].includes(tgt.kind || '') || (tgt.tags || []).includes('no_surrender'));
+  const beaten = !!tgt && tgt.hp <= tgt.maxHp / 2;
+  const send = (effect) => { act({ type: 'narrator/fight-ruling', id: fr.id, lines: line.trim() ? [line.trim()] : [], ...(effect ? { effect } : {}) }); self.setState({ fr: null }); };
+  const earned = () => (win === 'condition' && tgt ? { onSuccess: { condition: { target: tgt.id, id: cond } } } : win === 'surrender' && tgt ? { onSuccess: { surrender: { target: tgt.id } } } : {});
+  const TN_NAME = { 8: 'Easy', 12: 'Standard', 16: 'Hard', 20: 'Heroic' };
+  out.gm = { show: true, hint: 'The fight waits for you. Write a line if you like, then pick one answer. A check comes first when the outcome is in doubt.' + (fr.perk && fr.perk.ask ? ' Your part: ' + fr.perk.ask : ''),
+    line, onLine: (e) => set({ line: e.target.value }),
+    btn: 'flex: none; min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer',
+    sel: 'min-height: 32px; max-width: 100%; padding: 0 6px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 12px; letter-spacing: 0',
+    sayOnly: () => send(null), sayOff: !line.trim(),
+    skills: Object.values(SKILLS_BY_ID).map((k) => ({ value: k.id, label: k.name })).sort((a, b) => a.label.localeCompare(b.label)), skill, onSkill: (e) => set({ skill: e.target.value }),
+    tns: TN_LADDER.map((n) => ({ value: String(n), label: 'TN ' + n + ' · ' + (TN_NAME[n] || '') })), tn: String(tn), onTn: (e) => set({ tn: Number(e.target.value) }),
+    wins: [{ value: 'none', label: 'A success earns: your words' }, ...(tgt ? [{ value: 'condition', label: 'A success earns: the condition below' }, ...(never ? [] : [{ value: 'surrender', label: 'A success earns: a surrender' }])] : [])], win, onWin: (e) => set({ win: e.target.value }),
+    check: () => send({ check: { skill, tn, ...earned() } }),
+    hasTargets: foes.length > 0, targets: foes.map((x) => ({ value: x.id, label: x.name + (x.hp <= x.maxHp / 2 ? ' (half HP or less)' : '') })), target: tgt ? tgt.id : '', onTarget: (e) => set({ target: e.target.value }),
+    conds: FIGHT_CONDS.map((c) => ({ value: c, label: FIGHT_COND_NAME[c] + (c === 'hesitates' ? ' (−1 AP next turn)' : c === 'taunted' ? ' (by ' + name + ')' : '') })), cond, onCond: (e) => set({ cond: e.target.value }),
+    condition: () => { if (tgt) send({ condition: { target: tgt.id, id: cond } }); },
+    surrender: () => { if (tgt) send({ surrender: { target: tgt.id } }); }, surrenderOff: !tgt || never || !beaten,
+    surrenderTitle: !tgt ? 'No enemy is left.' : never ? tgt.name + ' never surrenders.' : !beaten ? tgt.name + ' is above half HP: it gives up only after a successful check (set what a success earns).' : tgt.name + ' stops fighting. No roll.',
+    hasPerk: !!fr.perk, perkName: fr.perk ? fr.perk.name : '', yes: () => send({ perk: { accepted: true } }), no: () => send({ perk: { accepted: false } }) };
+  return out;
+}
 
 export class CombatLogic extends DCLogic {
   constructor(props) { super(props); this.state = { action: 'move', hover: null, target: null }; LIVE = this; }
@@ -937,7 +996,11 @@ export class CombatLogic extends DCLogic {
       style: 'height: 14px; border-radius: 4px; ' + (i < ap - Math.max(0, cost - encoreLend) ? 'background: #E7EBF3' : i < ap ? 'background: #E7EBF3; opacity: 0.45' : 'background: #1C2536') }));
     const mv = cur ? cur.movement : 1;
     // The one action list (game/commands.ts): the tabs show it, the turn card's commands and their customise dialog pick from it.
-    const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!g.sandbox, g }); // the Proving Ground has no Narrator to rule on anything
+    // Rules 1.14, the perk card in a fight: the Perks tab's shelves (game/perkShelves.ts). pkSince: where in the log this
+    // unit's last turn began, so a passive's line can say what it last did.
+    const pkSince = cur ? turnMark(cb, cur) : 0;
+    const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!g.sandbox, g, since: pkSince }); // the Proving Ground has no Narrator to rule on anything
+    let pkShelfMemo = null; const pkShelves = () => pkShelfMemo || (pkShelfMemo = perkShelves(g, cb, cur, ch, { since: pkSince }));
     const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: items.map(([id, label, costText, text, why]) => ({
       // A move that can't be used now still opens (its footer says why); its reason is on the button too.
       name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { techLine: null, techOpt: null, tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
@@ -1022,9 +1085,9 @@ export class CombatLogic extends DCLogic {
       const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!pkT)) ? (id) => { const was = bindGame(g); try { const r = previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { ...pkArgs, choice: id }, 'combat'); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } finally { bindGame(was); } } : null;
       Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
     }
-    // A read-only Perks row (an item used from another action's chip, or automatic): its text, and no Confirm.
-    const pkiE = isPerkInfo(S.action) && mineTurn ? perkInfoEntries(g, cb, cur, ch).find((e) => PKI + e.id === S.action) || null : null;
-    if (pkiE) { sel.name = pkiE.label + ' · ' + perkInfoCost(pkiE); sel.text = pkiE.via + (pkiE.via === 'Automatic' ? ': it works by itself. ' : ': its chip is there. ') + pkiE.text; sel.extra = 'Nothing to confirm here: this row is to read.'; }
+    // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
+    const pkiE = isPerkInfo(S.action) && mineTurn ? (() => { const sh = pkShelves(); return [...sh.rides, ...sh.always].find((r) => PKI + r.key === S.action) || null; })() : null;
+    if (pkiE) { sel.name = pkiE.name + ' · ' + SHELF_LABEL[pkiE.shelf]; sel.text = pkiE.detail; sel.extra = 'Nothing to confirm: this one is here to read.'; }
     if (pr) Object.assign(sel, pr.sel);
     // A technique (rules 1.12): its name and cost, what to pick next, then the engine's preview in words: each roll's
     // odds and damage, its notes, Momentum now → after, each unit's Pressure and state, any save and its TN.
@@ -1118,6 +1181,17 @@ export class CombatLogic extends DCLogic {
     const say = { can: !!myU && !cb.over, value: S.say || '', onChange: (e) => this.setState({ say: e.target.value }),
       send: () => { const text = (this.state.say || '').trim(); if (!text || !myU) return; act({ type: 'combat/say', charId: myU.charId, text }); this.setState({ say: '' }); } };
     say.submit = (e) => { if (e && e.preventDefault) e.preventDefault(); say.send(); }; // the Say button, or Enter in the box
+    // Rules 1.14: an attempt (words that want something to happen) costs 1 AP, once a turn, on your own turn, and the
+    // Narrator answers at once; the fight waits for it. Say stays free. The reason it can't be used is the engine's.
+    const fr = cb.ruling || null, frWho = fr ? cb.units.find((u) => u.id === fr.unit) : null, hostMe = getState().role === 'host';
+    { const mineNow = !!myU && mineTurn && cur && myU.id === cur.id;
+      const no = !myU ? '' : fr ? 'The Narrator is deciding.' : (mineTurn && typeof performance !== 'undefined' && turnsBusyUntil() > performance.now()) ? 'The other turns are still playing out.' : !mineNow ? 'Only on your own turn.' : attemptWhy(g, cb, myU, ATTEMPT_AP) || '';
+      say.attemptOff = !!no; say.attemptLabel = 'Attempt · ' + ATTEMPT_AP + ' AP';
+      say.attemptTitle = no || 'Words that want something to happen: talk an enemy down, call a bluff, shout a warning, try something the action list doesn\'t have. Costs ' + ATTEMPT_AP + ' AP, once a turn. The Narrator answers at once and the fight waits for the answer.';
+      say.attemptStyle = 'flex: none; min-height: 36px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-weight: 700; ' + (no ? 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; cursor: not-allowed' : 'border: 1px solid #FFFFFF; background: #FFFFFF; color: #0A0D13; cursor: pointer');
+      say.why = no && !fr && (S.say || '').trim() ? '✕ Attempt: ' + no : '';
+      say.attempt = () => { const text = (this.state.say || '').trim(); if (!text || !myU || no) return; act({ type: 'combat/attempt', unitId: myU.id, text }); this.setState({ say: '' }); }; }
+    const talk = fr && !cb.over ? fightTalkVals(this, g, cb, fr, frWho, hostMe, act) : { show: false, gm: { show: false } };
     // The magic pads under the action list: the glyph keyboard (Draw) and your Outburst designs.
     const padBtn = (on, ink) => 'flex: 1; min-height: 36px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid ' + ink + '; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: #10151F; color: #A3AEC2');
     const pad = {
@@ -1254,13 +1328,15 @@ export class CombatLogic extends DCLogic {
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
-      items: tabG.items.filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+      // Rules 1.14, the perk card in a fight: three shelves. USE NOW is the buttons below; the other two are lists to read.
+      ...(tabG.id === 'perks' ? perkShelfVals(pkShelves(), tabG.items, rowSel) : { hasUse: false, useLabel: '', useHelp: '', shelves: [] }),
+      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
     const holdUntil = mineTurn && typeof performance !== 'undefined' ? turnsBusyUntil() : 0, holding = holdUntil > performance.now();
     if (holding && !this._holdTimer) this._holdTimer = setTimeout(() => { this._holdTimer = null; if (LIVE === this) this.setState({}); }, Math.ceil(holdUntil - performance.now()) + 30);
-    const lock = cb.over ? '' : holding ? 'held' : !mineTurn ? 'wait' : '';
-    const lockMsg = lock === 'held' ? 'The other turns are still playing out…' : lock === 'wait' ? (cur && cur.side === 'foe' ? 'Hostiles acting…' : cur ? 'Waiting for ' + cur.name + '…' : 'Waiting…') : '';
+    const lock = cb.over ? '' : holding ? 'held' : !mineTurn || fr ? 'wait' : ''; // rules 1.14: the panel is locked while the Narrator decides
+    const lockMsg = fr && lock === 'wait' ? 'The Narrator is deciding…' : lock === 'held' ? 'The other turns are still playing out…' : lock === 'wait' ? (cur && cur.side === 'foe' ? 'Hostiles acting…' : cur ? 'Waiting for ' + cur.name + '…' : 'Waiting…') : '';
     const vowV = vowPromptVals(this, g, cb, cur, mineTurn, act); this._vow = vowV.show ? vowV : null;
     // The backpack (rules 1.9, World Play: Gear in a fight): hands, light armour, the pack and the unit's ammo, each row
     // with its action and the engine's cost (game/backpack.ts); greyed with the engine's reason off-turn or AP short.
@@ -1338,7 +1414,7 @@ export class CombatLogic extends DCLogic {
       ...shellVals(this, 'combat'),
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
-      initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
+      initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, talk, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
       // The whole fight (the last 120 lines), newest first: the box is a reversed column, so it rests on the newest line
       // and scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).
       // …and only the lines written before the effect now playing: the log keeps step with what is on screen.

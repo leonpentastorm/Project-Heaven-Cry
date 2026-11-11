@@ -7,3 +7,4 @@ apps/web/public/assets/
 dist/
 node_modules/
 .claude/worktrees/
+.check/
