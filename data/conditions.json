@@ -715,7 +715,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "A wound from a critical hit (spec: Injuries). Head: Dazed for 1 turn. Torso: Bleeding. Arm: −2 to attacks with it. Leg: half Movement. Arm and leg injuries last until treated (a long rest with a Medic, surgery).",
+      "text": "A wound from a critical hit. Head: Dazed for 1 turn. Torso: Bleeding. Arm: −2 to attacks with it. Leg: half Movement. Arm and leg injuries last until treated (a long rest with a Medic, surgery).",
       "params": {
         "location": [
           "head",

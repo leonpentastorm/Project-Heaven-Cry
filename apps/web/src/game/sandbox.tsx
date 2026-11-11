@@ -990,7 +990,7 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
         <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Enemy weapon" style={{ ...field, flex: 1 }}>{WEAPONS.filter((w) => w.category !== 'thrown').map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
       </div>
       <div style={row}>
-        <select value={caster} onChange={(e) => { const c = CASTER[e.target.value]; setCaster(e.target.value); if (c) { setTier(c.tier); setWeapon(c.weapon); } }} aria-label="Sigil caster" style={{ ...field, flex: 1 }} title="A Sigil caster fights with an Evoker and its words (rules 1.4)">
+        <select value={caster} onChange={(e) => { const c = CASTER[e.target.value]; setCaster(e.target.value); if (c) { setTier(c.tier); setWeapon(c.weapon); } }} aria-label="Sigil caster" style={{ ...field, flex: 1 }} title="A Sigil caster fights with an Evoker and its words">
           <option value="">No Sigils</option>{CASTERS.map((c) => <option key={c.id} value={c.id}>{c.name} · {c.tier} · {c.sigils.map((w) => w.toUpperCase()).join(' ')}</option>)}
         </select>
       </div>

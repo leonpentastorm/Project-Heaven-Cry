@@ -43,7 +43,7 @@
         "diagonal"
       ],
       "bends": false,
-      "group": "a stroke: the glyphs drawn as one Line (each glyph records its strokeId); glyphs of other strokes never join, poison or block it (rules 1.10). Old glyphs with no strokeId keep the 1.4 reading: glyphs of one side that touch (diagonals too); a group that isn't one straight row of 2-4 is no shape",
+      "group": "a stroke: the glyphs drawn as one Line (each glyph records its strokeId); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the 1.4 reading: glyphs of one side that touch (diagonals too); a group that isn't one straight row of 2-4 is no shape",
       "stroke": {
         "extends": "a new glyph extends a stroke when it is next to the stroke's end glyph and continues its axis (same direction), and the stroke has fewer than max glyphs; a 1-glyph stroke extends in any of the 8 directions",
         "otherwise": "a new stroke, even if it touches other glyphs",
@@ -55,7 +55,7 @@
       "junction": {
         "gate_skill": "brain_power",
         "gate_points": 10,
-        "text": "at Brain Power Mastered, a glyph may belong to two strokes (a crossing): it extends two strokes at once, or extends one and starts a new one; evoking either Line counts it as a word of that Line, and it fades when the second Line is Evoked (rules 1.10, items 917-920)",
+        "text": "at Brain Power Mastered, a glyph may belong to two strokes (a crossing): it extends two strokes at once, or extends one and starts a new one; evoking either Line counts it as a word of that Line, and it fades when the second Line is Evoked",
         "provisional": true
       }
     },
@@ -178,7 +178,7 @@
       }
     ],
     "study": {
-      "text": "Rules 1.10 (Sigil 1.5): every Evoke earns study (base, +1 per glyph past 2, +1 if it struck an enemy; a fizzle earns none). At the first threshold, then every step more, the character may learn a word of their choice within the cap; picks with no free slot are banked. Copying a glyph or a scuffed glyph's trace (Read, or Analyzing the enemy that drew it) gives copy study and puts the word on the known-to-study list, once per glyph per character. Each Mastery level of the mastery skills gives mastery_study once; Mastered gives one free word over the cap, once per skill.",
+      "text": "Every Evoke earns study (base, +1 per glyph past 2, +1 if it struck an enemy; a fizzle earns none). At the first threshold, then every step more, the character may learn a word of their choice within the cap; picks with no free slot are banked. Copying a glyph or a scuffed glyph's trace (Read, or Analyzing the enemy that drew it) gives copy study and puts the word on the known-to-study list, once per glyph per character. Each Mastery level of the mastery skills gives mastery_study once; Mastered gives one free word over the cap, once per skill.",
       "per_evoke": 1,
       "per_glyph_past_2": 1,
       "hit_enemy": 1,
@@ -202,7 +202,7 @@
       "provisional": true
     },
     "word_mastery": {
-      "text": "Rules 1.10: every Evoke that includes a word you know adds 1 to its use count (repeats once). Practised at practised uses; a Mastered word at mastered uses turns its inflection on for you.",
+      "text": "Every Evoke that includes a word you know adds 1 to its use count (repeats once). Practised at practised uses; a Mastered word at mastered uses turns its inflection on for you.",
       "practised": 10,
       "mastered": 30,
       "provisional": true

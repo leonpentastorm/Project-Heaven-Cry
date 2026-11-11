@@ -1090,7 +1090,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
         "also_uses": [
           "mp"
         ]
@@ -1242,7 +1242,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
         "also_uses": [
           "mp"
         ]

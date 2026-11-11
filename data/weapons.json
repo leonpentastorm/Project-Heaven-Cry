@@ -3309,7 +3309,7 @@
       ],
       "grants": {
         "name": "Staff Evoker",
-        "text": "Counts as an Evoker while held in both hands. The Grand Sigilist plants a staff to raise a Grand form (spec item 634).",
+        "text": "Counts as an Evoker while held in both hands. The Grand Sigilist plants a staff to raise a Grand form.",
         "effect": {
           "op": "narrator"
         }
@@ -3358,7 +3358,7 @@
       "mastery_family": "unarmed",
       "hands": "1H",
       "grants": null,
-      "lore": "A beast companion's own weapon (rules 1.3; provisional).",
+      "lore": "A beast companion's own weapon.",
       "type": "fists",
       "companion_only": true,
       "provisional": true,

@@ -106,10 +106,10 @@ const CONDS: Record<string, CondDef> = {
   quickened: { name: 'Quickened', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 AP on your next turn (within the ceiling of 9).' },
   sharpened: { name: 'Sharpened', fam: 'body', rounds: 1, boon: true, text: 'Your next attack: +3 to hit and ×1.25 damage (until that attack, or the end of your next turn).' },
   // Rules 1.6.3 (item 738): until the fight ends or the patron intervenes (faith.ts ends it), so it never ticks.
-  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 99, noTick: true, boon: true, text: 'Your patron is watching (rules 1.6.3) until the fight ends or it intervenes: attack rolls carrying a tag your patron likes +2; taboo actions cost double Devotion XP.' },
+  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 99, noTick: true, boon: true, text: 'Your patron is watching until the fight ends or it intervenes: attack rolls carrying a tag your patron likes +2; taboo actions cost double Devotion XP.' },
   smitten: { name: 'Smitten', fam: 'heart', rounds: 1, text: 'You can\'t attack the one who smote you, or the allies linked to them (Sweet Nothings).' },
-  hopeful: { name: 'Hopeful (+2)', fam: 'heart', rounds: 1, boon: true, text: 'Your next attack or spell roll gets +2 (Hope, rules 1.8).' },
-  scorned: { name: 'Scorned', fam: 'heart', rounds: 2, noSave: true, text: '−2 to attack the one who scorned you (Contempt, rules 1.8).' },
+  hopeful: { name: 'Hopeful (+2)', fam: 'heart', rounds: 1, boon: true, text: 'Your next attack or spell roll gets +2 (Hope).' },
+  scorned: { name: 'Scorned', fam: 'heart', rounds: 2, noSave: true, text: '−2 to attack the one who scorned you (Contempt).' },
 };
 /** Data and older ids for the same conditions (conditions.json uses the long names). */
 const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brain_debuff: 'rdebuff', afraid: 'fear', stun: 'stunned', braced: 'emplaced' };
@@ -241,7 +241,7 @@ export function unitStrength(u: Unit | null | undefined, via?: string | null): n
   if (!tbl) return TIER_DEBUFF[u.tier || 'minion'] ?? 0;
   if ('*' in tbl) return tbl['*'];
   const v = viaOf(u, via);
-  if (!v) { if (STRICT_VIA.on) throw new Error('A condition from ' + u.name + ' names no source skill (rules 1.13).'); return 0; }
+  if (!v) { if (STRICT_VIA.on) throw new Error('A condition from ' + u.name + ' names no source skill.'); return 0; }
   return tbl[v] ?? 0;
 }
 const saveOf = unitSave;

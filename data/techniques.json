@@ -377,7 +377,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "One strike. Everyone knows it; it never takes a ready slot.",
+      "text": "One strike with your weapon. Every fighter knows it, and it is always ready.",
       "lines": [
         {
           "props": [
@@ -717,7 +717,7 @@
             "bare",
             "blunt"
           ],
-          "text": "not available (greyed, with the reason).",
+          "text": "can't be used with this weapon.",
           "match": "any"
         }
       ],
@@ -1226,7 +1226,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Roll your attack skill against the attacker's total. If you win, the hit is halved. A shield in the off hand adds +2.",
+      "text": "When a melee attack hits you: roll your attack skill against the attacker's roll. If you win, the hit does half damage. A shield in your off hand adds +2 to your roll. Uses your reaction.",
       "trigger": "a melee attack hits you",
       "lines": [
         {
@@ -1267,7 +1267,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Strike back for 0 AP.",
+      "text": "When a melee attack misses you: strike back at the attacker for 0 AP. Uses your reaction.",
       "trigger": "a melee attack misses you",
       "lines": [
         {
@@ -1275,7 +1275,7 @@
             "edge",
             "point"
           ],
-          "text": "+2 to hit.",
+          "text": "the strike back is at +2 to hit.",
           "match": "any"
         }
       ],
@@ -1301,7 +1301,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Strike it first. If you hit, it makes a Body save or stops where it is.",
+      "text": "When an enemy steps into your reach: you strike it first. If you hit, it makes a Body save or stops where it is and can't come closer this move. Uses your reaction.",
       "trigger": "an enemy steps into your reach",
       "lines": [
         {
@@ -1342,7 +1342,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "One shot. Everyone knows it; it takes no ready slot.",
+      "text": "One shot with your weapon. Every shooter knows it, and it is always ready.",
       "lines": [
         {
           "props": [
@@ -1390,13 +1390,13 @@
           "props": [
             "quick"
           ],
-          "text": "no penalty."
+          "text": "no −2."
         },
         {
           "props": [
             "heavy"
           ],
-          "text": "not available."
+          "text": "can't be used with this weapon."
         }
       ],
       "free": false,
@@ -1426,19 +1426,19 @@
       },
       "rounds": 3,
       "needs": {},
-      "text": "Two rolls at one target, the second at −2.",
+      "text": "Two shots at one target. The second is at −2 to hit.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "three rolls, and it may split between two adjacent targets."
+          "text": "three shots, and you may split them between two targets standing next to each other."
         },
         {
           "props": [
             "quick"
           ],
-          "text": "no −2."
+          "text": "the second shot has no −2."
         }
       ],
       "free": false,
@@ -1473,19 +1473,19 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "+2 to hit.",
+      "text": "A careful shot at +2 to hit.",
       "lines": [
         {
           "props": [
             "precise"
           ],
-          "text": "+3, and a critical on 18–20 if you haven't moved."
+          "text": "+3 to hit instead, and a critical hit on 18 to 20 if you haven't moved this turn."
         },
         {
           "props": [
             "drawn"
           ],
-          "text": "full draw, +25% damage."
+          "text": "a full draw: +25% damage."
         }
       ],
       "free": true,
@@ -1521,21 +1521,21 @@
           "props": [
             "precise"
           ],
-          "text": "no penalty."
+          "text": "no −2."
         },
         {
           "props": [
             "loud",
             "heavy"
           ],
-          "text": "leg is Prone instead.",
+          "text": "a leg shot knocks the target Prone instead of Slowing it.",
           "match": "any"
         },
         {
           "props": [
             "spread"
           ],
-          "text": "only within 4 tiles."
+          "text": "can only be used within 4 tiles."
         }
       ],
       "free": false,
@@ -1581,7 +1581,7 @@
           "props": [
             "heavy"
           ],
-          "text": "not available."
+          "text": "can't be used with this weapon."
         }
       ],
       "free": false,
@@ -1616,7 +1616,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "Half cover counts −2, not −5, and the cover takes the damage as well.",
+      "text": "Shoot through half cover: it only gives the target −2 to be hit, not −5, and the cover takes the damage too.",
       "lines": [
         {
           "props": [
@@ -1750,7 +1750,7 @@
       },
       "rounds": 3,
       "needs": {},
-      "text": "One roll at +2. A hit is half damage and +2 Pressure; a miss is +1.",
+      "text": "Fire to keep a target's head down: one roll at +2 to hit. A hit does half damage and gives it 2 Pressure. A miss still gives it 1 Pressure.",
       "lines": [
         {
           "props": [
@@ -1769,7 +1769,7 @@
           "props": [
             "silent"
           ],
-          "text": "hits only."
+          "text": "it gives Pressure only on a hit."
         }
       ],
       "free": false,
@@ -1803,13 +1803,13 @@
       },
       "rounds": 6,
       "needs": {},
-      "text": "Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit.",
+      "text": "Sweep fire across up to 3 targets that stand within 2 tiles of each other. Each shot is at −3 to hit, and each hit gives 1 Pressure.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "a full-auto cone for 10 rounds: one roll at −2 against every enemy near the line to your target; +1 Pressure hit or miss."
+          "text": "full auto: 10 rounds in a cone. One roll at −2 against every enemy near the line to your target; each gains 1 Pressure, hit or miss."
         },
         {
           "props": [
@@ -1855,7 +1855,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "No attack. The target makes a Heart save or gains +1 Pressure.",
+      "text": "A shot to frighten, not to hit. The target makes a Heart save or gains 1 Pressure.",
       "lines": [
         {
           "props": [
@@ -1867,7 +1867,7 @@
           "props": [
             "silent"
           ],
-          "text": "not available."
+          "text": "can't be used with this weapon."
         }
       ],
       "free": false,
@@ -1898,7 +1898,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "Hit the target's cover (no roll; the cover takes the damage). The target gains +2 Pressure.",
+      "text": "Shoot the target's cover, not the target. No roll: the cover takes the damage, and the target gains 2 Pressure.",
       "lines": [
         {
           "props": [
@@ -1968,7 +1968,7 @@
           "props": [
             "drawn"
           ],
-          "text": "not available."
+          "text": "can't be used with this weapon."
         }
       ],
       "free": false,
@@ -2166,7 +2166,7 @@
           "props": [
             "drawn"
           ],
-          "text": "not needed (any arrow, every shot)."
+          "text": "not needed: you pick any arrow for every shot."
         },
         {
           "props": [
@@ -2238,19 +2238,19 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "−2 Heat now.",
+      "text": "Cool the weapon: −2 Heat now.",
       "lines": [
         {
           "props": [
             "heavy"
           ],
-          "text": "−4 (a barrel swap)."
+          "text": "−4 Heat (a barrel swap)."
         },
         {
           "props": [
             "drawn"
           ],
-          "text": "not needed."
+          "text": "this weapon has no Heat to cool."
         }
       ],
       "free": false,
@@ -2280,7 +2280,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Remove 1 Pressure from yourself, 2 behind full cover. You can't Watch this round.",
+      "text": "Duck: remove 1 Pressure from yourself, or 2 if you are behind full cover. You can't hold a shot (Overwatch and the like) this round.",
       "lines": [],
       "free": false,
       "comes_with": [],
@@ -2410,13 +2410,13 @@
           "props": [
             "loud"
           ],
-          "text": "−2 more."
+          "text": "the save is at −2."
         },
         {
           "props": [
             "blast"
           ],
-          "text": "everyone Pressed in the radius."
+          "text": "every Pressed enemy in the blast must save."
         }
       ],
       "free": false,
@@ -2455,14 +2455,14 @@
             "loud",
             "heavy"
           ],
-          "text": "pushed 2.",
+          "text": "the target is pushed 2 tiles instead of 1.",
           "match": "any"
         },
         {
           "props": [
             "spread"
           ],
-          "text": "pushed 2 and Prone either way.",
+          "text": "within 4 tiles the target is pushed 2 tiles and knocked Prone, save or no save.",
           "when": "within_4"
         }
       ],
@@ -2583,26 +2583,26 @@
       },
       "rounds": 1,
       "needs": {},
-      "trigger": "the first enemy to move in your sight",
-      "text": "the held shot",
+      "trigger": "an enemy moves where you can see it",
+      "text": "Hold your shot. The first enemy that moves where you can see it is shot at once, on its own turn. This uses your reaction and lasts until your next turn.",
       "lines": [
         {
           "props": [
             "precise"
           ],
-          "text": "+2."
+          "text": "The held shot is at +2 to hit."
         },
         {
           "props": [
             "auto"
           ],
-          "text": "it is a Burst."
+          "text": "The held shot is a Burst of three."
         },
         {
           "props": [
             "spread"
           ],
-          "text": "anyone coming within 4 tiles."
+          "text": "It only fires at an enemy that comes within 4 tiles of you."
         }
       ],
       "free": true,
@@ -2630,21 +2630,21 @@
       },
       "rounds": 1,
       "needs": {},
-      "trigger": "the first enemy to enter a tile you name",
-      "text": "the shot; on a hit it stops there",
+      "trigger": "an enemy steps onto the tile you picked",
+      "text": "Pick a tile. The first enemy that steps onto it is shot at once. If the shot hits, that enemy stops there and loses the rest of its move. This uses your reaction and lasts until your next turn.",
       "lines": [
         {
           "props": [
             "heavy"
           ],
-          "text": "any tile in a straight line of 3.",
+          "text": "While braced, you guard a row of 3 tiles instead of one.",
           "when": "braced"
         },
         {
           "props": [
             "blast"
           ],
-          "text": "the tile takes the blast."
+          "text": "The shot goes off as a blast on that tile."
         }
       ],
       "free": false,
@@ -2671,20 +2671,20 @@
       },
       "rounds": 1,
       "needs": {},
-      "trigger": "the first enemy to attack an ally you name",
-      "text": "that attack is at −2, and the enemy gains +1 Pressure",
+      "trigger": "an enemy attacks the ally you picked",
+      "text": "Pick an ally. The first enemy that attacks them does it at −2 to hit and gains 1 Pressure. This uses your reaction and lasts until your next turn.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "two allies."
+          "text": "You cover two allies instead of one."
         },
         {
           "props": [
             "precise"
           ],
-          "text": "you also take the shot."
+          "text": "You also shoot the attacker."
         }
       ],
       "free": false,
@@ -2713,20 +2713,20 @@
       },
       "rounds": 1,
       "needs": {},
-      "trigger": "a Pressed enemy you name attacks, stands up, reloads or leaves cover",
-      "text": "the shot lands first, at +2",
+      "trigger": "the Pressed enemy you picked attacks, stands up, reloads or leaves cover",
+      "text": "Pick a Pressed enemy. The moment it attacks, stands up, reloads or leaves cover, you shoot first, at +2 to hit. This uses your reaction and lasts until your next turn.",
       "lines": [
         {
           "props": [
             "precise"
           ],
-          "text": "a critical on 18–20."
+          "text": "The shot is a critical hit on a roll of 18 to 20."
         },
         {
           "props": [
             "silent"
           ],
-          "text": "you stay Hidden."
+          "text": "You stay Hidden after the shot."
         }
       ],
       "free": false,
@@ -2840,7 +2840,7 @@
       "needs": {
         "shield": true
       },
-      "text": "Spend 1 Guard: your ally counts as behind half cover against that attack.",
+      "text": "When an ally next to you is shot at: spend 1 Guard and your reaction, and that ally counts as behind half cover against the shot (−5 to hit them).",
       "trigger": "an ally next to you is the target of a ranged attack",
       "lines": [],
       "free": false,
@@ -2869,7 +2869,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Spend 1 Guard: you take the hit instead. Your armour applies, and the Guard you have left soaks it.",
+      "text": "When an ally next to you is hit: spend 1 Guard and your reaction, and you take the hit instead. Your armour applies, and the Guard you have left soaks it.",
       "trigger": "an ally next to you is hit by an attack",
       "lines": [],
       "free": false,

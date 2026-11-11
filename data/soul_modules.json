@@ -33,7 +33,7 @@
       }
     ],
     "provisional": true,
-    "text": "Begin (2 AP, Swift 1) opens a ready design at stage 0 (+1 Strain). Pump (1 AP) +1 stage, to 4, plain or with a feeling (rules 1.8). Release (1 AP) fires it: x0.8 / 1 / 1.4 / 1.8 / 2.2. Held past your turn: +1 stage free at your next turn start (the swell), +1 Strain (+2 Flooded). The first Pump each fight is free; Empathy 3: 1 free Pump a round; Empathy 7: 2. Revert Pump (0 AP) undoes the last pump this turn.",
+    "text": "Begin (2 AP, Swift 1) opens a ready design at stage 0 (+1 Strain). Pump (1 AP) +1 stage, to 4, plain or with a feeling. Release (1 AP) fires it: x0.8 / 1 / 1.4 / 1.8 / 2.2. Held past your turn: +1 stage free at your next turn start (the swell), +1 Strain (+2 Flooded). The first Pump each fight is free; Empathy 3: 1 free Pump a round; Empathy 7: 2. Revert Pump (0 AP) undoes the last pump this turn.",
     "first_pump_free": true
   },
   "strain": {
@@ -68,7 +68,7 @@
       {
         "id": "letgo",
         "strain": "-stage",
-        "text": "Let it go (free, on your turn): drop the held Outburst; Strain falls by its stage, at most the Strain its swells cost (item 541); the meter +1."
+        "text": "Let it go (free, on your turn): drop the held Outburst; Strain falls by its stage, at most the Strain its swells cost; the meter +1."
       },
       {
         "id": "steady",
@@ -132,8 +132,8 @@
     "module_slots": "1 + floor(will_power/3)",
     "forms_per_design": 1,
     "two_schools_from_will_power": 5,
-    "ready_designs": "max(3, 2 + floor(empathy/2)) (rules 1.8: at least 3)",
-    "tones": "one at Lore Master 1 (rules 1.8; was Visualization 1); more from tutors or plates"
+    "ready_designs": "max(3, 2 + floor(empathy/2)): at least 3",
+    "tones": "one at Lore Master 1; more from tutors or plates"
   },
   "notes": "Every number from rules 1.5 is provisional until the damage balance pass. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead.",
   "schools": [
@@ -675,7 +675,7 @@
       "family": "behaviour",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Begin costs 1 AP instead of 2 (rules 1.5).",
+      "text": "Begin costs 1 AP instead of 2.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "gate": {

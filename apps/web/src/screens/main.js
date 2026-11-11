@@ -173,7 +173,7 @@ function magicVals(self, g, c) {
     canFree: canFree && !fight, freeLabel: picking === 'free' ? 'Close' : 'Take a free word (' + GV.free + ')', openFree: () => self.setState({ mgLearn: picking === 'free' ? null : 'free' }),
     why: studyWhy, hasWhy: !!studyWhy, picking: !!picking, pickHead: picking === 'free' ? 'A FREE WORD (MASTERY): IT IGNORES THE CAP' : 'LEARN A WORD · ' + GV.known + ' / ' + GV.cap + ' KNOWN', pick: pickWs,
     hasToStudy: GV.toStudy.length > 0, toStudy: GV.toStudy.filter((x) => SIGIL[x]).map((id) => ({ key: id, word: SIGIL[id].word, img: glyphUri(id, SIGIL_INK), title: SIGIL[id].text })) };
-  const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (old words retired in rules 1.4)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', handWord(evoAt)], ['Evoker charge', evoC ? N.charge + ' / ' + CORE_CHARGE : '—'],
+  const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (for old words that were retired)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', handWord(evoAt)], ['Evoker charge', evoC ? N.charge + ' / ' + CORE_CHARGE : '—'],
     ['Spare cores', String(N.cores)], ['Flux', N.flux + ' / ' + FLUX_MAX + (N.flux >= FLUX_MAX - 1 ? ' · vent soon' : '')], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
