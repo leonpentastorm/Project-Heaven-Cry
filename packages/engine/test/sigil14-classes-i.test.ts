@@ -2,6 +2,7 @@
 // docs/design/sigil-1.4-impact.md, base classes): the Mage's Barrage, Overcharge and Payload, the Warden's Raise Cover
 // and Seal, the Scribe's Stored Spell and the Trickster's Rewrite, every one through the reducer (apply).
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   CLASS, SIGIL_REV, d20, applyCond, condOn, previewAttack, attackDamage, objectsOf, positionsOf, npcsOf, standable, zoneMap, storyObjects, refOf, packOf, sigilCoreSaving, emit, findPattern,

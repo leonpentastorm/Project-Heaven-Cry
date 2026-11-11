@@ -1,7 +1,7 @@
 // Outburst 4.0 player UI (rules 1.8: feelings, residue, Revert, the codex) in a real browser, in the Proving Ground
 // (Enemy AI off). Solo, an Emanator gauntlet and every feeling granted through the tools:
 //   1. Begin a Burst; the HEART panel's feelings collapse under "Feelings ▸ (25)", open, search, pour Rage (a coloured
-//      stage segment with its glyph, ×1.1 on the counter, fx pump with the feeling) and Love ("now HEALS");
+//      stage segment with its glyph, ×1.5 on the counter, fx pump with the feeling) and Love ("now HEALS");
 //   2. Revert takes the last pump back (stage, feeling, AP);
 //   3. Release over a drill unit: the residue zone, its tinted tiles on the grid (the placed layer's ♥ badge);
 //   4. the unlock card ("You have felt X") played through the fx layer;
@@ -110,9 +110,9 @@ ok('the search narrows to Rage: ' + await p.locator('.phc-heart-panel [data-feel
 let n0 = await seq();
 await p.locator('.phc-heart-panel [data-feel="rage"]').click(); await p.waitForTimeout(400);
 s = await st(); let ev = (await fxSince(n0)).find((e) => e.k === 'pump');
-ok('Rage poured in: stage ' + s.u.mg.held.stage + ', felt ' + JSON.stringify(s.u.mg.held.felt) + ', fx ' + JSON.stringify(ev && { feeling: ev.feeling, mult: ev.mult }), s.u.mg.held.felt?.[0] === 'rage' && ev?.feeling === 'rage' && ev.mult === 1.1);
+ok('Rage poured in: stage ' + s.u.mg.held.stage + ', felt ' + JSON.stringify(s.u.mg.held.felt) + ', fx ' + JSON.stringify(ev && { feeling: ev.feeling, mult: ev.mult }), s.u.mg.held.felt?.[0] === 'rage' && ev?.feeling === 'rage' && ev.mult === 1.5);
 const mult = async () => ((await p.locator('.phc-heart-panel [data-heart-mult]').textContent().catch(() => '')) + ' ' + ((await p.locator('.phc-heart-panel [data-heart-does]').count()) ? await p.locator('.phc-heart-panel [data-heart-does]').textContent() : '')).trim();
-ok('the counter reads ×1.1: ' + await mult(), /×1\.1/.test(await mult()));
+ok('the counter reads ×1.5: ' + await mult(), /×1\.5/.test(await mult())); // rules 1.17: Rage +0.7 on the first Pump (×0.8 → ×1.5)
 ok('the stage-1 segment shows the feeling\'s glyph', await p.locator('.phc-heart-panel [data-stage="1"] img').count() === 1);
 await snap('1-rage');
 await p.locator('.phc-heart-panel input[aria-label="Search feelings"]').fill('love'); await p.locator('.phc-heart-panel input[aria-label="Search feelings"]').press('Tab'); await p.waitForTimeout(250);

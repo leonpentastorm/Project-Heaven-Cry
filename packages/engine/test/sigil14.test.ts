@@ -3,6 +3,7 @@
 // fizzle, what stays (fields, traps, turrets, walls), the previews the screen reads, the fx events, enemy casters,
 // the area map and old saves.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, apply, newGame, positionsOf, viewFor, magicTurnStart, magicRoundTick, moveUnit, endTurn, active,
@@ -307,7 +308,7 @@ describe('Burst (spec: Burst)', () => {
 
 // ---------- Subjects ----------
 describe('Subjects (spec: the words)', () => {
-  it('FIRE 30 (a critical sets Burning); FREEZE 25 + Slowed; STONE 35 Sigil (full armour); SPARK 15; GALE 15 and 2 tiles away', () => {
+  it('FIRE 30 (a critical is ×1.5 since rules 1.17, and sets Burning); FREEZE 25 + Slowed; STONE 35 Sigil (full armour); SPARK 15; GALE 15 and 2 tiles away', () => {
     for (const [w, dmg] of [['fire', 30], ['freeze', 25], ['stone', 35], ['spark', 15], ['gale', 15]] as const) {
       const { cb, u, e, rng } = setup([w, 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, [w, 'condense'], ['4,5', '3,5']);
       const hp = e.hp; evoke(cb, rng, u, '3,5', e.pos); expect(hp - e.hp).toBe(Math.round(dmg * 1.5));
@@ -319,7 +320,7 @@ describe('Subjects (spec: the words)', () => {
     expect(previewEvoke(a.cb, a.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(53 - 10);
     expect(previewEvoke(f.cb, f.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(45 - 5);
     const c = setup(['fire', 'condense'], [{ at: '5,5' }]); draw(c.cb, c.rng, c.u, ['fire', 'condense'], ['4,5', '3,5']);
-    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(90); expect(condOn(c.e, 'burning')).toBe(true);
+    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(68); expect(condOn(c.e, 'burning')).toBe(true); // 30 × 1.5 (CONDENSE) × 1.5 (critical) = 67.5 → 68
   });
   it('ACID: 15 Elemental and Corroded (no save): 5 at the start of each turn, Defense −2, a Body save at the end of each turn ends it', () => {
     const { cb, u, e, rng } = setup(['acid', 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, ['acid', 'condense'], ['4,5', '3,5']);

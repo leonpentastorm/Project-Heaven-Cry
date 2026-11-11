@@ -22,7 +22,7 @@ function rig(foes: string[] = ['6,5'], allies: string[] = [], mana = 15) {
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; });
   f.foes.forEach((e, i) => { e.pos = foes[i]; });
   for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).elemTaken = 0; (x as any).healRecv = 1; }
-  for (const p of f.pcs) Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, debuff: { body: 0, brain: 0, heart: 0 } });
+  for (const p of f.pcs) Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, debuff: { body: 0, brain: 0, heart: 0 } });
   for (const p of f.pcs) { p.sk = {}; p.dbf = {}; }
   const u = f.turn(f.pc); u.ap = 60;
   f.g.rng.state = SEED;
@@ -45,7 +45,7 @@ describe('the second school works on the primary\'s side (item 542)', () => {
       const d = give(f.pc, { school: 'buff', option: 'heal', school2, ...(option2 ? { option2 } : {}) });
       begin(f, d); pump(f); release(f, '4,5');
       const a = f.unit(ally.id);
-      expect(a.hp, school2).toBe(130); expect(a.pos, school2).toBe('4,5');
+      expect(a.hp, school2).toBe(136); expect(a.pos, school2).toBe('4,5'); // 30 × stage 1 (×1.2, rules 1.17)
       expect(condOn(a, 'shaken') || condOn(a, 'pinned'), school2).toBe(false);
       expect(withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '4,5')).affected[0].second).toBe('');
     }
@@ -104,7 +104,7 @@ describe('"landed" means took effect (item 543)', () => {
     expect(condOn(f.foe, 'shaken')).toBe(false); expect(lost(f.foe)).toBe(0);
     // A failed save still lands both.
     f = rig(); d = give(f.pc, { school: 'control', option: 'push', school2: 'damage' });
-    begin(f, d); pump(f); release(f, '6,5'); expect(f.foe.pos).toBe('9,5'); expect(lost(f.foe)).toBe(10);
+    begin(f, d); pump(f); release(f, '6,5'); expect(f.foe.pos).toBe('9,5'); expect(lost(f.foe)).toBe(12);
   });
 });
 
@@ -205,12 +205,12 @@ describe('the release preview (the same standard as Sigil\'s)', () => {
     f.act({ type: 'combat/release', unitId: u.id, aim: f.foe.pos, mods } as any);
     expect(fx(f.cb, 'release').at(-1)).toMatchObject({ stage: 3 });
   });
-  it('damage is floored as the hit floors it (soulMult 1.45, stage 2: 40.6 → 40)', () => {
+  it('damage is floored as the hit floors it (soulMult 1.45, stage 2: 20 × 1.45 × 1.6 = 46.4 → 46)', () => {
     const f = rig(); me(f).mg!.soulMult = 1.45; const d = give(f.pc, {});
     begin(f, d); pump(f, 2);
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
-    expect(plan.affected[0].dmg).toBe(40);
-    release(f, '6,5'); expect(lost(f.foe)).toBe(40);
+    expect(plan.affected[0].dmg).toBe(46);
+    release(f, '6,5'); expect(lost(f.foe)).toBe(46);
   });
   it('the reach ring follows the hooked range (Verse of War: +1), as the aim check does', () => {
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: { verse_of_war: 'achieved' } }], [{}]); const u = f.turn(f.pc); u.mg!.mp = 500; u.ap = 9;

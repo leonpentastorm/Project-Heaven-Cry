@@ -18,11 +18,14 @@
 //              dearest move is used whenever its price is met. With a melee weapon the Finisher is held until Momentum
 //              is full (from round 6: 3 or more), and only plain attacks are made until then (each hit gives 1).
 //   tank       optimised, but it keeps Guard up: the last AP of a turn goes to the Guard technique or Brace.
-//   sigil      draws the strongest damage Line its words, glyph cap, charge and Flux allow (walking away from the
-//              target, one glyph a tile), over as many turns as it takes, then Evokes it at the best target; the pistol
-//              when it can do nothing else.
-//   outburst   Begin the damage design, Pump while the AP and the Strain limit allow, Release at the best target;
-//              Begin again with what is left. peak: Pumps with its best feeling and holds for stage 4.
+//   sigil      draws the damage Line worth most for its AP that its words, glyph cap, charge and Flux allow (the
+//              strongest when playing the peak), across the way to the target, one glyph a tile, over as many turns as
+//              it takes; steps beside it and Evokes it at the best target; the pistol when it can do nothing else.
+//              opts.glyphs holds it to Lines of that length (magic-measure.test.ts).
+//   outburst   Begin the damage design; each Pump takes the feeling worth most that the Strain can pay for; carry it
+//              over the turn for the swell when the Strain allows; Overdraw and Heart Overload as their cards allow;
+//              Release at the best target. peak: holds for stage 4 and may burn 2 over the limit. opts.stage holds it
+//              to plain Pumps and a stage (magic-measure.test.ts).
 //   faith      the highest Hymn that deals damage, whenever the engine allows it; plain attacks between. peak: the
 //              Miracle when the engine allows it.
 //   calls      Rally, Spot, Brief, Threaten, in that order, each when the engine allows it, at most 2 Calls a turn; then
@@ -35,7 +38,7 @@ import {
 
 export type StepKind = 'attack' | 'technique' | 'move' | 'reload' | 'setup' | 'spell' | 'prayer' | 'call' | 'other';
 export interface Step { action: any; kind: StepKind; label: string; /** a move that is paid over several actions (a Line, an Outburst): where it starts and ends */ seq?: 'start' | 'part' | 'end' }
-export interface Ctx { g: any; cb: any; u: any; c: any; foes: any[]; allies: any[]; memo: Record<string, any>; banned: Set<string>; peak: boolean }
+export interface Ctx { g: any; cb: any; u: any; c: any; foes: any[]; allies: any[]; memo: Record<string, any>; banned: Set<string>; peak: boolean; opts?: Record<string, any> }
 export type Policy = (x: Ctx) => Step | null;
 
 const W = <T>(g: any, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
@@ -182,10 +185,14 @@ export function sigilLines(words: string[], max: number): { words: string[]; est
   if (n >= 3 && e2) out.push({ words: [e1, e2, 'seek'], est: dmgOf(e1) + dmgOf(e2) / 2 });
   if (n >= 4 && has('condense') && e2) out.push({ words: [e1, e2, 'condense', 'seek'], est: (dmgOf(e1) + dmgOf(e2) / 2) * 1.5 });
   if (n >= 4 && has('condense')) out.push({ words: [e1, 'condense', 'condense', 'seek'], est: dmgOf(e1) * 2 * 0.9 });
+  // with few words known, a word repeats (each repeated glyph ×0.9; a repeated Element adds half)
+  if (n >= 3) out.push({ words: [e1, e1, 'seek'], est: dmgOf(e1) * 1.5 * 0.9 });
+  if (n >= 4) out.push({ words: [e1, e1, e1, 'seek'], est: dmgOf(e1) * 2 * 0.81 });
+  if (n >= 4 && has('condense')) out.push({ words: [e1, e1, 'condense', 'seek'], est: dmgOf(e1) * 1.5 * 1.5 * 0.9 });
   return out.sort((a, b) => b.est - a.est);
 }
 export const sigil: Policy = (x) => {
-  const u = x.u, m = u.mg, M = x.memo;
+  const u = x.u, m = u.mg, M = x.memo, o = x.opts || {};
   const pistol = () => { const p = plainCands(x), b = best(x, p.cands, (c) => c.value); return b ? b.step : null; };
   if (!m || !m.evoker || !(m.words || []).length) return plain(x);
   const mine = (k: string) => (x.cb.glyphs || []).some((gl: any) => gl.pos === k && gl.side === u.side);
@@ -200,6 +207,15 @@ export const sigil: Policy = (x) => {
       if (v > 0 && (!bestA || v > bestA.v) && (pv.ap ?? 1) <= u.ap) bestA = { v, aim: t.pos, tile: plan.tiles[0] };
     }
     if (bestA) { const s = allowed(x, { action: { type: 'combat/evoke', tile: bestA.tile, aim: bestA.aim }, kind: 'spell', label: 'Evoke ' + plan.words.join('·').toUpperCase(), seq: 'end' }); if (s) { M.evoking = plan; return s; } }
+    // The facing rule: a Line drawn across the way to the target fires from beside it. One step to the tile next to
+    // the Line from which the Evoke reaches a target (the engine's own preview, tried from each tile one step away).
+    if (!bestA && !/charge|core/i.test(whyNot) && M.sideStep !== x.cb.round + ':' + x.cb.turn && apForTiles(1, u.bank || 0, u.movement) + 1 <= u.ap) {
+      let bestS: any = null; const p0 = u.pos;
+      for (const d of DIRS) { const k = stepK(p0, d); if (!standable(x.cb.map, k) || !W(x.g, () => freeTile(x.cb, k, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === k)) continue;
+        u.pos = k; try { for (const t of x.foes) { const pv = W(x.g, () => planEvoke(x.cb, u, plan.tiles[0], t.pos)); if (!pv.ok || pv.fizzle) continue;
+          const v = (pv.affected || []).filter((a: any) => !a.ally).reduce((n: number, a: any) => n + (a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour), 0); if (v > 0 && (!bestS || v > bestS.v)) bestS = { v, k }; } } finally { u.pos = p0; } }
+      if (bestS) { const s = allowed(x, { action: { type: 'combat/move', to: bestS.k }, kind: 'setup', label: 'step beside the Line', seq: 'part' }); if (s) { M.sideStep = x.cb.round + ':' + x.cb.turn; return s; } }
+    }
     if (/charge|core/i.test(whyNot) && m.cores > 0) { const s = allowed(x, { action: { type: 'combat/core' }, kind: 'setup', label: 'swap the core', seq: 'part' }); return s; }
     if (u.ap < 1) return null;
     // no target in its area (they moved): wait one turn for one to come into it, then give the Line up
@@ -232,6 +248,9 @@ export const sigil: Policy = (x) => {
     const charge = l.words.reduce((n, w) => n + (Number((SIGIL[w] as any)?.charge) || 1), 0) + Math.max(1, l.words.length - (m.coreSave || 0));
     return charge <= m.charge + m.cores * 10;
   }).map((l) => ({ ...l, ap: l.words.length * gAp + (l.words.length - 1) * stepAp + 1 }));
+  // opts.glyphs holds it to Lines of exactly that many glyphs (the measurements by Line length); with none it can
+  // draw, it is left with the pistol, so the table shows the pattern is out of its reach.
+  if (x.opts?.glyphs) { const only = lines.filter((l) => l.words.length === x.opts.glyphs); if (!only.length) return pistol(); lines.length = 0; lines.push(...only); }
   if (!lines.length) return plain(x);
   const line = lines.sort((a, b) => (x.peak ? b.est - a.est : b.est / b.ap - a.est / a.ap) || b.est - a.est)[0];
   const range = 8 + (m.rangeBonus || 0), n = line.words.length;
@@ -246,10 +265,25 @@ export const sigil: Policy = (x) => {
     for (let i = 1; i < n; i++) { const q = stepK(k, d, i); if (!standable(x.cb.map, q) || !W(x.g, () => freeTile(x.cb, q, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === q)) return null; tiles.push(q); }
     return tiles;
   };
+  // Across the way to the target (the facing rule: fired from beside it, one lane a glyph): the Line runs along the
+  // target's column or row direction's normal, and must take the target's row (or column) in one of its lanes. The next
+  // Line starts where the caster stands after the Evoke, one tile further back: no walking back to the start.
+  const fitAcross = (k: string): string[] | null => {
+    const [kx, ky] = k.split(',').map(Number), [tx, ty] = tgt.pos.split(',').map(Number), dx = tx - kx, dy = ty - ky, horiz = Math.abs(dx) >= Math.abs(dy);
+    const off = horiz ? dy : dx, depth = horiz ? Math.abs(dx) : Math.abs(dy);
+    if (depth < 2 || depth > range || Math.abs(off) > n - 1) return null;
+    for (const sgn of off > 0 ? [1] : off < 0 ? [-1] : [1, -1]) {
+      const d = horiz ? [0, sgn] : [sgn, 0], tiles = [k]; let ok = !(x.cb.glyphs || []).some((gl: any) => gl.pos === k);
+      for (let i = 1; i < n && ok; i++) { const q = stepK(k, d, i); if (!standable(x.cb.map, q) || !W(x.g, () => freeTile(x.cb, q, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === q)) ok = false; else tiles.push(q); }
+      if (ok) return tiles;
+    }
+    return null;
+  };
+  if (!o.along) { const ac = fitAcross(u.pos); if (ac && W(x.g, () => lineOfSight(x.cb, u.pos, tgt.pos))) { M.plan = { words: line.words, tiles: ac, i: 0, sid: null, est: line.est }; return sigil(x); } }
   const here = fit(u.pos);
   if (here && dist(u.pos, tgt.pos) <= range - 1 && W(x.g, () => lineOfSight(x.cb, u.pos, tgt.pos))) { M.plan = { words: line.words, tiles: here, i: 0, sid: null, est: line.est }; return sigil(x); }
   { const inReach = dist(u.pos, tgt.pos) <= range - 1;
-    const s = moveTo(x, (k) => W(x.g, () => lineOfSight(x.cb, k, tgt.pos)), tgt, { pre: (k) => dist(k, tgt.pos) <= range - 1 && dist(k, tgt.pos) >= 3 && !!fit(k), noClose: inReach });
+    const s = moveTo(x, (k) => W(x.g, () => lineOfSight(x.cb, k, tgt.pos)), tgt, { pre: (k) => dist(k, tgt.pos) <= range - 1 && dist(k, tgt.pos) >= 3 && !!((!o.along && fitAcross(k)) || fit(k)), noClose: inReach });
     if (s && M.roomMove !== x.cb.round) { M.roomMove = x.cb.round; return s; } }
   return pistol();
 };
@@ -263,10 +297,21 @@ export function sigilAfter(x: Ctx, step: Step, ok: boolean) {
   if (step.action.type === 'combat/evoke') { M.plan = null; M.evoking = null; }
 }
 
-// ---------- Outburst (rules 1.5 / 1.8): Begin, Pump, Release ----------
+// ---------- Outburst (rules 1.5 / 1.8 / 1.17): Begin, Pump, Release ----------
+// Steady play (no opts), as a careful player plays it: every Pump takes the feeling that adds most to the multiplier
+// among those the heart can pay for (its Strain stays inside the limit; a feeling that costs the caster HP is left
+// alone, since HP does not come back), and the Outburst is carried over the turn for the swell (a stage for 1 Strain) whenever the
+// Strain allows: Release what swelled, Begin again, Pump, hold. When the heart is at its limit it casts inside one turn.
+// The Will Power unlocks are played as their cards allow: Overdraw (once a turn a Pump adds 2 stages) when the Outburst
+// is 2 or more stages short, and Heart Overload's free Begin right after a Release at stage 2 or higher.
+// opts.stage = k: plain Pumps only, no Overdraw and no Heart Overload, released at exactly stage k (the measurements by stage).
+// opts.feel: every Pump takes the best feeling it knows, and it holds for stage 4 (the peak); x.peak plays the same.
+const feelStrain = (f: string | null) => (f ? Number((FEELING[f]?.pour as any)?.strain || 0) : 0);
+const feelHurts = (f: string | null) => (f ? Number((FEELING[f]?.pour as any)?.self_damage || 0) : 0);
 export const outburst: Policy = (x) => {
-  const u = x.u, m = u.mg;
+  const u = x.u, m = u.mg, o = x.opts || {};
   if (!m || !(m.designs || []).length) return plain(x);
+  const forced = o.stage != null, peak = !!(x.peak || o.feel), goal = forced ? o.stage : 4;
   const shoot = () => { const p = plainCands(x), b = best(x, p.cands, (c) => c.value); return b ? b.step : null; };
   const d = m.held ? m.designs.find((q: any) => q.id === m.held.design) : m.designs.find((q: any) => q.school === 'damage' && !q.modules.includes('inverse')) || null;
   if (!d) return plain(x);
@@ -279,30 +324,56 @@ export const outburst: Policy = (x) => {
       return shoot();
     }
     if (m.strain + pv.strain > m.strainLimit) return shoot(); // the heart needs a turn
+    // Heart Overload (the Will Power perk): right after a Release at stage 2 or higher, Begin the same design again for 0 AP.
+    if (!forced && (x.c?.perks || []).some((q: any) => q.id === 'heart_overload') && x.memo.relStamp === x.cb.round && x.memo.relStage >= 2 && x.memo.againStamp !== x.cb.round && dist(u.pos, tgt.pos) <= reach) {
+      const s = allowed(x, { action: { type: 'combat/outburst', design: d.id, hold: true, mods: ['perk:heart_overload#again'] }, kind: 'setup', label: 'Begin ' + d.name + ' again (Heart Overload)', seq: 'start' });
+      if (s) { x.memo.againStamp = x.cb.round; x.memo.begunRound = x.cb.round; return s; }
+    }
     if (dist(u.pos, tgt.pos) > reach && x.memo.walked !== x.cb.round) { x.memo.walked = x.cb.round; const s = moveTo(x, (k, apLeft) => dist(k, tgt.pos) <= reach && apLeft >= pv.ap && W(x.g, () => lineOfSight(x.cb, k, tgt.pos)), tgt); if (s) return s; }
+    x.memo.begunRound = x.cb.round;
     return allowed(x, { action: { type: 'combat/outburst', design: d.id, hold: true }, kind: 'setup', label: 'Begin ' + d.name, seq: 'start' });
   }
   // holding: the best release now
   let rel: any = null;
   for (const t of x.foes) {
-    const pl = W(x.g, () => previewOutburstPlan(x.cb, u, 'held', t.pos)); if (!pl.ok) continue;
+    const pl = W(x.g, () => previewOutburstPlan(x.cb, u, 'held', t.pos)); if (!pl.ok && !/AP/.test(pl.why || '')) continue;
     const v = (pl.affected || []).filter((a: any) => a.enemy).reduce((n: number, a: any) => n + (a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour), 0);
-    if (v > 0 && (!rel || v > rel.v)) rel = { v, aim: t.pos, ap: pl.ap };
+    if (v > 0 && (!rel || v > rel.v)) rel = { v, aim: t.pos, ap: pl.ap, ok: pl.ok, pct: ((pl.affected || []).find((a: any) => a.enemy && a.roll)?.roll?.pct ?? 100) / 100 };
   }
-  // a Pump, when the AP still pays for the Release after it and the Strain stays inside the limit (the peak accepts a burn, never a Mana Short)
-  if (m.held.stage < 4) {
+  const stage = m.held.stage, begunNow = x.memo.begunRound === x.cb.round;
+  // Carry it over the turn? Only an Outburst begun this turn, below its goal, when the swell's Strain still fits
+  // (next turn: −1, +1 for the swell, +1 for the next Begin). The peak holds as long as a point of Strain is left.
+  const room = m.strainLimit - m.strain;
+  const carry = stage < goal && (peak ? room >= 1 : forced ? true : begunNow && room >= 1);
+  if (stage < goal) {
+    // the Pump: plain when held to a stage; else the feeling that adds most and that the heart can pay for
     let feel: string | null = null;
-    if (x.peak) { let bm = 0; for (const f of [null, ...(m.feelings || [])]) { const pp = W(x.g, () => previewPump(x.cb, u, f)); if (pp.ok && pp.mult > bm + 1e-9) { bm = pp.mult; feel = f; } } }
+    if (!forced) {
+      // what the Release is worth after this Pump: its multiplier × its chance to land (Calm can't miss)
+      const hit = rel?.pct ?? 0.65, has = (f: string | null) => (m.held.felt || []).includes('calm') || f === 'calm';
+      const worth = (f: string | null) => { const pp = W(x.g, () => previewPump(x.cb, u, f)); return pp.ok ? pp.mult * (has(f) ? 1 : hit) : 0; };
+      let bm = worth(null);
+      for (const f of m.feelings || []) {
+        const fs = feelStrain(f); if (fs && m.strain + fs + (carry ? 1 : 0) > m.strainLimit + (peak ? 2 : 0)) continue;
+        if (feelHurts(f) && (!peak || u.hp < u.maxHp * 0.4)) continue; // HP does not come back: steady play does not pay in it
+        const v = worth(f); if (v > bm + 1e-9) { bm = v; feel = f; }
+      }
+    }
     const pp = W(x.g, () => previewPump(x.cb, u, feel));
-    if (pp.ok && u.ap - pp.ap >= 1) {
-      const after = W(x.g, () => previewOutburstPlan(x.cb, u, 'held', rel?.aim || tgt.pos, { stage: pp.stage }));
-      const safe = !after.shortWarning && (x.peak ? after.strainAfter <= after.strainLimit + 1 : !(after.burnWarning > 0));
-      if (safe || !after.ok) { const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}) }, kind: 'setup', label: feel ? 'Pump (' + (FEELING[feel]?.name || feel) + ')' : 'Pump', seq: 'part' }); if (s && (safe || !rel)) return s; }
+    // keep the Release's AP unless this Outburst is being carried over the turn anyway
+    const keep = carry && stage + 1 < goal ? 0 : carry ? 0 : 1;
+    if (pp.ok && u.ap - pp.ap >= keep) {
+      // Overdraw (Will Power 3): once a turn a Pump adds 2 stages; the first of a fight costs no Strain, the rest 1.
+      // Only when the turn's Pumps can't reach the goal without it: its second stage is a plain one (no feeling in it).
+      const canPump = Math.floor(u.ap - keep + 1e-9) + (m.freePumps || 0) + (m.firstUsed || x.cb.overworld ? 0 : 1);
+      const od = !forced && (x.c?.skills?.will_power || 0) >= 3 && stage <= goal - 2 && goal - stage > canPump && x.memo.odStamp !== x.cb.round && (!x.memo.odUsed || m.strain + feelStrain(feel) + 1 + (carry ? 1 : 0) <= m.strainLimit + (peak ? 2 : 0));
+      if (od) { const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}), mods: ['skill:will_power.3#overdraw'] }, kind: 'setup', label: 'Overdraw' + (feel ? ' (' + (FEELING[feel]?.name || feel) + ')' : ''), seq: 'part' }); if (s) { x.memo.odStamp = x.cb.round; x.memo.odUsed = true; return s; } }
+      const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}) }, kind: 'setup', label: feel ? 'Pump (' + (FEELING[feel]?.name || feel) + ')' : 'Pump', seq: 'part' });
+      if (s) return s;
     }
   }
-  // the peak holds for stage 4 (it swells a stage at the start of each turn) while the Strain allows one more turn of holding
-  const holdOn = x.peak && m.held.stage < 4 && m.strain + 1 <= m.strainLimit;
-  if (rel && rel.ap <= u.ap && !holdOn) { const s = allowed(x, { action: { type: 'combat/release', aim: rel.aim }, kind: 'spell', label: 'Release ' + d.name + ' (stage ' + m.held.stage + ')', seq: 'end' }); if (s) return s; }
+  const now = m.held.stage;
+  if (rel && rel.ap <= u.ap && (now >= goal || !carry)) { const s = allowed(x, { action: { type: 'combat/release', aim: rel.aim }, kind: 'spell', label: 'Release ' + d.name + ' (stage ' + now + ')', seq: 'end' }); if (s) { x.memo.relStamp = x.cb.round; x.memo.relStage = now; return s; } }
   if (!rel && dist(u.pos, tgt.pos) > reach) { const s = moveTo(x, (k, apLeft) => dist(k, tgt.pos) <= reach && apLeft >= 1 && W(x.g, () => lineOfSight(x.cb, k, tgt.pos)), tgt); if (s) return s; }
   return null; // hold it: it swells at the start of the next turn
 };
@@ -360,8 +431,8 @@ export const NOT_PLAYED = [
   'Anything valued for what it is not damage: conditions, pushes, Pressure, set-ups, Analyze, Hide, cover-seeking, stims and healing, shields, throwing grenades, swapping weapons, picking things up.',
   'Echo rerolls, Overreach, vows and rites.',
   'Dual wielding and off-hand guns (parked: section 9 of the balance pass).',
-  'Sigil: only single-target damage Lines with SEEK (no Bursts, fields, traps, turrets, Afflictions, Boons or Workings), finished from the last glyph drawn; no study or word mastery during a fight. It always draws its strongest Line and does not ration cores: when the kit\'s spare cores are gone it is left with its pistol.',
-  'Outburst: only the starting Damage design (Heart Bolt); no second school, no modules learned by practice, no tone, no Feed, Steady, Let go, Crystallise or Heart Overwatch.',
+  'Sigil: only single-target damage Lines with SEEK (no Bursts, fields, traps, turrets, Afflictions, Boons or Workings), drawn across the way to the target and Evoked from beside it; no study or word mastery during a fight. It does not ration cores: when the kit\'s spare cores are gone it is left with its pistol. It walks back into range every second Line (a player would start closer).',
+  'Outburst: only the starting Damage design (Heart Bolt); no second school, no modules learned by practice, no tone, no Feed, Steady, Let go, Crystallise or Heart Overwatch. Feelings are picked for the multiplier and the chance to land only, never for what they do; steady play never pays a feeling in HP.',
   'Faith: only the patron\'s damaging Hymn (and the Miracle on the peak turn); no Whispers, no support Hymns, no interventions asked for.',
   'Calls: only Rally, Spot, Brief and Threaten, in a fixed order, 2 a turn; no Order, Cue, Warn, Name It or Taunt, no Calls as reactions. Alone, a leader has only Threaten.',
 ];

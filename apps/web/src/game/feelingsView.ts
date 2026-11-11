@@ -134,6 +134,6 @@ export interface CodexFeeling { id: string; name: string; icon: string; ink: str
 export function feelingCodex(c: any): CodexFeeling[] {
   const known: string[] = c?.feelings || [];
   return FEELINGS.map((f: any) => { const k = known.includes(f.id), ink = feelingInk(f.id), s = f.step || {};
-    const step = s.base != null ? '+' + s.base : s.per_stage != null ? '+' + s.per_stage + ' a stage' : s.per_10pct_missing != null ? '+' + s.per_10pct_missing + ' per 10% HP missing' : s.per_ally != null ? '+' + s.per_ally + ' an ally near' : '';
+    const step = s.text || (s.base != null ? '+' + s.base : ''); // rules 1.17: the step in words, from the data ("+0.4; +0.7 against whoever last hurt you")
     return { id: f.id, name: f.name, icon: feelingIconSrc(f.id, k ? ink : '#7F8BA1'), ink, known: k, step, effect: f.pour?.text || '', residue: f.residue?.kind === 'none' ? 'No residue.' : 'Residue (' + f.residue.kind + '): ' + f.residue.text, trigger: 'Felt first when: ' + (f.trigger?.text || '') }; });
 }

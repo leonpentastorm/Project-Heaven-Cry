@@ -13,7 +13,7 @@
 import { apply, newGame, bindGame, MAPS, WEAPON, TECHNIQUE, alive, previewAttack, previewTechnique, techniquePad, pressureCap, isPressed, isSuppressed, maxHp } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { onHook } from '../../src/effects/hooks';
-import { ENEMY, clampEnemyLevel } from '../../src';
+import { ENEMY, clampEnemyLevel, FEELING } from '../../src';
 import { buildCharacter, BUILD, type Variant } from './builds';
 import { POLICIES, sigilAfter, type Ctx, type Step } from './policies';
 
@@ -48,7 +48,10 @@ ENEMY.sim_range_soldier = { ...ENEMY.soldier, id: 'sim_range_soldier', name: 'Ra
 TIER_WEAPON.sim_range_soldier = TIER_WEAPON.soldier;
 if (!(fxTaps as any).__balanceRange) { (fxTaps as any).__balanceRange = true; onHook('enemy_action_start', (ctx: any) => { if (ctx?.u?.tier === 'sim_range_soldier') { ctx.skip = true; ctx.u.ap = 0; } }); }
 
-export interface PcSpec { build: string; variant: Variant; level: number; policy?: string; peak?: boolean }
+export interface PcSpec { build: string; variant: Variant; level: number; policy?: string; peak?: boolean;
+  /** A pattern the policy is held to (the magic measurements, magic-measure.test.ts): sigil {glyphs: 2|3|4};
+   * outburst {stage: 0–4 (release at exactly that stage), feel: true (pour the best feeling into every Pump),
+   * feelings: 'all' (the character has felt all 25: the peak's "best feelings")}. */ opts?: Record<string, any> }
 export interface FightSpec { pcs: PcSpec[]; foes: { tier: string; weapon?: string; level?: number }[]; map: 'open' | 'cover'; seed: string; maxRounds?: number; /** the fight's level outright */ level?: number; /** levels above (+) or below (−) the squad */ shift?: number }
 export const RES = ['momentum', 'guard', 'heat', 'ammo', 'mp', 'strain', 'flux', 'charge', 'cores', 'echo', 'reactions'];
 const AP_KINDS = ['attack', 'technique', 'spell', 'prayer', 'call', 'move', 'reload', 'setup', 'other'];
@@ -91,7 +94,7 @@ const resMax = (u: any): Record<string, number> => {
 export function startFight(spec: FightSpec, begin = true) {
   let g = newGame(spec.seed, { id: 'host', name: 'Host' });
   const builds = spec.pcs.map((p) => buildCharacter(p.build, p.variant, p.level));
-  builds.forEach((b, i) => { const c = b.c; c.id = 'c' + (i + 1); c.owner = 'host'; c.name = BUILD[spec.pcs[i].build].label + (spec.pcs.length > 1 ? ' ' + (i + 1) : ''); g.characters[c.id] = c; });
+  builds.forEach((b, i) => { const c = b.c; c.id = 'c' + (i + 1); c.owner = 'host'; c.name = BUILD[spec.pcs[i].build].label + (spec.pcs.length > 1 ? ' ' + (i + 1) : ''); if (spec.pcs[i].opts?.feelings === 'all') c.feelings = Object.keys(FEELING); else if (spec.pcs[i].opts?.feelings === 'early') c.feelings = ['rage', 'love', 'calm', 'spite', 'joy', 'shame', 'fear', 'grief']; g.characters[c.id] = c; });
   g = apply(g, { type: 'session/start' }, 'host');
   g = apply(g, { type: 'narrator/turn', turn: { narration: 'The test begins.', sceneTitle: 'Simulator' } }, 'host');
   const open = { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Simulated fight', map: MAP_ID[spec.map], difficulty: 'standard', level: foeLevel(spec),
@@ -227,7 +230,7 @@ export function runFight(spec: FightSpec, opts: { log?: boolean } = {}): FightRe
       const me = c2.units.find((q: any) => q.id === u.id);
       if (!me || (c2.window?.queue?.[0]?.unitId ?? c2.order[c2.turn]) !== u.id || c2.window) break;
       if (me.downed || me.dead || me.ap <= 0) break;
-      const x: Ctx = { g, cb: c2, u: me, c: g.characters[me.charId], foes: c2.units.filter((q: any) => q.side === 'foe' && alive(q) && !q.hidden), allies: c2.units.filter((q: any) => q.side === 'pc' && q.id !== me.id && alive(q)), memo: memo[u.id], banned, peak: !!spc.peak };
+      const x: Ctx = { g, cb: c2, u: me, c: g.characters[me.charId], foes: c2.units.filter((q: any) => q.side === 'foe' && alive(q) && !q.hidden), allies: c2.units.filter((q: any) => q.side === 'pc' && q.id !== me.id && alive(q)), memo: memo[u.id], banned, peak: !!spc.peak, opts: spc.opts || {} };
       let step: Step | null = null;
       try { step = pol(x); } catch (e: any) { errors.push('policy ' + (spc.policy || BUILD[spc.build].policy) + ': ' + String(e?.message || e).slice(0, 160)); break; }
       if (!step) break;
@@ -301,7 +304,7 @@ export function figures(c: Cell) {
 /** N seeded fights of one build against one tier; returns the cell. */
 export function runCell(pc: PcSpec, tier: string, map: 'open' | 'cover', n: number, o: { foes?: number; tag?: string; maxRounds?: number; level?: number; shift?: number } = {}): Cell {
   let cell: Cell | null = null; const foes = Array(o.foes || 1).fill(0).map(() => ({ tier }));
-  const key = [pc.build, pc.variant, pc.level, (pc.policy || BUILD[pc.build].policy) + (pc.peak ? '+peak' : ''), tier, map, o.foes || 1, o.tag || ''].join('|');
+  const key = [pc.build, pc.variant, pc.level, (pc.policy || BUILD[pc.build].policy) + (pc.peak ? '+peak' : ''), tier, map, o.foes || 1, o.tag || '', pc.opts ? JSON.stringify(pc.opts) : ''].join('|');
   for (let i = 0; i < n; i++) cell = addResult(cell, runFight({ pcs: [pc], foes, map, seed: 'SIM-' + key + '-' + i, maxRounds: o.maxRounds, ...(o.level != null ? { level: o.level } : {}), ...(o.shift != null ? { shift: o.shift } : {}) }), 0, key);
   return cell!;
 }

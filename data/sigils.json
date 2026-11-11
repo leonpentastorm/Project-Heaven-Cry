@@ -101,6 +101,34 @@
         "a second, different Reach word"
       ]
     },
+    "line_mult": {
+      "by_glyphs": {
+        "2": 1.7,
+        "3": 1.75,
+        "4": 1.8
+      },
+      "applies_to": [
+        "damage"
+      ],
+      "who": "characters and the units that fight for them; an enemy caster's damage comes from the enemy table",
+      "provisional": true,
+      "text": "A Line's direct damage is multiplied by its length: ×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4. Healing, shields, ranges and conditions are not changed."
+    },
+    "critical": {
+      "mult": 1.5,
+      "max": 2.0,
+      "text": "A natural 20 on a spell's roll to hit is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear, the same rule as a weapon's critical.",
+      "provisional": true
+    },
+    "elite_guard": {
+      "tiers": [
+        "elite",
+        "boss"
+      ],
+      "leaves_hp": 1,
+      "text": "One Evoke never takes an Elite or a Boss of your level or higher from full HP to nothing: it is left on 1 HP.",
+      "provisional": true
+    },
     "refused": [
       {
         "words": [
@@ -133,7 +161,7 @@
       "after",
       "stays"
     ],
-    "multipliers": "A spell's strength is its Subjects added together, × the Reach word, × the Burst word, × the Delivery word (×0.5 for a field or turret, ×0.75 for each CHAIN jump), × 0.9 for each repeated glyph, × your Sigil multiplier. Elemental damage is also × your Elemental multiplier, MEND and WARD are also × your Healing given, and a critical hit doubles the damage. Armour comes off last.",
+    "multipliers": "A spell's strength is its Subjects added together, × the Reach word, × the Burst word, × the Delivery word (×0.5 for a field or turret, ×0.75 for each CHAIN jump), × 0.9 for each repeated glyph, × your Sigil multiplier. Damage is also × the Line multiplier (×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4). Elemental damage is also × your Elemental multiplier, MEND and WARD are also × your Healing given, and a critical hit is ×1.5 damage (up to ×2.0). Armour comes off last.",
     "mixes": {
       "condense+spread": "CONDENSE with SPREAD: ×1.5 on the tile where the spell lands and ×0.6 around it.",
       "condense+push": "CONDENSE with PUSH: ×1.5 on the tile where the spell lands and ×0.7 in the cone.",
@@ -301,11 +329,11 @@
     "shape": "line of 2",
     "draw_charge": 3,
     "evoke_charge": 2,
-    "damage": 15,
+    "damage": 26,
     "range_tiles": 8,
     "ap_at_agility_1_expression_1": 4
   },
-  "notes": "Rules 1.4: 40 words in five groups (group + class). Subjects carry their effect fields; Reach, Delivery and Burst words carry their numbers and per_copy (what each extra copy adds); every repeated glyph also multiplies the spell's damage, healing and shields by grammar.repeats.mult_per_repeated_glyph. grand is the Grand Sigilist's Grand form (the 23 words kept from 1.2). Every number is provisional.",
+  "notes": "Rules 1.4: 40 words in five groups (group + class). Subjects carry their effect fields; Reach, Delivery and Burst words carry their numbers and per_copy (what each extra copy adds); every repeated glyph also multiplies the spell's damage, healing and shields by grammar.repeats.mult_per_repeated_glyph. grand is the Grand Sigilist's Grand form (the 23 words kept from 1.2). Every number is provisional. Rules 1.17: line_mult (a Line's damage by its length), critical ×1.5 to ×2.0, no ceiling on a spell's damage, the Elite and Boss guard.",
   "items": [
     {
       "id": "fire",

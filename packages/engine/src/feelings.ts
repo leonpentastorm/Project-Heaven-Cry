@@ -4,6 +4,8 @@
 // the effects stream below); the Narrator may grant one too. This file holds the data, the steps, the unlocking and the
 // triggers, and residue lookups; what a feeling does at a release (and residue's effects) runs in magic.ts beside the
 // conditions, harm and heals. Everything is deterministic. Every number is provisional (spec 14, items 801 on).
+// Rules 1.17 (the magic step of the balance pass): no feeling steps under a plain Pump's +0.4 except Relief (which
+// gives Strain back); what a feeling costs is set against one yardstick (1 Strain or 8 HP for +0.4).
 import feelJ from '../../../data/feelings.json';
 import { SOUL_RULES } from './data';
 import type { Character } from './character';
@@ -14,7 +16,8 @@ import { emitFx } from './combat';
 
 export interface FeelingDef {
   id: string; name: string; n: number; family: string;
-  step: { base?: number; vs_last_hurt?: number; per_stage?: number; per_10pct_missing?: number; alone_extra?: number; alone_range?: number; per_ally?: number; range?: number; max?: number };
+  /** Rules 1.17: `base` is the step (+0.4 is a plain Pump's); the rest are what a few feelings add to it; `text` says it in words. */
+  step: { base?: number; text?: string; vs_last_hurt?: number; per_stage_past?: number; from_stage?: number; per_20pct_missing?: number; alone_extra?: number; alone_range?: number; per_ally?: number; range?: number; max?: number };
   trigger: { event: string; text: string };
   pour: Record<string, any> & { text: string };
   residue: Record<string, any> & { kind: 'helps' | 'harms' | 'none'; text: string };
@@ -22,7 +25,7 @@ export interface FeelingDef {
 const FJ: any = feelJ;
 export const FEELINGS: FeelingDef[] = FJ.items;
 export const FEELING: Record<string, FeelingDef> = Object.fromEntries(FEELINGS.map((f) => [f.id, f]));
-/** A plain Pump's step on the multiplier (the stage table climbs 0.4 a stage from stage 1). */
+/** A plain Pump's step on the multiplier (rules 1.17: the stage table climbs 0.4 a stage from stage 0). */
 export const PLAIN_STEP: number = FJ.plain_step ?? 0.4;
 export const START_FEELINGS: string[] = FJ.start_default || ['rage', 'love'];
 export const START_FEELING_COUNT: number = FJ.start_count ?? 2;
@@ -70,18 +73,19 @@ export function feelUnit(cb: Combat, u: Unit | null | undefined, id: string, why
 const alliesNear = (cb: Combat, u: Unit, r: number) => cb.units.filter((v) => v !== u && v.side === u.side && !v.dead && !v.downed && !v.surrendered && dist(v.pos, u.pos) <= r).length;
 /** Whoever last hurt this unit (an enemy), for Spite. */
 export const lastHurtBy = (u: Unit): string | null => (u as any).feelHurtBy || null;
-/** One feeling pump's step on the multiplier, read at the release (Pride by the stage reached, Despair by HP missing,
- * Loneliness and Belonging by allies near, Spite by the target). */
+/** One feeling pump's step on the multiplier, read at the release (rules 1.17: every feeling starts from its `base`,
+ * +0.4 like a plain Pump unless its card says otherwise; Pride adds by the stage reached, Despair by HP missing,
+ * Loneliness with no ally near, Belonging by allies near, Spite against whoever last hurt you). */
 export function feelingStep(cb: Combat | null, u: Unit, id: string, stage: number, t?: Unit | null): number {
   const f = FEELING[id]; if (!f) return PLAIN_STEP;
-  const s = f.step || {};
+  const s: any = f.step || {}, base: number = s.base ?? PLAIN_STEP, r2 = (n: number) => Math.round(n * 100) / 100;
   switch (id) {
-    case 'pride': return (s.per_stage ?? 0.2) * Math.max(0, stage);
-    case 'despair': { const miss = u.maxHp > 0 ? Math.max(0, (u.maxHp - u.hp) / u.maxHp) : 0; return (s.per_10pct_missing ?? 0.1) * Math.floor(miss * 10 + 1e-9); }
-    case 'loneliness': return (s.base ?? 0.2) + (cb && !alliesNear(cb, u, s.alone_range ?? 3) ? s.alone_extra ?? 0.3 : 0);
-    case 'belonging': return cb ? Math.min(s.max ?? 0.5, (s.per_ally ?? 0.1) * alliesNear(cb, u, s.range ?? 3)) : 0;
-    case 'spite': return t && lastHurtBy(u) === t.id ? s.vs_last_hurt ?? 0.8 : s.base ?? 0.4;
-    default: return s.base ?? PLAIN_STEP;
+    case 'pride': return r2(base + (s.per_stage_past ?? 0.1) * Math.max(0, stage - (s.from_stage ?? 2)));
+    case 'despair': { const miss = u.maxHp > 0 ? Math.max(0, (u.maxHp - u.hp) / u.maxHp) : 0; return r2(Math.min(s.max ?? 0.8, base + (s.per_20pct_missing ?? 0.1) * Math.floor(miss * 5 + 1e-9))); }
+    case 'loneliness': return r2(base + (cb && !alliesNear(cb, u, s.alone_range ?? 3) ? s.alone_extra ?? 0.1 : 0));
+    case 'belonging': return cb ? r2(Math.min(s.max ?? 0.7, base + (s.per_ally ?? 0.1) * alliesNear(cb, u, s.range ?? 3))) : base;
+    case 'spite': return t && lastHurtBy(u) === t.id ? s.vs_last_hurt ?? 0.6 : base;
+    default: return base;
   }
 }
 /** What the feeling pumps add to the stage table's multiplier: the sum of (step − 0.4) (item 804). */

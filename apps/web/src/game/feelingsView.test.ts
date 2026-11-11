@@ -26,12 +26,12 @@ describe('the feeling buttons (rules 1.8 section 7)', () => {
     const { cb, u } = fight(); expect(beginOutburst(cb, rng, u, 'bb', undefined, true)).toBeNull();
     const fb = feelingButtons(cb, u);
     expect(fb.map((b) => b.id)).toEqual(['rage', 'love', 'joy']);
-    expect(fb.find((b) => b.id === 'rage')).toMatchObject({ ok: true, step: 0.5, mult: 1.1, stepText: '+0.5' });
+    expect(fb.find((b) => b.id === 'rage')).toMatchObject({ ok: true, step: 0.7, mult: 1.5, stepText: '+0.7' }); // rules 1.17: Rage +0.7 on ×0.8
     expect(pumpOutburst(cb, rng, u, 'love')).toBeNull();
     const p = heartPanel(cb, u)!;
     expect(p.felt).toEqual(['love']); expect(p.does).toEqual(['now HEALS']); expect(p.stages[1].feeling).toBe('love');
     const v: any = heartVals(p, () => {}); // the counter short; what the feelings change on its own wrapping line
-    expect(v.multText).toBe('×0.9'); expect(v.doesText).toBe('now HEALS'); expect(v.doesStyle).toMatch(/white-space: normal/); expect(v.stages[1].glyph).toMatch(/^data:image\/svg\+xml|^\/assets/);
+    expect(v.multText).toBe('×1.2'); expect(v.doesText).toBe('now HEALS'); expect(v.doesStyle).toMatch(/white-space: normal/); expect(v.stages[1].glyph).toMatch(/^data:image\/svg\+xml|^\/assets/);
     expect(v.btns.map((b: any) => b.key)).toContain('revert'); // a pump this turn can be taken back
   });
   it('a refused feeling shows why; past six they collapse under "Feelings ▸" with a search', () => {

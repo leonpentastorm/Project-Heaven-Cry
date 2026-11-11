@@ -6,7 +6,7 @@
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
 import { SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
-  previewOutburst, previewOutburstPlan, previewPump, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START,
+  previewOutburst, previewOutburstPlan, previewPump, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
 import { heldOutburstOf } from './resources';
@@ -80,7 +80,8 @@ export function designInfo(m: any, d0: any, mana?: number): DesignInfo {
 /** One school's effect at a stage multiplier, in words with its numbers (f: 1 primary, the second school's strength). */
 function schoolEffect(m: any, d: any, school: string, opt: string | undefined, sm: number, f: number): string {
   const S: any = (SCHOOL as any)[school] || {}, o = opt || DEFAULT_OPT[school] || '';
-  if (school === 'damage') return (d.modules.includes('inverse') ? 'a shield of ' : '') + Math.floor(outburstDamage(m, d, sm) * f) + (d.modules.includes('inverse') ? ' on an ally' : ' damage');
+  // Inverse (rules 1.17): the shield is the damage × the module's own share (the engine's number).
+  if (school === 'damage') { const inv = d.modules.includes('inverse'); return (inv ? 'a shield of ' : '') + Math.floor(outburstDamage(m, d, sm) * f * (inv ? (MODULE as any).inverse?.shield_mult ?? 1 : 1)) + (inv ? ' on an ally' : ' damage'); }
   if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor((S.heal ?? 30) * (m.healMult ?? 1) * sm * f) : optionName(school, o) + (f < 1 ? ' (half)' : '');
   if (school === 'control') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (Body save)';
   if (school === 'status') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (a save)';
@@ -88,8 +89,10 @@ function schoolEffect(m: any, d: any, school: string, opt: string | undefined, s
 }
 /** The workshop's verdict: both effects with numbers at stage 1, the snap and full heart, the tone's rider, the cost. */
 export function designVerdict(m: any, d0: any, mana?: number): { effects: string; rider: string; line: string } {
-  const d = migrateDesign(d0), mm = { soulMult: 1, healMult: 1, costSave: 0, soulRange: 0, debuff: { body: 0, brain: 0, heart: 0 }, ...(m || {}) };
-  const one = schoolEffect(mm, d, d.school, d.option, 1, 1), two = d.school2 && d.school2 !== d.school ? schoolEffect(mm, d, d.school2, d.option2, 1, SECOND_SCHOOL.strength) : '';
+  // soulBase: the workshop is a character's (rules 1.17: the Damage base a character's heart carries); the stage 1 multiplier is the table's.
+  const d = migrateDesign(d0), mm = { soulMult: 1, healMult: 1, costSave: 0, soulRange: 0, soulBase: SOUL_DAMAGE, debuff: { body: 0, brain: 0, heart: 0 }, ...(m || {}) }, s1 = STAGE_MULT[1];
+  if (mm.soulBase == null) mm.soulBase = SOUL_DAMAGE;
+  const one = schoolEffect(mm, d, d.school, d.option, s1, 1), two = d.school2 && d.school2 !== d.school ? schoolEffect(mm, d, d.school2, d.option2, s1, SECOND_SCHOOL.strength) : '';
   const dmgRange = d.school === 'damage' && !d.modules.includes('inverse') ? ' (snap ×' + STAGE_MULT[0] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[0])) + ', stage 4 ×' + STAGE_MULT[MAX_STAGE] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[MAX_STAGE])) + ')' : '';
   const tone = toneOf(d), rider = tone === 'raw' ? 'Raw: Soul damage that ignores armour. No rider.' : toneName(tone) + ': armour counts half; stage 2–3 ' + toneRiders(tone, 2).text + ' Stage 4: ' + toneRiders(tone, MAX_STAGE).text;
   return { effects: 'At stage 1: ' + one + dmgRange + (two ? '; then ' + two : '') + '.', rider, line: designInfo(mm, d, mana).line };

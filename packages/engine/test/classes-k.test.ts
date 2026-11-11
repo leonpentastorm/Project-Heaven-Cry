@@ -3,6 +3,7 @@
 // through the reducer (apply) where it is an action or rides on one, else with the game bound and the engine's own
 // functions (resolveAttack, applyDamage, emit), the same calls enemy turns make.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, condOn, applyCond, applyDamage, resolveAttack, previewAttack, previewEvoke, previewOutburst, d20, endTurn, glyphCost, manaOf,
@@ -354,8 +355,8 @@ describe('Vessel', () => {
   it('Inner Charge: Iron adds armour by stage, grows at turn start with Strain; no Outbursts for a Vessel', () => {
     const f = fightWith([adv('vessel', SOUL)], [{}]); const u = f.turn(f.pc); const arm = f.unit(u.id).armour, mp = f.unit(u.id).mg!.mp;
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' });
-    expect(f.pc.armour).toBe(arm + 10); expect(f.pc.mg!.mp).toBeLessThan(mp); expect(f.pc.mg!.strain).toBe(1);
-    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 14); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1); // rules 1.5: stage 2 is ×1.4
+    expect(f.pc.armour).toBe(arm + 12); expect(f.pc.mg!.mp).toBeLessThan(mp); expect(f.pc.mg!.strain).toBe(1); // stage 1 is ×1.2 (rules 1.17)
+    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 16); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1); // stage 2 is ×1.6
     expect(withGame(f.g, () => previewOutburst(f.cb, f.pc, 'o1', f.foe.pos)).ok).toBe(false);
   });
   it('Inner Charge: Steady can\'t be knocked Prone; Pain to Power gives AP next turn; Surge adds 15 to melee', () => {
@@ -370,9 +371,9 @@ describe('Vessel', () => {
     expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), foe, 'melee')).dmg!.terms[0].v).toBe(10);
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'surge' }); seed(f, 10);
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
-    expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);
-    // fists 10 + Surge 15 (stage 1, ×1; past Empty Hand's floor of 20) + the release 15 × 1 × the Soul multiplier, armour 0
-    expect(999 - f.unit(foe.id).hp).toBe(25 + Math.floor(15 * f.pc.mg!.soulMult));
+    expect(logHas(f.cb, /RELEASE \(1 form, 18\)/)).toBe(true);
+    // fists 10 + Surge 15 × 1.2 (stage 1, ×1.2 since rules 1.17; past Empty Hand's floor of 20) + the release 15 × 1.2 × the Soul multiplier, armour 0
+    expect(999 - f.unit(foe.id).hp).toBe(10 + 18 + Math.floor(18 * f.pc.mg!.soulMult));
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });

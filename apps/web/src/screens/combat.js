@@ -125,6 +125,7 @@ const COMBAT_CSS = [
   '.phc-yt{transform:skewX(-14deg);animation:phcYtIn calc(.42s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
   '.phc-yt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:phcYtShine calc(.9s * var(--phc-k, 1)) ease-out calc(.35s * var(--phc-k, 1)) both;pointer-events:none}',
   '.phc-cb-act{transition:transform .12s ease-out,box-shadow .12s ease-out,background-color .12s}',
+  '.phc-key-code::before{content:attr(data-code)}', // (the two-key code is drawn, not text: a button's name stays its name)
   '.phc-cb-act:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18)}',
   '.phc-cb-act:not(:disabled):active{transform:translateY(1px) scale(.985);box-shadow:none;transition-duration:.04s}',
   '@keyframes phcCurRing{0%{transform:scale(1);opacity:.95}100%{transform:scale(1.32);opacity:0}}.phc-cur-ring{animation:phcCurRing calc(1.3s * var(--phc-k, 1)) ease-out infinite}',
@@ -755,6 +756,17 @@ export class CombatLogic extends DCLogic {
     const tTgt = tsel && needsEnemy(tId) ? tgtUnit : null, tTile = tsel && needsTile(tId) ? S.tile || null : null;
     const tPv = tsel ? techPreview(g, cb, cur, tsel, { targetId: tTgt ? tTgt.id : undefined, tile: tTile, allyId: tAlly ? tAlly.id : undefined, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) }) : null;
     const tAsk = tsel ? techPrompt(tId, { target: tTgt, tile: tTile, ally: tAlly }) : null;
+    // Fog of war (Leon, 11 Nov 2026: aiming a Lob into the fog marked and named the enemies standing in it). What a
+    // preview SHOWS never tells of a unit this side can't see: not marked on the grid, not counted, not named. The
+    // engine's own preview (tPv: the cost, whether it can be done) is untouched; tPvShown is what is drawn and written.
+    const seenId = (id) => { const x = cb.units.find((y) => y.id === id); return !x || seenFoe(x); };
+    const unseenNames = cb.units.filter((u) => !u.dead && !seenFoe(u)).map((u) => u.name).filter((n) => n && !cb.units.some((u) => u.name === n && seenFoe(u)));
+    const fogPv = (pv) => (!pv ? pv : { ...pv, attacks: (pv.attacks || []).filter((a) => seenId(a.target)), pressure: (pv.pressure || []).filter((x) => seenId(x.unit)), saves: (pv.saves || []).filter((x) => seenId(x.unit)),
+      moves: (pv.moves || []).filter((m) => !m.unit || seenId(m.unit)), notes: (pv.notes || []).filter((n) => !unseenNames.some((nm) => String(n).includes(nm))) });
+    const tPvShown = fogPv(tPv);
+    /** The fight as this side sees it, for a preview that works out who is affected (an Evoke's plan, an Outburst's aim):
+     *  the units out of sight aren't there. */
+    const fogCb = (c) => (c.units.every(seenFoe) ? c : { ...c, units: c.units.filter((u) => u.dead || seenFoe(u)) });
     /** The row a picked technique belongs to: its own (the plain attack), its weapon's Techniques row, or Hold a shot. */
     const rowSel = !tsel || tIsPlain ? S.action : tIsWatch ? TWATCH : padAction(tsel.hand);
     this._tech = tsel ? { sel: tsel, tgt: tTgt, ally: tAlly, tile: tTile, pv: tPv, ask: tAsk, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) } : null;
@@ -805,7 +817,7 @@ export class CombatLogic extends DCLogic {
     const readable = new Set(cb.units.filter((u) => u.side === 'pc' && owner(u) === me && u.mg).flatMap((u) => u.mg.words)), knows = (w) => readable.has(w);
     const seenGlyph = (k) => !!k && glyphsAt(pcb, k).some((gl) => gl.side === 'pc' || vis.tiles.has(k));
     const evTile = S.action === 'evoke' && S.glyphTile && seenGlyph(S.glyphTile) ? S.glyphTile : null;
-    const evV = mineTurn && mg && evTile ? evokeView(pcb, cur, evTile, S.evc || {}, S.hover, knows) : null;
+    const evV = mineTurn && mg && evTile ? evokeView(fogCb(pcb), cur, evTile, S.evc || {}, S.hover, knows) : null; // (fog: who is affected, as this side sees the fight)
     const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows) : null;
     // Outburst (rules 1.5, game/heartView.ts): not holding, a design and Begin (hold at stage 0) or Snap (Begin and
     // Release at once, aimed); holding, the HEART panel (Pump, Release, Steady, Let go, Feed, Heart Overwatch). Every cost,
@@ -826,8 +838,8 @@ export class CombatLogic extends DCLogic {
     let hz = noOverlay(), hzPlan = null;
     if (mineTurn && mg) {
       const at = S.aim || S.hover || null;
-      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(pcb, cur, dsel.id, obMode === 'snap' ? at : null, this._mods); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(pcb, cur, dsel.id, S.aim, this._mods).plan : null; }
-      else if (S.action === 'release' && held) { hz = aimOverlay(pcb, cur, 'held', at, this._mods); hzPlan = aimOverlay(pcb, cur, 'held', S.aim, this._mods).plan; }
+      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(fogCb(pcb), cur, dsel.id, obMode === 'snap' ? at : null, this._mods); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(fogCb(pcb), cur, dsel.id, S.aim, this._mods).plan : null; }
+      else if (S.action === 'release' && held) { hz = aimOverlay(fogCb(pcb), cur, 'held', at, this._mods); hzPlan = aimOverlay(fogCb(pcb), cur, 'held', S.aim, this._mods).plan; }
       else if (held && (HEART_ACTS.includes(S.action) || S.tab === 'outbursts')) hz = idleOverlay(pcb, cur);
     }
     const SIMPLE = { scuff: scuffGlyph, vent: ventFlux, core: swapCore, syphon: syphonMp, crystallise: crystalliseCore };
@@ -965,8 +977,8 @@ export class CombatLogic extends DCLogic {
     const placed0 = placedView(pcb, 'pc', vis.tiles), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { seen: vis.tiles, imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
-    const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, pkPv, cur.side) : null;
-    const tTiles = tPv && ((tPv.area || []).length || (tPv.moves || []).length || new Set([...(tPv.attacks || []).map((a) => a.target), ...(tPv.pressure || []).map((p) => p.unit)]).size > 1) ? actionPreviewTiles(cb, { tiles: [...(tPv.area || []), ...(tPv.moves || []).map((m) => m.to)], targets: (() => { const ids = [...new Set([...(tPv.attacks || []).map((a) => a.target), ...(tPv.pressure || []).map((p) => p.unit)])]; return ids.length > 1 ? ids : []; })() }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
+    const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, { ...pkPv, targets: (pkPv.targets || []).filter(seenId) }, cur.side) : null; // (fog: only the units in sight are marked)
+    const tTiles = tPvShown && ((tPvShown.area || []).length || (tPvShown.moves || []).length || new Set([...(tPvShown.attacks || []).map((a) => a.target), ...(tPvShown.pressure || []).map((p) => p.unit)]).size > 1) ? actionPreviewTiles(cb, { tiles: [...(tPvShown.area || []), ...(tPvShown.moves || []).map((m) => m.to)], targets: (() => { const ids = [...new Set([...(tPvShown.attacks || []).map((a) => a.target), ...(tPvShown.pressure || []).map((p) => p.unit)])]; return ids.length > 1 ? ids : []; })() }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
     const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : tTiles ? mergeTiles(placed.tiles, tTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
       if (hz.on) { if (u && hz.marks.has(u.id)) return overlayRingStyle({ ...hz, ink: hz.marks.get(u.id).ink }); const st = overlayTileStyle(hz, k); if (st) return st; }
@@ -1164,7 +1176,7 @@ export class CombatLogic extends DCLogic {
       } else if (S.action === 'outburst') {
         const pl = hzPlan, aura = card && card.form === 'aura';
         sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×' + STAGE_MULT[0] : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
-        sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×0.6). Pump it (1 AP a stage, to ×2.2) and Release it (1 AP). Confirm to begin.' : card.beginWhy)
+        sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×' + STAGE_MULT[0] + '). Pump it (1 AP a stage, to ×' + STAGE_MULT[STAGE_MULT.length - 1] + ') and Release it (1 AP). Confirm to begin.' : card.beginWhy)
           : !S.aim && !aura ? (card.snapWhy || (hz.aim && hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').' + (hz.summary.length ? ' ' + hz.summary.join(' ') : ''))) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
         sel.extra = card ? card.line + ' · ' + heart : heart;
       } else if (S.action === 'release') {
@@ -1200,7 +1212,7 @@ export class CombatLogic extends DCLogic {
     // A technique (rules 1.12): its name and cost, what to pick next, then the engine's preview in words: each roll's
     // odds and damage, its notes, Momentum now → after, each unit's Pressure and state, any save and its TN.
     if (tsel) {
-      const L = previewLines(cb, tPv), nm = tChip ? tChip.name : tId, ap = tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0;
+      const L = previewLines(cb, tPvShown), nm = tChip ? tChip.name : tId, ap = tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0;
       sel.name = nm + ' · ' + ap + ' AP' + (tChip && tChip.rounds ? ' · ' + tChip.rounds : '');
       sel.text = tAsk ? tAsk + (tChip ? ' ' + tChip.help : '') : tPv && !tPv.ok ? (tPv.why || 'Not now.') : [...L.odds, ...L.notes].join(' · ') || (tChip ? tChip.help : '');
       sel.extra = tAsk ? '' : [...L.meters, ...L.saves].join(' · '); // (while asking for a pick, the engine's "Name a tile." says the same)

@@ -1,0 +1,237 @@
+// Rules revision 1.17 (the magic step of the balance pass, 11 Nov 2026; spec: "Rules revision 1.17"). What this file
+// pins, each from a sentence of the spec:
+//   Sigil     the Line multiplier (×1.7 / ×1.75 / ×1.8 by length; damage only; characters only), no ceiling on a
+//             spell's damage, a critical ×1.5 (to ×2.0), the level gap on the roll to hit, and the standing rule that one
+//             Evoke never takes an Elite or a Boss of the caster's level from full HP to nothing.
+//   Outburst  the stage table (×0.8, then +0.4 a stage), the Damage base (28 for a character, 18 for an enemy caster),
+//             a critical ×1.5, the level gap, every feeling's step and cost (none under a plain Pump's +0.4 but Relief),
+//             Calm, Shame, Relief, Love and Guilt as their cards now say, Abandon once, and the repriced modules.
+// The targets themselves (percent of the plain rifle) are pinned cheaply in balance/magic-measure.test.ts.
+import { describe, expect, it } from 'vitest';
+import './helpers/yard16';
+import {
+  ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, previewEvoke, compileSpell, lineMult, LINE_MULT, lineMultFor, spellCritMult, capParts,
+  STAGE_MULT, stageMult, SOUL_DAMAGE, SOUL_DAMAGE_ENEMY, outburstDamage, heldMult, previewOutburstPlan, previewPump, heartMagic, HEART_CASTERS, migrateDesign,
+  FEELINGS, FEELING, PLAIN_STEP, feelingStep, MODULE, RETIRED_MODULE, SOUL_RULES, SIGIL_GRAMMAR, CRIT_BASE, CRIT_MAX,
+  type Sheet, type Combat, type Unit, type MapDef, type OutburstDesign,
+} from '../src';
+import { fightWith, withGame } from './helpers/perkfight';
+
+// ---------- Sigil ----------
+const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
+const sheet = (name: string): Sheet => { const a = arch('sigilist'); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
+const open = (): MapDef => ({ ...MAPS.yard16, w: 20, h: 20, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6'], foeStart: ['15,5', '15,6', '15,7', '15,8'] });
+function seed(n = 16): { state: number } { for (let s = 1; s < 200000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return { state: s }; } throw new Error('no seed'); }
+function rollIs(n: number): { state: number } { for (let s = 1; s < 200000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
+/** A caster at 2,5 with every multiplier ×1; foes that never dodge or save, 500 HP, no armour. */
+function sigil(words: string[], foes: { at: string; tier?: string; sigils?: string[] }[] = [{ at: '9,5' }], allyAt?: string) {
+  const c = newCharacter('c1', 'p1', sheet('Ilse')), ally = allyAt ? [{ c: newCharacter('a1', 'p1', sheet('Ally')), pos: allyAt }] : [];
+  const cb = startCombat('t', open(), [{ c, pos: '2,5' }, ...ally], foes.map((f, i) => ({ name: 'Foe ' + (i + 1), tier: f.tier || 'minion', weapon: 'service_pistol', at: refOf(f.at), ...(f.sigils ? { sigils: f.sigils } : {}) })), 'easy', { state: 7 }, []);
+  cb.objects = [];
+  const u = cb.units.find((x) => x.charId === 'c1')!, es = cb.units.filter((x) => x.side === 'foe'), al = cb.units.find((x) => x.charId === 'a1');
+  for (const x of cb.units.filter((q) => q.side === 'pc')) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
+  for (const e of es) { e.def = -99; e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
+  cb.mana = 15;
+  return { cb, u, e: es[0], es, ally: al, rng: seed() };
+}
+function draw(cb: Combat, rng: { state: number }, u: Unit, words: string[], tiles: string[]) {
+  for (let i = 0; i < words.length; i++) { u.pos = tiles[i]; const e = drawGlyph(cb, rng, u, words[i]); if (e) throw new Error(words[i] + ' at ' + tiles[i] + ': ' + e); }
+}
+/** Draw the Line walking away from the foe (ending on the last tile) and Evoke it at the foe. Returns the HP lost. */
+function cast(s: ReturnType<typeof sigil>, words: string[], rng = s.rng, t: Unit = s.e): number {
+  const tiles = words.map((_, i) => (5 - i) + ',5'); draw(s.cb, s.rng, s.u, words, tiles);
+  const hp = t.hp, err = evoke(s.cb, rng, s.u, tiles[tiles.length - 1], t.pos); if (err) throw new Error(err);
+  return hp - t.hp;
+}
+
+describe('Sigil: the Line multiplier (rules 1.17)', () => {
+  it('the data: ×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4; nothing under 2 glyphs', () => {
+    expect(LINE_MULT).toEqual({ 2: 1.7, 3: 1.75, 4: 1.8 }); expect([1, 2, 3, 4, 5].map(lineMult)).toEqual([1, 1.7, 1.75, 1.8, 1.8]);
+    expect(SIGIL_GRAMMAR.line_mult.provisional).toBe(true);
+  });
+  it('a character\'s Line multiplies its damage by its length, in the preview and in the hit', () => {
+    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(30 * 1.7)); // 51
+    const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(30 * 1.5 * 1.75)); // 79
+    // 4 glyphs: STONE 35 in full (Sigil), FIRE at half (Elemental), CONDENSE ×1.5, the Line ×1.8
+    const c = sigil(['stone', 'fire', 'condense', 'seek']);
+    draw(c.cb, c.rng, c.u, ['stone', 'fire', 'condense', 'seek'], ['5,5', '4,5', '3,5', '2,5']);
+    const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(35 * 1.5 * 1.8) + Math.round(15 * 1.5 * 1.8));
+    const hp = c.e.hp; expect(evoke(c.cb, c.rng, c.u, '2,5', c.e.pos)).toBeNull(); expect(hp - c.e.hp).toBe(pv.affected[0].dmg);
+  });
+  it('damage only: a heal and a shield are what they were', () => {
+    const s = sigil(['mend', 'seek'], [{ at: '15,5' }], '9,5'); s.ally!.hp = 100;
+    draw(s.cb, s.rng, s.u, ['mend', 'seek'], ['5,5', '4,5']); expect(evoke(s.cb, s.rng, s.u, '4,5', '9,5')).toBeNull();
+    expect(s.ally!.hp).toBe(125);
+  });
+  it('an enemy caster\'s Line takes no multiplier: its damage comes from the enemy table', () => {
+    const s = sigil(['fire', 'seek'], [{ at: '9,5', sigils: ['fire', 'seek'] }]), sp = compileSpell(['fire', 'seek']);
+    expect(lineMultFor(s.u, sp)).toBe(1.7); expect(lineMultFor(s.e, sp)).toBe(1); expect(lineMultFor(null, sp)).toBe(1);
+  });
+  it('no ceiling: a spell is never scaled down to 350 (the targets stay targets)', () => {
+    expect(capParts([400, 300], false)).toEqual([400, 300]);
+    const s = sigil(['fire', 'seek']); s.u.mg!.sigilMult = 10; s.e.hp = s.e.maxHp = 5000;
+    expect(cast(s, ['fire', 'seek'])).toBe(Math.round(30 * 1.7 * 10)); // 510
+  });
+});
+
+describe('Sigil: a critical, the level gap, and the Elite and Boss guard (rules 1.17)', () => {
+  it('a critical is ×1.5 (the caster\'s own critical multiplier, never past ×2.0), not ×2', () => {
+    const s = sigil(['fire', 'seek']); const cm = spellCritMult(s.cb, s.u, s.e);
+    expect(cm).toBeGreaterThanOrEqual(CRIT_BASE); expect(cm).toBeLessThanOrEqual(CRIT_MAX); expect(cm).toBeLessThan(2);
+    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(Math.round(30 * 1.7 * cm));
+    const half = sigil(['fire', 'seek']); half.e.critTaken = 0.5; // the target's Critical damage taken cuts the part above ×1
+    expect(spellCritMult(half.cb, half.u, half.e)).toBeCloseTo(1 + (cm - 1) / 2);
+    s.u.critTaken = 0; expect(spellCritMult(s.cb, s.e, s.u)).toBe(CRIT_BASE); // an enemy's
+  });
+  it('a spell\'s roll to hit reads the level gap: ±1 a level, like a weapon\'s', () => {
+    const s = sigil(['fire', 'seek']); draw(s.cb, s.rng, s.u, ['fire', 'seek'], ['5,5', '4,5']);
+    s.u.level = 6; s.e.level = 6; (s.e as any).lvlDmg = 1; const even = previewEvoke(s.cb, s.u, '4,5', s.e.pos).affected[0].roll!.bonus;
+    s.e.level = 9; expect(previewEvoke(s.cb, s.u, '4,5', s.e.pos).affected[0].roll!.bonus).toBe(even - 3);
+    s.e.level = 4; expect(previewEvoke(s.cb, s.u, '4,5', s.e.pos).affected[0].roll!.bonus).toBe(even + 2);
+  });
+  const big = (tier: string, words = ['fire', 'seek']) => { const s = sigil(words, [{ at: '9,5', tier }]); s.u.mg!.sigilMult = 10; s.e.hp = s.e.maxHp = 200; s.u.level = 6; s.e.level = 6; (s.e as any).lvlDmg = 1; return s; };
+  it('one Evoke never takes an Elite or a Boss of your level from full HP to nothing: it is left on 1 HP', () => {
+    for (const tier of ['elite', 'boss']) {
+      const s = big(tier); expect(cast(s, ['fire', 'seek'])).toBe(199); expect(s.e.hp).toBe(1); expect(s.e.dead).toBeFalsy();
+      expect(s.cb.log.at(-1)).toMatch(/too tough to fall to one spell: 1 HP left/);
+      expect(cast(s, ['fire', 'seek'])).toBe(1); expect(s.e.dead).toBe(true); // the second Evoke finishes it
+    }
+  });
+  it('the guard is for full HP, for Elites and Bosses, and for enemies at or above your level only', () => {
+    const hurt = big('elite'); hurt.e.hp = 199; cast(hurt, ['fire', 'seek']); expect(hurt.e.dead).toBe(true);
+    const soldier = big('soldier'); cast(soldier, ['fire', 'seek']); expect(soldier.e.dead).toBe(true);
+    const below = big('elite'); below.e.level = 4; cast(below, ['fire', 'seek']); expect(below.e.dead).toBe(true); // 2 levels under the caster
+    const above = big('elite'); above.e.level = 8; above.e.def = -99; cast(above, ['fire', 'seek']); expect(above.e.hp).toBe(1);
+  });
+  it('TWICE: both missiles of one Evoke are held by the guard', () => {
+    const words = ['fire', 'twice', 'seek'], s = big('boss', words); draw(s.cb, s.rng, s.u, words, ['5,5', '4,5', '3,5']);
+    expect(evoke(s.cb, s.rng, s.u, '3,5', s.e.pos, { aims: [s.e.pos, s.e.pos] } as any)).toBeNull();
+    expect(s.cb.log.at(-1)).toMatch(/missile 2 .*hits Foe 1/); expect(s.e.hp).toBe(1); expect(s.e.dead).toBeFalsy();
+  });
+});
+
+// ---------- Outburst ----------
+const SEED = (() => { for (let s = 1; s < 2000000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < 60 && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return s; } throw new Error('no seed'); })();
+/** A Soul caster at 3,5 on its turn, Soul multiplier 1, plenty of MP and AP, Strain limit 20, every feeling felt; the
+ * Damage base is the game's own (28). Foes and allies 500 HP, no armour, Defense −99, saves −99. */
+function heart(foes: string[] = ['6,5'], allies: string[] = []) {
+  const f = fightWith([{ archetype: 'stormcaller', kit: 'soul' }, ...allies.map(() => ({ archetype: 'stormcaller', kit: 'soul' }))], foes.map(() => ({ tier: 'minion' })));
+  const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
+  f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; }); f.foes.forEach((e, i) => { e.pos = foes[i]; });
+  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).elemTaken = 0; (x as any).healRecv = 1; }
+  for (const p of f.pcs) { Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } }); p.sk = {}; p.dbf = {}; }
+  const u = f.turn(f.pc); u.ap = 60; f.g.rng.state = SEED;
+  return f;
+}
+type F = ReturnType<typeof heart>;
+const give = (u: Unit, d: Partial<OutburstDesign> = {}): string => { const id = 'd' + (u.mg!.designs.length + 1); u.mg!.designs.push({ id, name: 'Test ' + id, school: 'damage', modules: [], ...d } as OutburstDesign); return id; };
+const A = (f: F, a: Record<string, any>) => f.act({ unitId: f.pc.id, ...a } as any);
+const begin = (f: F, design: string, o: Record<string, any> = {}) => A(f, { type: 'combat/outburst', design, ...o });
+const pump = (f: F, feeling?: string) => A(f, { type: 'combat/pump', ...(feeling ? { feeling } : {}) });
+const release = (f: F, aim = '6,5') => A(f, { type: 'combat/release', aim });
+const me = (f: F) => f.unit(f.pc.id);
+const lost = (u: Unit) => 500 - u.hp;
+
+describe('Outburst: the stage table and the Damage base (rules 1.17)', () => {
+  it('×0.8 at stage 0, then +0.4 a stage: a plain Pump is +0.4 at every stage', () => {
+    expect(STAGE_MULT).toEqual([0.8, 1.2, 1.6, 2, 2.4]);
+    for (let s = 1; s <= 4; s++) expect(Math.round((stageMult(s) - stageMult(s - 1)) * 100) / 100).toBe(PLAIN_STEP);
+    expect(PLAIN_STEP).toBe(0.4);
+  });
+  it('a character\'s Damage base is 28; an enemy caster\'s is 18', () => {
+    expect(SOUL_DAMAGE).toBe(28); expect(SOUL_DAMAGE_ENEMY).toBe(18); expect(SOUL_RULES.damage.provisional).toBe(true);
+    const f = heart(); expect(me(f).mg!.soulBase).toBe(28);
+    const d = give(f.pc); begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(28 * 0.8)); // a snap cast: 22
+    const g = heart(); const e = give(g.pc); begin(g, e); for (let i = 0; i < 4; i++) pump(g); release(g); expect(lost(g.foe)).toBe(Math.floor(28 * 2.4)); // 67
+    const foe = g.foes[0]; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.soulBase).toBeUndefined();
+    expect(outburstDamage(foe.mg!, { id: 'x', name: 'x', school: 'damage', modules: [] } as any, 1)).toBeCloseTo(18 * foe.mg!.soulMult);
+    // a fight saved before rules 1.17: the character's heart gets its base back the first time it is read
+    delete me(g).mg!.soulBase; const d2 = give(g.pc); begin(g, d2); expect(me(g).mg!.soulBase).toBe(28);
+  });
+  it('a critical is ×1.5 (to ×2.0 at most), not ×2; the roll reads the level gap', () => {
+    const f = heart(); const d = give(f.pc); f.g.rng.state = rollIs(20).state;
+    const cm = withGame(f.g, () => spellCritMult(f.cb, me(f), f.foe)); expect(cm).toBeGreaterThanOrEqual(1.5); expect(cm).toBeLessThan(2);
+    begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(28 * 0.8 * cm));
+    const g = heart(); const e = give(g.pc); me(g).level = 6; g.foe.level = 6; (g.foe as any).lvlDmg = 1;
+    const even = withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus;
+    g.foe.level = 9; expect(withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus).toBe(even - 3);
+  });
+});
+
+describe('Outburst: the feelings (rules 1.17)', () => {
+  it('no feeling steps under a plain Pump but Relief, whatever the moment; each card opens with its step in plain words', () => {
+    const alone = heart(), crowd = heart(['6,5'], ['3,6', '4,5', '2,5']);
+    for (const f of FEELINGS) {
+      const base = f.step.base!; expect(base, f.id).toBeGreaterThanOrEqual(f.id === 'relief' ? 0.2 : PLAIN_STEP);
+      for (const fx of [alone, crowd]) for (const stage of [1, 2, 3, 4]) for (const hp of [500, 250, 50]) {
+        me(fx).hp = hp; const s = feelingStep(fx.cb, me(fx), f.id, stage, fx.foe);
+        expect(s, f.id).toBeGreaterThanOrEqual(base); expect(s, f.id).toBeLessThanOrEqual(1.0);
+      }
+      expect(f.pour.text.startsWith('+' + base.toFixed(1)), f.id + ': ' + f.pour.text).toBe(true);
+      expect(f.pour.text, f.id).not.toMatch(/item \d|rules \d|section \d/i); // plain words: no rule numbers on a card
+      expect(f.step.text, f.id).toMatch(/^\+\d\.\d/);
+    }
+    expect(FEELINGS.filter((f) => f.step.base! < PLAIN_STEP).map((f) => f.id)).toEqual(['relief']);
+  });
+  it('the three that buy the multiplier outright: Rage +0.7 for 1 Strain, Shame +0.7 for 8 HP each, Abandon +1.0 for 2 Strain, once', () => {
+    expect(FEELING.rage.step.base).toBe(0.7); expect(FEELING.rage.pour.strain).toBe(1);
+    expect(FEELING.shame.step.base).toBe(0.7); expect(FEELING.shame.pour.self_damage).toBe(8); expect(FEELING.shame.pour.per_pour).toBe(true);
+    expect(FEELING.abandon.step.base).toBe(1.0); expect(FEELING.abandon.pour.strain).toBe(2); expect(FEELING.abandon.pour.once).toBe(true);
+    const f = heart(); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); const s0 = me(f).mg!.strain;
+    pump(f, 'rage'); expect(me(f).mg!.strain).toBe(s0 + 1); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(1.5); // 0.8 + 0.7
+    pump(f, 'abandon'); expect(me(f).mg!.strain).toBe(s0 + 3); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(2.5);
+    expect(withGame(f.g, () => previewPump(f.cb, me(f), 'abandon'))).toMatchObject({ ok: false }); expect(() => pump(f, 'abandon')).toThrow(/once is all it takes/);
+    pump(f, 'shame'); pump(f, 'shame'); const hp = me(f).hp; release(f);
+    expect(lost(f.foe)).toBe(Math.floor(28 * (0.8 + 0.7 + 1.0 + 0.7 + 0.7) * 0.8)); expect(me(f).hp).toBe(hp - 16); // two Shames: 8 each
+  });
+  it('Relief: +0.2, and each Relief takes 1 Strain off at the Release', () => {
+    const f = heart(); const d = give(f.pc); begin(f, d); pump(f, 'rage'); pump(f, 'relief'); pump(f, 'relief');
+    expect(me(f).mg!.strain).toBe(2); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(1.9); // 0.8 + 0.7 + 0.2 + 0.2
+    release(f); expect(me(f).mg!.strain).toBe(0);
+  });
+  it('Calm: a Bolt can\'t miss, at ×0.75; on a Burst (which never rolls) it is a plain Pump', () => {
+    const f = heart(); f.foe.def = 99; const d = give(f.pc); begin(f, d); pump(f, 'calm');
+    expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(0.9); // (0.8 + 0.4) × 0.75
+    const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5')); expect(plan.mult).toBe(0.9); expect(plan.affected[0].roll).toBeNull();
+    release(f); expect(lost(f.foe)).toBe(Math.floor(28 * 0.9));
+    const g = heart(); const e = give(g.pc, { modules: ['burst'] }); begin(g, e); pump(g, 'calm'); expect(heldMult(g.cb, me(g), me(g).mg!.held)).toBe(1.2);
+  });
+  it('Love with no ally in the shape heals the most wounded ally in reach, or you, for a fifth of the Release', () => {
+    const f = heart(); me(f).hp = 400; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'love');
+    const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
+    expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(Math.floor(28 * 1.2 * 0.8 * 0.2));
+    release(f); expect(me(f).hp).toBe(400 + Math.floor(28 * 1.2 * 0.8 * 0.2));
+    const g = heart(['6,5'], ['3,6']); me(g).hp = 450; g.unit(g.pcs[1].id).hp = 300; const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'love'); release(g);
+    expect(g.unit(g.pcs[1].id).hp).toBe(300 + Math.floor(28 * 1.2 * 0.8 * 0.2)); expect(me(g).hp).toBe(450); // the ally was hurt worse
+  });
+  it('Guilt with nobody you have hurt heals the most wounded ally in reach (10 × the stage) and still costs you 5 HP', () => {
+    const f = heart(['6,5'], ['3,6']); f.unit(f.pcs[1].id).hp = 300; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'guilt'); const hp = me(f).hp; release(f);
+    expect(f.unit(f.pcs[1].id).hp).toBe(310); expect(me(f).hp).toBe(hp - 5);
+  });
+  it('the conditional ones add to +0.4: Spite +0.6 on whoever last hurt you, Pride +0.5 at stage 4, Loneliness +0.5 alone, Belonging to +0.7, Despair to +0.8', () => {
+    const f = heart(['6,5', '6,7']); (me(f) as any).feelHurtBy = f.foes[1].id;
+    expect(feelingStep(f.cb, me(f), 'spite', 1, f.foes[1])).toBe(0.6); expect(feelingStep(f.cb, me(f), 'spite', 1, f.foes[0])).toBe(0.4);
+    expect([1, 2, 3, 4].map((s) => feelingStep(f.cb, me(f), 'pride', s))).toEqual([0.4, 0.4, 0.4, 0.5]);
+    expect(feelingStep(f.cb, me(f), 'loneliness', 1)).toBe(0.5);
+    const g = heart(['6,5'], ['3,6', '4,5', '2,5']);
+    expect(feelingStep(g.cb, me(g), 'loneliness', 1)).toBe(0.4); expect(feelingStep(g.cb, me(g), 'belonging', 1)).toBe(0.7);
+    me(g).hp = 500; expect(feelingStep(g.cb, me(g), 'despair', 1)).toBe(0.4); me(g).hp = 300; expect(feelingStep(g.cb, me(g), 'despair', 1)).toBe(0.6); me(g).hp = 10; expect(feelingStep(g.cb, me(g), 'despair', 1)).toBe(0.8);
+  });
+});
+
+describe('Outburst: the modules that were repriced (rules 1.17)', () => {
+  it('Impact is retired (it did nothing): an old design holding it loses it and keeps working', () => {
+    expect(MODULE.impact).toBeUndefined(); expect(RETIRED_MODULE.impact).toMatchObject({ becomes: null });
+    expect(migrateDesign({ id: 'o', name: 'Old', school: 'damage', modules: ['impact', 'move'] } as any).modules).toEqual(['move']);
+    expect(SOUL_RULES.gates.skills.will_power).not.toContain('impact');
+  });
+  it('At Once ×0.8, Return\'s second hit ×0.3, Shell a shield of ×0.35, Inverse a shield of ×0.7, Quiet +5 MP', () => {
+    expect((MODULE.at_once as any).damage_mult).toBe(0.8); expect((MODULE.return as any).second_mult).toBe(0.3);
+    expect((MODULE.shell as any).shield_of_power).toBe(0.35); expect((MODULE.inverse as any).shield_mult).toBe(0.7); expect(MODULE.quiet.cost).toBe(5);
+    const a = heart(); begin(a, give(a.pc, { modules: ['at_once'] }), { aim: '6,5' }); expect(lost(a.foe)).toBe(Math.floor(28 * 0.8 * 0.8));
+    const r = heart(); begin(r, give(r.pc, { modules: ['return'] }), { aim: '6,5' }); expect(lost(r.foe)).toBe(Math.floor(28 * 0.8) + Math.floor(28 * 0.8 * 0.3));
+    const pr = heart(); const dr = give(pr.pc, { modules: ['return'] }); expect(withGame(pr.g, () => previewOutburstPlan(pr.cb, me(pr), dr, '6,5')).affected[0].dmg).toBe(Math.floor(28 * 0.8 * 1.3));
+    const s = heart(); begin(s, give(s.pc, { modules: ['shell'] }), { aim: '6,5' }); expect(me(s).shield).toBe(Math.floor(28 * 0.8 * 0.35));
+    const i = heart(['12,5'], ['4,5']); begin(i, give(i.pc, { modules: ['inverse'] }), { aim: '4,5' }); expect(i.unit(i.pcs[1].id).shield).toBe(Math.floor(28 * 0.8 * 0.7));
+  });
+});

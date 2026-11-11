@@ -2,6 +2,7 @@
 // is an action or rides on one, else with the game bound and the engine's own functions (moveUnit, resolveAttack,
 // applyDamage, emit), the same calls the reducer and the enemy AI make.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { apply, defense, moveUnit, resolveAttack, previewAttack, applyDamage, applyCond, condOn, d20, emit, emitStory, refOf, objectsOf, endTurn, healingMult, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';

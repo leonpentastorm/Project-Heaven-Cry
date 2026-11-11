@@ -1264,10 +1264,10 @@ register({
 
 // ---------- Heart Surge (rank III; a toggle on Release or a snap cast; once a turn; rules 1.5) ----------
 // The release fires one stage higher: a held Outburst's stage really rises (its tone's rider too); past stage 4, and on a
-// snap cast, the multiplier reads one step higher (stage 4: ×2.6, the table's 0.4 step continued; a snap: ×1, stage 1).
+// snap cast, the multiplier reads one step higher (stage 4: ×2.8, the table's 0.4 step continued; a snap: ×1.2, stage 1).
 // For double the Strain: the Begin's Strain again (1, 2 in Flooded air), added once the release has landed (it can burn
 // and short like any Strain). Item 524, PROVISIONAL (1.2's ×2 for +1 Strain is gone: 1.5 already pays for holding).
-const SURGE_PAST = 2.6;
+const SURGE_PAST = Math.round((stageMult(MAX_STAGE) + 0.4) * 100) / 100; // rules 1.17: the table tops out at ×2.4, so one step past it is ×2.8 (it was ×2.6 past ×2.2)
 register({
   id: 'channeler.heart_surge', claims: 'all',
   toggles: [{ id: 'surge', label: 'Heart Surge (+1 stage at release, double Strain)', on: ['combat/release', 'combat/outburst'],

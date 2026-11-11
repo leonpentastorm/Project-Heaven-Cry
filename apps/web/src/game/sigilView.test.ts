@@ -111,13 +111,13 @@ describe('Evoke (spec 9.3–9.8)', () => {
     expect(v.facing).toMatch(/^→ \(along/); expect(v.area.has('8,5')).toBe(true); expect(v.tiles['9,5'].layer).toMatch(/rgba\(79, 200, 223/);
     expect(v.tiles['5,5'].marks.some((m) => m.key === 'path0' && m.text === '→')).toBe(true);
     const row = v.affected.find((a) => a.unit === e.id)!;
-    expect(row.tag).toBe('ENEMY'); expect(row.text).toMatch(/^−30 HP · 95% to hit/);
+    expect(row.tag).toBe('ENEMY'); expect(row.text).toMatch(/^−51 HP · 95% to hit/); // FIRE 30 × the Line multiplier of 2 glyphs, ×1.7 (rules 1.17)
     expect(v.payload).toBeNull();
     const k = evokeClick(v, cb, u, '8,5', {}); expect(k.choice!.aims).toEqual(['8,5']);
     v = evokeView(cb, u, '2,5', k.choice!);
     expect(v.ok).toBe(true); expect(v.payload).toEqual({ tile: '2,5', aim: '8,5' });
     // what the screen promised is what the engine does
-    const hp0 = e.hp; expect(evoke(cb, rng, u, '2,5', '8,5')).toBeNull(); expect(hp0 - e.hp).toBe(30);
+    const hp0 = e.hp; expect(evoke(cb, rng, u, '2,5', '8,5')).toBeNull(); expect(hp0 - e.hp).toBe(51);
   });
   it('a bolt stopped by a creature on the way shows the stop; burst tiles and the CONDENSE core', () => {
     const { cb, u, es, rng } = setup(['fire', 'seek', 'spread', 'condense'], ['8,5', '6,5']);
@@ -177,9 +177,9 @@ describe('the preview gaps of batch 1 (spec 9.7, 9.9; items 480)', () => {
     const { cb, u, rng } = setup(['fire', 'seek', 'leech'], ['8,5']); u.hp = 300;
     walk(cb, rng, u, ['fire', 'leech', 'seek'], L3);
     const v = evokeView(cb, u, '2,5', { aims: ['8,5'] });
-    expect(v.leech).toMatchObject({ heal: 15, restored: 15 });
-    const row = v.affected.find((a) => a.key === 'leech')!; expect(row.extra).toBe(true); expect(row.text).toMatch(/LEECH: \+15 HP if every hit lands/);
-    expect(v.tiles['2,5'].marks.some((m) => m.text === '+15 HP')).toBe(true);
+    expect(v.leech).toMatchObject({ heal: 26, restored: 26 }); // half of FIRE 30 × 1.75 (a Line of 3, rules 1.17) = 53
+    const row = v.affected.find((a) => a.key === 'leech')!; expect(row.extra).toBe(true); expect(row.text).toMatch(/LEECH: \+26 HP if every hit lands/);
+    expect(v.tiles['2,5'].marks.some((m) => m.text === '+26 HP')).toBe(true);
   });
   it('NULL marks what it would unmake; the other side\'s unspotted trap stays unknown', () => {
     const { cb, u, rng } = setup(['null', 'seek', 'spread'], ['14,14']);

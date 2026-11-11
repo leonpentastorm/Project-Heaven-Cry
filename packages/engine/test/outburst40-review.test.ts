@@ -15,7 +15,7 @@ function rig(foes: string[] = ['6,5'], spec: any = SOUL) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pc.pos = '3,5'; f.foes.forEach((e, i) => { e.pos = foes[i]; });
   for (const x of cb.units) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).healRecv = 1; }
-  Object.assign(f.pc.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } });
+  Object.assign(f.pc.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } });
   const u = f.turn(f.pc); u.ap = 60; f.g.rng.state = SEED;
   return f;
 }
@@ -50,8 +50,8 @@ describe('Fuse and the release hook (rules 1.8 section 4)', () => {
     };
     const plain = run(false), surged = run(true);
     expect(plain.n).toBe(1); expect(surged.n).toBe(1);
-    expect(plain.dmg).toBe(Math.floor(20 * 0.8 * 0.5)); // a snap at stage 0 (×0.8), At Once ×0.5
-    expect(surged.dmg).toBe(Math.floor(20 * 1 * 0.5)); // surged: read a stage higher (stage 1, ×1)
+    expect(plain.dmg).toBe(Math.floor(20 * 0.8 * 0.8)); // a snap at stage 0 (×0.8), At Once ×0.8 (rules 1.17)
+    expect(surged.dmg).toBe(Math.floor(20 * 1.2 * 0.8)); // surged: read a stage higher (stage 1, ×1.2)
   });
   it('a Fuse still waiting when the fight ends fizzles: never carried to the area map', () => {
     const f = rig(['6,5']); f.foe.hp = 1;

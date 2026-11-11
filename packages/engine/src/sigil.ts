@@ -10,20 +10,21 @@
 // 1.4 touching-group reading (groupAt) until they fade.
 import { WEAPON, type SigilDef } from './data';
 import {
-  type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT,
+  type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
 export * from './sigilwords';
 import {
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
-  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost,
+  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap,
 } from './combat';
 import { type Rng, d20 } from './rng';
-import { emit, boundGame } from './effects/hooks';
+import { emit, boundGame, onHook } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { AP_MAX } from './effects/ap';
-import { NEEDS_EVOKER, passiveVigilance } from './character';
+import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
+import { ENEMY_LEVELS } from './data';
 import {
   type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, strengthFor, withVia,
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
@@ -312,9 +313,35 @@ export interface Affected {
   roll: { bonus: number; need: number; pct: number; cover: boolean } | null; saves: { cond: string; fam: Fam; tn: number }[];
 }
 const SAVES: Record<string, Fam> = { body: 'body', brain: 'brain', heart: 'heart' };
-// ---------- the Sigil damage balance pass (docs/design/balance-targets.md; spec items 587-590, provisional) ----------
-/** The most direct damage one spell does to one creature, before armour: 350, or 500 on a critical (the game's ceilings). */
+// ---------- the Sigil damage balance pass (spec items 587-590; rules 1.17) ----------
+/** The targets the maths is balanced around (Leon, 10 Nov 2026): 350 a hit, 500 on a critical. Rules 1.17: they are
+ * targets, not a limit: the engine no longer scales a spell down to them (the full Line is the Mage's peak and may pass
+ * them). Kept for the screens and reports that name them. */
 export const SIGIL_CAP = 350, SIGIL_CAP_CRIT = 500;
+/** Whose Lines take the Line multiplier (rules 1.17): a character, or a unit fighting for one (a companion, a twin). */
+const linesGrow = (u: Unit | null | undefined) => !!u && !!(u.charId || (u as any).ctrl);
+/** A spell's Line multiplier for this caster (1 for an enemy caster, or a spell with no caster). */
+export const lineMultFor = (caster: Unit | null | undefined, sp: Spell): number => (linesGrow(caster) ? lineMult(sp.words.length) : 1);
+/** A spell's critical (rules 1.17: the same rule as a weapon's, rules 1.15): ×1.5, to ×2.0 at most with everything the
+ * caster's sheet and gear give (critMult), cut by the target's Critical damage taken. An enemy's is ×1.5. */
+export function spellCritMult(cb: Combat | null, by: Unit | null | undefined, t: Unit): number {
+  const who = by && by.charId && !by.companion && !(cb as any)?.dry ? (boundGame()?.characters?.[by.charId] as Character | undefined) : undefined;
+  return 1 + ((who ? critMult(who) : CRIT_BASE) - 1) * (1 - Math.min(1, Math.max(0, t.critTaken || 0)));
+}
+/** A spell's roll to hit reads the level gap as a weapon's does (rules 1.17; rules 1.15, The level gap). */
+export const spellGapToHit = (cb: Combat | null, by: Unit | null | undefined, t: Unit): number => (by ? levelGap(by, t, cb) * ENEMY_LEVELS.gap.to_hit_per_level : 0);
+/** Rules 1.17, the standing rule (Leon, 11 Nov 2026): an Elite or a Boss at or above the caster's level is never taken
+ * out by one Evoke from full HP: the Evoke leaves it on 1 HP. Set for the creature a character's Evoke is resolving on
+ * (applyTo), read in the damage chokepoint's 'would_drop_to_0' phase. */
+let LINE_GUARD: Unit | null = null;
+/** The creatures the Evoke resolving now found at full HP and guards to its end (a second missile of TWICE, a chain). */
+let EVOKE_GUARDED: Set<Unit> = new Set();
+export const lineGuards = (by: Unit | null | undefined, t: Unit, cb: Combat | null): boolean =>
+  !!by && linesGrow(by) && by.side !== t.side && (t.tier === 'elite' || t.tier === 'boss') && !t.companion && t.hp >= t.maxHp && levelGap(by, t, cb) <= 0;
+onHook('damage_in', (ctx: any) => {
+  if (ctx.phase !== 'would_drop_to_0' || !LINE_GUARD || ctx.t !== LINE_GUARD) return;
+  if (ctx.floor == null || ctx.floor < 1) ctx.floor = 1; ctx.lineGuard = true;
+});
 /** A caster's power for a damage type: Sigil damage takes the Sigil multiplier; Elemental damage takes the Sigil and
  * Elemental bonuses added together (1 + (Sigil − 1) + (Elemental − 1)), never their product. */
 export function sigilPower(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil'): number {
@@ -331,11 +358,8 @@ export function sigilParts(subjects: string[], infl?: string[]): { w: string; ty
   glyphs.forEach((x, i) => { const type = x.d.damage_type === 'elemental' ? 'elemental' : 'sigil', n = up(x.w, i === 0 ? x.d.damage : x.d.damage / 2), p = parts.find((y) => y.type === type); if (p) p.n += n; else parts.push({ w: x.w, type, n }); });
   return parts;
 }
-/** Scale the parts down together so their total stays under the ceiling. */
-export function capParts(raws: number[], crit: boolean): number[] {
-  const cap = crit ? SIGIL_CAP_CRIT : SIGIL_CAP, tot = raws.reduce((a, b) => a + b, 0);
-  return tot <= cap ? raws : raws.map((r) => Math.floor((r * cap) / tot));
-}
+/** Rules 1.17: no ceiling inside Sigil magic any more (the parts are returned as they are). Kept for old callers. */
+export function capParts(raws: number[], _crit: boolean): number[] { return raws; }
 // ---------- inflections (rules 1.10, Sigil 1.5: a Mastered word's small upgrade, always on for its caster) ----------
 /** The inflection value of a stat for a word, when the word is one of the spell's inflected words (0 otherwise). */
 const iv = (sp: Spell, w: string, stat: string) => (sp.infl?.includes(w) ? inflectionValue(w, stat) : 0);
@@ -389,10 +413,11 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; if (d.heal) hl += d.heal * (1 + iv(sp, w, 'heal_pct') / 100); if (d.shield) sh += d.shield * (1 + iv(sp, w, 'shield_pct') / 100); }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
   const hook = (kind: string, v: number) => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1) * v;
-  const [E, S] = capParts([Math.round(hook('damage', el * m * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * sigilPower(mg, 'sigil') * sharp))], false);
+  const lm = lineMultFor(caster, sp); // rules 1.17: the Line multiplier (damage only; a character's Lines)
+  const [E, S] = [Math.round(hook('damage', el * m * lm * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * lm * sigilPower(mg, 'sigil') * sharp))];
   const arm = (S ? Math.max(1, S - t.armour) : 0) + (E ? Math.max(1, E - Math.floor(t.armour / 2)) : 0);
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
-  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') : 0;
+  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) : 0;
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + unitStrength(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitStrength(caster, 'brain_power') });
@@ -920,6 +945,7 @@ export function previewEvoke(cb: Combat, u: Unit, tile: string, aim?: string, op
 /** Evoke (spec: Evoking): fire the pattern from where you stand at the tile you pick. */
 export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string, opts: EvokeOpts = {}): string | null {
   const pv = planEvoke(cb, u, tile, aim, opts); if (!pv.ok) return pv.why || 'Can\'t fire that.';
+  EVOKE_GUARDED = new Set(); // rules 1.17: the creatures this Evoke may not take out (an Elite or Boss it found at full HP)
   return magicSpellWords(pv.pattern!.glyphs.length, () => evokeInner(cb, rng, u, pv, opts));
 }
 function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: EvokeOpts): string | null {
@@ -977,15 +1003,20 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
     const hp0 = t.hp + (t.shield || 0), sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
     const parts = sigilParts(sp.subjects, sp.infl);
     line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
-    const raws = capParts(parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
-      return Math.round(p.n * a.mult * sigilPower(by?.mg, p.type) * sharp * hk * (crit ? 2 : 1)); }), crit);
-    if (raws.reduce((x, y) => x + y, 0) >= (crit ? SIGIL_CAP_CRIT : SIGIL_CAP)) line += ' (at the ceiling)';
-    for (const [pi, p] of parts.entries()) {
-      const raw = raws[pi];
-      // The line of fire runs from the missile's origin (SENSE appears at the target and a field is under it: no line).
-      const from = a.via === 'field' || (sp.missile === 'appear' && a.via !== 'chain') ? t.pos : o.origin;
-      line += withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));
-    }
+    const lm = lineMultFor(by, sp), cm = crit ? spellCritMult(cb, by, t) : 1; // rules 1.17: the Line multiplier; a critical ×1.5 to ×2.0
+    const raws = parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
+      return Math.round(p.n * a.mult * lm * sigilPower(by?.mg, p.type) * sharp * hk * cm); });
+    // Rules 1.17: one Evoke never takes an Elite or a Boss of the caster's level (or higher) from full HP to nothing.
+    const direct = !['field', 'turret', 'trap'].includes(a.via), guard = direct && (EVOKE_GUARDED.has(t) || lineGuards(by, t, cb)), wasGuard = LINE_GUARD; if (guard) { LINE_GUARD = t; EVOKE_GUARDED.add(t); }
+    try {
+      for (const [pi, p] of parts.entries()) {
+        const raw = raws[pi];
+        // The line of fire runs from the missile's origin (SENSE appears at the target and a field is under it: no line).
+        const from = a.via === 'field' || (sp.missile === 'appear' && a.via !== 'chain') ? t.pos : o.origin;
+        line += withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));
+      }
+    } finally { LINE_GUARD = wasGuard; }
+    if (guard && !t.dead && t.hp === 1) line += ' (' + t.name + ' is too tough to fall to one spell: 1 HP left)';
     dealt += Math.max(0, hp0 - (t.hp + (t.shield || 0)));
     if (crit) noteCrit(cb, by, t, 'sigil'); // the spotlight's crit (decision 113): presentation only
     if (!t.dead) {

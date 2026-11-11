@@ -31,7 +31,7 @@ function rig(foes: string[] = ['6,5'], allies: string[] = [], mana = 15) {
 function arm(u: Unit) {
   if (!u.mg) throw new Error('no magic');
   // firstUsed: rules 1.8's free first Pump of the fight is spent, so these 1.5 tests price every Pump (outburst40.test.ts covers it).
-  Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, debuff: { body: 0, brain: 0, heart: 0 } });
+  Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, debuff: { body: 0, brain: 0, heart: 0 } });
   u.sk = {}; u.dbf = {};
 }
 type F = ReturnType<typeof rig>;
@@ -46,8 +46,8 @@ const me = (f: F) => f.unit(f.pc.id);
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('the heart cycle: Begin, Pump, Release (rules 1.5, section 1)', () => {
-  it('Begin is 2 AP at stage 0 and +1 Strain; Pump 1 AP +1 stage to 4; Release 1 AP; the stage table ×0.8 (rules 1.8) … ×2.2', () => {
-    expect(STAGE_MULT).toEqual([0.8, 1, 1.4, 1.8, 2.2]); expect([0, 1, 2, 3, 4].map(stageMult)).toEqual([0.8, 1, 1.4, 1.8, 2.2]);
+  it('Begin is 2 AP at stage 0 and +1 Strain; Pump 1 AP +1 stage to 4; Release 1 AP; the stage table ×0.8, then +0.4 a stage to ×2.4 (rules 1.17)', () => {
+    expect(STAGE_MULT).toEqual([0.8, 1.2, 1.6, 2, 2.4]); expect([0, 1, 2, 3, 4].map(stageMult)).toEqual([0.8, 1.2, 1.6, 2, 2.4]);
     const f = rig(); const d = give(f.pc, {});
     begin(f, d); expect(me(f).ap).toBe(58); expect(me(f).mg!.held!.stage).toBe(0); expect(me(f).mg!.strain).toBe(1);
     expect(fx(f.cb, 'outburst').at(-1)).toMatchObject({ stage: 0, hold: true, form: 'bolt', tone: 'raw' });
@@ -55,8 +55,8 @@ describe('the heart cycle: Begin, Pump, Release (rules 1.5, section 1)', () => {
     expect(fx(f.cb, 'pump').map((e) => e.stage)).toEqual([1, 2, 3, 4]); expect(fx(f.cb, 'pump').at(-1).max).toBe(true);
     expect(() => pump(f)).toThrow(/full/);
     release(f, '6,5'); expect(me(f).ap).toBe(53); expect(me(f).mg!.held).toBeNull();
-    expect(lost(f.foe)).toBe(Math.floor(20 * 2.2));
-    expect(fx(f.cb, 'release').at(-1)).toMatchObject({ form: 'bolt', tone: 'raw', stage: 4, mult: 2.2, targets: [f.foe.id] });
+    expect(lost(f.foe)).toBe(Math.floor(20 * 2.4));
+    expect(fx(f.cb, 'release').at(-1)).toMatchObject({ form: 'bolt', tone: 'raw', stage: 4, mult: 2.4, targets: [f.foe.id] });
   });
   it('a snap cast (combat/outburst with an aim) is Begin + Release at once: 3 AP at ×0.8 (rules 1.8)', () => {
     const f = rig(); const d = give(f.pc, {});
@@ -89,7 +89,7 @@ describe('the swell, the Empathy Pumps, Steady (sections 1 and 3)', () => {
     begin(f, d); me(f).mg!.strain = 4;
     f.foe.pos = '15,10'; f.unit(f.foe.id).hp = 0; // keep the foe out of it
     f.turn(f.pc); expect(me(f).mg!.held!.stage).toBe(1); expect(me(f).mg!.strain).toBe(4);
-    expect(fx(f.cb, 'swell').at(-1)).toMatchObject({ stage: 1, mult: 1 });
+    expect(fx(f.cb, 'swell').at(-1)).toMatchObject({ stage: 1, mult: 1.2 });
     expect(fx(f.cb, 'hold').at(-1)).toMatchObject({ stage: 1 });
   });
   it('in Flooded air the swell strains 2', () => {
@@ -179,17 +179,17 @@ describe('calming the heart: the five ways, on top of the turn-start −1 (secti
 describe('the second school: a rider at half strength with its own option (section 4)', () => {
   it('Damage + Control (push): full damage, then a 1-tile push', () => {
     const f = rig(); const d = give(f.pc, { school2: 'control', option2: 'push' });
-    begin(f, d); pump(f); release(f, '6,5'); expect(lost(f.foe)).toBe(20); expect(f.foe.pos).toBe('7,5');
+    begin(f, d); pump(f); release(f, '6,5'); expect(lost(f.foe)).toBe(24); expect(f.foe.pos).toBe('7,5');
   });
-  it('Buff (heal) + Damage with Inverse on an ally: the heal, then a shield of half the damage', () => {
+  it('Buff (heal) + Damage with Inverse on an ally: the heal, then a shield of half the damage (Inverse: ×0.7 of it, rules 1.17)', () => {
     const f = rig(['12,5'], ['4,5']); const ally = f.pcs[1]; ally.hp = 100;
     const d = give(f.pc, { school: 'buff', option: 'heal', school2: 'damage', modules: ['inverse'] });
     begin(f, d); pump(f); release(f, '4,5');
-    expect(f.unit(ally.id).hp).toBe(130); expect(f.unit(ally.id).shield).toBe(10);
+    expect(f.unit(ally.id).hp).toBe(136); expect(f.unit(ally.id).shield).toBe(Math.floor(20 * 1.2 * 0.5 * 0.7));
   });
   it('Control (Pinned) + Damage: Pinned, and half damage with no roll', () => {
     const f = rig(); const d = give(f.pc, { school: 'control', option: 'pinned', school2: 'damage' });
-    begin(f, d); pump(f); release(f, '6,5'); expect(condOn(f.foe, 'pinned')).toBe(true); expect(lost(f.foe)).toBe(10);
+    begin(f, d); pump(f); release(f, '6,5'); expect(condOn(f.foe, 'pinned')).toBe(true); expect(lost(f.foe)).toBe(12);
   });
 });
 
@@ -200,8 +200,8 @@ describe('tones: Raw and the six elements, riders by stage (section 5)', () => {
     const d = give(f.pc, { tone }); begin(f, d); pump(f, stage); release(f, '6,5'); return f;
   }
   it('an element deals Elemental damage (armour half); Raw ignores armour', () => {
-    expect(lost(hit('raw', 1, { armour: 10 }).foe)).toBe(20);
-    expect(lost(hit('fire', 1, { armour: 10 }).foe)).toBe(15);
+    expect(lost(hit('raw', 1, { armour: 10 }).foe)).toBe(24);
+    expect(lost(hit('fire', 1, { armour: 10 }).foe)).toBe(19);
     const f = hit('fire', 1); expect(fx(f.cb, 'release').at(-1)).toMatchObject({ tone: 'fire', element: 'fire' });
   });
   it('Fire: none at 1; Burning 2 rounds at 2–3; at 4 it spreads to foes next to the target and the ground burns', () => {
@@ -214,8 +214,8 @@ describe('tones: Raw and the six elements, riders by stage (section 5)', () => {
     const c1 = rig(); c1.cb.map = { ...c1.cb.map, cover: ['5,5'] } as any; c1.foe.def = 9; // cover −5 would make it miss on a low roll
     const plan = withGame(c1.g, () => previewOutburstPlan(c1.cb, c1.pc, give(c1.pc, { tone: 'storm' }), '6,5', { stage: 1 }));
     expect(plan.affected[0].roll!.cover).toBe(false);
-    const f2 = hit('storm', 2, { foes: ['6,5', '8,5', '10,5'] }); expect(lost(f2.foes[1])).toBe(Math.floor(20 * 1.4 * 0.5)); expect(lost(f2.foes[2])).toBe(0);
-    const f4 = hit('storm', 4, { foes: ['6,5', '8,5', '10,5'] }); expect(lost(f4.foes[2])).toBe(Math.floor(20 * 2.2 * 0.5));
+    const f2 = hit('storm', 2, { foes: ['6,5', '8,5', '10,5'] }); expect(lost(f2.foes[1])).toBe(Math.floor(20 * 1.6 * 0.5)); expect(lost(f2.foes[2])).toBe(0);
+    const f4 = hit('storm', 4, { foes: ['6,5', '8,5', '10,5'] }); expect(lost(f4.foes[2])).toBe(Math.floor(20 * 2.4 * 0.5));
     expect(condOn(f4.foes[0], 'shaken')).toBe(true); expect(fx(f4.cb, 'chain').length).toBe(2);
   });
   it('Frost: Slowed (save) at 1; Slowed (no save) at 2–3; Slowed and Pinned 1 round at 4', () => {
@@ -228,7 +228,7 @@ describe('tones: Raw and the six elements, riders by stage (section 5)', () => {
   });
   it('Stone: armour counts in full and +10 from stage 1; Prone at 2–3; rubble around the target at 4', () => {
     expect(lost(hit('stone', 0, { armour: 10 }).foe)).toBe(Math.floor(20 * 0.8) - 5);
-    expect(lost(hit('stone', 1, { armour: 10 }).foe)).toBe(20 + 10 - 10);
+    expect(lost(hit('stone', 1, { armour: 10 }).foe)).toBe(24 + 10 - 10);
     expect(hit('stone', 2).foe.prone).toBe(true);
     const f = hit('stone', 4); expect(objectsOf(f.cb).filter((o) => o.kind === 'rubble').length).toBeGreaterThanOrEqual(6);
   });
@@ -266,17 +266,17 @@ describe('shapes: Bolt, Wave, Burst, Aura, Lance, with their areas (section 7)',
   });
   it('through the reducer: a Lance pierces two foes in a row (each rolls); a Burst hits all in it with no roll at ×0.7; an Aura needs no aim', () => {
     const f = rig(['5,5', '7,5']); const l = give(f.pc, { modules: ['lance'] });
-    begin(f, l); pump(f); release(f, '9,5'); expect(lost(f.foes[0])).toBe(16); expect(lost(f.foes[1])).toBe(16);
+    begin(f, l); pump(f); release(f, '9,5'); expect(lost(f.foes[0])).toBe(19); expect(lost(f.foes[1])).toBe(19);
     const g = rig(['6,5', '7,6']); const b = give(g.pc, { modules: ['burst'] }); g.foes[0].def = 99; g.foes[1].def = 99;
-    begin(g, b); pump(g); release(g, '6,5'); expect(lost(g.foes[0])).toBe(14); expect(lost(g.foes[1])).toBe(14);
+    begin(g, b); pump(g); release(g, '6,5'); expect(lost(g.foes[0])).toBe(16); expect(lost(g.foes[1])).toBe(16);
     const h = rig(['4,5', '2,4']); const a = give(h.pc, { modules: ['aura'] });
-    begin(h, a); pump(h); release(h); expect(lost(h.foes[0])).toBe(12); expect(lost(h.foes[1])).toBe(12); expect(lost(h.pc)).toBe(0);
+    begin(h, a); pump(h); release(h); expect(lost(h.foes[0])).toBe(14); expect(lost(h.foes[1])).toBe(14); expect(lost(h.pc)).toBe(0);
   });
   it('a hostile area reaches allies too (friendly fire); a Buff area reaches allies only', () => {
     const f = rig(['6,5'], ['6,6']); const b = give(f.pc, { modules: ['burst'] });
-    begin(f, b); pump(f); release(f, '6,5'); expect(lost(f.unit(f.pcs[1].id))).toBe(14);
+    begin(f, b); pump(f); release(f, '6,5'); expect(lost(f.unit(f.pcs[1].id))).toBe(16);
     const g = rig(['6,5'], ['6,6']); g.foe.hp = 100; g.unit(g.pcs[1].id).hp = 100; const h = give(g.pc, { school: 'buff', option: 'heal', modules: ['burst'] });
-    begin(g, h); pump(g); release(g, '6,5'); expect(g.foe.hp).toBe(100); expect(g.unit(g.pcs[1].id).hp).toBe(130);
+    begin(g, h); pump(g); release(g, '6,5'); expect(g.foe.hp).toBe(100); expect(g.unit(g.pcs[1].id).hp).toBe(136);
   });
 });
 
@@ -292,16 +292,16 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
     expect(me(f).mg!.held!.watch).toBe(true);
     const foe = f.unit(f.foe.id); f.cb.turn = f.cb.order.indexOf(foe.id); foe.ap = 9;
     withGame(f.g, () => moveUnit(f.cb, foe, '6,5', f.g.rng));
-    expect(lost(foe)).toBe(Math.floor(20 * 1.4)); expect(me(f).mg!.held).toBeNull();
+    expect(lost(foe)).toBe(Math.floor(20 * 1.6)); expect(me(f).mg!.held).toBeNull();
     expect(fx(f.cb, 'heart_overwatch').at(-1)).toMatchObject({ target: foe.id, stage: 2 }); expect(fx(f.cb, 'release').at(-1).reaction).toBe(true);
     expect(f.pc.reactedRound ?? (f.pc as any).reactUsed?.r).toBe(f.cb.round);
   });
   it('Resonance: an ally who releases after another in the same round gets +0.2 on the stage multiplier', () => {
     const f = rig(['6,5', '6,7'], ['3,7']); const d = give(f.pc, {}); const a = f.pcs[1]; const d2 = give(f.unit(a.id), {});
-    begin(f, d); pump(f); release(f, '6,5'); expect(lost(f.foes[0])).toBe(20);
+    begin(f, d); pump(f); release(f, '6,5'); expect(lost(f.foes[0])).toBe(24);
     const u2 = f.turn(a); u2.ap = 60; f.g.rng.state = SEED;
-    const plan = withGame(f.g, () => previewOutburstPlan(f.cb, f.unit(a.id), d2, '6,7', { stage: 1 })); expect(plan.resonance).toBe(true); expect(plan.mult).toBeCloseTo(1.2);
-    begin(f, d2, u2); pump(f, 1, u2); release(f, '6,7', u2); expect(lost(f.foes[1])).toBe(24);
+    const plan = withGame(f.g, () => previewOutburstPlan(f.cb, f.unit(a.id), d2, '6,7', { stage: 1 })); expect(plan.resonance).toBe(true); expect(plan.mult).toBeCloseTo(1.4);
+    begin(f, d2, u2); pump(f, 1, u2); release(f, '6,7', u2); expect(lost(f.foes[1])).toBe(28);
     expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: a.id, with: [f.pc.id] });
   });
   it('Resonance is capped at +0.4 in total per release (Leon 8 Nov 2026): the fourth releaser of a round gets +0.4, not +0.6', () => {
@@ -311,8 +311,8 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
     for (let i = 0; i < 3; i++) { const d = give(f.unit(f.pcs[i].id), {}); f.turn(f.pcs[i]).ap = 60; B(i, { type: 'combat/outburst', design: d }); B(i, { type: 'combat/release', aim: f.foes[i].pos }); }
     const last = f.pcs[3], d4 = give(f.unit(last.id), {}); f.turn(last).ap = 60; f.g.rng.state = SEED;
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, f.unit(last.id), d4, '6,11', { stage: 1 }));
-    expect(plan.resonanceBonus).toBeCloseTo(0.4); expect(plan.mult).toBeCloseTo(1.4);
-    B(3, { type: 'combat/outburst', design: d4 }); B(3, { type: 'combat/pump' }); B(3, { type: 'combat/release', aim: '6,11' }); expect(lost(f.foes[3])).toBe(28);
+    expect(plan.resonanceBonus).toBeCloseTo(0.4); expect(plan.mult).toBeCloseTo(1.6);
+    B(3, { type: 'combat/outburst', design: d4 }); B(3, { type: 'combat/pump' }); B(3, { type: 'combat/release', aim: '6,11' }); expect(lost(f.foes[3])).toBe(32);
     expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: last.id, bonus: 0.4 }); expect(fx(f.cb, 'resonance').at(-1).with.length).toBe(3);
   });
   it('Resonance is the players\' side only: two foe Soul casters releasing in one round get no bonus; two PCs still get +0.2', () => {
@@ -325,16 +325,16 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
       return u;
     });
     const u1 = foeCast(e1, fd1, '3,5'); const hp1 = f.unit(f.pc.id).hp; expect(withGame(f.g, () => releaseOutburst(f.cb, f.g.rng, f.unit(u1.id), '3,5'))).toBeNull();
-    const first = hp1 - f.unit(f.pc.id).hp; expect(first).toBeGreaterThan(0); expect(fx(f.cb, 'release').at(-1).mult).toBeCloseTo(1);
+    const first = hp1 - f.unit(f.pc.id).hp; expect(first).toBeGreaterThan(0); expect(fx(f.cb, 'release').at(-1).mult).toBeCloseTo(1.2);
     const u2 = foeCast(e2, fd2, '3,7');
     const hp2 = f.unit(a.id).hp, plan = withGame(f.g, () => previewOutburstPlan(f.cb, f.unit(u2.id), 'held', '3,7'));
-    expect(plan.resonance).toBe(false); expect(plan.resonanceBonus).toBe(0); expect(plan.mult).toBeCloseTo(1); // the enemy AI's preview counts none
+    expect(plan.resonance).toBe(false); expect(plan.resonanceBonus).toBe(0); expect(plan.mult).toBeCloseTo(1.2); // the enemy AI's preview counts none
     expect(withGame(f.g, () => releaseOutburst(f.cb, f.g.rng, f.unit(u2.id), '3,7'))).toBeNull();
-    expect(hp2 - f.unit(a.id).hp).toBe(first); expect(fx(f.cb, 'resonance').length).toBe(0); expect(fx(f.cb, 'release').at(-1)).toMatchObject({ resonance: 0, mult: 1 });
+    expect(hp2 - f.unit(a.id).hp).toBe(first); expect(fx(f.cb, 'resonance').length).toBe(0); expect(fx(f.cb, 'release').at(-1)).toMatchObject({ resonance: 0, mult: 1.2 });
     // The players, in the same round, still resonate with each other (the foes' releases don't count for them).
     const d = give(f.unit(f.pc.id), {}), d2 = give(f.unit(a.id), {});
-    const p1 = f.turn(f.pc); p1.ap = 60; f.g.rng.state = SEED; begin(f, d, p1); pump(f, 1, p1); release(f, '6,5', p1); expect(lost(f.unit(e1.id))).toBe(20);
-    const p2 = f.turn(a); p2.ap = 60; f.g.rng.state = SEED; begin(f, d2, p2); pump(f, 1, p2); release(f, '6,7', p2); expect(lost(f.unit(e2.id))).toBe(24);
+    const p1 = f.turn(f.pc); p1.ap = 60; f.g.rng.state = SEED; begin(f, d, p1); pump(f, 1, p1); release(f, '6,5', p1); expect(lost(f.unit(e1.id))).toBe(24);
+    const p2 = f.turn(a); p2.ap = 60; f.g.rng.state = SEED; begin(f, d2, p2); pump(f, 1, p2); release(f, '6,7', p2); expect(lost(f.unit(e2.id))).toBe(28);
     expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: a.id, with: [f.pc.id], bonus: 0.2 });
   });
   it('Resonance in a Proving Ground team fight: Team B\'s player characters stand on side foe and still resonate with each other, like Team A', () => {
@@ -346,7 +346,7 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
     for (const i of [1, 2]) {
       const d = give(f.unit(ids[i]), {}); f.turn(f.unit(ids[i])).ap = 60; f.g.rng.state = SEED;
       const hp = f.unit(f.pc.id).hp; B(i, { type: 'combat/outburst', design: d }); B(i, { type: 'combat/pump' }); B(i, { type: 'combat/release', aim: '6,7' });
-      expect(hp - f.unit(f.pc.id).hp).toBe(i === 1 ? 20 : 24);
+      expect(hp - f.unit(f.pc.id).hp).toBe(i === 1 ? 24 : 28);
     }
     expect(fx(f.cb, 'resonance').at(-1)).toMatchObject({ unit: b2.id, with: [b1.id], bonus: 0.2 });
   });
@@ -365,10 +365,10 @@ describe('the preview standard (section 7)', () => {
     const d = give(f.pc, { modules: ['burst'], tone: 'fire' });
     const p = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '6,5', { stage: 3 }));
     expect(p.ok).toBe(true); expect(p.ap).toBe(2 + 3 + 1); expect(p.mp).toBeGreaterThan(0); expect(p.strain).toBe(1); expect(p.strainAfter).toBe(1);
-    expect(p).toMatchObject({ stage: 3, mult: 1.8, form: 'burst', tone: 'fire', element: 'fire', riderStage: 3, reach: 4, needsAim: true, resonance: false });
+    expect(p).toMatchObject({ stage: 3, mult: 2, form: 'burst', tone: 'fire', element: 'fire', riderStage: 3, reach: 4, needsAim: true, resonance: false });
     expect(p.area.length).toBe(9); expect(p.reachTiles.length).toBeGreaterThan(9);
     const foe = p.affected.find((a) => a.unit === f.foes[0].id)!, ally = p.affected.find((a) => a.unit === f.pcs[1].id)!;
-    expect(foe).toMatchObject({ enemy: true, dmg: Math.round(20 * 1.8 * 0.7), dmgAfterArmour: Math.round(20 * 1.8 * 0.7) - 5, rider: 'Burning for 2 rounds.' });
+    expect(foe).toMatchObject({ enemy: true, dmg: Math.round(20 * 2 * 0.7), dmgAfterArmour: Math.round(20 * 2 * 0.7) - 5, rider: 'Burning for 2 rounds.' });
     expect(foe.roll).toBeNull(); expect(ally.ally).toBe(true); expect(ally.rider).toBe('');
     me(f).mg!.strain = 4; const w = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '6,5'));
     expect(w.burnWarning).toBe(3 * 8); expect(w.shortWarning).toBe(true);

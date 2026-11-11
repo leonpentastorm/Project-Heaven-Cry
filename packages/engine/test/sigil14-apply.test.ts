@@ -3,6 +3,7 @@
 // Boon notes, COMMAND's move tiles), QUICKEN's log and KIN's refused aims. Every spell is drawn and Evoked with
 // apply() (combat/draw, combat/evoke with aim, aims, dest, order and orderTo), the same path a player's click takes.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { d20, previewEvoke, placedMagic, condOn, applyCond, objectsOf, type Combat, type Unit } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 

@@ -4,6 +4,7 @@
 // the class-move previews the grid paints. Everything a player does goes through apply() (combat/draw, combat/evoke,
 // combat/perk, combat/attack).
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { d20, emit, applyCond, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';

@@ -26,7 +26,7 @@ const adv = (id: string, extra: CharSpec = {}): CharSpec => ({ ...SOUL, advanced
 function clean(f: F) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   for (const x of cb.units) { x.hp = x.maxHp = 999; x.armour = 0; x.def = -40; x.sv = { body: -40, brain: -40, heart: -40 } as any; x.hidden = false; (x as any).healRecv = 1; }
-  for (const x of cb.units) if (x.mg) Object.assign(x.mg, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0 });
+  for (const x of cb.units) if (x.mg) Object.assign(x.mg, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0 });
 }
 const give = (u: Unit, d: Partial<OutburstDesign>): string => { const id = 'x' + (u.mg!.designs.length + 1); u.mg!.designs.push({ id, name: 'Test ' + id, school: 'damage', modules: [], ...d } as OutburstDesign); return id; };
 const place = (f: F, u: Unit, k: string) => { f.unit(u.id).pos = k; return f.unit(u.id); };
@@ -41,8 +41,8 @@ describe('Channeler: Storm Front under 1.5 (item 523)', () => {
     A(f, f.unit(u.id), { type: 'combat/outburst', design: d, mods: ['class:channeler.storm_front#storm'] });
     expect(f.unit(u.id).mg!.mp).toBe(999 - designCost(f.unit(u.id).mg!, f.unit(u.id).mg!.designs.find((x) => x.id === d)!, manaOf(f.cb)) - 10);
     A(f, f.unit(u.id), { type: 'combat/pump' }); A(f, f.unit(u.id), { type: 'combat/release', aim: '6,2' });
-    expect(lost(f.unit(a.id))).toBe(20); // stage 1, ×1
-    expect(lost(f.unit(b.id))).toBe(20); expect(lost(f.unit(c.id))).toBe(20);
+    expect(lost(f.unit(a.id))).toBe(24); // stage 1, ×1.2 (rules 1.17)
+    expect(lost(f.unit(b.id))).toBe(24); expect(lost(f.unit(c.id))).toBe(24);
     expect(fxOf(f.cb, 'chain').filter((e) => e.storm).length).toBe(2);
   });
   it('an area shape can\'t take it: a Burst neither pays the +10 MP nor arcs', () => {
@@ -55,19 +55,19 @@ describe('Channeler: Storm Front under 1.5 (item 523)', () => {
 });
 
 describe('Channeler: Heart Surge on a stage-4 heart and a snap (item 524)', () => {
-  it('past stage 4 the multiplier reads ×2.6; a snap reads stage 1 (×1)', () => {
+  it('past stage 4 the multiplier reads ×2.8 (one more step of the table, rules 1.17); a snap reads stage 1 (×1.2)', () => {
     const f = fightWith([cls('channeler', 3)], [{}]); clean(f);
     const u = f.turn(f.pc); u.ap = 12; place(f, u, '2,2'); place(f, f.foe, '5,2'); const d = give(f.unit(u.id), { at_once: true } as any);
-    f.unit(u.id).mg!.designs.find((x) => x.id === d)!.modules = ['at_once']; // no roll: the numbers are exact (×0.5)
+    f.unit(u.id).mg!.designs.find((x) => x.id === d)!.modules = ['at_once']; // no roll: the numbers are exact (At Once: ×0.8, rules 1.17)
     A(f, f.unit(u.id), { type: 'combat/outburst', design: d }); for (let i = 0; i < 4; i++) A(f, f.unit(u.id), { type: 'combat/pump' });
     A(f, f.unit(u.id), { type: 'combat/release', aim: '5,2', mods: ['class:channeler.heart_surge#surge'] });
-    expect(Math.abs(lost(f.unit(f.foe.id)) - 20 * 2.6 * 0.5)).toBeLessThanOrEqual(1);
+    expect(Math.abs(lost(f.unit(f.foe.id)) - 20 * 2.8 * 0.8)).toBeLessThanOrEqual(1);
     const g = fightWith([cls('channeler', 3)], [{}]); clean(g);
     const v = g.turn(g.pc); v.ap = 9; place(g, v, '2,2'); place(g, g.foe, '5,2'); const e = give(g.unit(v.id), { modules: ['at_once'] });
     A(g, g.unit(v.id), { type: 'combat/outburst', design: e, aim: '5,2', mods: ['class:channeler.heart_surge#surge'] });
-    expect(lost(g.unit(g.foe.id))).toBe(Math.floor(20 * 1 * 0.5));
+    expect(lost(g.unit(g.foe.id))).toBe(Math.floor(20 * 1.2 * 0.8));
     expect(() => A(g, g.unit(v.id), { type: 'combat/outburst', design: e, aim: '5,2', mods: ['class:channeler.heart_surge#surge'] })).not.toThrow();
-    expect(lost(g.unit(g.foe.id))).toBe(Math.floor(20 * 0.5) + Math.floor(20 * 0.8 * 0.5)); // once a turn: the second snap is ×0.8 (rules 1.8)
+    expect(lost(g.unit(g.foe.id))).toBe(Math.floor(20 * 1.2 * 0.8) + Math.floor(20 * 0.8 * 0.8)); // once a turn: the second snap is ×0.8 (rules 1.8)
   });
 });
 
@@ -106,7 +106,7 @@ describe('Guardian and Bard under 1.5', () => {
     const cost = designCost(bu.mg!, dsg, manaOf(f.cb));
     s.act({ type: 'combat/gift', unitId: au.id, aim: '5,2' } as any);
     expect(f.unit(au.id).ap).toBe(3); expect(f.unit(bu.id).mg!.mp).toBe(999 - cost);
-    expect(lost(f.unit(foe.id))).toBe(Math.floor(20 * 1 * 0.5)); expect(f.unit(bu.id).mg!.strain).toBe(1);
+    expect(lost(f.unit(foe.id))).toBe(Math.floor(20 * 1.2 * 0.8)); expect(f.unit(bu.id).mg!.strain).toBe(1);
   });
 });
 
@@ -131,18 +131,18 @@ describe('Heartbinder: the links share the heart\'s load (item 530)', () => {
     const d = give(f.unit(u.id), { modules: ['wave'] });
     A(f, f.unit(u.id), { type: 'combat/outburst', design: d }); A(f, f.unit(u.id), { type: 'combat/pump' });
     perk(f, f.unit(u.id), 'heartbinder.through', { actionId: 'release_through', tile: '8,2' });
-    expect(lost(f.unit(f.foe.id))).toBe(Math.floor(20 * 0.7)); expect(lost(f.unit(ally.id))).toBe(0); expect(f.unit(hb.id).pos).toBe('0,8');
+    expect(lost(f.unit(f.foe.id))).toBe(Math.floor(20 * 1.2 * 0.7)); expect(lost(f.unit(ally.id))).toBe(0); expect(f.unit(hb.id).pos).toBe('0,8');
   });
 });
 
 // =================================================================================================== Vessel
 describe('Vessel: body forms on the 1.5 stage table (items 531, 532)', () => {
-  it('Pump a form: an Empathy free Pump first, then 1 AP; Iron reads ×1, ×1.4, ×1.8; no slipping when hurt', () => {
+  it('Pump a form: an Empathy free Pump first, then 1 AP; Iron reads ×1.2, ×1.6, ×2.0 (the stage table, rules 1.17); no slipping when hurt', () => {
     const f = fightWith([adv('vessel')], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 9; const arm = u.armour;
     f.unit(u.id).mg!.freePumps = 1;
-    perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' }); expect(f.pc.armour).toBe(arm + 10); expect(f.pc.ap).toBe(7);
-    perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' }); expect(f.pc.ap).toBe(7); expect(f.pc.armour).toBe(arm + 14);
-    perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' }); expect(f.pc.ap).toBe(6); expect(f.pc.armour).toBe(arm + 18);
+    perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' }); expect(f.pc.armour).toBe(arm + 12); expect(f.pc.ap).toBe(7);
+    perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' }); expect(f.pc.ap).toBe(7); expect(f.pc.armour).toBe(arm + 16);
+    perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' }); expect(f.pc.ap).toBe(6); expect(f.pc.armour).toBe(arm + 20);
     expect(fxOf(f.cb, 'pump').length).toBe(2);
     for (let i = 0; i < 5; i++) withGame(f.g, () => applyDamage(f.cb, f.pc, 60, { by: f.foe, type: 'weapon', credit: 'all' }));
     expect((f.g.characters[f.pc.charId!] as any).state.vessel.forms.length).toBe(1);
@@ -173,7 +173,7 @@ describe('Vessel: body forms on the 1.5 stage table (items 531, 532)', () => {
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' }); perk(f, f.pc, 'vessel.inner_charge', { choice: 'steady' });
     perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' }); perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' });
     seed(f, 10); perk(f, f.pc, 'vessel.release_strike', { targetId: f.foe.id });
-    expect(logHas(f.cb, /RELEASE \(2 forms, 42\)/)).toBe(true); // 15 × 1.8 + 15 × 1
+    expect(logHas(f.cb, /RELEASE \(2 forms, 48\)/)).toBe(true); // 15 × 2.0 + 15 × 1.2
   });
 });
 
@@ -328,7 +328,7 @@ describe('Soul perks and traits under 1.5', () => {
     expect(() => A(f, f.unit(u.id), { type: 'combat/release', aim: '7,2' })).toThrow(/Out of reach/);
     (f.cb.notes ||= []).push(f.g.characters[f.pc.charId!].name + ' (round ' + f.cb.round + '): "Hear me sing the storm"');
     A(f, f.unit(u.id), { type: 'combat/release', aim: '7,2', mods: ['verse'] });
-    expect(lost(f.unit(f.foe.id))).toBe(Math.floor(Math.floor(20 * 0.8 * 0.5) * 1.1)); expect(f.cb.notes!.some((n) => /in verse/.test(n))).toBe(true);
+    expect(lost(f.unit(f.foe.id))).toBe(Math.floor(Math.floor(20 * 0.8 * 0.8) * 1.1)); expect(f.cb.notes!.some((n) => /in verse/.test(n))).toBe(true);
   });
   it('Twin Souls (item 537): the third school lands at half strength with no roll, on the 1.5 stage table', () => {
     const f = fightWith([{ ...SOUL, perks: { twin_souls: 'achieved' } }], [{}]); clean(f); const u = f.turn(f.pc); u.ap = 9; place(f, u, '2,2'); place(f, f.foe, '4,2');

@@ -20,6 +20,7 @@ Notes one session (or one person) left for the next. The project-wide hand-off i
 | [blessing-art-brief.md](blessing-art-brief.md) | The patron, mark and prayer art brief | Referenced by the asset pipeline (`tools/build_web_assets.py`, `faithArt.ts`) |
 | [focus-in-hand-HANDOFF.md](focus-in-hand-HANDOFF.md) | Focus in hand: the browser follow-up (decision 103) | Its rule stands; its Hold the Evoker / Hold the Emanator actions were replaced by the combat backpack (World Play 1.1) |
 | [outburst-4.0-HANDOFF.md](outburst-4.0-HANDOFF.md) (+ `outburst-4.0-shots/`) | Outburst 4.0 (rules 1.8, items 801–818): feelings, residue, Revert, new modules and gates, practice; the web panel, codex, tools, icons and sounds | The feeling colours, readings, icons and sounds wait for Leon's verdict |
+| [damage-step-magic.md](damage-step-magic.md) | The magic damage step (rules 1.17, items 1050–1068): Sigil's Line multiplier and Elite guard, the Outburst stage table and base, all 25 feelings and the modules re-stepped; before and after tables from the simulator | On the branch, not live; ten questions for Leon, each built to its recommendation |
 | [grand-sigilist.md](grand-sigilist.md) | Open design for the Grand Sigilist's Grand forms | Input to the first advanced-class batch |
 
 ## Archived (`_archive/`)

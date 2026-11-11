@@ -141,6 +141,7 @@ describe('combat screen', () => {
     const tabEl = document.createElement('button'); tabEl.id = 'phc-tab-attack'; tabEl.setAttribute('role', 'tab');
     const panel = document.createElement('div'); panel.className = 'phc-cb-tabpanel'; const inside = document.createElement('button'); panel.appendChild(inside);
     document.body.append(tabEl, panel); inside.focus();
+    L._chord = null; // (a second number inside a second is a two-key code; this press is a lone one)
     L.numKey(key('2', inside)); r = L.renderVals(); expect(sel(r)).toBe('attack'); expect(document.activeElement).toBe(tabEl);
     tabEl.remove(); panel.remove();
     L.setTab('move'); r = L.renderVals();

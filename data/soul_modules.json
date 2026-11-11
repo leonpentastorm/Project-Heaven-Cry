@@ -1,8 +1,8 @@
 {
   "$schema_version": "2.0",
   "kind": "soul_modules",
-  "revision": 18,
-  "source": "PHC Core Rules v1.0, rules revision 1.8 (Outburst 4.0, accepted direction 9 Nov 2026; docs/design/outburst-4.0-spec.md), on rules 1.5 (Outburst 2.0, accepted 8 Nov 2026; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
+  "revision": 19,
+  "source": "PHC Core Rules v1.0, rules revision 1.17 (the magic step of the balance pass, 11 Nov 2026), on rules 1.8 (Outburst 4.0; docs/design/outburst-4.0-spec.md) and rules 1.5 (Outburst 2.0; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
   "cycle": {
     "begin_ap": 2,
     "swift_begin_ap": 1,
@@ -13,10 +13,10 @@
     "max_stage": 4,
     "stage_mult": [
       0.8,
-      1,
-      1.4,
-      1.8,
-      2.2
+      1.2,
+      1.6,
+      2.0,
+      2.4
     ],
     "begin_strain": 1,
     "swell_strain": 1,
@@ -33,7 +33,7 @@
       }
     ],
     "provisional": true,
-    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1, ×1.4, ×1.8 or ×2.2 for stages 0 to 4. If you are still holding it at the start of your next turn it swells: +1 stage for free and +1 Strain (+2 in Flooded air). Your first Pump of each fight is free; Empathy 3 gives 1 free Pump a round and Empathy 7 gives 2. Revert Pump (0 AP) undoes the last Pump you made this turn.",
+    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.2, ×1.6, ×2.0 or ×2.4 for stages 0 to 4: every plain Pump adds +0.4. If you are still holding it at the start of your next turn it swells: +1 stage for free and +1 Strain (+2 in Flooded air). Your first Pump of each fight is free; Empathy 3 gives 1 free Pump a round and Empathy 7 gives 2. Revert Pump (0 AP) undoes the last Pump you made this turn.",
     "first_pump_free": true
   },
   "strain": {
@@ -79,9 +79,15 @@
     ]
   },
   "damage": {
-    "base": 20,
+    "base": 28,
+    "enemy_base": 18,
     "soul_mult": "1 + 0.05*(determination-1) + 0.1*will_power",
-    "provisional": true
+    "critical": {
+      "mult": 1.5,
+      "max": 2.0
+    },
+    "provisional": true,
+    "text": "A character's Damage school starts from 28 (rules 1.17; it was 20). An enemy caster's starts from 18, so that with the new stage table its Outbursts deal what they did under the enemy table. A natural 20 on a Bolt's or Lance's roll is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear."
   },
   "aura": {
     "tick_damage": 5,
@@ -135,14 +141,14 @@
     "ready_designs": "max(3, 2 + floor(empathy/2)): at least 3",
     "tones": "one at Lore Master 1; more from tutors or plates"
   },
-  "notes": "Every number from rules 1.5 is provisional until the damage balance pass. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead.",
+  "notes": "Every number from rules 1.5 on is provisional. Rules 1.17 (balance pass): the stage table is ×0.8 +0.4 a stage; the Damage base is 28 for characters; Impact is retired; At Once, Return, Shell, Inverse and Quiet were repriced. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead.",
   "schools": [
     {
       "id": "damage",
       "name": "Damage",
       "base_cost": 20,
-      "text": "Deals 20 damage × your Soul multiplier × the stage multiplier. A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
-      "damage": 20,
+      "text": "Deals 28 damage × your Soul multiplier × the stage multiplier. A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
+      "damage": 28,
       "hit": "will_power_vs_defense",
       "options": [],
       "effects": [
@@ -637,6 +643,11 @@
       "id": "mastery",
       "becomes": null,
       "why": "Retired: the engine never counted casts; stages do the growing."
+    },
+    {
+      "id": "impact",
+      "becomes": null,
+      "why": "Retired in rules 1.17: every Outburst already takes effect when it lands, so the module did nothing and took a slot."
     }
   ],
   "items": [
@@ -746,14 +757,15 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of the same size, and it skips enemies in the area. The Narrator decides what a flipped debuff does.",
+      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of ×0.7 its damage, and it skips enemies in the area. The Narrator decides what a flipped debuff does.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "adjudication": "hybrid",
       "gate": {
         "skill": "camaraderie",
         "points": 2
-      }
+      },
+      "shield_mult": 0.7
     },
     {
       "id": "size",
@@ -786,30 +798,16 @@
       }
     },
     {
-      "id": "impact",
-      "name": "Impact",
-      "family": "trigger",
-      "cost": 0,
-      "strain_extra": 0,
-      "text": "The effect happens when the Outburst lands. Every Outburst already works this way, so it changes nothing.",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "gate": {
-        "skill": "will_power",
-        "points": 2
-      }
-    },
-    {
       "id": "at_once",
       "name": "At Once",
       "family": "trigger",
       "cost": 10,
       "strain_extra": 0,
-      "text": "A Bolt or Lance hits without a roll, for half damage. The area shapes never roll anyway.",
+      "text": "A Bolt or Lance hits without a roll, for ×0.8 damage. The area shapes never roll anyway.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "no_roll": true,
-      "damage_mult": 0.5,
+      "damage_mult": 0.8,
       "gate": {
         "skill": "empathy",
         "points": 2
@@ -955,14 +953,15 @@
       "family": "behaviour",
       "cost": 20,
       "strain_extra": 0,
-      "text": "A Bolt or Lance goes out and comes back, hitting each target twice. Each hit rolls on its own.",
+      "text": "A Bolt or Lance goes out and comes back: each target is hit a second time for ×0.3 damage. Each hit rolls on its own.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
       "gate": {
         "skill": "lore_master",
         "points": 4
-      }
+      },
+      "second_mult": 0.3
     },
     {
       "id": "volley",
@@ -1036,11 +1035,11 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "When you Release, you gain a shield equal to half the Outburst's damage.",
+      "text": "When you Release, you gain a shield equal to a third of the Outburst's damage.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
-      "shield_of_power": 0.5,
+      "shield_of_power": 0.35,
       "gate": {
         "skill": "camaraderie",
         "points": 2
@@ -1067,7 +1066,7 @@
       "id": "quiet",
       "name": "Quiet",
       "family": "augment",
-      "cost": -5,
+      "cost": 5,
       "strain_extra": 0,
       "text": "Holding the Outburst adds half the usual Strain, rounded down, from Begin, swells and feelings. In return the Release is at ×0.8 strength.",
       "provisional": true,
@@ -1289,7 +1288,6 @@
         "phantom"
       ],
       "will_power": [
-        "impact",
         "size",
         "bloom",
         "volley",

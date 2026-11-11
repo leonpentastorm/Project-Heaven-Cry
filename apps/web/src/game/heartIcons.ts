@@ -194,7 +194,6 @@ export const MODULE_PATHS: Record<string, string[]> = {
   // crossing paths: the engine picks the aim
   random: ['M3 6.5 H6.5 C11 6.5 13 17.5 17.5 17.5 H19.5', head(20.6, 17.5, 0, 3), 'M3 17.5 H6.5 C8.6 17.5 9.8 15 10.8 12.6 M13.2 11.4 C14.2 9 15.4 6.5 17.5 6.5 H19.5', head(20.6, 6.5, 0, 3)],
   // a dot hitting a line, with burst marks
-  impact: ['M12 2.5 V13.6', head(12, 13.6, 90, 3.4), 'M3 19.4 A9 2.6 0 0 0 21 19.4', '~M6.4 19.4 A5.6 1.4 0 0 0 17.6 19.4', '~M3 19.4 A9 2.6 0 0 1 7 17.2 M17 17.2 A9 2.6 0 0 1 21 19.4'],
   // three arrows leaving one point together
   at_once: [dot(3.8, 12, 2), arrow([6.4, 10.4], [19.4, 4.4]), arrow([6.6, 12], [20.6, 12]), arrow([6.4, 13.6], [19.4, 19.6])],
   // shapes: a cone of three arcs

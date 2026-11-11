@@ -1573,8 +1573,8 @@ Every word answers one question:
 3. **Glyphs on the ground.** You can have at most your Max Sigil words glyphs on the ground at once (Hold the Stroke adds to it); drawing one more fades your oldest. Above Intelligence 5 it no longer grows a spell, but it still grows this number, so a high-Intelligence caster keeps more Lines and traps ready.
 4. **Cost.** Drawing a glyph costs the Glyph AP (Derived stats), **the word's charge** from your Evoker's core, and **1 Flux** (TWICE: 2). Evoking costs **1 AP** and **1 charge per glyph** in the spell, minus your Sigil Core saving, minimum 1.
 5. **Repeats** (Leon). **Any word may repeat**, Subjects too, except KIN and a second Reach word of another kind. A repeated non-Subject word gives its "each extra copy" line. Repeated Subjects add up: their damage, healing and shields sum, and each copy's rider applies once (a condition never stacks: a second BIND adds nothing). **Every repeated glyph** (each copy past the first of a word) **multiplies the spell's final numbers by ×0.9**. FIRE · CONDENSE · CONDENSE · CONDENSE: 30 × 2.5 × 0.9 × 0.9 = **61** (raw 75; about 20% weaker). FIRE · FIRE · CONDENSE: (30 + 15) × 1.5 × 0.9 = **61** (one main element, item 589). The final numbers are the spell's direct damage, healing and shields; never ranges, tiles, rounds, AP, HP of walls and turrets, or the numbers of the conditions it sets (Burning's 10, Corroded's 5).
-6. **One main element** (balance pass, item 589, provisional): the strongest damaging Subject glyph counts in full; every other damaging glyph (another Element, or a repeat) adds half its damage. **The multipliers stack by product:** the Subjects' sum × the Reach multiplier × the Burst multiplier × the Delivery multiplier (field or turret ×0.5, each CHAIN jump ×0.75) × 0.9 per repeated glyph × the Sigil multiplier (× the Elemental multiplier for Elemental damage; × Healing given for MEND and WARD) × a critical. Elemental damage takes the Sigil and Elemental bonuses **added**, 1 + (Sigil − 1) + (Elemental − 1), not their product (item 588). **The ceiling:** a spell's direct damage to one creature is at most **350**, or **500** on a critical, before armour (item 590; the parts are scaled down together). Then armour (Sigil damage takes full armour, Elemental half).
-7. **Hitting.** A spell that deals damage rolls Brain Power against each target's Defense (a natural 20 is a critical: × the Critical multiplier; a natural 1 misses). Conditions a damage word sets (FREEZE's Slowed) still call for their save on a hit. Afflictions don't roll to hit: the target saves against 12 + your debuff strength. Boons and Workings neither roll nor allow a save, except STEP on an enemy (Body save).
+6. **One main element** (balance pass, item 589, provisional): the strongest damaging Subject glyph counts in full; every other damaging glyph (another Element, or a repeat) adds half its damage. **The multipliers stack by product:** the Subjects' sum × the Reach multiplier × the Burst multiplier × the Delivery multiplier (field or turret ×0.5, each CHAIN jump ×0.75) × 0.9 per repeated glyph × the Sigil multiplier (× the Elemental multiplier for Elemental damage; × Healing given for MEND and WARD) × a critical. Elemental damage takes the Sigil and Elemental bonuses **added**, 1 + (Sigil − 1) + (Elemental − 1), not their product (item 588). **The Line multiplier (rules 1.17):** a character's Line then multiplies its direct damage by its length: **×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4** (damage only, never healing, shields, ranges or conditions; an enemy caster's Line takes none: item 1050). The worked numbers in sections 1 to 10 are before it. **No ceiling (rules 1.17):** 350 a hit and 500 on a critical are the targets the maths is balanced around, not a limit; the engine no longer scales a spell down to them (it did until rules 1.17: item 590). Then armour (Sigil damage takes full armour, Elemental half). **Elites and Bosses (rules 1.17):** one Evoke never takes an Elite or a Boss of your level or higher from full HP to nothing: it is left on 1 HP (item 1053).
+7. **Hitting.** A spell that deals damage rolls Brain Power against each target's Defense (a natural 20 is a critical: **×1.5, to ×2.0 at most**, the weapon's rule, since rules 1.17; a natural 1 misses). The roll reads the level gap like a weapon's: ±1 for each level between you and an enemy, to 5 levels (rules 1.17). Conditions a damage word sets (FREEZE's Slowed) still call for their save on a hit. Afflictions don't roll to hit: the target saves against 12 + your debuff strength. Boons and Workings neither roll nor allow a save, except STEP on an enemy (Body save).
 8. **Fizzle.** A spell that goes off but finds nothing it may affect **fizzles**: nothing happens, and the charge, AP and Flux are still spent and its glyphs fade. The screen says so before you confirm.
 9. **Harmful effects skip the Downed and those who surrendered**; Boons don't.
 
@@ -1702,8 +1702,8 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 1. **Begin** (2 AP; **Swift**: 1 AP): open a ready design. Pay its MP (cost below) and take **1 Strain** (2 in Flooded air). It is now **held at stage 0**: your heart glows and everyone can see it. You hold one Outburst at a time.
 2. **Pump** (1 AP each): +1 stage, up to **stage 4**. Every AP you don't spend moving or shooting can go into the heart. Pumping adds no Strain.
-3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers: 0 → ×0.8 (rules 1.8; was ×0.6), 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2.** The multiplier scales damage and healing; conditions keep their durations.
-4. **A snap cast** is Begin and Release at once (3 AP, ×0.8 under rules 1.8). A full turn (Begin, Pump × 3, Release) is ×1.8. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.2.
+3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers (rules 1.17): 0 → ×0.8, 1 → ×1.2, 2 → ×1.6, 3 → ×2.0, 4 → ×2.4**: every plain Pump adds +0.4. (Rules 1.5 to 1.16: ×0.8 (×0.6 before rules 1.8), ×1, ×1.4, ×1.8, ×2.2, where the first Pump added only +0.2.) The multiplier scales damage and healing; conditions keep their durations.
+4. **A snap cast** is Begin and Release at once (3 AP, ×0.8). A full turn (Begin, Pump × 3, Release) is ×2.0. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.4.
 5. **Holding past your turn keeps the stage.** At the start of each of your next turns the held Outburst **swells**: +1 stage for free and +1 Strain (+2 in Flooded air). While holding you can move, shoot, Syphon, Steady or Feed, but not Begin another.
 6. **Empathy** gives **free Pumps each round**: 1 from Empathy 3, a second from Empathy 7. They come back at the start of each of your turns. Empathy no longer lowers any AP; it still sets your ready designs (2 + floor(Empathy ÷ 2)).
 7. **Every Pump has its heartbeat** (section 9): pumping must feel like the heart filling.
@@ -1712,10 +1712,10 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 #### 2. Damage
 
-1. **Damage school base 20** × the **Soul multiplier** (1 + 0.05 × (Determination − 1) + 0.1 × Will Power; 2.45 maxed) × the stage multiplier × the shape's multiplier.
-2. Maxed (2.45): a snap cast 29, a full turn's stage 3 88, a held stage 4 108 (a long rifle is 120 a shot every turn; fixed Sigil FIRE 114). Outburst trades damage per turn for one chosen, unblockable big moment.
+1. **Damage school base 28** (rules 1.17; it was 20; an enemy caster's is 18: item 1056) × the **Soul multiplier** (1 + 0.05 × (Determination − 1) + 0.1 × Will Power; 2.45 maxed) × the stage multiplier × the shape's multiplier.
+2. Maxed (2.45): a snap cast 54, a full turn's stage 3 137, a stage 4 164, before feelings. Outburst is the steady school: about 125% of a plain rifle in normal play, about 150% with the biggest Pump possible (rules 1.17).
 3. **Raw** (no tone): Soul damage, **armour ignored**. **An element:** Elemental damage, **armour counts half** (Stone from stage 1: in full).
-4. **Hitting.** A **Bolt** and a **Lance** roll Will Power against each target's Defense (half cover −5; a natural 20 doubles the damage, a natural 1 misses). **Wave, Burst and Aura don't roll**: everyone in the area is hit. **At Once** makes a Bolt or Lance land with no roll at half damage. Control and Status call for saves (12 + your debuff strength), as before.
+4. **Hitting.** A **Bolt** and a **Lance** roll Will Power against each target's Defense (half cover −5; a natural 20 is a critical, **×1.5 to ×2.0 at most** since rules 1.17; a natural 1 misses; the roll reads the level gap, ±1 a level). **Wave, Burst and Aura don't roll**: everyone in the area is hit. **At Once** makes a Bolt or Lance land with no roll at half damage. Control and Status call for saves (12 + your debuff strength), as before.
 
 #### 3. Strain, the burn, the Mana Short and calming the heart
 
@@ -1796,7 +1796,7 @@ The same element ids, riders and effects as Sigil 1.4 (sigils.json `elements`), 
 | Inverse | survives: damage becomes a shield on allies |
 | Size | changed: a shape +1 (Lance +2); a Bolt can't take it |
 | Random | survives: the aim picked among creatures within reach |
-| Impact | survives (no effect: the default) |
+| Impact | survives (no effect: the default); retired in rules 1.17 |
 | At Once | survives: a Bolt or Lance with no roll, half damage |
 | **Wave, Burst, Aura, Lance** | **new: the shapes** |
 | Rain | **replaced by Burst** (Rain + Size → Burst + Size) |
@@ -1862,7 +1862,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 - The first tone is free at **Lore Master 1** (was Visualization 1): picked with the starting design or the first toned design. More from tutors, plates and the Narrator, as before.
 - A toned Outburst uses the **Soul multiplier only**, never the Elemental one (Expression and Visualization). Storm Hand's Infusion and Discharge, which run through an Emanator gauntlet, also use the Soul multiplier (item 802). Sigil keeps the Elemental multiplier; Visualization stays a Mind skill (Sigil forms, the Elemental multiplier, the Trickster).
 
-**2. The stage table and the snap cast.** Stage 0 is now **×0.8** (was ×0.6): **0 → ×0.8, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2**. A snap cast (Begin and Release at once, 3 AP) and a Begin released straight away are the same thing at ×0.8 (item 803).
+**2. The stage table and the snap cast.** Stage 0 is now **×0.8** (was ×0.6): **0 → ×0.8, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2** (rules 1.17: ×0.8, ×1.2, ×1.6, ×2.0, ×2.4). A snap cast (Begin and Release at once, 3 AP) and a Begin released straight away are the same thing at ×0.8 (item 803).
 
 **3. Feelings.**
 1. **Pouring one in.** While you hold an Outburst, each **Pump** (1 AP, or a free one) is **plain** (+1 stage, as before) or a **feeling pump**: +1 stage and one feeling you know. A feeling pump has **its own step** on the multiplier instead of the plain +0.4: the release's multiplier is the stage table's, plus (step − 0.4) for each feeling pump (item 804). Stages from the swell, Feeding, Overdraw and Heart Surge are plain. Up to stage 4, as now. Feelings stack with themselves (Rage, Rage, Rage is three Rage steps) and combine freely with each other, the tone and the modules, each rider by its own rules ("lightning love" heals the allies it touches and chains by Storm's rule, healing along the chain).
@@ -1870,6 +1870,8 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 3. **Residue.** On a Release, the **strongest feeling poured in** (the most pumps; ties go to the latest) leaves **residue** on every tile the release covered (a Bolt: the tile it struck) **for 2 rounds**. **Helping** residue (Love, Hope, Belonging, Calm, Relief, Mercy, Joy, Guilt, Wonder, Defiance) works for the caster's side only. **Harming** residue (Rage, Grief, Fear, Spite, Shame, Despair, Cruelty, Dread, Contempt, Abandon) works on **anyone** who stands there, the caster's side too. "A turn" effects land at the start of the turn of whoever stands on the tile; "on entry" effects when a creature steps in; the rest hold while it stands there. A tile holds one residue; a newer one replaces it (item 807).
 4. **Revert Pump** (0 AP): undoes your **last pump this turn**, refunding its AP, the free Pump it used and the Strain it added. Repeat to undo more, back to the start of your turn. It can't undo the swell, a Feed, or a pump that set off a Mana Short (item 808).
 5. **Learning them: you feel it first.** A feeling **unlocks the first time its trigger happens to you** (the table); the engine detects every trigger, and the Narrator may grant one at a story moment as a bonus. Every Soul caster **starts with 2 feelings** of their choice (default Rage and Love). Unlocks are permanent: a log line and a card say "You have felt Grief. You can pour it in now." Only characters who can cast Outbursts (a design or a known school) feel (item 809).
+
+**The steps and what each feeling does when poured in were reworked in rules 1.17: the table in "Rules revision 1.17" replaces the Step and "Poured in" columns below.** The triggers and the residue are unchanged.
 
 | # | Feeling | Unlocked when the engine sees… | Step | Poured in, it… | Residue |
 |---|---|---|---|---|---|
@@ -1901,7 +1903,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 
 *Abandon is "Surrender" in the brainstorm, renamed because "surrender" is already a combat word.*
 
-**4. Modules: many more, gated by Soul skills, the strongest by advanced class.** Today's 16 stay (Move, Homing, Swift, Ether, Right, Left, Time, Inverse, Size, Random, Impact, At Once; the shapes Wave, Burst, Aura, Lance). New, for everyone (item 810):
+**4. Modules: many more, gated by Soul skills, the strongest by advanced class.** Today's 16 stay (Move, Homing, Swift, Ether, Right, Left, Time, Inverse, Size, Random, Impact, At Once; the shapes Wave, Burst, Aura, Lance). *Rules 1.17: Impact is retired (it did nothing), and At Once, Return, Shell, Inverse and Quiet were repriced: see "Rules revision 1.17".* New, for everyone (item 810):
 
 | Module | Gate | What it does |
 |---|---|---|
@@ -1926,7 +1928,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 | Skill | Gates |
 |---|---|
 | Lore Master | structure and the strange: the shapes (Wave, Burst, Aura, Lance), Time, Ether, Fuse, Return, Ricochet (and Phantom) |
-| Will Power | power and Strain: Impact, Size, Bloom, Volley, Quiet |
+| Will Power | power and Strain: Size, Bloom, Volley, Quiet (Impact until rules 1.17) |
 | Empathy | the design itself: Move, Random, At Once, Split (and ready designs, as now) |
 | Camaraderie | ally modules: Inverse, Thread, Shell |
 | Implication | status modules: Anchor, Lure, Linger |
@@ -2985,7 +2987,7 @@ What the table holds: the hits to kill, the 65%, the standard fight's length at 
 ### The level gap
 
 1. **Far below.** An enemy 5 or more levels below the character who hurts it is taken out by that hit (**never an Elite or a Boss**: they always fight to their last HP; Leon, 11 Nov 2026), whatever its HP and its shield, as long as the hit deals at least 1 damage after every reduction. Any damage counts (a weapon, a spell, a bleed the character caused, the character's companion). The attack card says so before the shot ("far below your level: any hit takes it out") and the fight log says so after it. It never works the other way: an enemy 5 levels above a character gets its bonus to hit and nothing more. (The first build called this rule "Outclassed"; the name is not used in the game, because a perk already has it.)
-2. **To hit.** For each level between an enemy and a character, the higher of the two gets +1 to hit the other and the lower gets −1, to at most 5 levels. This is on top of the table. An enemy 3 levels above the squad is then hit 42% of the time instead of 65% and hits back about 80% of the time: the fight to run from. The table alone cannot do this (three levels of the table are worth about 7 points of hit chance), which is why the gap has its own line. **It is read by weapon attacks and techniques only.** A spell's roll to hit (Sigil, Outburst) and every save do not read it yet (section 14, item 1032).
+2. **To hit.** For each level between an enemy and a character, the higher of the two gets +1 to hit the other and the lower gets −1, to at most 5 levels. This is on top of the table. An enemy 3 levels above the squad is then hit 42% of the time instead of 65% and hits back about 80% of the time: the fight to run from. The table alone cannot do this (three levels of the table are worth about 7 points of hit chance), which is why the gap has its own line. **It is read by weapon attacks, techniques and, since rules 1.17, a spell's roll to hit (Sigil, Outburst).** Saves do not read it yet (section 14, item 1032).
 3. The gap is read between an enemy with a level and a character (or a companion, which has its owner's level; a twin too). Each character reads its own: in a squad of levels 1 and 20 the fight is level 10, the level 1 character is 5 below every enemy and the level 20 character takes each of them out with one hit (section 14, item 1033). It does not apply between characters, or to a unit from a fight saved before this rule.
 
 ### Vermin
@@ -2999,12 +3001,108 @@ A tier under Minion, for swarms: small things that die to one hit at equal level
 3. **An enemy's critical is ×1.5** (it was ×2).
 4. The target's Critical damage taken still cuts the part above ×1: at −50%, a ×1.5 critical is ×1.25.
 5. **It never falls under ×1.5** either, whatever a sheet holds.
-6. What makes a critical more likely (an Aimed shot, an ambush, a weapon or a technique that crits on 18 to 20) is not changed. The limit inside Sigil magic (350, or 500 on a critical) is not changed in this step.
-7. **This is the weapon's critical.** A spell's critical (a natural 20 on a Sigil's or an Outburst's roll to hit) still doubles the spell's damage, for characters and for enemy casters: it is not changed in this step (section 14, item 1031).
+6. What makes a critical more likely (an Aimed shot, an ambush, a weapon or a technique that crits on 18 to 20) is not changed. The limit inside Sigil magic (350, or 500 on a critical) is not changed in this step (rules 1.17 removes it).
+7. **This is the weapon's critical.** A spell's critical (a natural 20 on a Sigil's or an Outburst's roll to hit) still doubles the spell's damage, for characters and for enemy casters: it is not changed in this step (section 14, item 1031). **Rules 1.17 changes it: a spell's critical is ×1.5 to ×2.0 too.**
 
 ### Not in this step
 
 The weapons (the long rifle against the service rifle), the AP prices, Burst, the Calls, defence stacking and XP by level are later steps of the balance pass. The simulator (`packages/engine/test/balance/`) fights enemies of a chosen level and measures this table against the targets (`fit.ts`); every later step runs it again.
+
+## Rules revision 1.17 (balance pass, the magic step): Sigil the biggest hit, Outburst the steady school
+
+Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md` sections 13 and 14 and its closing ruling); measured and fitted with the simulator (`packages/engine/test/balance/magic-measure.test.ts`); the report is `docs/design/handoffs/damage-step-magic.md`. **Every number here is provisional** (section 14, items 1050 to 1068). The yardstick for every percentage is the plain rifle (service rifle, plain shots, normal share) at the same level on the simulator's shooting range, over the same turns.
+
+### The targets
+
+1. **Sigil is the biggest single hit in the game.** A full Line (4 glyphs) Evoked lands at **150% to 200%** of what the plain rifle deals over the turns the Line took. Shorter Lines sit lower: a 2-glyph Line cast every turn is about on par with the rifle, 3 glyphs between the two.
+2. **An Elite and a Boss are never taken out by one Evoke at equal level.**
+3. **Outburst is the steady school:** about **125%** of the plain rifle in normal play, about **150%** with the biggest Pump possible.
+4. **No feeling is a worse Pump than a plain one.** A Pump with a feeling is better than a plain Pump in one clear way, and what it costs is in proportion.
+5. Standing: no hard damage caps; a critical is ×1.5 to ×2.0 for spells too; a spell reads the level gap.
+
+### Sigil
+
+1. **The Line multiplier.** A character's Line multiplies its **direct damage** by its length:
+
+| Glyphs in the Line | 2 | 3 | 4 |
+|---|---|---|---|
+| Damage | ×1.7 | ×1.75 | ×1.8 |
+
+   It multiplies with everything in "Grammar and cost" item 6 (the Subjects' sum × Reach × Burst × Delivery × 0.9 a repeated glyph × the Sigil and Elemental multipliers × a critical). It is damage only: healing, shields, ranges, rounds and the numbers of conditions are not changed. A field, a turret and a trap carry it (they are the same words). **Only characters and the units that fight for them** (a companion, a twin) get it: an enemy caster's damage comes from the enemy table (rules 1.15) and is not changed by this revision.
+2. **No ceiling.** The limit of 350 a hit and 500 on a critical inside Sigil magic (item 590) is gone. They are the targets the maths is balanced around (Leon's ruling 3 of the balance pass), and the full Line is the Mage's peak move, which may pass them.
+3. **A critical is ×1.5, to ×2.0 at most:** the weapon's rule (rules 1.15, Critical hits), read from the caster's own sheet (Perception +3% a point above 1, Dexterity +2% a point, perks and gear), cut by the target's Critical damage taken. An enemy caster's critical is ×1.5. It was ×2.
+4. **The level gap.** A spell's roll to hit gets +1 for each level the caster is above an enemy and −1 for each level below, to 5 levels, like a weapon attack. Saves still do not read the gap.
+5. **Elites and Bosses.** One Evoke never takes an Elite or a Boss **at or above the caster's level** from **full HP** to nothing: it is left on 1 HP, and the log says so. Every missile and chain jump of that Evoke is held by it. An Elite or Boss that is already hurt, or below the caster's level, or hit by a field, a turret or a trap, has no such guard. It is for characters' spells only.
+6. Nothing else in Sigil magic changed: the words' own numbers, charge, Flux, AP, the walk, ranges.
+
+**The working.** Before this revision the caster of the reference builds dealt 42 to 61% of the rifle with 2-glyph Lines (one a turn: about 4 AP with the step and the Evoke), 54 to 79% with 3 and 78 to 119% with 4. A 4-glyph Line costs 5.9 to 7.4 AP for a normal share (1.1 to 1.6 turns) and 6.8 to 10.1 AP all in (1.3 to 2 turns), core changes and vents counted. The multiplier is nearly flat because a long Line is already worth more for its glyphs (CONDENSE ×1.5 and a second element); what holds the 4-glyph number down is target 2: at ×1.8 the biggest Evoke a normal-share caster landed on an equal-level Elite was 89 to 92% of its HP at levels 3, 6 and 12, and the guard (item 5) held it at levels 9 and 20 (a roll that hits 65% of the time makes a Line that lands much bigger than its average). Above ×1.8 every landed Line would need the guard.
+
+**Measured** (normal share; damage of one Evoke, misses counted · turns it took · percent of the rifle over those turns; 12 fights of 8 turns a cell):
+
+| Line | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|---|---|
+| 2 glyphs | 73 · 1.1 t · **88%** | 69 · 1.1 t · **71%** | 93 · 1 t · **96%** | 94 · 1 t · **87%** | 107 · 1 t · **102%** | 126 · 1 t · **105%** |
+| 3 glyphs | 105 · 1.6 t · **90%** | 123 · 1.3 t · **109%** | 123 · 1.1 t · **110%** | 160 · 1.1 t · **130%** | 162 · 1.1 t · **135%** | 150 · 1 t · **125%** |
+| 4 glyphs | out of reach (2 words known) | 190 · 1.6 t · **140%** | 248 · 1.3 t · **190%** | 218 · 1.3 t · **151%** | 268 · 1.3 t · **191%** | 282 · 1.1 t · **205%** |
+
+All in (against the normal-share rifle): 4 glyphs 185 / 142 / 187 / 192 / 205 / 203% at the six levels (against the all-in rifle: 116 / 103 / 137 / 147 / 175 / 198%). **Against each tier at the caster's level** (normal share, a full Line): the biggest Evoke seen was under the Elite's and the Boss's HP at every level (the guard held it at levels 9 and 20, on criticals); an Elite took 2.0 to 2.8 average Evokes, a Boss 6 to 10, a Soldier 0.9 to 2.4, a Minion under one.
+
+### Outburst
+
+1. **The stage table** is ×0.8 at stage 0 and **+0.4 for every stage**: **×0.8, ×1.2, ×1.6, ×2.0, ×2.4**. (It was ×0.8, ×1, ×1.4, ×1.8, ×2.2: the first Pump added only +0.2 while every card said a plain Pump adds +0.4, so a feeling poured into the first Pump showed 0.2 less than its card.)
+2. **The Damage school's base is 28** for a character (it was 20). An enemy caster's is **18**, so that with the new table its Outbursts deal what the enemy table was fitted with (stage 1: 21.6 against 20; stage 3: 36 against 36).
+3. **A critical is ×1.5, to ×2.0 at most**, as for a Sigil (it was ×2). **The roll reads the level gap.** Both hold for the class moves that strike with an Outburst too (Storm Front's arcs).
+4. **The price of a feeling.** One yardstick: **1 Strain, or 8 HP, buys +0.3 on the multiplier** on top of the plain +0.4 (8 HP is what one point of Strain over the limit burns). Rage, Shame and Abandon are priced by it. A feeling that changes what the spell does steps **+0.4, the same as a plain Pump**, and costs nothing: its behaviour is what makes it better. Two feelings are **very strong** and pay for it: Calm (the Release ×0.75) and Relief (+0.2). Feelings that read the moment start at +0.4 and add to it, so none is ever a wasted Pump.
+5. **Abandon goes into an Outburst once.** Every other feeling still stacks with itself (its step each time, its behaviour once).
+6. **The 25 feelings** (this table replaces the Step and "Poured in" columns of rules 1.8; triggers and residue are unchanged):
+
+| # | Feeling | Step before | Step now | Cost | What it does | Why it changed |
+|---|---|---|---|---|---|---|
+| 1 | Rage | +0.5 | **+0.7** | 1 Strain at the Pump | nothing else: it buys the multiplier | +0.1 for a Strain was no trade (Leon). Now +0.3 over a plain Pump for 1 Strain: the yardstick. |
+| 2 | Grief | +0.3 | **+0.4** | none | targets hit are Slowed 2 rounds (Body save) | under a plain Pump; now equal, with the Slow on top |
+| 3 | Fear | +0.3 | **+0.4** | none | targets hit are pushed 1 tile and Shaken 2 rounds (Heart save) | under a plain Pump |
+| 4 | Love | +0.3 | **+0.4** | none | allies in the shape are spared and healed for ×0.35 of the Release; with no ally in the shape, the most wounded ally within its reach (or you) heals ×0.2 of it | under a plain Pump, and it did nothing on a Bolt (no ally stands in a one-tile shape); the heal shares went from ×0.5 with the base (28 from 20) so the HP healed stays about what it was |
+| 5 | Joy | +0.3 | **+0.4** | none | chains to one more enemy within 2 tiles of the first hit, at half, no roll | under a plain Pump |
+| 6 | Calm | +0.3 | **+0.4** | the whole Release ×0.75, and no critical (only when the shape rolls) | a Bolt or Lance can't miss and ignores cover; on a Wave, Burst or Aura (which never roll) it is a plain Pump | was the strongest damage feeling in the game for a Bolt: no roll at full strength and +0.3 (about +40% at a 65% hit chance). Very strong behaviour, so it pays: ×0.75 on the Release. At 65% to hit it is still worth about +11% and takes the miss away; at 80% it costs 9%. |
+| 7 | Spite | +0.4; +0.8 | **+0.4; +0.6 against whoever last hurt you** | none | +0.6 instead, against whoever last hurt you | its plain case was already a plain Pump; the revenge case was +0.8, more than Rage, for free, four times over |
+| 8 | Shame | +0.6 | **+0.7** | 8 HP to you for each Shame, at the Release (true damage) | nothing else: it buys the multiplier with HP | 5 damage once, however many Shames, for +0.2 each: "does nothing else" (Leon). Now the same trade as Rage, paid in HP at the burn's rate (1 Strain over the limit burns 8). |
+| 9 | Pride | +0.2 a stage | **+0.4; +0.5 at stage 4** | none | +0.5 instead, when Released at stage 4 | was +0.2 at stage 1 (half a plain Pump) and +0.8 at stage 4 (a free Abandon) |
+| 10 | Despair | +0.1 per 10% HP missing | **+0.4, +0.1 more per 20% of your HP missing** | none | +0.1 more for every 20% of your max HP missing, to +0.8 | was +0 at full HP: a wasted Pump |
+| 11 | Hope | +0.3 | **+0.4** | none | you and the allies in the shape lose Afraid and Shaken and are Hopeful (+2 to the next roll, 2 rounds) | under a plain Pump |
+| 12 | Mercy | +0.2 | **+0.4** | none | Downs instead of killing; a target hit at a quarter HP or less surrenders unless it passes a Heart save | half a plain Pump |
+| 13 | Cruelty | +0.4 | **+0.4** | none | targets hit Bleed (no save), and it spreads to one enemy next to each | unchanged: it was the one behaviour feeling at +0.4 |
+| 14 | Loneliness | +0.2; +0.5 alone | **+0.4; +0.5 with no ally within 3 tiles** | none | +0.5 instead, with no ally within 3 tiles | half a plain Pump next to an ally |
+| 15 | Belonging | +0.1 an ally (to +0.5) | **+0.4, +0.1 more per ally within 3 tiles** | none | +0.1 more for each ally within 3 tiles, to +0.7; counts twice for allies' Resonance | +0 with no ally near: a wasted Pump |
+| 16 | Dread | +0.3 | **+0.4** | none | targets hit lose their reactions this round and any held shot | under a plain Pump |
+| 17 | Awe | +0.3 | **+0.4** | none | targets hit lose 1 AP on their next turn | under a plain Pump |
+| 18 | Longing | +0.3 | **+0.4** | none | +2 reach; pulls targets hit 1 tile toward you | under a plain Pump |
+| 19 | Relief | +0.2 | **+0.2** | half a plain Pump's step | each Relief takes 1 Strain off you at the Release | gave back the WHOLE hold's Strain for one Pump, so Relief + three Rages was three free Rages every turn. Very strong behaviour: the one feeling under +0.4. |
+| 20 | Contempt | +0.3 | **+0.4** | none | targets hit have −2 to attack you for 2 rounds (no save) | under a plain Pump |
+| 21 | Guilt | +0.3 | **+0.4** | 5 HP to you at the Release | heals the ally you hurt last for 10 × the stage; if none, the most wounded ally within its reach | under a plain Pump, and with no ally hurt it only cost you 5 HP (the Shame problem) |
+| 22 | Jealousy | +0.3 | **+0.4** | none | steals one helpful condition, or the shield, from the first enemy hit | under a plain Pump |
+| 23 | Wonder | +0.2 | **+0.4** | none | reveals Hidden creatures, traps and hazards in its area | half a plain Pump |
+| 24 | Defiance | +0.3 | **+0.4** | none | no saves against its conditions, pushes and element effects; your next save passes | under a plain Pump |
+| 25 | Abandon | +0.8 | **+1.0** | 2 Strain at the Pump; once in an Outburst | nothing else: the biggest step there is | four of them made ×3.8 on the old table (1.7 times a plain stage 4). Once in an Outburst now. |
+
+7. **Modules.** **Impact is retired** (its card said it changed nothing; it took a slot and a pick: an old design holding it loses it and keeps working). **At Once**: no roll at **×0.8** (was ×0.5, which a free Calm beat outright). **Return**: the second hit is at **×0.3** (was a second full hit: ×2 damage for 20 MP, the strongest thing in the school). **Shell**: a shield of **×0.35** of the Release (was ×0.5) and **Inverse**: a shield of **×0.7** of the damage (was ×1), so both shield about what they did before the base rose. **Quiet** costs **+5 MP** (was −5: it halves the hold's Strain, which now has a price). The other modules, the schools, the shapes (Bolt ×1, Lance ×0.8, Wave and Burst ×0.7, Aura ×0.6) and the tones keep their numbers.
+8. **Strain** is unchanged: the limit (3 + half Will Power), +1 a Begin and a swell, −1 every turn start, 8 a point over the limit, the Mana Short at 3 over. It is the price of the costly feelings now, which is what makes it matter: a heart that pours Rage every turn fills in a fight of the target length.
+9. **The Will Power perks** (rules 1.14) are unchanged and are part of optimised play: Overdraw is +0.4 for 1 Strain (the first of a fight free), on the yardstick; Heart Overload's free Begin is worth 2 AP a turn; Resonance is +10% a Release to +20% or +30%. Heart Surge's reading past stage 4 is one step of the new table: ×2.8 (was ×2.6).
+
+**Measured** (normal share; percent of the rifle over the same turns; 12 fights of 8 turns a cell, the peak 36 fights of one turn):
+
+| Pattern | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|---|---|
+| Steady play, a new caster (Rage and Love) | 94% | 115% | 115% | 109% | 140% | 129% |
+| Steady play, the early feelings (Rage, Love, Calm, Spite, Joy, Shame, Fear, Grief) | 105% | 127% | 126% | 129% | 156% | 155% |
+| Steady play, all 25 feelings | 115% | 139% | 137% | 140% | 170% | 167% |
+| The biggest Release (stage 4, the best feelings, one turn from a quiet heart) | 91% over two turns | 113% over two turns | 148% | 145% | 169% | 158% |
+| Stage 4 with plain Pumps only | 83% | 87% | 99% | 107% | 149% | 181% |
+
+Before this revision the same rows read 61 to 89% (a new caster), 84 to 126% (the early feelings) and 122 to 143% (the biggest Release, levels 6 to 20). At levels 1 and 3 the caster of the reference build walks into reach on turn 1, so its biggest Release takes two turns. All in, against the all-in rifle: steady 106 to 133%, the biggest Release 134 to 182%.
+
+### Not in this step
+
+Sigil's AP (the Glyph AP, the walk between glyphs, the core change), the words' own numbers, Bloom's radius, the Strain rules, enemy casters, saves against the level gap, and the classes' own numbers that read the stage table (the shelved Vessel's body forms grow with it: +12, +16, +20 armour for Iron in place of +10, +14, +18).
 
 ## Maps (rules 1.16)
 
@@ -5056,11 +5154,11 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 **Rules revision 1.5: Soul magic, Outburst 2.0 (accepted 8 Nov 2026; decision 99). Every number below is PROVISIONAL until the damage balance pass.**
 
-492. **Stage multipliers** 0 → ×0.6, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2 (soul_modules.json `cycle.stage_mult`); they scale damage and healing only, never durations.
+492. **Stage multipliers** 0 → ×0.6, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2 (soul_modules.json `cycle.stage_mult`); they scale damage and healing only, never durations. *Rules 1.17: the table is ×0.8, ×1.2, ×1.6, ×2.0, ×2.4 (item 1055).*
 493. **The cycle's AP:** Begin 2 (Swift 1), Pump 1, Release 1; a snap cast (Begin + Release, `combat/outburst` with an aim) 3 AP at ×0.6. Class moves "at Soul cast AP" cost 2.
 494. **The swell:** +1 stage and +1 Strain (+2 Flooded) at each of your turn starts while holding, after the turn-start −1.
 495. **Empathy's free Pumps:** 1 a round from Empathy 3, 2 from 7 (`free_pumps` stat for items), on top of the swell. Flagged strong (Leon's caveat): with the swell a held heart gains 2–3 stages a turn for Strain alone. *Settled by Leon (8 Nov 2026): keep it; the numbers stay provisional for the balance pass.*
-496. **Damage:** school base 20 × the Soul multiplier 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed: snap 29, stage 3 88, stage 4 108).
+496. **Damage:** school base 20 × the Soul multiplier 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed: snap 29, stage 3 88, stage 4 108). *Rules 1.17: base 28 for a character, 18 for an enemy caster (item 1056); maxed: snap 54, stage 3 137, stage 4 164.*
 497. **Shape damage:** Bolt ×1, Lance ×0.8, Wave ×0.7, Burst ×0.7, Aura ×0.6; Bolt and Lance roll Will Power against Defense, the areas don't roll. Not in the proposal: added so an unrolled area isn't a full-damage Bolt on everyone. *Settled by Leon (8 Nov 2026): the shape and roll rules confirmed; the multipliers stay provisional for the balance pass.*
 498. **Strain falls by 1 at the start of every one of your turns, always** (Leon), and the five calming ways add to it.
 499. **The burn:** 8 true damage a point over the limit at the end of your turn; it Downs, never kills (a foe is subdued).
@@ -5186,7 +5284,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 587. **The Elemental multiplier** follows the Physical slope: 1 + 0.1 × (Expression − 1) + 0.05 × Visualization (was 0.2 and 0.1; at most ×2.4, was ×3.8).
 588. **Sigil and Elemental bonuses add** for Elemental damage: 1 + (Sigil − 1) + (Elemental − 1) (was their product: up to ×11 with both maxed).
 589. **One main element:** the strongest damaging Subject glyph in full, every other one at half. FIRE · FIRE · CONDENSE is 61 (was 81); FIRE ×3 · CONDENSE 73 (was 109).
-590. **The Sigil ceiling:** 350 a hit, 500 on a critical, per creature per spell, before armour (balance-targets.md). With items 587–589 a maxed caster's strongest single-target Line (STONE · FIRE · SHOCK · CONDENSE) is about 346 (was about 1,144; 2,288 on a critical), so the ceiling only trims the extreme cases.
+590. **The Sigil ceiling:** 350 a hit, 500 on a critical, per creature per spell, before armour (balance-targets.md). With items 587–589 a maxed caster's strongest single-target Line (STONE · FIRE · SHOCK · CONDENSE) is about 346 (was about 1,144; 2,288 on a critical), so the ceiling only trims the extreme cases. *Rules 1.17: removed. 350 and 500 are targets, not a limit; the full Line is the Mage's peak and may pass them (item 1052).*
 591. **Weapons exceed the ceilings too** (not changed here; for the damage simulator): the breacher tube at about 290 a hit for a maxed build with a masterwork, and about 990 on a critical (Critical multiplier up to 3.4).
 630. **A focus counts only in a hand** (Leon, 8 Nov 2026; retires item 77's "the Evoker and Emanator count when carried"; closes item 354's open note). The main or the off hand; a 2H weapon fills both, so an off-hand focus doesn't count beside one (and equipping one stows it). Evokers: the Evoker, the Evoker blade, the spellslinger's pistol, the Grand staff (2H). Emanators: the Emanator, the Emanator gauntlet. The refusals read "Needs an Evoker in hand." and "Needs an Emanator in hand." Carried, a focus keeps its store (core charge, MP; rests and refills still reach it), but nothing is cast or spent from it. Enemy casters hold theirs.
 631. **No Emanator in hand: Outbursts draw on the air** (Leon, 8 Nov 2026, choosing between Hands 2's "Soul spells need an Emanator in a hand" and Soul magic's "without one, every Begin pays from the air"). Begin costs no MP and +2 Strain; the MP stays in the carried Emanator. Syphon, Crystallise and every move that spends or fills MP need the Emanator in hand.
@@ -5365,7 +5463,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 **Rules 1.8: Outburst 4.0** (decision 109; `docs/design/outburst-4.0-spec.md`). Numbered from 801 so they don't collide with items 671–700 (World Play 1.1) and 701 on (Faith 2.1), written on other branches at the same time. Every number here is provisional, for the damage balance pass.
 
-801. **Feeling steps, residue values and practice thresholds** (the design's open item 1): every step in the feelings table, the residue's 5 a turn, heal 5, +1, +2, −1, −2 and its 2 rounds, practice 1 + stages past 1 + feelings, the thresholds 5 / 15 / +15, and Mastery's +5 (`data/feelings.json`, `soul_modules.json` `practice`).
+801. **Feeling steps, residue values and practice thresholds** (the design's open item 1): every step in the feelings table, the residue's 5 a turn, heal 5, +1, +2, −1, −2 and its 2 rounds, practice 1 + stages past 1 + feelings, the thresholds 5 / 15 / +15, and Mastery's +5 (`data/feelings.json`, `soul_modules.json` `practice`). *Rules 1.17: every step was set again (items 1057 to 1062).*
 802. **Storm Hand's Infusion and Discharge use the Soul multiplier** (they used the Elemental one): the gauntlet is an Emanator, and the design says Outburst tones use the Soul multiplier only. The class is shelved.
 803. **Stage 0 is ×0.8 for every release at stage 0**, not only the one-action snap cast: a Begin released at once in two actions is the same spell, and two prices for it would punish the interface.
 804. **A feeling pump's arithmetic:** the multiplier is the stage table's plus (step − 0.4) for each feeling pump, so every other way to gain a stage (the swell, Feeding, Overdraw, Heart Surge) stays a plain +0.4 step, and anything that reads the stage still works. Steps that depend on the moment (Pride by the stage reached, Despair by HP missing, Loneliness and Belonging by allies near, Spite by the target) are read at the release. A Resonance bonus and items' multipliers apply on top, as before.
@@ -5538,8 +5636,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1028. **Targets the table does not reach (rules 1.15, the fit):** the elite fight on open ground (4.6 to 5.5 rounds, target 6 to 8), the boss fight on open ground from level 3 (6.5 to 7.9, target 8 to 10), the win rate and the Downed rate of a standard fight (item 1026), and a fight against enemies 3 levels up (item 1029). The first two wait for the weapon step (the optimised long rifle at 173 to 215% of the yardstick).
 1029. **Three levels up is not yet "run" (rules 1.15, the fit):** the squad still wins 58 to 78% of standard fights on open ground against enemies 3 levels above it (30 to 62% with cover). In the simulator a level gap of 2 to hit a level, in place of 1, loses them 70 to 100% of the time (tried before the damage factors were lowered) and makes the Narrator's +2 a fight won 27 to 60% of the time. Not built; to settle with Leon.
 1030. **How "3 rounds under fire" is measured (rules 1.15, the fit):** the plain rifleman alone on open ground against 2 enemies with a Soldier's numbers (or an Elite's and a Soldier's) and 5,000 HP, for 10 rounds; it lasted the rounds before the one it went Down in. Enemies that could be killed would make the number larger.
-1031. **A spell's critical is still ×2 (rules 1.15, the review):** Sigil and Outburst criticals double the spell's damage, for characters and enemy casters, while a weapon's critical is ×1.5 to ×2.0. Leon's ruling 7 ("criticals ×1.5") does not say whether spells are in it. To settle with Leon; the change is two lines in the magic files.
-1032. **Spells do not read the level gap (rules 1.15, the review):** the ±1 to hit a level is on weapon attacks and techniques only. A caster 3 levels below an enemy hits it as if at equal level, and an enemy caster 3 levels up gets no bonus. The simulator's squad has a Sigil caster, so part of "3 levels up is still beaten" (item 1029) is this. To build with the magic step, or sooner if Leon says so.
+1031. **A spell's critical is still ×2 (rules 1.15, the review):** Sigil and Outburst criticals double the spell's damage, for characters and enemy casters, while a weapon's critical is ×1.5 to ×2.0. Leon's ruling 7 ("criticals ×1.5") does not say whether spells are in it. To settle with Leon; the change is two lines in the magic files. *Settled in rules 1.17 (Leon, 11 Nov 2026: yes): a spell's critical is ×1.5, to ×2.0 at most (item 1051).*
+1032. **Spells do not read the level gap (rules 1.15, the review):** the ±1 to hit a level is on weapon attacks and techniques only. A caster 3 levels below an enemy hits it as if at equal level, and an enemy caster 3 levels up gets no bonus. The simulator's squad has a Sigil caster, so part of "3 levels up is still beaten" (item 1029) is this. To build with the magic step, or sooner if Leon says so. *Built in rules 1.17 for a spell's roll to hit; saves still do not read the gap.*
 1033. **Far below, the Boss included (rules 1.15, the review; item 1019's question):** in a squad of mixed levels the rule is read by each character, so a level 20 character beside a level 1 one (fight level 10) takes a level 10 Boss out with one hit. To settle with Leon: spare the Boss (and perhaps the Elite), or read the gap from the fight's level instead of each character's.
 1034. **Enemy heals and shields grow with the damage factor (rules 1.15, the review):** a Sigil caster's MEND and WARD read the same multiplier as its damage, so a Soldier-tier adept heals ×0.78 at level 1 and ×1.42 at level 20, a Boss-tier magister ×1.2 and ×2.18. HP grows ×1.81 over the same levels, so the level part keeps pace; the tier part (a Soldier healing less than a Minion) is an accident of the build. To settle in the magic step.
 1035. **Vermin where tiers are named one by one (rules 1.15, the review):** the "rank-and-file" order perk lists Minion and Soldier, so Vermin do not hear it; a Vermin turret would be hacked at a Soldier's difficulty; the Proving Ground's waves never send Vermin; a fight started on the map with 3 or more Vermin is rated Standard (50 XP) like 3 of anything. None is built differently yet.
@@ -5557,3 +5655,25 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1047. **The enemy holds at range on a big map (rules 1.16):** an enemy with a gun stops on the first tile that has a line on someone within its weapon's range and does not come closer. On 26 × 26 that leaves riflemen far back while the knife fighters arrive alone. Unchanged in this revision; to look at with the combat-roles work.
 1048. **The camera's numbers (roadmap 2c, 11 Nov 2026; the screen, not a rule: no fight's outcome depends on them):** all provisional until playtests. The map's window shows the tiles at the size a 16 × 11 map had when it was fitted to the same window (about 35 px a tile at 1280 × 720, 49 px at 1440 × 900, 63 px at 1920 × 1080) and is 16 tiles wide unless the player widens the map zone; the camera glides in 250 ms at Fast (following the combat speed; a cut under reduced motion) and leaves that long plus 40 ms before the beat it moves for, so it has arrived when the beat plays and no beat is delayed; only attacks, spells, pushes, throws, walks and turns move it (a wound, a heal or a unit going down off screen gets an edge arrow instead); it keeps a target 1.5 tiles inside the window's edge; on the player's own turn it leaves the view alone while their pointer is over the map and for 4 s after they moved it by hand, on anyone else's turn for 1.5 s after; an arrow or W A S D key moves the view 2 tiles; a press that moves 6 px or more is a drag; the small map is 150 px on its longest side (under 6 px a tile at 26 × 26); an edge arrow stays 2.6 s at Fast (never under 1.2 s) and at most 5 show at once.
 1049. **The camera's rest (review of roadmap 2c, 11 Nov 2026; the screen, not a rule):** provisional. A camera move that the next beat would undo before the camera had rested 350 ms where it arrived (at Fast; it follows the combat speed) is not made: the camera goes straight to the later beat and the place it skipped gets an edge arrow. This is what keeps the view on the target when a hostile too far away to share the window shoots as its turn begins. To judge in play: whether players would rather see the shooter first (a longer banner, then the shot).
+
+**Rules 1.17 (the balance pass, the magic step; 11 Nov 2026).** Every number below is provisional until playtests. The measurements are in `docs/design/handoffs/damage-step-magic.md`.
+
+1050. **The Line multiplier (rules 1.17):** ×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4, on a character's direct Sigil damage. Fitted, not ruled: Leon's ruling is the target (a full Line at 150 to 200% of the plain rifle over the same turns). Only characters and their companions; an enemy caster's Line takes none, because the enemy table (rules 1.15) was fitted with its spells as they were. *Data: sigils.json grammar.line_mult.*
+1051. **A spell's critical (rules 1.17; Leon's answer E2):** ×1.5, to ×2.0 at most, read from the caster's sheet as a weapon's is (Perception and Dexterity, perks, gear). A caster has little of either, so in practice it is ×1.5. To settle with Leon: whether a spell's critical should grow with a caster's own attribute instead.
+1052. **No ceiling inside Sigil magic (rules 1.17):** item 590's 350 and 500 are targets now. The biggest Evoke measured: 646 (a critical on a Boss, level 20, normal share).
+1053. **The Elite and Boss guard (rules 1.17):** one Evoke leaves an Elite or a Boss at or above the caster's level on 1 HP if it found it at full HP. It is the only way to hold "never one-hit at equal level" beside a hit this size: without it a critical (×1.5) of a full Line takes an equal-level Elite out at every level, and an all-in caster's plain hit does at levels 1 to 3. At ×1.8 a normal-share caster's hit that is not a critical stays under an Elite's HP without it through level 12. To confirm with Leon.
+1054. **Spells read the level gap (rules 1.17; item 1032):** ±1 to hit a level, to 5 levels, on a Sigil's and an Outburst's roll. Saves, and spells that do not roll (Wave, Burst, Aura, Afflictions), do not read it.
+1055. **The stage table (rules 1.17):** ×0.8, ×1.2, ×1.6, ×2.0, ×2.4. It replaces item 492's.
+1056. **The Damage base (rules 1.17):** 28 for a character, 18 for an enemy caster. 28 is fitted so that steady play is about 125% of the plain rifle. *Data: soul_modules.json damage.*
+1057. **The price of a feeling (rules 1.17):** 1 Strain or 8 HP for +0.3 above the plain +0.4. Rage +0.7 for 1 Strain; Shame +0.7 for 8 true damage to yourself for each Shame; Abandon +1.0 for 2 Strain, once in an Outburst. An earlier fit with Rage at +0.8, Abandon at +1.1 with no limit and Calm at ×0.8 measured the biggest Release at 189 to 220% of the rifle (levels 6 to 20), against the target of 150.
+1058. **Calm (rules 1.17):** +0.4, a Bolt or Lance can't miss and can't crit, the Release ×0.75. Neutral in damage at about 73% to hit.
+1059. **Relief (rules 1.17):** +0.2, and 1 Strain off for each Relief at the Release (it gave back all the hold's Strain).
+1060. **The feelings that read the moment (rules 1.17):** Spite +0.4, +0.6 on whoever last hurt you; Pride +0.4, +0.5 at stage 4; Despair +0.4 and +0.1 a 20% of HP missing, to +0.8; Loneliness +0.4, +0.5 with no ally within 3; Belonging +0.4 and +0.1 an ally within 3, to +0.7.
+1061. **Love and Guilt reach someone (rules 1.17):** Love heals allies in the shape ×0.35 of the Release (×0.5 before the base rose), and with none in it, the most wounded ally within the design's reach, or the caster, ×0.2. Guilt heals the ally hurt last, else the most wounded ally within reach.
+1062. **Behaviour feelings step +0.4 (rules 1.17):** Grief, Fear, Love, Joy, Hope, Mercy, Cruelty, Dread, Awe, Longing, Contempt, Guilt, Jealousy, Wonder, Defiance. Their harming residue (it works on your own side too) and the Pump they take are their only price. To watch in playtests: Awe (1 AP off a Boss a turn) and Joy (half a hit more with two enemies together).
+1063. **Modules (rules 1.17):** Impact retired; At Once ×0.8; Return's second hit ×0.3; Shell ×0.35; Inverse ×0.7; Quiet +5 MP. Not changed and flagged: Bloom (+1 radius a stage: a Burst of radius 5 at stage 4, friendly fire included), Split (a second full hit with two enemies within 2 tiles), Swift (Begin 1 AP).
+1064. **Targets not met (rules 1.17):** a full Line at level 3, normal share: 140% (target 150); at level 20: 205% (it costs 5.9 AP there, 1.1 turns); a 2-glyph Line at level 3: 71%. Outburst's steady play at level 1: 94% (a new caster reaches stage 3 a turn); at levels 12 and 20: 129 to 156% (the Channeler's rank III moves and a free Pump make more than one Release a turn); the biggest Release 158 to 169% at levels 12 and 20. At levels 1 and 3 the biggest Release needs two turns on the range.
+1065. **What else reads the stage table (rules 1.17):** every heal and shield of the Buff school (+9 to +20% by stage); Heart Surge past stage 4 (×2.8); the shelved Vessel's body forms and Release; enemy Outbursts at stages 1 and 2 (+8% and +3% with the enemy base of 18; stage 0 is −10%, stage 4 −2%).
+1066. **How the magic targets are measured (rules 1.17):** on the range (item 1046's ground, a Soldier's numbers at the caster's level, 5,000 HP, it never acts), 8 turns, 12 fights a cell; a pattern's percent is its spell damage a turn against the plain rifle's (the sidearm's shots are left out). The Sigil caster draws its Line across the way to the target and Evokes from beside it, changes cores and vents as it must; the Outburst caster pours the feeling worth most that its Strain can pay for, carries the Outburst over the turn for the swell when the Strain allows, and uses Overdraw and Heart Overload. "The early feelings" are an assumption. Neither caster is shot at.
+1067. **Not built in this step (rules 1.17):** the browser suites were not run (they need a build); `feelings40` was updated for Rage's new step by reading it, not by running it.
+1068. **Enemy casters and the Line guard (rules 1.17):** the guard, the Line multiplier and the base of 28 are for characters. An enemy Mage's or Channeler's numbers are a later step (item 1024).

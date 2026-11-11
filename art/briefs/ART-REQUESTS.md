@@ -46,8 +46,8 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 
 | # | For | Status | What it must show | Direction | Goes to |
 | --- | --- | --- | --- | --- | --- |
-| F1 | **The 25 feelings** poured into an Outburst | Stand-in: the game draws simple shapes in code | One glyph a feeling | The brief has every feeling, its meaning and its look: [`outburst-4.0-art-brief.md`](../../docs/design/handoffs/outburst-4.0-art-brief.md) | `art/icons/feelings/feeling-<id>.png` |
-| F2 | **The Outburst modules** | Stand-in: code-drawn shapes | One icon a module | Same brief | `art/icons/modules/module-<id>.png` |
+| F1 | **The 25 feelings** poured into an Outburst | Stand-in: the game draws simple shapes in code | One glyph a feeling. Rules 1.17 (11 Nov 2026) changed what some feelings do, not what they mean: no glyph changes (Relief now eases Strain a point at a time; Calm steadies the cast at a price; Love and Guilt also reach an ally outside the shape) | The brief has every feeling, its meaning and its look: [`outburst-4.0-art-brief.md`](../../docs/design/handoffs/outburst-4.0-art-brief.md) | `art/icons/feelings/feeling-<id>.png` |
+| F2 | **The Outburst modules** | Stand-in: code-drawn shapes | One icon a module. **Impact needs no icon any more: the module was retired in rules 1.17 (11 Nov 2026)** | Same brief (skip its Impact row) | `art/icons/modules/module-<id>.png` |
 
 ### 3. Maps
 

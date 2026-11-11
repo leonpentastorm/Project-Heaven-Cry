@@ -5,6 +5,7 @@
 // Burst, KIN), the Keystone cut on your own tile and joining a Line, Survey's 2-tile reach with the facing rule read from
 // where you stand, Foundation's 0-AP draws through the ordinary Draw, and the Grand forms of the 17 words new in 1.4.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { SIGIL, d20, condOn, endTurn, glyphCost, previewEvoke, previewAttack, resolveAttack, applyDamage, moveUnit, objectsOf, emit, type Unit, type Combat, strokePick, type Character
 } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';

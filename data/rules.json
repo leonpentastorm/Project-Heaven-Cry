@@ -1159,7 +1159,7 @@
         "effect": "all flux to the air"
       },
       "hit": "damage spells: brain_power vs defense; Afflictions: the target saves against 12 + the caster's strength with Brain Power; Boons and Workings: no roll",
-      "damage": "Subjects' damage summed x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x sigil multiplier x elemental multiplier (elemental damage)",
+      "damage": "Subjects' damage summed x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x the Line multiplier (rules 1.17: 1.7 for 2 glyphs, 1.75 for 3, 1.8 for 4; a character's Lines only) x sigil multiplier x elemental multiplier (elemental damage); a critical x1.5, to x2.0 at most; no ceiling",
       "example": {
         "words": [
           "spark",
@@ -1167,7 +1167,7 @@
         ],
         "charge": 5,
         "ap_at_agility_1_expression_1": 4,
-        "damage": 15,
+        "damage": 26,
         "range_tiles": 8
       },
       "data": "sigils.json",
@@ -1214,7 +1214,7 @@
         ],
         "reset": "after combat"
       },
-      "hit": "damage: Bolt and Lance roll will_power vs defense; Wave, Burst and Aura don't roll; control/status: saves",
+      "hit": "damage: Bolt and Lance roll will_power vs defense (a critical x1.5, to x2.0 at most; the roll reads the level gap: rules 1.17); Wave, Burst and Aura don't roll; control/status: saves",
       "crystallise": {
         "ap": 3,
         "meter_min": 10,
@@ -1228,13 +1228,14 @@
         "pump_ap": 1,
         "release_ap": 1,
         "stage_mult": [
-          0.6,
-          1,
-          1.4,
-          1.8,
-          2.2
+          0.8,
+          1.2,
+          1.6,
+          2.0,
+          2.4
         ],
-        "swell": "+1 stage and +1 Strain (+2 Flooded) at each of your turn starts while holding"
+        "swell": "+1 stage and +1 Strain (+2 Flooded) at each of your turn starts while holding",
+        "note": "rules 1.17: x0.8 at stage 0, +0.4 a stage; the Damage base is 28 for a character and 18 for an enemy caster (soul_modules.json damage)"
       }
     },
     "prayer": {

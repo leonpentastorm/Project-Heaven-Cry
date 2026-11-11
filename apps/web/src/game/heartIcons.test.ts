@@ -24,8 +24,8 @@ function expectCleanSvg(svg: string, size = 24) {
 afterEach(() => setHeartArt(null));
 
 describe('Outburst 4.0 icons', () => {
-  it('the data has 25 feelings and 39 modules, and every one has paths', () => {
-    expect(FEELINGS.length).toBe(25); expect(MODULES.length).toBe(39);
+  it('the data has 25 feelings and 38 modules (Impact was retired in rules 1.17), and every one has paths', () => {
+    expect(FEELINGS.length).toBe(25); expect(MODULES.length).toBe(38);
     for (const f of FEELINGS) expect(FEELING_PATHS[f]?.length, f).toBeGreaterThan(0);
     for (const m of [...MODULES, 'bolt']) expect(MODULE_PATHS[m]?.length, m).toBeGreaterThan(0);
     for (const k of MARKS) expect(HEART_MARK_PATHS[k].length, k).toBeGreaterThan(0);

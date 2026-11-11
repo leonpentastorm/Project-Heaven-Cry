@@ -3,6 +3,7 @@
 // own tile, Edge Sigil's elements (ACID in, STONE out), Three-Cut Script's spell as Touch on the last target, Deploy
 // Cover's STAY glyph beside the barricade, Inscribed Rounds' Elements and Afflictions, Spell Magazine's spell as Touch.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { d20, emit, objectsOf, condOn, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';

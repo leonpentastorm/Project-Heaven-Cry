@@ -2,6 +2,7 @@
 // stays as a field; the field takes whoever it has not affected yet at full, and whoever it has (its placing strike or an
 // earlier bite) at ×0.5; at most once per creature per round.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, apply, newGame, positionsOf, viewFor, magicTurnStart, magicRoundTick, moveUnit, endTurn, active,

@@ -47,7 +47,7 @@ describe('design cards', () => {
   it('the workshop verdict names both effects with numbers, and the tone\'s rider', () => {
     const { u } = fight();
     const v = designVerdict(u.mg, DESIGNS[2]);
-    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.8 \d+, stage 4 ×2.2 \d+\); then Push 3 tiles \(half\)/);
+    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.8 \d+, stage 4 ×2.4 \d+\); then Push 3 tiles \(half\)/); // rules 1.17: the table tops out at ×2.4
     expect(designVerdict(u.mg, DESIGNS[0]).rider).toMatch(/^Fire: armour counts half; stage 2–3 Burning/);
     expect(toneChips([], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: true });
     expect(toneChips(['storm'], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: false });
@@ -60,13 +60,13 @@ describe('the HEART panel', () => {
     expect(beginOutburst(cb, rng, u, 'fb', undefined, true)).toBeNull();
     let p = heartPanel(cb, u)!;
     expect(p).toMatchObject({ name: 'Heartfire', stage: 0, tone: 'fire', form: 'burst' });
-    expect(p.stages.map((s) => s.mult)).toEqual([0.8, 1, 1.4, 1.8, 2.2]);
+    expect(p.stages.map((s) => s.mult)).toEqual([0.8, 1.2, 1.6, 2, 2.4]);
     expect(p.pump.ok).toBe(true);
     expect(p.pump.cost).toBe(u.mg.freePumps > 0 ? 'FREE' : '1 AP');
     expect(p.feedShow).toBe(false); // no glyph on your tile
     for (let i = 0; i < 3; i++) expect(pumpOutburst(cb, rng, u)).toBeNull();
     p = heartPanel(cb, u)!;
-    expect(p.stage).toBe(3); expect(p.mult).toBe(1.8);
+    expect(p.stage).toBe(3); expect(p.mult).toBe(2);
     expect(p.letgo.strainOff).toBe(0); // pumped stages give no Strain back (spec item 541)
     u.mg.held.paid = 2; expect(heartPanel(cb, u)!.letgo.strainOff).toBe(Math.min(2, u.mg.strain)); p = heartPanel(cb, u)!;
     const v: any = heartVals(p, () => {});
@@ -166,7 +166,7 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(p.overdraw).toMatch(/^Overdraw is ready this turn\. This Pump adds 2 stages\. Your first Overdraw of the fight costs no Strain\.$/);
     expect(p.pump.title).toMatch(/^A plain Pump: stage 0 → 1 .*Overdraw is ready this turn/);
     p = heartPanel(cb, u, [OD])!;
-    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP' }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.4\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
+    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP' }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.6\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
     expect(p.stages.find((x) => x.next)!.n).toBe(2); // the meter marks the stage this Pump reaches
     // Used this turn: the panel says why it isn't there; next turn it is ready again, now for 1 Strain.
     cb.mods = [OD]; pumpOutburst(cb, rng, u); delete cb.mods; u.mg.held.stage = 1;
@@ -203,10 +203,10 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     const { cb, u } = withPerks({ resonance: 'I' }); fire(cb, u, 1);
     beginOutburst(cb, rng, u, 'sb', undefined, true); u.mg.held.stage = 2; u.ap = 9;
     const p = heartPanel(cb, u)!;
-    expect(p.multNotes).toEqual(['Resonance +10%']); expect(p.mult).toBe(1.54); // ×1.4 at stage 2, +10%
-    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.54\)\. Resonance \+10% is in that number/);
+    expect(p.multNotes).toEqual(['Resonance +10%']); expect(p.mult).toBe(1.76); // ×1.6 at stage 2 (rules 1.17), +10%
+    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.76\)\. Resonance \+10% is in that number/);
     const v: any = heartVals(p, () => {});
-    expect(v.multText).toBe('×1.54'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +10%');
+    expect(v.multText).toBe('×1.76'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +10%');
     const o = aimOverlay(cb, u, 'held', '4,5');
     expect(o.summary[0]).toBe('Resonance +10% to this Release, built by the Releases before it.');
     // A snap cast of a design shows it too.
