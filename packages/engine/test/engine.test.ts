@@ -454,7 +454,8 @@ describe('music (spec: Music)', () => {
     r.g.campaign!.zones.find((z) => z.id === r.g.story.zone)!.music = { ambient: { yt: 'ccccccccccc', title: 'Zone', artist: '' } };
     expect(musicFor(r.g).track!.title).toBe('Zone'); expect(musicFor(r.g).layer).toBe('ambient');
     r.act({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Odd fight', difficulty: 'easy', enemies: [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }] } } });
-    expect(musicFor(r.g)).toMatchObject({ layer: 'combat', track: { title: 'Gunline', ost: 'gunline' } });
+    expect(musicFor(r.g)).toMatchObject({ layer: 'combat', track: { ost: r.g.combat!.song, artist: 'Project Heaven Cry OST' } });
+    expect(r.g.combat!.song).toBeTruthy();
   });
   it('a spotlight: once per scene, never cuts off a playing song, ends after one play (host says so)', () => {
     const r = room(), log: string[] = [], g = r.g;
