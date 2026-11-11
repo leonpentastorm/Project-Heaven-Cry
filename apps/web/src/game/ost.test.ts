@@ -1,6 +1,10 @@
 // The game's own fight music player (ost.ts): seamless loop passes and crossfades between tracks, on a fake Web Audio.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { OST, FIGHT_POOL, type OstId } from '@engine';
 import { OST_FILES, seamAt, ostPlay, ostNow, ostVolume, _ostReset } from './ost';
+import { CREDITS } from './credits';
 
 type Call = [string, ...any[]];
 class Param { value = 1; calls: Call[] = []; setValueAtTime(v: number, t: number) { this.calls.push(['set', v, t]); this.value = v; } linearRampToValueAtTime(v: number, t: number) { this.calls.push(['ramp', v, t]); } setValueCurveAtTime(c: Float32Array, t: number, d: number) { this.calls.push(['curve', c[0] < 0.5 ? 'in' : 'out', t, d]); } cancelScheduledValues(t: number) { this.calls.push(['cancel', t]); } }
@@ -71,5 +75,59 @@ describe('the fight music loop', () => {
   it('the volume eases the master gain', () => {
     ostPlay('gunline'); ostVolume(0.42, 250);
     expect(made.gains[0].gain.calls).toContainEqual(['ramp', 0.42, expect.closeTo(10.25, 5)]);
+  });
+});
+
+/** An MP3's length in seconds, by walking its frames (MPEG-1 or 2, Layer III; any ID3v2 tag at the head is skipped). */
+function mp3Seconds(file: string): number {
+  const b = readFileSync(file);
+  let i = 0, samples = 0, rate = 0;
+  if (b.toString('latin1', 0, 3) === 'ID3') i = 10 + ((b[6] & 0x7f) << 21 | (b[7] & 0x7f) << 14 | (b[8] & 0x7f) << 7 | (b[9] & 0x7f));
+  const BR1 = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320], BR2 = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160];
+  while (i + 4 <= b.length) {
+    if (b[i] !== 0xff || (b[i + 1] & 0xe0) !== 0xe0) { i++; continue; }
+    const ver = (b[i + 1] >> 3) & 3, layer = (b[i + 1] >> 1) & 3, br = (b[i + 2] >> 4) & 15, sr = (b[i + 2] >> 2) & 3, pad = (b[i + 2] >> 1) & 1;
+    if (ver === 1 || layer !== 1 || br === 0 || br === 15 || sr === 3) { i++; continue; }
+    const v1 = ver === 3, hz = [44100, 48000, 32000][sr] / (v1 ? 1 : ver === 2 ? 2 : 4), kbps = (v1 ? BR1 : BR2)[br];
+    const len = Math.floor((v1 ? 144 : 72) * kbps * 1000 / hz) + pad;
+    rate = hz; samples += v1 ? 1152 : 576; i += len;
+  }
+  return rate ? samples / rate : 0;
+}
+
+describe('the game\'s tracks and their files', () => {
+  const PUBLIC = resolve(__dirname, '../../public');
+  const ids = Object.keys(OST) as OstId[];
+  it('every track the engine can pick has a file and loop points, and nothing else has', () => {
+    expect(Object.keys(OST_FILES).sort()).toEqual([...ids].sort());
+    expect(ids.length).toBe(12);
+    for (const id of [...FIGHT_POOL, 'heaven_falls', 'last_rounds', 'gearing_up'] as OstId[]) expect(OST_FILES[id], id).toBeTruthy();
+    // One file a track: no two tracks play the same file.
+    expect(new Set(ids.map((id) => OST_FILES[id].src)).size).toBe(ids.length);
+  });
+  it.each(ids)('%s: the web copy exists, its loop points lie inside it, and it carries no tags or cover art', (id) => {
+    const f = OST_FILES[id], file = resolve(PUBLIC, f.src.slice(1));
+    expect(f.src).toBe('/music/' + id.replace(/_/g, '-') + '.mp3');
+    expect(existsSync(file), f.src).toBe(true);
+    const secs = mp3Seconds(file);
+    expect(secs).toBeGreaterThan(30);
+    // The engine's length (for the credits and the clock) is the file's, to the second.
+    expect(Math.abs(OST[id].length! - secs)).toBeLessThan(1.5);
+    expect(f.loopIn).toBeGreaterThanOrEqual(0);
+    expect(f.loopIn).toBeLessThan(1);
+    expect(f.seam).toBeGreaterThanOrEqual(1); expect(f.seam).toBeLessThanOrEqual(2);
+    // The loop out is inside the file, and near its end (within 8 s: nothing but the ending is left out).
+    expect(f.loopOut).toBeLessThanOrEqual(secs);
+    expect(secs - f.loopOut).toBeLessThan(8);
+    expect(f.loopOut - f.loopIn).toBeGreaterThan(f.seam * 4);
+    // Stream copies: no ID3 tag (so no cover art) at the head, and under 4.2 MB.
+    const head = readFileSync(file).subarray(0, 3).toString('latin1');
+    expect(head).not.toBe('ID3');
+    expect(readFileSync(file).length).toBeLessThan(4.2 * 1024 * 1024);
+  });
+  it('the Credits page lists every one of the game\'s tracks by its title', () => {
+    const music = CREDITS.find((g) => g.group === 'Music')!.items.map((c) => c.what);
+    for (const id of ids) expect(music.some((w) => w.startsWith(OST[id].title + ' (')), OST[id].title).toBe(true);
+    for (const w of music) expect(w).not.toMatch(/ingame/i);
   });
 });

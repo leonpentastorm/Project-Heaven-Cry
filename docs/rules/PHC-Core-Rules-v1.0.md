@@ -3113,10 +3113,14 @@ The room hears one song at a time. The engine decides what plays and why; each p
 | Spotlight | The favourite song of the character who did something amazing | One full play outside a fight; the end of the fight if it started in one |
 | Last Rounds | The game's own track, while at least half the party is Downed (or dead) | When enough of the party is up again: it hands back |
 | Encounter | The campaign's theme for that named encounter | The end of the fight |
-| Combat | The game's own fight music (Project Heaven Cry OST): **Heaven Falls** once the party has seen an elite or a boss in the fight (it holds for the rest of the fight), or in a Hard or Boss fight (the difficulty is known to everyone); else **Gunline**. An elite or boss still hidden in the fog of war changes nothing, and the music card names only what the party has seen (an unseen one reads as plain *Fight*). Campaigns' generic combat tracks are not played | The end of the fight |
+| Combat | The game's own fight music (Project Heaven Cry OST): **Heaven Falls** once the party has seen an elite or a boss in the fight (it holds for the rest of the fight), or in a Hard or Boss fight (the difficulty is known to everyone); else **the fight's song**, one of the nine in the pool below. An elite or boss still hidden in the fog of war changes nothing, and the music card names only what the party has seen (an unseen one reads as plain *Fight*). Campaigns' generic combat tracks are not played | The end of the fight |
 | Ambient | The zone's ambient track, else the campaign's | Leaving the zone |
 
-The game's own tracks loop seamlessly, crossfade (about 1.2 s) when the fight's situation changes, and fade out when the fight ends. A Proving Ground still gearing up (no fight begun) has no fight music.
+**The fight's song.** Ordinary fights share a pool of nine songs: *Gunline*, *Brass on the Floor*, *Danger Close*, *Flank Left*, *Held Breath*, *Hold the Line*, *Line of Four*, *Mag Check* and *Suppressing Fire*. The engine picks one at random when a fight begins, and the pick is part of the game's state: every player in the room hears the same song, and it is that fight's song to the end. Re-opening the page or reconnecting keeps it, and when Heaven Falls or Last Rounds take over and hand back, the same song returns. A fight never gets the song the last ordinary fight had (a fight that begins on Heaven Falls doesn't count as one). The pick uses none of the game's dice: it changes no roll. A fight saved before the pool existed keeps *Gunline*.
+
+The game's own tracks loop seamlessly, crossfade (about 1.2 s) when the fight's situation changes, and fade out when the fight ends.
+
+**The Proving Ground** plays *Gearing Up* on a loop while the squad is gearing up (no fight on: before the first, and between fights), in place of area music, alone or with a room. A fight there switches to its own music as anywhere else, and the end of the fight brings *Gearing Up* back. A spotlight or pinned song still plays over it.
 
 **The spotlight.** These start the character's favourite song for the whole room:
 

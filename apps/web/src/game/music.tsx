@@ -1,6 +1,6 @@
 // The room's music (spec: Music). The engine says what plays (musicFor); this plays it: players' songs and campaign
-// tracks through YouTube's embedded player, the game's own fight music (Gunline, Heaven Falls, Last Rounds) from its
-// files (ost.ts). It shows the credit on every change, and lets each player pause or turn it down for themselves only.
+// tracks through YouTube's embedded player, the game's own music (the fight's song, Heaven Falls, Last Rounds, the Proving Ground's Gearing Up)
+// from its files (ost.ts). It shows the credit on every change, and lets each player pause or turn it down for themselves only.
 // The level is the panel's volume times Settings' music volume (silent when muted).
 // The host's browser tells the engine when a one-play song has finished (music/end).
 import React from 'react';
@@ -94,8 +94,10 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   }, []);
   // Leaving the game (back to the title): the fight music fades out with it.
   React.useEffect(() => () => ostPlay(null, 600), []);
-  // The first fight's track is fetched while the story plays, so it is ready when the fight starts.
-  React.useEffect(() => { if (game && game.phase !== 'lobby') ostPreload('gunline'); }, [!!game && game.phase !== 'lobby']);
+  // The fight's song is fetched as soon as the fight has one (the engine picks it when the fight begins), under the
+  // combat-in transition, so it is ready when the music comes in.
+  const fightSong = game?.phase === 'combat' ? game.combat?.song : undefined;
+  React.useEffect(() => { if (fightSong) ostPreload(fightSong); }, [fightSong]);
 
   function fadeTo(target: number, then?: () => void, ms = FADE_MS) {
     const pl = player.current; if (!pl?.getVolume) { then?.(); return; }
