@@ -1,9 +1,10 @@
-// The game's own fight music (spec: Music; the engine's musicFor / fightTheme picks the track): Gunline, Heaven Falls
-// and Last Rounds, played from the game's files through Web Audio. Each track loops seamlessly: a pass crossfades into
+// The game's own music (spec: Music; the engine's musicFor / fightTheme picks the track): the nine songs of the
+// ordinary fight's pool (Gunline and the rest), Heaven Falls, Last Rounds, and the Proving Ground's Gearing Up, played
+// from the game's files through Web Audio. Each track loops seamlessly: a pass crossfades into
 // the next one at its loop points (the files end on Suno's hard cut, so a plain loop would click). Changing track
 // crossfades the two (about 1.2 s); stopping fades out. music.tsx drives it and sets the volume (Settings x panel x
 // the Narrator's duck). The browser starts sound only after a click: ostResume() on the first gesture.
-import type { OstId } from '@engine';
+import { GEARING_UP, type OstId } from '@engine';
 
 /** Each track's file and loop: a pass runs from loopIn to loopOut, the last `seam` seconds crossfading into the next. */
 export const OST_FILES: Record<OstId, { src: string; loopIn: number; loopOut: number; seam: number }> = {
@@ -13,6 +14,27 @@ export const OST_FILES: Record<OstId, { src: string; loopIn: number; loopOut: nu
   heaven_falls: { src: '/music/heaven-falls.mp3', loopIn: 0.1, loopOut: 135.5, seam: 1.5 },
   // Heartbeat and static at both ends.
   last_rounds: { src: '/music/last-rounds.mp3', loopIn: 0.1, loopOut: 81.0, seam: 1.2 },
+  // The eight songs that joined the pool on 11 Nov 2026 (measured from the files: audio/README.md). Where the song has
+  // a steady beat at both ends, the pass is a whole number of bars, so the beat carries across the seam.
+  // 140 bpm; 124 beats a pass. The file's last bar and its ring-out (from 55.2 s) are left out.
+  brass_on_the_floor: { src: '/music/brass-on-the-floor.mp3', loopIn: 0.05, loopOut: 54.24, seam: 1.2 },
+  // The intro has no beat to keep: the pass runs to the cut (59.56 s).
+  danger_close: { src: '/music/danger-close.mp3', loopIn: 0.05, loopOut: 59.5, seam: 1.2 },
+  // 150 bpm; 148 beats a pass. The closing phrase's last bar (to the cut at 61.7 s) is left out.
+  flank_left: { src: '/music/flank-left.mp3', loopIn: 0.1, loopOut: 60.5, seam: 1.2 },
+  // 200 bpm; 192 beats a pass. The last hits and the tail (from 60.1 s) are left out.
+  held_breath: { src: '/music/held-breath.mp3', loopIn: 0.1, loopOut: 58.89, seam: 1.2 },
+  // No silence at the head; the tail starts at 60.1 s.
+  hold_the_line: { src: '/music/hold-the-line.mp3', loopIn: 0, loopOut: 60.1, seam: 1.2 },
+  // Ends on a breakdown and one last hit (66.9 to 68.4 s): the hit's tail fades into the quiet intro, which builds again.
+  line_of_four: { src: '/music/line-of-four.mp3', loopIn: 0, loopOut: 69.2, seam: 1.2 },
+  // 139.3 bpm; 136 beats a pass. The cut is at 61.0 s.
+  mag_check: { src: '/music/mag-check.mp3', loopIn: 0.05, loopOut: 59.84, seam: 1.2 },
+  // 145.8 bpm, on the beat. The cut is at 56.8 s (silence after it).
+  suppressing_fire: { src: '/music/suppressing-fire.mp3', loopIn: 0, loopOut: 55.4, seam: 1.2 },
+  // Gearing Up (the Proving Ground): the pass hands over on the second of the three closing hits (171.73 s), where the
+  // intro's own first hit lands, and the file's fade-out (from 175 s) is never reached. A longer seam for a slower song.
+  gearing_up: { src: '/music/gearing-up.mp3', loopIn: 0.1, loopOut: 173.68, seam: 2.0 },
 };
 
 /** When the pass that starts at `when` (audio clock) from `offset` (seconds into the file) hands over to the next. */
@@ -31,8 +53,13 @@ let ctx: AudioContext | null = null, master: GainNode | null = null, none = fals
 let cur: Voice | null = null, level = 0;
 const fading: Voice[] = [];
 const bytes = new Map<OstId, Promise<ArrayBuffer>>();
-/** Decoded tracks, most recent last; at most two kept (a decoded track is 25 to 50 MB). */
+/** Decoded tracks, most recent last; at most two kept (a decoded track is 25 to 50 MB; Gearing Up about 70), and
+ * `home` besides. */
 const decoded = new Map<OstId, Promise<AudioBuffer>>();
+/** The track the fights hand back to (Gearing Up, while the Proving Ground is on): it stays decoded through a fight,
+ * whatever takes over in it (the fight's song, then Heaven Falls or Last Rounds), so the fight's end crossfades into
+ * it instead of fading out and waiting for 3 minutes of audio to be decoded again. Let go when the music stops. */
+let home: OstId | null = null;
 
 function audio(): AudioContext | null {
   if (!ctx && !none) {
@@ -57,7 +84,7 @@ function load(id: OstId): Promise<AudioBuffer> {
   p = fetchBytes(id).then((b) => new Promise<AudioBuffer>((res, rej) => { const q = c.decodeAudioData(b.slice(0), res, rej); if (q && typeof (q as any).then === 'function') (q as Promise<AudioBuffer>).then(res, rej); }));
   p.catch(() => decoded.delete(id));
   decoded.set(id, p);
-  while (decoded.size > 2) { const old = [...decoded.keys()].find((k) => k !== id && k !== cur?.id); if (!old) break; decoded.delete(old); }
+  while (decoded.size > 2) { const old = [...decoded.keys()].find((k) => k !== id && k !== cur?.id && k !== home); if (!old) break; decoded.delete(old); }
   return p;
 }
 /** Fetch a track's file ahead (not decoded), so the fight's music is ready when the fight starts. */
@@ -112,6 +139,7 @@ function revive(v: Voice, ms: number) {
 /** Play a track (crossfading from the one playing), or null to fade out. Playing the same track again does nothing. */
 export function ostPlay(id: OstId | null, fadeMs = 1200) {
   if (cur && !cur.dead && cur.id === id) return;
+  if (id === GEARING_UP) home = id; else if (!id) home = null;
   if (!id && !cur) return;
   if (!audio()) return;
   if (cur) fadeOut(cur, fadeMs);
@@ -142,4 +170,4 @@ export function ostResume(): Promise<boolean> {
 export const ostRunning = () => ctx?.state === 'running';
 
 /** Tests only: forget the audio context and everything playing. */
-export function _ostReset() { for (const v of [...fading, ...(cur ? [cur] : [])]) if (v.dying) clearTimeout(v.dying); ctx = null; master = null; none = false; cur = null; fading.length = 0; decoded.clear(); bytes.clear(); level = 0; }
+export function _ostReset() { for (const v of [...fading, ...(cur ? [cur] : [])]) if (v.dying) clearTimeout(v.dying); ctx = null; master = null; none = false; cur = null; home = null; fading.length = 0; decoded.clear(); bytes.clear(); level = 0; }

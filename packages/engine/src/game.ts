@@ -15,7 +15,7 @@ import { type Rng, d20, seedFrom } from './rng';
 import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from './calls';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
-import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
+import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, noteFightSong, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
 import type { Hazard } from './hazards';
@@ -471,6 +471,11 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
+  // The fight's song (spec: Music): picked once when the fight begins. A fight that was already under way without one
+  // (a save from before the song pool) keeps Gunline. "The same fight": no fight began in this action (every path
+  // that starts one bumps music.fight or the Proving Ground's fights), so a retry or a new wave on an old save picks.
+  if (g.combat && g.phase === 'combat') noteFightSong(g, !!state.combat && state.phase === 'combat' && !state.combat.song
+    && (state.music?.fight || 0) === (g.music?.fight || 0) && (state.sandbox?.fights || 0) === (g.sandbox?.fights || 0));
   if (g.combat && g.phase === 'combat') sightFx(g.combat); // presentation: a hostile that came into a side's sight (a reveal, a death that left a side blind…)
   g.v++;
   return g;

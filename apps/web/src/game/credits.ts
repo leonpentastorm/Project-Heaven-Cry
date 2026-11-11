@@ -24,9 +24,13 @@ export const CREDITS: { group: string; items: Credit[] }[] = [
     { what: 'Intake (character creation)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
     // The game's own fight music (Project Heaven Cry OST): made by Leon with Suno on the Pro plan, which licenses
     // commercial use. Masters in audio/music/ (see audio/README.md).
-    { what: 'Gunline (fight theme)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
+    { what: 'Gunline (fight song)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
+    // The eight songs that share the ordinary fight with Gunline (one is picked for each fight), 11 Nov 2026.
+    ...['Brass on the Floor', 'Danger Close', 'Flank Left', 'Held Breath', 'Hold the Line', 'Line of Four', 'Mag Check', 'Suppressing Fire']
+      .map((t) => ({ what: t + ' (fight song)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' })),
     { what: 'Heaven Falls (elite and boss fights)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
     { what: 'Last Rounds (when half the party is down)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
+    { what: 'Gearing Up (the Proving Ground)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
     { what: 'Shadows and Dust, I Walk With Ghosts, Decoherence, Machina, Red, Pursuit (M813)', who: 'Scott Buckley', licence: 'CC-BY 4.0', url: 'https://www.scottbuckley.com.au' },
     { what: 'Ossuary 6 – Air (M813)', who: 'Kevin MacLeod', licence: 'CC-BY 4.0', url: 'https://incompetech.com' },
     { what: 'Players\' favourite songs', who: 'their own YouTube links, played from YouTube' },
