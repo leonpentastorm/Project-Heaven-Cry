@@ -18,9 +18,12 @@ Leon's words are quoted; the notes under each are a first reading, not a diagnos
 | # | Bug | State |
 | --- | --- | --- |
 | 1 | Effect testing room | **Built.** Button on the Proving Ground's gearing-up screen; `sandbox/fxtest`; engine tests and the `fx-room` browser suite pass. |
-| 2 | Opportunity attack makes the Sigilist's glyphs vanish | Not started. |
-| 3, 5, 6, 7 | Thumper Suppress, Lob timing, fog preview, Suppress order | An agent is on it (with the sweep). |
-| 4 | Sweep of every weapon × technique | An agent is on it: `apps/web/e2e/fx-sweep.mjs`. |
+| 2 | Opportunity attack makes the Sigilist's glyphs vanish | **Not reproduced** (own caster, real speed, glyph under the caster and a Line of two: the glyphs stayed drawn). A check is in `fx-sweep` (`PARTS=glyphs`). Need from Leon: was the caster his or an enemy, and did the glyph on the tile vanish or the Sigil panel. |
+| 3 | Thumper Suppress draws bullets | **Fixed**: extra rounds draw what the weapon fires (`fx/ranged.ts`); `fx/launch.test.ts`. |
+| 5 | Lob goes off before it lands | **Fixed**: the blast, the damage and the HP bar wait for the landing (`fx/play.ts` `landsIn`). |
+| 6 | Area preview shows enemies in the fog | **Fixed** for techniques (checked in the browser with the Lob); the same change for perk, Evoke and Outburst previews is by reading only. |
+| 7 | Suppress: sound and damage before the shots | **Fixed** as read: the rattle starts with the first flash, the rolled round leaves last. With plain guns the gap was 100 to 170 ms, so Leon may have meant the thumper (bug 5). Leon to confirm. |
+| 4 | Sweep of every weapon × technique | **Built**: `npm run e2e -- fx-sweep` (about 9.5 min; `PARTS=real` 1.5 min). 2,022 cases, 1,303 played, 719 refused by the rules (need a shield, an ally, cover…), 0 failing. Plain burst and auto fire still start their sound about 100 ms before the first flash (not changed). |
 | 8 | Effects float when the map scrolls | The camera build moves drawn effects with the map (`fx/dom.ts`); the `camera` suite passes. Leon to confirm by eye. |
 | 9 | Last blow skips its animation | **Fixed**: a decided fight no longer plays only its last six effects. Checked in `fx-room`. |
 | 10 | Enemy acts while your turn card is up | **Fixed (cause found in code)**: on a new fight the card was timed by an estimate; it now waits for the effects. Not reproduced by a test: Leon to confirm. |

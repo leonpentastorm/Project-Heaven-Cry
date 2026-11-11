@@ -35,6 +35,14 @@ the table at the top of `BUGLIST-0.22.md`. Two agents were started in the workin
 `damage-step-magic.md` here). Guns' ceiling (a bit under 150%) is the part of the damage step not started.
 Nothing of this is live.
 
+**11 Nov, night.** Both agents finished and their work is committed. Rules 1.17 (the magic damage step) is in
+the spec, data and engine: read `damage-step-magic.md`, whose ten questions wait for Leon. The effects fixes and
+`fx-sweep` are in (bug list table). `npm run check` green (engine 3,118, web 980); `fx-room`, `fx-sweep` (real-speed
+part), `rules114`, `sigil14`, `classes`, `classes-moves` green. Five old suites outside the `all` group (`soul`,
+`heart`, `feelings40`, `sigil15`, `magic`) fail, and fail the same way on the commit before this work (`5d2bb32`):
+stale, to be repaired or retired. Not done: `npm run e2e -- all` on the final tree, the guns' ceiling, the version
+bump. Nothing of this is live.
+
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music

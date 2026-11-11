@@ -68,7 +68,7 @@ def run(name):
     if not slow and name not in ANIM: env['FAST'] = '1'
     t0 = time.time(); log = os.path.join(ROOT, '.check/e2e', name + '.log')
     try: p = subprocess.run(['node', 'apps/web/e2e/' + name + '.mjs'], cwd=ROOT, capture_output=True, text=True, env=env, timeout=1200); out, code = p.stdout + p.stderr, p.returncode
-    except subprocess.TimeoutExpired as e: out, code = (e.stdout or '') + '\nTIMED OUT after 20 minutes', 124
+    except subprocess.TimeoutExpired as e: out, code = (e.stdout.decode(errors='replace') if isinstance(e.stdout, bytes) else (e.stdout or '')) + '\nTIMED OUT after 20 minutes', 124
     open(log, 'w').write(out if isinstance(out, str) else out.decode())
     out = out if isinstance(out, str) else out.decode()
     oks = len(re.findall(r'^ok ', out, re.M)); bad = [l for l in out.split('\n') if l.startswith('FAIL')]
