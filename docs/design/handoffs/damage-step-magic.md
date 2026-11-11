@@ -354,6 +354,18 @@ Each has my recommendation, and the recommendation is what is built.
 10. **Sigil's AP is the real spread between levels** (5.9 to 10.1 AP for the same Line). *Recommendation: look at the
     Glyph AP floor (0.5) and the core change (2 AP, almost every full Line) in the AP step, not here.*
 
+### Leon's answers (11 Nov 2026, night)
+
+1. The Elite and Boss guard: **yes, keep it.**
+2. A 4-glyph Line: **it rolls like anything else.** Nothing changes.
+3. to 6. (Rage, the base, Calm, Abandon): not settled one by one. Instead, a second round on the Outburst as rules
+   1.19 (hand-off: `outburst-rework-2.md`): feelings re-audited by effect and against what the schools already do
+   (Relief and Calm's can't-miss called out as too strong; "Rage, Rage, Rage, Relief" must not be the line); the plain
+   Pump goes down so a feeling's number shows; a strong effect takes a lower or negative step; whether 1 AP is the
+   right price for a Pump; the free Pumps of a Soul 10 character (stage 4 every turn, the swell never matters);
+   schools get more to choose from; the same school twice in a design is prepared as an advanced-class feature.
+7. to 10.: not answered; the recommendations stand.
+
 ## 7. Files
 
 - Spec: `docs/rules/PHC-Core-Rules-v1.0.md` ("Rules revision 1.17"; notes in the Sigil and Soul sections and in rules

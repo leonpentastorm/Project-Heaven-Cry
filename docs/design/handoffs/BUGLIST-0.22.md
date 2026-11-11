@@ -18,7 +18,7 @@ Leon's words are quoted; the notes under each are a first reading, not a diagnos
 | # | Bug | State |
 | --- | --- | --- |
 | 1 | Effect testing room | **Built.** Button on the Proving Ground's gearing-up screen; `sandbox/fxtest`; engine tests and the `fx-room` browser suite pass. |
-| 2 | Opportunity attack makes the Sigilist's glyphs vanish | **Not reproduced** (own caster, real speed, glyph under the caster and a Line of two: the glyphs stayed drawn). A check is in `fx-sweep` (`PARTS=glyphs`). Need from Leon: was the caster his or an enemy, and did the glyph on the tile vanish or the Sigil panel. |
+| 2 | Opportunity attack makes a glyph vanish | **Being looked at again.** Leon (11 Nov, night): it was his character's opportunity attack on an *enemy* Sigil caster running away; the glyph on the tile where the caster was hit vanished. The first attempt had tried the mirror case. |
 | 3 | Thumper Suppress draws bullets | **Fixed**: extra rounds draw what the weapon fires (`fx/ranged.ts`); `fx/launch.test.ts`. |
 | 5 | Lob goes off before it lands | **Fixed**: the blast, the damage and the HP bar wait for the landing (`fx/play.ts` `landsIn`). |
 | 6 | Area preview shows enemies in the fog | **Fixed** for techniques (checked in the browser with the Lob); the same change for perk, Evoke and Outburst previews is by reading only. |
@@ -28,9 +28,9 @@ Leon's words are quoted; the notes under each are a first reading, not a diagnos
 | 9 | Last blow skips its animation | **Fixed**: a decided fight no longer plays only its last six effects. Checked in `fx-room`. |
 | 10 | Enemy acts while your turn card is up | **Fixed (cause found in code)**: on a new fight the card was timed by an estimate; it now waits for the effects. Not reproduced by a test: Leon to confirm. |
 | 11 | Next wave: drop dead, enemy turn with no effects | **Fixed (cause found in code)**: an opening of more than 40 effects played none, one of more than 24 lost its start. Leon to confirm. |
-| 12 | AP cost on the bar | **Not reproduced.** Attacks, techniques, perks, Outburst, prayers all show their cost in the browser. Need from Leon: which action. |
+| 12 | AP cost on the bar | **Not reproduced.** Attacks, techniques, perks, Outburst, prayers all show their cost in the browser. Leon will test again and say which action. |
 | 13 | Portraits change | **Fixed**: a face, once given, is kept for that enemy in that room. |
-| 14 | Music picks "gunfire" | **Not understood.** Need from Leon: the track title shown, and whether he had picked a song. |
+| 14 | Music picks "gunfire" | **Closed** by Leon (11 Nov, night): played 0.22.0 again and it is fine. |
 | new | Two-key codes (11, 42) | **Built**; each action button shows its code; checked in `fx-room`. |
 
 ## A. A new tool, build it first (it makes the rest quick to check)
