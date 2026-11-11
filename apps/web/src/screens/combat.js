@@ -11,7 +11,7 @@ import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack,
   lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions, routeHazards, reloadBothAp, PILE, PICKUP_AP, STAGE_MULT, encoreCredit, FAITH_PATRON,
   attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
-import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
+import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
 const act = (a) => {
@@ -960,7 +960,10 @@ export class CombatLogic extends DCLogic {
     const paint = (k, col) => (mapArt && !String(col).startsWith('rgba(255') ? tileBg(mapArt, k, cb.map.w, cb.map.h, TINT[col] || (String(col).startsWith('rgba') ? col : 'rgba(10, 13, 19, 0.1)')) : col);
     // The glyph layer: glyphs and standing zones by tile. Hostile glyphs show only where you can see, and only as words
     // your side can read (the rest are scratches).
-    const glyphAt = {}; (cb.glyphs || []).forEach((gl) => { (glyphAt[gl.pos] ||= []).push(gl); });
+    // Glyphs follow the effects too (fx/play.ts fxShownGlyphs): a Line drawn and Evoked in one step (a hostile caster's
+    // turn) lies on its tiles from its draw until its Evoke plays. For the picture only: the rules read cb.glyphs.
+    const glyphsShown = [...(cb.glyphs || []), ...fxShownGlyphs(g)];
+    const glyphAt = {}; glyphsShown.forEach((gl) => { (glyphAt[gl.pos] ||= []).push(gl); });
     const glyphName = (gl) => glyphMark(gl, 'pc', knows).title;
     // Rules 1.10: a scuffed glyph's trace stays 2 rounds, faint; Analyze aimed at it (or at a hostile glyph) reads it.
     const traceAt = {}; (cb.traces || []).forEach((t) => { (traceAt[t.pos] ||= []).push(t); });
@@ -970,7 +973,7 @@ export class CombatLogic extends DCLogic {
     // Rules 1.10 strokes (game/sigilView.ts strokeLayer): a faint line joins each stroke's glyphs; the hovered glyph lights
     // its whole stroke and names its words; while drawing, the stroke the glyph would make shows as a dashed line.
     const dwSel = S.action === 'draw' && word ? wordInfo[word] : null;
-    const SL = strokeLayer(cb.glyphs || [], { side: 'pc', seen: (k) => vis.tiles.has(k), hover: S.hover, knows, preview: dwSel && dwSel.ok ? [dwSel.joins, dwSel.joins2] : [] });
+    const SL = strokeLayer(glyphsShown, { side: 'pc', seen: (k) => vis.tiles.has(k), hover: S.hover, knows, preview: dwSel && dwSel.ok ? [dwSel.joins, dwSel.joins2] : [] });
     // Placed magic (spec 9.9: fields tinted by element, your traps, spotted enemy traps, turrets, RAISE walls, smoke,
     // light) under the Evoke plan's overlay; outside the area is dimmed while aiming (spec 9.4).
     // Class Roster Revision 3's standing marks (game/classMarks.ts): False Images, Read's intents, rigged and sabotaged tiles.

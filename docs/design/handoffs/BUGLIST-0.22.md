@@ -18,7 +18,7 @@ Leon's words are quoted; the notes under each are a first reading, not a diagnos
 | # | Bug | State |
 | --- | --- | --- |
 | 1 | Effect testing room | **Built.** Button on the Proving Ground's gearing-up screen; `sandbox/fxtest`; engine tests and the `fx-room` browser suite pass. |
-| 2 | Opportunity attack makes a glyph vanish | **Being looked at again.** Leon (11 Nov, night): it was his character's opportunity attack on an *enemy* Sigil caster running away; the glyph on the tile where the caster was hit vanished. The first attempt had tried the mirror case. |
+| 2 | Opportunity attack makes a glyph vanish | **Fixed (display).** The engine never lost the glyph: an enemy caster's whole spell (draw, walk, draw, Evoke) is one step, and the screen drew glyphs only from the finished state, so the first glyph showed for 0.9 s and went before the Evoke played. The grid now keeps a drawn glyph until the effect that removes it has played (`fxShownGlyphs`, `fx/play.ts`). Unit tests only; not yet watched in a browser. Leon to confirm. |
 | 3 | Thumper Suppress draws bullets | **Fixed**: extra rounds draw what the weapon fires (`fx/ranged.ts`); `fx/launch.test.ts`. |
 | 5 | Lob goes off before it lands | **Fixed**: the blast, the damage and the HP bar wait for the landing (`fx/play.ts` `landsIn`). |
 | 6 | Area preview shows enemies in the fog | **Fixed** for techniques (checked in the browser with the Lob); the same change for perk, Evoke and Outburst previews is by reading only. |

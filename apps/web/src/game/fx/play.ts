@@ -264,6 +264,33 @@ export function fxShownHp(g: GameState | null | undefined): Map<string, number> 
   }
   return out;
 }
+/** Whether a later effect takes the glyphs off a tile (word: only that word's glyph, for a fade). A Grand Sigil and a
+ *  Seal name the tiles they cover, not glyphs they use up. */
+const takesGlyph = (e: FxEvent, tile: string, word: string): boolean =>
+  e.k === 'evoke' ? e.shape !== 'grand' && e.shape !== 'area' && (e.tiles || []).includes(tile) : e.k === 'glyph_fade' ? e.tile === tile && (!e.word || e.word === word)
+    : e.k === 'scuff' ? e.at === tile : e.k === 'null_wave' ? (e.glyphs || []).includes(tile) : false;
+/**
+ * The glyphs that still lie on the ground on screen though the state has them gone already: drawn by an effect that has
+ * played, and taken off (Evoked, faded, scuffed, wiped) by one that has not played yet. The engine works a hostile
+ * caster's turn out in one step (draw, walk, draw, Evoke), so the state that arrives never holds its Line: without
+ * these, a glyph showed only for its draw effect's 0.9 s and was gone while its caster still walked the Line (Leon,
+ * 11 Nov 2026: "the sigil next to me on the tile they got Op attack vanish"). Pure: waits says which effects wait.
+ */
+export function shownGlyphs(fx: FxEvent[], waits: (e: FxEvent) => boolean): any[] {
+  const out: any[] = [];
+  fx.forEach((d, i) => {
+    if (d.k !== 'draw' || !d.tile || !d.word || waits(d)) return;
+    const gone = fx.slice(i + 1).find((e) => takesGlyph(e, String(d.tile), String(d.word)));
+    if (gone && waits(gone)) out.push({ id: 'fx' + d.n, word: d.word, pos: d.tile, by: d.unit, side: d.side, left: 1, shown: true, ...(d.stroke ? { strokeId: d.stroke } : {}), ...(d.stroke2 ? { strokeId2: d.stroke2 } : {}) });
+  });
+  return out;
+}
+export function fxShownGlyphs(g: GameState | null | undefined): any[] {
+  const cb = g?.combat, key = fightStream(g); if (!cb || !key || !hasLayer()) return [];
+  const w = waitingIn(cb, key); if (!w) return [];
+  const have = new Set((cb.glyphs || []).map((x: any) => x.pos + '|' + x.word));
+  return shownGlyphs(cb.fx || [], w).filter((x) => !have.has(x.pos + '|' + x.word));
+}
 export function setProcessed(stream: string | null | undefined, n: number) { if (!stream || processed.get(stream) === n) return; moved(); processed.set(stream, n); holdChanged(); }
 /** The fight's effects stream key (its numbering restarts with every fight). */
 export const fightStream = (g: GameState | null | undefined): string | null =>
