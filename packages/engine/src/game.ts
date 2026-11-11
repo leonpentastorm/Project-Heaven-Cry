@@ -31,6 +31,7 @@ import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy
 export * from './fighttalk';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
+import { deedGrant } from './deeds';
 import { condSkillMod } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
@@ -1286,15 +1287,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     const targets = x.charId === 'all' ? Object.values(g.characters).filter((c) => !c.dead) : [g.characters[x.charId]].filter(Boolean);
     for (const c of targets) giveXp(g, c, x.source, amt, x.reason);
   }
-  for (const d of t.deeds || []) {
-    const c = g.characters[d.charId]; if (!c || comboEligible(c, d.perkId)) continue;
-    c.perks.push({ id: d.perkId, tier: 'achieved' }); c.deeds.push(d.deed);
-    push(g, { kind: 'system', text: c.name + ' earns the combo perk ' + PERK[d.perkId].name + ': ' + d.deed });
-    canon(g, c.name + ' earned ' + PERK[d.perkId].name + ' by a deed: ' + d.deed, [c.name], 4);
-    const song = startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
-    spotlight(g, { kind: 'legend', char: c.id, unit: unitOfChar(g, c.id), reason: 'a legendary deed', perk: d.perkId, line: String(d.deed || '').slice(0, 200), song });
-    awardAutomatic(g, c);
-  }
+  for (const d of t.deeds || []) grantCombo(g, d);
   for (const d of t.legends || []) {
     const c = g.characters[d.charId]; if (!c || c.dead || !String(d.deed || '').trim()) continue;
     c.legends = (c.legends || 0) + 1; c.unspent.attr++; c.deeds.push(d.deed);
@@ -1642,6 +1635,18 @@ function fightRuling(g: GameState, a: FightAnswer) {
   runEnemies(g);
 }
 
+/** A combo perk earned by a deed: the Narrator's record (deeds[]), or the engine seeing it happen (deeds.ts). True when given. */
+function grantCombo(g: GameState, d: { charId: string; perkId: string; deed: string }): boolean {
+  const c = g.characters[d.charId]; if (!c || comboEligible(c, d.perkId)) return false;
+  c.perks.push({ id: d.perkId, tier: 'achieved' }); c.deeds.push(d.deed);
+  push(g, { kind: 'system', text: c.name + ' earns the combo perk ' + PERK[d.perkId].name + ': ' + d.deed });
+  canon(g, c.name + ' earned ' + PERK[d.perkId].name + ' by a deed: ' + d.deed, [c.name], 4);
+  const song = startSong(g, c, 'a legendary deed', 'spotlight', (x) => push(g, { kind: 'system', text: x }));
+  spotlight(g, { kind: 'legend', char: c.id, unit: unitOfChar(g, c.id), reason: 'a legendary deed', perk: d.perkId, line: String(d.deed || '').slice(0, 200), song });
+  awardAutomatic(g, c);
+  return true;
+}
+deedGrant.f = grantCombo;
 /** A character's own unit in the fight on now (not a companion), for a spotlight event. */
 const unitOfChar = (g: GameState, charId: string) => (g.phase === 'combat' ? g.combat?.units.find((x) => x.charId === charId && !x.companion)?.id ?? null : null);
 /** Spotlight moments in a fight (spec: Music): an elite or boss taken down, an ally revived; for the music traits also any kill and any big heal. */

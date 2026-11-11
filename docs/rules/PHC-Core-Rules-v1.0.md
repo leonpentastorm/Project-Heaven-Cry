@@ -2785,6 +2785,22 @@ The Perks tab shows three shelves and nothing that can't be used:
 
 Items that only matter in the story are not on the fight's card. The audit behind the shelves is `docs/design/handoffs/perk-audit.md`.
 
+### Deeds the engine sees
+
+A combo perk is earned by a deed. Nine of the deeds happen in a fight, where the engine can watch them: it grants the perk the moment the deed is complete, exactly as the Narrator's record of a deed does (the perk, the deed on the sheet, the line in the story, the spotlight and its song). The character must have the perk's skills at Mastery 2 and not hold it yet; it is granted once; the Narrator can still grant any of them by hand; a Proving Ground fight grants nothing; enemies and companions earn nothing. The other ten deeds stay with the Narrator. A fight that was already under way when the engine began to watch it (a save from before this rule) earns none of the deeds that need its opening. Each condition below is how the engine reads the deed's sentence (all PROVISIONAL, item 1014).
+
+| Combo perk | The deed | The engine reads it as |
+| --- | --- | --- |
+| **Charge!** | Open a fight by charging the enemy line, and win it. | On your first turn of the fight, before you do anything but move, you run 3 or more tiles in one straight line and end next to an enemy you closed on (or you use the Charge technique); 2 or more enemies are on their feet when that turn begins (one lone enemy is no line); and the fight is won. A run on somebody else's turn is not the opening. Granted when the fight ends. |
+| **Field Surgeon** | Bring a squadmate back from below 10% HP. | An ally was put Downed or under 10% of max HP by an enemy or a hazard (not by the squad's own fire and not by their own heart; a wound carried in from an earlier fight counts), and your healing gets them back on their feet, or from under 10% to 10% or more. A companion's healing earns nothing. Granted at once. |
+| **Dance of Iron** | Dodge three attacks in one round. | Three enemy attacks at you miss in one round, while you are on your feet. One burst or volley is one attack, however many of its shots miss. Granted on the third. |
+| **Between Heartbeats** | Come through an ambush without being hit. | The fight opened with an enemy Hidden and nobody of your squad Hidden; you were in it from the start; an enemy attacked you at least once; no enemy attack hit you and nothing but your own heart hurt you; you end it on your feet; and the fight is won. Granted when the fight ends. |
+| **Siege Engine** | Break through a wall to win a fight. | You destroy a closed door, or a piece of full cover that blocks the way (a barricade, a pillar; not a wall made by magic), that stood there when the fight opened (not one put up during it); you then move through the tile where it stood; and the fight is won. Granted when the fight ends. |
+| **Twin Souls** | Survive a Mana Short. | You suffer a Mana Short in a fight and are alive when it ends, won or lost. (Pure Heart, which every eligible character has, refuses the first Short of each fight: the deed is the second.) Granted when the fight ends. |
+| **Bite the Bullet** | Fight through an entire combat below a quarter of your max HP. | From the start of your first turn to the end of a won fight of 2 rounds or more, your HP is never at a quarter of your max or above and you are never Downed (Downed when your first turn comes also fails); an enemy attacked you at least once; you end it on your feet. Granted when the fight ends. |
+| **Fire Sermon** | Convert an enemy mid-fight. | An enemy surrenders to your words in a fight: talked down (the offer of terms, or an attempt the Narrator answers with a surrender), or your offered mercy accepted. Granted at once. |
+| **The Voice** | Stare down an enemy officer until they back off. | The same, and the enemy who gives up is an Elite or a Boss (a Boss never surrenders today, so in practice an Elite). Granted at once. |
+
 ## Exploration, social play, rest, and the Narrator
 
 **Social checks** use the target's disposition as the TN.
@@ -5250,3 +5266,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1011. **Heart Overload:** the free Begin needs a Release at stage 2 or higher, once a turn; tier II starts it at stage 1; blood pays at 1 HP a point.
 1012. **Resonance (perk):** +10% a step, to +20% (tier II +30%); lost on a turn with no held or Released Outburst.
 1013. **The perk card's three shelves** follow the audit of 11 Nov 2026; which perk sits on which shelf is the audit's reading and can move.
+1014. **Deeds the engine sees:** the nine conditions in the table of that name (rules 1.14) are the engine's reading of each deed's sentence and are provisional: 3 tiles, the first turn and 2 enemies standing for Charge!, 10% for Field Surgeon, a Downed ally counting and who put them there, 3 misses in a round with a burst as 1, what opens as an ambush and 1 attack at you, which objects are a wall and going through the gap, the second Mana Short for Twin Souls, a quarter, 2 rounds, 1 attack at you and never Downed for Bite the Bullet, which surrenders are words.

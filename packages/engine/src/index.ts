@@ -21,6 +21,7 @@ export * from './world';
 export * from './hazards';
 export * from './sigilgrowth';
 export * from './containers';
+export * from './deeds';
 export * from './gear';
 export * from './loot';
 export * from './feelings';
