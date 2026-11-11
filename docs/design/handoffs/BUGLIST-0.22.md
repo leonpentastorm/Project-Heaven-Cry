@@ -76,7 +76,8 @@ Leon's words are quoted; the notes under each are a first reading, not a diagnos
 
 The report was taken in the Proving Ground at wave 6, attempt 2 (a retried wave), round 1, the Recruit's turn, full
 HP, 6 AP, on the old 16 × 12 map, Firefox 159 at 2813 × 1428. It is a snapshot of one moment, so it can't show an
-animation; these facts are usable:
+animation. The numbers below are from the report; the cause given after each is a lead that has not been
+reproduced yet, so check it before fixing:
 
 - **For 10 and 11.** The fight's effect list holds two events only (the turn card and "Recruit is Shaken"), and no
   enemy had acted in the rules. So when an enemy is seen acting at the start of a retried wave, the rules have not
