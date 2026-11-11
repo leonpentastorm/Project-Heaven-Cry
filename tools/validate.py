@@ -495,6 +495,42 @@ for k in (data.get("enemies", {}) or {}).get("companions", []) if isinstance(dat
     for f in ("hp", "defense", "attack_bonus", "armour", "movement"):
         if not isinstance(k.get(f), (int, float)):
             errors.append(f"enemies.companions:{k.get('id')}: {f} must be a number")
+# Rules 1.15: enemy levels. Every tier row is its level 1 block with a damage factor; `levels.table` has one row for
+# each level from min to max, in order, with the five columns the engine reads; the gap and the Narrator's shift are numbers.
+if isinstance(data.get("enemies"), dict):
+    _en = data["enemies"]; _lv = _en.get("levels")
+    for t in items("enemies"):
+        for f in ("hp", "defense", "attack_bonus", "armour", "damage"):
+            if not isinstance(t.get(f), (int, float)) or isinstance(t.get(f), bool):
+                errors.append(f"enemies:{t.get('id')}: {f} must be a number (the tier's level 1 value)")
+        if isinstance(t.get("damage"), (int, float)) and t["damage"] <= 0:
+            errors.append(f"enemies:{t.get('id')}: damage (the factor on its weapon's damage) must be above 0")
+    if not isinstance(_lv, dict):
+        errors.append("enemies: needs a levels block (rules 1.15)")
+    else:
+        lo, hi, rows = _lv.get("min"), _lv.get("max"), _lv.get("table") or []
+        if not (isinstance(lo, int) and isinstance(hi, int) and 1 <= lo <= hi):
+            errors.append("enemies.levels: min and max must be whole numbers, 1 <= min <= max")
+        elif [r.get("level") for r in rows if isinstance(r, dict)] != list(range(lo, hi + 1)):
+            errors.append(f"enemies.levels.table: needs one row for each level {lo} to {hi}, in order")
+        for r in rows:
+            if not isinstance(r, dict):
+                errors.append("enemies.levels.table: every row is an object"); continue
+            for f in ("hp_mult", "armour_mult", "damage_mult"):
+                if not isinstance(r.get(f), (int, float)) or isinstance(r.get(f), bool) or r[f] <= 0:
+                    errors.append(f"enemies.levels.table level {r.get('level')}: {f} must be a number above 0")
+            for f in ("defense_plus", "attack_plus"):
+                if not isinstance(r.get(f), int) or isinstance(r.get(f), bool):
+                    errors.append(f"enemies.levels.table level {r.get('level')}: {f} must be a whole number")
+        sh = _lv.get("narrator_shift") or {}
+        if not (isinstance(sh.get("min"), int) and isinstance(sh.get("max"), int) and sh["min"] <= 0 <= sh["max"]):
+            errors.append("enemies.levels.narrator_shift: min and max must be whole numbers around 0")
+        gp = _lv.get("gap") or {}
+        for f in ("one_hit_levels_below", "to_hit_per_level", "max_levels"):
+            if not isinstance(gp.get(f), int) or isinstance(gp.get(f), bool) or gp[f] < 0:
+                errors.append(f"enemies.levels.gap: {f} must be a whole number, 0 or more")
+        if _lv.get("provisional") is not True:
+            errors.append("enemies.levels: must be flagged provisional (spec section 14, items 1015 to 1024)")
 # Enemy Sigil casters (rules 1.4, ai-sigil.ts): a known tier and weapon, known words that make a spell, a Reach word.
 _smap = {w.get("id"): w for w in items("sigils")}
 _cids = set()

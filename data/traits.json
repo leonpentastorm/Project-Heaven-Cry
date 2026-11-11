@@ -142,7 +142,7 @@
           "leave_cost_mult": null
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [
         "symbol_of_order",
         "rogue_element"
@@ -246,14 +246,14 @@
       "cost": null,
       "flavour": "The Hellraiser storm units go in first and come back last, if they come back at all. You volunteered, and you'd volunteer again.",
       "upsides": [
-        "Charge: when you end your turn closer to the nearest enemy than you started it, you have 2 more AP on your next turn."
+        "Charge: when you end your turn closer to the nearest enemy than you started it, you have 2 more AP on your next turn. Once every 3 turns."
       ],
       "downsides": [
         "No Way Back: armour above Class I gives you nothing more than Class I, and you can never Retreat or Disengage."
       ],
       "notes": [],
       "narrator_hook": "the mission where the smart move is to fall back.",
-      "text": "The Hellraiser storm units go in first and come back last, if they come back at all. You volunteered, and you'd volunteer again.\n+ Charge: when you end your turn closer to the nearest enemy than you started it, you have 2 more AP on your next turn.\n− No Way Back: armour above Class I gives you nothing more than Class I, and you can never Retreat or Disengage.",
+      "text": "The Hellraiser storm units go in first and come back last, if they come back at all. You volunteered, and you'd volunteer again.\n+ Charge: when you end your turn closer to the nearest enemy than you started it, you have 2 more AP on your next turn. Once every 3 turns.\n− No Way Back: armour above Class I gives you nothing more than Class I, and you can never Retreat or Disengage.",
       "effects": [
         {
           "op": "stat_mod",
@@ -314,7 +314,7 @@
           "value": 1
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": [],
       "provisional": true
@@ -415,7 +415,7 @@
           "note": "tells anyone who asks about the weapon, at length"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": [],
       "provisional": true
@@ -516,7 +516,7 @@
           "note": "rain, smoke and grapples can knock the glasses off; enemies can target them"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": [],
       "provisional": true
@@ -576,7 +576,7 @@
           "note": "people who met you masked don't recognise you unmasked, and vice versa"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": []
     },
@@ -1312,14 +1312,14 @@
       "flavour": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.",
       "upsides": [
         "Lucky Foot: once per session, the first enemy attack that would hit you in a fight is rerolled; you may hold it back for a later fight. Outside a fight, ask the Narrator to reroll one roll made against you.",
-        "Vengeful: when an ally is Downed, you have 2 more AP on your next turn."
+        "Vengeful: when an ally is Downed, you have 2 more AP on your next turn. Once every 3 turns."
       ],
       "downsides": [
         "Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and neither Take the Hit nor a taunt can pull their attacks off you."
       ],
       "notes": [],
       "narrator_hook": "the trophy-hunter who wants your foot.",
-      "text": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.\n+ Lucky Foot: once per session, the first enemy attack that would hit you in a fight is rerolled; you may hold it back for a later fight. Outside a fight, ask the Narrator to reroll one roll made against you.\n+ Vengeful: when an ally is Downed, you have 2 more AP on your next turn.\n− Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and neither Take the Hit nor a taunt can pull their attacks off you.",
+      "text": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.\n+ Lucky Foot: once per session, the first enemy attack that would hit you in a fight is rerolled; you may hold it back for a later fight. Outside a fight, ask the Narrator to reroll one roll made against you.\n+ Vengeful: when an ally is Downed, you have 2 more AP on your next turn. Once every 3 turns.\n− Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and neither Take the Hit nor a taunt can pull their attacks off you.",
       "effects": [
         {
           "op": "reroll",
@@ -1770,7 +1770,7 @@
           "note": "some humans won't talk to a machine"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [
         "humanity_first",
         "the_old_blood",
@@ -1980,7 +1980,7 @@
           "context": "blessing_received"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": [],
       "provisional": true
@@ -2200,14 +2200,14 @@
       "cost": null,
       "flavour": "Breathe out. Squeeze. Don't look away.",
       "upsides": [
-        "Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +50% Critical Damage."
+        "Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +25% Critical Damage (a critical is never more than double damage)."
       ],
       "downsides": [
         "Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +50% damage to you."
       ],
       "notes": [],
       "narrator_hook": "the flanker you didn't see.",
-      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +50% Critical Damage.\n− Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +50% damage to you.",
+      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +25% Critical Damage (a critical is never more than double damage).\n− Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +50% damage to you.",
       "effects": [
         {
           "op": "ignore_cover",
@@ -2215,7 +2215,7 @@
         },
         {
           "op": "crit_damage_mod",
-          "value_pct": 50,
+          "value_pct": 25,
           "context": "first_shot_if_not_moved"
         },
         {
@@ -2274,7 +2274,7 @@
           "note": "may only draw Sigils practised during last rest"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": [],
       "provisional": true
@@ -2407,7 +2407,7 @@
           "note": "owes the Smetanita Conjunction; collectors arrive when the Narrator decides"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": [],
       "provisional": true
@@ -3217,7 +3217,7 @@
           "note": "once per session, one of this character's voice lines may be misleading even when its hook was true"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": []
     },
@@ -3477,7 +3477,7 @@
           "when": "companion_destroyed_until_rebuilt"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "excludes": [],
       "requires": [],
       "provisional": true

@@ -42,7 +42,8 @@ describe('Soul caster archetypes (data/enemies.json soul_casters)', () => {
   });
   it('a foe naming one gets an Emanator (no Evoker), the designs, its Soul multiplier, MP, Strain limit and free Pumps', () => {
     const { e } = fight(['2,5'], [{ at: '15,5', caster: 'heartfire_elite' }]);
-    expect(e.mg).toMatchObject({ emanator: true, evoker: false, soulMult: 1.4, mp: 140, mpMax: 140, strainLimit: 5, freePumps: 1, freePumpsMax: 1, will: e.attack });
+    expect(e.mg!.soulMult).toBeCloseTo(1.4 * e.lvlDmg!, 6); expect(e.lvlDmg).toBe(1.05); // rules 1.15: its spells take the tier and level damage factor (an Elite at level 1: ×1.05)
+    expect(e.mg).toMatchObject({ emanator: true, evoker: false, mp: 140, mpMax: 140, strainLimit: 5, freePumps: 1, freePumpsMax: 1, will: e.attack });
     expect(e.mg!.designs.map((d) => d.id)).toEqual(['heartfire_burst', 'cinder_wave', 'ember_mend']);
     expect((e as any).caster).toBe('heartfire_elite');
   });

@@ -396,7 +396,7 @@ function play(seed: string) {
   act({ type: 'narrator/turn', turn: { narration: 'Guns come up.', combat: { name: 'Rear pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Keel', tier: 'soldier', weapon: 'drifter_revolver' }] } } });
   expect(g.phase).toBe('combat');
   // Players: shoot the nearest hostile they can, else close in, else end the turn.
-  for (let i = 0; i < 400 && g.phase === 'combat'; i++) {
+  for (let i = 0; i < 1500 && g.phase === 'combat'; i++) { // rules 1.15: enemies of the squad's level take more shots than the old fixed tiers
     const cb = g.combat!, u = active(cb)!, owner = g.characters[u.charId!].owner;
     const foe = cb.units.find((t) => t.side === 'foe' && !t.dead && !t.downed);
     try { act({ type: 'combat/attack', unitId: u.id, targetId: foe!.id, mode: 'shot' }, owner); continue; } catch { /* fall through */ }
@@ -415,10 +415,10 @@ describe('a full session', () => {
     expect(g.phase).toBe('story');
     expect(g.combat?.over).toBeTruthy();
     expect(g.story.work?.kind).toBe('combat_end');
-  });
+  }, 20000); // a whole fight against enemies of the squad's level (rules 1.15): about 3 s alone, more when the suite is busy
   it('is deterministic: same seed, same log', () => {
     expect(JSON.stringify(play('seed-2').g)).toBe(JSON.stringify(play('seed-2').g));
-  });
+  }, 20000);
   it('keeps voices private', () => {
     const { g } = play('seed-3');
     const voices = g.story.entries.filter((e) => e.kind === 'voice');

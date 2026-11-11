@@ -299,21 +299,28 @@ describe('Fire Sermon and The Voice: an enemy gives up to your words', () => {
     f.act({ type: 'narrator/fight-ruling', id: (f.cb as any).ruling.id, lines: ['The rifle lowers.'], effect: { surrender: { target: f.foe.id } } } as any);
     expect(f.g.combat ? f.foe.surrendered : true).toBe(true);
   }
-  it('Fire Sermon: a beaten enemy talked down: granted at once', () => {
-    const f = fight([FS], [{}, {}]); talkDown(f); granted(f, 'fire_sermon'); none(f, 'the_voice');
+  /** Fire Sermon's deed needs a Faithful character (rules 1.14, item 1110): give the first PC a patron. */
+  const faithful = (f: F) => { (f.g.characters[f.pc.charId!] as any).patron = 'mother_ember'; return f; };
+  it('Fire Sermon: a beaten enemy talked down by a Faithful character: granted at once', () => {
+    const f = faithful(fight([FS], [{}, {}])); talkDown(f); granted(f, 'fire_sermon'); none(f, 'the_voice');
+  });
+  it('Fire Sermon: an Atheist talks the enemy down just as well, but that is no conversion (item 1110); The Voice does not ask for faith', () => {
+    let f = fight([FS], [{}, {}]); talkDown(f); none(f, 'fire_sermon');
+    f = fight([FS], [{}, {}]); (f.g.characters[f.pc.charId!] as any).belief = { kind: 'atheist' }; (f.g.characters[f.pc.charId!] as any).patron = 'mother_ember'; talkDown(f); none(f, 'fire_sermon'); // left the faith: the old patron field doesn't count
+    f = fight([SK('faith', 'eloquence', 'authority', 'composure')], [{ tier: 'elite' }, {}]); talkDown(f); none(f, 'fire_sermon'); granted(f, 'the_voice');
   });
   it('The Voice: the one who gives up is an Elite', () => {
     const f = fight([V], [{ tier: 'elite' }, {}]); talkDown(f); granted(f, 'the_voice'); none(f, 'fire_sermon');
   });
   it('both at once for a character who qualifies for both', () => {
-    const f = fight([SK('faith', 'eloquence', 'authority', 'composure')], [{ tier: 'elite' }, {}]); talkDown(f); granted(f, 'fire_sermon'); granted(f, 'the_voice');
+    const f = faithful(fight([SK('faith', 'eloquence', 'authority', 'composure')], [{ tier: 'elite' }, {}])); talkDown(f); granted(f, 'fire_sermon'); granted(f, 'the_voice');
   });
   it('near misses: The Voice and a rank-and-file enemy; an enemy beaten down (subdued), not talked down; the Narrator says no; not eligible', () => {
     let f = fight([V], [{}, {}]); talkDown(f); none(f, 'the_voice');
-    f = fight([FS], [{}, {}]); withGame(f.g, () => emit(f.cb, 'on_surrender', { t: f.foe, by: f.pc, why: 'subdued', cb: f.cb })); none(f, 'fire_sermon');
-    f = fight([FS], [{}, {}]); f.act({ type: 'combat/attempt', unitId: f.pc.id, text: 'Yield.' } as any);
+    f = faithful(fight([FS], [{}, {}])); withGame(f.g, () => emit(f.cb, 'on_surrender', { t: f.foe, by: f.pc, why: 'subdued', cb: f.cb })); none(f, 'fire_sermon');
+    f = faithful(fight([FS], [{}, {}])); f.act({ type: 'combat/attempt', unitId: f.pc.id, text: 'Yield.' } as any);
     f.act({ type: 'narrator/fight-ruling', id: (f.cb as any).ruling.id, lines: ['It spits.'] } as any); none(f, 'fire_sermon');
-    f = fight([{}], [{}, {}]); talkDown(f); none(f, 'fire_sermon');
+    f = faithful(fight([{}], [{}, {}])); talkDown(f); none(f, 'fire_sermon');
   });
 });
 
@@ -322,6 +329,7 @@ describe('who and where', () => {
   it('the same seed and the same actions give the same game, grant included', () => {
     const run = () => {
       const f = fight([SK('faith', 'eloquence', 'authority', 'composure', 'intimidation', 'athletics')], [{ tier: 'elite' }, {}]);
+      (f.g.characters[f.pc.charId!] as any).patron = 'mother_ember'; // Fire Sermon's deed needs a Faithful character
       f.pc.ap = 9; f.act({ type: 'combat/move', unitId: f.pc.id, to: '7,5' } as any);
       f.foe.hp = Math.floor(f.foe.maxHp / 4); f.pc.ap = 6;
       f.act({ type: 'combat/attempt', unitId: f.pc.id, text: 'Lay it down.' } as any);

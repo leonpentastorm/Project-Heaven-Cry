@@ -10,7 +10,7 @@ import { previewTechnique, previewAttack } from '../src';
 const raw = process.env.PHC_TRY;
 (raw ? it : it.skip)('try', () => {
   const sc = JSON.parse(existsSync(raw) ? readFileSync(raw, 'utf8') : raw);
-  const f = fightWith(sc.pcs || [{}], sc.foes || [{ tier: 'soldier', at: 'F6' }], { seed: sc.seed, map: sc.map });
+  const f = fightWith(sc.pcs || [{}], sc.foes || [{ tier: 'soldier', at: 'F6' }], { seed: sc.seed, map: sc.map, ...(sc.level != null ? { level: sc.level } : {}) });
   const out: string[] = [], say = (s: string) => out.push(s);
   const unitOf = (ref: any) => (typeof ref !== 'string' ? ref : ref === '$pc' ? f.pcs[0] : ref === '$foe' ? f.foes[0] : /^\$pc(\d)$/.test(ref) ? f.pcs[+ref.slice(3)] : /^\$foe(\d)$/.test(ref) ? f.foes[+ref.slice(4)] : null);
   const fill = (v: any): any => (typeof v === 'string' && v.startsWith('$') ? (v.endsWith('.pos') ? unitOf(v.slice(0, -4))?.pos : unitOf(v)?.id) ?? v : Array.isArray(v) ? v.map(fill) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, fill(x)])) : v);

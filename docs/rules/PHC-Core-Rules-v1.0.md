@@ -246,7 +246,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Guts | Strength | beta | +1 on Body saves (poison, knock-downs, being pushed or pinned). |
 | Intimidation | Strength | gamma | Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say. |
 | Athletics | Agility | beta | +1 Defense (you are harder to hit), from 2 points. |
-| Dexterity | Agility | alpha | +1 to hit with guns, light blades and thrown weapons. +5% critical damage. You throw half a tile further. Your shots' techniques are harder to save against. |
+| Dexterity | Agility | alpha | +1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against. |
 | Reaction Speed | Agility | gamma | +1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
 | Ingenuity | Perception | alpha | +5% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against. |
 | Improvisation | Expression | beta | −10% ambush damage taken. Field Repair restores 5% more from 3 points up. |
@@ -504,7 +504,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **Damage.** On a hit: the weapon's damage × the matching multiplier (Physical, Elemental, Sigil, Soul) × any other multipliers, then subtract armour. Minimum 1.
 
-**Critical hits.** A natural 20 is a critical; an Aimed shot or an attack from Hidden crits on 19–20. A critical does damage × the attacker's Critical multiplier, reduced by the target's Critical damage taken. A critical also forces an injury roll.
+**Critical hits.** A natural 20 is a critical; an Aimed shot or an attack from Hidden crits on 19–20. A critical does damage × the attacker's Critical multiplier, reduced by the target's Critical damage taken. (Rules 1.15: the multiplier is ×1.5, to ×2.0 at most; see "Rules revision 1.15".) A critical also forces an injury roll.
 
 **Natural 1 on an attack.** Guns jam; melee and spell users fumble and lose 1 AP from their next turn.
 
@@ -552,7 +552,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 
 **Every death releases bots.** When any person or beast dies, the ambient mana meter rises (see Mana).
 
-**Enemy stat blocks** (enemies.json, provisional). Hostiles that aren't full characters use one of four tiers. The Narrator picks the tier, a name and a weapon from weapons.json when it starts a fight; the engine runs them.
+**Enemy stat blocks** (enemies.json, provisional). **Superseded by rules 1.15: every enemy has a level, there is a fifth tier (Vermin), and the numbers in this table are no longer used; see "Rules revision 1.15".** Hostiles that aren't full characters use one of four tiers. The Narrator picks the tier, a name and a weapon from weapons.json when it starts a fight; the engine runs them.
 
 | Tier | HP | Defense | Attack bonus | Armour | Movement (tiles per AP) | Endurance | Spare magazines |
 |---|---|---|---|---|---|---|---|
@@ -2798,8 +2798,211 @@ A combo perk is earned by a deed. Nine of the deeds happen in a fight, where the
 | **Siege Engine** | Break through a wall to win a fight. | You destroy a closed door, or a piece of full cover that blocks the way (a barricade, a pillar; not a wall made by magic), that stood there when the fight opened (not one put up during it); you then move through the tile where it stood; and the fight is won. Granted when the fight ends. |
 | **Twin Souls** | Survive a Mana Short. | You suffer a Mana Short in a fight and are alive when it ends, won or lost. (Pure Heart, which every eligible character has, refuses the first Short of each fight: the deed is the second.) Granted when the fight ends. |
 | **Bite the Bullet** | Fight through an entire combat below a quarter of your max HP. | From the start of your first turn to the end of a won fight of 2 rounds or more, your HP is never at a quarter of your max or above and you are never Downed (Downed when your first turn comes also fails); an enemy attacked you at least once; you end it on your feet. Granted when the fight ends. |
-| **Fire Sermon** | Convert an enemy mid-fight. | An enemy surrenders to your words in a fight: talked down (the offer of terms, or an attempt the Narrator answers with a surrender), or your offered mercy accepted. Granted at once. |
-| **The Voice** | Stare down an enemy officer until they back off. | The same, and the enemy who gives up is an Elite or a Boss (a Boss never surrenders today, so in practice an Elite). Granted at once. |
+| **Fire Sermon** | Convert an enemy mid-fight. | You are Faithful (you serve a patron), and an enemy surrenders to your words in a fight: talked down (the offer of terms, or an attempt the Narrator answers with a surrender), or your offered mercy accepted. An Atheist's words can make an enemy give up, but that is no conversion (item 1110). Granted at once. |
+| **The Voice** | Stare down an enemy officer until they back off. | An enemy surrenders to your words in a fight in the same ways (Faithful or not), and the enemy who gives up is an Elite or a Boss (a Boss never surrenders today, so in practice an Elite). Granted at once. |
+
+### The engine takes everything it can, first step
+
+Built on 11 Nov 2026 from section 11 of the balance pass (`docs/design/proposals/2026-11-balance-pass.md`), the split of all 80 hybrid and Narrator-run perks and traits (`docs/design/handoffs/adjudication-split.md`) and the recommendations to questions C1, C4, C5, C6, C8, C9 and C12 and Leon's answer 11 (`docs/design/handoffs/balance-questions.md`). Every number and reading here is PROVISIONAL (section 14, items 1101 to 1116).
+
+**1. Nineteen items are relabelled "engine".** Nothing they do needs a ruling: every number on the card runs by itself. What is left on some of them is colour (a standing fact about how people treat you, a story hook, a "the Narrator may", a roleplay line), and colour does not make an item Narrator-run (item 1101).
+
+- **Perks (8):** Into the Dark, Blueprint, Talks Broke Down, Just the Repairman, Verse of War, War Footing, Foreseen, Make Way.
+- **Traits (11):** Mind Without Fog, Sigil Savant, Grenadier's Arm, Blade Recluse, Bottle Butts for Eyes, The Mask, Factory Made, Upper-Touched, Gambler, Crowded Head, Drone Handler.
+
+The labels after it, of 180 perks and traits:
+
+| | engine | hybrid | narrator | engine share |
+| --- | --- | --- | --- | --- |
+| Before | 100 | 64 | 16 | 56% |
+| After | 119 | 46 | 15 | 66% |
+
+Two of the nineteen changed a sentence to get there. **Talks Broke Down** no longer says the Narrator decides whether the talk caused the fight: a fight breaks out of a talk when it starts in the same story round as the squad's last dialogue check or the round after (the timing the engine already used). The Narrator's `fromTalk` stays as a way to overrule it. **Verse of War** loses its last sentence (below). Into the Dark and Just the Repairman no longer send the Narrator a standing line about something the engine now handles.
+
+**2. Six small fixes.**
+
+- **The Name They Whisper.** Every enemy knows your name unless it is a **stranger**. A stranger is an enemy that carries the label `stranger`, or that the Narrator has listed for the holder (the `strangers` list in the holder's state, by name). The perk no longer reads `unaware`: an enemy caught unaware is still Afraid of your name, and a stranger no longer loses its first turn (item 1106).
+- **Verse of War.** The sentence "After the fight, the Narrator checks that your lines really were verse" is gone, with the audit note behind it. You still have to say a line before the switch can be turned on (item 1111).
+- **True Name.** "Studied" means **Analyzed**: the being carries the mark an Analyze leaves, yours or a squadmate's (an enemy can be Analyzed once). In a fight, and for a being that stands on the area map, the engine refuses the name until then. For a being that exists only in the story the Narrator still confirms it. "It can't lie to you" stays the Narrator's to play, so the perk stays hybrid (item 1107).
+- **Crowd Pleaser.** A crowd is **3 or more listeners within 8 tiles**, in or out of a fight. Outside a fight the engine counts the people on the area map within 8 tiles of you (hostile or not, not hidden ones) and gives the +2 by itself; the Narrator can still mark a check `crowd` where there is no map. What the crowd does to the person you name (Tier II) stays the Narrator's (item 1108).
+- **Old Tongue II.** In a fight the being **holds its attacks** on its next turn, as the card says: it makes no attack, casts nothing and uses no technique, but it may still move. Before this it lost the whole turn (item 1109).
+- **Fire Sermon's deed** also needs the character to be **Faithful** (the table in "Deeds the engine sees" is updated; The Voice's deed does not; item 1110).
+
+**3. The AP perks' cooldown** (Leon: "capping those decreases the value of gamma classes, just add a cooldown by turn"; 3 turns).
+
+A perk or trait that gives AP on a condition gives it **at most once every 3 of its holder's turns**: after its AP lands on one of your turns, it gives none on your next 2 turns. Where the same item also takes AP from its holder on a condition, that penalty has the same limit, counted by itself (so the bonus never cancels a penalty that is due, and a penalty never eats the bonus). The cooldown is one number (`rules.ap_cooldown.turns` in `data/perks.json`, item 1102).
+
+| Item | What is now once every 3 turns | It used to be |
+| --- | --- | --- |
+| **Grim Reaper** (I, II) | +2 AP for a kill or a knock-out on your own turn | once a turn |
+| **Got You in My Sight** (I, II) | +2 AP when an enemy you see hides or leaves your sight; Tier I's −2 AP when an Ambush hits you | once a round; every Ambush |
+| **Overruled!** (I, II) | +2 AP at the start of a turn while an enemy carries your Brain Debuff; the −2 AP (Tier II −1) while you carry one | every turn |
+| **Talks Broke Down** (I, II) | +2 AP after a won talk: on your first turn, then on turns 4, 7 and so on; Tier I's −2 AP after a lost talk on the same turns | every turn of the fight |
+| **Sweet Talker** (I, II) | +2 AP (Tier II +3) for a buff or debuff on someone you charmed; Tier I's −2 AP when they debuff you | once a turn; every betrayal |
+| **War Footing** | an enemy that ends a move next to you loses 2 AP: one enemy, then nothing for your next 2 turns | once for each enemy, every turn |
+| **Forlorn Hope** (trait) | +2 AP on your next turn for ending a turn closer to the enemy | every turn |
+| **Rabbit's Foot** (trait), Vengeful | +2 AP on your next turn when an ally is Downed | every time |
+
+How it is counted and what it leaves alone:
+
+- A turn here is a turn of the holder in a fight (one a round). AP that is banked for your next turn counts on the turn it lands. Each fight starts with every cooldown ready.
+- While a cooldown runs, the fight's log says at the start of each of the holder's turns when the item is ready again, so the perk card's live line shows it.
+- The limit of +3 AP gained a turn and the ceiling of 9 are unchanged and still apply on top.
+- Grim Reaper's 1 AP less on the first turn of a fight, and Talks Broke Down II's hesitating enemy, happen once a fight and are not part of the cooldown.
+- On the area map these items keep the limits they had (once a round); the cooldown is a rule of fights.
+- **Not covered** (item 1105): Outclassed (its AP comes once a fight already); the standing +1 AP of Southern Fist and Sworn Sibling; traits whose AP effect is only a penalty (Ghost Soldier, Soft Hands, Born Officer's squad); discounts, free moves and free attacks; and everything that is not a perk or a trait: the Calls (Rally, Brief, Order), the Sigil word QUICKEN, prayers and class moves.
+
+**4. After the review** (11 Nov 2026, a second reader tried to break the three parts above; items 1112 to 1116).
+
+*The relabels.* All nineteen handlers were read again for anything that waits for a Narrator: a standing line, a note, a pending ruling, a card sentence that says the Narrator decides. None of the nineteen has a rule left in it; what is left is the colour item 1101 describes, so no label went back. One line to the Narrator was wrong and is corrected: **Just the Repairman** told the Narrator the cover holds "until they act unlike a repairman", which is a judgement the card does not give anyone. It now says what the card says: the guard does not look again that scene unless the character attacks (item 1116).
+
+*The six fixes.* Three cards did not say what the game does, or left a judgement unnamed:
+
+- **True Name.** An Analyze made on the area map was lost when the Narrator started the fight (the fight seats the people on the map without their Analyze mark), so the button refused a being the squad had studied a moment earlier. The holder now remembers who the squad Analyzed on the area map (by the person's id and name, the last 24 people), and such a being counts as Analyzed in the fight. The card reads "It must have been Analyzed first", which covers all three kinds of being, and both buttons say it too (item 1112).
+- **Grim Reaper II.** The card said every enemy who sees "a kill of yours" is tested for Fear. The game tests them only for a kill or a knock-out on the holder's own turn, and does so every time, whether or not the 2 AP came. The card now says that (item 1113).
+- **The Name They Whisper** stays hybrid, and a hybrid card names the judgement that is left: "Only a stranger is spared: the Narrator says who has never heard of you." (item 1114).
+
+*The cooldown.* It was attacked through real turns (the turn ended, the enemies acting, 5 to 8 rounds) and held every time:
+
+| Attempt | Result |
+| --- | --- |
+| Talks Broke Down over 8 real rounds | +2 AP on turns 1, 4 and 7 only; a lost talk (Tier I) −2 AP on the same turns only |
+| A save and a reload in the middle of a fight | the cooldown is kept (it is stored on the fighter) |
+| A fight ends and a new one starts | every cooldown is ready again, as written above; inside one fight it never comes back early |
+| Two holders in one squad | each has its own cooldown; neither gives the other an extra turn |
+| The trigger on an enemy's turn (Got You in My Sight, Vengeful) | two triggers in one enemy turn pay once; a trigger after the holder's turn is over pays nothing and does not spend the cooldown (Got You in My Sight) or lands next turn and starts the 3 turns there (Vengeful) |
+| The Proving Ground | giving a perk or a trait in a fight keeps a running cooldown; the Refill tool starts the fighter fresh, cooldowns included |
+| A fight saved before the cooldown existed | the item is ready on the first turn after loading, then cools down |
+| The penalty side | Got You in My Sight, Overruled!, Sweet Talker and Talks Broke Down: each penalty at most once every 3 turns, and it never blocks or is blocked by the bonus |
+| The Calls and QUICKEN | untouched: nothing in their code reads the cooldown |
+
+What the attack found that is a reading, not a fault (item 1115): the count is kept in rounds of the fight, so a turn the holder loses (Downed, Stunned) still counts as one of the 3; AP that is lost to the limit of +3 a turn or the ceiling of 9 still starts the cooldown; and two holders of **War Footing** standing together each take 2 AP from the same enemy (4 in all), as they did before.
+
+## Rules revision 1.15 (balance pass, step 1): enemies with levels, Vermin, criticals, hit chance
+
+Built on 11 Nov 2026 from Leon's rulings in `docs/design/proposals/2026-11-balance-pass.md` (section 5: enemies scale with level, two attacks at least, no hard damage cap; section 8, answers 1 to 5, 7 and 8) and the recommendations of `docs/design/handoffs/balance-questions.md` (A1, B7). **The first numbers were set by arithmetic from the measured game (`docs/design/handoffs/balance-sim-baseline.md`); the table was then fitted against the targets with the fight simulator ("The fit" below; the report is `docs/design/handoffs/balance-sim-step1.md`). All are provisional (section 14, items 1015 to 1038).** Where this section and an older one disagree (Enemy stat blocks, Critical hits, the Critical damage line of Derived stats and of the Dexterity skill), this section wins.
+
+### Every enemy has a level
+
+1. **An enemy is a tier and a level.** The tier says what it is (Vermin, Minion, Soldier, Elite, Boss). The level, 1 to 20, says how strong. The Narrator names the tier; the game sets every number.
+2. **A fight has a level.** By default it is the average level of the characters in the fight, rounded down. Every enemy in the fight is that level unless it is given its own.
+3. **Who may change it.** The AI Narrator may shift a fight by −3 to +2 levels (an easy fight, a deadly one); it never names a number of its own, and no Narrator has a way to pin an enemy's HP, armour, Defense or damage. A campaign file, or a human Narrator's fight, may give a fight or one enemy a level outright: in a campaign file, `level` on an encounter is that fight's level and `level` on an encounter's enemy or on a zone's person is its own. A level given outright is the fight's level as it stands (no shift is added to it); an enemy's own level wins over the fight's; the fight's own list wins over the campaign file. Any level is held between 1 and 20 and rounded down. A level that is not a number (a word, an empty field) is no level: the squad's is used.
+4. **The Proving Ground.** Waves are the squad's level. The spawn tool can set a level for the unit it spawns; left empty, it is the squad's level as it is at that moment (a fighter levelled up in the middle of a fight counts at once; the enemies already in the fight keep their numbers).
+5. **Enemy casters** (Sigil and Soul) take their tier's numbers at the fight's level, and their spells' damage grows by the same damage factor as a weapon's. What a Sigil caster's spells heal and shield grows by the same factor, because they read the same multiplier (section 14, item 1034).
+6. **Companions** (the drone, the beast) are the level of their owner: their own stat block is the level 1 block, and the level table below raises it. The twin keeps its own rule (half its owner's HP, its owner's Defense, its own damage with no factor) and stands at its owner's level for the level gap, however it was called.
+7. **A fight that was already running** when this rule arrived keeps the numbers its units have. Nothing is worked out again for a saved fight.
+8. **XP for a fight is unchanged** in this step (by difficulty: 25 / 50 / 100 / 200).
+
+### The table
+
+An enemy's numbers are its tier's row at level 1, raised by its level's row (`data/enemies.json`: `items` and `levels.table`).
+
+**Tiers at level 1**
+
+| Tier | HP | Armour | Defense | Attack bonus | Damage factor | Movement | Endurance | Spare magazines |
+|---|---|---|---|---|---|---|---|---|
+| Vermin | 15 | 0 | 10 | +0 | ×0.5 | 2 | 1 | 0 |
+| Minion | 70 | 0 | 10 | +1 | ×1.0 | 1.5 | 1 | 1 |
+| Soldier | 140 | 5 | 11 | +3 | ×0.78 | 1.5 | 3 | 2 |
+| Elite | 240 | 10 | 12 | +5 | ×1.05 | 2 | 5 | 3 |
+| Boss | 960 | 10 | 13 | +6 | ×1.2 | 2 | 7 | 4 |
+
+**What a level adds**
+
+| Level | HP | Armour | Defense | Attack bonus | Damage |
+|---|---|---|---|---|---|
+| 1 | ×1.00 | ×1.00 | +0 | +0 | ×1.00 |
+| 2 | ×1.07 | ×1.04 | +0 | +0 | ×1.02 |
+| 3 | ×1.16 | ×1.09 | +1 | +0 | ×1.05 |
+| 4 | ×1.23 | ×1.16 | +1 | +0 | ×1.07 |
+| 5 | ×1.30 | ×1.20 | +2 | +0 | ×1.10 |
+| 6 | ×1.38 | ×1.27 | +2 | +1 | ×1.13 |
+| 7 | ×1.43 | ×1.29 | +3 | +1 | ×1.17 |
+| 8 | ×1.49 | ×1.36 | +3 | +1 | ×1.20 |
+| 9 | ×1.54 | ×1.40 | +4 | +1 | ×1.24 |
+| 10 | ×1.61 | ×1.47 | +4 | +2 | ×1.28 |
+| 11 | ×1.67 | ×1.49 | +5 | +2 | ×1.33 |
+| 12 | ×1.74 | ×1.56 | +5 | +2 | ×1.38 |
+| 13 | ×1.78 | ×1.60 | +6 | +3 | ×1.43 |
+| 14 | ×1.78 | ×1.60 | +6 | +3 | ×1.48 |
+| 15 | ×1.79 | ×1.60 | +6 | +4 | ×1.53 |
+| 16 | ×1.79 | ×1.60 | +6 | +4 | ×1.58 |
+| 17 | ×1.80 | ×1.60 | +6 | +5 | ×1.64 |
+| 18 | ×1.80 | ×1.60 | +6 | +5 | ×1.70 |
+| 19 | ×1.81 | ×1.60 | +6 | +6 | ×1.76 |
+| 20 | ×1.81 | ×1.60 | +6 | +6 | ×1.82 |
+
+HP and armour are rounded to the nearest whole number. **Damage:** an enemy deals its weapon's damage × its tier's damage factor × its level's damage factor (it used to deal the weapon's damage with no multiplier). Everything else on the tier (Movement, AP, Endurance, spare magazines, techniques, Calls) does not change with level.
+
+### The working
+
+The yardstick is the plain rifleman of the baseline: a service rifle (30 damage) in the hands of a character with a normal share of points, measured on hits that land.
+
+| Level | Yardstick: damage a hit | Attack bonus | HP | Defense | Soldier: HP | Armour | Hits to kill | Defense | Yardstick hits it | Soldier's hit, before armour | 2 soldiers drop the yardstick in (measured) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 45 | +3 | 145 | 11 | 140 | 5 | 3.50 | 11 | 65% | 23.4 | 3.3 rounds |
+| 3 | 49 | +4 | 163 | 11 | 162 | 5 | 3.68 | 12 | 65% | 24.6 | 3.1 rounds |
+| 6 | 57 | +5 | 190 | 12 | 193 | 6 | 3.78 | 13 | 65% | 26.4 | 3.2 rounds |
+| 9 | 63 | +7 | 233 | 12 | 216 | 7 | 3.86 | 15 | 65% | 29.0 | 3.0 rounds |
+| 12 | 70 | +8 | 288 | 13 | 244 | 8 | 3.94 | 16 | 65% | 32.3 | 3.1 rounds |
+| 20 | 72 | +9 | 445 | 17 | 253 | 8 | 3.95 | 17 | 65% | 42.6 | 3.0 rounds |
+
+How each column was set:
+
+1. **Armour** grows as the yardstick's damage a hit grows: 45 at level 1, 72 from level 13, so ×1.60 at the top. Armour then takes the same share of a hit at every level.
+2. **HP** grows a little faster than that: ×1.16 at level 3 where the yardstick's damage is ×1.09, ×1.74 at level 12 where it is ×1.56, ×1.81 at level 20 where it is ×1.60. The first table gave HP the yardstick's growth exactly (3.5 hits for a Soldier at every level), and the simulator showed fights getting shorter level by level, because a squad grows faster than the plain rifleman does. The fit uses the room the target leaves: a Soldier takes 3.5 of the yardstick's hits at level 1 and 3.68, 3.78, 3.86, 3.94 and 3.95 at levels 3, 6, 9, 12 and 20 (target 3 to 4); an Elite 6.9 at level 1 and 7.3 to 7.8 after (target 6 to 8). HP cannot go further without a fifth hit on a Soldier.
+3. **Hits to kill at equal level** (HP ÷ (yardstick damage − armour)): Vermin 15 HP, one hit from almost any weapon. Minion 70 ÷ 45 = 1.6, so 2 hits; a critical (45 × 1.64 = 73) can do it in one. Soldier 140 ÷ 40 = 3.5. Elite 240 ÷ 35 = 6.9. Boss 960 ÷ 35 = 27 hits.
+4. **The boss** is set from whole boss fights (1 boss and 2 soldiers against the squad of four), target 8 to 10 rounds. With 900 HP and damage ×1.4 the fight was 9.6 to 9.8 rounds at level 1 with 2.2 to 2.5 characters Downed a fight and 17 to 27% of fights lost: long enough, too deadly. Damage ×1.2 brought that to 1.3 to 1.5 Downed and 3% lost but shortened the fight (fewer characters down means more shooting), so HP went to 960. Measured: 9.0 and 9.6 rounds at level 1, 7.7 and 8.6 rounds at level 3, 7.2 and 8.8 rounds at level 6, 7.1 and 8.9 rounds at level 9, 7.9 and 9.9 rounds at level 12, 6.5 and 9.2 rounds at level 20 (open ground and ground with cover).
+5. **Defense** grows by what the yardstick's attack bonus grows: +1 every second level, to +6 at level 13 (+3 at level 1, +9 from level 13). The yardstick needs an 8 or more on the die against a Soldier at every level: 65% on open ground at 4 tiles. Minion and Vermin 70%, Elite 60%, Boss 55%.
+6. **Attack bonus** grows by what the yardstick's own Defense grows (11 at level 1, 17 at level 20), so a Soldier hits the yardstick 65% of the time for the whole career (an Elite 75%, a Boss with its machine gun 70%, a Minion 55%).
+7. **Damage.** The rule: a character at full HP in its normal armour lasts 3 rounds under fire from half the enemies of a standard fight for four (2 soldiers, or 1 elite and 1 soldier). The first table worked this out from 2.45 landed hits a soldier's turn and set the Soldier's factor at ×0.85 and the Elite's at ×1.15. Measured against soldiers who never go down, the yardstick then lasted 2.4 to 2.7 rounds and was Downed by the end of round 3 in about half the fights. The fit lowers the two factors by 8%: Soldier ×0.78 (a hit of 23.4 before armour at level 1, 8 after the yardstick's Class 3 armour), Elite ×1.05. Measured: the yardstick lasts 3.0 to 3.3 rounds under 2 soldiers and 3.2 to 3.6 under 1 elite and 1 soldier, and is Downed by the end of round 3 in about one fight in four. The level column (to ×1.82) is unchanged: the measure is flat across the six levels. A Minion keeps its weapon's damage; Vermin deal half.
+8. **A tank lasts noticeably longer:** under the same 2 soldiers the reference tank lasts 6.1 rounds at level 1 (Class 3 armour) and 8.1 to 9.9 from level 3 (Class 4; the measure stops at 10 rounds). That is 2 to 3 times the rifleman, and more than "noticeably": how unkillable a tank may be is the defence step's question, not this table's.
+
+### The fit
+
+Whole fights played by the simulator: the baseline's squad of four (optimised gun, tank, Sigil caster, Calls leader), enemies of the squad's level unless the row says otherwise, 60 fights a cell on open ground and as many on ground with cover (`packages/engine/test/balance/fit.ts`). The full before-and-after, the tuning log and what is still off are in `docs/design/handoffs/balance-sim-step1.md`.
+
+| Measure | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 | Target |
+|---|---|---|---|---|---|---|---|
+| Standard fight (3 soldiers, 1 elite): rounds to win, open · cover | 4.8 · 5.7 | 4.2 · 5.0 | 4.3 · 5.5 | 4.3 · 5.3 | 5.1 · 5.4 | 4.4 · 4.8 | 4 to 6 |
+| Elite fight (2 elites, 2 soldiers): rounds to win, open · cover | 5.5 · 6.3 | 4.8 · 6.0 | 5.1 · 6.2 | 5.0 · 6.2 | 5.2 · 6.7 | 4.6 · 5.6 | 6 to 8 |
+| Boss fight (1 boss, 2 soldiers): rounds to win, open · cover | 9.0 · 9.6 | 7.7 · 8.6 | 7.2 · 8.8 | 7.1 · 8.9 | 7.9 · 9.9 | 6.5 · 9.2 | 8 to 10 |
+| Standard fight: won · fights with someone Downed (open and cover together) | 99% · 28% | 100% · 8% | 100% · 17% | 100% · 8% | 100% · 28% | 100% · 8% | 90% · 33% |
+| The yardstick under fire: rounds it lasts, 2 soldiers · 1 elite and 1 soldier | 3.3 · 3.2 | 3.1 · 3.2 | 3.2 · 3.4 | 3.0 · 3.4 | 3.1 · 3.5 | 3.0 · 3.6 | 3 |
+| The tank under the same fire | 6.1 · 5.8 | 9.8 · 8.6 | 9.9 · 9.5 | 9.8 · 9.5 | 9.1 · 9.3 | 8.1 · 9.2 | noticeably longer |
+| Standard fight, enemies 3 levels up: won, open · cover | 67% · 30% | 58% · 47% | 68% · 50% | 78% · 62% | 75% · 57% | (20 is the top) | lost more often than won |
+| Standard fight, enemies 5 levels down: most hits any enemy took | – | – | 1 | 1 | 1 | 1 | 1 |
+
+What the table holds: the hits to kill, the 65%, the standard fight's length at every level, the 3 rounds under fire, the tank, the one-hit rule. What it does not, and why:
+
+1. **The elite fight is about a round short on open ground** (4.6 to 5.5 rounds; 5.6 to 6.7 with cover) and **the boss fight is short on open ground from level 3** (6.5 to 7.9; 8.6 to 9.9 with cover). Enemy HP is at the top of what the hits-to-kill targets allow. The squad's damage is what is over: the optimised long rifle deals 173 to 215% of the yardstick (target: a bit under 150%). The weapon step closes this, not the table.
+2. **A standard fight is too safe:** won 98 to 100% of the time (target 9 in 10), someone Downed in about 1 fight in 6 (target 1 in 3). This pulls against the 3 rounds under fire: with damage that puts someone down in 4 fights of 10 (Soldier ×0.95, Elite ×1.3) the yardstick lasts 2 rounds, not 3. The fit holds the 3 rounds, because that measure depends on the table alone, and leaves the other to the steps that change what a squad can do. Leon's call (the report's question 1).
+3. **Enemies 3 levels up are still beaten more often than not** on open ground (58 to 78% won). Three levels of the table and ±3 to hit are not enough. In the simulator, a gap of 2 to hit a level (in place of 1) loses that fight 70 to 100% of the time (tried before the damage factors were lowered); it is not built (the report's question 2).
+4. **The numbers fall with level where nothing in the table says they should:** characters Downed in a boss fight go from 1.4 a fight at level 1 to about 0.5 at level 20. The table is flat for the yardstick in its Class 3 armour (a Soldier's hit is 8 after armour at level 1 and 27 at level 20, as its HP goes from 145 to 445). It is not flat for a caster in Class 1 armour, whose HP triples while the same hit only doubles (18 to 38), and a squad kills faster as it grows. Armour by level is Equipment 2.0's.
+
+### The level gap
+
+1. **Far below.** An enemy 5 or more levels below the character who hurts it is taken out by that hit, whatever its HP and its shield, as long as the hit deals at least 1 damage after every reduction. Any damage counts (a weapon, a spell, a bleed the character caused, the character's companion). The attack card says so before the shot ("far below your level: any hit takes it out") and the fight log says so after it. It never works the other way: an enemy 5 levels above a character gets its bonus to hit and nothing more. (The first build called this rule "Outclassed"; the name is not used in the game, because a perk already has it.)
+2. **To hit.** For each level between an enemy and a character, the higher of the two gets +1 to hit the other and the lower gets −1, to at most 5 levels. This is on top of the table. An enemy 3 levels above the squad is then hit 42% of the time instead of 65% and hits back about 80% of the time: the fight to run from. The table alone cannot do this (three levels of the table are worth about 7 points of hit chance), which is why the gap has its own line. **It is read by weapon attacks and techniques only.** A spell's roll to hit (Sigil, Outburst) and every save do not read it yet (section 14, item 1032).
+3. The gap is read between an enemy with a level and a character (or a companion, which has its owner's level; a twin too). Each character reads its own: in a squad of levels 1 and 20 the fight is level 10, the level 1 character is 5 below every enemy and the level 20 character takes each of them out with one hit (section 14, item 1033). It does not apply between characters, or to a unit from a fight saved before this rule.
+
+### Vermin
+
+A tier under Minion, for swarms: small things that die to one hit at equal level. 15 HP, no armour, weak attacks (half its weapon's damage), fast (2 tiles an AP), no techniques, no Calls, no spare magazines, nothing in the drop tables, and the least weapon drill of any tier (1 a kill). It counts as a Minion wherever a rule ranks tiers (saves, notice). Where a rule names tiers one by one it is not yet named (section 14, item 1035). Player-facing name: **Vermin**.
+
+### Critical hits
+
+1. **A critical multiplies damage by 1.5.**
+2. **It can rise to ×2.0 and no further**, everything together: Perception gives +3% for each point above 1, Dexterity +2% a point, and One Shot's Breath Held +25% on that shot. Perception 10 and Dexterity 10 make ×1.97; anything more stops at ×2.0. (It was 2 + 10% a point of Perception + 5% a point of Dexterity, about ×2.4 at level 1 and ×2.9 at level 20, and Breath Held multiplied that by 1.5 again.)
+3. **An enemy's critical is ×1.5** (it was ×2).
+4. The target's Critical damage taken still cuts the part above ×1: at −50%, a ×1.5 critical is ×1.25.
+5. **It never falls under ×1.5** either, whatever a sheet holds.
+6. What makes a critical more likely (an Aimed shot, an ambush, a weapon or a technique that crits on 18 to 20) is not changed. The limit inside Sigil magic (350, or 500 on a critical) is not changed in this step.
+7. **This is the weapon's critical.** A spell's critical (a natural 20 on a Sigil's or an Outburst's roll to hit) still doubles the spell's damage, for characters and for enemy casters: it is not changed in this step (section 14, item 1031).
+
+### Not in this step
+
+The weapons (the long rifle against the service rifle), the AP prices, Burst, the Calls, defence stacking and XP by level are later steps of the balance pass. The simulator (`packages/engine/test/balance/`) fights enemies of a chosen level and measures this table against the targets (`fit.ts`); every later step runs it again.
 
 ## Exploration, social play, rest, and the Narrator
 
@@ -5267,3 +5470,43 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1012. **Resonance (perk):** +10% a step, to +20% (tier II +30%); lost on a turn with no held or Released Outburst.
 1013. **The perk card's three shelves** follow the audit of 11 Nov 2026; which perk sits on which shelf is the audit's reading and can move.
 1014. **Deeds the engine sees:** the nine conditions in the table of that name (rules 1.14) are the engine's reading of each deed's sentence and are provisional: 3 tiles, the first turn and 2 enemies standing for Charge!, 10% for Field Surgeon, a Downed ally counting and who put them there, 3 misses in a round with a burst as 1, what opens as an ambush and 1 attack at you, which objects are a wall and going through the gap, the second Mana Short for Twin Souls, a quarter, 2 rounds, 1 attack at you and never Downed for Bite the Bullet, which surrenders are words.
+1101. **Colour is not a ruling** (rules 1.14, "The engine takes everything it can, first step"; the recommendation to question C1): a standing fact about how people treat you, a story hook, a "the Narrator may" and a roleplay line do not make a perk or a trait Narrator-run. On that reading 19 items were relabelled `engine` (8 perks, 11 traits; 100 to 119 of 180). If Leon says no to C1, the 11 "colour" items go back to `hybrid`: Foreseen, Make Way, Grenadier's Arm, Blade Recluse, Bottle Butts for Eyes, The Mask, Factory Made, Upper-Touched, Gambler, Crowded Head, Drone Handler.
+1102. **The AP perks' cooldown: 3 turns** (`rules.ap_cooldown.turns`; Leon's answer 11). Counted in the holder's turns of one fight (one a round), from the turn the AP lands; a banked gain counts on the turn it arrives; every cooldown is ready when a fight starts. The bonus and the penalty of one item are counted separately. To settle: whether they should share one cooldown, and whether a cooldown should carry from one fight into the next.
+1103. **Talks Broke Down under the cooldown:** +2 AP (or Tier I's −2) on turns 1, 4, 7 and so on of the fight, where it was every turn. "Out of a talk" is the engine's timing rule on the card: the fight starts in the same story round as the squad's last dialogue check or the round after (the one story round of item 383).
+1104. **War Footing under the cooldown:** one enemy loses 2 AP, then nothing for the holder's next 2 turns (rounds), whichever enemy steps up. The other reading (a cooldown kept for each enemy) would leave it almost as it was: once for each enemy every turn.
+1105. **What the cooldown does not cover:** Outclassed (once a fight by its own rule), Southern Fist's +1 AP a turn with bare hands and Sworn Sibling's shared 1 AP (standing bonuses of 1, not swings of 2), penalty-only traits (Ghost Soldier's −2 when found, Soft Hands, Born Officer's squad leaning on the officer), discounts, free moves and free attacks, the Calls, QUICKEN, prayers and class moves. To settle: Southern Fist and Sworn Sibling.
+1106. **The Name They Whisper's strangers:** everyone knows the name unless marked a stranger: the label `stranger` on the enemy, or a name on the holder's `strangers` list (the Narrator's `traitState`). The label is read by the perk already, but the list of labels an enemy may carry does not have it yet (that list is part of the "labels on people" step), so today the list on the holder is the way that works.
+1107. **True Name's "studied" is Analyzed** (the recommendation to C4): the mark any squad member's Analyze leaves on the being; refused by the engine in a fight and for a being on the area map; a being that is only in the story is still confirmed by the Narrator.
+1108. **Crowd Pleaser's crowd outside a fight:** 3 or more people on the area map within 8 tiles of the speaker, hostile or neutral, not hidden (the fight half's numbers; the recommendation to C5). It applies to every Charisma check the holder makes there.
+1109. **Old Tongue II holds attacks, not the turn** (the recommendation to C12): for its next turn the being makes no attack, casts nothing and uses no technique; it may move. No save, 0 AP, once per being, as before.
+1110. **Fire Sermon's deed needs a Faithful character** (the recommendation to C6): one who serves a patron when the enemy gives up. The Voice's deed does not.
+1111. **Verse of War has no audit** (the recommendation to C9): nothing checks that the line was verse; a line must still have been said that round.
+1112. **True Name remembers an Analyze made on the area map** (rules 1.14, "After the review"): the holder keeps the id and the name of the last 24 people the squad Analyzed on the area map, and such a being counts as Analyzed in the fight that follows. The number 24 is new. The cause is outside the perk: a fight the Narrator starts seats the people on the map without their Analyze mark (only a fight a player opens by attacking carries it). To settle: carry the mark itself into every fight; then this memory can go.
+1113. **Grim Reaper II's Fear** comes with every kill or knock-out on the holder's own turn, also on the turns the 2 AP is cooling down, and never with a kill made off the holder's turn (a held shot, a reaction). The card was reworded to say so; the game did not change.
+1114. **A hybrid card names its judgement:** The Name They Whisper reads "the Narrator says who has never heard of you". The first step had removed the sentence; the perk is still hybrid, and section 11 of the balance pass asks for the judgement in one plain sentence on the card.
+1115. **The cooldown's readings, confirmed in review:** counted in rounds of the fight, so a turn the holder loses still counts; AP lost to the +3 limit or the ceiling of 9 still starts it; each holder has its own; a new fight and the Proving Ground's Refill start it ready. To settle: (a) whether a penalty should be on a cooldown at all (Talks Broke Down I after a lost talk was −2 AP every turn, now on turns 1, 4, 7); (b) whether two War Footing holders may both take 2 AP from one enemy; (c) whether the free attacks and free moves the action price list counted under the ruling (Dance of Iron, Roll With It, Heart Overload's free Begin) should have the same cooldown; (d) Got You in My Sight also pays when the holder is the one who walks out of sight of an enemy, which the cooldown now limits to once every 3 turns.
+1116. **Just the Repairman's line to the Narrator** says what the card says: the guard does not look again that scene unless the character attacks. It no longer says "until they act unlike a repairman".
+1015. **Enemy levels (rules 1.15):** a fight's level is the average level of its characters, rounded down; the Narrator's shift is −3 to +2; levels are held to 1 to 20.
+1016. **The tier rows at level 1 (rules 1.15):** HP 15 / 70 / 140 / 240 / 960, armour 0 / 0 / 5 / 10 / 10, Defense 10 / 10 / 11 / 12 / 13, attack bonus +0 / +1 / +3 / +5 / +6 (Vermin, Minion, Soldier, Elite, Boss). First numbers by arithmetic; the Boss's HP moved in the fit (item 1027).
+1017. **The tiers' damage factors (rules 1.15):** ×0.5 / ×1.0 / ×0.78 / ×1.05 / ×1.2 (the first table had ×0.85 / ×1.15 / ×1.4 for Soldier, Elite and Boss; items 1026 and 1027). They are measured with one weapon a tier (service rifle, bullpup, machine gun); another weapon in the same hands lands a different number.
+1018. **The level table (rules 1.15):** armour to ×1.60 at level 13 and flat after it (HP: item 1025); Defense +1 every second level to +6; attack bonus +1 at levels 6, 10, 13, 15, 17 and 19; damage to ×1.82 at level 20. All four follow one reference character (the plain rifleman with a normal share), whose damage stops growing at level 13 while its HP does not.
+1019. **Far below, first called Outclassed (rules 1.15):** 5 levels; any hit that deals 1 damage; every tier, the Boss included. To settle: whether a Boss should be spared the rule.
+1020. **The level gap to hit (rules 1.15):** 1 a level, to 5 levels. It is not one of Leon's rulings: it was added because the table alone does not make an enemy 3 levels up a fight to run from. Weapon attacks and techniques that roll to hit only; spells and saves do not read it yet.
+1021. **Vermin (rules 1.15):** 15 HP, Defense 10, attack +0, damage ×0.5, Movement 2, no spare magazines, no drop-table roll, 1 weapon drill a kill, ranked as a Minion for saves and notice. The Proving Ground's Vermin is the "Drill mite" (bite and claws, or a combat knife).
+1022. **Critical hits (rules 1.15):** ×1.5; +3% a point of Perception above 1 and +2% a point of Dexterity; One Shot's Breath Held +25%; ×2.0 at most; an enemy's ×1.5. The split between Perception and Dexterity is the old 2 to 1, scaled down.
+1023. **Companions and levels (rules 1.15):** the drone's 30 HP and the beast's 60 HP (settled, item 370) are now their level 1 numbers; at their owner's level 20 they have 54 and 109. To confirm with Leon.
+1024. **Enemy casters and levels (rules 1.15):** their spell damage takes the tier and level damage factor of a weapon; their MP, Strain limit and words do not change with level.
+1025. **Enemy HP by level, fitted (rules 1.15):** ×1.07, ×1.16, ×1.23, ×1.30, ×1.38, ×1.43, ×1.49, ×1.54, ×1.61, ×1.67, ×1.74 at levels 2 to 12, ×1.78 at 13 and 14, ×1.79 at 15 and 16, ×1.80 at 17 and 18, ×1.81 at 19 and 20. It runs ahead of armour (×1.60 at the top) so that a Soldier takes 3.5 of the plain rifleman's hits at level 1 and 3.95 at level 20, an Elite 6.9 and 7.8. There is no room left under the targets (4 and 8); if the weapon step lowers the yardstick's damage this column is fitted again.
+1026. **Soldier ×0.78 and Elite ×1.05 (rules 1.15, the fit):** set so the plain rifleman lasts 3 rounds under fire from 2 soldiers, or 1 elite and 1 soldier, that never go down (measured 3.0 to 3.3 and 3.2 to 3.6 rounds at the six levels). The price, measured: a squad of four wins 98 to 100% of standard fights (target 9 in 10) and someone is Downed in 1 fight in 6 (target 1 in 3). At ×0.95 and ×1.3 the squad targets come close (93 to 100% won, someone Downed in 4 fights of 10) and the rifleman lasts 2 rounds. To settle with Leon: which of the two wins.
+1027. **Boss 960 HP and ×1.2 (rules 1.15, the fit):** from 900 and ×1.4, where a level 1 squad lost a boss fight 1 time in 4 with 2 of 4 Downed. A boss fight is now 9.0 to 9.6 rounds at level 1 and 6.5 to 9.3 at level 20 (open ground to cover), with 1.4 characters Downed a fight at level 1 and 0.5 at level 20. A Boss takes 27 to 31 of the yardstick's hits.
+1028. **Targets the table does not reach (rules 1.15, the fit):** the elite fight on open ground (4.6 to 5.5 rounds, target 6 to 8), the boss fight on open ground from level 3 (6.5 to 7.9, target 8 to 10), the win rate and the Downed rate of a standard fight (item 1026), and a fight against enemies 3 levels up (item 1029). The first two wait for the weapon step (the optimised long rifle at 173 to 215% of the yardstick).
+1029. **Three levels up is not yet "run" (rules 1.15, the fit):** the squad still wins 58 to 78% of standard fights on open ground against enemies 3 levels above it (30 to 62% with cover). In the simulator a level gap of 2 to hit a level, in place of 1, loses them 70 to 100% of the time (tried before the damage factors were lowered) and makes the Narrator's +2 a fight won 27 to 60% of the time. Not built; to settle with Leon.
+1030. **How "3 rounds under fire" is measured (rules 1.15, the fit):** the plain rifleman alone on open ground against 2 enemies with a Soldier's numbers (or an Elite's and a Soldier's) and 5,000 HP, for 10 rounds; it lasted the rounds before the one it went Down in. Enemies that could be killed would make the number larger.
+1031. **A spell's critical is still ×2 (rules 1.15, the review):** Sigil and Outburst criticals double the spell's damage, for characters and enemy casters, while a weapon's critical is ×1.5 to ×2.0. Leon's ruling 7 ("criticals ×1.5") does not say whether spells are in it. To settle with Leon; the change is two lines in the magic files.
+1032. **Spells do not read the level gap (rules 1.15, the review):** the ±1 to hit a level is on weapon attacks and techniques only. A caster 3 levels below an enemy hits it as if at equal level, and an enemy caster 3 levels up gets no bonus. The simulator's squad has a Sigil caster, so part of "3 levels up is still beaten" (item 1029) is this. To build with the magic step, or sooner if Leon says so.
+1033. **Far below, the Boss included (rules 1.15, the review; item 1019's question):** in a squad of mixed levels the rule is read by each character, so a level 20 character beside a level 1 one (fight level 10) takes a level 10 Boss out with one hit. To settle with Leon: spare the Boss (and perhaps the Elite), or read the gap from the fight's level instead of each character's.
+1034. **Enemy heals and shields grow with the damage factor (rules 1.15, the review):** a Sigil caster's MEND and WARD read the same multiplier as its damage, so a Soldier-tier adept heals ×0.78 at level 1 and ×1.42 at level 20, a Boss-tier magister ×1.2 and ×2.18. HP grows ×1.81 over the same levels, so the level part keeps pace; the tier part (a Soldier healing less than a Minion) is an accident of the build. To settle in the magic step.
+1035. **Vermin where tiers are named one by one (rules 1.15, the review):** the "rank-and-file" order perk lists Minion and Soldier, so Vermin do not hear it; a Vermin turret would be hacked at a Soldier's difficulty; the Proving Ground's waves never send Vermin; a fight started on the map with 3 or more Vermin is rated Standard (50 XP) like 3 of anything. None is built differently yet.
+1036. **A level given outright ignores the shift (rules 1.15, the review):** the first build added the Narrator's shift on top of a level set by hand (9 and +2 made 11). Now 9 is 9.
+1037. **The spawn tool's empty level is the squad's level now (rules 1.15, the review):** the first build used the level the fight started at, so a fighter levelled from 4 to 15 in the middle of a fight still spawned level 4 units.
+1038. **Enemy weapons that end a character in one hit (rules 1.15, the review):** at level 1 a Boss with a Blackpoint 700 deals 108 before armour and with a breacher tube 132; an Elite 94 and 115. A character with 100 HP in Class 1 armour goes Down to one such hit at full HP (the breacher tube did this before the step; the Boss's ×1.2 adds the Blackpoint). The table is fitted with one weapon a tier (item 1017). To settle in the weapon step: these two weapons' damage, or which weapons the Narrator may hand an enemy.

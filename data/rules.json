@@ -351,7 +351,7 @@
       "sigil": "1 + 0.1*(intelligence-1) + 0.1*brain_power",
       "soul": "1 + 0.05*(determination-1) + 0.1*will_power",
       "healing_given": "1 + 0.1*(insight-1) + 0.1*empathy",
-      "critical": "2 + 0.1*(perception-1) + 0.05*dexterity",
+      "critical": "min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity + perks, traits and gear) (rules 1.15; provisional). An enemy: 1.5",
       "ambush": "1.5 + 0.05*ingenuity",
       "blessing_power": "1 + 0.1*faith"
     },
@@ -729,7 +729,7 @@
           "natural 20",
           "natural 19-20 on an Aimed shot or an attack from Hidden"
         ],
-        "damage": "x critical multiplier, reduced by target crit_damage_taken",
+        "damage": "x critical multiplier (1.5, to 2.0 at most: rules 1.15), reduced by target crit_damage_taken",
         "forces_injury_roll": true,
         "provisional": true
       },

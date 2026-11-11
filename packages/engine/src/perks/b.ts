@@ -16,6 +16,7 @@ import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../cha
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
 import { d20, die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
+import { cdFire, cdTick, landsNext } from './cooldown';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -102,7 +103,7 @@ register({
       ctx.cancel = true; ctx.why = 'Into the Dark';
     },
   },
-  brief: (h) => 'Narrator: walking first into the unknown, they are never surprised there' + (h.tier === 'II' ? '; no Fear on their first turn in a frightening place' : ''),
+  brief: () => null, // the engine runs all of it (the split's finding 19: no standing line for the Narrator)
 });
 
 
@@ -258,15 +259,16 @@ register({
 
 // =====================================================================================================================
 // Got You in My Sight (Vigilant). I: an enemy you see hide, or one that leaves your sight: +2 AP now on your turn,
-// banked if your turn is still to come this round (once a round, provisional). A sneak attack (an ambush) that hits
-// you: −2 AP next turn. II: no penalty, and the squad keeps the enemy's last position (cb.lastSeen).
+// banked if your turn is still to come this round; once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts;
+// it was once a round). A sneak attack (an ambush) that hits you: −2 AP next turn, also at most once every 3 turns.
+// II: no penalty, and the squad keeps the enemy's last position (cb.lastSeen). The area map keeps once a round.
 // =====================================================================================================================
 function gotYou(h: Holder, cb: Combat, foe: Unit, at: string) {
   const u = h.u!;
   if (h.tier === 'II') ((cb.lastSeen ||= {})[u.side] ||= {})[foe.id] = at;
-  if (myTurn(cb, u)) { if (uses(h).take('per_round')) grantPerkAp(cb, u, 2, 'Got You in My Sight: ' + foe.name); return; }
+  if (myTurn(cb, u)) { if (cdFire(h, 'gain', cb.round)) { uses(h).take('per_round'); grantPerkAp(cb, u, 2, 'Got You in My Sight: ' + foe.name); } return; }
   const mine = cb.order.indexOf(u.id);
-  if (mine > cb.turn && uses(h).take('per_round')) bankAp(u, 2, 'Got You in My Sight: ' + foe.name, cb);
+  if (mine > cb.turn && cdFire(h, 'gain', cb.round)) { uses(h).take('per_round'); bankAp(u, 2, 'Got You in My Sight: ' + foe.name, cb); }
 }
 function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!)) if (!f.hidden && unitSees(cb, h.u!, f.pos)) out[f.id] = f.pos; return out; }
 register({
@@ -285,9 +287,9 @@ register({
       if (unitSees(cb, h.u, ctx.u.pos)) gotYou(h, cb, ctx.u, ctx.u.pos);
     },
     attack_roll: (ctx, h) => { if (ctx.tgt === h.u && ctx.ambush && h.tier !== 'II') stateOf(h).sneak = true; },
-    on_hit: (ctx, h) => { if (ctx.tgt === h.u) { const s = stateOf(h); if (s.sneak) { s.pen = 2; s.sneak = false; log(ctx.cb, h.u!.name + ' is caught by a sneak attack: −2 AP next turn (Got You in My Sight).'); } } },
+    on_hit: (ctx, h) => { if (ctx.tgt === h.u) { const s = stateOf(h); if (s.sneak) { s.sneak = false; if (!s.pen && cdFire(h, 'pen', landsNext(ctx.cb, h.u!))) { s.pen = 2; log(ctx.cb, h.u!.name + ' is caught by a sneak attack: −2 AP next turn (Got You in My Sight).'); } } } },
     on_miss: (ctx, h) => { if (ctx.tgt === h.u) stateOf(h).sneak = false; },
-    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.pen) { pushAp(ctx, -s.pen, 'sneak attack (Got You in My Sight)'); s.pen = 0; } },
+    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); cdTick(h); if (s.pen) { pushAp(ctx, -s.pen, 'sneak attack (Got You in My Sight)'); s.pen = 0; } },
     // The area map: an NPC token the holder could see moves out of their sight, hides or leaves: +2 AP on the next
     // overworld round (once a round); II also marks where it was last seen (g.story.lastSeen, shown as a line).
     npc_moved: (ctx, h) => {
@@ -523,8 +525,9 @@ register({
 });
 
 // =====================================================================================================================
-// War Footing (Ultimate: Charge! + Make Way). Any enemy that ends a move (not a Disengage) next to you loses 2 AP at
-// once, once per enemy a turn. A failed Intimidation check costs nothing: no complication, a natural 1 is just a
+// War Footing (Ultimate: Charge! + Make Way). An enemy that ends a move (not a Disengage) next to you loses 2 AP at
+// once; once every 3 of your turns, whichever enemy it is (the AP perks' cooldown, ./cooldown.ts, spec item 1104; it
+// was once per enemy a turn). A failed Intimidation check costs nothing: no complication, a natural 1 is just a
 // failure, and the target is simply unmoved; no second try on the same target this scene (provisional). In a fight a
 // Threaten already can't backfire (it's the target's save).
 // =====================================================================================================================
@@ -534,10 +537,12 @@ register({
   on: {
     moved: (ctx, h) => {
       const u = h.u, m: Unit = ctx.u; if (!u || !alive(u) || m.side === u.side || ctx.how === 'disengage' || ctx.forced || dist(ctx.to, u.pos) > 1) return;
-      if (!uses(h).take('per_turn', 1, h.key + '|' + m.id)) return;
+      if (m.ap <= 0) return; // nothing to lose: the cooldown isn't spent on it
+      if (ow(ctx.cb) ? !uses(h).take('per_turn', 1, h.key + '|' + m.id) : !cdFire(h, 'gain', ctx.cb.round)) return; // the area map keeps once per enemy a turn
       const lost = Math.min(2, Math.max(0, m.ap)); m.ap = Math.max(0, m.ap - 2);
       log(ctx.cb, m.name + ' steps into ' + u.name + '\'s reach and falters: −' + lost + ' AP (War Footing).');
     },
+    turn_start_pre: (ctx, h) => { if (ctx.u === h.u) cdTick(h); },
     check_post: (ctx, h) => {
       if (ctx.c !== h.c || !intimidates(ctx.ck)) return;
       const g = gameOf(h), s = stateOf(h), who = String(ctx.ck.target || ctx.ck.npc || ''), scene = g?.story?.scene?.n;
@@ -603,7 +608,7 @@ register({
       const r = die(g.rng, 100); if (r > 50) return;
       if (nid) (s.passed ||= {})[nid] = scene; ctx.ok = true; ctx.labels.push('taken for staff');
       postStory(h, (ctx.npc?.name || 'The guard') + ' takes them for maintenance staff (d100 ' + r + ' ≤ 50).', { kind: 'system' });
-      note(h, (ctx.npc?.name || 'a guard') + ' took ' + h.c!.name + ' for maintenance staff: the cover holds until they act unlike a repairman.');
+      note(h, (ctx.npc?.name || 'a guard') + ' took ' + h.c!.name + ' for maintenance staff and will not look again this scene, unless ' + h.c!.name + ' attacks.');
     },
     spot: (ctx, h) => {
       if (ctx.u !== h.u || !carriesToolbox(h.c)) return; const s = stateOf(h), by: Unit = ctx.by;
@@ -613,7 +618,7 @@ register({
     },
     attack_roll: (ctx, h) => { if (ctx.att === h.u) stateOf(h).passed = {}; },
   },
-  brief: () => 'Narrator: how long the maintenance-staff cover holds when they talk.',
+  brief: () => null, // the engine rolls it and remembers who was fooled; the note above tells the Narrator when it happens
 });
 
 // =====================================================================================================================
@@ -749,10 +754,12 @@ register({
     return base > cap ? cap - base : 0;
   },
   on: {
+    turn_start_pre: (ctx, h) => { if (ctx.u === h.u) cdTick(h); },
     turn_start: (ctx, h) => { if (ctx.u === h.u && !ow(ctx.cb)) stateOf(h).d0 = nearestFoe(ctx.cb, h.u!); },
     turn_end: (ctx, h) => {
       if (ctx.u !== h.u || ow(ctx.cb) || !alive(h.u!)) return; const s = stateOf(h), d1 = nearestFoe(ctx.cb, h.u!);
-      if (Number.isFinite(s.d0) && d1 < s.d0) bankAp(h.u!, 2, 'Forlorn Hope: closer to the enemy', ctx.cb);
+      // Once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts): the AP lands on the next turn.
+      if (Number.isFinite(s.d0) && d1 < s.d0 && cdFire(h, 'gain', landsNext(ctx.cb, h.u!))) bankAp(h.u!, 2, 'Forlorn Hope: closer to the enemy', ctx.cb);
     },
   },
   brief: () => 'Never offer them a retreat or a way to fall back.',

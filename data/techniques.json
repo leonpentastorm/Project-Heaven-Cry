@@ -63,6 +63,7 @@
     },
     "drill": {
       "per_kill": {
+        "vermin": 1,
         "minion": 5,
         "soldier": 10,
         "elite": 25,

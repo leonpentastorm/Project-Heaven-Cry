@@ -108,7 +108,7 @@ describe('the damage chain (spec: Attacks, damage and armour; rules 1.3)', () =>
 
 describe('combat Hidden, ambush and spotting (rules 1.3)', () => {
   it('Hide only out of sight; a Hidden unit can\'t be targeted; its first attack is an ambush; ending next to it reveals it', () => {
-    const f = fightWith([{ weapon: 'hellraiser_service_rifle' }], [{ at: 'F6' }]);
+    const f = fightWith([{ weapon: 'hellraiser_service_rifle' }], [{ at: 'F6' }], { classic: true });
     const pc = f.turn(f.pc), foe = f.foe;
     withGame(f.g, () => {
       expect(hideAction(f.cb, pc)).toMatch(/can see you/);

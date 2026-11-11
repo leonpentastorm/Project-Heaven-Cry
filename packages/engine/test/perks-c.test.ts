@@ -3,7 +3,7 @@
 // resolveAttack, applyDamage…), the same calls the reducer and the enemy AI make.
 import { describe, expect, it } from 'vitest';
 import {
-  apply, moveUnit, resolveAttack, previewAttack, attackDamage, throwItem, applyDamage, applyCond, makeObject, d20, packOf, emitStory, condOn, refOf, positionsOf, endTurn,
+  apply, moveUnit, resolveAttack, previewAttack, attackDamage, throwItem, applyDamage, applyCond, makeObject, d20, packOf, emitStory, condOn, refOf, positionsOf, endTurn, critMult,
   type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
@@ -332,7 +332,7 @@ describe('Spray and Pray', () => {
 });
 
 describe('One Shot', () => {
-  it('Breath Held: unmoved, the first shot ignores half cover and a critical does ×1.5; then Tunnel Vision until you move', () => {
+  it('Breath Held: unmoved, the first shot ignores half cover and a critical does +25% (rules 1.15: never past ×2); then Tunnel Vision until you move', () => {
     const mk = (traits: string[]) => { const f = fightWith([{ traits }], [{ at: 'J6' }]); const u = f.turn(at(f.pc, '3,5')); f.foe.hp = 9999; f.foe.maxHp = 9999; f.foe.armour = 0; return { f, u }; };
     const { f, u } = mk(['one_shot']); f.cb.objects = [...(f.cb.objects || []), makeObject('cr1', 'crate', '8,5')];
     expect(previewAttack(f.cb, u, f.foe, 'shot').cover).toBe(0);
@@ -342,7 +342,8 @@ describe('One Shot', () => {
     const b = mk([]); b.f.g.rng.state = rngFor(20).state;
     b.f.act({ type: 'combat/attack', unitId: b.u.id, targetId: b.f.foe.id, mode: 'shot' } as any);
     const base = 9999 - b.f.foe.hp;
-    expect(lost).toBeGreaterThanOrEqual(Math.floor(base * 1.5) - 1);
+    const cm = withGame(f.g, () => critMult(charOf(f.g, f.pc)!)), want = base * Math.min(2, cm + 0.25) / cm; // base is a plain critical (× cm)
+    expect(cm).toBeLessThan(1.75); expect(lost).toBeGreaterThan(base); expect(Math.abs(lost - want)).toBeLessThanOrEqual(2);
     expect((charOf(f.g, f.pc) as any).state.tunnel).toBe(true);
     // The second shot of the turn is not Breath Held.
     expect(previewAttack(f.cb, f.pc, f.foe, 'shot').cover).toBe(5);

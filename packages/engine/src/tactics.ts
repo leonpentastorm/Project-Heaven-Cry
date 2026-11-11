@@ -7,7 +7,7 @@ import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
-import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy } from './combat';
+import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng, d20 } from './rng';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength } from './magic';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
@@ -331,6 +331,7 @@ export function companionUnits(cb: Combat | null, c: Character, owner: Unit, tak
     u.mags = undefined; // unlimited spares, as enemies carry
     // A fixed action list and a gun that never runs dry (the drone: move and shoot, no reload, no Heat or jams; spec §14
     // item 370), from the stat block.
+    levelCompanion(u, k, c.level, comp.hp); // rules 1.15: a companion is its owner's level (its block is the level 1 block)
     if (Array.isArray(k.actions) && k.actions.length) u.allowedActions = [...k.actions];
     if (k.infinite_ammo) u.infiniteAmmo = true;
     // The twin (Twinbound's Call on the area map): half its owner's maximum HP, the owner's Defense, tied to the owner.

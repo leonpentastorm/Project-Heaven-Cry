@@ -133,7 +133,11 @@ describe('True Name', () => {
     const f = fight([{ perks: { true_name: 'mastered' } }, {}]);
     expect(() => pcAct(f, { type: 'combat/perk', id: 'true_name', targetId: f.foe.id })).toThrow(/no true name/);
     f.foe.kind = 'upper_realm';
+    // "Studied" means Analyzed (rules 1.14, item 1107): refused until the being carries an Analyze's mark; the use is kept.
+    expect(() => pcAct(f, { type: 'combat/perk', id: 'true_name', targetId: f.foe.id })).toThrow(/not studied .* Analyze it first/);
+    f.foe.analyzedBy = f.pcs[1].id; // a squadmate's Analyze counts (an enemy is Analyzed once)
     pcAct(f, { type: 'combat/perk', id: 'true_name', targetId: f.foe.id });
+    expect((f.cb.notes || []).some((n) => /studied/.test(n))).toBe(false); // nothing left for the Narrator to confirm
     const ally = f.pcs[1]; ally.pos = '3,6'; ally.ap = 9;
     const d = withGame(f.g, () => previewAttack(f.cb, ally, f.foe, 'shot').dmg!);
     expect(d.mults.some((x) => x.label.startsWith('against this target') && x.label.includes('True Name'))).toBe(true);

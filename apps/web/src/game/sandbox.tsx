@@ -29,7 +29,7 @@ import { glyphKeyNav } from './glyphKeys';
 import { askConfirm } from './dialog';
 import {
   magicOf, FEELINGS, practiceOf, nextPickAt, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
+  ENEMIES, enemyStats, squadLevel, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
 import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, devotionWords, GATE, moduleShelved } from '@engine';
@@ -970,8 +970,10 @@ function useTilePick(armed: boolean, pick: (ref: string) => void) {
 }
 function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   const sb = game.sandbox!, gearing = game.phase === 'story', cb = gearing ? null : game.combat;
-  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb)), [caster, setCaster] = React.useState('');
-  const spawn = (at: string) => act({ type: 'sandbox/spawn', tier, weapon, at, ...(caster ? { caster } : {}) } as any);
+  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb)), [caster, setCaster] = React.useState(''), [lvl, setLvl] = React.useState('');
+  // The level of the unit to spawn: empty is the squad's level as it is now.
+  const squadLvl = squadLevel(game), spawnLvl = lvl.trim() && Number.isFinite(Number(lvl)) ? Math.max(1, Math.min(20, Math.floor(Number(lvl)))) : squadLvl;
+  const spawn = (at: string) => act({ type: 'sandbox/spawn', tier, weapon, at, ...(caster ? { caster } : {}), ...(lvl.trim() && Number.isFinite(Number(lvl)) ? { level: spawnLvl } : {}) } as any);
   // A tool search that names an enemy tier or a Sigil caster picks it (as the Squad tab's menus do).
   const q = React.useContext(WideCtx).q;
   React.useEffect(() => {
@@ -986,7 +988,8 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   return <>
     <Section title={gearing ? 'SPAWN A DRILL UNIT ON THE MAP (IDLE UNTIL THE FIGHT)' : 'SPAWN AN ENEMY INTO THE FIGHT'} keys={FIND.spawn}>
       <div style={row}>
-        <select value={tier} onChange={(e) => { setTier(e.target.value); if (CASTER[caster] && CASTER[caster].tier !== e.target.value) setCaster(''); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.hp} HP</option>)}</select>
+        <select value={tier} onChange={(e) => { setTier(e.target.value); if (CASTER[caster] && CASTER[caster].tier !== e.target.value) setCaster(''); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {enemyStats(t.id, spawnLvl).hp} HP</option>)}</select>
+        <input value={lvl} onChange={(e) => setLvl(e.target.value.replace(/[^0-9]/g, '').slice(0, 2))} placeholder={'Lv ' + squadLvl} inputMode="numeric" aria-label="Enemy level" title={'The level of the unit you spawn, 1 to 20. Leave it empty for your squad\'s level (' + squadLvl + ').'} style={{ ...field, width: 64 }} />
         <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Enemy weapon" style={{ ...field, flex: 1 }}>{WEAPONS.filter((w) => w.category !== 'thrown').map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
       </div>
       <div style={row}>

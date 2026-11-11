@@ -11,6 +11,11 @@
       "turn_max": 9,
       "turn_min": 2,
       "perk_gain_max_per_turn": 3
+    },
+    "ap_cooldown": {
+      "turns": 3,
+      "provisional": true,
+      "text": "A perk or trait that gives AP on a condition gives it at most once every 3 of its holder's turns in a fight; a penalty side of the same item has the same limit, counted by itself."
     }
   },
   "items": [
@@ -765,7 +770,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "exploration",
@@ -870,7 +875,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You have 1 AP less on your first turn of each fight. Once per turn, when you kill or knock out an enemy on your own turn, you gain 2 AP. II: Once per turn, when you kill or knock out an enemy on your own turn, you gain 2 AP. Every enemy who sees the kill makes a Heart save or is Afraid of you.",
+      "text": "I: You have 1 AP less on your first turn of each fight. When you kill or knock out an enemy on your own turn, you gain 2 AP. Once every 3 turns. II: When you kill or knock out an enemy on your own turn, you gain 2 AP. Once every 3 turns. Each time you do, every enemy who sees it makes a Heart save or is Afraid of you.",
       "effects": [
         {
           "op": "stat_mod",
@@ -896,7 +901,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "You have 1 AP less on your first turn of each fight. Once per turn, when you kill or knock out an enemy on your own turn, you gain 2 AP.",
+          "text": "You have 1 AP less on your first turn of each fight. When you kill or knock out an enemy on your own turn, you gain 2 AP. Once every 3 turns.",
           "effects": [
             {
               "op": "stat_mod",
@@ -922,7 +927,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per turn, when you kill or knock out an enemy on your own turn, you gain 2 AP. Every enemy who sees the kill makes a Heart save or is Afraid of you.",
+          "text": "When you kill or knock out an enemy on your own turn, you gain 2 AP. Once every 3 turns. Each time you do, every enemy who sees it makes a Heart save or is Afraid of you.",
           "effects": [
             {
               "op": "stat_mod",
@@ -949,7 +954,8 @@
       "tags": [
         "ap",
         "fear"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "bone_talk",
@@ -1841,7 +1847,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once per round, when an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. When an Ambush hits you, you have 2 AP less on your next turn. II: Once per round, when an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Your squad always knows where that enemy was last seen.",
+      "text": "I: When an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Once every 3 turns. When an Ambush hits you, you have 2 AP less on your next turn; that too happens at most once every 3 turns. II: When an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Once every 3 turns. Your squad always knows where that enemy was last seen.",
       "effects": [
         {
           "op": "stat_mod",
@@ -1866,7 +1872,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per round, when an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. When an Ambush hits you, you have 2 AP less on your next turn.",
+          "text": "When an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Once every 3 turns. When an Ambush hits you, you have 2 AP less on your next turn; that too happens at most once every 3 turns.",
           "effects": [
             {
               "op": "stat_mod",
@@ -1891,7 +1897,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per round, when an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Your squad always knows where that enemy was last seen.",
+          "text": "When an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Once every 3 turns. Your squad always knows where that enemy was last seen.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2330,7 +2336,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You start your turn with 2 more AP while an enemy carries a Left Brain Debuff you inflicted, and with 2 AP less while you carry one yourself. II: You start your turn with 2 more AP while an enemy carries a Left or Right Brain Debuff you inflicted, and with 1 AP less while you carry one yourself.",
+      "text": "I: While an enemy carries a Left Brain Debuff you inflicted, you start your turn with 2 more AP. Once every 3 turns. While you carry one yourself, you start your turn with 2 AP less; that too happens at most once every 3 turns. II: While an enemy carries a Left or Right Brain Debuff you inflicted, you start your turn with 2 more AP. Once every 3 turns. While you carry one yourself, you start your turn with 1 AP less; that too happens at most once every 3 turns.",
       "effects": [
         {
           "op": "stat_mod",
@@ -2354,7 +2360,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "You start your turn with 2 more AP while an enemy carries a Left Brain Debuff you inflicted, and with 2 AP less while you carry one yourself.",
+          "text": "While an enemy carries a Left Brain Debuff you inflicted, you start your turn with 2 more AP. Once every 3 turns. While you carry one yourself, you start your turn with 2 AP less; that too happens at most once every 3 turns.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2378,7 +2384,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "You start your turn with 2 more AP while an enemy carries a Left or Right Brain Debuff you inflicted, and with 1 AP less while you carry one yourself.",
+          "text": "While an enemy carries a Left or Right Brain Debuff you inflicted, you start your turn with 2 more AP. Once every 3 turns. While you carry one yourself, you start your turn with 1 AP less; that too happens at most once every 3 turns.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2402,7 +2408,8 @@
       "tags": [
         "ap",
         "debuff"
-      ]
+      ],
+      "provisional": true
     },
     {
       "id": "burden_of_proof",
@@ -2634,7 +2641,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "support",
@@ -2808,7 +2815,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When a fight starts because your squad won a dialogue check, you have 2 more AP on every turn of that fight. When it starts because of a failed one, you have 2 AP less. The Narrator decides whether the talk caused the fight. II: When a fight starts because your squad won a dialogue check, you have 2 more AP on every turn of that fight. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has 1 AP less in round 1. The Narrator decides whether the talk caused the fight.",
+      "text": "I: When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. When it breaks out of a talk your squad lost, you have 2 AP less on those turns instead. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after. II: When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has 1 AP less in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
       "effects": [
         {
           "op": "stat_mod",
@@ -2834,7 +2841,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "When a fight starts because your squad won a dialogue check, you have 2 more AP on every turn of that fight. When it starts because of a failed one, you have 2 AP less. The Narrator decides whether the talk caused the fight.",
+          "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. When it breaks out of a talk your squad lost, you have 2 AP less on those turns instead. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2860,7 +2867,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "When a fight starts because your squad won a dialogue check, you have 2 more AP on every turn of that fight. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has 1 AP less in round 1. The Narrator decides whether the talk caused the fight.",
+          "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has 1 AP less in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2881,7 +2888,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": "recovered",
       "tags": [
         "ap",
@@ -2907,7 +2914,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When you talk to a crowd, you make one roll for the whole crowd, at +2. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder. II: When you talk to a crowd, you make one roll for the whole crowd, at +2, and you can turn the crowd against one person you name; the Narrator plays what the crowd does. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
+      "text": "I: When you talk to a crowd, you make one roll for the whole crowd, at +2. A crowd is 3 or more listeners within 8 tiles of you. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder. II: When you talk to a crowd, you make one roll for the whole crowd, at +2, and you can turn the crowd against one person you name; the Narrator plays what the crowd does. A crowd is 3 or more listeners within 8 tiles of you. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
       "effects": [
         {
           "op": "skill_mod",
@@ -2925,7 +2932,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "When you talk to a crowd, you make one roll for the whole crowd, at +2. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
+          "text": "When you talk to a crowd, you make one roll for the whole crowd, at +2. A crowd is 3 or more listeners within 8 tiles of you. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
           "effects": [
             {
               "op": "skill_mod",
@@ -2943,7 +2950,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "When you talk to a crowd, you make one roll for the whole crowd, at +2, and you can turn the crowd against one person you name; the Narrator plays what the crowd does. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
+          "text": "When you talk to a crowd, you make one roll for the whole crowd, at +2, and you can turn the crowd against one person you name; the Narrator plays what the crowd does. A crowd is 3 or more listeners within 8 tiles of you. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
           "effects": [
             {
               "op": "skill_mod",
@@ -3348,7 +3355,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, once per turn, putting a buff or a debuff on them gives you 2 AP. If someone you charmed puts a debuff on you, you have 2 AP less on your next turn: betrayal stings. II: Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, once per turn, putting a buff or a debuff on them gives you 3 AP.",
+      "text": "I: Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 2 AP. Once every 3 turns. If someone you charmed puts a debuff on you, you have 2 AP less on your next turn: betrayal stings. That too happens at most once every 3 turns. II: Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 3 AP. Once every 3 turns.",
       "effects": [
         {
           "op": "stat_mod",
@@ -3372,7 +3379,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, once per turn, putting a buff or a debuff on them gives you 2 AP. If someone you charmed puts a debuff on you, you have 2 AP less on your next turn: betrayal stings.",
+          "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 2 AP. Once every 3 turns. If someone you charmed puts a debuff on you, you have 2 AP less on your next turn: betrayal stings. That too happens at most once every 3 turns.",
           "effects": [
             {
               "op": "stat_mod",
@@ -3396,7 +3403,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, once per turn, putting a buff or a debuff on them gives you 3 AP.",
+          "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 3 AP. Once every 3 turns.",
           "effects": [
             {
               "op": "stat_mod",
@@ -3678,7 +3685,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You can read any ancient or upper-realm script. The Narrator tells you what it says. II: You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens. The Narrator plays the parley.",
+      "text": "I: You can read any ancient or upper-realm script. The Narrator tells you what it says. II: You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
       "effects": [
         {
           "op": "narrator",
@@ -3710,7 +3717,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens. The Narrator plays the parley.",
+          "text": "You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
           "effects": [
             {
               "op": "narrator",
@@ -4736,7 +4743,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "They tell stories about you to keep their recruits in line.",
-      "text": "When a fight starts, every enemy who knows who you are makes a Heart save or is Afraid of you for 2 rounds; the Narrator decides who has never heard of you. An enemy at half HP or less that can see you makes a Heart save at the end of its turn or surrenders. That works once per enemy, only while you are standing, and never on a boss.",
+      "text": "When a fight starts, every enemy makes a Heart save or is Afraid of you for 2 rounds. Only a stranger is spared: the Narrator says who has never heard of you. An enemy at half HP or less that can see you makes a Heart save at the end of its turn or surrenders. That works once per enemy, only while you are standing, and never on a boss.",
       "effects": [
         {
           "op": "condition",
@@ -5415,7 +5422,7 @@
       "ap_cost": null,
       "uses": "per_session",
       "flavour": "You know what it's called. It knows you know.",
-      "text": "Once per session, for 0 AP, speak the true name of an upper-realm being, a cursed thing or a creature you have studied. For the rest of the scene it takes 50% more damage from you and your allies, and it can't lie to you. The Narrator decides whether you have studied it.",
+      "text": "Once per session, for 0 AP, speak the true name of an upper-realm being, a cursed thing or a creature. It must have been Analyzed first. For the rest of the scene it takes 50% more damage from you and your allies, and it can't lie to you; the Narrator plays that.",
       "effects": [
         {
           "op": "damage_mult",
@@ -5552,7 +5559,7 @@
           "note": "Once per session, rewind one major decision that went wrong: describe the outcome that would have followed, then let the player choose again."
         }
       ],
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "recovered": null,
       "provisional": true,
       "tags": [
@@ -5687,7 +5694,7 @@
           "note": "Crowds part for this character."
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": "recovered",
       "tags": [
         "mobility",
@@ -5730,7 +5737,7 @@
           "result": "observer treats you as maintenance staff"
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": "recovered",
       "tags": [
         "stealth",
@@ -6093,7 +6100,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "deed": "cast an Outburst that ends a fight, and say something worth remembering while you do it.",
-      "text": "Speak a line of verse, then Begin or Release an Outburst with In verse on: it gets +1 tile of range and +10% damage. After the fight, the Narrator checks that your lines really were verse.",
+      "text": "Speak a line of verse, then Begin or Release an Outburst with In verse on: it gets +1 tile of range and +10% damage.",
       "effects": [
         {
           "op": "stat_mod",
@@ -6111,7 +6118,7 @@
           "note": "Judge whether the player is speaking in verse."
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "soul_magic"
@@ -6504,7 +6511,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "The Hellraisers call it marching on the enemy's nerves.",
-      "text": "Your threats never backfire: a failed Intimidation check costs you nothing, though you can't try again on the same person that scene. Any enemy that ends a move next to you loses 2 AP at once: once per enemy each turn, and not if it Disengaged.",
+      "text": "Your threats never backfire: a failed Intimidation check costs you nothing, though you can't try again on the same person that scene. An enemy that ends a move next to you loses 2 AP at once, unless it Disengaged. Once every 3 turns.",
       "effects": [
         {
           "op": "negate_failure",
@@ -6522,7 +6529,7 @@
           }
         }
       ],
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": "recovered",
       "tags": [
         "presence",

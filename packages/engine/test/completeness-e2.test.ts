@@ -131,7 +131,7 @@ describe('data matches the spec: Spray and Pray, Ace Pilot, Daggerfall Veteran (
     expect(fx.find((e: any) => e.op === 'attack_mod' && e.context === 'full_auto').value).toBe(1);
   });
   it('Spray and Pray through combat/attack: the cone is Suppressed (a Body save), full auto costs double ammo', () => {
-    const f = fightWith([{ traits: ['spray_and_pray'] }], [{ at: 'H6' }]);
+    const f = fightWith([{ traits: ['spray_and_pray'] }], [{ at: 'H6' }], { classic: true });
     const u = f.turn(f.pc); u.pos = '3,5'; f.foe.pos = '6,5'; f.foe.hp = f.foe.maxHp = 9999;
     f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'auto' } as any);
     expect(logHas(f.cb, /Suppression on Foe 1/)).toBe(true);

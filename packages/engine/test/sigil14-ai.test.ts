@@ -138,6 +138,7 @@ describe('every enemy and the other side\'s magic', () => {
   it('walks around a field of yours it knows of instead of through it', () => {
     const { cb, e, p } = fight([{ at: '3,5', weapon: 'fists' }], [{ at: '10,5', tier: 'minion', weapon: 'fists' }]);
     const tiles = ['8,3', '8,4', '8,5', '8,6', '8,7']; field(cb, tiles, 'pc', p.id);
+    e.hp = e.maxHp = 30; // the old Minion's HP: a field that would nearly kill it is one it walks round
     const hp = e.hp; turn(cb, e);
     expect(e.hp).toBe(hp);
     const walked = (cb.fx || []).filter((x) => x.k === 'move' && x.unit === e.id).flatMap((x) => x.path);

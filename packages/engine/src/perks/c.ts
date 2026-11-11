@@ -620,7 +620,7 @@ register({
 
 // ---------- One Shot ----------
 // Breath Held: if you haven't moved this turn, your first shot of the turn ignores half cover (full cover still blocks
-// sight) and its critical multiplier is ×1.5 (2.0 → 3.0; plan 6b; PROVISIONAL). Tunnel Vision (after a Breath Held
+// sight) and its critical is +25% (rules 1.15: ×1.5 → ×1.75, never past ×2.0; PROVISIONAL, item 1022). Tunnel Vision (after a Breath Held
 // shot, until you next move; in the story too): no Vigilant checks (they fail; voice lines of Vigilant stay silent; no
 // spotting Hidden enemies), and ambushes on you do +50% damage. A new scene counts as moving (PROVISIONAL).
 const breathOk = (u: Unit) => !u.moved && !u.firstShotTurn && !isMelee(WEAPON[u.weapon]);
@@ -636,7 +636,7 @@ register({
       st.breath = ctx.mode !== 'melee' && breathOk(ctx.att);
       if (st.breath) { setTunnel(h, true); say(h.cb, ctx.att.name + ' holds a breath (One Shot).'); }
     },
-    damage_out: (ctx, h) => { if (ctx.att === h.u && ctx.crit && !ctx.preview && stateOf(h).breath) ctx.mults.push({ v: 1.5, label: 'Breath Held' }); },
+    damage_out: (ctx, h) => { if (ctx.att === h.u && ctx.crit && !ctx.preview && stateOf(h).breath) ctx.critBonus = (ctx.critBonus || 0) + 0.25; }, // rules 1.15: +25% on the critical, inside the ×2.0 ceiling (combat.ts)
     on_hit: (ctx, h) => { if (ctx.att === h.u) stateOf(h).breath = false; },
     on_miss: (ctx, h) => { if (ctx.att === h.u) stateOf(h).breath = false; },
     moved: (ctx, h) => { if (ctx.u === h.u && !ctx.forced && tunnelOn(h)) setTunnel(h, false); },

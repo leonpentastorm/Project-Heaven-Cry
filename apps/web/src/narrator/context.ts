@@ -160,8 +160,9 @@ COMBO PERKS (deeds)
 - A Legendary Deed is rarer still: an act the campaign will be remembered for, not a good roll or a won fight. Add legends[] (character, the deed in one sentence); the engine gives +1 Attribute point. Most sessions see none.
 
 FIGHTS
-- When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier (minion, soldier, elite, boss) and a weapon id. The engine runs the whole fight on the grid and tells you how it ended; you then narrate the aftermath.
-- Enemy tiers, weakest to strongest: minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). The engine sets their numbers.
+- When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier and a weapon id. The engine runs the fight on the grid and tells you how it ended; you then narrate the aftermath.
+- Enemy tiers, weakest to strongest: vermin (a swarm; one hit kills one), minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). You name the tier; the engine sets every number from the fight's level, which is the squad's average level.
+- level_shift moves that level: 0 for a fair fight, -1 to -3 for an easier one, +1 or +2 for a deadly one.
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 
 MAGIC (the engine runs every number)
@@ -474,6 +475,7 @@ export function turnSchema(g: GameState) {
     combat: { anyOf: [{ type: 'null' }, obj({
       name: { type: 'string' }, map: { type: 'string', enum: [...(campaignOf(g)?.zones.map((z) => z.id) || []), 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
       enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string' }, at: { type: 'string' } }) },
+      level_shift: { type: 'integer', minimum: -3, maximum: 2, description: 'Enemy levels above or below the squad (0: equal)' },
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
@@ -533,7 +535,7 @@ export function submitTool(g: GameState) {
   schema.properties.npcs = { type: 'array', description: 'Place, move, update or remove people and enemies on the map; carry or drop someone (empty when nothing changes)', items: { type: 'object', properties: {
     action: { type: 'string', enum: ['place', 'move', 'update', 'remove', 'carry', 'drop'] }, charId: { type: 'string', description: 'carry, drop: the carrier' },
     avatar: ST, wants: ST, knows: { type: 'object', properties: { objective: ST, hint: ST } }, talk: { type: 'array', items: APPROACH }, id: { type: 'string', description: 'The token id, for move, update and remove' }, name: { type: 'string' },
-    side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
+    side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['vermin', 'minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
     hidden: { type: 'boolean', description: 'Lurking: unseen by the players until spotted (place, update)' },
   }, required: ['action'] } };
   schema.properties.actions = { type: 'array', description: 'Mechanical actions players declared in words, run as their own actions when the next round opens (empty otherwise)', items: { type: 'object', properties: {

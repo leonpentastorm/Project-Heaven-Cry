@@ -6,6 +6,10 @@
 //   BALANCE_SIM_OUT=docs/design/handoffs npx vitest run --root packages/engine test/balance/balance-sim.test.ts
 //                                                the FULL baseline (minutes): writes balance-sim-baseline.md and .json there
 //   BALANCE_SIM_N=40 …                           fights a row in the full run (default 20; long fights use half)
+//   BALANCE_SIM_NAME=balance-sim-step1-full …    the two files' name (default balance-sim-baseline: the first baseline, the
+//                                                game before the balance pass; do not write over it)
+//   BALANCE_SIM_SHIFT=3 …                        every enemy that many levels above (or, negative, below) the squad
+//   test/balance/step1-fit.test.ts (fit.ts)      the enemy table against the targets, level by level (rules 1.15)
 //   BALANCE_SIM_FROM=docs/design/handoffs/balance-sim-baseline.json npx vitest run --root packages/engine test/balance/balance-sim.test.ts -t "rewrite"
 //                                                the report's text again from the saved numbers (seconds; after editing report.ts)
 //   BALANCE_SIM_FIGHT='{"pcs":[{"build":"sigil","variant":"normal","level":9}],"foes":[{"tier":"elite"}],"map":"open","seed":"X"}' \
@@ -129,7 +133,8 @@ describe('the fight simulator', () => {
   });
   it('plays every way to fight without a refusal it can\'t handle', () => {
     for (const b of BUILDS) {
-      const r = runFight({ pcs: [{ build: b.id, variant: 'allin', level: 20, peak: true }], foes: [{ tier: 'boss' }, { tier: 'soldier' }], map: 'cover', seed: 'WAYS-' + b.id });
+      // level 16 enemies (rules 1.15): at their own level 20 a boss and a soldier drop the all-in casters (about 210 HP) before their first turn
+      const r = runFight({ pcs: [{ build: b.id, variant: 'allin', level: 20, peak: true }], foes: [{ tier: 'boss' }, { tier: 'soldier' }], map: 'cover', seed: 'WAYS-' + b.id, level: 16 });
       expect(r.errors, b.id).toEqual([]);
       expect(r.pcs[0].turns, b.id).toBeGreaterThan(0);
     }
@@ -150,8 +155,9 @@ describe('the baseline', () => {
     const n = Math.max(1, Number(process.env.BALANCE_SIM_N) || 20), dir = fromRepo(OUT!);
     const D = runAll(FULL(n), (s) => console.log('[balance sim] ' + s));
     mkdirSync(dir, { recursive: true });
-    writeFileSync(resolve(dir, 'balance-sim-baseline.md'), writeReport(D));
-    writeFileSync(resolve(dir, 'balance-sim-baseline.json'), JSON.stringify(D, null, 1) + '\n');
+    const name = process.env.BALANCE_SIM_NAME || 'balance-sim-baseline';
+    writeFileSync(resolve(dir, name + '.md'), writeReport(D));
+    writeFileSync(resolve(dir, name + '.json'), JSON.stringify(D, null, 1) + '\n');
     console.log('[balance sim] written to ' + dir + ' · ' + D.meta.seconds + ' s · problems: ' + D.meta.errors);
     expect(D.builds.every((b: any) => !b.problems.length)).toBe(true);
   }, 3600000);

@@ -103,3 +103,39 @@ D8. Still open from the first build, with my view: Twin Souls should count a Sho
 11. Data and engine disagreements, unchanged from the first report: Unbroken (once a scene in data, once a fight in text); Reactive Plate (a reaction in data, no reaction in text); Hide costs 2 AP in code and is missing from the action list; 8 perk and trait buttons have an AP only the code works out. New: Last Round's card text does not say its +50% is for revolvers only.
 12. The Fighter's Finisher is worse than the Coup technique anyone can learn. Finisher: 3 AP, +20% per Momentum, 62 damage at 3 Momentum against a plain 37. Coup: 2 AP, +25% per Momentum, 58 damage at 2 Momentum. This is the clearest "expensive but not powerful enough" case under the peak rule.
 
+## E. Step 1 (enemy levels, criticals, accuracy): questions from the build, the fit and the review
+
+Read with: docs/design/handoffs/balance-sim-step1.md. As before, each has a recommendation and it is what gets built if no answer comes.
+
+E1. Is a Boss spared the one-hit rule? Today a level 20 character beside a level 1 one (the fight is level 10) takes a level 10 Boss out with one hit. Recommendation: spare the Boss and the Elite.
+E2. Are spell criticals x1.5 too? Your ruling 7 says 'criticals x1.5' and does not name spells; they still double. Recommendation: yes, the same x1.5 to x2.0, built in the magic step.
+E3. Do spells read the level gap? Recommendation: yes, and soon; it is one line in the magic file and part of why 3 levels up is not yet a fight to run from.
+E4. Which weapons may an enemy carry? A Boss with a Blackpoint 700 or a breacher tube ends a 100 HP character in one hit at level 1. Recommendation: leave the Narrator's list and bring those two weapons down in the weapon step.
+E5. The optimised long rifle kills a Minion in one hit at equal level. Recommendation: fix it in the weapon step, not with more Minion HP.
+E6. Should a swarm of Vermin be worth less XP? A fight started on the map with 3 or more enemies of any tier is rated Standard (50 XP). No recommendation yet; it belongs with XP by level.
+E7. Still open from the tuner's report: three rounds under fire or someone Downed in 1 fight in 3; 2 to hit a level across the gap instead of 1; whether a level 1 boss fight should cost someone; the drone's 54 HP and the beast's 109 at level 20.
+E8. Three rounds under fire, or someone Downed in one standard fight in three? The table gives one or the other today. Built: the 3 rounds (16% of fights with someone Downed). The other way is two numbers (Soldier x0.95, Elite x1.3): 42% of fights with someone Downed, and a rifleman who lasts 2 rounds. My recommendation: keep the 3 rounds and look again after the weapon step.
+E9. Should a level be worth 2 to hit instead of 1 across the level gap? With 1 (built), enemies 3 levels up are beaten 58 to 78% of the time on open ground. With 2 (tried, not built) it was 18%, and the Narrator's +2 fight fell to 36% won. My recommendation: yes, 2 a level, and then the Narrator's hardest shift may need to come down from +2 to +1.
+E10. Is a boss fight at level 1 meant to cost someone? It now puts 1.3 to 1.5 of four characters Down and is lost 3% of the time (was 2.2 to 2.5 Down and 17 to 27% lost). At level 20 it is 0.2 to 0.8 Down. My recommendation: level 1 is right; the high levels are too safe, which is finding 4.
+E11. Companions grew with the table: at their owner's level 20 the drone has 54 HP and the beast 109 (48 and 96 this morning; 30 and 60 at level 1, which you settled). Still to confirm.
+E12. The level gap to hit (+1 for the higher side and -1 for the lower, per level, to 5 levels) is my addition, because the table alone could not make '3 levels up' a fight to run from. Keep it, change its size, or replace it with something else (for example damage instead of to hit)?
+E13. Should a Boss be spared the Outclassed rule? Today a Boss 5 levels below a character dies to one hit like anything else.
+E14. Outclassed compares each character with each enemy, so one high-level character in a low-level squad one-hits the whole fight. Should the rule compare the enemy with the squad's level instead?
+E15. The drone's 30 HP and the beast's 60 HP were settled by you (item 370). They are now the level 1 numbers and grow to 48 and 96 at their owner's level 20. Is that what you want, or do companions stay fixed?
+E16. Perception 10 with Dexterity 10 gives x1.97, so the sheet alone nearly reaches the ceiling and only One Shot adds to it today. Your ruling said 'to x2 with perks and gear'. Should the sheet give less (for example +2% and +2%, x1.88 at the top) to leave room for gear?
+E17. Should spell criticals (Sigil and Outburst, both a fixed x2 today) follow the same x1.5 to x2.0 rule? I left them, because the Sigil clamp was out of this step.
+E18. Vermin deal almost nothing through medium armour. Is that right for 'weak attacks, comes in swarms', or should a swarm be a real threat to an armoured character?
+E19. Playtest request: one Proving Ground wave at your squad's level, then spawn one Elite 3 levels above you with the new level field. Did the wave end in 4 to 6 rounds, did the Elite feel like 'run', and did anything die or survive in a way that felt wrong?
+
+## F. The AP perks' cooldown and the first relabels: questions from the review
+
+F1. Should a penalty be on the cooldown at all? Talks Broke Down I after a lost talk was -2 AP every turn; it is now -2 AP on turns 1, 4 and 7 only. The same applies to Overruled!'s penalty for carrying a Brain Debuff. Recommendation: keep it, so bonus and penalty stay symmetric.
+F2. Two War Footing holders next to each other each take 2 AP from the same enemy (4 AP in all). Keep, or at most 2 AP per enemy move? Recommendation: at most 2 AP per enemy move.
+F3. The action price list counted free attacks and free moves (Dance of Iron, Roll With It, Heart Overload's free Begin) under the 3-turn ruling; the first step left them out. In or out? Recommendation: out for now; measure how often they fire in the simulator first.
+F4. Got You in My Sight pays +2 AP when the holder is the one who steps out of an enemy's sight. Should only the enemy's own move or hide count? Recommendation: yes, only the enemy's; it is a one-line change.
+F5. Southern Fist (+1 AP every turn with bare hands) and Sworn Sibling (1 shared AP a round next to your sibling): I left both out of the cooldown, as standing bonuses of 1 rather than swings of 2. Should either be covered? Under the cooldown Southern Fist would fall from 5 AP to 2 AP over a 5-round fight while still paying +1 AP on every other weapon.
+F6. War Footing: I built one cooldown for all enemies (1 enemy loses 2 AP, then nothing for 2 turns). The other reading, a cooldown kept for each enemy, would leave it nearly as strong as before. Which do you want for an Ultimate perk?
+F7. Bonus and penalty of one perk are counted separately (so a bonus can't shield you from a penalty that is due). Do you want one shared cooldown instead?
+F8. Should a cooldown carry from one fight into the next? Today every fight starts with all of them ready.
+F9. Talks Broke Down: the card now states the timing rule (a fight within one story round of the last dialogue check), and the Narrator can still overrule it. Is that the rule you want on the card?
+F10. The Name They Whisper now leaves nothing for the Narrator but naming a stranger, which is optional. May it be relabelled 'engine' in the next step?

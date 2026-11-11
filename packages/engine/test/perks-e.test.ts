@@ -80,21 +80,24 @@ describe('Grim Reaper', () => {
 // ======================================================================================================== Overruled!
 describe('Overruled!', () => {
   const setup = (tier: string) => { const f = fightWith([{ perks: { overruled: tier } }], [{ at: 'F6' }]); open(f.cb); f.turn(f.pc); return f; };
+  // Rules 1.14 (the AP perks' cooldown): the bonus and the penalty each come at most once every 3 of your turns, so
+  // these turns are three rounds apart. The cooldown itself is tested in rules114-engine-first-step.test.ts.
+  const turnLater = (f: F, n = 3) => { f.cb.round += n; return f.turn(f.pc); };
   it('I: +2 AP while your Left Brain Debuff holds on an enemy; −2 while you carry one', () => {
     const f = setup('I'), foe = f.foes[0];
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'ldebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(8);
-    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'ldebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(6);
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 3, undefined, { skipSave: true }));
-    f.unit(foe.id).conds!.ldebuff = 0; expect(f.turn(f.pc).ap).toBe(4); // a Right Brain Debuff doesn't count at Tier I
+    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'ldebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(8);
+    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'ldebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(6);
+    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 30, undefined, { skipSave: true }));
+    f.unit(foe.id).conds!.ldebuff = 0; expect(turnLater(f).ap).toBe(4); // a Right Brain Debuff doesn't count at Tier I
   });
   it('II: Right Brain Debuffs count too, and your own penalty is −1', () => {
     const f = setup('II'), foe = f.foes[0];
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(8);
-    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'rdebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(7);
+    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(8);
+    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'rdebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(7);
   });
   it('the fight\'s Persuade (a non-caster) feeds it', () => {
     const f = setup('I'), foe = f.foes[0]; weakSaves(f.unit(foe.id));
@@ -127,9 +130,12 @@ describe('Blueprint', () => {
 // ======================================================================================================== Talks Broke Down
 describe('Talks Broke Down', () => {
   const talk = (tier: string, ok: boolean) => fightAfter([{ perks: { talks_broke_down: tier } }], [{ at: 'P6' }, { at: 'P8' }], (s) => storyCheck(s, s.chars[0].id, ['charisma'], { auto: ok ? 'success' : 'fail' }));
-  it('I: a won argument before the fight, +2 AP every turn; a lost one, −2', () => {
-    const w = talk('I', true); expect(w.turn(w.pc).ap).toBe(8); expect(w.turn(w.pc).ap).toBe(8);
-    const l = talk('I', false); expect(l.turn(l.pc).ap).toBe(4);
+  // Rules 1.14 (the AP perks' cooldown): +2 on the first turn and then once every 3 turns (it was every turn).
+  /** The holder's turn in round r (the fight may have opened on their turn already: the cooldown starts fresh). */
+  const turnIn = (f: ReturnType<typeof talk>, r: number) => { if (r === 1) delete f.unit(f.pc.id).ps!['perk:talks_broke_down'].cd; f.cb.round = r; return f.turn(f.pc).ap; };
+  it('I: a won argument before the fight, +2 AP on turns 1, 4 and 7; a lost one, −2 on the same turns', () => {
+    const w = talk('I', true); expect([1, 2, 3, 4, 5, 6, 7].map((r) => turnIn(w, r))).toEqual([8, 6, 6, 8, 6, 6, 8]);
+    const l = talk('I', false); expect([1, 2, 3, 4].map((r) => turnIn(l, r))).toEqual([4, 6, 6, 4]);
   });
   it('II: no penalty, and the first enemy in initiative hesitates (−1 AP in round 1)', () => {
     const l = talk('II', false); expect(l.turn(l.pc).ap).toBe(6);

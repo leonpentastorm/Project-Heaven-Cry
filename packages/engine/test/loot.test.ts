@@ -89,7 +89,7 @@ describe('rolling: determinism, the cap, the boss (items 692, 695, 696, 699)', (
   it('the default table follows the kind, a caster rolls the caster table, and rolls follow the tier', () => {
     const { foes } = bare([{ name: 'Clerk', tier: 'minion', weapon: 'fists' }, { name: 'Drone', tier: 'minion', weapon: 'fists', kind: 'drone' }, { name: 'Hound', tier: 'minion', weapon: 'beast_bite', kind: 'beast' }, { name: 'Adept', tier: 'soldier', weapon: 'combat_knife', caster: 'sigil_adept' }]);
     expect(foes.map(defaultTable)).toEqual(['person', 'machine', 'beast', 'caster']);
-    expect(LOOT.rolls_by_tier).toEqual({ minion: 1, soldier: 1, elite: 2, boss: 2 });
+    expect(LOOT.rolls_by_tier).toEqual({ vermin: 0, minion: 1, soldier: 1, elite: 2, boss: 2 }); // rules 1.15: Vermin drop nothing from the tables
     // A machine's roll is parts or cores, never a personal effect.
     for (let s = 1; s <= 30; s++) { const x = bare([{ name: 'Unit', tier: 'elite', weapon: 'fists', kind: 'robot' }], 'boss', s); kill(x.cb, x.foes[0], x.rng); for (const e of pileOn(x.cb.objects, x.foes[0].pos)?.items || []) expect(['spare_parts', 'standard_core']).toContain(e.pack!.item || e.pack!.id); }
     // A person's personal effect is one of the 20, a plot item.

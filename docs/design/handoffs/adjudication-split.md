@@ -6,6 +6,11 @@ label is "hybrid" (64) or "narrator" (16) was read three ways: its card, the cod
 and the text pass found. Each sits in exactly one of six groups. Numbers and rules I propose are marked **(proposed)**
 and listed again in section 9.
 
+**Status, 11 Nov 2026: the first step is built** (spec, rules 1.14, "The engine takes everything it can, first
+step"; items 1101 to 1116). What was done is ticked in section 13 at the end, and checked by a second reader in section 14; everything else in this document still
+waits. The sentence above ("nothing in the game was changed") is true of this document as it was written, not of the
+game now.
+
 **Checked twice.** A second reader re-read all 80 cards and their code without relying on the first reading. Nine
 items changed group, one finding was wrong and is corrected, and the deed section was brought in line with work done
 at the same time. What changed is listed in section 12.
@@ -89,6 +94,8 @@ you to confirm it.
    traits already keep a separate "narrator hook" line in the data for exactly this.
 
 ## 4. Group A: already engine-run in practice (19). Recommendation for all: relabel "engine"
+
+**DONE (11 Nov 2026): all 19 are labelled "engine".** See section 13.
 
 The last column says what, if anything, is still the Narrator's. "Nothing" means the card needs no Narrator at all.
 "Colour" rows are the 11 that depend on question 1.
@@ -470,3 +477,89 @@ Confirmed as the first reading had them: the other 71 group placements; the 34 l
 - Credits: `c.state.credits` in `classes/j.ts` (provisional; the Narrator sets it).
 - Deeds: the nine fight detectors are in `packages/engine/src/deeds.ts` (spec "Deeds the engine sees", item 1014).
   Hooks the other five can use: `stay_hidden_result`, `notice`, and `raiseAlarm` in `world.ts`.
+
+## 13. What has been built (first step, 11 Nov 2026)
+
+Built from the recommendations to questions 1, 4, 5, 6, 8, 9 and 12 of section 8 (C1, C4, C5, C6, C8, C9 and C12 in
+`balance-questions.md`), because no answer had come. Each is provisional and listed in the spec (section 14, items
+1101 to 1111). If you answer differently, each is one small change back.
+
+### Ticked off
+
+| # | What | Where in this document | State |
+|---|---|---|---|
+| 1 | Group A relabelled "engine": all 19 (8 perks, 11 traits). Each handler was read once more; nothing in any of them waits for a ruling. | Section 4; order of work, step 1 | Done |
+| 2 | Talks Broke Down's card gives the timing rule instead of "the Narrator decides" (the Narrator can still overrule). | Section 4; finding 9 | Done |
+| 3 | The Name They Whisper no longer reads "unaware". A stranger is spared: the label "stranger", or a name on the holder's strangers list. | Finding 2; question 8 | Done, with one gap (below) |
+| 4 | Verse of War: the audit sentence, its note and its Narrator line are gone. | Finding 4; question 9 | Done |
+| 5 | True Name: "studied" means Analyzed. The engine refuses the name in a fight, and for a being on the area map, until then. | Finding 3; question 4 | Done |
+| 6 | Crowd Pleaser: 3 or more listeners within 8 tiles is a crowd outside a fight too; the engine counts the people on the area map itself. | Group D row; question 5 | Done |
+| 7 | Old Tongue II: the being holds its attacks and may still move; it no longer loses the whole turn. | Finding 7; question 12 | Done |
+| 8 | Fire Sermon's deed needs a Faithful character. | Section 6; question 6 | Done |
+| 9 | Leftover Narrator hints removed from Into the Dark and Just the Repairman (Make Way's "crowds part" is its colour and stays). | Finding 19 | Done |
+| 10 | The AP perks' cooldown, 3 turns: Grim Reaper, Got You in My Sight, Overruled!, Talks Broke Down, Sweet Talker, War Footing, Forlorn Hope, Rabbit's Foot (Vengeful). | Order of work, step 7 | Done |
+
+### The counts now (by label, of 180)
+
+| | engine | hybrid | narrator | engine share |
+|---|---|---|---|---|
+| Before | 100 | 64 | 16 | 56% |
+| After the first step | 119 | 46 | 15 | 66% |
+
+By line of effect nothing moved: 465 of 552 lines are the engine's (84%), as in section 2. The relabel changed labels,
+not the stored effect lines.
+
+### Left open by this step
+
+1. **The label and the badge still disagree** (finding 1). 13 of the 19 relabelled items still carry a stored effect
+   line marked for the Narrator (the colour lines, plus three stale ones: Verse of War's audit, Sigil Savant's
+   practised words, Foreseen's rewind), so the character sheet's badge still says "Both" for them (Foreseen:
+   "Narrator rules it"). Making one from the other is the rest of step 1.
+2. **The "stranger" label cannot be given to an enemy yet.** The perk reads it, but the list of labels an enemy may
+   carry does not hold it (that list is the "labels on people" work, step 2). Until then the Narrator spares a
+   stranger through the holder's strangers list.
+3. **Stale data lines** (finding 18) are untouched, and the stored effect lines of the eight cooldown items still say
+   "once a turn" or nothing; only their card text and the code changed.
+4. Groups B, C and D, the five deeds outside a fight, the twelve rewrites, Cultured and Ace Pilot: not started. The
+   order in section 10 stands, from step 2.
+
+## 14. The first step, reviewed (11 Nov 2026)
+
+A second reader tried to break the first step: every relabelled handler read again, each of the six fixes checked card
+against game, and the cooldown attacked through real turns. Spec: rules 1.14, "After the review"; items 1112 to 1116.
+
+### Ticked off
+
+| # | Checked | Result |
+|---|---|---|
+| 1 | The 19 relabels: is anything left for a Narrator to rule (a standing line, a note, a pending ruling, a card sentence)? | Nothing but colour. No label went back. 119 engine, 46 hybrid, 15 narrator stands. |
+| 2 | Just the Repairman | Fixed: its line to the Narrator said the cover holds "until they act unlike a repairman" (a judgement nobody has). It now says what the card says: unless the character attacks. |
+| 3 | True Name | Fixed: a being Analyzed on the area map was refused in the fight the Narrator then started. The holder now remembers who the squad Analyzed there. The card and both buttons say "It must have been Analyzed first". |
+| 4 | Grim Reaper II | Fixed (card only): the Fear comes with a kill or knock-out on your own turn, every time; the card said "a kill of yours". |
+| 5 | The Name They Whisper | Fixed (card only): it is hybrid, so the card names the judgement: "the Narrator says who has never heard of you". |
+| 6 | Verse of War, Crowd Pleaser, Old Tongue II, Fire Sermon's deed | Card and game agree. Old Tongue II was played through real turns: the being holds its attacks for one turn whichever of you acts first, then fights again. |
+| 7 | The cooldown, 8 items | Held against every attempt: 8 real rounds, a save and reload, a second fight, two holders, triggers on an enemy's turn, the Proving Ground's tools, a fight saved before the cooldown existed, the penalty side. Nothing was missed against the AP sources of the action price list, and the Calls and QUICKEN are untouched. |
+
+### Found and left, because the file is not this step's
+
+1. **An Analyze made on the area map is lost when the Narrator starts the fight.** Only a fight a player opens by
+   attacking carries the mark in. True Name now works around it; Analyze itself (the squad's read of HP, Defense and
+   armour, Read Them) still has to be done again. One line where the fight is started.
+2. **The "stranger" label still cannot be put on an enemy** (as section 13 says): the list of labels an enemy may
+   carry does not hold it. The Narrator's list on the holder is the way that works.
+3. **Three stored effect lines still tell the old story** for items this step fixed: The Name They Whisper ("The
+   Narrator decides who knows who you are"), True Name ("The Narrator confirms the character has studied it") and
+   Verse of War ("Judge whether the player is speaking in verse"). No player sees them and the AI Narrator is not sent
+   them, but they belong to the stale-lines clean-up.
+
+### For Leon (also in the spec, item 1115)
+
+1. Should a **penalty** be on the cooldown at all? Talks Broke Down I after a lost talk was −2 AP every turn; it is
+   now −2 on turns 1, 4 and 7.
+2. Two **War Footing** holders next to each other each take 2 AP from the same enemy (4 in all). Keep, or once per
+   enemy move?
+3. The action price list counted **free attacks and free moves** (Dance of Iron, Roll With It, Heart Overload's free
+   Begin) under the 3-turn ruling. The first step left them out. In or out?
+4. **Got You in My Sight** also pays when the holder is the one who walks out of an enemy's sight. With the cooldown
+   that is 2 AP every 3 turns for stepping behind a wall. Should only the enemy's own move or hide count?
+

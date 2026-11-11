@@ -949,7 +949,7 @@
       "slot": "alpha",
       "summary": "The quick hand. Guns, bows, thrown weapons and light blades; reloads, recoil, quick-draw.",
       "per_point": {
-        "text": "+1 to hit with guns, light blades and thrown weapons. +5% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
+        "text": "+1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1089,7 +1089,7 @@
           "No tricks here. I don't even need to open my eyes. I've carried this revolver since the years before Operation Daggerfall, stranger. Call me old-fashioned, call me outdated, but don't take this old body lightly in a gunfight. Wander within 500 metres and if your head doesn't vanish, your hat will need a big patch. These eyes aren't what they were, but these hands have never left the gunbelt. Identify. Squeeze. Breathe the powder smoke. Dig the grave."
         ],
         "intro": "Dexterity measures how reliable you are at anything that needs precision. Anyone can reload a gun or throw a dart. Nobody does it as fast or as clean as you.",
-        "effect": "+1 to hit with guns, light blades and thrown weapons. +5% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
+        "effect": "+1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
         "high_levels": "your hands work like a machine and your trained skills fire almost on their own. So you want to use them even when it's the wrong moment, and announcing your habits to the whole world is never a good idea.",
         "good_for": "gunslingers, snipers, blade masters, point strikers.",
         "bad_for": "gamblers, magic users, anyone who doesn't want to be called \"hands faster than brain.\"",

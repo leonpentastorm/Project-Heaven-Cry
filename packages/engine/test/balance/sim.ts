@@ -13,7 +13,7 @@
 import { apply, newGame, bindGame, MAPS, WEAPON, TECHNIQUE, alive, previewAttack, previewTechnique, techniquePad, pressureCap, isPressed, isSuppressed, maxHp } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { onHook } from '../../src/effects/hooks';
-import { ENEMY } from '../../src';
+import { ENEMY, clampEnemyLevel } from '../../src';
 import { buildCharacter, BUILD, type Variant } from './builds';
 import { POLICIES, sigilAfter, type Ctx, type Step } from './policies';
 
@@ -24,8 +24,19 @@ MAPS.sim_cover = { id: 'sim_cover', name: 'Ground with cover (simulator)', w: 16
   cover: ['3,5', '3,3', '3,7', '12,5', '12,3', '12,7', '7,4', '8,6', '2,2', '13,2'], full: ['7,1', '8,9'], ...START };
 export const MAP_ID = { open: 'sim_open', cover: 'sim_cover' };
 /** The weapon each tier carries here: the first one the Proving Ground gives that tier. */
-export const TIER_WEAPON: Record<string, string> = { minion: 'service_pistol', soldier: 'hellraiser_service_rifle', elite: 'legion_bullpup', boss: 'hellraiser_lmg' };
+export const TIER_WEAPON: Record<string, string> = { vermin: 'beast_bite', minion: 'service_pistol', soldier: 'hellraiser_service_rifle', elite: 'legion_bullpup', boss: 'hellraiser_lmg' };
 export const TIERS = ['minion', 'soldier', 'elite', 'boss'];
+/** Every tier, Vermin included (rules 1.15). TIERS stays the four the baseline's tables are built on. */
+export const ALL_TIERS = ['vermin', ...TIERS];
+/** Rules 1.15: enemies have levels. A fight's enemies are the squad's level (the average, rounded down) unless the spec
+ * says otherwise: `level` sets the fight's level outright, `shift` moves it from the squad's (any size: the simulator is
+ * not held to the Narrator's −3 to +2), and one foe may carry its own `level`. BALANCE_SIM_SHIFT=<n> shifts every
+ * fight of a run that names neither ("+3": every enemy 3 levels above the squad). */
+export const ENV_SHIFT = Math.trunc(Number((globalThis as any).process?.env?.BALANCE_SIM_SHIFT) || 0);
+export function foeLevel(spec: { pcs: { level: number }[]; level?: number; shift?: number }): number {
+  const squad = Math.floor(spec.pcs.reduce((t, p) => t + p.level, 0) / Math.max(1, spec.pcs.length));
+  return clampEnemyLevel(spec.level ?? squad + (spec.shift ?? ENV_SHIFT));
+}
 // THE SHOOTING RANGE (test only): a target with a soldier's Defense and armour and 5,000 HP that never acts. The engine
 // asks every item "may this enemy act?" before each enemy action (the hook Between Heartbeats uses); this one answer,
 // for this one test-only tier, is "no". Damage a turn is then measured with nothing in the way: no Pressure on the
@@ -35,7 +46,7 @@ TIER_WEAPON.sim_range_soldier = TIER_WEAPON.soldier;
 if (!(fxTaps as any).__balanceRange) { (fxTaps as any).__balanceRange = true; onHook('enemy_action_start', (ctx: any) => { if (ctx?.u?.tier === 'sim_range_soldier') { ctx.skip = true; ctx.u.ap = 0; } }); }
 
 export interface PcSpec { build: string; variant: Variant; level: number; policy?: string; peak?: boolean }
-export interface FightSpec { pcs: PcSpec[]; foes: { tier: string; weapon?: string }[]; map: 'open' | 'cover'; seed: string; maxRounds?: number }
+export interface FightSpec { pcs: PcSpec[]; foes: { tier: string; weapon?: string; level?: number }[]; map: 'open' | 'cover'; seed: string; maxRounds?: number; /** the fight's level outright */ level?: number; /** levels above (+) or below (−) the squad */ shift?: number }
 export const RES = ['momentum', 'guard', 'heat', 'ammo', 'mp', 'strain', 'flux', 'charge', 'cores', 'echo', 'reactions'];
 const AP_KINDS = ['attack', 'technique', 'spell', 'prayer', 'call', 'move', 'reload', 'setup', 'other'];
 export interface PcResult {
@@ -80,8 +91,8 @@ export function startFight(spec: FightSpec, begin = true) {
   builds.forEach((b, i) => { const c = b.c; c.id = 'c' + (i + 1); c.owner = 'host'; c.name = BUILD[spec.pcs[i].build].label + (spec.pcs.length > 1 ? ' ' + (i + 1) : ''); g.characters[c.id] = c; });
   g = apply(g, { type: 'session/start' }, 'host');
   g = apply(g, { type: 'narrator/turn', turn: { narration: 'The test begins.', sceneTitle: 'Simulator' } }, 'host');
-  const open = { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Simulated fight', map: MAP_ID[spec.map], difficulty: 'standard',
-    enemies: spec.foes.map((f, i) => ({ name: f.tier[0].toUpperCase() + f.tier.slice(1) + ' ' + (i + 1), tier: f.tier, weapon: f.weapon || TIER_WEAPON[f.tier] || 'service_pistol', no_surrender: true })) } } };
+  const open = { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Simulated fight', map: MAP_ID[spec.map], difficulty: 'standard', level: foeLevel(spec),
+    enemies: spec.foes.map((f, i) => ({ name: f.tier[0].toUpperCase() + f.tier.slice(1) + ' ' + (i + 1), tier: f.tier, weapon: f.weapon || TIER_WEAPON[f.tier] || 'service_pistol', no_surrender: true, ...(f.level != null ? { level: f.level } : {}) })) } } };
   if (begin) g = apply(g, open, 'host');
   return { g, builds, open };
 }
@@ -285,19 +296,19 @@ export function figures(c: Cell) {
 }
 
 /** N seeded fights of one build against one tier; returns the cell. */
-export function runCell(pc: PcSpec, tier: string, map: 'open' | 'cover', n: number, o: { foes?: number; tag?: string; maxRounds?: number } = {}): Cell {
+export function runCell(pc: PcSpec, tier: string, map: 'open' | 'cover', n: number, o: { foes?: number; tag?: string; maxRounds?: number; level?: number; shift?: number } = {}): Cell {
   let cell: Cell | null = null; const foes = Array(o.foes || 1).fill(0).map(() => ({ tier }));
   const key = [pc.build, pc.variant, pc.level, (pc.policy || BUILD[pc.build].policy) + (pc.peak ? '+peak' : ''), tier, map, o.foes || 1, o.tag || ''].join('|');
-  for (let i = 0; i < n; i++) cell = addResult(cell, runFight({ pcs: [pc], foes, map, seed: 'SIM-' + key + '-' + i, maxRounds: o.maxRounds }), 0, key);
+  for (let i = 0; i < n; i++) cell = addResult(cell, runFight({ pcs: [pc], foes, map, seed: 'SIM-' + key + '-' + i, maxRounds: o.maxRounds, ...(o.level != null ? { level: o.level } : {}), ...(o.shift != null ? { shift: o.shift } : {}) }), 0, key);
   return cell!;
 }
 
 /** A fight in which nothing has happened yet: the character acts first, so no enemy has Pressed, hurt or moved anyone.
  * (The opening of a fight plays the turns of every enemy that won initiative; a preview taken after that is not the
  * card's clean number.) Seeds are tried in turn until the character has won initiative. */
-export function freshFight(pc: PcSpec, tier: string, tag = 'PV') {
+export function freshFight(pc: PcSpec, tier: string, tag = 'PV', lv: { level?: number; shift?: number } = {}) {
   for (let i = 0; i < 400; i++) {
-    const st = startFight({ pcs: [pc], foes: [{ tier }], map: 'open', seed: tag + '-' + i }), cb = st.g.combat, u = cb.units.find((q: any) => q.side === 'pc'), t = cb.units.find((q: any) => q.side === 'foe');
+    const st = startFight({ pcs: [pc], foes: [{ tier }], map: 'open', seed: tag + '-' + i, ...lv }), cb = st.g.combat, u = cb.units.find((q: any) => q.side === 'pc'), t = cb.units.find((q: any) => q.side === 'foe');
     if (cb.round === 1 && cb.order[cb.turn] === u.id && u.hp === u.maxHp && t.hp === t.maxHp && !isPressed(u) && !isPressed(t)) return st;
   }
   throw new Error('no seed in 400 gave ' + pc.build + ' the first turn against a ' + tier);
@@ -305,8 +316,8 @@ export function freshFight(pc: PcSpec, tier: string, tag = 'PV') {
 
 /** The engine's own answer for a plain attack by a build on a tier at 4 tiles (guns) or next to it (melee): the
  * sanity check sets the simulator's attack numbers against this. */
-export function plainPreview(pc: PcSpec, tier: string) {
-  const { g } = freshFight(pc, tier);
+export function plainPreview(pc: PcSpec, tier: string, lv: { level?: number; shift?: number } = {}) {
+  const { g } = freshFight(pc, tier, 'PV', lv);
   const cb = g.combat, u = cb.units.find((q: any) => q.side === 'pc'), t = cb.units.find((q: any) => q.side === 'foe'), melee = /melee|unarmed/.test(WEAPON[u.weapon].category);
   u.pos = melee ? '6,5' : '3,5'; t.pos = '7,5'; u.ap = 6; u.heat = 0; u.shotsThisTurn = 0;
   const pv = W(g, () => previewAttack(cb, u, t, melee ? 'melee' : 'shot'));
@@ -316,7 +327,7 @@ export function plainPreview(pc: PcSpec, tier: string) {
   let back = W(g, () => previewAttack(cb, t, u, fmode));
   if (!back.ok && /Brace/i.test(back.why || '')) { t.braced = true; back = W(g, () => previewAttack(cb, t, u, fmode)); }
   return { ok: pv.ok, why: pv.why, ap: pv.ap, pct: pv.pct, hit: pv.dmg ? Math.max(1, Math.floor(pv.dmg.total) - pv.dmg.armour) : 0, crit: pv.dmg ? Math.max(1, Math.floor(pv.dmg.total * pv.dmg.crit) - pv.dmg.armour) : 0, critMult: pv.dmg?.crit,
-    foeHp: t.maxHp, foeDef: t.def, foeArmour: t.armour, pcHp: u.maxHp, pcDef: u.def, pcArmour: u.armour, guardMax: u.resMax?.guard || 0,
+    foeLevel: t.level, foeHp: t.maxHp, foeDef: t.def, foeArmour: t.armour, pcHp: u.maxHp, pcDef: u.def, pcArmour: u.armour, guardMax: u.resMax?.guard || 0,
     foe: back.ok && back.dmg ? { pct: back.pct, raw: Math.floor(back.dmg.total), afterArmour: Math.max(1, Math.floor(back.dmg.total) - back.dmg.armour), ap: back.ap } : { why: back.why } };
 }
 

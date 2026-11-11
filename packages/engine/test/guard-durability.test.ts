@@ -18,7 +18,7 @@ function fight(specs: { dur?: number; weapon?: string; shield?: string; known?: 
   f.cb.objects = [];
   const spots = ['C5', 'C4', 'C6'];
   f.pcs.forEach((u, i) => { f.put(u, spots[i]); const s = specs[i]; if (s.shield) { f.char(u).offHand = { id: s.shield } as any; f.unit(u.id).offItem = s.shield; } });
-  const foe = f.put(f.foe, o.foeAt || 'D5'); foe.hp = foe.maxHp = 900;
+  const foe = f.put(f.foe, o.foeAt || 'D5'); foe.hp = foe.maxHp = 900; foe.lvlDmg = 1; // its weapon's plain damage (rules 1.15 would scale it; these tests count Guard against whole numbers)
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
   f.turn(f.pc);
   for (const u of f.cb.units) { delete (u as any).reactUsed; if (u.side === 'pc') { u.hp = u.maxHp; u.armour = 0; } }

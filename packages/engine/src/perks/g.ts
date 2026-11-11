@@ -185,14 +185,23 @@ register({
 });
 
 // ---------- Crowd Pleaser (Charisma 3/5): one roll for a whole crowd at +2; II: turn it against one named person ----------
-// Story: +2 Charisma on a check tagged crowd (or applies crowd_pleaser); the one roll is the Narrator's (one check).
-// Combat (PROVISIONAL): a Persuade or Threaten heard by 3+ enemies is one roll for all of them, its save TN +2.
+// Story: +2 Charisma on a check made to a crowd; the one roll is the Narrator's (one check). A crowd (rules 1.14, spec
+// item 1108, PROVISIONAL) is 3 or more listeners within 8 tiles: the engine counts the people on the area map around
+// the speaker (hostile or neutral, not hidden) by itself; with no map the Narrator tags the check crowd (or applies
+// crowd_pleaser). Combat (PROVISIONAL): a Persuade or Threaten heard by 3+ enemies is one roll for all of them, its save TN +2.
+const CROWD = 3;
+/** Is the holder talking to a crowd: the Narrator said so, or 3 or more people on the area map are within earshot. Read only. */
+function crowdHere(ctx: any, h: Holder): boolean {
+  if (tagsOf(ctx).includes('crowd') || appliesTo(ctx.ck, 'crowd_pleaser')) return true;
+  const g = gOf(h), at = h.c ? g?.story?.positions?.[h.c.id] : null; if (!at || g?.phase === 'combat') return false;
+  return ((g.story.npcs || []) as any[]).filter((n) => n && n.pos && !n.hidden && dist(at, n.pos) <= HEARING).length >= CROWD;
+}
 register({
   id: 'crowd_pleaser',
   claims: ['skill_mod'], narrator: ['narrator'],
   on: {
-    check_mod: (ctx, h) => { if (ctx.c === h.c && hasSkill(ctx.ck, 'charisma') && (tagsOf(ctx).includes('crowd') || appliesTo(ctx.ck, 'crowd_pleaser'))) addOnce(ctx, 2, 'Crowd Pleaser'); },
-    check_result: (ctx, h) => { if (ctx.c === h.c && tierII(h) && ctx.roll?.ok && (tagsOf(ctx).includes('crowd') || appliesTo(ctx.ck, 'crowd_pleaser'))) ruling(h, 'Crowd Pleaser II: the crowd is won; ' + h.c!.name + ' may turn it against one named person (ask or let them say who).'); },
+    check_mod: (ctx, h) => { if (ctx.c === h.c && hasSkill(ctx.ck, 'charisma') && crowdHere(ctx, h)) addOnce(ctx, 2, 'Crowd Pleaser'); },
+    check_result: (ctx, h) => { if (ctx.c === h.c && tierII(h) && ctx.roll?.ok && hasSkill(ctx.ck, 'charisma') && crowdHere(ctx, h)) ruling(h, 'Crowd Pleaser II: the crowd is won; ' + h.c!.name + ' may turn it against one named person (ask or let them say who).'); },
     parley: (ctx, h) => {
       if (ctx.u !== h.u || !h.cb || (ctx.kind !== 'persuade' && ctx.kind !== 'threaten')) return;
       const crowd = h.cb.units.filter((t) => t.side !== h.u!.side && alive(t) && !t.surrendered && dist(h.u!.pos, t.pos) <= HEARING);
@@ -272,7 +281,8 @@ register({
 // ---------- Old Tongue (Lore Master 3/5): read any ancient or upper-realm script; II: speak it, one parley per being ----------
 // Story: a check tagged ancient_script (or applies old_tongue) is an automatic success for the holder: they read it.
 // II: 'Speak the Old Tongue' (story, and in a fight against an upper-realm being): once per being, it parleys. In a
-// fight (PROVISIONAL) it holds its next turn's attacks while it listens; the words go to the Narrator. It gives parley
+// fight (PROVISIONAL) it holds its next turn's attacks while it listens (rules 1.14, spec item 1109: no attack, spell
+// or technique on that turn, but it may move; it used to lose the whole turn); the words go to the Narrator. It gives parley
 // when met, never summons a Celestial (the Accords), and what scripts reveal stays inside the Veil.
 const parleyed = (h: Holder): string[] => (sro(h).beings || []);
 register({
@@ -302,8 +312,11 @@ register({
       },
       run: (h, a) => {
         const t = h.cb!.units.find((x) => x.id === a.targetId)!; (sst(h).beings ||= []).push(t.npcId || t.name);
+        // Holding its attacks is the 'hold' order of Commanded (the enemy's turn: no attack, spell or technique; it may
+        // move), put on with no save and by nobody's Heart magic, so nothing that stops a condition stops the parley.
+        (t.conds ||= {}).commanded = Math.max(t.conds.commanded || 0, 1); (t.condArg ||= {}).commanded = 'hold';
         stateOf(h).listening = t.id;
-        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tongue): it stops to listen.');
+        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tongue): it holds its attacks on its next turn and listens.');
         note(h, t.name + ' (upper-realm) parleys with ' + h.u!.name + (a.text ? ': "' + clip(a.text, 160) + '"' : '') + '. Rule what it agrees to.');
       },
     },
@@ -314,7 +327,7 @@ register({
     check_post: (ctx, h) => { if (ctx.c === h.c && (tagsOf(ctx).includes('ancient_script') || appliesTo(ctx.ck, 'old_tongue')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('OLD TONGUE'); } },
     enemy_action_start: (ctx, h) => {
       const st = h.u?.ps?.[h.key] as any; if (!st?.listening || ctx.u.id !== st.listening) return;
-      delete st.listening; ctx.skip = true; ctx.u.ap = 0; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tongue).');
+      delete st.listening; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tongue).');
     },
   },
   brief: (h) => 'reads any ancient or upper-realm script (tag such checks ancient_script)' + (tierII(h) ? '; speaks it: one parley per being' : '') + '; within the Veil',

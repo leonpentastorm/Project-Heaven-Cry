@@ -1,0 +1,9598 @@
+{
+ "about": "Balance pass, step 1 (rules 1.15): the enemy table fitted with the fight simulator, 11 Nov 2026. Read with balance-sim-step1.md. Made by packages/engine/test/balance/fit.ts (BALANCE_FIT_OUT). levels: 1, 3, 6, 9, 12, 20. In every summary list the six entries are those levels in order; \"open\"/\"cover\" are the two maps; rounds are rounds to win; *_any is the percent of fights with someone Downed; *_downs is characters Downed a fight; plain_gun_* and tank_* are rounds lasted under fire (soldiers = 2 soldiers, mixed = 1 elite and 1 soldier) and *_by3 the percent of fights Down by the end of round 3; up3/up2 are percent of standard fights won against enemies 3 and 2 levels above; down5 is the most hits any enemy 5 levels below took; htk is the yardstick's hits to kill, hit its chance to hit.",
+ "fitted": {
+  "fights_a_cell": 60,
+  "table": {
+   "tiers": {
+    "vermin": {
+     "hp": 15,
+     "armour": 0,
+     "defense": 10,
+     "attack_bonus": 0,
+     "damage": 0.5
+    },
+    "minion": {
+     "hp": 70,
+     "armour": 0,
+     "defense": 10,
+     "attack_bonus": 1,
+     "damage": 1
+    },
+    "soldier": {
+     "hp": 140,
+     "armour": 5,
+     "defense": 11,
+     "attack_bonus": 3,
+     "damage": 0.78
+    },
+    "elite": {
+     "hp": 240,
+     "armour": 10,
+     "defense": 12,
+     "attack_bonus": 5,
+     "damage": 1.05
+    },
+    "boss": {
+     "hp": 960,
+     "armour": 10,
+     "defense": 13,
+     "attack_bonus": 6,
+     "damage": 1.2
+    }
+   },
+   "levels": [
+    {
+     "level": 1,
+     "hp_mult": 1,
+     "armour_mult": 1,
+     "defense_plus": 0,
+     "attack_plus": 0,
+     "damage_mult": 1
+    },
+    {
+     "level": 2,
+     "hp_mult": 1.07,
+     "armour_mult": 1.04,
+     "defense_plus": 0,
+     "attack_plus": 0,
+     "damage_mult": 1.02
+    },
+    {
+     "level": 3,
+     "hp_mult": 1.16,
+     "armour_mult": 1.09,
+     "defense_plus": 1,
+     "attack_plus": 0,
+     "damage_mult": 1.05
+    },
+    {
+     "level": 4,
+     "hp_mult": 1.23,
+     "armour_mult": 1.16,
+     "defense_plus": 1,
+     "attack_plus": 0,
+     "damage_mult": 1.07
+    },
+    {
+     "level": 5,
+     "hp_mult": 1.3,
+     "armour_mult": 1.2,
+     "defense_plus": 2,
+     "attack_plus": 0,
+     "damage_mult": 1.1
+    },
+    {
+     "level": 6,
+     "hp_mult": 1.38,
+     "armour_mult": 1.27,
+     "defense_plus": 2,
+     "attack_plus": 1,
+     "damage_mult": 1.13
+    },
+    {
+     "level": 7,
+     "hp_mult": 1.43,
+     "armour_mult": 1.29,
+     "defense_plus": 3,
+     "attack_plus": 1,
+     "damage_mult": 1.17
+    },
+    {
+     "level": 8,
+     "hp_mult": 1.49,
+     "armour_mult": 1.36,
+     "defense_plus": 3,
+     "attack_plus": 1,
+     "damage_mult": 1.2
+    },
+    {
+     "level": 9,
+     "hp_mult": 1.54,
+     "armour_mult": 1.4,
+     "defense_plus": 4,
+     "attack_plus": 1,
+     "damage_mult": 1.24
+    },
+    {
+     "level": 10,
+     "hp_mult": 1.61,
+     "armour_mult": 1.47,
+     "defense_plus": 4,
+     "attack_plus": 2,
+     "damage_mult": 1.28
+    },
+    {
+     "level": 11,
+     "hp_mult": 1.67,
+     "armour_mult": 1.49,
+     "defense_plus": 5,
+     "attack_plus": 2,
+     "damage_mult": 1.33
+    },
+    {
+     "level": 12,
+     "hp_mult": 1.74,
+     "armour_mult": 1.56,
+     "defense_plus": 5,
+     "attack_plus": 2,
+     "damage_mult": 1.38
+    },
+    {
+     "level": 13,
+     "hp_mult": 1.78,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 3,
+     "damage_mult": 1.43
+    },
+    {
+     "level": 14,
+     "hp_mult": 1.78,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 3,
+     "damage_mult": 1.48
+    },
+    {
+     "level": 15,
+     "hp_mult": 1.79,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 4,
+     "damage_mult": 1.53
+    },
+    {
+     "level": 16,
+     "hp_mult": 1.79,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 4,
+     "damage_mult": 1.58
+    },
+    {
+     "level": 17,
+     "hp_mult": 1.8,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 5,
+     "damage_mult": 1.64
+    },
+    {
+     "level": 18,
+     "hp_mult": 1.8,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 5,
+     "damage_mult": 1.7
+    },
+    {
+     "level": 19,
+     "hp_mult": 1.81,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 6,
+     "damage_mult": 1.76
+    },
+    {
+     "level": 20,
+     "hp_mult": 1.81,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 6,
+     "damage_mult": 1.82
+    }
+   ]
+  },
+  "summary": {
+   "standard_open": [
+    4.85,
+    4.183333333333334,
+    4.316666666666666,
+    4.35,
+    5.066666666666666,
+    4.366666666666666
+   ],
+   "standard_open_win": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "standard_open_any": [
+    20,
+    2,
+    12,
+    3,
+    15,
+    3
+   ],
+   "standard_open_downs": [
+    0.21666666666666667,
+    0.016666666666666666,
+    0.13333333333333333,
+    0.03333333333333333,
+    0.16666666666666666,
+    0.03333333333333333
+   ],
+   "standard_cover": [
+    5.677966101694915,
+    5.05,
+    5.466666666666667,
+    5.3,
+    5.4,
+    4.8
+   ],
+   "standard_cover_win": [
+    98,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "standard_cover_any": [
+    35,
+    15,
+    22,
+    12,
+    42,
+    13
+   ],
+   "standard_cover_downs": [
+    0.4666666666666667,
+    0.16666666666666666,
+    0.25,
+    0.13333333333333333,
+    0.4666666666666667,
+    0.13333333333333333
+   ],
+   "elite_open": [
+    5.517241379310345,
+    4.783333333333333,
+    5.1,
+    4.95,
+    5.2,
+    4.583333333333333
+   ],
+   "elite_open_win": [
+    97,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "elite_open_any": [
+    52,
+    23,
+    32,
+    20,
+    45,
+    15
+   ],
+   "elite_open_downs": [
+    0.8333333333333334,
+    0.25,
+    0.4,
+    0.2,
+    0.5666666666666667,
+    0.15
+   ],
+   "elite_cover": [
+    6.327586206896552,
+    6.016666666666667,
+    6.186440677966102,
+    6.183333333333334,
+    6.7,
+    5.633333333333334
+   ],
+   "elite_cover_win": [
+    97,
+    100,
+    98,
+    100,
+    100,
+    100
+   ],
+   "elite_cover_any": [
+    57,
+    40,
+    60,
+    55,
+    70,
+    30
+   ],
+   "elite_cover_downs": [
+    0.9166666666666666,
+    0.5333333333333333,
+    0.8,
+    0.6,
+    0.75,
+    0.3
+   ],
+   "boss_open": [
+    8.982758620689655,
+    7.694915254237288,
+    7.237288135593221,
+    7.135593220338983,
+    7.866666666666666,
+    6.483333333333333
+   ],
+   "boss_open_win": [
+    97,
+    98,
+    98,
+    98,
+    100,
+    100
+   ],
+   "boss_open_any": [
+    78,
+    63,
+    58,
+    37,
+    62,
+    25
+   ],
+   "boss_open_downs": [
+    1.3166666666666667,
+    0.9333333333333333,
+    0.8,
+    0.4,
+    0.7,
+    0.25
+   ],
+   "boss_cover": [
+    9.620689655172415,
+    8.59322033898305,
+    8.796610169491526,
+    8.883333333333333,
+    9.859649122807017,
+    9.25
+   ],
+   "boss_cover_win": [
+    97,
+    98,
+    98,
+    100,
+    95,
+    100
+   ],
+   "boss_cover_any": [
+    85,
+    70,
+    77,
+    58,
+    85,
+    67
+   ],
+   "boss_cover_downs": [
+    1.5333333333333334,
+    1.0166666666666666,
+    1.05,
+    0.7166666666666667,
+    1.1333333333333333,
+    0.7833333333333333
+   ],
+   "plain_gun_soldiers": [
+    3.316666666666667,
+    3.1166666666666667,
+    3.183333333333333,
+    2.9833333333333334,
+    3.1166666666666667,
+    3.05
+   ],
+   "plain_gun_soldiers_by3": [
+    27,
+    25,
+    18,
+    27,
+    22,
+    25
+   ],
+   "plain_gun_mixed": [
+    3.2333333333333334,
+    3.216666666666667,
+    3.433333333333333,
+    3.3833333333333333,
+    3.5166666666666666,
+    3.6166666666666667
+   ],
+   "plain_gun_mixed_by3": [
+    30,
+    25,
+    25,
+    22,
+    23,
+    17
+   ],
+   "tank_soldiers": [
+    6.083333333333333,
+    9.816666666666666,
+    9.916666666666666,
+    9.8,
+    9.1,
+    8.05
+   ],
+   "tank_soldiers_by3": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "tank_mixed": [
+    5.783333333333333,
+    8.6,
+    9.5,
+    9.5,
+    9.333333333333334,
+    9.25
+   ],
+   "tank_mixed_by3": [
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "up3_open": [
+    67,
+    58,
+    68,
+    78,
+    75,
+    null
+   ],
+   "up3_cover": [
+    30,
+    47,
+    50,
+    62,
+    57,
+    null
+   ],
+   "up2": [
+    90,
+    87,
+    93,
+    90,
+    90,
+    null
+   ],
+   "down5": [
+    null,
+    null,
+    1,
+    1,
+    1,
+    1
+   ],
+   "down3r": [
+    null,
+    null,
+    3.2333333333333334,
+    3.2666666666666666,
+    3.3666666666666667,
+    3.6
+   ],
+   "htk": {
+    "vermin": [
+     0.33,
+     0.35,
+     0.37,
+     0.37,
+     0.37,
+     0.38
+    ],
+    "minion": [
+     1.56,
+     1.65,
+     1.7,
+     1.71,
+     1.74,
+     1.76
+    ],
+    "soldier": [
+     3.5,
+     3.68,
+     3.78,
+     3.86,
+     3.94,
+     3.95
+    ],
+    "elite": [
+     6.86,
+     7.32,
+     7.52,
+     7.55,
+     7.74,
+     7.75
+    ],
+    "boss": [
+     27.43,
+     29.32,
+     30.11,
+     30.16,
+     30.93,
+     31.04
+    ]
+   },
+   "hit": {
+    "vermin": [
+     70,
+     70,
+     70,
+     70,
+     70,
+     70
+    ],
+    "minion": [
+     70,
+     70,
+     70,
+     70,
+     70,
+     70
+    ],
+    "soldier": [
+     65,
+     65,
+     65,
+     65,
+     65,
+     65
+    ],
+    "elite": [
+     60,
+     60,
+     60,
+     60,
+     60,
+     60
+    ],
+    "boss": [
+     55,
+     55,
+     55,
+     55,
+     55,
+     55
+    ]
+   }
+  },
+  "levels": [
+   {
+    "level": 1,
+    "n": 60,
+    "cards": {
+     "vermin": {
+      "hp": 15,
+      "armour": 0,
+      "defense": 10,
+      "attack": 0,
+      "dmgFactor": 0.5,
+      "yardHit": 45,
+      "yardCrit": 73,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.33,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 70,
+      "armour": 0,
+      "defense": 10,
+      "attack": 1,
+      "dmgFactor": 1,
+      "yardHit": 45,
+      "yardCrit": 73,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.56,
+      "foePct": 55,
+      "foeRaw": 20,
+      "foeAfterArmour": 5,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 140,
+      "armour": 5,
+      "defense": 11,
+      "attack": 3,
+      "dmgFactor": 0.78,
+      "yardHit": 40,
+      "yardCrit": 68,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.5,
+      "foePct": 65,
+      "foeRaw": 23,
+      "foeAfterArmour": 8,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 240,
+      "armour": 10,
+      "defense": 12,
+      "attack": 5,
+      "dmgFactor": 1.05,
+      "yardHit": 35,
+      "yardCrit": 63,
+      "yardPct": 60,
+      "hitsToKill": 7,
+      "hitsToKillExact": 6.86,
+      "foePct": 75,
+      "foeRaw": 29,
+      "foeAfterArmour": 14,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 960,
+      "armour": 10,
+      "defense": 13,
+      "attack": 6,
+      "dmgFactor": 1.2,
+      "yardHit": 35,
+      "yardCrit": 63,
+      "yardPct": 55,
+      "hitsToKill": 28,
+      "hitsToKillExact": 27.43,
+      "foePct": 70,
+      "foeRaw": 30,
+      "foeAfterArmour": 15,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 60,
+      "foeRaw": 23,
+      "foeAfterArmour": 8,
+      "pcHp": 145,
+      "pcDef": 12,
+      "pcArmour": 15,
+      "guardMax": 3
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 1,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 291,
+      "rounds": 291,
+      "anyDown": 12,
+      "downs": 13,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 47712,
+      "pcTurns": 1061,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 180,
+        "hits": 461
+       },
+       "elite": {
+        "n": 60,
+        "hits": 335
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 1,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 59,
+      "timeouts": 0,
+      "winRounds": 335,
+      "rounds": 346,
+      "anyDown": 21,
+      "downs": 28,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 49670,
+      "pcTurns": 1263,
+      "maxHitsToKill": 8,
+      "kills": {
+       "elite": {
+        "n": 60,
+        "hits": 271
+       },
+       "soldier": {
+        "n": 179,
+        "hits": 526
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 1,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 58,
+      "timeouts": 0,
+      "winRounds": 320,
+      "rounds": 336,
+      "anyDown": 31,
+      "downs": 50,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 53173,
+      "pcTurns": 1225,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 316
+       },
+       "elite": {
+        "n": 116,
+        "hits": 564
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 1,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 58,
+      "timeouts": 0,
+      "winRounds": 367,
+      "rounds": 381,
+      "anyDown": 34,
+      "downs": 55,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 53051,
+      "pcTurns": 1417,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 118,
+        "hits": 288
+       },
+       "elite": {
+        "n": 116,
+        "hits": 582
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 1,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 58,
+      "timeouts": 0,
+      "winRounds": 521,
+      "rounds": 555,
+      "anyDown": 47,
+      "downs": 79,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 79840,
+      "pcTurns": 2048,
+      "maxHitsToKill": 28,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 297
+       },
+       "boss": {
+        "n": 58,
+        "hits": 1086
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 1,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 58,
+      "timeouts": 0,
+      "winRounds": 558,
+      "rounds": 586,
+      "anyDown": 51,
+      "downs": 92,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 80852,
+      "pcTurns": 2185,
+      "maxHitsToKill": 28,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 290
+       },
+       "boss": {
+        "n": 58,
+        "hits": 1096
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 1,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 16,
+      "down": 60,
+      "downRound": 259,
+      "lasted": 199,
+      "taken": 8894,
+      "rounds": 259,
+      "hp": 145,
+      "foeAttacks": 1968,
+      "foeHits": 1009,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 1,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 18,
+      "down": 60,
+      "downRound": 254,
+      "lasted": 194,
+      "taken": 9256,
+      "rounds": 254,
+      "hp": 145,
+      "foeAttacks": 1348,
+      "foeHits": 816,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 1,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 1,
+      "down": 58,
+      "downRound": 403,
+      "lasted": 365,
+      "taken": 8923,
+      "rounds": 422,
+      "hp": 145,
+      "foeAttacks": 2727,
+      "foeHits": 1206,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 1,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 5,
+      "down": 57,
+      "downRound": 374,
+      "lasted": 347,
+      "taken": 8958,
+      "rounds": 402,
+      "hp": 145,
+      "foeAttacks": 2120,
+      "foeHits": 1038,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "above3open": {
+      "fight": "standard",
+      "level": 1,
+      "map": "open",
+      "shift": 3,
+      "n": 60,
+      "wins": 40,
+      "timeouts": 1,
+      "winRounds": 344,
+      "rounds": 536,
+      "anyDown": 53,
+      "downs": 131,
+      "wipes": 20,
+      "errors": 0,
+      "dmg": 49713,
+      "pcTurns": 1919,
+      "maxHitsToKill": 14,
+      "kills": {
+       "soldier": {
+        "n": 155,
+        "hits": 504
+       },
+       "elite": {
+        "n": 40,
+        "hits": 307
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 1,
+      "map": "cover",
+      "shift": 3,
+      "n": 60,
+      "wins": 18,
+      "timeouts": 0,
+      "winRounds": 152,
+      "rounds": 429,
+      "anyDown": 56,
+      "downs": 194,
+      "wipes": 42,
+      "errors": 0,
+      "dmg": 36357,
+      "pcTurns": 1553,
+      "maxHitsToKill": 6,
+      "kills": {
+       "elite": {
+        "n": 34,
+        "hits": 162
+       },
+       "soldier": {
+        "n": 73,
+        "hits": 279
+       }
+      }
+     },
+     "below3": null,
+     "above2": {
+      "fight": "standard",
+      "level": 1,
+      "map": "open",
+      "shift": 2,
+      "n": 30,
+      "wins": 27,
+      "timeouts": 0,
+      "winRounds": 231,
+      "rounds": 261,
+      "anyDown": 24,
+      "downs": 48,
+      "wipes": 4,
+      "errors": 0,
+      "dmg": 27254,
+      "pcTurns": 952,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 86,
+        "hits": 282
+       },
+       "elite": {
+        "n": 27,
+        "hits": 202
+       }
+      }
+     }
+    },
+    "seconds": 199
+   },
+   {
+    "level": 3,
+    "n": 60,
+    "cards": {
+     "vermin": {
+      "hp": 17,
+      "armour": 0,
+      "defense": 11,
+      "attack": 0,
+      "dmgFactor": 0.525,
+      "yardHit": 49,
+      "yardCrit": 82,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.35,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 81,
+      "armour": 0,
+      "defense": 11,
+      "attack": 1,
+      "dmgFactor": 1.05,
+      "yardHit": 49,
+      "yardCrit": 82,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.65,
+      "foePct": 55,
+      "foeRaw": 21,
+      "foeAfterArmour": 6,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 162,
+      "armour": 5,
+      "defense": 12,
+      "attack": 3,
+      "dmgFactor": 0.819,
+      "yardHit": 44,
+      "yardCrit": 77,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.68,
+      "foePct": 65,
+      "foeRaw": 24,
+      "foeAfterArmour": 9,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 278,
+      "armour": 11,
+      "defense": 13,
+      "attack": 5,
+      "dmgFactor": 1.103,
+      "yardHit": 38,
+      "yardCrit": 71,
+      "yardPct": 60,
+      "hitsToKill": 8,
+      "hitsToKillExact": 7.32,
+      "foePct": 75,
+      "foeRaw": 30,
+      "foeAfterArmour": 15,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1114,
+      "armour": 11,
+      "defense": 14,
+      "attack": 6,
+      "dmgFactor": 1.26,
+      "yardHit": 38,
+      "yardCrit": 71,
+      "yardPct": 55,
+      "hitsToKill": 30,
+      "hitsToKillExact": 29.32,
+      "foePct": 70,
+      "foeRaw": 31,
+      "foeAfterArmour": 16,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 60,
+      "foeRaw": 24,
+      "foeAfterArmour": 4,
+      "pcHp": 167,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 3,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 251,
+      "rounds": 251,
+      "anyDown": 1,
+      "downs": 1,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 54273,
+      "pcTurns": 890,
+      "maxHitsToKill": 7,
+      "kills": {
+       "soldier": {
+        "n": 180,
+        "hits": 439
+       },
+       "elite": {
+        "n": 60,
+        "hits": 279
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 3,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 303,
+      "rounds": 303,
+      "anyDown": 9,
+      "downs": 10,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 56040,
+      "pcTurns": 1108,
+      "maxHitsToKill": 7,
+      "kills": {
+       "elite": {
+        "n": 60,
+        "hits": 248
+       },
+       "soldier": {
+        "n": 180,
+        "hits": 507
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 3,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 287,
+      "rounds": 287,
+      "anyDown": 14,
+      "downs": 15,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 60549,
+      "pcTurns": 1040,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 269
+       },
+       "elite": {
+        "n": 120,
+        "hits": 570
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 3,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 361,
+      "rounds": 361,
+      "anyDown": 24,
+      "downs": 32,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 61579,
+      "pcTurns": 1341,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 273
+       },
+       "elite": {
+        "n": 120,
+        "hits": 603
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 3,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 59,
+      "timeouts": 1,
+      "winRounds": 454,
+      "rounds": 474,
+      "anyDown": 38,
+      "downs": 56,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 91405,
+      "pcTurns": 1780,
+      "maxHitsToKill": 26,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 274
+       },
+       "boss": {
+        "n": 59,
+        "hits": 1106
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 3,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 59,
+      "timeouts": 1,
+      "winRounds": 507,
+      "rounds": 527,
+      "anyDown": 42,
+      "downs": 61,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 92413,
+      "pcTurns": 1957,
+      "maxHitsToKill": 28,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 269
+       },
+       "boss": {
+        "n": 59,
+        "hits": 1061
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 3,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 15,
+      "down": 60,
+      "downRound": 247,
+      "lasted": 187,
+      "taken": 9978,
+      "rounds": 247,
+      "hp": 163,
+      "foeAttacks": 1911,
+      "foeHits": 1031,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 3,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 15,
+      "down": 60,
+      "downRound": 253,
+      "lasted": 193,
+      "taken": 10344,
+      "rounds": 253,
+      "hp": 163,
+      "foeAttacks": 1415,
+      "foeHits": 818,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 3,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 0,
+      "down": 6,
+      "downRound": 55,
+      "lasted": 589,
+      "taken": 7441,
+      "rounds": 595,
+      "hp": 167,
+      "foeAttacks": 3970,
+      "foeHits": 1748,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 3,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 0,
+      "down": 33,
+      "downRound": 279,
+      "lasted": 516,
+      "taken": 9122,
+      "rounds": 545,
+      "hp": 167,
+      "foeAttacks": 2899,
+      "foeHits": 1437,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "above3open": {
+      "fight": "standard",
+      "level": 3,
+      "map": "open",
+      "shift": 3,
+      "n": 60,
+      "wins": 35,
+      "timeouts": 0,
+      "winRounds": 318,
+      "rounds": 581,
+      "anyDown": 57,
+      "downs": 156,
+      "wipes": 25,
+      "errors": 0,
+      "dmg": 54417,
+      "pcTurns": 2077,
+      "maxHitsToKill": 12,
+      "kills": {
+       "soldier": {
+        "n": 153,
+        "hits": 495
+       },
+       "elite": {
+        "n": 35,
+        "hits": 264
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 3,
+      "map": "cover",
+      "shift": 3,
+      "n": 60,
+      "wins": 28,
+      "timeouts": 0,
+      "winRounds": 278,
+      "rounds": 515,
+      "anyDown": 55,
+      "downs": 178,
+      "wipes": 32,
+      "errors": 0,
+      "dmg": 45970,
+      "pcTurns": 1835,
+      "maxHitsToKill": 8,
+      "kills": {
+       "elite": {
+        "n": 36,
+        "hits": 179
+       },
+       "soldier": {
+        "n": 104,
+        "hits": 412
+       }
+      }
+     },
+     "below3": null,
+     "above2": {
+      "fight": "standard",
+      "level": 3,
+      "map": "open",
+      "shift": 2,
+      "n": 30,
+      "wins": 26,
+      "timeouts": 0,
+      "winRounds": 217,
+      "rounds": 262,
+      "anyDown": 20,
+      "downs": 41,
+      "wipes": 4,
+      "errors": 0,
+      "dmg": 29412,
+      "pcTurns": 962,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 85,
+        "hits": 262
+       },
+       "elite": {
+        "n": 26,
+        "hits": 181
+       }
+      }
+     }
+    },
+    "seconds": 212
+   },
+   {
+    "level": 6,
+    "n": 60,
+    "cards": {
+     "vermin": {
+      "hp": 21,
+      "armour": 0,
+      "defense": 12,
+      "attack": 1,
+      "dmgFactor": 0.565,
+      "yardHit": 57,
+      "yardCrit": 95,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.37,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 97,
+      "armour": 0,
+      "defense": 12,
+      "attack": 2,
+      "dmgFactor": 1.13,
+      "yardHit": 57,
+      "yardCrit": 95,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.7,
+      "foePct": 55,
+      "foeRaw": 22,
+      "foeAfterArmour": 7,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 193,
+      "armour": 6,
+      "defense": 13,
+      "attack": 4,
+      "dmgFactor": 0.881,
+      "yardHit": 51,
+      "yardCrit": 89,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.78,
+      "foePct": 65,
+      "foeRaw": 26,
+      "foeAfterArmour": 11,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 331,
+      "armour": 13,
+      "defense": 14,
+      "attack": 6,
+      "dmgFactor": 1.187,
+      "yardHit": 44,
+      "yardCrit": 82,
+      "yardPct": 60,
+      "hitsToKill": 8,
+      "hitsToKillExact": 7.52,
+      "foePct": 75,
+      "foeRaw": 33,
+      "foeAfterArmour": 18,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1325,
+      "armour": 13,
+      "defense": 15,
+      "attack": 7,
+      "dmgFactor": 1.356,
+      "yardHit": 44,
+      "yardCrit": 82,
+      "yardPct": 55,
+      "hitsToKill": 31,
+      "hitsToKillExact": 30.11,
+      "foePct": 70,
+      "foeRaw": 33,
+      "foeAfterArmour": 18,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 65,
+      "foeRaw": 26,
+      "foeAfterArmour": 6,
+      "pcHp": 240,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 259,
+      "rounds": 259,
+      "anyDown": 7,
+      "downs": 8,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 63094,
+      "pcTurns": 916,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 180,
+        "hits": 427
+       },
+       "elite": {
+        "n": 60,
+        "hits": 311
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 6,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 328,
+      "rounds": 328,
+      "anyDown": 13,
+      "downs": 15,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 66092,
+      "pcTurns": 1181,
+      "maxHitsToKill": 9,
+      "kills": {
+       "elite": {
+        "n": 60,
+        "hits": 269
+       },
+       "soldier": {
+        "n": 180,
+        "hits": 554
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 6,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 306,
+      "rounds": 306,
+      "anyDown": 19,
+      "downs": 24,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 71132,
+      "pcTurns": 1114,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 281
+       },
+       "elite": {
+        "n": 120,
+        "hits": 605
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 6,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 59,
+      "timeouts": 0,
+      "winRounds": 365,
+      "rounds": 379,
+      "anyDown": 36,
+      "downs": 48,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 72045,
+      "pcTurns": 1368,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 119,
+        "hits": 267
+       },
+       "elite": {
+        "n": 119,
+        "hits": 648
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 6,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 59,
+      "timeouts": 1,
+      "winRounds": 427,
+      "rounds": 447,
+      "anyDown": 35,
+      "downs": 48,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 107726,
+      "pcTurns": 1647,
+      "maxHitsToKill": 36,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 280
+       },
+       "boss": {
+        "n": 59,
+        "hits": 1134
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 6,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 59,
+      "timeouts": 1,
+      "winRounds": 519,
+      "rounds": 539,
+      "anyDown": 46,
+      "downs": 63,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 110408,
+      "pcTurns": 1999,
+      "maxHitsToKill": 27,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 284
+       },
+       "boss": {
+        "n": 59,
+        "hits": 1128
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 6,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 11,
+      "down": 60,
+      "downRound": 251,
+      "lasted": 191,
+      "taken": 11921,
+      "rounds": 251,
+      "hp": 190,
+      "foeAttacks": 1963,
+      "foeHits": 1024,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 6,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 15,
+      "down": 60,
+      "downRound": 266,
+      "lasted": 206,
+      "taken": 12003,
+      "rounds": 266,
+      "hp": 190,
+      "foeAttacks": 1429,
+      "foeHits": 844,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 6,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 0,
+      "down": 5,
+      "downRound": 50,
+      "lasted": 595,
+      "taken": 10919,
+      "rounds": 599,
+      "hp": 240,
+      "foeAttacks": 4075,
+      "foeHits": 1995,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 6,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 0,
+      "down": 27,
+      "downRound": 267,
+      "lasted": 570,
+      "taken": 13588,
+      "rounds": 589,
+      "hp": 240,
+      "foeAttacks": 3273,
+      "foeHits": 1809,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": -5,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 22,
+      "rounds": 22,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 9966,
+      "pcTurns": 64,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 45
+       },
+       "elite": {
+        "n": 15,
+        "hits": 15
+       }
+      }
+     },
+     "above3open": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": 3,
+      "n": 60,
+      "wins": 41,
+      "timeouts": 2,
+      "winRounds": 333,
+      "rounds": 572,
+      "anyDown": 47,
+      "downs": 125,
+      "wipes": 19,
+      "errors": 0,
+      "dmg": 66498,
+      "pcTurns": 1995,
+      "maxHitsToKill": 12,
+      "kills": {
+       "soldier": {
+        "n": 161,
+        "hits": 487
+       },
+       "elite": {
+        "n": 41,
+        "hits": 258
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 6,
+      "map": "cover",
+      "shift": 3,
+      "n": 60,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 290,
+      "rounds": 568,
+      "anyDown": 54,
+      "downs": 173,
+      "wipes": 33,
+      "errors": 0,
+      "dmg": 55922,
+      "pcTurns": 1975,
+      "maxHitsToKill": 8,
+      "kills": {
+       "elite": {
+        "n": 42,
+        "hits": 187
+       },
+       "soldier": {
+        "n": 108,
+        "hits": 431
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": -3,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 97,
+      "rounds": 97,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 29215,
+      "pcTurns": 334,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 205
+       },
+       "elite": {
+        "n": 30,
+        "hits": 128
+       }
+      }
+     },
+     "above2": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": 2,
+      "n": 30,
+      "wins": 28,
+      "timeouts": 0,
+      "winRounds": 196,
+      "rounds": 220,
+      "anyDown": 18,
+      "downs": 31,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 36393,
+      "pcTurns": 806,
+      "maxHitsToKill": 13,
+      "kills": {
+       "soldier": {
+        "n": 88,
+        "hits": 259
+       },
+       "elite": {
+        "n": 28,
+        "hits": 202
+       }
+      }
+     }
+    },
+    "seconds": 232
+   },
+   {
+    "level": 9,
+    "n": 60,
+    "cards": {
+     "vermin": {
+      "hp": 23,
+      "armour": 0,
+      "defense": 14,
+      "attack": 1,
+      "dmgFactor": 0.62,
+      "yardHit": 63,
+      "yardCrit": 108,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.37,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 108,
+      "armour": 0,
+      "defense": 14,
+      "attack": 2,
+      "dmgFactor": 1.24,
+      "yardHit": 63,
+      "yardCrit": 108,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.71,
+      "foePct": 55,
+      "foeRaw": 24,
+      "foeAfterArmour": 9,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 216,
+      "armour": 7,
+      "defense": 15,
+      "attack": 4,
+      "dmgFactor": 0.967,
+      "yardHit": 56,
+      "yardCrit": 101,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.86,
+      "foePct": 65,
+      "foeRaw": 29,
+      "foeAfterArmour": 14,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 370,
+      "armour": 14,
+      "defense": 16,
+      "attack": 6,
+      "dmgFactor": 1.302,
+      "yardHit": 49,
+      "yardCrit": 94,
+      "yardPct": 60,
+      "hitsToKill": 8,
+      "hitsToKillExact": 7.55,
+      "foePct": 75,
+      "foeRaw": 36,
+      "foeAfterArmour": 21,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1478,
+      "armour": 14,
+      "defense": 17,
+      "attack": 7,
+      "dmgFactor": 1.488,
+      "yardHit": 49,
+      "yardCrit": 94,
+      "yardPct": 55,
+      "hitsToKill": 31,
+      "hitsToKillExact": 30.16,
+      "foePct": 70,
+      "foeRaw": 37,
+      "foeAfterArmour": 22,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 65,
+      "foeRaw": 29,
+      "foeAfterArmour": 9,
+      "pcHp": 310,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 261,
+      "rounds": 261,
+      "anyDown": 2,
+      "downs": 2,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 69453,
+      "pcTurns": 925,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 180,
+        "hits": 431
+       },
+       "elite": {
+        "n": 60,
+        "hits": 310
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 9,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 318,
+      "rounds": 318,
+      "anyDown": 7,
+      "downs": 8,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 74892,
+      "pcTurns": 1159,
+      "maxHitsToKill": 7,
+      "kills": {
+       "elite": {
+        "n": 60,
+        "hits": 242
+       },
+       "soldier": {
+        "n": 180,
+        "hits": 564
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 9,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 297,
+      "rounds": 297,
+      "anyDown": 12,
+      "downs": 12,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 79349,
+      "pcTurns": 1067,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 276
+       },
+       "elite": {
+        "n": 120,
+        "hits": 589
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 9,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 371,
+      "rounds": 371,
+      "anyDown": 33,
+      "downs": 36,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 82596,
+      "pcTurns": 1374,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 279
+       },
+       "elite": {
+        "n": 120,
+        "hits": 632
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 9,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 59,
+      "timeouts": 1,
+      "winRounds": 421,
+      "rounds": 441,
+      "anyDown": 22,
+      "downs": 24,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 120797,
+      "pcTurns": 1646,
+      "maxHitsToKill": 22,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 279
+       },
+       "boss": {
+        "n": 59,
+        "hits": 1082
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 9,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 533,
+      "rounds": 533,
+      "anyDown": 35,
+      "downs": 43,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 122662,
+      "pcTurns": 2014,
+      "maxHitsToKill": 22,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 275
+       },
+       "boss": {
+        "n": 60,
+        "hits": 1082
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 9,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 16,
+      "down": 60,
+      "downRound": 239,
+      "lasted": 179,
+      "taken": 14350,
+      "rounds": 239,
+      "hp": 233,
+      "foeAttacks": 1892,
+      "foeHits": 977,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 9,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 13,
+      "down": 60,
+      "downRound": 263,
+      "lasted": 203,
+      "taken": 14818,
+      "rounds": 263,
+      "hp": 233,
+      "foeAttacks": 1482,
+      "foeHits": 874,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 9,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 0,
+      "down": 12,
+      "downRound": 120,
+      "lasted": 588,
+      "taken": 16302,
+      "rounds": 597,
+      "hp": 310,
+      "foeAttacks": 4160,
+      "foeHits": 2044,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 9,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 0,
+      "down": 21,
+      "downRound": 201,
+      "lasted": 570,
+      "taken": 17060,
+      "rounds": 586,
+      "hp": 310,
+      "foeAttacks": 3278,
+      "foeHits": 1820,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": -5,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 24,
+      "rounds": 24,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 12213,
+      "pcTurns": 61,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 45
+       },
+       "elite": {
+        "n": 15,
+        "hits": 15
+       }
+      }
+     },
+     "above3open": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": 3,
+      "n": 60,
+      "wins": 47,
+      "timeouts": 3,
+      "winRounds": 391,
+      "rounds": 562,
+      "anyDown": 47,
+      "downs": 100,
+      "wipes": 12,
+      "errors": 0,
+      "dmg": 77327,
+      "pcTurns": 1976,
+      "maxHitsToKill": 13,
+      "kills": {
+       "soldier": {
+        "n": 169,
+        "hits": 497
+       },
+       "elite": {
+        "n": 47,
+        "hits": 301
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 9,
+      "map": "cover",
+      "shift": 3,
+      "n": 60,
+      "wins": 37,
+      "timeouts": 0,
+      "winRounds": 366,
+      "rounds": 577,
+      "anyDown": 58,
+      "downs": 162,
+      "wipes": 25,
+      "errors": 0,
+      "dmg": 70111,
+      "pcTurns": 1978,
+      "maxHitsToKill": 9,
+      "kills": {
+       "elite": {
+        "n": 52,
+        "hits": 252
+       },
+       "soldier": {
+        "n": 129,
+        "hits": 459
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": -3,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 98,
+      "rounds": 98,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 34028,
+      "pcTurns": 330,
+      "maxHitsToKill": 6,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 217
+       },
+       "elite": {
+        "n": 30,
+        "hits": 141
+       }
+      }
+     },
+     "above2": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": 2,
+      "n": 30,
+      "wins": 27,
+      "timeouts": 1,
+      "winRounds": 181,
+      "rounds": 221,
+      "anyDown": 19,
+      "downs": 32,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 40068,
+      "pcTurns": 801,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 87,
+        "hits": 263
+       },
+       "elite": {
+        "n": 27,
+        "hits": 169
+       }
+      }
+     }
+    },
+    "seconds": 281
+   },
+   {
+    "level": 12,
+    "n": 60,
+    "cards": {
+     "vermin": {
+      "hp": 26,
+      "armour": 0,
+      "defense": 15,
+      "attack": 2,
+      "dmgFactor": 0.69,
+      "yardHit": 70,
+      "yardCrit": 122,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.37,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 122,
+      "armour": 0,
+      "defense": 15,
+      "attack": 3,
+      "dmgFactor": 1.38,
+      "yardHit": 70,
+      "yardCrit": 122,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.74,
+      "foePct": 55,
+      "foeRaw": 27,
+      "foeAfterArmour": 12,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 244,
+      "armour": 8,
+      "defense": 16,
+      "attack": 5,
+      "dmgFactor": 1.076,
+      "yardHit": 62,
+      "yardCrit": 114,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.94,
+      "foePct": 65,
+      "foeRaw": 32,
+      "foeAfterArmour": 17,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 418,
+      "armour": 16,
+      "defense": 17,
+      "attack": 7,
+      "dmgFactor": 1.449,
+      "yardHit": 54,
+      "yardCrit": 106,
+      "yardPct": 60,
+      "hitsToKill": 8,
+      "hitsToKillExact": 7.74,
+      "foePct": 75,
+      "foeRaw": 40,
+      "foeAfterArmour": 25,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1670,
+      "armour": 16,
+      "defense": 18,
+      "attack": 8,
+      "dmgFactor": 1.656,
+      "yardHit": 54,
+      "yardCrit": 106,
+      "yardPct": 55,
+      "hitsToKill": 31,
+      "hitsToKillExact": 30.93,
+      "foePct": 70,
+      "foeRaw": 41,
+      "foeAfterArmour": 26,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 70,
+      "foeRaw": 32,
+      "foeAfterArmour": 12,
+      "pcHp": 392,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 304,
+      "rounds": 304,
+      "anyDown": 9,
+      "downs": 10,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 91294,
+      "pcTurns": 1092,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 180,
+        "hits": 529
+       },
+       "elite": {
+        "n": 60,
+        "hits": 356
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 12,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 324,
+      "rounds": 324,
+      "anyDown": 25,
+      "downs": 28,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 82674,
+      "pcTurns": 1162,
+      "maxHitsToKill": 9,
+      "kills": {
+       "elite": {
+        "n": 60,
+        "hits": 261
+       },
+       "soldier": {
+        "n": 180,
+        "hits": 580
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 12,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 312,
+      "rounds": 312,
+      "anyDown": 27,
+      "downs": 34,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 97463,
+      "pcTurns": 1154,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 369
+       },
+       "elite": {
+        "n": 120,
+        "hits": 637
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 12,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 402,
+      "rounds": 402,
+      "anyDown": 42,
+      "downs": 45,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 98795,
+      "pcTurns": 1465,
+      "maxHitsToKill": 13,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 329
+       },
+       "elite": {
+        "n": 120,
+        "hits": 701
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 12,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 472,
+      "rounds": 472,
+      "anyDown": 37,
+      "downs": 42,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 143638,
+      "pcTurns": 1780,
+      "maxHitsToKill": 26,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 348
+       },
+       "boss": {
+        "n": 60,
+        "hits": 1189
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 12,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 57,
+      "timeouts": 3,
+      "winRounds": 562,
+      "rounds": 622,
+      "anyDown": 51,
+      "downs": 68,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 145176,
+      "pcTurns": 2306,
+      "maxHitsToKill": 27,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 351
+       },
+       "boss": {
+        "n": 57,
+        "hits": 1063
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 12,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 13,
+      "down": 60,
+      "downRound": 247,
+      "lasted": 187,
+      "taken": 17942,
+      "rounds": 247,
+      "hp": 288,
+      "foeAttacks": 2001,
+      "foeHits": 1030,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 12,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 14,
+      "down": 60,
+      "downRound": 271,
+      "lasted": 211,
+      "taken": 18151,
+      "rounds": 271,
+      "hp": 288,
+      "foeAttacks": 1483,
+      "foeHits": 884,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 12,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 0,
+      "down": 34,
+      "downRound": 320,
+      "lasted": 546,
+      "taken": 22756,
+      "rounds": 574,
+      "hp": 392,
+      "foeAttacks": 4200,
+      "foeHits": 2236,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 12,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 0,
+      "down": 27,
+      "downRound": 257,
+      "lasted": 560,
+      "taken": 22142,
+      "rounds": 578,
+      "hp": 392,
+      "foeAttacks": 2993,
+      "foeHits": 1843,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": -5,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 23,
+      "rounds": 23,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 14255,
+      "pcTurns": 63,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 45
+       },
+       "elite": {
+        "n": 15,
+        "hits": 15
+       }
+      }
+     },
+     "above3open": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": 3,
+      "n": 60,
+      "wins": 45,
+      "timeouts": 3,
+      "winRounds": 391,
+      "rounds": 581,
+      "anyDown": 53,
+      "downs": 129,
+      "wipes": 17,
+      "errors": 0,
+      "dmg": 81848,
+      "pcTurns": 2031,
+      "maxHitsToKill": 16,
+      "kills": {
+       "soldier": {
+        "n": 167,
+        "hits": 479
+       },
+       "elite": {
+        "n": 45,
+        "hits": 296
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 12,
+      "map": "cover",
+      "shift": 3,
+      "n": 60,
+      "wins": 34,
+      "timeouts": 0,
+      "winRounds": 320,
+      "rounds": 529,
+      "anyDown": 56,
+      "downs": 170,
+      "wipes": 29,
+      "errors": 0,
+      "dmg": 64451,
+      "pcTurns": 1800,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 116,
+        "hits": 420
+       },
+       "elite": {
+        "n": 42,
+        "hits": 155
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": -3,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 101,
+      "rounds": 101,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 37290,
+      "pcTurns": 332,
+      "maxHitsToKill": 7,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 216
+       },
+       "elite": {
+        "n": 30,
+        "hits": 138
+       }
+      }
+     },
+     "above2": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": 2,
+      "n": 30,
+      "wins": 27,
+      "timeouts": 0,
+      "winRounds": 200,
+      "rounds": 239,
+      "anyDown": 22,
+      "downs": 40,
+      "wipes": 3,
+      "errors": 0,
+      "dmg": 41675,
+      "pcTurns": 857,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 87,
+        "hits": 254
+       },
+       "elite": {
+        "n": 27,
+        "hits": 161
+       }
+      }
+     }
+    },
+    "seconds": 308
+   },
+   {
+    "level": 20,
+    "n": 60,
+    "cards": {
+     "vermin": {
+      "hp": 27,
+      "armour": 0,
+      "defense": 16,
+      "attack": 6,
+      "dmgFactor": 0.91,
+      "yardHit": 72,
+      "yardCrit": 131,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.38,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 127,
+      "armour": 0,
+      "defense": 16,
+      "attack": 7,
+      "dmgFactor": 1.82,
+      "yardHit": 72,
+      "yardCrit": 131,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.76,
+      "foePct": 55,
+      "foeRaw": 36,
+      "foeAfterArmour": 21,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 253,
+      "armour": 8,
+      "defense": 17,
+      "attack": 9,
+      "dmgFactor": 1.42,
+      "yardHit": 64,
+      "yardCrit": 123,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.95,
+      "foePct": 65,
+      "foeRaw": 42,
+      "foeAfterArmour": 27,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 434,
+      "armour": 16,
+      "defense": 18,
+      "attack": 11,
+      "dmgFactor": 1.911,
+      "yardHit": 56,
+      "yardCrit": 115,
+      "yardPct": 60,
+      "hitsToKill": 8,
+      "hitsToKillExact": 7.75,
+      "foePct": 75,
+      "foeRaw": 53,
+      "foeAfterArmour": 38,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1738,
+      "armour": 16,
+      "defense": 19,
+      "attack": 12,
+      "dmgFactor": 2.184,
+      "yardHit": 56,
+      "yardCrit": 115,
+      "yardPct": 55,
+      "hitsToKill": 32,
+      "hitsToKillExact": 31.04,
+      "foePct": 70,
+      "foeRaw": 54,
+      "foeAfterArmour": 39,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 80,
+      "foeRaw": 42,
+      "foeAfterArmour": 22,
+      "pcHp": 672,
+      "pcDef": 14,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 20,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 262,
+      "rounds": 262,
+      "anyDown": 2,
+      "downs": 2,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 91856,
+      "pcTurns": 939,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 180,
+        "hits": 536
+       },
+       "elite": {
+        "n": 60,
+        "hits": 325
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 20,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 288,
+      "rounds": 288,
+      "anyDown": 8,
+      "downs": 8,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 88046,
+      "pcTurns": 1045,
+      "maxHitsToKill": 8,
+      "kills": {
+       "elite": {
+        "n": 60,
+        "hits": 253
+       },
+       "soldier": {
+        "n": 180,
+        "hits": 586
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 20,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 275,
+      "rounds": 275,
+      "anyDown": 9,
+      "downs": 9,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 99210,
+      "pcTurns": 982,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 360
+       },
+       "elite": {
+        "n": 120,
+        "hits": 600
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 20,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 338,
+      "rounds": 338,
+      "anyDown": 18,
+      "downs": 18,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 100483,
+      "pcTurns": 1229,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 340
+       },
+       "elite": {
+        "n": 120,
+        "hits": 640
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 20,
+      "map": "open",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 389,
+      "rounds": 389,
+      "anyDown": 15,
+      "downs": 15,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 150631,
+      "pcTurns": 1445,
+      "maxHitsToKill": 25,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 344
+       },
+       "boss": {
+        "n": 60,
+        "hits": 1100
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 20,
+      "map": "cover",
+      "shift": 0,
+      "n": 60,
+      "wins": 60,
+      "timeouts": 0,
+      "winRounds": 555,
+      "rounds": 555,
+      "anyDown": 40,
+      "downs": 47,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 151279,
+      "pcTurns": 2075,
+      "maxHitsToKill": 29,
+      "kills": {
+       "soldier": {
+        "n": 120,
+        "hits": 348
+       },
+       "boss": {
+        "n": 60,
+        "hits": 1148
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 20,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 15,
+      "down": 60,
+      "downRound": 243,
+      "lasted": 183,
+      "taken": 27551,
+      "rounds": 243,
+      "hp": 445,
+      "foeAttacks": 1867,
+      "foeHits": 1002,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 20,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 10,
+      "down": 60,
+      "downRound": 277,
+      "lasted": 217,
+      "taken": 27973,
+      "rounds": 277,
+      "hp": 445,
+      "foeAttacks": 1504,
+      "foeHits": 890,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 20,
+      "fire": "soldiers",
+      "n": 60,
+      "downBy3": 0,
+      "down": 54,
+      "downRound": 477,
+      "lasted": 483,
+      "taken": 42060,
+      "rounds": 530,
+      "hp": 672,
+      "foeAttacks": 3710,
+      "foeHits": 2412,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 20,
+      "fire": "mixed",
+      "n": 60,
+      "downBy3": 0,
+      "down": 39,
+      "downRound": 384,
+      "lasted": 555,
+      "taken": 41548,
+      "rounds": 581,
+      "hp": 672,
+      "foeAttacks": 3014,
+      "foeHits": 2110,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 20,
+      "map": "open",
+      "shift": -5,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 18,
+      "rounds": 18,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 17745,
+      "pcTurns": 53,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 45
+       },
+       "elite": {
+        "n": 15,
+        "hits": 15
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 20,
+      "map": "open",
+      "shift": -3,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 108,
+      "rounds": 108,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 45265,
+      "pcTurns": 363,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 267
+       },
+       "elite": {
+        "n": 30,
+        "hits": 165
+       }
+      }
+     },
+     "above2": null
+    },
+    "seconds": 235
+   }
+  ]
+ },
+ "first_table": {
+  "fights_a_cell": 30,
+  "table": {
+   "tiers": {
+    "vermin": {
+     "hp": 15,
+     "armour": 0,
+     "defense": 10,
+     "attack_bonus": 0,
+     "damage": 0.5
+    },
+    "minion": {
+     "hp": 70,
+     "armour": 0,
+     "defense": 10,
+     "attack_bonus": 1,
+     "damage": 1
+    },
+    "soldier": {
+     "hp": 140,
+     "armour": 5,
+     "defense": 11,
+     "attack_bonus": 3,
+     "damage": 0.85
+    },
+    "elite": {
+     "hp": 240,
+     "armour": 10,
+     "defense": 12,
+     "attack_bonus": 5,
+     "damage": 1.15
+    },
+    "boss": {
+     "hp": 900,
+     "armour": 10,
+     "defense": 13,
+     "attack_bonus": 6,
+     "damage": 1.4
+    }
+   },
+   "levels": [
+    {
+     "level": 1,
+     "hp_mult": 1,
+     "armour_mult": 1,
+     "defense_plus": 0,
+     "attack_plus": 0,
+     "damage_mult": 1
+    },
+    {
+     "level": 2,
+     "hp_mult": 1.04,
+     "armour_mult": 1.04,
+     "defense_plus": 0,
+     "attack_plus": 0,
+     "damage_mult": 1.02
+    },
+    {
+     "level": 3,
+     "hp_mult": 1.09,
+     "armour_mult": 1.09,
+     "defense_plus": 1,
+     "attack_plus": 0,
+     "damage_mult": 1.05
+    },
+    {
+     "level": 4,
+     "hp_mult": 1.16,
+     "armour_mult": 1.16,
+     "defense_plus": 1,
+     "attack_plus": 0,
+     "damage_mult": 1.07
+    },
+    {
+     "level": 5,
+     "hp_mult": 1.2,
+     "armour_mult": 1.2,
+     "defense_plus": 2,
+     "attack_plus": 0,
+     "damage_mult": 1.1
+    },
+    {
+     "level": 6,
+     "hp_mult": 1.27,
+     "armour_mult": 1.27,
+     "defense_plus": 2,
+     "attack_plus": 1,
+     "damage_mult": 1.13
+    },
+    {
+     "level": 7,
+     "hp_mult": 1.29,
+     "armour_mult": 1.29,
+     "defense_plus": 3,
+     "attack_plus": 1,
+     "damage_mult": 1.17
+    },
+    {
+     "level": 8,
+     "hp_mult": 1.36,
+     "armour_mult": 1.36,
+     "defense_plus": 3,
+     "attack_plus": 1,
+     "damage_mult": 1.2
+    },
+    {
+     "level": 9,
+     "hp_mult": 1.4,
+     "armour_mult": 1.4,
+     "defense_plus": 4,
+     "attack_plus": 1,
+     "damage_mult": 1.24
+    },
+    {
+     "level": 10,
+     "hp_mult": 1.47,
+     "armour_mult": 1.47,
+     "defense_plus": 4,
+     "attack_plus": 2,
+     "damage_mult": 1.28
+    },
+    {
+     "level": 11,
+     "hp_mult": 1.49,
+     "armour_mult": 1.49,
+     "defense_plus": 5,
+     "attack_plus": 2,
+     "damage_mult": 1.33
+    },
+    {
+     "level": 12,
+     "hp_mult": 1.56,
+     "armour_mult": 1.56,
+     "defense_plus": 5,
+     "attack_plus": 2,
+     "damage_mult": 1.38
+    },
+    {
+     "level": 13,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 3,
+     "damage_mult": 1.43
+    },
+    {
+     "level": 14,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 3,
+     "damage_mult": 1.48
+    },
+    {
+     "level": 15,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 4,
+     "damage_mult": 1.53
+    },
+    {
+     "level": 16,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 4,
+     "damage_mult": 1.58
+    },
+    {
+     "level": 17,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 5,
+     "damage_mult": 1.64
+    },
+    {
+     "level": 18,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 5,
+     "damage_mult": 1.7
+    },
+    {
+     "level": 19,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 6,
+     "damage_mult": 1.76
+    },
+    {
+     "level": 20,
+     "hp_mult": 1.6,
+     "armour_mult": 1.6,
+     "defense_plus": 6,
+     "attack_plus": 6,
+     "damage_mult": 1.82
+    }
+   ]
+  },
+  "summary": {
+   "standard_open": [
+    5.266666666666667,
+    4.466666666666667,
+    4.366666666666666,
+    4.633333333333334,
+    4.0,
+    3.6666666666666665
+   ],
+   "standard_open_win": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "standard_open_any": [
+    27,
+    13,
+    13,
+    7,
+    10,
+    0
+   ],
+   "standard_open_downs": [
+    0.3333333333333333,
+    0.16666666666666666,
+    0.2,
+    0.06666666666666667,
+    0.1,
+    0.0
+   ],
+   "standard_cover": [
+    5.9655172413793105,
+    5.166666666666667,
+    4.966666666666667,
+    4.933333333333334,
+    5.733333333333333,
+    4.566666666666666
+   ],
+   "standard_cover_win": [
+    97,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "standard_cover_any": [
+    40,
+    23,
+    17,
+    27,
+    57,
+    20
+   ],
+   "standard_cover_downs": [
+    0.7,
+    0.23333333333333334,
+    0.2,
+    0.26666666666666666,
+    0.7333333333333333,
+    0.26666666666666666
+   ],
+   "elite_open": [
+    6.142857142857143,
+    4.793103448275862,
+    5.066666666666666,
+    4.9,
+    4.620689655172414,
+    3.9
+   ],
+   "elite_open_win": [
+    93,
+    97,
+    100,
+    100,
+    97,
+    100
+   ],
+   "elite_open_any": [
+    57,
+    37,
+    50,
+    23,
+    37,
+    17
+   ],
+   "elite_open_downs": [
+    1.2666666666666666,
+    0.6,
+    0.6333333333333333,
+    0.26666666666666666,
+    0.5666666666666667,
+    0.16666666666666666
+   ],
+   "elite_cover": [
+    6.653846153846154,
+    5.933333333333334,
+    5.827586206896552,
+    5.433333333333334,
+    5.333333333333333,
+    4.862068965517241
+   ],
+   "elite_cover_win": [
+    87,
+    100,
+    97,
+    100,
+    100,
+    97
+   ],
+   "elite_cover_any": [
+    73,
+    57,
+    67,
+    43,
+    60,
+    43
+   ],
+   "elite_cover_downs": [
+    1.6,
+    0.7666666666666667,
+    0.9666666666666667,
+    0.4666666666666667,
+    0.6,
+    0.5333333333333333
+   ],
+   "boss_open": [
+    9.56,
+    8.307692307692308,
+    7.133333333333334,
+    6.7,
+    6.0,
+    5.333333333333333
+   ],
+   "boss_open_win": [
+    83,
+    87,
+    100,
+    100,
+    100,
+    100
+   ],
+   "boss_open_any": [
+    97,
+    83,
+    70,
+    43,
+    47,
+    23
+   ],
+   "boss_open_downs": [
+    2.1666666666666665,
+    1.9333333333333333,
+    1.1333333333333333,
+    0.6,
+    0.5,
+    0.26666666666666666
+   ],
+   "boss_cover": [
+    9.818181818181818,
+    8.5,
+    8.172413793103448,
+    7.758620689655173,
+    8.033333333333333,
+    7.0
+   ],
+   "boss_cover_win": [
+    73,
+    93,
+    97,
+    97,
+    100,
+    100
+   ],
+   "boss_cover_any": [
+    97,
+    87,
+    90,
+    67,
+    87,
+    47
+   ],
+   "boss_cover_downs": [
+    2.5,
+    1.5333333333333334,
+    1.3666666666666667,
+    1.0,
+    1.0666666666666667,
+    0.6
+   ],
+   "plain_gun_soldiers": [
+    2.7333333333333334,
+    2.3666666666666667,
+    2.5,
+    2.6333333333333333,
+    2.6,
+    2.466666666666667
+   ],
+   "plain_gun_soldiers_by3": [
+    37,
+    63,
+    57,
+    43,
+    50,
+    53
+   ],
+   "plain_gun_mixed": [
+    2.4,
+    2.933333333333333,
+    2.566666666666667,
+    2.7333333333333334,
+    2.933333333333333,
+    2.933333333333333
+   ],
+   "plain_gun_mixed_by3": [
+    60,
+    30,
+    53,
+    53,
+    47,
+    37
+   ],
+   "tank_soldiers": [
+    4.766666666666667,
+    9.3,
+    9.766666666666667,
+    8.833333333333334,
+    7.866666666666666,
+    7.466666666666667
+   ],
+   "tank_soldiers_by3": [
+    17,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "tank_mixed": [
+    5.2,
+    7.766666666666667,
+    8.833333333333334,
+    8.9,
+    8.266666666666667,
+    8.433333333333334
+   ],
+   "tank_mixed_by3": [
+    20,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "up3_open": [
+    40,
+    40,
+    63,
+    80,
+    73,
+    null
+   ],
+   "up3_cover": [
+    30,
+    40,
+    70,
+    70,
+    30,
+    null
+   ],
+   "up2": [
+    73,
+    87,
+    100,
+    93,
+    87,
+    null
+   ],
+   "down5": [
+    null,
+    null,
+    1,
+    1,
+    1,
+    1
+   ],
+   "down3r": [
+    null,
+    null,
+    3.3333333333333335,
+    3.2,
+    3.466666666666667,
+    3.066666666666667
+   ],
+   "htk": {
+    "vermin": [
+     0.33,
+     0.33,
+     0.33,
+     0.33,
+     0.33,
+     0.33
+    ],
+    "minion": [
+     1.56,
+     1.55,
+     1.56,
+     1.56,
+     1.56,
+     1.56
+    ],
+    "soldier": [
+     3.5,
+     3.48,
+     3.49,
+     3.5,
+     3.52,
+     3.5
+    ],
+    "elite": [
+     6.86,
+     6.89,
+     6.93,
+     6.86,
+     6.93,
+     6.86
+    ],
+    "boss": [
+     25.71,
+     25.82,
+     25.98,
+     25.71,
+     26,
+     25.71
+    ]
+   },
+   "hit": {
+    "vermin": [
+     70,
+     70,
+     70,
+     70,
+     70,
+     70
+    ],
+    "minion": [
+     70,
+     70,
+     70,
+     70,
+     70,
+     70
+    ],
+    "soldier": [
+     65,
+     65,
+     65,
+     65,
+     65,
+     65
+    ],
+    "elite": [
+     60,
+     60,
+     60,
+     60,
+     60,
+     60
+    ],
+    "boss": [
+     55,
+     55,
+     55,
+     55,
+     55,
+     55
+    ]
+   }
+  },
+  "levels": [
+   {
+    "level": 1,
+    "n": 30,
+    "cards": {
+     "vermin": {
+      "hp": 15,
+      "armour": 0,
+      "defense": 10,
+      "attack": 0,
+      "dmgFactor": 0.5,
+      "yardHit": 45,
+      "yardCrit": 73,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.33,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 70,
+      "armour": 0,
+      "defense": 10,
+      "attack": 1,
+      "dmgFactor": 1,
+      "yardHit": 45,
+      "yardCrit": 73,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.56,
+      "foePct": 55,
+      "foeRaw": 20,
+      "foeAfterArmour": 5,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 140,
+      "armour": 5,
+      "defense": 11,
+      "attack": 3,
+      "dmgFactor": 0.85,
+      "yardHit": 40,
+      "yardCrit": 68,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.5,
+      "foePct": 65,
+      "foeRaw": 25,
+      "foeAfterArmour": 10,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 240,
+      "armour": 10,
+      "defense": 12,
+      "attack": 5,
+      "dmgFactor": 1.15,
+      "yardHit": 35,
+      "yardCrit": 63,
+      "yardPct": 60,
+      "hitsToKill": 7,
+      "hitsToKillExact": 6.86,
+      "foePct": 75,
+      "foeRaw": 32,
+      "foeAfterArmour": 17,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 900,
+      "armour": 10,
+      "defense": 13,
+      "attack": 6,
+      "dmgFactor": 1.4,
+      "yardHit": 35,
+      "yardCrit": 63,
+      "yardPct": 55,
+      "hitsToKill": 26,
+      "hitsToKillExact": 25.71,
+      "foePct": 70,
+      "foeRaw": 35,
+      "foeAfterArmour": 20,
+      "pcHp": 145,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 60,
+      "foeRaw": 25,
+      "foeAfterArmour": 10,
+      "pcHp": 145,
+      "pcDef": 12,
+      "pcArmour": 15,
+      "guardMax": 3
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 1,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 158,
+      "rounds": 158,
+      "anyDown": 8,
+      "downs": 10,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 24017,
+      "pcTurns": 581,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 230
+       },
+       "elite": {
+        "n": 30,
+        "hits": 179
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 1,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 29,
+      "timeouts": 0,
+      "winRounds": 173,
+      "rounds": 183,
+      "anyDown": 12,
+      "downs": 21,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 24902,
+      "pcTurns": 661,
+      "maxHitsToKill": 8,
+      "kills": {
+       "elite": {
+        "n": 30,
+        "hits": 137
+       },
+       "soldier": {
+        "n": 89,
+        "hits": 264
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 1,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 28,
+      "timeouts": 0,
+      "winRounds": 172,
+      "rounds": 182,
+      "anyDown": 17,
+      "downs": 38,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 25402,
+      "pcTurns": 669,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 58,
+        "hits": 156
+       },
+       "elite": {
+        "n": 56,
+        "hits": 294
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 1,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 26,
+      "timeouts": 0,
+      "winRounds": 173,
+      "rounds": 209,
+      "anyDown": 22,
+      "downs": 48,
+      "wipes": 4,
+      "errors": 0,
+      "dmg": 25785,
+      "pcTurns": 774,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 58,
+        "hits": 134
+       },
+       "elite": {
+        "n": 54,
+        "hits": 289
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 1,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 25,
+      "timeouts": 0,
+      "winRounds": 239,
+      "rounds": 320,
+      "anyDown": 29,
+      "downs": 65,
+      "wipes": 5,
+      "errors": 0,
+      "dmg": 37393,
+      "pcTurns": 1138,
+      "maxHitsToKill": 27,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 148
+       },
+       "boss": {
+        "n": 25,
+        "hits": 459
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 1,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 22,
+      "timeouts": 1,
+      "winRounds": 216,
+      "rounds": 329,
+      "anyDown": 29,
+      "downs": 75,
+      "wipes": 7,
+      "errors": 0,
+      "dmg": 36694,
+      "pcTurns": 1174,
+      "maxHitsToKill": 26,
+      "kills": {
+       "soldier": {
+        "n": 58,
+        "hits": 141
+       },
+       "boss": {
+        "n": 22,
+        "hits": 399
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 1,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 11,
+      "down": 30,
+      "downRound": 112,
+      "lasted": 82,
+      "taken": 4546,
+      "rounds": 112,
+      "hp": 145,
+      "foeAttacks": 852,
+      "foeHits": 439,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 1,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 18,
+      "down": 30,
+      "downRound": 102,
+      "lasted": 72,
+      "taken": 4683,
+      "rounds": 102,
+      "hp": 145,
+      "foeAttacks": 555,
+      "foeHits": 343,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 1,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 5,
+      "down": 29,
+      "downRound": 162,
+      "lasted": 143,
+      "taken": 4518,
+      "rounds": 172,
+      "hp": 145,
+      "foeAttacks": 1155,
+      "foeHits": 504,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 1,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 6,
+      "down": 30,
+      "downRound": 186,
+      "lasted": 156,
+      "taken": 4572,
+      "rounds": 185,
+      "hp": 145,
+      "foeAttacks": 960,
+      "foeHits": 454,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "above3open": {
+      "fight": "standard",
+      "level": 1,
+      "map": "open",
+      "shift": 3,
+      "n": 30,
+      "wins": 12,
+      "timeouts": 1,
+      "winRounds": 100,
+      "rounds": 268,
+      "anyDown": 27,
+      "downs": 86,
+      "wipes": 18,
+      "errors": 0,
+      "dmg": 20390,
+      "pcTurns": 916,
+      "maxHitsToKill": 12,
+      "kills": {
+       "soldier": {
+        "n": 69,
+        "hits": 219
+       },
+       "elite": {
+        "n": 12,
+        "hits": 94
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 1,
+      "map": "cover",
+      "shift": 3,
+      "n": 30,
+      "wins": 9,
+      "timeouts": 0,
+      "winRounds": 79,
+      "rounds": 196,
+      "anyDown": 29,
+      "downs": 103,
+      "wipes": 21,
+      "errors": 0,
+      "dmg": 16114,
+      "pcTurns": 694,
+      "maxHitsToKill": 6,
+      "kills": {
+       "elite": {
+        "n": 14,
+        "hits": 61
+       },
+       "soldier": {
+        "n": 38,
+        "hits": 141
+       }
+      }
+     },
+     "below3": null,
+     "above2": {
+      "fight": "standard",
+      "level": 1,
+      "map": "open",
+      "shift": 2,
+      "n": 15,
+      "wins": 11,
+      "timeouts": 0,
+      "winRounds": 101,
+      "rounds": 132,
+      "anyDown": 13,
+      "downs": 32,
+      "wipes": 4,
+      "errors": 0,
+      "dmg": 11180,
+      "pcTurns": 474,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 39,
+        "hits": 112
+       },
+       "elite": {
+        "n": 11,
+        "hits": 85
+       }
+      }
+     }
+    },
+    "seconds": 98
+   },
+   {
+    "level": 3,
+    "n": 30,
+    "cards": {
+     "vermin": {
+      "hp": 16,
+      "armour": 0,
+      "defense": 11,
+      "attack": 0,
+      "dmgFactor": 0.525,
+      "yardHit": 49,
+      "yardCrit": 82,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.33,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 76,
+      "armour": 0,
+      "defense": 11,
+      "attack": 1,
+      "dmgFactor": 1.05,
+      "yardHit": 49,
+      "yardCrit": 82,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.55,
+      "foePct": 55,
+      "foeRaw": 21,
+      "foeAfterArmour": 6,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 153,
+      "armour": 5,
+      "defense": 12,
+      "attack": 3,
+      "dmgFactor": 0.893,
+      "yardHit": 44,
+      "yardCrit": 77,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.48,
+      "foePct": 65,
+      "foeRaw": 26,
+      "foeAfterArmour": 11,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 262,
+      "armour": 11,
+      "defense": 13,
+      "attack": 5,
+      "dmgFactor": 1.208,
+      "yardHit": 38,
+      "yardCrit": 71,
+      "yardPct": 60,
+      "hitsToKill": 7,
+      "hitsToKillExact": 6.89,
+      "foePct": 75,
+      "foeRaw": 33,
+      "foeAfterArmour": 18,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 981,
+      "armour": 11,
+      "defense": 14,
+      "attack": 6,
+      "dmgFactor": 1.47,
+      "yardHit": 38,
+      "yardCrit": 71,
+      "yardPct": 55,
+      "hitsToKill": 26,
+      "hitsToKillExact": 25.82,
+      "foePct": 70,
+      "foeRaw": 36,
+      "foeAfterArmour": 21,
+      "pcHp": 163,
+      "pcDef": 11,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 60,
+      "foeRaw": 26,
+      "foeAfterArmour": 6,
+      "pcHp": 167,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 3,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 134,
+      "rounds": 134,
+      "anyDown": 4,
+      "downs": 5,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 26878,
+      "pcTurns": 477,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 221
+       },
+       "elite": {
+        "n": 30,
+        "hits": 134
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 3,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 155,
+      "rounds": 155,
+      "anyDown": 7,
+      "downs": 7,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 27354,
+      "pcTurns": 568,
+      "maxHitsToKill": 5,
+      "kills": {
+       "elite": {
+        "n": 30,
+        "hits": 121
+       },
+       "soldier": {
+        "n": 90,
+        "hits": 247
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 3,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 29,
+      "timeouts": 0,
+      "winRounds": 139,
+      "rounds": 148,
+      "anyDown": 11,
+      "downs": 18,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 29006,
+      "pcTurns": 540,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 138
+       },
+       "elite": {
+        "n": 58,
+        "hits": 274
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 3,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 178,
+      "rounds": 178,
+      "anyDown": 17,
+      "downs": 23,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 29652,
+      "pcTurns": 669,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 137
+       },
+       "elite": {
+        "n": 60,
+        "hits": 305
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 3,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 26,
+      "timeouts": 0,
+      "winRounds": 216,
+      "rounds": 267,
+      "anyDown": 25,
+      "downs": 58,
+      "wipes": 4,
+      "errors": 0,
+      "dmg": 40764,
+      "pcTurns": 971,
+      "maxHitsToKill": 28,
+      "kills": {
+       "soldier": {
+        "n": 59,
+        "hits": 141
+       },
+       "boss": {
+        "n": 26,
+        "hits": 473
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 3,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 28,
+      "timeouts": 0,
+      "winRounds": 238,
+      "rounds": 269,
+      "anyDown": 26,
+      "downs": 46,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 41277,
+      "pcTurns": 991,
+      "maxHitsToKill": 20,
+      "kills": {
+       "soldier": {
+        "n": 59,
+        "hits": 127
+       },
+       "boss": {
+        "n": 28,
+        "hits": 448
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 3,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 19,
+      "down": 30,
+      "downRound": 101,
+      "lasted": 71,
+      "taken": 5017,
+      "rounds": 101,
+      "hp": 163,
+      "foeAttacks": 795,
+      "foeHits": 426,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 3,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 9,
+      "down": 30,
+      "downRound": 118,
+      "lasted": 88,
+      "taken": 5161,
+      "rounds": 118,
+      "hp": 163,
+      "foeAttacks": 647,
+      "foeHits": 367,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 3,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 0,
+      "down": 15,
+      "downRound": 144,
+      "lasted": 279,
+      "taken": 4548,
+      "rounds": 292,
+      "hp": 167,
+      "foeAttacks": 1862,
+      "foeHits": 834,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 3,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 0,
+      "down": 23,
+      "downRound": 186,
+      "lasted": 233,
+      "taken": 5027,
+      "rounds": 255,
+      "hp": 167,
+      "foeAttacks": 1324,
+      "foeHits": 661,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "above3open": {
+      "fight": "standard",
+      "level": 3,
+      "map": "open",
+      "shift": 3,
+      "n": 30,
+      "wins": 12,
+      "timeouts": 0,
+      "winRounds": 104,
+      "rounds": 246,
+      "anyDown": 28,
+      "downs": 88,
+      "wipes": 18,
+      "errors": 0,
+      "dmg": 21101,
+      "pcTurns": 868,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 66,
+        "hits": 201
+       },
+       "elite": {
+        "n": 12,
+        "hits": 83
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 3,
+      "map": "cover",
+      "shift": 3,
+      "n": 30,
+      "wins": 12,
+      "timeouts": 0,
+      "winRounds": 121,
+      "rounds": 244,
+      "anyDown": 29,
+      "downs": 99,
+      "wipes": 18,
+      "errors": 0,
+      "dmg": 18991,
+      "pcTurns": 873,
+      "maxHitsToKill": 7,
+      "kills": {
+       "elite": {
+        "n": 18,
+        "hits": 79
+       },
+       "soldier": {
+        "n": 44,
+        "hits": 163
+       }
+      }
+     },
+     "below3": null,
+     "above2": {
+      "fight": "standard",
+      "level": 3,
+      "map": "open",
+      "shift": 2,
+      "n": 15,
+      "wins": 13,
+      "timeouts": 0,
+      "winRounds": 99,
+      "rounds": 123,
+      "anyDown": 12,
+      "downs": 24,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 13124,
+      "pcTurns": 431,
+      "maxHitsToKill": 11,
+      "kills": {
+       "soldier": {
+        "n": 43,
+        "hits": 119
+       },
+       "elite": {
+        "n": 13,
+        "hits": 86
+       }
+      }
+     }
+    },
+    "seconds": 101
+   },
+   {
+    "level": 6,
+    "n": 30,
+    "cards": {
+     "vermin": {
+      "hp": 19,
+      "armour": 0,
+      "defense": 12,
+      "attack": 1,
+      "dmgFactor": 0.565,
+      "yardHit": 57,
+      "yardCrit": 95,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.33,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 89,
+      "armour": 0,
+      "defense": 12,
+      "attack": 2,
+      "dmgFactor": 1.13,
+      "yardHit": 57,
+      "yardCrit": 95,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.56,
+      "foePct": 55,
+      "foeRaw": 22,
+      "foeAfterArmour": 7,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 178,
+      "armour": 6,
+      "defense": 13,
+      "attack": 4,
+      "dmgFactor": 0.96,
+      "yardHit": 51,
+      "yardCrit": 89,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.49,
+      "foePct": 65,
+      "foeRaw": 28,
+      "foeAfterArmour": 13,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 305,
+      "armour": 13,
+      "defense": 14,
+      "attack": 6,
+      "dmgFactor": 1.299,
+      "yardHit": 44,
+      "yardCrit": 82,
+      "yardPct": 60,
+      "hitsToKill": 7,
+      "hitsToKillExact": 6.93,
+      "foePct": 75,
+      "foeRaw": 36,
+      "foeAfterArmour": 21,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1143,
+      "armour": 13,
+      "defense": 15,
+      "attack": 7,
+      "dmgFactor": 1.582,
+      "yardHit": 44,
+      "yardCrit": 82,
+      "yardPct": 55,
+      "hitsToKill": 26,
+      "hitsToKillExact": 25.98,
+      "foePct": 70,
+      "foeRaw": 39,
+      "foeAfterArmour": 24,
+      "pcHp": 190,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 65,
+      "foeRaw": 28,
+      "foeAfterArmour": 8,
+      "pcHp": 240,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 131,
+      "rounds": 131,
+      "anyDown": 4,
+      "downs": 6,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 30812,
+      "pcTurns": 458,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 210
+       },
+       "elite": {
+        "n": 30,
+        "hits": 152
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 6,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 149,
+      "rounds": 149,
+      "anyDown": 5,
+      "downs": 6,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 31409,
+      "pcTurns": 533,
+      "maxHitsToKill": 6,
+      "kills": {
+       "elite": {
+        "n": 30,
+        "hits": 123
+       },
+       "soldier": {
+        "n": 90,
+        "hits": 256
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 6,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 152,
+      "rounds": 152,
+      "anyDown": 15,
+      "downs": 19,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 33789,
+      "pcTurns": 553,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 140
+       },
+       "elite": {
+        "n": 60,
+        "hits": 293
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 6,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 29,
+      "timeouts": 0,
+      "winRounds": 169,
+      "rounds": 181,
+      "anyDown": 20,
+      "downs": 29,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 33576,
+      "pcTurns": 666,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 59,
+        "hits": 131
+       },
+       "elite": {
+        "n": 58,
+        "hits": 289
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 6,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 214,
+      "rounds": 214,
+      "anyDown": 21,
+      "downs": 34,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 48467,
+      "pcTurns": 805,
+      "maxHitsToKill": 23,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 137
+       },
+       "boss": {
+        "n": 30,
+        "hits": 499
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 6,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 29,
+      "timeouts": 1,
+      "winRounds": 237,
+      "rounds": 257,
+      "anyDown": 27,
+      "downs": 41,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 49271,
+      "pcTurns": 968,
+      "maxHitsToKill": 24,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 143
+       },
+       "boss": {
+        "n": 29,
+        "hits": 503
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 6,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 17,
+      "down": 30,
+      "downRound": 105,
+      "lasted": 75,
+      "taken": 5875,
+      "rounds": 105,
+      "hp": 190,
+      "foeAttacks": 840,
+      "foeHits": 431,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 6,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 16,
+      "down": 30,
+      "downRound": 107,
+      "lasted": 77,
+      "taken": 6096,
+      "rounds": 107,
+      "hp": 190,
+      "foeAttacks": 589,
+      "foeHits": 354,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 6,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 0,
+      "down": 8,
+      "downRound": 81,
+      "lasted": 293,
+      "taken": 6360,
+      "rounds": 298,
+      "hp": 240,
+      "foeAttacks": 2007,
+      "foeHits": 954,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 6,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 0,
+      "down": 22,
+      "downRound": 207,
+      "lasted": 265,
+      "taken": 7271,
+      "rounds": 283,
+      "hp": 240,
+      "foeAttacks": 1527,
+      "foeHits": 820,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": -5,
+      "n": 8,
+      "wins": 8,
+      "timeouts": 0,
+      "winRounds": 11,
+      "rounds": 11,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 5313,
+      "pcTurns": 34,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 24,
+        "hits": 24
+       },
+       "elite": {
+        "n": 8,
+        "hits": 8
+       }
+      }
+     },
+     "above3open": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": 3,
+      "n": 30,
+      "wins": 19,
+      "timeouts": 3,
+      "winRounds": 143,
+      "rounds": 272,
+      "anyDown": 28,
+      "downs": 70,
+      "wipes": 11,
+      "errors": 0,
+      "dmg": 31339,
+      "pcTurns": 960,
+      "maxHitsToKill": 10,
+      "kills": {
+       "soldier": {
+        "n": 80,
+        "hits": 221
+       },
+       "elite": {
+        "n": 19,
+        "hits": 113
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 6,
+      "map": "cover",
+      "shift": 3,
+      "n": 30,
+      "wins": 21,
+      "timeouts": 0,
+      "winRounds": 206,
+      "rounds": 277,
+      "anyDown": 28,
+      "downs": 75,
+      "wipes": 9,
+      "errors": 0,
+      "dmg": 28538,
+      "pcTurns": 950,
+      "maxHitsToKill": 8,
+      "kills": {
+       "elite": {
+        "n": 26,
+        "hits": 105
+       },
+       "soldier": {
+        "n": 68,
+        "hits": 240
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": -3,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 50,
+      "rounds": 50,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 14157,
+      "pcTurns": 180,
+      "maxHitsToKill": 6,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 101
+       },
+       "elite": {
+        "n": 15,
+        "hits": 65
+       }
+      }
+     },
+     "above2": {
+      "fight": "standard",
+      "level": 6,
+      "map": "open",
+      "shift": 2,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 80,
+      "rounds": 80,
+      "anyDown": 5,
+      "downs": 6,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 15431,
+      "pcTurns": 292,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 104
+       },
+       "elite": {
+        "n": 15,
+        "hits": 86
+       }
+      }
+     }
+    },
+    "seconds": 109
+   },
+   {
+    "level": 9,
+    "n": 30,
+    "cards": {
+     "vermin": {
+      "hp": 21,
+      "armour": 0,
+      "defense": 14,
+      "attack": 1,
+      "dmgFactor": 0.62,
+      "yardHit": 63,
+      "yardCrit": 108,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.33,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 98,
+      "armour": 0,
+      "defense": 14,
+      "attack": 2,
+      "dmgFactor": 1.24,
+      "yardHit": 63,
+      "yardCrit": 108,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.56,
+      "foePct": 55,
+      "foeRaw": 24,
+      "foeAfterArmour": 9,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 196,
+      "armour": 7,
+      "defense": 15,
+      "attack": 4,
+      "dmgFactor": 1.054,
+      "yardHit": 56,
+      "yardCrit": 101,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.5,
+      "foePct": 65,
+      "foeRaw": 31,
+      "foeAfterArmour": 16,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 336,
+      "armour": 14,
+      "defense": 16,
+      "attack": 6,
+      "dmgFactor": 1.426,
+      "yardHit": 49,
+      "yardCrit": 94,
+      "yardPct": 60,
+      "hitsToKill": 7,
+      "hitsToKillExact": 6.86,
+      "foePct": 75,
+      "foeRaw": 39,
+      "foeAfterArmour": 24,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1260,
+      "armour": 14,
+      "defense": 17,
+      "attack": 7,
+      "dmgFactor": 1.736,
+      "yardHit": 49,
+      "yardCrit": 94,
+      "yardPct": 55,
+      "hitsToKill": 26,
+      "hitsToKillExact": 25.71,
+      "foePct": 70,
+      "foeRaw": 43,
+      "foeAfterArmour": 28,
+      "pcHp": 233,
+      "pcDef": 12,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 65,
+      "foeRaw": 31,
+      "foeAfterArmour": 11,
+      "pcHp": 310,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 139,
+      "rounds": 139,
+      "anyDown": 2,
+      "downs": 2,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 33680,
+      "pcTurns": 491,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 217
+       },
+       "elite": {
+        "n": 30,
+        "hits": 151
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 9,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 148,
+      "rounds": 148,
+      "anyDown": 8,
+      "downs": 8,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 36009,
+      "pcTurns": 533,
+      "maxHitsToKill": 6,
+      "kills": {
+       "elite": {
+        "n": 30,
+        "hits": 117
+       },
+       "soldier": {
+        "n": 90,
+        "hits": 267
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 9,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 147,
+      "rounds": 147,
+      "anyDown": 7,
+      "downs": 8,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 37937,
+      "pcTurns": 522,
+      "maxHitsToKill": 7,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 140
+       },
+       "elite": {
+        "n": 60,
+        "hits": 277
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 9,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 163,
+      "rounds": 163,
+      "anyDown": 13,
+      "downs": 14,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 38175,
+      "pcTurns": 594,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 135
+       },
+       "elite": {
+        "n": 60,
+        "hits": 287
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 9,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 201,
+      "rounds": 201,
+      "anyDown": 13,
+      "downs": 18,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 53756,
+      "pcTurns": 743,
+      "maxHitsToKill": 18,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 138
+       },
+       "boss": {
+        "n": 30,
+        "hits": 481
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 9,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 29,
+      "timeouts": 1,
+      "winRounds": 225,
+      "rounds": 245,
+      "anyDown": 20,
+      "downs": 30,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 54014,
+      "pcTurns": 902,
+      "maxHitsToKill": 20,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 128
+       },
+       "boss": {
+        "n": 29,
+        "hits": 455
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 9,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 13,
+      "down": 30,
+      "downRound": 109,
+      "lasted": 79,
+      "taken": 7220,
+      "rounds": 109,
+      "hp": 233,
+      "foeAttacks": 853,
+      "foeHits": 435,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 9,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 16,
+      "down": 30,
+      "downRound": 112,
+      "lasted": 82,
+      "taken": 7440,
+      "rounds": 112,
+      "hp": 233,
+      "foeAttacks": 635,
+      "foeHits": 378,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 9,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 0,
+      "down": 18,
+      "downRound": 163,
+      "lasted": 265,
+      "taken": 9135,
+      "rounds": 281,
+      "hp": 310,
+      "foeAttacks": 1907,
+      "foeHits": 958,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 9,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 0,
+      "down": 21,
+      "downRound": 198,
+      "lasted": 267,
+      "taken": 9309,
+      "rounds": 281,
+      "hp": 310,
+      "foeAttacks": 1559,
+      "foeHits": 862,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": -5,
+      "n": 8,
+      "wins": 8,
+      "timeouts": 0,
+      "winRounds": 13,
+      "rounds": 13,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 6112,
+      "pcTurns": 33,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 24,
+        "hits": 24
+       },
+       "elite": {
+        "n": 8,
+        "hits": 8
+       }
+      }
+     },
+     "above3open": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": 3,
+      "n": 30,
+      "wins": 24,
+      "timeouts": 0,
+      "winRounds": 195,
+      "rounds": 266,
+      "anyDown": 24,
+      "downs": 54,
+      "wipes": 7,
+      "errors": 0,
+      "dmg": 37032,
+      "pcTurns": 913,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 84,
+        "hits": 237
+       },
+       "elite": {
+        "n": 24,
+        "hits": 137
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 9,
+      "map": "cover",
+      "shift": 3,
+      "n": 30,
+      "wins": 21,
+      "timeouts": 0,
+      "winRounds": 180,
+      "rounds": 254,
+      "anyDown": 29,
+      "downs": 72,
+      "wipes": 9,
+      "errors": 0,
+      "dmg": 32274,
+      "pcTurns": 882,
+      "maxHitsToKill": 7,
+      "kills": {
+       "elite": {
+        "n": 25,
+        "hits": 99
+       },
+       "soldier": {
+        "n": 69,
+        "hits": 220
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": -3,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 48,
+      "rounds": 48,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 15913,
+      "pcTurns": 155,
+      "maxHitsToKill": 6,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 100
+       },
+       "elite": {
+        "n": 15,
+        "hits": 66
+       }
+      }
+     },
+     "above2": {
+      "fight": "standard",
+      "level": 9,
+      "map": "open",
+      "shift": 2,
+      "n": 15,
+      "wins": 14,
+      "timeouts": 0,
+      "winRounds": 88,
+      "rounds": 94,
+      "anyDown": 9,
+      "downs": 16,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 16154,
+      "pcTurns": 342,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 42,
+        "hits": 94
+       },
+       "elite": {
+        "n": 14,
+        "hits": 84
+       }
+      }
+     }
+    },
+    "seconds": 139
+   },
+   {
+    "level": 12,
+    "n": 30,
+    "cards": {
+     "vermin": {
+      "hp": 23,
+      "armour": 0,
+      "defense": 15,
+      "attack": 2,
+      "dmgFactor": 0.69,
+      "yardHit": 70,
+      "yardCrit": 122,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.33,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 109,
+      "armour": 0,
+      "defense": 15,
+      "attack": 3,
+      "dmgFactor": 1.38,
+      "yardHit": 70,
+      "yardCrit": 122,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.56,
+      "foePct": 55,
+      "foeRaw": 27,
+      "foeAfterArmour": 12,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 218,
+      "armour": 8,
+      "defense": 16,
+      "attack": 5,
+      "dmgFactor": 1.173,
+      "yardHit": 62,
+      "yardCrit": 114,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.52,
+      "foePct": 65,
+      "foeRaw": 35,
+      "foeAfterArmour": 20,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 374,
+      "armour": 16,
+      "defense": 17,
+      "attack": 7,
+      "dmgFactor": 1.587,
+      "yardHit": 54,
+      "yardCrit": 106,
+      "yardPct": 60,
+      "hitsToKill": 7,
+      "hitsToKillExact": 6.93,
+      "foePct": 75,
+      "foeRaw": 44,
+      "foeAfterArmour": 29,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1404,
+      "armour": 16,
+      "defense": 18,
+      "attack": 8,
+      "dmgFactor": 1.932,
+      "yardHit": 54,
+      "yardCrit": 106,
+      "yardPct": 55,
+      "hitsToKill": 26,
+      "hitsToKillExact": 26,
+      "foePct": 70,
+      "foeRaw": 48,
+      "foeAfterArmour": 33,
+      "pcHp": 288,
+      "pcDef": 13,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 70,
+      "foeRaw": 35,
+      "foeAfterArmour": 15,
+      "pcHp": 392,
+      "pcDef": 12,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 120,
+      "rounds": 120,
+      "anyDown": 3,
+      "downs": 3,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 37493,
+      "pcTurns": 413,
+      "maxHitsToKill": 7,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 201
+       },
+       "elite": {
+        "n": 30,
+        "hits": 149
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 12,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 172,
+      "rounds": 172,
+      "anyDown": 17,
+      "downs": 22,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 40464,
+      "pcTurns": 594,
+      "maxHitsToKill": 7,
+      "kills": {
+       "elite": {
+        "n": 30,
+        "hits": 122
+       },
+       "soldier": {
+        "n": 90,
+        "hits": 286
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 12,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 29,
+      "timeouts": 0,
+      "winRounds": 134,
+      "rounds": 145,
+      "anyDown": 11,
+      "downs": 17,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 41044,
+      "pcTurns": 513,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 144
+       },
+       "elite": {
+        "n": 58,
+        "hits": 267
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 12,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 160,
+      "rounds": 160,
+      "anyDown": 18,
+      "downs": 18,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 41632,
+      "pcTurns": 575,
+      "maxHitsToKill": 8,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 130
+       },
+       "elite": {
+        "n": 60,
+        "hits": 292
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 12,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 180,
+      "rounds": 180,
+      "anyDown": 14,
+      "downs": 15,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 59858,
+      "pcTurns": 655,
+      "maxHitsToKill": 20,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 129
+       },
+       "boss": {
+        "n": 30,
+        "hits": 467
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 12,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 241,
+      "rounds": 241,
+      "anyDown": 26,
+      "downs": 32,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 61338,
+      "pcTurns": 895,
+      "maxHitsToKill": 20,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 134
+       },
+       "boss": {
+        "n": 30,
+        "hits": 462
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 12,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 15,
+      "down": 30,
+      "downRound": 108,
+      "lasted": 78,
+      "taken": 8918,
+      "rounds": 108,
+      "hp": 288,
+      "foeAttacks": 864,
+      "foeHits": 442,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 12,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 14,
+      "down": 30,
+      "downRound": 118,
+      "lasted": 88,
+      "taken": 9298,
+      "rounds": 118,
+      "hp": 288,
+      "foeAttacks": 654,
+      "foeHits": 390,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 12,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 0,
+      "down": 27,
+      "downRound": 233,
+      "lasted": 236,
+      "taken": 11935,
+      "rounds": 261,
+      "hp": 392,
+      "foeAttacks": 1840,
+      "foeHits": 976,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 12,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 0,
+      "down": 24,
+      "downRound": 212,
+      "lasted": 248,
+      "taken": 11990,
+      "rounds": 270,
+      "hp": 392,
+      "foeAttacks": 1366,
+      "foeHits": 854,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": -5,
+      "n": 8,
+      "wins": 8,
+      "timeouts": 0,
+      "winRounds": 11,
+      "rounds": 11,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 6947,
+      "pcTurns": 29,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 24,
+        "hits": 24
+       },
+       "elite": {
+        "n": 8,
+        "hits": 8
+       }
+      }
+     },
+     "above3open": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": 3,
+      "n": 30,
+      "wins": 22,
+      "timeouts": 0,
+      "winRounds": 142,
+      "rounds": 203,
+      "anyDown": 25,
+      "downs": 58,
+      "wipes": 8,
+      "errors": 0,
+      "dmg": 34023,
+      "pcTurns": 741,
+      "maxHitsToKill": 14,
+      "kills": {
+       "soldier": {
+        "n": 81,
+        "hits": 199
+       },
+       "elite": {
+        "n": 22,
+        "hits": 123
+       }
+      }
+     },
+     "above3cover": {
+      "fight": "standard",
+      "level": 12,
+      "map": "cover",
+      "shift": 3,
+      "n": 30,
+      "wins": 9,
+      "timeouts": 0,
+      "winRounds": 62,
+      "rounds": 195,
+      "anyDown": 29,
+      "downs": 97,
+      "wipes": 21,
+      "errors": 0,
+      "dmg": 21876,
+      "pcTurns": 661,
+      "maxHitsToKill": 6,
+      "kills": {
+       "soldier": {
+        "n": 33,
+        "hits": 100
+       },
+       "elite": {
+        "n": 15,
+        "hits": 52
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": -3,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 52,
+      "rounds": 52,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 18878,
+      "pcTurns": 168,
+      "maxHitsToKill": 7,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 108
+       },
+       "elite": {
+        "n": 15,
+        "hits": 68
+       }
+      }
+     },
+     "above2": {
+      "fight": "standard",
+      "level": 12,
+      "map": "open",
+      "shift": 2,
+      "n": 15,
+      "wins": 13,
+      "timeouts": 0,
+      "winRounds": 110,
+      "rounds": 135,
+      "anyDown": 11,
+      "downs": 24,
+      "wipes": 2,
+      "errors": 0,
+      "dmg": 18275,
+      "pcTurns": 464,
+      "maxHitsToKill": 13,
+      "kills": {
+       "soldier": {
+        "n": 43,
+        "hits": 112
+       },
+       "elite": {
+        "n": 13,
+        "hits": 92
+       }
+      }
+     }
+    },
+    "seconds": 141
+   },
+   {
+    "level": 20,
+    "n": 30,
+    "cards": {
+     "vermin": {
+      "hp": 24,
+      "armour": 0,
+      "defense": 16,
+      "attack": 6,
+      "dmgFactor": 0.91,
+      "yardHit": 72,
+      "yardCrit": 131,
+      "yardPct": 70,
+      "hitsToKill": 1,
+      "hitsToKillExact": 0.33,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "minion": {
+      "hp": 112,
+      "armour": 0,
+      "defense": 16,
+      "attack": 7,
+      "dmgFactor": 1.82,
+      "yardHit": 72,
+      "yardCrit": 131,
+      "yardPct": 70,
+      "hitsToKill": 2,
+      "hitsToKillExact": 1.56,
+      "foePct": 55,
+      "foeRaw": 36,
+      "foeAfterArmour": 21,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "soldier": {
+      "hp": 224,
+      "armour": 8,
+      "defense": 17,
+      "attack": 9,
+      "dmgFactor": 1.547,
+      "yardHit": 64,
+      "yardCrit": 123,
+      "yardPct": 65,
+      "hitsToKill": 4,
+      "hitsToKillExact": 3.5,
+      "foePct": 65,
+      "foeRaw": 46,
+      "foeAfterArmour": 31,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "elite": {
+      "hp": 384,
+      "armour": 16,
+      "defense": 18,
+      "attack": 11,
+      "dmgFactor": 2.093,
+      "yardHit": 56,
+      "yardCrit": 115,
+      "yardPct": 60,
+      "hitsToKill": 7,
+      "hitsToKillExact": 6.86,
+      "foePct": 75,
+      "foeRaw": 58,
+      "foeAfterArmour": 43,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "boss": {
+      "hp": 1440,
+      "armour": 16,
+      "defense": 19,
+      "attack": 12,
+      "dmgFactor": 2.548,
+      "yardHit": 56,
+      "yardCrit": 115,
+      "yardPct": 55,
+      "hitsToKill": 26,
+      "hitsToKillExact": 25.71,
+      "foePct": 70,
+      "foeRaw": 63,
+      "foeAfterArmour": 48,
+      "pcHp": 445,
+      "pcDef": 17,
+      "pcArmour": 15
+     },
+     "soldier_vs_tank": {
+      "foePct": 80,
+      "foeRaw": 46,
+      "foeAfterArmour": 26,
+      "pcHp": 672,
+      "pcDef": 14,
+      "pcArmour": 20,
+      "guardMax": 5
+     }
+    },
+    "squads": [
+     {
+      "fight": "standard",
+      "level": 20,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 110,
+      "rounds": 110,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 38472,
+      "pcTurns": 384,
+      "maxHitsToKill": 6,
+      "kills": {
+       "soldier": {
+        "n": 90,
+        "hits": 200
+       },
+       "elite": {
+        "n": 30,
+        "hits": 134
+       }
+      }
+     },
+     {
+      "fight": "standard",
+      "level": 20,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 137,
+      "rounds": 137,
+      "anyDown": 6,
+      "downs": 8,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 40417,
+      "pcTurns": 486,
+      "maxHitsToKill": 6,
+      "kills": {
+       "elite": {
+        "n": 30,
+        "hits": 128
+       },
+       "soldier": {
+        "n": 90,
+        "hits": 264
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 20,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 117,
+      "rounds": 117,
+      "anyDown": 5,
+      "downs": 5,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 43709,
+      "pcTurns": 428,
+      "maxHitsToKill": 7,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 142
+       },
+       "elite": {
+        "n": 60,
+        "hits": 268
+       }
+      }
+     },
+     {
+      "fight": "elite",
+      "level": 20,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 29,
+      "timeouts": 0,
+      "winRounds": 141,
+      "rounds": 156,
+      "anyDown": 13,
+      "downs": 16,
+      "wipes": 1,
+      "errors": 0,
+      "dmg": 42943,
+      "pcTurns": 547,
+      "maxHitsToKill": 9,
+      "kills": {
+       "soldier": {
+        "n": 59,
+        "hits": 127
+       },
+       "elite": {
+        "n": 60,
+        "hits": 303
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 20,
+      "map": "open",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 160,
+      "rounds": 160,
+      "anyDown": 7,
+      "downs": 8,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 62525,
+      "pcTurns": 590,
+      "maxHitsToKill": 18,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 142
+       },
+       "boss": {
+        "n": 30,
+        "hits": 456
+       }
+      }
+     },
+     {
+      "fight": "boss",
+      "level": 20,
+      "map": "cover",
+      "shift": 0,
+      "n": 30,
+      "wins": 30,
+      "timeouts": 0,
+      "winRounds": 210,
+      "rounds": 210,
+      "anyDown": 14,
+      "downs": 18,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 62816,
+      "pcTurns": 759,
+      "maxHitsToKill": 21,
+      "kills": {
+       "soldier": {
+        "n": 60,
+        "hits": 134
+       },
+       "boss": {
+        "n": 30,
+        "hits": 467
+       }
+      }
+     }
+    ],
+    "fire": [
+     {
+      "build": "plain_gun",
+      "level": 20,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 16,
+      "down": 30,
+      "downRound": 104,
+      "lasted": 74,
+      "taken": 13923,
+      "rounds": 104,
+      "hp": 445,
+      "foeAttacks": 808,
+      "foeHits": 446,
+      "errors": 0
+     },
+     {
+      "build": "plain_gun",
+      "level": 20,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 11,
+      "down": 30,
+      "downRound": 118,
+      "lasted": 88,
+      "taken": 13999,
+      "rounds": 118,
+      "hp": 445,
+      "foeAttacks": 653,
+      "foeHits": 386,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 20,
+      "fire": "soldiers",
+      "n": 30,
+      "downBy3": 0,
+      "down": 29,
+      "downRound": 243,
+      "lasted": 224,
+      "taken": 21127,
+      "rounds": 251,
+      "hp": 672,
+      "foeAttacks": 1683,
+      "foeHits": 1075,
+      "errors": 0
+     },
+     {
+      "build": "tank",
+      "level": 20,
+      "fire": "mixed",
+      "n": 30,
+      "downBy3": 0,
+      "down": 28,
+      "downRound": 261,
+      "lasted": 253,
+      "taken": 21643,
+      "rounds": 277,
+      "hp": 672,
+      "foeAttacks": 1397,
+      "foeHits": 985,
+      "errors": 0
+     }
+    ],
+    "gap": {
+     "below5": {
+      "fight": "standard",
+      "level": 20,
+      "map": "open",
+      "shift": -5,
+      "n": 8,
+      "wins": 8,
+      "timeouts": 0,
+      "winRounds": 8,
+      "rounds": 8,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 8496,
+      "pcTurns": 27,
+      "maxHitsToKill": 1,
+      "kills": {
+       "soldier": {
+        "n": 24,
+        "hits": 24
+       },
+       "elite": {
+        "n": 8,
+        "hits": 8
+       }
+      }
+     },
+     "below3": {
+      "fight": "standard",
+      "level": 20,
+      "map": "open",
+      "shift": -3,
+      "n": 15,
+      "wins": 15,
+      "timeouts": 0,
+      "winRounds": 46,
+      "rounds": 46,
+      "anyDown": 0,
+      "downs": 0,
+      "wipes": 0,
+      "errors": 0,
+      "dmg": 19097,
+      "pcTurns": 162,
+      "maxHitsToKill": 7,
+      "kills": {
+       "soldier": {
+        "n": 45,
+        "hits": 102
+       },
+       "elite": {
+        "n": 15,
+        "hits": 74
+       }
+      }
+     },
+     "above2": null
+    },
+    "seconds": 101
+   }
+  ]
+ },
+ "trials": {
+  "round1_hp_by_level": {
+   "fights_a_cell": 30,
+   "changed": "levels.hp_mult",
+   "table": {
+    "tiers": {
+     "vermin": {
+      "hp": 15,
+      "armour": 0,
+      "defense": 10,
+      "attack_bonus": 0,
+      "damage": 0.5
+     },
+     "minion": {
+      "hp": 70,
+      "armour": 0,
+      "defense": 10,
+      "attack_bonus": 1,
+      "damage": 1
+     },
+     "soldier": {
+      "hp": 140,
+      "armour": 5,
+      "defense": 11,
+      "attack_bonus": 3,
+      "damage": 0.85
+     },
+     "elite": {
+      "hp": 240,
+      "armour": 10,
+      "defense": 12,
+      "attack_bonus": 5,
+      "damage": 1.15
+     },
+     "boss": {
+      "hp": 900,
+      "armour": 10,
+      "defense": 13,
+      "attack_bonus": 6,
+      "damage": 1.4
+     }
+    },
+    "levels": [
+     {
+      "level": 1,
+      "hp_mult": 1,
+      "armour_mult": 1,
+      "defense_plus": 0,
+      "attack_plus": 0,
+      "damage_mult": 1
+     },
+     {
+      "level": 2,
+      "hp_mult": 1.07,
+      "armour_mult": 1.04,
+      "defense_plus": 0,
+      "attack_plus": 0,
+      "damage_mult": 1.02
+     },
+     {
+      "level": 3,
+      "hp_mult": 1.16,
+      "armour_mult": 1.09,
+      "defense_plus": 1,
+      "attack_plus": 0,
+      "damage_mult": 1.05
+     },
+     {
+      "level": 4,
+      "hp_mult": 1.23,
+      "armour_mult": 1.16,
+      "defense_plus": 1,
+      "attack_plus": 0,
+      "damage_mult": 1.07
+     },
+     {
+      "level": 5,
+      "hp_mult": 1.3,
+      "armour_mult": 1.2,
+      "defense_plus": 2,
+      "attack_plus": 0,
+      "damage_mult": 1.1
+     },
+     {
+      "level": 6,
+      "hp_mult": 1.38,
+      "armour_mult": 1.27,
+      "defense_plus": 2,
+      "attack_plus": 1,
+      "damage_mult": 1.13
+     },
+     {
+      "level": 7,
+      "hp_mult": 1.43,
+      "armour_mult": 1.29,
+      "defense_plus": 3,
+      "attack_plus": 1,
+      "damage_mult": 1.17
+     },
+     {
+      "level": 8,
+      "hp_mult": 1.49,
+      "armour_mult": 1.36,
+      "defense_plus": 3,
+      "attack_plus": 1,
+      "damage_mult": 1.2
+     },
+     {
+      "level": 9,
+      "hp_mult": 1.54,
+      "armour_mult": 1.4,
+      "defense_plus": 4,
+      "attack_plus": 1,
+      "damage_mult": 1.24
+     },
+     {
+      "level": 10,
+      "hp_mult": 1.61,
+      "armour_mult": 1.47,
+      "defense_plus": 4,
+      "attack_plus": 2,
+      "damage_mult": 1.28
+     },
+     {
+      "level": 11,
+      "hp_mult": 1.67,
+      "armour_mult": 1.49,
+      "defense_plus": 5,
+      "attack_plus": 2,
+      "damage_mult": 1.33
+     },
+     {
+      "level": 12,
+      "hp_mult": 1.74,
+      "armour_mult": 1.56,
+      "defense_plus": 5,
+      "attack_plus": 2,
+      "damage_mult": 1.38
+     },
+     {
+      "level": 13,
+      "hp_mult": 1.78,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 3,
+      "damage_mult": 1.43
+     },
+     {
+      "level": 14,
+      "hp_mult": 1.78,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 3,
+      "damage_mult": 1.48
+     },
+     {
+      "level": 15,
+      "hp_mult": 1.79,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 4,
+      "damage_mult": 1.53
+     },
+     {
+      "level": 16,
+      "hp_mult": 1.79,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 4,
+      "damage_mult": 1.58
+     },
+     {
+      "level": 17,
+      "hp_mult": 1.8,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 5,
+      "damage_mult": 1.64
+     },
+     {
+      "level": 18,
+      "hp_mult": 1.8,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 5,
+      "damage_mult": 1.7
+     },
+     {
+      "level": 19,
+      "hp_mult": 1.81,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 6,
+      "damage_mult": 1.76
+     },
+     {
+      "level": 20,
+      "hp_mult": 1.81,
+      "armour_mult": 1.6,
+      "defense_plus": 6,
+      "attack_plus": 6,
+      "damage_mult": 1.82
+     }
+    ]
+   },
+   "summary": {
+    "standard_open": [
+     5.266666666666667,
+     4.466666666666667,
+     4.466666666666667,
+     4.633333333333334,
+     5.033333333333333,
+     4.266666666666667
+    ],
+    "standard_open_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_open_any": [
+     27,
+     13,
+     13,
+     7,
+     27,
+     3
+    ],
+    "standard_open_downs": [
+     0.3333333333333333,
+     0.16666666666666666,
+     0.2,
+     0.06666666666666667,
+     0.3,
+     0.03333333333333333
+    ],
+    "standard_cover": [
+     5.9655172413793105,
+     5.2,
+     5.233333333333333,
+     5.066666666666666,
+     6.0,
+     4.9
+    ],
+    "standard_cover_win": [
+     97,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_cover_any": [
+     40,
+     27,
+     27,
+     27,
+     53,
+     23
+    ],
+    "standard_cover_downs": [
+     0.7,
+     0.26666666666666666,
+     0.3,
+     0.26666666666666666,
+     0.7333333333333333,
+     0.3
+    ],
+    "elite_open": [
+     6.142857142857143,
+     5.0344827586206895,
+     5.0,
+     5.066666666666666,
+     5.896551724137931,
+     4.8
+    ],
+    "elite_open_win": [
+     93,
+     97,
+     100,
+     100,
+     97,
+     100
+    ],
+    "elite_open_any": [
+     57,
+     40,
+     50,
+     33,
+     53,
+     27
+    ],
+    "elite_open_downs": [
+     1.2666666666666666,
+     0.6666666666666666,
+     0.6,
+     0.3333333333333333,
+     0.9,
+     0.3
+    ],
+    "elite_cover": [
+     6.653846153846154,
+     6.1,
+     6.482758620689655,
+     5.966666666666667,
+     6.448275862068965,
+     5.7
+    ],
+    "elite_cover_win": [
+     87,
+     100,
+     97,
+     100,
+     97,
+     100
+    ],
+    "elite_cover_any": [
+     73,
+     57,
+     77,
+     57,
+     77,
+     47
+    ],
+    "elite_cover_downs": [
+     1.6,
+     0.7666666666666667,
+     1.1333333333333333,
+     0.6333333333333333,
+     0.9333333333333333,
+     0.5666666666666667
+    ],
+    "boss_open": [
+     9.56,
+     9.153846153846153,
+     7.551724137931035,
+     7.166666666666667,
+     7.785714285714286,
+     5.7
+    ],
+    "boss_open_win": [
+     83,
+     87,
+     97,
+     100,
+     93,
+     100
+    ],
+    "boss_open_any": [
+     97,
+     90,
+     77,
+     43,
+     77,
+     27
+    ],
+    "boss_open_downs": [
+     2.1666666666666665,
+     2.1333333333333333,
+     1.3333333333333333,
+     0.6333333333333333,
+     1.0666666666666667,
+     0.26666666666666666
+    ],
+    "boss_cover": [
+     9.818181818181818,
+     8.851851851851851,
+     8.862068965517242,
+     8.448275862068966,
+     9.620689655172415,
+     8.3
+    ],
+    "boss_cover_win": [
+     73,
+     90,
+     97,
+     97,
+     97,
+     100
+    ],
+    "boss_cover_any": [
+     97,
+     87,
+     100,
+     70,
+     90,
+     70
+    ],
+    "boss_cover_downs": [
+     2.5,
+     1.6,
+     1.6,
+     1.0333333333333334,
+     1.3333333333333333,
+     0.8333333333333334
+    ],
+    "plain_gun_soldiers": [
+     2.7333333333333334,
+     2.3666666666666667,
+     2.5,
+     2.6333333333333333,
+     2.6,
+     2.466666666666667
+    ],
+    "plain_gun_soldiers_by3": [
+     37,
+     63,
+     57,
+     43,
+     50,
+     53
+    ],
+    "plain_gun_mixed": [
+     2.4,
+     2.933333333333333,
+     2.566666666666667,
+     2.7333333333333334,
+     2.933333333333333,
+     2.933333333333333
+    ],
+    "plain_gun_mixed_by3": [
+     60,
+     30,
+     53,
+     53,
+     47,
+     37
+    ],
+    "tank_soldiers": [
+     4.766666666666667,
+     9.3,
+     9.766666666666667,
+     8.833333333333334,
+     7.866666666666666,
+     7.466666666666667
+    ],
+    "tank_soldiers_by3": [
+     17,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "tank_mixed": [
+     5.2,
+     7.766666666666667,
+     8.833333333333334,
+     8.9,
+     8.266666666666667,
+     8.433333333333334
+    ],
+    "tank_mixed_by3": [
+     20,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "up3_open": [
+     37,
+     33,
+     67,
+     83,
+     50,
+     null
+    ],
+    "up3_cover": [
+     17,
+     23,
+     53,
+     57,
+     30,
+     null
+    ],
+    "up2": [
+     60,
+     67,
+     80,
+     80,
+     80,
+     null
+    ],
+    "down5": [
+     null,
+     null,
+     1,
+     1,
+     1,
+     1
+    ],
+    "down3r": [
+     null,
+     null,
+     3.466666666666667,
+     3.2,
+     3.466666666666667,
+     3.533333333333333
+    ],
+    "htk": {
+     "vermin": [
+      0.33,
+      0.35,
+      0.37,
+      0.37,
+      0.37,
+      0.38
+     ],
+     "minion": [
+      1.56,
+      1.65,
+      1.7,
+      1.71,
+      1.74,
+      1.76
+     ],
+     "soldier": [
+      3.5,
+      3.68,
+      3.78,
+      3.86,
+      3.94,
+      3.95
+     ],
+     "elite": [
+      6.86,
+      7.32,
+      7.52,
+      7.55,
+      7.74,
+      7.75
+     ],
+     "boss": [
+      25.71,
+      27.47,
+      28.23,
+      28.29,
+      29,
+      29.09
+     ]
+    },
+    "hit": {
+     "vermin": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "minion": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "soldier": [
+      65,
+      65,
+      65,
+      65,
+      65,
+      65
+     ],
+     "elite": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "boss": [
+      55,
+      55,
+      55,
+      55,
+      55,
+      55
+     ]
+    }
+   }
+  },
+  "round2_softer": {
+   "fights_a_cell": 30,
+   "changed": "round 1 + soldier damage 0.75, elite 1.0 (not kept)",
+   "summary": {
+    "standard_open": [
+     4.733333333333333,
+     4.233333333333333,
+     4.266666666666667,
+     4.633333333333334,
+     5.033333333333333,
+     4.266666666666667
+    ],
+    "standard_open_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_open_any": [
+     13,
+     3,
+     7,
+     7,
+     13,
+     0
+    ],
+    "standard_open_downs": [
+     0.13333333333333333,
+     0.03333333333333333,
+     0.06666666666666667,
+     0.06666666666666667,
+     0.13333333333333333,
+     0.0
+    ],
+    "standard_cover": [
+     5.666666666666667,
+     5.233333333333333,
+     5.133333333333334,
+     5.066666666666666,
+     5.266666666666667,
+     4.5
+    ],
+    "standard_cover_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_cover_any": [
+     20,
+     17,
+     13,
+     3,
+     47,
+     13
+    ],
+    "standard_cover_downs": [
+     0.26666666666666666,
+     0.16666666666666666,
+     0.13333333333333333,
+     0.03333333333333333,
+     0.5,
+     0.13333333333333333
+    ],
+    "elite_open": [
+     5.0344827586206895,
+     4.7,
+     4.8,
+     4.866666666666666,
+     5.333333333333333,
+     4.6
+    ],
+    "elite_open_win": [
+     97,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "elite_open_any": [
+     43,
+     13,
+     23,
+     3,
+     37,
+     10
+    ],
+    "elite_open_downs": [
+     0.6333333333333333,
+     0.16666666666666666,
+     0.26666666666666666,
+     0.03333333333333333,
+     0.43333333333333335,
+     0.1
+    ],
+    "elite_cover": [
+     5.862068965517241,
+     5.566666666666666,
+     6.3,
+     5.833333333333333,
+     6.6,
+     5.533333333333333
+    ],
+    "elite_cover_win": [
+     97,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "elite_cover_any": [
+     50,
+     30,
+     57,
+     40,
+     63,
+     23
+    ],
+    "elite_cover_downs": [
+     0.7666666666666667,
+     0.3,
+     0.6666666666666666,
+     0.43333333333333335,
+     0.6333333333333333,
+     0.23333333333333334
+    ],
+    "boss_open": [
+     8.88888888888889,
+     8.185185185185185,
+     7.466666666666667,
+     7.066666666666666,
+     7.896551724137931,
+     5.7
+    ],
+    "boss_open_win": [
+     90,
+     90,
+     100,
+     100,
+     97,
+     100
+    ],
+    "boss_open_any": [
+     93,
+     83,
+     77,
+     40,
+     77,
+     20
+    ],
+    "boss_open_downs": [
+     1.9666666666666666,
+     1.6333333333333333,
+     1.2333333333333334,
+     0.5666666666666667,
+     1.0333333333333334,
+     0.2
+    ],
+    "boss_cover": [
+     10.090909090909092,
+     9.0,
+     9.3,
+     8.379310344827585,
+     9.857142857142858,
+     8.4
+    ],
+    "boss_cover_win": [
+     73,
+     97,
+     100,
+     97,
+     93,
+     100
+    ],
+    "boss_cover_any": [
+     97,
+     83,
+     100,
+     63,
+     90,
+     73
+    ],
+    "boss_cover_downs": [
+     2.5,
+     1.5,
+     1.5333333333333334,
+     0.9666666666666667,
+     1.3666666666666667,
+     0.9
+    ],
+    "plain_gun_soldiers": [
+     3.8333333333333335,
+     3.5,
+     3.433333333333333,
+     3.566666666666667,
+     3.566666666666667,
+     3.2
+    ],
+    "plain_gun_soldiers_by3": [
+     10,
+     10,
+     10,
+     0,
+     17,
+     23
+    ],
+    "plain_gun_mixed": [
+     3.2333333333333334,
+     3.7666666666666666,
+     3.6,
+     3.6666666666666665,
+     3.8333333333333335,
+     3.966666666666667
+    ],
+    "plain_gun_mixed_by3": [
+     27,
+     10,
+     17,
+     17,
+     20,
+     13
+    ],
+    "tank_soldiers": [
+     6.866666666666666,
+     10.0,
+     9.966666666666667,
+     9.966666666666667,
+     9.566666666666666,
+     8.933333333333334
+    ],
+    "tank_soldiers_by3": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "tank_mixed": [
+     6.7,
+     9.166666666666666,
+     9.833333333333334,
+     9.666666666666666,
+     9.433333333333334,
+     9.666666666666666
+    ],
+    "tank_mixed_by3": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "up3_open": [
+     73,
+     73,
+     83,
+     77,
+     77,
+     null
+    ],
+    "up3_cover": [
+     37,
+     40,
+     70,
+     63,
+     60,
+     null
+    ],
+    "up2": [
+     80,
+     87,
+     100,
+     87,
+     87,
+     null
+    ],
+    "down5": [
+     null,
+     null,
+     1,
+     1,
+     1,
+     1
+    ],
+    "down3r": [
+     null,
+     null,
+     3.466666666666667,
+     3.2,
+     3.466666666666667,
+     3.533333333333333
+    ],
+    "htk": {
+     "vermin": [
+      0.33,
+      0.35,
+      0.37,
+      0.37,
+      0.37,
+      0.38
+     ],
+     "minion": [
+      1.56,
+      1.65,
+      1.7,
+      1.71,
+      1.74,
+      1.76
+     ],
+     "soldier": [
+      3.5,
+      3.68,
+      3.78,
+      3.86,
+      3.94,
+      3.95
+     ],
+     "elite": [
+      6.86,
+      7.32,
+      7.52,
+      7.55,
+      7.74,
+      7.75
+     ],
+     "boss": [
+      25.71,
+      27.47,
+      28.23,
+      28.29,
+      29,
+      29.09
+     ]
+    },
+    "hit": {
+     "vermin": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "minion": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "soldier": [
+      65,
+      65,
+      65,
+      65,
+      65,
+      65
+     ],
+     "elite": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "boss": [
+      55,
+      55,
+      55,
+      55,
+      55,
+      55
+     ]
+    }
+   }
+  },
+  "round3_harder": {
+   "fights_a_cell": 30,
+   "changed": "round 1 + soldier damage 0.95, elite 1.3 (not kept)",
+   "summary": {
+    "standard_open": [
+     5.75,
+     4.9,
+     4.862068965517241,
+     4.766666666666667,
+     5.566666666666666,
+     4.5
+    ],
+    "standard_open_win": [
+     93,
+     100,
+     97,
+     100,
+     100,
+     100
+    ],
+    "standard_open_any": [
+     47,
+     30,
+     37,
+     20,
+     37,
+     10
+    ],
+    "standard_open_downs": [
+     0.8666666666666667,
+     0.36666666666666664,
+     0.6,
+     0.2,
+     0.4666666666666667,
+     0.1
+    ],
+    "standard_cover": [
+     6.214285714285714,
+     5.655172413793103,
+     5.366666666666666,
+     5.4,
+     5.75,
+     5.033333333333333
+    ],
+    "standard_cover_win": [
+     93,
+     97,
+     100,
+     100,
+     93,
+     100
+    ],
+    "standard_cover_any": [
+     77,
+     47,
+     40,
+     47,
+     63,
+     50
+    ],
+    "standard_cover_downs": [
+     1.2,
+     0.6,
+     0.4666666666666667,
+     0.5666666666666667,
+     0.9333333333333333,
+     0.6
+    ],
+    "elite_open": [
+     6.666666666666667,
+     6.266666666666667,
+     6.551724137931035,
+     5.379310344827586,
+     6.75,
+     4.866666666666666
+    ],
+    "elite_open_win": [
+     80,
+     100,
+     97,
+     97,
+     93,
+     100
+    ],
+    "elite_open_any": [
+     97,
+     67,
+     70,
+     53,
+     80,
+     47
+    ],
+    "elite_open_downs": [
+     2.2666666666666666,
+     1.3333333333333333,
+     1.4333333333333333,
+     0.8,
+     1.4,
+     0.6
+    ],
+    "elite_cover": [
+     7.136363636363637,
+     7.5,
+     7.0,
+     6.571428571428571,
+     7.107142857142857,
+     6.033333333333333
+    ],
+    "elite_cover_win": [
+     73,
+     93,
+     97,
+     93,
+     93,
+     100
+    ],
+    "elite_cover_any": [
+     83,
+     83,
+     93,
+     70,
+     93,
+     67
+    ],
+    "elite_cover_downs": [
+     2.1666666666666665,
+     1.8333333333333333,
+     1.5333333333333334,
+     1.1666666666666667,
+     1.5,
+     0.8
+    ],
+    "boss_open": [
+     9.4,
+     9.115384615384615,
+     7.689655172413793,
+     7.066666666666666,
+     8.172413793103448,
+     5.733333333333333
+    ],
+    "boss_open_win": [
+     83,
+     87,
+     97,
+     100,
+     97,
+     100
+    ],
+    "boss_open_any": [
+     97,
+     90,
+     80,
+     47,
+     77,
+     33
+    ],
+    "boss_open_downs": [
+     2.2333333333333334,
+     2.1333333333333333,
+     1.4,
+     0.7,
+     1.0333333333333334,
+     0.3333333333333333
+    ],
+    "boss_cover": [
+     9.363636363636363,
+     8.555555555555555,
+     8.89655172413793,
+     8.620689655172415,
+     10.0,
+     8.533333333333333
+    ],
+    "boss_cover_win": [
+     73,
+     90,
+     97,
+     97,
+     97,
+     100
+    ],
+    "boss_cover_any": [
+     93,
+     87,
+     100,
+     73,
+     90,
+     73
+    ],
+    "boss_cover_downs": [
+     2.3666666666666667,
+     1.5666666666666667,
+     1.7,
+     1.0,
+     1.4,
+     0.9666666666666667
+    ],
+    "plain_gun_soldiers": [
+     1.9666666666666666,
+     1.7,
+     1.7,
+     1.9666666666666666,
+     1.9666666666666666,
+     2.033333333333333
+    ],
+    "plain_gun_soldiers_by3": [
+     77,
+     90,
+     93,
+     77,
+     83,
+     77
+    ],
+    "plain_gun_mixed": [
+     1.9666666666666666,
+     2.1333333333333333,
+     2.0,
+     1.9333333333333333,
+     2.3333333333333335,
+     2.3666666666666667
+    ],
+    "plain_gun_mixed_by3": [
+     77,
+     63,
+     73,
+     77,
+     70,
+     53
+    ],
+    "tank_soldiers": [
+     3.7,
+     7.7,
+     8.266666666666667,
+     7.3,
+     6.6,
+     6.133333333333334
+    ],
+    "tank_soldiers_by3": [
+     33,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "tank_mixed": [
+     4.333333333333333,
+     6.066666666666666,
+     7.266666666666667,
+     7.166666666666667,
+     7.2,
+     7.7
+    ],
+    "tank_mixed_by3": [
+     20,
+     3,
+     0,
+     0,
+     0,
+     0
+    ],
+    "up3_open": [
+     13,
+     10,
+     40,
+     27,
+     40,
+     null
+    ],
+    "up3_cover": [
+     7,
+     13,
+     27,
+     27,
+     10,
+     null
+    ],
+    "up2": [
+     47,
+     40,
+     87,
+     60,
+     47,
+     null
+    ],
+    "down5": [
+     null,
+     null,
+     1,
+     1,
+     1,
+     1
+    ],
+    "down3r": [
+     null,
+     null,
+     3.466666666666667,
+     3.2,
+     3.466666666666667,
+     3.533333333333333
+    ],
+    "htk": {
+     "vermin": [
+      0.33,
+      0.35,
+      0.37,
+      0.37,
+      0.37,
+      0.38
+     ],
+     "minion": [
+      1.56,
+      1.65,
+      1.7,
+      1.71,
+      1.74,
+      1.76
+     ],
+     "soldier": [
+      3.5,
+      3.68,
+      3.78,
+      3.86,
+      3.94,
+      3.95
+     ],
+     "elite": [
+      6.86,
+      7.32,
+      7.52,
+      7.55,
+      7.74,
+      7.75
+     ],
+     "boss": [
+      25.71,
+      27.47,
+      28.23,
+      28.29,
+      29,
+      29.09
+     ]
+    },
+    "hit": {
+     "vermin": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "minion": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "soldier": [
+      65,
+      65,
+      65,
+      65,
+      65,
+      65
+     ],
+     "elite": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "boss": [
+      55,
+      55,
+      55,
+      55,
+      55,
+      55
+     ]
+    }
+   }
+  },
+  "round4_gap_2_a_level": {
+   "fights_a_cell": 30,
+   "changed": "round 1 + levels.gap.to_hit_per_level 2 (a what-if outside the table; not built)",
+   "summary": {
+    "standard_open": [
+     5.266666666666667,
+     4.466666666666667,
+     4.466666666666667,
+     4.633333333333334,
+     5.033333333333333,
+     4.266666666666667
+    ],
+    "standard_open_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_open_any": [
+     27,
+     13,
+     13,
+     7,
+     27,
+     3
+    ],
+    "standard_open_downs": [
+     0.3333333333333333,
+     0.16666666666666666,
+     0.2,
+     0.06666666666666667,
+     0.3,
+     0.03333333333333333
+    ],
+    "standard_cover": [
+     5.9655172413793105,
+     5.2,
+     5.233333333333333,
+     5.066666666666666,
+     6.0,
+     4.9
+    ],
+    "standard_cover_win": [
+     97,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_cover_any": [
+     40,
+     27,
+     27,
+     27,
+     53,
+     23
+    ],
+    "standard_cover_downs": [
+     0.7,
+     0.26666666666666666,
+     0.3,
+     0.26666666666666666,
+     0.7333333333333333,
+     0.3
+    ],
+    "elite_open": [
+     6.142857142857143,
+     5.0344827586206895,
+     5.0,
+     5.066666666666666,
+     5.896551724137931,
+     4.8
+    ],
+    "elite_open_win": [
+     93,
+     97,
+     100,
+     100,
+     97,
+     100
+    ],
+    "elite_open_any": [
+     57,
+     40,
+     50,
+     33,
+     53,
+     27
+    ],
+    "elite_open_downs": [
+     1.2666666666666666,
+     0.6666666666666666,
+     0.6,
+     0.3333333333333333,
+     0.9,
+     0.3
+    ],
+    "elite_cover": [
+     6.653846153846154,
+     6.1,
+     6.482758620689655,
+     5.966666666666667,
+     6.448275862068965,
+     5.7
+    ],
+    "elite_cover_win": [
+     87,
+     100,
+     97,
+     100,
+     97,
+     100
+    ],
+    "elite_cover_any": [
+     73,
+     57,
+     77,
+     57,
+     77,
+     47
+    ],
+    "elite_cover_downs": [
+     1.6,
+     0.7666666666666667,
+     1.1333333333333333,
+     0.6333333333333333,
+     0.9333333333333333,
+     0.5666666666666667
+    ],
+    "boss_open": [
+     9.56,
+     9.153846153846153,
+     7.551724137931035,
+     7.166666666666667,
+     7.785714285714286,
+     5.7
+    ],
+    "boss_open_win": [
+     83,
+     87,
+     97,
+     100,
+     93,
+     100
+    ],
+    "boss_open_any": [
+     97,
+     90,
+     77,
+     43,
+     77,
+     27
+    ],
+    "boss_open_downs": [
+     2.1666666666666665,
+     2.1333333333333333,
+     1.3333333333333333,
+     0.6333333333333333,
+     1.0666666666666667,
+     0.26666666666666666
+    ],
+    "boss_cover": [
+     9.818181818181818,
+     8.851851851851851,
+     8.862068965517242,
+     8.448275862068966,
+     9.620689655172415,
+     8.3
+    ],
+    "boss_cover_win": [
+     73,
+     90,
+     97,
+     97,
+     97,
+     100
+    ],
+    "boss_cover_any": [
+     97,
+     87,
+     100,
+     70,
+     90,
+     70
+    ],
+    "boss_cover_downs": [
+     2.5,
+     1.6,
+     1.6,
+     1.0333333333333334,
+     1.3333333333333333,
+     0.8333333333333334
+    ],
+    "plain_gun_soldiers": [
+     2.7333333333333334,
+     2.3666666666666667,
+     2.5,
+     2.6333333333333333,
+     2.6,
+     2.466666666666667
+    ],
+    "plain_gun_soldiers_by3": [
+     37,
+     63,
+     57,
+     43,
+     50,
+     53
+    ],
+    "plain_gun_mixed": [
+     2.4,
+     2.933333333333333,
+     2.566666666666667,
+     2.7333333333333334,
+     2.933333333333333,
+     2.933333333333333
+    ],
+    "plain_gun_mixed_by3": [
+     60,
+     30,
+     53,
+     53,
+     47,
+     37
+    ],
+    "tank_soldiers": [
+     4.766666666666667,
+     9.3,
+     9.766666666666667,
+     8.833333333333334,
+     7.866666666666666,
+     7.466666666666667
+    ],
+    "tank_soldiers_by3": [
+     17,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "tank_mixed": [
+     5.2,
+     7.766666666666667,
+     8.833333333333334,
+     8.9,
+     8.266666666666667,
+     8.433333333333334
+    ],
+    "tank_mixed_by3": [
+     20,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "up3_open": [
+     13,
+     3,
+     23,
+     30,
+     23,
+     null
+    ],
+    "up3_cover": [
+     0,
+     3,
+     20,
+     23,
+     20,
+     null
+    ],
+    "up2": [
+     27,
+     27,
+     60,
+     33,
+     33,
+     null
+    ],
+    "down5": [
+     null,
+     null,
+     1,
+     1,
+     1,
+     1
+    ],
+    "down3r": [
+     null,
+     null,
+     3.1333333333333333,
+     3.2666666666666666,
+     3.2,
+     3.2
+    ],
+    "htk": {
+     "vermin": [
+      0.33,
+      0.35,
+      0.37,
+      0.37,
+      0.37,
+      0.38
+     ],
+     "minion": [
+      1.56,
+      1.65,
+      1.7,
+      1.71,
+      1.74,
+      1.76
+     ],
+     "soldier": [
+      3.5,
+      3.68,
+      3.78,
+      3.86,
+      3.94,
+      3.95
+     ],
+     "elite": [
+      6.86,
+      7.32,
+      7.52,
+      7.55,
+      7.74,
+      7.75
+     ],
+     "boss": [
+      25.71,
+      27.47,
+      28.23,
+      28.29,
+      29,
+      29.09
+     ]
+    },
+    "hit": {
+     "vermin": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "minion": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "soldier": [
+      65,
+      65,
+      65,
+      65,
+      65,
+      65
+     ],
+     "elite": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "boss": [
+      55,
+      55,
+      55,
+      55,
+      55,
+      55
+     ]
+    }
+   }
+  },
+  "round5_damage": {
+   "fights_a_cell": 30,
+   "changed": "round 1 + soldier damage 0.78, elite 1.05",
+   "summary": {
+    "standard_open": [
+     4.9,
+     4.233333333333333,
+     4.333333333333333,
+     4.633333333333334,
+     5.166666666666667,
+     4.266666666666667
+    ],
+    "standard_open_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_open_any": [
+     17,
+     3,
+     10,
+     7,
+     17,
+     0
+    ],
+    "standard_open_downs": [
+     0.16666666666666666,
+     0.03333333333333333,
+     0.13333333333333333,
+     0.06666666666666667,
+     0.2,
+     0.0
+    ],
+    "standard_cover": [
+     5.566666666666666,
+     5.266666666666667,
+     5.2,
+     5.066666666666666,
+     5.333333333333333,
+     4.8
+    ],
+    "standard_cover_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_cover_any": [
+     27,
+     20,
+     20,
+     10,
+     47,
+     17
+    ],
+    "standard_cover_downs": [
+     0.3333333333333333,
+     0.2,
+     0.2,
+     0.1,
+     0.5,
+     0.16666666666666666
+    ],
+    "elite_open": [
+     5.655172413793103,
+     4.8,
+     4.866666666666666,
+     4.866666666666666,
+     5.533333333333333,
+     4.6
+    ],
+    "elite_open_win": [
+     97,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "elite_open_any": [
+     53,
+     17,
+     37,
+     10,
+     43,
+     13
+    ],
+    "elite_open_downs": [
+     0.8666666666666667,
+     0.2,
+     0.43333333333333335,
+     0.1,
+     0.6333333333333333,
+     0.13333333333333333
+    ],
+    "elite_cover": [
+     6.379310344827586,
+     5.766666666666667,
+     6.310344827586207,
+     5.8,
+     6.966666666666667,
+     5.6
+    ],
+    "elite_cover_win": [
+     97,
+     100,
+     97,
+     100,
+     100,
+     100
+    ],
+    "elite_cover_any": [
+     53,
+     37,
+     70,
+     47,
+     70,
+     27
+    ],
+    "elite_cover_downs": [
+     0.9666666666666667,
+     0.4666666666666667,
+     0.9666666666666667,
+     0.4666666666666667,
+     0.7666666666666667,
+     0.26666666666666666
+    ],
+    "boss_open": [
+     8.884615384615385,
+     8.444444444444445,
+     7.6,
+     7.133333333333334,
+     7.857142857142857,
+     5.666666666666667
+    ],
+    "boss_open_win": [
+     87,
+     90,
+     100,
+     100,
+     93,
+     100
+    ],
+    "boss_open_any": [
+     97,
+     87,
+     77,
+     43,
+     77,
+     20
+    ],
+    "boss_open_downs": [
+     2.066666666666667,
+     1.8666666666666667,
+     1.2666666666666666,
+     0.6333333333333333,
+     1.1,
+     0.2
+    ],
+    "boss_cover": [
+     9.619047619047619,
+     8.793103448275861,
+     9.433333333333334,
+     8.379310344827585,
+     9.96551724137931,
+     8.4
+    ],
+    "boss_cover_win": [
+     70,
+     97,
+     100,
+     97,
+     97,
+     100
+    ],
+    "boss_cover_any": [
+     97,
+     83,
+     100,
+     70,
+     90,
+     73
+    ],
+    "boss_cover_downs": [
+     2.5,
+     1.4,
+     1.5666666666666667,
+     1.0333333333333334,
+     1.4,
+     0.9
+    ],
+    "plain_gun_soldiers": [
+     3.3666666666666667,
+     2.966666666666667,
+     3.1333333333333333,
+     3.033333333333333,
+     3.1666666666666665,
+     2.966666666666667
+    ],
+    "plain_gun_soldiers_by3": [
+     23,
+     30,
+     20,
+     23,
+     23,
+     27
+    ],
+    "plain_gun_mixed": [
+     3.033333333333333,
+     3.433333333333333,
+     3.2666666666666666,
+     3.2,
+     3.5,
+     3.533333333333333
+    ],
+    "plain_gun_mixed_by3": [
+     27,
+     17,
+     30,
+     30,
+     27,
+     20
+    ],
+    "tank_soldiers": [
+     6.333333333333333,
+     9.9,
+     9.933333333333334,
+     9.7,
+     9.166666666666666,
+     8.266666666666667
+    ],
+    "tank_soldiers_by3": [
+     3,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "tank_mixed": [
+     6.133333333333334,
+     8.866666666666667,
+     9.6,
+     9.466666666666667,
+     9.166666666666666,
+     9.433333333333334
+    ],
+    "tank_mixed_by3": [
+     10,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "up3_open": [
+     63,
+     63,
+     77,
+     77,
+     87,
+     null
+    ],
+    "up3_cover": [
+     30,
+     40,
+     43,
+     60,
+     53,
+     null
+    ],
+    "up2": [
+     87,
+     87,
+     87,
+     80,
+     87,
+     null
+    ],
+    "down5": [
+     null,
+     null,
+     1,
+     1,
+     1,
+     1
+    ],
+    "down3r": [
+     null,
+     null,
+     3.466666666666667,
+     3.2,
+     3.466666666666667,
+     3.533333333333333
+    ],
+    "htk": {
+     "vermin": [
+      0.33,
+      0.35,
+      0.37,
+      0.37,
+      0.37,
+      0.38
+     ],
+     "minion": [
+      1.56,
+      1.65,
+      1.7,
+      1.71,
+      1.74,
+      1.76
+     ],
+     "soldier": [
+      3.5,
+      3.68,
+      3.78,
+      3.86,
+      3.94,
+      3.95
+     ],
+     "elite": [
+      6.86,
+      7.32,
+      7.52,
+      7.55,
+      7.74,
+      7.75
+     ],
+     "boss": [
+      25.71,
+      27.47,
+      28.23,
+      28.29,
+      29,
+      29.09
+     ]
+    },
+    "hit": {
+     "vermin": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "minion": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "soldier": [
+      65,
+      65,
+      65,
+      65,
+      65,
+      65
+     ],
+     "elite": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "boss": [
+      55,
+      55,
+      55,
+      55,
+      55,
+      55
+     ]
+    }
+   }
+  },
+  "round6_boss_damage": {
+   "fights_a_cell": 30,
+   "changed": "round 5 + boss damage 1.2",
+   "summary": {
+    "standard_open": [
+     4.9,
+     4.233333333333333,
+     4.333333333333333,
+     4.633333333333334,
+     5.166666666666667,
+     4.266666666666667
+    ],
+    "standard_open_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_open_any": [
+     17,
+     3,
+     10,
+     7,
+     17,
+     0
+    ],
+    "standard_open_downs": [
+     0.16666666666666666,
+     0.03333333333333333,
+     0.13333333333333333,
+     0.06666666666666667,
+     0.2,
+     0.0
+    ],
+    "standard_cover": [
+     5.566666666666666,
+     5.266666666666667,
+     5.2,
+     5.066666666666666,
+     5.333333333333333,
+     4.8
+    ],
+    "standard_cover_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_cover_any": [
+     27,
+     20,
+     20,
+     10,
+     47,
+     17
+    ],
+    "standard_cover_downs": [
+     0.3333333333333333,
+     0.2,
+     0.2,
+     0.1,
+     0.5,
+     0.16666666666666666
+    ],
+    "elite_open": [
+     5.655172413793103,
+     4.8,
+     4.866666666666666,
+     4.866666666666666,
+     5.533333333333333,
+     4.6
+    ],
+    "elite_open_win": [
+     97,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "elite_open_any": [
+     53,
+     17,
+     37,
+     10,
+     43,
+     13
+    ],
+    "elite_open_downs": [
+     0.8666666666666667,
+     0.2,
+     0.43333333333333335,
+     0.1,
+     0.6333333333333333,
+     0.13333333333333333
+    ],
+    "elite_cover": [
+     6.379310344827586,
+     5.766666666666667,
+     6.310344827586207,
+     5.8,
+     6.966666666666667,
+     5.6
+    ],
+    "elite_cover_win": [
+     97,
+     100,
+     97,
+     100,
+     100,
+     100
+    ],
+    "elite_cover_any": [
+     53,
+     37,
+     70,
+     47,
+     70,
+     27
+    ],
+    "elite_cover_downs": [
+     0.9666666666666667,
+     0.4666666666666667,
+     0.9666666666666667,
+     0.4666666666666667,
+     0.7666666666666667,
+     0.26666666666666666
+    ],
+    "boss_open": [
+     8.566666666666666,
+     7.551724137931035,
+     6.733333333333333,
+     6.866666666666666,
+     7.6,
+     5.766666666666667
+    ],
+    "boss_open_win": [
+     100,
+     97,
+     100,
+     100,
+     100,
+     100
+    ],
+    "boss_open_any": [
+     70,
+     73,
+     57,
+     30,
+     60,
+     13
+    ],
+    "boss_open_downs": [
+     1.1333333333333333,
+     1.0666666666666667,
+     0.7666666666666667,
+     0.3,
+     0.7,
+     0.13333333333333333
+    ],
+    "boss_cover": [
+     8.96551724137931,
+     7.9655172413793105,
+     8.620689655172415,
+     8.2,
+     9.535714285714286,
+     8.7
+    ],
+    "boss_cover_win": [
+     97,
+     97,
+     97,
+     100,
+     93,
+     100
+    ],
+    "boss_cover_any": [
+     83,
+     67,
+     87,
+     50,
+     80,
+     60
+    ],
+    "boss_cover_downs": [
+     1.5333333333333334,
+     0.9666666666666667,
+     1.1333333333333333,
+     0.6,
+     1.0666666666666667,
+     0.6666666666666666
+    ],
+    "plain_gun_soldiers": [
+     3.3666666666666667,
+     2.966666666666667,
+     3.1333333333333333,
+     3.033333333333333,
+     3.1666666666666665,
+     2.966666666666667
+    ],
+    "plain_gun_soldiers_by3": [
+     23,
+     30,
+     20,
+     23,
+     23,
+     27
+    ],
+    "plain_gun_mixed": [
+     3.033333333333333,
+     3.433333333333333,
+     3.2666666666666666,
+     3.2,
+     3.5,
+     3.533333333333333
+    ],
+    "plain_gun_mixed_by3": [
+     27,
+     17,
+     30,
+     30,
+     27,
+     20
+    ],
+    "tank_soldiers": [
+     6.333333333333333,
+     9.9,
+     9.933333333333334,
+     9.7,
+     9.166666666666666,
+     8.266666666666667
+    ],
+    "tank_soldiers_by3": [
+     3,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "tank_mixed": [
+     6.133333333333334,
+     8.866666666666667,
+     9.6,
+     9.466666666666667,
+     9.166666666666666,
+     9.433333333333334
+    ],
+    "tank_mixed_by3": [
+     10,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "up3_open": [
+     63,
+     63,
+     77,
+     77,
+     87,
+     null
+    ],
+    "up3_cover": [
+     30,
+     40,
+     43,
+     60,
+     53,
+     null
+    ],
+    "up2": [
+     87,
+     87,
+     87,
+     80,
+     87,
+     null
+    ],
+    "down5": [
+     null,
+     null,
+     1,
+     1,
+     1,
+     1
+    ],
+    "down3r": [
+     null,
+     null,
+     3.466666666666667,
+     3.2,
+     3.466666666666667,
+     3.533333333333333
+    ],
+    "htk": {
+     "vermin": [
+      0.33,
+      0.35,
+      0.37,
+      0.37,
+      0.37,
+      0.38
+     ],
+     "minion": [
+      1.56,
+      1.65,
+      1.7,
+      1.71,
+      1.74,
+      1.76
+     ],
+     "soldier": [
+      3.5,
+      3.68,
+      3.78,
+      3.86,
+      3.94,
+      3.95
+     ],
+     "elite": [
+      6.86,
+      7.32,
+      7.52,
+      7.55,
+      7.74,
+      7.75
+     ],
+     "boss": [
+      25.71,
+      27.47,
+      28.23,
+      28.29,
+      29,
+      29.09
+     ]
+    },
+    "hit": {
+     "vermin": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "minion": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "soldier": [
+      65,
+      65,
+      65,
+      65,
+      65,
+      65
+     ],
+     "elite": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "boss": [
+      55,
+      55,
+      55,
+      55,
+      55,
+      55
+     ]
+    }
+   }
+  },
+  "round7_boss_hp": {
+   "fights_a_cell": 30,
+   "changed": "round 6 + boss hp 960 (the fitted table)",
+   "summary": {
+    "standard_open": [
+     4.9,
+     4.233333333333333,
+     4.333333333333333,
+     4.633333333333334,
+     5.166666666666667,
+     4.266666666666667
+    ],
+    "standard_open_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_open_any": [
+     17,
+     3,
+     10,
+     7,
+     17,
+     0
+    ],
+    "standard_open_downs": [
+     0.16666666666666666,
+     0.03333333333333333,
+     0.13333333333333333,
+     0.06666666666666667,
+     0.2,
+     0.0
+    ],
+    "standard_cover": [
+     5.566666666666666,
+     5.266666666666667,
+     5.2,
+     5.066666666666666,
+     5.333333333333333,
+     4.8
+    ],
+    "standard_cover_win": [
+     100,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "standard_cover_any": [
+     27,
+     20,
+     20,
+     10,
+     47,
+     17
+    ],
+    "standard_cover_downs": [
+     0.3333333333333333,
+     0.2,
+     0.2,
+     0.1,
+     0.5,
+     0.16666666666666666
+    ],
+    "elite_open": [
+     5.655172413793103,
+     4.8,
+     4.866666666666666,
+     4.866666666666666,
+     5.533333333333333,
+     4.6
+    ],
+    "elite_open_win": [
+     97,
+     100,
+     100,
+     100,
+     100,
+     100
+    ],
+    "elite_open_any": [
+     53,
+     17,
+     37,
+     10,
+     43,
+     13
+    ],
+    "elite_open_downs": [
+     0.8666666666666667,
+     0.2,
+     0.43333333333333335,
+     0.1,
+     0.6333333333333333,
+     0.13333333333333333
+    ],
+    "elite_cover": [
+     6.379310344827586,
+     5.766666666666667,
+     6.310344827586207,
+     5.8,
+     6.966666666666667,
+     5.6
+    ],
+    "elite_cover_win": [
+     97,
+     100,
+     97,
+     100,
+     100,
+     100
+    ],
+    "elite_cover_any": [
+     53,
+     37,
+     70,
+     47,
+     70,
+     27
+    ],
+    "elite_cover_downs": [
+     0.9666666666666667,
+     0.4666666666666667,
+     0.9666666666666667,
+     0.4666666666666667,
+     0.7666666666666667,
+     0.26666666666666666
+    ],
+    "boss_open": [
+     9.133333333333333,
+     7.9655172413793105,
+     7.2,
+     7.2,
+     7.966666666666667,
+     6.066666666666666
+    ],
+    "boss_open_win": [
+     100,
+     97,
+     100,
+     100,
+     100,
+     100
+    ],
+    "boss_open_any": [
+     73,
+     73,
+     67,
+     37,
+     67,
+     20
+    ],
+    "boss_open_downs": [
+     1.1666666666666667,
+     1.1333333333333333,
+     0.9333333333333333,
+     0.36666666666666664,
+     0.8,
+     0.2
+    ],
+    "boss_cover": [
+     9.551724137931034,
+     8.448275862068966,
+     9.10344827586207,
+     8.6,
+     10.178571428571429,
+     9.133333333333333
+    ],
+    "boss_cover_win": [
+     97,
+     97,
+     97,
+     100,
+     93,
+     100
+    ],
+    "boss_cover_any": [
+     87,
+     73,
+     87,
+     57,
+     83,
+     67
+    ],
+    "boss_cover_downs": [
+     1.6,
+     1.1333333333333333,
+     1.1666666666666667,
+     0.6666666666666666,
+     1.1,
+     0.7666666666666667
+    ],
+    "plain_gun_soldiers": [
+     3.3666666666666667,
+     2.966666666666667,
+     3.1333333333333333,
+     3.033333333333333,
+     3.1666666666666665,
+     2.966666666666667
+    ],
+    "plain_gun_soldiers_by3": [
+     23,
+     30,
+     20,
+     23,
+     23,
+     27
+    ],
+    "plain_gun_mixed": [
+     3.033333333333333,
+     3.433333333333333,
+     3.2666666666666666,
+     3.2,
+     3.5,
+     3.533333333333333
+    ],
+    "plain_gun_mixed_by3": [
+     27,
+     17,
+     30,
+     30,
+     27,
+     20
+    ],
+    "tank_soldiers": [
+     6.333333333333333,
+     9.9,
+     9.933333333333334,
+     9.7,
+     9.166666666666666,
+     8.266666666666667
+    ],
+    "tank_soldiers_by3": [
+     3,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "tank_mixed": [
+     6.133333333333334,
+     8.866666666666667,
+     9.6,
+     9.466666666666667,
+     9.166666666666666,
+     9.433333333333334
+    ],
+    "tank_mixed_by3": [
+     10,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "up3_open": [
+     63,
+     63,
+     77,
+     77,
+     87,
+     null
+    ],
+    "up3_cover": [
+     30,
+     40,
+     43,
+     60,
+     53,
+     null
+    ],
+    "up2": [
+     87,
+     87,
+     87,
+     80,
+     87,
+     null
+    ],
+    "down5": [
+     null,
+     null,
+     1,
+     1,
+     1,
+     1
+    ],
+    "down3r": [
+     null,
+     null,
+     3.466666666666667,
+     3.2,
+     3.466666666666667,
+     3.533333333333333
+    ],
+    "htk": {
+     "vermin": [
+      0.33,
+      0.35,
+      0.37,
+      0.37,
+      0.37,
+      0.38
+     ],
+     "minion": [
+      1.56,
+      1.65,
+      1.7,
+      1.71,
+      1.74,
+      1.76
+     ],
+     "soldier": [
+      3.5,
+      3.68,
+      3.78,
+      3.86,
+      3.94,
+      3.95
+     ],
+     "elite": [
+      6.86,
+      7.32,
+      7.52,
+      7.55,
+      7.74,
+      7.75
+     ],
+     "boss": [
+      27.43,
+      29.32,
+      30.11,
+      30.16,
+      30.93,
+      31.04
+     ]
+    },
+    "hit": {
+     "vermin": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "minion": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "soldier": [
+      65,
+      65,
+      65,
+      65,
+      65,
+      65
+     ],
+     "elite": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "boss": [
+      55,
+      55,
+      55,
+      55,
+      55,
+      55
+     ]
+    }
+   }
+  }
+ },
+ "review": {
+  "date": "2026-11-11",
+  "table_changed": false,
+  "refit_level_6_n60": {
+   "standard_rounds": [
+    4.3,
+    5.5
+   ],
+   "elite_rounds": [
+    5.1,
+    6.2
+   ],
+   "boss_rounds": [
+    7.2,
+    8.8
+   ],
+   "yardstick_under_fire_rounds": [
+    3.2,
+    3.4
+   ],
+   "tank_under_fire_rounds": [
+    9.9,
+    9.5
+   ],
+   "three_levels_up_won_pct": [
+    68,
+    50
+   ],
+   "note": "the same as the fitted run, after the review's fixes"
+  },
+  "hand_check": {
+   "levels": [
+    1,
+    6,
+    12,
+    20
+   ],
+   "yardstick_damage": [
+    45,
+    57,
+    70,
+    72
+   ],
+   "yardstick_hp": [
+    145,
+    190,
+    288,
+    445
+   ],
+   "soldier_hp": [
+    140,
+    193,
+    244,
+    253
+   ],
+   "soldier_armour": [
+    5,
+    6,
+    8,
+    8
+   ],
+   "soldier_defense": [
+    11,
+    13,
+    16,
+    17
+   ],
+   "hits_to_kill_soldier": [
+    3.5,
+    3.78,
+    3.94,
+    3.95
+   ],
+   "hits_to_kill_elite": [
+    6.86,
+    7.52,
+    7.74,
+    7.75
+   ],
+   "hits_to_kill_boss": [
+    27.43,
+    30.11,
+    30.93,
+    31.04
+   ],
+   "yardstick_hit_pct": {
+    "vermin": 70,
+    "minion": 70,
+    "soldier": 65,
+    "elite": 60,
+    "boss": 55
+   },
+   "soldier_hit_before_armour": [
+    23,
+    26,
+    32,
+    42
+   ],
+   "soldier_hit_after_class3": [
+    8,
+    11,
+    17,
+    27
+   ]
+  },
+  "fixed": [
+   "a level that is not a number is no level",
+   "a level given outright ignores the shift",
+   "pinned numbers are a test tool only",
+   "a campaign file's level is read",
+   "the spawn tool's empty level is the squad's level now",
+   "a twin stands at its owner's level",
+   "the one-hit rule is on the card and in the log, after every reduction",
+   "the rule is called 'far below'",
+   "the critical has a floor of 1.5",
+   "the whole-fight test's time limit"
+  ],
+  "open_spec_items": [
+   1031,
+   1032,
+   1033,
+   1034,
+   1035,
+   1036,
+   1037,
+   1038
+  ]
+ }
+}

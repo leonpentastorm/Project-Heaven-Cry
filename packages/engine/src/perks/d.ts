@@ -533,21 +533,21 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
 // Verse of War (Achieved: Implication 5 + Will Power 5). An Outburst cast while you speak in verse: +1 tile of range,
 // ×1.1 Soul damage. Player-declared (plan 4.3: the Narrator is never called per cast): Say the line (free), then Begin
 // or Release with the "In verse" toggle (in a fight that chip is its only button: Leon, 9 Nov 2026, no Confirm when the
-// move already has a use button); the line goes to the fight notes for the Narrator to audit after the fight. On the
-// area map, "Release in verse" (the Perks list there): the line is this round's Say (story/speak), and the audit is a
-// pending ruling.
+// move already has a use button); the line goes to the fight notes so the Narrator knows it was said. Nothing checks
+// that it was verse (rules 1.14, spec item 1111: the audit had no consequence and is gone). On the area map, "Release
+// in verse" (the Perks list there): the line is this round's Say (story/speak).
 // =====================================================================================================================
-function verseNote(h: Holder) { const l = sayLine(h); note(h, 'cast an Outburst in verse' + (l ? ': "' + l.slice(0, 160) + '"' : ' (no line said)') + '. Audit whether it was verse (+1 range, ×1.1 damage given).'); }
+function verseNote(h: Holder) { const l = sayLine(h); note(h, 'cast an Outburst in verse' + (l ? ': "' + l.slice(0, 160) + '"' : ' (no line said)') + ' (+1 range, ×1.1 damage given).'); }
 register({
   id: 'verse_of_war', claims: [0, 1],
   toggles: [{
     id: 'verse', label: 'In verse', on: ['combat/outburst'],
     available: (h) => (!h.u?.mg ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
-    preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
+    preview: () => '+1 tile of range, ×1.1 damage.',
   }, {
     id: 'verse', label: 'In verse', on: ['combat/release'],
     available: (h) => (!h.u?.mg?.held ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
-    preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
+    preview: () => '+1 tile of range, ×1.1 damage.',
   }],
   actions: [{
     id: 'release', label: 'Release in verse', scope: ['world'], ap: 0, target: 'tile',
@@ -582,7 +582,7 @@ register({
     },
     damage_in: (ctx, h) => { const s = stateOf(h); if (ctx.phase === 'reduce' && me(h, ctx.src?.by) && outburstHit(ctx.src) && s.verseAt != null && s.verseAt === ctx.cb?.log.length) ctx.dmg *= 1.1; },
   },
-  brief: () => 'Narrator: audit after the fight whether the declared lines were verse.',
+  brief: () => null,
 });
 
 // =====================================================================================================================

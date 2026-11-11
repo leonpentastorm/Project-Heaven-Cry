@@ -17,6 +17,7 @@ import { tendHook } from '../effects/damage';
 import { WEAPON } from '../data';
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
 import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
+import { cdFire, cdTick, landsNext } from './cooldown';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -112,17 +113,21 @@ register({
 });
 
 // ---------- The Name They Whisper (Intimidation Mastered) ----------
-// When a fight starts, every enemy not marked unaware saves (Heart) or is Afraid of you for 2 rounds. An enemy at half
+// When a fight starts, every enemy who is not a stranger saves (Heart) or is Afraid of you for 2 rounds. Everyone
+// knows the name unless marked a stranger (rules 1.14, spec item 1106): the tag 'stranger' on the enemy, or a name on
+// the holder's `strangers` list (c.state.strangers, the Narrator's traitState: a name, or a list of names). It no
+// longer reads 'unaware' (that mark also takes the enemy's first turn; a surprised guard still knows the name). An enemy at half
 // HP or less that can see you, at the end of its own turn, makes a Heart save or surrenders: once per enemy a fight,
 // only while you're up, never a Boss (plan 6, The Name They Whisper: GAMEBREAKING fix; PROVISIONAL). The TN is 12 +
 // your Intimidation strength (rules 1.13: a perk that speaks reads the gamma it belongs to).
+const isStranger = (h: Holder, v: Unit) => (v.tags || []).includes('stranger') || [v.name, v.npcId, v.id].some((ref) => ref != null && listHas(ro(h.c).strangers, ref));
 register({
   id: 'the_name_they_whisper', claims: 'all', narrator: (e: any) => e?.op === 'narrator',
   on: {
     combat_start: (ctx, h) => {
       const cb = h.cb!, u = h.u; if (!up(u) || !oncePerFight(h, 'started')) return;
       const rng = rngOf(h, ctx) || { state: 1 }; let out = '';
-      for (const v of cb.units) if (v.side !== u.side && up(v) && !(v.tags || []).includes('unaware')) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { via: 'intimidation' });
+      for (const v of cb.units) if (v.side !== u.side && up(v) && !isStranger(h, v)) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { via: 'intimidation' });
       if (out) say(cb, 'They know the name ' + u.name + ' (The Name They Whisper)' + out + '.');
     },
     turn_end: (ctx, h) => {
@@ -131,7 +136,7 @@ register({
       say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, ctx.rng || rngOf(h) || { state: 1 }, u, t, 0, 'intimidation') + '.');
     },
   },
-  brief: () => 'Narrator: NPCs who know the name react; mark strangers unaware when a fight starts',
+  brief: () => 'everyone knows the name; only for someone who has truly never heard of them, set traitState strangers (a list of names) before the fight starts',
 });
 
 // ---------- Open Hand (Empathy Mastered) ----------
@@ -262,8 +267,20 @@ register({
 // Once per session, 0 AP: name an upper-realm being, curse or creature you've studied. For the rest of the scene it
 // takes +50% from you and your allies (the target bucket, capped ×2), and it can't lie to you. The engine allows only
 // targets the Narrator marked upper-realm, cursed, celestial or beast (kind, or the upper_realm tag; plan 6, True Name;
-// PROVISIONAL); "studied" and the lie are the Narrator's. In the story the Narrator confirms (refused: the use comes back).
+// PROVISIONAL). "Studied" means Analyzed (rules 1.14, spec item 1107): the unit carries an Analyze's mark (anyone's on
+// your side: an enemy is Analyzed once), or the person on the area map does; the engine refuses the name until then.
+// An Analyze made on the area map before the fight counts in the fight too (the holder remembers it: studiedBefore).
+// The lie is the Narrator's. A being that is only in the story (no token) is still confirmed by the Narrator (refused:
+// the use comes back).
 const NAMEABLE = new Set(['upper_realm', 'cursed', 'celestial', 'beast']);
+/** What the squad has Analyzed on the area map, as the holder remembers it (c.state.studied: each person's id and
+ * name, the last 24 people). A fight the Narrator starts seats the people on the map without their Analyze mark (and
+ * on another map under a new id), so the holder's own memory is what makes the card true there: "it must have been
+ * Analyzed" holds for an Analyze made before the fight too. */
+const studiedBefore = (h: Holder, t: Unit) => { const l = ro(h.c).studied; return Array.isArray(l) && [t.npcId, t.id, t.name.toLowerCase()].some((id) => id != null && l.includes(id)); };
+const studied = (h: Holder, t: Unit) => !!t.analyzedBy || studiedBefore(h, t);
+/** The person on the area map a typed name or id means (read only: no map, no list, nobody), or null. */
+const onMap = (h: Holder, who: string): any | null => (who ? ((h.g?.story?.npcs || []) as any[]).find((x) => x.id === who || nameMatch(x.name, who)) || null : null);
 const nameable = (t: Unit) => NAMEABLE.has(t.kind || '') || (t.tags || []).includes('upper_realm');
 const trueNamed = (h: Holder, t: Unit) => { const tn = ro(h.c).true_name; return !!tn && (tn.scene == null || tn.scene === sceneN(h)) && (tn.unit === t.id || matches(t, tn.id)); };
 register({
@@ -271,31 +288,47 @@ register({
   actions: [
     {
       id: 'true_name', label: 'True Name', scope: ['combat'], target: 'enemy', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Once a session: speak the true name of an upper-realm being, a cursed being or a creature. Your side deals +50% damage to it for the scene, and it can\'t lie to you.',
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && !nameable(t)) return { ok: false, why: t.name + ' has no true name to speak. It must be upper-realm, cursed or a creature.' }; return { lines: ['+50% damage to it from your side for the rest of the scene.'] }; },
+      text: 'Once a session: speak the true name of an upper-realm being, a cursed being or a creature. It must have been Analyzed first. Your side deals +50% damage to it for the scene, and it can\'t lie to you.',
+      preview: (h, a) => {
+        const t = h.cb?.units.find((x) => x.id === a.targetId);
+        if (t && !nameable(t)) return { ok: false, why: t.name + ' has no true name to speak. It must be upper-realm, cursed or a creature.' };
+        if (t && !studied(h, t)) return { ok: false, why: 'You have not studied ' + t.name + ' yet. Analyze it first.' };
+        return { lines: ['+50% damage to it from your side for the rest of the scene.'] };
+      },
       run: (h, a) => {
         const t = h.cb!.units.find((x) => x.id === a.targetId)!;
         cst(h.c).true_name = { id: t.npcId || t.name, unit: t.id, scene: sceneN(h) };
         say(h.cb, h.u!.name + ' speaks the true name of ' + t.name + ' (True Name): it takes +50% from the squad this scene.');
-        note(h, t.name + ' was named; it can\'t lie to ' + h.u!.name + ' this scene. Confirm it was studied.');
+        note(h, t.name + ' was named; it can\'t lie to ' + h.u!.name + ' this scene.');
       },
     },
     {
       id: 'true_name_story', label: 'True Name', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Once a session: speak the true name of a being, a curse or a creature here (type who). It can\'t lie to you this scene, and it takes +50% damage from your side if it comes to a fight.',
+      text: 'Once a session: speak the true name of a being, a curse or a creature here (type who). If it stands on the map, it must have been Analyzed first. It can\'t lie to you this scene, and it takes +50% damage from your side if it comes to a fight.',
       available: (h) => (uses(h).left('per_session', 1, h.key + '#true_name') > 0 ? true : 'Used this session.'),
+      preview: (h, a) => { const n = onMap(h, a.npc || String(a.text || '').trim()); return n && !n.analyzed ? { ok: false, why: 'You have not studied ' + n.name + ' yet. Analyze it first.' } : {}; },
       run: (h, a) => {
-        const who = a.npc || String(a.text || '').trim(); uses(h).take('per_session', 1, h.key + '#true_name');
+        const who = a.npc || String(a.text || '').trim(), n = onMap(h, who);
+        if (n && !n.analyzed) return 'You have not studied ' + n.name + ' yet. Analyze it first.';
+        uses(h).take('per_session', 1, h.key + '#true_name');
         cst(h.c).true_name = { id: who.slice(0, 60), scene: sceneN(h) };
         const eid = postStory(h, 'speaks the true name of ' + who.slice(0, 80) + '.');
-        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'True Name on ' + who.slice(0, 80) + ': if it is an upper-realm being, curse or creature ' + h.c.name + ' has studied, it can\'t lie to them this scene (and takes +50% in a fight). Refuse otherwise (the use comes back).', eid || undefined);
+        // On the map the engine has checked "studied" (Analyzed); what kind of being it is, and a being with no token, stay the Narrator's.
+        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'True Name on ' + who.slice(0, 80) + ': if it is an upper-realm being, a curse or a creature' + (n ? '' : ' that ' + h.c.name + ' has studied') + ', it can\'t lie to them this scene (and takes +50% in a fight). Refuse otherwise (the use comes back).', eid || undefined);
+        return null;
       },
     },
   ],
   on: {
+    // An Analyze by anyone on the holder's side, on the area map: remembered by the person's id (see studiedBefore).
+    analyze: (ctx, h) => {
+      const t: Unit = ctx.t, by: Unit = ctx.u; if (!h.c || !h.u || !t || !by || by.side !== h.u.side || !overworld(ctx.cb)) return;
+      const l: string[] = Array.isArray(ro(h.c).studied) ? ro(h.c).studied : [], add = [t.npcId || t.id, t.name.toLowerCase()].filter((x) => x && !l.includes(x));
+      if (add.length) cst(h.c).studied = [...l, ...add].slice(-48);
+    },
     damage_out: (ctx, h) => { if (h.u && ctx.att.side === h.u.side && trueNamed(h, ctx.tgt) && !ctx.vs.some((x: any) => x.label === 'True Name')) ctx.vs.push({ v: 0.5, label: 'True Name' }); },
   },
-  brief: (h) => { const tn = ro(h.c).true_name; return 'Narrator: confirm studied; the named one can\'t lie' + (tn && tn.scene === sceneN(h) ? ' (named: ' + String(tn.id).slice(0, 30) + ')' : ''); },
+  brief: (h) => { const tn = ro(h.c).true_name; return 'the named one can\'t lie to them this scene' + (tn && tn.scene === sceneN(h) ? ' (named: ' + String(tn.id).slice(0, 30) + ')' : ''); },
 });
 
 // ---------- Case Closed (Acuity Mastered; id analysis) ----------
@@ -799,8 +832,9 @@ register({
       const was = ctx.die; ctx.die = d20(ctx.rng || rngOf(h) || { state: 1 }); delete ctx.hit;
       say(h.cb, 'Lucky Foot: ' + ctx.att.name + '\'s ' + was + ' against ' + h.u!.name + ' is rerolled: ' + ctx.die + '.');
     },
-    on_downed: (ctx, h) => { const v: Unit = ctx.victim; if (h.u && v !== h.u && v.side === h.u.side && !v.companion && v.downed && up(h.u)) stateOf(h).venge = true; },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u && stateOf(h).venge) { stateOf(h).venge = false; pushAp(ctx, 2, 'Vengeful'); } },
+    // Vengeful: once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts); the AP lands on your next turn.
+    on_downed: (ctx, h) => { const v: Unit = ctx.victim; if (h.u && h.cb && v !== h.u && v.side === h.u.side && !v.companion && v.downed && up(h.u) && !stateOf(h).venge && cdFire(h, 'gain', landsNext(h.cb, h.u))) stateOf(h).venge = true; },
+    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; cdTick(h); if (stateOf(h).venge) { stateOf(h).venge = false; pushAp(ctx, 2, 'Vengeful'); } },
     damage_in: (ctx, h) => {
       const by: Unit | null = ctx.src?.by; if (ctx.phase !== 'reduce' || ctx.t !== h.u || !by) return;
       if (by.kind === 'ork' || (by.tags || []).includes('hunter')) ctx.dmg = ctx.dmg * 1.25;

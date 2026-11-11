@@ -23,7 +23,9 @@ export interface WeaponDef { id: string; name: string; category: string; damage:
 export interface ClassDef { id: string; name: string; attribute: string; core: CoreId; role: string; skills: string[]; ranks: any; resource: any; resources: string[]; tagline?: string }
 export interface PerkDef { id: string; name: string; tier: 'acquired' | 'mastered' | 'achieved' | 'ultimate'; skills: string[]; requires: any[]; text: string; tiers?: any; deed?: string; flavour?: string }
 export interface TraitDef { id: string; name: string; effects: any[]; excludes: string[] }
-export interface EnemyTier { id: string; name: string; hp: number; defense: number; attack_bonus: number; armour: number; movement: number; ap: number; kills: number; endurance?: number; spare_mags?: number; /** Physical 2.0 (rules 1.12): the techniques this tier has ready, beside what its weapon lends. */ techniques?: { melee?: string[]; ranged?: string[] }; /** Calls (rules 1.13): the Calls this tier makes, and the level that stands in for skill points. */ calls?: string[]; call_level?: number }
+/** A tier's row holds its LEVEL 1 numbers (rules 1.15); enemyStats() raises them by the level table. `damage` is the
+ * factor on what its weapon or spell deals. A tier missing from a table that ranks tiers (saves, notice) reads as a Minion. */
+export interface EnemyTier { id: string; name: string; hp: number; defense: number; attack_bonus: number; armour: number; damage?: number; movement: number; ap: number; kills: number; endurance?: number; spare_mags?: number; /** Physical 2.0 (rules 1.12): the techniques this tier has ready, beside what its weapon lends. */ techniques?: { melee?: string[]; ranged?: string[] }; /** Calls (rules 1.13): the Calls this tier makes, and the level that stands in for skill points. */ calls?: string[]; call_level?: number }
 
 export const SKILLS: SkillDef[] = (skillsJ as any).items;
 export const ATTRS: AttrDef[] = (attributesJ as any).items.map((a: any) => ({ id: a.id, name: a.name, core: a.core }));
@@ -56,6 +58,24 @@ export const WEAPON: Record<string, WeaponDef> = Object.fromEntries(WEAPONS.map(
 export const CLASS: Record<string, ClassDef> = Object.fromEntries(CLASSES.map((c) => [c.id, c]));
 export const PERK: Record<string, PerkDef> = Object.fromEntries(PERKS.map((p) => [p.id, p]));
 export const ENEMY: Record<string, EnemyTier> = Object.fromEntries(ENEMIES.map((e) => [e.id, e]));
+// ---------- enemy levels (rules 1.15, the balance pass step 1; enemies.json `levels`; every number provisional) ----------
+export interface EnemyLevelRow { level: number; hp_mult: number; armour_mult: number; defense_plus: number; attack_plus: number; damage_mult: number }
+export const ENEMY_LEVELS: { min: number; max: number; narrator_shift: { min: number; max: number }; gap: { one_hit_levels_below: number; to_hit_per_level: number; max_levels: number }; table: EnemyLevelRow[] } = (enemiesJ as any).levels;
+/** A level held to the table's range (1 to 20), whole. Anything that is not a number is level 1. */
+export const clampEnemyLevel = (n: unknown): number => { const v = Math.floor(Number(n)); return Number.isFinite(v) ? Math.max(ENEMY_LEVELS.min, Math.min(ENEMY_LEVELS.max, v)) : ENEMY_LEVELS.min; };
+/** A level someone gave (the Narrator's fight, a campaign file, the spawn tool): a number, or a string that is one, held
+ * to 1 to 20. Anything else (nothing, an empty string, a word, true, a list) is null: no level was given. */
+export const levelGiven = (n: unknown): number | null => (typeof n === 'number' ? Number.isFinite(n) : typeof n === 'string' && /^\s*-?\d+(\.\d+)?\s*$/.test(n)) ? clampEnemyLevel(n) : null;
+export const enemyLevelRow = (level: unknown): EnemyLevelRow => { const l = clampEnemyLevel(level); return ENEMY_LEVELS.table.find((r) => r.level === l) || ENEMY_LEVELS.table[0]; };
+/** A level's row applied to a level 1 stat block (a tier, or a companion's own block). */
+export function levelled(base: { hp: number; defense: number; attack_bonus: number; armour: number; damage?: number }, level: unknown) {
+  const r = enemyLevelRow(level);
+  return { level: r.level, hp: Math.max(1, Math.round(base.hp * r.hp_mult)), armour: Math.round(base.armour * r.armour_mult), defense: base.defense + r.defense_plus, attack_bonus: base.attack_bonus + r.attack_plus, damage: Math.round((base.damage ?? 1) * r.damage_mult * 1000) / 1000 };
+}
+/** An enemy's numbers: its tier at this level. An unknown tier reads as a Minion. */
+export const enemyStats = (tierId: string, level: unknown) => levelled(ENEMY[tierId] || ENEMY.minion, level);
+/** The fight's level from the characters in it: their average level, rounded down (rules 1.15). */
+export const fightLevelOf = (levels: number[]): number => clampEnemyLevel(levels.length ? Math.floor(levels.reduce((t, n) => t + (Number(n) || 1), 0) / levels.length) : 1);
 export const XP_TOTAL: Record<string, number> = RULES.character.levels.xp_total;
 export const TN_LADDER = [8, 12, 16, 20];
 

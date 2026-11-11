@@ -25,7 +25,7 @@ export const ENGINE_DEEDS = {
   siege_engine: 'You destroy a closed door or a piece of full cover that blocks the way and stood there when the fight opened, you then move through the gap, and the fight is won.',
   twin_souls: 'You suffer a Mana Short and are alive when the fight ends.',
   bite_the_bullet: 'From the start of your first turn to the end of a won fight of 2 rounds or more, your HP is never at a quarter of your max or above and you are never Downed; an enemy attacked you at least once; you end it on your feet.',
-  fire_sermon: 'An enemy surrenders to your words in a fight (talked down, or your mercy accepted).',
+  fire_sermon: 'You are Faithful, and an enemy surrenders to your words in a fight (talked down, or your mercy accepted).',
   the_voice: 'An Elite or a Boss surrenders to your words in a fight.',
 } satisfies Record<string, string>;
 /** The nine perk ids, read off the list above. (Written ID.x and never as a quoted id: the client's shelf test reads a
@@ -47,6 +47,8 @@ interface DeedMem { amb: boolean; walls: string[]; v?: number; u: Record<string,
 
 const isPc = (u: Unit | null | undefined): u is Unit => !!u && typeof u === 'object' && !!u.charId && !u.companion && u.side === 'pc';
 const up = (u: Unit) => !u.dead && !u.downed && !u.surrendered;
+/** Does the unit's character serve a patron (Faithful, not Atheist)? Read as faith.ts beliefOf reads it. */
+const faithful = (u: Unit) => { const c: any = boundGame()?.characters?.[u.charId || '']; return !!c && (c.belief ? c.belief.kind === 'faithful' && !!c.belief.patron : !!c.patron); };
 /** Self-inflicted harm (Strain, a Mana Short, Flux, an overload) is not "being hit". */
 const SELF = new Set(['short', 'overload', 'strain', 'flux', 'heart', 'shame']);
 /** Words that make an enemy give up (tactics.ts surrender's reasons): the offer of terms and the fight talk; Clemency. */
@@ -190,7 +192,7 @@ fxTaps.push((cb: Combat, ev: any) => {
 // Fire Sermon and The Voice: an enemy gives up to your words.
 onHook('on_surrender', (ctx, cb) => {
   const t: Unit = ctx.t, by: Unit = ctx.by; if (!isPc(by) || !t || t.side === by.side || !WORDS.test(String(ctx.why || ''))) return;
-  grant(cb, by, ID.fire_sermon);
+  if (faithful(by)) grant(cb, by, ID.fire_sermon); // a conversion needs a believer (rules 1.14, spec item 1110)
   if (t.tier === 'elite' || t.tier === 'boss') grant(cb, by, ID.the_voice);
 });
 

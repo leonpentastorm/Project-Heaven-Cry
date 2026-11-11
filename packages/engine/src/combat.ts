@@ -1,8 +1,8 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { fxTaps } from './fxtap';
-import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef } from './data';
+import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, d20, die } from './rng';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
@@ -10,7 +10,7 @@ import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverW
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
-import { emit, anyOn, heldOfChar, boundGame as boundGameRef } from './effects/hooks';
+import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook } from './effects/hooks';
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
@@ -125,6 +125,10 @@ export interface Unit {
   edgeWord?: boolean;
   /** This turn is lost (Stunned): the engine passes it. */
   skipTurn?: boolean;
+  /** Rules 1.15: its level (a character's own, an enemy's from the fight, a companion's owner's), and for an enemy or a
+   * companion the factor on the damage it deals (tier × level). Absent on units from a fight saved before 1.15: they
+   * keep the numbers they have, deal plain weapon damage and take no part in the level gap. */
+  level?: number; lvlDmg?: number;
   /** Derived stats (spec: Derived stats) the damage chain reads: percent of critical, elemental and ambush damage not
    * taken, healing and shields received multiplier, Counter bonus, Throwing range, Ambush multiplier, Blessing power,
    * the Ingenuity modifier (spotting), and Stealth. */
@@ -177,7 +181,7 @@ export interface Unit {
    * Narrator (absent: the engine's default for its kind and tier). */
   drops?: import('./loot').Drops;
 }
-export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
+export interface Combat { /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; /** Rules 1.15: the fight's level (the squad's average, rounded down, unless set); absent in a fight saved before it. */ level?: number; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
   /** Retired in rules 1.9: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -390,7 +394,7 @@ export const visionOf = (c: Character) => 12 + 2 * ((c.attrs.perception || 1) - 
 export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
   const w = WEAPON[c.weapon] || WEAPON.service_pistol;
   return {
-    id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait,
+    id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait, level: clampEnemyLevel(c.level),
     pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: (ARMOUR[c.armourClass]?.value || 0) + gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor').add,
     attack: mod(c.skills[w.skill] || 0) + RARITY[c.weaponState?.rarity || 'standard'].acc + skillRollMod({ c }, w.skill, { roll: 'attack', combat: true }).add + statQuery({ c }, 'attack').add, weapon: w.id,
     movement: movement(c), init: d20(rng) + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), magazineSize(w.id, c.weaponState?.mods) ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
@@ -446,19 +450,61 @@ export function resourcesFor(c: Character): { res: Record<string, number>; resMa
   return { res, resMax };
 }
 
-export function unitFromEnemy(id: string, name: string, tierId: string, weaponId: string, pos: string, rng: Rng): Unit {
-  const t = ENEMY[tierId] || ENEMY.minion, w = WEAPON[weaponId] || WEAPON.service_pistol;
+/** Rules 1.15: an enemy is a tier and a level. Its HP, armour, Defense, attack bonus and damage factor come from
+ * enemies.json (the tier's level 1 row raised by the level's row: data.ts enemyStats). No level given: level 1. */
+export function unitFromEnemy(id: string, name: string, tierId: string, weaponId: string, pos: string, rng: Rng, level?: number): Unit {
+  const t = ENEMY[tierId] || ENEMY.minion, w = WEAPON[weaponId] || WEAPON.service_pistol, n = enemyStats(t.id, level ?? 1);
   return {
-    id, side: 'foe', name, short: name.split(/\s+/).map((x) => x[0]).join('').slice(0, 2).toUpperCase() || 'EN', tier: t.id,
-    pos, hp: t.hp, maxHp: t.hp, def: t.defense, armour: t.armour, attack: t.attack_bonus, weapon: w.id, movement: t.movement,
-    init: d20(rng) + t.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
+    id, side: 'foe', name, short: name.split(/\s+/).map((x) => x[0]).join('').slice(0, 2).toUpperCase() || 'EN', tier: t.id, level: n.level, lvlDmg: n.damage,
+    pos, hp: n.hp, maxHp: n.hp, def: n.defense, armour: n.armour, attack: n.attack_bonus, weapon: w.id, movement: t.movement,
+    init: d20(rng) + n.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
-    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: t.attack_bonus,
+    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: n.attack_bonus,
     mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
     ...(t.techniques && (t.techniques.melee?.length || t.techniques.ranged?.length) ? { techs: [...(t.techniques.melee || []), ...(t.techniques.ranged || [])] } : {}),
     ...(t.calls?.length ? { calls: [...t.calls], callLevel: t.call_level || 1 } : {}), // rules 1.13: an officer's Calls
   };
 }
+/** Rules 1.15: a companion is its owner's level. Its own stat block (enemies.json companions) is the level 1 block; the
+ * level table raises its HP, armour, Defense, attack bonus and damage. hpNow: the HP it carries from before (null: full).
+ * The twin keeps its own rule (half its owner's HP, its owner's Defense, plain damage): it only takes the level. */
+export function levelCompanion(u: Unit, block: { hp: number; defense: number; attack_bonus: number; armour: number }, ownerLevel: number | undefined, hpNow?: number | null) {
+  const n = levelled({ ...block, damage: 1 }, ownerLevel ?? 1);
+  if (u.companion === 'twin' || (u as any).twinOf) { u.level = n.level; delete u.lvlDmg; return u; }
+  Object.assign(u, { level: n.level, lvlDmg: n.damage, maxHp: n.hp, hp: Math.min(n.hp, hpNow ?? n.hp), def: n.defense, armour: n.armour, attack: n.attack_bonus, strength: n.attack_bonus });
+  return u;
+}
+/** Rules 1.15: an enemy caster's spells grow by its damage factor, as its weapon's damage does (after armFoe / armHeart). */
+export function levelFoeMagic(u: Unit) {
+  const f = u.lvlDmg, m: any = u.mg; if (!m || !f || f === 1 || m.lvlScaled) return;
+  m.sigilMult = (m.sigilMult || 1) * f; m.soulMult = (m.soulMult || 1) * f; m.lvlScaled = true;
+}
+/** The level a unit stands at for the level gap: its own; a twin stands at its owner's (called in a fight, it is built
+ * without one). Undefined: a unit from a fight saved before rules 1.15, or one with pinned numbers. */
+const gapLevel = (u: Unit, cb?: Combat | null): number | undefined => ((u as any).twinOf && cb ? cb.units.find((x) => x.id === (u as any).twinOf)?.level : u.level);
+/** Rules 1.15, the level gap between an enemy and a character (or a companion): how many levels `a` stands above `b`,
+ * to the gap's limit. 0 between characters, between enemies, and for any unit with no level (an old save's fight).
+ * cb: the fight, so that a twin reads its owner's level. */
+export function levelGap(a: Unit, b: Unit, cb?: Combat | null): number {
+  const la = gapLevel(a, cb), lb = gapLevel(b, cb);
+  if (la == null || lb == null || a.side === b.side) return 0;
+  const foe = a.side === 'foe' ? a : b.side === 'foe' ? b : null; if (!foe || foe.lvlDmg == null) return 0;
+  const m = ENEMY_LEVELS.gap.max_levels; return Math.max(-m, Math.min(m, la - lb));
+}
+/** Rules 1.15: this enemy is 5 or more levels below the character (or companion) who is hurting it: one hit takes it out. */
+export function farBelow(t: Unit, by: Unit | null | undefined, cb?: Combat | null): boolean {
+  if (!by || t.side !== 'foe' || t.companion || by.side === 'foe' || t.level == null || t.lvlDmg == null) return false;
+  const lb = gapLevel(by, cb); return lb != null && lb - t.level >= ENEMY_LEVELS.gap.one_hit_levels_below;
+}
+// The hit itself (rules 1.15): whatever the enemy's HP and shield, as long as the hit deals at least 1 damage. It is
+// read after every reduction has spoken: in the 'shield' phase, or, for damage that goes past shields (which has no
+// such phase), in 'reduce' (a listener like this one runs after every item's).
+onHook('damage_in', (ctx: any) => {
+  const t: Unit = ctx.t;
+  if (ctx.phase === 'after') { if (ctx.oneHit && ctx.killed && ctx.cb) ctx.cb.log.push(t.name + ' is far below ' + (ctx.src?.by?.name || 'you') + '\'s level: one hit is enough.'); return; }
+  if (!(ctx.phase === 'shield' || (ctx.phase === 'reduce' && (ctx.src?.shield === false || t.downed))) || !(ctx.dmg >= 1)) return;
+  if (farBelow(t, ctx.src?.by, ctx.cb)) { ctx.dmg = Math.max(ctx.dmg, t.hp + (t.shield || 0)); ctx.oneHit = true; }
+});
 
 /** −2 to attacks when an injured arm holds the weapon: the main-hand arm, or either arm for a two-handed weapon. */
 export const armPenalty = (u: Unit, w: WeaponDef) => ((u.injuries || []).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0);
@@ -906,8 +952,9 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const terms: Term[] = [...T(att.attack, 'skill'), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
     ...T(mode === 'aimed' ? 2 : 0, 'aimed'), ...T(mode === 'auto' ? -2 : 0, 'full auto'), ...T(opts.extra || 0, 'volley'), ...T(rangePenalty, 'range'), ...T(heat, 'Heat'), ...T(armPenalty(att, useW), 'injured arm'),
     ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),
-    ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...(hk.terms as Term[]).filter((t) => t && t.v)];
+    ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...T(levelGap(att, tgt, cb) * ENEMY_LEVELS.gap.to_hit_per_level, 'level gap'), ...(hk.terms as Term[]).filter((t) => t && t.v)];
   if (hk.ignoreCover && coverTile0) terms.push({ v: 0, label: 'cover ignored' });
+  if (farBelow(tgt, att, cb)) terms.push({ v: 0, label: 'far below your level: any hit takes it out' }); // rules 1.15
   const toHit = terms.reduce((t, x) => t + x.v, 0);
   const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
   const who = charFor(att);
@@ -930,19 +977,23 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const base = bayonet ? 15 : weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) + (useW.category === 'unarmed' ? att.unarmedBonus || 0 : 0) + (melee && useW === w && hasMod(att.mods, 'mod_weighted') ? 3 : 0) - (!melee && hasMod(att.mods, 'mod_suppressor') ? 2 : 0);
   const mults: Term[] = [], vs: Term[] = [];
   const M = (v: number, label: string) => { if (v !== 1) mults.push({ v, label }); };
-  M(who ? weaponMult(who, useW.id) : 1, weaponMultLabel(useW.id)); M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill'); // rules 1.12: the first multiplier follows the weapon's scales_with
+  M(who ? weaponMult(who, useW.id) : 1, weaponMultLabel(useW.id)); M(!who && att.lvlDmg ? att.lvlDmg : 1, att.tier ? 'tier and level' : 'level'); M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill'); // rules 1.12: the first multiplier follows the weapon's scales_with
   if (melee && useW === w && att.maxDur) M((att.dur ?? 1) <= 0 ? 0.5 : worn ? 0.9 : 1, (att.dur ?? 1) <= 0 ? 'broken' : 'worn');
   if (ammo?.damage_mult) M(ammo.damage_mult, ammo.id.replace(/_/g, '-') + ' rounds');
-  const critM0 = who ? critMult(who) : 2, critM = 1 + (critM0 - 1) * (1 - (tgt.critTaken || 0));
-  if (o.crit) M(critM, 'critical');
+  // Rules 1.15: a critical is ×1.5 (an enemy's too), to ×2.0 at most with everything together. An item adds to it through
+  // ctx.critBonus in 'damage_out' (One Shot's Breath Held); the ceiling is applied after the items have spoken.
+  const critOf = (bonus: number) => 1 + (Math.max(CRIT_BASE, Math.min(CRIT_MAX, (who ? critMult(who) : CRIT_BASE) + bonus)) - 1) * (1 - Math.min(1, Math.max(0, tgt.critTaken || 0)));
+  let critM = critOf(0); const critTerm: Term = { v: critM, label: 'critical' };
+  if (o.crit) mults.push(critTerm);
   if (o.ambush) M(att.ambushMult || 1.5, 'ambush');
   if (condOn(att, 'weakened')) M(0.75, 'Weakened');
   if (condOn(att, 'sharpened')) M(1.25, 'Sharpened'); // SHARPEN (rules 1.4)
   if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
-  const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false };
+  const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0 };
   emit(cb, 'damage_out', ctx);
+  if (ctx.critBonus) { critM = critOf(ctx.critBonus); critTerm.v = critM; }
   const st = stackDamage(mults, vs);
   if (vs.length) mults.push({ v: Math.round(st.vsMult * 100) / 100, label: 'against this target (' + vs.map((x) => x.label).join(', ') + (vs.reduce((t, x) => t + x.v, 0) > VS_CAP ? '; capped at ×2' : '') + ')' });
   const total = (base + ctx.add) * st.total;
@@ -1131,27 +1182,42 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
 /** sigils: an Evoker and its words (true: the tier's default set; sigils.json enemy_ai), rules 1.4. */
 export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon: string; at?: string; hp?: number; sigils?: string[] | true;
   /** A caster archetype from enemies.json `casters` (its words and spell bias; sigils, if given, wins). Rules 1.4, ai-sigil.ts. */ caster?: string;
-  /** Rules 1.9: what it drops when it dies (loot.ts; already cleaned by the caller). */ drops?: import('./loot').Drops }
-export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean } = {}): Combat {
+  /** Rules 1.9: what it drops when it dies (loot.ts; already cleaned by the caller). */ drops?: import('./loot').Drops;
+  /** Rules 1.15: this enemy's own level (1 to 20); without it, the fight's. */ level?: number;
+  /** Numbers pinned by hand (tests and tools: the engine's own fights never set it): the unit takes these, has no level,
+   * deals plain weapon damage and stands outside the level gap, as a unit from a fight saved before rules 1.15 does. */
+  fixed?: { hp: number; defense: number; attack_bonus: number; armour: number } }
+/** Rules 1.15: the level of a fight for these characters: their average level, rounded down, moved by `shift` (the
+ * Narrator's −3 to +2). A `level` given outright (a campaign file, a human Narrator) is the fight's level as it stands:
+ * no shift is added to it. Always 1 to 20. */
+export function fightLevel(chars: { level: number }[], o: { level?: unknown; shift?: unknown } = {}): number {
+  const set = levelGiven(o.level); if (set != null) return set;
+  const sh = Number(o.shift), lim = ENEMY_LEVELS.narrator_shift;
+  return clampEnemyLevel(fightLevelOf(chars.map((c) => c.level)) + (Number.isNaN(sh) ? 0 : Math.max(lim.min, Math.min(lim.max, Math.trunc(sh)))));
+}
+export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean; /** rules 1.15: the fight's level outright, or a shift on the squad's */ level?: number | null; levelShift?: number | null } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
   const units: Unit[] = [], taken = new Set<string>(objs.filter(blocksMove).map((o) => o.pos));
   const anyFree = () => { for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = key(x, y); if (standable(map, k) && !taken.has(k)) return k; } return null; };
   const place = (want: string | null | undefined, fallback: string[]) => { const k = want && standable(map, want) && !taken.has(want) ? want : fallback.find((f) => !taken.has(f)) || anyFree() || fallback[0]; taken.add(k); return k; };
+  const level = fightLevel(pcs.map((x) => x.c), { level: extra.level, shift: extra.levelShift }); // rules 1.15
   pcs.forEach(({ c, pos }) => units.push(unitFromCharacter(c, place(pos, map.pcStart), rng)));
   // Companions (a drone, a beast) stand next to their owner and act right after it (rules 1.3).
   for (const { c, comp } of pcs) { const owner = units.find((x) => x.charId === c.id); if (owner && c.companions?.length) units.push(...companionUnits(null, c, owner, taken, rng, map, comp)); }
   foes.slice(0, Math.max(map.foeStart.length, 8)).forEach((f, i) => {
-    const u = unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng);
+    const u = unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng, levelGiven(f.level) ?? level);
+    if (f.fixed && ['hp', 'defense', 'attack_bonus', 'armour'].every((k) => Number.isFinite((f.fixed as any)[k])) && f.fixed.hp > 0) { u.init += f.fixed.attack_bonus - u.attack; Object.assign(u, { hp: f.fixed.hp, maxHp: f.fixed.hp, def: f.fixed.defense, armour: f.fixed.armour, attack: f.fixed.attack_bonus, strength: f.fixed.attack_bonus }); delete u.level; delete u.lvlDmg; }
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
     armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)
+    levelFoeMagic(u); // rules 1.15: its spells grow as its weapon does
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
     if (f.drops && typeof f.drops === 'object') u.drops = JSON.parse(JSON.stringify(f.drops)); // rules 1.9 drop tables
     units.push(u);
   });
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
-  const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
+  const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null, level, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });

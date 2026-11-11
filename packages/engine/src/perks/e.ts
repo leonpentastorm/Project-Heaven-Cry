@@ -22,6 +22,7 @@ import { applyCond, condOn, condSource, unitStrength, isBoon } from '../magic';
 import { d20 } from '../rng';
 import { HEARING } from '../tactics';
 import { apLeft, positionsOf, rankReached } from '../game';
+import { cdFire, cdTick, landsNow, landsNext } from './cooldown';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -121,13 +122,15 @@ export function pettyGate(h: Holder, target: Unit | Character | null | undefined
 
 // ---------- Grim Reaper (Intimidation γ) ----------
 // I: −1 AP on your first turn of each fight; a kill or a KO (a subdued foe) of an enemy on your own turn gives +2 AP at
-// once, once per turn (the +3 cap and the 9 ceiling hold). II: no first-turn penalty; same +2; every enemy who sees
+// once, once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts; the +3 cap and the 9 ceiling hold). II: no first-turn penalty; same +2; every enemy who sees
 // the kill saves (Heart, vs 12 + your Intimidation strength) against Fear, with you as its source. A kill on someone
 // else's turn (Overwatch, a reaction) gives nothing. Area map fights count the same (the first-turn penalty is a fight's).
 function reaperKill(h: Holder, victim: Unit, rng: Rng) {
   const u = h.u, cb = h.cb; if (!u || !cb || victim.side === u.side) return;
-  if (uses(h).take('per_turn', 1, h.key + '#ap')) {
-    if (overworld(cb)) { u.ap += 2; say(cb, u.name + ' +2 AP (Grim Reaper).'); } else grantPerkAp(cb, u, 2, 'Grim Reaper');
+  // The area map keeps its once-a-turn limit; in a fight the cooldown decides (and the turn's use is still counted, so
+  // the perk card says "Used this turn").
+  if (overworld(cb) ? uses(h).take('per_turn', 1, h.key + '#ap') : cdFire(h, 'gain', cb.round)) {
+    if (overworld(cb)) { u.ap += 2; say(cb, u.name + ' +2 AP (Grim Reaper).'); } else { uses(h).take('per_turn', 1, h.key + '#ap'); grantPerkAp(cb, u, 2, 'Grim Reaper'); }
   }
   if (tierII(h) && !overworld(cb)) {
     for (const f of cb.units) if (f.side !== u.side && alive(f) && f !== victim && unitSees(cb, f, victim.pos)) say(cb, u.name + '\'s kill (Grim Reaper)' + applyCond(cb, rng, u, f, 'fear', undefined, 'heart', { via: 'intimidation' }) + '.');
@@ -137,7 +140,7 @@ register({
   id: 'grim_reaper', claims: 'all',
   on: {
     turn_start_pre: (ctx, h) => {
-      if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h);
+      if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h); cdTick(h);
       if (!st.firstDone) { st.firstDone = true; if (!tierII(h)) pushAp(ctx, -1, 'Grim Reaper: first turn'); }
     },
     on_kill: (ctx, h) => { if (ctx.by === h.u && ctx.ownTurn) reaperKill(h, ctx.victim, rngOf(h, ctx)); },
@@ -149,15 +152,16 @@ register({
 // ---------- Overruled! (Eloquence γ) ----------
 // I: +2 AP at the start of your turn while a Left Brain Debuff you inflicted is on a living enemy (once, however many);
 // −2 AP while you carry one. II: Left or Right Brain Debuff; your own penalty is −1. Non-casters inflict it with the
-// fight's Persuade (rules 1.3, 2 AP). The story has no debuffs: no story part.
+// fight's Persuade (rules 1.3, 2 AP). The story has no debuffs: no story part. The bonus comes at most once every 3 of
+// your turns, and so does the penalty, each counted by itself (the AP perks' cooldown, ./cooldown.ts).
 register({
   id: 'overruled', claims: 'all',
   on: {
     turn_start_pre: (ctx, h) => {
       const u = h.u, cb = h.cb; if (ctx.u !== u || !u || !cb) return;
-      const ids = tierII(h) ? ['ldebuff', 'rdebuff'] : ['ldebuff'];
-      if (cb.units.some((e) => e.side !== u.side && alive(e) && ids.some((id) => condSource(e, id) === u.id))) pushAp(ctx, 2, 'Overruled!');
-      if (ids.some((id) => condOn(u, id))) pushAp(ctx, tierII(h) ? -1 : -2, 'Overruled! (your own Brain Debuff)');
+      const ids = tierII(h) ? ['ldebuff', 'rdebuff'] : ['ldebuff']; cdTick(h);
+      if (cb.units.some((e) => e.side !== u.side && alive(e) && ids.some((id) => condSource(e, id) === u.id)) && cdFire(h, 'gain', cb.round)) pushAp(ctx, 2, 'Overruled!');
+      if (ids.some((id) => condOn(u, id)) && cdFire(h, 'pen', cb.round)) pushAp(ctx, tierII(h) ? -1 : -2, 'Overruled! (your own Brain Debuff)');
     },
   },
   brief: () => null,
@@ -208,8 +212,10 @@ register({
 // ---------- Talks Broke Down (Charisma γ) ----------
 // The engine reads how the talk went: the last dialogue check (a dialogue skill, or the 'dialogue' tag) any squadmate
 // made this scene, before the fight started. The Narrator's combat.fromTalk says whether the fight started because of
-// it; when it says nothing the engine infers it from a talk this story round or the one before (PROVISIONAL). I: won, +2
-// AP every turn of the fight; lost, −2. II: no penalty, and the first enemy in initiative order hesitates: −1 AP on its
+// it; when it says nothing the engine infers it from a talk this story round or the one before (PROVISIONAL; this
+// timing is the card's rule since rules 1.14, the Narrator's fromTalk only overrules it). I: won, +2 AP on your first
+// turn of the fight and then once every 3 turns (turns 1, 4, 7: the AP perks' cooldown, ./cooldown.ts; it was every
+// turn); lost, −2 on the same turns. II: no penalty, and the first enemy in initiative order hesitates: −1 AP on its
 // round-1 turn.
 register({
   id: 'talks_broke_down', claims: 'all',
@@ -230,11 +236,15 @@ register({
     },
     turn_start_pre: (ctx, h) => {
       const cb = h.cb; if (!cb) return;
-      if (ctx.u === h.u) { const o = stateOf(h).origin; if (o === 'won') pushAp(ctx, 2, 'Talks Broke Down'); else if (o === 'lost' && !tierII(h)) pushAp(ctx, -2, 'Talks Broke Down'); }
+      if (ctx.u === h.u) {
+        const o = stateOf(h).origin; cdTick(h);
+        if (o === 'won') { if (cdFire(h, 'gain', cb.round)) pushAp(ctx, 2, 'Talks Broke Down'); }
+        else if (o === 'lost' && !tierII(h)) { if (cdFire(h, 'pen', cb.round)) pushAp(ctx, -2, 'Talks Broke Down'); }
+      }
       const fs = (ctx.u as Unit).ps?.[h.key]; if (fs?.hesitate && cb.round === 1 && !fs.hesitated) { fs.hesitated = true; pushAp(ctx, -1, 'hesitates'); }
     },
   },
-  brief: () => 'say combat.fromTalk when a fight breaks out of a talk (false if not)',
+  brief: () => 'a fight within one story round of a talk counts as breaking out of it; set combat.fromTalk only to overrule that',
 });
 
 // ---------- Rally Cry (Camaraderie β) ----------
@@ -297,8 +307,9 @@ register({
 // ---------- Sweet Talker (Implication γ) ----------
 // The charm: a successful Charisma or Implication check aimed at an NPC (the check's target) marks that NPC charmed
 // for the scene. In a fight (and on the area map) buffing or debuffing that NPC's unit gives +2 AP at once (II +3),
-// once per turn (plan 6, PROVISIONAL). I: a charmed NPC who debuffs you costs you 2 AP on your next turn. The
-// fight is usually the same scene, so the charm carries in.
+// once every 3 of your turns in a fight (the AP perks' cooldown, ./cooldown.ts; once a turn on the area map). I: a
+// charmed NPC who debuffs you costs you 2 AP on your next turn, also at most once every 3 turns. The fight is usually
+// the same scene, so the charm carries in.
 const charmedKey = (s: string) => String(s || '').trim().toLowerCase();
 function charmedBy(h: Holder, t: Unit): boolean {
   const g = gameOf(h), ch = cs(h.c).charmed; if (!ch || !g || ch.scene !== (g.story?.scene?.n ?? 0)) return false;
@@ -318,14 +329,15 @@ register({
     cond_landed: (ctx, h) => {
       const u = h.u, cb = h.cb; if (!u || !cb) return;
       if (ctx.by === u && ctx.t !== u && charmedBy(h, ctx.t)) {
-        if (!uses(h).take('per_turn', 1, h.key + '#ap')) return;
+        if (overworld(cb) ? !uses(h).take('per_turn', 1, h.key + '#ap') : !cdFire(h, 'gain', landsNow(cb, u))) return;
         const n = tierII(h) ? 3 : 2;
-        if (overworld(cb)) { u.ap += n; say(cb, u.name + ' +' + n + ' AP (Sweet Talker).'); } else grantPerkAp(cb, u, n, 'Sweet Talker');
+        if (overworld(cb)) { u.ap += n; say(cb, u.name + ' +' + n + ' AP (Sweet Talker).'); } else { uses(h).take('per_turn', 1, h.key + '#ap'); grantPerkAp(cb, u, n, 'Sweet Talker'); }
       } else if (ctx.t === u && ctx.by && ctx.by !== u && !tierII(h) && !isBoon(ctx.id) && charmedBy(h, ctx.by)) {
+        if (stateOf(h).sting || !cdFire(h, 'pen', landsNext(cb, u))) return;
         stateOf(h).sting = true; say(cb, ctx.by.name + '\'s betrayal stings (Sweet Talker): −2 AP next turn.');
       }
     },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u && stateOf(h).sting) { delete stateOf(h).sting; pushAp(ctx, -2, 'Sweet Talker: betrayal'); } },
+    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; cdTick(h); if (stateOf(h).sting) { delete stateOf(h).sting; pushAp(ctx, -2, 'Sweet Talker: betrayal'); } },
   },
   brief: (h) => { const ch = cs(h.c).charmed; return ch?.npcs?.length ? 'charmed this scene: ' + ch.npcs.slice(0, 3).join(', ') + ' (name the target on social checks)' : 'name the target NPC on Charisma/Insinuation checks'; },
 });

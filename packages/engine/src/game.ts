@@ -1,6 +1,6 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
-import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS } from './data';
+import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS, levelGiven, fightLevelOf } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
@@ -10,7 +10,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from './calls';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
@@ -248,7 +248,7 @@ export type NarratorTurn = {
   triggers?: { action?: 'place' | 'remove'; id?: string; when?: 'enter' | 'examine' | 'objective'; tiles?: string[]; rect?: { from: string; to: string } | null; objId?: string; objective?: string;
     then?: 'spawn' | 'fight' | 'reveal'; spawn?: NonNullable<NarratorTurn['npcs']>; difficulty?: string; name?: string; reveal?: string[]; text?: string }[];
   /** fromTalk: the fight broke out of the talk just had (Talks Broke Down); absent = the engine's guess from the last check. */
-  combat?: { name: string; map?: string; difficulty?: string; fear?: boolean; fromTalk?: boolean; enemies: ({ name: string; tier: string; weapon: string; at?: string; /** Rules 1.9: this fight's drops for this enemy (loot.ts; at most 4 items). */ drops?: Drops } & FoeTraits)[] } | null;
+  combat?: { name: string; map?: string; difficulty?: string; fear?: boolean; fromTalk?: boolean; /** Rules 1.15: the fight's level outright (a campaign file, a human Narrator; 1 to 20), or a shift on the squad's level (the AI Narrator: −3 to +2). */ level?: number; level_shift?: number; enemies: ({ name: string; tier: string; weapon: string; at?: string; /** Rules 1.15: this enemy's own level. */ level?: number; /** Rules 1.9: this fight's drops for this enemy (loot.ts; at most 4 items). */ drops?: Drops } & FoeTraits)[] } | null;
   /** The Narrator moves characters on the zone map, by grid reference ("C7"). */
   moves?: { charId: string; to: string }[];
   /** Move the whole party to another zone of the campaign (its id), or "". */
@@ -377,7 +377,7 @@ export type Action =
   | FaithAction;
 
 /** A person or enemy on the overworld map. Neutral ones turn hostile when attacked. */
-export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; portrait?: string; facing?: [number, number]; analyzed?: boolean;
+export interface Npc { id: string; name: string; side: 'hostile' | 'neutral'; tier: string; weapon: string; pos: string; /** Rules 1.15: its own level, if it has one (else the fight's). */ level?: number; portrait?: string; facing?: [number, number]; analyzed?: boolean;
   /** A Sigil caster archetype (enemies.json `casters`; rules 1.4, ai-sigil.ts): it fights with an Evoker. */ caster?: string;
   /** What it is and its tags (rules 1.3: human, robot, crawler…; military, hunter, no_surrender…); a prisoner who gave up. */
   kind?: string; tags?: string[]; prisoner?: boolean;
@@ -1363,22 +1363,38 @@ function encounterDrops<T extends { name: string; drops?: Drops }>(g: GameState,
     if (!f.drops && (enc.enemies[i] as any).drops) { const d = cleanDrops((enc.enemies[i] as any).drops, { max: Infinity, tables }); if (d) f.drops = d; } }
   return foes;
 }
+/** Rules 1.15: a fight with a prepared encounter's name takes the levels its campaign file gives: `level` on an enemy
+ * (matched by name, where the fight's own list gave that enemy none) and `level` on the encounter (returned: the fight's
+ * level outright, unless the fight was started with one). */
+function encounterLevels(g: GameState, name: string, foes: { name: string; level?: number }[]): number | null {
+  const enc: any = campaignOf(g)?.encounters?.find((e) => e.name.toLowerCase() === String(name || '').toLowerCase()); if (!enc) return null;
+  const used = new Set<number>();
+  for (const f of foes) { const i = (enc.enemies || []).findIndex((e: any, j: number) => !used.has(j) && String(e?.name || '').toLowerCase() === String(f.name || '').toLowerCase()); if (i < 0) continue; used.add(i);
+    const l = levelGiven(enc.enemies[i].level); if (f.level == null && l != null) f.level = l; }
+  return levelGiven(enc.level);
+}
+/** Tools for tests only: `pinned` lets a fight's enemy carry `fixed` numbers (a target that holds still). The game never
+ * turns it on, so a Narrator can name a tier and a level and never a number (rules 1.15). */
+export const FIGHT_TOOLS = { pinned: false };
+/** Rules 1.15: the level a fight would have now: the average level of the living characters, rounded down. */
+export const squadLevel = (g: GameState): number => fightLevelOf(Object.values(g.characters).filter((c) => !c.dead).map((c) => c.level));
 /** Start a fight from the story (the Narrator's combat, a trigger's fight): on the current map everyone starts where they
  * stand and every hostile token joins where it stands (a lurker starts it Hidden); then the enemies act if they're first. */
 function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat']>) {
   const t = { combat };
   const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden, drops: cleanDrops((e as any).drops, { tables: campTables(g) }) }));
+  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden, drops: cleanDrops((e as any).drops, { tables: campTables(g) }), ...(levelGiven(e.level) != null ? { level: levelGiven(e.level)! } : {}), ...(FIGHT_TOOLS.pinned && (e as any).fixed ? { fixed: (e as any).fixed } : {}) }));
   // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
   if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
     const used = new Set<number>();
-    for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait || n.avatar, ...(n.hidden ? { hidden: true } : {}), caster: n.caster ?? (i >= 0 ? foes[i].caster : undefined), kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])], drops: (i >= 0 && foes[i].drops) || n.drops }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
+    for (const n of host) { const i = foes.findIndex((f, j) => !used.has(j) && f.name.toLowerCase() === n.name.toLowerCase()); const f: any = { ...(i >= 0 ? foes[i] : {}), name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), id: n.id, portrait: n.portrait || n.avatar, ...(n.hidden ? { hidden: true } : {}), caster: n.caster ?? (i >= 0 ? foes[i].caster : undefined), kind: n.kind || (i >= 0 ? foes[i].kind : undefined), tags: [...(n.tags || []), ...(i >= 0 ? foes[i].tags || [] : [])], drops: (i >= 0 && foes[i].drops) || n.drops, ...((i >= 0 ? foes[i].level : undefined) ?? n.level) != null ? { level: (i >= 0 ? foes[i].level : undefined) ?? n.level } : {} }; if (i >= 0) { foes[i] = f; used.add(i); } else { used.add(foes.length); foes.push(f); } }
     g.story.npcs = npcsOf(g).filter((n) => !host.includes(n)); foes = foes.slice(0, 8); }
   if (!foes.length) return; // nobody to fight (a trigger whose people couldn't be placed)
   encounterDrops(g, t.combat.name || '', foes); // rules 1.9: a prepared fight's enemies bring the campaign's drops
+  const encLevel = encounterLevels(g, t.combat.name || '', foes); // rules 1.15: a campaign file may give the fight, or one enemy, a level
   // Another zone's map starts from that zone's stashed objects (rules 1.9 fix: its piles and caches were ignored).
-  g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : g.story.zoneObjects?.[map.id], { fear: !!t.combat.fear, ...(typeof t.combat.fromTalk === 'boolean' ? { fromTalk: t.combat.fromTalk } : {}) }); magicIn(g, g.combat);
+  g.combat = startCombat(t.combat.name || 'Fight', map, pcs, foes, t.combat.difficulty || 'standard', g.rng, same ? storyObjects(g) : g.story.zoneObjects?.[map.id], { fear: !!t.combat.fear, ...(typeof t.combat.fromTalk === 'boolean' ? { fromTalk: t.combat.fromTalk } : {}), level: levelGiven(t.combat.level) ?? encLevel, levelShift: t.combat.level_shift }); magicIn(g, g.combat);
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
   // Every enemy gets a stable NPC id (its face and its survival after the fight follow it); a story NPC keeps its own.
   g.combat.units.filter((u) => u.side === 'foe').forEach((u, i) => { const f: any = foes[i]; u.npcId = (f && f.id) || 'n' + (++g.seq); if (f && f.portrait) u.img = f.portrait; });
@@ -1902,7 +1918,7 @@ function finishCombat(g: GameState) {
   // Enemies still standing go back on the map as hostile tokens where they ended.
   { const map = zoneMap(g), taken = new Set([...Object.values(g.story.positions), ...npcsOf(g).map((n) => n.pos)]);
     const freeNear = (k: string) => { if (!taken.has(k)) return k; const [x0, y0] = k.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const n = (x0 + dx) + ',' + (y0 + dy); if (standable(map, n) && !taken.has(n) && !storyObjects(g).some((o) => o.pos === n && blocksMove(o))) return n; } return k; };
-    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed && !u.surrendered) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}), ...(u.tags?.length ? { tags: u.tags.filter((t) => t !== 'humanoid') } : {}), ...(u.drops ? { drops: u.drops } : {}) }); }
+    for (const u of cb.units) if (u.side === 'foe' && !u.dead && !u.downed && !u.surrendered) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}), ...(u.tags?.length ? { tags: u.tags.filter((t) => t !== 'humanoid') } : {}), ...(u.drops ? { drops: u.drops } : {}), ...(u.level != null && u.level !== cb.level ? { level: u.level } : {}) }); }
     // Surrendered and subdued foes stay as neutral prisoners where they gave up (rules 1.3), for the Narrator to deal with.
     for (const u of cb.units) if (u.side === 'foe' && u.surrendered && !u.dead) { const at = freeNear(u.pos); taken.add(at); npcsOf(g).push({ id: u.npcId || 'n' + (++g.seq), name: u.name, side: 'neutral', tier: u.tier || 'minion', weapon: u.weapon, pos: at, portrait: u.img || undefined, hp: Math.max(1, u.hp), prisoner: true, tags: ['prisoner', ...(u.tags || []).filter((t) => t !== 'prisoner' && t !== 'humanoid')], ...(u.kind && u.kind !== 'human' ? { kind: u.kind } : {}) }); } }
   landDropped(g, cb); // rules 1.7: what Downed carriers dropped is a token again
@@ -2180,7 +2196,7 @@ const FACE: Record<string, [number, number]> = { N: [0, -1], S: [0, 1], E: [1, 0
 export function initialNpcs(g: GameState): Npc[] {
   const z = campaignOf(g)?.zones.find((x) => x.id === zoneMap(g).id), map = zoneMap(g);
   const seen: Record<string, number> = {};
-  return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, ...((n as any).caster ? { caster: (n as any).caster } : {}), pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined,
+  return (z?.npcs || []).map((n, i) => ({ id: 'n' + (i + 1) + '-' + map.id, name: n.name, side: n.side, tier: n.tier, weapon: n.weapon, ...((n as any).caster ? { caster: (n as any).caster } : {}), ...(levelGiven((n as any).level) != null ? { level: levelGiven((n as any).level)! } : {}), pos: keyOf(n.at, map) || map.foeStart[0], portrait: n.portrait || portraitFor(g, n.name, seen) || undefined, facing: n.facing ? FACE[n.facing] : undefined,
     ...(n.kind ? { kind: n.kind } : {}), ...(n.tags?.length ? { tags: [...n.tags] } : {}), ...((n as any).drops ? { drops: cleanDrops((n as any).drops, { max: Infinity, tables: campTables(g) }) } : {}) }));
 }
 export function npcsOf(g: GameState): Npc[] { return (g.story.npcs ||= initialNpcs(g)); }
@@ -2231,7 +2247,7 @@ export function npcSensed(g: GameState, n: Npc, why: string, only?: Character[])
 }
 /** Every lurking NPC gets a look (a zone entered, a round, a move): see npcSensed. */
 export function senseLurkers(g: GameState, why: string, only?: Character[]) { for (const n of [...(g.story.npcs || [])]) if (n.hidden) npcSensed(g, n, why, only); }
-const ENEMY_TIERS = ['minion', 'soldier', 'elite', 'boss'];
+const ENEMY_TIERS = ['vermin', 'minion', 'soldier', 'elite', 'boss'];
 /** Names too generic to be a person in memory. */
 const GENERIC = /^(scavenger drone|drone|engineer|security guard|guard|guard captain|hostile|soldier|trooper|enemy rearguard trooper)$/i;
 
@@ -2396,7 +2412,7 @@ export function storyCb(g: GameState): Combat {
   // Companions on the area map (a drone, a beast): tokens with their own AP this round.
   for (const c of Object.values(g.characters)) { const owner = units.find((x) => x.charId === c.id); if (!owner || !c.companions?.some((k) => COMPANION_ROUND_AP[k.kind] != null)) continue;
     const taken = new Set(units.map((x) => x.pos)); for (const d of companionUnits(null, c, owner, taken, scratch, map, pos)) { if (!pos[d.id] || COMPANION_ROUND_AP[d.companion!] == null) continue; d.pos = pos[d.id]; d.ap = g.story.ap?.[d.id] ?? COMPANION_ROUND_AP[d.companion!]; units.push(d); } }
-  for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch); if (n.portrait) u.img = n.portrait; if (n.hidden) u.hidden = true; units.push(u); }
+  for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch, n.level ?? squadLevel(g)); if (n.portrait) u.img = n.portrait; if (n.hidden) u.hidden = true; units.push(u); }
   const cb = { name: 'overworld', overworld: true, map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
   // Rules 1.7: the zone's hazards (the story's own, so what a step spends stays spent), rolled on the game's dice.
   { const hz = zoneHazards(g, map.id); if (hz.length) { cb.hazards = hz; cb.worldRng = g.rng; } }
@@ -2651,7 +2667,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const pcs = Object.values(g.characters).filter((x) => !x.dead).map((x) => ({ c: x, pos: pos[x.id], comp: pos }));
   const tier = foes.some((n) => n.tier === 'boss') ? 'boss' : foes.some((n) => n.tier === 'elite') ? 'hard' : foes.length > 2 ? 'standard' : 'easy';
   const fightName = (hidden ? 'Ambush at ' : 'Fight at ') + refOf(npc.pos);
-  g.combat = startCombat(fightName, zoneMap(g), pcs, encounterDrops(g, fightName, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster, drops: n.drops }))), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
+  g.combat = startCombat(fightName, zoneMap(g), pcs, encounterDrops(g, fightName, foes.map((n) => ({ name: n.name, tier: n.tier, weapon: n.weapon, at: refOf(n.pos), hp: n.hp, kind: n.kind, tags: n.tags, caster: n.caster, drops: n.drops, ...(n.level != null ? { level: n.level } : {}) }))), tier, g.rng, storyObjects(g)); magicIn(g, g.combat);
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   // Who starts Hidden is set up quietly (no 'sight' event: a lurker the party could have seen must not fade out where it
   // lurks, which would give the ambush away); each side's sight is recorded afresh after it.
@@ -2709,7 +2725,7 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
 function poiToNpc(g: GameState, cb: Combat, o: MapObject): Combat['units'][number] {
   const n: Npc = { id: 'n' + (++g.seq), name: o.name, side: 'neutral', tier: 'minion', weapon: 'fists', pos: o.pos, portrait: o.portrait || portraitFor(g, o.name) || undefined, facing: facingToward(o.pos, partyCentre(g)) };
   npcsOf(g).push(n); o.npcId = n.id;
-  const unit = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, { state: g.rng.state }); if (n.portrait) unit.img = n.portrait;
+  const unit = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, { state: g.rng.state }, n.level ?? squadLevel(g)); if (n.portrait) unit.img = n.portrait;
   cb.units.push(unit);
   return unit;
 }
@@ -2934,7 +2950,7 @@ export type SandboxAction =
   | { type: 'sandbox/study'; charId: string; study: number } | { type: 'sandbox/word-uses'; charId: string; word: string; uses: number }
   | { type: 'sandbox/mark'; at: string; word: string; age?: string; damage?: string; name?: string; text?: string } | { type: 'sandbox/junctions'; on: boolean }
   | { type: 'sandbox/design'; charId: string; design: OutburstDesign } | { type: 'sandbox/forget'; charId: string; word?: string; designId?: string }
-  | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string } | { type: 'sandbox/clear' }
+  | { type: 'sandbox/spawn'; tier: string; weapon: string; at: string; name?: string; caster?: string; /** rules 1.15: its level (1 to 20); empty: the squad's */ level?: number } | { type: 'sandbox/clear' }
   | { type: 'sandbox/ai'; on: boolean } | { type: 'sandbox/auto'; on: boolean } | { type: 'sandbox/mana'; value: number }
   // Rules 1.6: set a character's belief, patron, Devotion, Faith, knowledge pieces and vow; reset clears the Miracle and the prayer cooldowns.
   | { type: 'sandbox/faith'; charId: string; belief?: 'faithful' | 'atheist'; patron?: string; devotion?: number; faith?: number; pieces?: Record<string, number>; vow?: string | null; allyId?: string; reset?: boolean }
@@ -2957,6 +2973,7 @@ const SANDBOX_STORY = /^(world\/act|story\/(move|door|focus|unfocus)|poi\/try)$/
 export const PROVING_GROUND = provingJ as unknown as Campaign;
 /** Drill units by tier: their names and the weapons each wave cycles through. */
 export const SANDBOX_TIERS: Record<string, { name: string; weapons: string[] }> = {
+  vermin: { name: 'Drill mite', weapons: ['beast_bite', 'combat_knife'] }, // rules 1.15: spawned by hand; the waves don't use it yet
   minion: { name: 'Drill drone', weapons: ['service_pistol', 'combat_knife', 'decrkm_smg', 'lever_carbine'] },
   soldier: { name: 'Sparring trooper', weapons: ['hellraiser_service_rifle', 'lumeri_scattergun', 'legion_pdw', 'sabre'] },
   elite: { name: 'Range warden', weapons: ['legion_bullpup', 'brigade_auto_shotgun', 'ccec_marksman_rifle', 'war_axe'] },
@@ -3174,7 +3191,7 @@ function sbPlace(g: GameState, n: number) {
   });
 }
 /** Begin a fight on the Proving Ground map: the squad where it stands (pos), these foes, everyone on the fight's clock. */
-function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string; hidden?: boolean }[], pos: Record<string, string>, objects?: MapObject[]) {
+function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string; hidden?: boolean; level?: number }[], pos: Record<string, string>, objects?: MapObject[]) {
   const sb = sbOf(g), wasLive = !!liveFight(g), map = zoneMap(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
   if (!pcs.length) fail('Lock in a character first.');
@@ -3217,7 +3234,7 @@ function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
     // The seated foes still standing go back as tokens with the HP they have left; everyone the fight did not seat
     // (overflow units, people who were not hostile) stays on the map as they were, moved aside if a fighter ended on their tile.
     const back = cb.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => ({ id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos,
-      portrait: u.img || undefined, ...(u.analyzedBy ? { analyzed: true } : {}), ...(u.hp < u.maxHp ? { hp: u.hp } : {}), ...(u.drops ? { drops: u.drops } : {}) }) as Npc);
+      portrait: u.img || undefined, ...(u.analyzedBy ? { analyzed: true } : {}), ...(u.hp < u.maxHp ? { hp: u.hp } : {}), ...(u.drops ? { drops: u.drops } : {}), ...(u.level != null && u.level !== cb.level ? { level: u.level } : {}) }) as Npc);
     const ids = new Set(back.map((n) => n.id)), map = zoneMap(g), objs = g.story.objects || [];
     const taken = new Set<string>([...Object.values(pos), ...back.map((n) => n.pos)]);
     const free = (k: string) => standable(map, k) && !taken.has(k) && !objs.some((o) => o.pos === k && blocksMove(o));
@@ -3350,7 +3367,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       const foes = npcsOf(g).filter((x) => x.side === 'hostile'), stay = npcsOf(g).filter((x) => x.side !== 'hostile');
       sbAttempt(sb, n);
       g.story.npcs = stay;
-      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster, ...(x.hidden ? { hidden: true } : {}) })), { ...positionsOf(g) }, storyObjects(g)); // a hostile placed Hidden starts the fight Hidden (as in a Narrator's fight)
+      sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster, ...(x.hidden ? { hidden: true } : {}), ...(x.level != null ? { level: x.level } : {}) })), { ...positionsOf(g) }, storyObjects(g)); // a hostile placed Hidden starts the fight Hidden (as in a Narrator's fight)
       return;
     }
     case 'sandbox/stage': {
@@ -3435,7 +3452,8 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     case 'sandbox/spawn': {
       fieldOnly();
       if (sb.mode === 'teams') fail('Team fight: no drill units (switch the mode to Co-op waves).');
-      if (!ENEMY[a.tier]) fail('Pick a tier: minion, soldier, elite or boss.');
+      if (!ENEMY[a.tier]) fail('Pick a tier: vermin, minion, soldier, elite or boss.');
+      const lvl = levelGiven(a.level) ?? undefined; // rules 1.15: empty is the squad's level
       // A Sigil caster (enemies.json casters; rules 1.4) of the same tier: it fights with an Evoker and its words.
       const caster: { id: string; name: string; tier: string; weapon: string } | undefined = a.caster ? CASTER[a.caster] || HEART_CASTER[a.caster] : undefined;
       if (a.caster && !caster) fail('No such caster.');
@@ -3448,19 +3466,19 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         const map = zoneMap(g), k = tileKey(g, a.at);
         if (!standable(map, k) || Object.values(positionsOf(g)).includes(k) || npcsOf(g).some((n) => n.pos === k) || storyObjects(g).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
         const nm = name || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (npcsOf(g).filter((n) => n.tier === a.tier).length + 1);
-        npcsOf(g).push({ id: 'foe-s' + (++sb.spawned), name: nm, side: 'hostile', tier: a.tier, weapon, pos: k, portrait: portraitFor(g, nm) || undefined, facing: facingToward(k, partyCentre(g)), ...(caster ? { caster: caster.id } : {}) });
-        sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? (HEART_CASTER[caster.id] ? ', Outbursts' : ', Sigils') : '') + ') stands at ' + refOf(k) + '.');
+        npcsOf(g).push({ id: 'foe-s' + (++sb.spawned), name: nm, side: 'hostile', tier: a.tier, weapon, pos: k, portrait: portraitFor(g, nm) || undefined, facing: facingToward(k, partyCentre(g)), ...(caster ? { caster: caster.id } : {}), ...(lvl != null ? { level: lvl } : {}) });
+        sbLog(g, nm + ' (' + a.tier + (lvl != null ? ' level ' + lvl : '') + ', ' + WEAPON[weapon].name + (caster ? (HEART_CASTER[caster.id] ? ', Outbursts' : ', Sigils') : '') + ') stands at ' + refOf(k) + '.');
         return;
       }
       if (!cb) fail('No fight is on.');
       const k = tileKey(g, a.at);
       if (!standable(cb!.map, k) || cb!.units.some((u) => u.pos === k && !u.dead) || objectsOf(cb!).some((o) => o.pos === k && blocksMove(o))) fail('Nobody can stand there.');
       const nm = name || (SANDBOX_TIERS[a.tier]?.name || 'Drill unit') + ' ' + (cb!.units.filter((u) => u.tier === a.tier).length + 1);
-      const u = unitFromEnemy('foe-s' + (++sb.spawned), nm, a.tier, weapon, k, g.rng); u.npcId = u.id;
-      if (caster) { armFoe(u, { caster: caster.id }); armHeart(u, { caster: caster.id }); }
+      const u = unitFromEnemy('foe-s' + (++sb.spawned), nm, a.tier, weapon, k, g.rng, lvl ?? squadLevel(g)); u.npcId = u.id; // empty: the squad's level as it is now (a level-up in the middle of a fight counts)
+      if (caster) { armFoe(u, { caster: caster.id }); armHeart(u, { caster: caster.id }); levelFoeMagic(u); }
       const p = portraitFor(g, nm); if (p) u.img = p;
       cb!.units.push(u); cb!.order.push(u.id);
-      sbLog(g, nm + ' (' + a.tier + ', ' + WEAPON[weapon].name + (caster ? (HEART_CASTER[caster.id] ? ', Outbursts' : ', Sigils') : '') + ') enters at ' + refOf(k) + '.');
+      sbLog(g, nm + ' (' + a.tier + ' level ' + u.level + ', ' + WEAPON[weapon].name + (caster ? (HEART_CASTER[caster.id] ? ', Outbursts' : ', Sigils') : '') + ') enters at ' + refOf(k) + '.');
       return;
     }
     case 'sandbox/clear': {

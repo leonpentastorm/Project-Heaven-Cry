@@ -92,7 +92,7 @@ describe('Defender', () => {
     // nearest player, the Defender itself): without Anchor it walks off toward them; with Anchor it keeps beside the Defender.
     const tiles: Record<number, string> = {};
     for (const rank of [8, 5]) {
-      const f = fightWith([cls('defender', rank), {}], [{ weapon: 'combat_knife' }]);
+      const f = fightWith([cls('defender', rank), {}], [{ weapon: 'combat_knife' }], { classic: true });
       const [d, p] = f.pcs; at(f, d, '5,2').hidden = true; at(f, p, '15,2'); tough(at(f, f.foe, '6,2'));
       order(f, d, f.foe, p); f.turn(d); act(f, f.unit(d.id), { type: 'combat/end-turn' });
       tiles[rank] = f.unit(f.foe.id).pos;
@@ -215,7 +215,7 @@ describe('Infiltrator', () => {
     expect(() => perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: f.foes[1].id })).toThrow(/isn't a machine/);
   });
   it('Sabotage: a rigged tile springs on the next enemy (30, Pinned on a failed Body save), never on your side', () => {
-    const f = fightWith([cls('infiltrator', 8), {}], [{}]);
+    const f = fightWith([cls('infiltrator', 8), {}], [{}], { classic: true });
     const [i, p] = f.pcs; at(f, i, '4,2'); at(f, p, '3,3'); f.turn(i);
     perk(f, f.unit(i.id), 'class:infiltrator.sabotage', { actionId: 'rig' });
     expect(objectsOf(f.cb).some((o: any) => o.rig && o.pos === '4,2')).toBe(true);
@@ -281,7 +281,7 @@ describe('Trickster', () => {
     expect(it0.kind).toMatch(/attack|move/); expect(f.g.rng.state).toBe(s0); expect(JSON.stringify(f.cb)).toBe(before);
   });
   it('False Image: 1 charge, a decoy the fooled enemy shoots instead of you; it scatters when struck', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}]);
+    const f = fightWith([cls('trickster', 3, MIND)], [{}], { classic: true });
     const u = tough(at(f, f.pc, '4,2')), foe = saves(at(f, f.foe, '10,2'), -50); order(f, u, foe); f.turn(u);
     const ch = f.unit(u.id).mg!.charge;
     perk(f, u, 'class:trickster.false_image', { tile: '6,4' });
