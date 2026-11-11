@@ -45,7 +45,7 @@ describe('the second school works on the primary\'s side (item 542)', () => {
       const d = give(f.pc, { school: 'buff', option: 'heal', school2, ...(option2 ? { option2 } : {}) });
       begin(f, d); pump(f); release(f, '4,5');
       const a = f.unit(ally.id);
-      expect(a.hp, school2).toBe(136); expect(a.pos, school2).toBe('4,5'); // 30 × stage 1 (×1.2, rules 1.17)
+      expect(a.hp, school2).toBe(130); expect(a.pos, school2).toBe('4,5'); // 30 × stage 1 (×1.0, rules 1.19)
       expect(condOn(a, 'shaken') || condOn(a, 'pinned'), school2).toBe(false);
       expect(withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '4,5')).affected[0].second).toBe('');
     }
@@ -104,7 +104,7 @@ describe('"landed" means took effect (item 543)', () => {
     expect(condOn(f.foe, 'shaken')).toBe(false); expect(lost(f.foe)).toBe(0);
     // A failed save still lands both.
     f = rig(); d = give(f.pc, { school: 'control', option: 'push', school2: 'damage' });
-    begin(f, d); pump(f); release(f, '6,5'); expect(f.foe.pos).toBe('9,5'); expect(lost(f.foe)).toBe(12);
+    begin(f, d); pump(f); release(f, '6,5'); expect(f.foe.pos).toBe('9,5'); expect(lost(f.foe)).toBe(10);
   });
 });
 
@@ -176,7 +176,7 @@ describe('a fight saved under 1.2 gets its free Pumps back', () => {
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul' }], [{}]); const u = f.turn(f.pc), c = charOf(f, u);
     c.skills.empathy = 7; delete (u.mg as any).freePumpsMax; delete (u.mg as any).freePumps; u.ap = 9;
     f.act({ type: 'combat/outburst', unitId: u.id, design: u.mg!.designs[0].id, hold: true } as any);
-    const m = f.unit(u.id).mg!; expect(m.freePumpsMax).toBe(freePumps(c)); expect(freePumps(c)).toBe(2);
+    const m = f.unit(u.id).mg!; expect(m.freePumpsMax).toBe(freePumps(c)); expect(freePumps(c)).toBe(1) // rules 1.19: Empathy 7 no longer gives a second;
     expect(withGame(f.g, () => previewPump(f.cb, f.unit(u.id)))).toMatchObject({ ok: true, ap: 0, free: true });
   });
 });
@@ -199,18 +199,18 @@ describe('the release preview (the same standard as Sigil\'s)', () => {
     const mods = ['class:channeler.heart_surge#surge'], v = f.unit(u.id);
     expect(withGame(f.g, () => previewOutburstPlan(f.cb, v, 'held', f.foe.pos)).stage).toBe(2);
     const p = withGame(f.g, () => previewOutburstPlan(f.cb, v, 'held', f.foe.pos, { mods }));
-    expect(p.stage).toBe(3); expect(p.mult).toBe(stageMult(3)); expect((f.cb as any).mods).toBeUndefined();
+    expect(p.stage).toBe(3); expect(p.mult).toBeCloseTo(stageMult(3) + (v.mg!.held!.plus || 0)); // Shape's +0.1 on the turn's free Pump (rules 1.19) expect((f.cb as any).mods).toBeUndefined();
     expect(() => f.act({ type: 'combat/release', unitId: u.id, aim: '40,40', mods } as any)).toThrow();
     expect(f.unit(u.id).mg!.held!.stage).toBe(2);
     f.act({ type: 'combat/release', unitId: u.id, aim: f.foe.pos, mods } as any);
     expect(fx(f.cb, 'release').at(-1)).toMatchObject({ stage: 3 });
   });
-  it('damage is floored as the hit floors it (soulMult 1.45, stage 2: 20 × 1.45 × 1.6 = 46.4 → 46)', () => {
+  it('damage is floored as the hit floors it (soulMult 1.45, stage 2: 20 × 1.45 × 1.2 = 34.8 → 34)', () => {
     const f = rig(); me(f).mg!.soulMult = 1.45; const d = give(f.pc, {});
     begin(f, d); pump(f, 2);
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
-    expect(plan.affected[0].dmg).toBe(46);
-    release(f, '6,5'); expect(lost(f.foe)).toBe(46);
+    expect(plan.affected[0].dmg).toBe(34);
+    release(f, '6,5'); expect(lost(f.foe)).toBe(34);
   });
   it('the reach ring follows the hooked range (Verse of War: +1), as the aim check does', () => {
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: { verse_of_war: 'achieved' } }], [{}]); const u = f.turn(f.pc); u.mg!.mp = 500; u.ap = 9;

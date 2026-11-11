@@ -1539,16 +1539,27 @@ export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'mele
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
   u.ap -= cost; u.overwatch = mode; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); cb.log.push(u.name + ' holds a shot on overwatch.'); return null;
 }
-/** Burst (spec): 3 AP, 3 rounds at one target, each later round −1 more. Full auto: 4 AP, 10 rounds, one roll at −2 per enemy near the line. */
-/** The rolls of a Burst (rules 1.18; techniques.json burst.numbers): three rounds, TWO rolls, the second at −2 (a Quick
- * weapon: −1). A Heavy weapon that is Braced, Prone or Emplaced holds all three on the target: three rolls, each later
- * one −1 more. The technique (physical/ranged/fire.ts) and this plain action read the same numbers. */
-export function burstRolls(u: Unit, w: WeaponDef, line?: string | null): number[] {
-  const n: any = ((techniquesJ as any).items || []).find((x: any) => x.id === 'burst')?.numbers || {}, props: string[] = (w as any).phys?.props || [];
-  if (props.includes('heavy') && (weaponBraced(u) || !!u.prone || condOn(u, 'emplaced'))) return Array.from({ length: n.heavy_rolls ?? 3 }, (_, i) => -(n.heavy_step ?? 1) * i);
-  const quick = props.includes('quick'); void line;
-  return Array.from({ length: n.rolls ?? 2 }, (_, i) => (i ? -(quick ? n.quick_penalty ?? 1 : n.later_penalty ?? 2) : 0));
+/** Burst (spec, rules 1.18): 3 AP, 3 rounds at one target, two rolls (burstRolls below). Full auto: 4 AP, 10 rounds, one roll at −2 per enemy near the line. */
+/** The rolls of a Burst (rules 1.18; techniques.json burst.numbers), as the to-hit step of each roll. A character's
+ * Burst is three rounds and TWO rolls, the second at −4 (a Quick weapon: −3; a Heavy weapon that is Braced, Prone or
+ * Emplaced: −1). An enemy's Burst is still the one the enemy table was fitted with (rules 1.15): with an Auto weapon
+ * three rolls, each later one −1 more (`enemy_rolls`, `enemy_step`); with any other, two rolls, the second at −2
+ * (`enemy_later_penalty`; Quick: none), until that table is fitted again. The technique
+ * (physical/ranged/fire.ts), the held Burst of an Overwatch and the plain burst action all read this. */
+const BURST_NUM = (k: string, fb: number): number => { const v = (((techniquesJ as any).items || []).find((x: any) => x.id === 'burst')?.numbers || {})[k]; return typeof v === 'number' ? v : fb; };
+export function burstRolls(u: Unit, w: WeaponDef): number[] {
+  const props: string[] = (w as any).phys?.props || [];
+  if (!u.charId) { // as rules 1.12 had it for everyone: Auto three rolls, each later one −1 more; else two, the second at −2 (Quick: no −2)
+    if (props.includes('auto')) return Array.from({ length: BURST_NUM('enemy_rolls', 3) }, (_, i) => (i ? -BURST_NUM('enemy_step', 1) * i : 0));
+    return Array.from({ length: BURST_NUM('rolls', 2) }, (_, i) => (i && !props.includes('quick') ? -BURST_NUM('enemy_later_penalty', 2) : 0));
+  }
+  const braced = props.includes('heavy') && (weaponBraced(u) || !!u.prone || condOn(u, 'emplaced'));
+  const later = braced ? BURST_NUM('heavy_penalty', 1) : props.includes('quick') ? BURST_NUM('quick_penalty', 3) : BURST_NUM('later_penalty', 4);
+  return Array.from({ length: BURST_NUM('rolls', 2) }, (_, i) => (i ? -later : 0));
 }
+/** The Heat a Burst gives back when it ends. Heat is one a roll: a character's two rolls are 2 Heat and nothing cools; an
+ * enemy's three rolls cool 1 (2 Heat too), as its table was fitted. */
+export const burstCool = (u: Unit, auto: boolean): number => (!auto ? 0 : !u.charId ? BURST_NUM('enemy_heat_cool', 1) : BURST_NUM('auto_heat_cool', 0));
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
   const rolls = burstRolls(u, WEAPON[u.weapon]), mag = WEAPON[u.weapon].magazine;
@@ -1557,9 +1568,9 @@ export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character
   // resolveAttack refuses (and ends the burst on) any round the preview won't allow: broken gun, target pushed out of sight.
   let made = 0;
   chained(() => { for (let i = 0; i < rolls.length && !t.dead && (mag == null || u.ammo > 0) && !u.jammed; i++) { const r = resolveAttack(cb, rng, u, t, 'shot', who, { extra: rolls[i], noAp: true, noWear: i > 0, vi: i } as any); if (r.refused || r.cancelled) break; made++; } }, 'burst');
-  // three rounds leave the gun whatever was rolled (rules 1.18): the ones with no roll of their own are burned, and heat it
-  if (made === rolls.length && rolls.length < 3) { const burn = Math.min(3 - rolls.length, mag != null && !u.infiniteAmmo ? Math.max(0, u.ammo) : 3 - rolls.length); if (mag != null && !u.infiniteAmmo) u.ammo -= burn; if (WEAPON[u.weapon].heat_limit && !u.infiniteAmmo) u.heat += burn; }
-  u.heat = Math.max(0, u.heat - 1); emit(cb, 'volley_end', { u, mode: 'burst', target: t, cb, rng }); checkOver(cb); return null;
+  // three rounds leave the gun whatever was rolled (rules 1.18): the one with no roll of its own is burned (no Heat: Heat is one a roll)
+  if (made === rolls.length && rolls.length < 3 && mag != null && !u.infiniteAmmo) u.ammo -= Math.min(3 - rolls.length, Math.max(0, u.ammo));
+  u.heat = Math.max(0, u.heat - burstCool(u, true)); emit(cb, 'volley_end', { u, mode: 'burst', target: t, cb, rng }); checkOver(cb); return null;
 }
 export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'auto'); if (!pv.ok) return pv.why!;

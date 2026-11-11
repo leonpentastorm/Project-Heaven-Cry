@@ -22,10 +22,10 @@ describe('starting magic on the Create screen', () => {
     expect(v.canSigil && v.canSoul && v.hasMagic).toBe(true);
     expect(v.sigilVerdict).toMatch(/^✓ SPARK \+ SEEK: SPARK, a bolt, range 8/);
     expect(v.resetSigilsLabel).toBe('Back to SPARK + SEEK');
-    expect(v.obVerdict).toMatch(/^✓ Damage Outburst: Damage · Move/);
+    expect(v.obVerdict).toMatch(/^✓ Damage Outburst: Damage · Strike · Move/);
     const s = l.sheet();
     expect(s.sigils).toEqual(['spark', 'seek']);
-    expect(s.outburst).toEqual({ school: 'damage', modules: ['move'] });
+    expect(s.outburst).toEqual({ school: 'damage', modules: ['move'], option: 'strike' }) // rules 1.19: the Damage school's plain way;
   });
   it('the summary reads the range from the engine: SEEK reach plus this build\'s range bonus', () => {
     const l = screen({ brain_power: 3, rumination: 2 }, 'sigil');

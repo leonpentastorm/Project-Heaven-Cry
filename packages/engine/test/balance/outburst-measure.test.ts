@@ -34,8 +34,8 @@ const ROWS = [
   { what: 'steady, a new caster (Rage and Love)', opts: null },
   { what: 'steady, the early feelings', opts: { feelings: 'early' } },
   { what: 'steady, all 25 feelings', opts: { feelings: 'all' } },
-  { what: 'the biggest Release (all 25)', opts: { feel: true, feelings: 'all' }, rounds: 1, n: 3 },
-  { what: 'the biggest Release (the early feelings)', opts: { feel: true, feelings: 'early' }, rounds: 1, n: 3 },
+  { what: 'the biggest Release (all 25)', opts: { feel: true, feelings: 'all' }, rounds: 1, n: 10 },
+  { what: 'the biggest Release (the early feelings)', opts: { feel: true, feelings: 'early' }, rounds: 1, n: 10 },
   { what: 'stage 2, plain Pumps', opts: { stage: 2 } },
   { what: 'stage 4, plain Pumps', opts: { stage: 4 } },
 ];
@@ -96,7 +96,7 @@ describe('the Outburst measurements (rules 1.19)', () => {
     for (const v of ['normal', 'allin']) {
       const ys = LEVELS.map((lv) => rifle(lv, N));
       md += '\n**' + (v === 'normal' ? 'Normal share' : 'All in') + '.** Plain rifle (normal share) a turn: ' + ys.map((y) => 'L' + y.level + ' ' + Math.round(y.normal * 10) / 10).join(' · ') + '\n\n| Pattern | ' + LEVELS.map((l) => 'Level ' + l).join(' | ') + ' |\n|---|' + LEVELS.map(() => '---').join('|') + '|\n';
-      for (const p of ROWS) { const cells = LEVELS.map((lv, i) => row(p, v, lv, ys[i])); out(v + ' ' + p.what + ': ' + cells.map((r) => 'L' + r.level + ' ' + r.pctRifle + '%').join(' · ')); md += '| ' + p.what + ' | ' + cells.map(cell).join(' | ') + ' |\n'; expect(cells.reduce((e, r) => e + r.errors, 0)).toBe(0); }
+      for (const p of ROWS) { const cells = LEVELS.map((lv, i) => row(p, v, lv, ys[i])); out(v + ' ' + p.what + ': ' + cells.map((r) => 'L' + r.level + ' ' + cell(r)).join(' | ')); md += '| ' + p.what + ' | ' + cells.map(cell).join(' | ') + ' |\n'; expect(cells.reduce((e, r) => e + r.errors, 0)).toBe(0); }
     }
     console.log(md);
   }, 7200000);

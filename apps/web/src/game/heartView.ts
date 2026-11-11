@@ -5,7 +5,7 @@
 // Nothing here works a rule out: every cost, refusal, number and tile comes from the engine (previewOutburstPlan,
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
-import { SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
+import { SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
   previewOutburst, previewOutburstPlan, previewPump, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
@@ -81,10 +81,17 @@ export function designInfo(m: any, d0: any, mana?: number): DesignInfo {
 function schoolEffect(m: any, d: any, school: string, opt: string | undefined, sm: number, f: number): string {
   const S: any = (SCHOOL as any)[school] || {}, o = opt || DEFAULT_OPT[school] || '';
   // Inverse (rules 1.17): the shield is the damage × the module's own share (the engine's number).
-  if (school === 'damage') { const inv = d.modules.includes('inverse'); return (inv ? 'a shield of ' : '') + Math.floor(outburstDamage(m, d, sm) * f * (inv ? (MODULE as any).inverse?.shield_mult ?? 1 : 1)) + (inv ? ' on an ally' : ' damage'); }
+  if (school === 'damage') {
+    const inv = d.modules.includes('inverse'), raw = outburstDamage(m, d, sm) * f;
+    if (inv) return 'a shield of ' + Math.floor(raw * ((MODULE as any).inverse?.shield_mult ?? 1)) + ' on an ally';
+    // Rules 1.19: the way it strikes, with the engine's own numbers (soul_modules.json damage.modes).
+    const md: any = (SOUL_RULES as any).damage?.modes?.[o] || null, n = Math.floor(raw * damageModeMult(o));
+    return n + ' damage' + (!md ? '' : md.mult_low != null ? ' (Finish: ' + Math.floor(raw * md.mult_low) + ' against a target at half its HP or less)' : md.condition ? ', and the target is Marked for your side (Brand)' : md.heal_of_damage ? ', and you heal for a quarter of the HP it takes (Drain)' : '');
+  }
   if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor((S.heal ?? 30) * (m.healMult ?? 1) * sm * f) : optionName(school, o) + (f < 1 ? ' (half)' : '');
-  if (school === 'control') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (Body save)';
-  if (school === 'status') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (a save)';
+  // Rules 1.19: these read the stage too (a harder save every 2 stages, longer from stage 3).
+  if (school === 'control') return optionName(school, o) + (f < 1 ? ' (half)' : '') + (o === 'swap' ? ' (Body save; an ally doesn\'t resist)' : ' (Body save; harder to resist as the stage rises)');
+  if (school === 'status') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (a save; harder to resist as the stage rises)';
   return S.name || school;
 }
 /** The workshop's verdict: both effects with numbers at stage 1, the snap and full heart, the tone's rider, the cost. */
@@ -191,7 +198,7 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
     freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
     pump: { id: 'pump', label: 'Pump', ap: pp.ap, cost: pp.ok ? (pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
-      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight.' : pp.free ? '. This is a free Pump from Empathy: ' + freeLeft + ' left this round.' : '.')
+      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight.' : pp.free ? '. This is your free Pump for this turn.' : '.')
         + (pp.note ? ' ' + pp.note : overdraw && !od?.why ? ' ' + overdraw : '') : pp.why || '' },
     release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (notes.length ? '. ' + notes.join(', ') + ' is in that number, built by the Releases before this one' : '') + (info?.form === 'aura' ? '. It goes off all around you, with no aim.' : '. Pick the aim on the grid.') },
     steadyBtn: { id: 'steady', label: 'Steady', cost: SOUL_AP.steady + ' AP', ok: !st.err, why: st.err || '', title: 'Lose 1 Strain, and the Outburst doesn\'t swell at the start of your next turn.' },
@@ -322,7 +329,7 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
     feel: { ...fr, toggle: fo.toggle || (() => {}), onSearch: fo.search || (() => {}), query: fo.query || '', openStr: fr.open ? 'true' : 'false',
       searchStyle: 'min-height: 26px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 11px' },
     freeShort: p.freePumps == null ? '' : p.freePumps + ' FREE PUMP' + (p.freePumps === 1 ? '' : 'S'),
-    free: p.freePumps == null ? 'No free Pumps. Empathy 3 gives one each round.' : p.freePumps + ' free Pump' + (p.freePumps === 1 ? '' : 's') + ' left this round',
+    free: p.freePumps == null ? 'No free Pumps. Empathy 3 gives one each round.' : p.freePumps + ' free Pump' + (p.freePumps === 1 ? '' : 's') + ' left this round (one a turn at most)',
     strainText: 'STRAIN ' + p.strain + ' / ' + p.limit, strainTrack: S.strainTrack, strainFill: S.strainFill, strainMark: S.strainMark,
     warn: p.warn, hasWarn: !!p.warn, warnStyle: S.warnStyle, swell: p.swell, rider: p.rider,
     btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,

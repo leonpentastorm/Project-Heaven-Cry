@@ -9,6 +9,11 @@ import { BUILD, BUILDS } from './builds';
 import { WEAPON } from '../../src';
 
 export const G_LEVELS = [1, 3, 6, 9, 12, 20];
+/** The guns that matter for the ceiling (the full run's default list): every gun that measured over 120% before rules
+ * 1.18 or after it, the yardstick's own rifle, and one of each family that sits far under it. */
+export const TOP_GUNS = ['hellraiser_service_rifle', 'long_rifle', 'legion_bullpup', 'adamantile_battle_rifle', 'ccec_marksman_rifle', 'core_rifle', 'lever_carbine', 'frontier_hand_cannon', 'hellraiser_lmg', 'crossbow', 'decrkm_smg', 'blackpoint_700', 'breacher_tube'];
+/** Guns whose price is their ammunition (40 credits a round or more): allowed the full 150% (Leon, 11 Nov 2026). */
+export const SPECIAL_AMMO = ['blackpoint_700', 'breacher_tube', 'smetanita_thumper', 'purifier_flamer'];
 const r1 = (n: number) => Math.round(n * 10) / 10, pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 100) : 0);
 /** The damage techniques a gun build readies, best first (builds.ts learns as many as creation and drill give). */
 export const GUN_TECHNIQUES = ['mag_dump', 'dead_centre', 'last_round', 'stopping_shot', 'heavy_bolt', 'walking_fire', 'called_shot', 'bead', 'suppress', 'shift'];

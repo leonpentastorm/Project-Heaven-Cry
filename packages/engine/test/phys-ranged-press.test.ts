@@ -271,11 +271,11 @@ describe('Flush', () => {
 
 // ---------- 12. Mag Dump ----------
 describe('Mag Dump', () => {
-  it('empties the weapon: one roll per 3 rounds (at most 4), each at −1 more; +1 Pressure per hit; Heat to one under the limit; 4 AP', () => {
+  it('empties the weapon: one roll per 3 rounds (at most 3), each at −4 more (rules 1.18); +1 Pressure per hit; Heat to one under the limit; 4 AP', () => {
     const f = fight('service_pistol', [{ at: 'G5', tier: 'elite' }]), lim = heatLimit(f.pc, WEAPON.service_pistol);
     const pv = f.pv('mag_dump', { targetId: f.foe.id });
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(4); expect(pv.rounds).toBe(12); expect(pv.attacks.length).toBe(4);
-    expect(pv.attacks.map((a) => term({ attacks: [a] } as any, 0, 'Mag Dump') ?? 0)).toEqual([0, -1, -2, -3]);
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(4); expect(pv.rounds).toBe(12); expect(pv.attacks.length).toBe(3);
+    expect(pv.attacks.map((a) => term({ attacks: [a] } as any, 0, 'Mag Dump') ?? 0)).toEqual([0, -4, -8]);
     expect(pv.pressure!.every((x) => x.onHit)).toBe(true); expect(pressAfter(pv, f.foe)).toBe(3); // an elite stops at 3
     rig({ hit: false, die: 5 });
     expect(f.tech('mag_dump', { targetId: f.foe.id })).toBeNull();
@@ -293,13 +293,13 @@ describe('Mag Dump', () => {
     const f = fight('hellraiser_service_rifle', [{ at: 'H5' }]);
     const pv = f.pv('mag_dump', { targetId: f.foe.id }); expect(pv.rounds).toBe(24); expect(pv.pressure!.some((x) => x.onHit)).toBe(false);
     rig({ hit: false, die: 5 }); f.tech('mag_dump', { targetId: f.foe.id });
-    expect(f.pressure(f.foe)).toBe(4); expect(f.pc.ammo).toBe(0); expect(f.pc.heat).toBe(heatLimit(f.pc, WEAPON.hellraiser_service_rifle) - 1);
+    expect(f.pressure(f.foe)).toBe(3); expect(f.pc.ammo).toBe(0); expect(f.pc.heat).toBe(heatLimit(f.pc, WEAPON.hellraiser_service_rifle) - 1); // rules 1.18: three rolls
   });
   it('no Recoil on top of its own growing penalty: the step is all that grows (review fix); one wear', () => {
     const f = fight('hellraiser_service_rifle', [{ at: 'H5' }], { pc: { skills: { dexterity: 0 } } }); const d0 = f.pc.dur!;
-    const pv = f.pv('mag_dump', { targetId: f.foe.id }); expect(pv.attacks.length).toBe(4);
-    expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'recoil')?.v)).toEqual([undefined, undefined, undefined, undefined]);
-    expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'Mag Dump')?.v ?? 0)).toEqual([0, -1, -2, -3]);
+    const pv = f.pv('mag_dump', { targetId: f.foe.id }); expect(pv.attacks.length).toBe(3);
+    expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'recoil')?.v)).toEqual([undefined, undefined, undefined]);
+    expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'Mag Dump')?.v ?? 0)).toEqual([0, -4, -8]);
     rig({ hit: false, die: 5 }); const at = f.cb.log.length; f.tech('mag_dump', { targetId: f.foe.id });
     expect(rolledToHit(f, at, f.pc)).toEqual(pvToHit(pv)); expect(f.pc.dur).toBe(d0 - 1);
     // the revolver's "no growing penalty": a shooter with no Dexterity gets none from Recoil either
@@ -310,7 +310,7 @@ describe('Mag Dump', () => {
     const f = fight('drifter_revolver'); const pv = f.pv('mag_dump', { targetId: f.foe.id });
     expect(pv.attacks.length).toBe(2); expect(pv.attacks.map((a) => a.pv.terms!.find((x) => x.label === 'Mag Dump')?.v ?? 0)).toEqual([0, 0]);
     const g = fight('service_pistol'); g.pc.ammo = 6;
-    expect(g.pv('mag_dump', { targetId: g.foe.id }).attacks.map((a) => a.pv.terms!.find((x) => x.label === 'Mag Dump')?.v ?? 0)).toEqual([0, -1]);
+    expect(g.pv('mag_dump', { targetId: g.foe.id }).attacks.map((a) => a.pv.terms!.find((x) => x.label === 'Mag Dump')?.v ?? 0)).toEqual([0, -4]);
   });
   it('Spread: both barrels, one roll at double damage within 4 tiles (single damage further off)', () => {
     const f = fight('coach_gun', [{ at: 'E5' }]); f.foe.hp = 999; f.foe.maxHp = 999; const pv = f.pv('mag_dump', { targetId: f.foe.id }), shot = f.pv('shot', { targetId: f.foe.id });
@@ -360,13 +360,14 @@ describe('Crossfire', () => {
     expect(g.foe.hitRound?.[g.pc.id]).toBe(g.cb.round); // only the user hit it
     expect(g.tech('crossfire', { targetId: g.foe.id })).toBe('No ally has hit ' + g.foe.name + ' this round.');
   });
-  it('+2 to hit and +1 Pressure on a hit on top of the hit\'s own; 2 AP, 1 round, Heat 1 + 1', () => {
+  it('+2 to hit and +1 Pressure on a hit on top of the hit\'s own; 2 AP (3 with the long rifle: its bolt, rules 1.18), 1 round, Heat 1 + 1', () => {
     const { f } = crossed('long_rifle'); expect(f.pressure(f.foe)).toBe(1);
     let pv!: phys.TechPreview; unchanged(f, () => { pv = f.pv('crossfire', { targetId: f.foe.id }); });
-    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.rounds).toBe(1); expect(term(pv, 0, 'Crossfire')).toBe(2);
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(1); expect(term(pv, 0, 'Crossfire')).toBe(2);
+    expect(crossed('lever_carbine').f.pv('crossfire', { targetId: f.foe.id }).ap).toBe(2);
     expect(pressAfter(pv, f.foe)).toBe(3); expect(pv.pressure![0].onHit).toBe(true);
     rig({ hit: true, die: 12 }); expect(f.tech('crossfire', { targetId: f.foe.id })).toBeNull();
-    expect(f.pressure(f.foe)).toBe(3); expect(f.pc.ap).toBe(4); expect(f.pc.ammo).toBe(4); expect(f.pc.heat).toBe(2);
+    expect(f.pressure(f.foe)).toBe(3); expect(f.pc.ap).toBe(3); expect(f.pc.ammo).toBe(4); expect(f.pc.heat).toBe(2);
   });
   it('a miss gives nothing extra', () => {
     const { f } = crossed('long_rifle'); rig({ hit: false, die: 5 }); f.tech('crossfire', { targetId: f.foe.id }); expect(f.pressure(f.foe)).toBe(1);

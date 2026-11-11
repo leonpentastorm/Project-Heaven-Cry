@@ -69,14 +69,14 @@ describe('Snap Shot', () => {
 });
 
 describe('Burst', () => {
-  it('base: two rolls at one target, the second at −2, three rounds, no Recoil inside the burst', () => {
+  it('base (rules 1.18): two rolls at one target, the second at −4, three rounds, no Recoil inside the burst', () => {
     const f = gunner('ccec_marksman_rifle', ['burst'], undefined, { skills: { dexterity: 0 } }); rig({ hit: false, die: 5 });
     const pv = f.pv('burst', { targetId: f.foe.id });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(3); expect(pv.attacks.length).toBe(2);
-    expect(term(pv, 1, 'Burst')).toBe(-2); expect(term(pv, 1, 'recoil')).toBeUndefined();
+    expect(term(pv, 1, 'Burst')).toBe(-4); expect(term(pv, 1, 'recoil')).toBeUndefined();
     const a0 = f.pc.ammo, h0 = f.pc.heat, at = f.cb.log.length;
     expect(f.tech('burst', { targetId: f.foe.id })).toBeNull();
-    expect(f.pc.ap).toBe(3); expect(f.pc.ammo).toBe(a0 - 3); expect(f.pc.heat).toBe(h0 + 2); // two rolls' Heat, no cooling without Auto
+    expect(f.pc.ap).toBe(3); expect(f.pc.ammo).toBe(a0 - 3); expect(f.pc.heat).toBe(h0 + 2); // two rolls' Heat (Heat is one a roll)
     expect(rolls(f, at)).toEqual(pv.attacks.map((a) => a.pv.toHit));
     expect(f.pressure(f.foe)).toBe(0); // a miss gives none
   });
@@ -85,15 +85,15 @@ describe('Burst', () => {
     f.tech('shot', { targetId: f.foe.id });
     const pv = f.pv('burst', { targetId: f.foe.id }); expect(term(pv, 0, 'recoil')).toBe(-1); expect(term(pv, 1, 'recoil')).toBeUndefined();
   });
-  it('Quick: no −2', () => {
+  it('Quick (rules 1.18): the second roll at −3', () => {
     const f = gunner('service_pistol', ['burst']); const pv = f.pv('burst', { targetId: f.foe.id });
-    expect(pv.attacks.length).toBe(2); expect(term(pv, 1, 'Burst')).toBeUndefined();
+    expect(pv.attacks.length).toBe(2); expect(term(pv, 1, 'Burst')).toBe(-3);
   });
-  it('Auto: today\'s burst (three rolls, each later one −1; the barrel cools 1), offered without knowing it', () => {
+  it('Auto (rules 1.18): the same two rolls (0, −4), three rounds, 2 Heat; offered without knowing it', () => {
     const f = gunner('hellraiser_service_rifle'); rig({ hit: true, die: 12 });
     const pv = f.pv('burst', { targetId: f.foe.id });
-    expect(pv.ok).toBe(true); expect(pv.attacks.length).toBe(3); expect(pv.rounds).toBe(3);
-    expect([term(pv, 0, 'Burst'), term(pv, 1, 'Burst'), term(pv, 2, 'Burst')]).toEqual([undefined, -1, -2]);
+    expect(pv.ok).toBe(true); expect(pv.attacks.length).toBe(2); expect(pv.rounds).toBe(3);
+    expect([term(pv, 0, 'Burst'), term(pv, 1, 'Burst')]).toEqual([undefined, -4]);
     const a0 = f.pc.ammo, h0 = f.pc.heat, fx0 = f.fx('volley').length;
     f.foe.hp = f.unit(f.foe.id).maxHp = 999;
     expect(f.tech('burst', { targetId: f.foe.id })).toBeNull();
@@ -106,7 +106,7 @@ describe('Burst', () => {
     f.foes.forEach((x) => { f.unit(x.id).hp = f.unit(x.id).maxHp = 999; }); // nobody falls (a kill would spill Pressure on the other: the base's damage scales with Agility and Dexterity now)
     const [a, b, c] = f.foes.map((x) => x.id);
     expect(f.pv('burst', { targetIds: [a, c] }).why).toMatch(/next to each other/);
-    const pv = f.pv('burst', { targetIds: [a, b] }); expect(pv.attacks.map((x) => x.target)).toEqual([a, b, b]);
+    const pv = f.pv('burst', { targetIds: [a, b] }); expect(pv.attacks.map((x) => x.target)).toEqual([a, b]);
     expect(f.tech('burst', { targetIds: [a, b] })).toBeNull(); expect(f.pressure(f.foes[0])).toBe(1); expect(f.pressure(f.foes[1])).toBe(1);
     const g = gunner('ccec_marksman_rifle', ['burst'], [{ at: 'H5' }, { at: 'H6' }]);
     expect(g.tech('burst', { targetIds: g.foes.map((x) => x.id) })).toMatch(/Only an automatic weapon/);
@@ -225,7 +225,7 @@ describe('Walking Fire', () => {
   });
   it('Auto: the shot is a Burst for 3 rounds (refused with fewer loaded)', () => {
     const f = fight('hellraiser_service_rifle'); rig({ hit: true, die: 12 }); const a0 = f.pc.ammo, h0 = f.pc.heat;
-    const pv = f.pv('walking_fire', { targetId: f.foe.id, tile: f.tile('C6') }); expect(pv.attacks.length).toBe(3); expect(pv.rounds).toBe(3);
+    const pv = f.pv('walking_fire', { targetId: f.foe.id, tile: f.tile('C6') }); expect(pv.attacks.length).toBe(2); expect(pv.rounds).toBe(3); // rules 1.18: the Burst's two rolls
     expect(f.tech('walking_fire', { targetId: f.foe.id, tile: f.tile('C6') })).toBeNull();
     expect(f.pc.ammo).toBe(a0 - 3); expect(f.pc.heat).toBe(h0 + 2); expect(f.pc.ap).toBe(3);
     const g = fight('hellraiser_service_rifle'); g.unit(g.pc.id).ammo = 2;
@@ -329,7 +329,7 @@ describe('Burst is one attack action (review fixes)', () => {
     const { onHook } = await import('../src/effects/hooks'); const seen: any[] = [];
     onHook('attack_target', (ctx: any) => { if (ctx.att?.side === 'pc') seen.push([ctx.volley, ctx.vi]); });
     const f = gunner('hellraiser_service_rifle'); rig({ hit: false, die: 5 }); seen.length = 0;
-    f.tech('burst', { targetId: f.foe.id }); expect(seen).toEqual([['burst', 0], ['burst', 1], ['burst', 2]]);
+    f.tech('burst', { targetId: f.foe.id }); expect(seen).toEqual([['burst', 0], ['burst', 1]]); // rules 1.18: two rolls
   });
 });
 

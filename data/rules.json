@@ -363,7 +363,7 @@
       "sigil_duration_bonus_rounds": "0.5*brain_power",
       "max_mp": "100 + 100*(virtue-1)",
       "soul_cast_ap": "2 (Begin; Swift 1; rules 1.5)",
-      "free_pumps_per_round": "1 from empathy 3, 2 from empathy 7",
+      "free_pumps_per_round": "1 from empathy 3 (rules 1.19: one free Pump a turn at most; empathy 7: a swell adds no Strain)",
       "soul_cost_pct": "-5*(insight-1)",
       "soul_range_bonus_tiles": "0.5*will_power",
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
@@ -516,7 +516,7 @@
         "id": "burst",
         "ap": 3,
         "rounds": 3,
-        "text": "3 rounds at one target; -1 to hit per round after the first"
+        "text": "3 rounds at one target, two rolls; the second roll at -4 to hit (a Quick weapon -3; a Heavy weapon that is braced -1). Rules 1.18"
       },
       {
         "id": "full_auto",
@@ -1229,13 +1229,13 @@
         "release_ap": 1,
         "stage_mult": [
           0.8,
+          1.0,
           1.2,
-          1.6,
-          2.0,
-          2.4
+          1.4,
+          1.6
         ],
         "swell": "+1 stage and +1 Strain (+2 Flooded) at each of your turn starts while holding",
-        "note": "rules 1.17: x0.8 at stage 0, +0.4 a stage; the Damage base is 28 for a character and 18 for an enemy caster (soul_modules.json damage)"
+        "note": "rules 1.19: x0.8 at stage 0, +0.2 a stage; the Damage base is 36 for a character and 24 for an enemy caster (soul_modules.json damage); one free Pump a turn; each feeling once in an Outburst"
       }
     },
     "prayer": {

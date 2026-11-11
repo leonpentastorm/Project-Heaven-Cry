@@ -2247,7 +2247,7 @@
         "name": "Shape",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "While you hold a Damage Outburst, your first Pump each turn that would cost AP is free. Free Pumps from Empathy are used first.",
+        "text": "While you hold a Damage Outburst, you get your one free Pump a turn even without Empathy 3. And your free Pump each turn, wherever it comes from, adds +0.1 more to the multiplier.",
         "effects": [
           {
             "op": "stat_mod",

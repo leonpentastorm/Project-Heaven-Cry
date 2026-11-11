@@ -418,7 +418,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Melee attack | 2 |
 | Ranged shot, or loose an arrow | 2 |
 | Aimed shot (+2 to hit) | 3 |
-| Burst: 3 rounds at one target, −1 to hit for each round after the first | 3 |
+| Burst: 3 rounds at one target, two rolls, the second at −4 to hit (rules 1.18; it was three rolls, −1 for each round after the first) | 3 |
 | Full auto: a 3-tile cone, 10 rounds, one roll per target at −2 | 4 |
 | Speed reload a magazine (the old one drops into the pile on your tile), or swap an Evoker core | 2 |
 | Tactical reload a magazine (the old one goes back in your pack; rules 1.9) | the reload's cost + 1 (3) |
@@ -569,7 +569,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 
 **Guns.**
 
-- **Heat:** a single shot adds 1, a burst 2, full auto 4. Each 2 Heat is −1 to hit. When Heat reaches the weapon's limit, it jams (2 AP to clear). Heat drops by 2 at the start of each of your turns.
+- **Heat:** a single shot adds 1, a burst 2 (one a roll: rules 1.18), full auto 4. Each 2 Heat is −1 to hit. When Heat reaches the weapon's limit, it jams (2 AP to clear). Heat drops by 2 at the start of each of your turns.
 - **Recoil:** each shot after the first in the same turn is −1 to hit, cumulative, reduced by floor(Dexterity ÷ 2).
 - **Range:** each weapon has an effective range in tiles. Each further band of the same length is −2 to hit, out to two bands.
 - **Modes:** a weapon lists which of single, burst and auto it supports.
@@ -600,12 +600,12 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 |---|---|---|---|---|---|---|---|
 | Service pistol (.32 Decrkm) | Pistol | 20 | 8 | 12 | 6 | single | 1 kg |
 | Drifter revolver | Revolver | 28 | 10 | 6 | 6 | single | 1.5 kg |
-| Decrkm SMG (.32 Decrkm) | SMG | 15 | 8 | 30 | 10 | single, burst, auto | 3 kg |
+| Decrkm SMG (.32 Decrkm) | SMG | 19 (rules 1.18; was 15) | 8 | 30 | 10 | single, burst, auto | 3 kg |
 | Hellraiser service rifle | Rifle | 30 | 16 | 24 | 8 | single, burst, auto | 4 kg |
 | Lever carbine | Rifle | 32 | 14 | 8 | 6 | single | 3.5 kg |
 | Lumeri scattergun | Shotgun | 40 within 4 tiles, 25 within 8 | 8 | 6 | 6 | single | 4 kg |
-| Long rifle | Rifle | 50 | 30 | 5 | 6 | single | 6 kg |
-| .700 Blackpoint anti-materiel | Heavy | 90, ignores 10 armour | 40 | 3 | 3 | single; must be braced or prone | 15 kg |
+| Long rifle | Rifle | 48 (rules 1.18; was 50). A Shot costs 3 AP, an Aimed Shot 4 | 30 | 5 | 6 | single | 6 kg |
+| .700 Blackpoint anti-materiel | Heavy | 68 (rules 1.18; was 90), ignores 10 armour | 40 | 3 | 3 | single; must be braced or prone | 15 kg |
 | Hellraiser LMG | Heavy | 25 | 18 | 100 | 14 | burst, auto; −2 to hit unless emplaced | 10 kg |
 | Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 20 | none | single | 1.5 kg |
 | Crossbow | Bow | 55 | 16 | 1 | none | single | 4 kg |
@@ -725,7 +725,7 @@ Range is in tiles. Mag is the magazine (or "loose", for loading round by round).
 | Type | Dmg | Range | Mag | Heat | Modes | Kg | Price | Mods |
 |---|---|---|---|---|---|---|---|---|
 | ✓ Service pistol (.32 Decrkm) | 20 | 8 | 12 | 6 | single | 1 | 250 | optic, muzzle, magazine |
-| Decrkm auto-pistol | 14 | 6 | 20 | 8 | single, burst | 1.2 | 500 | optic, muzzle, magazine |
+| Decrkm auto-pistol | 17 (rules 1.18; was 14) | 6 | 20 | 8 | single, burst | 1.2 | 500 | optic, muzzle, magazine |
 | Parlour pistol | 16 | 4 | 2 (loose) | 4 | single | 0.4 | 150 | none |
 | ✓ Drifter revolver | 28 | 10 | 6 (speedloader) | 6 | single | 1.5 | 350 | optic |
 | Magistrate heavy pistol (revolver) | 26 | 8 | 7 | 5 | single | 1.4 | 450 | optic, muzzle, magazine |
@@ -744,9 +744,9 @@ Weapon skills and lore:
 | Type | Hands | Dmg | Range | Mag | Heat | Modes | Kg | Price | Mods |
 |---|---|---|---|---|---|---|---|---|---|
 | ✓ Decrkm SMG | 2H | 15 | 8 | 30 | 10 | single, burst, auto | 3 | 600 | optic, muzzle, magazine, underbarrel |
-| Legion PDW | 1H | 16 | 8 | 25 | 9 | burst, auto | 2.2 | 750 | optic, muzzle, magazine |
-| Whisper SMG | 2H | 13 | 7 | 30 | 12 | single, burst, auto | 3.2 | 900 | optic, magazine (built-in suppressor) |
-| Mandestra drum-gun | 2H | 15 | 7 | 70 (drum) | 10 | auto | 4.5 | 1,100 | optic, underbarrel |
+| Legion PDW | 1H | 20 (rules 1.18; was 16) | 8 | 25 | 9 | burst, auto | 2.2 | 750 | optic, muzzle, magazine |
+| Whisper SMG | 2H | 16 (rules 1.18; was 13) | 7 | 30 | 12 | single, burst, auto | 3.2 | 900 | optic, magazine (built-in suppressor) |
+| Mandestra drum-gun | 2H | 19 (rules 1.18; was 15) | 7 | 70 (drum) | 10 | auto | 4.5 | 1,100 | optic, underbarrel |
 
 - **Decrkm SMG · Spray and Pray:** full auto costs 3 AP instead of 4. *"Thirty rounds of opinion."*
 - **Legion PDW · Clear the Room:** bursts get +2 to hit within 3 tiles. *"The Thousand World Legion's door-kicker."*
@@ -759,9 +759,9 @@ Weapon skills and lore:
 |---|---|---|---|---|---|---|---|---|
 | ✓ Hellraiser service rifle | 30 | 16 | 24 | 8 | single, burst, auto | 4 | 900 | all four |
 | ✓ Lever carbine | 32 | 14 | 8 (loose) | 6 | single | 3.5 | 700 | optic, muzzle |
-| Adamantile battle rifle | 38 | 18 | 15 | 6 | single, burst | 5 | 1,300 | all four |
-| CCEC marksman rifle | 40 | 22 | 10 | 6 | single | 4.5 | 1,600 | optic, muzzle, magazine |
-| ✓ Long rifle | 50 | 30 | 5 (loose) | 6 | single | 6 | 1,400 | optic, muzzle |
+| Adamantile battle rifle | 30 (rules 1.18; was 38) | 18 | 15 | 6 | single, burst | 5 | 1,300 | all four |
+| CCEC marksman rifle | 33 (rules 1.18; was 40) | 22 | 10 | 6 | single | 4.5 | 1,600 | optic, muzzle, magazine |
+| ✓ Long rifle | 48 (rules 1.18; was 50); Shot 3 AP, Aimed Shot 4 AP | 30 | 5 (loose) | 6 | single | 6 | 1,400 | optic, muzzle |
 | Legion bullpup | 28 | 14 | 30 | 8 | single, burst, auto | 3.4 | 1,100 | optic, muzzle, magazine |
 
 - **Service rifle · Suppressing Fire:** 3 AP; mark a 3-tile line until your next turn. Enemies shooting from or moving through it are at −2, and the first one to move through it takes a shot from you. *"The Hellraisers' answer to every frontier."*
@@ -778,7 +778,7 @@ Weapon skills and lore:
 | ✓ Lumeri scattergun | 2H | 40 / 25 | 8 | 6 (loose) | 6 | single | 4 | 650 | optic, underbarrel |
 | Coach gun | 2H | 45 / 25 | 6 | 2 (loose) | 4 | single, both barrels | 3.5 | 400 | none |
 | Sawn-off | 1H | 42 / 15 | 6 | 2 (loose) | 4 | single, both barrels | 2 | 300 | none |
-| Brigade auto-shotgun | 2H | 35 / 20 | 8 | 12 | 9 | single, burst | 5 | 1,500 | optic, magazine, underbarrel |
+| Brigade auto-shotgun | 2H | 40 / 24 (rules 1.18; was 35 / 20) | 8 | 12 | 9 | single, burst | 5 | 1,500 | optic, magazine, underbarrel |
 
 - **Scattergun · Door Key:** 2 AP; breaks a door, or deals double damage to cover. *"The Church calls it a key."*
 - **Coach gun · Both Barrels:** 3 AP; both shells in one attack, +50% damage. *"Two arguments, one conclusion."*
@@ -791,7 +791,7 @@ Weapon skills and lore:
 |---|---|---|---|---|---|---|---|
 | ✓ Hellraiser LMG | 25 | 18 | 100 rifle (box) | 14 | 10 | 2,500 | −2 unless emplaced |
 | Hellraiser rotary | 22 | 16 | 200 rifle (belt) | 20 | 18 | 4,500 | auto only; −1 Movement |
-| ✓ .700 Blackpoint | 90, ignores 10 armour | 40 | 3 (.700) | 3 | 15 | 4,000 | braced or prone |
+| ✓ .700 Blackpoint | 68 (rules 1.18; was 90), ignores 10 armour | 40 | 3 (.700) | 3 | 15 | 4,000 | braced or prone |
 | Smetanita thumper (grenade launcher) | 40, radius 2 | 14 | 6 grenades (loose) | 4 | 4.5 | 1,800 | |
 | Breacher tube (rocket launcher) | 110 on the tile, 60 radius 1 | 16 | 1 rocket (loose) | none | 8 | 3,000 | 3 AP to reload |
 | Purifier flamer | 20 + Burning, 3-tile cone | 3 | fuel canister (10 bursts) | none | 12 | 2,200 | flame ignores half cover |
@@ -891,7 +891,7 @@ Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. T
 
 | Type | Hands | Dmg | Range | Feeds on | Kg | Price | Needs |
 |---|---|---|---|---|---|---|---|
-| Science Team core rifle | 2H | 32 Elemental, ignores armour | 16 | a mana core: 1 charge a shot | 5 | 2,600 | Dexterity 3 (rules 1.13; was Proficiency 3) |
+| Science Team core rifle | 2H | 29 (rules 1.18; was 32) Elemental, ignores armour | 16 | a mana core: 1 charge a shot | 5 | 2,600 | Dexterity 3 (rules 1.13; was Proficiency 3) |
 | Spellslinger's pistol | 1H | 22 | 8 | .32 Decrkm, sigil-etched magazines | 1.1 | 1,500 | Brain Power 3 to inscribe |
 | Evoker blade | 1H | 26 | 1 | counts as an Evoker | 1.8 | 2,400 | Brain Power 3 |
 | Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
@@ -1022,7 +1022,7 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 2. **At creation** a character with Raw Power or Dexterity picks 2 melee techniques (one must be an Opener), and one with Dexterity picks 2 ranged techniques. With no picks sent, they are Lunge and Sidestep, and Suppress and Shift. A character made before 1.12 gets those defaults.
 3. **Ready lists.** A character has one ready list per system: 3 + half the attack skill, rounded down (melee: the better of Raw Power and Dexterity; ranged: Dexterity). Only ready techniques can be used. The lists are changed out of a fight.
 4. **A weapon lends its signature.** Each weapon teaches one technique. While you hold the weapon, that technique is usable without knowing it and without a ready slot.
-5. **Auto weapons always offer Burst and Rake,** known or not.
+5. **Auto weapons always offer Burst and Rake,** known or not. *(Rules 1.18: a Burst is two rolls for every weapon.)*
 6. **Drill** is an XP bar per weapon. When an enemy dies, everyone who hit it in that fight gains drill for the weapon they hit it with: minion 5, soldier 10, elite 25, boss 50. A hit alone gives nothing. Defenders, Fighters and Marksmen earn it at ×3.
 7. **Three marks** on each bar, at 300, 900 and 1,800 drill. Mark I teaches the weapon's signature for good: it becomes a technique you can ready with any weapon. Marks II and III each give one pick of any technique of that weapon's system. A weapon with no signature gives a pick at mark I too.
 8. **Off its home.** A technique marked † is particular to a kind of weapon. With a weapon that has none of its home properties it is at −2 to hit and gets no property line.
@@ -1092,7 +1092,7 @@ Guard is a pool of points that takes hits for you. Anyone with Durability has on
 
 #### Enemies
 
-Enemies have both meters and follow every rule above. An enemy has the free techniques, the technique its weapon lends, and the list of its tier (item 950). A minion has no list and keeps to plain attacks. The enemy AI uses a technique where it would have made a plain attack, when the technique is worth more to it; Analyze shows it ("means to use Suppress on …").
+Enemies have both meters and follow every rule above. *(One exception since rules 1.18: an enemy's Burst is still the one of this section, three rolls with an Auto weapon, until the enemy table is fitted again; item 1079.)* An enemy has the free techniques, the technique its weapon lends, and the list of its tier (item 950). A minion has no list and keeps to plain attacks. The enemy AI uses a technique where it would have made a plain attack, when the technique is worth more to it; Analyze shows it ("means to use Suppress on …").
 
 #### The melee techniques (27)
 
@@ -1172,13 +1172,13 @@ A shield (an off-hand item with the **Shield** property: the buckler and the rio
 |---|---|---|---|---|---|
 | 0 | **Shot** (free) | 2 | 1 | One shot. Everyone knows it; it takes no ready slot. | **Precise:** +1 if you haven't moved this turn. **Loud:** a miss gives +1 Pressure. |
 | 1 | **Snap Shot** | 2 | 1 | Draw or swap to this weapon and fire, at −2. | **Quick:** no penalty. **Heavy:** not available. |
-| 2 | **Burst** | 3 | 3 | Two rolls at one target, the second at −2. | **Auto:** three rolls, and it may split between two adjacent targets. **Quick:** no −2. |
+| 2 | **Burst** | 3 | 3 | Two rolls at one target, the second at −4 (rules 1.18; it was −2). | **Auto:** it may split between two adjacent targets (rules 1.18; it was three rolls). **Quick:** the second roll at −3. **Heavy, braced:** the second roll at −1. |
 | 3 | **Aimed Shot** (free) | 3 | 1 | +2 to hit. | **Precise:** +3, and a critical on 18–20 if you haven't moved. **Drawn:** full draw, +25% damage. |
 | 4 | **Called Shot** | 3 | 1 | −2 to hit. Choose leg (Slowed), arm (weapon lowered) or head (Dazed); the target makes a Body save. | **Precise:** no penalty. **Loud or Heavy:** leg is Prone instead. **Spread:** only within 4 tiles. |
-| 5 | **Walking Fire** | 3 | 1 | Move 2 tiles and fire one shot at any point of the move. | **Quick:** 3 tiles, and no opportunity attacks. **Auto:** the shot is a Burst for 3 rounds. **Heavy:** not available. |
+| 5 | **Walking Fire** | 3 | 1 | Move 2 tiles and fire one shot at any point of the move. | **Quick:** 3 tiles, and no opportunity attacks. **Auto:** the shot is a Burst for 3 rounds (the Burst's two rolls, rules 1.18). **Heavy:** not available. |
 | 6 | **Punch Through** | 3 | 1 | Half cover counts −2, not −5, and the cover takes the damage as well. | **Heavy:** the round carries on to the next target in line at half. **Blast or Spread:** half cover is destroyed. |
 | 7 | **Lob** † | 3 | 1 | Fire at a target only an ally can see (through smoke or dark), at −4. | **Arc:** over full cover, at −2. **Blast:** you aim at the tile; no penalty, and everyone in the radius gains +2 Pressure. |
-| 31 | **Heavy Bolt** | 4 | 1 | One bolt at +50% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile. | **Precise:** +2 to hit. **Quick:** 1 AP less. |
+| 31 | **Heavy Bolt** | 4 | 1 | One bolt at +40% damage (rules 1.18; it was +50%) that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile. | **Precise:** +2 to hit. **Quick:** 1 AP less. |
 
 **Press**
 
@@ -1188,7 +1188,7 @@ A shield (an off-hand item with the **Shield** property: the buckler and the rio
 | 9 | **Rake** † | 4 | 6 | Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit. | **Auto:** a full-auto cone for 10 rounds (one roll at −2 against every enemy near the line); +1 Pressure hit or miss. **Spread:** the cone is 1 wider. |
 | 10 | **Warning Shot** | 1 | 1 | No attack. The target makes a Heart save or gains +1 Pressure. | **Loud:** the save is at −2. **Silent:** not available. |
 | 11 | **Flush** | 3 | 1 | Hit the target's cover (no roll; the cover takes the damage). The target gains +2 Pressure. | **Spread or Blast:** double damage to the cover. **Arc:** the cover is ignored and the target takes half damage as well. |
-| 12 | **Mag Dump** † | 4 | all | Empty the weapon at one target: one roll per 3 rounds left (at most 4 rolls), each at −1 more than the last. +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty. **Spread:** both barrels, one roll at double damage within 4 tiles. **Drawn:** not available. |
+| 12 | **Mag Dump** † | 4 | all | Empty the weapon at one target: one roll per 3 rounds left (at most 3 rolls, each at −4 more than the last: rules 1.18; it was 4 rolls, −1 more each). +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty. **Spread:** both barrels, one roll at double damage within 4 tiles. **Drawn:** not available. |
 | 13 | **Crossfire** | 2 | 1 | A shot at a target an ally has already hit this round: +2 to hit and +1 extra Pressure. | **Quick:** step 1 tile first, with no opportunity attack. |
 
 **Sets**
@@ -1693,6 +1693,8 @@ Each element has one identity, used by every spell that carries it. Sigil magic 
 Non-element Subjects keep plain Sigil visuals (cyan, square) with a glyph per kind: Afflictions bind and cage, Boons rise, Workings build or unbuild the ground.
 
 ### Soul magic: Outbursts, the heart (Soul, through an Emanator)
+
+> **Rules revision 1.19 (the Outburst rework, round 2; 11 Nov 2026)** changes numbers and rules in this section: the stage table (+0.2 a stage), the Damage base (36), every feeling's step and several feelings' effects, each feeling once in an Outburst, one free Pump a turn (Empathy 7 and Shape), the schools (they read the stage; the Damage school's ways; Swap; Silenced) and the same school twice (defined, shelved). Where this section and "Rules revision 1.19" disagree, 1.19 stands.
 
 > **Rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; decision 99).** It replaces the 1.2 Soul rules (items 68–76 where they name 1.2 numbers): Begin, Pump and Release with stage multipliers, the swell, Strain that burns and shorts with no roll, calming the heart (no vent), a second school as a half-strength rider, tones (the Sigil 1.4 elements in the Soul style), shapes, and holding as gameplay (the aura, Heart Overwatch, Resonance, Feeding). Sigil magic owns space; Outburst owns time and the body. **Every number is provisional** (items 492–521) until the damage balance pass. The design is in `docs/design/outburst-2.0-proposal.md`; the data in `soul_modules.json` (`cycle`, `strain`, `tones`, shapes as `form` modules, `retired`).
 
@@ -3006,11 +3008,11 @@ A tier under Minion, for swarms: small things that die to one hit at equal level
 
 ### Not in this step
 
-The weapons (the long rifle against the service rifle), the AP prices, Burst, the Calls, defence stacking and XP by level are later steps of the balance pass. The simulator (`packages/engine/test/balance/`) fights enemies of a chosen level and measures this table against the targets (`fit.ts`); every later step runs it again.
+The weapons (the long rifle against the service rifle), the AP prices, Burst, the Calls, defence stacking and XP by level are later steps of the balance pass. *(The long rifle and Burst: rules 1.18.)* The simulator (`packages/engine/test/balance/`) fights enemies of a chosen level and measures this table against the targets (`fit.ts`); every later step runs it again.
 
 ## Rules revision 1.17 (balance pass, the magic step): Sigil the biggest hit, Outburst the steady school
 
-Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md` sections 13 and 14 and its closing ruling); measured and fitted with the simulator (`packages/engine/test/balance/magic-measure.test.ts`); the report is `docs/design/handoffs/damage-step-magic.md`. **Every number here is provisional** (section 14, items 1050 to 1068). The yardstick for every percentage is the plain rifle (service rifle, plain shots, normal share) at the same level on the simulator's shooting range, over the same turns.
+Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md` sections 13 and 14 and its closing ruling); measured and fitted with the simulator (`packages/engine/test/balance/magic-measure.test.ts`); the report is `docs/design/handoffs/damage-step-magic.md`. **Every number here is provisional** (section 14, items 1050 to 1068). **The Outburst part was reworked again in rules 1.19 (the stage table, the base, every feeling): read "Rules revision 1.19" for the numbers that stand.** The yardstick for every percentage is the plain rifle (service rifle, plain shots, normal share) at the same level on the simulator's shooting range, over the same turns.
 
 ### The targets
 
@@ -3103,6 +3105,242 @@ Before this revision the same rows read 61 to 89% (a new caster), 84 to 126% (th
 ### Not in this step
 
 Sigil's AP (the Glyph AP, the walk between glyphs, the core change), the words' own numbers, Bloom's radius, the Strain rules, enemy casters, saves against the level gap, and the classes' own numbers that read the stage table (the shelved Vessel's body forms grow with it: +12, +16, +20 armour for Iron in place of +10, +14, +18).
+
+## Rules revision 1.18 (balance pass, the guns step): the guns' ceiling
+
+Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md`, section 12 answers 1 to 3 and the closing ruling); measured and fitted with the simulator (`packages/engine/test/balance/guns-measure.test.ts`); the report is `docs/design/handoffs/damage-step-guns.md`. **Every number here is provisional** (section 14, items 1069 to 1088). The yardstick for every percentage is the plain rifle (service rifle, standard, plain shots, a normal share of points, no perks) at the same level on the simulator's shooting range, over the same 8 turns. Where this section and an older one disagree (Actions, the weapon tables, Physical techniques), this section wins.
+
+### The targets
+
+1. **An optimised gun deals a bit under 150% of the plain rifle.** Optimised is Leon's definition: the best rotation of techniques, a Masterwork weapon, the build's perks and its class. The aim is 135 to 148% from level 6.
+2. **A gun whose price is its ammunition may reach the full 150%.** That is a gun whose round costs 40 credits or more: the .700 Blackpoint, the thumper, the flamer, the breacher tube (a rifle round costs 2).
+3. **A technique beats the plain Shot for its AP by 10 to 25% when its condition is met; a Burst deals more than the Shot for its AP and is worse to hit** (answers 2 and 3).
+4. **The plain rifle does not move, and neither does what enemies deal** (the enemy table of rules 1.15).
+5. Guns end below a full Sigil Line (150 to 200%, rules 1.17) and level with the biggest Outburst (150%).
+
+### What made 170 to 224%
+
+Measured before this revision, level 6, a normal share, the same build with each gun (Masterwork), the best of four ways to play it:
+
+| What | Worth |
+|---|---|
+| A Masterwork gun (+2 to hit, +10% damage) | ×1.23 to ×1.28 on any gun. **Not changed** (it is the same rule for blades) |
+| A big round at the price of a small one: every gun fired a Shot for 2 AP whatever it dealt | long rifle (50) ×1.7 over the service rifle (30); battle rifle (38) ×1.45; marksman rifle (40) ×1.35; core rifle (32, no armour, no Heat) ×1.2; the .700 Blackpoint ×1.55 |
+| The Burst of an automatic gun: three rolls for 3 AP, where a Shot is one roll for 2 AP | ×1.5 to ×1.8 over plain shots with the same gun (service rifle, bullpup, machine gun), with no skill, perk or class behind it |
+| Mag Dump: four rolls for 4 AP | about the same rate as the old Burst, once a magazine |
+| Heavy Bolt: +50% damage through 10 armour, every turn | crossbow ×1.8 over its plain bolt |
+| Perks | none adds gun damage. Dexterity's perks are reloads, Recoil and reactions |
+| A gun in each hand | at the ceiling (two hand cannons 131 to 152%); the paired attack's rule is **not changed** |
+
+The products: a Masterwork service rifle firing Bursts 200 to 223%; a Masterwork long rifle firing plain Shots 212 to 220%; the bullpup 208 to 221%; the Blackpoint 194 to 203%; the machine gun, braced, 173 to 193%; the battle rifle and the marksman rifle 170 to 179%; the crossbow 140 to 154%; the core rifle 151 to 169%.
+
+### The Burst
+
+1. **A Burst is three rounds and two rolls.** The first roll is a plain one; **the second is at −4 to hit.** It costs 3 AP, burns 3 rounds and adds 2 Heat (one a roll), as before.
+2. **Quick:** the second roll is at −3. **Heavy, while Braced** (or Prone, or Emplaced): the second roll is at −1.
+3. **Auto:** the two rolls may be split between two targets standing next to each other. An Auto weapon still always offers Burst.
+4. It was: two rolls, the second at −2 (Quick: no penalty); with an Auto weapon three rolls, each later one −1 more, and the barrel cooled 1.
+5. **Everything that fires a Burst fires this one:** Walking Fire with an Auto weapon, an Auto weapon's held shot (Overwatch), the paired Burst, the plain burst action.
+6. **Enemies keep the Burst they were fitted with** (rules 1.15): with an Auto weapon three rolls, each later one −1 more, cooling 1; with any other, two rolls, the second at −2 (Quick: none). The enemy table's damage factors were set with that Burst; a Soldier's fire is mostly Bursts, and with the new one the plain rifleman lasts 5 rounds under two Soldiers where the target is 3. When the enemy table is fitted again, enemies take the same Burst as characters (item 1079).
+
+At 65% to hit, a Burst is worth about 1.7 Shots for the AP of 1.5: +13% for its AP. At 75% (a Masterwork gun) +15%; at 45% (a target in cover) +4%.
+
+### Mag Dump and Heavy Bolt
+
+1. **Mag Dump: three rolls at most, each at −4 more than the last** (it was four rolls, each −1 more): the Burst's own step. One roll for every 3 rounds left, as before; the whole magazine goes, 4 AP, Heat to one under the limit. A revolver (Quick and Precise) still has no growing penalty.
+2. **Heavy Bolt: +40% damage** (it was +50%). Still 4 AP, through 10 armour, +2 to hit with a Precise weapon.
+
+### A slow action: the long rifle's bolt
+
+1. **The long rifle is worked by hand between rounds.** Its **Shot costs 3 AP** and its **Aimed Shot 4 AP**. Every other technique that fires a round with it costs 1 AP more than its card (Called Shot 4, Dead Centre 4, Stopping Shot 3, Overwatch 3). Sets (Bead, Brace, Vent) cost what they cost.
+2. A weapon carries this as `cycle_ap` (weapons.json). Only the long rifle has it. The crossbow keeps its own rule (item 955).
+3. The long rifle's damage is **48** (it was 50). Two Shots a turn, the biggest single hit of any rifle: 1.6 times a service rifle's round.
+
+### Weapon numbers
+
+| Gun | Was | Now | Why |
+|---|---|---|---|
+| Long rifle | 50, Shot 2 AP | **48, Shot 3 AP, Aimed Shot 4 AP** | the slow big shot |
+| Adamantile battle rifle | 38 | **30** | it ignores 5 armour, which is worth 5 a hit |
+| CCEC marksman rifle | 40 | **33** | a 2 AP rifle |
+| Science Team core rifle | 32 | **29** | Elemental, ignores armour, no Heat |
+| .700 Blackpoint | 90 | **68** | the special-ammunition class, at 150% |
+| Frontier hand cannon | 40 | **38** | one in each hand measured 152% at level 20 |
+| Decrkm SMG | 15 | **19** | its Burst lost a roll |
+| Legion PDW | 16 | **20** | the same |
+| Whisper SMG | 13 | **16** | the same |
+| Mandestra drum gun | 15 | **19** | the same |
+| Decrkm auto-pistol | 14 | **17** | the same |
+| Brigade auto-shotgun | 35 within 4 tiles, 20 within 8 | **40, 24** | the same |
+
+No rifle that fires a Shot for 2 AP deals more than 33. No automatic sidearm out-hits the service pistol (20) with a plain shot. Not changed: the service rifle (30), the lever carbine (32), the bullpup (28), the machine gun (25), the rotary (22), every pistol, revolver, shotgun, bow, launcher and thrown weapon.
+
+### Not changed, on purpose
+
+1. **Masterwork** (+2 to hit, +10% damage): it is the largest single piece of the ceiling and the same rule for blades.
+2. **Fire Discipline** (one Burst a turn for 2 AP), **Speed Loader**, **Dead Centre** (+50%, a Pressed target, one Take a turn): with a two-roll Burst they add up to what the target allows.
+3. **Heat and jams.** Clearing a jam still sets Heat to 0 for 2 AP.
+4. **Melee.** The optimised blade measures 112 to 126% of the plain rifle (target: 150%).
+5. **Special rounds** (armour-piercing, hollow-point, incendiary, Enhanced): not measured in this step.
+
+### Measured
+
+On the range, a normal share, a Masterwork gun, the best of four ways to play it (24 fights a cell; the full tables, all in included, are in the report):
+
+| | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|---|---|
+| Before: the best gun | 204% | 212% | 217% | 213% | 212% | 221% |
+| **Now: the best gun** | **145%** | **146%** | **146%** | **143%** | **146%** | **144%** |
+| Now: the service rifle (Bursts, Mag Dump, Dead Centre) | 129% | 142% | 140% | 139% | 140% | 141% |
+| Now: the long rifle (plain Shots) | 145% | 134% | 140% | 141% | 138% | 137% |
+| Now: the battle rifle | 142% | 140% | 140% | 143% | 140% | 140% |
+| Now: the bullpup (Bursts) | 125% | 125% | 141% | 134% | 135% | 134% |
+| Before: the .700 Blackpoint | 180% | 179% | 191% | 187% | 196% | 189% |
+| **Now: the .700 Blackpoint** (special ammunition, allowed 150%) | 136% | 136% | 145% | 142% | 148% | 143% |
+
+The plain rifle is where it was (71.6 / 79.1 / 90.5 / 101.4 / 110.6 / 117.7 damage a turn at the six levels: nothing it uses changed). What enemies deal is where it was: on the ground the rules 1.15 fit was measured on, the plain rifleman lasts 3.37 / 2.97 / 3.13 / 3.03 / 3.17 / 2.97 rounds under two Soldiers before and after, to the last point.
+
+## Rules revision 1.19 (the Outburst rework, round 2): feelings that are worth pouring, schools with something inside
+
+Ruled by Leon on 11 Nov 2026, after rules 1.17: *"reconsider some effect of emotion, does it does something the outburst school already did or not, effect like relief is busted and make rage rage rage relief the go to. Cant miss too, busted. Normal pump need to go down so the number dif from the emotion feel worth and impactful. Some busted effect need to lower multipier instead of increase to broaden the design space. Also consider is 1 AP for pumps the right balance. A full 10 soul character also start with like 3 free pumb, making moving and a lvl4 OB always a thing even before overdraw. Consider this again because swell barely matter with these char. Ob school is also weak, too litte effect to choose each scholl making it dmg or heal and thats it. I also like to see 2 same school stack on each other to be a advance class feature so ready for it."* Sigil is not touched by this revision. **Every number here is provisional** (section 14, items 1100 to 1121). The report, with every measurement, is `docs/design/handoffs/outburst-rework-2.md`. The targets stand: steady play about 125% of the plain rifle, the biggest Release about 150% (rules 1.17).
+
+This revision replaces, in rules 1.5, 1.8 and 1.17: the stage table, the Damage base, the Step and "What it does" of every feeling, Empathy's free Pumps, Shape (Channeler I), and the rule that a feeling stacks with itself. Everything else in those sections stands.
+
+### 1. A plain Pump is +0.2
+
+1. **The stage table** is ×0.8 at stage 0 and **+0.2 for every stage: ×0.8, ×1.0, ×1.2, ×1.4, ×1.6.** (Rules 1.17: +0.4 a stage, to ×2.4.) A snap cast stays ×0.8.
+2. **The Damage school's base is 36** for a character (28 in rules 1.17). An enemy caster's is **24** (18), so its Outbursts deal about what the enemy table was fitted with: stage 0: 19 (was 14), stage 1: 24 (22), stage 2: 29 (29), stage 3: 34 (36), stage 4: 38 (43), before its Soul multiplier.
+3. A feeling poured into a Pump has **its own step in place of the plain +0.2**. The Release's multiplier is the table's, plus (step − 0.2) for each feeling Pump. Stages from the swell, Feeding, Overdraw and Heart Surge are plain.
+4. Heart Surge past stage 4 reads one more step of the table: ×1.8 (×2.8 in rules 1.17). The Buff school's heal reads the table as before (30 × the multiplier; its base is not raised): at stage 1 it heals 30, what it healed before rules 1.17 (36 in rules 1.17); at stage 4 with plain Pumps 48 (72), and with Rage and three +0.3 feelings 66 (81). Rules 1.17 had raised healing 9 to 20% as a side effect of its table; this gives that back (item 1104).
+
+### 2. Each feeling goes into an Outburst once
+
+A feeling you have poured into the Outburst you are holding can't be poured into it again. (Rules 1.8 let a feeling stack with itself, "Rage, Rage, Rage"; rules 1.17 took that from Abandon only.) An Outburst holds at most four different feelings. A plain Pump is never refused.
+
+### 3. The 25 feelings
+
+One rule for the price: a feeling that **buys the multiplier** pays for it, at **1 Strain or 8 HP for +0.3 above a plain Pump**. A feeling that **changes what the Release does** steps **+0.3**. A feeling whose effect is **strong** steps **+0.2, +0 or below 0: the multiplier going down is its price.** No feeling does what a school, a module or an element already does, except the four where the table says why.
+
+| # | Feeling | Step in rules 1.17 | Step now | It costs | What it does when poured in | What it overlapped, and what was done |
+|---|---|---|---|---|---|---|
+| 1 | Rage | +0.7 | **+0.5** | 1 Strain at the Pump | nothing else: it buys the multiplier | nothing. Two and a half times a plain Pump (it was 1.75 times) |
+| 2 | Grief | +0.4 | **+0.2; +0.5 once an ally has gone Down or died in this fight** | none | nothing else: it reads the fight | it Slowed (2 rounds, Body save): that is Control's Slowed and Frost's stage 1. **New job:** the feeling of a fight going wrong |
+| 3 | Fear | +0.4 | **+0.3** | none | the Release throws **you** 2 tiles back, away from where you aimed it; forced movement, so nobody reacts to it | it pushed 1 and Shook: Control's push, Gale's push, Status' Shaken. **New job:** the only thing in Soul magic that moves the caster |
+| 4 | Love | +0.4 | **+0.3** | none | as in rules 1.17: allies in the shape are spared and healed for ×0.35 of the Release; with none in it, the most wounded ally in reach, or you, heals ×0.2 of it | the Buff school heals. **Kept on purpose:** it is the only way a harmful shape spares your friends, and its heal is a share of the damage, well under a Buff heal |
+| 5 | Joy | +0.4 | **+0.3** | none | a Bolt or Lance is a critical on a roll of **18, 19 or 20** that hits. On a Wave, Burst or Aura (no roll) it only adds its +0.3 | it chained to one more enemy at half: Storm's stage 2 and the Split module. **New job:** the gamble, Calm's opposite |
+| 6 | Calm | +0.4, and the whole Release ×0.75 | **−0.4** | the multiplier | a Bolt or Lance **rolls twice and keeps the better roll**; it can't be a critical. On a Wave, Burst or Aura it only costs you | it could not miss and ignored cover: the At Once module and Homing. **Narrowed and priced:** set against a plain Pump in a Release of Rage and two +0.3 feelings, it loses 4% at a 65% chance to hit and 18% at 85%, and wins 7% at 50% and 14% at 40%. It pays against cover, a higher level or a high Defense, and nowhere else |
+| 7 | Spite | +0.4; +0.6 | **+0.2; +0.5 against whoever last hurt you** | none | nothing else | nothing |
+| 8 | Shame | +0.7 | **+0.5** | 8 HP to you at the Release (true damage) | nothing else: it buys the multiplier with HP | nothing |
+| 9 | Pride | +0.4; +0.5 at stage 4 | **+0.6** | **2 Strain after the Release, unless it took somebody down** | nothing else: the finisher's feeling | nothing. It was a plain Pump with +0.1 at stage 4 |
+| 10 | Despair | +0.4, to +0.8 | **+0.2, +0.1 more per 20% of your HP missing, to +0.6** | none | nothing else | nothing |
+| 11 | Hope | +0.4 | **+0.3** | none | you and each ally in the shape **shake off one harmful condition**, the newest first | it gave +2 to the next roll: the Buff school's Inspired. **New job:** the only cleanse in Soul magic |
+| 12 | Mercy | +0.4 | **+0.3** | none | unchanged: it Downs instead of killing; a target hit at a quarter HP or less surrenders unless it passes a Heart save | nothing |
+| 13 | Cruelty | +0.4 | **+0.2** | none | unchanged: targets hit Bleed (no save), spreading to one enemy next to each | the elements' damage over time (Burning, Corroded). **Kept on purpose:** it is the only wound a Raw Outburst leaves. The Bleed is damage on top, so it steps as a plain Pump |
+| 14 | Loneliness | +0.4; +0.5 | **+0.2; +0.4 with no ally within 3 tiles** | none | nothing else | nothing |
+| 15 | Belonging | +0.4, to +0.7 | **+0.2, +0.1 more per ally within 3 tiles, to +0.5** | none | this Release counts twice for your allies' Resonance this round | nothing |
+| 16 | Dread | +0.4 | **+0.3** | none | unchanged: targets hit lose their reactions this round and any held shot | nothing |
+| 17 | Awe | +0.4 | **+0** | the step | unchanged: targets hit have 1 AP less on their next turn (no save) | nothing. **Strong:** AP off every target hit, with no save |
+| 18 | Longing | +0.4 | **+0.3** | none | the Release reaches 2 tiles further. It no longer pulls | its pull was the Lure module's and Control's. Its reach is the Move module's, **kept on purpose:** Move takes a slot in the design for good, Longing is one Release |
+| 19 | Relief | +0.2 | **−0.2** | the multiplier | takes **2 Strain** off you at the Release | the Quiet module halves a hold's Strain. **Kept on purpose:** Quiet is a standing trade built into a design; Relief is a choice in the moment. Abandon and Relief together are worth two +0.3 feelings and no Strain: no free lunch |
+| 20 | Contempt | +0.4 | **+0.3** | none | unchanged: targets hit have −2 to attack you for 2 rounds (Scorned; no save) | nothing |
+| 21 | Guilt | +0.4, and 5 HP | **+0.3** | none | targets hit are **Taunted** unless they pass a Heart save: their next attack must be at you | it healed an ally (10 × the stage): the Buff school and Love. **New job:** drawing fire, Contempt's opposite |
+| 22 | Jealousy | +0.4 | **+0.3** | none | unchanged: steals one helpful condition, or the shield, from the first enemy hit | nothing |
+| 23 | Wonder | +0.4 | **+0.3** | none | unchanged: reveals Hidden creatures, traps and hazards in its area | nothing |
+| 24 | Defiance | +0.4 | **+0.2** | none | everything this Release makes a target save against is **4 harder to resist** (its conditions, pushes and element effects); your own next save passes | nothing. **Strong:** it was "no save at all", which on a Control or Status design is a certain Pinned or Afraid every Release |
+| 25 | Abandon | +1.0 | **+0.8** | 2 Strain at the Pump | nothing else: the biggest step there is | nothing |
+
+Triggers and residue are unchanged (rules 1.8). Calm's, Relief's and Awe's Pumps still add a stage: the stage counts for the element's rider, the schools (item 6 below) and practice.
+
+**No fixed four.** With the costs counted, the four best feelings are not the same from one moment to the next (the engine's own preview, level 6, a 65% chance to hit; `outburst-measure.test.ts`):
+
+| The moment | The strongest four that cost nothing | The strongest four a heart can pour every turn (1 Strain) | The biggest hit, whatever it costs |
+|---|---|---|---|
+| alone, unhurt | Loneliness and any three of the +0.3 feelings | Rage, Loneliness and any two of the +0.3 feelings | Rage, Shame, Pride, Abandon: ×3.2 for 5 Strain and 8 HP |
+| two allies within 3 tiles | Belonging and any three | Rage, Belonging and any two | the same four |
+| alone, at 40% HP, aiming at whoever last hurt you | Spite, Despair, Loneliness and any one | Rage, Spite, Despair, Loneliness | Rage, Spite or Despair, Pride, Abandon |
+| in a squad with an ally Down | Grief and any three | Rage, Grief and any two | Rage, Grief, Pride, Abandon |
+
+The eleven +0.3 feelings are equal on the multiplier, so those places are filled for what the feelings do. In rules 1.17 the same table read "Rage, Rage, Calm, Abandon" in every row, and Calm was in every one of the six best sets.
+
+### 4. A Pump costs 1 AP
+
+Unchanged. Three other prices were measured on the same ground and not adopted: 2 AP for every paid Pump after the second in a turn; 2 AP a Pump; a feeling Pump 1 AP more than a plain one. With the free Pumps capped (item 5) and each feeling in once, a Release at stage 4 with four feelings already costs the whole turn (Begin 2, one free Pump, three paid, Release 1). The dearer prices put the new caster under the rifle and left the high-level caster where it was. Numbers in the report, section 4. The two dearer prices that could be told apart are kept as switches in the data, off (`cycle.pump_ap_after_second`, `cycle.feeling_pump_ap_extra`).
+
+### 5. One free Pump a turn
+
+What gave a Soul 10 character stages for nothing, as it stood:
+
+| Source | It gave |
+|---|---|
+| The fight's first Pump (rules 1.8) | 1 stage, once a fight |
+| Empathy 3 | 1 free Pump every round |
+| Empathy 7 | a second free Pump every round |
+| Shape (Channeler rank I) | the first Pump of a turn that would cost AP, free, on a Damage design, on top of Empathy's |
+| Overdraw (Will Power 3) | a second stage on one Pump a turn: free of Strain the first time in a fight, 1 Strain after |
+| Heart Overload (perk; tier II) | a free Begin (2 AP) after a Release at stage 2 or higher, once a turn; at tier II it held at stage 1 |
+| Heart Surge (Channeler rank III) | the Release counted a stage higher, for the Begin's Strain again |
+| The Twin Pays (Will Power Mastered) | once a fight a Begin for no AP, MP or Strain (no stage) |
+| Shelved, when they return: Feed a feeling and Overflow (Heartfed), Love Made Manifest (Devoted) | free Pumps and a Begin at stage 2 or 4 |
+
+A Channeler with Empathy 7 and Will Power 3 reached stage 4 for the Begin and the Release alone (3 AP: two Empathy Pumps, Shape's, and Overdraw on one of them), every turn, with 3 AP to move.
+
+1. **A character takes one free stage a turn at most**, whatever gives it: the fight's first Pump, Empathy's, Shape's, a fed Pump, Heart Overload II's stage 1. A second one in the same turn costs its AP. Enemy casters keep their own free Pumps (their table was fitted with them).
+2. **Empathy 3** still gives a free Pump every round. **Empathy 7** no longer gives a second: from Empathy 7 **a held Outburst swells without Strain**. (Idle holding is then −1 Strain a turn, still less than a turn of stillness: −2.)
+3. **Shape (Channeler I)** no longer adds a free Pump to Empathy's. On a Damage design you have the turn's free Pump **even without Empathy 3**, and the turn's free Pump, wherever it comes from, **steps +0.1 more**.
+4. **Heart Overload II**'s free Begin holds at stage 1 only if the turn's free stage has not been taken; otherwise at stage 0.
+5. **Not changed:** Overdraw (its second stage is a plain one, worth +0.2 now, and has its own price), Heart Surge, Heart Overload's free Begin, The Twin Pays, Feeding.
+
+A full stage 4 inside one turn now costs the whole turn; with 2 AP kept for moving a caster Releases at stage 2, or holds, and the swell gives the third stage next turn.
+
+### 6. The schools
+
+Before this revision a Pump changed nothing in a Control or Status design, or in a Buff design that Inspires or Guards: only damage and healing read the stage. And the Damage school had nothing to choose.
+
+1. **Every school reads the stage.** For Control, Status and the Buff school's Inspired and Guarded: **the target's save is 1 harder for every 2 stages** (stage 2: +1, stage 4: +2); **from stage 3 a condition lasts 1 round longer**; **a push or pull is 1 tile longer from stage 2 and 2 tiles longer at stage 4**; **Inspired and Guarded last 3 rounds from stage 2 and 4 rounds at stage 4**. Damage and the Buff heal read the multiplier, as before.
+2. **What each school is for, and what is inside it** (one way a design; the second school has its own):
+
+| School | It is | Ways (new in bold) |
+|---|---|---|
+| Damage | the school that ends a fight | **Strike**: the full damage (what the school was). **Finish**: ×0.8, or ×1.4 against a target at half its HP or less. **Brand**: ×0.8, and a target it hits is Marked (your side has +1 to hit it; it can't hide). **Drain**: ×0.8, and you heal for a quarter of the HP it takes |
+| Buff | the school that keeps your side standing | Heal 30 × the multiplier; Inspired (+2 to hit); Guarded (+2 Defense). The two boons now grow with the stage |
+| Control | the school that moves the fight | Push 3; Pull 3; Pinned; Slowed; **Swap**: you and the first creature a Bolt reaches trade places (Body save; an ally doesn't resist). All of them now grow with the stage |
+| Status | the school that gets inside their heads | Afraid; Shaken; Confused; Left Brain Debuff; Right Brain Debuff; **Silenced** (1 round). All of them now grow with the stage |
+
+3. A design with the Inverse module (a shield) has no way to strike. A second school's way rides at half strength like the rest of it (Drain's heal too).
+4. All of it is the engine's: the preview shows the way's number on each target, the harder save and the longer push.
+
+### 7. The same school twice in one design (defined; not open)
+
+It will come with an advanced class. **Nobody can build one now:** the workshop, the Beloved and twin designs and the Proving Ground refuse it. The engine and the data carry such a design, so the class only has to open the door (`soul_modules.json` `second_school.same_school.shelved`).
+
+1. It takes the second school's place: Will Power 5, +10 MP, and no other second school in that design.
+2. The second copy has its own way. **A different way** rides at half strength, like any second school (Strike, then Drain at half; Push, then Pinned for half the rounds).
+3. **The same way twice deepens it:** half again the damage or the healing; half again the push or pull (rounded down, at least 1 tile more); half again the rounds of a condition, on one save.
+
+### 8. Measured
+
+Percent of the plain rifle over the same turns (normal share; 12 fights of 8 turns a cell; the yardstick of rules 1.17: 72.6 / 84.5 / 97.6 / 107.9 / 105.4 / 120.1 damage a turn at levels 1, 3, 6, 9, 12, 20). Before is rules 1.17, measured again with the same tool.
+
+| Pattern | | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|---|---|---|
+| Steady play, a new caster (Rage and Love) | before | 94% | 115% | 115% | 109% | 140% | 129% |
+| | **now** | **96%** | **113%** | **110%** | **102%** | **138%** | **119%** |
+| Steady play, a seasoned caster (the eight early feelings) | before | 105% | 127% | 126% | 129% | 156% | 155% |
+| | **now** | **120%** | **126%** | **126%** | **109%** | **154%** | **129%** |
+| Steady play, all 25 feelings | before | 115% | 139% | 137% | 140% | 170% | 167% |
+| | **now** | **118%** | **122%** | **133%** | **129%** | **147%** | **156%** |
+| The biggest Release | before | 93% over two turns | 117% over two turns | 148% | 145% | 169% | 158% |
+| | **now** (over two turns at every level) | **72%** | **99%** | **138%** | **145%** | **165%** | **155%** |
+| Stage 4 with plain Pumps only | before | 83% | 87% | 99% | 107% | 149% | 181% |
+| | **now** | **71%** | **79%** | **79%** | **77%** | **97%** | **110%** |
+| AP of one steady Release (the seasoned caster) | before | 5.7 | 5.5 | 4.9 | 4.4 | 4.4 | 4.1 |
+| | **now** | **5.5** | **5.5** | **5.8** | **5.6** | **5.6** | **5.8** |
+
+The Soul 10 caster all in (Will Power 10 from level 9; against the normal-share rifle, and against its own share's rifle in brackets): steady play with the early feelings 155% (118%), 179% (153%), 140% (137%) at levels 9, 12 and 20, where rules 1.17 gave 144%, 158%, 160%; one steady Release costs it 6.6, 5.8 and 5.8 AP (6.7, 5.9, 3.5). The numbers move about 10% either way between runs of 12 fights (level 9 against level 12 above); the biggest Release is one roll that lands 65% of the time, and 120 fights still leave it about 7% either way.
+
+### Not in this step
+
+The Strain rules and the limit, Overdraw, Heart Overload's free Begin, Resonance, the modules (Bloom, Split and Swift are still flagged: item 1063), the shapes and the elements, enemy casters' own numbers, the residue each feeling leaves (Grief's residue still Slows, Fear's still Shakes: they are what the feeling leaves on the ground, not what it does to the Release), and art (no glyph changes its meaning; the six new ways have no icons and need none on today's screens).
 
 ## Maps (rules 1.16)
 
@@ -5677,3 +5915,45 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1066. **How the magic targets are measured (rules 1.17):** on the range (item 1046's ground, a Soldier's numbers at the caster's level, 5,000 HP, it never acts), 8 turns, 12 fights a cell; a pattern's percent is its spell damage a turn against the plain rifle's (the sidearm's shots are left out). The Sigil caster draws its Line across the way to the target and Evokes from beside it, changes cores and vents as it must; the Outburst caster pours the feeling worth most that its Strain can pay for, carries the Outburst over the turn for the swell when the Strain allows, and uses Overdraw and Heart Overload. "The early feelings" are an assumption. Neither caster is shot at.
 1067. **Not built in this step (rules 1.17):** the browser suites were not run (they need a build); `feelings40` was updated for Rage's new step by reading it, not by running it.
 1068. **Enemy casters and the Line guard (rules 1.17):** the guard, the Line multiplier and the base of 28 are for characters. An enemy Mage's or Channeler's numbers are a later step (item 1024).
+1069. **The guns' ceiling (rules 1.18):** an optimised gun (the best rotation, a Masterwork weapon, perks, class; a normal share) at a bit under 150% of the plain rifle, aim 135 to 148% from level 6. Leon's ruling is the target; every number that reaches it below is fitted, not ruled. Measured: the best gun, the best way, 145 / 146 / 146 / 143 / 146 / 144% at levels 1, 3, 6, 9, 12 and 20 (204 to 221% before).
+1070. **A Burst is two rolls, the second at −4 (rules 1.18).** Three rounds, 3 AP, 2 Heat. Fitted: at 65% to hit it is worth +13% for its AP over the Shot, at 75% +15%, at 45% +4% (the ruling: 10 to 25% more for its AP, and worse to hit). It was three rolls with an Auto weapon (+85% for its AP).
+1071. **Burst, Quick −3 and Heavy braced −1 (rules 1.18):** a Quick weapon's second roll is at −3; a Heavy weapon's, while Braced, Prone or Emplaced, at −1. Both apply by the weapon's property, not by a choice of line (an SMG is Quick and Auto: it splits and has the −3).
+1072. **Mag Dump: three rolls at most, each −4 more (rules 1.18).** It was four rolls, each −1 more: four rolls for 4 AP, twice the Shot's rate. Its Pressure (a roll for an Auto weapon, a hit for others) is one less at the top.
+1073. **The long rifle's bolt (rules 1.18):** `cycle_ap` 1: Shot 3 AP, Aimed Shot 4 AP, +1 AP on every technique that fires a round. Damage 48 (was 50). A Shot was 2 AP, which made a 50-damage round cost what a 30-damage round costs. Only the long rifle has a bolt; the Blackpoint, the marksman rifle and the lever carbine do not.
+1074. **Rifle and hand cannon damage (rules 1.18):** battle rifle 30 (was 38), marksman rifle 33 (was 40), core rifle 29 (was 32), Frontier hand cannon 38 (was 40). Set so each rifle's best rotation lands inside the ceiling; the three are told apart by what they do (5 armour ignored and a two-roll Burst; range 22 and criticals on an Aimed Shot; Elemental damage past armour with no Heat), not by damage.
+1075. **The special-ammunition class (rules 1.18):** a gun whose round costs 40 credits or more may reach 150% (Leon: "ludicrously expensive ammunition"). The line at 40 credits is this revision's reading, not Leon's number. The .700 Blackpoint deals 68 (was 90): 136 to 148% (180 to 196% before).
+1076. **Heavy Bolt +40% (rules 1.18)** (was +50%): the crossbow fired it every turn for 140 to 154%. It measures 111 to 135% now.
+1077. **The automatic guns whose Burst lost a roll (rules 1.18):** SMG 19 (was 15), PDW 20 (16), whisper SMG 16 (13), drum gun 19 (15), auto-pistol 17 (14), auto-shotgun 40 and 24 (35 and 20). Set so their Burst rotation stays about where it was (60 to 100% of the plain rifle): they were under the ceiling before and are not meant to pay for it. Their plain shots are stronger by the same amount; none passes the service pistol's 20. An enemy carrying one deals more with a plain shot (a Minion with an SMG: 19, a service pistol: 20).
+1078. **Guns still weak (rules 1.18, not changed):** pistols 40 to 95%, SMGs 55 to 85%, shotguns 30 to 100% (the range starts 13 tiles away: they walk first), bows 75 to 100%, the thumper 50%, the flamer 50%. A floor for the weak families is a later step.
+1079. **Enemies keep the old Burst (rules 1.18):** three rolls with an Auto weapon, each later one −1 more, cooling 1; two rolls at 0 and −2 with any other. Measured with the new Burst for enemies: a Soldier's damage a turn falls 30 to 37%, and the plain rifleman lasts 4.9 to 5.3 rounds under two Soldiers (target 3; 3.0 to 3.4 with the old Burst). With the old Burst kept, what enemies deal is the same to the last point at all six levels. To settle when the enemy table is fitted again: enemies take the characters' Burst and the Soldier's, Elite's and Boss's damage factors rise to hold the 3 rounds.
+1080. **Fire Discipline, Speed Loader, Dead Centre, Masterwork and the jam clear are not changed (rules 1.18).** Masterwork alone is ×1.23 to ×1.28 on a gun; a jam clear takes Heat to 0 for 2 AP, which makes Heat a small price for sustained Bursts.
+1081. **Targets not met (rules 1.18):** with a normal share, none (143 to 146% at every level). All in, against the normal-share rifle: 228 / 223 / 214 / 187 / 175 / 148% at levels 1 to 20 (331 / 329 / 311 / 284 / 249 / 217% before), because the all-in plain rifle is itself 167 / 158 / 146 / 131 / 110 / 100% of the normal one; against the all-in plain rifle the optimised gun is 137 to 159%. Whether an all-in build may pass the ceiling is the creation budget's question, not a weapon's. A Burst at a target in cover is worth +4% for its AP (the ruling: 10 to 25%).
+1082. **The rocket class on one target (rules 1.18):** the breacher tube measures about 25% of the plain rifle on the range (one rocket, a 3 AP reload, the carry limit leaves it one or two rockets). Its worth is its blast, which the range does not measure. Not changed.
+1083. **How the guns are measured (rules 1.18):** the optimised gun build (Marksman, a normal share or all in, its perks, drill marks by level) with each gun, Masterwork, on the range (a Soldier's numbers at the character's level, 5,000 HP, it never acts), 8 turns, 24 fights a cell, played four ways: plain shots only; the simulator's optimised policy; "the gunner" (Brace and Bead once, the best damage for its AP, paired shots and paired techniques with a gun in each hand, a spare AP to Vent) without Mag Dump; the gunner with it. A gun's number is the best of the four. Not played: special rounds, Overwatch, Killzone, cover, more than one target (a split Burst, Rake, a blast).
+1084. **A gun in each hand (rules 1.18, measured, not changed):** two hand cannons 123 to 144% (131 to 152% before the hand cannon went from 40 to 38 damage); two revolvers, magistrate pistols, PDWs and service pistols 80 to 122% before the revision. The off hand was a standard gun and the main hand a Masterwork.
+1085. **Melee (rules 1.18, measured, not changed):** the optimised blade (Masterwork greatsword, Fighter) 112 / 115 / 114 / 112 / 126 / 118% at levels 1 to 20 (109 to 142% when it holds its Finisher for full Momentum; 122 to 160% all in) of the plain rifle on the range; it walks for most of the first turn. Under 150% at every level.
+1086. **The simulator's ground and the enemy table (found in this step):** since the fights moved to the 26 × 26 ground (the sides 13 tiles apart), an enemy never fires at a character who stands still and shoots: in the fit's "under fire" rows the plain rifleman lasts all 10 rounds at every level (3.0 to 3.4 in rules 1.15). On the old 16 × 11 ground the rules 1.15 numbers come back exactly. The table is not wrong; the measure is. This step measured enemies on the old ground. Open: why an enemy that sees nobody at 13 tiles does not close in, and whether the game's own fights have the same gap.
+1087. **Not built or run in this step (rules 1.18):** the browser suites; `apps/web/src/game/protodata.json` (screen data generated from the data pack) was not regenerated.
+1088. **Fire Discipline's 2 AP Burst with the two-roll Burst (rules 1.18):** it is now worth about 1 AP a turn (a Burst, a Burst and a spare AP; or a Burst and two Shots). Kept. If guns have to come down further, this is the next thing to change.
+1100. **A plain Pump is +0.2 (rules 1.19):** the stage table is ×0.8, ×1.0, ×1.2, ×1.4, ×1.6 (rules 1.17: +0.4 a stage). It replaces item 1054. PROVISIONAL.
+1101. **The Damage base (rules 1.19):** 36 for a character (28), 24 for an enemy caster (18). It replaces item 1056's numbers. Fitted on the range: steady play with the early feelings 109 to 154% of the plain rifle (126% at levels 3 and 6). PROVISIONAL.
+1102. **Each feeling goes into an Outburst once (rules 1.19):** it replaces "feelings stack with themselves" (rules 1.8) and item 1060 (Abandon once). The other way to stop "Rage, Rage, Rage, Relief" was a smaller step each time; once is simpler to read on the Pump button. PROVISIONAL (Leon to confirm).
+1103. **The price of a feeling (rules 1.19):** 1 Strain or 8 HP buys +0.3 above a plain Pump (the rate of item 1057, on the new table); a feeling that changes the Release steps +0.3; a strong one +0.2, +0 or below 0. PROVISIONAL.
+1104. **The Buff heal's base stays 30 (rules 1.19):** with the flatter table a heal at stage 4 on plain Pumps is 48 (72 in rules 1.17), with Rage and three +0.3 feelings 66 (81); at stage 1 it is 30 (36). Not raised: healing was not a target. PROVISIONAL.
+1105. **The feelings that buy the multiplier (rules 1.19):** Rage +0.5 for 1 Strain; Shame +0.5 for 8 HP; Abandon +0.8 for 2 Strain; Pride +0.6 for 2 Strain after a Release that takes nobody down (dead, Down or surrendered among those it hit; none on a wild Release). PROVISIONAL.
+1106. **The feelings that read the moment (rules 1.19):** Grief +0.5 once an ally has gone Down or died in this fight (companions count; else +0.2); Spite +0.5 against whoever last hurt you (else +0.2); Despair +0.2 and +0.1 per 20% of max HP missing, to +0.6; Loneliness +0.4 with no ally within 3 tiles (else +0.2); Belonging +0.2 and +0.1 per ally within 3 tiles, to +0.5. PROVISIONAL.
+1107. **New jobs (rules 1.19):** Fear throws the caster 2 tiles back from the aim (forced movement; nothing on an Aura, which has no aim); Joy makes a Bolt's or Lance's roll of 18 to 20 a critical when it hits; Hope ends 1 harmful condition (the newest) on the caster and each ally in the shape; Guilt Taunts the targets hit for 1 round (Heart save); Longing keeps +2 reach and loses its pull. The old numbers (Grief's Slow, Fear's push and Shaken, Joy's chain, Guilt's heal of 10 a stage for 5 HP, Hope's Hopeful) are gone from the feelings. PROVISIONAL.
+1108. **The strong ones (rules 1.19):** Calm −0.4, two rolls and the better kept, no critical (it was: no roll, cover ignored, the Release ×0.75: item 1059); Relief −0.2 and 2 Strain off at the Release (item 1058: +0.2 and 1 Strain); Awe +0 (1 AP off each target hit, no save); Defiance +0.2 and every save against the Release 4 harder (it was: no save); Cruelty +0.2 (its Bleed is damage on top). PROVISIONAL.
+1109. **The +0.3 feelings (rules 1.19):** Fear, Love, Joy, Hope, Mercy, Dread, Longing, Contempt, Guilt, Jealousy, Wonder. It replaces item 1062's +0.4. PROVISIONAL.
+1110. **A Pump stays 1 AP (rules 1.19):** measured against 2 AP after the second paid Pump of a turn, 2 AP flat, and a feeling Pump +1 AP (the report, section 4). Two switches are kept in the data, off. PROVISIONAL.
+1111. **One free stage a turn (rules 1.19):** for a character, from any source (the fight's first Pump, Empathy, Shape, a fed Pump, Heart Overload II's stage 1); enemy casters are not bound by it (their free Pumps are in their stat blocks). Overdraw's second stage is not counted. PROVISIONAL.
+1112. **Empathy 7 (rules 1.19):** a held Outburst swells without Strain (it was a second free Pump a round). The enemy caster that reads "as Empathy 7" keeps two free Pumps. PROVISIONAL.
+1113. **Shape (rules 1.19):** the turn's free Pump on a Damage design without Empathy 3; the turn's free Pump steps +0.1 more (kept on the held Outburst; Revert takes it back). It replaces item 522's reading. PROVISIONAL.
+1114. **Heart Overload II (rules 1.19):** its free Begin holds at stage 1 only while the turn's free stage is untaken; else stage 0. PROVISIONAL.
+1115. **The schools read the stage (rules 1.19):** saves against Control and Status +1 for every 2 stages; conditions +1 round from stage 3; a push or pull +1 tile from stage 2 and +2 at stage 4; Inspired and Guarded +1 round from stage 2 and +2 at stage 4. A second school at half strength reads the same stage. Enemy casters read it too. PROVISIONAL.
+1116. **The Damage school's ways (rules 1.19):** Strike ×1; Finish ×0.8, ×1.4 against a target at 50% HP or less; Brand ×0.8 and Marked (no save, until ended); Drain ×0.8 and the caster heals 25% of the HP taken. A design with no way set is a Strike. PROVISIONAL.
+1117. **Swap and Silenced (rules 1.19):** Control's Swap trades places with the first creature a Bolt reaches (Body save; an ally doesn't resist; one trade a Release; nothing on the area shapes); Status' Silenced lasts 1 round (2 from stage 3), Brain save. PROVISIONAL.
+1118. **The same school twice (rules 1.19):** defined and shelved. A different way rides at half; the same way is half again the damage, healing, push or rounds (one save for a condition). It costs what a second school costs. Open: which advanced class, and whether it should cost more than 10 MP. PROVISIONAL.
+1119. **Targets (rules 1.19):** steady play, a new caster 96 to 138% (110 to 113% at levels 3 and 6); the early feelings 109 to 154%; the biggest Release 138 to 165% from level 6, and it now takes the whole turn (5 AP and a step into reach: measured over two turns). Not met: level 1's biggest Release (72%: a new caster has no free Pump after the fight's first and a Strain limit of 5); level 12 steady (138 to 154%: Heart Overload's free Begin); the all-in caster (124 to 230% of the normal-share rifle, 118 to 153% of its own share's from level 9), as in rules 1.17. PROVISIONAL.
+1120. **What else moved with the table (rules 1.19):** Heart Surge past stage 4 ×1.8 (×2.8); the shelved Vessel's body forms (Iron +10 / +12 / +14) and Release; Storm Front's arcs; Overdraw's second stage is worth +0.2 (it was +0.4), so Overdraw is weaker than Leon set it in rules 1.14; Gift's stage 1 is ×1.0. Not refitted.
+1121. **Not done in this step (rules 1.19):** the browser suites were not run (`feelings40`, `outburst40` and the heart suites pin numbers this revision changes; they were edited by reading); the simulator's caster plays one target and gives no value to what a feeling does, only to its multiplier; it never plays Relief; the enemy AI does not choose the new ways.

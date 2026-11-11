@@ -51,7 +51,7 @@ describe('Fuse and the release hook (rules 1.8 section 4)', () => {
     const plain = run(false), surged = run(true);
     expect(plain.n).toBe(1); expect(surged.n).toBe(1);
     expect(plain.dmg).toBe(Math.floor(20 * 0.8 * 0.8)); // a snap at stage 0 (×0.8), At Once ×0.8 (rules 1.17)
-    expect(surged.dmg).toBe(Math.floor(20 * 1.2 * 0.8)); // surged: read a stage higher (stage 1, ×1.2)
+    expect(surged.dmg).toBe(Math.floor(20 * 1 * 0.8)); // surged: read a stage higher (stage 1, ×1.0)
   });
   it('a Fuse still waiting when the fight ends fizzles: never carried to the area map', () => {
     const f = rig(['6,5']); f.foe.hp = 1;

@@ -95,7 +95,8 @@ describe('the ranged lane is complete', () => {
     // node's fs, loaded by name (the engine's tsconfig carries no node types)
     const fs: any = await import(/* @vite-ignore */ 'node:' + 'fs'), path: any = await import(/* @vite-ignore */ 'node:' + 'path'), url: any = await import(/* @vite-ignore */ 'node:' + 'url');
     const dir = path.join(path.dirname(url.fileURLToPath((import.meta as any).url)), '../src/physical/ranged');
-    const src = (fs.readdirSync(dir) as string[]).filter((n) => n.endsWith('.ts')).map((n) => fs.readFileSync(path.join(dir, n), 'utf8') as string).join('\n');
+    const src = (fs.readdirSync(dir) as string[]).filter((n) => n.endsWith('.ts')).map((n) => fs.readFileSync(path.join(dir, n), 'utf8') as string).join('\n')
+      + fs.readFileSync(path.join(dir, '../../combat.ts'), 'utf8'); // rules 1.18: the Burst's rolls are worked out in combat.ts (burstRolls), for the technique and the plain burst action alike
     const unused: string[] = [];
     for (const d of phys.TECHNIQUES.filter((x) => x.system === 'ranged')) for (const k of Object.keys(d.numbers || {})) if (!src.includes("'" + k + "'")) unused.push(d.id + '.' + k);
     expect(unused).toEqual([]);

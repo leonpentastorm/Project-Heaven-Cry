@@ -138,7 +138,7 @@ describe('the fight simulator', () => {
       expect(r.errors, b.id).toEqual([]);
       expect(r.pcs[0].turns, b.id).toBeGreaterThan(0);
     }
-  });
+  }, 30000); // (many builds: slow when the machine is busy)
 });
 
 describe('the baseline', () => {

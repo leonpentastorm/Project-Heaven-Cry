@@ -295,7 +295,7 @@ describe('Heartfed', () => {
     const mp = m.mp; act(f, f.unit(u.id), { type: 'combat/outburst', design: 'o1' });
     expect(mp - f.pc.mg!.mp).toBe(Math.max(5, Math.round(plain * 0.6)));
     perk(f, f.pc, 'heartfed.fed'); perk(f, f.pc, 'heartfed.fed');
-    expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(2); expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(2);
+    expect(f.pc.ap).toBe(6); // rules 1.19: one free stage a turn, so the second fed Pump costs its AP expect(f.pc.mg!.held!.stage).toBe(2); expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(2);
     expect(() => perk(f, f.pc, 'heartfed.fed')).toThrow(/Used twice this turn already/);
     act(f, f.unit(u.id), { type: 'combat/release', aim: foe.pos });
     expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(0); expect(logHas(f.cb, /takes the rest of the rage/)).toBe(true);
@@ -355,8 +355,8 @@ describe('Vessel', () => {
   it('Inner Charge: Iron adds armour by stage, grows at turn start with Strain; no Outbursts for a Vessel', () => {
     const f = fightWith([adv('vessel', SOUL)], [{}]); const u = f.turn(f.pc); const arm = f.unit(u.id).armour, mp = f.unit(u.id).mg!.mp;
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' });
-    expect(f.pc.armour).toBe(arm + 12); expect(f.pc.mg!.mp).toBeLessThan(mp); expect(f.pc.mg!.strain).toBe(1); // stage 1 is ×1.2 (rules 1.17)
-    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 16); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1); // stage 2 is ×1.6
+    expect(f.pc.armour).toBe(arm + 10); expect(f.pc.mg!.mp).toBeLessThan(mp); expect(f.pc.mg!.strain).toBe(1); // stage 1 is ×1.0 (rules 1.19)
+    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 12); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1); // stage 2 is ×1.2
     expect(withGame(f.g, () => previewOutburst(f.cb, f.pc, 'o1', f.foe.pos)).ok).toBe(false);
   });
   it('Inner Charge: Steady can\'t be knocked Prone; Pain to Power gives AP next turn; Surge adds 15 to melee', () => {
@@ -371,9 +371,9 @@ describe('Vessel', () => {
     expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), foe, 'melee')).dmg!.terms[0].v).toBe(10);
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'surge' }); seed(f, 10);
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
-    expect(logHas(f.cb, /RELEASE \(1 form, 18\)/)).toBe(true);
-    // fists 10 + Surge 15 × 1.2 (stage 1, ×1.2 since rules 1.17; past Empty Hand's floor of 20) + the release 15 × 1.2 × the Soul multiplier, armour 0
-    expect(999 - f.unit(foe.id).hp).toBe(10 + 18 + Math.floor(18 * f.pc.mg!.soulMult));
+    expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);
+    // fists 10 + Surge 15 × 1.0 (stage 1, ×1.0 since rules 1.19; past Empty Hand's floor of 20) + the release 15 × 1.0 × the Soul multiplier, armour 0
+    expect(999 - f.unit(foe.id).hp).toBe(10 + 15 + Math.floor(15 * f.pc.mg!.soulMult));
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });

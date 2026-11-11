@@ -40,9 +40,10 @@ export const OUTBURST_PATTERNS = [
   { what: 'steady play (a new caster: Rage and Love)', opts: null },
   { what: 'steady play (the early feelings)', opts: { feelings: 'early' } },
   { what: 'steady play (all 25 feelings)', opts: { feelings: 'all' } },
-  // the peak: one turn from a quiet heart (the fight's free first Pump makes stage 4 a one-turn cast), everything poured in
-  { what: 'THE PEAK: the biggest Release, one turn', opts: { feel: true, feelings: 'all' }, rounds: 1, n: 3 },
-  { what: 'the biggest Release with the early feelings, one turn', opts: { feel: true, feelings: 'early' }, rounds: 1, n: 3 },
+  // the peak: from a quiet heart, everything poured in. Rules 1.19: one free Pump a turn, so it takes the whole turn; a caster that
+  // steps into reach first Releases on turn 2 and the row is over both turns (measureLevel notes it).
+  { what: 'THE PEAK: the biggest Release, one turn', opts: { feel: true, feelings: 'all' }, rounds: 1, n: 10 },
+  { what: 'the biggest Release with the early feelings, one turn', opts: { feel: true, feelings: 'early' }, rounds: 1, n: 10 },
 ];
 /** The feelings a caster has usually felt after a session or two (their triggers are everyday: a quiet heart, an enemy's
  * hit, a natural 20 or 1, a heavy hit, an Elite, an ally Down). */

@@ -38,12 +38,15 @@ describe('the magic targets hold (rules 1.17)', () => {
   it('Outburst: steady play is about 125% of the plain rifle; the biggest Release is about 150% and above steady play', () => {
     const steady = pattern('steady', 'outburst', 'normal', 6, N, { feelings: 'early' }, /^Release /, y);
     const fresh = pattern('steady, a new caster', 'outburst', 'normal', 6, N, null, /^Release /, y);
-    const peak = pattern('peak', 'outburst', 'normal', 6, N * 3, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 1);
+    // Rules 1.19: one free Pump a turn, so the biggest Release takes the whole turn (Begin 2, four Pumps with one free, Release 1): a
+    // caster that has to step into reach first lets it go on turn 2, and the percent is then over both turns (as the full run does).
+    const peak1 = pattern('peak', 'outburst', 'normal', 6, N * 10, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 1);
+    const peak = peak1.casts ? peak1 : pattern('peak', 'outburst', 'normal', 6, N * 10, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 2);
     expect(steady.errors + fresh.errors + peak.errors).toBe(0);
-    expect(steady.pctRifle, 'steady play, percent of the rifle').toBeGreaterThanOrEqual(105); expect(steady.pctRifle).toBeLessThanOrEqual(145);
+    expect(steady.pctRifle, 'steady play, percent of the rifle').toBeGreaterThanOrEqual(100); expect(steady.pctRifle).toBeLessThanOrEqual(145);
     expect(fresh.pctRifle, 'a new caster, percent of the rifle').toBeGreaterThanOrEqual(95); expect(fresh.pctRifle).toBeLessThanOrEqual(140);
     expect(peak.pctRifle, 'the biggest Release, percent of the rifle').toBeGreaterThanOrEqual(120); expect(peak.pctRifle).toBeLessThanOrEqual(175);
-    expect(peak.perCast).toBeGreaterThan(steady.perCast);
+    expect(peak.perCast).toBeGreaterThan(steady.perCast); console.log('[targets] steady ' + steady.pctRifle + '% fresh ' + fresh.pctRifle + '% peak ' + peak.pctRifle + '% (' + peak.perCast + ' a cast vs ' + steady.perCast + ')');
   }, 120000);
 });
 

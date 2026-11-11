@@ -1461,11 +1461,14 @@
         "rolls": 2,
         "later_penalty": 4,
         "quick_penalty": 3,
-        "heavy_rolls": 2,
-        "heavy_step": 1,
+        "heavy_penalty": 1,
         "auto_heat_cool": 0,
         "auto_split_targets": 2,
-        "auto_split_range": 1
+        "auto_split_range": 1,
+        "enemy_rolls": 3,
+        "enemy_step": 1,
+        "enemy_later_penalty": 2,
+        "enemy_heat_cool": 1
       },
       "adjudication": "engine",
       "provisional": true,
@@ -1602,8 +1605,7 @@
       "numbers": {
         "tiles": 2,
         "quick_tiles": 3,
-        "auto_rounds": 3,
-        "auto_heat_cool": 1
+        "auto_rounds": 3
       },
       "adjudication": "engine",
       "provisional": true,
@@ -1713,7 +1715,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "One bolt at +30% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile.",
+      "text": "One bolt at +40% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile.",
       "lines": [
         {
           "props": [
@@ -1737,7 +1739,7 @@
       ],
       "particular": false,
       "numbers": {
-        "damage_pct": 30,
+        "damage_pct": 40,
         "pierce": 10,
         "push": 1,
         "precise_hit": 2
@@ -1950,7 +1952,7 @@
       },
       "rounds": "all",
       "needs": {},
-      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most 3 rolls), each at −3 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
+      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most 3 rolls), each at −4 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
       "lines": [
         {
           "props": [
@@ -1991,7 +1993,7 @@
       "numbers": {
         "per_roll": 3,
         "max_rolls": 3,
-        "step": 3,
+        "step": 4,
         "pressure": 1,
         "heat_under": 1,
         "spread_mult": 2,

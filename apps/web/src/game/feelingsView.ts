@@ -2,7 +2,7 @@
 // its step and effect; collapsed into "Feelings ▸" with a search past six), the colour and glyph of each feeling, the
 // residue tiles' tint, the unlock card, and the practice bar. The engine is the one source of numbers (previewPump,
 // previewOutburstPlan, practiceOf); this file only words and styles them.
-import { FEELINGS, FEELING, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, MODULE, SKILL } from '@engine';
+import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, MODULE, SKILL } from '@engine';
 import { feelingIcon, moduleIcon, heartMark } from './heartIcons';
 
 /** Each feeling's light (a proposal for Leon; docs/design/handoffs/outburst-4.0-HANDOFF.md). Light and particles only,
@@ -48,8 +48,8 @@ export function feelingButtons(cb: any, u: any): FeelingBtn[] {
   const known: string[] = (m.feelings || []).filter((f: string) => (FEELING as any)[f]);
   return FEELINGS.filter((f: any) => known.includes(f.id)).map((f: any) => {
     const p = previewPump(cb, u, f.id), ink = feelingInk(f.id);
-    const step = p.step ?? (f.step?.base ?? 0.4);
-    return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '') + r2(step).toFixed(1),
+    const step = p.step ?? (f.step?.base ?? PLAIN_STEP);
+    return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
       effect: f.pour?.text || '', cost: p.ok ? (p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' };
   });
 }
@@ -134,6 +134,6 @@ export interface CodexFeeling { id: string; name: string; icon: string; ink: str
 export function feelingCodex(c: any): CodexFeeling[] {
   const known: string[] = c?.feelings || [];
   return FEELINGS.map((f: any) => { const k = known.includes(f.id), ink = feelingInk(f.id), s = f.step || {};
-    const step = s.text || (s.base != null ? '+' + s.base : ''); // rules 1.17: the step in words, from the data ("+0.4; +0.7 against whoever last hurt you")
+    const step = s.text || (s.base != null ? '+' + s.base : ''); // the step in words, from the data ("+0.2; +0.5 against whoever last hurt you")
     return { id: f.id, name: f.name, icon: feelingIconSrc(f.id, k ? ink : '#7F8BA1'), ink, known: k, step, effect: f.pour?.text || '', residue: f.residue?.kind === 'none' ? 'No residue.' : 'Residue (' + f.residue.kind + '): ' + f.residue.text, trigger: 'Felt first when: ' + (f.trigger?.text || '') }; });
 }

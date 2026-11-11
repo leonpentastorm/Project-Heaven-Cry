@@ -19,7 +19,7 @@ import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, previewOutburst, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
   RESONANCE_BONUS, resonates, fadePattern, evokeGrowth, practiceOnce, type Affected,
-  takeFreeStage,
+  takeFreeStage, freeStageLeft,
 } from '../magic';
 import { asBolt, schoolRider, resonanceExtra } from '../classes/soul';
 import { blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
@@ -165,7 +165,7 @@ register({
   toggles: [{
     id: 'again', label: 'Heart Overload: Begin again for 0 AP', on: ['combat/outburst'], defaultOn: true,
     available: (h) => !!hoOffer(h), // only right after the Release that earned it
-    preview: (h) => 'Begin ' + hoName(h) + ' again now for 0 AP. You pay its mana and Strain as usual. It holds at stage ' + (h.tier === 'II' ? 1 : 0) + '. Once a turn.',
+    preview: (h) => 'Begin ' + hoName(h) + ' again now for 0 AP. You pay its mana and Strain as usual. It holds at stage ' + (h.tier === 'II' && h.u && freeStageLeft(h.u) ? 1 : 0) + '. Once a turn.',
   }, {
     id: 'pay_hp', label: 'Heart Overload: pay the mana in HP', on: ['combat/outburst'], defaultOn: true,
     available: (h) => hoBlood(h) > 0, // only for the free Begin, and only when the mana is short

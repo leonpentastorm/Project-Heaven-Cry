@@ -1,7 +1,7 @@
 // Physical 2.0, ranged Fire: damage. Shot and Aimed Shot are the lead's references; the ranged lane builds Snap Shot,
 // Burst, Called Shot, Walking Fire and Punch Through here (Lob lives in thrown.ts: its Blast line is the grenade code).
 import { technique, strike, addPressure, spendRounds, save, cond, stop, stepsWithin, standingAt, stepUser, turnStamp, onHook, type Tech } from './shared';
-import { alive, dist, xy, key, emitFx, chained, burstRolls, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
+import { alive, dist, xy, key, emitFx, chained, burstRolls, burstCool, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { physicalMult } from '../../character';
 
@@ -97,9 +97,9 @@ technique({
   ai: (t) => (t.tgt ? 5 : 0),
 });
 
-// 2. Burst (rules 1.18): three rounds, TWO rolls at one target, the second at −2. Auto: the two rolls may split between
-//    two adjacent targets, and the barrel cools 1 after. Quick: the second roll is at −1. Heavy, while Braced (or Prone,
-//    or Emplaced): the weapon holds all three rounds on the target: three rolls, each later one −1 more.
+// 2. Burst (rules 1.18): three rounds, TWO rolls at one target, the second at −4. Auto: the two rolls may split between
+//    two adjacent targets. Quick: the second roll is at −3. Heavy, while Braced (or Prone, or Emplaced): −1.
+//    Heat is one a roll (2, as before). An enemy's Burst is the one its table was fitted with (three rolls, cools 1).
 //    A split names the target of each roll in targetIds (repeats allowed); rolls past the list go at its last one.
 //    The numbers are burstRolls' (combat.ts), which the plain burst action reads too.
 technique({
@@ -119,7 +119,7 @@ technique({
       if (dist(targets[0].pos, targets[1].pos) > t.num('auto_split_range', 1)) return 'The two targets must stand next to each other.';
     }
     const rolls: Roll[] = steps.map((extra, i) => ({ target: list[Math.min(i, list.length - 1)]!, extra }));
-    return volley(t, rolls, { burn: Math.max(0, (t.def.rounds as number) - n), cool: auto ? t.num('auto_heat_cool', 1) : 0 });
+    return volley(t, rolls, { burn: Math.max(0, (t.def.rounds as number) - n), cool: burstCool(t.u, auto) });
   },
   ai: (t) => (!t.tgt ? 0 : t.line('auto') ? 6 : 4),
 });
@@ -189,7 +189,7 @@ technique({
     const shoot = (): string | null => {
       if (!auto) { const r = strike(t); return r.ok ? null : r.why || 'Can\'t attack that.'; }
       const rolls: Roll[] = burstRolls(u, t.w).map((extra) => ({ target: tgt, extra })); // rules 1.18: the Burst's own rolls
-      return volley(t, rolls, { burn: Math.max(0, need - rolls.length), cool: t.num('auto_heat_cool', 1) });
+      return volley(t, rolls, { burn: Math.max(0, need - rolls.length), cool: burstCool(u, true) });
     };
     if (t.preview) {
       if (route.length) stepUser(t, route);

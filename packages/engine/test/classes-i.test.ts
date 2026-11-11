@@ -374,13 +374,13 @@ describe('Channeler', () => {
     act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(1); expect(logHas(f.cb, /Shape: the first Pump/)).toBe(true);
     act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(2);
   });
-  it('Shape: Empathy\'s free Pump goes first; Shape takes the next one', () => {
+  it('Shape (rules 1.19): one free Pump a turn, so with Empathy\'s Shape adds none; the free Pump steps +0.1 more', () => {
     const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
     const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.freePumps = 1; m.freePumpsMax = 1; m.firstUsed = true;
     const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d });
-    act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7);
-    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(3);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.plus).toBe(0.1);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(5); expect(f.pc.mg!.held!.stage).toBe(3);
   });
   it('Storm Front: +10 MP, two more enemies within 2 tiles of the first, once a turn', () => {
     const f = fightWith([cls('channeler', 2, SOUL)], [{}, {}, {}]);
@@ -402,7 +402,7 @@ describe('Channeler', () => {
       return { f, rel: (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1) as any, strain: f.pc.mg!.strain - s0 };
     };
     const plain = run([]), surge = run(['class:channeler.heart_surge#surge']);
-    expect(plain.rel.stage).toBe(2); expect(surge.rel.stage).toBe(3); expect(surge.rel.mult).toBe(2); // stage 3 is ×2.0 (rules 1.17)
+    expect(plain.rel.stage).toBe(2); expect(surge.rel.stage).toBe(3); expect(surge.rel.mult).toBe(1.5); // stage 3 is ×1.4, and Shape's +0.1 on the free Pump (rules 1.19)
     expect(surge.strain).toBe(plain.strain + 1); expect(logHas(surge.f.cb, /Heart Surge: the heart pays for it/)).toBe(true);
   });
 });
@@ -472,7 +472,7 @@ describe('Bard', () => {
     // Rules 1.5: Begin, Pump to stage 1 (×1.2 since rules 1.17), Release.
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/release', aim: '5,2' });
     const hm = f.unit(bd.id).mg!.healMult, recv = f.unit(ally.id).healRecv || 1;
-    expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(30 * 1.2 * hm * recv) * 40 / 30));
+    expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(30 * 1 * hm * recv) * 40 / 30));
   });
   it('Gift: out of combat, once a rest, a design handed to an ally (the Narrator is told)', () => {
     const s = storyWith([cls('bard', 3, SOUL), {}]);

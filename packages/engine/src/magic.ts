@@ -1319,7 +1319,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
     else if (F.has('joy') && hits.some((t) => t.side !== u.side) && hostile) { hitFoes.push(...hits.filter((t) => t.side !== u.side)); chainFrom(FP('joy').chain ?? 1, FP('joy').range ?? 2, FP('joy').mult ?? 0.5, 'joy', false); }
   } finally { NOSAVE_BY = was.ns; NONLETHAL_BY = was.nl; REL = was.rel; }
   // After the strike: feelings that touch you and your side, and the modules that do.
-  line.push(...pourAfter(cb, rng, u, d, F, felt, stage, tiles, hits, heldWas, sm, aim));
+  line.push(...pourAfter(cb, rng, u, d, F, felt, stage, tiles, hits, heldWas, sm, aim, wild));
   if (!targets.length && !loved.length) line.push('nobody ' + (form === 'bolt' ? 'at ' + refOf(aim) : 'in the ' + form));
   const fn = felt.length ? ' with ' + [...new Set(felt)].map((f) => FEELING[f]?.name + (felt.filter((x) => x === f).length > 1 ? ' ×' + felt.filter((x) => x === f).length : '')).join(', ') : '';
   cb.log.push(u.name + ' releases ' + d.name + ' (' + form.toUpperCase() + (tone !== 'raw' ? ' · ' + TONE[tone].name : '') + ')' + fn + ' at stage ' + stage + ' (×' + Math.round(sm * 100) / 100 + (res.bonus ? ', resonance +' + res.bonus.toFixed(1) : '') + ')' + (wild ? ' (wild)' : '') + (reaction ? ' (Heart Overwatch)' : '') + ': ' + line.filter(Boolean).join(' · ') + '.');
@@ -1369,7 +1369,7 @@ function pourOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, F: Se
 }
 /** After the strike (rules 1.8): Hope, Guilt, Shame, Jealousy, Wonder, Relief, Defiance's next save; Shell, Thread,
  * Linger. Returns log parts. */
-function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<string>, felt: string[], stage: number, tiles: string[], hits: Unit[], held: HeldOutburst | null, sm: number, aim?: string): string[] {
+function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<string>, felt: string[], stage: number, tiles: string[], hits: Unit[], held: HeldOutburst | null, sm: number, aim?: string, wild = false): string[] {
   const out: string[] = [], m = u.mg!, FP = (id: string): any => FEELING[id]?.pour || {}, has = (x: string) => d.modules.includes(x), set = new Set(tiles);
   const clean = (x: string) => x.replace(/^ · /, '');
   if (F.has('hope')) for (const a of cb.units.filter((v) => !v.dead && v.side === u.side && (v === u || set.has(v.pos)))) {
@@ -1383,7 +1383,7 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
   // Fear (rules 1.19): the Release throws you back from where you aimed it. Forced movement: nobody reacts to it.
   if (F.has('fear') && FP('fear').recoil && !u.dead && !u.downed) { const from = aim && aim !== u.pos ? aim : hits.find((v) => v.pos !== u.pos)?.pos; if (from) { const s = magicShove(cb, u, from, FP('fear').recoil, null); if (s) out.push(clean(s) + ' (Fear)'); } }
   // Pride (rules 1.19): a Release that takes nobody down costs 1 Strain after it.
-  if (F.has('pride') && FP('pride').strain_unless_down && !u.dead && !hits.some((v) => v.side !== u.side && (v.dead || v.downed || v.hp <= 0 || v.surrendered))) { const s = addStrain(cb, rng, u, FP('pride').strain_unless_down, 'pride'); out.push(u.name + '\'s pride stings (+' + FP('pride').strain_unless_down + ' Strain)' + s); }
+  if (F.has('pride') && FP('pride').strain_unless_down && !wild && !u.dead && !hits.some((v) => v.side !== u.side && (v.dead || v.downed || v.hp <= 0 || v.surrendered))) { const s = addStrain(cb, rng, u, FP('pride').strain_unless_down, 'pride'); out.push(u.name + '\'s pride stings (+' + FP('pride').strain_unless_down + ' Strain)' + s); }
   // Shame (rules 1.17): each Shame poured in costs its own damage (it was 5 once, however many).
   if (F.has('shame') && !u.dead) out.push(u.name + ' pays' + harmFor('shame', () => harm(cb, rng, null, u, (FP('shame').self_damage ?? 8) * (FP('shame').per_pour ? felt.filter((x) => x === 'shame').length : 1), 'true')));
   if (F.has('jealousy')) { const t = hits.find((v) => v.side !== u.side); if (t) { const boon = Object.keys(t.conds || {}).find((c) => condOn(t, c) && isBoon(c) && c !== 'hidden'); if (boon) { const n = t.conds![boon]; endCond(t, boon, cb); (u.conds ||= {})[boon] = Math.max(u.conds[boon] || 0, Math.min(n, 3)); out.push(u.name + ' steals ' + condName(boon) + ' from ' + t.name + ' (Jealousy)'); } else if ((t.shield || 0) > 0) { const n = t.shield!; t.shield = 0; out.push(clean(grantShield(cb, u, n, u) + '') + ' ' + u.name + ' steals ' + t.name + "'s shield (Jealousy)"); } } }

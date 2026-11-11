@@ -3532,7 +3532,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "per_turn",
-      "text": "I: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 0. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand. II: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
+      "text": "I: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 0. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand. II: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1 if you have not taken your free Pump this turn (at stage 0 if you have). If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
       "effects": [
         {
           "op": "alt_cost",
@@ -3568,7 +3568,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
+          "text": "Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1 if you have not taken your free Pump this turn (at stage 0 if you have). If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
           "effects": [
             {
               "op": "alt_cost",

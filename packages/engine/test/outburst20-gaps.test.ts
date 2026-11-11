@@ -146,7 +146,7 @@ describe('the preview lists everyone a release would reach, past its area too (s
     const p = withG(f, () => previewOutburstPlan(f.cb, me(f), d, '6,5', { stage: 2 }));
     expect(ids(p, 'area')).toEqual([a.id]); expect(ids(p, 'chain')).toEqual([b.id]); expect(ids(p)).not.toContain(c.id);
     const chain = p.affected.find((x: any) => x.via === 'chain')!;
-    expect(chain).toMatchObject({ enemy: true, roll: null, dmg: Math.floor(20 * 1.6 * 0.5) }); expect(chain.rider).toMatch(/chains from/);
+    expect(chain).toMatchObject({ enemy: true, roll: null, dmg: Math.floor(20 * 1.2 * 0.5) }); expect(chain.rider).toMatch(/chains from/);
     begin(f, d); pump(f, 2); release(f, '6,5');
     expect(lost(f.unit(b.id))).toBe(chain.dmgAfterArmour); expect(lost(f.unit(c.id))).toBe(0);
   });

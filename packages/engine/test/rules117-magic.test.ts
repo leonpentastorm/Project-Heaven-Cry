@@ -132,90 +132,43 @@ const release = (f: F, aim = '6,5') => A(f, { type: 'combat/release', aim });
 const me = (f: F) => f.unit(f.pc.id);
 const lost = (u: Unit) => 500 - u.hp;
 
-describe('Outburst: the stage table and the Damage base (rules 1.17)', () => {
-  it('×0.8 at stage 0, then +0.4 a stage: a plain Pump is +0.4 at every stage', () => {
-    expect(STAGE_MULT).toEqual([0.8, 1.2, 1.6, 2, 2.4]);
-    for (let s = 1; s <= 4; s++) expect(Math.round((stageMult(s) - stageMult(s - 1)) * 100) / 100).toBe(PLAIN_STEP);
-    expect(PLAIN_STEP).toBe(0.4);
-  });
-  it('a character\'s Damage base is 28; an enemy caster\'s is 18', () => {
-    expect(SOUL_DAMAGE).toBe(28); expect(SOUL_DAMAGE_ENEMY).toBe(18); expect(SOUL_RULES.damage.provisional).toBe(true);
-    const f = heart(); expect(me(f).mg!.soulBase).toBe(28);
-    const d = give(f.pc); begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(28 * 0.8)); // a snap cast: 22
-    const g = heart(); const e = give(g.pc); begin(g, e); for (let i = 0; i < 4; i++) pump(g); release(g); expect(lost(g.foe)).toBe(Math.floor(28 * 2.4)); // 67
+// Rules 1.19 (the Outburst rework, round 2) changed the stage table, the Damage base and every feeling: those are pinned
+// in rules119-outburst.test.ts. What rules 1.17 set and still stands is pinned here.
+describe('Outburst: what rules 1.17 set and still stands', () => {
+  it('a character\'s heart carries its own Damage base; an enemy caster has none of its own and reads the enemy base', () => {
+    expect(SOUL_RULES.damage.provisional).toBe(true);
+    const f = heart(); expect(me(f).mg!.soulBase).toBe(SOUL_DAMAGE);
+    const d = give(f.pc); begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8)); // a snap cast
+    const g = heart(); const e = give(g.pc); begin(g, e); for (let i = 0; i < 4; i++) pump(g); release(g); expect(lost(g.foe)).toBe(Math.floor(SOUL_DAMAGE * stageMult(4)));
     const foe = g.foes[0]; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.soulBase).toBeUndefined();
-    expect(outburstDamage(foe.mg!, { id: 'x', name: 'x', school: 'damage', modules: [] } as any, 1)).toBeCloseTo(18 * foe.mg!.soulMult);
+    expect(outburstDamage(foe.mg!, { id: 'x', name: 'x', school: 'damage', modules: [] } as any, 1)).toBeCloseTo(SOUL_DAMAGE_ENEMY * foe.mg!.soulMult);
     // a fight saved before rules 1.17: the character's heart gets its base back the first time it is read
-    delete me(g).mg!.soulBase; const d2 = give(g.pc); begin(g, d2); expect(me(g).mg!.soulBase).toBe(28);
+    delete me(g).mg!.soulBase; const d2 = give(g.pc); begin(g, d2); expect(me(g).mg!.soulBase).toBe(SOUL_DAMAGE);
   });
   it('a critical is ×1.5 (to ×2.0 at most), not ×2; the roll reads the level gap', () => {
     const f = heart(); const d = give(f.pc); f.g.rng.state = rollIs(20).state;
     const cm = withGame(f.g, () => spellCritMult(f.cb, me(f), f.foe)); expect(cm).toBeGreaterThanOrEqual(1.5); expect(cm).toBeLessThan(2);
-    begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(28 * 0.8 * cm));
+    begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8 * cm));
     const g = heart(); const e = give(g.pc); me(g).level = 6; g.foe.level = 6; (g.foe as any).lvlDmg = 1;
     const even = withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus;
     g.foe.level = 9; expect(withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus).toBe(even - 3);
   });
-});
-
-describe('Outburst: the feelings (rules 1.17)', () => {
-  it('no feeling steps under a plain Pump but Relief, whatever the moment; each card opens with its step in plain words', () => {
-    const alone = heart(), crowd = heart(['6,5'], ['3,6', '4,5', '2,5']);
-    for (const f of FEELINGS) {
-      const base = f.step.base!; expect(base, f.id).toBeGreaterThanOrEqual(f.id === 'relief' ? 0.2 : PLAIN_STEP);
-      for (const fx of [alone, crowd]) for (const stage of [1, 2, 3, 4]) for (const hp of [500, 250, 50]) {
-        me(fx).hp = hp; const s = feelingStep(fx.cb, me(fx), f.id, stage, fx.foe);
-        expect(s, f.id).toBeGreaterThanOrEqual(base); expect(s, f.id).toBeLessThanOrEqual(1.0);
-      }
-      expect(f.pour.text.startsWith('+' + base.toFixed(1)), f.id + ': ' + f.pour.text).toBe(true);
-      expect(f.pour.text, f.id).not.toMatch(/item \d|rules \d|section \d/i); // plain words: no rule numbers on a card
-      expect(f.step.text, f.id).toMatch(/^\+\d\.\d/);
-    }
-    expect(FEELINGS.filter((f) => f.step.base! < PLAIN_STEP).map((f) => f.id)).toEqual(['relief']);
-  });
-  it('the three that buy the multiplier outright: Rage +0.7 for 1 Strain, Shame +0.7 for 8 HP each, Abandon +1.0 for 2 Strain, once', () => {
-    expect(FEELING.rage.step.base).toBe(0.7); expect(FEELING.rage.pour.strain).toBe(1);
-    expect(FEELING.shame.step.base).toBe(0.7); expect(FEELING.shame.pour.self_damage).toBe(8); expect(FEELING.shame.pour.per_pour).toBe(true);
-    expect(FEELING.abandon.step.base).toBe(1.0); expect(FEELING.abandon.pour.strain).toBe(2); expect(FEELING.abandon.pour.once).toBe(true);
-    const f = heart(); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); const s0 = me(f).mg!.strain;
-    pump(f, 'rage'); expect(me(f).mg!.strain).toBe(s0 + 1); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(1.5); // 0.8 + 0.7
-    pump(f, 'abandon'); expect(me(f).mg!.strain).toBe(s0 + 3); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(2.5);
-    expect(withGame(f.g, () => previewPump(f.cb, me(f), 'abandon'))).toMatchObject({ ok: false }); expect(() => pump(f, 'abandon')).toThrow(/once is all it takes/);
-    pump(f, 'shame'); pump(f, 'shame'); const hp = me(f).hp; release(f);
-    expect(lost(f.foe)).toBe(Math.floor(28 * (0.8 + 0.7 + 1.0 + 0.7 + 0.7) * 0.8)); expect(me(f).hp).toBe(hp - 16); // two Shames: 8 each
-  });
-  it('Relief: +0.2, and each Relief takes 1 Strain off at the Release', () => {
-    const f = heart(); const d = give(f.pc); begin(f, d); pump(f, 'rage'); pump(f, 'relief'); pump(f, 'relief');
-    expect(me(f).mg!.strain).toBe(2); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(1.9); // 0.8 + 0.7 + 0.2 + 0.2
-    release(f); expect(me(f).mg!.strain).toBe(0);
-  });
-  it('Calm: a Bolt can\'t miss, at ×0.75; on a Burst (which never rolls) it is a plain Pump', () => {
-    const f = heart(); f.foe.def = 99; const d = give(f.pc); begin(f, d); pump(f, 'calm');
-    expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(0.9); // (0.8 + 0.4) × 0.75
-    const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5')); expect(plan.mult).toBe(0.9); expect(plan.affected[0].roll).toBeNull();
-    release(f); expect(lost(f.foe)).toBe(Math.floor(28 * 0.9));
-    const g = heart(); const e = give(g.pc, { modules: ['burst'] }); begin(g, e); pump(g, 'calm'); expect(heldMult(g.cb, me(g), me(g).mg!.held)).toBe(1.2);
-  });
   it('Love with no ally in the shape heals the most wounded ally in reach, or you, for a fifth of the Release', () => {
+    const love = Math.floor(SOUL_DAMAGE * heldMult(null, heart().pc, { stage: 1, felt: ['love'] }) * 0.8 * 0.2);
     const f = heart(); me(f).hp = 400; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'love');
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
-    expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(Math.floor(28 * 1.2 * 0.8 * 0.2));
-    release(f); expect(me(f).hp).toBe(400 + Math.floor(28 * 1.2 * 0.8 * 0.2));
+    expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(love);
+    release(f); expect(me(f).hp).toBe(400 + love);
     const g = heart(['6,5'], ['3,6']); me(g).hp = 450; g.unit(g.pcs[1].id).hp = 300; const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'love'); release(g);
-    expect(g.unit(g.pcs[1].id).hp).toBe(300 + Math.floor(28 * 1.2 * 0.8 * 0.2)); expect(me(g).hp).toBe(450); // the ally was hurt worse
+    expect(g.unit(g.pcs[1].id).hp).toBe(300 + love); expect(me(g).hp).toBe(450); // the ally was hurt worse
   });
-  it('Guilt with nobody you have hurt heals the most wounded ally in reach (10 × the stage) and still costs you 5 HP', () => {
-    const f = heart(['6,5'], ['3,6']); f.unit(f.pcs[1].id).hp = 300; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'guilt'); const hp = me(f).hp; release(f);
-    expect(f.unit(f.pcs[1].id).hp).toBe(310); expect(me(f).hp).toBe(hp - 5);
-  });
-  it('the conditional ones add to +0.4: Spite +0.6 on whoever last hurt you, Pride +0.5 at stage 4, Loneliness +0.5 alone, Belonging to +0.7, Despair to +0.8', () => {
-    const f = heart(['6,5', '6,7']); (me(f) as any).feelHurtBy = f.foes[1].id;
-    expect(feelingStep(f.cb, me(f), 'spite', 1, f.foes[1])).toBe(0.6); expect(feelingStep(f.cb, me(f), 'spite', 1, f.foes[0])).toBe(0.4);
-    expect([1, 2, 3, 4].map((s) => feelingStep(f.cb, me(f), 'pride', s))).toEqual([0.4, 0.4, 0.4, 0.5]);
-    expect(feelingStep(f.cb, me(f), 'loneliness', 1)).toBe(0.5);
-    const g = heart(['6,5'], ['3,6', '4,5', '2,5']);
-    expect(feelingStep(g.cb, me(g), 'loneliness', 1)).toBe(0.4); expect(feelingStep(g.cb, me(g), 'belonging', 1)).toBe(0.7);
-    me(g).hp = 500; expect(feelingStep(g.cb, me(g), 'despair', 1)).toBe(0.4); me(g).hp = 300; expect(feelingStep(g.cb, me(g), 'despair', 1)).toBe(0.6); me(g).hp = 10; expect(feelingStep(g.cb, me(g), 'despair', 1)).toBe(0.8);
+  it('each card opens with its step in plain words and names no rule', () => {
+    for (const f of FEELINGS) {
+      const base = f.step.base!, sign = base < 0 ? '−' : '+';
+      expect(f.pour.text.startsWith(sign + (Math.abs(base) % 1 ? Math.abs(base).toFixed(1) : String(Math.abs(base)))), f.id + ': ' + f.pour.text).toBe(true);
+      expect(f.pour.text, f.id).not.toMatch(/item \d|rules \d|section \d/i);
+      expect(f.step.text, f.id).toMatch(/^[+−]\d/);
+    }
   });
 });
 
@@ -228,10 +181,10 @@ describe('Outburst: the modules that were repriced (rules 1.17)', () => {
   it('At Once ×0.8, Return\'s second hit ×0.3, Shell a shield of ×0.35, Inverse a shield of ×0.7, Quiet +5 MP', () => {
     expect((MODULE.at_once as any).damage_mult).toBe(0.8); expect((MODULE.return as any).second_mult).toBe(0.3);
     expect((MODULE.shell as any).shield_of_power).toBe(0.35); expect((MODULE.inverse as any).shield_mult).toBe(0.7); expect(MODULE.quiet.cost).toBe(5);
-    const a = heart(); begin(a, give(a.pc, { modules: ['at_once'] }), { aim: '6,5' }); expect(lost(a.foe)).toBe(Math.floor(28 * 0.8 * 0.8));
-    const r = heart(); begin(r, give(r.pc, { modules: ['return'] }), { aim: '6,5' }); expect(lost(r.foe)).toBe(Math.floor(28 * 0.8) + Math.floor(28 * 0.8 * 0.3));
-    const pr = heart(); const dr = give(pr.pc, { modules: ['return'] }); expect(withGame(pr.g, () => previewOutburstPlan(pr.cb, me(pr), dr, '6,5')).affected[0].dmg).toBe(Math.floor(28 * 0.8 * 1.3));
-    const s = heart(); begin(s, give(s.pc, { modules: ['shell'] }), { aim: '6,5' }); expect(me(s).shield).toBe(Math.floor(28 * 0.8 * 0.35));
-    const i = heart(['12,5'], ['4,5']); begin(i, give(i.pc, { modules: ['inverse'] }), { aim: '4,5' }); expect(i.unit(i.pcs[1].id).shield).toBe(Math.floor(28 * 0.8 * 0.7));
+    const a = heart(); begin(a, give(a.pc, { modules: ['at_once'] }), { aim: '6,5' }); expect(lost(a.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.8));
+    const r = heart(); begin(r, give(r.pc, { modules: ['return'] }), { aim: '6,5' }); expect(lost(r.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8) + Math.floor(SOUL_DAMAGE * 0.8 * 0.3));
+    const pr = heart(); const dr = give(pr.pc, { modules: ['return'] }); expect(withGame(pr.g, () => previewOutburstPlan(pr.cb, me(pr), dr, '6,5')).affected[0].dmg).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 1.3));
+    const s = heart(); begin(s, give(s.pc, { modules: ['shell'] }), { aim: '6,5' }); expect(me(s).shield).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.35));
+    const i = heart(['12,5'], ['4,5']); begin(i, give(i.pc, { modules: ['inverse'] }), { aim: '4,5' }); expect(i.unit(i.pcs[1].id).shield).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.7));
   });
 });
