@@ -29,7 +29,7 @@ describe('the fit of the enemy table', () => {
     expect(line).not.toMatch(/undefined|NaN/);
     expect(line).toMatch(/errors 0$/);
     expect(o.squads.length).toBe(6); expect(o.fire.length).toBe(4);
-    expect(o.gap.below5.maxHitsToKill).toBe(1); // Outclassed: 5 levels below, one hit
+    expect(o.gap.below5.maxHitsToKill).toBeGreaterThan(1); // 5 levels below: Soldiers go in one hit, the fight's Elite does not (never an Elite or a Boss)
   }, 120000);
   (OUT ? it : it.skip)('full run: the levels asked for, written as JSON', () => {
     if (TABLE) useTable(JSON.parse(readFileSync(fromRepo(TABLE), 'utf8')));

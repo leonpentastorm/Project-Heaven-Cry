@@ -13,6 +13,14 @@ Everything not named here takes its recommendation.
 - **B3 (Burst against the plain Shot):** Burst is **better in damage and worse to hit**. It may out-damage the Shot for its AP; it pays in accuracy.
 - **C2 (the 90% target):** restated as "no rule is ever left to the Narrator". The three labels stay; the report shows the label share and the effect-line share side by side.
 
+### On step 1 (sections E and F), 11 Nov 2026
+
+- **E1 (is a Boss spared the one-hit rule):** yes: a Boss and an Elite are never taken out in one hit by the level gap.
+- **E2 (spell criticals):** yes: ×1.5 to ×2.0 like every other critical, built in the magic step.
+- **E4 (which weapons an enemy may carry):** fix the two weapons (the Blackpoint 700 and the breacher tube) in the weapon step.
+- **"3 rounds under fire" against "someone Downed in 1 fight in 3":** a balance of the two; neither wins outright.
+- **F1 (a perk's AP penalty on the cooldown too):** yes, bonus and penalty stay symmetric.
+
 ## A. The yardsticks (from the fight simulator)
 
 Read with: docs/design/handoffs/balance-sim-baseline.md.

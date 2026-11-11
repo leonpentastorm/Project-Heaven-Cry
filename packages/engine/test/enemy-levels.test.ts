@@ -154,10 +154,12 @@ describe('the level gap', () => {
     expect(ENEMY_LEVELS.gap).toMatchObject({ to_hit_per_level: 1, max_levels: 5, one_hit_levels_below: 5 });
   });
   it('far below: an enemy 5 or more levels below the character who hurts it is taken out by that hit; 4 below is not', () => {
-    const hit = (pcLevel: number, foeLevel: number, tier = 'boss') => { const f = fightWith([{ level: pcLevel }], [{ tier }], { level: foeLevel }); const foe = f.foe;
+    const hit = (pcLevel: number, foeLevel: number, tier = 'soldier') => { const f = fightWith([{ level: pcLevel }], [{ tier }], { level: foeLevel }); const foe = f.foe;
       withGame(f.g, () => applyDamage(f.cb, foe, 12, { by: f.pc, type: 'weapon', shield: true, credit: 'all' } as any)); return { hp: foe.hp, max: foe.maxHp, dead: foe.dead }; };
     expect(hit(10, 5)).toMatchObject({ hp: 0, dead: true });
-    expect(hit(20, 1, 'elite')).toMatchObject({ hp: 0, dead: true });
+    expect(hit(20, 1, 'minion')).toMatchObject({ hp: 0, dead: true });
+    // an Elite and a Boss are never taken out by the gap: they lose the 12 and fight on
+    for (const tier of ['elite', 'boss']) { const r = hit(20, 1, tier); expect(r.dead).toBe(false); expect(r.hp).toBe(r.max - 12); }
     const near = hit(10, 6); expect(near.hp).toBe(near.max - 12); expect(near.dead).toBe(false);
     // the other way round it is only the to-hit line: a character far below an enemy is not taken out by one hit
     const f = fightWith([{ level: 1 }], [{}], { level: 12 }), hp = f.pc.hp;

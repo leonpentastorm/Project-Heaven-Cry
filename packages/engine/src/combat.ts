@@ -491,9 +491,10 @@ export function levelGap(a: Unit, b: Unit, cb?: Combat | null): number {
   const foe = a.side === 'foe' ? a : b.side === 'foe' ? b : null; if (!foe || foe.lvlDmg == null) return 0;
   const m = ENEMY_LEVELS.gap.max_levels; return Math.max(-m, Math.min(m, la - lb));
 }
-/** Rules 1.15: this enemy is 5 or more levels below the character (or companion) who is hurting it: one hit takes it out. */
+/** Rules 1.15: this enemy (never an Elite or a Boss) is 5 or more levels below the character (or companion) who is hurting it: one hit takes it out. */
 export function farBelow(t: Unit, by: Unit | null | undefined, cb?: Combat | null): boolean {
   if (!by || t.side !== 'foe' || t.companion || by.side === 'foe' || t.level == null || t.lvlDmg == null) return false;
+  if (t.tier === 'elite' || t.tier === 'boss') return false; // Leon, 11 Nov 2026: an Elite and a Boss are never taken out in one hit by the gap
   const lb = gapLevel(by, cb); return lb != null && lb - t.level >= ENEMY_LEVELS.gap.one_hit_levels_below;
 }
 // The hit itself (rules 1.15): whatever the enemy's HP and shield, as long as the hit deals at least 1 damage. It is

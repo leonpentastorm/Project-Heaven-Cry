@@ -81,7 +81,7 @@ describe('the level gap', () => {
     expect(levelGap(lo, hi)).toBe(0);
   });
   it('far below (5 levels or more): the card says so, one hit takes it out whatever its HP and shield, and the log says why', () => {
-    const f = fightWith([{ level: 20 }], [{ tier: 'boss' }], { level: 15 });
+    const f = fightWith([{ level: 20 }], [{ tier: 'soldier' }], { level: 15 }); // an Elite or a Boss is never taken out by the gap (Leon, 11 Nov 2026)
     const pc = f.turn(f.pc), boss = f.foe; pc.pos = '3,5'; boss.pos = '7,5'; boss.shield = 200;
     withGame(f.g, () => {
       const pv = previewAttack(f.cb, pc, boss, 'shot');

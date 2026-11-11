@@ -18,10 +18,11 @@ import os, re, subprocess, sys, time, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ANIM = ['turn-order', 'melee-fx', 'reload', 'cutins', 'clarity', 'brass', 'combat-speed']
-RULES = ['rules114', 'two-players', 'coop-stall', 'old-save', 'skeleton-screens', 'creation-points', 'creation-layout', 'physical',
+# real speed: these check animation or timing (faith-pg times the Miracle; two-players watches the turn banners go by)
+ANIM = ['turn-order', 'melee-fx', 'reload', 'cutins', 'clarity', 'brass', 'combat-speed', 'faith-pg', 'two-players']
+RULES = ['rules114', 'coop-stall', 'old-save', 'skeleton-screens', 'creation-points', 'creation-layout', 'physical',
          'physical-pack', 'perks', 'pg-levelup', 'combat-fixes', 'world-play', 'classes', 'classes-moves', 'sandbox',
-         'right-panels', 'tabs', 'gear-icons', 'ground', 'faith-pg']
+         'right-panels', 'tabs', 'gear-icons', 'ground']
 GROUPS = {'smoke': ['old-save', 'two-players', 'rules114', 'perks', 'turn-order'], 'anim': ANIM, 'rules': RULES, 'all': RULES + ANIM}
 
 args = sys.argv[1:]
