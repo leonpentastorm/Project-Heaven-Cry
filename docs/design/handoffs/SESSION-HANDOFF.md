@@ -7,6 +7,20 @@ proves which change), then this.
 
 **`docs/design/handoffs/BUGLIST-0.22.md`**: fourteen bugs and asks from Leon's playtest of 0.22.0, in order, starting with merging `origin/main` (0.22.0, a music expansion from another session) into this branch. Do that list before anything in section 4.
 
+## 0a. Checkpoint, 11 Nov 2026 (Leon called it at 99% usage)
+
+Everything in the working tree is pushed on `claude/charming-gauss-hbq4n0` as "CHECKPOINT, not verified" commits.
+Nothing in them has been through `npm run check`, the browser suites or `python3 tools/validate_art.py`: run those
+first. Whether the maps and camera review (workflow run `wf_330a0dc7-9eb`) finished was not checked; treat its
+last edits (`packages/engine/src/combat.ts`, `apps/web/e2e/turn-order.mjs`) as unreviewed.
+
+Added since the last hand-off:
+- `BUGLIST-0.22.md` section E: what Leon's report from room QDF3DM shows (leads for bugs 10, 11, 13, 14).
+- Balance pass section 13: Outburst gets a full rework in the damage step (Leon: Rage adds Strain with no bigger
+  multiplier, Shame only hurts you; every feeling, module, tone and shape gets audited and priced).
+
+Order when usage is back: verify the checkpoint, then the bug list, then the damage step with the Outburst rework.
+
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music

@@ -335,3 +335,20 @@ and Narrator split `adjudication-split.md`; the 38 questions and Leon's answers 
 4. **A hit costs Momentum at most once a round.**
 5. **"3 turns of focus"** is 3 rounds under fire from half the enemies of a standard fight for four.
 6. **The engine target** is "no rule is ever left to the Narrator", not a share of labels.
+
+## 13. Outburst needs a full rework in the damage step (Leon, 11 Nov 2026)
+
+Leon, from play on 0.22.0: "we need to rebalance the Outburst hugely. Rage adds Strain but does not make the
+multiplier bigger; Shame deals 5 damage to you and does nothing else. Everything in the Outburst module needs a look."
+
+This is part of the damage step, not a later pass. To do, in order:
+
+1. **Audit every one of the 25 feelings** (rules 1.8): for each, what the card says, what the engine does, what it
+   costs (Strain, HP, AP) and what it gives (step size, behaviour, residue). A feeling that costs and gives nothing
+   back is a bug in the numbers. Rage and Shame are the first two named; check them in the engine before trusting
+   the report (not reproduced yet).
+2. **Audit every module, school, tone and shape** the same way, and the stage multipliers (×0.8 / 1 / 1.4 / 1.8 / 2.2).
+3. **Price them with the same instruments as weapons**: the fight simulator and the action price list, against the
+   targets in sections 5, 8 and 12 (Outburst steady at 125% of a plain weapon; the peak rule in section 10).
+4. **Rule for every feeling:** a Pump with a feeling must be better than a plain Pump in one clear way, and its cost
+   must be in proportion. Draft the new numbers as one table for Leon, flagged provisional, spec first.
