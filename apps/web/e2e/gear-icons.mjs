@@ -103,7 +103,11 @@ g = await G();
 const me = mine(g);
 // spend a round on something with HP (no target in sight needed): cover, as ground.mjs does
 let e1 = 'no cover in range';
-for (const k of ['5,4', '3,8', '3,2', '3,3', '4,4', '6,5', '11,9']) { e1 = await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if (!e1) break; }
+{ // any cover in reach will do (the maps were redrawn at 26 x 26 in rules 1.16: no tile is named here)
+  const [ux, uy] = (await G()).combat.units.find((u) => u.id === me.id).pos.split(',').map(Number), near = [];
+  for (let dy = -7; dy <= 7; dy++) for (let dx = -7; dx <= 7; dx++) if (dx || dy) near.push([dx * dx + dy * dy, (ux + dx) + ',' + (uy + dy)]);
+  const a0 = mine(await G()).ammo;
+  for (const [, k] of near.sort((a, b) => a[0] - b[0])) { const r = await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if (mine(await G()).ammo < a0) { e1 = null; break; } if (r) e1 = r; } }
 await p.waitForTimeout(1500);
 const e2 = await act({ type: 'combat/reload', unitId: me.id });
 if (e1 || e2) console.log('     shot:', e1, '· reload:', e2, '· ammo', mine(await G()).ammo);

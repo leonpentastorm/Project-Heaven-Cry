@@ -2,6 +2,7 @@
 // is an action or rides on one, else with the game bound and the engine's own functions (moveUnit, resolveAttack,
 // applyDamage, emit), the same calls the reducer and the enemy AI make.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { apply, defense, moveUnit, resolveAttack, previewAttack, applyDamage, applyCond, condOn, d20, emit, emitStory, refOf, objectsOf, endTurn, healingMult, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -157,7 +158,7 @@ describe('CCEC Ballistician', () => {
     expect((s.g.story.rulings || []).some((r: any) => /Case File on Vex/.test(r.text))).toBe(true);
     emitStory(s.g, 'check_result', { c: s.g.characters[c.id], ck: { skills: ['analysis'], roll: { ok: true } }, g: s.g });
     expect(s.g.characters[c.id].state!['class:ccec_ballistician.case_file'].files).toContain('Vex');
-    s.act({ type: 'narrator/turn', turn: { narration: 'Vex draws.', combat: { name: 'Vex', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Vex', tier: 'soldier', weapon: 'service_pistol', at: 'O6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Vex draws.', combat: { name: 'Vex', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Vex', tier: 'soldier', weapon: 'service_pistol', at: 'O6' }] } } } as any);
     const vex = s.g.combat!.units.find((u) => u.name === 'Vex')!;
     expect(condOn(vex, 'marked')).toBe(true);
   });

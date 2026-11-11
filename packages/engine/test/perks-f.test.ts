@@ -3,6 +3,7 @@
 // an action exists, else with the game bound and the engine's own functions (applyCond, applyDamage, healUnit,
 // enemyTurn, endTurn…), the same calls the reducer makes.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   emit, applyCond, applyDamage, healUnit, previewAttack, statQuery, endTurn, enemyTurn, condOn, d20, storyConds, perkActionsFor,
   type Unit, type Combat, type GameState,
@@ -56,7 +57,7 @@ describe('Bone Talk', () => {
     s.act({ type: 'narrator/turn', turn: { narration: 'He says nothing.', conditions: [{ target: 'The courier', id: 'shaken' }] } } as any);
     const head = storyCheck(s, c.id, ['charisma'], { target: 'The courier' }).roll();
     expect(head).toMatch(/\+2 The courier is Shaken/);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'The courier', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'The courier', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
     expect(condOn(s.g.combat!.units.find((u) => u.name === 'The courier')!, 'shaken')).toBe(true);
   });
 });
@@ -149,7 +150,7 @@ describe('True Name', () => {
     s.act({ type: 'story/perk', charId: c.id, id: 'true_name', actionId: 'true_name_story', text: 'The Hollow Saint' });
     expect(s.g.story.rulings!.at(-1)!.key).toBe('perk:true_name');
     expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'true_name', actionId: 'true_name_story', text: 'again' })).toThrow();
-    s.act({ type: 'narrator/turn', turn: { narration: 'It comes.', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'The Hollow Saint', tier: 'elite', weapon: 'service_pistol', at: '', kind: 'upper_realm' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'It comes.', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'The Hollow Saint', tier: 'elite', weapon: 'service_pistol', at: '', kind: 'upper_realm' }] } } } as any);
     const cb = s.g.combat!, pc = cb.units.find((u) => u.side === 'pc')!, t = cb.units.find((u) => u.side === 'foe')!; open(cb); pc.pos = '2,5'; t.pos = '4,5';
     expect(withGame(s.g, () => previewAttack(cb, pc, t, 'shot').dmg!.mults.some((x) => x.label.startsWith('against this target') && x.label.includes('True Name')))).toBe(true);
   });
@@ -204,7 +205,7 @@ describe('Red Line', () => {
   });
   it('I in a fight: +1 on the unit\'s Heart save; II: allies within 3 tiles +1', () => {
     const s = storyWith([{ perks: { red_line: 'I' } }]); s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'red_line', actionId: 'name_line', text: 'No civilians.' });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'X', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'X', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.side === 'pc')!, base = s.g.characters[u.charId!].skills.composure || 0;
     expect(u.sv!.heart).toBe((base ? base - 1 : -2) + 1);
     const f = fight([{ perks: { red_line: 'II' } }, {}]); charOf(f.g, f.pc).state = { red_line: 'No civilians.' };
@@ -304,7 +305,7 @@ describe('Grudge Bearer', () => {
     s.act({ type: 'narrator/turn', turn: { narration: 'Kain laughs.', traitState: [{ charId: c.id, key: 'grudge', value: 'Captain Kain' }] } } as any);
     expect(storyCheck(s, c.id, ['eloquence'], { auto: 'success' }).roll()).toMatch(/−2 Never Forgive/);
     expect(storyCheck(s, c.id, ['eloquence'], { target: 'Captain Kain', auto: 'success' }).roll()).not.toMatch(/Never Forgive/);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Captain Kain', tier: 'elite', weapon: 'service_pistol', at: '' }, { name: 'Guard', tier: 'minion', weapon: 'service_pistol', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Captain Kain', tier: 'elite', weapon: 'service_pistol', at: '' }, { name: 'Guard', tier: 'minion', weapon: 'service_pistol', at: '' }] } } } as any);
     const cb = s.g.combat!; open(cb); const pc = cb.units.find((u) => u.side === 'pc')!; pc.pos = '2,5';
     const [kain, guard] = cb.units.filter((u) => u.side === 'foe'); kain.pos = '4,5'; guard.pos = '4,6';
     expect(withGame(s.g, () => previewAttack(cb, pc, guard, 'shot').terms!.some((t) => t.label === 'Never Forgive'))).toBe(true);
@@ -367,7 +368,7 @@ describe('Moon Hunter', () => {
     const s = storyWith([{ traits: ['moon_hunter'] }]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'moon_hunter', actionId: 'track', text: 'The Scavenger' });
     expect(s.g.story.rulings!.at(-1)!.key).toBe('trait:moon_hunter');
-    s.act({ type: 'narrator/turn', turn: { narration: 'There.', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'The Scavenger', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'There.', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'The Scavenger', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
     const cb = s.g.combat!; open(cb); const pc = cb.units.find((u) => u.side === 'pc')!, t = cb.units.find((u) => u.side === 'foe')!; pc.pos = '2,5'; t.pos = '4,5';
     expect(withGame(s.g, () => previewAttack(cb, pc, t, 'shot').dmg!.mults.some((x) => x.label.startsWith('against this target') && x.label.includes('Tracker')))).toBe(true);
     cb.turn = cb.order.indexOf(pc.id); pc.ap = 9;

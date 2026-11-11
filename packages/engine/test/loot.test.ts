@@ -3,6 +3,7 @@
 // the weapon worn and the leftover magazines always, rolled things capped a fight, a boss's notable thing, and three
 // layers of tables (the engine's, the campaign's, the Narrator's), the most specific winning.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, type Sheet, type GameState, type Action, type NarratorTurn, type MapObject, type Combat, type Unit, newGame, apply, newCharacter, startCombat, noteDeaths, active,
   WEAPON, maxDurOf, refOf, keyOf, storyObjects, packOf, viewFor, npcsOf, combatReport, validateCampaign, BUILT_IN_CAMPAIGNS,
@@ -18,7 +19,7 @@ const clone = <T>(x: T): T => JSON.parse(JSON.stringify(x));
 /** A bare fight on the yard: one character and these foes, on a known seed. */
 function bare(foes: any[], difficulty = 'standard', seed = 7) {
   const c = newCharacter('c1', 'p1', sheetOf('Rook')), rng = { state: seed };
-  const cb = startCombat('Drill', 'yard', [{ c }], foes, difficulty, rng);
+  const cb = startCombat('Drill', 'yard16', [{ c }], foes, difficulty, rng);
   return { c, cb, rng, foes: cb.units.filter((u) => u.side === 'foe') };
 }
 const kill = (cb: Combat, u: Unit, rng: { state: number }) => { u.dead = true; u.hp = 0; noteDeaths(cb, rng); };

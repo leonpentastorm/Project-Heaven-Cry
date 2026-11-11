@@ -1,7 +1,8 @@
-// The combat map's size: Auto (the default) fits the map to its zone at any resolution, growing past 100% on big
-// screens and shrinking on small ones; Manual is a size the player picks (− / + buttons, the − and + keys, Ctrl or ⌘
-// with the mouse wheel over the map), and the map scrolls inside its zone when it is bigger. A per-browser preference
-// (localStorage), never game state. Pure functions here (tested in mapZoom.test.ts); screens/combat.js applies them.
+// The combat map's size. The default ('auto') is the usual size: the tiles are as big as a 16 x 11 map's were when it was
+// fitted to the window, and a bigger map scrolls in its window (the camera: game/camera.ts usualScale, cameraView.ts).
+// Manual is a size the player picks (− / + buttons, the − and + keys, Ctrl or ⌘ with the mouse wheel over the map). A
+// per-browser preference (localStorage), never game state. Pure functions here (tested in mapZoom.test.ts);
+// screens/combat.js applies them. autoFit is the plain fit-to-room arithmetic the tests keep.
 export type ZoomMode = 'auto' | 'manual';
 export interface MapZoom { mode: ZoomMode; scale: number }
 export const MAP_ZOOM_KEY = 'phc.mapZoom';
@@ -47,4 +48,6 @@ export const ZOOM_CSS = [
   '.phc-mapzoom button[aria-pressed=true]{border-color:#FFFFFF;background:#1C2536;color:#FFFFFF}',
   '.phc-mapzoom button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   '.phc-mapzoom .phc-mz-pct{min-width:52px}',
+  '.phc-mapzoom{flex-wrap:wrap}.phc-mapzoom kbd{margin-left:4px;padding:1px 5px;border-radius:4px;border:1px solid #3B475D;color:#A3AEC2;font:700 10px/1 \'Chakra Petch\',sans-serif}',
+  '.phc-mapzoom .phc-mz-whole{margin-left:8px}.phc-mapzoom>.phc-mz-hint{margin:0 0 0 8px;font-size:11px;font-weight:500;letter-spacing:0;color:#A3AEC2}',
 ].join('');

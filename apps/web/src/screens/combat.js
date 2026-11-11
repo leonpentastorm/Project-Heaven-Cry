@@ -21,6 +21,8 @@ const act = (a) => {
   return actNow(a);
 };
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
+import { CameraView, CAMERA_CSS } from '../game/cameraView';
+import { usualScale, overviewScale, naturalSize, fitsWhole, panKey, REF_W } from '../game/camera';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { forecastVals } from '../game/manaForecast';
 import { echoView } from '../game/echoView';
@@ -153,6 +155,10 @@ const COMBAT_CSS = [
   // the tab panel that gives up the room, the footer). Nothing above the footer scrolls the Say row away.
   // The cap leaves the turn box what it needs (about 520 px: YOUR TURN, AP, tabs, a usable tab panel, the footer).
   '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(42%, calc(100% - 520px))}.phc-cb-top:empty{display:none}',
+  // A tall footer (a target behind cover under two rows of tabs) used to push Confirm off the column's end and squeeze
+  // the action list to nothing. Beside the map (1000 px and wider) the list keeps a usable height, the dock scrolls
+  // inside itself when it must, and Confirm and End turn stay at its foot.
+  '@media (min-width:1000px){.phc-cb-aside .phc-cb-dock{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-cb-aside .phc-cb-tabpanel{min-height:84px}.phc-cb-aside .phc-cb-confirm{position:sticky;bottom:0;z-index:4;background:#0A0D13;padding-top:6px;margin-top:-6px}}',
   '.phc-cb-hide,.phc-cb-link,.phc-cb-show{transition:background-color .12s,color .12s,border-color .12s}.phc-cb-hide:hover,.phc-cb-link:hover,.phc-cb-show:hover{background:#1C2536!important;color:#FFFFFF!important;border-color:#A3AEC2!important}',
   '.phc-cb-hide:focus-visible,.phc-cb-link:focus-visible,.phc-cb-show:focus-visible,.phc-cb-mini button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   // Short windows (1280×720): You shrinks to one line in the bar, and on your turn the squad list steps aside (the
@@ -178,24 +184,37 @@ ensureStyle('phc-combat-motion', COMBAT_CSS);
 ensureStyle('phc-combat-layout', LAYOUT_CSS);
 ensureStyle('phc-resources', RES_CSS);
 ensureStyle('phc-combat-mapzoom', ZOOM_CSS);
+ensureStyle('phc-camera', CAMERA_CSS);
+/** The fight's camera (roadmap 2c; game/cameraView.ts): the map's window keeps the usual tile size and follows the play.
+ *  Local to this browser: every player in a room has their own. */
+const CAM = new CameraView('fight');
+/** Room kept free beside the map for the small map, so the tiles in that corner can be scrolled out from under it. */
+const MINI_SLACK = 172;
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
 let LIVE = null;
 const onScreen = () => typeof document !== 'undefined' && !!document.querySelector('.phc-grid');
-/** Bring a tile into view on the grid: scroll it to the middle; on your own turn, a short zoom on it, then settle.
- *  Driven by the turn intro's phc:focus-tile, which follows the shared turn order, so every screen does the same. */
+/** A narrow window scrolls the whole page: bring the map's window back into it (the jump-back key and button). */
+function pageToMap() {
+  const box = typeof document !== 'undefined' ? document.querySelector('.phc-grid-scroll') : null; if (!box || !box.scrollIntoView) return;
+  const r = box.getBoundingClientRect();
+  if (r.top < 0 || r.bottom > (window.innerHeight || 0)) box.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' });
+}
+/** A turn starts on a tile: the camera goes to it (your own turn: centred on your unit, with a short zoom on it, then
+ *  settle). Driven by the turn intro's phc:focus-tile, which follows the shared turn order, so every screen does the
+ *  same; the effects queue moves the camera for everything else (game/fx/play.ts runQueue). */
 export function focusTile(key, mine) {
   if (typeof document === 'undefined' || !key) return;
-  const grid = document.querySelector('.phc-grid'), scroller = grid && grid.closest('.phc-grid-scroll');
+  const grid = document.querySelector('.phc-grid');
   const tile = grid && grid.querySelector('button.phc-tok[aria-label^="' + refOf(key) + ' ·"]');
   if (!grid || !tile) return;
-  const rm = reducedMotion(), tr = tile.getBoundingClientRect();
-  if (scroller && scroller.scrollWidth > scroller.clientWidth + 1 && scroller.scrollTo) {
-    const sr = scroller.getBoundingClientRect();
-    scroller.scrollTo({ left: Math.max(0, scroller.scrollLeft + (tr.left + tr.width / 2) - (sr.left + sr.width / 2)), behavior: rm ? 'auto' : 'smooth' });
-  }
-  if ((tr.top < 0 || tr.bottom > (window.innerHeight || 0)) && tile.scrollIntoView) tile.scrollIntoView({ block: 'center', inline: 'nearest', behavior: rm ? 'auto' : 'smooth' });
-  if (!mine || rm || document.hidden || !grid.animate) return;
+  const rm = reducedMotion();
+  CAM.follow([key], mine ? 'turn-mine' : 'turn');
+  // A narrow window scrolls the whole map zone: bring the map itself into the window.
+  // (With a camera the tile is brought into the map's window by the camera; the page only has to show that window.)
+  const tr = tile.getBoundingClientRect(), box = CAM.scrolls() ? document.querySelector('.phc-grid-scroll') : tile, br = box ? box.getBoundingClientRect() : tr;
+  if (box && (br.top < 0 || br.bottom > (window.innerHeight || 0)) && box.scrollIntoView) box.scrollIntoView({ block: box === tile ? 'center' : 'nearest', inline: 'nearest', behavior: rm ? 'auto' : 'smooth' });
+  if (!mine || rm || document.hidden || !grid.animate || CAM.overview) return;
   const gr = grid.getBoundingClientRect(), o = Math.round(tr.left + tr.width / 2 - gr.left) + 'px ' + Math.round(tr.top + tr.height / 2 - gr.top) + 'px';
   grid.animate([{ transform: 'scale(1)', transformOrigin: o }, { transform: 'scale(1.09)', transformOrigin: o, offset: 0.35 }, { transform: 'scale(1)', transformOrigin: o }], { duration: 900, easing: 'cubic-bezier(.2,.8,.2,1)' });
 }
@@ -205,7 +224,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
   // Keys 1–9 flip the action tabs on your turn (the row wraps onto a second line when the tabs don't fit); a resize refits the grid beside the pinned action column.
-  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); } });
+  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); LIVE.camKey(e); } });
   // Ctrl or ⌘ with the wheel over the map sizes the map (not the page). Non-passive, so the page zoom is held back there.
   window.addEventListener('wheel', (e) => { if (!LIVE || !onScreen() || !(e.ctrlKey || e.metaKey) || !e.target || typeof e.target.closest !== 'function' || !e.target.closest('.phc-grid-scroll, .phc-mapzoom')) return;
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
@@ -507,10 +526,13 @@ export class CombatLogic extends DCLogic {
     if (to < panel.scrollTop - 1 && panel.scrollTo) panel.scrollTo({ top: to, behavior: reducedMotion() ? 'auto' : 'smooth' });
     return true;
   }
-  /** The map's size: a step in or out (Manual from then on), back to Auto, or 100%. */
+  /** The map's size: a step in or out (your own size from then on), back to the usual size, or 100%. Any of them
+   *  leaves the overview. */
   zoomBy(what) {
+    const back = !!this._overview; this._overview = false; CAM.overview = false;
     ZOOM = normaliseZoom(zoomAction(ZOOM, this._zoom || 1, what)); saveZoom(ZOOM);
     this._fitKey = null; this.fitGrid(); this.setState({});
+    if (back) this.camAfter(() => CAM.follow([CAM.home].filter(Boolean), 'ask', true));
   }
   /** − and + (= too) size the map; not while typing, not under a dialog or the turn card. */
   zoomKey(e) {
@@ -519,13 +541,53 @@ export class CombatLogic extends DCLogic {
     if (!getState().game?.combat) return;
     e.preventDefault(); this.zoomBy(e.key === '-' ? 'out' : 'in');
   }
+  /** Run f once the page has laid the map out again (two frames: the render, then the measure). */
+  camAfter(f) { if (typeof requestAnimationFrame === 'undefined') return; requestAnimationFrame(() => requestAnimationFrame(() => { if (LIVE === this) { this.camSync(); f(); } })); }
+  /** The overview: the whole map fitted to the window, and back to the camera (centred on a tile when one is given,
+   *  else on your unit). Nothing to switch when the whole map already fits at the usual size. */
+  toggleOverview(key) {
+    if (!this._overview && !this._camNeeded) return false;
+    this._overview = !this._overview; CAM.overview = this._overview;
+    this._fitKey = null; this.fitGrid(); this.setState({});
+    if (!this._overview) this.camAfter(() => CAM.follow([key || CAM.home].filter(Boolean), 'ask', true));
+    return true;
+  }
+  /** The camera's keys: M the whole map and back, Home back to your unit, the arrows and WASD move the view. Not
+   *  while typing, not under a dialog, the backpack or the turn card, and not on a control that uses the arrows itself. */
+  camKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    const t = e.target;
+    if (typingIn(t) || typingIn(document.activeElement) || this.state.bp || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (!getState().game?.combat) return;
+    if (e.key === 'm' || e.key === 'M') { if (!e.repeat && this.toggleOverview()) e.preventDefault(); return; }
+    if (e.key === 'Home') { if (e.repeat) return; e.preventDefault(); if (this._overview) this.toggleOverview(); else CAM.goHome(); pageToMap(); return; }
+    const d = panKey(e.key); if (!d) return;
+    if (t && typeof t.closest === 'function' && t.closest('[role="tablist"], [role="slider"], [role="separator"], [role="radiogroup"], [role="listbox"], [role="menu"], .phc-grip, select')) return;
+    if (CAM.pan(d)) e.preventDefault();
+  }
+  /** After a render: the camera binds to the map's window, gets the small map's picture, and on a new fight starts on
+   *  your unit. */
+  camSync() {
+    if (typeof document === 'undefined') return;
+    const g = getState().game, cb = g && g.combat, sc = document.querySelector('.phc-grid-scroll'), ov = document.querySelector('.phc-cam-over[data-phc-cam="fight"]');
+    if (!cb || !sc) return;
+    const key = (g.code || '') + '|' + cb.name + '|' + (cb.log[0] || ''), fresh = !CAM.live() || this._camFight !== key;
+    CAM.onMini = () => { if (LIVE === this) { this._fitKey = null; this.setState({}); } };
+    CAM.attach(sc, ov, cb.map.w, cb.map.h); CAM.setMini(this._mini || null);
+    if (fresh && CAM.grid()) { this._camFight = key; if (CAM.home) CAM.follow([CAM.home], 'ask', true); }
+    const mini = CAM.miniShown(); if (mini !== !!this._miniOn) { this._miniOn = mini; this.setState({}); }
+  }
   /** The map toolbar's bindings. */
   zoomVals() {
-    const z = this._zoom || 1, auto = ZOOM.mode === 'auto';
-    return { label: zoomLabel(z), auto: auto ? 'true' : 'false', manual: auto ? 'false' : 'true',
+    const z = this._zoom || 1, over = !!this._overview, auto = ZOOM.mode === 'auto' && !over, can = !!this._camNeeded || over;
+    return { label: zoomLabel(z), auto: auto ? 'true' : 'false', manual: auto || over ? 'false' : 'true',
       out: () => this.zoomBy('out'), in: () => this.zoomBy('in'), toAuto: () => this.zoomBy('auto'), reset: () => this.zoomBy('reset'),
-      cantOut: !auto && ZOOM.scale <= ZOOM_MIN, cantIn: !auto && ZOOM.scale >= ZOOM_MAX,
-      pctTitle: auto ? 'Auto: the map fits its zone (' + zoomLabel(z) + '). Click for 100%.' : 'Click for 100%', autoTitle: 'Auto: fit the map to its zone at any screen size' };
+      cantOut: !auto && !over && ZOOM.scale <= ZOOM_MIN, cantIn: !auto && !over && ZOOM.scale >= ZOOM_MAX,
+      pctTitle: auto ? 'The usual size (' + zoomLabel(z) + '). Click for 100%.' : 'Click for 100%', autoTitle: 'The usual size: the tiles stay as big as they always were, and the view follows the fight',
+      whole: over ? 'true' : 'false', toggleWhole: () => { this.toggleOverview(); }, cantWhole: !can,
+      wholeTitle: over ? 'Back to the fight (M). Or click a tile to go there.' : can ? 'See the whole map (M)' : 'The whole map is already on screen',
+      home: () => { if (this._overview) this.toggleOverview(); else CAM.goHome(); pageToMap(); }, homeTitle: 'Back to your unit (Home)',
+      hint: over ? 'Whole map: click a tile to go there.' : can ? 'Drag the map, or use the arrow keys.' : '', hasHint: over || can };
   }
   /** A new layout (a panel dropped, the splitter let go, Reset): saved for this browser, then the grid refits. */
   setLayout(l) {
@@ -587,20 +649,34 @@ export class CombatLogic extends DCLogic {
     const mapP = sec.querySelector(':scope > [data-phc-panel="map"]'), mapOrd = mapP ? Number(getComputedStyle(mapP).order) || 0 : 0, gap = parseFloat(getComputedStyle(sec).rowGap) || 0;
     const panelsAboveH = [...sec.querySelectorAll(':scope > [data-phc-panel]')].filter((p) => p !== mapP && (Number(getComputedStyle(p).order) || 0) < mapOrd).reduce((t, p) => t + p.offsetHeight + gap, 0);
     const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = (narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18) - toolH - panelsAboveH;
-    // Manual: the player's own size (the map scrolls inside its zone when bigger).
-    if (ZOOM.mode === 'manual') { if (ZOOM.scale !== (this._zoom || 1)) { this._zoom = ZOOM.scale; this.setState({}); } return; }
-    // Auto: the largest size that fits, growing past 100% on big screens (up to the manual maximum).
-    let fit = Math.min(ZOOM_MAX, availW / natW, availH / natH);
-    // Panel hidden: the grid sits on the left and stays clear of the turn mini-bar in the bottom-right corner, either
-    // beside it or above it (whichever leaves the bigger map), so no tile hides under it.
+    // The room for the map's window. Panel hidden: the window stays clear of the turn mini-bar in the bottom-right corner,
+    // either beside it or above it (whichever leaves the bigger tiles, then the bigger window), so no tile hides under it.
+    let aW = Math.max(120, availW), aH = Math.max(120, availH);
+    const w = cb.map.w, h = cb.map.h;
     if (PANEL_HIDDEN && !narrow) {
       const r = sec.getBoundingClientRect(), miniRight = getState().game?.sandbox ? 64 : 20;
-      const besideW = window.innerWidth - miniRight - Math.min(380, window.innerWidth - 32) - 16 - (r.left + 2);
-      const aboveH = window.innerHeight - 16 - MINI_H - 12 - (r.top + 16) - panelsAboveH;
-      fit = Math.max(Math.min(fit, besideW / natW), Math.min(fit, aboveH / natH));
+      const besideW = Math.min(aW, window.innerWidth - miniRight - Math.min(380, window.innerWidth - 32) - 16 - (r.left + 2));
+      const aboveH = Math.min(aH, window.innerHeight - 16 - MINI_H - 12 - (r.top + 16) - panelsAboveH);
+      const zb = usualScale(besideW, aH, w, h), za = usualScale(aW, aboveH, w, h);
+      if (zb > za || (zb === za && besideW * aH >= aW * aboveH)) aW = Math.max(120, besideW); else aH = Math.max(120, aboveH);
     }
-    const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, fit) * 100) / 100;
-    if (z !== (this._zoom || 1)) { this._zoom = z; this.setState({}); }
+    // The usual size (game/camera.ts): what a 16 x 11 map fitted to this room came to, so the tiles are as big as they
+    // always were and a bigger map scrolls in its window (the camera). The overview fits the whole map; a size the
+    // player picked is theirs.
+    const usual = usualScale(aW, aH, w, h, narrow), needed = !fitsWhole(aW, aH, w, h, usual);
+    if (!needed && this._overview) { this._overview = false; CAM.overview = false; }
+    const z = this._overview ? overviewScale(aW, aH, w, h, narrow) : ZOOM.mode === 'manual' ? ZOOM.scale : usual;
+    // The window: as wide as the map people know (16 tiles) unless the player sized the zone, hid the column or picked
+    // a size; as tall as the room allows.
+    const wide = sized || PANEL_HIDDEN || narrow, whole = this._overview || ZOOM.mode === 'manual';
+    const vw = Math.floor(wide ? aW : Math.min(aW, Math.ceil(naturalSize(whole ? w : Math.min(w, REF_W), 1).w * z) + (needed && !this._overview ? 14 : 2))), vh = Math.floor(aH);
+    // The overview keeps the map zone as wide as the usual view made it (the smaller map sits in the middle of it), so
+    // the action column beside it does not jump wider and back each time the player looks at the whole map.
+    const col = this._overview ? Math.floor(wide ? aW : Math.min(aW, Math.ceil(naturalSize(Math.min(w, REF_W), 1).w * usual) + 14)) : vw;
+    const v0 = this._view || {};
+    if (z !== (this._zoom || 1) || vw !== v0.w || vh !== v0.h || col !== v0.col || needed !== !!this._camNeeded) { this._zoom = z; this._view = { w: vw, h: vh, col }; this._camNeeded = needed; this.setState({}); }
+    CAM.fits = !this._overview && fitsWhole(aW, aH, w, h, z);
+    CAM.sync();
   }
 
   renderVals() {
@@ -787,7 +863,8 @@ export class CombatLogic extends DCLogic {
     // the perk previews already count it); the cost shown is what is left to pay, and the panel says it is free.
     const encoreLend = !mineTurn ? 0 : encoreCredit(cur, cChip ? { type: 'combat/call', id: cId } : tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : pkE ? { type: 'combat/perk', id: pkE.id } : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
-    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
+    const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
+    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
     const condWord = (u) => (u.dead ? 'dead' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'wounded' : 'badly hurt');
 
     const at = {}; cb.units.filter((u) => !u.dead && seenFoe(u)).forEach((u) => { at[u.pos] = u; });
@@ -881,7 +958,12 @@ export class CombatLogic extends DCLogic {
     // World Play 1.7 (game/worldView.ts): the fight's hazards per tile, caches with their count, carried people a Downed
     // carrier dropped (lying on the floor until the fight ends).
     const myCharC = (cur && cur.charId && g.characters[cur.charId]?.owner === me ? cur.charId : Object.values(g.characters).find((x) => x.owner === me)?.id), WLc = worldLayer(g, true, myCharC), dropAt = {}; (cb.dropped || []).forEach((d) => { dropAt[d.at] = d; });
-    const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text });
+    // The letters and numbers stay at the window's edge while the map scrolls under them (the camera).
+    const AXIS = 'display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ';
+    const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text, style: AXIS + (key === 'h-' ? 'top: 0; left: 0; z-index: 7' : key[0] === 'h' ? 'top: 0; z-index: 6' : 'left: 0; z-index: 6') });
+    // Tooltips near an edge turn inward: the edge is the camera's window, not the map's (vx, vy: a tile's place in it).
+    const VT = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 }, vW = Math.max(1, VT.x1 - VT.x0 + 1), vH = Math.max(1, VT.y1 - VT.y0 + 1);
+    const vxOf = (x) => Math.max(0, Math.min(vW - 1, x - VT.x0)), vyOf = (y) => Math.max(0, Math.min(vH - 1, y - VT.y0));
     tiles.push(axis('h-', '')); for (let x = 0; x < cb.map.w; x++) tiles.push(axis('h' + x, refOf(x + ',0').replace(/\d+$/, '')));
     const WMk = watchMarks(g, cb, 'pc');
     for (let y = 0; y < cb.map.h; y++) for (let x = -1; x < cb.map.w; x++) {
@@ -915,7 +997,7 @@ export class CombatLogic extends DCLogic {
         key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.shield > 0 ? ' · Shield ' + u.shield + ' (damage takes it first)' : '') + (u.res && u.res.guard > 0 ? ' · Guard ' + u.res.guard : '') + (u.downed ? ' · Downed' : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
-        hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, cb.map.w, !!u) : '',
+        hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, vxOf(x), vyOf(y), vW, !!u) : '',
         hasCross: crossAt.has(k), crossStyle: CROSS_STYLE, crossChipStyle: CROSS_CHIP_STYLE,
         unseen: !vis.tiles.has(k), sensed: !!sensedAt[k], dark: !!cb.map.dark && !litAt(cb, k),
         hasHzd: !!wc.hz, hzdLayer: wc.hz ? wc.hz.layer : '', hzdGlyph: wc.hz ? wc.hz.glyph : '', hzdGlyphStyle: wc.hz ? wc.hz.glyphStyle : '', hzdKind: wc.hz ? wc.hz.kind + (wc.hz.safe ? ' safe' : '') : '',
@@ -929,8 +1011,8 @@ export class CombatLogic extends DCLogic {
         // long, Leon 10 Nov 2026): a long reason wraps, and near an edge the chip slides inward; on the top row it sits
         // under the tile. It is drawn over every token and overlay of the grid.
         costStyle: (() => { const txt = String(mTag || (aTag ? aTag.text : '') || ''), wrap = !!aTag && !aTag.ok && txt.length > 26, wPx = Math.min(wrap ? 230 : 400, txt.length * 7.2 + 16), half = wPx / 2;
-          const right = (cb.map.w - 1 - x) * 48 + 23 + 6, left = x * 48 + 23 + 22, dx = Math.round(Math.max(0, half - left) - Math.max(0, half - right));
-          return 'position: absolute; left: 50%; ' + (y === 0 ? 'top: calc(100% - 6px)' : 'bottom: calc(100% - 10px)') + '; transform: translateX(calc(-50% + ' + dx + 'px)); z-index: 30; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; pointer-events: none; '
+          const right = (vW - 1 - vxOf(x)) * 48 + 23 + 6, left = vxOf(x) * 48 + 23 + 22, dx = Math.round(Math.max(0, half - left) - Math.max(0, half - right));
+          return 'position: absolute; left: 50%; ' + (vyOf(y) === 0 ? 'top: calc(100% - 6px)' : 'bottom: calc(100% - 10px)') + '; transform: translateX(calc(-50% + ' + dx + 'px)); z-index: 30; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; pointer-events: none; '
             + (wrap ? 'white-space: normal; width: max-content; max-width: 230px; text-align: center; line-height: 1.25; ' : 'white-space: nowrap; '); })()
           + (aTag ? (aTag.ok ? 'background: #F65157; color: #0A0D13' : 'background: #1C2536; color: #F65157; border: 1px solid #F65157') : 'background: #FFFFFF; color: #0A0D13'),
         hasPlan: !!planStyle, planStyle: 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; box-sizing: border-box; ' + planStyle,
@@ -949,7 +1031,7 @@ export class CombatLogic extends DCLogic {
         // A preview line ends under the caster's token: while drawing, the joins sit above the token (and below the tip).
         joinStyle: 'position: absolute; left: -26px; top: -26px; width: 96px; height: 96px; pointer-events: none; z-index: ' + (SL.tiles[k] && SL.tiles[k].some((x) => x.kind === 'preview') ? 4 : 2),
         hasStrokeHot: SL.hot.has(k), strokeHotStyle: 'position: absolute; inset: 0; z-index: 2; border-radius: 4px; pointer-events: none; box-sizing: border-box; border: 1px solid ' + SIGIL_INK + '; box-shadow: inset 0 0 8px rgba(139, 222, 238, 0.35)',
-        hasStrokeTip: k === S.hover && !!SL.hotText, strokeTip: SL.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (x >= cb.map.w / 2 ? 'right: 0' : 'left: 0') + '; z-index: 5; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
+        hasStrokeTip: k === S.hover && !!SL.hotText, strokeTip: SL.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (vxOf(x) >= vW / 2 ? 'right: 0' : 'left: 0') + '; z-index: 5; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
         hasGlyphs: gls.length + trs.length > 0, glyphs: [...gls.map((gl) => ({ key: gl.id, title: glyphName(gl), src: glyphMark(gl, 'pc', knows).src,
           style: 'width: 16px; height: 16px; border-radius: 3px; background: rgba(5, 7, 11, 0.55); ' + (gl.side === 'pc' ? 'box-shadow: 0 0 6px rgba(79, 200, 223, 0.6)' : 'opacity: 0.85; box-shadow: 0 0 0 1px rgba(246, 81, 87, 0.5)') })),
           ...trs.map((t) => { const tm = traceMark(t, knows); return { key: 'tr-' + t.id, title: tm.title, src: tm.src, style: tm.style }; })],
@@ -980,6 +1062,10 @@ export class CombatLogic extends DCLogic {
       // an unseen hostile keeps its face and its initials to itself (the turn card's '?', below; review fix: the bar showed them)
       ...(() => { const sn = seenFoe(u), fc = sn ? faceOf(u) : ''; return { zoom: zoomer(this, fc, sn ? u.name : 'Unseen hostile', 'portrait'), hasImg: !!fc, noImg: !fc, img: fc, short: sn ? u.short : '?' }; })(),
       key: u.id, name: seenFoe(u) ? u.name + (u.downed ? ' (down)' : u.surrendered ? ' (surrendered)' : '') : 'Unseen hostile', init: u.init,
+      // A click on a portrait shows that unit on the map (the camera goes there); an unseen hostile gives nothing away.
+      show: () => { if (!seenFoe(u) || u.dead) return; if (this._overview) this.toggleOverview(u.pos); else CAM.follow([u.pos], 'ask'); },
+      showLabel: seenFoe(u) ? 'Show ' + u.name + ' on the map' : 'Unseen hostile: not on the map', cantShow: !seenFoe(u) || !!u.dead,
+      showBtn: 'padding: 0; border: 0; background: transparent; font-family: inherit; line-height: 0; border-radius: 6px; cursor: ' + (seenFoe(u) && !u.dead ? 'pointer' : 'default'),
       imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (u.surrendered ? '#A3AEC2' : '#F65157')) + (u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : ''),
       badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; border-radius: ' + (u.side === 'pc' ? '50%' : '4px') + '; border: 2px solid ' + ring(u) + '; color: ' + ring(u) + '; font-size: 11px; font-weight: 700',
       style: 'display: flex; gap: 8px; align-items: center; padding: 6px 12px 6px 6px; border-radius: 999px; flex: none; ' + (cur && u.id === cur.id && !cb.over ? 'border: 1px solid #FFFFFF; background: #1C2536; box-shadow: 0 0 0 1px #FFFFFF, 0 0 14px rgba(255, 255, 255, 0.25)' : 'border: 1px solid #232D3F'),
@@ -1367,6 +1453,15 @@ export class CombatLogic extends DCLogic {
     };
     // The grid fits the room beside the pinned column (fitGrid measures; it runs again on resize and when the map changes).
     const zoom = this._zoom || 1, fitKey = cb.map.w + 'x' + cb.map.h;
+    // The camera: whose turn the screen shows, where this player's unit is, and the small map's picture; it binds to
+    // the page after the render.
+    { const mineU = (cur && cur.side === 'pc' && owner(cur) === me && !cur.dead ? cur : null) || cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) || cb.units.find((u) => u.side === 'pc' && !u.dead);
+      CAM.myTurn = !!mineTurn; CAM.home = mineU ? mineU.pos : null; CAM.overview = !!this._overview;
+      const shown = cb.units.filter((u) => !u.dead && seenFoe(u)), nPc = shown.filter((u) => u.side === 'pc').length, nFoe = shown.length - nPc;
+      this._mini = { solid: cb.map.solid || [], full: Object.keys(covers).filter((k) => covers[k].kind === 'full'), half: Object.keys(covers).filter((k) => covers[k].kind !== 'full'),
+        dots: shown.map((u) => ({ key: u.pos, color: ring(u), me: !!mineU && u.id === mineU.id, square: u.side !== 'pc' })),
+        label: nPc + (nPc === 1 ? ' squad member' : ' squad members') + ', ' + nFoe + (nFoe === 1 ? ' hostile' : ' hostiles') + ' in sight' };
+      if (typeof requestAnimationFrame !== 'undefined' && !this._camRaf) this._camRaf = requestAnimationFrame(() => { this._camRaf = 0; if (LIVE === this) this.camSync(); }); }
     if (fitKey !== this._fitKey && typeof requestAnimationFrame !== 'undefined') { this._fitKey = fitKey; requestAnimationFrame(() => this.fitGrid()); }
     // ---------- the column hidden: a mini-bar keeps the turn playable ----------
     const hidden = PANEL_HIDDEN;
@@ -1385,13 +1480,16 @@ export class CombatLogic extends DCLogic {
     return {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend, turnPanels,
       gridLeave: () => { if (this.state.hover != null) this.setState({ hover: null }); }, // the stroke tip and lit stroke go with the cursor
-      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (hidden ? '; margin: 0 auto 0 0' : ''),
+      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
+      // The map's window (the camera): the grid scrolls inside it when it is bigger.
+      camStyle: 'flex: none; max-width: ' + (this._view ? this._view.w + 'px' : '100%') + (this._view ? '; max-height: ' + this._view.h + 'px' : ''),
+      camLabel: 'The map. Drag it, or use the arrow keys or W A S D, to look around; Home goes back to your unit; M shows the whole map.',
       // The Proving Ground's tools tab sits on the right edge: keep the action column clear of it.
       rowStyle: 'flex: 1 1 auto; min-height: 0; display: flex; padding: 0 ' + (g.sandbox ? 60 : 24) + 'px 12px 24px' + (lay.swap ? '; flex-direction: row-reverse' : ''), lay,
       // Room around the grid inside its scrolling column (top and right) for the hover chips over edge tiles.
       mz: this.zoomVals(),
       // A big Manual size never pushes the action zone below its minimum: the map scrolls inside its zone instead.
-      leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : Math.ceil((48 * cb.map.w + 36) * zoom + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
+      leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : ((this._view ? this._view.col || this._view.w : Math.ceil((48 * Math.min(cb.map.w, REF_W) + 36) * zoom)) + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
       // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
       // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
       // With a panel moved into the action column (the forecast, the legend or the log) the turn box keeps a floor of
@@ -1429,6 +1527,8 @@ export class CombatLogic extends DCLogic {
   }
 
   tileClick(k) {
+    // In the overview a click on a tile goes back to the camera, centred there; it never acts.
+    if (this._overview) { this.toggleOverview(k); return; }
     const S = this.state, g = getState().game, cb = castFight(g, g.combat, ART), cur = active(cb);
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);
     const u = cb.units.find((x) => x.pos === k && !x.dead);

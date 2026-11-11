@@ -56,13 +56,13 @@ const gridW = () => p.evaluate(() => { const g = document.querySelector('.phc-gr
 const w0 = await gridW();
 await p.locator('.phc-cb-hide').first().click(); await p.waitForTimeout(700);
 const w1 = await gridW();
-ok(`Hide panel: the map widens (${w0} → ${w1} px of 1440)`, w1 > w0 + 200);
+ok(`Hide panel: the map's window widens (${w0} → ${w1} px of 1440; it stays clear of the turn mini-bar)`, w1 > w0 + 60);
 ok('the edge tab "SHOW PANEL" and the mini-bar are up', (await p.locator('.phc-cb-show').count()) > 0 && (await p.locator('.phc-cb-mini').count()) === 1);
 ok('localStorage remembers it: ' + await p.evaluate(() => localStorage.getItem('phc.combatPanel')), /hid|1|true|off|closed/i.test(String(await p.evaluate(() => localStorage.getItem('phc.combatPanel')))));
 await p.screenshot({ path: OUT + 'slate-combat-hidden.png' });
 for (const [vw, vh] of [[1440, 900], [1280, 720], [1920, 1080], [1093, 526]]) {
   await p.setViewportSize({ width: vw, height: vh }); await p.waitForTimeout(500);
-  const o = await p.evaluate(() => { const g = document.querySelector('.phc-grid').getBoundingClientRect(), m = document.querySelector('.phc-cb-mini')?.getBoundingClientRect();
+  const o = await p.evaluate(() => { const g = document.querySelector('.phc-grid-scroll').getBoundingClientRect(), m = document.querySelector('.phc-cb-mini')?.getBoundingClientRect();
     return { grid: [g.left, g.top, g.right, g.bottom].map(Math.round), mini: m && [m.left, m.top, m.right, m.bottom].map(Math.round), overlap: !!m && g.right > m.left && g.bottom > m.top }; });
   ok(`${vw}x${vh} panel hidden: no tile under the mini-bar (grid ${o.grid}, mini ${o.mini})`, !o.overlap);
   if (vw === 1920) await p.screenshot({ path: OUT + 'slate-combat-hidden-1920.png' });

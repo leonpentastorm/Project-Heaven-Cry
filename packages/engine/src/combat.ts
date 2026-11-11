@@ -1,5 +1,6 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { fxTaps } from './fxtap';
+import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
 import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
@@ -31,7 +32,8 @@ export interface MapDef { id: string; name: string; w: number; h: number; solid:
   dark?: boolean;
   objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; to?: string; sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
 
-/** The M813 rear landing pad from the Combat prototype; a generic yard for anything else. */
+const keyOfRef = (r: string) => (r.charCodeAt(0) - 65) + ',' + (Number(r.slice(1)) - 1);
+/** The M813 rear landing pad from the Combat prototype; a generic yard (open ground) for anything else. */
 export const MAPS: Record<string, MapDef> = {
   rear_pad: {
     id: 'rear_pad', name: 'Outpost-813 rear landing pad', w: 16, h: 11,
@@ -49,17 +51,11 @@ export const MAPS: Record<string, MapDef> = {
     ],
     objects: [{ kind: 'poi', at: 'M5', name: 'The loading ramp', text: 'The ship\'s ramp, down and guarded. Chief Engineer Keel stands at its foot with a pistol on his hip and a manifest in his hand.' }],
   },
-  yard: {
-    id: 'yard', name: 'Open ground', w: 16, h: 11, solid: [],
-    cover: ['5,3', '5,4', '7,1', '8,9'], full: ['10,6', '10,7'], difficult: ['7,5', '8,5', '7,6'],
-    pcStart: ['1,4', '1,6', '2,5', '1,8', '2,2', '1,2'], foeStart: ['14,5', '14,3', '14,7', '13,4', '13,6', '15,5', '13,9'],
-    notes: [
-      { at: 'A1–P11', text: 'Open ground. Whatever the Narrator says this place is.' },
-      { at: 'F4–F5, H2, I10', text: 'Low walls and debris: half cover.' },
-      { at: 'K7–K8', text: 'A thick pillar: full cover.' },
-      { at: 'H6–I6, H7', text: 'Rough ground: slow going.' },
-    ],
-  },
+  // Open ground (rules 1.16): the full 26 × 26, laid out in data/maps.json (layouts.open_ground) and shared with the
+  // Narrator's Own Start. Its half cover and full cover are the map's cover lists (crates and pillars in a fight).
+  yard: (() => { const L = MAP_LAYOUTS.open_ground, p = readLayout(L.rows, L.w, L.h, L.legend), ks = (rs: string[]) => rs.map((r) => keyOfRef(r));
+    const at = (kind: string) => ks(p.objects.filter((o) => o.kind === kind).map((o) => o.at));
+    return { id: 'yard', name: L.name, w: L.w, h: L.h, solid: ks(p.solid), cover: at('crate'), full: at('pillar'), difficult: ks(p.difficult), pcStart: ks(p.start), foeStart: ks(p.enemyStart), notes: L.notes || [] } as MapDef; })(),
 };
 
 export interface Unit {
@@ -632,8 +628,10 @@ export function paths(cb: Combat, from: string, self: string, avoid?: Set<string
   const d: Record<string, number> = { [from]: 0 }, prev: Record<string, string> = {}, open = [from];
   const stand = (k: string) => !solid.has(k) && !blocked.has(k);
   while (open.length) {
-    open.sort((a, b) => d[a] - d[b]);
-    const k = open.shift()!, [x, y] = xy(k);
+    // The nearest open tile, the earliest found among equals (what a stable sort of the whole list gave, without
+    // sorting it at every step: a 26 × 26 map has 676 tiles to visit).
+    let bi = 0; for (let i = 1; i < open.length; i++) if (d[open[i]] < d[open[bi]]) bi = i;
+    const k = open.splice(bi, 1)[0], [x, y] = xy(k);
     if (avoid && k !== from && avoid.has(k)) continue; // reachable, but no way through
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
       if (!dx && !dy) continue;
@@ -701,9 +699,10 @@ export function routeHazards(cb: Combat, u: Unit, to: string, how: MoveHow = 'mo
 export const apForTiles = (tiles: number, bank: number, mov: number) => Math.ceil(Math.max(0, tiles - bank) / mov - 1e-9);
 
 // ---------- line of sight and cover ----------
-export function lineOfSight(cb: Combat, a: string, b: string, ignoreVeil = false): boolean {
+export function lineOfSight(cb: Combat, a: string, b: string, ignoreVeil = false, blockers?: Set<string>): boolean {
   // half cover doesn't block sight; ignoreVeil: smoke (VEIL zones) doesn't either (Skin Map)
-  const solid = ignoreVeil ? new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos)]) : sightBlockers(cb);
+  // blockers: sightBlockers(cb), from a caller that asks about many tiles at once (the enemy's choice of where to stand)
+  const solid = blockers ? blockers : ignoreVeil ? new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos)]) : sightBlockers(cb);
   let [x0, y0] = xy(a); const [x1, y1] = xy(b);
   const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx + dy;
@@ -1200,8 +1199,9 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
   const units: Unit[] = [], taken = new Set<string>(objs.filter(blocksMove).map((o) => o.pos));
-  const anyFree = () => { for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = key(x, y); if (standable(map, k) && !taken.has(k)) return k; } return null; };
-  const place = (want: string | null | undefined, fallback: string[]) => { const k = want && standable(map, want) && !taken.has(want) ? want : fallback.find((f) => !taken.has(f)) || anyFree() || fallback[0]; taken.add(k); return k; };
+  // Out of start tiles (a big squad, a ninth enemy): the free tile nearest that side's start, never one across the map (rules 1.16).
+  const anyFree = (near: string | undefined) => nearestFree(map.w, map.h, near || '0,0', (k) => standable(map, k) && !taken.has(k));
+  const place = (want: string | null | undefined, fallback: string[]) => { const k = want && standable(map, want) && !taken.has(want) ? want : fallback.find((f) => !taken.has(f)) || anyFree(fallback[0]) || fallback[0]; taken.add(k); return k; };
   const level = fightLevel(pcs.map((x) => x.c), { level: extra.level, shift: extra.levelShift }); // rules 1.15
   pcs.forEach(({ c, pos }) => units.push(unitFromCharacter(c, place(pos, map.pcStart), rng)));
   // Companions (a drone, a beast) stand next to their owner and act right after it (rules 1.3).
@@ -2019,8 +2019,9 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   // Where it stands is the tile to beat: a move that gains nothing is not made (it used to take the best OTHER tile
   // every step, so an enemy with nothing to attack walked back and forth between two equal tiles), and it never walks
   // back onto a tile it already stood on this turn.
+  const walls = sightBlockers(cb), reach = mode === 'melee' ? 1 : effectiveRange(w); // (once for the whole map, not once a tile)
   const score0 = (k: string, tiles: number) => { const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
-    const sees = pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= (mode === 'melee' ? 1 : effectiveRange(w)));
+    const sees = pcs.some((t) => dist(k, t.pos) <= reach && lineOfSight(cb, k, t.pos, false, walls));
     // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
     return order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100 + near) + tiles * 0.1; };
   let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05;

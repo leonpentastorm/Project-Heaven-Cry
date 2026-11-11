@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, SANDBOX_PORTRAIT, validateCampaign, zoneMap, active,
-  WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf, SKILL,
+  WEAPON, maxHp, classRank, packOf, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, viewFor, ADVANCED_CLASSES, CLASS, MANA_START, mapFor, standable, sandboxNext, refOf, positionsOf, npcsOf, SKILL, dist,
 } from '../src';
 import { beforeAll, afterAll } from 'vitest';
 import { _setAdvancedLive } from '../src';
@@ -33,10 +33,13 @@ describe('the Proving Ground map', () => {
   it('validates as a campaign and has room for every wave', () => {
     expect(validateCampaign(PROVING_GROUND)).toEqual([]);
     const z = PROVING_GROUND.zones[0];
-    expect([z.w, z.h]).toEqual([16, 12]);
+    expect([z.w, z.h]).toEqual([26, 26]); // the full size (rules 1.16)
     const g = start(), map = zoneMap(g);
     expect(map.id).toBe('proving_ground');
     expect(map.foeStart.length).toBeGreaterThanOrEqual(8);
+    // Every wave size up to the largest (8) stands on or beside the east start, 10 to 14 tiles from the squad.
+    for (const n of [1, 5, 10, 20]) { const w = apply(open(), { type: 'sandbox/stage', wave: n }, HOST);
+      for (const f of w.story.npcs || []) { const d = Math.min(...map.pcStart.map((k) => dist(k, f.pos))); expect(d, 'wave ' + n + ' ' + f.name).toBeGreaterThanOrEqual(10); expect(d).toBeLessThanOrEqual(16); } }
     const kinds = new Set((g.combat!.objects || []).map((o) => o.kind));
     for (const k of ['crate', 'low_wall', 'pillar', 'barricade', 'barrel', 'door', 'trap', 'fire', 'toxic']) expect(kinds.has(k), k).toBe(true);
     // The practice mine is visible; doors start closed.

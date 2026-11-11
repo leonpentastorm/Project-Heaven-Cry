@@ -2,6 +2,7 @@
 // cycle (spec section 14, items 522 on). Every move through apply() (combat/outburst, combat/pump, combat/release,
 // combat/perk, combat/attack, combat/end-turn); enemy-side harm through the engine calls their turns use.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { d20, designCost, manaOf, applyDamage, condOn, beginTurn, CLASS, stageMult, type Combat, type Unit, type OutburstDesign } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -94,7 +95,7 @@ describe('Guardian and Bard under 1.5', () => {
   it('Gift (item 526): the ally spends 3 AP, it goes off at stage 1 (×1) on the Bard\'s MP (the full price) and a Begin\'s Strain', () => {
     const s = storyWith([cls('bard', 3), {}]); const [b, ally] = s.chars;
     s.act({ type: 'story/perk', charId: b.id, id: 'class:bard.gift', text: 'For you, ' + s.g.characters[ally.id].name });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const f: any = { get g() { return s.g; }, get cb() { return s.g.combat!; }, unit: (id: string) => s.g.combat!.units.find((x) => x.id === id)! };
     clean(f);
     const bu = f.cb.units.find((x: Unit) => x.charId === b.id)!, au = f.cb.units.find((x: Unit) => x.charId === ally.id)!, foe = f.cb.units.find((x: Unit) => x.side === 'foe')!;
@@ -163,7 +164,7 @@ describe('Vessel: body forms on the 1.5 stage table (items 531, 532)', () => {
     // here as the fight starts, so it adds nothing (no Swift Movement).
     st.forms.push({ form: 'swift', stage: 4 });
     expect(() => take('surge')).toThrow(/already hold 2 body forms/);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     expect((s.g.characters[v.id] as any).state.vessel.forms.map((x: any) => x.form)).toEqual(['iron', 'steady']);
     expect((s.g.combat!.units.find((x) => x.charId === v.id) as any).vsl.move).toBe(0);
   });
@@ -181,7 +182,7 @@ describe('Twinbound: the twin\'s own heart (item 533)', () => {
   function called() {
     const s = storyWith([adv('twinbound')]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: 'damage; damage; damage' } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'I3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'I3' }] } } } as any);
     const f: any = { get g() { return s.g; }, get cb() { return s.g.combat!; }, unit: (id: string) => s.g.combat!.units.find((x: Unit) => x.id === id)!, act: s.act };
     clean(f);
     const pc = f.cb.units.find((x: Unit) => x.side === 'pc')!; f.cb.turn = f.cb.order.indexOf(pc.id); pc.ap = 6;

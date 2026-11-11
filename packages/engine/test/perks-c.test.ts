@@ -2,6 +2,7 @@
 // (apply) where an action exists, else with the game bound and the engine's own functions (moveUnit, throwItem,
 // resolveAttack, applyDamage…), the same calls the reducer and the enemy AI make.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, moveUnit, resolveAttack, previewAttack, attackDamage, throwItem, applyDamage, applyCond, makeObject, d20, packOf, emitStory, condOn, refOf, positionsOf, endTurn, critMult,
   type Unit, type Combat, type Character,
@@ -409,7 +410,7 @@ describe('Blade Recluse', () => {
     const s = storyWith([{ traits: ['blade_recluse'] }]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'blade_recluse', actionId: 'name_blade' } as any);
     expect((s.g.characters[c.id] as any).state.oneBlade.weapon).toBe('hellraiser_service_rifle');
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'minion', weapon: 'service_pistol', at: 'E6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'minion', weapon: 'service_pistol', at: 'E6' }] } } } as any);
     const cb = s.g.combat!, pc = cb.units.find((x) => x.side === 'pc')!, foe = cb.units.find((x) => x.side === 'foe')!;
     const r = withGame(s.g, () => applyCond(cb, s.g.rng, foe, pc, 'disarmed', undefined, undefined, { skipSave: true }));
     expect(r).toMatch(/untouched/); expect(condOn(pc, 'disarmed')).toBe(false);

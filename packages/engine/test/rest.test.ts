@@ -1,6 +1,7 @@
 // Rest (spec: Rest) from the buttons: the host's rest, a player's request, the Proving Ground's rest while gearing up,
 // and once-per-rest uses (Storm Hand's Gauntlet Infusion) coming back after one.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { apply, newGame, perkActionsFor, bindGame, RuleError, ARCHETYPES, REST_INFO, type Action, type GameState, type Sheet } from '../src';
 import { storyWith } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -44,7 +45,7 @@ describe('rest in the story', () => {
   });
   it('no rest in a fight', () => {
     const s = storyWith([{}]);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'service_pistol', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'service_pistol', at: '' }] } } } as any);
     expect(s.g.phase).toBe('combat');
     expect(refused(() => s.act({ type: 'rest', kind: 'short' }))).toMatch(/No resting in a fight/);
   });

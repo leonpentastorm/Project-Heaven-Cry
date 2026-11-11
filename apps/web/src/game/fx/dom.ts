@@ -6,7 +6,46 @@ import { reducedMotion } from '../sfx';
 import { battlePace } from '../combatSpeed';
 
 let layer: HTMLDivElement | null = null;
-export const setLayer = (el: HTMLDivElement | null) => { layer = el; };
+export const setLayer = (el: HTMLDivElement | null) => { layer = el; applyClip(); };
+// ---------- the camera (game/cameraView.ts) ----------
+// Everything on the layer is placed in viewport pixels over the map. When the map scrolls under it (the camera glides,
+// the player drags), what is already drawn moves with the map: every absolutely placed box shifts by the scroll. Boxes
+// that follow a tile each frame (anchor, the standing looks, the reload card) place themselves again anyway, and the
+// full-screen ones (position: fixed) stay. And the layer is clipped to the map's window, so an effect on a tile that
+// is off screen never draws over the panels beside the map.
+/** The map scrolled by (dx, dy) px: move what is drawn with it. */
+export function shiftLayer(dx: number, dy: number) {
+  tileCache.clear();
+  scrolled.x += dx; scrolled.y += dy;
+  for (const f of floats) { f.l -= dx; f.r -= dx; f.y -= dy; }
+  if (!layer || (!dx && !dy)) return;
+  for (const el of Array.from(layer.children) as HTMLElement[]) {
+    const st = el.style; if (!st || st.position !== 'absolute') continue;
+    const l = parseFloat(st.left), t = parseFloat(st.top);
+    if (Number.isFinite(l)) st.left = (l - dx) + 'px';
+    if (Number.isFinite(t)) st.top = (t - dy) + 'px';
+  }
+}
+/** How far the map has scrolled in all (the camera). A point found with centre() carries the figure of that moment,
+ *  so a step that draws at it later (a wound's number 150 ms after the hit, an impact after the flight) lands on the
+ *  tile where it is by then, not where it was before the camera moved (liveAt). */
+const scrolled = { x: 0, y: 0 };
+/** A point as it is on screen now: one found with centre() before the map scrolled is moved with the map. A point
+ *  built by hand (no stamp) is taken as it is. */
+export function liveAt<T extends { x: number; y: number }>(p: T): T {
+  const q = p as T & { _sx?: number; _sy?: number };
+  if (typeof q._sx !== 'number' || typeof q._sy !== 'number' || (q._sx === scrolled.x && q._sy === scrolled.y)) return p;
+  return { ...p, x: p.x - (scrolled.x - q._sx), y: p.y - (scrolled.y - q._sy), _sx: scrolled.x, _sy: scrolled.y };
+}
+let clip: { left: number; top: number; right: number; bottom: number } | null = null;
+function applyClip() {
+  if (!layer) return;
+  const W = typeof innerWidth === 'number' ? innerWidth : 0, H = typeof innerHeight === 'number' ? innerHeight : 0;
+  const v = clip ? 'inset(' + Math.max(0, Math.round(clip.top)) + 'px ' + Math.max(0, Math.round(W - clip.right)) + 'px ' + Math.max(0, Math.round(H - clip.bottom)) + 'px ' + Math.max(0, Math.round(clip.left)) + 'px)' : '';
+  if (layer.style.clipPath !== v) layer.style.clipPath = v;
+}
+/** Clip the layer to the map's window (viewport pixels), or lift the clip (null: no camera on screen). */
+export function setLayerClip(r: { left: number; top: number; right: number; bottom: number } | null) { clip = r; applyClip(); }
 export const hasLayer = () => !!layer && layer.isConnected;
 /** The layer node itself (the ambient field and turret looks keep their own nodes on it). */
 export const layerEl = () => layer;
@@ -49,14 +88,18 @@ export function tileEl(key: string | null | undefined): HTMLElement | null {
   return el;
 }
 function findTile(ref: string): HTMLElement | null {
-  let best: HTMLElement | null = null, area = 0;
+  // A tile of a map bigger than its window (the camera) can lie beyond the browser window's own edge: it is still the
+  // tile (its effects are drawn there, clipped, and ride in when the camera arrives; a walk through it must not be
+  // dropped), so it is found when no tile of that name is inside the browser window.
+  let best: HTMLElement | null = null, area = 0, off: HTMLElement | null = null, offArea = 0;
   for (const el of Array.from(document.querySelectorAll<HTMLElement>('button.phc-tok[aria-label]'))) {
     const l = el.getAttribute('aria-label') || '';
     if (!l.startsWith(ref) || /[0-9A-Za-z]/.test(l.charAt(ref.length))) continue;
     const r = el.getBoundingClientRect(), a = r.width * r.height;
-    if (a > area && r.bottom > 0 && r.top < innerHeight) { area = a; best = el; }
+    if (r.bottom > 0 && r.top < innerHeight) { if (a > area) { area = a; best = el; } }
+    else if (a > offArea) { offArea = a; off = el; }
   }
-  return best;
+  return best || off;
 }
 /** Is any map grid on screen at all? */
 export const gridShown = () => !!document.querySelector('button.phc-tok[aria-label]');
@@ -69,11 +112,11 @@ export function tokenEl(tile: HTMLElement | null): HTMLElement | null {
   }
   return null;
 }
-export interface Pt { x: number; y: number; s: number }
+export interface Pt { x: number; y: number; s: number; _sx?: number; _sy?: number }
 /** The centre of a tile on screen and its size, in viewport pixels. */
 export function centre(key: string | null | undefined): Pt | null {
   const el = tileEl(key); if (!el) return null;
-  const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, s: Math.max(18, r.width) };
+  const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, s: Math.max(18, r.width), _sx: scrolled.x, _sy: scrolled.y };
 }
 export const angle = (a: Pt, b: Pt) => Math.atan2(b.y - a.y, b.x - a.x);
 export const panOf = (p: Pt | null) => (p ? Math.max(-0.7, Math.min(0.7, (p.x / Math.max(1, innerWidth)) * 1.4 - 0.7)) : 0);
@@ -81,6 +124,7 @@ export const panOf = (p: Pt | null) => (p ? Math.max(-0.7, Math.min(0.7, (p.x / 
 // ---------- nodes ----------
 /** Put a node on the layer at a viewport point (its centre), for ms; it is removed after, whatever happens. */
 export function put(el: HTMLElement | SVGElement, p: { x: number; y: number }, w: number, h: number, ms: number): HTMLElement {
+  p = liveAt(p);
   const box = document.createElement('div');
   box.style.cssText = 'position:absolute;left:' + (p.x - w / 2) + 'px;top:' + (p.y - h / 2) + 'px;width:' + w + 'px;height:' + h + 'px;pointer-events:none;will-change:transform,opacity';
   box.appendChild(el);
@@ -154,8 +198,9 @@ export function clearShift(list: FloatBox[], x: number, y: number, hw: number, h
 }
 /** Floating text over a point: damage numbers, MISS, a condition. rise: how far it drifts up over its life (in tiles;
  *  0.5 by default, so it fades before it reaches the unit in the tile above). */
-export function floatText(text: string, p: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean; rise?: number } = {}) {
+export function floatText(text: string, p0: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean; rise?: number } = {}) {
   const run = () => {
+    const p = liveAt(p0);
     const t = document.createElement('div'), fs = o.big ? Math.round(p.s * 0.62) : o.small ? Math.max(10, Math.round(p.s * 0.26)) : Math.round(p.s * 0.42);
     const ms = o.ms || (o.big ? 1300 : 1000), now = performance.now(), rise = p.s * (o.rise ?? 0.5), h = fs * 1.4;
     for (let i = floats.length - 1; i >= 0; i--) if (now - floats[i].t0 > floats[i].ms * fxScale() + 50) floats.splice(i, 1);

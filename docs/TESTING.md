@@ -41,6 +41,11 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 - `tools/try_fight.py` + `packages/engine/test/try.test.ts` (`npm run try`): a scenario in JSON, played by the engine.
 - `tools/e2e.py` (`npm run e2e`): the browser suites; groups `smoke`, `rules`, `anim`, `all`; `--jobs`, `--no-build`,
   `--slow`, `--base`.
+- **The ground a test fights on.** `fightWith` (and so `npm run try`) fights on the **practice square**, a fixed 16 × 11
+  map kept for tests (`packages/engine/test/helpers/yard16.ts`, map id `yard16`): a rule's test names tiles on it and
+  must not move when a real map is redrawn. The real maps (26 × 26 open ground is map id `yard`; rules 1.16) are walked
+  by `packages/engine/test/maps.test.ts` and fought on by the simulator; pass `map: 'yard'` (in a scenario,
+  `"map": "yard"`) to try something on the real ground. A test file that names `yard16` itself imports the helper.
 - `packages/engine/test/helpers/perkfight.ts`: `fightWith`, `storyWith`, `sheetOf`, `withGame`: a fight or a story
   with the characters, perks, skills and enemies you name, through the real reducer. Every rules test starts here.
 - `packages/engine/test/perk-audit.test.ts`: every perk and trait through a fight (`PERK_AUDIT_OUT=<file>` writes the
@@ -49,6 +54,8 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that
   answers at once, for tests), `net()`; `window.__phcFxDebug()`: where the effects queue stands.
+  `window.__phcCamera()`: the camera of the map on screen (its frame, the first and last column and row showing, whether
+  it is gliding or in the overview, the edge arrows up); the `camera` suite reads it.
 - The Proving Ground's `sandbox/*` actions set a fight up from a script: `sandbox/perk`, `sandbox/trait`,
   `sandbox/skill`, `sandbox/level`, `sandbox/class`, `sandbox/give`, `sandbox/kit`, `sandbox/spawn`, `sandbox/clear`,
   `sandbox/ai`, `sandbox/meter` (Momentum, Pressure, Guard, a shield), `sandbox/mana`.

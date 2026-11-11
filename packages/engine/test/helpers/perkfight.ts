@@ -10,6 +10,7 @@ import {
   ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register,
   type Action, type Character, type Combat, type GameState, type ItemHandler, type Sheet, type Unit,
 } from '../../src';
+import './yard16';
 
 // Tests may pin an enemy's numbers (`classic`, `fixed`); the game itself never lets a fight do that (rules 1.15).
 FIGHT_TOOLS.pinned = true;
@@ -66,11 +67,11 @@ export const CLASSIC: Record<string, { hp: number; defense: number; attack_bonus
   minion: { hp: 30, defense: 10, attack_bonus: 1, armour: 0 }, soldier: { hp: 60, defense: 12, attack_bonus: 3, armour: 5 },
   elite: { hp: 100, defense: 13, attack_bonus: 5, armour: 10 }, boss: { hp: 200, defense: 14, attack_bonus: 6, armour: 10 },
 };
-/** A fight with these characters against these foes, on the yard map unless given. Returns live getters (the state is
+/** A fight with these characters against these foes, on the 16 × 11 practice square (helpers/yard16.ts) unless given. Returns live getters (the state is
  * replaced by every act). turn(u) makes it that unit's turn (its AP and turn_start hooks run). */
 export function fightWith(specs: CharSpec[] = [{}], foes: FoeSpec[] = [{}], o: { map?: string; seed?: string; /** the fight's level (default: the squad's) */ level?: number; /** every foe with the old fixed numbers */ classic?: boolean } = {}) {
   const s = storyWith(specs, o.seed);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: o.map || 'yard', difficulty: 'standard', ...(o.level != null ? { level: o.level } : {}),
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: o.map || 'yard16', difficulty: 'standard', ...(o.level != null ? { level: o.level } : {}),
     enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: f.weapon || 'service_pistol', at: f.at || '', ...(f.level != null ? { level: f.level } : {}), ...((f.classic ?? o.classic) ? { fixed: CLASSIC[f.tier || 'soldier'] || CLASSIC.minion } : {}) })) } } } as any);
   const box: any = s;
   const api = {

@@ -1,7 +1,7 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, WEAPON, visibility, phys } from '@engine';
+import { type FxEvent, type GameState, SIGIL, WEAPON, visibility, phys, refOf } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
@@ -22,6 +22,8 @@ import { reloadCard } from './reload';
 import { bangMark, bangDue, tickDue, noteSight, noteOverwatch, tagChip, aimLine, resetSight, HOSTILE_INK, OTHER_INK } from './sight';
 import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
 
+import { activeCamera } from '../cameraView';
+import { fxTiles, glideMs, movesCamera } from '../camera';
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
 export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle', FX_HOLD = 'phc-fx-hold';
@@ -1522,6 +1524,12 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
   if (plan.from > 0) { const later = new Set(evs.slice(plan.from).filter((e) => e.k === 'move' || e.k === 'sight').map((e) => String(e.unit || ''))); for (const e of evs.slice(0, plan.from)) if (e.unit && !later.has(String(e.unit))) releaseMover(String(e.unit)); }
   runQueue(evs.slice(plan.from), stream, base, plan.speed, null, null);
 }
+/** The camera leaves this much before a glide's length ahead of its beat, so the glide is over when the beat plays. */
+export const CAM_EARLY_MS = 40;
+/** The camera rests this long (at Fast; it follows the combat speed) where a move takes it, or the move is not made. */
+export const CAM_REST_MS = 350;
+/** The order the camera's looks were planned in, and the latest one that has run (see runQueue). */
+let camOrd = 0, camDone = 0;
 /** The last walk or sight event of each unit in a batch being scheduled: only that one lets a held unit go when its walk
  *  is out of sight (H.move). */
 const lastOfUnit = new WeakSet<FxEvent>();
@@ -1539,6 +1547,8 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
   let lastTurn = -1;
   { const had = new Set<string>(); for (let i = evs.length - 1; i >= 0; i--) { const e = evs[i], id = String(e.unit || ''); if ((e.k === 'move' || e.k === 'sight') && id && !had.has(id)) { had.add(id); lastOfUnit.add(e); } } }
   const walks = new Map<string, { t: number; path: string[]; ms: number }[]>();
+  const cam = document.hidden ? null : activeCamera(); let camAt: { x: number; y: number } | null = null;
+  let lastGo: { arrives: number; from: { x: number; y: number } | null; rec: { skip: boolean } } | null = null;
   for (let i = 0; i < evs.length; i++) {
     const e = evs[i], gate = gates.find((x) => x.at === i);
     if (gate) {
@@ -1547,8 +1557,49 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
       if (c) { closeGate(evs.slice(i), stream, t, gate, c, lastTurn, speed); return; }
     }
     const slowed = slowedIn(e, seg), tp = slowed ? CUTIN_TEMPO : 1, beat = beatOf(e);
+    // The camera (roadmap 2c): the camera goes to a beat whose tiles are off screen, and is there when the beat plays:
+    // it leaves a glide's length before the beat's time (while the beat before it ends), so no beat is ever delayed
+    // (a wait put into the queue here broke the turn hand-over and the melee techniques' paired beats). A turn's banner
+    // plays as the camera leaves for its unit. Planned here from where the camera will be by then (cam.plan), done when
+    // the time comes (cam.show: not while the player aims or drags; what still does not show gets an arrow at the
+    // window's edge).
+    let look: (() => void) | null = null;
+    if (cam && mineOnly(e)) {
+      const isTurn = e.k === 'turn', keys = isTurn ? (sawThen(e) && typeof e.at === 'string' && visible(e.at) ? [String(e.at)] : []) : beat > 0 || e.k === 'move' ? fxTiles(e, (id) => unit(id)?.pos, (k) => visible(k)) : [];
+      if (keys.length) {
+        // A result (a wound, a heal, a unit going down) never moves the camera: off screen it only gets its arrow.
+        const moves = isTurn || movesCamera(e.k);
+        let to: { x: number; y: number } | null = moves ? cam.plan(keys, camAt, isTurn ? 'turn' : 'beat') : null;
+        const glide = glideMs(fxPace(), reducedMotion()) / tp, leaves = isTurn ? t : t - glide - CAM_EARLY_MS;
+        // No going somewhere only to leave at once: when this beat takes the camera away before it has rested where
+        // the move before sent it (a hostile's turn banner, then its shot at a unit on the far side 0.4 s later), that
+        // move is not made (its place gets an arrow at the window's edge) and the camera goes straight here.
+        if (to && lastGo && leaves - lastGo.arrives < CAM_REST_MS * fxPace() / tp) { lastGo.rec.skip = true; camAt = lastGo.from; to = cam.plan(keys, camAt, isTurn ? 'turn' : 'beat'); lastGo = null; }
+        const rec = { skip: false };
+        // The same for a turn's banner, looked up ahead (a banner at the head of a batch plays before the rest is
+        // planned): the unit's next beat is on another part of the map before the camera would have rested on it.
+        if (to && isTurn) {
+          let tt = t + beat * speed;
+          for (let j = i + 1; j < evs.length && evs[j].k !== 'turn' && !gates.some((x) => x.at === j); j++) {
+            const x = evs[j], bx = beatOf(x), ks = mineOnly(x) && movesCamera(x.k) && (bx > 0 || x.k === 'move') ? fxTiles(x, (id) => unit(id)?.pos, (k) => visible(k)) : [];
+            if (ks.length) { if (cam.plan(ks, to, 'beat') && tt - glide - CAM_EARLY_MS - (t + glide) < CAM_REST_MS * fxPace() / tp) { rec.skip = true; to = null; } break; }
+            tt += bx * speed;
+          }
+        }
+        if (to) { lastGo = { arrives: leaves + glide, from: camAt, rec }; camAt = to; }
+        const who = unit(e.unit) || unit(e.target), tag = { color: who && who.side === 'pc' ? WHITE : HP, label: (who && seesUnit(String(e.unit || e.target || '')) ? who.name : isTurn ? 'A turn' : 'Something') + ' at ' + refOf(keys[0]) };
+        // A beat's own look never takes the camera back from a later beat's: the camera may already have left for
+        // the next one (its early start), and a technique's name over the attacker would pull it back from the
+        // target just before the shot lands. A look that comes late only raises its arrow.
+        const ord = ++camOrd;
+        look = () => { const late = ord < camDone; if (!late) camDone = ord; try { if (isTurn && rec.skip) activeCamera()?.passTurn(keys[0]); activeCamera()?.show(keys, isTurn ? 'turn' : 'beat', tag, moves && !late && !rec.skip); } catch { /* */ } };
+        // The early start has its own timer only when there is a glide to make (no extra timer otherwise).
+        if (to && !isTurn) { if (leaves - now <= 4) look(); else schedule(look, leaves); }
+      }
+    }
     if (e.k === 'turn') lastTurn = t;
-    const wait = t - now, go = () => { if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp); };
+    const camLook = look;
+    const wait = t - now, go = () => { if (camLook) camLook(); if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp); };
     // A walk's clock: a sight change its walker's eyes made plays on that step (a hostile found or lost mid-walk), not
     // after the whole walk.
     if (e.k === 'move' && e.unit && mineOnly(e)) { const id = String(e.unit); (walks.get(id) || walks.set(id, []).get(id)!).push({ t, path: (e.path || [e.from, e.to]).filter(Boolean), ms: (e.how === 'sprint' ? 75 : 115) * fxPace() / tp }); }
@@ -1559,7 +1610,7 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
     // draw holds its full time even when a backlog plays faster (the arrow can't fly before it is loosed), and a Miracle
     // (behind a gate that was closed when it came) is never sped up.
     const draw = drawsArrow(e) && mineOnly(e) ? DRAW_MS * fxPace() : 0;
-    t += slowed ? beat / tp : e.k === 'miracle' ? beat : (beat - draw) * speed + draw;
+    t += (slowed ? beat / tp : e.k === 'miracle' ? beat : (beat - draw) * speed + draw);
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
@@ -1575,7 +1626,16 @@ const holdChanged = () => { try { window.dispatchEvent(new CustomEvent(FX_HOLD))
 /** Run f at performance.now() time t (a timer the queue can move: hurryFx). */
 function schedule(run: () => void, t: number) {
   const entry = { id: 0, at: t, run };
-  entry.id = window.setTimeout(() => { timers = timers.filter((x) => x !== entry); run(); }, Math.max(0, t - performance.now()));
+  // Steps due at the same moment play in the order they were scheduled. Each has its own timer, set a little later
+  // than the one before it (planning the camera's move between two of them takes a moment), so the browser may fire
+  // the later one first: a step that fires runs the earlier ones still waiting for that moment before itself. (A
+  // technique's movement beat and the push it plays over were swapped this way once the camera was planned here.)
+  entry.id = window.setTimeout(() => {
+    const i = timers.indexOf(entry), first = i > 0 ? timers.slice(0, i).filter((x) => x.at <= entry.at) : [];
+    timers = timers.filter((x) => x !== entry && !first.includes(x));
+    for (const x of first) { clearTimeout(x.id); x.run(); }
+    run();
+  }, Math.max(0, t - performance.now()));
   timers.push(entry);
 }
 /** Close a gate at time t: the rest of the batch waits; the cut-in plays at t; when it ends (or is skipped, or the cap)

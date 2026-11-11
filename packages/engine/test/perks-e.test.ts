@@ -3,6 +3,7 @@
 // and the world do goes through the engine functions their turns use (resolveAttack, applyDamage, applyCond), with the
 // game bound.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { applyDamage, applyCond, resolveAttack, previewAttack as pv0, healUnit, condOn, condArg, d20, beginTurn, type Unit, type Combat } from '../src';
 import { fightWith, storyWith, withGame, rng } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -31,7 +32,7 @@ function storyCheck(s: { act: any; g: any }, charId: string, skills: string[], e
 /** A story first, then a fight on the yard (before() runs in the story). */
 function fightAfter(specs: any[], foes: any[], before: (s: ReturnType<typeof storyWith>) => void) {
   const s = storyWith(specs); before(s);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: 'service_pistol', at: f.at || '' })) } } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard16', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: 'service_pistol', at: f.at || '' })) } } } as any);
   const box: any = s;
   const api = {
     get g() { return box.g; }, get cb(): Combat { return box.g.combat; },
@@ -189,7 +190,7 @@ describe('Soulmate', () => {
   it('the share never Downs the holder; mutual Soulmates don\'t ping-pong', () => {
     const s0 = storyWith([{ perks: { soulmate: 'I' }, skills: { camaraderie: 9 } }, { perks: { soulmate: 'I' }, skills: { camaraderie: 9 } }]);
     const [c1, c2] = s0.chars; s0.act({ type: 'story/perk', charId: c1.id, id: 'soulmate', choice: c2.name }); s0.act({ type: 'story/perk', charId: c2.id, id: 'soulmate', choice: c1.name });
-    s0.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
+    s0.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
     const cb = s0.g.combat!, [a, b] = cb.units.filter((u) => u.side === 'pc'); a.hp = a.maxHp = 200; b.hp = b.maxHp = 200;
     withGame(s0.g, () => applyDamage(cb, b, 100, { type: 'weapon', by: cb.units.find((u) => u.side === 'foe') }));
     expect(a.hp).toBe(180); expect(b.hp).toBe(120);
@@ -531,7 +532,7 @@ describe('Rival', () => {
     expect(storyCheck(s, r.id, ['charisma'])).toMatch(/\+2 Show-Off/);
   });
   it('Show-Off in a fight: a hit by your rival gives your next attack with that skill +2', () => {
-    const s = rivals(); s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
+    const s = rivals(); s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
     const cb = s.g.combat!, [me, r] = cb.units.filter((u) => u.side === 'pc'), foe = cb.units.find((u) => u.side === 'foe')!;
     open(cb); r.attack = 60; foe.hp = foe.maxHp = 999;
     withGame(s.g, () => resolveAttack(cb, s.g.rng, r, foe, 'shot', null, { noAp: true }));

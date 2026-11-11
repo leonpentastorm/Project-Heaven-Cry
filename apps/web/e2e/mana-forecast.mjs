@@ -26,7 +26,7 @@ const fc = p.locator('[data-phc-panel="mana"]');
 ok('one forecast panel, in the map zone', (await fc.count()) === 1 && (await p.locator('[data-phc-zone="mapZone"] [data-phc-panel="mana"]').count()) === 1);
 const fcBox = await fc.boundingBox(), mapBox = await p.locator('[data-phc-panel="map"]').boundingBox();
 ok('it sits above the map: forecast ' + Math.round(fcBox.y) + '–' + Math.round(fcBox.y + fcBox.height) + ', map from ' + Math.round(mapBox.y), fcBox.y + fcBox.height <= mapBox.y + 2);
-const fits = async (w, h) => { await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(700); const g = await p.locator('.phc-grid').boundingBox(); return { ok: !!g && g.y + g.height <= h + 1, bottom: g ? Math.round(g.y + g.height) : null }; };
+const fits = async (w, h) => { await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(700); const g = await p.locator('.phc-grid-scroll').boundingBox(); return { ok: !!g && g.y + g.height <= h + 1, bottom: g ? Math.round(g.y + g.height) : null }; };
 for (const [w, h] of [[1440, 900], [1280, 720]]) { const r = await fits(w, h); ok('the map still fits the window at ' + w + '×' + h + ' (grid bottom ' + r.bottom + ')', r.ok); await p.screenshot({ path: OUT + 'fc-' + w + '.png' }); }
 await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(500);
 const headline = async () => (await p.locator('[data-fc-headline]').first().textContent()).trim();
@@ -57,7 +57,7 @@ ok('right then left puts it back above the map: the default layout again (nothin
 // in the map zone or was moved into the action column (there it shows under the map instead).
 const shortCheck = async (label) => {
   await p.setViewportSize({ width: 1093, height: 526 }); await p.waitForTimeout(900);
-  const g = await p.locator('.phc-grid').boundingBox(), conf = await p.getByRole('button', { name: /^(Confirm|Click a tile)/ }).first().boundingBox().catch(() => null), endT = await p.getByRole('button', { name: 'End turn', exact: true }).first().boundingBox().catch(() => null);
+  const g = await p.locator('.phc-grid-scroll').boundingBox(), conf = await p.getByRole('button', { name: /^(Confirm|Click a tile)/ }).first().boundingBox().catch(() => null), endT = await p.getByRole('button', { name: 'End turn', exact: true }).first().boundingBox().catch(() => null);
   const fcIn = await p.evaluate(() => document.querySelector('[data-phc-panel="mana"]')?.closest('[data-phc-zone]')?.dataset.phcZone || '');
   ok(label + ': grid bottom ' + Math.round(g.y + g.height) + ', Confirm bottom ' + (conf && Math.round(conf.y + conf.height)) + ', End turn bottom ' + (endT && Math.round(endT.y + endT.height)) + ', forecast in ' + fcIn, g.y + g.height <= 527 && conf && conf.y + conf.height <= 526 && endT && endT.y + endT.height <= 526);
   await p.screenshot({ path: OUT + 'fc-short-' + label.replace(/\W+/g, '-') + '.png' });

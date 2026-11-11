@@ -2,6 +2,7 @@
 // its squad, a set level, the clamp; a fight saved before the rule keeps its numbers; Vermin; the level gap; criticals
 // at ×1.5 and never past ×2.0, for characters and enemies; companions; the Proving Ground's spawn.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ENEMY, ENEMIES, ENEMY_LEVELS, enemyStats, clampEnemyLevel, fightLevelOf, fightLevel, levelGap, squadLevel, LOOT, SANDBOX_TIERS,
   critMult, CRIT_BASE, CRIT_MAX, attackDamage, previewAttack, resolveAttack, applyDamage, apply, newGame, ARCHETYPES, npcsOf, COMBAT_XP, combatXp, d20,
@@ -76,7 +77,7 @@ describe('a fight has a level', () => {
     expect(fightLevel([{ level: 1 }], { shift: -3 })).toBe(1); expect(fightLevel([{ level: 20 }], { shift: 2 })).toBe(20);
     expect(ENEMY_LEVELS.narrator_shift).toEqual({ min: -3, max: 2 });
     const s = storyWith([{ level: 6 }]);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Deadly', map: 'yard', difficulty: 'hard', level_shift: 2, enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Deadly', map: 'yard16', difficulty: 'hard', level_shift: 2, enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     expect(s.g.combat!.level).toBe(8); expect(s.g.combat!.units.find((u) => u.side === 'foe')!.level).toBe(8);
   });
   it('XP for a fight is unchanged: by difficulty, whatever the level', () => {
@@ -138,7 +139,7 @@ describe('Vermin: a tier under Minion', () => {
   });
   it('the Narrator may place one, and the Proving Ground may spawn one', () => {
     const s = storyWith([{}]);
-    s.act({ type: 'narrator/turn', turn: { narration: 'They pour out of the vent.', combat: { name: 'Swarm', map: 'yard', difficulty: 'easy', enemies: Array.from({ length: 6 }, (_, i) => ({ name: 'Vent mite ' + (i + 1), tier: 'vermin', weapon: 'beast_bite' })) } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'They pour out of the vent.', combat: { name: 'Swarm', map: 'yard16', difficulty: 'easy', enemies: Array.from({ length: 6 }, (_, i) => ({ name: 'Vent mite ' + (i + 1), tier: 'vermin', weapon: 'beast_bite' })) } } } as any);
     expect(s.g.combat!.units.filter((u) => u.tier === 'vermin').length).toBe(6);
   });
 });
@@ -208,7 +209,7 @@ describe('companions are their owner\'s level', () => {
     const c = Object.values(g.characters)[0]; c.level = level; c.companions = [{ id: 'd1', kind: 'drone', name: 'Bolt', ...(hp != null ? { hp } : {}) } as any];
     g = apply(g, { type: 'session/start' }, 'host');
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'Go.', sceneTitle: 'Test' } }, 'host');
-    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'fists' }] } } } as any, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'fists' }] } } } as any, 'host');
     return g.combat!.units.find((u) => u.companion === 'drone')!;
   };
   it('the drone\'s own block is its level 1 block; the level table raises it', () => {

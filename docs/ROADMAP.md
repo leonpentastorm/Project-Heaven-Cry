@@ -24,15 +24,22 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    ~~**Still open for Leon:** the Miracle's price.~~ **Decided** (Leon, 9 Nov 2026) and built as **Miracle 2.1**, rules
    1.6.2 (items 724–737): the Miracle needs Devotion 10 and lowers Devotion by 5 levels; all eight Miracles are
    stronger and engine-run. Every number in items 701–736 is provisional for playtests.
-2b. **Fight maps up to 26 × 26** (Leon, 11 Nov 2026; queued right behind step 1 of the balance pass, which is in the
+2b. **Fight maps up to 26 × 26** (**built**, rules 1.16, 11 Nov 2026: the limits, `data/maps.json`, layouts as rows of
+   characters, open ground and the Proving Ground at 26 × 26, the M813 paintings retired; the camera is 2c. Spec:
+   Maps; open items 1039 to 1047) (Leon, 11 Nov 2026; queued right behind step 1 of the balance pass, which is in the
    same engine files). 26 × 26 (A to Z by 1 to 26) is the largest a map can be and the size of the Proving Ground and
    of open ground; a campaign or a later game mode may set a smaller map, chosen when the campaign is made (the
    campaign format gets a size field with that maximum); sides deploy about 10 to 14 tiles apart with cover on the
    approach (Sprint and range bands finally matter); the screen opens zoomed to fit and follows whoever acts. The five
    painted maps (M813's four and the Proving Ground) go to plain colour until they are repainted (`art/briefs/ART-REQUESTS.md`,
    maps M1 to M9). The simulator's maps follow, so the balance numbers are measured on the real ground.
-2c. **The camera** (Leon, 11 Nov 2026: on a 26 × 26 map zoomed to fit, "tokens will be barely visible, let alone
-   effects like casings"; "zoom to our current is good"). Built with 2b, for the fight and the area map alike:
+2c. **The camera** (**built**, 11 Nov 2026: `apps/web/src/game/camera.ts` and `cameraView.ts`, the effects queue in
+   `fx/play.ts`, both map screens; how it behaves: `docs/design/ui-screens.md`, The camera; its numbers: spec item
+   1048 and 1049; browser suite `camera`. What was settled while building: it follows every turn and effect the squad can
+   see; each co-op player has their own; the overview is on M and on the map's toolbar, not in the settings;
+   reduced motion cuts instead of gliding; the jump-back key is Home.) (Leon, 11 Nov 2026: on a 26 × 26 map zoomed
+   to fit, "tokens will be barely visible, let alone effects like casings"; "zoom to our current is good"). For the
+   fight and the area map alike:
    - **The view keeps today's tile size.** The map is bigger than the window and the window is a camera on it. Fit-to-
      window stays as an **overview** the player switches to and back from (a key and the map's zoom control), never
      the default.

@@ -30,7 +30,9 @@ const myTurn = () => p.waitForFunction((id) => { const cb = window.__phc.getStat
 const confirmBtn = () => p.locator('.phc-cb-confirm button').first();
 /** Spend a round on something with HP (no hostile needed): the pillar, then the crates. */
 // (a refusal is only a toast, so success is read from the magazine: Physical 2.0's damage breaks the pillar in two shots)
-const burn = async () => { for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9', '12,9']) { const a0 = mine(await G()).ammo; await act({ type: 'combat/shoot-cover', unitId: mine(await G()).id, tile: k }); await p.waitForTimeout(150); if (mine(await G()).ammo < a0) return true; } return false; };
+const nearTiles = async () => { const [ux, uy] = mine(await G()).pos.split(',').map(Number), out = []; for (let dy = -7; dy <= 7; dy++) for (let dx = -7; dx <= 7; dx++) if (dx || dy) out.push([dx * dx + dy * dy, (ux + dx) + ',' + (uy + dy)]); return out.sort((a, b) => a[0] - b[0]).map((x) => x[1]); };
+// any cover in reach will do (the maps were redrawn at 26 x 26 in rules 1.16: no tile is named here)
+const burn = async () => { for (const k of await nearTiles()) { const a0 = mine(await G()).ammo; const refused = await act({ type: 'combat/shoot-cover', unitId: mine(await G()).id, tile: k }); if (refused) continue; await p.waitForTimeout(150); if (mine(await G()).ammo < a0) return true; } return false; };
 
 // 1. The Proving Ground, solo, the enemies passing their turns (Enemy AI off); start the fight.
 await p.setViewportSize({ width: 1440, height: 1000 });

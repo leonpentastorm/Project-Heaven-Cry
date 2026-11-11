@@ -3,6 +3,7 @@
 // longer join, poison or block a Line. Every draw, scuff and Evoke here goes through the reducer (apply), the path a
 // player's click takes; the enemy AI runs its own turn (enemyTurn), which takes the same engine actions.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   d20, enemyMagic, drawGlyph, previewDraw, findPattern, patternAt, strokeOf, strokesAt, strokeRuns, magicRoundTick, migrateSigil, migrateStorySigil, enemyTurn, startCombat, newCharacter,
   ARCHETYPES, MAPS, refOf, SIGIL_REV, apply, newGame, positionsOf,
@@ -155,7 +156,7 @@ describe('co-op and enemies (rules 1.10, Drawing 3.6)', () => {
     const arch = (id: string) => ARCHETYPES.find((x: any) => x.id === id)!;
     const sheet = (name: string): Sheet => { const a = arch('sigilist'); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
     // Its walk east (away from the players) is the only way: the diagonals are walled.
-    const map: MapDef = { ...MAPS.yard, w: 20, h: 20, cover: [], full: [], solid: ['11,4', '11,6'], difficult: [], pcStart: ['2,5'], foeStart: ['10,5'] };
+    const map: MapDef = { ...MAPS.yard16, w: 20, h: 20, cover: [], full: [], solid: ['11,4', '11,6'], difficult: [], pcStart: ['2,5'], foeStart: ['10,5'] };
     const cs = [{ c: newCharacter('c0', 'p1', sheet('P1')), pos: '5,5' }, { c: newCharacter('c1', 'p1', sheet('P2')), pos: '5,6' }, { c: newCharacter('c2', 'p1', sheet('P3')), pos: '6,5' }];
     const cb = startCombat('t', map, cs, [{ name: 'Caster', tier: 'soldier', weapon: 'combat_knife', at: refOf('10,5'), sigils: ['fire', 'arc', 'spread'] }], 'easy', { state: 7 }, []);
     cb.objects = []; cb.mana = 15;

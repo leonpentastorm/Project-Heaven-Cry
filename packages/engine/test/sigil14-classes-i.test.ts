@@ -2,6 +2,7 @@
 // docs/design/sigil-1.4-impact.md, base classes): the Mage's Barrage, Overcharge and Payload, the Warden's Raise Cover
 // and Seal, the Scribe's Stored Spell and the Trickster's Rewrite, every one through the reducer (apply).
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   CLASS, SIGIL_REV, d20, applyCond, condOn, previewAttack, attackDamage, objectsOf, positionsOf, npcsOf, standable, zoneMap, storyObjects, refOf, packOf, sigilCoreSaving, emit, findPattern,
   type Unit, type Combat, type GameState,
@@ -199,7 +200,7 @@ describe('Scribe Stored Spell under 1.4', () => {
     return { s, c, before };
   }
   function fight(s: any, c: any) {
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     const cb: Combat = s.g.combat!, u = cb.units.find((x) => x.charId === c.id)!, foe = cb.units.find((x) => x.side === 'foe')!;
     cb.objects = []; Object.assign(u.mg!, { sigilMult: 1, elemMult: 1, rangeBonus: 0 }); u.pos = '8,2'; foe.pos = '2,2'; foe.def = -99; foe.hp = foe.maxHp = 999; foe.armour = 0;
     cb.turn = cb.order.indexOf(u.id); u.ap = 6; s.g.rng.state = plain();

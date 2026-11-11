@@ -698,6 +698,94 @@ else:
                 if o.get("damage") is not None and o["damage"] not in (mk.get("damages") or []):
                     errors.append(f"campaigns/{cp.name}:{z.get('id')}: sigil mark at {o.get('at')}: unknown damage {o['damage']}")
 
+# Maps, rules 1.16: the limits, the shared layouts, and every campaign zone's size, picture and start tiles
+import maplayout as _ml
+_maps = data.get("maps")
+if not _maps:
+    errors.append("maps: data/maps.json (rules 1.16) is missing")
+else:
+    _lim = _maps.get("limits") or {}
+    if _lim.get("max") != 26:
+        errors.append("maps: limits.max must be 26 (Leon, 11 Nov 2026: A to Z by 1 to 26)")
+    if not (isinstance(_lim.get("min"), int) and 1 <= _lim["min"] <= _lim.get("max", 0)):
+        errors.append("maps: limits.min must be a whole number up to the maximum")
+    if _lim.get("min_provisional") is not True:
+        errors.append("maps: limits.min is provisional (spec section 14) and must be flagged min_provisional")
+    if not (_lim.get("deploy_min") == 10 and _lim.get("deploy_max") == 14):
+        errors.append("maps: the sides deploy 10 to 14 tiles apart (limits.deploy_min, limits.deploy_max)")
+    if _lim.get("full_size") != _lim.get("max"):
+        errors.append("maps: limits.full_size (open ground, the Proving Ground) must be the maximum")
+    _okinds = ids_of(items("objects"))
+    for _ch, _v in (_maps.get("legend") or {}).items():
+        if len(_ch) != 1:
+            errors.append(f"maps: legend key {_ch!r} must be one character")
+        if isinstance(_v, dict) and _v.get("kind") not in _okinds:
+            errors.append(f"maps: legend {_ch!r} names unknown object kind {_v.get('kind')!r}")
+
+    def _check_ground(where, w, h, solid, objects, start, enemy):
+        """Start tiles on the map, on free ground; objects of known kinds."""
+        sol = _ml.expand_refs(solid, w, h)
+        blk = {}
+        for o in objects or []:
+            if o.get("kind") not in _okinds:
+                errors.append(f"{where}: unknown object kind {o.get('kind')!r}")
+                continue
+            kd = next(k for k in items("objects") if k.get("id") == o["kind"])
+            if kd.get("blocks_move"):
+                for t in _ml.expand_refs([o.get("at")], w, h):
+                    blk[t] = o.get("name") or kd.get("name")
+        for lst, what in ((start, "start"), (enemy, "enemy start")):
+            for r in lst or []:
+                ts = _ml.expand_refs([r], w, h)
+                if not ts:
+                    errors.append(f"{where}: {what} tile {r} is off the map")
+                for t in ts:
+                    if t in sol:
+                        errors.append(f"{where}: {what} tile {_ml.ref(*t)} is inside solid ground")
+                    elif t in blk:
+                        errors.append(f"{where}: {what} tile {_ml.ref(*t)} is on {blk[t]}, which blocks the way")
+        return sol, blk
+
+    def _gap(a, b):
+        return min((max(abs(p[0] - q[0]), abs(p[1] - q[1])) for p in a for q in b), default=None)
+
+    for _lid, _lay in (_maps.get("layouts") or {}).items():
+        _bad = _ml.size_problem(_maps, _lay.get("w"), _lay.get("h"))
+        if _bad:
+            errors.append(f"maps:{_lid}: {_bad}")
+            continue
+        _parts, _errs = _ml.read_layout(_maps, _lay.get("rows"), _lay["w"], _lay["h"], _lay.get("legend"))
+        for _e in _errs:
+            errors.append(f"maps:{_lid}: {_e}")
+        if not _parts["start"] or not _parts["enemyStart"]:
+            errors.append(f"maps:{_lid}: a shared layout needs squad (S) and enemy (E) start tiles")
+        _check_ground(f"maps:{_lid}", _lay["w"], _lay["h"], _parts["solid"], _parts["objects"], _parts["start"], _parts["enemyStart"])
+    for cp in sorted((root / "campaigns").glob("*.json")):
+        try:
+            camp = json.loads(cp.read_text())
+        except Exception as e:
+            errors.append(f"campaigns/{cp.name}: does not parse ({e})")
+            continue
+        for z0 in camp.get("zones") or []:
+            _w = f"campaigns/{cp.name}:{z0.get('id')}"
+            z, _errs = _ml.expand_zone(_maps, z0)
+            for _e in _errs:
+                errors.append(f"{_w}: {_e}")
+            _bad = _ml.size_problem(_maps, z.get("w"), z.get("h"))
+            if _bad:
+                errors.append(f"{_w}: {_bad}")
+                continue
+            if not z.get("start"):
+                errors.append(f"{_w}: needs start tiles")
+            _check_ground(_w, z["w"], z["h"], z.get("solid"), z.get("objects"), z.get("start"), z.get("enemyStart"))
+            if (z.get("art") or {}).get("map"):
+                errors.append(f"{_w}: art.map names a map painting, but every map is plain colour until it is repainted (rules 1.16; art/briefs/ART-REQUESTS.md section 3)")
+            # A full-size map: the nearest of each side 10 to 14 tiles apart (when it names both starts).
+            if z["w"] == _lim.get("full_size") and z["h"] == _lim.get("full_size") and z.get("enemyStart"):
+                _g = _gap(_ml.expand_refs(z.get("start"), z["w"], z["h"]), _ml.expand_refs(z.get("enemyStart"), z["w"], z["h"]))
+                if _g is not None and not (_lim.get("deploy_min", 0) <= _g <= _lim.get("deploy_max", 99)):
+                    errors.append(f"{_w}: the nearest squad and enemy start tiles are {_g} apart; a full-size map deploys them {_lim.get('deploy_min')} to {_lim.get('deploy_max')} apart")
+
 # Soul magic, rules 1.5 (Outburst 2.0): tones, forms, retired modules, the cycle's numbers
 soul = data.get("soul_modules", {})
 if soul:

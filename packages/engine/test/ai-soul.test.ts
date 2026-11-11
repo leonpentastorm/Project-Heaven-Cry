@@ -2,6 +2,7 @@
 // `soul_casters`). The AI only chooses: every release is a real previewOutburstPlan and every step a real action, so the
 // tests check the choice and what the engine then did.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, enemyTurn, sandboxWave, magicTurnStart, magicTurnEnd, moveUnit, wikiLookup, wikiKinds,
   HEART_CASTER, HEART_CASTERS, heartBestRelease, heartPlanValue, previewOutburstPlan, SCHOOL, MODULE, TONE, WEAPON,
@@ -10,7 +11,7 @@ import {
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
-const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
+const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard16, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
 function seed(n = 60, from = 1): { state: number } { for (let s = from; s < 200000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return { state: s }; } throw new Error('no seed'); }
 interface FoeAt { at: string; caster?: string; tier?: string; name?: string; weapon?: string }
 /** Players with 500 HP, Defense 10, saves 0; foes[0] is the one whose turn the tests run. Normal air. */

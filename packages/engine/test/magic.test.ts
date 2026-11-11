@@ -1,5 +1,6 @@
 // Magic (spec: Mana): Sigil glyphs and Lines (rules 1.4; the full word set is in sigil14.test.ts), Evoke, Flux, Outbursts held and released, Strain, the meter.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, validateSheet, startCombat, apply, newGame, positionsOf, zoneMap, npcsOf, refOf, keyOf,
   drawGlyph, evoke, findPattern, previewEvoke, scuff, vent, beginOutburst, releaseOutburst, addStrain, syphon, crystallise, magicTurnStart, moveUnit,
@@ -8,7 +9,7 @@ import {
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string, extra: Partial<Sheet> = {}): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, ...extra }; };
-const yard = { ...MAPS.yard, cover: [], full: [], solid: [], difficult: [] };
+const yard = { ...MAPS.yard16, cover: [], full: [], solid: [], difficult: [] };
 function fight(s: Sheet, foeAt = '6,5', seed = 7) {
   const c = newCharacter('c1', 'p1', s);
   const cb = startCombat('t', yard, [{ c, pos: '2,5' }], [{ name: 'Guard', tier: 'minion', weapon: 'service_pistol', at: refOf(foeAt) }], 'easy', { state: seed }, []);

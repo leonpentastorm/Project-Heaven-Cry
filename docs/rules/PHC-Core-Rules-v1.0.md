@@ -10,6 +10,8 @@
 
 > **Revision 1.12 (2026-11-10), Physical 2.0:** techniques for melee weapons (Momentum, a meter on you, built by chaining different techniques and spent by Finishers) and for ranged weapons (Pressure, a meter on the target, built by fire and spent by Takes); weapon properties; ready lists; drill per weapon in place of weapon mastery; the quiver. See Weapons, Physical techniques, and items 932 on. Design: `docs/design/proposals/2026-11-melee-techniques.md`, `2026-11-ranged-techniques.md`. *(Momentum's rule was reworked the same day: it is no longer built by chaining different techniques. Superseded by "Melee: Momentum and the chain" and Revision 1.13.)*
 
+> **Revision 1.16 (2026-11-11), Maps:** a fight map is at most 26 × 26 tiles (A to Z by 1 to 26) and at least 8 × 8; open ground and the Proving Ground are the full size; a campaign zone sets its own size; the sides deploy 10 to 14 tiles apart with cover on the approach; every map is plain colour until it is repainted. See Maps, and items 1039 on.
+
 > **Revision 1.13 (2026-11-10), Skeleton 2.0:**
 > - **Cores are not spent.** Body, Mind and Soul are families; a Core shows the highest Attribute of its family. Creation is 10 Skill and 10 Attribute points, and no level gives a Core point. An Attribute's ceiling rises with level: 7 at creation, 8 from level 3, 9 from level 6, 10 from level 9.
 > - **Every slot has a job.** An alpha opens a way of fighting and carries the offence, a beta is a defence, a gamma is world play and speech.
@@ -363,7 +365,7 @@ The Guardian's Under the Eye, Blessed Shells and Judgement need a patron and pra
 
 **Reactions.** Each character gets one reaction per round, used outside their turn: an opportunity attack, or a perk that says "reaction." Reactions cost no AP unless stated.
 
-**Grid references.** Every map is a grid. Columns are letters, A, B, C… from left to right (after Z: AA, AB…), and rows are numbers, 1, 2, 3… from top to bottom. "C7" is column C, row 7. Each map carries notes on what is where ("L3–L5: stacked platinum crates"). Players see them by hovering a tile, and the Narrator reads them with the map.
+**Grid references.** Every map is a grid. Columns are letters, A, B, C… from left to right, and rows are numbers, 1, 2, 3… from top to bottom; a map is at most 26 × 26, so the last column is Z and the last row 26 (see Maps, rules 1.16). "C7" is column C, row 7. Each map carries notes on what is where ("L3–L5: stacked platinum crates"). Players see them by hovering a tile, and the Narrator reads them with the map.
 
 **Moving outside a fight.** Between fights each character stands on a tile of the story's map. Players move their own characters freely (no AP), and the Narrator moves characters when the story moves them ("Leon moves to A15"). A fight on the same map starts with everyone where they stand; the Narrator places enemies by grid reference. When a fight ends, everyone stays where they ended up.
 
@@ -3004,6 +3006,35 @@ A tier under Minion, for swarms: small things that die to one hit at equal level
 
 The weapons (the long rifle against the service rifle), the AP prices, Burst, the Calls, defence stacking and XP by level are later steps of the balance pass. The simulator (`packages/engine/test/balance/`) fights enemies of a chosen level and measures this table against the targets (`fit.ts`); every later step runs it again.
 
+## Maps (rules 1.16)
+
+Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
+
+**Size.**
+- A map is **at most 26 tiles wide and 26 tall**: columns A to Z, rows 1 to 26 (39 m a side). Nothing is larger, so a grid reference is always one letter and a number.
+- A map is **at least 8 × 8** (provisional, item 1039).
+- **Open ground** (the map of the Narrator's Own Start, and of any fight that names no place) and **the Proving Ground** are the full **26 × 26**.
+- **A campaign zone has its own size**, any width and any height from 8 to 26, chosen when the campaign is made: a cellar may be 12 × 9, a street 26 × 10. A later game mode may set smaller maps the same way. An interior that should feel tight stays small: the penthouse of *A Summoning in Central City* stays 16 × 11 (24 m × 16.5 m is already a large suite, and its two starts are 11 tiles apart; item 1041).
+- A size outside the limits is **an error**: the campaign check refuses the file and says why. The engine never cuts a map down to fit.
+- The four M813 zones keep their 16 × 11 layouts until M813 is rewritten.
+
+**Deployment.** Where a fight starts with the two sides apart (a prepared fight, a wave on the Proving Ground, a fight on open ground):
+- The squad starts on its **start tiles** and the enemy on its **enemy start tiles**, as the map gives them. On the full-size maps the nearest tile of each side is **10 to 14 tiles** from the other's (13 on open ground and on the Proving Ground): outside pistol and shotgun range, inside a rifle's, and two turns of walking for a melee fighter at Agility 1, with cover on the way.
+- **A map that gives no enemy start tiles** gets them from the engine: the squad's start tiles mirrored to the other side of the map; if that leaves the nearest of each more than 14 apart, the enemy's tiles come nearer, column by column, until it is 14; a tile inside solid ground or on something that blocks the way moves to the nearest free tile. On a map too narrow for 10 tiles, or with the squad starting in the middle, the enemy starts as far to the other side as the map allows.
+- **More fighters than start tiles:** the next one stands on the free tile nearest that side's start tiles, never on the other side of the map.
+- **Out of sight on turn 1.** The full-size maps that ship are laid out so that no start tile of one side has a line of sight to a start tile of the other: something that blocks sight (a wall, a building, a barricade line) stands between them, with a way round it on both sides. A campaign author is asked to do the same wherever the place allows it; the engine does not move start tiles to make it so (item 1042).
+- A fight that starts in the middle of the story is not deployed: everyone starts where they stand, and an enemy the Narrator places with a grid reference starts there.
+
+**What a full-size map needs.** Both starts on free ground; a way between them (never a walled-off start); cover within 4 tiles of each start; at least two ways across (a lane or a flank each side of the middle), so a squad can go round instead of meeting head-on; some difficult ground. The game's own maps are checked for all of this by a test that walks every zone of every campaign.
+
+**Drawing a map.** A map may be written as a picture instead of lists of tiles: one row of characters per row of the map, one character per tile (`docs/design/campaign-format.md`, "A map as a picture"). `.` is open ground, `#` solid, `~` difficult ground, `S` a squad start tile, `E` an enemy start tile; any other character is an object the zone's legend names (`c` a crate, `w` a low wall, `P` a pillar, `B` a barricade, `o` a barrel unless the legend says otherwise). The engine turns the picture into the same lists a hand-written zone has. Open ground is one shared picture (`data/maps.json`, `layouts.open_ground`).
+
+**Plain colour.** A map with no painting is drawn in the interface's own colours, and that is the normal case: open tiles in the ground colour, solid ground and walls in the raised panel colour, difficult ground a shade lighter than open ground, half cover and full cover in their two browns, objects as their sprites or their labels. No map is painted today: the four M813 paintings were made for layouts and a scale that no longer hold and are retired to `art/_archive/maps/` until the maps are repainted (`art/briefs/ART-REQUESTS.md`, maps M1 to M9). A zone's banner (the illustration over the story) is not a map painting and stays.
+
+**Saves from before this revision.** A fight in progress keeps the map it began on (the fight carries its own map). A story in progress keeps the zones its campaign was copied in with: a zone whose layout changed keeps its old layout and size, and only new games get the larger ground.
+
+**The enemy on a big map.** The enemy's rules are unchanged: it attacks what it can, and otherwise walks toward the nearest tile with a line on someone, around what is in the way. A round of twelve enemies on a 26 × 26 map takes the engine about 0.2 seconds (measured 11 Nov 2026).
+
 ## Exploration, social play, rest, and the Narrator
 
 **Social checks** use the target's disposition as the TN.
@@ -3394,6 +3425,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | sigils.json | 40 | Sigil words (five groups), grammar, element identities and the enemy casters' default words (rules 1.4; provisional numbers) |
 | soul_modules.json | 4 + 20 | Soul schools and modules (provisional numbers) |
 | patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |
+| maps.json | object | Map limits (26 at most, 8 at least; deployment 10 to 14 tiles), the picture legend, and the shared open-ground layout (rules 1.16) |
 | effect_ops.json | 132 | Registry of every effect op: 50 core, 82 bespoke |
 
 **Effect ops.** The engine implements the 50 core ops generically. The 82 bespoke ops cover about 10% of effect uses, each in one or two items: implement each as a hook on its item, or until then hand that item's text to the Narrator. An op the engine doesn't recognise always falls back to the Narrator; it is never silently ignored.
@@ -5510,3 +5542,14 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1036. **A level given outright ignores the shift (rules 1.15, the review):** the first build added the Narrator's shift on top of a level set by hand (9 and +2 made 11). Now 9 is 9.
 1037. **The spawn tool's empty level is the squad's level now (rules 1.15, the review):** the first build used the level the fight started at, so a fighter levelled from 4 to 15 in the middle of a fight still spawned level 4 units.
 1038. **Enemy weapons that end a character in one hit (rules 1.15, the review):** at level 1 a Boss with a Blackpoint 700 deals 108 before armour and with a breacher tube 132; an Elite 94 and 115. A character with 100 HP in Class 1 armour goes Down to one such hit at full HP (the breacher tube did this before the step; the Boss's ×1.2 adds the Blackpoint). The table is fitted with one weapon a tier (item 1017). To settle in the weapon step: these two weapons' damage, or which weapons the Narrator may hand an enemy.
+1039. **The smallest map (rules 1.16):** 8 × 8 tiles (it was 6 × 6). Nothing ships that small; 8 is the least that leaves two start tiles, a tile of cover and a way round it. *Data: maps.json limits.min, flagged provisional.*
+1040. **The deployment gap on the full-size maps (rules 1.16):** Leon's band is 10 to 14 tiles; open ground and the Proving Ground use 13 (columns F–G against T–U), the mining camp and the lifted town 13. To settle in playtests: 11 (one column nearer each side) if melee fighters spend too long walking.
+1041. **The penthouse stays 16 × 11 (rules 1.16):** the one interior among the open campaigns. To settle when its campaign is written: a larger suite with rooms, or this one.
+1042. **Out of sight on turn 1 is a property of the layout, not a rule the engine enforces (rules 1.16):** the shipped full-size maps are tested for it; a campaign file is not refused for lacking it, and a map with no enemy start tiles gets them by mirroring, whatever can then be seen.
+1043. **The layouts of the mining camp and the lifted town (rules 1.16):** first layouts at 26 × 26 for two campaigns that are still sketches (not offered in the Room). They pass the map checks; nobody has played them.
+1044. **The Proving Ground's layout (rules 1.16):** the blockhouse to the north, a staggered barricade line across the middle, sandbags in front of both starts, low walls on the south lane, a rubble field on the south flank, churned sand on the north-west and north-east. First layout; every position is open to playtests. The ammo locker stands on the squad's side only.
+1045. **The Narrator's limits were not raised with the maps (rules 1.16):** 64 hazard tiles, 12 hazards and 16 triggers a zone, 6 spawned people a turn (world_play.json limits). A 26 × 26 map has 4.2 times the tiles of a 16 × 11 one; the limits are counts of things, not of tiles, and stay until a playtest shows one is too low.
+1046. **The simulator's grounds (rules 1.16):** both are 26 × 26 with the game's deployment (13 tiles); "open" is bare ground, "cover" is the real open-ground layout. The saved baselines (11 Nov 2026 and earlier) were measured on 16 × 11 with the sides 11 tiles apart and are not comparable tile for tile; only the quick run was repeated.
+1047. **The enemy holds at range on a big map (rules 1.16):** an enemy with a gun stops on the first tile that has a line on someone within its weapon's range and does not come closer. On 26 × 26 that leaves riflemen far back while the knife fighters arrive alone. Unchanged in this revision; to look at with the combat-roles work.
+1048. **The camera's numbers (roadmap 2c, 11 Nov 2026; the screen, not a rule: no fight's outcome depends on them):** all provisional until playtests. The map's window shows the tiles at the size a 16 × 11 map had when it was fitted to the same window (about 35 px a tile at 1280 × 720, 49 px at 1440 × 900, 63 px at 1920 × 1080) and is 16 tiles wide unless the player widens the map zone; the camera glides in 250 ms at Fast (following the combat speed; a cut under reduced motion) and leaves that long plus 40 ms before the beat it moves for, so it has arrived when the beat plays and no beat is delayed; only attacks, spells, pushes, throws, walks and turns move it (a wound, a heal or a unit going down off screen gets an edge arrow instead); it keeps a target 1.5 tiles inside the window's edge; on the player's own turn it leaves the view alone while their pointer is over the map and for 4 s after they moved it by hand, on anyone else's turn for 1.5 s after; an arrow or W A S D key moves the view 2 tiles; a press that moves 6 px or more is a drag; the small map is 150 px on its longest side (under 6 px a tile at 26 × 26); an edge arrow stays 2.6 s at Fast (never under 1.2 s) and at most 5 show at once.
+1049. **The camera's rest (review of roadmap 2c, 11 Nov 2026; the screen, not a rule):** provisional. A camera move that the next beat would undo before the camera had rested 350 ms where it arrived (at Fast; it follows the combat speed) is not made: the camera goes straight to the later beat and the place it skipped gets an edge arrow. This is what keeps the view on the target when a hostile too far away to share the window shoots as its turn begins. To judge in play: whether players would rather see the shooter first (a longer banner, then the shot).

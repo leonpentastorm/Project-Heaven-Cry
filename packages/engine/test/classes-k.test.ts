@@ -3,6 +3,7 @@
 // through the reducer (apply) where it is an action or rides on one, else with the game bound and the engine's own
 // functions (resolveAttack, applyDamage, emit), the same calls enemy turns make.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, condOn, applyCond, applyDamage, resolveAttack, previewAttack, previewEvoke, previewOutburst, d20, endTurn, glyphCost, manaOf,
   coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, condTurnEnd, type Unit, type Combat, type Character,
@@ -98,7 +99,7 @@ describe('Lumeri Templar', () => {
     s.act({ type: 'story/perk', charId: c.id, id: 'lumeri_templar.blessed_shells', actionId: 'bless_shell', choice: 'saints_shield' } as any);
     expect((s.g.characters[c.id] as any).state.blessedShell.id).toBe('saints_shield');
     expect((s.g.story.rulings || []).some((r: any) => /patron answers/.test(r.text))).toBe(true);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.side === 'pc')!;
     expect(u.ps!['class:lumeri_templar.blessed_shells'].loaded.bl.id).toBe('saints_shield');
   });
@@ -399,7 +400,7 @@ describe('Twinbound', () => {
   it('Call: 2 AP, the twin acts right after you with 4 AP and casts from your heart', () => {
     const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'I3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'I3' }] } } } as any);
     const f: any = { get g() { return s.g; }, get cb() { return s.g.combat!; }, act: s.act, unit: (id: string) => s.g.combat!.units.find((x) => x.id === id)! };
     const cb = () => s.g.combat!; const pc = cb().units.find((x) => x.side === 'pc' && !(x as any).twinOf)!;
     cb().turn = cb().order.indexOf(pc.id); withGame(s.g, () => beginTurn(cb(), s.g.rng));
@@ -418,7 +419,7 @@ describe('Twinbound', () => {
   it('Bond: the twin at 0 HP vanishes (not Downed, no bots) and you take 3 Strain; no Call again this scene', () => {
     const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const cb = () => s.g.combat!; const pc = cb().units.find((x) => x.side === 'pc')!;
     cb().turn = cb().order.indexOf(pc.id); withGame(s.g, () => beginTurn(cb(), s.g.rng));
     s.act({ type: 'combat/perk', unitId: pc.id, id: 'twinbound.call', tile: '2,4' } as any);
@@ -458,7 +459,7 @@ describe('Lane K: more forms and story parts', () => {
   it('Call: the twin guards you (takes the next attack within 1 tile) and is held within 6 tiles of you', () => {
     const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const cb = () => s.g.combat!, U = (id: string) => cb().units.find((x) => x.id === id)!; const pc = cb().units.find((x) => x.side === 'pc')!;
     cb().turn = cb().order.indexOf(pc.id); withGame(s.g, () => beginTurn(cb(), s.g.rng));
     s.act({ type: 'combat/perk', unitId: pc.id, id: 'twinbound.call', tile: '2,4' } as any);
@@ -478,7 +479,7 @@ describe('Lane K: more forms and story parts', () => {
     s.act({ type: 'story/perk', charId: hb.id, id: 'heartbinder.link', actionId: 'link_story', choice: v.id } as any);
     expect((s.g.characters[hb.id] as any).state.links.ids).toEqual([v.id]);
     expect((s.g.story.rulings || []).length).toBeGreaterThanOrEqual(2);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.charId === v.id)!; expect((u as any).vsl.armour).toBeGreaterThanOrEqual(10);
   });
 });

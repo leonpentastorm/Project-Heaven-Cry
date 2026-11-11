@@ -2,6 +2,7 @@
 // enemy or the world, each through the reducer (apply): an enemy's turn after combat/end-turn, a story check, a
 // Narrator turn, an area-map act.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { makeObject, apply, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, condOn, d20, applyDamage, type GameState, type Combat, type Unit } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -29,7 +30,7 @@ function storyCheck(s: any, charId: string, skills: string[], tags: string[], di
 
 describe('Clean Hands out of a fight', () => {
   it('a spared moment the Narrator accepts is a shield of 15% (II 25%) of max HP when the next fight starts, and no AP; refused, nothing', () => {
-    const fightNow = (s: ReturnType<typeof storyWith>) => { s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any); return s.g.combat!.units.find((u) => u.side === 'pc')!; };
+    const fightNow = (s: ReturnType<typeof storyWith>) => { s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any); return s.g.combat!.units.find((u) => u.side === 'pc')!; };
     for (const [tier, n] of [['I', 15], ['II', 25]] as const) {
       const s = storyWith([{ perks: { clean_hands: tier } }]); const c = s.chars[0];
       s.act({ type: 'story/perk', charId: c.id, id: 'clean_hands', actionId: 'clean_story', text: 'let the deserter go' } as any);

@@ -3,6 +3,7 @@
 // parley, the tile-by-tile walk with reactions, throwing, weapon swaps, companions, prayer, and the story side
 // (conditions, Karma, rest, tutors and advanced classes, voices per character, start items).
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   applyCond, condOn, condSource, condTurnEnd, unitSave, previewAttack, resolveAttack, attackDamage, stackDamage, moveUnit, endTurn, beginTurn, active, checkOver,
   hideAction, hide, spotHidden, canReact, maxReactions, useReaction, trySurrender, parley, throwItem, applyDamage, register, holderOf, statQuery,
@@ -196,7 +197,7 @@ describe('throwing, swapping, companions and prayer (rules 1.3)', () => {
   });
   it('a drone companion acts after its owner, takes its owner\'s orders, and is destroyed at 0 HP', () => {
     const s = storyWith([{}]); s.g.characters[s.chars[0].id].companions = [{ id: 'd1', kind: 'drone', name: 'Pip' }];
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'service_pistol', at: 'P6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'service_pistol', at: 'P6' }] } } } as any);
     const cb = s.g.combat!, pc = cb.units.find((u) => u.charId)!, drone = cb.units.find((u) => u.companion)!;
     expect(drone.name).toBe('Pip'); expect(drone.side).toBe('pc'); expect(drone.ctrl).toBe(pc.charId);
     withGame(s.g, () => { applyDamage(cb, drone, 999, { type: 'weapon', by: cb.units.find((u) => u.side === 'foe') }); });
@@ -244,7 +245,7 @@ describe('throwing, swapping, companions and prayer (rules 1.3)', () => {
   });
   it('swapping hands: the off-hand pistol comes to the main hand for 1 AP', () => {
     const s = storyWith([{ weapon: 'service_pistol' }]); const c = s.g.characters[s.chars[0].id]; c.offHand = { id: 'decrkm_autopistol' } as any;
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'fists', at: 'P6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'fists', at: 'P6' }] } } } as any);
     const cb = s.g.combat!; cb.turn = cb.order.indexOf(cb.units.find((u) => u.charId)!.id);
     withGame(s.g, () => beginTurn(cb, s.g.rng));
     const pc = cb.units.find((u) => u.charId)!;
@@ -327,7 +328,7 @@ describe('more of the shared subsystems through the reducer (rules 1.3)', () => 
     c.pack = [...(c.pack || []), { id: 'ammo_armor_piercing', item: 'ammo_armor_piercing', name: 'AP', qty: 30, kind: 'ammo' } as any];
     s.act({ type: 'gear/ammo', charId: id, ammo: 'armour_piercing' } as any);
     expect(s.g.characters[id].loadedType).toBe('armor_piercing');
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'fists', at: 'F6', kind: 'robot', tags: ['military'] }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'fists', at: 'F6', kind: 'robot', tags: ['military'] }] } } } as any);
     const cb = s.g.combat!, pc = cb.units.find((u) => u.charId)!, foe = cb.units.find((u) => u.side === 'foe')!;
     expect(pc.ammoType).toBe('armor_piercing'); expect(foe.kind).toBe('robot'); expect(foe.tags).toContain('military');
     cb.turn = cb.order.indexOf(pc.id); withGame(s.g, () => beginTurn(cb, s.g.rng));

@@ -2,6 +2,7 @@
 // small fixes, and the AP perks' cooldown (once every 3 of the holder's turns). Each rule is played through the real
 // reducer or the engine's own functions with the game bound, the way the lanes' tests do it.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import perksJ from '../../../data/perks.json';
 import traitsJ from '../../../data/traits.json';
 import { applyCond, applyDamage, resolveAttack, moveUnit, enemyTurn, hide, emit, condOn, d20, beginTurn, holderOf, briefOf, type Unit, type Combat } from '../src';
@@ -32,7 +33,7 @@ function storyCheck(s: S, charId: string, skills: string[], extra: any = {}, die
 /** A story first, then a fight on the yard (before() runs in the story; extra goes into the Narrator's turn). */
 function fightAfter(specs: any[], foes: any[], before: (s: S) => void, extra: any = {}) {
   const s = storyWith(specs); before(s);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', ...extra, combat: { name: 'Test fight', map: 'yard', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: 'service_pistol', at: f.at || 'F6', ...(f.more || {}) })) } } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', ...extra, combat: { name: 'Test fight', map: 'yard16', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: 'service_pistol', at: f.at || 'F6', ...(f.more || {}) })) } } } as any);
   const box: any = s;
   return {
     get g() { return box.g; }, get cb(): Combat { return box.g.combat; },

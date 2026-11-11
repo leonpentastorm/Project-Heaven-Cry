@@ -35,7 +35,8 @@ art/
     ahoc/ahoc-seal-white.png       the AHOC seal used in the UI (+ the red 2020 original)
     patrons/<patron_id>.png        the eight patron marks
   illustrations/m813/<id>.png      M813 banners and story moments; spoilers/ holds ending-only images
-  maps/m813/<zone>.png             M813 map backgrounds (1600 x 1100)
+  maps/                            empty today: every map is plain colour (rules 1.16). The four M813 map paintings
+                                   (16 x 11 tiles) are in _archive/maps/m813/retired-2026-11/; new maps: briefs/ART-REQUESTS.md
   sprites/objects/<object>.png     M813 object sprites (catalog id minus "obj-")
   mascot/wick-welcome.png          the app mark
   mascot/wick-anim/                the five menu clips (a validated package: frames, strips, masters, manifest)

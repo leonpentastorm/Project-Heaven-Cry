@@ -3,6 +3,7 @@
 // do to a character goes through the same engine functions their turns use (resolveAttack, applyDamage, applyCond,
 // shove, blessing), with the game bound.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   applyDamage, applyCond, resolveAttack, previewAttack, shove, healUnit, blessing, movement, carryLimit, maxHp, skillRollMod, PATRONS, condOn,
   type Unit, type Combat,
@@ -411,7 +412,7 @@ describe('Augmented', () => {
     s.act({ type: 'story/perk', charId: id, id: 'augmented', actionId: 'augment_pick', choice: 'arm' });
     expect(s.g.characters[id].state!.augment).toBe('arm');
     expect(() => s.act({ type: 'story/perk', charId: id, id: 'augmented', actionId: 'augment_pick', choice: 'eye' })).toThrow();
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'C6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'C6' }] } } } as any);
     const cb = s.g.combat!, u = cb.units.find((x) => x.side === 'pc')!, foe = cb.units.find((x) => x.side === 'foe')!;
     expect(withGame(s.g, () => previewAttack(cb, u, foe, 'shot')).dmg!.mults.some((m) => /Augmented arm/.test(m.label))).toBe(true);
     withGame(s.g, () => applyDamage(cb, u, 5, { by: foe, type: 'weapon', dmgType: 'emp' }));
@@ -424,7 +425,7 @@ describe('Augmented', () => {
     s.act({ type: 'story/perk', charId: a, id: 'augmented', actionId: 'augment_pick', choice: 'legs' });
     s.act({ type: 'story/perk', charId: b, id: 'augmented', actionId: 'augment_pick', choice: 'eye' }, s.g.characters[b].owner);
     expect(movement(s.g.characters[a])).toBe(movement(s.g.characters[plain]) + 1);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'P10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'P10' }] } } } as any);
     const cb = s.g.combat!, ua = cb.units.find((x) => x.charId === a)!, ub = cb.units.find((x) => x.charId === b)!, up = cb.units.find((x) => x.charId === plain)!;
     expect(ub.vision).toBe(up.vision! + 2); expect(ub.darkSight).toBe(true); expect(ua.movement).toBe(up.movement + 1);
     const s2 = storyWith([{ traits: ['augmented'] }]);

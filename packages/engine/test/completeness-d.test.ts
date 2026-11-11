@@ -1,6 +1,7 @@
 // The completeness pass, part D: class moves (lanes I, J, K) whose fight, area-map or story side was missing or untested.
 // Player actions go through the reducer (apply); an enemy's blow through combat/end-turn where the AI can make it.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   CLASS, apply, holderOf, lineOfSight, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, d20, resolveAttack, previewEvoke, applyCond, emit, stampOf,
   type GameState, type Combat, type Unit,
@@ -50,7 +51,7 @@ describe('Bard: the Gift cast in a fight', () => {
   it('the ally casts it on their turn (combat/gift) on the Bard\'s MP; once', () => {
     const s = storyWith([cls('bard', 3, SOUL), {}]); const [b, ally] = s.chars;
     s.act({ type: 'story/perk', charId: b.id, id: 'class:bard.gift', text: 'For you, ' + s.g.characters[ally.id].name });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'boss', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'boss', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!, bu = cb.units.find((u) => u.charId === b.id)!, au = cb.units.find((u) => u.charId === ally.id)!, foe = cb.units.find((u) => u.side === 'foe')!;
     bu.pos = '2,2'; au.pos = '3,2'; foe.pos = '5,2'; foe.def = -40; const mp = bu.mg!.mp;
     cb.turn = cb.order.indexOf(au.id); au.ap = 6; delete cb.window;

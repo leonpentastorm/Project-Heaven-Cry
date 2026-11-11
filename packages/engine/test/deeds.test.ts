@@ -1,6 +1,7 @@
 // Deeds the engine sees (rules 1.14; spec item 1014): the nine combo-perk deeds the engine grants by itself in a fight.
 // For each deed: a fight where it happens (the perk, the story line and the spotlight), and the near misses.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { apply, emit, emitFx, healUnit, damageObject, makeObject, addStrain, PERK, ENGINE_DEEDS, SPOTLIGHT_FX, newGame, type Combat, type GameState, type Unit } from '../src';
 import { fightWith, storyWith, withGame, sheetOf, type CharSpec } from './helpers/perkfight';
 
@@ -174,7 +175,7 @@ describe('Between Heartbeats: come through an ambush without being hit', () => {
   }
   it('the Narrator\'s fight with a hidden enemy is read as an ambush', () => {
     const s = storyWith([B]);
-    s.act({ type: 'narrator/turn', turn: { narration: 'They were waiting.', combat: { name: 'Ambush', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Lurker', tier: 'minion', weapon: 'service_pistol', hidden: true }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'They were waiting.', combat: { name: 'Ambush', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Lurker', tier: 'minion', weapon: 'service_pistol', hidden: true }] } } } as any);
     expect((s.g.combat as any).deeds.amb).toBe(true);
   });
   it('never hit, on your feet, the fight won: granted at the fight\'s end', () => {

@@ -4,6 +4,7 @@
 // penalties and the Masterpiece save; start items for every trait that grants one; and the class moves' other sides
 // (Vessel, Bard's Gift, Shade's silent takedown, Payload and Raise Cover on the area map).
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, d20, packOf, applyCond, WEAPON, TRAITS, CLASS,
   holdersOf, briefOf, designBan, collectionOf, collectGuns, partError,
@@ -144,7 +145,7 @@ describe('data matches the spec: Spray and Pray, Ace Pilot, Daggerfall Veteran (
     const mv = (grounded: boolean) => {
       const s = storyWith([{ traits: ['ace_pilot'] }]); const c = s.chars[0];
       if (grounded) s.act({ type: 'narrator/turn', turn: { narration: 'A long walk.', traitState: [{ charId: c.id, key: 'grounded', value: true }] } } as any);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+      s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
       return s.g.combat!.units.find((x) => x.side === 'pc')!.movement;
     };
     expect(mv(true)).toBeCloseTo(Math.max(0.5, mv(false) - 0.5));
@@ -193,7 +194,7 @@ describe('Lowland Born through the reducer (item 57)', () => {
   it('fight in ruins: +1 Movement (combat/move costs fewer AP); fight under open sky: a Hidden foe past half Vision isn\'t spotted as the turn ends', () => {
     const fight = (traits: string[], tag: string) => {
       const s = storyWith([{ traits, attrs: { agility: 1 } }, {}]); tagZone(s.g, tag);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+      s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
       return s;
     };
     const moved = (traits: string[]) => {
@@ -314,7 +315,7 @@ describe('class moves: Vessel, Bard\'s Gift, Payload, Raise Cover (items 61-65)'
     expect(designBan(s.g.characters[c.id])).toMatch(/Vessel/);
     expect(() => s.act({ type: 'magic/design', charId: c.id, design: { name: 'Bolt', school: 'damage', modules: [] } } as any)).toThrow(/Vessel/);
     expect(s.g.characters[c.id].outbursts?.length).toBeGreaterThan(0); // the soul kit's designs, carried in
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!, u = cb.units.find((x) => x.charId === c.id)!, d = s.g.characters[c.id].outbursts![0];
     cb.turn = cb.order.indexOf(u.id); u.ap = 6; delete cb.window;
     expect(() => s.act({ type: 'combat/outburst', unitId: u.id, design: d.id, aim: cb.units.find((x) => x.side === 'foe')!.pos } as any)).toThrow(/Vessel|body/i);
@@ -322,7 +323,7 @@ describe('class moves: Vessel, Bard\'s Gift, Payload, Raise Cover (items 61-65)'
   it('Bard\'s Gift in a fight: the ally pays its Soul cast AP, the Bard pays the MP and takes the Strain', () => {
     const s = storyWith([cls('bard', 3, SOUL), {}]); const [b, ally] = s.chars;
     s.act({ type: 'story/perk', charId: b.id, id: 'class:bard.gift', text: 'For you, ' + s.g.characters[ally.id].name });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'boss', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'boss', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!, bu = cb.units.find((u) => u.charId === b.id)!, au = cb.units.find((u) => u.charId === ally.id)!, foe = cb.units.find((u) => u.side === 'foe')!;
     bu.pos = '2,2'; au.pos = '3,2'; foe.pos = '5,2'; foe.def = -40; const mp = bu.mg!.mp, strain = bu.mg!.strain || 0, allyStrain = au.mg?.strain || 0;
     cb.turn = cb.order.indexOf(au.id); au.ap = 6; delete cb.window;

@@ -110,8 +110,8 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     const foe = s.cb.units.find((u) => u.side === 'foe' && !u.dead && p);
     const vis = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb.units.filter((u) => u.side === 'foe' && !u.dead).map((u) => u.pos); });
     let clicked = false;
-    for (const k of vis) { const t = p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"][aria-label*="hostile"]').first(); if (await t.count()) { await t.click(); clicked = true; break; } }
-    await p.waitForTimeout(200);
+    for (const k of vis) { const t = p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"][aria-label*="hostile"]').first(); if (await t.count()) { await p.waitForFunction(() => { const c = window.__phcCamera && window.__phcCamera(); return !c || !c.gliding; }, null, { timeout: 4000 }).catch(() => {}); await t.evaluate((el) => el.scrollIntoView({ block: 'center', inline: 'center' })); await p.waitForTimeout(250); await t.click(); clicked = true; break; } } // the camera's window: once the camera has come to rest on your unit (your turn has just started), the tile is brought to its middle, clear of the small map in the corner
+    await p.waitForFunction(() => document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]')?.getAttribute('data-tab') === 'attack', null, { timeout: 2500 }).catch(() => {});
     ok('clicking a hostile while on Move switches to the Attack tab: ' + await selTab(), clicked && (await selTab()) === 'attack');
     // The last tab is remembered for this character across turns; a command on the turn card switches the tab.
     await p.locator('[role="tab"][data-tab="utility"]').click(); await p.waitForTimeout(150);

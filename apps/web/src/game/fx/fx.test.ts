@@ -2,7 +2,7 @@
 // The effects layer: every event kind plays over a grid of tiles without throwing, draws something, and cleans up.
 import { describe, expect, it, vi } from 'vitest';
 import { refOf } from '@engine';
-import { setLayer, tileEl, tokenEl } from './dom';
+import { setLayer, tileEl, tokenEl, centre, put, shiftLayer, liveAt, floatText, resetFloats } from './dom';
 import { playFx, queueFx, fxBusyUntil, setContext, clearFx, reloadKind } from './play';
 import * as sfxMod from '../sfx';
 
@@ -24,6 +24,28 @@ describe('effects layer', () => {
     expect(tileEl('2,3')?.getAttribute('aria-label')).toMatch(/^C4 /);
     expect(tokenEl(tileEl('2,3'))?.tagName).toBe('IMG');
     expect(tileEl('99,99')).toBeNull();
+  });
+  it('a point found before the camera moved is drawn where its tile is by then (review of roadmap 2c)', () => {
+    vi.useFakeTimers();
+    const layer = grid(); resetFloats();
+    const p = centre('2,3')!; // C4: centre 100, 140
+    expect([p.x, p.y]).toEqual([100, 140]);
+    shiftLayer(30, 98); // the camera glides: the map moves 30 px left and 98 px up on screen
+    expect([liveAt(p).x, liveAt(p).y]).toEqual([70, 42]);
+    // a point built from it by spreading keeps its stamp; one built by hand is taken as it is (as before)
+    expect(liveAt({ ...p, y: p.y + 10 }).y).toBe(52);
+    expect(liveAt({ x: p.x, y: p.y }).y).toBe(140);
+    const box = put(document.createElement('i'), p, 20, 20, 500);
+    expect([parseFloat(box.style.left), parseFloat(box.style.top)]).toEqual([60, 32]);
+    // a wound's number that appears 150 ms after the hit: the camera moves again in between
+    const q = centre('2,3')!; // found now: the stamp is the scroll so far
+    floatText('−17', q, '#F65157', { delay: 150 });
+    shiftLayer(0, 50); vi.advanceTimersByTime(400);
+    const num = [...layer.children].find((c) => c.textContent === '−17') as HTMLElement;
+    expect(num).toBeTruthy();
+    // its box is centred on x 100 and sits 0.35 tile above the tile's centre, 50 px higher than where the tile was
+    expect(parseFloat(num.style.top) + parseFloat(num.style.height) / 2).toBeCloseTo(140 - 40 * 0.35 - 50, 0);
+    vi.useRealTimers(); layer.remove();
   });
   it('plays every kind of event without throwing, and leaves nothing behind', async () => {
     vi.useFakeTimers();

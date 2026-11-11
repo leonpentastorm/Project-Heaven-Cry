@@ -18,10 +18,13 @@ import { buildCharacter, BUILD, type Variant } from './builds';
 import { POLICIES, sigilAfter, type Ctx, type Step } from './policies';
 
 // ---------- the two test grounds ----------
-const START = { pcStart: ['2,5', '2,3', '2,7', '1,4', '1,6', '2,1'], foeStart: ['13,5', '13,3', '13,7', '14,4', '14,6', '13,1', '13,9'] };
-MAPS.sim_open = { id: 'sim_open', name: 'Open ground (simulator)', w: 16, h: 11, solid: [], cover: [], full: [], difficult: [], ...START };
-MAPS.sim_cover = { id: 'sim_cover', name: 'Ground with cover (simulator)', w: 16, h: 11, solid: [], difficult: [],
-  cover: ['3,5', '3,3', '3,7', '12,5', '12,3', '12,7', '7,4', '8,6', '2,2', '13,2'], full: ['7,1', '8,9'], ...START };
+// Both are the full 26 × 26 (rules 1.16) with the game's own deployment: the squad on F–G, the enemy on T–U, rows
+// 11 to 16, the nearest of each 13 tiles apart. sim_open is bare ground (nothing to hide behind: the control);
+// sim_cover is the game's real open ground (data/maps.json layouts.open_ground: the broken middle, the two lanes, the
+// walls and debris), so a number measured here is measured on the ground a fight is really played on.
+const START = { pcStart: [...MAPS.yard.pcStart], foeStart: [...MAPS.yard.foeStart] };
+MAPS.sim_open = { id: 'sim_open', name: 'Open ground (simulator)', w: MAPS.yard.w, h: MAPS.yard.h, solid: [], cover: [], full: [], difficult: [], ...START };
+MAPS.sim_cover = { ...MAPS.yard, id: 'sim_cover', name: 'Ground with cover (simulator)', notes: [] };
 export const MAP_ID = { open: 'sim_open', cover: 'sim_cover' };
 /** The weapon each tier carries here: the first one the Proving Ground gives that tier. */
 export const TIER_WEAPON: Record<string, string> = { vermin: 'beast_bite', minion: 'service_pistol', soldier: 'hellraiser_service_rifle', elite: 'legion_bullpup', boss: 'hellraiser_lmg' };
@@ -309,7 +312,7 @@ export function runCell(pc: PcSpec, tier: string, map: 'open' | 'cover', n: numb
 export function freshFight(pc: PcSpec, tier: string, tag = 'PV', lv: { level?: number; shift?: number } = {}) {
   for (let i = 0; i < 400; i++) {
     const st = startFight({ pcs: [pc], foes: [{ tier }], map: 'open', seed: tag + '-' + i, ...lv }), cb = st.g.combat, u = cb.units.find((q: any) => q.side === 'pc'), t = cb.units.find((q: any) => q.side === 'foe');
-    if (cb.round === 1 && cb.order[cb.turn] === u.id && u.hp === u.maxHp && t.hp === t.maxHp && !isPressed(u) && !isPressed(t)) return st;
+    if (cb.round === 1 && cb.turn === 0 && cb.order[0] === u.id && u.hp === u.maxHp && t.hp === t.maxHp && !isPressed(u) && !isPressed(t)) return st;
   }
   throw new Error('no seed in 400 gave ' + pc.build + ' the first turn against a ' + tier);
 }

@@ -3,6 +3,7 @@
 // combat/perk, combat/attack, combat/parley, combat/analyze), with the game bound only where an engine hook is read
 // directly (notice, the enemy AI).
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { votesOf, rerollFrom, d20, emitStory, enemyTurn, holderOf, briefOf, perkActionsFor, previewAttack, coverageReport, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -329,7 +330,7 @@ describe('Every Lie Is a Door', () => {
     const ctx: any = withGame(s.g, () => emitStory(s.g, 'notice', { c: live(s, c), npc: {}, range: 5, dark: false, g: s.g }));
     expect(ctx.range).toBe(0);
     expect(() => perk(s, c, 'every_lie_is_a_door', { text: 'Again.' })).toThrow();
-    turn(s, { combat: { name: 'Caught', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Guard', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
+    turn(s, { combat: { name: 'Caught', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Guard', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
     expect(live(s, c).state?.lie_door).toBeUndefined();
   });
 });
@@ -425,7 +426,7 @@ describe('Cold Case', () => {
   });
   it('combat: Analyze costs 1 AP less; an unrelated fight is −1 to hit', () => {
     const s = storyWith([{ traits: ['cold_case'] }, {}]);
-    turn(s, { traitState: [{ charId: s.chars[0].id, key: 'case_open', value: true }], combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
+    turn(s, { traitState: [{ charId: s.chars[0].id, key: 'case_open', value: true }], combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
     const [u, v] = s.g.combat!.units.filter((x) => x.side === 'pc');
     expect(u.attack - v.attack).toBe(-1);
     const f = fight([{ traits: ['cold_case'] }]); const ap = f.pc.ap;

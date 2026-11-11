@@ -2,6 +2,7 @@
 // combat/attack, combat/move, combat/draw, combat/outburst, story/perk, check/roll); what enemies do goes through the
 // same engine functions their turns use (resolveAttack, moveUnit, applyDamage, harm, applyCond), with the game bound.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   CLASS, WEAPON, resolveAttack, previewAttack, attackDamage, moveUnit, applyDamage, applyCond, condOn, harm, glyphCost, previewOutburst, objectsOf, healingMult, maxHp,
   manaOf, perkActionsFor, coverageOf, itemInfo, emit, type Unit, type Combat,
@@ -318,7 +319,7 @@ describe('Scribe', () => {
     const c = st.chars[0];
     st.act({ type: 'story/perk', charId: c.id, id: 'class:scribe.inscribe_gear', actionId: 'armour_story' });
     expect(st.g.characters[c.id].evoCharge).toBe(8);
-    st.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    st.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     const pcU = st.g.combat!.units.find((x) => x.charId === c.id)!;
     const plain = fightWith([cls('scribe', 2, MIND)]).pc.armour;
     expect(pcU.armour).toBe(plain + 5);

@@ -38,7 +38,10 @@ const myTurn = async () => {
   await p.waitForFunction(() => performance.now() > window.__phcHold(), null, { timeout: 15000 });
 };
 // a refused action doesn't throw (it toasts), so a round is spent only when the magazine says so: cover that broke is skipped
-const burn = async () => { const left = async () => (await G()).combat.units.find((x) => x.id === me.id).ammo; const a0 = await left(); for (const k of ['5,4', '3,8', '3,2', '3,3', '11,9']) { await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if ((await left()) < a0) return true; } return false; };
+const burn = async () => { const left = async () => (await G()).combat.units.find((x) => x.id === me.id).ammo; const a0 = await left(); const [ux, uy] = (await G()).combat.units.find((x) => x.id === me.id).pos.split(',').map(Number), near = [];
+  // any cover in reach will do (the Proving Ground was redrawn at 26 x 26 in rules 1.16: no tile is named here)
+  for (let dy = -7; dy <= 7; dy++) for (let dx = -7; dx <= 7; dx++) if (dx || dy) near.push([dx * dx + dy * dy, (ux + dx) + ',' + (uy + dy)]);
+  for (const [, k] of near.sort((a, b) => a[0] - b[0])) { await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if ((await left()) < a0) return true; } return false; };
 const settle = () => p.waitForFunction(() => !document.querySelector('[data-fx="reload"]'), null, { timeout: 8000 }).catch(() => {});
 /** Start something (a game action, or an effect by hand) and sample the reload card every step ms: its box, its mode
  *  and title, the count, the old magazine's centre, the pack and pile glyphs, and (once, at probeAt ms) what is on top

@@ -11,8 +11,8 @@
 <div aria-label="Initiative order" class="phc-init" style="flex: none; display: flex; gap: 10px; padding: 10px 24px; border-bottom: 1px solid #232D3F; overflow-x: auto">
 <sc-for list="{{initiative}}" as="i" hint-placeholder-count="5">
 <div data-init="{{i.key}}" style="{{i.style}}">
-<sc-if value="{{i.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{i.zoom}}" aria-label="Enlarge {{i.name}}" style="{{zoomBtn}}"><img src="{{i.img}}" alt="" style="{{i.imgStyle}}"></button></sc-if>
-<sc-if value="{{i.noImg}}" hint-placeholder-val="{{false}}"><span style="{{i.badgeStyle}}">{{i.short}}</span></sc-if>
+<sc-if value="{{i.hasImg}}" hint-placeholder-val="{{true}}"><button type="button" data-init-show="" onClick="{{i.show}}" disabled="{{i.cantShow}}" aria-label="{{i.showLabel}}" title="{{i.showLabel}}" style="{{i.showBtn}}"><img src="{{i.img}}" alt="" style="{{i.imgStyle}}"></button></sc-if>
+<sc-if value="{{i.noImg}}" hint-placeholder-val="{{false}}"><button type="button" data-init-show="" onClick="{{i.show}}" disabled="{{i.cantShow}}" aria-label="{{i.showLabel}}" title="{{i.showLabel}}" style="{{i.showBtn}}"><span style="{{i.badgeStyle}}">{{i.short}}</span></button></sc-if>
 <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; font-weight: 700">{{i.name}}</span><span style="display: flex; gap: 6px; align-items: baseline"><sc-if value="{{i.hasTag}}"><span style="{{i.tagStyle}}">{{i.tag}}</span></sc-if><span style="font-size: 11px; color: #A3AEC2">INIT {{i.init}}</span></span><span aria-hidden="true" style="{{i.hpBox}}"><span class="phc-hp-chip" style="{{i.hpChip}}"></span><span class="phc-hp-fill" style="{{i.hpFill}}"></span></span></span>
 </div>
 </sc-for>
@@ -36,10 +36,10 @@
 </section>
 </div><!--/PANEL:mana--></sc-if>
 <div data-phc-panel="map" style="{{lay.mapStyle}}"><button type="button" class="phc-grip" style="top: 2px; right: -31px" onPointerDown="{{lay.grip.map}}" onKeyDown="{{lay.gripKey.map}}" aria-label="Move the map: drag, or use the arrow keys" title="Drag to move the map (arrow keys too)">⠿</button>
-<div class="phc-mapzoom" role="group" aria-label="Map size"><span>MAP</span><button type="button" onClick="{{mz.out}}" disabled="{{mz.cantOut}}" aria-label="Smaller map" aria-keyshortcuts="-" title="Smaller (−, or Ctrl + wheel)">−</button><button type="button" class="phc-mz-pct" onClick="{{mz.reset}}" aria-pressed="{{mz.manual}}" title="{{mz.pctTitle}}" aria-label="Map size {{mz.label}}: set 100%">{{mz.label}}</button><button type="button" onClick="{{mz.in}}" disabled="{{mz.cantIn}}" aria-label="Bigger map" aria-keyshortcuts="+" title="Bigger (+, or Ctrl + wheel)">+</button><button type="button" onClick="{{mz.toAuto}}" aria-pressed="{{mz.auto}}" title="{{mz.autoTitle}}">⤢ Auto</button></div>
-<div class="phc-grid-scroll" style="flex: none; overflow-x: auto"><div class="phc-grid" style="{{gridStyle}}" onMouseLeave="{{gridLeave}}">
+<div class="phc-mapzoom" role="group" aria-label="Map size and view"><span>MAP</span><button type="button" onClick="{{mz.out}}" disabled="{{mz.cantOut}}" aria-label="Smaller map" aria-keyshortcuts="-" title="Smaller (−, or Ctrl + wheel)">−</button><button type="button" class="phc-mz-pct" onClick="{{mz.reset}}" aria-pressed="{{mz.manual}}" title="{{mz.pctTitle}}" aria-label="Map size {{mz.label}}: set 100%">{{mz.label}}</button><button type="button" onClick="{{mz.in}}" disabled="{{mz.cantIn}}" aria-label="Bigger map" aria-keyshortcuts="+" title="Bigger (+, or Ctrl + wheel)">+</button><button type="button" class="phc-mz-auto" onClick="{{mz.toAuto}}" aria-pressed="{{mz.auto}}" title="{{mz.autoTitle}}">Usual size</button><button type="button" class="phc-mz-whole" onClick="{{mz.toggleWhole}}" disabled="{{mz.cantWhole}}" aria-pressed="{{mz.whole}}" aria-keyshortcuts="M" title="{{mz.wholeTitle}}">▦ Whole map <kbd>M</kbd></button><button type="button" class="phc-mz-home" onClick="{{mz.home}}" aria-keyshortcuts="Home" title="{{mz.homeTitle}}">◎ My unit <kbd>Home</kbd></button><sc-if value="{{mz.hasHint}}"><span class="phc-mz-hint" aria-hidden="true">{{mz.hint}}</span></sc-if></div>
+<div class="phc-cam"><div class="phc-grid-scroll phc-cam-scroll" role="group" aria-label="{{camLabel}}" style="{{camStyle}}"><div class="phc-grid" style="{{gridStyle}}" onMouseLeave="{{gridLeave}}">
 <sc-for list="{{tiles}}" as="t" hint-placeholder-count="176">
-<sc-if value="{{t.isLabel}}"><span aria-hidden="true" style="display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" title="{{t.title}}" data-sfx="{{t.sfx}}" style="{{t.style}}">
+<sc-if value="{{t.isLabel}}"><span aria-hidden="true" style="{{t.style}}">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" title="{{t.title}}" data-sfx="{{t.sfx}}" style="{{t.style}}">
 <sc-if value="{{t.hasZone}}"><span aria-hidden="true" style="{{t.zoneStyle}}"></span></sc-if>
 <sc-if value="{{t.hasPlan}}"><span aria-hidden="true" class="phc-plan" style="{{t.planStyle}}"></span></sc-if>
 <sc-if value="{{t.hasWatchT}}"><span aria-hidden="true" data-watch-tile="1" title="{{t.watchTTitle}}" style="{{t.watchTStyle}}"></span></sc-if>
@@ -70,7 +70,7 @@
 <sc-if value="{{t.hasStrokeTip}}" hint-placeholder-val="{{false}}"><span data-stroke-tip="1" style="{{t.strokeTipStyle}}">{{t.strokeTip}}</span></sc-if>
 </button></sc-if>
 </sc-for>
-</div></div>
+</div></div><div class="phc-cam-over" data-phc-cam="fight"></div></div>
 </div>
 <sc-if value="{{lay.legendMap}}" hint-placeholder-val="{{true}}"><!--PANEL:legend--><div data-phc-panel="legend" style="{{lay.legendStyle}}"><button type="button" class="phc-grip" onPointerDown="{{lay.grip.legend}}" onKeyDown="{{lay.gripKey.legend}}" aria-label="Move the legend: drag, or use the arrow keys" title="Drag to move the legend (arrow keys too)">⠿</button>
 <div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: #A3AEC2; padding-right: 30px">

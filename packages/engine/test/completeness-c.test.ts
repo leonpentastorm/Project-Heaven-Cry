@@ -1,6 +1,7 @@
 // The completeness pass, part C: lanes B-H items whose story, area-map or reducer-path side was missing or untested.
 // Everything goes through the reducer (apply): story/perk, world/act, combat/*, narrator/turn, check/roll, char/add.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, d20, previewAttack, packOf, makeObject, ARCHETYPES, memoryOf,
   togglesFor, storyCb, WEAPONS, ITEM, maxHp, PATRON, sideSees,
@@ -143,7 +144,7 @@ describe('The Old Blood, Machine-Faced, The Brightest Light, Ghost Soldier', () 
     const s2 = fightWith([{ traits: ['the_brightest_light'] }], [{ at: 'O10' }]);
     void s2; // the crash is read when the unit is built: start a fight with it set
     const s = storyWith([{ traits: ['the_brightest_light'] }]); s.g.characters[s.chars[0].id].state = { crashed: true };
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!, u = cb.units.find((x) => x.side === 'pc')!, foe = cb.units.find((x) => x.side === 'foe')!; u.ap = 6; u.pos = '2,2'; foe.pos = '5,2';
     const crashed = withGame(s.g, () => previewAttack(cb, u, foe, 'shot')).toHit;
     expect(crashed).toBe(base - 2);

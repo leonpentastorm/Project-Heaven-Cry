@@ -185,6 +185,14 @@ export function editable(t: EventTarget | null): boolean {
   if (tag === 'INPUT') return !['button', 'submit', 'reset', 'checkbox', 'radio', 'range', 'color', 'file', 'image'].includes(String((e as HTMLInputElement).type || 'text').toLowerCase());
   return !!e.isContentEditable;
 }
+/** The part of the map that is on screen: a map bigger than its window scrolls inside it (the camera, game/cameraView.ts),
+ *  so the grid's own box runs past the window's edges. */
+function shownRect(grid: HTMLElement): { left: number; top: number; right: number; bottom: number; width: number; height: number } {
+  const r = grid.getBoundingClientRect(), sc = grid.closest ? (grid.closest('.phc-cam-scroll') as HTMLElement | null) : null;
+  if (!sc) return r;
+  const s = sc.getBoundingClientRect(), left = Math.max(r.left, s.left), top = Math.max(r.top, s.top), right = Math.min(r.right, s.right), bottom = Math.min(r.bottom, s.bottom);
+  return { left, top, right, bottom, width: Math.max(0, right - left), height: Math.max(0, bottom - top) };
+}
 /** Where a focus lands on screen, and the map element to punch in on (the grid that holds the tile, else the biggest). */
 function focusOf(focus: string | null | undefined): { p: Pt; grid: HTMLElement | null } | null {
   if (!focus || typeof document === 'undefined') return null;
@@ -194,14 +202,14 @@ function focusOf(focus: string | null | undefined): { p: Pt; grid: HTMLElement |
   }
   const any = document.querySelector('.phc-grid') as HTMLElement | null || (document.querySelector('button.phc-tok[aria-label]')?.parentElement as HTMLElement | null);
   if (!any) return null;
-  const r = any.getBoundingClientRect();
+  const r = shownRect(any);
   return { p: { x: r.left + r.width / 2, y: r.top + r.height / 2, s: Math.max(40, Math.min(r.width, r.height) / 6) }, grid: any };
 }
 
 /** Where the effect box goes: centred at the top of the map's visible part (the grid, or the area map), so it never
  *  covers the action column, the FAITH tab or the story composer; with no map on screen, high in the middle. */
 export function boxPlace(focus: string | null | undefined): string {
-  const f = focusOf(focus) || focusOf('map'), r = f?.grid?.getBoundingClientRect();
+  const f = focusOf(focus) || focusOf('map'), r = f?.grid ? shownRect(f.grid) : undefined;
   if (r) {
     const L = Math.max(0, r.left), R = Math.min(innerWidth, r.right), T = Math.max(0, r.top), B = Math.min(innerHeight, r.bottom);
     if (R - L >= 300 && B - T >= 160) return 'left:' + Math.round((L + R) / 2) + 'px;top:' + Math.round(T + 12) + 'px;width:' + Math.round(Math.min(560, R - L - 24)) + 'px;';

@@ -8,6 +8,7 @@ import type { FxEvent, GameState } from '@engine';
 import { preloadCombatSfx, reducedMotion } from '../sfx';
 import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
+import { refreshClip } from '../cameraView';
 import { canDraw, clearFx, fightStream, forgetSpotlights, fxBusyUntil, FX_IDLE, holdMovers, isHeld, noteQueued, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 import { meleeMarksOf, syncMeleeMarks, clearMeleeMarks } from './melee-techniques';
@@ -56,6 +57,9 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   // paint, so the units a new batch is about to show can be held where they were: play.ts holdMovers).
   React.useLayoutEffect(() => { setContext(game, screen); }, [game, screen]);
   React.useEffect(() => { if (!document.hidden) syncAmbient(ambientOf(game, screen, seenNow())); }, [game, screen]);
+  // The layer is clipped to the map's window while a camera is on screen (game/cameraView.ts): whole again when the
+  // screen changes and no map is up.
+  React.useEffect(() => { refreshClip(); }, [screen, !!game]);
   // The melee techniques' lasting states (a Bind, a grapple, a weapon left in a nailed unit, a Guard, a Feint's mark)
   // follow the effects queue, not the state (review fix): the state already holds the outcome while its beats are still
   // to play, so the marks are synced only once the queue has played them (and no unit they stand on is still held where

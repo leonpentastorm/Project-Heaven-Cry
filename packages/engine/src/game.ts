@@ -13,7 +13,8 @@ import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RU
 import { levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, d20, seedFrom } from './rng';
 import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from './calls';
-import { type Campaign, builtInCampaign, validateCampaign, zoneToMap } from './campaign';
+import { type Campaign, builtInCampaign, validateCampaign, zoneToMap, expandCampaign } from './campaign';
+import { nearestFree } from './maplayout';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
 import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
@@ -793,7 +794,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (!isHost(g, by)) fail('Only the host loads a campaign.');
       if (g.phase !== 'lobby') fail('Load a campaign before the session starts.');
       const errs = validateCampaign(a.campaign); if (errs.length) fail('That campaign file has problems: ' + errs.slice(0, 4).join(' '));
-      g.campaign = { ...JSON.parse(JSON.stringify(a.campaign)), custom: true };
+      g.campaign = { ...expandCampaign(JSON.parse(JSON.stringify(a.campaign))), custom: true }; // (a layout picture becomes the plain lists: rules 1.16)
       // A file may not pass itself off as a built-in (it would be refreshed over, and session start would swap it out).
       if (builtInCampaign(g.campaign!.id)) g.campaign!.id = g.campaign!.id + '-custom';
       g.settings.start = g.campaign!.id;
@@ -2254,7 +2255,7 @@ const GENERIC = /^(scavenger drone|drone|engineer|security guard|guard|guard cap
 // ---------- magic on the story map and between the story and fights (spec: Mana, rules 1.2) ----------
 const MAGIC_ACTS: WorldAct[] = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise', 'pump', 'letgo', 'steady', 'feed', 'heartwatch', 'revert'];
 /** A tile from a grid reference ("C7") or a tile key ("2,6"). */
-function tileKey(g: GameState, t: string): string { if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
+function tileKey(g: GameState, t: string): string { if (typeof t !== 'string') return ''; if (/^\d+,\d+$/.test(t)) return t; const map = g.phase === 'combat' && g.combat ? g.combat.map : zoneMap(g); return keyOf(t, map) || t; }
 /** The Evoke choices beyond the aim (rules 1.4): TWICE's other aims, STEP's landing tile, COMMAND's order. */
 function evokeOptsOf(g: GameState, a: { aims?: string[]; dest?: string; order?: string; orderTo?: string; paint?: string; stroke?: string }) {
   return { ...(a.aims?.length ? { aims: a.aims.map((t) => tileKey(g, t)) } : {}), ...(a.stroke && a.stroke !== 'new' && !a.stroke.startsWith('junction:') ? { stroke: String(a.stroke) } : {}), ...(a.dest ? { dest: tileKey(g, a.dest) } : {}), ...(a.order ? { order: a.order } : {}), ...(a.orderTo ? { orderTo: tileKey(g, a.orderTo) } : {}),
@@ -2970,7 +2971,7 @@ export type SandboxAction =
 const SANDBOX_REFUSED = /^(narrator\/|session\/start|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/)/;
 /** The area map's own actions, which work while gearing up (moving, doors, attacking or casting on a drill unit). */
 const SANDBOX_STORY = /^(world\/act|story\/(move|door|focus|unfocus)|poi\/try)$/;
-export const PROVING_GROUND = provingJ as unknown as Campaign;
+export const PROVING_GROUND = expandCampaign(provingJ as any) as unknown as Campaign;
 /** Drill units by tier: their names and the weapons each wave cycles through. */
 export const SANDBOX_TIERS: Record<string, { name: string; weapons: string[] }> = {
   vermin: { name: 'Drill mite', weapons: ['beast_bite', 'combat_knife'] }, // rules 1.15: spawned by hand; the waves don't use it yet
@@ -3183,7 +3184,7 @@ function sbPlace(g: GameState, n: number) {
   const sb = sbOf(g), map = zoneMap(g), pos = positionsOf(g), centre = partyCentre(g), seen: Record<string, number> = {};
   const taken = new Set<string>([...Object.values(pos), ...storyObjects(g).filter(blocksMove).map((o) => o.pos)]);
   const free = (k: string) => standable(map, k) && !taken.has(k);
-  const anyFree = () => { for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) if (free(x + ',' + y)) return x + ',' + y; return null; };
+  const anyFree = () => nearestFree(map.w, map.h, map.foeStart[0] || '0,0', free); // more drill units than start tiles: beside the start, never across the map
   sb.placed = { wave: n, party: sbParty(g) };
   g.story.npcs = sandboxWave(n, sb.placed.party).map((f) => {
     const at = map.foeStart.find(free) || anyFree() || map.foeStart[0]; taken.add(at);

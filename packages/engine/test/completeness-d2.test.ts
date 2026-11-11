@@ -5,6 +5,7 @@
 // Insomniac's Wired at session start and Always Up on an enemy's turn; Rival's Petty on a Downed stim (fight and area
 // map); Rabbit's Foot against a taunt and an Interpose; Company Man's RTC contract thread.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, d20, maxHp, memoryOf, packOf,
   storyCb, briefOf, holdersOf, companionId, COMPANION_ROUND_AP, COMPANION_KINDS, CLASS, TRAITS, visibility, sideSees,
@@ -31,7 +32,7 @@ function place(s: any, at: string, o: any = {}) {
 /** A fight opened by the Narrator with enemy traits (kind, tags, hidden). */
 function fightOf(specs: CharSpec[], foes: any[], seed = 'D2') {
   const s = storyWith(specs, seed);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: f.weapon || 'service_pistol', at: f.at || '', ...f })) } } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard16', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: f.weapon || 'service_pistol', at: f.at || '', ...f })) } } } as any);
   return s;
 }
 /** The PC ends its turn and the given foes act next (their AI through combat/end-turn). */
@@ -144,7 +145,7 @@ describe('the sight hook: Sworn Sibling, Upper-Touched, Chain Smoker (items 43-4
     const run = (bond: boolean) => {
       const s = storyWith([{ traits: ['sworn_sibling'] }, { owner: 'host' }]);
       if (bond) s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'sworn_sibling', choice: s.chars[1].name } as any);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Dark', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+      s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Dark', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
       const cb = s.g.combat!, [a, b] = cb.units.filter((u) => u.side === 'pc' && !u.companion);
       a.pos = '0,0'; b.pos = String(cb.map.w - 1) + ',' + String(cb.map.h - 1); a.vision = 2;
       return withGame(s.g, () => sideSees(cb, 'pc', b, a));
@@ -231,7 +232,7 @@ describe('Insomniac, Rival, Rabbit\'s Foot, Company Man (items 49-52)', () => {
     let found = false;
     for (let seed = 1; seed < 30 && !found; seed++) {
       const s = storyWith([{ traits: ['insomniac'] }], 'AU' + seed);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Night.', rest: { kind: 'short' }, combat: { name: 'Night raid', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '', hidden: true }] } } } as any);
+      s.act({ type: 'narrator/turn', turn: { narration: 'Night.', rest: { kind: 'short' }, combat: { name: 'Night raid', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '', hidden: true }] } } } as any);
       const cb = s.g.combat!, pc = cb.units.find((u) => u.side === 'pc')!, foe = cb.units.find((u) => u.side === 'foe')!;
       pc.pos = '2,5'; foe.pos = '6,5'; foe.attack = 40; foe.ap = 6;
       const f = { get g() { return s.g; }, get cb() { return s.g.combat!; }, act: s.act, turn: (u: Unit) => { const c2 = s.g.combat!; c2.turn = c2.order.indexOf(u.id); return u; } } as any;

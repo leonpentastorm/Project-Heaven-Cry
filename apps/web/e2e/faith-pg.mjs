@@ -78,7 +78,7 @@ ok('the Miracle cuts in over the whole screen', shown);
 if (shown) {
   const portrait = await cut.locator('[data-phc-cut-portrait]').getAttribute('src');
   ok('with Mother Ember\'s portrait (' + portrait + ')', /patron-mother_ember/.test(portrait || ''));
-  const big = await cut.locator('[data-phc-cut-portrait]').boundingBox(), map = await p.locator('.phc-grid').boundingBox();
+  const big = await cut.locator('[data-phc-cut-portrait]').boundingBox(), map = await p.locator('.phc-grid-scroll').boundingBox();
   ok('larger than the combat map (' + Math.round(big?.height || 0) + ' px tall vs the map\'s ' + Math.round(map?.height || 0) + ')', !!big && !!map && big.height > map.height && big.width * big.height > map.width * map.height);
   const z = await cut.evaluate((el) => Number(getComputedStyle(el).zIndex));
   ok('above everything (z-index ' + z + ')', z >= 90);
@@ -96,7 +96,9 @@ if (SHOTS) { await p.waitForTimeout(Math.max(0, 2420 - (Date.now() - tCut))); aw
   await p.waitForTimeout(Math.max(0, 2900 - (Date.now() - tCut))); await p.screenshot({ path: SHOTS + '/faith-miracle-land.png' }); }
 await cut.waitFor({ state: 'detached', timeout: 4500 }).catch(() => {});
 const landed = Date.now() - tCut;
-ok('it lands in about 3 s and lets go of the screen (' + landed + ' ms after it came up)', landed < 3600 && (await cut.count()) === 0);
+// At the Normal combat speed the landing is at 3000 ms ÷ 0.85 = 3529 ms; the two screenshots above (a 26 x 26 map at the usual
+// tile size is a bigger page to draw) can return after it, so the check leaves room for them.
+ok('it lands in about 3.5 s and lets go of the screen (' + landed + ' ms after it came up)', landed < 4500 && (await cut.count()) === 0);
 const box = p.locator('[data-phc-cut-box]');
 const boxShown = await box.waitFor({ timeout: 2500 }).then(() => true, () => false);
 const boxText = boxShown ? (await box.textContent()) || '' : '';
@@ -134,7 +136,7 @@ ok('Reset the limits clears the Miracle\'s session mark', c.miracleSession == nu
   await cut.waitFor({ state: 'detached', timeout: 1500 }).catch(() => {});
   ok('a key skips it (' + (Date.now() - k0) + ' ms)', (await cut.count()) === 0 && Date.now() - k0 < 1000);
   ok('and the box still follows', await box.waitFor({ timeout: 1500 }).then(() => true, () => false));
-  const bx = await box.boundingBox(), grid = await p.locator('.phc-grid').boundingBox(), panel = await p.locator('[role="tabpanel"]').boundingBox();
+  const bx = await box.boundingBox(), grid = await p.locator('.phc-grid-scroll').boundingBox(), panel = await p.locator('[role="tabpanel"]').boundingBox();
   const overlaps = (a, b) => !!a && !!b && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
   ok('the box sits over the map, not over the FAITH tab (' + JSON.stringify(bx && { x: Math.round(bx.x), y: Math.round(bx.y), w: Math.round(bx.width) }) + ')', !!bx && !!grid && bx.y >= grid.y - 1 && !overlaps(bx, panel));
   ok('and clicks go through it (only its × takes one)', (await box.evaluate((el) => getComputedStyle(el).pointerEvents)) === 'none');

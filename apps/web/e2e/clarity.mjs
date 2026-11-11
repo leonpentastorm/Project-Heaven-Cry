@@ -58,7 +58,7 @@ async function run(speed) {
   await autoConfirm(p);
   const G = () => p.evaluate(() => window.__phc.getState().game);
   const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
-  const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOP'[x] + (y + 1); };
+  const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
   console.log('--- combat speed: ' + speed);
   await p.goto(BASE);
   await click(p, 'PROVING GROUND');
@@ -138,7 +138,7 @@ async function run(speed) {
   ok('the recruit\'s turn', g.combat.order[g.combat.turn] === me2.id);
   // (b) again, made sure of: a knife drone dropped into the nearest shadow the recruit can't see (it has to walk out).
   const shade = await p.evaluate(() => [...document.querySelectorAll('button.phc-tok[aria-label]')].map((b) => b.getAttribute('aria-label')).filter((l) => /· open/.test(l) && /out of sight/.test(l)).map((l) => l.split(' ')[0]));
-  const toKey = (r) => ('ABCDEFGHIJKLMNOP'.indexOf(r[0])) + ',' + (Number(r.slice(1)) - 1), d = (k) => Math.max(Math.abs(+k.split(',')[0] - +me2.pos.split(',')[0]), Math.abs(+k.split(',')[1] - +me2.pos.split(',')[1]));
+  const toKey = (r) => ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(r[0])) + ',' + (Number(r.slice(1)) - 1), d = (k) => Math.max(Math.abs(+k.split(',')[0] - +me2.pos.split(',')[0]), Math.abs(+k.split(',')[1] - +me2.pos.split(',')[1]));
   const spot = shade.map(toKey).filter((k) => d(k) >= 3).sort((a, b) => d(a) - d(b))[0];
   if (spot) ok('a knife drone waits in the shadow at ' + ref(spot), (await act({ type: 'sandbox/spawn', tier: 'minion', weapon: 'combat_knife', at: ref(spot), name: 'Shade' })) === null);
   await p.waitForTimeout(300);

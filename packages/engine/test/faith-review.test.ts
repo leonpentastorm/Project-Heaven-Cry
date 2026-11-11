@@ -3,6 +3,7 @@
 // fight (its rounds of the bearer's own turns; never carried into the story), a turn's days before its faith ops, the
 // pact's fx, the one Devotion XP format, the rite texts in XP.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, faithView, beliefOf, condOn, d20, setDevotionXp, devotionThreshold, devotionXpOf, devotionWords, tagDevotion, grudgeOf,
   FAITH_FX, FAITH_PATRONS, DEVOTION_XP, TAG_CAPS,
@@ -19,7 +20,7 @@ function faithful(patron = 'mother_ember', level = 3, faith = 5) {
   const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron }; c.patron = patron; setDevotionXp(c, devotionThreshold(level));
   return { s, c: (): Character => s.g.characters[c.id], ally: (): Character => s.g.characters[s.chars[1].id], act: (a: any, by = 'host') => s.act(a as Action, by) };
 }
-const FIGHT = { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } };
+const FIGHT = { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } };
 /** Win the fight at once (every foe down), through the reducer's own end-of-fight path. */
 function winFight(s: { g: GameState }, act: (a: any, by?: string) => GameState) {
   const cb = s.g.combat!; for (const u of cb.units) if (u.side === 'foe') { u.hp = 0; u.dead = true; }

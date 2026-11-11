@@ -51,7 +51,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   if (u.mg && !u.mg.emanator) { await act(p, { type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true }); await p.waitForTimeout(200); await act(p, { type: 'sandbox/give', charId: cid, item: 'emanator', equip: true }); await p.waitForTimeout(300); u = await meU(); }
   ok('the Recruit holds an Emanator in hand (' + (u.mg && u.mg.emanator) + ') and a design (' + (d && d.name) + ', ' + (u.mg ? u.mg.mp : '?') + ' MP)', !!d && !!u.mg && !!u.mg.emanator);
   if (d) {
-    { const [x, y] = u.pos.split(',').map(Number); await act(p, { type: 'sandbox/clear' }); await act(p, { type: 'sandbox/spawn', tier: 'elite', weapon: 'fists', at: 'ABCDEFGHIJKLMNOP'[x + 3] + (y + 1) }); await p.waitForTimeout(300); }
+    { const [x, y] = u.pos.split(',').map(Number); await act(p, { type: 'sandbox/clear' }); await act(p, { type: 'sandbox/spawn', tier: 'elite', weapon: 'fists', at: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x + 3] + (y + 1) }); await p.waitForTimeout(300); }
     const foe = (await G(p)).combat.units.find((x) => x.side === 'foe' && !x.dead);
     let e = await act(p, { type: 'combat/outburst', unitId: u.id, design: d.id, hold: true }); await p.waitForTimeout(250);
     e = e || await act(p, { type: 'combat/pump', unitId: u.id, mods: ['overdraw'] }); await p.waitForTimeout(250);

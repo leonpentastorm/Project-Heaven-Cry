@@ -114,7 +114,7 @@ await panel().locator('[data-act="tpad:main"]').click(); await p.waitForTimeout(
 ok('the knife\'s Techniques open its pad, with Lunge and Coup', (await p.locator('[data-tech-pad="tpad:main"] [data-tech="lunge"]').count()) === 1 && (await p.locator('[data-tech-pad="tpad:main"] [data-tech="coup"]').count()) === 1);
 for (const [w, h] of [[1440, 900], [1280, 720]]) {
   await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(400);
-  ok('at ' + w + '×' + h + ' with a pad open: the grid and Confirm on screen, no page scroll', (await inView('.phc-grid')) && (await inView('.phc-cb-confirm button')) && (await noPageScroll()));
+  ok('at ' + w + '×' + h + ' with a pad open: the map\'s window and Confirm on screen, no page scroll', (await inView('.phc-grid-scroll')) && (await inView('.phc-cb-confirm button')) && (await noPageScroll()));
   await snap('pad-main-' + w);
 }
 await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(300);

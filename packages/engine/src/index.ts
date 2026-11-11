@@ -5,6 +5,7 @@ export * from './combat';
 export * from './game';
 export * from './objects';
 export * from './campaign';
+export { MAP_LIMITS, MAP_LAYOUTS, readLayout, expandZone, sizeProblem, startGap, deployEnemy, nearestFree } from './maplayout';
 export * from './music';
 export * from './spotlight';
 export * from './glossary';

@@ -1,5 +1,6 @@
 // The hooks-gap pass (rules 1.3): core hooks the lanes asked for, each tested through the item that needed it.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { harm, applyCond, blessing, emitStory, newRound, setStoryCond, glyphCost, condOn, throwItem, type Combat } from '../src';
 import { fightWith, storyWith, withGame, rng } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -88,7 +89,7 @@ describe('the story side', () => {
   it('a session Shaken comes into a fight, and stays a session Shaken after it (F1)', () => {
     const s = storyWith([{}]); const id = s.chars[0].id;
     setStoryCond(s.g, s.g.characters[id], 'shaken', 'session');
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'easy', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'service_pistol', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'easy', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'service_pistol', at: '' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.charId === id)!;
     expect(condOn(u, 'shaken')).toBe(true);
   });

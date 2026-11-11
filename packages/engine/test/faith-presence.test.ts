@@ -4,6 +4,7 @@
 // miss); 20 + 4 × Devotion × Blessing power; the grant bank's {name}; the Miracle's and the intervention's fx; the
 // story Miracle; determinism; old fights in saves. Every rule goes through apply() where a player's click would.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   FAITH_PATRONS, FAITH_PATRON, FAITH_FX, INTERVENTION, interventionAmount, interventionLimit, grantLine, LINE_BANKS,
   d20, applyDamage, resolveAttack, condOn, condTurnEnd, setDevotionXp, devotionThreshold,
@@ -62,7 +63,7 @@ describe('Witnessed lasts until the fight ends or the intervention fires (item 7
   it('it ends with the fight: never in the story, not in the next fight', () => {
     const s = storyWith([{ name: 'Saint', skills: { faith: 6 } }, { name: 'Friend' }]);
     const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; setDevotionXp(c, devotionThreshold(3));
-    const FIGHT = { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } };
+    const FIGHT = { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } };
     s.act({ type: 'narrator/turn', turn: FIGHT } as any, 'host');
     const cb = s.g.combat!, u = cb.units.find((x) => x.charId === c.id)!; cb.turn = cb.order.indexOf(u.id); u.ap = 6;
     s.act({ type: 'faith/pray', unitId: u.id, kind: 'hymn', id: 'saints_shield', targetId: u.id } as any, s.g.characters[c.id].owner);
@@ -176,7 +177,7 @@ describe('the widened triggers (items 742-743)', () => {
     // a character who walks into the fight with no MP left: nothing ran out in this fight
     const s = storyWith([{ name: 'Clerk', archetype: 'stormcaller', kit: 'soul', skills: { faith: 7 } } as any]);
     const c = s.g.characters[s.chars[0].id]; c.belief = { kind: 'faithful', patron: 'the_quartermaster' }; c.patron = 'the_quartermaster'; setDevotionXp(c, devotionThreshold(3)); c.mp = 0;
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any, 'host');
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any, 'host');
     const cb = s.g.combat!, u = cb.units.find((x) => x.charId === c.id)!; expect(u.mg!.mp).toBe(0);
     u.conds = { witnessed: 99 } as any; cb.turn = cb.order.indexOf(u.id); u.ap = 6;
     s.act({ type: 'combat/prone', unitId: u.id } as any, c.owner);

@@ -2,6 +2,9 @@
 // the sheet is your character, the stream is the session, voices and Overreach are the engine's private entries,
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { resourcesOf, resView, RES_CSS } from '../game/resources';
+import { CameraView, CAMERA_CSS } from '../game/cameraView';
+import { panKey, REF_W, REF_H } from '../game/camera';
+import { ZOOM_CSS } from '../game/mapZoom';
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, checkMod, fmt, tabNavIndex, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
@@ -49,6 +52,13 @@ const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) =
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
 // Main-screen extras: the dice verdict lands after the die does; the area map's planning marks breathe a little.
 ensureStyle('phc-resources', RES_CSS);
+ensureStyle('phc-camera', CAMERA_CSS);
+ensureStyle('phc-combat-mapzoom', ZOOM_CSS); // the area map's view buttons share the fight map toolbar's look
+/** The area map's camera (roadmap 2c; game/cameraView.ts): a map bigger than the one people know (16 x 11) keeps its
+ *  tile size and scrolls in its window, as the fight's does. Local to this browser. */
+const AREA_CAM = new CameraView('area');
+let AREA_LIVE = null;
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('keydown', (e) => { if (AREA_LIVE && AREA_LIVE.state.area && AREA_CAM.live()) AREA_LIVE.areaKey(e); });
 ensureStyle('phc-story-panels', STORY_PANELS_CSS); // the right column's movable modules (game/storyPanels.ts)
 // The UI pass (docs/design/ui-pass-shell.md 3, 4): Echo's flare when one is gained or spent, a new quest row's white
 // flash, and the minimap kept short enough that the quest board keeps its room on a short window.
@@ -314,6 +324,40 @@ export class MainLogic extends DCLogic {
     if (this.state.area) { if (!fromButton) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); return; }
     if (!fromButton && typeof document !== 'undefined' && document.querySelector('[role="dialog"][aria-modal="true"]')) return;
     this.setState({ area: true, shNarr: false });
+  }
+  /** The area map's whole-map view and back (centred on a tile when one is given, else on your character). */
+  areaWhole(on, key) {
+    this.setState({ areaWhole: !!on });
+    if (!on && typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => requestAnimationFrame(() => { this.areaSync(); AREA_CAM.follow([key || AREA_CAM.home].filter(Boolean), 'ask', true); }));
+  }
+  /** The area map's camera keys: the arrows and WASD move the view, Home goes back to your character. Not while typing
+   *  and not on a control that uses the arrows itself. */
+  areaKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    const t = e.target, typing = (x) => !!x && (/^(INPUT|TEXTAREA|SELECT)$/.test(x.tagName || '') || !!x.isContentEditable);
+    if (typing(t) || typing(document.activeElement) || document.querySelector('[data-phc-dialog], [data-phc-cutin]')) return;
+    if (e.key === 'Home') { if (e.repeat) return; e.preventDefault(); if (this.state.areaWhole) this.areaWhole(false); else AREA_CAM.goHome(); return; }
+    const d = panKey(e.key); if (!d) return;
+    if (t && typeof t.closest === 'function' && t.closest('[role="tablist"], [role="slider"], [role="separator"], [role="radiogroup"], [role="listbox"], [role="menu"], select')) return;
+    if (AREA_CAM.pan(d)) e.preventDefault();
+  }
+  /** After a render with the area map open: the tile size people know (what a 16 x 11 map came to in this window), the
+   *  camera bound to the map's window, the small map's picture; it opens on your character and follows them. */
+  areaSync() {
+    if (typeof document === 'undefined' || !this.state.area) return;
+    const sc = document.querySelector('.phc-area-scroll'), ov = document.querySelector('.phc-cam-over[data-phc-cam="area"]'), A = this._area;
+    if (!sc || !A) return;
+    const box = sc.parentElement && sc.parentElement.parentElement, innerW = box ? box.clientWidth - 16 : 800;
+    const T = Math.max(28, Math.min(80, Math.floor((Math.min(innerW, (window.innerHeight - 260) * (REF_W + 0.4) / (REF_H + 0.4)) - 18 - 2 * REF_W) / REF_W)));
+    if (T !== this._areaT) { this._areaT = T; this.setState({}); return; }
+    AREA_CAM.onMini = () => this.setState({});
+    AREA_CAM.overview = !A.cam; AREA_CAM.myTurn = false;
+    const fresh = !AREA_CAM.live() || this._areaKey !== A.key, was = AREA_CAM.home;
+    AREA_CAM.home = A.home; AREA_CAM.attach(sc, ov, A.w, A.h); AREA_CAM.setMini(A.mini);
+    if (!A.cam || !AREA_CAM.grid()) return;
+    if (fresh) { this._areaKey = A.key; if (A.home) AREA_CAM.follow([A.home], 'ask', true); }
+    else if (A.home && was && A.home !== was) AREA_CAM.follow([A.home], 'beat');
+    const mini = AREA_CAM.miniShown(); if (mini !== !!this._areaMiniOn) { this._areaMiniOn = mini; this.setState({}); }
   }
   /** The right column's four modules (game/storyPanels.ts): each one's place (CSS order), its grip's handlers, the
    *  reset link, and the player card's styles. `seats`: how many the player card keeps room for (four players and the
@@ -934,8 +978,14 @@ export class MainLogic extends DCLogic {
     const pdOn = !!(S.putDown && c && !inFight && (c.carried || []).some((x) => x.npc.id === S.putDown)), pdSet = pdOn ? new Set(putDownTiles(g, c.id)) : new Set();
     if (S.putDown && !pdOn) queueMicrotask(() => this.setState({ putDown: null }));
     const sgTiles = evW ? mergeTiles((placedW && placedW.tiles) || {}, evW.tiles) : (placedW && placedW.tiles) || {};
+    // The area map's camera (roadmap 2c): a map bigger than 16 x 11 scrolls in its window at the usual tile size; the
+    // whole-map view is the old fitted grid. Tooltips near an edge turn inward from the window's edge, not the map's.
+    const areaBig = map.w > REF_W || map.h > REF_H, areaCamOn = areaBig && !S.areaWhole;
+    const AVT = S.area && areaCamOn && AREA_CAM.live() && AREA_CAM.id === 'area' ? AREA_CAM.tiles() : { x0: 0, y0: 0, x1: map.w - 1, y1: map.h - 1 };
     const cellsFor = (labels, onClick) => {
-      const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1' });
+      const vx = (x) => (labels ? x - AVT.x0 : x), vy = (y) => (labels ? y - AVT.y0 : y), vW = labels ? AVT.x1 - AVT.x0 + 1 : map.w, vH = labels ? AVT.y1 - AVT.y0 + 1 : map.h;
+      const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1'
+        + (labels && areaCamOn ? '; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ' + (key === 'h-' ? 'top: 0; left: 0; z-index: 9' : key[0] === 'h' ? 'top: 0; z-index: 8; min-height: 16px' : 'left: 0; z-index: 8') : '') });
       if (labels) { out.push(lab('h-', '')); for (let x = 0; x < map.w; x++) out.push(lab('h' + x, refOf(x + ',0').replace(/\d+$/, ''))); }
       for (let y = 0; y < map.h; y++) {
         if (labels) out.push(lab('r' + y, String(y + 1)));
@@ -975,11 +1025,11 @@ export class MainLogic extends DCLogic {
             costStyle: 'position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 6; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; '
               + (plan.isAtk ? 'background: ' + RANGE_RED + '; color: #0A0D13' : 'background: #FFFFFF; color: #0A0D13'), isLabel: false, isTile: true, has: !!u, glyph, hasGlyph: !!glyph, hasSprite: !!spr, sprite: spr, spriteStyle: o ? spriteStyle(o) : '', glyphStyle: 'position: absolute; inset: 0; display: grid; place-items: center; font-size: ' + (labels ? 18 : 9) + 'px; line-height: 1; color: ' + (o && (o.approaches.some((a) => !a.tries.length) || o.kind === 'poi') && !o.resolved ? '#FFFFFF' : o && (kindOf(o).hazard || o.kind === 'trap') ? '#F65157' : '#C9D3E3'),
             click: labels && pdOn ? onClick(k) : u && u.npc && labels && W === 'move' ? () => openTalk(u.id) : interesting(o) && labels && W === 'move' ? () => openObj(o) : onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
-            t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
+            t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: vx(x) >= vW / 2, up: vy(y) >= vH / 2 }) : null,
             hasTrail: !!trailAt[k] && !u, trailStyle: trailAt[k] ? 'position: absolute; left: 50%; top: 50%; width: ' + (labels ? 10 : 5) + 'px; height: ' + (labels ? 10 : 5) + 'px; margin: -' + (labels ? 5 : 2.5) + 'px 0 0 -' + (labels ? 5 : 2.5) + 'px; border-radius: 50%; z-index: 2; pointer-events: none; background: ' + trailAt[k] + '; box-shadow: 0 0 0 2px rgba(5, 7, 11, 0.6)' : '',
             picked: S.wTarget && u && u.id === S.wTarget,
             hasJoin: labels && !!(SLw.tiles[k] && SLw.tiles[k].length), join: labels && SLw.tiles[k] ? joinUri(SLw.tiles[k], { size: 100, pad: 60, anchor: [25, 25], pitch: 104 }) : '',
-            hasStrokeHot: labels && SLw.hot.has(k), hasStrokeTip: labels && k === S.hoverTile && !!SLw.hotText, strokeTip: SLw.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (x >= map.w / 2 ? 'right: 0' : 'left: 0') + '; z-index: 7; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
+            hasStrokeHot: labels && SLw.hot.has(k), hasStrokeTip: labels && k === S.hoverTile && !!SLw.hotText, strokeTip: SLw.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (vx(x) >= vW / 2 ? 'right: 0' : 'left: 0') + '; z-index: 7; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
             glyphs: gl.slice(0, 2).map((x, i) => { const ours = x.side === 'pc';
               return { key: x.id, src: glyphMark(x, 'pc', knowsW).src,
                 style: 'position: absolute; z-index: 3; width: 44%; height: 44%; pointer-events: none; ' + (i ? 'right: 3%; bottom: 3%' : 'left: 3%; top: 3%') + (ours ? '; filter: drop-shadow(0 0 2px ' + SIG_CYAN + ')' : '; opacity: 0.7') }; })
@@ -1112,7 +1162,15 @@ export class MainLogic extends DCLogic {
       if (W === 'beast') { const b = myBeast(); if (!b) return toast('Your beast is gone.'); act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: 'move', unit: b.id }); }
       if (W === 'twin') { const t = myTwin(); if (!t) return toast('The twin isn\'t here: call it from the Class tab.'); act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: 'move', unit: t.id }); }
     };
-    const areaCells = cellsFor(true, worldClick);
+    // In the whole-map view of a big map a click on a tile goes back to the camera, centred there; it never acts.
+    const areaCells = cellsFor(true, areaBig && S.areaWhole ? (k) => () => this.areaWhole(false, k) : worldClick);
+    AREA_LIVE = this;
+    { const myU = c ? units.find((u) => u.charId === c.id) : null, shown = units.filter((u) => !u.dead), nPc = shown.filter((u) => u.side === 'pc').length;
+      this._area = { key: (g.code || '') + '|' + map.name + '|' + map.w + 'x' + map.h + '|' + (S.area ? 1 : 0), w: map.w, h: map.h, cam: areaCamOn, home: myU ? myU.pos : null,
+        mini: { solid: map.solid || [], full: Object.keys(cov).filter((k) => cov[k].kind === 'full'), half: Object.keys(cov).filter((k) => cov[k].kind !== 'full'),
+          dots: shown.map((u) => { const p = u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null; return { key: u.pos, color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : u.side === 'pc' ? '#7FD4FF' : '#F65157', me: !!myU && u === myU, square: u.side !== 'pc' }; }),
+          label: nPc + (nPc === 1 ? ' squad member' : ' squad members') + ' and ' + (shown.length - nPc) + ' others in sight' } };
+      if (S.area && typeof requestAnimationFrame !== 'undefined' && !this._areaRaf) this._areaRaf = requestAnimationFrame(() => { this._areaRaf = 0; this.areaSync(); }); }
     // ---------- buffs and debuffs (the Status tab) ----------
     const fxList = (() => {
       if (!c) return [];
@@ -1412,7 +1470,12 @@ export class MainLogic extends DCLogic {
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';
         const cell = areaCells.find((c) => c.key === k); return (plan.info && plan.hv === k ? plan.info + ' · ' : '') + cell.label; })(),
       areaHint: pdOn ? pdHint : mOpen && mHint ? mHint : plan.isAtk ? (plan.reachText || '') + ' Red: in reach. Hover a target for the odds.' : plan.isMove ? 'Dashed tiles are in reach this round: hover one for the path and its AP, click to go.' : mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
-      areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
+      areaGrid: areaCamOn ? 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', ' + (this._areaT || 48) + 'px); gap: 2px; width: max-content' + (AREA_CAM.miniHidden ? '' : '; margin-right: 172px')
+        : 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
+      areaCamWrap: areaCamOn ? '' : 'width: 100%', areaCamStyle: areaCamOn ? 'max-width: 100%; max-height: calc(100vh - 260px)' : 'overflow: visible',
+      areaCamLabel: 'The area map. Drag it, or use the arrow keys or W A S D, to look around; Home goes back to your character.',
+      areaView: { big: areaBig, whole: areaBig && S.areaWhole ? 'true' : 'false', toggle: () => this.areaWhole(!S.areaWhole), home: () => { if (S.areaWhole) this.areaWhole(false); else AREA_CAM.goHome(); },
+        wholeTitle: S.areaWhole ? 'Back to the usual size. Or click a tile to go there.' : 'See the whole map', hint: S.areaWhole ? 'Whole map: click a tile to go there.' : 'Drag the map, or use the arrow keys.' },
       areaTitle: 'AREA MAP · ' + (SB ? 'PROVING GROUND' : st0.short.toUpperCase() + ' · ' + map.name.toUpperCase()), inFight,
       hud: (() => { if (!c) return { has: false, bars: [], res: resView([]), magic: [] };
         const ap = apNow;

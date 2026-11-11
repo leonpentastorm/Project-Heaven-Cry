@@ -3,6 +3,7 @@
 // the enemies' turns, a save and a reload, a second fight, the Proving Ground's tools); the six small fixes are
 // checked where the card and the game could still disagree.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import perksJ from '../../../data/perks.json';
 import { apply, newGame, applyCond, applyDamage, hide, moveUnit, d20, condOn, type Unit, type Combat } from '../src';
 import { fightWith, storyWith, withGame, sheetOf, rng } from './helpers/perkfight';
@@ -18,7 +19,7 @@ function storyCheck(s: S, charId: string, skills: string[], extra: any = {}) {
 }
 /** Enemies that can't hit (attack −30), so a fight can run for many real rounds. */
 const HARMLESS = { hp: 60, defense: 12, attack_bonus: -30, armour: 5 };
-const startFight = (s: S, foes: { at?: string; name?: string; kind?: string; tier?: string }[]) => s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard', difficulty: 'standard',
+const startFight = (s: S, foes: { at?: string; name?: string; kind?: string; tier?: string }[]) => s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard16', difficulty: 'standard',
   enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: 'service_pistol', at: f.at || '', ...(f.kind ? { kind: f.kind } : {}), fixed: HARMLESS })) } } } as any);
 const cbOf = (s: S): Combat => s.g.combat!;
 const active = (s: S): Unit => cbOf(s).units.find((u) => u.id === cbOf(s).order[cbOf(s).turn])!;

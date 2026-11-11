@@ -53,25 +53,26 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 
 **The rule for every map (Leon, 11 Nov 2026).** A fight map is at most **26 × 26 tiles** (A to Z by 1 to 26). The
 Proving Ground is that full size. A campaign or a later game mode may set a smaller map for a place that should feel
-tight; the size is chosen when the campaign is made. The five maps that were painted before this were 16 × 11 (the
-Proving Ground 16 × 12): they are retired to plain colour and kept in `art/_archive/` as the reference for the look.
+tight; the size is chosen when the campaign is made. The four maps that were painted before this (M813's, 16 × 11 tiles each) are retired to plain colour and kept in
+`art/_archive/maps/m813/retired-2026-11/` as the reference for the look. (The Proving Ground was listed as a fifth
+painted map; it only ever had its banner, which stays.)
 
-**Direction for all of them.** The same Heavenprint map treatment as the retired five: top-down, the same tile scale
+**Direction for all of them.** The same Heavenprint map treatment as the retired four: top-down, the same tile scale
 and light, so tokens and object sprites sit on it unchanged. A map shows approaches, flanks and a way round, so a squad
 can manoeuvre instead of meeting head-on. Paint to the tile layout guide that `tools/render_map_guides.py` makes from
 the campaign file: **a map is only ready to paint when its row below says its layout is set.**
 
 | # | Map | Campaign | Size | Status | Notes | Goes to |
 | --- | --- | --- | --- | --- | --- | --- |
-| M1 | **The Proving Ground** | The Proving Ground (practice fights) | 26 × 26 | Wanted. Layout not set yet (it follows the 26 × 26 change); plain colour until then | Packed sand under floodlights; the squad comes in from the west, drill units from the east. The first one to paint | `art/maps/proving-ground.png` |
-| M2 | **The shield line** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Leon: "M813 is too broken now with all we have changed… wait for the rewrite." Old painting: `shield-line.png` | `art/maps/m813/shield-line.png` |
-| M3 | **Outpost-813 rear landing pad** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Old painting: `rear-pad.png` | `art/maps/m813/rear-pad.png` |
-| M4 | **Outpost-813** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Old painting: `outpost.png` | `art/maps/m813/outpost.png` |
-| M5 | **Outpost-1** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Old painting: `outpost-1.png` | `art/maps/m813/outpost-1.png` |
-| M6 | **Open ground** | The Narrator's Own Start, and any fight with no map of its own | 26 × 26 | Wanted. Never painted; plain colour today | The generic field the Narrator uses when a story names no place: it should read as "somewhere outdoors" and suit any world. Worth two or three variants later (wasteland, street, forest edge) | `art/maps/open-ground.png` |
-| M7 | **The mining camp** | A God-Plot on a Mining World | to be set | Wanted when its layout is set. Never painted | A shrine camp on a mining world | `art/maps/godplot/shrine-camp.png` |
-| M8 | **The penthouse** | A Summoning in Central City | to be set (an interior: likely smaller than the maximum) | Wanted when its layout is set. Never painted | A Central City penthouse where a summoning goes wrong | `art/maps/summoning/penthouse.png` |
-| M9 | **The lifted town** | The Town Where the Curse Is Lifted | to be set | Wanted when its layout is set. Never painted | A Bazaim-style town of lifted curses | `art/maps/curse/lifted-town.png` |
+| M1 | **The Proving Ground** | The Proving Ground (practice fights) | 26 × 26 | **Layout set** (rules 1.16, 11 Nov 2026; first layout, open to playtests). Ready to paint once Leon has played it. Guide: `python3 tools/render_map_guides.py data/campaigns/proving.json <folder>` | Packed sand under floodlights; the squad comes in from the west, drill units from the east. The first one to paint | `art/maps/proving-ground.png` |
+| M2 | **The shield line** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Leon: "M813 is too broken now with all we have changed… wait for the rewrite." Old painting: `art/_archive/maps/m813/retired-2026-11/shield-line.png` | `art/maps/m813/shield-line.png` |
+| M3 | **Outpost-813 rear landing pad** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Old painting: `art/_archive/maps/m813/retired-2026-11/rear-pad.png` | `art/maps/m813/rear-pad.png` |
+| M4 | **Outpost-813** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Old painting: `art/_archive/maps/m813/retired-2026-11/outpost.png` | `art/maps/m813/outpost.png` |
+| M5 | **Outpost-1** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Old painting: `art/_archive/maps/m813/retired-2026-11/outpost-1.png` | `art/maps/m813/outpost-1.png` |
+| M6 | **Open ground** | The Narrator's Own Start, and any fight with no map of its own | 26 × 26 | **Layout set** (rules 1.16; `data/maps.json`, `layouts.open_ground`). Never painted; plain colour today. Guide: the same tool on `data/campaigns/own.json` | The generic field the Narrator uses when a story names no place: it should read as "somewhere outdoors" and suit any world. Worth two or three variants later (wasteland, street, forest edge) | `art/maps/open-ground.png` |
+| M7 | **The mining camp** | A God-Plot on a Mining World | 26 × 26 | First layout set (rules 1.16), but the campaign is still a sketch: wait until it is written. Never painted | A shrine camp on a mining world | `art/maps/godplot/shrine-camp.png` |
+| M8 | **The penthouse** | A Summoning in Central City | 16 × 11 (an interior; kept small) | Layout unchanged; the campaign is still a sketch: wait until it is written. Never painted | A Central City penthouse where a summoning goes wrong | `art/maps/summoning/penthouse.png` |
+| M9 | **The lifted town** | The Town Where the Curse Is Lifted | 26 × 26 | First layout set (rules 1.16), but the campaign is still a sketch: wait until it is written. Never painted | A Bazaim-style town of lifted curses | `art/maps/curse/lifted-town.png` |
 
 ### 3b. Portraits and illustrations
 
@@ -117,6 +118,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **11 Nov 2026:** maps built to rules 1.16: M1 and M6 have their 26 × 26 layouts; the four M813 paintings moved to `art/_archive/maps/m813/retired-2026-11/` and left the catalog.
 - **11 Nov 2026:** maps: the rule (26 × 26 at most, the Proving Ground at full size, smaller allowed per campaign) and one row a map, M1 to M9.
 - **11 Nov 2026:** E1 added (Heavenprint artwork for all equipment, planned with Equipment 2.0).
 - **11 Nov 2026:** list started. W1, W2, F1, F2 opened. Breaching Strike, Nothing Gets Past and Iron Grip were

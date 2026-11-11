@@ -1,6 +1,7 @@
 // Rules 1.15, the adversarial review (11 Nov 2026): the cases that were found broken or untested, each from a sentence
 // of "Rules revision 1.15" in the spec. The table itself and the first build are in enemy-levels.test.ts.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   FIGHT_TOOLS, ENEMY, ENEMY_LEVELS, enemyStats, levelGiven, fightLevel, levelGap, farBelow, levelCompanion, unitFromEnemy, critMult, CRIT_BASE, CRIT_MAX,
   attackDamage, previewAttack, resolveAttack, applyDamage, apply, npcsOf, squadLevel, d20, LOOT, PERKS, TRAITS, WEAPONS, RARITY, COMBAT_XP,
@@ -9,7 +10,7 @@ import {
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 const rngFor = (want: number) => { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === want) return { state: s }; } throw new Error('no seed'); };
-const fightBy = (s: ReturnType<typeof storyWith>, combat: any) => { s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol' }], ...combat } } } as any); return s.g.combat!; };
+const fightBy = (s: ReturnType<typeof storyWith>, combat: any) => { s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol' }], ...combat } } } as any); return s.g.combat!; };
 const foesOf = (cb: { units: Unit[] }) => cb.units.filter((u) => u.side === 'foe');
 
 describe('a level someone gives', () => {
@@ -193,7 +194,7 @@ describe('a fight saved before the rule, and the one after it', () => {
     expect(foe.dead).toBe(true); expect(foe.maxHp).toBe(60);
     g = apply(g, { type: 'combat/end-turn', unitId: pc.id } as any, 'host');
     expect(g.phase).not.toBe('combat'); // its last enemy fell: the saved fight is over
-    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Again.', combat: { name: 'Next', map: 'yard', difficulty: 'standard', enemies: [{ name: 'New', tier: 'soldier', weapon: 'fists' }] } } } as any, 'host');
+    g = apply(g, { type: 'narrator/turn', turn: { narration: 'Again.', combat: { name: 'Next', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'New', tier: 'soldier', weapon: 'fists' }] } } } as any, 'host');
     const nf = g.combat!.units.find((u) => u.side === 'foe')!;
     expect(g.combat!.level).toBe(12); expect(nf).toMatchObject({ level: 12, maxHp: 244, def: 16, armour: 8 }); expect(g.combat!.units.find((u) => u.side === 'pc')!.level).toBe(12);
   });
