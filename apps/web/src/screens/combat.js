@@ -189,6 +189,8 @@ ensureStyle('phc-camera', CAMERA_CSS);
  *  Local to this browser: every player in a room has their own. */
 const CAM = new CameraView('fight');
 /** Room kept free beside the map for the small map, so the tiles in that corner can be scrolled out from under it. */
+/** Two-key codes: how long after the first number the second still counts (provisional; balance pass section 15). */
+const CHORD_MS = 1000;
 const MINI_SLACK = 172;
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
@@ -446,6 +448,14 @@ export class CombatLogic extends DCLogic {
       if (c && !c.off) { e.preventDefault(); this.pickAction(c.action); sfx('tab'); }
       return;
     }
+    // Two-key codes (Leon, 11 Nov 2026): the first number is the tab, the second the action in it, in the order shown:
+    // 11 the first tab's first action, 42 the fourth tab's second. The tab doesn't have to be open. A second number that
+    // names no action there is read as a tab, as a lone number always is.
+    const now = Date.now(), chord = this._chord; this._chord = null;
+    if (chord && now - chord.at <= CHORD_MS) {
+      const k2 = ((this._tabItems || [])[chord.tab] || [])[Number(e.key) - 1];
+      if (k2) { e.preventDefault(); this.pickAction(k2); sfx('tab'); return; }
+    }
     // Inside the Attack tab (a pad open, or the keyboard in the tab's panel): 1 the first weapon's plain attack, 2 its
     // Techniques, 3 and 4 the second weapon's, 5 Hold a shot. Elsewhere the numbers switch tabs, as before.
     if (this.state.tab === 'attack' && this._attackKeys) {
@@ -457,6 +467,7 @@ export class CombatLogic extends DCLogic {
     }
     const id = (this._tabs || [])[Number(e.key) - 1];
     if (!id) return;
+    this._chord = { tab: Number(e.key) - 1, at: now };
     // Focus follows into the tab bar when it is there, or when it sits in the tab panel that is about to be replaced
     // (an action, a glyph or a design button), so a keyboard player never drops back to the page.
     const ae = document.activeElement, inTabs = !!ae && ae.getAttribute && ae.getAttribute('role') === 'tab';
@@ -1393,6 +1404,9 @@ export class CombatLogic extends DCLogic {
     if (!tabIds.includes(S.tab)) S.tab = tabOf[S.action] || tabIds[0];
     if (mineTurn) tabMem(cur.charId, S.tab);
     this._tabs = tabIds; this._tabOf = tabOf;
+    // The two-key codes: each tab's actions in the order shown (the read-only perk rows have none).
+    this._tabItems = groups.map((gr) => gr.items.filter((x) => !isPerkInfo(x.key)).map((x) => x.key));
+    { const codeOf = {}; this._tabItems.forEach((ks, ti) => ks.forEach((k, ki) => { if (ti < 9 && ki < 9) codeOf[k] = String(ti + 1) + (ki + 1); })); this._codeOf = codeOf; }
     if (S.tab !== this._tabShown) { // flipping: the new tab's actions slide in from the side it sits on
       this._tabCls = this._tabShown == null ? '' : tabIds.indexOf(S.tab) > tabIds.indexOf(this._tabShown) ? 'phc-slide-in-right' : 'phc-slide-in-left'; this._tabShown = S.tab;
     }
@@ -1427,7 +1441,7 @@ export class CombatLogic extends DCLogic {
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
       // Rules 1.14, the perk card in a fight: three shelves. USE NOW is the buttons below; the other two are lists to read.
       ...(tabG.id === 'perks' ? perkShelfVals(pkShelves(), tabG.items, rowSel) : { hasUse: false, useLabel: '', useHelp: '', shelves: [] }),
-      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), code: this._codeOf[a.key] || '', hasCode: !!this._codeOf[a.key], padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
     const holdUntil = mineTurn && typeof performance !== 'undefined' ? turnsBusyUntil() : 0, holding = holdUntil > performance.now();

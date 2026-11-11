@@ -58,6 +58,7 @@ export function npcFace(g: GameState | null, key: string, current: string | null
   if (current && !taken.has(current)) return current;
   // Things that aren't people (drones, turrets, beasts) keep their own art, or none.
   if (!current && tags.includes('thing')) return '';
+  { const kept = KEPT.get((g?.code || '') + '|' + key); if (kept && !taken.has(kept)) return kept; } // once cast, kept (see KEPT)
   // Keep the role of the card it lost: a guard stays a guard.
   const lost = current ? POOL.find((c) => c.img === current) : null, want = new Set([...tags, ...(lost ? tagsOf(lost) : [])]);
   const score = (c: Card) => tagsOf(c).filter((t) => want.has(t)).length;
@@ -71,10 +72,19 @@ export function npcFace(g: GameState | null, key: string, current: string | null
 }
 
 /** Cast a whole screen's NPCs at once, in a fixed order, so no two share a face while cards last. */
+/** The face each NPC was given, by game and NPC: once cast, a face is kept (Leon, 11 Nov 2026: portraits changed between
+ *  turns and scenes, because the pick depended on who else was on screen, and fog of war changes that every turn). */
+const KEPT = new Map<string, string>();
 export function castMany(g: GameState | null, list: { key: string; current: string | null | undefined; tags: string[] }[], taken = takenCards(g)): Map<string, string> {
-  const out = new Map<string, string>(), used = new Set<string>();
+  const out = new Map<string, string>(), used = new Set<string>(), room = (g?.code || '') + '|';
   for (const n of list) if (n.current && !taken.has(n.current)) used.add(n.current);
-  for (const n of [...list].sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))) { const f = npcFace(g, n.key, n.current, n.tags, taken, used); if (f) used.add(f); out.set(n.key, f); }
+  // Faces already given come first, so a newcomer never takes one.
+  for (const n of list) { const k = KEPT.get(room + n.key); if (k && !(n.current && !taken.has(n.current)) && !taken.has(k)) { used.add(k); out.set(n.key, k); } }
+  for (const n of [...list].sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))) {
+    if (out.has(n.key)) continue;
+    const f = npcFace(g, n.key, n.current, n.tags, taken, used); if (f) used.add(f); out.set(n.key, f);
+    if (f && f !== n.current) { if (KEPT.size > 4000) KEPT.clear(); KEPT.set(room + n.key, f); }
+  }
   return out;
 }
 
