@@ -402,3 +402,21 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     - **It rolls no dice:** the pick hashes the dice's current state and the count of picks without advancing them, so no roll in the game changed (every seeded test kept its numbers) and the same seed and actions give the same songs.
     - **Old saves:** a fight already under way without a song keeps Gunline (what it was playing), set once on the next action.
     - **Loop points** were measured from the files and each seam checked numerically (`audio/README.md`); where a song has a steady beat at both ends, a pass is a whole number of bars.
+115. **The roguelike is the main mode and is free; cosmetics and extra campaigns are what is sold; power never is**
+    (Leon, 11 Nov 2026, from a brainstorm; nothing is built or designed yet; `docs/ROADMAP.md`, "The roguelike mode,
+    companions and what is sold").
+    - **Order:** every combat style and the advanced classes come first, then the roguelike. Leon: "Before selling
+      anything this must be a good game for me and the bois to play first."
+    - **The roguelike** is a full game on the combat and character building, fully engine-run (no AI key needed),
+      with every unlock earned by play. Why free: it is the mode anyone can play without setting up a key, so it is
+      how people get in.
+    - **Open mode with your own AI key stays free and stays an option forever.** A hosted DM only if the game gets
+      big. Why: the own-key DM costs nothing to run and is what no other game offers.
+    - **Sold:** cosmetics (dice skins, animated banners and the like) and extra campaigns, which the buyer can also
+      free-roam with their DM; the host's copy covers the room. **Never sold:** power, progress, anything that
+      changes a fight. Why: selling power needs a server that can't be fooled and makes players resent the game;
+      a faked cosmetic costs nothing.
+    - **Companions** (about 10, random per run, permanent death unless revived in time, controlled or free-acting)
+      are character cards with written lines, engine-written memories and an optional DM. **Dialogue is trees with
+      skill checks**; talking can replace fighting in places; every player talks separately.
+    - **Every skill, companion and patron gets its own voice and writing style**, cast by Leon later.

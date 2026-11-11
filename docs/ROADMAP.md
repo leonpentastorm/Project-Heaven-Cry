@@ -1,4 +1,4 @@
-# Roadmap: what's next, and everything planned but not built (as of v0.0.1, 9 Nov 2026)
+# Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
 `CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.
@@ -57,6 +57,10 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    Mirage, Heartbinder, Heartfed, Saint. Roadmap: `docs/design/class-roster-rev3-proposal.md` section 7. Shelved
    moves to bring back are listed in `docs/design/move-pool.md`. The data already carries `kind`/`pair`/`batch`, so
    turning a batch on is mostly data.
+
+6. **The roguelike mode** (Leon, 11 Nov 2026): built **after every combat style and the advanced classes are in**. It
+   becomes the main mode. Section "The roguelike mode, companions and what is sold" below; decision 115.
+   **Before anything is sold, this must be a good game for Leon and his friends to play.**
 
 ## Outburst 4.0 (built: rules 1.8, decision 109)
 
@@ -156,6 +160,79 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 - Patron icon exports (`exports/<size>/`) were listed but never delivered; the game builds its own sizes.
 - Still needed: icons for vows and Witnessed, beast avatars, and the Narrator's 3D Wick (brief:
   `art/briefs/wick-narrator-3d.md`).
+
+## The roguelike mode, companions and what is sold (Leon, 11 Nov 2026; decision 115)
+
+Brainstormed, not designed. Nothing here is built, and no number exists yet. **Order:** every combat style and the
+advanced classes first, then the roguelike. **Rule:** it must be a good game for Leon and his friends before anything
+is sold.
+
+### The roguelike: the main mode, free
+
+- A full game on the existing combat and character building: dungeon diving, a world map to move on, random events.
+- **Fully engine-run:** no AI key needed, no cost, no waiting. A DM is optional (see companions).
+- Every unlock is earned by play. Nothing in it is sold.
+- **Progress between runs** needs accounts: unlocked companions and service characters, hub upgrades, a codex,
+  starting options earned by play.
+
+### Companions (about 10) and service characters (about 10)
+
+- **Companions** appear at random, a few per run, each good in a short arc. Each has a **character card** in data
+  (who they are, how they talk, sample lines), written content (a recruit scene, a short personal quest, reactions,
+  banter), **memories** the engine writes as things happen, and approval.
+- **With a key, the DM can speak for a companion** from the card and memories when the player goes off-script. Without
+  one, the written lines carry the mode.
+- **In a fight** the player chooses, per companion, to control them or let them act on their own (the enemy AI, with
+  a personality from the card).
+- **Death is permanent** unless they are revived in time.
+- **Service characters** run shops and upgrades and hand out missions: light writing, one shared pattern. The shop is
+  needed anyway.
+
+### Dialogue trees with skill checks
+
+- Conversations as data: lines, replies, checks, conditions, effects. The engine already has the parts (checks, inner
+  voices that interject, Echo, Overreach, effect ops).
+- Replies show the skill and the odds. Some checks can be retried later; some are one try with a consequence.
+- Inner voices cut in before the replies and can unlock one. Replies can be gated by class, patron, trait, origin,
+  an item or an earlier deed.
+- **Talking can replace fighting** in some situations: avoid, weaken or turn a fight; parley during one; talk a boss
+  down. Failing must cost something.
+- **Everyone talks separately** (each player's character has their own conversation, with their own skills; the
+  others can listen in).
+- Needs: the file format, a validator (no dead ends), a dialogue screen, and a simulator to see which branches builds
+  reach. Write hubs deep and everyone else shallow; Claude drafts, Leon edits; start with one character.
+
+### Voices
+
+- Kokoro ships 28 English voices; the game offers 7. Blending two voices makes as many as needed.
+- **Each of the 27 skills, each companion and each patron gets its own voice** (a recipe in data: two base voices, a
+  ratio, a speed). An NPC the DM invents gets a recipe derived from its name. Leon casts them by ear, later, on a
+  casting page with a play button.
+- **Each voice gets a writing style card** (about 25 words). Only the cards of the voices in play are sent to the DM.
+- **To playtest:** the DM tagging who speaks each line (needed to voice dialogue inside narration in open mode).
+- First small step when wanted: offer the other 21 voices and a preview button.
+
+### Open mode and campaigns
+
+- **Open mode with your own AI key stays free and stays an option forever.** A hosted DM comes only if the game gets
+  big, and is priced per use (it is the first thing that costs money per player).
+- **M813 is free. Extra campaigns may be sold.** The host's copy covers the room.
+- **Free roam:** a campaign you own is a world you can take your DM into, off the written path. So a campaign ships
+  its maps, cast, factions and secrets as well as its plot. The engine still owns every number.
+- In open mode, written characters use their written lines first; the DM writes only what is outside them.
+
+### What is sold, and what never is
+
+- **Sold:** cosmetics (dice skins, animated banners and name cards, cut-in styles, token rings and trails, portrait
+  frames, kill and crit effects, themes, music packs, Wick outfits) and extra campaigns. Some cosmetics are earned
+  only by play.
+- **Never sold:** power, progress, or anything that changes a fight.
+- **Build order:** accounts and server saves; the cosmetic locker with free and earned cosmetics; then payments
+  (a provider that handles checkout, tax and refunds); then paid campaigns.
+- **Check before any sale:** the image generator's terms for selling the portraits, saying plainly that AI was used,
+  the credits for CC BY assets staying in, and that the game's name and Wick are free to use.
+- **Size:** the built game is about 107 MB (images 78, music 27). Text, trees and voices add little; painted art is
+  the only thing that grows it. Move art and music to Cloudflare R2 if they reach several hundred MB.
 
 ## Product and world (from `CLAUDE.md` "Next steps" and the tech plan)
 
