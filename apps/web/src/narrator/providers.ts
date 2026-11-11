@@ -9,6 +9,7 @@ import { anthropicProvider, polish as anthropicPolish, MODELS, type NarratorProv
 import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
 import { rememberTurn } from './craft';
 import { MAX_LOOKUPS, REWRITE_TOOL, REWRITE_SYSTEM, rewriteAsk, POLISH_SYSTEM, polishAsk } from './prompts';
+import { FIGHT_SYSTEM, FIGHT_MAX_TOKENS, fightAsk, fightJsonAsk, fightTool, parseFightAnswer } from './fight';
 
 export type ProviderId = 'anthropic' | 'openai' | 'openrouter' | 'deepseek' | 'google' | 'ollama' | 'custom' | 'custom-anthropic';
 export interface ProviderInfo {
@@ -261,6 +262,16 @@ export function openaiProvider(o: OpenAIOptions): NarratorProvider {
         if (sum.input || sum.output) (err as any).usage = usage();
         throw err;
       }
+    },
+
+    // Rules 1.14: an attempt in a fight, as one small call (see anthropicProvider.fight).
+    async fight(g, r) {
+      const tool = fightTool(g, r), sys = { role: 'system', content: FIGHT_SYSTEM };
+      const { j } = await chat(o, { messages: [sys, { role: 'user', content: fightAsk(g, r) }] }, FIGHT_MAX_TOKENS, [toTool(tool)], () => ({ messages: [sys, { role: 'user', content: fightJsonAsk(g, r) }] }));
+      const msg = j.choices?.[0]?.message || {}, call = (msg.tool_calls || []).find((c: any) => c.function?.name === tool.name);
+      const text = String(msg.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      const raw = (call ? args(call) : jsonFrom(msg.content)) || (text ? { lines: text.split(/\n+/).slice(0, 2) } : null), usage = { ...usageOf(j), costUsd: 0 };
+      try { return { answer: parseFightAnswer(raw), usage }; } catch (e) { (e as any).usage = usage; throw e; }
     },
 
     async rewrite(g, text, ask): Promise<RewriteResult> {

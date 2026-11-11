@@ -9,6 +9,7 @@
 // perkRulings. Recommended fixes from the audit (plan section 6) are marked PROVISIONAL and listed in
 // the spec (section 14, tags G…) and docs/design/perk-runtime.md. The Narrator-side texts for every other item are in ./briefs.ts.
 import { register, stateOf, uses, note, pendRuling, postStory, modOn, boundGame, type Holder } from '../effects';
+import { wordsGate, raiseWords } from '../fighttalk';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, strengthOf } from '../character';
@@ -340,17 +341,18 @@ register({
 
 // ---------- Established Fact (Rumination Mastered): once per session, state a fact; it becomes true ----------
 // PROVISIONAL guardrails (plan 6): a fact can't decide a check, create items, money or allies, or touch the Veil or
-// Celestial truth; the Narrator refuses (perkRulings accepted false: the use comes back). Said in a fight, it goes into
-// the fight notes (and spends the session's use).
+// Celestial truth; the Narrator refuses (perkRulings accepted false: the use comes back). Said in a fight (rules 1.14) it is the turn's attempt, answered at once:
+// the fight waits for the Narrator's yes or no, and a no gives the use back.
 const factRule = 'Make it true (pin it in memory) unless it contradicts something already shown, decides a check, creates items, money or allies, or touches the Veil or Celestial truth: then refuse (the use comes back).';
 register({
   id: 'established_fact',
   narrator: 'all',
   actions: [{
     id: 'fact', label: 'Established Fact', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'Once a session: state a fact about the technology, biology or history in the scene. It is true from now on, unless it contradicts what has already been shown.',
+    text: 'Once a session: state a fact about the technology, biology or history in the scene. It is true from now on, unless it contradicts what has already been shown. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',
+    preview: (h, a) => (inFight(h) ? (textArg(a) ? wordsGate(h) : { ok: false, why: 'Type the fact you state.' }) : {}),
     run: (h, a) => {
-      if (inFight(h)) { say(h.cb, h.u!.name + ' states a fact (Established Fact): "' + clip(a.text, 160) + '".'); note(h, 'Established Fact: "' + clip(a.text, 160) + '". ' + factRule); return; }
+      if (inFight(h)) { say(h.cb, h.u!.name + ' states a fact (Established Fact): "' + clip(a.text, 160) + '".'); return raiseWords(h, { text: textArg(a), ask: 'Established Fact. ' + factRule, per: 'per_session', actionId: 'fact' }); }
       const eid = postStory(h, 'states a fact: "' + textArg(a) + '"');
       ruling(h, 'Established Fact: "' + clip(a.text, 160) + '". ' + factRule, eid);
     },
@@ -366,9 +368,10 @@ register({
   narrator: 'all',
   actions: [{
     id: 'close', label: 'Closing Argument', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Once a scene: make your closing argument. Every listener who isn\'t ruled by fear or faith accepts its logic. An Eloquence check waiting on that point succeeds.',
+    text: 'Once a scene: make your closing argument. Every listener who isn\'t ruled by fear or faith accepts its logic. An Eloquence check waiting on that point succeeds. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',
+    preview: (h, a) => (inFight(h) ? (textArg(a) ? wordsGate(h) : { ok: false, why: 'Type your closing argument.' }) : {}),
     run: (h, a) => {
-      if (inFight(h)) { say(h.cb, h.u!.name + ' makes a closing argument (Closing Argument).'); note(h, 'Closing Argument: "' + clip(a.text, 160) + '": listeners not ruled by fear or faith accept the logic (they may still refuse to act).'); return; }
+      if (inFight(h)) { say(h.cb, h.u!.name + ' makes a closing argument (Closing Argument): "' + clip(a.text, 160) + '".'); return raiseWords(h, { text: textArg(a), ask: 'Closing Argument: every listener not ruled by fear or faith accepts the logic of it; each may still refuse to act on it. Refuse only if nobody here could follow an argument (the use comes back).', per: 'per_scene', actionId: 'close' }); }
       const ck = pendingCheck(h, a.checkId, (k) => hasSkill(k, 'eloquence'));
       if (ck) { ck.auto = 'success'; (ck.mods ||= []); }
       const eid = postStory(h, 'closes: "' + textArg(a) + '"' + (ck ? ' (their Eloquence check succeeds)' : ''));
@@ -431,8 +434,9 @@ register({
   narrator: 'all',
   actions: [{
     id: 'suggest', label: 'Their Own Idea', scope: ['story', 'combat'], target: 'npc', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Once a scene: hide a suggestion inside a sentence (type it, and name the listener). They believe it was their own idea and act on it, unless it would harm them directly.',
+    text: 'Once a scene: hide a suggestion inside a sentence (type it, and name the listener). They believe it was their own idea and act on it, unless it would harm them directly. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',
     preview: (h, a) => {
+      if (inFight(h)) { const g = wordsGate(h); if (g.why) return g; }
       if (!textArg(a)) return { ok: false, why: 'Type the suggestion you hide.' };
       if (inFight(h) && !a.targetId) return { ok: false, why: 'Pick the listener.' };
       const t = inFight(h) ? h.cb!.units.find((x) => x.id === a.targetId) : null, r = inFight(h) ? null : npcRef(h, a);
@@ -449,7 +453,7 @@ register({
         save = ' · ' + who + ' HEART SAVE d20 ' + die + ' +' + m + ' = ' + (die + m) + ' vs ' + tn + (ok ? ': resists' : ': takes it');
         if (ok) { if (inFight(h)) say(h.cb, h.u!.name + ' plants an idea in ' + who + save + '.'); else entry(g, { kind: 'check', charId: h.c!.id, ok: false, to: h.c!.owner, head: 'THEIR OWN IDEA · ' + save.slice(3).toUpperCase(), text: who + ' doesn\'t take the bait.' }); return; }
       }
-      if (inFight(h)) { say(h.cb, h.u!.name + ' plants an idea in ' + who + ' (Their Own Idea)' + save + '.'); note(h, who + ' takes "' + clip(a.text, 160) + '" as their own idea (after the fight unless it harms them directly).'); return; }
+      if (inFight(h)) { say(h.cb, h.u!.name + ' plants an idea in ' + who + ' (Their Own Idea)' + save + '.'); return raiseWords(h, { text: textArg(a), ask: 'Their Own Idea: ' + who + ' believes this is their own idea and acts on it. Refuse if it would harm them directly (the use comes back).', targetId: a.targetId, private: true, per: 'per_scene', actionId: 'suggest' }); }
       const eid = postStory(h, 'to ' + who + ', the hidden suggestion: "' + textArg(a) + '"' + save, { private: true });
       ruling(h, 'Their Own Idea: ' + who + ' believes "' + clip(a.text, 160) + '" is their own idea and acts on it. Refuse if it would harm them directly (the use comes back).' + save, eid);
     },

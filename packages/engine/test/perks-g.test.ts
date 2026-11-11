@@ -206,10 +206,12 @@ describe('Established Fact', () => {
     perk(s, c, 'established_fact', { text: 'A better fact.' });
     expect(rulings(s.g, 'perk:established_fact').length).toBe(1);
   });
-  it('in a fight it goes to the fight notes and spends the session\'s use', () => {
+  it('in a fight it is the turn\'s attempt (rules 1.14): the fight waits for the Narrator, and the answer reaches the fight notes', () => {
     const f = fight([{ perks: { established_fact: 'mastered' } }]);
     pcAct(f, { type: 'combat/perk', id: 'established_fact', text: 'These drones share one relay.' });
-    expect(notes(f)).toMatch(/one relay/);
+    const r = (f.cb as any).ruling; expect(r.perk.key).toBe('perk:established_fact'); expect(r.text).toMatch(/one relay/);
+    f.act({ type: 'narrator/fight-ruling', id: r.id, lines: ['They do.'], effect: { perk: { accepted: true } } } as any);
+    expect(notes(f)).toMatch(/one relay.*answered in the fight/);
   });
 });
 

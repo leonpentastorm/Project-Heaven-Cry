@@ -4,7 +4,7 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, perkInfoFor, bindGame, type PerkActionEntry, type PerkInfoEntry,
+import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry,
   focusHand, NEEDS_EVOKER, NEEDS_EMANATOR, reloadBothAp, PILE, PICKUP_AP, dist } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { heartPanel } from './heartView';
@@ -15,6 +15,7 @@ import { heldClassId, currentClassId } from './classView';
 import { pilesIn } from './worldView';
 import { weaponBlocks, blockItems, techAction, TWATCH, legacyAttack } from './techView';
 import { callItems } from './callView';
+import { perkShelves } from './perkShelves';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
@@ -52,19 +53,10 @@ export function perkEntries(g: any, cb: any, u: any, ch: any, scope: 'combat' | 
   const was = bindGame(g || null);
   try { return perkActionsFor({ u, c, cb, g }, scope); } catch { return []; } finally { bindGame(was); }
 }
-/** A read-only row in the Perks tab: "pki:<item key>". The item is used from another action (a chip on Pump, Begin, an
- *  attack) or by itself; the row shows what it does and its uses, with no Confirm (Leon, 9 Nov 2026). */
+/** A read-only row in the Perks tab: "pki:<item key>". The item rides another action (a switch on an attack, a move,
+ *  a Pump…) or works by itself; the row is there to read, with no Confirm (rules 1.14: the perk card in a fight). */
 export const PKI = 'pki:';
 export const isPerkInfo = (id: string | null | undefined) => !!id && id.startsWith(PKI);
-/** The unit's items to read in the Perks tab (engine perkInfoFor), with the game bound. */
-export function perkInfoEntries(g: any, cb: any, u: any, ch: any): PerkInfoEntry[] {
-  if (!u) return [];
-  const c = ch || (g && u.charId ? g.characters?.[u.charId] : null);
-  const was = bindGame(g || null);
-  try { return perkInfoFor({ u, c, cb, g }, 'combat'); } catch { return []; } finally { bindGame(was); }
-}
-/** "on Pump · 1/1 combat", "automatic · 1/1 combat": where a read-only item is used, and its uses. */
-export const perkInfoCost = (e: PerkInfoEntry) => (e.via === 'Automatic' ? 'automatic' : e.via.replace(/^Used from /, 'on ')) + (e.uses.label ? ' · ' + e.uses.label : '');
 /** A character's story-side perk, trait and class actions (the story panel's Perks strip). */
 export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
   if (!ch || !g) return [];
@@ -127,7 +119,7 @@ export const pileInReach = (cb: any, u: any) => { if (!cb || !u) return null; fo
 
 /** Options for the action list. noNarrator: there is no Narrator to rule on anything (the Proving Ground), so actions
  *  only the Narrator can resolve (cost 'Narrator', e.g. a weapon skill the engine doesn't run) are left out. */
-export interface ActionOpts { noNarrator?: boolean; /** The game (perk actions read the live character and the use counters). */ g?: any }
+export interface ActionOpts { noNarrator?: boolean; /** The game (perk actions read the live character and the use counters). */ g?: any; /** Where in the fight's log this unit's last turn began (perkShelves turnMark), for the passives' live lines. */ since?: number }
 
 /** Every action this unit has, in tab order (Move · Attack · Utility · Sigils · Outbursts). ch: the unit's character
  *  (for stims and the song), or null. */
@@ -198,8 +190,10 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   const pk = perkEntries(opts.g, cb, cur, ch, 'combat');
   const pkItem = (e: PerkActionEntry): ActionItem => { const st = pkState(e); return [pkId(e), e.label + st.tag, pkCost(e), pkText(e), st.why]; };
   const perks = pk.filter((e) => e.tab === 'perks'), moves = pk.filter((e) => e.tab === 'class');
-  // Items used from another action, listed to read (no Confirm): "<via>. <text>".
-  const info = perkInfoEntries(opts.g, cb, cur, ch).filter((e) => e.tab === 'perks').map((e): ActionItem => [PKI + e.id, e.label, perkInfoCost(e), e.via + '. ' + e.text, null]);
+  // Rules 1.14, the perk card in a fight: USE NOW is the buttons; RIDES AN ACTION and ALWAYS ON are rows to read (no
+  // Confirm), in that order (game/perkShelves.ts sorts them). Story-only items are not on the fight's card.
+  const sh = perkShelves(opts.g, cb, cur, ch, { entries: perks, since: opts.since });
+  const info = [...sh.rides, ...sh.always].map((r): ActionItem => [PKI + r.key, r.name, r.line, r.detail, null]);
   if (perks.length || info.length) ITEMS.push(['PERKS & TRAITS', [...perks.map(pkItem), ...info], null, 'perks']);
   if (moves.length) { const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), moves[0].cls); ITEMS.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves.map(pkItem), k ? k.ink : null, 'class']); }
   // Magic, two groups that never mix: Sigils (Mind cyan) and Outbursts (Soul violet). Only for a unit that has magic.

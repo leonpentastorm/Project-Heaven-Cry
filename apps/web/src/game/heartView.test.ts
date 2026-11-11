@@ -1,7 +1,7 @@
 // Outburst 2.0 on screen (game/heartView.ts): design cards with a shape icon and their line, the HEART panel's costs
 // and refusals (the engine's), the grid preview that tells an area from a bolt, and the cut-in's top commands.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst } from '@engine';
+import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst } from '@engine';
 import { formIconSvg, designInfo, designCards, heartPanel, heartVals, aimOverlay, idleOverlay, overlayTileStyle, designVerdict, toneChips, FORMS } from './heartView';
 import { smartCommands, actionGroups } from './commands';
 
@@ -140,5 +140,92 @@ describe('the action list and the cut-in', () => {
     const cmds = smartCommands(u);
     expect(cmds.slice(0, 2).map((c) => c.action)).toEqual(['pump', 'release']);
     expect(cmds[0].sub).toMatch(/Stage 0 → 1/);
+  });
+});
+
+// Rules 1.14: the three Will Power changes on screen. The fight() character has Will Power 6, so Overdraw is theirs.
+describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel and the design cards', () => {
+  const OD = 'skill:will_power.3#overdraw';
+  /** fight(), with these perks and this Will Power on the character before the fight is built. */
+  function withPerks(perks: Record<string, string>, will = 6) {
+    const c: any = newCharacter('c1', 'p1', sheetFrom('Vale')); c.skills.will_power = will;
+    c.perks = Object.entries(perks).map(([id, tier]) => ({ id, tier }));
+    c.outbursts = DESIGNS.map((d) => ({ ...d, modules: [...d.modules] })); c.soulKnown = { schools: ['damage', 'control'], modules: ['burst', 'wave'], tones: ['fire'] };
+    const cb: any = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'Raider', tier: 'soldier', weapon: 'fists', at: 'E6' }, { name: 'Keel', tier: 'soldier', weapon: 'fists', at: 'E7' }], 'easy', { state: 4 }, []);
+    cb.turn = cb.order.indexOf(cb.units.find((x: any) => x.side === 'pc').id);
+    const u = cb.units.find((x: any) => x.side === 'pc'); u.mg.mp = 400; u.mg.mpMax = 400;
+    u.mg.firstUsed = true; u.mg.freePumps = 0; u.mg.freePumpsMax = 0; u.mg.strainLimit = 20; u.ap = 9; u.mg.emanator = true; // an Emanator in hand
+    return { c, cb, u };
+  }
+  /** Begin sb, set its stage, Release it at the Raider. */
+  const fire = (cb: any, u: any, stage: number) => { expect(beginOutburst(cb, rng, u, 'sb', undefined, true)).toBeNull(); u.mg.held.stage = stage; u.ap = 9; expect(releaseOutburst(cb, rng, u, '4,5')).toBeNull(); };
+
+  it('Overdraw is offered every turn: the Pump button says it is ready, and with the switch on shows 2 stages and its Strain', () => {
+    const { cb, u } = withPerks({}); beginOutburst(cb, rng, u, 'sb', undefined, true);
+    let p = heartPanel(cb, u)!;
+    expect(p.overdraw).toMatch(/^Overdraw is ready this turn\. This Pump adds 2 stages\. Your first Overdraw of the fight costs no Strain\.$/);
+    expect(p.pump.title).toMatch(/^A plain Pump: stage 0 → 1 .*Overdraw is ready this turn/);
+    p = heartPanel(cb, u, [OD])!;
+    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP' }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.4\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
+    expect(p.stages.find((x) => x.next)!.n).toBe(2); // the meter marks the stage this Pump reaches
+    // Used this turn: the panel says why it isn't there; next turn it is ready again, now for 1 Strain.
+    cb.mods = [OD]; pumpOutburst(cb, rng, u); delete cb.mods; u.mg.held.stage = 1;
+    expect(heartPanel(cb, u)!.overdraw).toBe('Overdraw: Once a turn.');
+    cb.round += 1;
+    expect(heartPanel(cb, u)!.overdraw).toMatch(/^Overdraw is ready this turn\. This Pump adds 2 stages\. You take 1 Strain after it\.$/);
+    expect(heartPanel(cb, u, [OD])!.pump.title).toMatch(/stage 1 → 3 .*You take 1 Strain after it\./);
+  });
+  it('a character without Overdraw has no Overdraw line', () => {
+    const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true);
+    expect(heartPanel(cb, u)!.overdraw).toBe(''); expect(heartPanel(cb, u)!.pump.title).not.toMatch(/Overdraw/);
+  });
+  it('Heart Overload: after a Release at stage 2 the same design\'s card offers Begin again for 0 AP; the others don\'t', () => {
+    const { cb, u } = withPerks({ heart_overload: 'I' }); fire(cb, u, 2); u.ap = 0;
+    const cards = designCards(cb, u), sb = cards.find((x) => x.id === 'sb')!, fb = cards.find((x) => x.id === 'fb')!;
+    expect(sb).toMatchObject({ canBegin: true, beginAp: 0, bloodHp: 0, again: 'Heart Overload: Begin Soul Bolt again for 0 AP.' });
+    expect(sb.costText).toMatch(/^Heart Overload: Begin again 0 AP · Snap 3 AP/);
+    expect(fb).toMatchObject({ canBegin: false, beginAp: 2, again: '', beginWhy: 'Needs 2 AP.' }); expect(fb.costText).toMatch(/^Begin 2 AP/);
+  });
+  it('Heart Overload: no offer after a Release below stage 2, and none on a later turn', () => {
+    const a = withPerks({ heart_overload: 'I' }); fire(a.cb, a.u, 1);
+    expect(designCards(a.cb, a.u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 2, again: '' });
+    const b = withPerks({ heart_overload: 'I' }); fire(b.cb, b.u, 2); b.cb.round += 1;
+    expect(designCards(b.cb, b.u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 2, again: '' });
+  });
+  it('Heart Overload, mana short: the card shows the HP it costs and that it can\'t heal or shield', () => {
+    const { cb, u } = withPerks({ heart_overload: 'I' }); fire(cb, u, 2); u.mg.mp = 0; u.hp = u.maxHp = 500;
+    const sb = designCards(cb, u).find((x) => x.id === 'sb')!;
+    expect(sb.canBegin).toBe(true); expect(sb.bloodHp).toBeGreaterThan(0); expect(sb.mp).toBe(0);
+    expect(sb.again).toBe('Heart Overload: Begin Soul Bolt again for 0 AP. You don\'t have the mana: it costs ' + sb.bloodHp + ' HP, and it can\'t heal or shield.');
+    expect(sb.costText).toMatch(new RegExp('^Heart Overload: Begin again 0 AP · ' + sb.bloodHp + ' HP for the mana · Snap'));
+  });
+  it('Resonance: the bonus is in the Release preview before releasing (the panel, the button and the grid summary)', () => {
+    const { cb, u } = withPerks({ resonance: 'I' }); fire(cb, u, 1);
+    beginOutburst(cb, rng, u, 'sb', undefined, true); u.mg.held.stage = 2; u.ap = 9;
+    const p = heartPanel(cb, u)!;
+    expect(p.multNotes).toEqual(['Resonance +10%']); expect(p.mult).toBe(1.54); // ×1.4 at stage 2, +10%
+    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.54\)\. Resonance \+10% is in that number/);
+    const v: any = heartVals(p, () => {});
+    expect(v.multText).toBe('×1.54'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +10%');
+    const o = aimOverlay(cb, u, 'held', '4,5');
+    expect(o.summary[0]).toBe('Resonance +10% to this Release, built by the Releases before it.');
+    // A snap cast of a design shows it too.
+    u.mg.held = null; expect(aimOverlay(cb, u, 'sb', '4,5').summary[0]).toMatch(/^Resonance \+10% to this Release/);
+  });
+  it('without the perk the panel has no Resonance note', () => {
+    const { cb, u } = withPerks({}); fire(cb, u, 1); beginOutburst(cb, rng, u, 'sb', undefined, true);
+    const p = heartPanel(cb, u)!; expect(p.multNotes).toEqual([]); expect((heartVals(p, () => {}) as any).hasDoes).toBe(false);
+  });
+});
+
+describe('rules 1.14: Heart Overload needs an Emanator in hand', () => {
+  it('without one the design card offers nothing after the Release', () => {
+    const c: any = newCharacter('c1', 'p1', sheetFrom('Vale')); c.perks = [{ id: 'heart_overload', tier: 'I' }];
+    c.outbursts = DESIGNS.map((d) => ({ ...d, modules: [...d.modules] })); c.soulKnown = { schools: ['damage', 'control'], modules: ['burst', 'wave'], tones: ['fire'] };
+    const cb: any = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'Raider', tier: 'soldier', weapon: 'fists', at: 'E6' }], 'easy', { state: 4 }, []);
+    cb.turn = cb.order.indexOf(cb.units.find((x: any) => x.side === 'pc').id);
+    const u = cb.units.find((x: any) => x.side === 'pc'); u.ap = 9; u.mg.mp = 400; u.mg.strainLimit = 20; u.mg.emanator = false;
+    beginOutburst(cb, rng, u, 'sb', undefined, true); u.mg.held.stage = 2; u.ap = 9; releaseOutburst(cb, rng, u, '4,5');
+    expect(designCards(cb, u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 2, again: '' });
   });
 });

@@ -27,7 +27,11 @@ import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { actionAp } from './effects/core';
+import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
+export * from './fighttalk';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { surrender as yieldUnit } from './tactics';
+import { condSkillMod } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
@@ -148,7 +152,7 @@ export interface GameState {
   };
   checks: Check[]; overreach: Overreach[]; combat: Combat | null;
   awards: { charId: string; perkId: string }[];
-  narrator: { busy: boolean; error: string | null; /** g.seq when the in-flight call began: later rulings weren't in its prompt. */ beganSeq?: number; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number; last?: number; max?: number; recent?: number[]; rewrites?: number } };
+  narrator: { /** Rules 1.14: the host's browser has no AI Narrator set up (no key): attempts in a fight are refused. */ offline?: boolean; busy: boolean; error: string | null; /** g.seq when the in-flight call began: later rulings weren't in its prompt. */ beganSeq?: number; usage: { input: number; output: number; cacheRead: number; costUsd: number; calls: number; last?: number; max?: number; recent?: number[]; rewrites?: number } };
   /** The campaign being played (spec: Campaigns): copied in at session start, or loaded from a file by the host. */
   campaign?: Campaign | null;
   /** What the room hears (spec: Music). */
@@ -297,7 +301,13 @@ export type Action =
   | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
   | { type: 'narrator/begin' } | { type: 'narrator/turn'; turn: NarratorTurn } | { type: 'narrator/error'; message: string }
-  | { type: 'narrator/usage'; input: number; output: number; cacheRead: number; costUsd: number; kind?: 'turn' | 'rewrite' } | { type: 'narrator/retry' }
+  | { type: 'narrator/usage'; input: number; output: number; cacheRead: number; costUsd: number; kind?: 'turn' | 'rewrite' | 'fight' } | { type: 'narrator/retry' }
+  // Rules 1.14: an attempt in a fight (1 AP, once a turn) opens one pending fight ruling; the Narrator answers it
+  // (the host's client for an AI, the host for a human Narrator) or the host skips it (everything spent comes back).
+  // narrator/ready: the host's browser says whether an AI Narrator is set up.
+  | { type: 'combat/attempt'; unitId: string; text: string }
+  | { type: 'narrator/fight-ruling'; id: string; lines: string[]; effect?: FightEffect }
+  | { type: 'narrator/fight-skip'; id?: string; note?: string } | { type: 'narrator/ready'; ready: boolean }
   | { type: 'check/roll'; checkId: string } | { type: 'check/reroll'; checkId: string } | { type: 'check/accept'; checkId: string }
   | { type: 'voice/ask'; charId: string; skill: string } | { type: 'overreach/choose'; id: string; choice: 'indulge' | 'resist' }
   | { type: 'levelup/raise'; charId: string; kind: 'skill' | 'attr' | 'core'; id: string } | { type: 'levelup/class'; charId: string; classId: string }
@@ -601,11 +611,15 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'narrator/begin': { if (!isHost(g, by)) fail('Host only.'); g.narrator.busy = true; g.narrator.error = null; g.narrator.beganSeq = g.seq; return; }
     case 'narrator/error': { if (!isHost(g, by)) fail('Host only.'); g.narrator.busy = false; g.narrator.error = a.message; return; }
     case 'narrator/retry': { if (!isHost(g, by)) fail('Host only.'); g.narrator.error = null; if (!g.story.work) g.story.work = { kind: g.combat ? 'combat_end' : 'round' }; return; }
+    case 'narrator/ready': { if (!isHost(g, by)) fail('Host only.'); if (a.ready) delete g.narrator.offline; else g.narrator.offline = true; return; }
+    case 'narrator/fight-ruling': { if (!isHost(g, by)) fail('Only the Narrator can answer that.'); fightRuling(g, a); return; }
+    case 'narrator/fight-skip': { if (!isHost(g, by)) fail('Only the host can skip the wait.'); fightSkip(g, a.id, a.note); return; }
     case 'narrator/usage': {
       if (!isHost(g, by)) fail('Host only.');
       const u = g.narrator.usage; u.input += a.input; u.output += a.output; u.cacheRead += a.cacheRead; u.costUsd += a.costUsd;
       // Rewordings count in the total but are not Narrator turns.
       if (a.kind === 'rewrite') { u.rewrites = (u.rewrites || 0) + 1; return; }
+      if (a.kind === 'fight') { (u as any).fights = ((u as any).fights || 0) + 1; return; } // rules 1.14: a fight answer is no Narrator turn
       u.calls++;
       // For the host's spend meter: the last call, the dearest, and the last 20.
       u.last = a.costUsd; u.max = Math.max(u.max || 0, a.costUsd); u.recent = [...(u.recent || []), Math.round(a.costUsd * 10000) / 10000].slice(-20);
@@ -892,6 +906,8 @@ function reduce(g: GameState, a: Action, by: string) {
       const text = String(a.text || '').trim().slice(0, 300); if (!text) fail('Say something.');
       (cb!.notes ||= []).push(c!.name + ' (round ' + cb!.round + '): "' + text + '"');
       cb!.log.push(c!.name + ': "' + text + '"');
+      // rules 1.14: speech is free and goes to the Narrator (its next answer in this fight reads the last few lines)
+      { const t = talkOf(cb!); t.said = [...(t.said || []), { who: c!.name, text, round: cb!.round }].slice(-6); }
       return;
     }
     case 'gear/equip': case 'gear/unequip': case 'gear/mod': {
@@ -1383,6 +1399,8 @@ function combatAction(g: GameState, a: Action, by: string) {
   const cb = g.combat; if (!cb || g.phase !== 'combat') fail('No fight is on.');
   if (cb!.over) fail('The fight is over.');
   const u = active(cb!)!;
+  // rules 1.14: the fight waits for the Narrator's answer to an attempt (nobody acts, the turn can't end)
+  if (fightRulingOf(cb)) fail('The Narrator is deciding. The fight waits for the answer.');
   // rules 1.13: a Call made as a reaction comes from a unit whose turn it isn't (from 9 points, once a round)
   if (a.type === 'combat/call' && a.react && a.unitId !== u.id) { callReaction(g, cb!, a, by); return; }
   if (!('unitId' in a) || a.unitId !== u.id) fail('It\'s ' + u.name + '\'s turn.');
@@ -1415,7 +1433,10 @@ function combatAction(g: GameState, a: Action, by: string) {
   (cb as any).acting = true; // encoreCredit: previews inside the action don't lend Encore's AP again
   try {
   switch (a.type) {
-    case 'combat/perk': err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat'); break;
+    case 'combat/perk': { const ap0 = u.ap; err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat');
+      // rules 1.14: a perk that asks for words opened the turn's attempt: it carries what the action cost (a no gives it back)
+      const fr = fightRulingOf(cb); if (!err && fr && fr.perk && fr.unit === u.id) fr.ap = Math.max(0, Math.round((ap0 - u.ap) * 10) / 10); break; }
+    case 'combat/attempt': err = attempt(g, cb!, u, a.text); break;
     case 'combat/decline': if (!cb!.window) fail('There is nothing to decline.'); windowStep(cb!, true); break;
     case 'combat/move': err = moveUnit(cb!, u, a.to, g.rng, a.how || 'move'); break;
     case 'combat/shove': { const t = cb!.units.find((x) => x.id === a.targetId); if (!anyTarget(t, u)) fail('Pick someone else.'); refuseHook(cb!, u, a); err = shove(cb!, g.rng, u, t!); break; }
@@ -1511,6 +1532,112 @@ function combatAction(g: GameState, a: Action, by: string) {
   songTriggers(g, u, c!, before);
   critMoment(g); // decision 113: a party crit in this action cuts in (unless a bigger moment already did)
   noteDeaths(cb!, g.rng);
+  checkOver(cb!);
+  runEnemies(g);
+}
+
+// ---------- speaking and attempting in a fight (rules 1.14; items 1008 and 1009, provisional) ----------
+/** An attempt: words that want something to happen. 1 AP, once a turn, on your own turn, with a Narrator connected.
+ *  It opens the one pending fight ruling; the fight waits for the answer. */
+function attempt(g: GameState, cb: Combat, u: Combat['units'][number], text0: string): string | null {
+  const text = String(text0 || '').trim().slice(0, 300); if (!text) return 'Write what you attempt.';
+  const why = attemptWhy(g, cb, u, ATTEMPT_AP); if (why) return why;
+  u.ap = Math.round((u.ap - ATTEMPT_AP) * 10) / 10;
+  openRuling(g, cb, u, text, ATTEMPT_AP);
+  cb.log.push(u.name + ' attempts (' + ATTEMPT_AP + ' AP): "' + text + '"');
+  return null;
+}
+/** Give back what a fight ruling cost: its AP and, for a perk, the use. Returns what came back, in words. */
+function refundFight(g: GameState, cb: Combat, r: FightRuling): string {
+  const u = cb.units.find((x) => x.id === r.unit), c = g.characters[r.charId], back: string[] = [];
+  if (u && r.ap > 0) { u.ap = Math.round((u.ap + r.ap) * 10) / 10; back.push(r.ap + ' AP'); }
+  if (r.perk?.use && c) { usesOf({ key: r.perk.key, c, u, cb, g }).refund(r.perk.use.per as any, r.perk.use.key); if (!['at_will', 'out_of_combat'].includes(r.perk.use.per)) back.push('the use of ' + r.perk.name); }
+  return back.join(' and ');
+}
+/** The host ends the wait with no answer (a dead key, a Narrator who left): everything the attempt cost comes back,
+ *  and the turn's attempt with it. */
+function fightSkip(g: GameState, id?: string, note?: string) {
+  const cb = g.combat, r = fightRulingOf(cb); if (!cb || !r || (id && id !== r.id)) fail('Nothing is waiting for the Narrator.');
+  const u = cb!.units.find((x) => x.id === r!.unit), back = refundFight(g, cb!, r!), t = talkOf(cb!);
+  delete t.ruling; if (t.attempted) delete t.attempted[r!.unit];
+  cb!.log.push((String(note || '').trim().slice(0, 160) || 'The Narrator didn\'t answer.') + (back ? ' ' + (u?.name || 'The speaker') + ' gets ' + back + ' back.' : ''));
+}
+const UNYIELDING = ['machine', 'robot', 'turret', 'drone'];
+/** A unit the speaker may name in a fight ruling: an enemy of theirs still in the fight (by its id, or its name when
+ *  only one enemy carries it). */
+function fightTarget(cb: Combat, u: Combat['units'][number] | undefined, ref: unknown) {
+  if (!u || typeof ref !== 'string' || !ref) return null;
+  const foes = cb.units.filter((x) => x.side !== u.side && !x.dead && !x.surrendered);
+  const byName = foes.filter((x) => x.name.toLowerCase() === ref.trim().toLowerCase());
+  return foes.find((x) => x.id === ref) || (byName.length === 1 ? byName[0] : null);
+}
+/** A condition or a surrender the Narrator asked for, checked: null when it isn't allowed. afterCheck: it is what a
+ *  successful check earned (a surrender then needs no beaten enemy). */
+function fightOutcome(cb: Combat, u: Combat['units'][number] | undefined, e: any, afterCheck: boolean): FightOutcome | null {
+  if (!e || typeof e !== 'object') return null;
+  const hasC = e.condition != null, hasS = e.surrender != null; if (hasC === hasS) return null; // exactly one
+  if (hasC) {
+    const t = fightTarget(cb, u, e.condition?.target), id = e.condition?.id;
+    return t && (FIGHT_CONDS as readonly string[]).includes(id) ? { condition: { target: t.id, id: id as FightCond } } : null;
+  }
+  const t = fightTarget(cb, u, e.surrender?.target); if (!t) return null;
+  if (t.tier === 'boss' || UNYIELDING.includes(t.kind || '') || (t.tags || []).includes('no_surrender')) return null; // it never surrenders
+  if (!afterCheck && t.hp > t.maxHp / 2) return null; // only a beaten enemy gives up without a check
+  return { surrender: { target: t.id } };
+}
+/** The one thing the Narrator may ask for, validated (rules 1.14, point 3): a check, one condition, one surrender, or a
+ *  yes / no on a perk. Anything else (damage, healing, movement, AP, a second effect) is not on the list: null. */
+export function cleanFightEffect(cb: Combat, r: FightRuling, e: any): FightEffect | null {
+  if (!e || typeof e !== 'object' || Array.isArray(e)) return null;
+  const u = cb.units.find((x) => x.id === r.unit);
+  const keys = (['check', 'condition', 'surrender', 'perk'] as const).filter((k) => e[k] != null); if (keys.length !== 1) return null;
+  if (keys[0] === 'perk') return r.perk && typeof e.perk?.accepted === 'boolean' ? { perk: { accepted: e.perk.accepted } } : null;
+  if (keys[0] === 'check') {
+    const skill = e.check?.skill, tn = e.check?.tn; if (!u || typeof skill !== 'string' || !Object.prototype.hasOwnProperty.call(SKILL, skill) || typeof tn !== 'number' || !TN_LADDER.includes(tn)) return null; // a real skill id, never an inherited name
+    const on = fightOutcome(cb, u, e.check.onSuccess, true);
+    return { check: { skill, tn, ...(on ? { onSuccess: on } : {}) } };
+  }
+  return fightOutcome(cb, u, e, false);
+}
+/** Apply a checked condition or surrender; returns the log's words for it (' · …'). */
+function applyFightOutcome(g: GameState, cb: Combat, u: Combat['units'][number], o: FightOutcome): string {
+  if ('surrender' in o) { const t = cb.units.find((x) => x.id === o.surrender.target)!; return yieldUnit(cb, t, u, 'talked down'); }
+  const t = cb.units.find((x) => x.id === o.condition.target)!, id = o.condition.id;
+  // Hesitates is the engine's own "−1 AP on its next turn" (stunnedNext), the only AP the Narrator may touch.
+  if (id === 'hesitates') { t.stunnedNext = Math.max(t.stunnedNext || 0, 1); return ' · ' + t.name + ' hesitates (−1 AP on its next turn)'; }
+  return applyCondition(cb, g.rng, u, t, id, FIGHT_COND_ROUNDS, undefined, { skipSave: true });
+}
+/** The Narrator's answer to the pending fight ruling: one or two lines in the log, and at most one effect, validated
+ *  here. An effect that isn't allowed is dropped and the lines still show. The engine rolls a check and keeps every number. */
+function fightRuling(g: GameState, a: FightAnswer) {
+  const cb = g.combat, r = fightRulingOf(cb); if (!cb || g.phase !== 'combat' || !r) fail('Nothing is waiting for the Narrator.');
+  if (a.id !== r!.id) fail('That attempt isn\'t waiting for an answer.');
+  if (cb!.over) fail('The fight is over.'); // nothing lands on a finished fight: the host's skip clears the wait
+  const lines = (Array.isArray(a.lines) ? a.lines : []).filter((x) => typeof x === 'string').map((x) => x.replace(/\s+/g, ' ').trim().slice(0, 240)).filter(Boolean).slice(0, 2);
+  const eff = cleanFightEffect(cb!, r!, a.effect);
+  if (!lines.length && !eff) fail('The Narrator\'s answer is empty.');
+  const u = cb!.units.find((x) => x.id === r!.unit), c = g.characters[r!.charId], t = talkOf(cb!);
+  delete t.ruling;
+  for (const l of lines) cb!.log.push('Narrator: ' + l);
+  let did = '';
+  // A speaker who is dead or Downed when the answer comes rolls nothing and earns nothing; a perk's yes or no still stands.
+  const up = !!u && !u.dead && !u.downed;
+  if (eff && u && (up || 'perk' in eff)) {
+    if ('perk' in eff) {
+      if (!eff.perk.accepted) { const back = refundFight(g, cb!, r!); did = r!.perk!.name + ' refused'; cb!.log.push(u.name + '\'s ' + r!.perk!.name + ' is refused' + (back ? ': ' + back + ' come' + (/ and /.test(back) ? '' : 's') + ' back.' : '.')); }
+      else did = r!.perk!.name + ' accepted';
+    } else if ('check' in eff && c) {
+      // The same dice as a story check: d20 + the speaker's modifier against the Narrator's TN; a natural 20 succeeds, a natural 1 fails.
+      const sk = eff.check.skill, m = sideRollMod(g, c, sk) + condSkillMod(u, sk), die = d20(g.rng), total = die + m, tn = eff.check.tn;
+      const crit = die === 20, fumble = die === 1, ok = crit || (!fumble && total >= tn);
+      const won = ok && eff.check.onSuccess ? applyFightOutcome(g, cb!, u, eff.check.onSuccess) : '';
+      cb!.log.push(u.name + ' · ' + SKILL[sk].name.toUpperCase() + ' CHECK · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + ' ' + Math.abs(m) + ' = ' + total + ' vs ' + tn + ' · ' + (crit ? '✓ CRITICAL' : fumble ? '✕ CRITICAL FAIL' : ok ? '✓ SUCCESS' : '✕ FAILURE') + won + '.');
+      did = SKILL[sk].name + ' check ' + total + ' vs ' + tn + (ok ? ', a success' : ', a failure') + won;
+    } else if (!('check' in eff)) { const out = applyFightOutcome(g, cb!, u, eff); cb!.log.push(out.replace(/^ · /, '') + '.'); did = out.replace(/^ · /, ''); }
+  }
+  // The after-fight report: already answered, with what the engine did (the Narrator follows through, it doesn't rule twice).
+  (cb!.notes ||= []).push((u?.name || 'Someone') + ' (round ' + r!.round + (r!.perk ? ', ' + r!.perk.name : ', an attempt') + '): "' + r!.text.slice(0, 160) + '" — answered in the fight' + (lines.length ? ': ' + lines.join(' ') : '') + (did ? ' [' + did + ']' : '') + (r!.perk?.ask && !(eff && 'perk' in eff && !eff.perk.accepted) ? ' Follow through: ' + r!.perk.ask : ''));
+  for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10;
   checkOver(cb!);
   runEnemies(g);
 }
@@ -1936,6 +2063,12 @@ export function viewFor(g: GameState, playerId: string): GameState {
   // own side, and to the other side only while it sees the holder.
   if (v.combat && g.combat) { const cb0 = g.combat; v.combat = { ...v.combat, units: v.combat.units.map((u) => callView(physFog(cb0, u, me), me)) }; } // rules 1.13: a Call's mark shows to the side that made it (calls/core.ts)
   pileFog(g, v, me); // rules 1.9: a pile shows only on a tile the viewer's party sees now (item 676)
+  // rules 1.14: the pending fight ruling shows to everyone (the fight waits on it), without the Narrator's side of a
+  // perk; words a perk keeps private (Their Own Idea) show to the speaker's player and the host only.
+  if (v.combat && playerId !== g.hostId) { const fr = fightRulingOf(g.combat); if (fr) { const mine = g.characters[fr.charId]?.owner === playerId, perk = fr.perk ? { ...fr.perk } : undefined; if (perk) delete perk.ask;
+    v.combat = { ...v.combat, ruling: { ...fr, ...(perk ? { perk } : {}), ...(fr.perk?.private && !mine ? { text: '' } : {}) } } as any; } }
+  // The fight's notes are the Narrator's (what was said, what a perk asks of them, hidden words): never sent to a guest.
+  if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.notes; }
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side

@@ -69,42 +69,26 @@ describe('Parallel Thought', () => {
   });
 });
 
-describe('Heart Overload', () => {
-  it('I: Begin an Outburst paying 2 HP a point of mana instead (the toggle); II: 1 HP a point', () => {
-    for (const [tier, rate] of [['I', 2], ['II', 1]] as const) {
-      const f = soulFight({ heart_overload: tier }); f.pc.maxHp = f.pc.hp = 999;
-      const d = f.pc.mg!.designs[0], cost = designCost(f.pc.mg!, d, manaOf(f.cb)), mp = f.pc.mg!.mp, hp = f.pc.hp;
-      f.act({ type: 'combat/outburst', unitId: f.pc.id, design: d.id, aim: f.foe.pos, mods: ['pay_hp'] } as any);
-      expect(f.pc.mg!.mp).toBe(mp); expect(f.pc.hp).toBe(hp - cost * rate);
-    }
-  });
-  it('an HP-paid cast can\'t heal or shield; rules 1.5: a held one pays blood too (item 534)', () => {
-    const f = soulFight({ heart_overload: 'II' }); f.pc.maxHp = 999; f.pc.hp = 500;
-    f.pc.mg!.designs.push({ id: 'mend', name: 'Mend', school: 'buff', option: 'heal', modules: [] });
-    const cost = designCost(f.pc.mg!, f.pc.mg!.designs[1], manaOf(f.cb));
-    expect(() => f.act({ type: 'combat/outburst', unitId: f.pc.id, design: 'mend', aim: f.pc.pos, mods: ['pay_hp'] } as any)).toThrow(/blood can't mend/);
-    expect(f.pc.hp).toBe(500); void cost;
-    const g = soulFight({ heart_overload: 'I' }); g.pc.maxHp = g.pc.hp = 999; const mp = g.pc.mg!.mp, hp = g.pc.hp, d = g.pc.mg!.designs[0], c0 = designCost(g.pc.mg!, d, manaOf(g.cb));
-    g.act({ type: 'combat/outburst', unitId: g.pc.id, design: d.id, hold: true, mods: ['pay_hp'] } as any);
-    expect(g.pc.mg!.mp).toBe(mp); expect(g.pc.hp).toBe(hp - 2 * c0); expect(g.pc.mg!.held!.stage).toBe(0);
-    g.act({ type: 'combat/pump', unitId: g.pc.id } as any); expect(g.pc.mg!.held!.stage).toBe(1); expect(g.pc.hp).toBe(hp - 2 * c0); // a Pump costs AP, never blood
-  });
-});
-
-describe('Heart Overload without an Emanator (item 371, Leon 7 Nov 2026)', () => {
-  it('does nothing: the Pay with HP toggle isn\'t offered, and a sent pay_hp costs no HP', () => {
-    const f = soulFight({ heart_overload: 'I' });
+// Heart Overload and Resonance were rewritten in rules 1.14 (a free Begin after a Release; your own Releases build on
+// each other): their tests are in test/rules114-will-power.test.ts. What stays here is what 1.14 kept from before.
+describe('Heart Overload (rules 1.14): what the rewrite kept', () => {
+  it('no Emanator: nothing is offered, and a sent pay_hp costs no HP (item 371, Leon 7 Nov 2026)', () => {
+    const f = soulFight({ heart_overload: 'I' }); f.pc.mg!.emanator = false;
     const on = () => withGame(f.g, () => togglesFor({ u: f.pc, c: f.g.characters[f.pc.charId!], cb: f.cb, g: f.g } as any, 'combat/outburst')).map((t) => t.id);
-    expect(on()).toContain('perk:heart_overload#pay_hp');
-    f.pc.mg!.emanator = false;
-    expect(on()).not.toContain('perk:heart_overload#pay_hp');
+    expect(on().some((id) => id.startsWith('perk:heart_overload#'))).toBe(false);
     const hp = f.pc.hp;
     try { f.act({ type: 'combat/outburst', unitId: f.pc.id, design: f.pc.mg!.designs[0].id, aim: f.foe.pos, mods: ['pay_hp'] } as any); } catch { /* the cast itself may need an Emanator: either way no HP is paid */ }
     expect(f.pc.hp).toBe(hp);
   });
+  it('paying in HP is no longer a choice on a plain Begin: the mana is paid', () => {
+    const f = soulFight({ heart_overload: 'II' }); f.pc.maxHp = f.pc.hp = 999;
+    const d = f.pc.mg!.designs[0], cost = designCost(f.pc.mg!, d, manaOf(f.cb)), mp = f.pc.mg!.mp;
+    f.act({ type: 'combat/outburst', unitId: f.pc.id, design: d.id, hold: true, mods: ['pay_hp'] } as any);
+    expect(f.pc.hp).toBe(999); expect(mp - f.pc.mg!.mp).toBe(cost);
+  });
 });
 
-describe('Resonance (rules 1.5: the perk widens the rule\'s window, item 535)', () => {
+describe('Resonance, the perk (rules 1.14): what the rewrite kept', () => {
   /** Two Soul PCs side by side; a releases on round r, b on round r + 1; returns b's release multiplier. */
   function twoRounds(perksA: Record<string, string>, perksB: Record<string, string>) {
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: perksA, name: 'A' }, { archetype: 'stormcaller', kit: 'soul', perks: perksB, name: 'B' }], [{ at: 'H6' }]);
@@ -116,8 +100,9 @@ describe('Resonance (rules 1.5: the perk widens the rule\'s window, item 535)', 
     return (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1)!.mult as number;
   }
   it('without the perk, a release last round gives nothing (the rule is one round)', () => { expect(twoRounds({}, {})).toBe(0.8); }); // rules 1.8: a snap is ×0.8
-  it('I: the holder\'s release hears an ally\'s release from the round before: +0.2', () => { expect(twoRounds({}, { resonance: 'I' })).toBe(1); });
-  it('II: and allies hear the holder\'s from the round before', () => { expect(twoRounds({ resonance: 'II' }, {})).toBe(1); expect(twoRounds({ resonance: 'I' }, {})).toBe(0.8); });
+  it('the perk no longer widens the shared rule\'s window: an ally\'s release last round gives the rule\'s +0.2 to no one', () => {
+    expect(twoRounds({}, { resonance: 'I' })).toBe(0.8); expect(twoRounds({ resonance: 'II' }, {})).toBe(0.8);
+  });
   it('the 1.2 MP discount is gone', () => {
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: { resonance: 'II' } }, { archetype: 'stormcaller', kit: 'soul', name: 'Ally' }], [{ at: 'H6' }]);
     open(f.cb); const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '3,5';
