@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced } from '../combat';
+import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -192,13 +192,16 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
 }
 
 // ---------- cost and who may use what ----------
+/** Does this technique fire a round of the weapon (a ranged technique that lists rounds)? A Set fires none. */
+const firesRound = (def: TechDef) => def.system === 'ranged' && (def.rounds === 'all' || Number(def.rounds) > 0);
 /** A technique's AP with this weapon and line. */
 export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?: Unit | null): number {
   const w = WEAPON[weaponId] || WEAPON.fists;
   const fx: any = (w as any).grants?.effect || {};
   const base = def.ap.base === 'reaction' ? 0 : def.id === 'aimed_shot' && fx.op === 'aimed_ap' ? fx.value // the crossbow's Bolt Rest
     : def.id === 'shot' ? Math.max(def.ap.value || 0, attackApCost(w, 'shot')) // a weapon whose shot costs more than 2 (the crossbow: 3, the next bolt loaded with it)
-    : def.ap.base === 'flat' ? def.ap.value || 0 : attackApCost(w, isMelee(w) ? 'melee' : 'shot') + (def.ap.add || 0);
+    : def.ap.base === 'flat' ? (def.ap.value || 0) + (firesRound(def) ? cycleAp(w) : 0) // rules 1.18: a hand-worked action (the long rifle's bolt) adds its AP to every technique that fires a round
+    : attackApCost(w, isMelee(w) ? 'melee' : 'shot') + (def.ap.add || 0);
   const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));
 }

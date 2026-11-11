@@ -1427,19 +1427,28 @@
       },
       "rounds": 3,
       "needs": {},
-      "text": "Two shots at one target. The second is at −2 to hit.",
+      "text": "Three rounds at one target, two rolls. The second roll is at −2 to hit.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "three shots, and you may split them between two targets standing next to each other."
+          "text": "you may split the two rolls between two targets standing next to each other, and the barrel cools 1 Heat after."
         },
         {
           "props": [
             "quick"
           ],
-          "text": "the second shot has no −2."
+          "text": "the second roll is at −1 instead of −2.",
+          "stack": true
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "the weapon holds all three rounds on the target: three rolls, each at −1 more than the last.",
+          "when": "braced",
+          "stack": true
         }
       ],
       "free": false,
@@ -1451,8 +1460,9 @@
       "numbers": {
         "rolls": 2,
         "later_penalty": 2,
-        "auto_rolls": 3,
-        "auto_step": 1,
+        "quick_penalty": 1,
+        "heavy_rolls": 3,
+        "heavy_step": 1,
         "auto_heat_cool": 1,
         "auto_split_targets": 2,
         "auto_split_range": 1
@@ -1576,7 +1586,7 @@
           "props": [
             "auto"
           ],
-          "text": "the shot is a Burst for 3 rounds."
+          "text": "the shot is a Burst (3 rounds, the Burst's own rolls)."
         },
         {
           "props": [
@@ -1592,8 +1602,6 @@
       "numbers": {
         "tiles": 2,
         "quick_tiles": 3,
-        "auto_rolls": 3,
-        "auto_step": 1,
         "auto_rounds": 3,
         "auto_heat_cool": 1
       },
@@ -1705,7 +1713,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "One bolt at +50% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile.",
+      "text": "One bolt at +30% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile.",
       "lines": [
         {
           "props": [
@@ -1729,7 +1737,7 @@
       ],
       "particular": false,
       "numbers": {
-        "damage_pct": 50,
+        "damage_pct": 30,
         "pierce": 10,
         "push": 1,
         "precise_hit": 2
@@ -2597,7 +2605,7 @@
           "props": [
             "auto"
           ],
-          "text": "The held shot is a Burst of three."
+          "text": "The held shot is a Burst."
         },
         {
           "props": [

@@ -367,8 +367,8 @@
         "single"
       ],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "single": 3,
+        "aimed": 4
       },
       "ammo": "rifle",
       "skill": "dexterity",
@@ -406,13 +406,15 @@
           "agility"
         ],
         "teaches": "bead"
-      }
+      },
+      "cycle_ap": 1,
+      "provisional": true
     },
     {
       "id": "blackpoint_700",
       "name": ".700 Blackpoint anti-materiel",
       "category": "heavy",
-      "damage": 90,
+      "damage": 75,
       "damage_type": "physical",
       "range_tiles": 40,
       "magazine": 3,
@@ -464,7 +466,8 @@
           "agility"
         ],
         "teaches": "dead_centre"
-      }
+      },
+      "provisional": true
     },
     {
       "id": "hellraiser_lmg",
@@ -1520,7 +1523,7 @@
       "id": "adamantile_battle_rifle",
       "name": "Adamantile battle rifle",
       "category": "rifle",
-      "damage": 38,
+      "damage": 33,
       "damage_type": "physical",
       "range_tiles": 18,
       "magazine": 15,
@@ -1580,7 +1583,7 @@
       "id": "ccec_marksman_rifle",
       "name": "CCEC marksman rifle",
       "category": "rifle",
-      "damage": 40,
+      "damage": 34,
       "damage_type": "physical",
       "range_tiles": 22,
       "magazine": 10,
@@ -2932,7 +2935,7 @@
       "id": "core_rifle",
       "name": "Science Team core rifle",
       "category": "mana",
-      "damage": 32,
+      "damage": 29,
       "damage_type": "elemental",
       "range_tiles": 16,
       "magazine": 10,

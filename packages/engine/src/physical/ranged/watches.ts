@@ -2,11 +2,11 @@
 // holding it; the handler checks the trigger and calls fireWatch(), which spends the reaction (never while Pressed).
 // Overwatch and Deny are the lead's references; the ranged lane builds Cover Me and Dead to Rights here.
 import { technique, strike, canStrike, holdWatch, fireWatch, stop, spendRounds, addPressure, isPressed, atCover, turnStamp, onHook, strikingWith, type Tech } from './shared';
-import { alive, dist, lineOfSight, unitSees, sideSees, effectiveRange, xy, key, type Combat, type Unit } from '../../combat';
+import { alive, dist, burstRolls, lineOfSight, unitSees, sideSees, effectiveRange, xy, key, type Combat, type Unit } from '../../combat';
 import type { HeldWatch } from '../types';
 import { looseRound } from './press';
 
-// 27. Overwatch: the first enemy to move in your sight: the held shot. Precise: +2. Auto: it is a Burst (3 rounds, each
+// 27. Overwatch: the first enemy to move in your sight: the held shot. Precise: +2. Auto: it is a Burst (rules 1.18: its rolls; each
 //     later one −1). Spread: anyone coming within 4 tiles (instead of anyone moving in sight).
 technique({
   id: 'overwatch',
@@ -18,8 +18,8 @@ technique({
       if (p === 'spread' && dist(t.u.pos, m.pos) > t.num('spread_range', 4)) return;
       if (!canStrike(t, m)) return;
       fireWatch(t, ctx, m, () => {
-        const shots = p === 'auto' ? 3 : Math.max(1, t.u.owShots || 1); t.u.owShots = 0;
-        for (let i = 0; i < shots && alive(m); i++) if (!strike(t, { target: m, extra: (p === 'precise' ? t.num('precise_hit', 2) : 0) - (p === 'auto' ? i : 0) }).ok) break;
+        const burst = p === 'auto' ? burstRolls(t.u, t.w) : null, shots = burst ? burst.length : Math.max(1, t.u.owShots || 1); t.u.owShots = 0; // rules 1.18: an Auto weapon's held shot is a Burst, with the Burst's rolls
+        for (let i = 0; i < shots && alive(m); i++) if (!strike(t, { target: m, extra: (p === 'precise' ? t.num('precise_hit', 2) : 0) + (burst ? burst[i] : 0) }).ok) break;
       }, 'overwatch');
     },
   },

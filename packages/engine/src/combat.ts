@@ -881,7 +881,12 @@ export function setEffectiveArmour(u: Unit, n: number): void {
 }
 export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
   typeof w.damage === 'number' ? w.damage : w.damage?.within_4 ? (range <= 4 ? w.damage.within_4 : w.damage.within_8) : w.id === 'recurve_bow' ? 20 + 5 * rawPower : 20;
-export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? 3 : (w.ap_cost.single ?? 2));
+/** Rules 1.18: a gun whose action is worked by hand between rounds (weapons.json `cycle_ap`: the long rifle's bolt)
+ * costs that much more AP for every action that fires it. Its Shot and Aimed Shot carry it in the weapon's own
+ * `ap_cost` (single 3, aimed 4); every other technique that fires a round adds it (physical/core.ts techniqueAp).
+ * 0 for every other weapon. */
+export const cycleAp = (w: WeaponDef | null | undefined): number => (w && !isMelee(w) ? Math.max(0, Number((w as any).cycle_ap) || 0) : 0);
+export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? Number((w.ap_cost as any).aimed) || 3 : (w.ap_cost.single ?? 2));
 export const effectiveRange = (w: WeaponDef) => (typeof w.range_tiles === 'number' ? w.range_tiles : 8);
 
 const ENCORE_PLAIN: Record<string, string> = { shot: 'combat/attack:shot', aimed_shot: 'combat/attack:aimed', cut: 'combat/attack:melee', overwatch: 'combat/overwatch' };
@@ -1530,12 +1535,25 @@ export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'mele
   u.ap -= cost; u.overwatch = mode; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); cb.log.push(u.name + ' holds a shot on overwatch.'); return null;
 }
 /** Burst (spec): 3 AP, 3 rounds at one target, each later round −1 more. Full auto: 4 AP, 10 rounds, one roll at −2 per enemy near the line. */
+/** The rolls of a Burst (rules 1.18; techniques.json burst.numbers): three rounds, TWO rolls, the second at −2 (a Quick
+ * weapon: −1). A Heavy weapon that is Braced, Prone or Emplaced holds all three on the target: three rolls, each later
+ * one −1 more. The technique (physical/ranged/fire.ts) and this plain action read the same numbers. */
+export function burstRolls(u: Unit, w: WeaponDef, line?: string | null): number[] {
+  const n: any = ((techniquesJ as any).items || []).find((x: any) => x.id === 'burst')?.numbers || {}, props: string[] = (w as any).phys?.props || [];
+  if (props.includes('heavy') && (weaponBraced(u) || !!u.prone || condOn(u, 'emplaced'))) return Array.from({ length: n.heavy_rolls ?? 3 }, (_, i) => -(n.heavy_step ?? 1) * i);
+  const quick = props.includes('quick'); void line;
+  return Array.from({ length: n.rolls ?? 2 }, (_, i) => (i ? -(quick ? n.quick_penalty ?? 1 : n.later_penalty ?? 2) : 0));
+}
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
+  const rolls = burstRolls(u, WEAPON[u.weapon]), mag = WEAPON[u.weapon].magazine;
   u.ap -= pv.ap; cb.log.push(u.name + ' fires a burst' + (pv.ap !== 3 ? ' (' + pv.ap + ' AP)' : '') + '.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: WEAPON[u.weapon].category, mode: 'burst', shots: 3 });
   // resolveAttack refuses (and ends the burst on) any round the preview won't allow: broken gun, target pushed out of sight.
-  chained(() => { for (let i = 0; i < 3 && !t.dead && (WEAPON[u.weapon].magazine == null || u.ammo > 0) && !u.jammed; i++) { const r = resolveAttack(cb, rng, u, t, 'shot', who, { extra: -i, noAp: true, noWear: i > 0, vi: i } as any); if (r.refused || r.cancelled) break; } }, 'burst');
+  let made = 0;
+  chained(() => { for (let i = 0; i < rolls.length && !t.dead && (mag == null || u.ammo > 0) && !u.jammed; i++) { const r = resolveAttack(cb, rng, u, t, 'shot', who, { extra: rolls[i], noAp: true, noWear: i > 0, vi: i } as any); if (r.refused || r.cancelled) break; made++; } }, 'burst');
+  // three rounds leave the gun whatever was rolled (rules 1.18): the ones with no roll of their own are burned, and heat it
+  if (made === rolls.length && rolls.length < 3) { const burn = Math.min(3 - rolls.length, mag != null && !u.infiniteAmmo ? Math.max(0, u.ammo) : 3 - rolls.length); if (mag != null && !u.infiniteAmmo) u.ammo -= burn; if (WEAPON[u.weapon].heat_limit && !u.infiniteAmmo) u.heat += burn; }
   u.heat = Math.max(0, u.heat - 1); emit(cb, 'volley_end', { u, mode: 'burst', target: t, cb, rng }); checkOver(cb); return null;
 }
 export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {

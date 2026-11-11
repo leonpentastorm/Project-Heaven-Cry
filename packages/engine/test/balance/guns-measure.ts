@@ -34,3 +34,21 @@ export function gunRow(what: string, build: string, variant: string, level: numb
     apShare: f.apShare, actions: Object.fromEntries(Object.entries(c.actions).map(([k, v]) => [k, r1(v / c.n)])), bigHit: c.bigHit, bigWhat: c.bigHitWhat, peakTurn: c.peakTurn, errors: c.errors };
 }
 export const gline = (r: GRow) => r.what + ' L' + r.level + ' ' + r.variant + ': ' + r.perTurn + ' a turn · ' + r.pctRifle + '% · hit ' + r.hitPct + '% · ' + r.dmgPerHit + ' a hit · ' + r.shotsPerTurn + ' rolls a turn · crit share ' + r.critShare + '% · biggest ' + r.bigHit + (r.errors ? ' · ERRORS ' + r.errors : '');
+
+/** The ways a gun is played (one row each; the ceiling of a weapon is the best of them). */
+export const ROTATIONS: { id: string; label: string; policy: string; opts?: any }[] = [
+  { id: 'plain', label: 'plain shots only', policy: 'plain' },
+  { id: 'step1', label: 'the simulator\'s optimised policy (as the step-1 report ran it)', policy: 'optimised' },
+  { id: 'gunner', label: 'the gunner (set-ups, paired shots, Vent; no Mag Dump)', policy: 'gunner', opts: { noDump: true } },
+  { id: 'dump', label: 'the gunner with Mag Dump', policy: 'gunner' },
+];
+/** Every gun a character can fire (not the thrown ones). */
+export const GUNS = () => Object.values(WEAPON).filter((w: any) => w.phys?.system === 'ranged' && w.category !== 'thrown').map((w: any) => w.id as string);
+export const ONE_HANDED = () => GUNS().filter((id) => (WEAPON[id] as any).hands === '1H');
+/** One weapon, every rotation; returns the rows and the best. */
+export function weaponRows(weapon: string, rarity: string, variant: string, level: number, n: number, yard: number, o: { offHand?: string; rotations?: string[] } = {}) {
+  const b = gunBuild(weapon, rarity, o.offHand ? { offHand: o.offHand } : {});
+  const rows = ROTATIONS.filter((r) => !o.rotations || o.rotations.includes(r.id)).map((r) => ({ rot: r.id, ...gunRow(weapon + (o.offHand ? ' ×2' : '') + ' · ' + r.id, b, variant, level, n, yard, { policy: r.policy, opts: r.opts }) }));
+  const best = rows.reduce((a, c) => (c.pctRifle > a.pctRifle ? c : a), rows[0]);
+  return { weapon, rarity, offHand: o.offHand || null, rows, best };
+}

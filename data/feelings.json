@@ -1,9 +1,9 @@
 {
   "$schema_version": "2.0",
   "kind": "feelings",
-  "revision": 19,
-  "source": "PHC Core Rules v1.0, rules revision 1.17 (the magic step of the balance pass, 11 Nov 2026), on rules 1.8 (Outburst 4.0; docs/design/outburst-4.0-spec.md section 3). Engine: packages/engine/src/feelings.ts and magic.ts.",
-  "plain_step": 0.4,
+  "revision": 20,
+  "source": "PHC Core Rules v1.0, rules revision 1.19 (the Outburst rework, round 2; 11 Nov 2026), on rules 1.17 and rules 1.8 (Outburst 4.0; docs/design/outburst-4.0-spec.md section 3). Engine: packages/engine/src/feelings.ts and magic.ts.",
+  "plain_step": 0.2,
   "max_feelings_per_hold": 4,
   "start_count": 2,
   "start_default": [
@@ -21,7 +21,7 @@
     "wild": "the heart off its leash",
     "holy": "stillness and the high"
   },
-  "notes": "Steps replace the plain Pump's +0.4: a release's multiplier is the stage table's plus (step - 0.4) for each feeling pump (item 804). Rules 1.17: the stage table climbs 0.4 a stage from stage 0, so a plain Pump is +0.4 at every stage; no feeling steps under +0.4 except Relief (it gives Strain back); the yardstick for a cost is 1 Strain or 8 HP for +0.3 above the plain +0.4. Residue: the strongest feeling poured in (most pumps, ties to the latest) on every tile the release covered, for residue_rounds. Every number is provisional (spec 14, items 801 and 1050 on).",
+  "notes": "Rules 1.19: a plain Pump adds +0.2 (the stage table climbs 0.2 a stage from x0.8). A feeling Pump has its own step instead: a Release's multiplier is the stage table's plus (step - 0.2) for each feeling Pump. Each feeling goes into an Outburst once. A feeling that buys the multiplier pays for it (1 Strain or 8 HP for +0.3 above the plain +0.2); a feeling that changes what the Release does steps +0.3; a strong one steps +0.2, 0 or -0.2: the multiplier going down is its price. No feeling does what a school, a module or an element already does, except where its text says why. Residue: the strongest feeling poured in (ties to the latest) on every tile the Release covered, for residue_rounds. Every number is provisional (spec 14, items 801, 1050 and 1100 on).",
   "items": [
     {
       "id": "rage",
@@ -29,15 +29,15 @@
       "n": 1,
       "family": "wild",
       "step": {
-        "base": 0.7,
-        "text": "+0.7"
+        "base": 0.5,
+        "text": "+0.5"
       },
       "trigger": {
         "event": "big_hit",
         "text": "You take 25% of your max HP or more in one hit."
       },
       "pour": {
-        "text": "+0.7 to the multiplier (a plain Pump gives +0.4). +1 Strain when you pour it in.",
+        "text": "+0.5 to the multiplier (a plain Pump gives +0.2). +1 Strain when you pour it in.",
         "strain": 1,
         "effects": [
           {
@@ -67,18 +67,16 @@
       "n": 2,
       "family": "cold",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.2,
+        "fallen": 0.5,
+        "text": "+0.2; +0.5 once an ally has fallen"
       },
       "trigger": {
         "event": "ally_down",
         "text": "An ally goes Down or dies."
       },
       "pour": {
-        "text": "+0.4. Targets hit are Slowed for 2 rounds (Body save).",
-        "condition": "slowed",
-        "rounds": 2,
-        "save": true,
+        "text": "+0.2, or +0.5 if an ally has gone Down or died in this fight.",
         "effects": [
           {
             "op": "feeling_pour",
@@ -109,19 +107,16 @@
       "n": 3,
       "family": "low",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "dread_fight",
         "text": "A fight with an Elite or Boss starts, or you are made Afraid."
       },
       "pour": {
-        "text": "+0.4. Targets hit are pushed 1 tile and Shaken for 2 rounds (Heart save).",
-        "push": 1,
-        "condition": "shaken",
-        "rounds": 2,
-        "save": true,
+        "text": "+0.3. The Release throws you 2 tiles back, away from where you aimed it. Nobody gets a swing at you as you go.",
+        "recoil": 2,
         "effects": [
           {
             "op": "feeling_pour",
@@ -152,23 +147,23 @@
       "n": 4,
       "family": "warm",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "tend_ally",
         "text": "You heal or shield an ally."
       },
       "pour": {
-        "text": "+0.4. Allies in the shape are spared its damage and healed for a third of it. If it reaches no ally, the most wounded ally within its reach (or you) heals for a fifth of it.",
+        "text": "+0.3. Allies in the shape are spared its damage and healed for a third of it. If it reaches no ally, the most wounded ally within its reach (or you) heals for a fifth of it.",
         "heal_of_power": 0.35,
+        "lone_heal_of_power": 0.2,
         "effects": [
           {
             "op": "feeling_pour",
             "feeling": "love"
           }
-        ],
-        "lone_heal_of_power": 0.2
+        ]
       },
       "residue": {
         "kind": "helps",
@@ -191,18 +186,16 @@
       "n": 5,
       "family": "bright",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "nat20",
         "text": "You roll a natural 20."
       },
       "pour": {
-        "text": "+0.4. Chains to one more enemy within 2 tiles of the first one hit, for half damage, with no roll.",
-        "chain": 1,
-        "range": 2,
-        "mult": 0.5,
+        "text": "+0.3. A Bolt or Lance is a critical on a roll of 18, 19 or 20 that hits. On a Wave, Burst or Aura, which never roll, it only adds its +0.3.",
+        "crit_from": 18,
         "effects": [
           {
             "op": "feeling_pour",
@@ -231,24 +224,23 @@
       "n": 6,
       "family": "holy",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": -0.2,
+        "text": "−0.2"
       },
       "trigger": {
         "event": "calm_turn",
         "text": "You end a turn having Steadied, or with 0 Strain."
       },
       "pour": {
-        "text": "+0.4. A Bolt or Lance can't miss and ignores cover, but the whole Release is at ×0.75 strength and can't be a critical. On a Wave, Burst or Aura, which never miss, it is a plain Pump.",
-        "ignore_cover": true,
-        "no_miss": true,
+        "text": "−0.2: the multiplier goes down. In return a Bolt or Lance rolls twice and keeps the better roll. It can't be a critical. On a Wave, Burst or Aura, which never roll, it only costs you.",
+        "advantage": true,
+        "no_crit": true,
         "effects": [
           {
             "op": "feeling_pour",
             "feeling": "calm"
           }
-        ],
-        "release_mult": 0.75
+        ]
       },
       "residue": {
         "kind": "helps",
@@ -271,16 +263,16 @@
       "n": 7,
       "family": "sharp",
       "step": {
-        "base": 0.4,
-        "vs_last_hurt": 0.6,
-        "text": "+0.4; +0.6 against whoever last hurt you"
+        "base": 0.2,
+        "vs_last_hurt": 0.5,
+        "text": "+0.2; +0.5 against whoever last hurt you"
       },
       "trigger": {
         "event": "hurt_by_enemy",
         "text": "An enemy damages you."
       },
       "pour": {
-        "text": "+0.4, or +0.6 against whoever last hurt you.",
+        "text": "+0.2, or +0.5 against whoever last hurt you.",
         "effects": [
           {
             "op": "feeling_pour",
@@ -310,23 +302,23 @@
       "n": 8,
       "family": "hollow",
       "step": {
-        "base": 0.7,
-        "text": "+0.7"
+        "base": 0.5,
+        "text": "+0.5"
       },
       "trigger": {
         "event": "nat1",
         "text": "You roll a natural 1, or a vow breaks."
       },
       "pour": {
-        "text": "+0.7 to the multiplier. Each Shame you pour in deals 8 damage to you at the Release; armour and shields don't stop it.",
+        "text": "+0.5 to the multiplier. It deals 8 damage to you at the Release; armour and shields don't stop it.",
         "self_damage": 8,
+        "per_pour": true,
         "effects": [
           {
             "op": "feeling_pour",
             "feeling": "shame"
           }
-        ],
-        "per_pour": true
+        ]
       },
       "residue": {
         "kind": "harms",
@@ -349,17 +341,16 @@
       "n": 9,
       "family": "holy",
       "step": {
-        "base": 0.4,
-        "per_stage_past": 0.1,
-        "from_stage": 3,
-        "text": "+0.4; +0.5 at stage 4"
+        "base": 0.6,
+        "text": "+0.6"
       },
       "trigger": {
         "event": "big_kill",
         "text": "You take down an Elite or Boss."
       },
       "pour": {
-        "text": "+0.4, or +0.5 if you Release at stage 4.",
+        "text": "+0.6 to the multiplier. If the Release takes nobody down, you take 1 Strain after it.",
+        "strain_unless_down": 1,
         "effects": [
           {
             "op": "feeling_pour",
@@ -380,17 +371,17 @@
       "n": 10,
       "family": "hollow",
       "step": {
-        "base": 0.4,
+        "base": 0.2,
         "per_20pct_missing": 0.1,
-        "max": 0.8,
-        "text": "+0.4, +0.1 more per 20% of your HP missing"
+        "max": 0.6,
+        "text": "+0.2, +0.1 more per 20% of your HP missing"
       },
       "trigger": {
         "event": "low_hp",
         "text": "You drop below a quarter of your max HP."
       },
       "pour": {
-        "text": "+0.4, and +0.1 more for every 20% of your max HP you are missing (up to +0.8).",
+        "text": "+0.2, and +0.1 more for every 20% of your max HP you are missing (up to +0.6).",
         "effects": [
           {
             "op": "feeling_pour",
@@ -421,21 +412,16 @@
       "n": 11,
       "family": "bright",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "got_up",
         "text": "You get back up from Downed."
       },
       "pour": {
-        "text": "+0.4. You and the allies in the shape lose Afraid and Shaken, and your next rolls are at +2 (Hopeful, 2 rounds).",
-        "cleanse": [
-          "fear",
-          "shaken"
-        ],
-        "condition": "hopeful",
-        "rounds": 2,
+        "text": "+0.3. You and each ally in the shape shake off one harmful condition, the newest first.",
+        "cleanse_any": 1,
         "effects": [
           {
             "op": "feeling_pour",
@@ -464,15 +450,15 @@
       "n": 12,
       "family": "holy",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "accept_surrender",
         "text": "A foe surrenders to you because of you: talked down, or spared by a non-lethal blow (you accept it)."
       },
       "pour": {
-        "text": "+0.4. It Downs instead of killing. A target hit at a quarter of its HP or less surrenders unless it passes a Heart save.",
+        "text": "+0.3. It Downs instead of killing. A target hit at a quarter of its HP or less surrenders unless it passes a Heart save.",
         "nonlethal": true,
         "surrender_at": 0.25,
         "effects": [
@@ -503,15 +489,15 @@
       "n": 13,
       "family": "low",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.2,
+        "text": "+0.2"
       },
       "trigger": {
         "event": "hit_helpless",
         "text": "You hit someone Downed or helpless (Stunned, Pinned, Grappled)."
       },
       "pour": {
-        "text": "+0.4. Targets hit start Bleeding (no save), and the Bleeding spreads to one enemy next to each.",
+        "text": "+0.2, like a plain Pump. Targets hit start Bleeding (no save), and the Bleeding spreads to one enemy next to each.",
         "condition": "bleeding",
         "spread": 1,
         "effects": [
@@ -544,17 +530,17 @@
       "n": 14,
       "family": "cold",
       "step": {
-        "base": 0.4,
-        "alone_extra": 0.1,
+        "base": 0.2,
+        "alone_extra": 0.3,
         "alone_range": 3,
-        "text": "+0.4; +0.5 with no ally within 3 tiles"
+        "text": "+0.2; +0.5 with no ally within 3 tiles"
       },
       "trigger": {
         "event": "last_standing",
         "text": "You are the last of your side standing."
       },
       "pour": {
-        "text": "+0.4, or +0.5 with no ally within 3 tiles of you.",
+        "text": "+0.2, or +0.5 with no ally within 3 tiles of you.",
         "effects": [
           {
             "op": "feeling_pour",
@@ -575,18 +561,18 @@
       "n": 15,
       "family": "warm",
       "step": {
-        "base": 0.4,
+        "base": 0.2,
         "per_ally": 0.1,
         "range": 3,
-        "max": 0.7,
-        "text": "+0.4, +0.1 more per ally within 3 tiles"
+        "max": 0.5,
+        "text": "+0.2, +0.1 more per ally within 3 tiles"
       },
       "trigger": {
         "event": "together",
         "text": "You stand with 3 or more allies within 2."
       },
       "pour": {
-        "text": "+0.4, and +0.1 more for each ally within 3 tiles of you (up to +0.7). This Release counts twice for your allies' Resonance this round.",
+        "text": "+0.2, and +0.1 more for each ally within 3 tiles of you (up to +0.5). This Release counts twice for your allies' Resonance this round.",
         "resonance": 2,
         "effects": [
           {
@@ -616,15 +602,15 @@
       "n": 16,
       "family": "low",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "ambushed",
         "text": "An attacker who was Hidden hits you, or a trap or hazard goes off on you."
       },
       "pour": {
-        "text": "+0.4. Targets hit lose their reactions this round and any shot they were holding.",
+        "text": "+0.3. Targets hit lose their reactions this round and any shot they were holding.",
         "no_reaction": true,
         "effects": [
           {
@@ -654,15 +640,15 @@
       "n": 17,
       "family": "holy",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.0,
+        "text": "+0"
       },
       "trigger": {
         "event": "witness",
         "text": "A Miracle or a Grand form happens in your sight."
       },
       "pour": {
-        "text": "+0.4. Targets hit have 1 AP less on their next turn.",
+        "text": "+0: this Pump adds a stage but nothing to the multiplier. In return targets hit have 1 AP less on their next turn (no save).",
         "ap_loss": 1,
         "effects": [
           {
@@ -684,17 +670,16 @@
       "n": 18,
       "family": "cold",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "apart",
         "text": "A scene starts with your linked ally gone (or the Narrator grants it)."
       },
       "pour": {
-        "text": "+0.4. The Release reaches 2 tiles further and pulls targets hit 1 tile toward you.",
+        "text": "+0.3. The Release reaches 2 tiles further.",
         "reach": 2,
-        "pull": 1,
         "effects": [
           {
             "op": "feeling_pour",
@@ -715,22 +700,22 @@
       "n": 19,
       "family": "warm",
       "step": {
-        "base": 0.2,
-        "text": "+0.2"
+        "base": -0.2,
+        "text": "−0.2"
       },
       "trigger": {
         "event": "clean_win",
         "text": "A fight you win ends with no ally Down."
       },
       "pour": {
-        "text": "+0.2 to the multiplier, half of a plain Pump. In return each Relief you pour in takes 1 Strain off you at the Release.",
+        "text": "−0.2: the multiplier goes down. In return it takes 2 Strain off you at the Release.",
+        "strain_back": 2,
         "effects": [
           {
             "op": "feeling_pour",
             "feeling": "relief"
           }
-        ],
-        "strain_back": 1
+        ]
       },
       "residue": {
         "kind": "helps",
@@ -753,15 +738,15 @@
       "n": 20,
       "family": "sharp",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "enemy_yields",
         "text": "An enemy gives up while you were its last attacker."
       },
       "pour": {
-        "text": "+0.4. Targets hit have −2 to attack you for 2 rounds (Scorned; no save).",
+        "text": "+0.3. Targets hit have −2 to attack you for 2 rounds (Scorned; no save).",
         "condition": "scorned",
         "rounds": 2,
         "effects": [
@@ -792,17 +777,18 @@
       "n": 21,
       "family": "hollow",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "hurt_ally",
         "text": "You damage an ally."
       },
       "pour": {
-        "text": "+0.4. Heals the ally you hurt last for 10 × the stage; if you have hurt none, the most wounded ally within its reach. It costs you 5 HP.",
-        "heal_per_stage": 10,
-        "self_damage": 5,
+        "text": "+0.3. Targets hit are Taunted unless they pass a Heart save: their next attack must be at you.",
+        "condition": "taunted",
+        "rounds": 1,
+        "save": true,
         "effects": [
           {
             "op": "feeling_pour",
@@ -831,15 +817,15 @@
       "n": 22,
       "family": "sharp",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "stolen_kill",
         "text": "An ally takes down a creature you damaged this round."
       },
       "pour": {
-        "text": "+0.4. You steal one helpful condition, or the shield, from the first enemy hit.",
+        "text": "+0.3. You steal one helpful condition, or the shield, from the first enemy hit.",
         "steal": 1,
         "effects": [
           {
@@ -861,15 +847,15 @@
       "n": 23,
       "family": "bright",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.3,
+        "text": "+0.3"
       },
       "trigger": {
         "event": "discover",
         "text": "A hidden thing is revealed to you, or you reach a zone for the first time (or the Narrator grants it)."
       },
       "pour": {
-        "text": "+0.4. Reveals Hidden creatures, traps and hazards in its area.",
+        "text": "+0.3. Reveals Hidden creatures, traps and hazards in its area.",
         "reveal": true,
         "effects": [
           {
@@ -899,16 +885,16 @@
       "n": 24,
       "family": "wild",
       "step": {
-        "base": 0.4,
-        "text": "+0.4"
+        "base": 0.2,
+        "text": "+0.2"
       },
       "trigger": {
         "event": "defy",
         "text": "You resist an Overreach, or pass a save against Afraid."
       },
       "pour": {
-        "text": "+0.4. Nothing it does can be resisted: no saves against its conditions, pushes and element effects. Your own next save passes.",
-        "no_saves": true,
+        "text": "+0.2, like a plain Pump. Everything this Release makes a target save against is 4 harder to resist: its conditions, pushes and element effects. Your own next save passes.",
+        "save_penalty": 4,
         "next_save": true,
         "effects": [
           {
@@ -938,23 +924,22 @@
       "n": 25,
       "family": "wild",
       "step": {
-        "base": 1.0,
-        "text": "+1.0"
+        "base": 0.8,
+        "text": "+0.8"
       },
       "trigger": {
         "event": "indulge",
         "text": "You indulge an Overreach."
       },
       "pour": {
-        "text": "+1.0 to the multiplier, the biggest step there is. +2 Strain when you pour it in. Once in an Outburst.",
+        "text": "+0.8 to the multiplier, the biggest step there is. +2 Strain when you pour it in.",
         "strain": 2,
         "effects": [
           {
             "op": "feeling_pour",
             "feeling": "abandon"
           }
-        ],
-        "once": true
+        ]
       },
       "residue": {
         "kind": "harms",
@@ -983,7 +968,8 @@
   "price": {
     "strain_per_step": 0.3,
     "hp_per_step": 8,
-    "text": "What a damage feeling costs is set against one yardstick: 1 Strain, or 8 HP, buys +0.3 on the multiplier on top of the plain +0.4.",
+    "text": "What a feeling that buys the multiplier costs is set against one yardstick: 1 Strain, or 8 HP, buys +0.3 on the multiplier on top of the plain +0.2.",
     "provisional": true
-  }
+  },
+  "once_each": true
 }

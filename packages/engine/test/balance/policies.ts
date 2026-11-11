@@ -26,6 +26,8 @@
 //              over the turn for the swell when the Strain allows; Overdraw and Heart Overload as their cards allow;
 //              Release at the best target. peak: holds for stage 4 and may burn 2 over the limit. opts.stage holds it
 //              to plain Pumps and a stage (magic-measure.test.ts).
+//   gunner     optimised, as someone who knows guns plays the range: Brace and Bead once, the paired shot and paired
+//              techniques with a gun in each hand, a spare AP to Vent (guns-measure.test.ts; opts there).
 //   faith      the highest Hymn that deals damage, whenever the engine allows it; plain attacks between. peak: the
 //              Miracle when the engine allows it.
 //   calls      Rally, Spot, Brief, Threaten, in that order, each when the engine allows it, at most 2 Calls a turn; then
@@ -33,7 +35,7 @@
 import {
   previewAttack, previewTechnique, techniquePad, paths, apForTiles, dist, alive, WEAPON, isMelee, bindGame,
   previewOutburst, previewPump, previewOutburstPlan, heartReach, planEvoke, glyphCost, glyphApOf, groundCap, freeTile, dir8, SIGIL,
-  previewPrayer, patronOf, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING,
+  previewPrayer, patronOf, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces,
 } from '../../src';
 
 export type StepKind = 'attack' | 'technique' | 'move' | 'reload' | 'setup' | 'spell' | 'prayer' | 'call' | 'other';
@@ -421,7 +423,45 @@ export const calls: Policy = (x) => {
   return plain(x);
 };
 
-export const POLICIES: Record<string, Policy> = { plain, optimised, tank, sigil, outburst, faith, calls };
+// ---------- the gunner (rules 1.18: the guns' ceiling; guns-measure.test.ts) ----------
+// The optimised policy, played the way someone who knows guns plays the range:
+//   1. the set-ups a gun build has are used once: Brace a weapon that braces (it never walks again), a Bead on the target;
+//   2. the best expected damage for its AP among the plain shot, the ready techniques and, with a gun in each hand,
+//      the paired shot and the paired techniques (both hands for the dearer hand's AP + 1);
+//   3. a spare AP that can't pay for a shot goes to Vent (−2 Heat) when the barrel is warm.
+// opts: { noDump: true } leaves Mag Dump out (it empties the magazine for one turn's damage: the one-action-ahead
+// reading overvalues it); { only: [ids] } keeps to the plain shot and those techniques; { noSets: true } skips 1 and 3;
+// { noPaired: true } fires one hand at a time.
+export const gunner: Policy = (x) => {
+  const u = x.u, o = x.opts || {}, t0 = x.foes[0];
+  const padOf = () => W(x.g, () => techniquePad(x.cb, u, 'main', x.g)).flatMap((g: any) => g.entries);
+  const setStep = (id: string, args: any, label: string): Step | null => { const e = padOf().find((q: any) => q.id === id && q.ok && q.ap <= u.ap); if (!e) return null; let pv: any; try { pv = W(x.g, () => previewTechnique(x.cb, u, id, args, x.g)); } catch { return null; } return pv?.ok ? allowed(x, { action: { type: 'combat/technique', id, ...args }, kind: 'setup', label }) : null; };
+  const p = plainCands(x); let cands = [...p.cands, ...techCands(x)];
+  if (o.noDump) cands = cands.filter((c) => c.step.action.id !== 'mag_dump');
+  if (o.only) cands = cands.filter((c) => c.step.kind === 'attack' || o.only.includes(c.step.action.id));
+  if (u.offWeapon && !o.noPaired) for (const t of x.foes) {
+    // the paired shot: the main hand at −1, the off hand at its own penalty (the same weapon in each hand here), for 3 AP
+    const off = Math.min(-1, -3 + Math.floor((u.dexterity || 0) / 3)), ap = Math.max(2, WEAPON[u.weapon]?.ap_cost?.single ?? 2, WEAPON[u.offWeapon]?.ap_cost?.single ?? 2) + 1;
+    if (ap <= u.ap && (u.offAmmo ?? 1) > 0) { const a = W(x.g, () => previewAttack(x.cb, u, t, 'shot', { extra: -1, free: true })), b = W(x.g, () => previewAttack(x.cb, u, t, 'shot', { extra: off, free: true }));
+      if (a.ok && b.ok) cands.push({ step: { action: { type: 'combat/paired', targetId: t.id }, kind: 'attack', label: 'paired shot' }, value: expected(a) + expected(b), ap }); }
+    for (const id of ['burst', 'aimed_shot']) { let pv: any; try { pv = W(x.g, () => previewTechnique(x.cb, u, id, { targetId: t.id, hand: 'both' }, x.g)); } catch { continue; }
+      if (!pv?.ok || pv.ap > u.ap || (o.only && !o.only.includes(id))) continue;
+      const value = (pv.attacks || []).reduce((n: number, a: any) => n + expected(a.pv, id === 'aimed_shot' ? 0.1 : 0.05), 0);
+      if (value > 0) cands.push({ step: { action: { type: 'combat/technique', id, targetId: t.id, hand: 'both' }, kind: 'technique', label: 'paired ' + TECHNIQUE[id].name }, value, ap: pv.ap }); }
+  }
+  const canFire = cands.some((c) => !x.banned.has(keyOf(c.step)) && c.ap <= u.ap);
+  if (!o.noSets && t0 && canFire) {
+    if (!u.braced && weaponBraces(u) && u.ap >= 1 && !x.memo.gBraced) { const s = allowed(x, { action: { type: 'combat/brace' }, kind: 'setup', label: 'brace' }); if (s) { x.memo.gBraced = true; return s; } }
+    if (x.memo.gBead !== t0.id + '@' + u.pos) { const s = setStep('bead', { targetId: t0.id }, 'Bead'); if (s) { x.memo.gBead = t0.id + '@' + u.pos; return s; } }
+  }
+  const b = best(x, cands, (c) => c.value / Math.max(0.5, c.ap));
+  if (b) return b.step;
+  if (!o.noSets && u.heat >= 2 && u.ap >= 1 && !u.jammed) { const s = setStep('vent', {}, 'Vent'); if (s) return s; }
+  if (cands.some((c) => !x.banned.has(keyOf(c.step)))) return null;
+  return fixOrMove(x, p.whys);
+};
+
+export const POLICIES: Record<string, Policy> = { plain, optimised, gunner, tank, sigil, outburst, faith, calls };
 /** What the policies do not play (the report prints this list as it stands). */
 export const NOT_PLAYED = [
   'Reaction choices: a reaction window offered to a player is declined; Answers, Interpose, Duck and Roll and the other automatic reactions still fire by themselves.',

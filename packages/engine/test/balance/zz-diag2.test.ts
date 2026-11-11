@@ -1,14 +1,16 @@
 // @ts-nocheck
 import { it } from 'vitest';
-import { runFight } from './sim';
-it('foe actions', () => {
-  for (const tier of ['soldier', 'elite', 'boss']) {
-    const cnt: any = {}; let taken = 0, ft = 0;
-    for (let i = 0; i < 6; i++) { const r = runFight({ pcs: [{ build: 'tank', variant: 'normal', level: 6 }], foes: [{ tier }], map: 'open', seed: 'ZZ' + tier + i, maxRounds: 6 }, { log: true });
-      taken += r.pcs[0].taken; ft += r.foeTurns;
-      for (const l of r.log || []) { const m = /(fires a burst|Burst|Suppress|opens up|Rake|shoots|Aimed|Mag Dump|Dead Centre|Pin Down|Stopping)/.exec(l); if (m && /Soldier|Elite|Boss/.test(l)) cnt[m[1]] = (cnt[m[1]] || 0) + 1; }
-      if (i === 0) console.log((r.log || []).filter((l) => /Soldier|Elite|Boss/.test(l)).slice(0, 14).join('\n'));
-    }
-    console.log(tier, JSON.stringify(cnt), 'taken/foeTurn', (taken / ft).toFixed(1));
-  }
-}, 600000);
+import { freshFight } from './sim';
+import { gunBuild } from './guns-measure';
+import { buildCharacter } from './builds';
+import { previewAttack, previewTechnique, bindGame, apply } from '../../src';
+it('dual', () => {
+  const b = gunBuild('frontier_hand_cannon', 'masterwork', { offHand: 'frontier_hand_cannon' });
+  const bc = buildCharacter(b, 'normal', 6);
+  console.log(JSON.stringify(bc.c.offHand), bc.c.weapon, JSON.stringify(bc.c.pack).slice(0, 600));
+  const st = freshFight({ build: b, variant: 'normal', level: 6 }, 'sim_range_soldier');
+  const cb = st.g.combat, u = cb.units.find((q) => q.side === 'pc'), t = cb.units.find((q) => q.side === 'foe');
+  console.log('off', u.offWeapon, u.offAmmo, u.ammo, u.ap, u.pos, t.pos);
+  let g = st.g;
+  try { g = apply(g, { type: 'combat/paired', charId: u.charId, targetId: t.id }, 'host'); console.log(g.combat.log.slice(-4).join('\n')); } catch (e) { console.log('ERR', String(e)); }
+}, 60000);
