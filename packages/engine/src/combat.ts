@@ -63,6 +63,8 @@ export interface Unit {
   pos: string; hp: number; maxHp: number; def: number; armour: number; attack: number; weapon: string; movement: number; init: number; agility: number;
   ap: number; bank: number; ammo: number; heat: number; jammed: boolean; shotsThisTurn: number;
   downed: boolean; dead: boolean; saves: { ok: number; fail: number }; stunnedNext: number; kills: number;
+  /** The Proving Ground's Effect testing room: this unit can't be brought to 0 HP (effects/damage.ts). */
+  undying?: boolean;
   /** A music trait's modifier to the weapon skill while its song state holds (spec: Music). */
   song?: number;
   /** The overworld token this enemy came from (spec: Overworld rounds): survivors go back on the map. */

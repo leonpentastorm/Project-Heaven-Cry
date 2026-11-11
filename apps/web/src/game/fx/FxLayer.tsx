@@ -13,10 +13,6 @@ import { canDraw, clearFx, fightStream, forgetSpotlights, fxBusyUntil, FX_IDLE, 
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 import { meleeMarksOf, syncMeleeMarks, clearMeleeMarks } from './melee-techniques';
 import { closeKeptBoxes } from '../cutIn';
-import { getState } from '../store';
-
-/** A decided fight plays only its last few effects (fx/play.ts queueFx keep). */
-const DECIDED_KEEP = 6;
 
 export { playFx, queueFx, fxBusyUntil, FX_EVENT, FX_IDLE } from './play';
 
@@ -106,10 +102,12 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
       else {
         // Another stream came on screen. A fight that has just begun plays from its start (who acts before you); going
         // back to the area map, or a fight already well under way, syncs silently.
-        opening = s.key.startsWith('cb|') && (game.combat?.round || 1) <= 1 && s.list.length <= 40 && (s.list[0]?.n || 1) <= 1;
-        fresh = opening ? s.list.slice(-24) : [];
+        // The whole opening plays, however long (Leon, 11 Nov 2026: with enemies first on a new wave, an opening of more
+        // than 40 effects played none of them and one of more than 24 lost its start: "you just drop dead").
+        opening = s.key.startsWith('cb|') && (game.combat?.round || 1) <= 1 && (s.list[0]?.n || 1) <= 1;
+        fresh = opening ? s.list.slice() : [];
       }
-    } else if (s.key.startsWith('cb|') && top < h.n) { opening = true; forgetSpotlights(s.key); fresh = s.list.slice(-24); } // the same fight started over (its numbering restarted)
+    } else if (s.key.startsWith('cb|') && top < h.n) { opening = true; forgetSpotlights(s.key); fresh = s.list.slice(); } // the same fight started over (its numbering restarted)
     else fresh = s.list.filter((e) => e.n > h.n);
     seen.current = { key: s.key, n: top, code: game.code };
     if (s.key.startsWith('cb|')) { fight.current = { key: s.key, n: top }; if (fresh.length) noteQueued(s.key, top); setProcessed(s.key, top); }
@@ -128,12 +126,9 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
       if (latest.current.game?.code !== game.code || document.hidden) { leave(); marksPending.current = false; return; }
       const first = line.current[0] === ticket;
       const busy = !first || Date.now() < readyAt || (opening && !!document.querySelector('.phc-combat-in'));
-      // A decided fight (won, lost, or every one of the viewer's fighters down): only its last moments play, at normal
-      // speed; the steps the engine ran after it was decided aren't replayed.
-      const cb = latest.current.game?.combat as any, me = latest.current.game ? Object.values(latest.current.game.characters || {}).filter((c: any) => c.owner === getState().me.id).map((c: any) => c.id) : [];
-      const mine = cb ? (cb.units || []).filter((u: any) => u.charId && me.includes(u.charId)) : [];
-      const decided = !!cb && (!!cb.over || (mine.length > 0 && mine.every((u: any) => u.dead || u.downed)));
-      if ((!busy && canDraw()) || (tries++ > 30 && first)) { leave(); queueFx(fresh, stream, decided ? { keep: DECIDED_KEEP } : {}); marksPending.current = !!line.current.length; syncMarks(); return; }
+      // A decided fight plays in full like any other (Leon, 11 Nov 2026: the last blow of a fight skipped its swing and
+      // the enemy just fell; nothing in a fight is skipped).
+      if ((!busy && canDraw()) || (tries++ > 30 && first)) { leave(); queueFx(fresh, stream, {}); marksPending.current = !!line.current.length; syncMarks(); return; }
       setTimeout(go, busy ? 60 : 150);
     };
     go();

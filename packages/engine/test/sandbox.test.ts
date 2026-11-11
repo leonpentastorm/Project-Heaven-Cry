@@ -493,3 +493,43 @@ describe('outside the Proving Ground, and leaving it', () => {
     }
   });
 });
+
+describe('the Effect testing room (Leon, 11 Nov 2026)', () => {
+  const room = () => apply(open(), { type: 'sandbox/fxtest' }, HOST);
+  it('one dummy that cannot die and never acts; AP comes back after every action', () => {
+    let g = room();
+    const foes = g.combat!.units.filter((u) => u.side === 'foe');
+    expect(foes.length).toBe(1); expect(foes[0].name).toBe('Target dummy'); expect(foes[0].hp).toBe(9999);
+    expect(g.combat!.name).toBe('Proving Ground · Effect testing');
+    expect(g.sandbox!.fx).toBe(true); expect(active(g.combat!)!.side).toBe('pc');
+    expect(pc(g).ap).toBe(9);
+    const d = foes[0].id;
+    for (let i = 0; i < 12; i++) {
+      try { g = apply(g, { type: 'combat/attack', unitId: pc(g).id, targetId: d } as Action, HOST); }
+      catch (e) { g = apply(g, { type: /jam/.test((e as Error).message) ? 'combat/clear' : 'combat/reload', unitId: pc(g).id } as Action, HOST); }
+      expect(pc(g).ap).toBe(9); expect(g.combat!.over).toBeFalsy();
+    }
+    expect(g.combat!.units.find((u) => u.id === d)!.hp).toBeLessThan(9999);
+    // a blow far bigger than its HP does not kill it
+    const x: GameState = JSON.parse(JSON.stringify(g)); x.combat!.units.find((u) => u.id === d)!.hp = 3; pc(x).jammed = false; pc(x).ammo = 5; pc(x).heat = 0;
+    const y = apply(x, { type: 'combat/attack', unitId: pc(x).id, targetId: d } as Action, HOST);
+    expect(y.combat!.units.find((u) => u.id === d)!.dead).toBe(false);
+    // ending the turn: the dummy passes, the turn is yours again
+    g = apply(g, { type: 'combat/end-turn', unitId: pc(g).id } as Action, HOST);
+    expect(active(g.combat!)!.side).toBe('pc'); expect(g.combat!.round).toBeGreaterThan(1);
+  });
+  it('Stop the fight leaves the room: no dummy on the map, the wave count untouched', () => {
+    const g0 = open(), wave = g0.sandbox!.wave, best = g0.sandbox!.best;
+    let g = apply(g0, { type: 'sandbox/fxtest' }, HOST);
+    g = apply(g, { type: 'sandbox/stop' }, HOST);
+    expect(g.sandbox!.fx).toBeFalsy(); expect(g.combat).toBeNull(); expect(g.sandbox!.state).toBe('ready');
+    expect(npcsOf(g).some((n) => n.name === 'Target dummy')).toBe(false);
+    expect(g.sandbox!.wave).toBe(wave); expect(g.sandbox!.best).toBe(best);
+    g = apply(g, { type: 'sandbox/fight' }, HOST);
+    expect(g.combat!.units.some((u) => u.undying)).toBe(false); expect(g.combat!.name).toMatch(/Wave/);
+  });
+  it('only the host opens it, and not during a fight', () => {
+    expect(refused(open(), { type: 'sandbox/fxtest' }, GUEST)).toMatch(/host/);
+    expect(refused(start(), { type: 'sandbox/fxtest' }, HOST)).toMatch(/Stop the fight/);
+  });
+});

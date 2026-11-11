@@ -401,7 +401,7 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
   const [hint, setHint] = React.useState(() => { try { return localStorage.getItem(HINT) !== '1'; } catch { return true; } });
   const hide = () => { setHint(false); try { localStorage.setItem(HINT, '1'); } catch { /* */ } };
   if (!gearing) return <div style={{ ...row, padding: '10px 16px', borderBottom: '1px solid ' + C.line }}>
-    <span style={{ flex: 1, fontSize: 13, color: C.muted }}>Wave {sb.wave}{sb.attempt > 1 ? ' · attempt ' + sb.attempt : ''} is on. Gear changes here work mid-fight too.</span>
+    <span style={{ flex: 1, fontSize: 13, color: C.muted }}>{sb.fx ? 'Effect testing: the dummy can\'t die and never acts, and your AP comes back after every action. Stop the fight to leave.' : 'Wave ' + sb.wave + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' is on. Gear changes here work mid-fight too.'}</span>
     {isHost && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/stop' })} title="End the fight now and go back to gearing up; the enemies stay where they stand">■ Stop the fight</button>}
   </div>;
   return <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: wide ? 0 : '12px 16px', borderBottom: wide ? 0 : '1px solid ' + C.line }}>
@@ -420,6 +420,7 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
       {!onMap && !wide && <EmptyLine game={game} />}
       {(isHost || sb.spawnAll) && <button type="button" style={small} onClick={() => act({ type: 'sandbox/stage', wave: n })}>{onMap ? 'Reset to wave ' + n : 'Place wave ' + n + ' on the map'}</button>}
       {(isHost || (sb.state === 'fallen' && sb.guestRetry !== false)) && sb.wave > 1 && <button type="button" style={small} onClick={() => act({ type: 'sandbox/retry', restart: true })}>Restart from wave 1</button>}
+      {isHost && <button type="button" style={small} title="A room for looking at effects: one dummy that can't die and never acts, and your AP comes back after every action. Stop the fight to leave." onClick={() => act({ type: 'sandbox/fxtest' })}>Effect testing</button>}
     </div>}
     </div>
   </div>;

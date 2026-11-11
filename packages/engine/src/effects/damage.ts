@@ -74,12 +74,14 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
     return res;
   }
   if (ctx.dmg <= 0) return res;
-  if (t.hp - ctx.dmg <= 0 && cb) {
+  if (t.hp - ctx.dmg <= 0 && cb && !t.undying) {
     ctx.phase = 'would_drop_to_0'; ctx.floor = null; emit(cb, 'damage_in', ctx);
     if (ctx.floor != null) ctx.dmg = Math.max(0, t.hp - ctx.floor);
     ctx.dmg = Math.max(0, Math.floor(ctx.dmg));
     if (ctx.dmg <= 0) { res.prevented = true; return res; }
   }
+  // The Effect testing room (Proving Ground): nobody there can be brought to 0; a unit that would be is topped up first.
+  if (t.undying && t.hp - ctx.dmg < 1) t.hp = Math.max(t.maxHp, ctx.dmg + 1);
   const prevHp = t.hp; res.amount = ctx.dmg;
   t.hp = Math.max(0, t.hp - ctx.dmg); res.dealt = prevHp - t.hp;
   if (src.by) { t.lastHitBy = src.by.id; const d = (t.damagedBy ||= []); if (!d.includes(src.by.id)) d.push(src.by.id); }

@@ -471,6 +471,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   // Rules 1.10 (Sigil 1.5): Mastery in Brain Power, Rumination or Eloquence pays its study (and the Mastered free word) once.
   for (const c of Object.values(g.characters || {})) { const notes = masterySync(c); if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
+  if (g.sandbox?.fx) fxRoomAfter(g);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
   // The fight's song (spec: Music): picked once when the fight begins. A fight that was already under way without one
@@ -1884,7 +1885,7 @@ function runEnemies(g: GameState) {
     if (u.charId) break; // a player's fighter on the foe side (the Proving Ground's team fight): its player acts
     if (puppeteerOf(g, cb, u)) break; // a Puppeted enemy's turn is run by its puppeteer's player (rules 1.3)
     markAction(cb); // spotlight.ts: an enemy's turn is its own action (an intervention in it slows its playback)
-    if (!g.sandbox || g.sandbox.ai) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
+    if (!g.sandbox || (g.sandbox.ai && !g.sandbox.fx)) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     critMoment(g); // a party reaction's crit in the enemy's turn (decision 113)
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
     sightFx(cb); // presentation: what came into sight in its turn (its walks carry their own)
@@ -2892,6 +2893,9 @@ export function rerollFrom(current: GameState, before: GameState, note: string):
 export interface Sandbox {
   /** ready: gearing up (sandboxNext is this wave); fighting; cleared / fallen: the last fight's result, gearing up again. */
   wave: number; best: number; attempt: number; ai: boolean;
+  /** The Effect testing room is on: one dummy that can't die and never acts, the squad can't fall, and its AP comes
+   *  back after every action (sandbox/fxtest; Stop the fight leaves it). */
+  fx?: boolean;
   /** Rules 1.10: Junctions on for every character here (testing; normally Brain Power Mastered). */
   junctions?: boolean;
   /** Endless waves: after a cleared wave the next one comes by itself after a short pause (the host's client sends sandbox/wave). */
@@ -2937,6 +2941,7 @@ export type MagicKit = 'both' | 'sigil' | 'soul';
 export type SandboxAction =
   | { type: 'sandbox/start'; archetype?: string; kit?: string; standalone?: boolean } | { type: 'sandbox/end' }
   | SandboxMpAction
+  | { type: 'sandbox/fxtest' }
   | { type: 'sandbox/fight' } | { type: 'sandbox/stage'; wave?: number } | { type: 'sandbox/stop' }
   | { type: 'sandbox/wave'; wave?: number } | { type: 'sandbox/retry'; restart?: boolean }
   | { type: 'sandbox/give'; charId: string; item: string; qty?: number; rarity?: Rarity; equip?: boolean }
@@ -3196,20 +3201,39 @@ function sbPlace(g: GameState, n: number) {
     return { id: 'foe-s' + (++sb.spawned), name: f.name, side: 'hostile', tier: f.tier, weapon: f.weapon, pos: at, portrait: portraitFor(g, f.name, seen) || undefined, facing: facingToward(at, centre), ...(f.caster ? { caster: f.caster } : {}) } as Npc;
   });
 }
+/** The Effect testing room (Leon, 11 Nov 2026): a place to look at every weapon's and spell's effects. One dummy that
+ * can't die and never acts stands 4 tiles from the squad; nobody can be brought to 0; AP comes back after every action. */
+export const FX_DUMMY_HP = 9999, FX_ROOM_AP = 9;
+function sbEffectRoom(g: GameState) {
+  const sb = sbOf(g), map = zoneMap(g), pos = positionsOf(g), [cx, cy] = partyCentre(g).split(',').map(Number);
+  const taken = new Set<string>([...Object.values(pos), ...storyObjects(g).filter(blocksMove).map((o) => o.pos)]);
+  const free = (k: string) => standable(map, k) && !taken.has(k);
+  const want = Math.max(0, Math.min(map.w - 1, cx + (cx + 4 < map.w ? 4 : -4))) + ',' + cy, at = nearestFree(map.w, map.h, want, free) || want;
+  g.story.npcs = [];
+  sbBegin(g, sb.wave || 1, [{ name: 'Target dummy', tier: 'elite', weapon: 'fists', at: refOf(at) }], { ...pos }, storyObjects(g), 'Effect testing');
+}
+/** After every action in the Effect testing room: the squad's AP is full again. */
+function fxRoomAfter(g: GameState) {
+  const cb = g.combat; if (!cb || cb.over || !g.sandbox?.fx) return;
+  for (const u of cb.units) if (u.side !== 'foe' && !u.dead && !u.downed) u.ap = Math.max(u.ap, FX_ROOM_AP);
+}
 /** Begin a fight on the Proving Ground map: the squad where it stands (pos), these foes, everyone on the fight's clock. */
-function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string; hidden?: boolean; level?: number }[], pos: Record<string, string>, objects?: MapObject[]) {
+function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string; hidden?: boolean; level?: number }[], pos: Record<string, string>, objects?: MapObject[], room?: string) {
   const sb = sbOf(g), wasLive = !!liveFight(g), map = zoneMap(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: pos[c.id] }));
   if (!pcs.length) fail('Lock in a character first.');
-  const cb = startCombat('Proving Ground · Wave ' + n, map, pcs, foes, n % 5 === 0 ? 'boss' : n >= 4 ? 'hard' : 'standard', g.rng, objects);
+  const cb = startCombat('Proving Ground · ' + (room || 'Wave ' + n), map, pcs, foes, n % 5 === 0 ? 'boss' : n >= 4 ? 'hard' : 'standard', g.rng, objects);
   magicIn(g, cb);
   cb.noXp = true;
   const seated = cb.units.filter((u) => u.side === 'foe');
-  cb.log.unshift('WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + seated.length + ' drill unit' + (seated.length === 1 ? '' : 's'));
+  if (room) { sb.fx = true; for (const u of cb.units) u.undying = true; for (const u of seated) { u.maxHp = u.hp = FX_DUMMY_HP; } }
+  cb.log.unshift(room ? room.toUpperCase() + ' · the dummy can\'t die and never acts · your AP comes back after every action'
+    : 'WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + seated.length + ' drill unit' + (seated.length === 1 ? '' : 's'));
   { const seen: Record<string, number> = {}; seated.forEach((u, i) => { const f = foes[i]; u.npcId = f?.npc?.id || u.id; const p = f?.npc?.portrait || portraitFor(g, u.name, seen); if (p) u.img = p; }); }
   g.story.npcs = [...(g.story.npcs || []).filter((x) => !foes.some((f) => f.npc === x)), ...(foes.slice(seated.length).map((f) => f.npc).filter(Boolean) as Npc[])];
   g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
-  sb.wave = n; sb.state = 'fighting'; sb.waveMana = cb.mana ?? MANA_START; sb.fights = (sb.fights || 0) + 1;
+  if (!room) sb.wave = n;
+  sb.state = 'fighting'; sb.waveMana = cb.mana ?? MANA_START; sb.fights = (sb.fights || 0) + 1;
   sbFightBegun(g);
   if (!wasLive) musicOf(g).fight++;
   syncSong(g);
@@ -3233,6 +3257,7 @@ function sbStartWave(g: GameState, n: number, fresh: boolean, mana?: number, ret
  * lost here: everyone refilled at the start tiles, the arena and the mana as the wave began, the field empty. */
 function sbToNeutral(g: GameState, how: 'won' | 'fell' | 'stop') {
   const sb = sbOf(g), cb = g.combat!;
+  if (sb.fx) { sb.fx = false; cb.units = cb.units.filter((u) => u.side !== 'foe'); how = 'stop'; } // the Effect testing room: the dummy goes, nothing is won or lost
   const pos: Record<string, string> = {}; for (const u of cb.units) if (u.charId && !u.dead) pos[u.charId] = u.pos;
   sbCollect(g);
   if (how !== 'fell') {
@@ -3374,6 +3399,12 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       sbAttempt(sb, n);
       g.story.npcs = stay;
       sbBegin(g, n, foes.map((x) => ({ name: x.name, tier: x.tier, weapon: x.weapon, at: refOf(x.pos), hp: x.hp, npc: x, caster: x.caster, ...(x.hidden ? { hidden: true } : {}), ...(x.level != null ? { level: x.level } : {}) })), { ...positionsOf(g) }, storyObjects(g)); // a hostile placed Hidden starts the fight Hidden (as in a Narrator's fight)
+      return;
+    }
+    case 'sandbox/fxtest': {
+      hostOnly(); if (!gearing) fail('Stop the fight first.');
+      if (sb.mode === 'teams') fail('Team fight: no Effect testing (switch the mode to Co-op waves).');
+      sbEffectRoom(g);
       return;
     }
     case 'sandbox/stage': {

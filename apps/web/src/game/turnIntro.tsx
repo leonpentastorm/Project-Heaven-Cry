@@ -32,6 +32,7 @@ import { bigPortrait } from './charfile';
 import { sfx, sfxGraph, SFX_FILES, reducedMotion, busLevel, type Sfx } from './sfx';
 import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
+import { hasLayer } from './fx/dom';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, readCardSide, cardOnRight, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
 import { resourcesOf, resRowView, type ResRow } from './resources';
@@ -255,7 +256,9 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       if (keep.includes(e)) {
         const go = () => showCombatTurn(e.unit, e.round ?? cb.round);
         const clock = fxClock.current;
-        if (clock.on && !newFight) {
+        // A new fight too (Leon, 11 Nov 2026: on a retry or the next wave the your-turn card came up by an estimate while
+        // the enemies who act first were still playing): its banners wait for their own turn events on the effects clock.
+        if (clock.on || hasLayer()) {
           if (clock.at >= e.n) later(go, 0);
           else { clock.waiters.set(e.n, go); later(() => { if (clock.waiters.get(e.n) === go) { clock.waiters.delete(e.n); go(); } }, 90000 * fightPace()); } // a safety net only: the banner waits for its own turn event, however long the moves before it take
         } else later(go, t);
