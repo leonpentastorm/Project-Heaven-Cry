@@ -3487,6 +3487,8 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     case 'sandbox/meter': {
       hostOnly(); const cb = liveFight(g), u = cb?.units.find((x) => x.id === a.unitId); if (!cb || !u) fail('No such fighter.');
       if (a.momentum != null) { ensureMomentum(u!); if (u!.resMax?.momentum != null) u!.res!.momentum = Math.max(0, Math.min(u!.resMax.momentum, Math.round(a.momentum))); }
+      if ((a as any).guard != null) { const n = Math.max(0, Math.min(5, Math.round((a as any).guard))); (u!.res ||= {}).guard = n; (u!.resMax ||= {}).guard = Math.max(u!.resMax.guard || 0, n); } // for looking at the token's Guard pips
+      if ((a as any).shield != null) u!.shield = Math.max(0, Math.round((a as any).shield));
       if (a.pressure != null) { const to = Math.max(0, Math.round(a.pressure)), now = pressureOf(u!); if (to > now) addPressureTo(cb!, u!, to - now, null, 'the Proving Ground'); else lowerPressureOf(cb!, u!, now - to, 'the Proving Ground'); }
       return;
     }
