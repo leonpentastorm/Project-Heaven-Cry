@@ -49,11 +49,33 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 | F1 | **The 25 feelings** poured into an Outburst | Stand-in: the game draws simple shapes in code | One glyph a feeling | The brief has every feeling, its meaning and its look: [`outburst-4.0-art-brief.md`](../../docs/design/handoffs/outburst-4.0-art-brief.md) | `art/icons/feelings/feeling-<id>.png` |
 | F2 | **The Outburst modules** | Stand-in: code-drawn shapes | One icon a module | Same brief | `art/icons/modules/module-<id>.png` |
 
-### 3. Portraits, illustrations, maps
+### 3. Maps
 
-| # | For | Status | What it must show | Direction | Goes to |
-| --- | --- | --- | --- | --- | --- |
-| M1 | **Fight maps for the 26 × 26 grid** (Leon, 11 Nov 2026: maps were too enclosed at 16 × 11; every fight map becomes A to Z by 1 to 26). The five painted maps (the four M813 maps in `art/maps/m813/` and the Proving Ground) were painted for 16 × 11 and are **retired to plain colour** with the larger grid | **Planned, with the M813 rewrite. Don't start:** Leon: "M813 is too broken now with all we have changed, change to plain colour and wait for the rewrite." The rewrite (`docs/ROADMAP.md` item 3) will set new layouts; the Proving Ground can be painted as soon as its 26 × 26 layout is settled | Each place painted for a 26 × 26 grid: approaches, flanks and a way round, so a squad can manoeuvre instead of meeting head-on | Same Heavenprint map treatment as the retired five (kept in `art/_archive/` as reference for the look), top-down, same tile scale and light, so tokens and object sprites sit on it unchanged. Paint to the tile layout guide that `tools/render_map_guides.py` makes from the campaign file once the layout is set | `art/maps/m813/<zone>.png`, `art/maps/` for the Proving Ground |
+**The rule for every map (Leon, 11 Nov 2026).** A fight map is at most **26 × 26 tiles** (A to Z by 1 to 26). The
+Proving Ground is that full size. A campaign or a later game mode may set a smaller map for a place that should feel
+tight; the size is chosen when the campaign is made. The five maps that were painted before this were 16 × 11 (the
+Proving Ground 16 × 12): they are retired to plain colour and kept in `art/_archive/` as the reference for the look.
+
+**Direction for all of them.** The same Heavenprint map treatment as the retired five: top-down, the same tile scale
+and light, so tokens and object sprites sit on it unchanged. A map shows approaches, flanks and a way round, so a squad
+can manoeuvre instead of meeting head-on. Paint to the tile layout guide that `tools/render_map_guides.py` makes from
+the campaign file: **a map is only ready to paint when its row below says its layout is set.**
+
+| # | Map | Campaign | Size | Status | Notes | Goes to |
+| --- | --- | --- | --- | --- | --- | --- |
+| M1 | **The Proving Ground** | The Proving Ground (practice fights) | 26 × 26 | Wanted. Layout not set yet (it follows the 26 × 26 change); plain colour until then | Packed sand under floodlights; the squad comes in from the west, drill units from the east. The first one to paint | `art/maps/proving-ground.png` |
+| M2 | **The shield line** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Leon: "M813 is too broken now with all we have changed… wait for the rewrite." Old painting: `shield-line.png` | `art/maps/m813/shield-line.png` |
+| M3 | **Outpost-813 rear landing pad** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Old painting: `rear-pad.png` | `art/maps/m813/rear-pad.png` |
+| M4 | **Outpost-813** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Old painting: `outpost.png` | `art/maps/m813/outpost.png` |
+| M5 | **Outpost-1** | The Last Ship Out (M813) | to be set | Planned, with the M813 rewrite. Don't start | Old painting: `outpost-1.png` | `art/maps/m813/outpost-1.png` |
+| M6 | **Open ground** | The Narrator's Own Start, and any fight with no map of its own | 26 × 26 | Wanted. Never painted; plain colour today | The generic field the Narrator uses when a story names no place: it should read as "somewhere outdoors" and suit any world. Worth two or three variants later (wasteland, street, forest edge) | `art/maps/open-ground.png` |
+| M7 | **The mining camp** | A God-Plot on a Mining World | to be set | Wanted when its layout is set. Never painted | A shrine camp on a mining world | `art/maps/godplot/shrine-camp.png` |
+| M8 | **The penthouse** | A Summoning in Central City | to be set (an interior: likely smaller than the maximum) | Wanted when its layout is set. Never painted | A Central City penthouse where a summoning goes wrong | `art/maps/summoning/penthouse.png` |
+| M9 | **The lifted town** | The Town Where the Curse Is Lifted | to be set | Wanted when its layout is set. Never painted | A Bazaim-style town of lifted curses | `art/maps/curse/lifted-town.png` |
+
+### 3b. Portraits and illustrations
+
+Nothing waiting.
 
 ### 4. Equipment artwork (Heavenprint)
 
@@ -95,7 +117,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
-- **11 Nov 2026:** M1 added, then changed the same day: the grid is 26 × 26, the five painted maps go to plain colour and wait for the M813 rewrite.
+- **11 Nov 2026:** maps: the rule (26 × 26 at most, the Proving Ground at full size, smaller allowed per campaign) and one row a map, M1 to M9.
 - **11 Nov 2026:** E1 added (Heavenprint artwork for all equipment, planned with Equipment 2.0).
 - **11 Nov 2026:** list started. W1, W2, F1, F2 opened. Breaching Strike, Nothing Gets Past and Iron Grip were
   checked against their rules 1.13 meanings and fit as they are.
