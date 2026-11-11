@@ -8,6 +8,18 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.20.0 — 11 November 2026
+
+The playtest pass. It goes live together with 0.19.1 below, which was merged but never deployed on its own.
+
+- **Every card says what it does, in plain words.** 1,411 player-facing texts were rewritten for a player in the middle of a fight: Calls, class moves, conditions, objects, perks, traits, Sigil words, Outbursts, prayers, weapons, and the labels, hints and refusal reasons written in the game itself. Each was checked against what the game actually does. Where the old card and the game disagreed (118 places), the card now says what the game does; the list is `docs/design/handoffs/text-pass-mismatches.md`.
+- **One action keeps every effect it makes.** A hostile phase with more than 40 effects lost the oldest ones before any screen saw them (units jumped to where they ended). The list is now trimmed between actions, never during one.
+- **Co-op:** the room no longer stops passing the game on when a player's old connection has died without a word (the guest sat on an old state while the host moved on); a guest that falls behind catches up by itself every few seconds; and a screen that is waiting for effects that will never play shows the real state after a bound instead of staying locked. The stall first seen on 10 November was not reproduced in 75 test fights, so it is listed as persistent, with these safety nets: `docs/design/handoffs/coop-stall.md`.
+- **The perk and trait audit** (`docs/design/handoffs/perk-audit.md`): all 180 put through a fight, with what the card says against what happened. It is the ground for the new perk card.
+- **For the artist:** `art/briefs/ART-REQUESTS.md`, the running list of art that is wanted, with direction and links to the guides.
+- **Rules 1.14 is written** (speaking in a fight, Overdraw, Heart Overload, Resonance, the perk card's three shelves) and is being built; none of it is in this release.
+- **Test tools:** a fast pace for the browser suites that don't look at animation (`FAST=1`).
+
 ## 0.19.1 — 10 November 2026
 
 A hotfix for 0.19.0.

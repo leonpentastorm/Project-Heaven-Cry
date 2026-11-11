@@ -28,7 +28,8 @@ const res = await p.evaluate(async (meId) => {
   const t0 = performance.now(), fx = [], rows = [];
   const on = (ev) => { const d = ev.detail; if (d && d.n) fx.push({ t: Math.round(performance.now() - t0), n: d.n, k: d.k, unit: d.unit, target: d.target, hp: d.hp ? d.hp[meId] : null }); };
   window.addEventListener('phc-fx', on);
-  let bannerAt = null; const onTurn = (ev) => { if (ev.detail && ev.detail.mine && bannerAt == null && fx.some((e) => e.k === 'turn' && e.unit !== meId)) bannerAt = Math.round(performance.now() - t0); }; // a banner left over from the set-up (before any hostile's turn) doesn't count window.addEventListener('phc:turn-shown', onTurn);
+  let bannerAt = null; const onTurn = (ev) => { if (ev.detail && ev.detail.mine && bannerAt == null && fx.some((e) => e.k === 'turn' && e.unit !== meId)) bannerAt = Math.round(performance.now() - t0); };
+  /* a banner left over from the set-up (before any hostile's turn) doesn't count */ window.addEventListener('phc:turn-shown', onTurn);
   const st0 = window.__phc.getState().game.combat.units.find((u) => u.id === meId).hp;
   window.__phc.act({ type: 'combat/end-turn', unitId: meId });
   let mineAt = null, lastState = null;

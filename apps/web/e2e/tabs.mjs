@@ -54,6 +54,7 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
   await p.getByRole('button', { name: 'End turn', exact: true }).click().catch(() => {});
   await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 8000 });
   await p.waitForTimeout(600); await dismissCut(p, vw, vh); await p.waitForTimeout(300);
+  await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 }).catch(() => {}); // the panel comes up when the turn is yours on screen
   const tabs = await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').allTextContents();
   ok(tag + ' tabs: ' + tabs.map((t) => t.replace(/\s+/g, ' ').trim()).join(' | '), tabs.length >= 4);
   const sel0 = await p.locator('[role="tab"][aria-selected="true"]').first().textContent();

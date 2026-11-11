@@ -10,7 +10,11 @@
 // The spotlight cut-in's own slow-mo on the special action (tempo 0.85, fx/dom.ts withTempo) stacks on top of this.
 // The settings cog (game/settings.tsx, Combat tab) calls setCombatSpeed; anything may listen to the window event 'phc:combat-speed'
 // (detail: { speed }). The change applies at once, no reload. Outside a fight the pace is 1 (the area map, the title).
-export type CombatSpeed = 'normal' | 'fast';
+/** 'test' is not on the settings screen: the browser test suites that don't look at animation set it (apps/web/e2e/lib.mjs,
+ *  FAST=1) so a fight plays every effect in order at about 25 times the speed (Leon, 11 Nov 2026). */
+export type CombatSpeed = 'normal' | 'fast' | 'test';
+/** Durations at the test pace (× this). */
+export const TEST_RATE = 0.04;
 export const COMBAT_SPEED_KEY = 'phc.combatSpeed';
 export const EV_COMBAT_SPEED = 'phc:combat-speed';
 /** The same event name under the settings cog's name for it (game/settings.tsx). */
@@ -20,9 +24,9 @@ export const NORMAL_RATE = 0.85;
 
 /** The duration multiplier for a speed: normal 1/0.85 ≈ 1.176, fast 1. Pure (tests). */
 export function combatTempo(speed: CombatSpeed | string | null | undefined): number {
-  return speed === 'fast' ? 1 : 1 / NORMAL_RATE;
+  return speed === 'test' ? TEST_RATE : speed === 'fast' ? 1 : 1 / NORMAL_RATE;
 }
-const valid = (v: unknown): CombatSpeed => (v === 'fast' ? 'fast' : 'normal');
+const valid = (v: unknown): CombatSpeed => (v === 'fast' ? 'fast' : v === 'test' ? 'test' : 'normal');
 
 let cached: CombatSpeed | null = null;
 /** The player's combat speed (localStorage 'phc.combatSpeed'; 'normal' when unset or unreadable). */
