@@ -3,10 +3,14 @@
 For whoever continues: a person, or a fresh AI session. Read `CLAUDE.md` first, then `docs/TESTING.md` (which tool
 proves which change), then this.
 
+## 0. First thing to do
+
+**`docs/design/handoffs/BUGLIST-0.22.md`**: fourteen bugs and asks from Leon's playtest of 0.22.0, in order, starting with merging `origin/main` (0.22.0, a music expansion from another session) into this branch. Do that list before anything in section 4.
+
 ## 1. What is live
 
-**0.21.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `66e66e9`, backup branch
-`backup/live-0.21.0`). Leon decides every deploy; say what is ready and wait for his word. The release steps are at
+**0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music
+expansion merged by another session; this branch is 9 commits behind it). Leon decides every deploy; say what is ready and wait for his word. The release steps are at
 the end of `docs/TESTING.md`. Releases were made from a clean copy (a `git worktree` of the release commit) while
 agents worked in the main folder.
 

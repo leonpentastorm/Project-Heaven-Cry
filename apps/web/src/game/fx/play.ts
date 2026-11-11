@@ -1626,7 +1626,16 @@ const holdChanged = () => { try { window.dispatchEvent(new CustomEvent(FX_HOLD))
 /** Run f at performance.now() time t (a timer the queue can move: hurryFx). */
 function schedule(run: () => void, t: number) {
   const entry = { id: 0, at: t, run };
-  entry.id = window.setTimeout(() => { timers = timers.filter((x) => x !== entry); run(); }, Math.max(0, t - performance.now()));
+  // Steps due at the same moment play in the order they were scheduled. Each has its own timer, set a little later
+  // than the one before it (planning the camera's move between two of them takes a moment), so the browser may fire
+  // the later one first: a step that fires runs the earlier ones still waiting for that moment before itself. (A
+  // technique's movement beat and the push it plays over were swapped this way once the camera was planned here.)
+  entry.id = window.setTimeout(() => {
+    const i = timers.indexOf(entry), first = i > 0 ? timers.slice(0, i).filter((x) => x.at <= entry.at) : [];
+    timers = timers.filter((x) => x !== entry && !first.includes(x));
+    for (const x of first) { clearTimeout(x.id); x.run(); }
+    run();
+  }, Math.max(0, t - performance.now()));
   timers.push(entry);
 }
 /** Close a gate at time t: the rest of the batch waits; the cut-in plays at t; when it ends (or is skipped, or the cap)
