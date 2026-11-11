@@ -5,10 +5,10 @@
   "revision": 3,
   "assignment": {
     "unlock_level": 3,
-    "score": "the class's attribute (each base class belongs to one of the 9 attributes)",
-    "eligible": "the class of the character's highest attribute; on a tie, any of the tied attributes' classes",
-    "tie_rule": "player chooses among the tied; nobody is classless",
-    "fixed": "the class picked at level 3 is kept for good; changing class is a separate system for later",
+    "score": "Each base class belongs to one of the nine attributes.",
+    "eligible": "At level 3 you get the class of your highest attribute. If several attributes are tied for highest, you can take the class of any of them.",
+    "tie_rule": "On a tie the player chooses among the tied classes. Nobody goes without a class.",
+    "fixed": "The class you get at level 3 is yours for good.",
     "rank_thresholds": {
       "I": "on gaining the class",
       "II": 5,
@@ -19,13 +19,13 @@
       "II": 6,
       "III": 12
     },
-    "rank_rule": "each rank unlocks the class's two moves at that rank; rank reads the class's own attribute (not the highest one) and the character's level: rank II needs the attribute at 5 and level 6, rank III the attribute at 8 and level 12",
+    "rank_rule": "Each rank gives you the class's two moves of that rank. Rank II needs the class's own attribute at 5 and level 6. Rank III needs it at 8 and level 12.",
     "rank_thresholds_provisional": true,
     "moves": "a rank's move is either written in full (a Revision 3 move) or {\"ref\": \"<origin>.<moveId>\"}: a move from the pool or an advanced class, kept under its old key class:<origin>.<moveId>",
     "advanced": {
       "live": false,
       "shelved_text": "Advanced classes are being rebuilt; not learnable yet.",
-      "held_rule": "a character who holds an advanced class keeps the field, but gets none of its moves, resources or effects while advanced classes are shelved",
+      "held_rule": "A character who already holds an advanced class keeps it on the sheet, but it gives no moves, resources or effects until advanced classes can be learned.",
       "hybrid_gate": {
         "base_attribute_min": 6,
         "partner_attribute_min": 5,
@@ -37,10 +37,10 @@
         "level_min": 7,
         "provisional": true
       },
-      "hybrid_rule": "a hybrid pairs a base attribute with an attribute of another core",
-      "squared_rule": "a squared class pairs a base attribute with itself"
+      "hybrid_rule": "A hybrid class pairs its base attribute with an attribute from another Core.",
+      "squared_rule": "A squared class pairs its base attribute with itself."
     },
-    "patrons": "prayer is not a class; any character with a patron and Faith 3+ can Pray (see patrons.json)",
+    "patrons": "Prayer is not a class: any character with a patron and Faith 3 or more can pray.",
     "rank_rule_source": "rules 1.11"
   },
   "migration": {
@@ -69,7 +69,7 @@
       "resource": {
         "id": "guard",
         "max": 5,
-        "rule": "Gained by Brace. Interpose (reaction): when an adjacent ally is hit, spend 1 Guard to take the hit instead; your armour applies. Guard is lost after combat."
+        "rule": "Guard is a pool of up to 5 points, and Brace fills it. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend 1 Guard and your reaction and take the hit yourself, with your own armour. Each point of Guard can also take 10 damage off a hit on you. Guard is lost when the fight ends."
       },
       "resources": [
         "guard"
@@ -103,7 +103,7 @@
               "name": "Shrug It Off",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Reaction, 1 Guard: when you gain Bleeding, Slowed, Weakened or Prone, end it at once.",
+              "text": "When you become Bleeding, Slowed, Weakened or Prone, it ends at once. Costs 1 Guard and your reaction, and happens by itself whenever you have both.",
               "effects": [
                 {
                   "op": "reaction",
@@ -159,7 +159,7 @@
               "name": "Anchor",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "While Braced you can't be pushed, pulled or knocked Prone. An enemy that starts its turn next to you and moves away provokes your opportunity attack.",
+              "text": "While you are Braced, you can't be pushed, pulled or knocked Prone. An enemy that starts its turn next to you and then moves out of your reach provokes your opportunity attack, even if it Disengages. The attack uses your reaction.",
               "effects": [
                 {
                   "op": "anchor",
@@ -210,7 +210,7 @@
       "resource": {
         "id": "momentum",
         "max": 5,
-        "rule": "+1 for each tile you move toward a target before a melee attack (max +2 per turn), +1 for each melee hit. Resets to 0 after combat or if you end a turn without attacking."
+        "rule": "Momentum is a pool of up to 5 points, and you start each fight with 1. Each hit with a plain melee attack, a Lunge, a Riposte or a Finisher gives 1. On your first melee attack each turn you also gain 1 for each tile you closed on the target that turn, up to 2. Each tile you walk costs 1, and so does each hit you take, unless you Parry it or your Guard takes part of it. Momentum carries over from turn to turn and is lost when the fight ends."
       },
       "resources": [
         "momentum"
@@ -234,7 +234,7 @@
               "name": "Shove",
               "ap_cost": 1,
               "uses": "at_will",
-              "text": "Push an adjacent enemy 1 tile, or knock it Prone. It makes a Body save, harder the more Raw Power you have.",
+              "text": "Costs 1 AP. Push an enemy next to you 1 tile straight back, or knock it Prone: your choice. It makes a Body save against 12 + your strength with Raw Power, and nothing happens if it succeeds. You can't push it into a wall or another unit.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -292,7 +292,7 @@
               "name": "Unstoppable",
               "ap_cost": 1,
               "uses": "per_scene",
-              "text": "Until your next turn, ignore Fear, Shaken, Slowed, Pinned and opportunity attacks, and gain 2 Momentum.",
+              "text": "Costs 1 AP, once per scene. Until your next turn starts, Fear, Shaken, Slowed and Pinned don't affect you, and nobody gets an opportunity attack on you. You also gain 2 Momentum. Any of those conditions you already had are only set aside: they come back when it ends.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -357,7 +357,7 @@
         "id": "heat",
         "max": "weapon heat_limit",
         "per_turn": -2,
-        "rule": "Guns only: single +1, burst +2, auto +4 Heat; -1 to hit per 2 Heat; jam at the limit (2 AP to clear). Bows have no Heat or recoil, are silent, and scale with Raw Power."
+        "rule": "Guns build Heat: +1 for a single shot, +2 for a burst, +4 for full auto. Every 2 Heat is −1 to hit, and at the weapon's Heat limit the gun jams (2 AP to clear). Heat falls by 2 at the start of each of your turns. Bows build no Heat and have no recoil; they are silent and their damage grows with Raw Power."
       },
       "resources": [
         "heat"
@@ -380,7 +380,7 @@
               "name": "Speed Loader",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Your first reload each turn costs 1 AP less (minimum 1).",
+              "text": "Your first reload each turn costs 1 AP less, but never less than 1 AP. It doesn't apply to your off-hand gun or to reloading two guns at once.",
               "effects": [
                 {
                   "op": "action_cost",
@@ -417,7 +417,7 @@
               "name": "Duck and Roll",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Reaction: when a ranged attack targets you, step 1 tile first. If that puts you in cover, the attack is at -2; if it takes you out of sight, the attack has no target.",
+              "text": "When a ranged weapon attack targets you, you step 1 tile before it is rolled, for no AP. It uses your reaction and happens by itself when a step helps. If the step takes you out of the attacker's sight, the attack isn't made; if it takes you into cover, the attack is at −2 to hit.",
               "effects": [
                 {
                   "op": "reaction",
@@ -479,7 +479,7 @@
       "resource": {
         "id": "marks",
         "max": 3,
-        "rule": "Up to 3 enemies Marked at once. Toxin doses: 2 + floor(ingenuity / 3), restocked at rest."
+        "rule": "You can keep up to 3 enemies Marked at once. You carry 2 toxin doses, +1 for every 3 points of Ingenuity, restocked when you rest."
       },
       "resources": [
         "marks",
@@ -503,7 +503,7 @@
               "name": "Vanish",
               "ap_cost": 1,
               "uses": "per_turn",
-              "text": "If no enemy can see you right now (fog, smoke, full cover), become Hidden.",
+              "text": "Costs 1 AP, once per turn. If no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden. You can't Vanish while you are Marked.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -546,7 +546,7 @@
               "name": "Field Fix",
               "ap_cost": 2,
               "uses": "at_will",
-              "text": "Adjacent: clear a jammed weapon, restore one item's durability, or repair a robot, drone or turret for 20.",
+              "text": "Costs 2 AP. Do one of three things for an ally next to you: clear their jammed weapon, restore some of their weapon's durability, or repair a robot, drone, turret or machine for 20 HP. The repair also brings a Downed machine back up.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -594,7 +594,7 @@
               "name": "Sabotage",
               "ap_cost": 2,
               "uses": "at_will",
-              "text": "Adjacent: disable an enemy machine, turret, drone or barricade for 2 rounds. Or rig your tile: the next enemy to enter it takes 30 and is Pinned (Body save).",
+              "text": "Costs 2 AP. Disable an enemy machine, turret or drone next to you for 2 rounds, or make a barricade next to you stop blocking the way for 2 rounds. Or rig your own tile: the next enemy to step on it takes 30 damage, stops there, and makes a Body save against 12 + your strength with Ingenuity or is Pinned. You can have one rigged tile at a time.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -654,7 +654,7 @@
       "resource": {
         "id": "flux",
         "max": 6,
-        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
+        "shared_rule": "Every word you draw adds 1 Flux to your Evoker, which holds 6. If it goes above 6 the Evoker overloads: you take 10 damage for each point over 6, all the Flux bursts into the ambient mana, and the Evoker is locked until the next round. Vent (1 AP) empties your Flux into the ambient mana, which rises by the amount vented.",
         "also_uses": [
           "mana_core"
         ]
@@ -682,7 +682,7 @@
               "name": "Core Change",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Swapping a spent mana core costs 1 AP less (minimum 1).",
+              "text": "Swapping a spent mana core costs 1 AP less, but never less than 1 AP.",
               "effects": [
                 {
                   "op": "action_cost",
@@ -719,7 +719,7 @@
               "name": "Bleed the Flux",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Venting costs 1 AP less (minimum 0) and vents 1 more Flux.",
+              "text": "Venting costs 1 AP less, so a 1 AP Vent is free. After you Vent, the next glyph you draw adds 1 Flux less.",
               "effects": [
                 {
                   "op": "action_cost",
@@ -778,7 +778,7 @@
       "resource": {
         "id": "flux",
         "max": 6,
-        "shared_rule": "Every word drawn adds 1 Flux. Above 6 the Evoker overloads (10 damage per Flux over 6, Evoker locks 1 turn, all Flux bursts into the air). Vent (1 AP) dumps all Flux into the air: meter + Flux vented.",
+        "shared_rule": "Every word you draw adds 1 Flux to your Evoker, which holds 6. If it goes above 6 the Evoker overloads: you take 10 damage for each point over 6, all the Flux bursts into the ambient mana, and the Evoker is locked until the next round. Vent (1 AP) empties your Flux into the ambient mana, which rises by the amount vented.",
         "also_uses": [
           "mana_core"
         ]
@@ -801,7 +801,7 @@
               "name": "Read",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Analyze costs 1 AP and also tells you the target's intended next action.",
+              "text": "Analyze costs you 1 AP, and it also shows what the target means to do on its next turn.",
               "effects": [
                 {
                   "op": "action_cost",
@@ -835,7 +835,7 @@
               "name": "False Image",
               "ap_cost": 2,
               "uses": "at_will",
-              "text": "Spend 1 charge: a decoy of you stands on a tile within Sigil range for 2 rounds. Enemies who fail a Brain save treat it as you.",
+              "text": "Costs 2 AP and 1 charge. Needs an Evoker in hand. A decoy of you appears on a free tile you can see within 8 tiles (plus your Sigil range bonus) and lasts 2 rounds. Every enemy that can see it makes a Brain save against 12 + your strength with Brain Power, and those who fail treat the decoy as you. You can have one at a time; it fades when it is attacked or when you go down.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -883,7 +883,7 @@
               "name": "Silver Tongue",
               "ap_cost": 2,
               "uses": "at_will",
-              "text": "A target within 6 tiles who can hear you makes a Brain save, or loses 2 AP on its next turn (bosses lose 1).",
+              "text": "Costs 2 AP. An enemy within 6 tiles that can hear you makes a Brain save against 12 + your strength with Charisma. If it fails, it loses 2 AP on its next turn (a boss or a Celestial loses 1). It doesn't work on machines, turrets or drones.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -930,7 +930,7 @@
               "name": "Sleight",
               "ap_cost": 1,
               "uses": "per_scene",
-              "text": "Swap places with your False Image or a willing ally within 6 tiles.",
+              "text": "Costs 1 AP, once per scene. Swap places with your False Image or with a standing ally within 6 tiles. The swap provokes no opportunity attacks.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -979,7 +979,7 @@
       "resource": {
         "id": "supplies",
         "max": "3 + floor(proficiency / 2)",
-        "rule": "Stims, kits and med-drones. Restocked at rest."
+        "rule": "Supplies are your stims, kits and med-drones. You carry 3, +1 for every 2 points of Improvisation, restocked when you rest."
       },
       "resources": [
         "supplies",
@@ -1026,7 +1026,7 @@
               "name": "Rally",
               "ap_cost": 2,
               "uses": "per_scene",
-              "text": "Every ally within 4 tiles heals 20 x your Healing given multiplier and loses Fear and Shaken.",
+              "text": "Costs 2 AP, once per scene. Every ally within 4 tiles heals 20 × your Healing given and loses Fear and Shaken. It doesn't heal you, and it doesn't reach Downed allies.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1090,7 +1090,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Each Begin or cast adds 1 Strain (2 where the ambient mana is Flooded), and each turn you keep holding an Outburst adds 1 more. Strain falls by 1 at the start of each of your turns, and again when you calm your heart: a turn spent still, your first weapon attack of the turn, the first heal, stim, shield or cleanse you give someone each turn, letting a held Outburst go, or Steady the heart. Your Strain limit is 3, +1 for every 2 points of Will Power. At the end of your turn each point over the limit burns you for 8 damage that ignores armour. At 3 over the limit you suffer a Mana Short with no roll: you are Stunned and a held Outburst goes off wild. Strain is cleared when the fight ends. Crystallise (3 AP, needs ambient mana of 10 or more) lowers the ambient mana by 10 and makes one standard mana core.",
         "also_uses": [
           "mp"
         ]
@@ -1152,7 +1152,7 @@
               "name": "Occult Library",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "You learn one more tone, and you can keep one more design ready.",
+              "text": "You can keep one more design ready. Once, out of a fight, you learn one more Outburst tone of your choice.",
               "effects": [
                 {
                   "op": "stat_mod",
@@ -1193,7 +1193,7 @@
               "name": "Eye of the Storm",
               "ap_cost": 0,
               "uses": "per_scene",
-              "text": "Once a scene: your next Release this turn adds no Strain, and its tone's rider counts one stage higher.",
+              "text": "Once per scene, on your turn, for 0 AP: your next Release this turn adds no Strain, and its tone's rider counts as one stage higher (stage 4 at most). If you don't Release this turn, the use is lost.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1242,7 +1242,7 @@
       "resource": {
         "id": "strain",
         "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Rules 1.5 (Outburst 2.0): each Begin or cast adds 1 Strain (2 in Flooded air), and each turn you hold an Outburst 1 more. Strain falls by 1 at the start of every one of your turns, and by calming the heart (a still turn, your first weapon attack or first heal, stim, shield or cleanse given each turn, letting a held Outburst go, Steady the heart). Over the limit (3 + floor(Will Power / 2)) each point burns 8 true damage at the end of your turn; at 3 over the Mana Short is automatic (no roll): Stunned, and a held Outburst goes off wild. Resets after combat. Crystallise (3 AP, meter >= 10): meter -10, make one standard core.",
+        "shared_rule": "Each Begin or cast adds 1 Strain (2 where the ambient mana is Flooded), and each turn you keep holding an Outburst adds 1 more. Strain falls by 1 at the start of each of your turns, and again when you calm your heart: a turn spent still, your first weapon attack of the turn, the first heal, stim, shield or cleanse you give someone each turn, letting a held Outburst go, or Steady the heart. Your Strain limit is 3, +1 for every 2 points of Will Power. At the end of your turn each point over the limit burns you for 8 damage that ignores armour. At 3 over the limit you suffer a Mana Short with no roll: you are Stunned and a held Outburst goes off wild. Strain is cleared when the fight ends. Crystallise (3 AP, needs ambient mana of 10 or more) lowers the ambient mana by 10 and makes one standard mana core.",
         "also_uses": [
           "mp"
         ]
@@ -1269,7 +1269,7 @@
               "name": "Command",
               "ap_cost": 1,
               "uses": "per_turn",
-              "text": "An ally within 6 tiles who can hear you moves up to 2 tiles now, for free. Needs Leadership Squad (Authority 1).",
+              "text": "Costs 1 AP, once per turn. Needs 1 point of Authority. An ally within 6 tiles moves up to 2 tiles to a tile you pick, right now and for none of their AP. It is a normal move, so it can provoke opportunity attacks.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1337,7 +1337,7 @@
         "name": "Fire Discipline",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Aimed shots add no Heat. Once per turn, a Burst costs 2 AP instead of 3. With a bow, an Aimed shot gets +3 to hit instead of +2.",
+        "text": "Aimed shots add no Heat. Once per turn, a Burst costs 2 AP instead of 3. With a bow, an Aimed shot has +3 to hit instead of +2.",
         "effects": [
           {
             "op": "heat_mod",
@@ -1374,7 +1374,7 @@
         "name": "Special Ammo",
         "ap_cost": 0,
         "uses": "per_rest",
-        "text": "You carry one magazine (or quiver) each of armour-piercing, hollow-point and incendiary, restocked at rest. You can switch ammo type as part of a reload.",
+        "text": "You carry one magazine (or one quiver of up to 12 arrows) each of armour-piercing, hollow-point and incendiary rounds, restocked when you rest. Loading one is a reload and costs the same AP; a quiver has to be filled before the fight. Armour-piercing ignores armour at ×0.8 damage, hollow-point deals ×1.3 damage against doubled armour, and incendiary deals ×0.9 damage and sets the target Burning.",
         "effects": [
           {
             "op": "resource",
@@ -1401,7 +1401,7 @@
         "name": "Killzone",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "When you hold AP for Overwatch, you may hold enough for two shots: one each at the first two enemies that move into your line, both at +2 to hit.",
+        "text": "Hold two Overwatch shots instead of one, for twice the shot's AP. You fire one at each of the first two different enemies that move into your line, both at +2 to hit. The two shots use one reaction between them. You can't set it while Pressed.",
         "effects": [
           {
             "op": "grant_action",
@@ -1434,7 +1434,7 @@
         "name": "Lunge",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Spend 1 Momentum: move up to 2 tiles as part of a melee attack. This movement provokes no opportunity attacks.",
+        "text": "Costs the AP of your melee attack and 1 Momentum. Move up to 2 tiles and strike an enemy, all in one action. The move provokes no opportunity attacks.",
         "effects": [
           {
             "op": "resource",
@@ -1468,7 +1468,7 @@
         "name": "Riposte",
         "ap_cost": 0,
         "uses": "reaction",
-        "text": "When a melee attack against you misses, spend 1 Momentum to make a melee attack against the attacker for 0 AP, adding your Counter bonus to hit.",
+        "text": "When a melee attack misses you and the attacker is within your reach: strike back at once for 0 AP, adding your Counter bonus to hit. Costs 1 Momentum and your reaction.",
         "effects": [
           {
             "op": "resource",
@@ -1502,7 +1502,7 @@
         "name": "Finisher",
         "ap_cost": 3,
         "uses": "at_will",
-        "text": "Spend all your Momentum on one melee strike: +20% damage per point spent (up to +100%).",
+        "text": "Costs 3 AP and all your Momentum (at least 1). Make one melee strike that deals +20% damage for each point spent, up to +100%. The Momentum is spent even if you miss.",
         "effects": [
           {
             "op": "damage_mult",
@@ -1530,7 +1530,7 @@
         "name": "Brace",
         "ap_cost": 2,
         "uses": "at_will",
-        "text": "Gain Guard equal to 1 + your Durability modifier (max 5) and become Braced (+2 Defense) until you move. Interpose is available whenever you hold Guard.",
+        "text": "Costs 2 AP. You gain Guard equal to your Durability points (at least 1; you hold 5 at most) and become Braced: +2 Defense until you move, are pushed or are knocked Prone. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend 1 Guard and your reaction and take the hit yourself, with your own armour.",
         "effects": [
           {
             "op": "resource",
@@ -1575,7 +1575,7 @@
         "name": "Draw Fire",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Spend 1 Guard: one enemy you can see must attack you on its next turn, or take -2 to hit anyone else. Bosses and Celestials may ignore it at -2.",
+        "text": "Costs 1 AP and 1 Guard. An enemy you can see is Taunted for 1 round, with no save: its next attack must be aimed at you if it can see you, and it has −2 to hit anyone else. A boss or a Celestial isn't forced to attack you, but still has −2 to hit anyone else on its next turn.",
         "effects": [
           {
             "op": "resource",
@@ -1609,7 +1609,7 @@
         "name": "Reactive Plate",
         "ap_cost": 0,
         "uses": "reaction",
-        "text": "Your armour is bot-woven and hardens when struck. When you take damage, spend any Guard: each point cuts the damage by 10. Every 3 Guard you lose this way sheds bots: the ambient meter rises by 2.",
+        "text": "Your armour is woven with bots and hardens when struck. When you take damage, Guard is spent to block it: each point takes 10 off the damage, as many points as the hit needs. It costs no AP and no reaction. For every 3 Guard spent this way the plate sheds bots, and the ambient mana rises by 2.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1641,7 +1641,7 @@
         "name": "Triage",
         "ap_cost": 2,
         "uses": "at_will",
-        "text": "Heal an adjacent ally 20 x your Healing given multiplier and end their Bleeding. Costs no Supplies. You stabilise a Downed ally for 1 AP.",
+        "text": "Costs 2 AP. Heal an ally next to you for 20 × your Healing given and end their Bleeding. It uses no Supplies, and works once per ally per turn (out of a fight, once per ally per scene). You can also Stabilise a Downed ally next to you for 1 AP: they come back at 1 HP, with no stim needed.",
         "effects": [
           {
             "op": "heal",
@@ -1679,7 +1679,7 @@
         "name": "Stim Throw",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Spend 1 Supply: an ally within 4 tiles heals 30 x your Healing given multiplier and stops Bleeding.",
+        "text": "Costs 1 AP and 1 Supply. An ally within 4 tiles that you can see heals 30 × your Healing given and stops Bleeding. A Downed ally is stabilised at 1 HP instead.",
         "effects": [
           {
             "op": "resource",
@@ -1713,7 +1713,7 @@
         "name": "Field Surgery",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Out of combat, spend 1 Supply: treat one arm or leg injury, or clear every Body condition from one ally. Robot medics repair machines the same way.",
+        "text": "Out of a fight, spend 1 Supply to do one of two things for an ally or yourself: treat one arm or leg injury, or clear every Body condition they carry. A robot medic repairs machines the same way; the Narrator decides which machines count.",
         "effects": [
           {
             "op": "resource",
@@ -1755,7 +1755,7 @@
         "name": "Mark",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Mark an enemy you can see: it becomes Marked (your squad gets +1 to hit it; it can't become Hidden).",
+        "text": "Costs 1 AP. An enemy you can see becomes Marked until the fight ends: your squad gets +1 to hit it, and it can't become Hidden. You can keep 3 enemies Marked; a fourth Mark lifts the oldest one.",
         "effects": [
           {
             "op": "condition",
@@ -1783,7 +1783,7 @@
         "name": "Toxin",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Spend 1 toxin dose to coat a blade, dart or arrow. Your next hit also inflicts Weakened, Slowed or Bleeding (your choice; Body save).",
+        "text": "Costs 1 AP and 1 toxin dose. Coat a melee weapon, your arrows or a thrown weapon (never a gun) and choose Weakened, Slowed or Bleeding. Your next hit with it forces a Body save against 12 + your strength with Ingenuity, and the target takes that condition if it fails. The coat lasts until that hit or the end of the fight, and you can put it on before a fight starts.",
         "effects": [
           {
             "op": "resource",
@@ -1822,7 +1822,7 @@
         "name": "Execution",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Your hit on a Marked enemy at or below a quarter of its max HP kills it outright. Bosses and Celestials are immune.",
+        "text": "When your hit leaves a Marked enemy at a quarter of its max HP or less, it dies outright. Bosses and Celestials are immune.",
         "effects": [
           {
             "op": "execute",
@@ -1849,7 +1849,7 @@
         "name": "Barrage",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "The 2-charge damage words (FIRE, FREEZE, SHOCK, STONE and ACID) cost 1 charge less each; each glyph still costs at least 1. SPARK and GALE already cost 1.",
+        "text": "The damage words FIRE, FREEZE, SHOCK, STONE and ACID cost 1 charge less to draw: 1 instead of 2. SPARK and GALE already cost 1 and stay there, because no glyph costs less than 1 charge.",
         "effects": [
           {
             "op": "word_cost",
@@ -1881,7 +1881,7 @@
         "name": "Overcharge",
         "ap_cost": 0,
         "uses": "per_combat",
-        "text": "Once per combat, add one word to a spell beyond your Max Sigil words (never past 4 glyphs), for no charge and no AP. It still adds Flux.",
+        "text": "Once per fight, for 0 AP: the next glyph you draw costs no charge and no AP, and its spell may hold one word more than your Max Sigil words (never more than 4 glyphs). The glyph still adds Flux.",
         "effects": [
           {
             "op": "word_cost",
@@ -1909,7 +1909,7 @@
         "name": "Payload",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Evoke a Line with double area: a SPREAD radius or a PUSH cone's length doubles (both, if it has both), and a spell with neither gets one more missile, as one more TWICE. The Evoke adds Flux equal to its glyph count. A STAY, WAIT or WATCH spell can't carry it.",
+        "text": "Evoke a Line with double area. A SPREAD radius and a PUSH cone's length are doubled; a spell with neither fires one more missile, as one more TWICE would. On top of the Flux its glyphs already added, the Evoke adds Flux equal to its number of glyphs. A spell with STAY, WAIT or WATCH can't carry it.",
         "effects": [
           {
             "op": "area_mult",
@@ -2109,7 +2109,7 @@
         "name": "Stored Spell",
         "ap_cost": 0,
         "uses": "per_rest",
-        "text": "Out of combat, write a whole Sigil spell (its words) onto an object, paying its charge and Flux now. Anyone can trigger it later for 1 AP: it goes off from the object's tile with its own Reach, all around. It fades at the next rest. You can keep a number of stored spells equal to your Rumination modifier.",
+        "text": "Out of a fight, write a whole Sigil spell onto an object: name its words (ones you know, up to your Max Sigil words) and pay its charge now. In a fight, with an Evoker in hand, you set off your oldest stored spell for 1 AP: it goes off from your tile, in every direction, with its own Reach. You can keep as many stored spells as your Rumination modifier (at least 1), and they fade at your next rest. A spell with STAY, WAIT or WATCH can't be stored. Out of a fight, the Narrator decides what a stored spell does.",
         "effects": [
           {
             "op": "grant_action",
@@ -2173,7 +2173,7 @@
         "name": "Blind and Slow",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff), if you don't already know them; each costs 1 charge less.",
+        "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff) if you don't know them yet. MUDDLE costs you 1 charge less to draw: 1 instead of 2. BLIND and SLOW already cost 1, and no glyph costs less than 1 charge.",
         "effects": [
           {
             "op": "unlock_word",
@@ -2216,7 +2216,7 @@
         "name": "Rewrite",
         "ap_cost": 3,
         "uses": "at_will",
-        "text": "Spend 3 charge: one buff or helpful state on an enemy in range flips into its opposite until it ends (Braced becomes Prone, +2 to hit becomes -2, a shield becomes damage). Brain save.",
+        "text": "Costs 3 AP and 3 charge, once per turn, and adds 1 Flux. An enemy you can see within 8 tiles (plus your Sigil range bonus) makes a Brain save against 12 + your strength with Brain Power. If it fails, one helpful state on it flips into its opposite until it would have ended: Braced becomes Prone, +2 to hit becomes −2, a shield becomes damage, Hidden becomes revealed and Marked. The Narrator decides the flip for a state the game doesn't track.",
         "effects": [
           {
             "op": "convert_condition",
@@ -2247,7 +2247,7 @@
         "name": "Shape",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Your first Pump each turn that would cost AP is free, while the held Outburst is a Damage design (Empathy's free Pumps go first).",
+        "text": "While you hold a Damage Outburst, your first Pump each turn that would cost AP is free. Free Pumps from Empathy are used first.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2276,7 +2276,7 @@
         "name": "Storm Front",
         "ap_cost": 0,
         "uses": "per_turn",
-        "text": "Once per turn, for +10 MP at Begin: once a Damage Bolt or Lance has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit, at the stage reached, one roll each, with its tone's rider (area shapes can't take it).",
+        "text": "Once per turn, when you Begin a Damage Outburst shaped as a Bolt or a Lance, you can pay 10 MP more. When it lands, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit. Each arc is rolled on its own, at the stage you released at, and carries the tone's rider. Wave, Burst and Aura shapes can't take it.",
         "effects": [
           {
             "op": "area_mult",
@@ -2309,7 +2309,7 @@
         "name": "Heart Surge",
         "ap_cost": 0,
         "uses": "per_turn",
-        "text": "Once per turn, a toggle on a Release (or a snap cast): it fires one stage higher (past stage 4: x2.6; a snap: stage 1), for double the Strain: the Begin's Strain again once it lands.",
+        "text": "Once per turn, when you Release an Outburst or snap cast one (Begin and Release at once), you can make it fire one stage higher. Past stage 4 it fires at ×2.6, and a snap cast fires at stage 1. It costs double Strain: the Begin's Strain is added again once the Outburst lands.",
         "effects": [
           {
             "op": "stat_mod",
@@ -2343,7 +2343,7 @@
         "name": "Will Shield",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "A Buff-school cast (Soul cast AP, 20 MP base): an ally in range gains a shield of 30 x your Healing given multiplier until the end of combat.",
+        "text": "A Buff-school cast: it costs your Soul cast AP and 20 MP (before the ambient mana is counted), and adds Strain like any cast. You, or an ally you can see within Soul reach, gains a shield of 30 × your Healing given until the fight ends. If they already have a bigger shield, that one stays.",
         "effects": [
           {
             "op": "shield",
@@ -2402,7 +2402,7 @@
         "name": "Sanctuary",
         "ap_cost": 0,
         "uses": "per_scene",
-        "text": "Soul cast AP, 60 MP, +1 extra Strain: a 3x3-tile zone where allies take half damage until your next turn (your own heart's burn isn't halved).",
+        "text": "Once per scene. It costs your Soul cast AP and 60 MP, and adds 1 Strain more than a normal cast. Pick a tile you can see within Soul reach: allies on the 3×3 tiles around it, you included, take half damage until the start of your next turn. The burn from your own Strain is not halved.",
         "effects": [
           {
             "op": "state",
@@ -2435,7 +2435,7 @@
         "name": "Inspire",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Spend 10 MP: an ally within 6 tiles gets +2 on their next roll. Adds no Strain.",
+        "text": "Costs 1 AP and 10 MP. An ally within 6 tiles gets +2 on their next d20 roll: an attack, a save or a check. It adds no Strain, and a second Inspire on the same ally doesn't stack.",
         "effects": [
           {
             "op": "resource",
@@ -2470,7 +2470,7 @@
         "name": "Mend",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "A Buff-school cast that heals 40 x your Healing given multiplier x the ambient Healing multiplier: stronger in rich air.",
+        "text": "Your healing Outbursts (Buff school) heal from a base of 40 instead of 30, before your Healing given, the stage and the ambient mana are counted. Healing is stronger where the ambient mana is Rich or Flooded.",
         "effects": [
           {
             "op": "heal",
@@ -3101,7 +3101,7 @@
           "name": "Called Shot",
           "ap_cost": 3,
           "uses": "at_will",
-          "text": "Name head, arm or leg and shoot at -2. On a hit, apply that injury result (head: Dazed; arm: -2 to attacks with it; leg: half Movement) without needing a critical.",
+          "text": "Costs 3 AP. Needs a gun or a bow. Name the head, an arm or a leg and shoot at −2 to hit. A hit causes that injury without needing a critical hit: head, Dazed; arm, −2 to attacks with that arm; leg, half Movement. A target with Injury resistance can still resist it.",
           "effects": [
             {
               "op": "attack_mod",
@@ -4253,7 +4253,7 @@
           "name": "Unbroken",
           "ap_cost": 0,
           "uses": "per_scene",
-          "text": "The first time in a combat you would drop to 0 HP, drop to 1 instead and gain 3 Guard.",
+          "text": "Once per fight, the first time damage would drop you to 0 HP, you stay at 1 HP instead and gain 3 Guard.",
           "effects": [
             {
               "op": "stat_mod",
@@ -4377,7 +4377,7 @@
           "name": "Lingering Dread",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "When you kill, every enemy within 3 tiles who saw it makes a Heart save or becomes Shaken.",
+          "text": "When you kill an enemy, every other enemy within 3 tiles of it that saw it die makes a Heart save against 12 + your strength with Will Power, or is Shaken for 3 rounds.",
           "effects": [
             {
               "op": "condition",
@@ -4444,7 +4444,7 @@
           "name": "Blessed Shells",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "When you Pray successfully, you can load the Blessing into a scattergun shell or your weapon instead. On your next hit it resolves at the target (if harmful) or on allies adjacent to the target (if helpful).",
+          "text": "When a prayer of yours succeeds, you can load the Hymn into your weapon instead of using it at once. Your next hit releases it: a harmful Hymn lands on the target, a helpful one on every ally next to the target. It stays loaded until that hit or the end of the fight.",
           "effects": [
             {
               "op": "grant_action",
@@ -4471,7 +4471,7 @@
           "name": "Under the Eye",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "While you are Witnessed, allies within 3 tiles also get +2 on actions on your patron's theme.",
+          "text": "While you are Witnessed, allies within 3 tiles of you get +2 to hit. Out of a fight they get +2 on checks the Narrator counts as on your patron's theme.",
           "effects": [
             {
               "op": "skill_mod_tag",
@@ -4498,7 +4498,7 @@
           "name": "Judgement",
           "ap_cost": 4,
           "uses": "per_combat",
-          "text": "Once per fight, spend 1 Devotion (10 Devotion XP): a melee or scattergun attack dealing damage x (1 + your Blessing power).",
+          "text": "Costs 4 AP and 1 Devotion (10 Devotion XP), once per fight. Needs a melee weapon or a scattergun. Make one attack that deals damage × (1 + your Blessing power). The Devotion is spent even if you miss.",
           "effects": [
             {
               "op": "resource",

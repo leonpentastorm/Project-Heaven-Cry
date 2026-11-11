@@ -52,18 +52,30 @@ const seenOf = (p) => p.evaluate(() => ({ banners: [...window.__seen.banners], f
 // fight until it's over: each player acts on their own unit's turn, read from the game state
 const myTurn = (p) => p.evaluate(() => { const s = window.__phc.getState(), g = s.game, cb = g && g.combat; if (!cb || cb.over) return cb && cb.over ? 'over' : 'none';
   const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId && g.characters[u.charId].owner === s.me.id ? 'mine' : 'other'; });
-for (let i = 0; i < 300; i++) {
+// A fight can run long (one in five here: a round often ends with no shot to take, up to 130 actions and six minutes), so the loop
+// has no fixed length: it ends when the fight does, or fails as a stall when the game has not moved for 45 s, printing
+// both screens' books (docs/design/handoffs/coop-stall.md; the stall's own suite is coop-stall.mjs).
+const books = (p) => p.evaluate(() => { const s = window.__phc.getState(), cb = s.game && s.game.combat, dock = document.querySelector('.phc-cb-dock');
+  return { v: s.game && s.game.v, round: cb && cb.round, unit: cb && cb.order[cb.turn], lock: dock && dock.getAttribute('data-lock'), fx: window.__phcFxDebug && window.__phcFxDebug(), net: window.__phc.net && window.__phc.net() }; });
+const version = (p) => p.evaluate(() => { const g = window.__phc.getState().game; return g ? g.v : -1; });
+let lastKey = '', lastChange = Date.now();
+for (let i = 0; i < 6000; i++) {
   const states = [await myTurn(host), await myTurn(guest)];
   if (states.includes('over')) break;
+  const key = states.join() + ':' + (await version(host)) + ':' + (await version(guest));
+  if (key !== lastKey) { lastKey = key; lastChange = Date.now(); }
+  if (Date.now() - lastChange > 45000) { log('FAIL the fight stood still for 45 s at', key); log('host', JSON.stringify(await books(host))); log('guest', JSON.stringify(await books(guest))); process.exitCode = 1; break; }
   for (const [k, p] of [[0, host], [1, guest]]) {
     if (states[k] !== 'mine') continue;
     if (!(await p.locator('text=ACTION POINTS').count())) { await p.waitForTimeout(200); continue; }
+    // As a player: the action panel is greyed out while the other turns still play on screen, and takes no click.
+    if (await p.evaluate(() => !!(document.querySelector('.phc-cb-dock') || { getAttribute: () => 'none' }).getAttribute('data-lock'))) continue;
     await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
     const conf = p.getByRole('button', { name: 'Confirm', exact: true });
     if (await conf.isEnabled()) await conf.click(); else await p.getByRole('button', { name: 'End turn', exact: true }).click();
     await p.waitForTimeout(60);
   }
-  if (i % 20 === 0) console.log('loop', i, states.join(','));
+  if (i % 100 === 0) console.log('loop', i, states.join(','));
   await host.waitForTimeout(80);
 }
 await shot(host, '16-combat-over'); await shot(guest, '17-combat-over-guest');

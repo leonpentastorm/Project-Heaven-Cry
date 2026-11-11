@@ -23,7 +23,7 @@ type Loader = (c: Character, weaponId: string, load: Record<string, number>) => 
 let LOADER: Loader | null = null;
 /** The ranged lane registers its loadQuiver here; the phys/quiver action runs it. */
 export const quiverLoader = (f: Loader) => { LOADER = f; };
-export const loadQuiverWith = (c: Character, weaponId: string, load: Record<string, number>): string | null => (LOADER ? LOADER(c, weaponId, load) : 'The quiver isn\'t built yet.');
+export const loadQuiverWith = (c: Character, weaponId: string, load: Record<string, number>): string | null => (LOADER ? LOADER(c, weaponId, load) : 'Quivers aren\'t in the game yet.');
 
 // ---------- arrows ----------
 export type Quiver = Record<string, number>;

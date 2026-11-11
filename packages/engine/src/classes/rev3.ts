@@ -82,7 +82,7 @@ function shrug(h: Holder, id: string) {
 }
 register({
   id: 'defender.shrug_it_off', claims: 'all',
-  actions: [policyAction('shrug_off', 'Shrug It Off: off', 'off', 'Spend no Guard on Shrug It Off for the rest of this fight.'), policyAction('shrug_on', 'Shrug It Off: on', 'auto', 'Shrug off Bleeding, Slowed, Weakened and Prone as they land (the default).')],
+  actions: [policyAction('shrug_off', 'Shrug It Off: off', 'off', 'Spend no Guard on Shrug It Off for the rest of this fight.'), policyAction('shrug_on', 'Shrug It Off: on', 'auto', 'Shrug off Bleeding, Slowed, Weakened and Prone the moment they land on you. This is the default.')],
   on: {
     cond_landed: (ctx, h) => { if (ctx.t === h.u && SHRUG.includes(ctx.id)) shrug(h, ctx.id); },
     attack_target: (ctx, h) => { if (ctx.tgt === h.u && inFight(h)) stateOf(h).pre = { bleed: !!h.u!.bleed, prone: !!h.u!.prone }; },
@@ -147,12 +147,12 @@ register({
   id: 'fighter.shove', claims: 'all',
   actions: [{
     id: 'class_shove', label: 'Shove', scope: ['combat'], target: 'enemy', ap: 1, range: 1, pick: ['push', 'prone'], pickLabel: 'Push it back, or knock it down',
-    text: 'Push an adjacent enemy 1 tile, or knock it Prone: a Body save against 12 + your Raw Power strength.',
+    text: 'Push an enemy next to you 1 tile straight back, or knock it Prone: your choice. It makes a Body save against 12 + your strength with Raw Power, and nothing happens if it succeeds.',
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       const how = args.choice === 'prone' ? 'prone' : 'push';
       if (how === 'prone' && t.prone) return { ok: false, why: t.name + ' is already prone.' };
-      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !free(cb, to, t)) return { ok: false, why: 'Nothing behind them to push into: knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
+      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !free(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
       return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] };
     },
     run: (h, args, rng) => {
@@ -189,7 +189,7 @@ register({
   id: 'fighter.unstoppable', claims: 'all',
   actions: [{
     id: 'unstoppable', label: 'Unstoppable', scope: ['combat'], target: 'none', ap: 1, uses: { per: 'per_scene', n: 1 },
-    text: 'Until your next turn: ignore Fear, Shaken, Slowed, Pinned and opportunity attacks; gain 2 Momentum.',
+    text: 'Once a scene: until your next turn starts, Fear, Shaken, Slowed and Pinned don\'t affect you, and nobody gets an opportunity attack on you. You also gain 2 Momentum.',
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h); st.on = true; st.stash = {};
       const set: string[] = [];
@@ -258,7 +258,7 @@ function duckTile(cb: Combat, me: Unit, att: Unit, mode: string): { k: string; o
 }
 register({
   id: 'marksman.duck_and_roll', claims: 'all',
-  actions: [policyAction('duck_off', 'Duck and Roll: off', 'off', 'No automatic Duck and Roll for the rest of this fight.'), policyAction('duck_on', 'Duck and Roll: on', 'auto', 'Duck and roll whenever a shot comes your way and a step helps (the default).')],
+  actions: [policyAction('duck_off', 'Duck and Roll: off', 'off', 'No automatic Duck and Roll for the rest of this fight.'), policyAction('duck_on', 'Duck and Roll: on', 'auto', 'Duck and roll whenever a shot comes your way and a step would help. This is the default.')],
   on: {
     attack_target: (ctx, h) => {
       const me = h.u!, cb = h.cb!, st = stateOf(h), att: Unit = ctx.att;
@@ -292,8 +292,8 @@ register({
   id: 'infiltrator.vanish', claims: 'all',
   actions: [{
     id: 'vanish', label: 'Vanish', scope: ['combat'], target: 'none', ap: 1, uses: { per: 'per_turn', n: 1 },
-    text: 'If no enemy can see you right now (fog, smoke, full cover), become Hidden.',
-    available: (h) => { const u = h.u; if (!u || !h.cb) return false; if (u.hidden) return 'Already Hidden.'; if (condOn(u, 'marked')) return 'Marked: you can\'t hide.'; if (seenByFoes(h.cb, u)) return 'An enemy can see you: get out of sight first.'; return true; },
+    text: 'Once a turn: if no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden. You can\'t Vanish while you are Marked.',
+    available: (h) => { const u = h.u; if (!u || !h.cb) return false; if (u.hidden) return 'Already Hidden.'; if (condOn(u, 'marked')) return 'Marked: you can\'t hide.'; if (seenByFoes(h.cb, u)) return 'An enemy can see you. Get out of sight first.'; return true; },
     run: (h) => { const u = h.u!, cb = h.cb!; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' }); say(cb, u.name + ' vanishes' + hide(cb, u, 'Vanish') + '.'); },
   }],
   brief: () => null,
@@ -312,9 +312,9 @@ register({
   id: 'infiltrator.field_fix', claims: 'all',
   actions: [{
     id: 'field_fix', label: 'Field Fix', scope: ['combat'], target: 'ally', ap: 2, range: 1, pick: [...FIX], pickLabel: 'What to fix',
-    text: 'Adjacent: clear a jammed weapon, restore one item\'s durability, or repair a robot, drone or turret for 20.',
+    text: 'Do one thing for an ally next to you: clear their jammed weapon, restore some of their weapon\'s durability, or repair a robot, drone, turret or machine for 20 HP.',
     preview: (h, args) => {
-      const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Field Fix a squadmate (your own jam: Clear Jam).' };
+      const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Field Fix works on a squadmate. For your own jammed weapon, use Clear Jam.' };
       const can = fixable(t), what = args.choice || can[0];
       if (!what) return { ok: false, why: 'Nothing to fix on ' + t.name + '.' };
       if (!can.includes(what)) return { ok: false, why: what === 'clear_jam' ? t.name + '\'s weapon isn\'t jammed.' : what === 'restore_durability' ? t.name + '\'s weapon is in full repair.' : repairable(t) ? t.name + ' is undamaged.' : t.name + ' isn\'t a machine.' };
@@ -350,7 +350,7 @@ register({
   actions: [
     {
       id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 2, range: 1,
-      text: 'Adjacent: disable an enemy machine, turret or drone for 2 rounds (no turns, no reactions).',
+      text: 'Disable an enemy machine, turret or drone next to you for 2 rounds. It takes no turns and no reactions.',
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for 2 rounds.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
@@ -361,7 +361,7 @@ register({
     },
     {
       id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 2,
-      text: 'Adjacent: a barricade stops blocking the way, or an emplaced turret is disabled, for 2 rounds.',
+      text: 'Pick a barricade or an emplaced turret next to you. For 2 rounds, the barricade stops blocking the way, or the turret is disabled.',
       preview: (h, args) => {
         const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
         const o = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret'); if (!o) return { ok: false, why: 'No barricade or turret there.' };
@@ -378,8 +378,8 @@ register({
     },
     {
       id: 'rig', label: 'Sabotage: rig your tile', scope: ['combat'], target: 'none', ap: 2,
-      text: 'Rig your tile: the next enemy to enter it takes 30 and is Pinned (Body save).',
-      preview: (h) => { const cb = h.cb!, u = h.u!; if (objectsAt(cb, u.pos).some((o) => !!kindOf(o).trap && !o.resolved && !((o as any).rig === h.key && (o as any).owner === u.id))) return { ok: false, why: 'There is already a trap here.' }; return { tiles: [u.pos], lines: ['Rig ' + refOf(u.pos) + ': 30 and Pinned (Body save) for the next enemy to step on it.'] }; },
+      text: 'Rig your own tile. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.',
+      preview: (h) => { const cb = h.cb!, u = h.u!; if (objectsAt(cb, u.pos).some((o) => !!kindOf(o).trap && !o.resolved && !((o as any).rig === h.key && (o as any).owner === u.id))) return { ok: false, why: 'There is already a trap here.' }; return { tiles: [u.pos], lines: ['Rig ' + refOf(u.pos) + '. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.'] }; },
       run: (h) => {
         const cb = h.cb!, u = h.u!;
         cb.objects = objectsOf(cb).filter((o) => !((o as any).rig === h.key && (o as any).owner === u.id));
@@ -465,16 +465,16 @@ register({
 const IMAGE_RANGE = 8;
 function evokerWhy(h: Holder): string | null {
   const u = h.u, m = u?.mg; if (!u || !m || !m.evoker) return 'Needs an Evoker in hand.';
-  if (u.dead || u.downed) return 'Downed.'; if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
-  if (m.lockRound != null && h.cb && h.cb.round <= m.lockRound) return 'Your Evoker is locked after an overload until next round.';
+  if (u.dead || u.downed) return 'Downed.'; if (condOn(u, 'silenced')) return 'You are Silenced: no magic this round.';
+  if (m.lockRound != null && h.cb && h.cb.round <= m.lockRound) return 'Your Evoker overloaded. It is locked until next round.';
   return null;
 }
 register({
   id: 'trickster.false_image', claims: 'all',
   actions: [{
     id: 'false_image', label: 'False Image', scope: ['combat'], target: 'tile', ap: 2,
-    text: 'Spend 1 charge: a decoy of you on a tile within Sigil range for 2 rounds. Enemies who fail a Brain save treat it as you.',
-    available: (h) => { if (!h.u) return false; const e = evokerWhy(h); if (e) return e; if ((h.u.mg!.charge || 0) < 1) return 'Needs 1 charge (swap a core).'; return true; },
+    text: 'Costs 1 charge. Needs an Evoker in hand. A decoy of you appears on a free tile you can see within 8 tiles (plus your Sigil range bonus) and lasts 2 rounds. Every enemy that can see it makes a Brain save, and those who fail treat the decoy as you. It fades when it is attacked or when you go down.',
+    available: (h) => { if (!h.u) return false; const e = evokerWhy(h); if (e) return e; if ((h.u.mg!.charge || 0) < 1) return 'Needs 1 charge. Swap in a fresh core.'; return true; },
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {}; const r = IMAGE_RANGE + (u.mg?.rangeBonus || 0);
       if (k === u.pos) return { ok: false, why: 'Put it on another tile.' };
@@ -512,7 +512,7 @@ register({
   id: 'trickster.silver_tongue', claims: 'all',
   actions: [{
     id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 2, range: 6,
-    text: 'A target within 6 tiles who can hear you makes a Brain save, or loses 2 AP on its next turn (bosses lose 1).',
+    text: 'An enemy within 6 tiles that can hear you makes a Brain save. If it fails, it loses 2 AP on its next turn. A boss or a Celestial loses 1 AP instead. It doesn\'t work on machines, turrets or drones.',
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (12 + unitStrength(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, s = famSave(cb, rng as Rng, u, t, 'silver_tongue', 'brain', 'charisma'), n = isBoss(t) ? 1 : 2;
@@ -539,9 +539,9 @@ register({
   actions: [
     {
       id: 'sleight', label: 'Sleight: swap with a squadmate', scope: ['combat'], target: 'ally', ap: 1, range: 6,
-      text: 'Swap places with a willing ally within 6 tiles (once a scene, with the image swap).',
+      text: 'Once a scene: swap places with a standing ally within 6 tiles. This shares its one use a scene with the False Image swap.',
       available: sleightLeft,
-      preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' can\'t (Downed).' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
+      preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' is Downed and can\'t swap.' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, from = u.pos, to = t.pos; uses(h).take('per_scene', 1, h.key);
         u.pos = to; t.pos = from; u.braced = false; t.braced = false;
@@ -554,7 +554,7 @@ register({
     },
     {
       id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 1,
-      text: 'Swap places with your False Image within 6 tiles (once a scene, with the squadmate swap).',
+      text: 'Once a scene: swap places with your False Image within 6 tiles. This shares its one use a scene with the squadmate swap.',
       available: (h) => { const l = sleightLeft(h); if (l !== true) return l; return h.cb && h.u && imageOfOwner(h.cb, h.u.id) ? true : 'You have no False Image out.'; },
       preview: (h) => {
         const img = imageOfOwner(h.cb!, h.u!.id)!; if (dist(h.u!.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' };
@@ -583,8 +583,8 @@ register({
   id: 'bard.rally', claims: 'all',
   actions: [{
     id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 2, uses: { per: 'per_scene', n: 1 },
-    text: 'Every ally within 4 tiles heals 20 × your Healing given and loses Fear and Shaken.',
-    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(20 * (h.c ? healingMult(h.c) : 1)) + ' each, Fear and Shaken gone.'] }; },
+    text: 'Once a scene: every ally within 4 tiles heals 20 HP × your Healing given and loses Fear and Shaken.',
+    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(20 * (h.c ? healingMult(h.c) : 1)) + ' HP each, and their Fear and Shaken end.'] }; },
     run: (h) => {
       const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
       emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });
@@ -616,10 +616,10 @@ register({
   id: 'channeler.occult_library', claims: [0],
   actions: [{
     id: 'occult_tone', label: 'Occult Library: learn a tone', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_campaign', n: 1 }, pick: ELEMENT_TONES(), pickLabel: 'The tone',
-    text: 'Learn one more Outburst tone (once, out of a fight; the scene\'s one new thing).',
+    text: 'Once only, out of a fight: learn one more Outburst tone of your choice. It counts as the one new thing you can learn this scene.',
     available: (h) => { const c = h.c; if (!c) return false; const kt = c.soulKnown?.tones || []; return ELEMENT_TONES().some((t) => !kt.includes(t)) ? true : 'You know every tone.'; },
     preview: (h, args) => { const c = h.c!, kt = c.soulKnown?.tones || []; if (!args.choice) return { ok: false, why: 'Pick a tone.' }; if (!ELEMENT_TONES().includes(args.choice)) return { ok: false, why: 'No such tone.' }; if (kt.includes(args.choice)) return { ok: false, why: 'You know that tone.' };
-      if (h.g?.phase === 'story' && c.learnedScene === h.g?.story?.scene?.n) return { ok: false, why: 'One new thing a scene: it takes a rest to sink in.' }; return { lines: ['Learn the ' + ((TONE as any)[args.choice]?.name || args.choice) + ' tone.'] }; },
+      if (h.g?.phase === 'story' && c.learnedScene === h.g?.story?.scene?.n) return { ok: false, why: 'You already learned something new this scene. Only one new thing a scene.' }; return { lines: ['Learn the ' + ((TONE as any)[args.choice]?.name || args.choice) + ' tone.'] }; },
     run: (h, args) => {
       const c = h.c! as Character, k = (c.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(args.choice!);
       if (h.g?.story?.scene) c.learnedScene = h.g.story.scene.n;
@@ -639,8 +639,8 @@ register({
   id: 'channeler.eye_of_the_storm', claims: 'all',
   actions: [{
     id: 'eye_of_the_storm', label: 'Eye of the Storm', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Your next Release this turn adds no Strain, and its tone\'s rider counts one stage higher.',
-    available: (h) => { if (!h.u) return false; if (!h.u.mg || !(h.u.mg.designs || []).length) return 'You have no Outbursts.'; if (!myTurn(h)) return 'On your turn.'; if (eyeArmed(h)) return 'Already armed.'; return true; },
+    text: 'Once a scene, on your turn: your next Release this turn adds no Strain, and its tone\'s rider counts as one stage higher.',
+    available: (h) => { if (!h.u) return false; if (!h.u.mg || !(h.u.mg.designs || []).length) return 'You have no Outbursts.'; if (!myTurn(h)) return 'Only on your turn.'; if (eyeArmed(h)) return 'Already armed.'; return true; },
     run: (h) => { const u = h.u!, cb = h.cb!; stateOf(h).armed = { round: cb.round }; emitFx(cb, 'eye_storm', { unit: u.id, at: u.pos }); say(cb, u.name + ' finds the eye of the storm: the next Release adds no Strain, its rider a stage higher.'); },
   }],
   stat: (h, stat) => (stat === 'rider_stage' && eyeArmed(h) ? 1 : 0),
@@ -666,17 +666,17 @@ register({
   id: 'guardian.command', claims: 'all',
   actions: [{
     id: 'command', label: 'Command', scope: ['combat'], target: 'ally', ap: 1, range: 6, uses: { per: 'per_turn', n: 1 }, pickLabel: 'The squadmate, then the tile',
-    text: 'An ally within 6 tiles who can hear you moves up to 2 tiles now, for free. Needs Leadership Squad (Authority 1).',
-    available: (h) => (!h.u ? false : authorityOf(h) < 1 ? 'Needs Leadership Squad (Authority 1).' : true),
+    text: 'Once a turn: an ally within 6 tiles moves up to 2 tiles to a tile you pick, right now and for none of their AP. It is a normal move, so it can draw opportunity attacks. Needs 1 point of Authority.',
+    available: (h) => (!h.u ? false : authorityOf(h) < 1 ? 'Needs 1 point of Authority.' : true),
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       if (t === u) return { ok: false, why: 'Command a squadmate, not yourself.' };
       const blk = moveBlock(t); if (blk) return { ok: false, why: t.name + ': ' + blk };
       const k = tileOf(cb, args.tile); if (!k) return { ok: false, why: 'Pick the tile they move to (up to 2 tiles).' };
       const P = paths(cb, t.pos, t.id); if (P.dist[k] === undefined || k === t.pos) return { ok: false, why: 'They can\'t reach that tile.' };
-      if (P.dist[k] > 2) return { ok: false, why: 'Up to 2 tiles.' };
+      if (P.dist[k] > 2) return { ok: false, why: 'They can move 2 tiles at most.' };
       { const fs = t.condBy?.fear && condOn(t, 'fear') ? unitById(cb, t.condBy.fear) : null; if (fs && !fs.dead && dist(k, fs.pos) < dist(t.pos, fs.pos)) return { ok: false, why: t.name + ' is Afraid of ' + fs.name + '.' }; }
-      return { tiles: [k], targets: [t.id], lines: [t.name + ' moves to ' + refOf(k) + ' (free).'] };
+      return { tiles: [k], targets: [t.id], lines: [t.name + ' moves to ' + refOf(k) + ' for none of their AP.'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, k = tileOf(cb, args.tile)!, from = t.pos;

@@ -134,7 +134,7 @@ describe('Jury-Rig', () => {
     f.act({ type: 'combat/perk', unitId: u.id, id: 'jury_rig', actionId: 'one_more', targetId: f.foe.id } as any);
     expect(logHas(f.cb, /one more go \(Jury-Rig\)/)).toBe(true); expect(logHas(f.cb, /fires at Foe 1/)).toBe(true);
     expect(f.pc.ap).toBe(4); expect(f.pc.dur).toBe(0);
-    expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'jury_rig', actionId: 'one_more', targetId: f.foe.id } as any)).toThrow(/this breakage/);
+    expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'jury_rig', actionId: 'one_more', targetId: f.foe.id } as any)).toThrow(/Already used on this broken weapon/);
   });
   it('II: patches a drone at double Field Repair strength', () => {
     const f = fightWith([{ perks: { jury_rig: 'II' }, kit: 'medic', skills: { proficiency: 5 } }], [{ at: 'O10' }]);

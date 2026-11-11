@@ -131,7 +131,7 @@ describe('Evoke (spec 9.3–9.8)', () => {
     const { cb, u, rng } = setup(['fire', 'kin'], ['15,15'], ['3,4']);
     walk(cb, rng, u, ['fire', 'kin'], ['2,5', '3,5']); u.pos = '1,5'; // along, firing →; KIN on yourself
     const v = evokeView(cb, u, '2,5', { aims: ['1,5'] });
-    expect(v.fizzle).toBe(true); expect(v.fizzleText).toMatch(/^Nothing it may affect: this spell will fizzle/);
+    expect(v.fizzle).toBe(true); expect(v.fizzleText).toMatch(/^There is nothing this spell can affect, so it will fizzle/);
     expect(v.affected.find((a) => a.unit === u.id)!.tag).toBe('SPARED (KIN)');
   });
   it('TWICE needs one aim per missile, numbered', () => {

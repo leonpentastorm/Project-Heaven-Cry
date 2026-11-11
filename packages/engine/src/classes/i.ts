@@ -79,8 +79,8 @@ const fmt = (n: number) => (n >= 0 ? '+' : '−') + Math.abs(n);
 function evokerReady(h: Holder): string | null {
   const u = h.u, m = u?.mg; if (!u || !m || !m.evoker) return 'Needs an Evoker in hand.';
   if (u.dead || u.downed) return 'Downed.';
-  if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
-  if (m.lockRound != null && h.cb && h.cb.round <= m.lockRound) return 'Your Evoker is locked after an overload until next round.';
+  if (condOn(u, 'silenced')) return 'You are Silenced: no magic this round.';
+  if (m.lockRound != null && h.cb && h.cb.round <= m.lockRound) return 'Your Evoker overloaded. It is locked until next round.';
   return null;
 }
 /** Flux into the Evoker (spec: every word drawn adds 1; above 6 it overloads: 10 damage per Flux over, locked a round,
@@ -96,10 +96,10 @@ function addFlux(cb: Combat, u: Unit, n: number): string {
 // ---------- the Emanator (Soul classes) ----------
 function soulReady(h: Holder): string | null {
   const u = h.u, m = u?.mg; if (!u) return 'Only in the field.';
-  if (!m) return 'You have no Soul magic (an Emanator, or Outbursts drawn from the air).';
+  if (!m) return 'You have no Soul magic. You need an Emanator in hand, or the skill to draw Outbursts from the air.';
   if (u.dead || u.downed) return 'Downed.';
-  if (condOn(u, 'silenced')) return 'Silenced: no magic this round.';
-  if (m.held) return 'You are holding an Outburst: release it first.';
+  if (condOn(u, 'silenced')) return 'You are Silenced: no magic this round.';
+  if (m.held) return 'You are holding an Outburst. Release it first.';
   return null;
 }
 /** A class move cast like an Outburst (Soul cast AP, school base cost × the air × your saving, +20% under a Right Brain
@@ -174,15 +174,15 @@ const SPECIAL = [['armor_piercing', 'armour-piercing'], ['hollow_point', 'hollow
 export const QUIVER = 12;
 /** A Drawn weapon (a bow) has a quiver, and a quiver can't be refilled in a fight (rules 1.12, Weapons 10). */
 const isDrawn = (wid: string | null | undefined) => !!wid && weaponProps(wid).includes('drawn');
-const QUIVER_WHY = 'A quiver is filled before the fight.';
+const QUIVER_WHY = 'A quiver is filled before the fight, not during it.';
 const ammoOk = (wid: string): string | null => { const w = WEAPON[wid]; if (!w || isMelee(w)) return 'Your weapon takes no rounds.'; if (w.magazine == null || /flame|launcher|thrown/.test(w.category) || !w.ammo) return 'No special rounds for this weapon.'; return null; };
 register({
   id: 'marksman.special_ammo', claims: 'all',
   actions: [
     ...SPECIAL.map(([id, name]): ActionDef => ({
       id: 'load_' + id, label: 'Load ' + name, scope: ['combat'], target: 'none', ap: (h) => (h.u ? reloadAp(h.u) : 2),
-      text: 'Reload with your ' + name + ' ' + 'magazine (restocked at rest).',
-      available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon) || (isDrawn(h.u.weapon) ? QUIVER_WHY : null); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
+      text: 'Reload with your ' + name + ' magazine. You carry one, and it is restocked when you rest.',
+      available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon) || (isDrawn(h.u.weapon) ? QUIVER_WHY : null); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Used up. It is restocked at your next rest.'; return true; },
       run: (h) => {
         const u = h.u!, cb = h.cb!, w = WEAPON[u.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
         // The magazine in the gun goes back to the pouch (a partly spent standard one keeps its rounds; a spent special one is dropped).
@@ -197,7 +197,7 @@ register({
     })),
     ...SPECIAL.map(([id, name]): ActionDef => ({
       id: 'story_' + id, label: 'Load ' + name, scope: ['story'], target: 'none', ap: 0,
-      available: (h) => { if (!h.c) return false; const e = ammoOk(h.c.weapon); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Spent: restocked at the next rest.'; return true; },
+      available: (h) => { if (!h.c) return false; const e = ammoOk(h.c.weapon); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Used up. It is restocked at your next rest.'; return true; },
       run: (h) => {
         const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
         // A Drawn weapon's arrows are its quiver (Physical 2.0, rules 1.12: physical/ranged/quiver.ts): what it held goes
@@ -224,8 +224,8 @@ register({
   actions: (['shot', 'aimed'] as const).map((mode): ActionDef => ({
     id: 'overwatch_double' + (mode === 'aimed' ? '_aimed' : ''), label: 'Killzone' + (mode === 'aimed' ? ' (aimed)' : ''), scope: ['combat'], target: 'none',
     ap: (h) => (h.u ? 2 * attackApCost(WEAPON[h.u.weapon], mode) : 4),
-    text: 'Hold two ' + (mode === 'aimed' ? 'aimed ' : '') + 'overwatch shots: one each at the first two enemies that move into your line, both +2 to hit.',
-    available: (h) => { const u = h.u; if (!u) return false; const w = WEAPON[u.weapon]; if (!w || isMelee(w)) return 'Killzone needs a ranged weapon.'; if (u.overwatch) return 'Already on overwatch.'; if (isPressed(u)) return 'You are Pressed: you can\'t hold a shot.'; return true; },
+    text: 'Hold two ' + (mode === 'aimed' ? 'aimed ' : '') + 'overwatch shots. You fire one at each of the first two enemies that move into your line of fire, each at +2 to hit.',
+    available: (h) => { const u = h.u; if (!u) return false; const w = WEAPON[u.weapon]; if (!w || isMelee(w)) return 'Killzone needs a ranged weapon.'; if (u.overwatch) return 'Already on overwatch.'; if (isPressed(u)) return 'You are Pressed and can\'t hold a shot.'; return true; },
     run: (h) => { const u = h.u!; u.overwatch = mode; u.owShots = 1; stateOf(h).kz = { left: 2, hit: [], mode, firing: null }; emitFx(h.cb!, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); say(h.cb, u.name + ' sets a killzone: two shots held.'); },
   })),
   on: {
@@ -265,15 +265,15 @@ register({
   id: 'fighter.lunge', claims: 'all',
   actions: [{
     id: 'lunge', label: 'Lunge', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
-    text: 'Spend 1 Momentum: move up to 2 tiles and strike in one action (the strike\'s AP; the move provokes no opportunity attacks).',
-    available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'momentum') < 1) return 'Needs 1 Momentum (melee hits and closing in earn it).'; return true; },
+    text: 'Costs 1 Momentum and the AP of a strike. Move up to 2 tiles and strike, as one action. The move draws no opportunity attacks.',
+    available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'momentum') < 1) return 'Needs 1 Momentum. You earn it with melee hits and by closing in.'; return true; },
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
-      const at = lungeTile(cb, u, t); if (!at) return { ok: false, why: 'No tile within 2 puts you in reach.' };
+      const at = lungeTile(cb, u, t); if (!at) return { ok: false, why: 'No tile within 2 tiles puts you in reach.' };
       return { tiles: [at], lines: ['Lunge to ' + refOf(at) + ' and strike ' + t.name + ' (' + meleeAp(u) + ' AP, 1 Momentum).'] };
     },
     run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, at = lungeTile(cb, u, t); if (!at) return 'No tile within 2 puts you in reach.';
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, at = lungeTile(cb, u, t); if (!at) return 'No tile within 2 tiles puts you in reach.';
       resSpend(u, 'momentum', 1); const st = stateOf(h); st.lungeFrom = u.pos;
       if (at !== u.pos) { lunging = u; try { const e = moveUnit(cb, u, at, rng as Rng, 'move'); if (e) { resGain(u, 'momentum', 1); return e; } } finally { lunging = null; } }
       if (u.dead || u.downed || t.dead) return null;
@@ -300,7 +300,7 @@ register({
 let riposting = false;
 register({
   id: 'fighter.riposte', claims: 'all',
-  actions: [policyAction('off', 'Riposte off', 'off', 'No automatic Ripostes for the rest of this fight.'), policyAction('on', 'Riposte on', 'auto', 'Riposte every melee miss you can (the default).')],
+  actions: [policyAction('off', 'Riposte off', 'off', 'No automatic Ripostes for the rest of this fight.'), policyAction('on', 'Riposte on', 'auto', 'Riposte whenever a melee attack misses you and you can. This is the default.')],
   on: {
     on_miss: (ctx, h) => {
       const u = h.u!, cb = h.cb!; if (!ctx.melee || ctx.tgt !== u || riposting || !foeOf(ctx.att, u)) return;
@@ -356,7 +356,7 @@ register({
   actions: [
     {
       id: 'brace', label: 'Brace (Hold the Line)', scope: ['combat'], target: 'none', ap: 2,
-      text: 'Gain Guard 1 + your Durability modifier (at least 1, max 5) and become Braced (+2 Defense) until you move. Interpose while you hold Guard.',
+      text: 'Gain Guard equal to your Durability points (at least 1; you hold 5 Guard at most). You are Braced, with +2 Defense, until you move. While you hold Guard you Interpose: as your reaction, spend 1 Guard to take a weapon hit aimed at an ally next to you.',
       available: (h) => (h.u ? true : false),
       run: (h) => {
         const u = h.u!, st = stateOf(h), c = h.c, n = Math.max(1, 1 + mod(c?.skills.durability || 0)), got = resGain(u, 'guard', n);
@@ -366,9 +366,9 @@ register({
         emit(h.cb!, 'braced', { u, cb: h.cb }); // 'braced' {u}: the Defender's Brace landed (Adamantile Knight's Bulwark of Will)
       },
     },
-    policyAction('interpose_auto', 'Interpose on every hit', 'auto', 'Interpose whenever an adjacent ally is hit and you hold Guard (the default).'),
+    policyAction('interpose_auto', 'Interpose on every hit', 'auto', 'Interpose whenever an ally next to you is hit and you hold Guard. This is the default.'),
     policyAction('interpose_down', 'Interpose only to save a Downed ally', 'down', 'Interpose only when the hit would Down the ally.'),
-    policyAction('interpose_off', 'Interpose off', 'off', 'Never Interpose this fight.'),
+    policyAction('interpose_off', 'Interpose off', 'off', 'Don\'t Interpose for the rest of this fight.'),
   ],
   on: {
     moved: (ctx, h) => { if (ctx.u === h.u) braceSync(h); },
@@ -411,7 +411,7 @@ register({
   id: 'defender.draw_fire', claims: 'all',
   actions: [{
     id: 'draw_fire', label: 'Draw Fire', scope: ['combat'], target: 'enemy', ap: 1,
-    available: (h) => (h.u ? (resOf(h.u, 'guard') < 1 ? 'Needs 1 Guard (Brace first).' : true) : false),
+    available: (h) => (h.u ? (resOf(h.u, 'guard') < 1 ? 'Needs 1 Guard. Brace first.' : true) : false),
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && !sideSees(h.cb!, h.u!.side, t)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!; resSpend(u, 'guard', 1);
@@ -435,9 +435,9 @@ register({
 register({
   id: 'defender.reactive_plate', claims: 'all',
   actions: [
-    policyAction('plate_all', 'Reactive Plate: spend what it takes', 'auto', 'The plate spends as much Guard as the hit needs (the default).'),
-    policyAction('plate_keep1', 'Reactive Plate: keep 1 Guard', 'keep1', 'The plate never spends your last Guard (kept for Interpose).'),
-    policyAction('plate_off', 'Reactive Plate: off', 'off', 'The plate spends no Guard this fight.'),
+    policyAction('plate_all', 'Reactive Plate: spend what it takes', 'auto', 'Reactive Plate spends as much Guard as the hit needs. This is the default.'),
+    policyAction('plate_keep1', 'Reactive Plate: keep 1 Guard', 'keep1', 'Reactive Plate never spends your last Guard, so you keep it for Interpose.'),
+    policyAction('plate_off', 'Reactive Plate: off', 'off', 'Reactive Plate spends no Guard for the rest of this fight.'),
   ],
   on: {
     damage_in: (ctx, h) => {
@@ -478,8 +478,8 @@ register({
   actions: [
     {
       id: 'triage', label: 'Triage', scope: ['combat', 'world'], target: 'ally', ap: 2, range: 1,
-      text: 'Heal an adjacent ally 20 × your Healing given and end their Bleeding (once per ally per turn; out of a fight once per ally per scene). No Supplies.',
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Triage an ally, not yourself.' }; if (t.downed) return { ok: false, why: 'Downed: Stabilise them (1 AP).' }; if (uses(h).left(triPer(h), 1, triKey(h, t)) <= 0) return { ok: false, why: triPer(h) === 'per_scene' ? 'Already treated this scene.' : 'Already treated this turn.' };
+      text: 'Heal an ally next to you for 20 HP × your Healing given and end their Bleeding. Once per ally each turn, or once per ally each scene out of a fight. Costs no Supplies.',
+      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Triage an ally, not yourself.' }; if (t.downed) return { ok: false, why: 'They are Downed. Stabilise them instead (1 AP).' }; if (uses(h).left(triPer(h), 1, triKey(h, t)) <= 0) return { ok: false, why: triPer(h) === 'per_scene' ? 'Already treated this scene.' : 'Already treated this turn.' };
         return { lines: ['Heal ' + t.name + ' about ' + Math.floor(20 * healMultOf(h) * (t.healRecv || 1)) + (t.bleed ? ' and stop the bleeding.' : '.')] }; },
       run: (h, args) => {
         const cb = h.cb!, t = unitById(cb, args.targetId)!; if (t === h.u) return 'Triage an ally, not yourself.';
@@ -491,18 +491,18 @@ register({
     },
     {
       id: 'stabilise', label: 'Stabilise (Triage)', scope: ['combat', 'world'], target: 'ally', ap: 1, range: 1,
-      text: 'Stabilise a Downed ally next to you at 1 HP, no stim needed.',
+      text: 'Stabilise a Downed ally next to you at 1 HP. No stim needed.',
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && !t.downed) return { ok: false, why: t.name + ' isn\'t Downed.' }; return {}; },
       run: (h, args) => { const cb = h.cb!, t = unitById(cb, args.targetId)!; healUnit(cb, t, 1, h.u!, 'stabilise'); t.bleed = 0; emitFx(cb, 'stim', { unit: h.u!.id, target: t.id, from: h.u!.pos, to: t.pos }); say(cb, h.u!.name + ' stabilises ' + t.name + ' at 1 HP.'); },
     },
     {
       id: 'triage_story', label: 'Triage', scope: ['story'], target: 'none', ap: 0,
-      text: 'Patch up an ally (named in what you say, else the most hurt): 20 × your Healing given, once per ally per scene.',
+      text: 'Patch up an ally for 20 HP × your Healing given. Name the ally in what you say, or it goes to whoever is most hurt. Once per ally each scene.',
       available: (h) => (mostHurt(h) ? true : 'Nobody is hurt.'),
       run: (h, args) => {
         const t = charNamed(h, args) || mostHurt(h); if (!t) return 'Nobody is hurt.';
         if (t.id === h.c?.id) return 'Triage an ally, not yourself.';
-        if (t.hp <= 0) return t.name + ' is Downed: the Narrator rules the treatment (or stim them).';
+        if (t.hp <= 0) return t.name + ' is Downed. Use a stim on them, or the Narrator decides the treatment.';
         if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.';
         const n = storyHeal(h, t, 20 * healMultOf(h)); postStory(h, h.c!.name + ' triages ' + t.name + ': +' + n + ' HP (' + t.hp + '/' + maxHp(t) + ').');
       },
@@ -518,7 +518,7 @@ register({
   id: 'medic.stim_throw', claims: 'all',
   actions: [{
     id: 'stim_throw', label: 'Stim Throw', scope: ['combat', 'world'], target: 'ally', ap: 1, range: 4, needsSight: true,
-    available: (h) => (h.u ? (resOf(h.u, 'supplies') < 1 ? 'No Supplies left (restocked at rest).' : true) : false),
+    available: (h) => (h.u ? (resOf(h.u, 'supplies') < 1 ? 'No Supplies left. They are restocked when you rest.' : true) : false),
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && t !== h.u && !unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!; resSpend(u, 'supplies', 1);
@@ -540,8 +540,8 @@ register({
   actions: [
     {
       id: 'injury', label: 'Field Surgery: treat an injury', scope: ['story', 'world'], target: 'none', ap: 0,
-      text: 'Out of combat, 1 Supply: treat one arm or leg injury of an ally (named in what you say, else yourself).',
-      available: (h) => (h.c ? (storyRes(h.c, 'supplies') < 1 ? 'No Supplies left (restocked at rest).' : true) : false),
+      text: 'Out of a fight, for 1 Supply: treat one arm or leg injury. Name the ally in what you say, or you treat yourself.',
+      available: (h) => (h.c ? (storyRes(h.c, 'supplies') < 1 ? 'No Supplies left. They are restocked when you rest.' : true) : false),
       run: (h, args) => {
         const t = surgeryTarget(h, args); if (!t) return 'Name who you treat.';
         const i = (t.injuries || []).findIndex((x) => x.loc === 'arm' || x.loc === 'leg'); if (i < 0) return t.name + ' has no arm or leg injury.';
@@ -552,8 +552,8 @@ register({
     },
     {
       id: 'conditions', label: 'Field Surgery: clear Body conditions', scope: ['story', 'world'], target: 'none', ap: 0,
-      text: 'Out of combat, 1 Supply: clear every Body condition an ally carries (named in what you say, else yourself).',
-      available: (h) => (h.c ? (storyRes(h.c, 'supplies') < 1 ? 'No Supplies left (restocked at rest).' : true) : false),
+      text: 'Out of a fight, for 1 Supply: clear every Body condition on one person. Name the ally in what you say, or you treat yourself.',
+      available: (h) => (h.c ? (storyRes(h.c, 'supplies') < 1 ? 'No Supplies left. They are restocked when you rest.' : true) : false),
       run: (h, args) => {
         const t = surgeryTarget(h, args); if (!t) return 'Name who you treat.';
         const body = (t.persistentConds || []).filter((x) => condFamily(x.id) === 'body');
@@ -601,14 +601,14 @@ register({
   actions: [
     ...TOX.map(([id, name]): ActionDef => ({
       id: 'toxin_' + id, label: 'Toxin: ' + name, scope: ['combat'], target: 'none', ap: 1,
-      available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'toxins') < 1) return 'No toxin doses left (restocked at rest).'; if (!coatable(u)) return 'Coat a blade, dart or arrow: not a gun.'; return true; },
+      available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'toxins') < 1) return 'No toxin doses left. They are restocked when you rest.'; if (!coatable(u)) return 'Toxin goes on a blade, a dart or an arrow, not a gun.'; return true; },
       run: (h) => { const u = h.u!; resSpend(u, 'toxins', 1); stateOf(h).coat = id; say(h.cb, u.name + ' coats the weapon (' + name + '; ' + resOf(u, 'toxins') + ' doses left).'); },
     })),
     ...TOX.map(([id, name]): ActionDef => ({
       id: 'story_' + id, label: 'Toxin: ' + name, scope: ['story'], target: 'none', ap: 0,
-      text: 'Coat your weapon before trouble starts: the next fight opens with the coat on (' + name + ').',
-      available: (h) => (h.c ? (storyRes(h.c, 'toxins') < 1 ? 'No toxin doses left (restocked at rest).' : true) : false),
-      run: (h) => { if (!spendStoryRes(h.c!, 'toxins')) return 'No doses.'; keep(h).coat = id; postStory(h, h.c!.name + ' coats the weapon with a ' + name.toLowerCase() + ' toxin.'); },
+      text: 'Coat your weapon with ' + name.toLowerCase() + ' toxin before trouble starts. Your next fight begins with the coat already on. Uses one toxin dose.',
+      available: (h) => (h.c ? (storyRes(h.c, 'toxins') < 1 ? 'No toxin doses left. They are restocked when you rest.' : true) : false),
+      run: (h) => { if (!spendStoryRes(h.c!, 'toxins')) return 'No toxin doses left.'; keep(h).coat = id; postStory(h, h.c!.name + ' coats the weapon with a ' + name.toLowerCase() + ' toxin.'); },
     })),
   ],
   on: {
@@ -676,8 +676,8 @@ function overSync(st: Record<string, any>, u: Unit | null | undefined, cb: Comba
 }
 const overAction = (scope: 'combat' | 'world'): ActionDef => ({
   id: scope === 'combat' ? 'overcharge' : 'overcharge_world', label: 'Overcharge', scope: [scope], target: 'none', ap: 0, uses: { per: scope === 'combat' ? 'per_combat' : 'per_scene', n: 1 },
-  text: 'Your next glyph costs no charge and no AP, and may go one word past your Max Sigil words (never past 4 glyphs). It still adds Flux.',
-  available: (h) => { const e = evokerReady(h); if (e) return e; if (stateOf(h).over) return 'Ready: draw the glyph.'; return true; },
+  text: (scope === 'combat' ? 'Once a fight' : 'Once a scene') + ': your next glyph costs no charge and no AP, and the spell can run one word past your Max Sigil words (never past 4 glyphs). The glyph still adds Flux.',
+  available: (h) => { const e = evokerReady(h); if (e) return e; if (stateOf(h).over) return 'Overcharge is ready. Draw the glyph.'; return true; },
   run: (h) => { const st = stateOf(h); st.over = true; overSync(st, h.u, h.cb); say(h.cb, h.u!.name + ' overcharges the Evoker: the next glyph is free, and the spell may hold one word more (never past ' + MAX_GLYPHS + ').'); },
 });
 register({
@@ -740,7 +740,7 @@ function payloadPlan(cb: Combat, u: Unit, args: ActionArgs): { pv?: EvokePreview
 }
 const payloadAction = (scope: 'combat' | 'world'): ActionDef => ({
   id: scope === 'combat' ? 'payload' : 'payload_world', label: 'Evoke with Payload', scope: [scope], target: 'tile', ap: 0,
-  text: 'Evoke the Line on this tile with double area: a SPREAD radius or a PUSH cone ×2, or one more missile for a one-target spell. The Evoke adds Flux equal to its glyphs. Not for STAY, WAIT or WATCH.',
+  text: 'Evoke the Line on this tile with a bigger effect: a SPREAD radius or a PUSH cone is doubled, and a one-target spell fires one more missile. The Evoke adds Flux equal to the number of glyphs in the Line. It can\'t be used with STAY, WAIT or WATCH.',
   preview: (h, args) => {
     const cb = h.cb!, u = h.u!, r = payloadPlan(cb, u, args); if (r.why) return { ok: false, why: r.why, ...(r.pv?.area?.length ? { area: r.pv.area, sigil: true } : {}) };
     const pv = r.pv!, n = pv.pattern!.glyphs.length;
@@ -810,14 +810,14 @@ register({
   actions: [{
     // In a fight and on the area map (the same number of overworld rounds there: cb.round is the story round).
     id: 'raise_cover', label: 'Raise Cover (cover rune)', scope: ['combat', 'world'], target: 'none', ap: SPELL_AP.evoke,
-    text: 'Evoke your lone STAY glyph as a cover rune, from a tile next to it: full cover on its tile and the one beside it.',
+    text: 'Evoke your lone STAY glyph as a cover rune, from a tile next to it. The rune is full cover on its own tile and on the tile beside it.',
     available: (h) => {
       const e = evokerReady(h); if (e) return e; const cb = h.cb, u = h.u!;
-      if (!cb || !loneStay(cb, u)) return (cb?.glyphs || []).some((g) => g.pos === u.pos && isLoneStay(cb!, u, g)) ? 'Step off the STAY glyph: you Evoke the rune from a tile next to it.' : 'Draw a lone STAY glyph, then step to a tile next to it.';
+      if (!cb || !loneStay(cb, u)) return (cb?.glyphs || []).some((g) => g.pos === u.pos && isLoneStay(cb!, u, g)) ? 'Step off the STAY glyph. You Evoke the rune from a tile next to it.' : 'Draw a lone STAY glyph, then step to a tile next to it.';
       if ((u.mg!.charge || 0) < 1) return 'Needs 1 charge.'; return true;
     },
     run: (h) => {
-      const cb = h.cb!, u = h.u!, g = loneStay(cb, u)!; if (cb.units.some((v) => !v.dead && v.pos === g.pos)) return 'Someone stands on the glyph: the rune needs the tile clear.';
+      const cb = h.cb!, u = h.u!, g = loneStay(cb, u)!; if (cb.units.some((v) => !v.dead && v.pos === g.pos)) return 'Someone is standing on the glyph. The rune needs a clear tile.';
       const tiles = runeTiles(cb, u, g.pos), left = 2 + (u.mg!.durBonus || 0), st = stateOf(h);
       u.mg!.charge -= 1; u.mg!.cast = true; cb.glyphs = (cb.glyphs || []).filter((x) => x !== g); tidyStrokes(cb.glyphs);
       const ids: string[] = [];
@@ -851,7 +851,7 @@ register({
 // Healing given multiplier (the higher shield stands, like the WARD word). +1 Flux per charge. No glyph.
 const wardDef = (n: number, self: boolean): ActionDef => ({
   id: 'ward' + n + (self ? '_self' : ''), label: 'Ward ×' + n + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally', ap: 2, range: 6,
-  text: 'Spend ' + n + ' charge: a shield of ' + 10 * n + ' × your Healing given on ' + (self ? 'yourself' : 'an ally within 6') + '. +' + n + ' Flux.',
+  text: 'Spend ' + n + ' charge to put a shield of ' + 10 * n + ' × your Healing given on ' + (self ? 'yourself' : 'an ally within 6 tiles') + '. Adds ' + n + ' Flux.',
   available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < n) return 'Needs ' + n + ' charge.'; return true; },
   preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (t && !unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
   run: (h, args) => {
@@ -906,11 +906,11 @@ register({
     // The area map (the audit's proposal, PROVISIONAL): an overworld round is everyone's turn at once, so the ally's +1
     // lands on this round's AP straight away (the ceiling of 9 holds). Once a round, as once a turn in a fight.
     id: 'quicken_world', label: 'Quicken', scope: ['world'], target: 'ally', ap: 2, range: 6, uses: { per: 'per_turn', n: 1 },
-    text: 'Spend 1 charge: an ally within 6 tiles gets +1 AP this overworld round.',
+    text: 'Once a round, for 1 charge: an ally within 6 tiles gets +1 AP this round.',
     available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 1) return 'Needs 1 charge.'; return true; },
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, g = h.g, t = unitById(cb, args.targetId); if (!t || t === u) return 'Quicken an ally, not yourself.';
-      const tc = charOfUnit(t); if (!g || !tc) return 'Only a character takes Quicken on the area map.';
+      const tc = charOfUnit(t); if (!g || !tc) return 'Out of a fight, Quicken only works on a squadmate.';
       if (g.story.ended?.[tc.id]) return tc.name + ' has ended the turn.';
       const was = apLeft(g, tc), now = Math.min(AP_MAX, was + 1); if (now <= was) return tc.name + ' is at the ceiling of ' + AP_MAX + ' AP.';
       u.mg!.charge -= 1; u.mg!.cast = true; (g.story.ap ||= {})[tc.id] = now;
@@ -945,14 +945,14 @@ function inscribe(h: Holder, t: Character, kind: 'weapon' | 'armour', u?: Unit |
 const inscribeDef = (kind: 'weapon' | 'armour', self: boolean, scope: 'combat' | 'story'): ActionDef => ({
   id: kind + (self ? '_self' : '') + (scope === 'story' ? '_story' : ''), label: 'Inscribe ' + (kind === 'weapon' ? 'a weapon' : 'armour') + (self ? ' (yours)' : ''), scope: scope === 'combat' ? ['combat'] : ['story', 'world'],
   target: self || scope === 'story' ? 'none' : 'ally', ap: scope === 'combat' ? 3 : 0, range: 1,
-  text: kind === 'weapon' ? '2 charge: +10% damage with the weapon until the next rest.' : '2 charge: +5 armour value until the next rest.' + (scope === 'story' ? ' Name the ally in what you say (else yourself).' : ''),
+  text: (kind === 'weapon' ? 'Spend 2 charge: the weapon deals +10% damage until the next rest.' : 'Spend 2 charge: the armour gains +5 armour value until the next rest.') + (scope === 'story' && !self ? ' Name the ally in what you say, or you inscribe your own.' : ''),
   available: (h) => {
     if (scope === 'combat') { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 2) return 'Needs 2 charge.'; return true; }
     if (!h.c || !hasEvoker(h.c)) return 'Needs an Evoker in hand.'; if (evoChargeNow(h.c) < 2) return 'Needs 2 charge in the core.'; return true;
   },
   run: (h, args) => {
     if (scope === 'combat') {
-      const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!, tc = charOfUnit(t); if (!tc) return 'Only a character\'s gear takes an inscription.';
+      const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!, tc = charOfUnit(t); if (!tc) return 'Only a squadmate\'s gear can take an inscription.';
       const e = inscribe(h, tc, kind, t); if (e) return e; u.mg!.charge -= 2; u.mg!.cast = true;
       say(cb, u.name + ' inscribes ' + (t === u ? 'their own ' : t.name + '\'s ') + (kind === 'weapon' ? WEAPON[t.weapon]?.name || 'weapon' : 'armour') + ' (' + (kind === 'weapon' ? '+10% damage' : '+5 armour') + ' until the next rest; 2 charge).');
       return;
@@ -1024,14 +1024,14 @@ register({
   actions: [
     {
       id: 'write', label: 'Store a spell', scope: ['story', 'world'], target: 'text', ap: 0,
-      text: 'Write a Sigil spell onto an object (say its words: "FIRE SEEK SPREAD"); pay its charge now. It fades at the next rest. In a fight it goes off from your tile with its own Reach, all around.',
-      available: (h) => { const c = h.c; if (!c || !hasEvoker(c)) return 'Needs an Evoker in hand.'; if (storedOf(h).length >= storedCap(c)) return 'You keep ' + storedCap(c) + ' stored spell(s) at most.'; return true; },
+      text: 'Write a Sigil spell onto an object. Say its words, for example "FIRE SEEK SPREAD", and pay its charge now. It fades at your next rest. Triggered in a fight, it goes off from your tile in every direction, with its own Reach.',
+      available: (h) => { const c = h.c; if (!c || !hasEvoker(c)) return 'Needs an Evoker in hand.'; if (storedOf(h).length >= storedCap(c)) return 'You can keep ' + storedCap(c) + (storedCap(c) === 1 ? ' stored spell' : ' stored spells') + ' at most.'; return true; },
       run: (h, args) => {
         const c = h.c!, words = parseSpell(args.text || ''), known = new Set([...(c.sigils || []), ...itemWords(c)]);
-        if (words.length < 2) return 'Name the words (at least two: a Subject and another word).';
+        if (words.length < 2) return 'Say the spell\'s words: at least two, a Subject and one other word.';
         const bad = words.find((w) => !known.has(w)); if (bad) return 'You don\'t know ' + bad.toUpperCase() + '.';
         const ge = grammarError(words, maxSigilWords(c)); if (ge) return ge;
-        if (words.some((w) => STORE_REFUSED.includes(w))) return 'A STAY, WAIT or WATCH spell can\'t be stored: it would outlive the object.';
+        if (words.some((w) => STORE_REFUSED.includes(w))) return 'A STAY, WAIT or WATCH spell can\'t be stored.';
         const wc = wordCostMods(c), cost = words.reduce((t, w) => t + Math.max(0, (SIGIL as any)[w].charge + (wc[w] || 0)), 0) + Math.max(1, words.length - sigilCoreSaving(c));
         if (evoChargeNow(c) < cost) return 'Needs ' + cost + ' charge (' + evoChargeNow(c) + ' in the core).';
         c.evoCharge = evoChargeNow(c) - cost;
@@ -1043,9 +1043,9 @@ register({
     },
     {
       id: 'trigger', label: 'Trigger a stored spell', scope: ['combat'], target: 'tile', ap: 1,
-      text: 'Set off your oldest stored spell from your tile, with its own Reach, all around: pick the target (1 AP).',
+      text: 'Set off your oldest stored spell and pick its target. It goes off from your tile in every direction, with its own Reach.',
       available: (h) => {
-        const sp = storedOf(h)[0]; if (!sp) return 'Nothing stored (write one out of combat).';
+        const sp = storedOf(h)[0]; if (!sp) return 'Nothing stored. Store a spell out of a fight first.';
         const e = evokerReady(h); if (e) return e; return true;
       },
       preview: (h, args) => {
@@ -1068,7 +1068,7 @@ register({
     },
     {
       id: 'trigger_story', label: 'Trigger a stored spell', scope: ['story'], target: 'none', ap: 0,
-      text: 'Set off a stored spell outside a fight (a door ward, a bomb): the Narrator rules the result from its numbers.',
+      text: 'Set off a stored spell outside a fight, as a door ward or a bomb for example. The Narrator decides the result from the spell\'s numbers.',
       available: (h) => (storedOf(h).length ? true : 'Nothing stored.'),
       run: (h, args) => {
         const list = storedOf(h), sp = list[0]!; keep(h).spells = list.slice(1);
@@ -1134,7 +1134,7 @@ register({
       available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 3) return 'Needs 3 charge.'; return true; },
       preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
         if (dist(u.pos, t.pos) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (!lineOfSight(cb, u.pos, t.pos)) return { ok: false, why: 'No line of sight.' };
-        const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (12 + unitStrength(u, 'brain_power')) + ').' : t.name + ' shows no state the engine knows: the Narrator picks what flips.'] }; },
+        const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (12 + unitStrength(u, 'brain_power')) + ').' : t.name + ' has nothing the game tracks to flip. The Narrator decides what flips.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, r0 = rng as Rng; u.mg!.charge -= 3; u.mg!.cast = true;
         const r = d20(r0), m = unitSave(t, 'brain'), tn = 12 + unitStrength(u, 'brain_power'), ok = r === 20 || (r !== 1 && r + m >= tn);
@@ -1150,14 +1150,14 @@ register({
           case 'quickened': endCond(t, 'quickened', cb); t.dazedNext = 1; line += ' · its haste turns to a stagger (Dazed: −2 AP on its next turn)'; break;
           case 'sharpened': endCond(t, 'sharpened', cb); (st.blunt ||= []).push({ id: t.id, until: cb.round + 2 }); line += ' · its edge turns (−3 to hit and ×0.8 damage on its next attack)'; break;
           case 'hidden': line += reveal(cb, t, 'rewritten') + applyCond(cb, r0, u, t, 'marked', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
-          default: line += ' · no state the engine knows: the Narrator rules what flips'; note(h, t.name + ' failed the Rewrite save: pick the opposite of one of its exotic buffs, until it would have ended.');
+          default: line += ' · the Narrator decides what flips'; note(h, t.name + ' failed the Rewrite save: pick the opposite of one of its exotic buffs, until it would have ended.');
         }
         say(cb, line + addFlux(cb, u, 1) + '.'); checkOver(cb);
       },
     },
     {
       id: 'rewrite_story', label: 'Rewrite', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'Flip a blessing, ward or advantage someone relies on (pick who and what). The engine rolls their Brain save; the Narrator rules the flip.',
+      text: 'Once a scene, for 3 charge: flip a blessing, ward or advantage someone relies on (say who and what). They make a Brain save. If they fail, the Narrator decides how it flips.',
       available: (h) => (h.c && hasEvoker(h.c) ? (evoChargeNow(h.c) < 3 ? 'Needs 3 charge in the core.' : true) : 'Needs an Evoker in hand.'),
       run: (h, args) => {
         const c = h.c!; c.evoCharge = evoChargeNow(c) - 3; const r = d20(h.g.rng), tn = 12 + strengthOf(c, 'brain_power'), ok = r === 20 || (r !== 1 && r >= tn);
@@ -1226,9 +1226,9 @@ register({
 const stormable = (d: any) => isDamageDesign(d) && ['bolt', 'lance'].includes(formOf(migrateDesign(d)));
 register({
   id: 'channeler.storm_front', claims: 'all',
-  toggles: [{ id: 'storm', label: 'Storm Front (+10 MP, arcs to 2 more)', on: ['combat/outburst'],
-    available: (h) => (uses(h).left('per_turn', 1, h.key + '#storm') > 0 ? true : 'Once a turn.'),
-    preview: () => 'A Bolt or Lance arcs on to up to 2 more enemies within 2 tiles of the first, one roll each, at the stage reached.' }],
+  toggles: [{ id: 'storm', label: 'Storm Front (+10 MP, arcs to 2 more enemies)', on: ['combat/outburst'],
+    available: (h) => (uses(h).left('per_turn', 1, h.key + '#storm') > 0 ? true : 'Used this turn.'),
+    preview: () => 'Once a turn, for +10 MP: a Bolt or Lance arcs on to up to 2 more enemies within 2 tiles of the first. Each is rolled separately, at the stage the Outburst reached.' }],
   priority: 120,
   on: {
     outburst_cost: (ctx, h) => { if (ctx.u === h.u && !ctx.classMove && modOn(h, 'storm') && stormable(ctx.design)) ctx.mp += 10; },
@@ -1271,7 +1271,7 @@ const SURGE_PAST = 2.6;
 register({
   id: 'channeler.heart_surge', claims: 'all',
   toggles: [{ id: 'surge', label: 'Heart Surge (+1 stage at release, double Strain)', on: ['combat/release', 'combat/outburst'],
-    available: (h) => (uses(h).left('per_turn', 1, h.key + '#surge') > 0 ? true : 'Once a turn.'), preview: (h) => (h.cb ? '+1 stage at release (past 4: ×' + SURGE_PAST + '); +' + baseStrain(h.cb) + ' Strain after it lands.' : null) }],
+    available: (h) => (uses(h).left('per_turn', 1, h.key + '#surge') > 0 ? true : 'Used this turn.'), preview: (h) => (h.cb ? 'Once a turn: the Outburst releases 1 stage higher. At stage 4 it releases at ×' + SURGE_PAST + ' instead. You take +' + baseStrain(h.cb) + ' Strain after it lands.' : null) }],
   priority: 60,
   on: {
     // A held release: the stage itself rises (the release_cost of the real release, not a preview).
@@ -1310,7 +1310,7 @@ const shieldBy = (h: Holder): Record<string, boolean> => (stateOf(h).shields ||=
 const willShield = (self: boolean): ActionDef => ({
   id: self ? 'will_shield_self' : 'will_shield', label: 'Will Shield' + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally',
   ap: (h) => (h.u?.mg ? soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20).ap : 2),
-  text: 'A Buff cast: a shield of 30 × your Healing given on ' + (self ? 'yourself' : 'an ally in Soul reach') + ', until the fight ends.',
+  text: 'Put a shield of 30 × your Healing given on ' + (self ? 'yourself' : 'an ally in Soul reach that you can see') + '. It lasts until the fight ends. It costs MP and Strain like a Buff Outburst.',
   available: (h) => { const e = soulReady(h); if (e) return e; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); if (h.u!.mg!.emanator && h.u!.mg!.mp < p.mp) return 'Needs ' + p.mp + ' MP.'; return true; },
   preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); const e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Will Shield on ' + t.name + ': about ' + Math.floor(30 * healMultOf(h) * (t.healRecv || 1)) + ' (' + p.mp + ' MP, ' + p.strain + ' Strain).'] }; },
   run: (h, args, rng) => {
@@ -1328,7 +1328,7 @@ register({ id: 'guardian.will_shield', claims: 'all', actions: [willShield(false
 // damage source). Automatic; policy: off for the fight.
 register({
   id: 'guardian.drink_it_in', claims: 'all',
-  actions: [policyAction('drink_off', 'Drink It In off', 'off', 'Keep your reaction for something else this fight.'), policyAction('drink_on', 'Drink It In on', 'auto', 'Drink enemy spells that hit your shields (the default).')],
+  actions: [policyAction('drink_off', 'Drink It In off', 'off', 'Don\'t use Drink It In for the rest of this fight, so your reaction stays free for something else.'), policyAction('drink_on', 'Drink It In on', 'auto', 'Drink in enemy spells that hit your shields. This is the default.')],
   on: {
     shield_grant: (ctx, h) => { if (ctx.by === h.u && h.u && ctx.n >= (ctx.t.shield || 0)) (stateOf(h).shields ||= {})[ctx.t.id] = true; else if (ctx.by !== h.u && ctx.n > (ctx.t.shield || 0)) { const s = stateOf(h).shields; if (s) delete s[ctx.t.id]; } },
     damage_in: (ctx, h) => {
@@ -1369,7 +1369,7 @@ register({
     },
     {
       id: 'sanctuary_story', label: 'Sanctuary', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'Raise a sanctuary around the party (60 MP): the Narrator rules what it keeps out.',
+      text: 'Once a scene, for 60 MP: raise a sanctuary around the party. The Narrator decides what it keeps out.',
       available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => { const c = h.c!; c.mp = mpNow(c) - 60; const eid = postStory(h, c.name + ' raises a Sanctuary' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '.'));
         pendRuling(h.g, c, h.key, 'Sanctuary out of combat (60 MP paid): a 3×3 safe zone where allies take half damage until the danger passes. Rule what it keeps out.', eid || undefined); },
@@ -1413,7 +1413,7 @@ register({
     },
     {
       id: 'inspire_story', label: 'Inspire', scope: ['story'], target: 'none', ap: 0,
-      text: '10 MP: an ally (named in what you say) gets +2 on their next check.',
+      text: 'For 10 MP: an ally gets +2 on their next check. Name the ally in what you say.',
       available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 10 ? 'Needs 10 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => {
         const t = charNamed(h, args); if (!t || t === h.c) return 'Name the ally you inspire.';
@@ -1488,7 +1488,7 @@ register({
   id: 'bard.gift', claims: 'all',
   actions: [{
     id: 'gift', label: 'Gift a design', scope: ['story', 'world'], target: 'text', ap: 0, uses: { per: 'per_rest', n: 1 },
-    text: 'Hand an ally one of your ready designs (say who, and which). They cast it once, on your MP and your Strain.',
+    text: 'Once per rest: hand an ally one of your ready designs (say who, and which). They can cast it once, and you pay the MP and the Strain.',
     available: (h) => (h.c?.outbursts?.length ? true : 'You have no ready designs.'),
     run: (h, args) => {
       const c = h.c!, t = charNamed(h, args); if (!t || t === c) return 'Name the ally you give it to.';
@@ -1559,7 +1559,7 @@ register({
     },
     {
       id: 'puppet_story', label: 'Puppet', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: '60 MP: say who and what they do. The engine rolls their Heart save; the Narrator plays out the forced act.',
+      text: 'Once a scene, for 60 MP: say who you take over and what they do. They make a Heart save. If they fail, the Narrator plays out the forced act.',
       available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => {
         const c = h.c!; c.mp = mpNow(c) - 60; const r = d20(h.g.rng), tn = 12 + strengthOf(c, 'will_power');

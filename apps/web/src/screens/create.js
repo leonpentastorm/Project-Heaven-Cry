@@ -482,7 +482,7 @@ export class CreateLogic extends DCLogic {
     const sigilGroups = WORD_CLASS.map(([cls, label]) => ({ label, words: SIGILS.filter((w) => w.class === cls).map((w) => {
       const on = sig.includes(w.id), isMod = !isSubject(w.id) && !isReachW(w.id); // a starting pair is a Subject and a Reach word
       return { id: w.id, word: w.word, img: glyphUri(w.id, on ? SIGIL_GLOW : SIGIL_INK, { glow: on }), charge: 'CHARGE ' + w.charge, text: w.text,
-        pick: pickWord(w.id), pressed: on ? 'true' : 'false', disabled: isMod && !on, title: isMod ? w.word + ' is learned in play: your 2 starting words are a Subject and a Reach word (rules 1.4). ' + w.text : w.word + ': ' + w.text,
+        pick: pickWord(w.id), pressed: on ? 'true' : 'false', disabled: isMod && !on, title: isMod ? w.word + ' is learned in play: your 2 starting words are a Subject and a Reach word. ' + w.text : w.word + ': ' + w.text,
         style: 'display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 10px; border-radius: 10px; color: #E7EBF3; font-family: inherit; cursor: ' + (isMod ? 'not-allowed' : 'pointer') + '; ' +
           (on ? 'background: #1C2536; border: 1px solid ' + SIGIL_GLOW : 'background: #10151F; border: 1px solid #232D3F') + (isMod ? '; opacity: 0.55' : '') };
     }) }));

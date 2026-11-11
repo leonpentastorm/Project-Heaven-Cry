@@ -96,9 +96,9 @@ export function migrateWords(words: string[] | undefined): { words: string[]; fr
   // Two starting words with no Reach word (a 1.2 Stack: SPARK · CONDENSE, FIRE · RETURN): the non-Subject one becomes SEEK.
   if (list.length === 2 && !list.some((w) => W(w) && isReach(w)) && !list.includes('seek')) {
     const i = list.findIndex((w) => !W(w) || !isSubject(w)), at = i >= 0 ? i : 1, was = list[at];
-    list[at] = 'seek'; notes.push((was || '?').toUpperCase() + ' becomes SEEK: a caster starts with a Reach word (rules 1.4).');
+    list[at] = 'seek'; notes.push((was || '?').toUpperCase() + ' becomes SEEK: a caster starts with a Reach word.');
   }
-  const kept = list.filter((w) => { if (W(w)) return true; free++; notes.push((w || '?').toUpperCase() + ' is gone from the Sigil words (rules 1.4)' + (w === 'return' ? ': targeting yourself is Touch\'s exception now' : '') + '; one free word at the next rest.'); return false; });
+  const kept = list.filter((w) => { if (W(w)) return true; free++; notes.push((w || '?').toUpperCase() + ' is gone from the Sigil words' + (w === 'return' ? ': targeting yourself is Touch\'s exception now' : '') + '; one free word at the next rest.'); return false; });
   return { words: kept, free, notes };
 }
 

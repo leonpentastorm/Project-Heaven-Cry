@@ -47,7 +47,7 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
   }
 }
 export const handlerOf = (id: string): TechHandler | null => HANDLERS[id] || null;
-export const NOT_BUILT = 'Not built yet.';
+export const NOT_BUILT = 'This technique isn\'t in the game yet.';
 
 // ---------- this turn ----------
 /** A stamp for "this turn of this unit": the round and the turn index. */
@@ -277,7 +277,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.group === 'watch' && isPressed(u)) return 'You are Pressed: you can\'t hold a shot.';
   if (def.group === 'watch' && (u as any).noWatch === cb.round) return 'Head down: no held shot this round.';
   if (def.group === 'take' && techStateOf(u, '_take').t === turnStamp(cb)) return 'One Take a turn.';
-  if (def.needs.hidden && !u.hidden) return 'Only from Hidden.';
+  if (def.needs.hidden && !u.hidden) return 'Only while you are Hidden.';
   const pair = (args as any)._pair as PairMark | undefined;
   const ap = pair ? pair.ap : apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
   if (u.ap + encoreCredit(u, { type: 'combat/technique', id: def.id }, cb) < ap) return 'Needs ' + ap + ' AP.'; // Encore lends a repeat its AP (items 729, 737)

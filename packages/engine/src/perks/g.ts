@@ -81,7 +81,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'touch', label: 'Touch (Bedside Manner)', scope: ['story'], target: 'npc', ap: 0,
-    text: 'A handshake, a hand on the shoulder: learn whether their next statement is a lie (II: and whether they\'re afraid, and of whom).',
+    text: 'A handshake or a hand on the shoulder: learn whether their next statement is a lie. II: you also learn whether they are afraid, and of whom.',
     preview: (h, a) => (npcRef(h, a).name || textArg(a) ? {} : { ok: false, why: 'Who do you touch? Type their name.' }),
     run: (h, a) => {
       const who = npcRef(h, a).name || clip(a.text, 60);
@@ -105,7 +105,7 @@ register({
   actions: [
     {
       id: 'cite', label: 'Cite a fact (Footnote)', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'Cite a fact. Allies who act on it get +1 (II: +2) on those rolls this scene.',
+      text: 'Once a scene: cite a fact. I: allies who act on it get +1 on those rolls this scene. II: they get +2.',
       run: (h, a) => {
         sst(h).cite = { scene: sceneN(h), text: textArg(a) };
         const eid = postStory(h, 'cites: "' + textArg(a) + '"');
@@ -114,7 +114,7 @@ register({
     },
     {
       id: 'cite_fight', label: 'Footnote', scope: ['combat'], target: 'enemy', ap: 0, uses: { per: 'per_combat', n: 1 },
-      text: 'Cite a fact about one enemy: your allies\' attacks on it get +1 (II: +2) for the rest of the round.',
+      text: 'Once a fight: cite a fact about one enemy. I: your allies get +1 to hit it for the rest of the round. II: they get +2.',
       preview: (h) => ({ lines: ['Allies (not you) get +' + footBonus(h) + ' to hit it until the round ends.'] }),
       run: (h, a) => {
         const t = h.cb!.units.find((x) => x.id === a.targetId)!;
@@ -144,7 +144,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'demand', label: 'Demand evidence (Burden of Proof)', scope: ['story'], target: 'text', ap: 0,
-    text: 'When an NPC accuses you or the squad: demand their evidence. Without it they lose the argument outright (II: onlookers shift your way).',
+    text: 'When someone accuses you or the squad: demand their evidence. Without it, they lose the argument outright. II: the onlookers also shift to your side.',
     run: (h, a) => {
       const eid = postStory(h, 'demands evidence: "' + textArg(a) + '"');
       ruling(h, 'Burden of Proof: if the accuser has no evidence, they lose the argument outright: call no check' + (tierII(h) ? '; every onlooker shifts one attitude step toward the squad' : '') + '. If they have evidence, refuse (the demand fails on its merits).', eid);
@@ -226,7 +226,7 @@ register({
   actions: [
     {
       id: 'hint', label: 'Double Meaning', scope: ['story'], target: 'text', ap: 0,
-      text: 'Say one sentence that means one thing to them and another to your squad: +2 for the squad on the hinted action.',
+      text: 'Say one sentence that means one thing to them and another to your squad. The squad gets +2 on the action you hinted at.',
       run: (h, a) => {
         sst(h).hint = { scene: sceneN(h), text: textArg(a) };
         const eid = postStory(h, 'says: "' + textArg(a) + '"');
@@ -235,7 +235,7 @@ register({
     },
     {
       id: 'hint_fight', label: 'Double Meaning', scope: ['combat'], target: 'enemy', ap: 0, uses: { per: 'per_round', n: 1 }, range: HEARING,
-      text: 'Hint at an attack on one enemy: each squad member\'s next attack on it gets +2 until your next turn. II: another enemy who heard it loses its first action.',
+      text: 'Once a round: hint at an attack on one enemy in earshot. Each squad member\'s next attack on it gets +2 to hit, until your next turn. II: the nearest other enemy who heard it loses its first action.',
       preview: (h) => ({ lines: ['+2 to each squad member\'s next attack on it, until your next turn.' + (tierII(h) ? ' The nearest other enemy within 8 tiles loses its first action.' : '')] }),
       run: (h, a) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!, st = stateOf(h);
@@ -291,7 +291,7 @@ register({
     },
     {
       id: 'speak_fight', label: 'Speak the Old Tongue', scope: ['combat'], target: 'enemy', ap: 0, range: HEARING,
-      text: 'An upper-realm being in earshot parleys: it holds its attacks on its next turn, once per being.',
+      text: 'Speak to an upper-realm being in earshot. It parleys with you and makes no attacks on its next turn. Once per being.',
       available: (h) => (tierII(h) ? true : false),
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t) return {};
@@ -326,7 +326,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'read_org', label: 'Who really runs this? (Real Power)', scope: ['story'], target: 'text', ap: 0,
-    text: 'Name the organisation: the Narrator tells you who actually holds the power (II: and that person agrees to see you). Once per organisation.',
+    text: 'Name an organisation: the Narrator tells you who really holds the power there. II: that person also agrees to see you. Once per organisation.',
     preview: (h, a) => (sro(h).orgs || []).some((o: string) => nameMatch(o, textArg(a))) ? { ok: false, why: 'You already know who runs ' + clip(a.text, 40) + '.' } : {},
     run: (h, a) => {
       const org = clip(a.text, 80); (sst(h).orgs ||= []).push(org);
@@ -348,7 +348,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'fact', label: 'Established Fact', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'State a fact about the technology, biology or history in the scene. It\'s true now, unless it contradicts what\'s been shown.',
+    text: 'Once a session: state a fact about the technology, biology or history in the scene. It is true from now on, unless it contradicts what has already been shown.',
     run: (h, a) => {
       if (inFight(h)) { say(h.cb, h.u!.name + ' states a fact (Established Fact): "' + clip(a.text, 160) + '".'); note(h, 'Established Fact: "' + clip(a.text, 160) + '". ' + factRule); return; }
       const eid = postStory(h, 'states a fact: "' + textArg(a) + '"');
@@ -366,7 +366,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'close', label: 'Closing Argument', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Make your closing argument: every listener not ruled by fear or faith accepts its logic. A pending Eloquence check on the point succeeds.',
+    text: 'Once a scene: make your closing argument. Every listener who isn\'t ruled by fear or faith accepts its logic. An Eloquence check waiting on that point succeeds.',
     run: (h, a) => {
       if (inFight(h)) { say(h.cb, h.u!.name + ' makes a closing argument (Closing Argument).'); note(h, 'Closing Argument: "' + clip(a.text, 160) + '": listeners not ruled by fear or faith accept the logic (they may still refuse to act).'); return; }
       const ck = pendingCheck(h, a.checkId, (k) => hasSkill(k, 'eloquence'));
@@ -388,7 +388,7 @@ register({
   actions: [
     {
       id: 'befriend', label: 'Everyone\'s Friend', scope: ['story'], target: 'npc', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'One NPC who doesn\'t already hate you treats you as a trusted friend until the scene ends. Your first lie to them lands.',
+      text: 'Once a scene: one person who doesn\'t already hate you treats you as a trusted friend until the scene ends. Your first lie to them is believed.',
       preview: (h, a) => (npcRef(h, a).name || textArg(a) ? {} : { ok: false, why: 'Who? Type their name.' }),
       run: (h, a) => {
         const who = npcRef(h, a).name || clip(a.text, 60);
@@ -399,9 +399,9 @@ register({
     },
     {
       id: 'first_lie', label: 'First lie lands', scope: ['story'], target: 'check', ap: 0,
-      text: 'Your pending Charisma check is your first lie to your friend this scene: it succeeds.',
-      available: (h) => { const f = friendOf(h); return !f ? false : f.lie ? 'The first lie is spent.' : true; },
-      preview: (h, a) => (pendingCheck(h, a.checkId, (k) => hasSkill(k, 'charisma')) ? {} : { ok: false, why: 'No pending Charisma check of yours.' }),
+      text: 'Use this on a Charisma check you are about to roll: it is your first lie to your friend this scene, and it succeeds.',
+      available: (h) => { const f = friendOf(h); return !f ? false : f.lie ? 'You already used your first lie on them.' : true; },
+      preview: (h, a) => (pendingCheck(h, a.checkId, (k) => hasSkill(k, 'charisma')) ? {} : { ok: false, why: 'You have no Charisma check waiting.' }),
       run: (h, a) => {
         const ck = pendingCheck(h, a.checkId, (k) => hasSkill(k, 'charisma'))!, f = sst(h).friend;
         ck.auto = 'success'; f.lie = true; ck.target ||= f.npc;
@@ -431,7 +431,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'suggest', label: 'Their Own Idea', scope: ['story', 'combat'], target: 'npc', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Hide a suggestion inside a sentence: the listener believes it was their own idea and acts on it, unless it would harm them directly. Type it; name the listener.',
+    text: 'Once a scene: hide a suggestion inside a sentence (type it, and name the listener). They believe it was their own idea and act on it, unless it would harm them directly.',
     preview: (h, a) => {
       if (!textArg(a)) return { ok: false, why: 'Type the suggestion you hide.' };
       if (inFight(h) && !a.targetId) return { ok: false, why: 'Pick the listener.' };
@@ -467,7 +467,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'foresee', label: 'Foreseen', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'After a major decision goes wrong: say which. The room votes to go back to before that Narrator turn; you choose again.',
+    text: 'Once a session, after a major decision goes wrong: say which one. The room votes on going back to just before it, and if the vote passes you choose again.',
     run: (h, a) => {
       const g = gOf(h); if (!g || !h.c) return 'Only in the story.';
       return foreseeVote(g, h.c, h.key + '#foresee', a.choice, textArg(a));
@@ -503,7 +503,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'vision', label: 'What Could Be', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'Before a major decision: a brief vision of the best outcome within reach, and one way to get there. It can still fail.',
+    text: 'Once a session, before a major decision: you get a brief vision of the best outcome within reach, and one way to get there. It can still fail.',
     run: (h, a) => {
       const eid = postStory(h, 'asks what could be: "' + textArg(a) + '"', { private: true });
       ruling(h, 'What Could Be: before "' + clip(a.text, 160) + '", show ' + h.c!.name + ' privately (perkLines key perk:what_could_be) the best outcome within reach and one honest route to it. It can still fail; don\'t make it fail out of spite.', eid);
@@ -523,7 +523,7 @@ register({
   narrator: 'all',
   actions: [{
     id: 'door', label: 'Every Lie Is a Door', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'Name a reason to be in a guarded place: you walk in and are believed until someone draws a weapon.',
+    text: 'Once a session: name a reason to be in a guarded place. You walk in and are believed until someone draws a weapon.',
     run: (h, a) => {
       cst(h.c).lie_door = clip(a.text, 80);
       const eid = postStory(h, 'walks in: "' + textArg(a) + '"');
@@ -554,8 +554,8 @@ register({
   claims: ['double_or_nothing'], narrator: ['narrator'],
   actions: [{
     id: DOUBLE, label: 'Double or Nothing', scope: ['story'], target: 'check', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Before your d20: a success becomes a critical success, a failure a critical failure.',
-    preview: (h, a) => (pendingCheck(h, a.checkId, (k) => !k.double) ? {} : { ok: false, why: 'No pending check of yours to double.' }),
+    text: 'Once a scene, before you roll a check: a success becomes a critical success, and a failure becomes a critical failure.',
+    preview: (h, a) => (pendingCheck(h, a.checkId, (k) => !k.double) ? {} : { ok: false, why: 'You have no check waiting to double.' }),
     run: (h, a) => {
       const ck = pendingCheck(h, a.checkId, (k) => !k.double)!; ck.double = true;
       postStory(h, 'goes double or nothing on: ' + clip(ck.stakes, 120));
@@ -564,7 +564,7 @@ register({
   toggles: [{
     id: DOUBLE, label: 'Double or Nothing', on: ['combat/attack'],
     available: (h) => (doubleLeft(h) ? true : 'Used this scene.'),
-    preview: () => 'A hit becomes a critical; a miss jams the gun or costs 1 AP next turn.',
+    preview: () => 'Once a scene: if this attack hits, it is a critical hit. If it misses, your gun jams. With a melee weapon or a gun that can\'t jam, you lose 1 AP next turn instead.',
   }],
   on: {
     check_build: (ctx, h) => {
@@ -615,7 +615,7 @@ register({
   claims: ['counter'], narrator: ['narrator'],
   actions: [{
     id: 'new_name', label: 'New Name', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'Set up a false identity in one sentence. NPCs accept it until you fail a roll in front of them.',
+    text: 'Once a session: set up a false identity in one sentence. People accept it until you fail a roll in front of them.',
     run: (h, a) => {
       syncCover(h); sst(h).pending = false;
       cst(h.c).identity = clip(a.text, 80);
@@ -652,7 +652,7 @@ register({
   claims: ['roll_mod_all'], narrator: ['narrator'],
   actions: [{
     id: 'case_file', label: 'Case File', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'After investigating a scene: ask one yes-or-no question about whoever is responsible. The answer is true.',
+    text: 'Once a session, after you investigate a scene: ask one yes-or-no question about whoever is responsible. The answer is true.',
     run: (h, a) => {
       const eid = postStory(h, 'asks the case file: "' + textArg(a) + '"', { private: true });
       ruling(h, 'Case File: answer ' + h.c!.name + '\'s yes-or-no question "' + clip(a.text, 160) + '" truthfully, privately (perkLines key trait:cold_case). Refuse if they haven\'t investigated the scene yet (the use comes back).', eid);
@@ -694,8 +694,8 @@ register({
   claims: 'all',
   actions: [{
     id: DRAMA, label: 'Play it as a holo-drama', scope: ['story', 'combat'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Describe your action as a scene from a holo-drama: if the Narrator buys it, roll with +3 (in a fight: +3 to your next attack this turn).',
-    preview: (h, a) => (inFight(h) ? { lines: ['+3 to your next attack this turn.'] } : needText(a, 'Describe the scene you\'re playing.')),
+    text: 'Once a scene: describe your action as a scene from a holo-drama. If the Narrator buys it, you roll with +3. In a fight, you get +3 to hit on your next attack this turn.',
+    preview: (h, a) => (inFight(h) ? { lines: ['+3 to hit on your next attack this turn.'] } : needText(a, 'Describe the scene you\'re playing.')),
     run: (h, a) => {
       if (inFight(h)) { stateOf(h).next = { turn: h.cb!.round + '.' + h.cb!.turn }; say(h.cb, h.u!.name + ' plays it like the holo-dramas (Dramatic Timing): +3 to the next attack.'); if (a.text) note(h, 'Dramatic Timing: "' + clip(a.text, 160) + '"'); return; }
       sst(h).drama = { scene: sceneN(h), applied: null };
@@ -747,7 +747,7 @@ register({
   claims: (e) => e?.op === 'choose_bonus' || (e?.op === 'skill_mod' && e?.context === 'others_targeting_you'),
   actions: [{
     id: 'adaptable', label: 'Adaptable', pick: 'gamma', pickLabel: 'The γ skill you play', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Pick the γ skill you play this scene: +2 to it for the scene.',
+    text: 'Once a scene: pick the γ skill you play. You get +2 to it for the rest of the scene.',
     preview: (h, a) => (a.choice && GAMMA.includes(a.choice) ? { lines: ['+2 ' + SKILL[a.choice].name + ' for the rest of the scene.'] } : { ok: false, why: 'Pick a γ skill: ' + GAMMA.map((s) => SKILL[s].name).join(', ') + '.' }),
     run: (h, a) => { sst(h).pick = { scene: sceneN(h), skill: a.choice, auto: false }; postStory(h, 'plays ' + SKILL[a.choice!].name + ' this scene.', { private: true }); },
   }],

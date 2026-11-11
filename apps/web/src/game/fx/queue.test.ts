@@ -30,6 +30,28 @@ describe('the effects queue', () => {
   });
 });
 
+describe('a fight plays every effect, in order, at full length (Leon, 11 Nov 2026)', () => {
+  it('a long enemy phase: 40 hits and three turn banners all play, none early, none skipped; outside a fight a backlog still catches up', () => {
+    const run = (stream: string) => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance', 'Date'] });
+      clearFx(); const t0 = performance.now(), at = new Map<number, number>();
+      const on = (ev: Event) => { const d = (ev as CustomEvent).detail; if (d?.n) at.set(d.n, performance.now() - t0); };
+      window.addEventListener(FX_EVENT, on);
+      const evs: any[] = []; let n = 0;
+      for (const who of ['f1', 'f2', 'f3']) { evs.push({ n: ++n, k: 'turn', unit: who, side: 'foe', at: '1,1' }); for (let i = 0; i < 13; i++) evs.push({ n: ++n, k: 'hurt', target: 'p1', at: '4,5', dmg: 5 }); }
+      evs.push({ n: ++n, k: 'turn', unit: 'p1', side: 'pc', at: '4,5' });
+      try { queueFx(evs, stream); vi.advanceTimersByTime(120000); } finally { window.removeEventListener(FX_EVENT, on); clearFx(); vi.useRealTimers(); }
+      return { at, n };
+    };
+    const fight = run('cb|long');
+    expect(fight.at.size).toBe(fight.n); // every one played
+    const times = [...fight.at.entries()].sort((a, b) => a[0] - b[0]).map((x) => x[1]);
+    for (let i = 1; i < times.length; i++) expect(times[i]).toBeGreaterThanOrEqual(times[i - 1]); // in order
+    expect(times[times.length - 1]).toBeGreaterThan(7000); // the player's turn banner waits for all of it (the old room was 7 s)
+    expect(run('st|long').at.size).toBeLessThan(fight.n); // the area map's stream still skips a backlog
+  });
+});
+
 describe('a Miracle in the queue (Faith 2.2, Leon: "zoom to the map, then the miracle happens")', () => {
   /** Queue a batch with fake clocks; return when (ms after queueing) each event played, by its n, and which never did. */
   function run(evs: any[], opts: { keep?: number } = {}) {

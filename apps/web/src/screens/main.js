@@ -173,7 +173,7 @@ function magicVals(self, g, c) {
     canFree: canFree && !fight, freeLabel: picking === 'free' ? 'Close' : 'Take a free word (' + GV.free + ')', openFree: () => self.setState({ mgLearn: picking === 'free' ? null : 'free' }),
     why: studyWhy, hasWhy: !!studyWhy, picking: !!picking, pickHead: picking === 'free' ? 'A FREE WORD (MASTERY): IT IGNORES THE CAP' : 'LEARN A WORD · ' + GV.known + ' / ' + GV.cap + ' KNOWN', pick: pickWs,
     hasToStudy: GV.toStudy.length > 0, toStudy: GV.toStudy.filter((x) => SIGIL[x]).map((id) => ({ key: id, word: SIGIL[id].word, img: glyphUri(id, SIGIL_INK), title: SIGIL[id].text })) };
-  const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (old words retired in rules 1.4)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', handWord(evoAt)], ['Evoker charge', evoC ? N.charge + ' / ' + CORE_CHARGE : '—'],
+  const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (for old words that were retired)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', handWord(evoAt)], ['Evoker charge', evoC ? N.charge + ' / ' + CORE_CHARGE : '—'],
     ['Spare cores', String(N.cores)], ['Flux', N.flux + ' / ' + FLUX_MAX + (N.flux >= FLUX_MAX - 1 ? ' · vent soon' : '')], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
@@ -387,9 +387,13 @@ export class MainLogic extends DCLogic {
     // Ask shows only on skills whose voice has something to say in this scene (a hook not yet revealed to this character:
     // the view carries the skill names, never the hooks); the other trained skills are Silent (Leon, combat feel v1).
     const voiced = (c && (g.story.scene.voiced || {})[c.id]) || [];
-    const sheetSkills = D.skills.filter((s) => s.core === S.core).map((s) => {
+    // Grouped by attribute, each group under its attribute's name and level (Leon, 11 Nov 2026: the levels showed nowhere but the level-up screen).
+    const sheetSkills = D.skills.filter((s) => s.core === S.core).map((s, i, all) => {
+      const head = i === 0 || all[i - 1].attr !== s.attr, av = c ? c.attrs[s.attr] || 1 : 0;
       const p = P(s.id), m = checkMod(s.id, p), ink = ATTR[s.attr].ink, done = asked.includes(s.id), off = !c || p === 0 || g.phase !== 'story', silent = !done && !off && !voiced.includes(s.id);
-      return { key: s.id, zoom: zoomer(this, s.img, s.name, 'skill'), img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
+      return { key: s.id, head, headName: ATTR[s.attr].name.toUpperCase(), headVal: c ? av : '', headNote: c ? 'its skills can reach ' + av : '',
+        headStyle: 'display: flex; align-items: baseline; gap: 10px; margin-top: ' + (i ? 6 : 0) + 'px; padding: 4px 8px; border-left: 3px solid ' + ATTR[s.attr].ink + '; color: ' + ATTR[s.attr].ink,
+        zoom: zoomer(this, s.img, s.name, 'skill'), img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         ask: () => act({ type: 'voice/ask', charId: c.id, skill: s.id }), noAsk: done || off || silent, askLabel: done ? 'Asked' : silent || off ? 'Silent' : 'Ask',
         askTitle: done ? 'Asked once this scene.' : silent ? 'Nothing to say about this right now.' : off ? (p === 0 ? 'No points: no voice yet.' : g.phase !== 'story' ? 'Ask a skill out of combat.' : '') : 'It has something to say. Ask it (once this scene).',
         rowCls: 'phc-m-tab-' + (S.coreDir || 'r'),

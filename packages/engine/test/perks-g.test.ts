@@ -233,7 +233,7 @@ describe('Everyone\'s Friend', () => {
     perk(s, c, 'everyones_friend', { actionId: 'first_lie', checkId: k.ck.id });
     expect(k.roll(1)).toMatch(/SUCCESS \(AUTO\)/);
     const k2 = storyCheck(s, c.id, ['charisma']);
-    expect(() => perk(s, c, 'everyones_friend', { actionId: 'first_lie', checkId: k2.ck.id })).toThrow(/spent/);
+    expect(() => perk(s, c, 'everyones_friend', { actionId: 'first_lie', checkId: k2.ck.id })).toThrow(/already used your first lie/);
     expect(brief(s.g, c, 'perk:everyones_friend')).toMatch(/Old Maro is a trusted friend/);
   });
   it('the Narrator\'s lie tag on a check at the friend lands the same way', () => {

@@ -52,10 +52,10 @@ function gate(cb: Combat, u: Unit, def: CallDef, args: CallArgs): string | null 
   if (!alive(u)) return 'Out of the fight.';
   const level = callLevel(u, def);
   if (level < 1) return 'Needs a point of ' + callSkillName(def) + '.';
-  if (condOn(u, 'silenced')) return 'Silenced: you can\'t Call.';
+  if (condOn(u, 'silenced')) return 'You are Silenced and can\'t Call.';
   if (args.react) {
     if (level < CALL_RULES.reaction_at) return 'A Call as a reaction needs ' + CALL_RULES.reaction_at + ' points of ' + callSkillName(def) + '.';
-    if (active(cb) === u) return 'It is your turn: make the Call as an action.';
+    if (active(cb) === u) return 'It is your turn. Make the Call as an action.';
     if (u.call?.react === cb.round) return 'One Call as a reaction a round.';
     if (!canReact(cb, u)) return 'No reaction left this round.';
   }
@@ -93,7 +93,7 @@ function buildCall(cb: Combat, u: Unit, def: CallDef, args: CallArgs, tgt: Unit,
 function prepare(cb: Combat, u: Unit, id: string, args: CallArgs, rng: Rng, preview: boolean): { t: Call | null; why: string | null; h: CallHandler | null; pv: CallPreview | null } {
   const def = CALL[id]; if (!def) return { t: null, why: 'No such Call.', h: null, pv: null };
   const g = gate(cb, u, def, args); if (g) return { t: null, why: g, h: null, pv: newPreview(cb, u, def, args) };
-  const h = callHandler(id); if (!h) return { t: null, why: 'Not built yet.', h: null, pv: newPreview(cb, u, def, args) };
+  const h = callHandler(id); if (!h) return { t: null, why: 'This Call isn\'t in the game yet.', h: null, pv: newPreview(cb, u, def, args) };
   const tgt = args.targetId ? cb.units.find((x) => x.id === args.targetId) || null : def.aim === 'self-or-ally' ? u : null;
   if (!tgt) return { t: null, why: def.aim === 'enemy' ? NO_ENEMY : 'Pick an ally who can hear you.', h, pv: newPreview(cb, u, def, args) };
   const t = buildCall(cb, u, def, args, tgt, rng, preview);
@@ -163,7 +163,7 @@ export function callPad(cb: Combat, u: Unit, g?: any): CallPadEntry[] {
   const out: CallPadEntry[] = [];
   for (const def of CALLS) {
     const level = callLevel(u, def); if (level < 1) continue;
-    const step = callStepAt(def, level), ap = callAp(cb, u, def), why = gate(cb, u, def, {}) || (callHandler(def.id) ? null : 'Not built yet.');
+    const step = callStepAt(def, level), ap = callAp(cb, u, def), why = gate(cb, u, def, {}) || (callHandler(def.id) ? null : 'This Call isn\'t in the game yet.');
     out.push({
       id: def.id, name: def.name, skill: def.skill, skillName: callSkillName(def), kind: def.kind, aim: def.aim, ap, range: callRangeAt(level), level, step, ok: !why, why,
       text: def.steps[step - 1]?.text || def.text, summary: def.text, steps: def.steps.map((s) => ({ at: s.at, text: s.text, has: level >= s.at })),
@@ -186,7 +186,7 @@ export function apLands(cb: Combat, t: Unit): 'now' | 'this turn' | 'next turn' 
  * at once (0 when it was banked for the unit's turn). */
 export function giveAp(t: Call, n: number): number {
   const when = apLands(t.cb, t.tgt);
-  if (t.preview) { t.pv.gives = { unit: t.tgt.id, ap: n, when }; t.note(t.tgt.name + ' gains ' + n + ' AP ' + (when === 'now' ? 'now' : when === 'this turn' ? 'at the start of their turn this round' : 'on their next turn') + ' (inside the +3 cap).'); return n; }
+  if (t.preview) { t.pv.gives = { unit: t.tgt.id, ap: n, when }; t.note(t.tgt.name + ' gains ' + n + ' AP ' + (when === 'now' ? 'now' : when === 'this turn' ? 'at the start of their turn this round' : 'on their next turn') + '. Bonus AP can\'t go past +3 a turn.'); return n; }
   return grantPerkAp(t.cb, t.tgt, n, t.def.name, t.u);
 }
 /** A hindering Call's condition, saved against 12 + the speaker's strength with the Call's skill. True: it took. In a

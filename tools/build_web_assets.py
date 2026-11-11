@@ -15,7 +15,7 @@ C = json.loads((ROOT / "art/catalog.json").read_text())
 OUT.mkdir(parents=True, exist_ok=True)
 assets = {}
 
-def emit(name, src, small, large, quality=82):
+def emit(name, src, small, large, quality=82, versioned=False):
     """small/large are max (w, h) boxes; images are never upscaled."""
     src = pathlib.Path(src)
     for suffix, box in (("", small), ("-lg", large)):
@@ -27,10 +27,11 @@ def emit(name, src, small, large, quality=82):
             im = im.convert("RGBA") if im.mode in ("RGBA", "LA", "P") else im.convert("RGB")
             im.thumbnail(box, Image.LANCZOS)
             im.save(dst, "WEBP", quality=quality, method=4)
-        assets[name + suffix] = f"/assets/{name}{suffix}.webp"
+        # versioned: ?v=<content hash>, so art replaced under the same name is never served from an old cache
+        assets[name + suffix] = f"/assets/{name}{suffix}.webp" + ("?v=" + hashlib.sha256(dst.read_bytes()).hexdigest()[:10] if versioned else "")
 
 for sid, a in C["skills"].items():
-    emit("skill-" + sid, ROOT / a["path"], (400, 500), (800, 1000))
+    emit("skill-" + sid, ROOT / a["path"], (400, 500), (800, 1000), versioned=True)  # recoloured in 0.19 (Acuity, Improvisation)
 for cid, a in C["characters"].items():
     emit("char-" + cid, ROOT / a["path"], (320, 400), (800, 1000))
 for fam, prefix in (("traits", "wick-trait-"), ("perks", "wick-perk-")):

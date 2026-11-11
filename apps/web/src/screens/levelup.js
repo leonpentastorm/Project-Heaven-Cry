@@ -14,7 +14,7 @@
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, perPoint, ceilingLine } from './shared';
-import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
+import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 
@@ -192,6 +192,9 @@ export class LevelUpLogic extends DCLogic {
       rules: 'A skill can\'t be higher than the attribute above it, and an attribute can\'t pass the ceiling for your level; 10 is the top. Each Mastery level (3, 5, 7, 9 points) gives one perk step: one of the skill\'s two perks at Tier I, or a Tier I raised to Tier II. 10 points give the skill\'s Mastered perk.',
       stepsHead: owed ? 'PERK STEPS WAITING · ' + owed : '',
       pointsNote: 'Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.',
+      // Take back what this visit spent (points and perk steps), until a fight or a class settles it.
+      canRevert: !canRevertLevelUp(g, c), revert: () => act({ type: 'levelup/revert', charId: c.id }),
+      revertStyle: 'min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A3AEC2; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer',
       done: () => go(g.phase === 'combat' ? 'combat' : 'main', { levelupChar: null }), doneLabel: allDone ? 'Done · back to the story' : 'Back to the story (finish later)',
       doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (allDone ? 'background: #6FEA77; color: #0A0D13' : 'background: #1C2536; color: #E7EBF3'),
     };

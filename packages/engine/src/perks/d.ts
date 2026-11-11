@@ -288,19 +288,19 @@ register({
   toggles: [{
     id: 'twin', label: 'The Twin Pays', on: ['combat/outburst'],
     available: (h) => (!h.u?.mg ? false : uses(h).left('per_combat', 1) > 0 ? true : 'Used this fight.'),
-    preview: () => '0 MP, 0 Strain: your twin in the upper realm pays.',
+    preview: () => '0 AP, 0 MP, 0 Strain: your twin in the upper realm pays.',
   }],
   on: {
     outburst_cost: (ctx, h) => {
       if (!me(h, ctx.u) || !modOn(h, 'twin') || uses(h).left('per_combat', 1) <= 0) return;
-      ctx.mp = 0; ctx.strain = 0; ctx.hp = 0;
+      ctx.mp = 0; ctx.strain = 0; ctx.hp = 0; ctx.ap = 0; // the Begin's AP too (Leon, 11 Nov 2026)
     },
     outburst_begin: (ctx, h) => {
       if (!me(h, ctx.u)) return;
       // Any other Begin is an ordinary paid one: the free hold of an earlier, let-go twin cast ends here.
       if (!modOn(h, 'twin') || !uses(h).take('per_combat', 1)) { stateOf(h).free = null; return; }
       if (ctx.hold) stateOf(h).free = ctx.design.id;
-      log(ctx.cb, 'Up there, someone with ' + h.u!.name + '\'s face flinches (The Twin Pays: no mana, no Strain).');
+      log(ctx.cb, 'Up there, someone with ' + h.u!.name + '\'s face flinches (The Twin Pays: no AP, no mana, no Strain).');
     },
     // Holding it costs nothing: the hold's Strain is zeroed at the start of the turn (hooks gap D7), never pre-paid.
     outburst_hold: (ctx, h) => {

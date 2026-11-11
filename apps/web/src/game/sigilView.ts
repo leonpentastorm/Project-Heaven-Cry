@@ -293,7 +293,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
     if (out.hereOk) { out.stage = 'none'; out.hint = out.why; return out; } // on a good tile, but it can't fire (charge, AP, Silenced…)
     out.stage = 'stand';
     const goods = out.origins.filter((o) => o.ok).length;
-    out.hint = (here ? 'Not from your tile: ' + (here.why || out.why) : out.why) + (goods ? ' Step onto a cyan tile by the Line (its arrow shows which way the spell opens), then Evoke: the Line stays picked.' : '');
+    out.hint = (here ? 'Not from your tile: ' + (here.why || out.why) : out.why) + (goods ? ' Step onto a cyan tile by the Line, then Evoke. The arrow on the tile shows which way the spell fires, and the Line stays picked.' : '');
     return out;
   }
   out.area = new Set(base.area); out.pickable = new Set(base.pickable);
@@ -388,14 +388,14 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   if (cmd === 'move' && choice.orderTo) out.orderPath.forEach((k, i) => { if (k !== choice.orderTo) mark(k, { key: 'orderpath', text: '·' + (i + 1), style: badge('transparent', '#E3BF51') + '; ' + CORNER.c + '; font-size: 12px', title: 'COMMAND: step ' + (i + 1) + ' of the walk' }, 'COMMAND: step ' + (i + 1) + ' of the walk'); });
   // 8. fizzle
   out.fizzle = !!show.ok && !!show.fizzle;
-  out.fizzleText = out.fizzle ? 'Nothing it may affect: this spell will fizzle (its charge, AP and Flux are spent and its glyphs fade).' : '';
+  out.fizzleText = out.fizzle ? 'There is nothing this spell can affect, so it will fizzle. Its charge, AP and Flux are still spent, and its glyphs fade.' : '';
   // COMMAND's order
   if (sp && sp.uniqueSubjects.includes('command')) out.orders = (SIGIL.command as any)?.orders || ORDERS_DEFAULT;
   // stage and hint
   const stepWhy = base.missiles.find((m: any) => m.why && m.stepTo && m.stepTo.length);
   if (stepWhy && !choice.dest) { for (const k of stepWhy.stepTo) { out.stepTo.add(k); mark(k, { key: 'stepto', text: '', style: 'position: absolute; inset: 30%; z-index: 4; pointer-events: none; border: 2px dashed #FFFFFF', title: 'STEP may land here' }, 'STEP may land here'); } }
   if (!aims.length) { out.stage = 'aim'; out.hint = 'Pick a target in the tinted area' + (out.range ? ' (' + (out.range === 1 ? 'Touch, 1 tile' : 'range ' + out.range) + ')' : '') + ', or yourself. Hover to see where it goes.'; }
-  else if (aims.length < out.missilesNeeded && !base.ok) { out.stage = 'aim'; out.hint = 'TWICE: pick missile ' + (aims.length + 1) + ' of ' + out.missilesNeeded + ' (or Confirm: the engine aims the rest at the nearest).'; }
+  else if (aims.length < out.missilesNeeded && !base.ok) { out.stage = 'aim'; out.hint = 'TWICE: pick missile ' + (aims.length + 1) + ' of ' + out.missilesNeeded + ', or Confirm to send the rest at the nearest target.'; }
   else if (stepWhy && !choice.dest) { out.stage = 'dest'; out.hint = 'Pick where STEP lands them: a dashed tile up to 4 away.'; }
   else if (out.orders && choice.order === 'move' && !choice.orderTo) { out.stage = 'order'; out.hint = 'COMMAND · move: pick the tile they must walk to (up to 3 tiles).'; }
   else if (base.ok) { out.stage = 'ready'; out.hint = 'Confirm to Evoke.'; }
@@ -404,7 +404,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   if (out.ok || (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded)) {
     out.payload = { tile, aim: aims[0], ...(strokeSel ? { stroke: strokeSel } : {}), ...(aims.length > 1 ? { aims } : {}), ...(choice.dest ? { dest: choice.dest } : {}), ...(out.orders && choice.order ? { order: choice.order } : {}), ...(choice.orderTo ? { orderTo: choice.orderTo } : {}), ...(paint ? { paint } : {}) };
   }
-  if (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded && base.ok) { out.stage = 'ready'; out.ok = true; out.hint = 'Confirm: the engine aims the other missile' + (out.missilesNeeded - aims.length > 1 ? 's' : '') + ' at the nearest target, or pick ' + (out.missilesNeeded - aims.length > 1 ? 'them' : 'it') + '.'; }
+  if (aims.length && out.missilesNeeded > 1 && aims.length < out.missilesNeeded && base.ok) { out.stage = 'ready'; out.ok = true; out.hint = 'Confirm to send the other missile' + (out.missilesNeeded - aims.length > 1 ? 's' : '') + ' at the nearest target, or pick ' + (out.missilesNeeded - aims.length > 1 ? 'them' : 'it') + '.'; }
   return out;
 }
 const LIGHT_LAYER = 'background: rgba(255, 248, 225, 0.08)';

@@ -172,6 +172,15 @@ await step.locator('button.phc-lu-choice').first().click(); await p.waitForTimeo
 const c2 = (await G()).characters[cid], took = c2.perks.length > perks0 ? c2.perks.at(-1).id : null;
 ok('a perk step taken from the skill\'s own card (' + sk + ': ' + took + ')', !!took);
 ok('…and that perk now reads as yours on the card', !!took && /✓ TIER/.test(await p.locator('.phc-lu-skill[data-skill="' + sk + '"] .phc-lu-perk[data-perk="' + took + '"]').textContent()));
+// Revert (11 Nov 2026): what this visit spent comes back, then it is spent again so the rest of the script stands
+{ const spent = JSON.stringify((await G()).characters[cid].unspent);
+  ok('a Revert button shows once something is spent', (await p.locator('button.phc-lu-revert').count()) === 1);
+  await p.locator('button.phc-lu-revert').click(); await p.waitForTimeout(300);
+  const c3 = (await G()).characters[cid];
+  ok('Revert gives the points back (' + spent + ' → ' + JSON.stringify(c3.unspent) + ') and the button goes', c3.unspent.attr === u0.attr && c3.unspent.skill > JSON.parse(spent).skill && (await p.locator('button.phc-lu-revert').count()) === 0);
+  await p.locator('.phc-lu-attrcol[data-attr="intelligence"] button[data-raise="attr"]').click(); await p.waitForTimeout(200);
+  await p.locator('.phc-lu-skill[data-skill="brain_power"] button[data-raise="skill"]').click(); await p.waitForTimeout(200);
+  if (took) { await p.locator('.phc-lu-skill[data-skill="' + sk + '"] button.phc-lu-choice').first().click().catch(() => {}); await p.waitForTimeout(250); } }
 ok('…and what it does is on the card, not only on hover', await p.locator('.phc-lu-skill[data-skill="' + sk + '"] .phc-lu-perk[data-perk="' + took + '"] [data-perk-text]').isVisible());
 await p.locator('.phc-lu-skill[data-skill="' + sk + '"]').scrollIntoViewIfNeeded();
 await snap('levelup-after');

@@ -257,3 +257,67 @@ word.
 17. The four legacy numbers stay. 18. Leon playtests; each request for a playtest comes with what to test.
 
 **Also to investigate (Leon):** how good or bad dual wielding is.
+
+## 9. Parked until the pass starts (Leon, 11 Nov 2026)
+
+Not to be worked on before the balance pass itself begins:
+
+1. **Dual wielding.** First read, not measured: a both-hands technique makes both weapons attack for the dearer
+   weapon's AP + 1, at −1 to hit on the main hand and −1 to −3 on the off hand (by Dexterity). For two sabres that is
+   roughly 20% more damage per AP than one, paid for with the shield, two-handed weapons, and 2 more skill points on
+   the second weapon. To measure: add paired techniques to `packages/engine/test/balance-baseline.test.ts`.
+2. **The fight simulator** (instrument 1 of section 3): not built. The plain-attack baseline exists.
+
+## 10. The peak rule (Leon, 11 Nov 2026)
+
+A standing rule of the pass, beside the targets:
+
+1. **Every class has its moment.** Each class may go past the soft targets (350 a hit, 500 on a mega critical, and
+   its share of sustained damage) with **the most expensive move the class has**. The targets describe ordinary play;
+   the peak is what the class pays its highest price for.
+2. **Power and price are read together.** For every move the pass records what it does and what it costs (AP,
+   Momentum, Guard, mana, Strain, cores, Flux, uses a fight, turns of set-up, Devotion). Two cases get looked at:
+   a move that is **powerful but not expensive enough**, and a move that is **expensive but not powerful enough**.
+3. What this adds to the instruments: the reference builds are measured twice, once on their ordinary turn and once
+   on their peak turn (the dearest move, fully set up), and the report lists each class's peak with its full price.
+4. A move that passes the targets and is **not** its class's dearest move is an outlier by definition.
+
+## 11. The engine takes everything it can (Leon, 11 Nov 2026)
+
+**The rule.** To keep both the human and the AI Narrator light, anything the engine can decide, it decides, at about
+90% engine to 10% Narrator. A Narrator is asked for judgement only, never for a rule.
+
+**Where things stand** (the `adjudication` field, 11 Nov 2026):
+
+| | engine | hybrid | narrator | engine share |
+|---|---|---|---|---|
+| Perks (106) | 72 | 23 | 11 | 68% |
+| Traits (74) | 28 | 41 | 5 | 38% |
+| Both (180) | 100 | 64 | 16 | 56% |
+
+So 80 items still lean on the Narrator. The target is about 18.
+
+**The combo perks' deeds.** All 19 combo perks are granted by a deed that only the Narrator can record today. Read
+against what the engine already sees:
+
+- **The engine can see these now, or with one counter:** Charge! (open a fight with a charge and win it), Field
+  Surgeon (bring a squadmate back from below 10% HP), Dance of Iron (dodge three attacks in one round), Between
+  Heartbeats (come through an ambush unhit), Siege Engine (break a wall in a fight you win), Twin Souls (survive a
+  Mana Short), Bite the Bullet (a whole fight below a quarter HP), Fire Sermon (an enemy surrenders to your words in
+  a fight, once speaking in a fight is built), The Voice (an officer backs off: the same).
+- **The engine can see these through World Play:** Silent Partner (the squad crosses a guarded area unseen), Dead
+  Signal (a security hazard disarmed with no alarm), Just the Repairman (a guard's notice talked down), Sixth Sense
+  (a tail spotted before it strikes), Make Way (a hostile crowd crossed with no weapon drawn).
+- **These stay the Narrator's, as story beats:** Spoon-Feed (teach someone a Sigil), Cultured (win someone over
+  with art), Cold Read (close a case with a confession), What Could Be (talk someone out of a terrible choice),
+  Verse of War (the line worth remembering; the fight-ending Outburst half is the engine's).
+
+That is 14 of 19 the engine can own, and 5 that are judgement by nature.
+
+**What the pass does with it.**
+1. Each deed the engine can see gets a detector; the perk is granted the moment it happens, with the same spotlight.
+   The Narrator can still grant any of them by hand.
+2. Every `hybrid` perk and trait is read once: what part is a rule (to the engine) and what part is judgement (stays,
+   stated in one plain sentence on the card). An item is `hybrid` only if a real judgement is left.
+3. A `narrator` item with no judgement left in it is a rule nobody runs: it becomes `engine` or is rewritten.
+4. The count above is printed again at the end of the pass.

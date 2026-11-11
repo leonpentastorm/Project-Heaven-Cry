@@ -189,7 +189,79 @@ function fadeStandIn(id: string): boolean {
 function heldIds(): Set<string> { return new Set([...waiting.keys(), ...walking.keys(), ...parked.keys()]); }
 /** How far each fight's events have been taken up by the layer (FxLayer: queued, or synced silently), by stream. */
 const processed = new Map<string, number>();
-export function setProcessed(stream: string | null | undefined, n: number) { if (!stream || processed.get(stream) === n) return; processed.set(stream, n); holdChanged(); }
+/** How far each stream has been handed to the queue (queued) and has actually played or been skipped (played). */
+const queuedTo = new Map<string, number>(), playedTo = new Map<string, number>();
+const notePlayed = (stream: string | undefined, n: number, turnOf?: string) => { if (!stream || !n) return; moved(); if (turnOf) turnShown.set(stream, turnOf); if (n > (playedTo.get(stream) || 0)) { playedTo.set(stream, n); holdChanged(); } };
+// ---------- the way out (docs/design/handoffs/coop-stall.md) ----------
+// The combat screen shows the turn, the log and the HP as far as the effects have played, so an effect that is counted
+// as waiting but will never play would lock the screen for good (seen once: the action panel greyed out on the player's
+// own turn and never came back). So the wait has a bound. A stream whose effects wait while nothing has moved in these
+// books (nothing queued, taken up or played) for STUCK_MS and nothing is left to play them (no timer, no gate), or for
+// STUCK_HARD_MS whatever is left, is settled: everything in it counts as played and the screen shows the real state.
+/** How long nothing may move, with nothing left to play, before a waiting stream is settled (ms, wall clock: longer than
+ *  FxLayer's own wait for the grid before it queues a batch, about 4.7 s). */
+export const STUCK_MS = 6000;
+/** How long nothing may move at all before a waiting stream is settled, whatever is still scheduled (no beat, cut-in or
+ *  Miracle holds the stage a fraction as long). */
+export const STUCK_HARD_MS = 45000;
+/** When something last moved in the books, and when each stream's newest effect was first seen by the screen. */
+let lastMove = 0, settled = 0;
+const topSeen = new Map<string, { n: number; at: number }>();
+const moved = () => { lastMove = typeof performance !== 'undefined' ? performance.now() : 0; };
+/** Which of a fight's effects still wait to be shown (null: the layer has not met this fight, the state is what shows).
+ *  Settles a stuck stream first (see above). */
+function waitingIn(cb: { fx?: FxEvent[] }, key: string): ((e: FxEvent) => boolean) | null {
+  const p = processed.get(key); if (p == null) return null;
+  let done = playedTo.get(key) || 0; const q = queuedTo.get(key) || 0;
+  const fx = cb.fx || [], top = fx.length ? fx[fx.length - 1].n || 0 : 0, now = performance.now();
+  let seen = topSeen.get(key); if (!seen || seen.n !== top) topSeen.set(key, (seen = { n: top, at: now }));
+  if (top > done) {
+    const quiet = now - Math.max(lastMove, seen.at);
+    if (quiet > STUCK_HARD_MS || (quiet > STUCK_MS && !timers.length && !held && now > queueEnd)) {
+      try { console.warn('[phc] a fight\'s effects stopped playing: showing the real state', { stream: key, played: done, queued: q, takenUp: p, newest: top, quietMs: Math.round(quiet) }); } catch { /* */ }
+      playedTo.set(key, (done = top)); settled++;
+    }
+  }
+  return (e) => e.n > done && (e.n <= q || e.n > p);
+}
+/** The unit whose turn banner played last, by stream. */
+const turnShown = new Map<string, string>();
+/**
+ * Whose turn the screen shows while other turns are still playing out: the unit of the last turn banner that has
+ * played, as long as a later turn's banner is still waiting (null: nothing waits, the state's own turn is the one on
+ * screen). The host works a whole hostile phase out in one step, so the state says "your turn" long before the
+ * hostiles' moves have been shown.
+ */
+export function fxShownTurn(g: GameState | null | undefined): { unit: string | null } | null {
+  const cb = g?.combat, key = fightStream(g); if (!cb || !key || cb.over || !hasLayer()) return null; // no effects layer: nothing will play, the state is what shows
+  const w = waitingIn(cb, key); if (!w) return null;
+  const waits = (cb.fx || []).some((e) => e.k === 'turn' && w(e));
+  return waits ? { unit: turnShown.get(key) || null } : null;
+}
+/** These events are about to be queued (FxLayer, before a delayed queueFx): they count as not yet played. */
+export function noteQueued(stream: string | null | undefined, n: number) { moved(); if (stream && n > (queuedTo.get(stream) || 0)) queuedTo.set(stream, n); }
+/** How many of the fight's log lines show now: those written before the first effect still to play (null: all). */
+export function fxShownLog(g: GameState | null | undefined): number | null {
+  const cb = g?.combat, key = fightStream(g); if (!cb || !key || cb.over || !hasLayer()) return null; // no effects layer: nothing will play, the state is what shows
+  const w = waitingIn(cb, key); if (!w) return null;
+  for (const e of cb.fx || []) if (w(e) && typeof e.L === 'number') return e.L;
+  return null;
+}
+/**
+ * The HP each unit shows now: what it had before the first effect that changes it and has not played yet (the engine
+ * stamps hp: {unit: [was, now]} on the event a change follows; combat.ts emitFx). A unit with nothing waiting is not in
+ * the map (it shows its real HP). So a bar falls when the hit lands on screen, not when the state arrives.
+ */
+export function fxShownHp(g: GameState | null | undefined): Map<string, number> {
+  const out = new Map<string, number>(), cb = g?.combat, key = fightStream(g); if (!cb || !key || !hasLayer()) return out;
+  const w = waitingIn(cb, key); if (!w) return out;
+  for (const e of cb.fx || []) {
+    if (!e.hp || !w(e)) continue;
+    for (const [id, v] of Object.entries(e.hp as Record<string, [number, number]>)) if (!out.has(id)) out.set(id, v[0]);
+  }
+  return out;
+}
+export function setProcessed(stream: string | null | undefined, n: number) { if (!stream || processed.get(stream) === n) return; moved(); processed.set(stream, n); holdChanged(); }
 /** The fight's effects stream key (its numbering restarts with every fight). */
 export const fightStream = (g: GameState | null | undefined): string | null =>
   g && g.combat ? 'cb|' + g.code + '|' + g.combat.name + '|' + (g.combat.log[0] || '') : null;
@@ -653,7 +725,9 @@ const H: Record<string, Handler> = {
     noteOverwatch({ watcher: watcherSeen ? String(e.unit) : '', target: String(e.target), tile: String(e.at), at: Math.round(performance.now()) });
   },
   shot(e) {
-    const g = gunOf(e.weapon || '', e.cat || ''), br = brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
+    // a thrown weapon is never a gunshot, whatever the event names as the weapon (a gun in the other hand, a blade that
+    // is also a focus): a swish, no muzzle flash, no casing
+    const g: Gun = e.thrown && gunOf(e.weapon || '', e.cat || '').look !== 'lob' ? { sound: 'swish', rate: 0.8, look: 'thrown' } : gunOf(e.weapon || '', e.cat || ''), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
     const silent = !!(volley && volley.unit === e.unit && volley.silent && e.chain && performance.now() < volley.until);
     // A bow's shot waits for the draw: the arrow comes from the quiver behind the portrait to the front, then flies.
     const draw = drawsArrow(e) ? DRAW_MS : 0;
@@ -675,7 +749,7 @@ const H: Record<string, Handler> = {
       if (from && shooterTok && !rico) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
       // the casing: thrown out behind the shooter (away from the target), with a wisp of smoke; a pump, a lever or a
       // bolt is worked first, so its casing comes a beat later
-      if (from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
+      if (br && from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
       const start = mp || (from ? { x: from.x, y: from.y } : null);
       const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
       const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' || g.look === 'thrown' ? 0.9 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
@@ -1333,7 +1407,14 @@ export function forgetSpotlights(stream?: string) { if (!stream) { decided.clear
 /** Until when (performance.now() clock) other units' turns are still being shown: the engine runs the enemies' turns at
  *  once, so the state says "your turn" while their moves still play. The combat screen holds your actions until then,
  *  and while a spotlight cut-in shows. */
-export const turnsBusyUntil = () => Math.min(Math.max(turnsUntil, gateUntil), performance.now() + TURNS_HOLD_MAX * fxPace());
+export const turnsBusyUntil = () => {
+  const now = performance.now(), until = Math.min(Math.max(turnsUntil, gateUntil), now + TURNS_HOLD_MAX * fxPace());
+  // Nothing left to play and no cut-in up: whatever the clocks say (an estimate nothing corrected), the hold is a banner's
+  // tail at most. Without this the cap above moved with the clock and so never ran out.
+  return !timers.length && !held && !gateShowing ? Math.min(until, now + TURN_TAIL_MS * fxPace()) : until;
+};
+/** A turn banner's tail: how long input stays held after the last of the other turns has started to play (ms at Fast). */
+export const TURN_TAIL_MS = 120;
 // For the e2e suites (they wait for the other turns to finish playing before they act, as a player must).
 if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 /** When the queued effects will have played (performance.now() clock): a turn banner can wait for the enemies' moves. */
@@ -1348,12 +1429,14 @@ export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tem
   // numbering n belongs to (FxLayer's stream key: 'cb|…' for a fight, 'st|…' for the area map).
   if (ev.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: ev.n, stream: stream || '' } })); } catch { /* */ }
   try { window.dispatchEvent(new CustomEvent(FX_EVENT, { detail: ev })); } catch { /* */ }
+  // its HP changes show a beat into it (the hit lands), not as it starts
+  if (ev.n && ev.hp) { const n = ev.n; window.setTimeout(() => notePlayed(stream, n), slow(ev.k === 'shot' || ev.k === 'melee' ? 260 : 80)); } else notePlayed(stream, ev.n, ev.k === 'turn' && ev.unit ? String(ev.unit) : undefined);
 }
 /** How much faster than normal a backlog may play: past this, the oldest effects are skipped instead (they never play in a
  *  blur: "the battle keeps going in super speed"). */
 export const MAX_SPEEDUP = 1.35;
 /** Skip an effect: nothing drawn or heard, but its place in the stream is announced so turn banners keep their clock. */
-function skipFx(e: FxEvent, stream?: string) { try { if (e.k === 'object' && e.at) releaseTile(String(e.at)); else if (e.k === 'explode' && e.at) releaseCloud(e); else if (e.k === 'shove' && e.target) releaseMover(String(e.target)); } catch { /* */ } if (e.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: e.n, stream: stream || '' } })); } catch { /* */ } }
+function skipFx(e: FxEvent, stream?: string) { notePlayed(stream, e.n); try { if (e.k === 'object' && e.at) releaseTile(String(e.at)); else if (e.k === 'explode' && e.at) releaseCloud(e); else if (e.k === 'shove' && e.target) releaseMover(String(e.target)); } catch { /* */ } if (e.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: e.n, stream: stream || '' } })); } catch { /* */ } }
 /** How far past the room a spotlight's protected tail may run (its action and everything after it) before the protection
  *  gives way: the moment is then skipped like any old effect, with no cut-in, so play never lags far. */
 export const PROTECT_GRACE = 1.5;
@@ -1398,6 +1481,7 @@ const isFight = (stream?: string) => !!stream && stream.startsWith('cb|');
  *  decided: what happened after it matters, not a replay of every step). A spotlight's action is never skipped. */
 export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; from?: number } = {}) {
   if (!evs.length) return;
+  noteQueued(stream, Math.max(...evs.map((e) => e.n || 0)));
   if (opts.from == null) rangedBatch(evs, stream); // fx/ranged.ts: tag the batch's techniques in order (a new fight forgets the last)
   // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
   // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms
@@ -1424,7 +1508,11 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
   evs = meleePrepass(evs); // the melee techniques' movement beats over their moves, quick later strikes, Thrown Flurry flights
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
-  const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), k = fxPace(), room = Math.max(1500 * k, 7000 * k - backlog);
+  // A fight plays every effect, in order, at the speed the player chose (Leon, 11 Nov 2026: "the animation must be
+  // obeyed"). Before this a long enemy phase was sped up and its oldest effects skipped: a skipped push dropped a unit
+  // on its end tile, HP fell before the hit showed, and the enemy's moves ran on into the player's turn. Only a decided
+  // fight (keep) and the streams outside a fight still fit themselves into the room.
+  const backlog = base - Math.max(now, Math.min(base, opts.from ?? now)), k = fxPace(), room = isFight(stream) && opts.keep == null ? Infinity : Math.max(1500 * k, 7000 * k - backlog);
   const gates = isFight(stream) ? gatesOf(evs, (e) => decided.has(keyOf(stream, e))) : [];
   const plan = planQueue(evs.map(beatOf), room, opts.keep, gates.length ? gates[0].at : -1);
   // A gate whose action is (partly) skipped shows no cut-in: the moment went by in the backlog.
@@ -1475,7 +1563,7 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
-  if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + 120 * fxPace()); if (turnsUntil !== was) holdChanged(); }
+  if (lastTurn >= 0) { const was = turnsUntil; turnsUntil = Math.max(turnsUntil, lastTurn + TURN_TAIL_MS * fxPace()); if (turnsUntil !== was) holdChanged(); }
   clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, t - now + 50);
 }
 /** The queue ran dry: a walker still stopped mid-walk (the rest of its walk never came) goes, its real token shows. */
@@ -1501,7 +1589,7 @@ function closeGate(rest: FxEvent[], stream: string | undefined, t: number, gate:
   rest.forEach((e, i) => { if (e.k === 'turn') lastTurn = times[i]; });
   const turnsWas = turnsUntil;
   queueEnd = (times.length ? times[times.length - 1] + beats[beats.length - 1] / (slowedIn(rest[rest.length - 1], seg) ? CUTIN_TEMPO : 1) : t + cutMs);
-  if (lastTurn >= 0) turnsUntil = Math.max(turnsUntil, lastTurn + 120 * k);
+  if (lastTurn >= 0) turnsUntil = Math.max(turnsUntil, lastTurn + TURN_TAIL_MS * k);
   gateUntil = t + cutMs; holdChanged();
   const id = c.spec.id;
   let opened = false, cap = 0;
@@ -1540,7 +1628,7 @@ export function hurryFx(ms: number) {
   clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, queueEnd - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden), a closed gate and every cut-in with it. */
-export function clearFx() { releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; volley = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); }
+export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; volley = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */
@@ -1557,4 +1645,13 @@ export function combatTempoInfo() {
   return { speed, mult: combatTempo(speed), pace: battlePace(), battle: inBattle(), tempo: fxTempo(), scale: fxScale(),
     beat: (k: string, e: Record<string, unknown> = {}) => beatOf({ n: 0, ...e, k } as any), fx: FX_LOG.slice() };
 }
+/** A cheap debug hook for a stalled fight (docs/design/handoffs/coop-stall.md): where each effects stream stands and
+ *  what the queue is waiting for. Read by the e2e suites and by a tester's console (window.__phcFxDebug()). */
+export function fxDebug() {
+  const now = performance.now(), ms = (t: number) => (t ? Math.round(t - now) : 0);
+  return { processed: Object.fromEntries(processed), queuedTo: Object.fromEntries(queuedTo), playedTo: Object.fromEntries(playedTo), turnShown: Object.fromEntries(turnShown),
+    queueEndIn: ms(queueEnd), turnsIn: ms(turnsUntil), gateIn: ms(gateUntil), gateShowing, heldBehindGate: held ? held.evs.length : 0, timers: timers.length,
+    waiting: [...waiting.keys()], walking: [...walking.keys()], parked: [...parked.keys()], quietMs: Math.round(now - lastMove), settled, hidden: typeof document !== 'undefined' && document.hidden, layer: hasLayer() };
+}
+if (typeof window !== 'undefined') (window as any).__phcFxDebug = fxDebug;
 if (typeof window !== 'undefined') (window as any).__phcCombatTempo = () => { const t = combatTempoInfo(); return { ...t, beat: undefined, shotBeat: t.beat('shot', { hit: true }) }; };
