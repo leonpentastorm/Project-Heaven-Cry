@@ -942,153 +942,6 @@
       }
     },
     {
-      "id": "athletics",
-      "name": "Athletics",
-      "attribute": "agility",
-      "core": "body",
-      "slot": "beta",
-      "summary": "Armour just slows you down.",
-      "per_point": {
-        "text": "+1 Defense (you are harder to hit), from 2 points.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "dodge",
-            "basis": "skill_mod",
-            "min": 0
-          }
-        ]
-      },
-      "gates": [
-        "armor:light",
-        "gear:agile"
-      ],
-      "unlocks": {
-        "3": {
-          "name": "Vault",
-          "category": "Combat Interaction",
-          "mastery": 1,
-          "text": "Move over cover and obstacles at no extra movement cost.",
-          "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ignore_obstacle_move_cost",
-              "value": 1
-            },
-            {
-              "op": "perk_choice",
-              "skill": "athletics",
-              "choice": "tier_1"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "5": {
-          "name": "Untouchable",
-          "category": "Active Skill",
-          "mastery": 2,
-          "text": "While wearing no torso armour (Class 0), attacks against you roll twice and take the worse result.",
-          "effects": [
-            {
-              "op": "disadvantage",
-              "context": "attacks_against_self:armor_class_0"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "7": {
-          "name": "Mastery 3",
-          "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
-          "effects": [
-            {
-              "op": "perk_choice",
-              "skill": "athletics",
-              "choice": "upgrade_or_second"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "9": {
-          "name": "Mastery 4",
-          "mastery": 4,
-          "text": "Mastery 4.",
-          "effects": [],
-          "adjudication": "engine"
-        },
-        "10": {
-          "name": "Mastered",
-          "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
-          "effects": [
-            {
-              "op": "perk_choice",
-              "skill": "athletics",
-              "choice": "both_tier_2"
-            }
-          ],
-          "adjudication": "engine"
-        }
-      },
-      "overreach": {
-        "from_points": 5,
-        "trigger": "grappled, restrained, Pinned, or stuck in a tight space",
-        "consequence": "A bird without wings: lose half your AP each turn until you're free.",
-        "text": "Trigger: grappled, restrained, Pinned, or stuck in a tight space. Indulge: A bird without wings: lose half your AP each turn until you're free.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "ap_pct_while_restrained",
-            "value": -50
-          }
-        ],
-        "adjudication": "hybrid",
-        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
-        "once_per_scene": true
-      },
-      "signature_of": [
-        "fighter"
-      ],
-      "tags": [
-        "beta",
-        "core:body",
-        "attr:agility",
-        "combat",
-        "mobility",
-        "defense"
-      ],
-      "number": 7,
-      "voice": {
-        "persona": "A reckless acrobat who thinks armour is for people who can't dodge.",
-        "wants": "Speed, flips, open ground, and never being tied down.",
-        "style": "Fast, cocky, breathless; talks in moves.",
-        "never": "Never likes standing still or anything heavy.",
-        "tone_from": "Dominik Edelgard, the Banner Lord",
-        "sample_lines": {
-          "notices": "There's a ledge under the window. Two steps and you're out of their line.",
-          "pushes": "Take the vest off. It's slowing you down.",
-          "quiet": "Light on your feet. They swing like Orks; you move like you."
-        },
-        "provisional": true
-      },
-      "epccg": {
-        "entry": 7,
-        "speaker": "Dominik Edelgard, the \"Banner Lord\" of the 237th Hellraiser Division",
-        "portrait": "Dominik Edelgard",
-        "portrait_id": "first-patch-revival--athletics",
-        "quote": [
-          "Armour? What armour? Oh, I left the vest at base. First-floor locker room, locker 16, key's under the red flowerpot if you want it. Natalia still grumbles every time I deploy: 'Are those two banners on your back for a burial shroud or what?' But the armoury boys lean on tech way too much. What I'm fighting out here are Orks. ORKS. They swing junk machetes, and the gunners aren't any better, aiming with both eyes open. If you can dodge everything they throw at you, armour just slows you down!"
-        ],
-        "intro": "Athletics is how nimble and supple you are. It decides how well you pull off anything that needs flexibility: flips, swimming, dodging.",
-        "effect": "+1 Defense (you are harder to hit), from 2 points.",
-        "high_levels": "your body is light as a feather and limber as a cat. Until someone ties you down. Then you aren't a person who lost a leg, you're a bird that lost its wings. Prepare for the trauma.",
-        "good_for": "gymnasts, dancers, guys who spam crouch after every kill.",
-        "bad_for": "slow-living types, high nobility, heavy-armour users.",
-        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
-        "game_text_edits": []
-      }
-    },
-    {
       "id": "dexterity",
       "name": "Dexterity",
       "attribute": "agility",
@@ -1240,6 +1093,153 @@
         "high_levels": "your hands work like a machine and your trained skills fire almost on their own. So you want to use them even when it's the wrong moment, and announcing your habits to the whole world is never a good idea.",
         "good_for": "gunslingers, snipers, blade masters, point strikers.",
         "bad_for": "gamblers, magic users, anyone who doesn't want to be called \"hands faster than brain.\"",
+        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
+        "game_text_edits": []
+      }
+    },
+    {
+      "id": "athletics",
+      "name": "Athletics",
+      "attribute": "agility",
+      "core": "body",
+      "slot": "beta",
+      "summary": "Armour just slows you down.",
+      "per_point": {
+        "text": "+1 Defense (you are harder to hit), from 2 points.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "dodge",
+            "basis": "skill_mod",
+            "min": 0
+          }
+        ]
+      },
+      "gates": [
+        "armor:light",
+        "gear:agile"
+      ],
+      "unlocks": {
+        "3": {
+          "name": "Vault",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "Move over cover and obstacles at no extra movement cost.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ignore_obstacle_move_cost",
+              "value": 1
+            },
+            {
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Untouchable",
+          "category": "Active Skill",
+          "mastery": 2,
+          "text": "While wearing no torso armour (Class 0), attacks against you roll twice and take the worse result.",
+          "effects": [
+            {
+              "op": "disadvantage",
+              "context": "attacks_against_self:armor_class_0"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Mastery 4.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "grappled, restrained, Pinned, or stuck in a tight space",
+        "consequence": "A bird without wings: lose half your AP each turn until you're free.",
+        "text": "Trigger: grappled, restrained, Pinned, or stuck in a tight space. Indulge: A bird without wings: lose half your AP each turn until you're free.",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "ap_pct_while_restrained",
+            "value": -50
+          }
+        ],
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
+      },
+      "signature_of": [
+        "fighter"
+      ],
+      "tags": [
+        "beta",
+        "core:body",
+        "attr:agility",
+        "combat",
+        "mobility",
+        "defense"
+      ],
+      "number": 7,
+      "voice": {
+        "persona": "A reckless acrobat who thinks armour is for people who can't dodge.",
+        "wants": "Speed, flips, open ground, and never being tied down.",
+        "style": "Fast, cocky, breathless; talks in moves.",
+        "never": "Never likes standing still or anything heavy.",
+        "tone_from": "Dominik Edelgard, the Banner Lord",
+        "sample_lines": {
+          "notices": "There's a ledge under the window. Two steps and you're out of their line.",
+          "pushes": "Take the vest off. It's slowing you down.",
+          "quiet": "Light on your feet. They swing like Orks; you move like you."
+        },
+        "provisional": true
+      },
+      "epccg": {
+        "entry": 7,
+        "speaker": "Dominik Edelgard, the \"Banner Lord\" of the 237th Hellraiser Division",
+        "portrait": "Dominik Edelgard",
+        "portrait_id": "first-patch-revival--athletics",
+        "quote": [
+          "Armour? What armour? Oh, I left the vest at base. First-floor locker room, locker 16, key's under the red flowerpot if you want it. Natalia still grumbles every time I deploy: 'Are those two banners on your back for a burial shroud or what?' But the armoury boys lean on tech way too much. What I'm fighting out here are Orks. ORKS. They swing junk machetes, and the gunners aren't any better, aiming with both eyes open. If you can dodge everything they throw at you, armour just slows you down!"
+        ],
+        "intro": "Athletics is how nimble and supple you are. It decides how well you pull off anything that needs flexibility: flips, swimming, dodging.",
+        "effect": "+1 Defense (you are harder to hit), from 2 points.",
+        "high_levels": "your body is light as a feather and limber as a cat. Until someone ties you down. Then you aren't a person who lost a leg, you're a bird that lost its wings. Prepare for the trauma.",
+        "good_for": "gymnasts, dancers, guys who spam crouch after every kill.",
+        "bad_for": "slow-living types, high nobility, heavy-armour users.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
       }
@@ -1559,58 +1559,57 @@
       }
     },
     {
-      "id": "proficiency",
-      "name": "Improvisation",
-      "attribute": "expression",
+      "id": "analysis",
+      "name": "Acuity",
+      "attribute": "perception",
       "core": "mind",
       "slot": "beta",
-      "summary": "Making a thing work now with what is at hand. Fixes guns, gear and machines in the field, robot squadmates included.",
+      "summary": "Seeing how a thing works: a lock, a mechanism, a crime scene, an enemy. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
       "per_point": {
-        "text": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
+        "text": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "sigil_core_saving",
-            "value": 0.3334
+            "stat": "analyze_range",
+            "value": 1
           }
         ]
       },
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Field Repair",
+          "name": "Quick Read",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Improvisation point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
+          "text": "Analyze costs 1 AP.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "field_repair",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "stat_mod",
+              "stat": "ap_cost:analyze",
+              "value": -1
             },
             {
               "op": "perk_choice",
-              "skill": "proficiency",
+              "skill": "analysis",
               "choice": "tier_1"
             }
           ],
           "adjudication": "engine"
         },
         "5": {
-          "name": "Tuned",
+          "name": "Read Them",
           "category": "Passive",
           "mastery": 2,
-          "text": "The weapon in your main hand never jams and never breaks.",
+          "text": "Enemies you've analyzed deal 15% less damage to your whole squad.",
           "effects": [
             {
-              "op": "immunity",
-              "to": "weapon_jam_and_break",
-              "context": "the weapon in your main hand"
+              "op": "damage_reduction",
+              "value_pct": 15,
+              "target": "squad",
+              "source": "enemies you have analyzed"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -1619,7 +1618,7 @@
           "effects": [
             {
               "op": "perk_choice",
-              "skill": "proficiency",
+              "skill": "analysis",
               "choice": "upgrade_or_second"
             }
           ],
@@ -1639,7 +1638,7 @@
           "effects": [
             {
               "op": "perk_choice",
-              "skill": "proficiency",
+              "skill": "analysis",
               "choice": "both_tier_2"
             }
           ],
@@ -1648,13 +1647,13 @@
       },
       "overreach": {
         "from_points": 5,
-        "trigger": "an important conversation with an interesting mechanism nearby",
-        "consequence": "You're busy taking it apart; the Narrator withholds one detail from the scene.",
-        "text": "Trigger: an important conversation with an interesting mechanism nearby. Indulge: You're busy taking it apart; the Narrator withholds one detail from the scene.",
+        "trigger": "a scene with several clues",
+        "consequence": "You fixate on the first one; the Narrator gives you no other clue until you pass.",
+        "text": "Trigger: a scene with several clues. Indulge: You fixate on the first one; the Narrator gives you no other clue until you pass.",
         "effects": [
           {
             "op": "narrator",
-            "note": "Narrator withholds one scene detail from this player"
+            "note": "Narrator withholds further clues from this player"
           }
         ],
         "adjudication": "narrator",
@@ -1662,48 +1661,57 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "medic",
-        "scribe"
+        "warden",
+        "trickster"
       ],
       "tags": [
         "beta",
         "core:mind",
-        "attr:perception",
-        "tech",
+        "attr:expression",
+        "investigation",
         "support",
-        "repair"
+        "debuff"
       ],
-      "number": 11,
+      "number": 17,
       "voice": {
-        "persona": "A cheerful fixer who trusts her hands more than any plan.",
-        "wants": "To try it now and see.",
-        "style": "Quick, practical, amused; counts what is in reach.",
-        "never": "Never waits for the right tool.",
-        "tone_from": "Drava Keel, salvage fitter of the Mandestra lowland yards",
+        "persona": "A fussy, delighted tinkerer for whom every machine is a puzzle and every puzzle is a joy.",
+        "wants": "To take it apart and see how it goes.",
+        "style": "Fast, technical, affectionate about parts; loses the thread of people.",
+        "never": "Never cares about the conversation when there's a mechanism in the room.",
+        "tone_from": "Demitri Kortev of Kortev Utility Shack",
         "sample_lines": {
-          "notices": "That strap, that pipe and your belt. That's a splint.",
-          "pushes": "Stop reading the plan. The plan left ten minutes ago.",
-          "quiet": "It doesn't have to be right. It has to hold."
+          "notices": "That turret's feed is jammed on the third link. It's firing half as often as it should.",
+          "pushes": "Never mind the colonel. Look at the clockwork in that wall.",
+          "quiet": "Every piece fits somewhere. You just have to see all of them."
         },
         "provisional": true
       },
       "epccg": {
-        "entry": 11,
-        "speaker": "Drava Keel, salvage fitter of the Mandestra lowland yards",
-        "portrait": "Drava Keel",
-        "portrait_id": "drava-keel",
+        "entry": 17,
+        "speaker": "Demitri Kortev of Kortev Utility Shack",
+        "portrait": "Demitri Kortev",
+        "portrait_id": "first-patch-revival--proficiency",
         "quote": [
-          "The manual says a servo-hand wants a clean bench, a calibrated driver and four hours. I had a ditch, a soup spoon, and as long as it takes an Ork to cross a field. He still has the hand. Plans are lovely things. I have had hundreds, and every one of them died in the first minute, most of them louder than I did. What you have after that is whatever is in your pockets, and how fast you stop mourning the plan. The spoon is still in there, by the way. Load-bearing. Nobody tell him."
+          "Yes, yes, a watchmaker and a gunsmith aren't far apart. Lay every part of a pendulum clock on the table and odds are your brain starts shorting out. Guns are the same: picking one up and shooting is a world away from stripping every screw and putting it back. Anyone can read a clock, but how many can fix one? What you need is someone who sees every piece of the puzzle and joins them into one. Like me! Unless you use a digital clock or one of those toy guns from the carnival stalls, in which case: scram. Shoo, shoo."
         ],
-        "intro": "Improvisation is what you do when the plan is gone: making the thing in front of you work with whatever is at hand, right now, and working out why later.",
-        "effect": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
-        "high_levels": "nothing catches you flat and nothing stays broken near you. But you stop making plans at all, and the people who depend on you can never tell what you will do next.",
-        "good_for": "field mechanics, ditch medics, smugglers, anyone who performs for a living.",
-        "bad_for": "planners, quartermasters, whoever signed for the equipment.",
-        "source": "docs/design/proposals/2026-11-nine-doors.md, section 18.4 (new in rules 1.13; not in the 2020 EPCCG)",
-        "game_text_edits": [],
+        "intro": "Acuity is your grasp of complex mechanisms, from something as small as a stopwatch to something as huge as a transcontinental cannon. All of it can be taken apart by you.",
+        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
+        "high_levels": "you see how everything works, man-made or not: a lock, a network, a crime scene, the way an enemy guards itself. That helps with a lot, but the first answer that fits is the one you keep, and you lose interest in anything that can't be taken apart, people included.",
+        "good_for": "detectives, locksmiths, slicers, clockmakers, anyone who reads an enemy before the shooting starts.",
+        "bad_for": "enchanters, party people, therapists, anyone who has to act before they understand.",
+        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5 (entry 11, Proficiency: Demitri Kortev's entry stands for Acuity since rules 1.13; docs/design/proposals/2026-11-nine-doors.md sections 17.5 and 18.1)",
+        "game_text_edits": [
+          [
+            "toy guns from Alcatraz",
+            "toy guns from the carnival stalls"
+          ],
+          [
+            "Proficiency is your grasp of complex mechanisms",
+            "Acuity is your grasp of complex mechanisms"
+          ]
+        ],
         "provisional": true,
-        "note": "Suggested: a new speaker and entry for Improvisation; the cast is the owner's to approve. Second choice for the face: Milo Quill."
+        "note": "Rules 1.13: the 2020 Proficiency entry, moved here with its speaker; the intro's skill name, the high levels and the good for / bad for lines are rewritten for Acuity (knowing how a thing works). The 2020 Analysis entry (D12.9.6) left the book: docs/lore/D12-9-6.md."
       }
     },
     {
@@ -2466,57 +2474,58 @@
       }
     },
     {
-      "id": "analysis",
-      "name": "Acuity",
-      "attribute": "perception",
+      "id": "proficiency",
+      "name": "Improvisation",
+      "attribute": "expression",
       "core": "mind",
       "slot": "beta",
-      "summary": "Seeing how a thing works: a lock, a mechanism, a crime scene, an enemy. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
+      "summary": "Making a thing work now with what is at hand. Fixes guns, gear and machines in the field, robot squadmates included.",
       "per_point": {
-        "text": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
+        "text": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "analyze_range",
-            "value": 1
+            "stat": "sigil_core_saving",
+            "value": 0.3334
           }
         ]
       },
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Quick Read",
+          "name": "Field Repair",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "Analyze costs 1 AP.",
+          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Improvisation point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap_cost:analyze",
-              "value": -1
+              "op": "grant_action",
+              "action": "field_repair",
+              "ap": 2,
+              "uses": "at_will"
             },
             {
               "op": "perk_choice",
-              "skill": "analysis",
+              "skill": "proficiency",
               "choice": "tier_1"
             }
           ],
           "adjudication": "engine"
         },
         "5": {
-          "name": "Read Them",
+          "name": "Tuned",
           "category": "Passive",
           "mastery": 2,
-          "text": "Enemies you've analyzed deal 15% less damage to your whole squad.",
+          "text": "The weapon in your main hand never jams and never breaks.",
           "effects": [
             {
-              "op": "damage_reduction",
-              "value_pct": 15,
-              "target": "squad",
-              "source": "enemies you have analyzed"
+              "op": "immunity",
+              "to": "weapon_jam_and_break",
+              "context": "the weapon in your main hand"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "7": {
           "name": "Mastery 3",
@@ -2525,7 +2534,7 @@
           "effects": [
             {
               "op": "perk_choice",
-              "skill": "analysis",
+              "skill": "proficiency",
               "choice": "upgrade_or_second"
             }
           ],
@@ -2545,7 +2554,7 @@
           "effects": [
             {
               "op": "perk_choice",
-              "skill": "analysis",
+              "skill": "proficiency",
               "choice": "both_tier_2"
             }
           ],
@@ -2554,13 +2563,13 @@
       },
       "overreach": {
         "from_points": 5,
-        "trigger": "a scene with several clues",
-        "consequence": "You fixate on the first one; the Narrator gives you no other clue until you pass.",
-        "text": "Trigger: a scene with several clues. Indulge: You fixate on the first one; the Narrator gives you no other clue until you pass.",
+        "trigger": "an important conversation with an interesting mechanism nearby",
+        "consequence": "You're busy taking it apart; the Narrator withholds one detail from the scene.",
+        "text": "Trigger: an important conversation with an interesting mechanism nearby. Indulge: You're busy taking it apart; the Narrator withholds one detail from the scene.",
         "effects": [
           {
             "op": "narrator",
-            "note": "Narrator withholds further clues from this player"
+            "note": "Narrator withholds one scene detail from this player"
           }
         ],
         "adjudication": "narrator",
@@ -2568,57 +2577,48 @@
         "once_per_scene": true
       },
       "signature_of": [
-        "warden",
-        "trickster"
+        "medic",
+        "scribe"
       ],
       "tags": [
         "beta",
         "core:mind",
-        "attr:expression",
-        "investigation",
+        "attr:perception",
+        "tech",
         "support",
-        "debuff"
+        "repair"
       ],
-      "number": 17,
+      "number": 11,
       "voice": {
-        "persona": "A fussy, delighted tinkerer for whom every machine is a puzzle and every puzzle is a joy.",
-        "wants": "To take it apart and see how it goes.",
-        "style": "Fast, technical, affectionate about parts; loses the thread of people.",
-        "never": "Never cares about the conversation when there's a mechanism in the room.",
-        "tone_from": "Demitri Kortev of Kortev Utility Shack",
+        "persona": "A cheerful fixer who trusts her hands more than any plan.",
+        "wants": "To try it now and see.",
+        "style": "Quick, practical, amused; counts what is in reach.",
+        "never": "Never waits for the right tool.",
+        "tone_from": "Drava Keel, salvage fitter of the Mandestra lowland yards",
         "sample_lines": {
-          "notices": "That turret's feed is jammed on the third link. It's firing half as often as it should.",
-          "pushes": "Never mind the colonel. Look at the clockwork in that wall.",
-          "quiet": "Every piece fits somewhere. You just have to see all of them."
+          "notices": "That strap, that pipe and your belt. That's a splint.",
+          "pushes": "Stop reading the plan. The plan left ten minutes ago.",
+          "quiet": "It doesn't have to be right. It has to hold."
         },
         "provisional": true
       },
       "epccg": {
-        "entry": 17,
-        "speaker": "Demitri Kortev of Kortev Utility Shack",
-        "portrait": "Demitri Kortev",
-        "portrait_id": "first-patch-revival--proficiency",
+        "entry": 11,
+        "speaker": "Drava Keel, salvage fitter of the Mandestra lowland yards",
+        "portrait": "Drava Keel",
+        "portrait_id": "drava-keel",
         "quote": [
-          "Yes, yes, a watchmaker and a gunsmith aren't far apart. Lay every part of a pendulum clock on the table and odds are your brain starts shorting out. Guns are the same: picking one up and shooting is a world away from stripping every screw and putting it back. Anyone can read a clock, but how many can fix one? What you need is someone who sees every piece of the puzzle and joins them into one. Like me! Unless you use a digital clock or one of those toy guns from the carnival stalls, in which case: scram. Shoo, shoo."
+          "The manual says a servo-hand wants a clean bench, a calibrated driver and four hours. I had a ditch, a soup spoon, and as long as it takes an Ork to cross a field. He still has the hand. Plans are lovely things. I have had hundreds, and every one of them died in the first minute, most of them louder than I did. What you have after that is whatever is in your pockets, and how fast you stop mourning the plan. The spoon is still in there, by the way. Load-bearing. Nobody tell him."
         ],
-        "intro": "Acuity is your grasp of complex mechanisms, from something as small as a stopwatch to something as huge as a transcontinental cannon. All of it can be taken apart by you.",
-        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
-        "high_levels": "you see how everything works, man-made or not: a lock, a network, a crime scene, the way an enemy guards itself. That helps with a lot, but the first answer that fits is the one you keep, and you lose interest in anything that can't be taken apart, people included.",
-        "good_for": "detectives, locksmiths, slicers, clockmakers, anyone who reads an enemy before the shooting starts.",
-        "bad_for": "enchanters, party people, therapists, anyone who has to act before they understand.",
-        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5 (entry 11, Proficiency: Demitri Kortev's entry stands for Acuity since rules 1.13; docs/design/proposals/2026-11-nine-doors.md sections 17.5 and 18.1)",
-        "game_text_edits": [
-          [
-            "toy guns from Alcatraz",
-            "toy guns from the carnival stalls"
-          ],
-          [
-            "Proficiency is your grasp of complex mechanisms",
-            "Acuity is your grasp of complex mechanisms"
-          ]
-        ],
+        "intro": "Improvisation is what you do when the plan is gone: making the thing in front of you work with whatever is at hand, right now, and working out why later.",
+        "effect": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
+        "high_levels": "nothing catches you flat and nothing stays broken near you. But you stop making plans at all, and the people who depend on you can never tell what you will do next.",
+        "good_for": "field mechanics, ditch medics, smugglers, anyone who performs for a living.",
+        "bad_for": "planners, quartermasters, whoever signed for the equipment.",
+        "source": "docs/design/proposals/2026-11-nine-doors.md, section 18.4 (new in rules 1.13; not in the 2020 EPCCG)",
+        "game_text_edits": [],
         "provisional": true,
-        "note": "Rules 1.13: the 2020 Proficiency entry, moved here with its speaker; the intro's skill name, the high levels and the good for / bad for lines are rewritten for Acuity (knowing how a thing works). The 2020 Analysis entry (D12.9.6) left the book: docs/lore/D12-9-6.md."
+        "note": "Suggested: a new speaker and entry for Improvisation; the cast is the owner's to approve. Second choice for the face: Milo Quill."
       }
     },
     {
@@ -3398,6 +3398,157 @@
       }
     },
     {
+      "id": "composure",
+      "name": "Composure",
+      "attribute": "determination",
+      "core": "soul",
+      "slot": "beta",
+      "summary": "A face that never moves.",
+      "per_point": {
+        "text": "+1 on Heart saves (fear, despair, losing your nerve).",
+        "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "save_heart",
+            "basis": "skill_mod"
+          }
+        ]
+      },
+      "gates": [],
+      "unlocks": {
+        "3": {
+          "name": "Poker Face",
+          "category": "Conversation Quirk",
+          "mastery": 1,
+          "text": "Interrogators and lie-readers take −3 against you.",
+          "effects": [
+            {
+              "op": "tn_mod",
+              "context": "insight_checks_against_self",
+              "value": 3
+            },
+            {
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "tier_1"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "5": {
+          "name": "Stand Still",
+          "category": "Combat Starter",
+          "mastery": 2,
+          "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "defense_until_first_act",
+              "value": 2
+            },
+            {
+              "op": "grant_action",
+              "action": "stand_still_counter",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "upgrade_or_second"
+            }
+          ],
+          "adjudication": "engine"
+        },
+        "9": {
+          "name": "Mastery 4",
+          "mastery": 4,
+          "text": "Mastery 4.",
+          "effects": [],
+          "adjudication": "engine"
+        },
+        "10": {
+          "name": "Mastered",
+          "mastery": 5,
+          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "both_tier_2"
+            }
+          ],
+          "adjudication": "engine"
+        }
+      },
+      "overreach": {
+        "from_points": 5,
+        "trigger": "a warm, intimate or emotional moment",
+        "consequence": "You stay blank; the other person reads you as cold: −3 to rapport.",
+        "text": "Trigger: a warm, intimate or emotional moment. Indulge: You stay blank; the other person reads you as cold: −3 to rapport.",
+        "effects": [
+          {
+            "op": "skill_mod_tag",
+            "tag": "social:vs_target_scene",
+            "value": -3
+          }
+        ],
+        "adjudication": "hybrid",
+        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
+        "once_per_scene": true
+      },
+      "signature_of": [
+        "warden"
+      ],
+      "tags": [
+        "gamma",
+        "core:soul",
+        "attr:determination",
+        "defense",
+        "social",
+        "resolve"
+      ],
+      "number": 24,
+      "voice": {
+        "persona": "A ring-hardened stillness that wins by never moving first.",
+        "wants": "Control: of the face, the breath, and the moment to act.",
+        "style": "Spare, slow, instructional; 'stand still'.",
+        "never": "Never shows anything on your face.",
+        "tone_from": "Kaizer Meyer Reinch Wolf of Central Command",
+        "sample_lines": {
+          "notices": "His eyes slipped off yours. That was the moment. He's done.",
+          "pushes": "She's crying. Stay still. Give her nothing.",
+          "quiet": "Stand still. Then stand stiller."
+        },
+        "provisional": true
+      },
+      "epccg": {
+        "entry": 24,
+        "speaker": "Kaizer Meyer Reinch Wolf of Central Command Center",
+        "portrait": "Kaizer Meyer Reinch Wolf",
+        "portrait_id": "first-patch-revival--composure",
+        "quote": [
+          "In the ring, kid, the first punch you throw doesn't come from your fist. What you need is your eyes! When he walks at you, arms up and chest out, you stand still. When your lips feel his boozy breath, you stand still. When his bloodthirsty stare locks on yours, you stand stiller. Only when his eyes slip off yours do you get to move. The only problem is, the fight ended long before that."
+        ],
+        "intro": "Composure is your ability to stay calm in any situation. Neither a monster at midnight nor the woman waiting at the end of the alley can move your face an inch.",
+        "effect": "+1 on Heart saves (fear, despair, losing your nerve).",
+        "high_levels": "your face goes stone in every situation. Great when someone threatens or interrogates you; terrible for anyone who just wants to be friendly.",
+        "good_for": "security guards, police, iron men, lead men.",
+        "bad_for": "small bois, shy bois, studs and sluts.",
+        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
+        "game_text_edits": []
+      }
+    },
+    {
       "id": "lore_master",
       "name": "Lore Master",
       "attribute": "determination",
@@ -3545,157 +3696,6 @@
         "high_levels": "you can tell at once whether something is the work of the supernatural and how to deal with it. Comfortable among mages, but you start rejecting proven science because you see the supernatural threads behind it.",
         "good_for": "dreamers, divine casters, spellswords.",
         "bad_for": "scientists, hackers, barbarians.",
-        "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
-        "game_text_edits": []
-      }
-    },
-    {
-      "id": "composure",
-      "name": "Composure",
-      "attribute": "determination",
-      "core": "soul",
-      "slot": "beta",
-      "summary": "A face that never moves.",
-      "per_point": {
-        "text": "+1 on Heart saves (fear, despair, losing your nerve).",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "save_heart",
-            "basis": "skill_mod"
-          }
-        ]
-      },
-      "gates": [],
-      "unlocks": {
-        "3": {
-          "name": "Poker Face",
-          "category": "Conversation Quirk",
-          "mastery": 1,
-          "text": "Interrogators and lie-readers take −3 against you.",
-          "effects": [
-            {
-              "op": "tn_mod",
-              "context": "insight_checks_against_self",
-              "value": 3
-            },
-            {
-              "op": "perk_choice",
-              "skill": "composure",
-              "choice": "tier_1"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "5": {
-          "name": "Stand Still",
-          "category": "Combat Starter",
-          "mastery": 2,
-          "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
-          "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "defense_until_first_act",
-              "value": 2
-            },
-            {
-              "op": "grant_action",
-              "action": "stand_still_counter",
-              "ap": 0,
-              "uses": "per_combat"
-            }
-          ],
-          "adjudication": "engine",
-          "provisional": true
-        },
-        "7": {
-          "name": "Mastery 3",
-          "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
-          "effects": [
-            {
-              "op": "perk_choice",
-              "skill": "composure",
-              "choice": "upgrade_or_second"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "9": {
-          "name": "Mastery 4",
-          "mastery": 4,
-          "text": "Mastery 4.",
-          "effects": [],
-          "adjudication": "engine"
-        },
-        "10": {
-          "name": "Mastered",
-          "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
-          "effects": [
-            {
-              "op": "perk_choice",
-              "skill": "composure",
-              "choice": "both_tier_2"
-            }
-          ],
-          "adjudication": "engine"
-        }
-      },
-      "overreach": {
-        "from_points": 5,
-        "trigger": "a warm, intimate or emotional moment",
-        "consequence": "You stay blank; the other person reads you as cold: −3 to rapport.",
-        "text": "Trigger: a warm, intimate or emotional moment. Indulge: You stay blank; the other person reads you as cold: −3 to rapport.",
-        "effects": [
-          {
-            "op": "skill_mod_tag",
-            "tag": "social:vs_target_scene",
-            "value": -3
-          }
-        ],
-        "adjudication": "hybrid",
-        "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
-        "once_per_scene": true
-      },
-      "signature_of": [
-        "warden"
-      ],
-      "tags": [
-        "gamma",
-        "core:soul",
-        "attr:determination",
-        "defense",
-        "social",
-        "resolve"
-      ],
-      "number": 24,
-      "voice": {
-        "persona": "A ring-hardened stillness that wins by never moving first.",
-        "wants": "Control: of the face, the breath, and the moment to act.",
-        "style": "Spare, slow, instructional; 'stand still'.",
-        "never": "Never shows anything on your face.",
-        "tone_from": "Kaizer Meyer Reinch Wolf of Central Command",
-        "sample_lines": {
-          "notices": "His eyes slipped off yours. That was the moment. He's done.",
-          "pushes": "She's crying. Stay still. Give her nothing.",
-          "quiet": "Stand still. Then stand stiller."
-        },
-        "provisional": true
-      },
-      "epccg": {
-        "entry": 24,
-        "speaker": "Kaizer Meyer Reinch Wolf of Central Command Center",
-        "portrait": "Kaizer Meyer Reinch Wolf",
-        "portrait_id": "first-patch-revival--composure",
-        "quote": [
-          "In the ring, kid, the first punch you throw doesn't come from your fist. What you need is your eyes! When he walks at you, arms up and chest out, you stand still. When your lips feel his boozy breath, you stand still. When his bloodthirsty stare locks on yours, you stand stiller. Only when his eyes slip off yours do you get to move. The only problem is, the fight ended long before that."
-        ],
-        "intro": "Composure is your ability to stay calm in any situation. Neither a monster at midnight nor the woman waiting at the end of the alley can move your face an inch.",
-        "effect": "+1 on Heart saves (fear, despair, losing your nerve).",
-        "high_levels": "your face goes stone in every situation. Great when someone threatens or interrogates you; terrible for anyone who just wants to be friendly.",
-        "good_for": "security guards, police, iron men, lead men.",
-        "bad_for": "small bois, shy bois, studs and sluts.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
       }

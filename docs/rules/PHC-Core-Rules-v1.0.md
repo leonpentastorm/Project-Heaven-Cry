@@ -140,7 +140,9 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 
 Rules revision 1.11 (10 Nov 2026; provisional, items 924–927). Over levels 2 to 20 that is **28 Skill points, 10 Attribute points and 6 Core points**, on top of creation's 10, 10 and 6: 38 Skill points in a career. Before 1.11 a level gave 1 Skill point, and a Core point came every 5th level (19 Skill and 4 Core points in a career): raising a capped skill needs a point of each kind, so every character's best skill rose by 1 per 5 levels and no build that started below a Core of 6 could ever reach a Mastered perk. Points you don't spend are kept. *(Rules 1.13: no Core points at creation or from levels; a career is 38 Skill and 20 Attribute points.)*
 
-Skill books and quest rewards can grant extra Skill points. A **Legendary Deed**, at the Narrator's call, grants **1 Attribute point**, and for each deed done one Attribute point may stand **1 above the level's ceiling** (never above 10). When the ceiling rises past that point, the room is free again. A skill still can't pass its Attribute.
+Skill books and quest rewards can grant extra Skill points. **Taking a level-up back.** The points and perk steps you spend on the level-up screen can be taken back with Revert, all at once, until something settles them: a fight starts, or you earn your class. After that they are spent for good.
+
+A **Legendary Deed**, at the Narrator's call, grants **1 Attribute point**, and for each deed done one Attribute point may stand **1 above the level's ceiling** (never above 10). When the ceiling rises past that point, the room is free again. A skill still can't pass its Attribute.
 
 **XP sources.** XP is tagged by source, because traits care (Born Performer gets +20% from combat and nothing from conversation).
 
@@ -1840,14 +1842,14 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 | **Heart's Own** (Devoted) | The +2 limit lasts while a Beloved spell is begun or held; the plain limit is back at your turn's end once it is gone. |
 | **Love Made Manifest** (Devoted) | Once a fight, a Beloved Outburst **Begins at stage 4**. (1.2's ×3 would reach ×6.6.) |
 | **Fusion** (Circuit Mage) | Each creature the Sigil reaches takes the Outburst as a Bolt, at stage 0 or its held stage. |
-| **Heart Overload** (perk) | The Begin's MP in HP; the Outburst can now be held and Pumped. Blood can't heal or shield. (A Pump paid in HP was refused: HP into stage 4 every turn.) |
-| **Resonance** (perk) | Widens the rule's window, not its bonus: I: an ally's release in the round before counts for you; II: yours counts for allies in the next round. The +0.4 ceiling stands. The MP discount is gone. |
+| **Heart Overload** (perk) | Rewritten in rules 1.14 (see "Rules revision 1.14"): a free Begin after a Release; paying in HP is its fallback. |
+| **Resonance** (perk) | Rewritten in rules 1.14 (see "Rules revision 1.14"): your own Releases build on each other; allies' Releases count at tier II. |
 | **Twin Souls** (perk) | The third school is a half-strength rider with its own option and no roll, on the release's area by its own reach rule; it lands after the primary hit (on whoever is still standing). |
 | **Twin Discipline** (perk) | Each creature the Sigil covers takes the held Outburst as a Bolt. |
 | **Verse of War** (perk) | "In verse" rides a Release too (+1 reach, ×1.1). Its ×1.1 reaches elemental Outbursts. |
-| **The Twin Pays** (perk) | Unchanged: no MP, no Begin Strain, no swell Strain. A free heart swelled to stage 4 once a fight. |
+| **The Twin Pays** (perk) | No AP for the Begin (since 11 Nov 2026), no MP, no Begin Strain, no swell Strain. A free heart swelled to stage 4 once a fight. |
 | **Hollow Heart** (trait) | When your own heart's burn Downs you, you are stable; **a Mana Short doesn't Stun you**. +10% reaches elemental Outbursts. |
-| **Overdraw** (Will Power 3) | Once a fight, a toggle on a Pump: +2 stages (from stage 2 or lower), then +1 Strain. |
+| **Overdraw** (Will Power 3) | Rules 1.14: once a turn, a Pump adds 2 stages (from stage 2 or lower). The first Overdraw of a fight costs no Strain; each one after it +1 Strain. |
 | **Pure Heart** (Will Power 5) | Once a fight, the first Strain that would short you is refused: Strain falls to your limit, no Stun, no wild release. |
 
 #### 12. Rules 1.8: Outburst 4.0, remembered spells felt live
@@ -2735,6 +2737,53 @@ Shove and Break are techniques everyone can learn (the Shove Link, the Break Fin
 - **Story uses.** Advanced moves with a story part show in the story Perks strip: Bless a shell (the engine rolls the
   prayer), Mark/Design a Beloved spell, Self-Crystallise, Enlarge (a ruling), Key a design, Let it fill a gauge (a
   ruling), Link, Share always/never, Inner Charge, Manifest the twin.
+
+## Rules revision 1.14 (11 Nov 2026): speaking in a fight, and the Will Power perks
+
+Accepted by Leon on 11 Nov 2026 from `docs/design/proposals/2026-11-playtest-fixes-2.md`. Every number here is provisional (section 14, items 1008 to 1013).
+
+### Speaking and attempting in a fight
+
+Words said in a fight used to wait in the log until the fight was over. Now the Narrator answers inside the fight.
+
+1. **Speech is free.** Anything a player says in a fight goes in the log and to the Narrator, who may answer with one or two lines. Plain speech has no effect on the fight.
+2. **An attempt costs 1 AP**, once a turn for each character, on that character's own turn. An attempt is words that want something to happen: talk an enemy down, call a bluff, shout a warning, try something the action list doesn't have. A perk that asks for words costs what its card says and counts as that turn's attempt.
+3. **The Narrator answers at once** with one or two lines, and may ask the engine for **exactly one** of these, and nothing else:
+   - **a check** by the speaker, with the skill and the TN the Narrator sets (the engine rolls it; its result is the Narrator's to describe, with the effect below it earns on a success);
+   - **one condition on one unit for one round**, from this list only: Shaken, Taunted (by the speaker), weapon lowered, Hesitates (−1 AP on its next turn);
+   - **a surrender:** one enemy stops fighting. Only an enemy at half its HP or less, or after a successful check;
+   - **a ruling on a perk:** yes, or no (a no gives the use and the AP back).
+4. **The Narrator never** deals damage, heals, moves a unit, or changes AP beyond that −1. The engine keeps every number.
+5. **A check comes first when the outcome is in doubt.** A condition or a surrender with no check is for when the fiction has already earned it (a beaten enemy, a threat the squad just carried out).
+6. **No Narrator connected** (no key, or the Narrator is offline): the attempt is refused and costs nothing; plain speech still goes in the log.
+7. **A human Narrator** gets the words on the Narrator screen with the same four answers as buttons; the fight waits for them.
+
+### Overdraw (Will Power 3)
+
+**Once a turn**, a Pump may be an Overdraw: it adds 2 stages instead of 1 (so it needs stage 2 or lower), for the Pump's own AP. The first Overdraw of a fight costs no Strain. Each one after it costs 1 Strain once the Pump is done.
+
+### Heart Overload (Will Power perk)
+
+- **I:** once a turn, right after you Release an Outburst at stage 2 or higher, you may Begin the same design again at once for **0 AP**. You pay its mana and its Strain as usual, and it holds at stage 0.
+- **II:** that free Begin holds at stage 1.
+- **Blood for mana:** if you don't have the mana for that free Begin, you may pay it in HP, 1 HP for each point of mana. An Outburst paid in blood can't heal or shield.
+- It needs an Emanator in hand, like any Begin.
+
+### Resonance (Will Power perk)
+
+- **I:** each Outburst you Release gives your **next** Release in this fight **+10%** to its effect, building up to **+20%**. You lose what you have built when you end a turn in which you neither held nor Released an Outburst.
+- **II:** it builds up to **+30%**, and an ally's Release that you can see adds a step too.
+- The shared Resonance rule of rules 1.5 (allies releasing in the same round, +0.2 on the stage multiplier each, +0.4 at most) is unchanged and adds to this.
+
+### The perk card in a fight
+
+The Perks tab shows three shelves and nothing that can't be used:
+
+1. **Use now:** perks, traits and class moves with an action: its AP, the uses left, and the reason when it can't be used.
+2. **Rides an action:** those that change an attack, a move, a Pump, a Begin or a prayer. They are not buttons here: each is a switch on the action it rides. The shelf lists them with where to find the switch.
+3. **Always on:** passives, each with a live line: ready, used this fight, waiting for its trigger, or what it last did.
+
+Items that only matter in the story are not on the fight's card. The audit behind the shelves is `docs/design/handoffs/perk-audit.md`.
 
 ## Exploration, social play, rest, and the Narrator
 
@@ -5194,3 +5243,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1004. **The kept Guard point and Momentum.** "A hit on a unit that holds Guard points costs it no Momentum" was written when the soak spent every point. With 1 point kept back, a unit that has Braced once keeps its Momentum against every hit until it spends that point on a reaction or the hit would take it down. To settle: leave it, or protect Momentum only from a hit that Guard soaked part of.
 1005. **The perk hooks wired into the technique core** (after item 990): Heavy Hands adds 1 tile to every push away by a melee technique (Shove, Bash's Heavy line, Lunge's Heavy line, Shield Bash), on the card and in play. Quick Draw zeroes the AP of the first technique of a fight that draws its weapon (Draw Cut, Snap Shot). Iron Grip II lets Throw Down start with no Momentum on a held target (it then deals its base damage). Breaching Strike also answers a push that is blocked at once, where the target stands, including a Shove that knocks Prone because the tile behind is blocked; a push is slammed once. Siege Engine's discount reaches the Shove Link and the Break Finisher, never below 1 AP, so a 1 AP Shove stays 1 AP and in practice only Break is cheaper: to settle whether Shove should be free for its holder. Tuned: a natural 1 with a gun that can jam is only a miss (no jam, and no −1 AP either), and Heat never jams it.
 1006. ~~A Legendary Deed's Core point~~ **Settled (Leon, 10 Nov 2026):** a Legendary Deed grants 1 Attribute point, and one Attribute point per deed may stand 1 above the level's ceiling (never above 10).
+1007. **The Twin Pays also pays the Begin's AP** (Leon, 11 Nov 2026): the Begin costs 0 AP as well as 0 MP and 0 Strain, once a fight.
+1008. **An attempt in a fight** costs 1 AP, once a turn for each character; plain speech is free (rules 1.14).
+1009. **What the Narrator may ask for in a fight:** one check, or one condition for one round (Shaken, Taunted, weapon lowered, Hesitates −1 AP), or one surrender (at half HP or less, or after a check), or a yes/no on a perk. The list and the one-round length are provisional.
+1010. **Overdraw** once a turn; free of Strain the first time each fight, then 1 Strain.
+1011. **Heart Overload:** the free Begin needs a Release at stage 2 or higher, once a turn; tier II starts it at stage 1; blood pays at 1 HP a point.
+1012. **Resonance (perk):** +10% a step, to +20% (tier II +30%); lost on a turn with no held or Released Outburst.
+1013. **The perk card's three shelves** follow the audit of 11 Nov 2026; which perk sits on which shelf is the audit's reading and can move.

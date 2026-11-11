@@ -95,8 +95,8 @@ register({
   id: 'gunslinger.six_for_six', claims: 'all',
   actions: [{
     id: 'fan_fire', label: 'Six for Six', scope: ['combat'], ap: 4, uses: { per: 'per_scene', n: 1 }, target: 'enemy', range: 4,
-    text: 'Fire up to six single shots from a pistol or revolver at enemies within 4 tiles. Recoil and Heat apply to each.',
-    available: (h) => (!h.u ? false : !isHandgun(h.u) ? 'Needs a pistol or revolver.' : h.u.jammed ? 'Jammed.' : W(h.u).magazine != null && h.u.ammo <= 0 ? 'Empty.' : true),
+    text: 'Fire up to six single shots from a pistol or revolver at enemies within 4 tiles. Recoil and Heat apply to each shot.',
+    available: (h) => (!h.u ? false : !isHandgun(h.u) ? 'Needs a pistol or revolver.' : h.u.jammed ? 'Your gun is jammed.' : W(h.u).magazine != null && h.u.ammo <= 0 ? 'Your gun is empty. Reload first.' : true),
     preview: (h, a) => {
       const u = h.u!, cb = h.cb!, list = (a.targetIds?.length ? a.targetIds : Array(6).fill(a.targetId)).slice(0, 6);
       const bad = list.map((id) => unitById(cb, id)).find((t) => !t || t.side === u.side || dist(t.pos, u.pos) > 4);
@@ -136,7 +136,7 @@ register({
   id: 'gunslinger.called_shot', claims: 'all',
   actions: [
     { id: 'called_shot', label: 'Called Shot', pick: ['head', 'arm', 'leg'], pickLabel: 'Head, arm or leg', scope: ['combat', 'world'], ap: 3, target: 'enemy',
-      text: 'Name head, arm or leg and shoot at −2. On a hit: head Dazed, arm −2 to attacks with it, leg half Movement (Injury resistance still rolls).',
+      text: 'Name the head, an arm or a leg and shoot at −2 to hit. A head hit leaves the target Dazed, an arm hit gives −2 to attacks with that arm, and a leg hit halves its Movement. The target still rolls to resist the injury.',
       available: (h) => (!h.u ? false : !isRanged(h.u) ? 'Needs a gun or a bow.' : true),
       preview: (h, a) => {
         const loc = String(a.choice || '').split(':')[0]; if (!['head', 'arm', 'leg'].includes(loc)) return { ok: false, why: 'Name head, arm or leg.' };
@@ -152,7 +152,7 @@ register({
         checkOver(cb); return null;
       } },
     { id: 'called_shot_story', label: 'Called Shot (a standoff)', scope: ['story'], ap: 0, target: 'text', uses: { per: 'per_scene', n: 1 },
-      text: 'Say where you put the round (head, arm or leg). The Narrator calls the check; the engine rolls it.',
+      text: 'Say where you put the round: head, arm or leg. The Narrator calls for the check and you roll it.',
       run: (h, a) => { const eid = postStory(h, a.text || 'calls the shot.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Called Shot in a standoff: "' + (a.text || '') + '". Call a Dexterity check (the gun\'s skill) at −2; on a success the named location is disabled (head dazed, arm −2, leg slowed).', eid || undefined); return null; } },
   ],
   on: { attack_preview: termsHook },
@@ -175,7 +175,7 @@ register({
   id: 'hellraiser_heavy.emplace', claims: 'all',
   actions: [{
     id: 'emplace', label: 'Emplace', scope: ['combat'], ap: 2, target: 'none',
-    text: 'Set the gun down: Emplaced (no recoil, the heavy weapon\'s penalty gone) and +5 armour until you move.',
+    text: 'Set the gun down. Until you move you are Emplaced: no recoil, no heavy-weapon penalty, and +5 armour.',
     available: (h) => (!h.u ? false : !EMPLACE_CATS.includes(W(h.u)?.category || '') ? 'Needs a heavy weapon or a rifle.' : condOn(h.u, 'emplaced') ? 'Already Emplaced.' : true),
     run: (h, _a, rng) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h);
@@ -216,8 +216,8 @@ register({
   id: 'hellraiser_heavy.suppression', claims: 'all',
   actions: [{
     id: 'suppression', label: 'Suppression', scope: ['combat'], ap: 4, target: 'tile',
-    text: 'While Emplaced: full auto into a 3x3 area. Until your next turn, an enemy there that moves or attacks takes one attack roll from you and is Pinned on a hit (Body save).',
-    available: (h) => (!h.u ? false : !(W(h.u).modes || []).includes('auto') ? false : !condOn(h.u, 'emplaced') ? 'Emplace first.' : h.u.jammed ? 'Jammed.' : W(h.u).magazine != null && h.u.ammo <= 0 ? 'Empty.' : true),
+    text: 'While Emplaced: fire full auto into a 3×3 area. Until your next turn, any enemy there that moves or attacks takes one attack from you. If it hits, the enemy makes a Body save or is Pinned.',
+    available: (h) => (!h.u ? false : !(W(h.u).modes || []).includes('auto') ? false : !condOn(h.u, 'emplaced') ? 'Emplace first.' : h.u.jammed ? 'Your gun is jammed.' : W(h.u).magazine != null && h.u.ammo <= 0 ? 'Your gun is empty. Reload first.' : true),
     preview: (h, a) => {
       const cb = h.cb!, u = h.u!, c = tileOf(cb, a.tile); if (!c) return {};
       if (!lineOfSight(cb, u.pos, c)) return { ok: false, why: 'No line of sight to that tile.' };
@@ -278,7 +278,7 @@ register({
   stat: (h, stat, ctx) => (stat === 'ap_cost:analyze' ? 1 - (ctx?.base ?? 2) : 0),
   actions: [
     { id: 'case_file', label: 'Case File', scope: ['combat'], ap: 1, target: 'enemy',
-      text: 'Analyze (1 AP) and Mark the target; an analyzed target is Marked again.',
+      text: 'Analyze a target for 1 AP and Mark it. A target that is already Analyzed is Marked again.',
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId); if (!t) return {};
         if (dist(u.pos, t.pos) > 4 + (u.analysis || 0)) return { ok: false, why: 'Out of Analyze range (' + (4 + (u.analysis || 0)) + ' tiles).' };
@@ -291,7 +291,7 @@ register({
         say(cb, u.name + ' adds ' + t.name + ' to the case file' + markTarget(h, t, rng) + '.'); return null;
       } },
     { id: 'case_file_story', label: 'Open a case file', scope: ['story'], ap: 0, target: 'npc', uses: { per: 'per_scene', n: 1 },
-      text: 'Name an NPC and study them. Pass an Acuity check in this scene and they start your next fight with them Marked.',
+      text: 'Name someone and study them. If you pass an Acuity check this scene, they are Marked at the start of your next fight with them.',
       run: (h, a) => {
         const who = String(a.npc || a.text || '').trim(); if (!who) return 'Name who you\'re studying.';
         const st = charState(h.c)[h.key] ||= {}; st.pending = { npc: who.slice(0, 60), scene: h.g?.story?.scene?.n ?? 0 };
@@ -346,7 +346,7 @@ register({
   id: 'ccec_ballistician.one_shot', claims: 'all',
   actions: [{
     id: 'one_shot', label: 'One Shot', scope: ['combat'], ap: 4, uses: { per: 'per_combat', n: 1 }, target: 'enemy',
-    text: 'If you haven\'t moved this turn: an Aimed shot at a Marked target for triple damage (double on a Boss or a Celestial).',
+    text: 'If you haven\'t moved this turn: take an Aimed shot at a Marked target for triple damage. Against a Boss or a Celestial it deals double damage.',
     available: (h) => (!h.u ? false : !isRanged(h.u) ? 'Needs a gun or a bow.' : h.u.moved ? 'You moved this turn.' : true),
     preview: (h, a) => {
       const t = unitById(h.cb!, a.targetId); if (!t) return {};
@@ -387,10 +387,10 @@ register({
   id: 'banner_dancer.rally_banner', claims: 'all',
   actions: [{
     id: 'plant_banner', label: 'Rally Banner', scope: ['combat'], ap: 2, uses: { per: 'per_scene', n: 1 }, target: 'tile',
-    text: 'Plant a banner here or next to you. Allies who start their turn within 2 tiles of it gain a 10-point shield while you stay within 3 tiles of it.',
+    text: 'Plant a banner on your tile or next to you. While you stay within 3 tiles of it, each ally who starts their turn within 2 tiles of it gains a shield of 10.',
     preview: (h, a) => {
       const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {};
-      if (!adj(h.u!.pos, t)) return { ok: false, why: 'Your tile or one next to you.' };
+      if (!adj(h.u!.pos, t)) return { ok: false, why: 'Pick your tile or one next to you.' };
       if (!standable(cb.map, t) || moveBlockers(cb).has(t)) return { ok: false, why: 'Nothing can stand there.' };
       return { tiles: [t] };
     },
@@ -423,8 +423,8 @@ register({
   id: 'banner_dancer.sweep', claims: 'all',
   actions: [{
     id: 'banner_sweep', label: 'Sweep', scope: ['combat'], ap: 3, target: 'tile',
-    text: 'Spend 3 Momentum: move up to 3 tiles, strike each enemy you pass next to, and heal each ally you pass 10.',
-    available: (h) => (!h.u ? false : resOf(h.u, 'momentum') < 3 ? 'Needs 3 Momentum (' + resOf(h.u, 'momentum') + ').' : moveBlock(h.u) || true),
+    text: 'Costs 3 Momentum. Move up to 3 tiles, strike each enemy you pass next to, and heal each ally you pass for 10 HP.',
+    available: (h) => (!h.u ? false : resOf(h.u, 'momentum') < 3 ? 'Needs 3 Momentum. You have ' + resOf(h.u, 'momentum') + '.' : moveBlock(h.u) || true),
     preview: (h, a) => {
       const cb = h.cb!, u = h.u!, t = tileOf(cb, a.tile); if (!t) return {};
       const d = paths(cb, u.pos, u.id).dist[t]; if (d == null || t === u.pos) return { ok: false, why: 'Can\'t reach that tile.' };
@@ -471,7 +471,7 @@ register({
 export const RTC_START_CREDITS = 1000;
 const creditsOf = (c: Character | null | undefined) => (cs(c).credits ?? RTC_START_CREDITS) as number;
 function spendCredits(c: Character | null | undefined, n: number): boolean { if (!c) return false; const st = charState(c); const have = st.credits ?? RTC_START_CREDITS; if (have < n) return false; st.credits = have - n; return true; }
-const needCredits = (h: Holder, n: number) => (creditsOf(h.c) < n ? 'Needs ' + n + ' credits (' + creditsOf(h.c) + ' in the account).' : true);
+const needCredits = (h: Holder, n: number) => (creditsOf(h.c) < n ? 'Needs ' + n + ' credits. You have ' + creditsOf(h.c) + '.' : true);
 const SIGNAL = 'Only where the Company has signal (no drops underground, in jammed zones or on Celestial ground): refuse it if there\'s none, and the use comes back.';
 
 // ---------- Supply Drop ----------
@@ -483,12 +483,12 @@ register({
   id: 'rtc_contractor.supply_drop', claims: 'all',
   actions: [
     { id: 'supply_drop', label: 'Supply Drop', scope: ['combat'], ap: 2, target: 'tile', range: 6,
-      text: 'Spend 100 credits: next turn a crate lands within 6 tiles (4 takes: a Supply or a magazine, 1 AP each).',
+      text: 'Costs 100 credits. Next turn a crate lands on a tile you pick within 6 tiles. It holds 4 picks, and each pick is 1 Supply or a magazine and costs 1 AP to take.',
       available: (h) => (stateOf(h).due ? 'A drop is already inbound.' : needCredits(h, 100)),
-      preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; return dist(h.u!.pos, t) > 6 ? { ok: false, why: 'Within 6 tiles.' } : !standable(cb.map, t) || moveBlockers(cb).has(t) ? { ok: false, why: 'The crate needs open ground.' } : { tiles: [t] }; },
+      preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; return dist(h.u!.pos, t) > 6 ? { ok: false, why: 'Pick a tile within 6 tiles.' } : !standable(cb.map, t) || moveBlockers(cb).has(t) ? { ok: false, why: 'The crate needs open ground.' } : { tiles: [t] }; },
       run: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile)!; if (!spendCredits(h.c, 100)) return 'Not enough credits.'; stateOf(h).due = t; say(cb, h.u!.name + ' calls a supply drop on ' + refOf(t) + ' (100 credits; ' + creditsOf(h.c) + ' left).'); note(h, 'Supply drop called on ' + refOf(t) + '. ' + SIGNAL); return null; } },
     { id: 'take_from_crate', label: 'Take from the crate', pick: ['supply', 'magazine'], pickLabel: 'A supply or a magazine', scope: ['combat'], ap: 1, target: 'none',
-      text: 'Next to the crate: take 1 Supply or a magazine for your gun, or hand it to an ally next to the crate.',
+      text: 'While you stand next to the crate: take 1 Supply or a magazine for your gun, or hand it to an ally who is also next to the crate.',
       available: (h) => { const c = stateOf(h).crate; if (!c || !h.cb) return false; const o = objectsOf(h.cb).find((x) => x.id === c.id); if (!o) return false; return c.left <= 0 ? 'The crate is empty.' : true; },
       preview: (h, a) => {
         const c = stateOf(h).crate, o = objectsOf(h.cb!).find((x) => x.id === c.id)!, who = a.targetId ? unitById(h.cb!, a.targetId) : h.u!;
@@ -506,7 +506,7 @@ register({
         return null;
       } },
     { id: 'supply_drop_story', label: 'Supply Drop', scope: ['story'], ap: 0, target: 'none', uses: { per: 'per_scene', n: 1 },
-      text: 'Spend 100 credits: a Company drop where there\'s signal. You get a stim now.',
+      text: 'Costs 100 credits. The Company drops supplies wherever it has signal, and you get a stim at once.',
       available: (h) => needCredits(h, 100),
       run: (h) => { if (!spendCredits(h.c, 100)) return 'Not enough credits.'; h.c!.stims = (h.c!.stims || 0) + 1; const eid = postStory(h, 'calls in a Company supply drop (100 credits).'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Supply Drop (100 credits spent, a stim given): narrate the crate. ' + SIGNAL, eid || undefined); return null; } },
   ],
@@ -537,12 +537,12 @@ register({
   id: 'rtc_contractor.strike_call', claims: ['resource'],
   actions: [
     { id: 'strike_call', label: 'Strike Call', scope: ['combat'], ap: 3, uses: { per: 'per_scene', n: 1 }, target: 'tile',
-      text: 'Spend 300 credits: at the start of your next turn a 3x3 area takes 50 Physical damage. Anyone inside can spend their reaction to step 1 tile out.',
+      text: 'Costs 300 credits. At the start of your next turn, a 3×3 area takes 50 Physical damage. Anyone inside can spend their reaction to step 1 tile out first.',
       available: (h) => needCredits(h, 300),
-      preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; const seen = cb.units.some((v) => v.side === h.u!.side && unitSees(cb, v, t)); return !seen ? { ok: false, why: 'The squad has to see the tile.' } : { tiles: area3(t), lines: ['50 Physical to everyone in ' + refOf(t) + ' ±1 at the start of your next turn.'] }; },
+      preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; const seen = cb.units.some((v) => v.side === h.u!.side && unitSees(cb, v, t)); return !seen ? { ok: false, why: 'The squad has to see the tile.' } : { tiles: area3(t), lines: ['50 Physical damage to everyone within 1 tile of ' + refOf(t) + ', at the start of your next turn.'] }; },
       run: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile)!; if (!spendCredits(h.c, 300)) return 'Not enough credits.'; stateOf(h).strike = { tiles: area3(t), at: t }; say(cb, h.u!.name + ' calls a Company strike on ' + refOf(t) + ' (300 credits): it lands at the start of their next turn.'); note(h, 'Strike Call on ' + refOf(t) + '. ' + SIGNAL); return null; } },
     { id: 'strike_call_story', label: 'Strike Call', scope: ['story'], ap: 0, target: 'text', uses: { per: 'per_scene', n: 1 },
-      text: 'Spend 300 credits: a Company strike on a target you name (the Narrator stages it).',
+      text: 'Costs 300 credits. The Company strikes a target you name. The Narrator plays out the strike.',
       available: (h) => needCredits(h, 300),
       run: (h, a) => { if (!spendCredits(h.c, 300)) return 'Not enough credits.'; const eid = postStory(h, 'calls a Company strike: ' + (a.text || '') + ' (300 credits).'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Strike Call (300 credits spent) on "' + (a.text || '') + '": a set piece, 50 Physical to a 3x3 area if it comes to a fight. ' + SIGNAL, eid || undefined); return null; } },
   ],
@@ -573,12 +573,12 @@ register({
   id: 'rtc_contractor.extraction', claims: ['resource'],
   actions: [
     { id: 'extraction', label: 'Extraction', scope: ['combat'], ap: 4, uses: { per: 'per_session', n: 1 }, target: 'tile',
-      text: 'Spend 500 credits: a Company flyer lands here in 2 rounds and lifts out everyone within 2 tiles of it.',
+      text: 'Costs 500 credits. A Company flyer lands on the tile you pick in 2 rounds and lifts out everyone within 2 tiles of it.',
       available: (h) => (stateOf(h).lz ? 'A flyer is already inbound.' : needCredits(h, 500)),
       preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; return !standable(cb.map, t) ? { ok: false, why: 'The flyer needs open ground.' } : !cb.units.some((v) => v.side === h.u!.side && unitSees(cb, v, t)) ? { ok: false, why: 'The squad has to see the tile.' } : { tiles: [t] }; },
       run: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile)!; if (!spendCredits(h.c, 500)) return 'Not enough credits.'; stateOf(h).lz = { at: t, round: cb.round + 2 }; say(cb, h.u!.name + ' calls a Company extraction to ' + refOf(t) + ' (500 credits): wheels down at the start of round ' + (cb.round + 2) + '.'); note(h, 'Extraction called to ' + refOf(t) + ': decide whether the flyer can land, where it takes the squad, and what the Company bills. ' + SIGNAL); return null; } },
     { id: 'extraction_story', label: 'Extraction', scope: ['story'], ap: 0, target: 'text', uses: { per: 'per_session', n: 1 },
-      text: 'Spend 500 credits: a Company flyer takes the squad out of this zone (say where to).',
+      text: 'Costs 500 credits. A Company flyer takes the squad out of this zone. Say where it takes you.',
       available: (h) => needCredits(h, 500),
       run: (h, a) => { if (!spendCredits(h.c, 500)) return 'Not enough credits.'; const eid = postStory(h, 'calls a Company flyer (500 credits)' + (a.text ? ': ' + a.text : '') + '.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Extraction (500 credits spent): the flyer lifts the squad out' + (a.text ? ' toward "' + a.text + '"' : '') + '. Decide where it can land and what follows. ' + SIGNAL, eid || undefined); return null; } },
   ],
@@ -635,7 +635,7 @@ register({
       const u = h.u; if (!u || !knows(u, w) || !u.mg?.evoker) return false; if (actx?.mode && actx.mode !== 'melee' && !isMelee(W(u))) return false;
       return tileTaken(h.cb, u) ? 'Your tile already holds a glyph.' : true;
     },
-    preview: () => SIGIL[w].word + ' on your own tile: ' + SIGIL[w].charge + ' charge, ' + (SIGIL[w] as any).flux + ' Flux, no AP.',
+    preview: () => 'This strike also draws ' + SIGIL[w].word + ' on your own tile for no AP. It costs ' + SIGIL[w].charge + ' charge and adds ' + (SIGIL[w] as any).flux + ' Flux.',
   })),
   on: {
     attack_roll: (ctx, h) => {
@@ -686,7 +686,7 @@ register({
   id: 'blade_scribe.three_cut_script', claims: 'all',
   actions: [{
     id: 'three_cut_script', label: 'Three-Cut Script', pick: 'words', pickMulti: 3, pickLabel: 'Three words', scope: ['combat'], ap: 6, uses: { per: 'per_scene', n: 1 }, target: 'enemy', range: 1,
-    text: 'Three melee strikes, each cutting one word; after the third cut the three words resolve as one spell on the last target, as Touch.',
+    text: 'Make three melee strikes, each one cutting a word you chose. After the third cut, the three words go off as one spell on the last target, delivered by Touch.',
     available: (h) => (!h.u ? false : evokerReady(h.u)),
     preview: (h, a) => {
       const u = h.u!, cb = h.cb!, words = wordsOf(a.choice);
@@ -756,10 +756,10 @@ register({
   id: 'siege_engineer.deploy_cover', claims: 'all',
   actions: [
     { id: 'deploy_cover', label: 'Deploy Cover', scope: ['combat'], ap: 2, target: 'tile',
-      text: 'A portable barricade on an adjacent tile: half cover, 40 HP. A STAY glyph on a tile next to it makes it full cover. Three out at most.',
+      text: 'Set a portable barricade on a tile next to you. It is half cover with 40 HP. A STAY glyph on a tile next to it makes it full cover. You can have three out at once.',
       preview: (h, a) => {
         const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {};
-        if (t === h.u!.pos || !adj(h.u!.pos, t)) return { ok: false, why: 'A tile next to you.' };
+        if (t === h.u!.pos || !adj(h.u!.pos, t)) return { ok: false, why: 'Pick a tile next to you.' };
         if (!standable(cb.map, t) || moveBlockers(cb).has(t) || objectsAt(cb, t).some((o) => o.hp != null) || cb.units.some((v) => !v.dead && v.pos === t)) return { ok: false, why: 'The tile has to be open.' };
         return { tiles: [t], lines: [(stateOf(h).cover || []).length >= 3 ? 'Your oldest barricade packs up.' : 'Half cover, 40 HP.'] };
       },
@@ -790,11 +790,11 @@ register({
   id: 'siege_engineer.sentry_turret', claims: 'all',
   actions: [{
     id: 'sentry_turret', label: 'Sentry Turret', scope: ['combat'], ap: 3, target: 'tile',
-    text: 'Spend 2 charge: deploy a turret (40 HP, Defense 10) that fires once a round at the nearest enemy (+4 to hit, 20 damage). One at a time.',
-    available: (h) => (!h.u ? false : !h.u.mg?.evoker ? 'Needs an Evoker in hand (2 charge).' : (h.u.mg.charge || 0) < 2 ? 'Needs 2 charge.' : turretOf(h) ? 'Your turret is still up.' : true),
+    text: 'Costs 2 charge. Deploy a turret on a tile next to you. It has 40 HP and Defense 10, and once a round it fires at the nearest enemy at +4 to hit for 20 damage. You can have one turret out at a time.',
+    available: (h) => (!h.u ? false : !h.u.mg?.evoker ? 'Needs an Evoker in hand with 2 charge.' : (h.u.mg.charge || 0) < 2 ? 'Needs 2 charge.' : turretOf(h) ? 'Your turret is still up.' : true),
     preview: (h, a) => {
       const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {};
-      if (t === h.u!.pos || !adj(h.u!.pos, t)) return { ok: false, why: 'A tile next to you.' };
+      if (t === h.u!.pos || !adj(h.u!.pos, t)) return { ok: false, why: 'Pick a tile next to you.' };
       if (!standable(cb.map, t) || moveBlockers(cb).has(t) || cb.units.some((v) => !v.dead && v.pos === t)) return { ok: false, why: 'The tile has to be open.' };
       return { tiles: [t] };
     },
@@ -836,7 +836,7 @@ register({
   id: 'siege_engineer.bulwark_line', claims: 'all',
   actions: [{
     id: 'bulwark_line', label: 'Bulwark Line', scope: ['combat'], ap: 4, uses: { per: 'per_scene', n: 1 }, target: 'none',
-    text: 'Until your next turn, cover within 3 tiles with an ally beside it counts as full cover and gains 20 HP.',
+    text: 'Until your next turn, every piece of cover within 3 tiles of you that has an ally beside it counts as full cover and gains 20 HP.',
     run: (h) => {
       const cb = h.cb!, u = h.u!, list: { id: string; kind: string; max: number }[] = [];
       for (const o of objectsOf(cb)) {
@@ -877,7 +877,7 @@ register({
   id: 'spellslinger.inscribed_rounds', claims: 'all',
   actions: [{
     id: 'inscribe_rounds', label: 'Inscribed Rounds', pick: 'words', pickLabel: 'The word', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
-    text: 'Out of combat: inscribe up to 6 rounds with an element or an affliction word, 1 charge per round.',
+    text: 'Out of a fight: inscribe up to 6 rounds with an Element or an Affliction word. Costs 1 charge per round.',
     available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker in hand.' : true; },
     preview: (h, a) => {
       const m = magicOf(h.c!)!, w = String(a.choice || '').toLowerCase(), n = Math.max(1, Math.min(6, Number(a.text) || 6));
@@ -897,7 +897,7 @@ register({
   }],
   toggles: [{ id: 'inscribed', label: 'Inscribed round', on: ['combat/attack'], defaultOn: true,
     available: (h) => { const s = insOf(h); return !!s && s.n > 0 && !!h.u && isRanged(h.u) && inscribable(s.word) ? true : false; },
-    preview: (h) => { const s = insOf(h)!; return s.word.toUpperCase() + ' round (' + s.n + ' left).'; } }],
+    preview: (h) => { const s = insOf(h)!; return 'This shot fires a ' + s.word.toUpperCase() + ' round. You have ' + s.n + ' left.'; } }],
   on: {
     attack_roll: (ctx, h) => {
       const u = h.u, s = insOf(h); if (ctx.att !== u || !u || !s || s.n <= 0 || !isRanged(u) || ctx.mode === 'melee' || !modOn(h, 'inscribed') || !inFight(h)) return;
@@ -939,14 +939,14 @@ register({
   id: 'spellslinger.spell_magazine', claims: 'all',
   actions: [
     { id: 'spell_magazine', label: 'Spell Magazine', pick: 'words', pickMulti: 4, pickLabel: 'The words', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
-      text: 'Out of combat: store a whole Sigil spell in a magazine, paying its charge now.',
+      text: 'Out of a fight: store a whole Sigil spell in a magazine. You pay its charge now.',
       available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker in hand.' : true; },
       preview: (h, a) => {
         const m = magicOf(h.c!)!, words = wordsOf(a.choice);
         const unk = words.find((w) => !SIGIL[w] || !m.words.includes(w)); if (!words.length || unk) return { ok: false, why: unk ? 'You don\'t know ' + unk.toUpperCase() + '.' : 'Name the spell\'s words.' };
         const ge = grammarError(words, m.maxWords); if (ge) return { ok: false, why: ge };
         const cost = smCost(m, words);
-        return m.charge < cost ? { ok: false, why: 'Needs ' + cost + ' charge (' + m.charge + ' in the core).' } : { lines: ['Store ' + words.map((w) => w.toUpperCase()).join(' · ') + ' (' + cost + ' charge). It goes off on the first target the magazine hits, as Touch.'] };
+        return m.charge < cost ? { ok: false, why: 'Needs ' + cost + ' charge (' + m.charge + ' in the core).' } : { lines: ['Store ' + words.map((w) => w.toUpperCase()).join(' · ') + ' (' + cost + ' charge). It goes off on the first target a round from the magazine hits, delivered by Touch.'] };
       },
       run: (h, a) => {
         const c = h.c!, m = magicOf(c)!, words = wordsOf(a.choice), cost = smCost(m, words);
@@ -957,7 +957,7 @@ register({
         return null;
       } },
     { id: 'load_spell_magazine', label: 'Load the spell magazine', scope: ['combat'], ap: (h) => (h.u ? (WEAPON[h.u.weapon] as any)?.reload_ap ?? 2 : 2), target: 'none',
-      text: 'Swap in the stored spell magazine: its first hit fires the spell at the target.',
+      text: 'Swap in your spell magazine. The first round from it that hits sets the stored spell off on that target.',
       available: (h) => { const s = smOf(h); if (!s || s.rest !== restStamp(h.g) || !h.u) return false; return !isRanged(h.u) || W(h.u).magazine == null ? 'Needs a gun.' : stateOf(h).loaded ? 'Already loaded.' : true; },
       run: (h) => {
         const u = h.u!, cb = h.cb!, s = smOf(h)!, cap = magazineSize(u.weapon, u.mods) || 0;
@@ -995,7 +995,7 @@ register({
   id: 'spellslinger.ricochet_glyph', claims: 'all',
   toggles: [{ id: 'ricochet', label: 'Ricochet', on: ['combat/attack'], defaultOn: true,
     available: (h) => (!h.u || !isRanged(h.u) ? false : uses(h).left('per_turn', 1) > 0 ? true : 'Used this turn.'),
-    preview: () => 'A miss glances to another enemy within 4 tiles (−2).' }],
+    preview: () => 'Once a turn: if this shot misses, it glances to the nearest other enemy within 4 tiles of the target, with a new roll at −2 to hit.' }],
   on: {
     attack_preview: termsHook,
     on_miss: (ctx, h) => {
@@ -1026,13 +1026,13 @@ register({
   id: 'storm_hand.gauntlet_infusion', claims: 'all',
   actions: [{
     id: 'infuse', label: 'Gauntlet Infusion', pick: ['fire', 'freeze', 'shock', 'spark'], pickLabel: 'The element', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
-    text: 'Choose the element your melee hits carry until the next rest: fire, freeze, shock or spark.',
+    text: 'Choose the element your melee hits carry until your next rest: fire, freeze, shock or spark.',
     preview: (_h, a) => (INFUSE.includes(String(a.choice || '').toLowerCase()) ? { lines: ['Infused: ' + String(a.choice).toUpperCase() + '.'] } : { ok: false, why: 'Pick fire, freeze, shock or spark.' }),
     run: (h, a) => { const el = String(a.choice).toLowerCase(); charState(h.c)[h.key] = { element: el }; const line = 'infuses the gauntlet with ' + el.toUpperCase() + '.'; if (h.cb) say(h.cb, h.c!.name + ' ' + line); else postStory(h, line, { private: true }); return null; },
   }],
   toggles: [{ id: 'infusion', label: 'Infusion', on: ['combat/attack'], defaultOn: true,
     available: (h, actx) => { const u = h.u; if (!u || !infusionOf(h)) return false; if (actx?.mode && actx.mode !== 'melee' && !isMelee(W(u))) return false; return !u.mg?.emanator ? 'Needs an Emanator in hand.' : (u.mg.mp || 0) < 5 ? 'Needs 5 MP.' : true; },
-    preview: (h) => '+10 ' + String(infusionOf(h)).toUpperCase() + ' for 5 MP.' }],
+    preview: (h) => 'For 5 MP, this melee hit deals +10 ' + String(infusionOf(h)).toUpperCase() + ' damage.' }],
   on: {
     on_hit: (ctx, h) => {
       const u = h.u, el = infusionOf(h); if (ctx.att !== u || !u || !el || !ctx.melee || !modOn(h, 'infusion')) return;
@@ -1075,7 +1075,7 @@ register({
   id: 'storm_hand.discharge', claims: 'all',
   toggles: [{ id: 'discharge', label: 'Discharge', on: ['combat/attack'],
     available: (h, actx) => { const u = h.u; if (!u || resOf(u, 'charges') <= 0) return false; if (actx?.mode && actx.mode !== 'melee' && !isMelee(W(u))) return false; return true; },
-    preview: (h) => 'Spend ' + resOf(h.u!, 'charges') + ' Charge: ' + 20 * resOf(h.u!, 'charges') + ' Elemental to each enemy next to the target.' }],
+    preview: (h) => 'On a hit, spend all ' + resOf(h.u!, 'charges') + ' of your Charge: each enemy next to the target takes ' + 20 * resOf(h.u!, 'charges') + ' Elemental damage.' }],
   on: {
     attack_roll: (ctx, h) => { const u = h.u; if (ctx.att === u && u && (ctx.mode === 'melee' || isMelee(W(u))) && modOn(h, 'discharge')) stateOf(h).dn = resOf(u, 'charges'); },
     on_hit: (ctx, h) => {
@@ -1119,7 +1119,7 @@ register({
   id: 'adamantile_knight.bulwark_of_will', claims: 'all',
   actions: [{
     id: 'brace', label: 'Brace (Guard)', scope: ['combat'], ap: 2, target: 'none',
-    text: 'Gain Guard equal to 1 + your Durability modifier (max 5) and become Braced (+2 Defense) until you move. Bulwark of Will: a shield of 20 × your Healing given.',
+    text: 'Gain Guard equal to your Durability points (at least 1; you hold 5 Guard at most). You are Braced, with +2 Defense, until you move. Bulwark of Will also gives you a shield of 20 × your Healing given.',
     available: (h) => (!h.u || has(h.u, DEF_BRACE) ? false : true),
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h), n = Math.max(1, 1 + mod(h.c?.skills?.durability || 0)), got = resGain(u, 'guard', n);

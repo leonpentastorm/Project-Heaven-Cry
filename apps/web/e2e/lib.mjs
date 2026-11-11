@@ -7,6 +7,10 @@ export async function player(browser, name) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, ignoreHTTPSErrors: true, deviceScaleFactor: Number(process.env.DSF) || 1 }); // DSF=2: sharper screenshots
   // The Narrator's voice holds new lines until it is ready; tests read the text, so they start with auto-read off (and no tips).
   await ctx.addInitScript((voice) => { try { if (!voice) localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } }, !!process.env.VOICE);
+  // FAST=1: a fight plays every effect in order at about 25 times the speed (game/combatSpeed.ts 'test'). For suites
+  // that check rules and screens, not animation; the animation suites (melee-fx, brass, reload, cutins, clarity,
+  // turn-order, combat-speed) run without it.
+  if (process.env.FAST) await ctx.addInitScript(() => { try { localStorage.setItem('phc.combatSpeed', 'test'); } catch { /* */ } });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
@@ -27,6 +31,9 @@ export const click = async (page, text, opts = {}) => { const b = page.getByRole
  *  Sigils · Outbursts) and only the open tab's buttons are on the page, so this flips to the tab that holds it first. */
 export async function pickAction(page, name, opts = {}) {
   const btn = () => page.locator('[role="tabpanel"]').getByRole('button', { name, exact: !!opts.exact }).first();
+  // The action panel is yours only when the other turns (and a Miracle's hold) have played out on screen: wait for
+  // it as a player does, instead of clicking a panel that isn't up or is still locked.
+  await page.waitForFunction(() => { const d = document.querySelector('.phc-cb-dock'); return !!d && !d.getAttribute('data-lock') && !!document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"]'); }, null, { timeout: opts.wait ?? opts.timeout ?? 60000 }).catch(() => {});
   if (!(await btn().count())) {
     const tabs = page.locator('[role="tablist"][aria-label="Actions"] [role="tab"]');
     const n = await tabs.count();

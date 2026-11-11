@@ -49,7 +49,7 @@ describe('combat screen', () => {
     for (const seed of ['fan-a', 'fan-b', 'fan-c', 'fan-d']) {
       fight(seed);
       await React.act(async () => { root.render(React.createElement(App, { key: seed })); });
-      await React.act(async () => { vi.advanceTimersByTime(4000); });
+      await React.act(async () => { vi.advanceTimersByTime(15000); });
       for (let i = 0; i < 8 && G.combat && !G.combat.over; i++) {
         const u = active(G.combat)!; if (u.side !== 'pc') break;
         expect(el.textContent).toContain('YOUR TURN');
@@ -63,13 +63,15 @@ describe('combat screen', () => {
         await React.act(async () => { conf.click(); });
         if (G.combat.log.slice(n0).some((l) => /uses Shot/.test(l))) fans++;
         expect(G.combat.log.some((l) => /NaN|undefined/.test(l))).toBe(false);
-        await React.act(async () => { vi.advanceTimersByTime(5000); });
+        await React.act(async () => { vi.advanceTimersByTime(20000); });
         expect(el.querySelector('pre')).toBeNull(); // the screen's error view never shows
         try { doAct({ type: 'combat/reload', unitId: u.id }); } catch { /* full or nothing to load */ }
         await React.act(async () => { vi.advanceTimersByTime(2500); });
         if (G.combat.over) break;
-        try { doAct({ type: 'combat/end-turn', unitId: active(G.combat)!.id }); } catch { /* */ }
-        await React.act(async () => { vi.advanceTimersByTime(8000); });
+        await React.act(async () => { try { doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id }); } catch { /* */ } });
+        // the hostiles' moves play in full before the turn is yours on screen (11 Nov 2026): give them their time
+        await React.act(async () => { vi.advanceTimersByTime(40000); });
+        await React.act(async () => { vi.advanceTimersByTime(5000); });
       }
     }
     await React.act(async () => { root.unmount(); });
@@ -163,7 +165,7 @@ describe('combat screen', () => {
     fight('say-pin', 'service_pistol');
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     await React.act(async () => { root.render(React.createElement(App)); });
-    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    await React.act(async () => { vi.advanceTimersByTime(15000); });
     const say = el.querySelector('form.phc-cb-say') as HTMLElement;
     expect(say).toBeTruthy();
     expect(say.closest('.phc-cb-top')).toBeNull();
@@ -224,7 +226,7 @@ describe('combat screen', () => {
     const c = fight('custom', 'service_pistol');
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     await React.act(async () => { root.render(React.createElement(App)); });
-    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    await React.act(async () => { vi.advanceTimersByTime(15000); });
     const open = buttons(el, /Customise/).find((b) => b.classList.contains('phc-cb-link'))!;
     expect(open).toBeTruthy();
     await React.act(async () => { open.click(); });
@@ -336,7 +338,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     // Make it the PC's turn whatever initiative said (the enemy may have gone first).
     for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
     await React.act(async () => { root.render(React.createElement(App)); });
-    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    await React.act(async () => { vi.advanceTimersByTime(15000); });
     const u = active(G.combat!)!; expect(u.side).toBe('pc');
     G.combat!.units.find((x) => x.id === u.id)!.prone = true; // Shrug It Off needs a Body debuff to remove (spec §14 item 101)
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab).toBeTruthy();
@@ -358,7 +360,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     doAct({ type: 'narrator/turn', turn: { narration: 'Halt.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'D4' }] } } } as any);
     for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
     await React.act(async () => { root.render(React.createElement(App)); });
-    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    await React.act(async () => { vi.advanceTimersByTime(15000); });
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; await React.act(async () => { tab.click(); });
     await React.act(async () => { buttons(el, /The Voice/)[0].click(); });
     expect(el.querySelector('.phc-pk-detail')).toBeNull();
@@ -384,7 +386,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     doAct({ type: 'narrator/turn', turn: { narration: 'Drones.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Drill drone', tier: 'minion', weapon: 'service_pistol', portrait: 'char-m813-scavenger-drone' }, { name: 'Sentry turret', tier: 'minion', weapon: 'service_pistol' }, { name: 'Sigil novice', tier: 'minion', weapon: 'service_pistol' }] } } });
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     await React.act(async () => { root.render(React.createElement(App)); });
-    await React.act(async () => { vi.advanceTimersByTime(4000); });
+    await React.act(async () => { vi.advanceTimersByTime(15000); });
     const L = new CombatLogic({}) as any;
     const drone = G.combat!.units.find((u) => u.name === 'Drill drone')!, novice = G.combat!.units.find((u) => u.name === 'Sigil novice')!, turret = G.combat!.units.find((u) => u.name === 'Sentry turret')!;
     expect(drone.img).toBe('char-m813-scavenger-drone');

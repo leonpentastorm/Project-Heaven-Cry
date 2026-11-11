@@ -247,16 +247,17 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     // A new fight waits for the combat-in transition; the rest are spaced like their effects play.
     const base = Math.max(0, screenAt.current.at + (newFight ? COMBAT_IN_MS : 0) - Date.now());
     // Many turns in one batch (a long enemy phase): keep the last few.
-    const keep = turns.slice(-4);
+    // Every turn of the batch gets its banner when the effects reach it: nothing is skipped in a fight any more.
+    const keep = turns;
     let t = base;
     const firstN = fresh[0]?.n ?? 0;
     for (const e of fresh) {
       if (keep.includes(e)) {
         const go = () => showCombatTurn(e.unit, e.round ?? cb.round);
         const clock = fxClock.current;
-        if (clock.on && e.n > firstN && !newFight) {
+        if (clock.on && !newFight) {
           if (clock.at >= e.n) later(go, 0);
-          else { clock.waiters.set(e.n, go); later(() => { if (clock.waiters.get(e.n) === go) { clock.waiters.delete(e.n); go(); } }, 6000 * fightPace()); }
+          else { clock.waiters.set(e.n, go); later(() => { if (clock.waiters.get(e.n) === go) { clock.waiters.delete(e.n); go(); } }, 90000 * fightPace()); } // a safety net only: the banner waits for its own turn event, however long the moves before it take
         } else later(go, t);
       }
       t += estMs(e) * fightPace();

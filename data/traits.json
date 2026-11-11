@@ -11,7 +11,7 @@
     "budget_sp_net": 3,
     "budget_note": "Design budget: upside minus downside is about +3 SP; +1 on a roll costs 2 SP. Per-trait prices are not recorded in the source docs, so cost is null.",
     "bond_traits_need_consent": true,
-    "music_shared": "All three share these rules. You start with a Musek Blestor, and the player picks a real song for the character's Favourite Song field. Starting the song costs 2 AP, or it starts on its own when you kill, revive an ally, or land a big heal or shield; while it plays, it replaces the area or combat music. The bonus fades after 2 area changes without the song; the penalty starts after 4."
+    "music_shared": "The three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4."
   },
   "effect_ops_added": [
     "action_cost",
@@ -109,16 +109,16 @@
       "cost": null,
       "flavour": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.",
       "upsides": [
-        "Still Water: gain 2 Attribute points at creation (12 in place of 10). Heart Debuffs never affect you."
+        "Still Water: you get 2 extra Attribute points at creation (12 instead of 10). Heart debuffs never affect you."
       ],
       "downsides": [
-        "Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change."
+        "Unmoving: bonuses to Attributes and Skills from gear don't work on you, and your Karma can never change."
       ],
       "notes": [
-        "Mechanical note: 'Karma can never change' locks Karma at its starting value."
+        "Your Karma stays locked at the value you start with."
       ],
       "narrator_hook": "every faction wants to convert the one recruit who can't be converted.",
-      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: gain 2 Attribute points at creation (12 in place of 10). Heart Debuffs never affect you.\n− Unmoving: gear bonuses to Attributes and Skills don't work on you, and your Karma can never change.",
+      "text": "You were raised in a Lumeri cloister, or by priests of some other faith. Whatever you believe now, your mind is still water. Nobody has ever managed to stir it.\n+ Still Water: you get 2 extra Attribute points at creation (12 instead of 10). Heart debuffs never affect you.\n− Unmoving: bonuses to Attributes and Skills from gear don't work on you, and your Karma can never change.",
       "effects": [
         {
           "op": "creation_points",
@@ -161,14 +161,14 @@
       "cost": null,
       "flavour": "Burn it down, all of it. The brightest light burns out the fastest, and you've never cared how long you last.",
       "upsides": [
-        "Blaze: each kill this combat gives +10% damage, up to +50%."
+        "Blaze: each enemy you take out in a fight gives you +10% damage for the rest of it, up to +50%."
       ],
       "downsides": [
-        "Burnout: weapons wear twice as fast in your hands, and when the fighting stops you crash: −2 on every roll until you rest."
+        "Burnout: weapons wear out twice as fast in your hands. After every fight you took part in, you crash: −2 on every roll until you rest."
       ],
       "notes": [],
       "narrator_hook": "the fight that should never have started, right before the one nobody can avoid.",
-      "text": "Burn it down, all of it. The brightest light burns out the fastest, and you've never cared how long you last.\n+ Blaze: each kill this combat gives +10% damage, up to +50%.\n− Burnout: weapons wear twice as fast in your hands, and when the fighting stops you crash: −2 on every roll until you rest.",
+      "text": "Burn it down, all of it. The brightest light burns out the fastest, and you've never cared how long you last.\n+ Blaze: each enemy you take out in a fight gives you +10% damage for the rest of it, up to +50%.\n− Burnout: weapons wear out twice as fast in your hands. After every fight you took part in, you crash: −2 on every roll until you rest.",
       "effects": [
         {
           "op": "damage_mod",
@@ -203,14 +203,14 @@
       "cost": null,
       "flavour": "You trained with the southern sects, where martial arts and magic were never separated. Your fists are weapons. Anything else in your hands is a clumsy stick.",
       "upsides": [
-        "These Hands: while fighting with nothing but gloves, +1 AP per turn and +20% Physical Damage."
+        "These Hands: while you fight with nothing but gloves or bare fists, you have 1 more AP each turn and your unarmed strikes deal +20% damage."
       ],
       "downsides": [
-        "Not That: every attack with any other weapon, guns included, costs +1 AP."
+        "Not That: every attack with any other weapon, guns included, costs 1 AP more."
       ],
       "notes": [],
       "narrator_hook": "armoured targets, fights across a canyon, and zones where only gunfire reaches.",
-      "text": "You trained with the southern sects, where martial arts and magic were never separated. Your fists are weapons. Anything else in your hands is a clumsy stick.\n+ These Hands: while fighting with nothing but gloves, +1 AP per turn and +20% Physical Damage.\n− Not That: every attack with any other weapon, guns included, costs +1 AP.",
+      "text": "You trained with the southern sects, where martial arts and magic were never separated. Your fists are weapons. Anything else in your hands is a clumsy stick.\n+ These Hands: while you fight with nothing but gloves or bare fists, you have 1 more AP each turn and your unarmed strikes deal +20% damage.\n− Not That: every attack with any other weapon, guns included, costs 1 AP more.",
       "effects": [
         {
           "op": "stat_mod",
@@ -246,14 +246,14 @@
       "cost": null,
       "flavour": "The Hellraiser storm units go in first and come back last, if they come back at all. You volunteered, and you'd volunteer again.",
       "upsides": [
-        "Charge: +2 AP on any turn you end closer to an enemy than you started."
+        "Charge: when you end your turn closer to the nearest enemy than you started it, you have 2 more AP on your next turn."
       ],
       "downsides": [
-        "No Way Back: no armour above Class I, and you can never take the Retreat or Disengage action."
+        "No Way Back: armour above Class I gives you nothing more than Class I, and you can never Retreat or Disengage."
       ],
       "notes": [],
       "narrator_hook": "the mission where the smart move is to fall back.",
-      "text": "The Hellraiser storm units go in first and come back last, if they come back at all. You volunteered, and you'd volunteer again.\n+ Charge: +2 AP on any turn you end closer to an enemy than you started.\n− No Way Back: no armour above Class I, and you can never take the Retreat or Disengage action.",
+      "text": "The Hellraiser storm units go in first and come back last, if they come back at all. You volunteered, and you'd volunteer again.\n+ Charge: when you end your turn closer to the nearest enemy than you started it, you have 2 more AP on your next turn.\n− No Way Back: armour above Class I gives you nothing more than Class I, and you can never Retreat or Disengage.",
       "effects": [
         {
           "op": "stat_mod",
@@ -290,14 +290,14 @@
       "cost": null,
       "flavour": "In the mess halls they arm-wrestle. In the field you throw: grenades, crates, Orks, the occasional squadmate.",
       "upsides": [
-        "Long Throw: +2 throwing range. You can throw anything under your carry weight, allies and enemies included; damage scales with its weight."
+        "Long Throw: +2 tiles of throwing range. You can also throw a person, a drone or an object next to you that weighs less than your carry weight, ally or enemy: it and whatever it lands on take damage that grows with its weight. Bosses can't be thrown."
       ],
       "downsides": [
-        "Strained Arm: thrown weapons cost +1 AP."
+        "Strained Arm: every throw costs 1 AP more."
       ],
       "notes": [],
       "narrator_hook": "the squadmate who needs to be on the other side of the gap right now.",
-      "text": "In the mess halls they arm-wrestle. In the field you throw: grenades, crates, Orks, the occasional squadmate.\n+ Long Throw: +2 throwing range. You can throw anything under your carry weight, allies and enemies included; damage scales with its weight.\n− Strained Arm: thrown weapons cost +1 AP.",
+      "text": "In the mess halls they arm-wrestle. In the field you throw: grenades, crates, Orks, the occasional squadmate.\n+ Long Throw: +2 tiles of throwing range. You can also throw a person, a drone or an object next to you that weighs less than your carry weight, ally or enemy: it and whatever it lands on take damage that grows with its weight. Bosses can't be thrown.\n− Strained Arm: every throw costs 1 AP more.",
       "effects": [
         {
           "op": "stat_mod",
@@ -330,14 +330,14 @@
       "cost": null,
       "flavour": "You were born on a low-gravity mining moon, and your bones never set right in real gravity. So you learned to move before anything could break them.",
       "upsides": [
-        "Runner: +5 Initiative, and your first move each combat costs 1 AP less."
+        "Runner: +5 Initiative, and your first move in each fight costs 1 AP less."
       ],
       "downsides": [
-        "Glass: +50% limb damage taken. A broken leg halves your Movement until it's set."
+        "Glass: a critical hit that injures your arm or leg deals 50% more damage. A leg injury cuts your Movement to a quarter, not a half, until it is treated."
       ],
       "notes": [],
       "narrator_hook": "called shots to the legs.",
-      "text": "You were born on a low-gravity mining moon, and your bones never set right in real gravity. So you learned to move before anything could break them.\n+ Runner: +5 Initiative, and your first move each combat costs 1 AP less.\n− Glass: +50% limb damage taken. A broken leg halves your Movement until it's set.",
+      "text": "You were born on a low-gravity mining moon, and your bones never set right in real gravity. So you learned to move before anything could break them.\n+ Runner: +5 Initiative, and your first move in each fight costs 1 AP less.\n− Glass: a critical hit that injures your arm or leg deals 50% more damage. A leg injury cuts your Movement to a quarter, not a half, until it is treated.",
       "effects": [
         {
           "op": "stat_mod",
@@ -377,14 +377,14 @@
       "cost": null,
       "flavour": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.",
       "upsides": [
-        "One Blade: weapon mastery levels 25% faster. Name one weapon: it can't be disarmed and gets one extra mod slot."
+        "One Blade: outside a fight, name one weapon as yours. It can't be Disarmed and has one extra mod slot, and your weapon mastery with it grows 25% faster."
       ],
       "downsides": [
-        "Rusty Manners: −1 Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length."
+        "Rusty Manners: −1 Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length; the Narrator holds you to it."
       ],
       "notes": [],
       "narrator_hook": "the negotiation where someone compliments the sword.",
-      "text": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.\n+ One Blade: weapon mastery levels 25% faster. Name one weapon: it can't be disarmed and gets one extra mod slot.\n− Rusty Manners: −1 Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length.",
+      "text": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.\n+ One Blade: outside a fight, name one weapon as yours. It can't be Disarmed and has one extra mod slot, and your weapon mastery with it grows 25% faster.\n− Rusty Manners: −1 Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length; the Narrator holds you to it.",
       "effects": [
         {
           "op": "weapon_mastery_rate",
@@ -431,14 +431,14 @@
       "cost": null,
       "flavour": "Pain is the only thing that makes you sharp. Theirs or yours, it doesn't matter.",
       "upsides": [
-        "Bloodied: while you're below half HP, +50% damage."
+        "Bloodied: while you are below half your max HP, you deal +50% damage."
       ],
       "downsides": [
-        "Fresh: while you're above half HP, +50% damage taken."
+        "Fresh: while you are above half your max HP, you take +50% damage."
       ],
       "notes": [],
       "narrator_hook": "the medic has to decide whether healing you helps.",
-      "text": "Pain is the only thing that makes you sharp. Theirs or yours, it doesn't matter.\n+ Bloodied: while you're below half HP, +50% damage.\n− Fresh: while you're above half HP, +50% damage taken.",
+      "text": "Pain is the only thing that makes you sharp. Theirs or yours, it doesn't matter.\n+ Bloodied: while you are below half your max HP, you deal +50% damage.\n− Fresh: while you are above half your max HP, you take +50% damage.",
       "effects": [
         {
           "op": "damage_mod",
@@ -469,14 +469,14 @@
       "cost": null,
       "flavour": "Four-eyes, bookworm, glass-jaw. You've been called a lot of names, most of them accurate, but they didn't have to say it out loud.",
       "upsides": [
-        "Well-Read: +2 Rumination; start with [Prescription Glasses]. While wearing them, +1 Acuity and Ingenuity."
+        "Well-Read: +2 Rumination. You start with [Prescription Glasses]; while you wear them, +1 Acuity and Ingenuity."
       ],
       "downsides": [
-        "Glasses Off: without them, −4 Acuity and Ingenuity."
+        "Glasses Off: without them, −4 Acuity and Ingenuity. A critical hit to the head knocks them off until the fight ends, and the Narrator may knock them off in the story."
       ],
       "notes": [],
       "narrator_hook": "enemies can aim for the glasses; rain, smoke and fistfights knock them off.",
-      "text": "Four-eyes, bookworm, glass-jaw. You've been called a lot of names, most of them accurate, but they didn't have to say it out loud.\n+ Well-Read: +2 Rumination; start with [Prescription Glasses]. While wearing them, +1 Acuity and Ingenuity.\n− Glasses Off: without them, −4 Acuity and Ingenuity.",
+      "text": "Four-eyes, bookworm, glass-jaw. You've been called a lot of names, most of them accurate, but they didn't have to say it out loud.\n+ Well-Read: +2 Rumination. You start with [Prescription Glasses]; while you wear them, +1 Acuity and Ingenuity.\n− Glasses Off: without them, −4 Acuity and Ingenuity. A critical hit to the head knocks them off until the fight ends, and the Narrator may knock them off in the story.",
       "effects": [
         {
           "op": "skill_mod",
@@ -533,15 +533,15 @@
       "cost": null,
       "flavour": "Bare-faced, nobody looks at you twice. Put the mask on and the street parts for you.",
       "upsides": [
-        "Behind the Mask: start with a [Smiling Mask]. While masked, +2 Composure and Authority."
+        "Behind the Mask: you start with a [Smiling Mask]. While you wear it, +2 Composure and Authority. You can put it on or take it off only outside a fight."
       ],
       "downsides": [
-        "Bare Face: unmasked, −3 Composure and Authority.",
-        "Two Faces: people who met you masked don't recognise you unmasked, and the other way round."
+        "Bare Face: without the mask, −3 Composure and Authority.",
+        "Two Faces: people who met you masked don't recognise you unmasked, and the other way round. The Narrator plays who knows which face."
       ],
       "notes": [],
       "narrator_hook": "places that demand a bare face: checkpoints, courtrooms, funerals.",
-      "text": "Bare-faced, nobody looks at you twice. Put the mask on and the street parts for you.\n+ Behind the Mask: start with a [Smiling Mask]. While masked, +2 Composure and Authority.\n− Bare Face: unmasked, −3 Composure and Authority.\n+/− Two Faces: people who met you masked don't recognise you unmasked, and the other way round.",
+      "text": "Bare-faced, nobody looks at you twice. Put the mask on and the street parts for you.\n+ Behind the Mask: you start with a [Smiling Mask]. While you wear it, +2 Composure and Authority. You can put it on or take it off only outside a fight.\n− Bare Face: without the mask, −3 Composure and Authority.\n+/− Two Faces: people who met you masked don't recognise you unmasked, and the other way round. The Narrator plays who knows which face.",
       "effects": [
         {
           "op": "start_item",
@@ -592,14 +592,14 @@
       "cost": null,
       "flavour": "You bought a new face at a back-alley clinic in Central City. It was a robot clinic. Nobody told the surgeon you weren't a robot.",
       "upsides": [
-        "Blank Face: every Composure check in dialogue succeeds. Robots and machines treat you as one of their own."
+        "Blank Face: every Composure check you make in a conversation succeeds without a roll. Robots and machines treat you as one of their own; the Narrator plays them."
       ],
       "downsides": [
-        "Uncanny: you can't use Insinuation or Charisma in dialogue (their combat perks still work), and children and animals panic around you."
+        "Uncanny: you can't use Insinuation or Charisma in a conversation (their perks still work in a fight), and children and animals panic around you."
       ],
       "notes": [],
       "narrator_hook": "the scene that needs a warm human face.",
-      "text": "You bought a new face at a back-alley clinic in Central City. It was a robot clinic. Nobody told the surgeon you weren't a robot.\n+ Blank Face: every Composure check in dialogue succeeds. Robots and machines treat you as one of their own.\n− Uncanny: you can't use Insinuation or Charisma in dialogue (their combat perks still work), and children and animals panic around you.",
+      "text": "You bought a new face at a back-alley clinic in Central City. It was a robot clinic. Nobody told the surgeon you weren't a robot.\n+ Blank Face: every Composure check you make in a conversation succeeds without a roll. Robots and machines treat you as one of their own; the Narrator plays them.\n− Uncanny: you can't use Insinuation or Charisma in a conversation (their perks still work in a fight), and children and animals panic around you.",
       "effects": [
         {
           "op": "auto_success",
@@ -641,14 +641,14 @@
       "cost": null,
       "flavour": "Central City's streets don't move aside for anyone, and neither do you. Your limp has been there since the old injury; you just walk through it.",
       "upsides": [
-        "I'm Walking Here: against anyone who blocks your path or interrupts you, +2 Intimidation and Authority. You can't be moved by Shove."
+        "I'm Walking Here: +2 Intimidation and Authority against anyone who blocks your path or interrupts you. You can't be Shoved."
       ],
       "downsides": [
-        "Old Injury: −0.5 Movement, −2 Reaction Speed."
+        "Old Injury: −0.5 Movement and −2 Reaction Speed."
       ],
       "notes": [],
       "narrator_hook": "crowds, queues, and anyone who wants you to wait.",
-      "text": "Central City's streets don't move aside for anyone, and neither do you. Your limp has been there since the old injury; you just walk through it.\n+ I'm Walking Here: against anyone who blocks your path or interrupts you, +2 Intimidation and Authority. You can't be moved by Shove.\n− Old Injury: −0.5 Movement, −2 Reaction Speed.",
+      "text": "Central City's streets don't move aside for anyone, and neither do you. Your limp has been there since the old injury; you just walk through it.\n+ I'm Walking Here: +2 Intimidation and Authority against anyone who blocks your path or interrupts you. You can't be Shoved.\n− Old Injury: −0.5 Movement and −2 Reaction Speed.",
       "effects": [
         {
           "op": "skill_mod",
@@ -693,14 +693,14 @@
       "cost": null,
       "flavour": "Ten years ago you passed the academy's endurance drill with the best time in your cohort. The announcer's voice never stopped counting in your head.",
       "upsides": [
-        "Best Time: the Sprint action costs 1 AP less, and running, climbing and endurance checks can't roll below 10."
+        "Best Time: Sprint costs you 1 AP less, and your d20 can't roll below 10 on running, climbing and endurance checks."
       ],
       "downsides": [
-        "The Count: whenever you concentrate (drawing a Sigil, a Brain Power or Rumination check), roll a d6. On a 1 the count starts again, and you lose the action."
+        "The Count: whenever you concentrate (drawing a glyph, or a Brain Power or Rumination check), roll a d6. On a 1 the count starts again in your head: you lose the action and the AP it cost."
       ],
       "notes": [],
       "narrator_hook": "quiet, high-stakes thinking.",
-      "text": "Ten years ago you passed the academy's endurance drill with the best time in your cohort. The announcer's voice never stopped counting in your head.\n+ Best Time: the Sprint action costs 1 AP less, and running, climbing and endurance checks can't roll below 10.\n− The Count: whenever you concentrate (drawing a Sigil, a Brain Power or Rumination check), roll a d6. On a 1 the count starts again, and you lose the action.",
+      "text": "Ten years ago you passed the academy's endurance drill with the best time in your cohort. The announcer's voice never stopped counting in your head.\n+ Best Time: Sprint costs you 1 AP less, and your d20 can't roll below 10 on running, climbing and endurance checks.\n− The Count: whenever you concentrate (drawing a glyph, or a Brain Power or Rumination check), roll a d6. On a 1 the count starts again in your head: you lose the action and the AP it cost.",
       "effects": [
         {
           "op": "action_cost",
@@ -822,14 +822,14 @@
       "cost": null,
       "flavour": "Three days without food, or three days without a holo-drama? You'd live on water.",
       "upsides": [
-        "Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, roll with +3."
+        "Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, you roll with +3. In a fight it needs no approval: your next attack that turn gets +3."
       ],
       "downsides": [
-        "Leading Role: anything unglamorous (crawling through sewage, hiding in a bin) takes a Visualization check first: you have to picture it as a scene worth filming. On a fail you refuse, or do it at −3."
+        "Leading Role: before anything unglamorous (crawling through sewage, hiding in a bin) you make a Visualization check (target 12) to picture it as a scene worth filming. On a fail you refuse, or do it at −3."
       ],
       "notes": [],
       "narrator_hook": "the plan only works if someone hides in the dumpster.",
-      "text": "Three days without food, or three days without a holo-drama? You'd live on water.\n+ Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, roll with +3.\n− Leading Role: anything unglamorous (crawling through sewage, hiding in a bin) takes a Visualization check first: you have to picture it as a scene worth filming. On a fail you refuse, or do it at −3.",
+      "text": "Three days without food, or three days without a holo-drama? You'd live on water.\n+ Dramatic Timing: once per scene, describe your action as a scene from a holo-drama. If the Narrator buys the drama, you roll with +3. In a fight it needs no approval: your next attack that turn gets +3.\n− Leading Role: before anything unglamorous (crawling through sewage, hiding in a bin) you make a Visualization check (target 12) to picture it as a scene worth filming. On a fail you refuse, or do it at −3.",
       "effects": [
         {
           "op": "roll_bonus",
@@ -861,14 +861,14 @@
       "cost": null,
       "flavour": "Oil paint runs through the vessels of your brain. Give you a glass of wine and you could argue technique with Rémy Étienne or Master Sakamoto all night.",
       "upsides": [
-        "Canvas: read any artwork, mural, graffiti or designed object to learn who made it, how, and where it came from. +1 Visualization, Acuity and Rumination."
+        "Canvas: study any artwork, mural, graffiti or designed object, and the Narrator tells you who made it, how, and where it came from. +1 Visualization, Acuity and Rumination."
       ],
       "downsides": [
-        "Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once."
+        "Paper: −1 Durability, Pain Threshold and Senses. If you have both Oil traits, you take this penalty only once."
       ],
       "notes": [],
       "narrator_hook": "gang tags, forged paintings, propaganda posters, a killer's \"art.\"",
-      "text": "Oil paint runs through the vessels of your brain. Give you a glass of wine and you could argue technique with Rémy Étienne or Master Sakamoto all night.\n+ Canvas: read any artwork, mural, graffiti or designed object to learn who made it, how, and where it came from. +1 Visualization, Acuity and Rumination.\n− Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once.",
+      "text": "Oil paint runs through the vessels of your brain. Give you a glass of wine and you could argue technique with Rémy Étienne or Master Sakamoto all night.\n+ Canvas: study any artwork, mural, graffiti or designed object, and the Narrator tells you who made it, how, and where it came from. +1 Visualization, Acuity and Rumination.\n− Paper: −1 Durability, Pain Threshold and Senses. If you have both Oil traits, you take this penalty only once.",
       "effects": [
         {
           "op": "narrator",
@@ -950,16 +950,16 @@
       "cost": null,
       "flavour": "You don't know the technique. You know exactly how the painter felt.",
       "upsides": [
-        "Canvas: read any artwork to learn the maker's emotional state and intent. +1 Empathy, Camaraderie and Insinuation."
+        "Canvas: study any artwork, and the Narrator tells you what its maker felt and meant. +1 Empathy, Camaraderie and Insinuation."
       ],
       "downsides": [
-        "Still Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once."
+        "Still Paper: −1 Durability, Pain Threshold and Senses. If you have both Oil traits, you take this penalty only once."
       ],
       "notes": [
-        "Both Oils: Masterpiece. A recruit with both reads an artwork's whole story (maker, method and meaning) at once. Once per session, they can make a work of art that gives one ally +2 on a roll of that ally's choice."
+        "Both Oils: Masterpiece. With both Oil traits you read an artwork's whole story at once: maker, method and meaning. Once per session, for 0 AP, you make a work of art for one ally: they get +2 on their next d20 roll."
       ],
       "narrator_hook": "the same gang tags and forgeries, read from the heart.",
-      "text": "You don't know the technique. You know exactly how the painter felt.\n+ Canvas: read any artwork to learn the maker's emotional state and intent. +1 Empathy, Camaraderie and Insinuation.\n− Still Paper: −1 Durability, Pain Threshold and Senses. With both Oil traits, this penalty applies once.\nBoth Oils: Masterpiece. A recruit with both reads an artwork's whole story (maker, method and meaning) at once. Once per session, they can make a work of art that gives one ally +2 on a roll of that ally's choice.",
+      "text": "You don't know the technique. You know exactly how the painter felt.\n+ Canvas: study any artwork, and the Narrator tells you what its maker felt and meant. +1 Empathy, Camaraderie and Insinuation.\n− Still Paper: −1 Durability, Pain Threshold and Senses. If you have both Oil traits, you take this penalty only once.\nBoth Oils: Masterpiece. With both Oil traits you read an artwork's whole story at once: maker, method and meaning. Once per session, for 0 AP, you make a work of art for one ally: they get +2 on their next d20 roll.",
       "effects": [
         {
           "op": "narrator",
@@ -1042,15 +1042,15 @@
       "flavour": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?",
       "upsides": [
         "Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.",
-        "Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability."
+        "Drunk (3 drinks): a further +1 to those three, and +1 Intimidation, Guts and Durability."
       ],
       "downsides": [
         "Wasted (5 drinks): −2 Reaction Speed, Dexterity, Acuity, Vigilance, Improvisation and Visualization.",
-        "The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Will Power check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure."
+        "The Slope: a drink comes from a bottle of spirits in your pack and costs 1 AP in a fight. Drinks wear off at the end of each scene, but when a scene ends with you Drunk you make a Will Power check (target 12 + drinks today): on a fail you keep them and take one more. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure until your next drink."
       ],
       "notes": [],
       "narrator_hook": "the bar scene, the dry mission, the open bottle in the evidence room.",
-      "text": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?\n+ Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.\n+ Drunk (3 drinks): a further +1 to those, plus Intimidation, Guts and Durability.\n− Wasted (5 drinks): −2 Reaction Speed, Dexterity, Acuity, Vigilance, Improvisation and Visualization.\n− The Slope: drinks wear off at the end of each scene. When a scene ends with you Drunk, make a Will Power check (target 12 + drinks today); on a fail you keep drinking, one step closer to Wasted. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure.",
+      "text": "Part gentleman, part lush. A glass of Mandestra vintage, or the whole jug of lowland rotgut?\n+ Tipsy (1 drink): +1 Camaraderie, Lore Master and Authority.\n+ Drunk (3 drinks): a further +1 to those three, and +1 Intimidation, Guts and Durability.\n− Wasted (5 drinks): −2 Reaction Speed, Dexterity, Acuity, Vigilance, Improvisation and Visualization.\n− The Slope: a drink comes from a bottle of spirits in your pack and costs 1 AP in a fight. Drinks wear off at the end of each scene, but when a scene ends with you Drunk you make a Will Power check (target 12 + drinks today): on a fail you keep them and take one more. A day with no drink at all gives you the shakes: −1 Camaraderie, Authority and Composure until your next drink.",
       "effects": [
         {
           "op": "stacking_state",
@@ -1197,14 +1197,14 @@
       "cost": null,
       "flavour": "Born on a high-gravity world. Your mother has never forgiven you, the bullies at school never forgot you, and doorframes still don't fit you.",
       "upsides": [
-        "Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you wield heavy weapons one-handed, and you get +2 Intimidation."
+        "Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you can use heavy weapons one-handed, and you have +2 Intimidation."
       ],
       "downsides": [
-        "Too Big: −3 Athletics and −0.5 Movement. Attacks against you get +2 to hit. You can't hide in light, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you."
+        "Too Big: −3 Athletics and −0.5 Movement. Attacks against you have +2 to hit. You can't hide on a lit tile, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you."
       ],
       "notes": [],
       "narrator_hook": "stealth missions, tight corridors, and the rope bridge.",
-      "text": "Born on a high-gravity world. Your mother has never forgiven you, the bullies at school never forgot you, and doorframes still don't fit you.\n+ Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you wield heavy weapons one-handed, and you get +2 Intimidation.\n− Too Big: −3 Athletics and −0.5 Movement. Attacks against you get +2 to hit. You can't hide in light, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you.",
+      "text": "Born on a high-gravity world. Your mother has never forgiven you, the bullies at school never forgot you, and doorframes still don't fit you.\n+ Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you can use heavy weapons one-handed, and you have +2 Intimidation.\n− Too Big: −3 Athletics and −0.5 Movement. Attacks against you have +2 to hit. You can't hide on a lit tile, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you.",
       "effects": [
         {
           "op": "size_mod",
@@ -1262,14 +1262,14 @@
       "cost": null,
       "flavour": "Every conversation is a stage, and you've never once been yourself on it. The world may not understand you, but you understand the world.",
       "upsides": [
-        "Adaptable: at the start of each scene, pick one γ skill: +2 to it for the scene. +20% XP from combat."
+        "Adaptable: in each scene, one of your γ skills (the third skill of an Attribute) has +2. It starts on your highest one, and you may move it to another once per scene. +20% XP from combat."
       ],
       "downsides": [
         "Hollow: conversation never gives you XP, and anyone using Empathy on you gets +2: they sense nobody is home."
       ],
       "notes": [],
       "narrator_hook": "the person who asks who you really are.",
-      "text": "Every conversation is a stage, and you've never once been yourself on it. The world may not understand you, but you understand the world.\n+ Adaptable: at the start of each scene, pick one γ skill: +2 to it for the scene. +20% XP from combat.\n− Hollow: conversation never gives you XP, and anyone using Empathy on you gets +2: they sense nobody is home.",
+      "text": "Every conversation is a stage, and you've never once been yourself on it. The world may not understand you, but you understand the world.\n+ Adaptable: in each scene, one of your γ skills (the third skill of an Attribute) has +2. It starts on your highest one, and you may move it to another once per scene. +20% XP from combat.\n− Hollow: conversation never gives you XP, and anyone using Empathy on you gets +2: they sense nobody is home.",
       "effects": [
         {
           "op": "choose_bonus",
@@ -1311,15 +1311,15 @@
       "cost": null,
       "flavour": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.",
       "upsides": [
-        "Lucky Foot: once per session, force a reroll of any d20 that targets you.",
-        "Vengeful: when an ally is downed, your next turn has +2 AP."
+        "Lucky Foot: once per session, the first enemy attack that would hit you in a fight is rerolled; you may hold it back for a later fight. Outside a fight, ask the Narrator to reroll one roll made against you.",
+        "Vengeful: when an ally is Downed, you have 2 more AP on your next turn."
       ],
       "downsides": [
-        "Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and Take the Hit or taunts can't pull their attacks off you."
+        "Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and neither Take the Hit nor a taunt can pull their attacks off you."
       ],
       "notes": [],
       "narrator_hook": "the trophy-hunter who wants your foot.",
-      "text": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.\n+ Lucky Foot: once per session, force a reroll of any d20 that targets you.\n+ Vengeful: when an ally is downed, your next turn has +2 AP.\n− Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and Take the Hit or taunts can't pull their attacks off you.",
+      "text": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.\n+ Lucky Foot: once per session, the first enemy attack that would hit you in a fight is rerolled; you may hold it back for a later fight. Outside a fight, ask the Narrator to reroll one roll made against you.\n+ Vengeful: when an ally is Downed, you have 2 more AP on your next turn.\n− Prey: −1 Guts, Intimidation and Authority. Hunters and Orks deal +25% damage to you, and neither Take the Hit nor a taunt can pull their attacks off you.",
       "effects": [
         {
           "op": "reroll",
@@ -1374,14 +1374,14 @@
       "cost": null,
       "flavour": "You fought in a war the records say never happened. The arm is new. The habits aren't.",
       "upsides": [
-        "Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Improvisation can modify."
+        "Unseen: your first Ambush attack in each fight deals +50% damage and makes no sound. You start with a prosthetic arm that can take mods."
       ],
       "downsides": [
-        "The War Never Ended: resting in a settlement takes a Vigilance check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Insinuation and Composure."
+        "The War Never Ended: to rest in a settlement you must pass a Vigilance check (target 12), or you spend the night watching the doors and get nothing from the rest. When an enemy breaks your stealth, you have 2 AP less on your next turn. −1 Eloquence, Charisma, Insinuation and Composure."
       ],
       "notes": [],
       "narrator_hook": "the ceasefire, the homecoming, the quiet town.",
-      "text": "You fought in a war the records say never happened. The arm is new. The habits aren't.\n+ Unseen: your first attack from stealth each combat does +50% damage and makes no sound. Start with a prosthetic arm that Improvisation can modify.\n− The War Never Ended: resting in a settlement takes a Vigilance check, or you spend the night watching the doors and get no benefit. When your stealth is broken, you lose 2 AP on your next turn. −1 Eloquence, Charisma, Insinuation and Composure.",
+      "text": "You fought in a war the records say never happened. The arm is new. The habits aren't.\n+ Unseen: your first Ambush attack in each fight deals +50% damage and makes no sound. You start with a prosthetic arm that can take mods.\n− The War Never Ended: to rest in a settlement you must pass a Vigilance check (target 12), or you spend the night watching the doors and get nothing from the rest. When an enemy breaks your stealth, you have 2 AP less on your next turn. −1 Eloquence, Charisma, Insinuation and Composure.",
       "effects": [
         {
           "op": "damage_mod",
@@ -1445,14 +1445,14 @@
       "cost": null,
       "flavour": "The law is the only wall between the Thousand-Planet City and the dark. You are a stone in that wall.",
       "upsides": [
-        "I Am the Law: Karma starts locked to LAWFUL. Once per scene, when you invoke law or rank, an official must answer one question truthfully."
+        "I Am the Law: your Karma starts at Lawful. Once per scene, invoke the law or your rank: an official must answer one question truthfully. The Narrator plays the answer."
       ],
       "downsides": [
         "My Way: leaving Lawful costs double Karma, and every unlawful act you commit costs double Karma too."
       ],
       "notes": [],
       "narrator_hook": "the law that is plainly wrong.",
-      "text": "The law is the only wall between the Thousand-Planet City and the dark. You are a stone in that wall.\n+ I Am the Law: Karma starts locked to LAWFUL. Once per scene, when you invoke law or rank, an official must answer one question truthfully.\n− My Way: leaving Lawful costs double Karma, and every unlawful act you commit costs double Karma too.",
+      "text": "The law is the only wall between the Thousand-Planet City and the dark. You are a stone in that wall.\n+ I Am the Law: your Karma starts at Lawful. Once per scene, invoke the law or your rank: an official must answer one question truthfully. The Narrator plays the answer.\n− My Way: leaving Lawful costs double Karma, and every unlawful act you commit costs double Karma too.",
       "effects": [
         {
           "op": "karma_lock",
@@ -1488,14 +1488,14 @@
       "cost": null,
       "flavour": "Plans, permits, chains of command: all of them break the same way, if you push hard enough.",
       "upsides": [
-        "Spanner in the Works: Karma starts locked to CHAOTIC. Once per scene, when you wreck someone's plan or property, gain 1 Echo."
+        "Spanner in the Works: your Karma starts at Chaotic. Once per scene, when you wreck someone's plan or property, you gain 1 Echo. In a fight that means breaking an object; in the story the Narrator decides whether it counts."
       ],
       "downsides": [
         "My Way: leaving Chaotic costs double Karma. Lawful factions start hostile to you."
       ],
       "notes": [],
       "narrator_hook": "the job that needs a permit.",
-      "text": "Plans, permits, chains of command: all of them break the same way, if you push hard enough.\n+ Spanner in the Works: Karma starts locked to CHAOTIC. Once per scene, when you wreck someone's plan or property, gain 1 Echo.\n− My Way: leaving Chaotic costs double Karma. Lawful factions start hostile to you.",
+      "text": "Plans, permits, chains of command: all of them break the same way, if you push hard enough.\n+ Spanner in the Works: your Karma starts at Chaotic. Once per scene, when you wreck someone's plan or property, you gain 1 Echo. In a fight that means breaking an object; in the story the Narrator decides whether it counts.\n− My Way: leaving Chaotic costs double Karma. Lawful factions start hostile to you.",
       "effects": [
         {
           "op": "karma_lock",
@@ -1536,13 +1536,13 @@
         "Vibing: while your song plays, +1 to every Soul skill."
       ],
       "downsides": [
-        "Lost the Vibe: silent too long, −1 to every Mind and Body skill."
+        "Lost the Vibe: when you have gone too long without your song, −1 to every Mind and Body skill."
       ],
       "notes": [
-        "All three share these rules. You start with a Musek Blestor, and the player picks a real song for the character's Favourite Song field. Starting the song costs 2 AP, or it starts on its own when you kill, revive an ally, or land a big heal or shield; while it plays, it replaces the area or combat music. The bonus fades after 2 area changes without the song; the penalty starts after 4."
+        "The three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4."
       ],
       "narrator_hook": "silence zones, broken Blestors, and the stealth mission where the music gives you away.",
-      "text": "Gentle as a ripple, violent as a flood in the wet season, deep enough to drown your whole soul in.\n+ Vibing: while your song plays, +1 to every Soul skill.\n− Lost the Vibe: silent too long, −1 to every Mind and Body skill.\nAll three share these rules. You start with a Musek Blestor, and the player picks a real song for the character's Favourite Song field. Starting the song costs 2 AP, or it starts on its own when you kill, revive an ally, or land a big heal or shield; while it plays, it replaces the area or combat music. The bonus fades after 2 area changes without the song; the penalty starts after 4.",
+      "text": "Gentle as a ripple, violent as a flood in the wet season, deep enough to drown your whole soul in.\n+ Vibing: while your song plays, +1 to every Soul skill.\n− Lost the Vibe: when you have gone too long without your song, −1 to every Mind and Body skill.\nThe three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4.",
       "effects": [
         {
           "op": "song_state",
@@ -1588,13 +1588,13 @@
         "Banger: while your song plays, +1 to every Body skill."
       ],
       "downsides": [
-        "Losing It: silent too long, −1 to every Mind and Soul skill."
+        "Losing It: when you have gone too long without your song, −1 to every Mind and Soul skill."
       ],
       "notes": [
-        "All three share these rules. You start with a Musek Blestor, and the player picks a real song for the character's Favourite Song field. Starting the song costs 2 AP, or it starts on its own when you kill, revive an ally, or land a big heal or shield; while it plays, it replaces the area or combat music. The bonus fades after 2 area changes without the song; the penalty starts after 4."
+        "The three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4."
       ],
       "narrator_hook": "silence zones, broken Blestors, and the stealth mission where the music gives you away.",
-      "text": "The bass hits harder than a .700 Blackpoint round, and you want it louder.\n+ Banger: while your song plays, +1 to every Body skill.\n− Losing It: silent too long, −1 to every Mind and Soul skill.\nAll three share these rules. You start with a Musek Blestor, and the player picks a real song for the character's Favourite Song field. Starting the song costs 2 AP, or it starts on its own when you kill, revive an ally, or land a big heal or shield; while it plays, it replaces the area or combat music. The bonus fades after 2 area changes without the song; the penalty starts after 4.",
+      "text": "The bass hits harder than a .700 Blackpoint round, and you want it louder.\n+ Banger: while your song plays, +1 to every Body skill.\n− Losing It: when you have gone too long without your song, −1 to every Mind and Soul skill.\nThe three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4.",
       "effects": [
         {
           "op": "song_state",
@@ -1640,13 +1640,13 @@
         "Brain Dancing: while your song plays, +1 to every Mind skill."
       ],
       "downsides": [
-        "Dead Air: silent too long, −1 to every Body and Soul skill."
+        "Dead Air: when you have gone too long without your song, −1 to every Body and Soul skill."
       ],
       "notes": [
-        "All three share these rules. You start with a Musek Blestor, and the player picks a real song for the character's Favourite Song field. Starting the song costs 2 AP, or it starts on its own when you kill, revive an ally, or land a big heal or shield; while it plays, it replaces the area or combat music. The bonus fades after 2 area changes without the song; the penalty starts after 4."
+        "The three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4."
       ],
       "narrator_hook": "silence zones, broken Blestors, and the stealth mission where the music gives you away.",
-      "text": "Music while you sleep, cook, drive, even while you're listening to other music. And this band is criminally underrated.\n+ Brain Dancing: while your song plays, +1 to every Mind skill.\n− Dead Air: silent too long, −1 to every Body and Soul skill.\nAll three share these rules. You start with a Musek Blestor, and the player picks a real song for the character's Favourite Song field. Starting the song costs 2 AP, or it starts on its own when you kill, revive an ally, or land a big heal or shield; while it plays, it replaces the area or combat music. The bonus fades after 2 area changes without the song; the penalty starts after 4.",
+      "text": "Music while you sleep, cook, drive, even while you're listening to other music. And this band is criminally underrated.\n+ Brain Dancing: while your song plays, +1 to every Mind skill.\n− Dead Air: when you have gone too long without your song, −1 to every Body and Soul skill.\nThe three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4.",
       "effects": [
         {
           "op": "song_state",
@@ -1689,16 +1689,16 @@
       "cost": null,
       "flavour": "The worldlines are merging. Things that shouldn't exist walk your streets, and nobody else seems to notice.",
       "upsides": [
-        "Wild: the strangest, most impossible events show up in your campaign."
+        "Wild: the strangest, most impossible events turn up in your campaign. The Narrator chooses them."
       ],
       "downsides": [
-        "Unravelling: those events replace the normal events of that area."
+        "Unravelling: those events replace the normal events of the area you are in."
       ],
       "notes": [
-        "Only takes effect if every squad member logs it."
+        "This trait only takes effect if every member of the squad has it."
       ],
       "narrator_hook": "the area whose normal events stopped happening.",
-      "text": "The worldlines are merging. Things that shouldn't exist walk your streets, and nobody else seems to notice.\n+ Wild: the strangest, most impossible events show up in your campaign.\n− Unravelling: those events replace the normal events of that area.\nOnly takes effect if every squad member logs it.",
+      "text": "The worldlines are merging. Things that shouldn't exist walk your streets, and nobody else seems to notice.\n+ Wild: the strangest, most impossible events turn up in your campaign. The Narrator chooses them.\n− Unravelling: those events replace the normal events of the area you are in.\nThis trait only takes effect if every member of the squad has it.",
       "effects": [
         {
           "op": "narrator",
@@ -1725,14 +1725,14 @@
       "cost": null,
       "flavour": "Oil for blood, a plug for a gender, and a serial number for a name. The Factory built you to be spent. You weren't.",
       "upsides": [
-        "Machine Body: immune to poison, bleed and suffocation. Improvisation's Field Repair restores your HP, at 10 per Improvisation rank."
+        "Machine Body: you are immune to poison, Bleeding and suffocation. Improvisation's Field Repair heals you like a machine, for 10 HP per point of Improvisation. With Improvisation 3 you can repair yourself: 2 AP and one spare-parts charge in a fight."
       ],
       "downsides": [
-        "Plug: heals and Blessings work at half power on you, lightning and EMP deal double, and some humans won't talk to a machine."
+        "Plug: heals and Blessings work at half power on you, lightning and EMP deal double damage to you, and some humans won't talk to a machine."
       ],
       "notes": [],
       "narrator_hook": "robot-rights politics, scrapyards, and the officer who calls you equipment.",
-      "text": "Oil for blood, a plug for a gender, and a serial number for a name. The Factory built you to be spent. You weren't.\n+ Machine Body: immune to poison, bleed and suffocation. Improvisation's Field Repair restores your HP, at 10 per Improvisation rank.\n− Plug: heals and Blessings work at half power on you, lightning and EMP deal double, and some humans won't talk to a machine.",
+      "text": "Oil for blood, a plug for a gender, and a serial number for a name. The Factory built you to be spent. You weren't.\n+ Machine Body: you are immune to poison, Bleeding and suffocation. Improvisation's Field Repair heals you like a machine, for 10 HP per point of Improvisation. With Improvisation 3 you can repair yourself: 2 AP and one spare-parts charge in a fight.\n− Plug: heals and Blessings work at half power on you, lightning and EMP deal double damage to you, and some humans won't talk to a machine.",
       "effects": [
         {
           "op": "immunity",
@@ -1790,14 +1790,14 @@
       "cost": null,
       "flavour": "You grew up in the dead-building forest past the desert, Black Scavenger country, where every corner is an ambush.",
       "upsides": [
-        "Concrete Forest: in ruins and dense urban terrain, +1 Movement, and you always know one way out."
+        "Concrete Forest: in ruins and dense urban terrain, +1 Movement, and the Narrator always tells you one way out."
       ],
       "downsides": [
-        "Open Sky: in open terrain, −2 Vigilance and half Detection Range."
+        "Open Sky: in open terrain, −2 Vigilance, and you spot Hidden enemies only within half your Vision range."
       ],
       "notes": [],
       "narrator_hook": "the mission that leaves the city.",
-      "text": "You grew up in the dead-building forest past the desert, Black Scavenger country, where every corner is an ambush.\n+ Concrete Forest: in ruins and dense urban terrain, +1 Movement, and you always know one way out.\n− Open Sky: in open terrain, −2 Vigilance and half Detection Range.",
+      "text": "You grew up in the dead-building forest past the desert, Black Scavenger country, where every corner is an ambush.\n+ Concrete Forest: in ruins and dense urban terrain, +1 Movement, and the Narrator always tells you one way out.\n− Open Sky: in open terrain, −2 Vigilance, and you spot Hidden enemies only within half your Vision range.",
       "effects": [
         {
           "op": "stat_mod",
@@ -1839,14 +1839,14 @@
       "cost": null,
       "flavour": "Bank cards, shock batons, and somebody else to do the dirty work. Outside the walls, nobody is impressed.",
       "upsides": [
-        "Plugged In: start with a city ID and a bank card. +2 on social rolls with officials and merchants; city services are open to you."
+        "Plugged In: you start with a city ID and a bank card. +2 on social checks with officials and merchants, and city services are open to you."
       ],
       "downsides": [
-        "Soft Hands: the first time you're wounded in each combat, lose 2 AP from shock. Outside the city, −2 Guts."
+        "Soft Hands: the first time you lose HP in each fight, you lose 2 AP from the shock. Outside the city, −2 Guts."
       ],
       "notes": [],
       "narrator_hook": "the frontier, where your card is worth a rock.",
-      "text": "Bank cards, shock batons, and somebody else to do the dirty work. Outside the walls, nobody is impressed.\n+ Plugged In: start with a city ID and a bank card. +2 on social rolls with officials and merchants; city services are open to you.\n− Soft Hands: the first time you're wounded in each combat, lose 2 AP from shock. Outside the city, −2 Guts.",
+      "text": "Bank cards, shock batons, and somebody else to do the dirty work. Outside the walls, nobody is impressed.\n+ Plugged In: you start with a city ID and a bank card. +2 on social checks with officials and merchants, and city services are open to you.\n− Soft Hands: the first time you lose HP in each fight, you lose 2 AP from the shock. Outside the city, −2 Guts.",
       "effects": [
         {
           "op": "start_item",
@@ -1891,14 +1891,14 @@
       "cost": null,
       "flavour": "You were there. You remember what the speeches left out.",
       "upsides": [
-        "I Was There: you're immune to Fear, and once per combat you can shake off any Heart Debuff for free. +2 Authority and Composure with anyone military. Once per session, ask the Narrator how an enemy force will move next: you've seen it before."
+        "I Was There: you are immune to Fear, and once per fight you can remove one Heart debuff from yourself for 0 AP. +2 Authority and Composure with anyone military. Once per session, ask how the enemy will move next: in a fight you are shown each visible enemy's next move and target, and outside one the Narrator answers truthfully."
       ],
       "downsides": [
-        "Flashback: shelling, burning, or a Crawler child: Composure check (target 12) or lose your next turn."
+        "Flashback: once per fight, when you are Burning or an explosion goes off within 3 tiles of you, you make a Composure check (target 12) or lose your next turn. The Narrator can call for the same check in the story: shelling, burning, or a Crawler child."
       ],
       "notes": [],
       "narrator_hook": "Crawlers, survivors, and Captain Kain.",
-      "text": "You were there. You remember what the speeches left out.\n+ I Was There: you're immune to Fear, and once per combat you can shake off any Heart Debuff for free. +2 Authority and Composure with anyone military. Once per session, ask the Narrator how an enemy force will move next: you've seen it before.\n− Flashback: shelling, burning, or a Crawler child: Composure check (target 12) or lose your next turn.",
+      "text": "You were there. You remember what the speeches left out.\n+ I Was There: you are immune to Fear, and once per fight you can remove one Heart debuff from yourself for 0 AP. +2 Authority and Composure with anyone military. Once per session, ask how the enemy will move next: in a fight you are shown each visible enemy's next move and target, and outside one the Narrator answers truthfully.\n− Flashback: once per fight, when you are Burning or an explosion goes off within 3 tiles of you, you make a Composure check (target 12) or lose your next turn. The Narrator can call for the same check in the story: shelling, burning, or a Crawler child.",
       "effects": [
         {
           "op": "immunity",
@@ -1951,14 +1951,14 @@
       "cost": null,
       "flavour": "You were born too close to the veil, and your twin soul in the upper realm talks back.",
       "upsides": [
-        "Thin Veil: Outbursts cost 20% less mana, and you sense upper-realm beings within 10 tiles."
+        "Thin Veil: your Outbursts cost 20% less mana, and you sense upper-realm beings within 10 tiles."
       ],
       "downsides": [
-        "Seen From Above: upper-realm beings always know where you are. Blessings cast on you roll a d6 for a side effect."
+        "Seen From Above: upper-realm beings always know where you are, so you can't hide from them. Every Blessing cast on you rolls a d6 for a side effect: on a 1 it fails, on a 2 you gain 1 Strain, on a 3 you are Shaken for a round, on a 5 it is half again as strong, and on a 6 a voice from above speaks to you."
       ],
       "notes": [],
       "narrator_hook": "Heaven has noticed you, and it isn't sure which side you're on.",
-      "text": "You were born too close to the veil, and your twin soul in the upper realm talks back.\n+ Thin Veil: Outbursts cost 20% less mana, and you sense upper-realm beings within 10 tiles.\n− Seen From Above: upper-realm beings always know where you are. Blessings cast on you roll a d6 for a side effect.",
+      "text": "You were born too close to the veil, and your twin soul in the upper realm talks back.\n+ Thin Veil: your Outbursts cost 20% less mana, and you sense upper-realm beings within 10 tiles.\n− Seen From Above: upper-realm beings always know where you are, so you can't hide from them. Every Blessing cast on you rolls a d6 for a side effect: on a 1 it fails, on a 2 you gain 1 Strain, on a 3 you are Shaken for a round, on a 5 it is half again as strong, and on a 6 a voice from above speaks to you.",
       "effects": [
         {
           "op": "mana_cost_mult",
@@ -1997,14 +1997,14 @@
       "cost": null,
       "flavour": "Your first word was a war-cry. Your second was the name of a weapon.",
       "upsides": [
-        "Ork Steel: +20% damage with melee weapons. Orks will parley with you instead of attacking."
+        "Ork Steel: +20% damage with melee weapons. Orks parley with you instead of attacking: an Ork won't attack you until your side attacks an Ork."
       ],
       "downsides": [
-        "Can't Read: you can't use written documents, maps or text-based Rumination. Humans who know your history start at −2 Charisma; other squad members choose whether this applies to them."
+        "Can't Read: you can't use written documents or maps, and any check that needs reading fails. You have −2 Charisma with humans who know your history; each squadmate chooses whether that includes them."
       ],
       "notes": [],
       "narrator_hook": "the warband that wants you home.",
-      "text": "Your first word was a war-cry. Your second was the name of a weapon.\n+ Ork Steel: +20% damage with melee weapons. Orks will parley with you instead of attacking.\n− Can't Read: you can't use written documents, maps or text-based Rumination. Humans who know your history start at −2 Charisma; other squad members choose whether this applies to them.",
+      "text": "Your first word was a war-cry. Your second was the name of a weapon.\n+ Ork Steel: +20% damage with melee weapons. Orks parley with you instead of attacking: an Ork won't attack you until your side attacks an Ork.\n− Can't Read: you can't use written documents or maps, and any check that needs reading fails. You have −2 Charisma with humans who know your history; each squadmate chooses whether that includes them.",
       "effects": [
         {
           "op": "damage_mod",
@@ -2047,14 +2047,14 @@
       "cost": null,
       "flavour": "You can name the rifle from its echo and the factory from its casing.",
       "upsides": [
-        "Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP."
+        "Know Your Iron: you can name any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own has 1 extra mod slot, and clearing a jam costs you 0 AP."
       ],
       "downsides": [
-        "Collector: the first 3 guns you get are your collection (your kit's gun counts), and you carry them, weight included. Selling, abandoning or giving away one of them takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go."
+        "Collector: the first 3 guns you get are your collection (your kit's gun counts), and you always carry them, weight included. To sell, abandon or give away one of them you must pass a Dexterity check (target 12): the gun hand has to let go. On a fail, you can't part with it until your next rest. You sell every gun at half price: you never really want to let go."
       ],
       "notes": [],
       "narrator_hook": "rare guns as loot, as bait, and as evidence.",
-      "text": "You can name the rifle from its echo and the factory from its casing.\n+ Know Your Iron: identify any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own gets +1 mod slot, and clearing a jam costs 0 AP.\n− Collector: the first 3 guns you get are your collection (your kit's gun counts), and you carry them, weight included. Selling, abandoning or giving away one of them takes a Dexterity check: the gun hand has to let go; on a fail, you can't part with it until your next rest. You sell every gun at −50%: you never really want to let go.",
+      "text": "You can name the rifle from its echo and the factory from its casing.\n+ Know Your Iron: you can name any firearm or round by its sound or casing: calibre, maker, where it was issued. Every gun you own has 1 extra mod slot, and clearing a jam costs you 0 AP.\n− Collector: the first 3 guns you get are your collection (your kit's gun counts), and you always carry them, weight included. To sell, abandon or give away one of them you must pass a Dexterity check (target 12): the gun hand has to let go. On a fail, you can't part with it until your next rest. You sell every gun at half price: you never really want to let go.",
       "effects": [
         {
           "op": "narrator",
@@ -2107,14 +2107,14 @@
       "cost": null,
       "flavour": "The drifter's creed: identify, squeeze, breathe the powder smoke, dig the grave.",
       "upsides": [
-        "Fan the Hammer: with a revolver or lever gun, fire every remaining round in one 3 AP action, at −2 to hit per shot."
+        "Fan the Hammer: once per turn, with a revolver or lever gun, spend 3 AP to fire every round still loaded at one target. Each shot is at −2 to hit."
       ],
       "downsides": [
-        "Analog: no smart optics, Evoker-linked guns or electronic sights."
+        "Analog: you can't use smart optics, Evoker-linked guns or electronic sights."
       ],
       "notes": [],
       "narrator_hook": "the armoury full of tech you refuse to touch.",
-      "text": "The drifter's creed: identify, squeeze, breathe the powder smoke, dig the grave.\n+ Fan the Hammer: with a revolver or lever gun, fire every remaining round in one 3 AP action, at −2 to hit per shot.\n− Analog: no smart optics, Evoker-linked guns or electronic sights.",
+      "text": "The drifter's creed: identify, squeeze, breathe the powder smoke, dig the grave.\n+ Fan the Hammer: once per turn, with a revolver or lever gun, spend 3 AP to fire every round still loaded at one target. Each shot is at −2 to hit.\n− Analog: you can't use smart optics, Evoker-linked guns or electronic sights.",
       "effects": [
         {
           "op": "grant_action",
@@ -2150,14 +2150,14 @@
       "cost": null,
       "flavour": "The Hellraiser doctrine: volume of fire is a tactic.",
       "upsides": [
-        "Suppression: a full-auto burst leaves every target in its cone Suppressed, hit or miss (a Body save; it doesn't stack): −1 AP next turn and no reactions or Overwatch. Your full-auto penalty is −1 instead of −2."
+        "Suppression: every target your full-auto burst fires at, hit or miss, makes a Body save or is Suppressed: 1 AP less on its next turn, and no reactions or Overwatch. It doesn't stack. Your full-auto penalty is −1 instead of −2."
       ],
       "downsides": [
-        "Ammo Hog: you burn double ammo, every round, and aimed shots are at −2."
+        "Ammo Hog: every round you fire uses up two, and your aimed shots are at −2 to hit."
       ],
       "notes": [],
       "narrator_hook": "the long mission with no resupply.",
-      "text": "The Hellraiser doctrine: volume of fire is a tactic.\n+ Suppression: a full-auto burst leaves every target in its cone Suppressed, hit or miss (a Body save; it doesn't stack): −1 AP next turn and no reactions or Overwatch. Your full-auto penalty is −1 instead of −2.\n− Ammo Hog: you burn double ammo, every round, and aimed shots are at −2.",
+      "text": "The Hellraiser doctrine: volume of fire is a tactic.\n+ Suppression: every target your full-auto burst fires at, hit or miss, makes a Body save or is Suppressed: 1 AP less on its next turn, and no reactions or Overwatch. It doesn't stack. Your full-auto penalty is −1 instead of −2.\n− Ammo Hog: every round you fire uses up two, and your aimed shots are at −2 to hit.",
       "effects": [
         {
           "op": "condition",
@@ -2200,14 +2200,14 @@
       "cost": null,
       "flavour": "Breathe out. Squeeze. Don't look away.",
       "upsides": [
-        "Breath Held: if you haven't moved this turn, your first shot ignores cover and does +50% Critical Damage."
+        "Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +50% Critical Damage."
       ],
       "downsides": [
-        "Tunnel Vision: until your next move, you can't make Vigilance checks, and ambushes against you do +50% damage."
+        "Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +50% damage to you."
       ],
       "notes": [],
       "narrator_hook": "the flanker you didn't see.",
-      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores cover and does +50% Critical Damage.\n− Tunnel Vision: until your next move, you can't make Vigilance checks, and ambushes against you do +50% damage.",
+      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +50% Critical Damage.\n− Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +50% damage to you.",
       "effects": [
         {
           "op": "ignore_cover",
@@ -2245,14 +2245,14 @@
       "cost": null,
       "flavour": "Twenty years at the Science Team bench, and one Sigil you can draw in your sleep.",
       "upsides": [
-        "Muscle Memory: choose one Sigil word. Its glyph always costs 0 Core and 1 AP less."
+        "Muscle Memory: choose one Sigil word. Drawing its glyph always costs you 0 Core charge and 1 AP less (never below half an AP)."
       ],
       "downsides": [
-        "Rigid: you can only draw Sigils you practised during your last rest; nothing new mid-mission."
+        "Rigid: you can only draw the words you practised at your last long rest (as many as your Max Sigil words), plus your Muscle Memory word. Nothing new mid-mission."
       ],
       "notes": [],
       "narrator_hook": "the problem only an unpractised Sigil solves.",
-      "text": "Twenty years at the Science Team bench, and one Sigil you can draw in your sleep.\n+ Muscle Memory: choose one Sigil word. Its glyph always costs 0 Core and 1 AP less.\n− Rigid: you can only draw Sigils you practised during your last rest; nothing new mid-mission.",
+      "text": "Twenty years at the Science Team bench, and one Sigil you can draw in your sleep.\n+ Muscle Memory: choose one Sigil word. Drawing its glyph always costs you 0 Core charge and 1 AP less (never below half an AP).\n− Rigid: you can only draw the words you practised at your last long rest (as many as your Max Sigil words), plus your Muscle Memory word. Nothing new mid-mission.",
       "effects": [
         {
           "op": "choose",
@@ -2290,14 +2290,14 @@
       "cost": null,
       "flavour": "A Mana Short left a hole in your chest. The fear went out through it.",
       "upsides": [
-        "Hollow: when your own heart Downs you (the Strain burn), you fall unconscious and stable instead of dying, and a Mana Short doesn't Stun you. +10% Outburst Damage."
+        "Hollow: when the burn of your own Strain Downs you, you are unconscious but stable: you make no death saves, and hits don't count against you. A Mana Short doesn't Stun you. +10% Outburst damage."
       ],
       "downsides": [
-        "Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be in stealth on a turn you cast."
+        "Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be Hidden on a turn you cast."
       ],
       "notes": [],
       "narrator_hook": "the stealth mission where you'll want to cast anyway.",
-      "text": "A Mana Short left a hole in your chest. The fear went out through it.\n+ Hollow: when your own heart Downs you (the Strain burn), you fall unconscious and stable instead of dying, and a Mana Short doesn't Stun you. +10% Outburst Damage.\n− Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be in stealth on a turn you cast.",
+      "text": "A Mana Short left a hole in your chest. The fear went out through it.\n+ Hollow: when the burn of your own Strain Downs you, you are unconscious but stable: you make no death saves, and hits don't count against you. A Mana Short doesn't Stun you. +10% Outburst damage.\n− Echo Chamber: every Outburst you cast is loud. Every enemy within 10 tiles learns where you are, and you can't be Hidden on a turn you cast.",
       "effects": [
         {
           "op": "mana_short_outcome",
@@ -2337,14 +2337,14 @@
       "cost": null,
       "flavour": "You learned to call down a Blessing without kneeling to anyone. The saints noticed.",
       "upsides": [
-        "Stolen Fire: you can use Blessings without Faith. Your Blessing Power runs on Will Power instead."
+        "Stolen Fire: you can pray for any patron's Blessings without Faith and without a pact. Your Will Power takes the place of Faith for everything a Blessing asks, its power included."
       ],
       "downsides": [
-        "Excommunicated: every faith-based faction is hostile to you, the Lumeri Church first. Allied Blessings on you fail on a 1–2 on a d6."
+        "Excommunicated: every faith-based faction is hostile to you, the Lumeri Church first. A Blessing an ally casts on you fails on a 1–2 on a d6."
       ],
       "notes": [],
       "narrator_hook": "Sister October, and her shotgun.",
-      "text": "You learned to call down a Blessing without kneeling to anyone. The saints noticed.\n+ Stolen Fire: you can use Blessings without Faith. Your Blessing Power runs on Will Power instead.\n− Excommunicated: every faith-based faction is hostile to you, the Lumeri Church first. Allied Blessings on you fail on a 1–2 on a d6.",
+      "text": "You learned to call down a Blessing without kneeling to anyone. The saints noticed.\n+ Stolen Fire: you can pray for any patron's Blessings without Faith and without a pact. Your Will Power takes the place of Faith for everything a Blessing asks, its power included.\n− Excommunicated: every faith-based faction is hostile to you, the Lumeri Church first. A Blessing an ally casts on you fails on a 1–2 on a d6.",
       "effects": [
         {
           "op": "blessing_without_faith"
@@ -2389,14 +2389,14 @@
       "cost": null,
       "flavour": "The house always wins. You are not the house, and you've never once let that stop you.",
       "upsides": [
-        "Double or Nothing: once per scene, declare \"double\" before a d20. A success becomes a critical success; a failure becomes a critical failure."
+        "Double or Nothing: once per scene, call \"double\" before a d20 check or attack roll. A success becomes a critical success; a failure becomes a critical failure."
       ],
       "downsides": [
         "In Debt: you owe the Smetanita Conjunction. Their collectors turn up when the Narrator decides."
       ],
       "notes": [],
       "narrator_hook": "Papa Avencio would like a word, over a milkshake.",
-      "text": "The house always wins. You are not the house, and you've never once let that stop you.\n+ Double or Nothing: once per scene, declare \"double\" before a d20. A success becomes a critical success; a failure becomes a critical failure.\n− In Debt: you owe the Smetanita Conjunction. Their collectors turn up when the Narrator decides.",
+      "text": "The house always wins. You are not the house, and you've never once let that stop you.\n+ Double or Nothing: once per scene, call \"double\" before a d20 check or attack roll. A success becomes a critical success; a failure becomes a critical failure.\n− In Debt: you owe the Smetanita Conjunction. Their collectors turn up when the Narrator decides.",
       "effects": [
         {
           "op": "double_or_nothing",
@@ -2426,11 +2426,11 @@
         "Always Up: you can't be ambushed while the squad rests, and you take a watch with no penalty."
       ],
       "downsides": [
-        "Wired: resting restores only half your HP and mana."
+        "Wired: a rest restores only half as much HP and mana for you."
       ],
       "notes": [],
       "narrator_hook": "the long deployment with short rests.",
-      "text": "Sleep is for people without a watch rotation.\n+ Always Up: you can't be ambushed while the squad rests, and you take a watch with no penalty.\n− Wired: resting restores only half your HP and mana.",
+      "text": "Sleep is for people without a watch rotation.\n+ Always Up: you can't be ambushed while the squad rests, and you take a watch with no penalty.\n− Wired: a rest restores only half as much HP and mana for you.",
       "effects": [
         {
           "op": "immunity",
@@ -2465,14 +2465,14 @@
       "cost": null,
       "flavour": "Smoke break. Now. The Orks can wait.",
       "upsides": [
-        "Light Up: 2 AP: +2 Composure for the scene and remove one Heart Debuff."
+        "Light Up: spend 2 AP (free outside a fight) to gain +2 Composure for the scene and remove one Heart debuff from yourself."
       ],
       "downsides": [
         "Hacking Cough: −1 Athletics. Enemies smell you coming: +2 to their Detection against you."
       ],
       "notes": [],
       "narrator_hook": "the field hospital, the gas leak, the last cigarette.",
-      "text": "Smoke break. Now. The Orks can wait.\n+ Light Up: 2 AP: +2 Composure for the scene and remove one Heart Debuff.\n− Hacking Cough: −1 Athletics. Enemies smell you coming: +2 to their Detection against you.",
+      "text": "Smoke break. Now. The Orks can wait.\n+ Light Up: spend 2 AP (free outside a fight) to gain +2 Composure for the scene and remove one Heart debuff from yourself.\n− Hacking Cough: −1 Athletics. Enemies smell you coming: +2 to their Detection against you.",
       "effects": [
         {
           "op": "grant_action",
@@ -2511,14 +2511,14 @@
       "cost": null,
       "flavour": "Brave is a word they carve on headstones.",
       "upsides": [
-        "Tactical Withdrawal: Retreat and Disengage cost 0 AP, and you get +2 Dodge while retreating."
+        "Tactical Withdrawal: once per turn, Disengage costs you 0 AP. Once per fight, you can Retreat for 0 AP: a Sprint that ends farther from every enemy you can see and draws no opportunity attacks. Either one gives you +2 Defense until the end of your next turn."
       ],
       "downsides": [
-        "Yellow: allies within 3 tiles take −1 on Fear saves. It's contagious."
+        "Yellow: allies within 3 tiles of you take −1 on saves against Fear. It's contagious."
       ],
       "notes": [],
       "narrator_hook": "the last stand, and the squad that remembers who ran last time.",
-      "text": "Brave is a word they carve on headstones.\n+ Tactical Withdrawal: Retreat and Disengage cost 0 AP, and you get +2 Dodge while retreating.\n− Yellow: allies within 3 tiles take −1 on Fear saves. It's contagious.",
+      "text": "Brave is a word they carve on headstones.\n+ Tactical Withdrawal: once per turn, Disengage costs you 0 AP. Once per fight, you can Retreat for 0 AP: a Sprint that ends farther from every enemy you can see and draws no opportunity attacks. Either one gives you +2 Defense until the end of your next turn.\n− Yellow: allies within 3 tiles of you take −1 on saves against Fear. It's contagious.",
       "effects": [
         {
           "op": "action_cost",
@@ -2565,14 +2565,14 @@
       "cost": null,
       "flavour": "Blood, oath, or something stronger. Where they go, you go.",
       "upsides": [
-        "Bound: while adjacent, the two of you share one free AP per round. You always know where they are."
+        "Bound: bond with one squadmate; their player has to agree. Each round the two of you start a turn next to each other, one of you gets 1 free AP. You always know where they are, even through walls."
       ],
       "downsides": [
-        "Bound: if they go down, you must reach them. Until you do, every attack and skill roll that isn't moving you toward them, healing them or defending them is at −2, and moving away from them costs double. HP, damage and other combat stats aren't affected."
+        "Bound: if they go down, you must reach them. Until you are next to them, your attacks are at −2 unless they defend your sibling (an enemy within 2 tiles of them, or one that hurt them), your skill checks are at −2 unless they are for your sibling, and a move that ends farther from them costs double AP. Your HP, damage and other combat stats aren't affected."
       ],
       "notes": [],
       "narrator_hook": "the mission that splits the squad.",
-      "text": "Blood, oath, or something stronger. Where they go, you go.\n+ Bound: while adjacent, the two of you share one free AP per round. You always know where they are.\n− Bound: if they go down, you must reach them. Until you do, every attack and skill roll that isn't moving you toward them, healing them or defending them is at −2, and moving away from them costs double. HP, damage and other combat stats aren't affected.",
+      "text": "Blood, oath, or something stronger. Where they go, you go.\n+ Bound: bond with one squadmate; their player has to agree. Each round the two of you start a turn next to each other, one of you gets 1 free AP. You always know where they are, even through walls.\n− Bound: if they go down, you must reach them. Until you are next to them, your attacks are at −2 unless they defend your sibling (an enemy within 2 tiles of them, or one that hurt them), your skill checks are at −2 unless they are for your sibling, and a move that ends farther from them costs double AP. Your HP, damage and other combat stats aren't affected.",
       "effects": [
         {
           "op": "bond",
@@ -2620,15 +2620,15 @@
       "cost": null,
       "flavour": "Jealous? Why would you be jealous? Completely ridiculous.",
       "upsides": [
-        "Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.",
-        "Neck and Neck: whenever your rival reaches a new level, you gain 50 XP; while your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: the same goes for your rival."
+        "Show-Off: bond with one squadmate as your rival; their player has to agree. After your rival succeeds with a skill, your next roll with that same skill gets +2.",
+        "Neck and Neck: whenever your rival reaches a new level, you gain 50 XP. While your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: your rival gets the same from you."
       ],
       "downsides": [
-        "Petty: helping your rival (handing them AP, healing, giving cover) takes a Camaraderie check first."
+        "Petty: before you help your rival (handing them AP, healing them, giving them cover) you must pass a Camaraderie check (target 12). On a fail you can't help them that turn."
       ],
       "notes": [],
       "narrator_hook": "the day your rival needs saving.",
-      "text": "Jealous? Why would you be jealous? Completely ridiculous.\n+ Show-Off: after your rival succeeds at something, your next roll on that same skill gets +2.\n+ Neck and Neck: whenever your rival reaches a new level, you gain 50 XP; while your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: the same goes for your rival.\n− Petty: helping your rival (handing them AP, healing, giving cover) takes a Camaraderie check first.",
+      "text": "Jealous? Why would you be jealous? Completely ridiculous.\n+ Show-Off: bond with one squadmate as your rival; their player has to agree. After your rival succeeds with a skill, your next roll with that same skill gets +2.\n+ Neck and Neck: whenever your rival reaches a new level, you gain 50 XP. While your rival is a higher level than you, you get +10% XP from every source except Essence. It works both ways: your rival gets the same from you.\n− Petty: before you help your rival (handing them AP, healing them, giving them cover) you must pass a Camaraderie check (target 12). On a fail you can't help them that turn.",
       "effects": [
         {
           "op": "bond",
@@ -2749,14 +2749,14 @@
       "cost": null,
       "flavour": "Your face is on a poster in every Central City precinct, and it's a bad likeness.",
       "upsides": [
-        "Notorious: +2 Intimidation with the underworld; start with one piece of contraband."
+        "Notorious: +2 Intimidation with the underworld. You start with one piece of contraband."
       ],
       "downsides": [
-        "Bounty: bounty hunters appear when the Narrator decides, and Central City officials start hostile."
+        "Bounty: bounty hunters appear when the Narrator decides, and Central City officials start hostile to you and your squad."
       ],
       "notes": [],
       "narrator_hook": "the hunter who's better than you.",
-      "text": "Your face is on a poster in every Central City precinct, and it's a bad likeness.\n+ Notorious: +2 Intimidation with the underworld; start with one piece of contraband.\n− Bounty: bounty hunters appear when the Narrator decides, and Central City officials start hostile.",
+      "text": "Your face is on a poster in every Central City precinct, and it's a bad likeness.\n+ Notorious: +2 Intimidation with the underworld. You start with one piece of contraband.\n− Bounty: bounty hunters appear when the Narrator decides, and Central City officials start hostile to you and your squad.",
       "effects": [
         {
           "op": "skill_mod",
@@ -2794,14 +2794,14 @@
       "cost": null,
       "flavour": "Rigaz Trade Company (RTC™®). The card has no limit. The contract does.",
       "upsides": [
-        "Company Card: buy gear from RTC at cost. Once per campaign, RTC extracts you from anywhere."
+        "Company Card: RTC sells you its gear at cost, 40% off the list price. Once per campaign, call RTC to extract you from anywhere. In a fight you leave it and earn no XP from it; the Narrator decides where you land."
       ],
       "downsides": [
         "Contract: RTC sends you jobs. You can't refuse one without breaking the contract, and RTC remembers."
       ],
       "notes": [],
       "narrator_hook": "old Rourigaz calls mid-mission, with a job that conflicts with the squad's.",
-      "text": "Rigaz Trade Company (RTC™®). The card has no limit. The contract does.\n+ Company Card: buy gear from RTC at cost. Once per campaign, RTC extracts you from anywhere.\n− Contract: RTC sends you jobs. You can't refuse one without breaking the contract, and RTC remembers.",
+      "text": "Rigaz Trade Company (RTC™®). The card has no limit. The contract does.\n+ Company Card: RTC sells you its gear at cost, 40% off the list price. Once per campaign, call RTC to extract you from anywhere. In a fight you leave it and earn no XP from it; the Narrator decides where you land.\n− Contract: RTC sends you jobs. You can't refuse one without breaking the contract, and RTC remembers.",
       "effects": [
         {
           "op": "price_mod",
@@ -2834,14 +2834,14 @@
       "cost": null,
       "flavour": "You learned triage under fire, in a medical unit where the casualty rate was the point.",
       "upsides": [
-        "Triage: healing an ally costs 1 AP less. Once per combat, you can heal a downed ally up to 3 tiles away with a thrown stim."
+        "Triage: healing an ally costs you 1 AP less, never below 1 AP. Once per fight, you can throw a stim to stabilise a Downed ally up to 3 tiles away that you can see."
       ],
       "downsides": [
-        "First, Do No Harm: on a turn when an ally within 5 tiles is below a quarter of their HP, you can't attack until you've healed someone."
+        "First, Do No Harm: if an ally within 5 tiles is below a quarter of their HP when your turn starts, you can't attack that turn until you have healed someone. This only binds you while you have a way to heal."
       ],
       "notes": [],
       "narrator_hook": "two wounded, one stim.",
-      "text": "You learned triage under fire, in a medical unit where the casualty rate was the point.\n+ Triage: healing an ally costs 1 AP less. Once per combat, you can heal a downed ally up to 3 tiles away with a thrown stim.\n− First, Do No Harm: on a turn when an ally within 5 tiles is below a quarter of their HP, you can't attack until you've healed someone.",
+      "text": "You learned triage under fire, in a medical unit where the casualty rate was the point.\n+ Triage: healing an ally costs you 1 AP less, never below 1 AP. Once per fight, you can throw a stim to stabilise a Downed ally up to 3 tiles away that you can see.\n− First, Do No Harm: if an ally within 5 tiles is below a quarter of their HP when your turn starts, you can't attack that turn until you have healed someone. This only binds you while you have a way to heal.",
       "effects": [
         {
           "op": "action_cost",
@@ -2880,14 +2880,14 @@
       "cost": null,
       "flavour": "Someone has to hold the line so everyone else can move.",
       "upsides": [
-        "Hold Fast: allies within 2 tiles of you get +1 on all saves and +1 Dodge. If you don't move this turn, the range becomes 3 tiles."
+        "Hold Fast: allies within 2 tiles of you get +1 on all saves and +1 Defense. If you haven't moved this turn, the range is 3 tiles."
       ],
       "downsides": [
-        "Fixed Point: on a turn you move more than 2 tiles, the effect drops and you lose 1 AP next turn."
+        "Fixed Point: on a turn when you move more than 2 tiles, the effect stops until your next turn, and you have 1 AP less on that turn."
       ],
       "notes": [],
       "narrator_hook": "the fight that won't stay in one place.",
-      "text": "Someone has to hold the line so everyone else can move.\n+ Hold Fast: allies within 2 tiles of you get +1 on all saves and +1 Dodge. If you don't move this turn, the range becomes 3 tiles.\n− Fixed Point: on a turn you move more than 2 tiles, the effect drops and you lose 1 AP next turn.",
+      "text": "Someone has to hold the line so everyone else can move.\n+ Hold Fast: allies within 2 tiles of you get +1 on all saves and +1 Defense. If you haven't moved this turn, the range is 3 tiles.\n− Fixed Point: on a turn when you move more than 2 tiles, the effect stops until your next turn, and you have 1 AP less on that turn.",
       "effects": [
         {
           "op": "aura",
@@ -2935,14 +2935,14 @@
       "cost": null,
       "flavour": "A commission, a bloodline, or just the voice. When you speak, soldiers move.",
       "upsides": [
-        "Command: once per round, spend 1 AP to give an ally a free 1 AP move or attack. Your Leadership rating counts one step higher."
+        "Command: once per round, spend 1 AP to give an ally you can see a free 1 AP move or a free basic attack. Your Leadership rating counts one step higher."
       ],
       "downsides": [
-        "The Squad Leans on You: if you're downed or out of sight, allies within 5 tiles lose 1 AP next turn. Taking an order from anyone else takes a Composure check."
+        "The Squad Leans on You: an ally within 5 tiles of you starts their turn with 1 AP less if you are Downed or they can't see you. Taking an order from anyone else takes a Composure check."
       ],
       "notes": [],
       "narrator_hook": "the superior officer who's wrong.",
-      "text": "A commission, a bloodline, or just the voice. When you speak, soldiers move.\n+ Command: once per round, spend 1 AP to give an ally a free 1 AP move or attack. Your Leadership rating counts one step higher.\n− The Squad Leans on You: if you're downed or out of sight, allies within 5 tiles lose 1 AP next turn. Taking an order from anyone else takes a Composure check.",
+      "text": "A commission, a bloodline, or just the voice. When you speak, soldiers move.\n+ Command: once per round, spend 1 AP to give an ally you can see a free 1 AP move or a free basic attack. Your Leadership rating counts one step higher.\n− The Squad Leans on You: an ally within 5 tiles of you starts their turn with 1 AP less if you are Downed or they can't see you. Taking an order from anyone else takes a Composure check.",
       "effects": [
         {
           "op": "grant_action",
@@ -2995,14 +2995,14 @@
       "cost": null,
       "flavour": "The CCEC washed you out, or you walked. Either way, you never stopped working cases.",
       "upsides": [
-        "Case File: the Analyze action costs 1 AP less. Once per session, after investigating a scene, ask the Narrator one yes-or-no question about whoever is responsible. The answer is true."
+        "Case File: Analyze costs you 1 AP less. Once per session, after you investigate a scene, ask the Narrator one yes-or-no question about whoever is responsible. The answer is true."
       ],
       "downsides": [
-        "Obsession: while a case is open, −1 on every roll in scenes that have nothing to do with it."
+        "Obsession: while a case is open, −1 on every roll in scenes that have nothing to do with it. The Narrator opens and closes your cases."
       ],
       "notes": [],
       "narrator_hook": "two cases at once, and a squad that needs you on neither.",
-      "text": "The CCEC washed you out, or you walked. Either way, you never stopped working cases.\n+ Case File: the Analyze action costs 1 AP less. Once per session, after investigating a scene, ask the Narrator one yes-or-no question about whoever is responsible. The answer is true.\n− Obsession: while a case is open, −1 on every roll in scenes that have nothing to do with it.",
+      "text": "The CCEC washed you out, or you walked. Either way, you never stopped working cases.\n+ Case File: Analyze costs you 1 AP less. Once per session, after you investigate a scene, ask the Narrator one yes-or-no question about whoever is responsible. The answer is true.\n− Obsession: while a case is open, −1 on every roll in scenes that have nothing to do with it. The Narrator opens and closes your cases.",
       "effects": [
         {
           "op": "action_cost",
@@ -3035,14 +3035,14 @@
       "cost": null,
       "flavour": "Central Command taught you the quiet room. You still know where every bone in the hand is.",
       "upsides": [
-        "The Quiet Room: alone with a captive, +2 on Intimidation and Eloquence. A captive you break gives one true answer they'd never give anyone else."
+        "The Quiet Room: alone with a captive, +2 Intimidation and Eloquence. A captive you break gives you one true answer they would never give anyone else; the Narrator plays it."
       ],
       "downsides": [
-        "Known Trade: civilians who learn what you do start at −2 Charisma and Empathy with you."
+        "Known Trade: with civilians who learn what you do, you have −2 Charisma and Empathy."
       ],
       "notes": [],
       "narrator_hook": "the captive who knows exactly who you are.",
-      "text": "Central Command taught you the quiet room. You still know where every bone in the hand is.\n+ The Quiet Room: alone with a captive, +2 on Intimidation and Eloquence. A captive you break gives one true answer they'd never give anyone else.\n− Known Trade: civilians who learn what you do start at −2 Charisma and Empathy with you.",
+      "text": "Central Command taught you the quiet room. You still know where every bone in the hand is.\n+ The Quiet Room: alone with a captive, +2 Intimidation and Eloquence. A captive you break gives you one true answer they would never give anyone else; the Narrator plays it.\n− Known Trade: with civilians who learn what you do, you have −2 Charisma and Empathy.",
       "effects": [
         {
           "op": "skill_mod",
@@ -3088,14 +3088,14 @@
       "cost": null,
       "flavour": "You can't say anything plainly. Plain words are for orders and obituaries.",
       "upsides": [
-        "Verse: once per scene, answer in metaphor. The listener rolls Insinuation against your Insinuation; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene."
+        "Verse: once per scene, answer in metaphor to one listener within 8 tiles; in a fight it costs 1 AP. The listener makes a Heart save against your Insinuation or is Confused. Allies who hear you get +1 Composure for the scene."
       ],
       "downsides": [
-        "Nothing Straight: giving a plain, direct answer takes an Eloquence check."
+        "Nothing Straight: giving a plain, direct answer takes an Eloquence check; the Narrator calls for it."
       ],
       "notes": [],
       "narrator_hook": "the panicked squadmate who needs a simple yes.",
-      "text": "You can't say anything plainly. Plain words are for orders and obituaries.\n+ Verse: once per scene, answer in metaphor. The listener rolls Insinuation against your Insinuation; on a fail, they take a Heart Debuff (Confused). Allies who hear you get +1 Composure for the scene.\n− Nothing Straight: giving a plain, direct answer takes an Eloquence check.",
+      "text": "You can't say anything plainly. Plain words are for orders and obituaries.\n+ Verse: once per scene, answer in metaphor to one listener within 8 tiles; in a fight it costs 1 AP. The listener makes a Heart save against your Insinuation or is Confused. Allies who hear you get +1 Composure for the scene.\n− Nothing Straight: giving a plain, direct answer takes an Eloquence check; the Narrator calls for it.",
       "effects": [
         {
           "op": "opposed",
@@ -3146,14 +3146,14 @@
       "cost": null,
       "flavour": "You remember every slight. You've written most of them down.",
       "upsides": [
-        "Spite: Debuffs you inflict last 1 extra round, and the first one each combat skips the target's save."
+        "Spite: debuffs you inflict last 1 round longer, except Stunned and Dazed. The first one you inflict in each fight skips the target's save, unless the target is a boss or the debuff is Stunned."
       ],
       "downsides": [
-        "Never Forgive: when someone wrongs you, the Narrator marks them. Until you get even, −2 on rolls that don't target them."
+        "Never Forgive: when someone wrongs you, the Narrator marks them. Until you get even, −2 on every roll that isn't aimed at them."
       ],
       "notes": [],
       "narrator_hook": "the grudge against someone the squad needs alive.",
-      "text": "You remember every slight. You've written most of them down.\n+ Spite: Debuffs you inflict last 1 extra round, and the first one each combat skips the target's save.\n− Never Forgive: when someone wrongs you, the Narrator marks them. Until you get even, −2 on rolls that don't target them.",
+      "text": "You remember every slight. You've written most of them down.\n+ Spite: debuffs you inflict last 1 round longer, except Stunned and Dazed. The first one you inflict in each fight skips the target's save, unless the target is a boss or the debuff is Stunned.\n− Never Forgive: when someone wrongs you, the Narrator marks them. Until you get even, −2 on every roll that isn't aimed at them.",
       "effects": [
         {
           "op": "debuff_duration",
@@ -3189,14 +3189,14 @@
       "cost": null,
       "flavour": "Every skill in your head has an opinion, and none of them wait their turn.",
       "upsides": [
-        "Chorus: up to 4 voice lines per beat instead of 2, and you can Ask a skill twice per scene instead of once."
+        "Chorus: you hear up to 4 voice lines per story beat instead of 2, and you can Ask a skill twice per scene instead of once."
       ],
       "downsides": [
-        "Cacophony: resisting an Overreach costs 1 more Echo, and once per session the Narrator may turn one of your voice lines misleading, even when the hook was true."
+        "Cacophony: resisting an Overreach costs you 1 more Echo, and once per session the Narrator may make one of your voice lines misleading, even when that voice knew the truth."
       ],
       "notes": [],
       "narrator_hook": "the moment when the voices disagree.",
-      "text": "Every skill in your head has an opinion, and none of them wait their turn.\n+ Chorus: up to 4 voice lines per beat instead of 2, and you can Ask a skill twice per scene instead of once.\n− Cacophony: resisting an Overreach costs 1 more Echo, and once per session the Narrator may turn one of your voice lines misleading, even when the hook was true.",
+      "text": "Every skill in your head has an opinion, and none of them wait their turn.\n+ Chorus: you hear up to 4 voice lines per story beat instead of 2, and you can Ask a skill twice per scene instead of once.\n− Cacophony: resisting an Overreach costs you 1 more Echo, and once per session the Narrator may make one of your voice lines misleading, even when that voice knew the truth.",
       "effects": [
         {
           "op": "voice_line_cap",
@@ -3233,14 +3233,14 @@
       "cost": null,
       "flavour": "You grew up behind a stall in Mandestra. You can price a man by his boots.",
       "upsides": [
-        "Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake."
+        "Haggle: you buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it is a fake."
       ],
       "downsides": [
-        "Price on Everything: giving away an item or accepting a gift takes an Acuity check: you can't stop pricing it. −1 Camaraderie."
+        "Price on Everything: giving away an item or accepting a gift takes an Acuity check, because you can't stop pricing it; the Narrator calls for it. −1 Camaraderie."
       ],
       "notes": [],
       "narrator_hook": "the squadmate who needs your spare medkit for free.",
-      "text": "You grew up behind a stall in Mandestra. You can price a man by his boots.\n+ Haggle: buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it's fake.\n− Price on Everything: giving away an item or accepting a gift takes an Acuity check: you can't stop pricing it. −1 Camaraderie.",
+      "text": "You grew up behind a stall in Mandestra. You can price a man by his boots.\n+ Haggle: you buy at −20% and sell at +20%. Touch any item to learn its true value, and whether it is a fake.\n− Price on Everything: giving away an item or accepting a gift takes an Acuity check, because you can't stop pricing it; the Narrator calls for it. −1 Camaraderie.",
       "effects": [
         {
           "op": "price_mod",
@@ -3279,14 +3279,14 @@
       "cost": null,
       "flavour": "You've sold the same bridge in four systems, under four names.",
       "upsides": [
-        "New Name: once per session, set up a false identity in one sentence. NPCs accept it until you fail a roll in front of them."
+        "New Name: once per session, set up a false identity in one sentence. People accept it until you fail a roll in front of them."
       ],
       "downsides": [
-        "Paper Trail: the Narrator tallies every identity you burn. At 3, someone from an old con turns up."
+        "Paper Trail: the Narrator counts every identity you burn. At 3, someone from an old con turns up."
       ],
       "notes": [],
       "narrator_hook": "the mark who never forgot your face.",
-      "text": "You've sold the same bridge in four systems, under four names.\n+ New Name: once per session, set up a false identity in one sentence. NPCs accept it until you fail a roll in front of them.\n− Paper Trail: the Narrator tallies every identity you burn. At 3, someone from an old con turns up.",
+      "text": "You've sold the same bridge in four systems, under four names.\n+ New Name: once per session, set up a false identity in one sentence. People accept it until you fail a roll in front of them.\n− Paper Trail: the Narrator counts every identity you burn. At 3, someone from an old con turns up.",
       "effects": [
         {
           "op": "narrator",
@@ -3316,14 +3316,14 @@
       "cost": null,
       "flavour": "Old money from Central City's inner ring. Your family name opens doors, and paints a target.",
       "upsides": [
-        "Allowance: start with triple funds. Once per session, call in a favour from the family."
+        "Allowance: you start with triple funds. Once per session, call in a favour from the family; the Narrator decides what it gets you."
       ],
       "downsides": [
         "The Name: every enemy of your house knows you, kidnappers included, and you can't refuse a family summons."
       ],
       "notes": [],
       "narrator_hook": "the summons that arrives mid-mission.",
-      "text": "Old money from Central City's inner ring. Your family name opens doors, and paints a target.\n+ Allowance: start with triple funds. Once per session, call in a favour from the family.\n− The Name: every enemy of your house knows you, kidnappers included, and you can't refuse a family summons.",
+      "text": "Old money from Central City's inner ring. Your family name opens doors, and paints a target.\n+ Allowance: you start with triple funds. Once per session, call in a favour from the family; the Narrator decides what it gets you.\n− The Name: every enemy of your house knows you, kidnappers included, and you can't refuse a family summons.",
       "effects": [
         {
           "op": "start_funds_mult",
@@ -3353,14 +3353,14 @@
       "cost": null,
       "flavour": "You started out cracking bank cards in Central City. You graduated to doors, cameras and turrets.",
       "upsides": [
-        "Backdoor: 2 AP: take control of one electronic device within 5 tiles (door, camera, turret) for a round, on an Acuity check against its tier."
+        "Backdoor: spend 2 AP to take control of one electronic device within 5 tiles (a door, terminal, camera, alarm or emplaced turret) until your next turn. It takes an Acuity check against the device's tier."
       ],
       "downsides": [
-        "Jacked In: your implant makes EMP and lightning stun you for 1 turn, and machines spot you more easily: +2 to their Detection against you."
+        "Jacked In: because of your implant, any EMP or lightning hit Stuns you for 1 turn, and machines get +2 to their Detection against you."
       ],
       "notes": [],
       "narrator_hook": "the facility where everything is networked, including the guards.",
-      "text": "You started out cracking bank cards in Central City. You graduated to doors, cameras and turrets.\n+ Backdoor: 2 AP: take control of one electronic device within 5 tiles (door, camera, turret) for a round, on an Acuity check against its tier.\n− Jacked In: your implant makes EMP and lightning stun you for 1 turn, and machines spot you more easily: +2 to their Detection against you.",
+      "text": "You started out cracking bank cards in Central City. You graduated to doors, cameras and turrets.\n+ Backdoor: spend 2 AP to take control of one electronic device within 5 tiles (a door, terminal, camera, alarm or emplaced turret) until your next turn. It takes an Acuity check against the device's tier.\n− Jacked In: because of your implant, any EMP or lightning hit Stuns you for 1 turn, and machines get +2 to their Detection against you.",
       "effects": [
         {
           "op": "grant_action",
@@ -3401,14 +3401,14 @@
       "cost": null,
       "flavour": "Every problem is a load-bearing wall.",
       "upsides": [
-        "Shaped Charge: set an explosive as a 2 AP action and choose the blast's shape: line, cone or circle. +30% explosive damage."
+        "Shaped Charge: spend 2 AP to set one of your explosives on your tile or the one next to you, and choose the blast's shape: a line, a cone or a circle. Set it off at once, or later with Detonate for 1 AP. +30% explosive damage."
       ],
       "downsides": [
         "Ringing Ears: −2 Vigilance, and any check that depends on hearing fails."
       ],
       "notes": [],
       "narrator_hook": "the whisper, the footstep, the ticking you didn't hear.",
-      "text": "Every problem is a load-bearing wall.\n+ Shaped Charge: set an explosive as a 2 AP action and choose the blast's shape: line, cone or circle. +30% explosive damage.\n− Ringing Ears: −2 Vigilance, and any check that depends on hearing fails.",
+      "text": "Every problem is a load-bearing wall.\n+ Shaped Charge: spend 2 AP to set one of your explosives on your tile or the one next to you, and choose the blast's shape: a line, a cone or a circle. Set it off at once, or later with Detonate for 1 AP. +30% explosive damage.\n− Ringing Ears: −2 Vigilance, and any check that depends on hearing fails.",
       "effects": [
         {
           "op": "action_cost",
@@ -3450,14 +3450,14 @@
       "cost": null,
       "flavour": "It's small, it's loud, and it's the only one in the squad that never complains.",
       "upsides": [
-        "Little Friend: start with a drone: 30 HP, 3 AP of its own, scouts or carries 5 kg. Improvisation repairs it."
+        "Little Friend: you start with a drone that acts right after you, with 30 HP and 3 AP of its own. It scouts for the squad or carries 5 kg, and you repair it with Improvisation."
       ],
       "downsides": [
-        "Tethered: if the drone is destroyed, you take a Heart Debuff until you rebuild it, which takes a rest and materials."
+        "Tethered: if the drone is destroyed, you are Shaken until you rebuild it, which takes a rest and materials."
       ],
       "notes": [],
       "narrator_hook": "EMP fields, jammers, and the enemy who shoots the drone first.",
-      "text": "It's small, it's loud, and it's the only one in the squad that never complains.\n+ Little Friend: start with a drone: 30 HP, 3 AP of its own, scouts or carries 5 kg. Improvisation repairs it.\n− Tethered: if the drone is destroyed, you take a Heart Debuff until you rebuild it, which takes a rest and materials.",
+      "text": "It's small, it's loud, and it's the only one in the squad that never complains.\n+ Little Friend: you start with a drone that acts right after you, with 30 HP and 3 AP of its own. It scouts for the squad or carries 5 kg, and you repair it with Improvisation.\n− Tethered: if the drone is destroyed, you are Shaken until you rebuild it, which takes a rest and materials.",
       "effects": [
         {
           "op": "companion",
@@ -3494,14 +3494,14 @@
       "cost": null,
       "flavour": "Part of you came out of a catalogue.",
       "upsides": [
-        "Chrome: pick one augment at creation. Arm: +20% Physical Damage. Eye: +2 Vision Range and sight in darkness. Legs: +1 Movement and jumps of up to 2 tiles."
+        "Chrome: pick one augment at creation. Arm: +20% Physical damage with weapons. Eye: +2 Vision range, and you see in darkness. Legs: +1 Movement, and you can jump up to 2 tiles, over a blocked one."
       ],
       "downsides": [
-        "Maintenance: after each rest, make an Improvisation check; on a fail, the augment doesn't work the next day. EMP disables it for 2 turns."
+        "Maintenance: after each rest you make an Improvisation check (target 12); on a fail, the augment doesn't work until your next rest. An EMP hit switches it off for 2 turns."
       ],
       "notes": [],
       "narrator_hook": "the long mission far from a workshop.",
-      "text": "Part of you came out of a catalogue.\n+ Chrome: pick one augment at creation. Arm: +20% Physical Damage. Eye: +2 Vision Range and sight in darkness. Legs: +1 Movement and jumps of up to 2 tiles.\n− Maintenance: after each rest, make an Improvisation check; on a fail, the augment doesn't work the next day. EMP disables it for 2 turns.",
+      "text": "Part of you came out of a catalogue.\n+ Chrome: pick one augment at creation. Arm: +20% Physical damage with weapons. Eye: +2 Vision range, and you see in darkness. Legs: +1 Movement, and you can jump up to 2 tiles, over a blocked one.\n− Maintenance: after each rest you make an Improvisation check (target 12); on a fail, the augment doesn't work until your next rest. An EMP hit switches it off for 2 turns.",
       "effects": [
         {
           "op": "choose",
@@ -3572,14 +3572,14 @@
       "cost": null,
       "flavour": "Holy Father Nerukhan, or some other saint, has never once let you down. You've never once let them down either.",
       "upsides": [
-        "Unshaken: Blessing cooldowns are 1 turn shorter. Once per session, your prayer is answered: the Narrator grants a small miracle."
+        "Unshaken: your Blessing cooldowns are 1 turn shorter, never below 1. Once per session, ask for a small miracle: the Narrator grants it."
       ],
       "downsides": [
-        "Rites: keep your church's daily rites (dawn prayer, fasting days). Each day you can't, −1 Faith and Will Power until you make amends."
+        "Rites: keep your church's daily rites (dawn prayer, fasting days). For each day you can't, −1 Faith and Will Power, up to −3, until you make amends."
       ],
       "notes": [],
       "narrator_hook": "the mission that makes the rites impossible.",
-      "text": "Holy Father Nerukhan, or some other saint, has never once let you down. You've never once let them down either.\n+ Unshaken: Blessing cooldowns are 1 turn shorter. Once per session, your prayer is answered: the Narrator grants a small miracle.\n− Rites: keep your church's daily rites (dawn prayer, fasting days). Each day you can't, −1 Faith and Will Power until you make amends.",
+      "text": "Holy Father Nerukhan, or some other saint, has never once let you down. You've never once let them down either.\n+ Unshaken: your Blessing cooldowns are 1 turn shorter, never below 1. Once per session, ask for a small miracle: the Narrator grants it.\n− Rites: keep your church's daily rites (dawn prayer, fasting days). For each day you can't, −1 Faith and Will Power, up to −3, until you make amends.",
       "effects": [
         {
           "op": "blessing_cooldown",
@@ -3627,14 +3627,14 @@
       "cost": null,
       "flavour": "The Department fights Heaven. You pray to it. If they ever find out, they'll shoot you.",
       "upsides": [
-        "Communion: once per scene, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst Range."
+        "Communion: once per scene, outside a fight, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst range."
       ],
       "downsides": [
-        "Treason: if the Department learns your faith, you're hunted. Each time you fight upper-realm beings, make a Faith check or hesitate and lose 2 AP."
+        "Treason: if the Department learns your faith, you are hunted. At the start of each fight against upper-realm beings you make a Faith check (target 12); on a fail you hesitate and lose 2 AP on your first turn."
       ],
       "notes": [],
       "narrator_hook": "the upper-realm being who calls you by name.",
-      "text": "The Department fights Heaven. You pray to it. If they ever find out, they'll shoot you.\n+ Communion: once per scene, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst Range.\n− Treason: if the Department learns your faith, you're hunted. Each time you fight upper-realm beings, make a Faith check or hesitate and lose 2 AP.",
+      "text": "The Department fights Heaven. You pray to it. If they ever find out, they'll shoot you.\n+ Communion: once per scene, outside a fight, ask your twin soul in the upper realm one question. The Narrator answers truthfully, but in riddles. +2 Outburst range.\n− Treason: if the Department learns your faith, you are hunted. At the start of each fight against upper-realm beings you make a Faith check (target 12); on a fail you hesitate and lose 2 AP on your first turn.",
       "effects": [
         {
           "op": "narrator",
@@ -3675,14 +3675,14 @@
       "cost": null,
       "flavour": "The Institute of Forgotten Knowledge lent you one book. You never gave it back.",
       "upsides": [
-        "Forbidden Text: start with a grimoire. Once per session, learn any supernatural creature's weakness. Out of combat, you can spend 10 minutes warding an area against the supernatural."
+        "Forbidden Text: you start with a grimoire. Once per session, look up a supernatural creature: the Narrator tells you its weakness. Outside a fight, you can spend 10 minutes warding an area against the supernatural."
       ],
       "downsides": [
         "Overdue: the Institute wants its book back. The book talks too: once per session, the Narrator whispers you one false line through it."
       ],
       "notes": [],
       "narrator_hook": "Mother Lovelace's collectors.",
-      "text": "The Institute of Forgotten Knowledge lent you one book. You never gave it back.\n+ Forbidden Text: start with a grimoire. Once per session, learn any supernatural creature's weakness. Out of combat, you can spend 10 minutes warding an area against the supernatural.\n− Overdue: the Institute wants its book back. The book talks too: once per session, the Narrator whispers you one false line through it.",
+      "text": "The Institute of Forgotten Knowledge lent you one book. You never gave it back.\n+ Forbidden Text: you start with a grimoire. Once per session, look up a supernatural creature: the Narrator tells you its weakness. Outside a fight, you can spend 10 minutes warding an area against the supernatural.\n− Overdue: the Institute wants its book back. The book talks too: once per session, the Narrator whispers you one false line through it.",
       "effects": [
         {
           "op": "start_item",
@@ -3722,14 +3722,14 @@
       "cost": null,
       "flavour": "Your grandmother crossed the line at Daggerfall. Her blood still shows under your skin.",
       "upsides": [
-        "Chitin: 30% less limb damage taken. You can climb walls at half Movement, and Crawlers never attack you first."
+        "Chitin: a critical hit that injures your arm or leg deals 30% less damage. You can climb walls at half Movement where the Narrator allows it, and a Crawler never attacks you until you attack a Crawler."
       ],
       "downsides": [
-        "Marked: humans who see your blood start hostile. Lumeri Blessings burn you for 10 damage before they take effect."
+        "Marked: humans who see your blood start hostile. A Blessing from a Lumeri patron burns you for 10 damage before it takes effect."
       ],
       "notes": [],
       "narrator_hook": "Daggerfall's survivors, on both sides.",
-      "text": "Your grandmother crossed the line at Daggerfall. Her blood still shows under your skin.\n+ Chitin: 30% less limb damage taken. You can climb walls at half Movement, and Crawlers never attack you first.\n− Marked: humans who see your blood start hostile. Lumeri Blessings burn you for 10 damage before they take effect.",
+      "text": "Your grandmother crossed the line at Daggerfall. Her blood still shows under your skin.\n+ Chitin: a critical hit that injures your arm or leg deals 30% less damage. You can climb walls at half Movement where the Narrator allows it, and a Crawler never attacks you until you attack a Crawler.\n− Marked: humans who see your blood start hostile. A Blessing from a Lumeri patron burns you for 10 damage before it takes effect.",
       "effects": [
         {
           "op": "damage_taken_mod",
@@ -3772,14 +3772,14 @@
       "cost": null,
       "flavour": "You were already old when Daggerfall happened.",
       "upsides": [
-        "Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Acuity check succeeds automatically."
+        "Seen It All: you start each session with 1 extra Echo (2 in all). Once per session, outside a fight, declare you have seen this before: one Rumination, Lore Master or Acuity check succeeds automatically."
       ],
       "downsides": [
-        "Old Bones: −0.5 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day."
+        "Old Bones: −0.5 Movement and −10% max HP. After a night without a full rest, −2 on every Body skill the next day."
       ],
       "notes": [],
       "narrator_hook": "the forced march.",
-      "text": "You were already old when Daggerfall happened.\n+ Seen It All: start each session with 1 extra Echo (2). Once per session, declare you've seen this before: one Rumination, Lore Master or Acuity check succeeds automatically.\n− Old Bones: −0.5 Movement and −10% max HP. Without a full night's rest, −2 on every Body skill the next day.",
+      "text": "You were already old when Daggerfall happened.\n+ Seen It All: you start each session with 1 extra Echo (2 in all). Once per session, outside a fight, declare you have seen this before: one Rumination, Lore Master or Acuity check succeeds automatically.\n− Old Bones: −0.5 Movement and −10% max HP. After a night without a full rest, −2 on every Body skill the next day.",
       "effects": [
         {
           "op": "resource",
@@ -3830,14 +3830,14 @@
       "cost": null,
       "flavour": "You won't kill. Not even them.",
       "upsides": [
-        "Sanctuary: while you haven't attacked this combat, enemies get −2 to hit you. Every attack you make can be nonlethal, and enemies you defeat that way surrender to a talk at +3. Mercy earns you double Karma."
+        "Sanctuary: until you attack in a fight, enemies have −2 to hit you. Your attacks are nonlethal unless you choose otherwise: an enemy you would have killed is subdued instead, and you get +3 on checks to talk to it afterwards. Mercy earns you double Karma."
       ],
       "downsides": [
-        "The Vow: if you kill, lose all your Echo and take a Heart Debuff for the rest of the session."
+        "The Vow: if you kill, you lose all your Echo and are Shaken for the rest of the session."
       ],
       "notes": [],
       "narrator_hook": "the enemy who will never stop unless someone stops them for good.",
-      "text": "You won't kill. Not even them.\n+ Sanctuary: while you haven't attacked this combat, enemies get −2 to hit you. Every attack you make can be nonlethal, and enemies you defeat that way surrender to a talk at +3. Mercy earns you double Karma.\n− The Vow: if you kill, lose all your Echo and take a Heart Debuff for the rest of the session.",
+      "text": "You won't kill. Not even them.\n+ Sanctuary: until you attack in a fight, enemies have −2 to hit you. Your attacks are nonlethal unless you choose otherwise: an enemy you would have killed is subdued instead, and you get +3 on checks to talk to it afterwards. Mercy earns you double Karma.\n− The Vow: if you kill, you lose all your Echo and are Shaken for the rest of the session.",
       "effects": [
         {
           "op": "to_hit_against_self",
@@ -3895,14 +3895,14 @@
       "cost": null,
       "flavour": "You tracked game across three moons before you ever tracked a man.",
       "upsides": [
-        "Tracker: follow any trail less than a day old. Your first attack on a creature you tracked this scene does +30% damage."
+        "Tracker: you can follow any trail less than a day old; the Narrator tells you where it leads. Your first attack on a creature you tracked this scene deals +30% damage (a miss uses it up too)."
       ],
       "downsides": [
         "Wild Born: in cities, −2 Charisma, Eloquence and Authority."
       ],
       "notes": [],
       "narrator_hook": "the hunt that leads into Central City.",
-      "text": "You tracked game across three moons before you ever tracked a man.\n+ Tracker: follow any trail less than a day old. Your first attack on a creature you tracked this scene does +30% damage.\n− Wild Born: in cities, −2 Charisma, Eloquence and Authority.",
+      "text": "You tracked game across three moons before you ever tracked a man.\n+ Tracker: you can follow any trail less than a day old; the Narrator tells you where it leads. Your first attack on a creature you tracked this scene deals +30% damage (a miss uses it up too).\n− Wild Born: in cities, −2 Charisma, Eloquence and Authority.",
       "effects": [
         {
           "op": "narrator",
@@ -3948,14 +3948,14 @@
       "cost": null,
       "flavour": "It came to you half-starved. Now it would die for you, and nearly has.",
       "upsides": [
-        "Companion: a trained beast fights at your side: 60 HP, 4 AP of its own, bite and grapple. It obeys your Empathy checks."
+        "Companion: a trained beast fights at your side and acts right after you, with 60 HP, 4 AP of its own and a bite that can Grapple. Each turn it obeys you on an Empathy check; on a fail it acts on instinct."
       ],
       "downsides": [
-        "Bond: if it dies, you take a Heart Debuff for the rest of the campaign arc. It can't enter most buildings in Central City."
+        "Bond: if it dies, you are Shaken for the rest of the campaign arc. It can't enter most buildings in Central City."
       ],
       "notes": [],
       "narrator_hook": "the place where beasts aren't allowed.",
-      "text": "It came to you half-starved. Now it would die for you, and nearly has.\n+ Companion: a trained beast fights at your side: 60 HP, 4 AP of its own, bite and grapple. It obeys your Empathy checks.\n− Bond: if it dies, you take a Heart Debuff for the rest of the campaign arc. It can't enter most buildings in Central City.",
+      "text": "It came to you half-starved. Now it would die for you, and nearly has.\n+ Companion: a trained beast fights at your side and acts right after you, with 60 HP, 4 AP of its own and a bite that can Grapple. Each turn it obeys you on an Empathy check; on a fail it acts on instinct.\n− Bond: if it dies, you are Shaken for the rest of the campaign arc. It can't enter most buildings in Central City.",
       "effects": [
         {
           "op": "companion",
@@ -3995,14 +3995,14 @@
       "cost": null,
       "flavour": "Give you anything with an engine and you'll find out what it can really do.",
       "upsides": [
-        "Born Behind the Stick: you can drive or pilot anything with an engine. Vehicles you drive get +1 Movement, and use your Dodge."
+        "Born Behind the Stick: you can drive or pilot anything with an engine, with no check. Vehicles you drive get +1 Movement and use your Dodge; the Narrator runs them."
       ],
       "downsides": [
-        "Grounded: after a full day on foot, −0.5 Movement and −1 Reaction Speed until you're back in a seat."
+        "Grounded: after a full day on foot when there were vehicles to be had, −0.5 Movement and −1 Reaction Speed until you are back in a seat. The Narrator decides when that applies."
       ],
       "notes": [],
       "narrator_hook": "the mission where everything with an engine is gone.",
-      "text": "Give you anything with an engine and you'll find out what it can really do.\n+ Born Behind the Stick: you can drive or pilot anything with an engine. Vehicles you drive get +1 Movement, and use your Dodge.\n− Grounded: after a full day on foot, −0.5 Movement and −1 Reaction Speed until you're back in a seat.",
+      "text": "Give you anything with an engine and you'll find out what it can really do.\n+ Born Behind the Stick: you can drive or pilot anything with an engine, with no check. Vehicles you drive get +1 Movement and use your Dodge; the Narrator runs them.\n− Grounded: after a full day on foot when there were vehicles to be had, −0.5 Movement and −1 Reaction Speed until you are back in a seat. The Narrator decides when that applies.",
       "effects": [
         {
           "op": "narrator",

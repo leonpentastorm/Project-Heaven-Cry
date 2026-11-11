@@ -179,7 +179,7 @@
       "spent": true,
       "stops": true,
       "disarm": "Disarm the mines",
-      "text": "Light 25, heavy 45 damage; a Body save halves it; armour applies; that tile's mine is spent; the walk stops."
+      "text": "Stepping on a mined tile deals 25 damage (light) or 45 (heavy), reduced by armour; a Body save halves it. That tile's mine is then used up, and your move stops there."
     },
     {
       "id": "fire",
@@ -194,7 +194,7 @@
         "heavy": "burning"
       },
       "disarm": "Put out the fire",
-      "text": "Light 10, heavy 20 damage and Burning; ignores armour."
+      "text": "Entering a burning tile deals 10 damage (light) or 20 (heavy) that ignores armour, and sets you Burning."
     },
     {
       "id": "radiation",
@@ -210,7 +210,7 @@
         "heavy": "weakened"
       },
       "disarm": "Seal the source",
-      "text": "Light 5, heavy 10 damage; ignores armour; Weakened from the third tile a creature enters in it."
+      "text": "Each tile you enter deals 5 damage (light) or 10 (heavy) that ignores armour. From the third tile you enter, you are also Weakened."
     },
     {
       "id": "gas",
@@ -229,7 +229,7 @@
         "stunned"
       ],
       "disarm": "Vent the gas",
-      "text": "A Heart save, or Shaken (light) or Stunned (heavy)."
+      "text": "Entering it forces a Heart save. If you fail, you are Shaken in light gas, or Stunned in heavy gas, which also stops your move."
     },
     {
       "id": "collapse",
@@ -245,7 +245,7 @@
       },
       "stops": true,
       "disarm": "Shore it up",
-      "text": "Light 20, heavy 35 damage and Prone; armour applies; the walk stops."
+      "text": "Entering it deals 20 damage (light) or 35 (heavy), reduced by armour, knocks you Prone and stops your move."
     }
   ],
   "hazard_approaches": [
@@ -280,7 +280,7 @@
     "route_slack_tiles": 2,
     "tactical_reload_extra_ap": 1,
     "provisional": true,
-    "text": "Rules 1.9 (World Play 1.1, items 671-683): a pile holds at most 24 entries; the Narrator's ground[] places at most 6 piles a turn and 12 items each; rounds:<calibre> gives at most 120 rounds an entry; player click-paths go around revealed hazards when a route is at most 2 tiles longer; a tactical reload costs the speed reload + 1 AP."
+    "text": "A pile holds at most 24 different entries. The Narrator can place up to 6 piles a turn, with up to 12 items in each and up to 120 rounds in one entry. When you click to move, your path goes around hazards you know about if the detour is 2 tiles or less. A tactical reload costs 1 AP more than a speed reload."
   },
   "gear": {
     "hand_ap": 1,
@@ -292,6 +292,6 @@
     "light_armour_ap": 1,
     "light_armour_max_kg": 1.2,
     "provisional": true,
-    "text": "Rules 1.9 (World Play 1.1, items 684-690): in a fight, changing what a hand holds costs 1 AP a hand: a draw into one hand 1, a two-handed draw 2, swapping main and off hand 1, putting away 1 a hand (2 for a two-handed weapon), dropping 0 (into the pile on your tile); a light armour piece (1.2 kg or less, provisional) on or off 1 AP each; heavier armour isn't changed in a fight. Hot-Swap covers the hand rows, not armour."
+    "text": "In a fight, changing what a hand holds costs 1 AP per hand: drawing a one-handed item costs 1 AP, drawing a two-handed weapon 2 AP, swapping your main and off hand 1 AP, and putting an item away 1 AP per hand it took. Dropping an item is free; it lands in the pile on your tile. A light piece of armour (1.2 kg or less) takes 1 AP to put on or take off, and heavier armour can't be changed in a fight. Hot-Swap applies to the hand changes, not to armour."
   }
 }

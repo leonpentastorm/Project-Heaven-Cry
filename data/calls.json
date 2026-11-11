@@ -26,7 +26,7 @@
       "per_turn": 1,
       "beats": 5
     },
-    "text": "A Call is spoken to one unit that can hear you: 2 AP, within 5 tiles + 1 per point of its skill. Step 2 of its effect at 3 points, 1 AP from 5 points, step 3 at 7 points, usable as a reaction once a round from 9 points, and the first Call of each turn is free at 10 points. A unit can be the target of one helping Call and one hindering Call each round. A Call deals no damage. A hindering Call with a save is saved against 12 + the speaker's strength with its skill (points − 1, floor 0). A Silenced unit can't Call. AP a Call gives lands this turn if the ally has not acted yet this round (up to the turn's 9) and on its next turn if it has, inside the +3 cap on AP gained in a turn."
+    "text": "A Call is something you say to one unit that can hear you. It costs 2 AP, reaches 4 tiles + 1 per point of its skill, and never deals damage. More points make it better: step 2 of its effect at 3 points, 1 AP instead of 2 at 5 points, step 3 at 7 points, usable as a reaction for 0 AP once a round at 9 points, and the first Call of each turn free at 10 points. Each round a unit can be the target of one helping Call and one hindering Call. An enemy saves against 12 + your strength with the Call's skill (its points − 1). A Silenced unit can't Call. AP from a Call arrives this turn if the ally has not acted yet this round, and on their next turn if they have; nobody gains more than 3 AP in a turn or goes above 9 AP."
   },
   "items": [
     {
@@ -35,11 +35,11 @@
       "skill": "authority",
       "kind": "helping",
       "aim": "ally",
-      "text": "An ally does one thing now, on their reaction and for none of their AP. You choose what, and never an attack.",
+      "text": "Order an ally to do one thing right now. They do it on their reaction and it costs them no AP. You choose what they do, and it is never an attack.",
       "steps": [
         {
           "at": 1,
-          "text": "They reload, stand up or pick up, now.",
+          "text": "An ally reloads, stands up or picks up a pile right now. It uses their reaction and costs them no AP.",
           "numbers": {
             "things": 1,
             "move": 0
@@ -47,7 +47,7 @@
         },
         {
           "at": 3,
-          "text": "They reload, stand up, pick up, or move their Movement (the tiles 1 AP walks them), now.",
+          "text": "An ally reloads, stands up, picks up a pile or moves right now. The move goes as far as 1 AP walks them, to a tile you pick. It uses their reaction and costs them no AP.",
           "numbers": {
             "things": 1,
             "move": 1
@@ -55,7 +55,7 @@
         },
         {
           "at": 7,
-          "text": "They do two different things of those, now, on the one reaction.",
+          "text": "An ally does two different things right now: reload, stand up, pick up a pile, or move as far as 1 AP walks them. Both use the one reaction and cost them no AP.",
           "numbers": {
             "things": 2,
             "move": 1
@@ -71,11 +71,11 @@
       "skill": "charisma",
       "kind": "helping",
       "aim": "ally",
-      "text": "An ally gains AP: this turn if they have not acted yet this round, on their next turn if they have.",
+      "text": "Give an ally AP. They get it this turn if they have not acted yet this round, and on their next turn if they have.",
       "steps": [
         {
           "at": 1,
-          "text": "They gain 1 AP.",
+          "text": "An ally gains 1 AP: this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 1,
             "pressure": 0
@@ -83,7 +83,7 @@
         },
         {
           "at": 3,
-          "text": "They gain 1 AP and shed 1 Pressure.",
+          "text": "An ally gains 1 AP and loses 1 Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 1,
             "pressure": 1
@@ -91,7 +91,7 @@
         },
         {
           "at": 7,
-          "text": "They gain 2 AP and shed 1 Pressure.",
+          "text": "An ally gains 2 AP and loses 1 Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 2,
             "pressure": 1
@@ -107,11 +107,11 @@
       "skill": "eloquence",
       "kind": "helping",
       "aim": "ally",
-      "text": "An ally's next action costs less AP. It holds until the end of their next turn; an action that costs nothing doesn't use it up.",
+      "text": "Make an ally's next actions cost less AP. The discount lasts until the end of their next turn, and an action that costs no AP doesn't use it up.",
       "steps": [
         {
           "at": 1,
-          "text": "Their next action costs 1 AP less.",
+          "text": "An ally's next action costs 1 AP less. This lasts until the end of their next turn.",
           "numbers": {
             "first": 1,
             "second": 0
@@ -119,7 +119,7 @@
         },
         {
           "at": 3,
-          "text": "Their next two actions cost 1 AP less each.",
+          "text": "An ally's next two actions cost 1 AP less each. This lasts until the end of their next turn.",
           "numbers": {
             "first": 1,
             "second": 1
@@ -127,7 +127,7 @@
         },
         {
           "at": 7,
-          "text": "Their next action costs 2 AP less, and the one after 1 AP less.",
+          "text": "An ally's next action costs 2 AP less, and the one after it 1 AP less. This lasts until the end of their next turn.",
           "numbers": {
             "first": 2,
             "second": 1
@@ -143,11 +143,11 @@
       "skill": "lore_master",
       "kind": "helping",
       "aim": "self-or-ally",
-      "text": "You call out what the thing is, so it can't get into their head: the one you call to is harder to break until your next turn.",
+      "text": "Tell an ally, or yourself, what they are facing, so it can't get into their head. They get a bonus on all their saves until the start of your next turn.",
       "steps": [
         {
           "at": 1,
-          "text": "+2 on all their saves until your next turn.",
+          "text": "You or an ally gets +2 on all saves until the start of your next turn.",
           "numbers": {
             "saves": 2,
             "fresh_save": 0,
@@ -156,7 +156,7 @@
         },
         {
           "at": 3,
-          "text": "+3 on all their saves, and a fresh save now against one condition on them.",
+          "text": "You or an ally gets +3 on all saves until the start of your next turn, and rolls a new save right now against one condition they have.",
           "numbers": {
             "saves": 3,
             "fresh_save": 1,
@@ -165,7 +165,7 @@
         },
         {
           "at": 7,
-          "text": "+4 on all their saves, a fresh save against one condition, and Shaken and Afraid end on them.",
+          "text": "You or an ally gets +4 on all saves until the start of your next turn, rolls a new save right now against one condition they have, and stops being Shaken and Afraid.",
           "numbers": {
             "saves": 4,
             "fresh_save": 1,
@@ -182,11 +182,11 @@
       "skill": "reaction_speed",
       "kind": "helping",
       "aim": "ally",
-      "text": "An ally gets a second reaction, good until the start of your next turn.",
+      "text": "Give an ally one more reaction. They must use it before the start of your next turn.",
       "steps": [
         {
           "at": 1,
-          "text": "They get one more reaction.",
+          "text": "An ally gets one more reaction, to use before the start of your next turn.",
           "numbers": {
             "reactions": 1,
             "step": 0,
@@ -195,7 +195,7 @@
         },
         {
           "at": 3,
-          "text": "They get one more reaction, or you name a tile next to them and they spend it at once on that step (free, no opportunity attack).",
+          "text": "An ally gets one more reaction, to use before the start of your next turn. Or name a free tile next to them: they step there at once instead, for no AP and without provoking an opportunity attack.",
           "numbers": {
             "reactions": 1,
             "step": 1,
@@ -204,7 +204,7 @@
         },
         {
           "at": 7,
-          "text": "As step 2, and if they have not acted yet this round they act straight after you in the order.",
+          "text": "An ally gets one more reaction, to use before the start of your next turn, or steps at once to a free tile you name next to them (no AP, no opportunity attack). If you Call on your own turn and they have not acted yet this round, they also take their turn straight after yours.",
           "numbers": {
             "reactions": 1,
             "step": 1,
@@ -221,11 +221,11 @@
       "skill": "vigilant",
       "kind": "hindering",
       "aim": "enemy",
-      "text": "You point an enemy out. No save. The mark holds until the start of your next turn and is used up by an ally's real attack, never by you.",
+      "text": "Point out an enemy to your allies. There is no save. The mark lasts until the start of your next turn and is used up when an ally attacks that enemy; you can't use it yourself.",
       "steps": [
         {
           "at": 1,
-          "text": "The next ally to attack it ignores its cover.",
+          "text": "The next ally to attack this enemy ignores its cover. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
           "numbers": {
             "allies": 1,
             "unhide": 0,
@@ -234,7 +234,7 @@
         },
         {
           "at": 3,
-          "text": "The next ally to attack it ignores its cover, and it isn't Hidden to them. You can Spot a Hidden enemy whose tile you can see.",
+          "text": "The next ally to attack this enemy ignores its cover and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
           "numbers": {
             "allies": 1,
             "unhide": 1,
@@ -243,7 +243,7 @@
         },
         {
           "at": 7,
-          "text": "The next two allies to attack it ignore its cover, at +1 to hit, and it isn't Hidden to them.",
+          "text": "The next two allies to attack this enemy ignore its cover, get +1 to hit and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
           "numbers": {
             "allies": 2,
             "unhide": 1,
@@ -260,11 +260,11 @@
       "skill": "sensory",
       "kind": "helping",
       "aim": "ally",
-      "text": "Before the next weapon attack on an ally lands, they step clear, free and with no opportunity attack: to the tile you named, or else to the nearest tile that takes them out of the attack. An attack that can no longer reach them is wasted. The warning holds until the start of your next turn.",
+      "text": "Warn an ally about the next weapon attack on them. Just before it is rolled they step out of the way, for no AP and without provoking an opportunity attack: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. The warning lasts until the start of your next turn.",
       "steps": [
         {
           "at": 1,
-          "text": "They step 1 tile before the next attack on them.",
+          "text": "Just before the next weapon attack on an ally is rolled, they step 1 tile out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. It lasts until the start of your next turn.",
           "numbers": {
             "tiles": 1,
             "hit": 0
@@ -272,7 +272,7 @@
         },
         {
           "at": 3,
-          "text": "They step up to 2 tiles before the next attack on them.",
+          "text": "Just before the next weapon attack on an ally is rolled, they step up to 2 tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. It lasts until the start of your next turn.",
           "numbers": {
             "tiles": 2,
             "hit": 0
@@ -280,7 +280,7 @@
         },
         {
           "at": 7,
-          "text": "They step up to 2 tiles before the next attack on them, and that attack is at −2 to hit.",
+          "text": "Just before the next weapon attack on an ally is rolled, they step up to 2 tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. That attack is at −2 to hit, and it is wasted if it can no longer reach them. It lasts until the start of your next turn.",
           "numbers": {
             "tiles": 2,
             "hit": -2
@@ -297,11 +297,11 @@
       "kind": "hindering",
       "aim": "enemy",
       "save": "heart",
-      "text": "An enemy makes a Heart save against 12 + your Intimidation strength, or is Shaken (3 rounds) and loses AP on its next turn.",
+      "text": "Frighten an enemy. It makes a Heart save against 12 + your strength with Intimidation. If it fails, it is Shaken for 3 rounds and loses AP on its next turn.",
       "steps": [
         {
           "at": 1,
-          "text": "Shaken, and it loses 1 AP on its next turn.",
+          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds and loses 1 AP on its next turn.",
           "numbers": {
             "ap_loss": 1,
             "no_approach": 0
@@ -309,7 +309,7 @@
         },
         {
           "at": 3,
-          "text": "Shaken, it loses 1 AP on its next turn, and on that turn it can't move toward you.",
+          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses 1 AP on its next turn and can't move toward you on that turn.",
           "numbers": {
             "ap_loss": 1,
             "no_approach": 1
@@ -317,7 +317,7 @@
         },
         {
           "at": 7,
-          "text": "Shaken, it loses 2 AP on its next turn, and on that turn it can't move toward you.",
+          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses 2 AP on its next turn and can't move toward you on that turn.",
           "numbers": {
             "ap_loss": 2,
             "no_approach": 1
@@ -334,25 +334,25 @@
       "kind": "hindering",
       "aim": "enemy",
       "save": "heart",
-      "text": "An enemy makes a Heart save against 12 + your Insinuation strength, or is Taunted (1 round): its next attack must go at you, if it can see you.",
+      "text": "Goad an enemy. It makes a Heart save against 12 + your strength with Insinuation. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you.",
       "steps": [
         {
           "at": 1,
-          "text": "Taunted: it must attack you.",
+          "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you.",
           "numbers": {
             "attack_ap": 0
           }
         },
         {
           "at": 3,
-          "text": "Taunted, and that attack on you costs it 1 AP more.",
+          "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it 1 AP more.",
           "numbers": {
             "attack_ap": 1
           }
         },
         {
           "at": 7,
-          "text": "Taunted, and that attack on you costs it 2 AP more.",
+          "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it 2 AP more.",
           "numbers": {
             "attack_ap": 2
           }

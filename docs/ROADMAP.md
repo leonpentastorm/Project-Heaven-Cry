@@ -51,6 +51,8 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
      for each weapon when dual wielding. Recorded in `docs/design/proposals/2026-11-weapon-arts.md`; not designed yet.
    - **Tri-scale armour** (hybrid armour gated by two or three beta skills, with its own mechanics).
    - The four playstyles Skeleton 2.0 leaves open (Ingenuity, Visualization, Durability, Empathy).
+   - **Heavenprint artwork for every weapon and piece of gear** (about 100 and growing; Leon, 11 Nov 2026): the
+     painted large view beside the line icons. Listed for the artist as E1 in `art/briefs/ART-REQUESTS.md`.
 5. **Advanced classes, batch 1: the 9 squared classes.** Juggernaut, Berserker, Gunslinger, Ghost, Grand Sigilist,
    Mirage, Heartbinder, Heartfed, Saint. Roadmap: `docs/design/class-roster-rev3-proposal.md` section 7. Shelved
    moves to bring back are listed in `docs/design/move-pool.md`. The data already carries `kind`/`pair`/`batch`, so

@@ -107,7 +107,7 @@
         "per_devotion": 4,
         "scales_with": "blessing_power"
       },
-      "text": "While you are Witnessed your patron acts unasked when its trigger happens, and Witnessed ends. Once a fight; twice from Devotion 7. Soul, heals and Storm are 20 + 4 × Devotion, × Blessing power."
+      "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage and healing are 20 + 4 × your Devotion, × your Blessing power."
     },
     "provisional": true
   },
@@ -115,17 +115,17 @@
     {
       "id": "protect",
       "name": "Protect",
-      "text": "Shield an ally, Interpose, Brace, or take a hit for someone."
+      "text": "Shield an ally, Interpose, Brace, or take a hit meant for someone else."
     },
     {
       "id": "heal",
       "name": "Heal",
-      "text": "Heal or stabilise someone else."
+      "text": "Heal or stabilise someone other than yourself."
     },
     {
       "id": "mercy",
       "name": "Mercy",
-      "text": "Accept a surrender, or end a fight without killing a surrendered enemy."
+      "text": "Accept a surrender, or end a fight without killing an enemy who surrendered."
     },
     {
       "id": "judge",
@@ -140,54 +140,54 @@
     {
       "id": "burn",
       "name": "Burn",
-      "text": "Deal Fire damage or set Burning."
+      "text": "Deal fire damage or set someone Burning."
     },
     {
       "id": "storm",
       "name": "Storm",
-      "text": "Deal Storm damage (SHOCK, the Storm tone, lightning)."
+      "text": "Deal lightning damage: the Sigil word SHOCK, the Storm tone, or any other lightning."
     },
     {
       "id": "trick",
       "name": "Trick",
-      "text": "A Trickster move, hiding, a False Image, a feint or a swap."
+      "text": "Use a Trickster move, hide, make a False Image, feint or swap places."
     },
     {
       "id": "supply",
       "name": "Supply",
-      "text": "Reload an ally, throw a stim, hand over items, place cover."
+      "text": "Reload an ally's weapon, throw a stim, hand over an item or place cover."
     },
     {
       "id": "hold",
       "name": "Hold",
-      "text": "End a turn Braced, Anchored or in Overwatch."
+      "text": "End your turn Braced, Anchored or on Overwatch."
     },
     {
       "id": "flee",
       "name": "Flee",
-      "text": "Retreat out of a fight, or Disengage away from enemies."
+      "text": "Retreat from a fight, or Disengage away from enemies."
     },
     {
       "id": "desecrate",
       "name": "Desecrate",
-      "text": "Damage a shrine, a corpse or holy ground (map objects tagged holy)."
+      "text": "Damage a shrine, a corpse or holy ground."
     },
     {
       "id": "betray",
       "name": "Betray",
-      "text": "Attack a creature on your own side."
+      "text": "Attack someone on your own side."
     },
     {
       "id": "cower",
       "name": "Cower",
-      "text": "End a turn Hidden while an ally is Downed."
+      "text": "End your turn Hidden while an ally is Downed."
     }
   ],
   "whispers": [
     {
       "id": "luck",
       "name": "Luck",
-      "text": "You or an ally in sight: +2 on the next roll.",
+      "text": "You or an ally you can see gets +2 on their next attack roll or check.",
       "target": "self_or_ally",
       "effects": [
         {
@@ -202,7 +202,7 @@
     {
       "id": "health",
       "name": "Health",
-      "text": "You or an ally in sight heals 15 × Blessing power.",
+      "text": "You or an ally you can see heals 15 × your Blessing power.",
       "target": "self_or_ally",
       "effects": [
         {
@@ -217,7 +217,7 @@
     {
       "id": "protection",
       "name": "Protection",
-      "text": "You or an ally in sight gains a 15 × Blessing power shield.",
+      "text": "You or an ally you can see gains a shield of 15 × your Blessing power.",
       "target": "self_or_ally",
       "effects": [
         {
@@ -232,7 +232,7 @@
     {
       "id": "courage",
       "name": "Courage",
-      "text": "End Fear or Shaken on you or an ally in sight.",
+      "text": "Ends Fear and Shaken on you or an ally you can see.",
       "target": "self_or_ally",
       "effects": [
         {
@@ -249,7 +249,7 @@
     {
       "id": "guidance",
       "name": "Guidance",
-      "text": "Reveal Hidden enemies and traps within 6, and +2 on your next notice roll.",
+      "text": "Reveals Hidden enemies and traps within 6 tiles of you, and gives you +2 on your next roll to spot something.",
       "target": "self",
       "effects": [
         {
@@ -288,7 +288,7 @@
       "name": "Shield",
       "words": "None of them falls.",
       "needs_ally": true,
-      "broken_when": "the named ally is Downed",
+      "broken_when": "the ally you named is Downed",
       "adjudication": "engine"
     },
     {
@@ -302,7 +302,7 @@
       "id": "stand",
       "name": "Stand",
       "words": "I don't give ground.",
-      "broken_when": "you end a turn farther from the nearest enemy than you started it",
+      "broken_when": "you end a turn further from the nearest enemy than you started it",
       "adjudication": "engine"
     },
     {
@@ -316,7 +316,7 @@
       "id": "unarmed_faith",
       "name": "No Magic but Theirs",
       "words": "No magic but theirs.",
-      "broken_when": "you draw, Evoke or Begin (Sigil or Outburst)",
+      "broken_when": "you draw a glyph, Evoke a spell or Begin an Outburst",
       "adjudication": "engine"
     },
     {
@@ -390,18 +390,18 @@
           "check": {
             "kind": "story"
           },
-          "text": "Confess before the saints, out of a fight (a story button). Once a session: +4 Devotion XP."
+          "text": "Confess before the saints. You can do it once a session, from the story screen, outside a fight: +4 Devotion XP."
         },
         {
           "id": "shrine_tithe",
           "name": "Tithe at a Shrine",
           "engine": false,
-          "text": "Leave a share of your loot at a Lumeri shrine (the Narrator marks it kept)."
+          "text": "Leave a share of your loot at a Lumeri shrine. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
         "trigger": "enemy_harms_helpless",
-        "text": "An enemy damages a surrendered or Downed creature: that enemy takes 20 + 4 × Devotion Soul (× Blessing power).",
+        "text": "When an enemy damages a surrendered or Downed creature, that enemy takes 20 + 4 × your Devotion Soul damage, × your Blessing power.",
         "scale": "devotion",
         "scales_with": "blessing_power",
         "effects": [
@@ -422,7 +422,7 @@
           "id": "saints_shield",
           "name": "Saint's Shield",
           "tier": 1,
-          "text": "An ally in sight gains a 40 shield.",
+          "text": "You or an ally you can see gains a shield of 40 × your Blessing power.",
           "target": "ally",
           "effects": [
             {
@@ -438,7 +438,7 @@
           "id": "judgement",
           "name": "Judgement",
           "tier": 2,
-          "text": "An enemy in sight takes 40 Soul; ×2 if it harmed the helpless this fight.",
+          "text": "An enemy you can see takes 40 Soul damage × your Blessing power. The damage is doubled if that enemy harmed a surrendered or Downed creature this fight.",
           "target": "enemy",
           "effects": [
             {
@@ -461,7 +461,7 @@
           "id": "absolution",
           "name": "Absolution",
           "tier": 3,
-          "text": "An ally is cleansed of every condition and heals 30.",
+          "text": "You or an ally you can see loses every harmful condition and heals 30 × your Blessing power.",
           "target": "ally",
           "effects": [
             {
@@ -481,7 +481,7 @@
       "miracle": {
         "id": "saints_verdict",
         "name": "The Saints' Verdict",
-        "text": "Every enemy in sight takes 100 Soul and is Stunned 1 round; those that harmed the helpless this fight take double and are Stunned 2 rounds.",
+        "text": "Every enemy in sight takes 100 Soul damage × your Blessing power and is Stunned for 1 round. Enemies that harmed a surrendered or Downed creature this fight take double and are Stunned for 2 rounds.",
         "target": "none",
         "effects": [
           {
@@ -623,13 +623,13 @@
           "check": {
             "kind": "after_rest"
           },
-          "text": "Count and log every round you carry after a rest (a story button, once a rest has been taken this session). Once a session: +4 Devotion XP."
+          "text": "Count and log every round you carry. You can do it once a session, from the story screen, after you have rested this session: +4 Devotion XP."
         },
         {
           "id": "requisition_form",
           "name": "Requisition Form",
           "engine": false,
-          "text": "File a proper request before taking anything from a depot or a fallen soldier (the Narrator marks it kept)."
+          "text": "File a proper request before you take anything from a depot or a fallen soldier. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
@@ -639,7 +639,7 @@
           "core_dry",
           "mp_out"
         ],
-        "text": "You reload (any reload of yours): it is free, its AP comes back. Your Evoker's core runs dry (its charge hits 0): a fresh core from the Quartermaster slots in, free (no AP; your spare cores untouched). Your MP runs out (it hits 0): you get 25% of your max MP back (rounded down).",
+        "text": "When you reload, the reload is free: its AP comes back. When your Evoker's core runs out of charge, a fresh core slots in for free and your spare cores are untouched. When your MP runs out, you get back 25% of your maximum MP, rounded down.",
         "effects": [
           {
             "op": "resource",
@@ -673,7 +673,7 @@
           "id": "resupply",
           "name": "Resupply",
           "tier": 1,
-          "text": "An ally in sight reloads every weapon for free and regains 1 Supply.",
+          "text": "You or an ally you can see reloads every weapon for free and regains 1 Supply.",
           "target": "ally",
           "effects": [
             {
@@ -695,7 +695,7 @@
           "id": "dig_in",
           "name": "Dig In",
           "tier": 2,
-          "text": "An ally gains half cover where they stand until they move, and is Braced.",
+          "text": "You or an ally you can see gains half cover on the tile where they stand, until they move, and is Braced.",
           "target": "ally",
           "effects": [
             {
@@ -716,7 +716,7 @@
           "id": "covering_fire",
           "name": "Covering Fire",
           "tier": 3,
-          "text": "A 3×3 area in sight: every enemy in it makes a Body save or is Pinned 1 round.",
+          "text": "Pick a 3 × 3 area you can see. Each enemy in it is Pinned for 1 round unless it passes a Body save.",
           "target": "tile",
           "effects": [
             {
@@ -735,7 +735,7 @@
       "miracle": {
         "id": "requisition_approved",
         "name": "Requisition Approved",
-        "text": "The whole squad gets a full restock (ammo, Supplies, throwables), 2 standard cores each, all gear repaired to full durability, jams and heat cleared, and +3 AP next turn.",
+        "text": "The whole squad is restocked (ammo, Supplies, throwables) and gets 2 standard cores each. All gear is repaired, jams and heat are cleared, and everyone gets +3 AP next turn.",
         "target": "none",
         "effects": [
           {
@@ -890,18 +890,18 @@
           "check": {
             "kind": "story"
           },
-          "text": "Tell a joke to the room, out of a fight (a story button). Once a session: +4 Devotion XP."
+          "text": "Tell a joke to the room. You can do it once a session, from the story screen, outside a fight: +4 Devotion XP."
         },
         {
           "id": "a_good_prank",
           "name": "A Good Prank",
           "engine": false,
-          "text": "Pull a prank someone important will remember (the Narrator marks it kept)."
+          "text": "Pull a prank that someone important will remember. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
         "trigger": "enemy_misses_you",
-        "text": "An enemy misses you: it falls Prone.",
+        "text": "When an enemy misses you, it falls Prone.",
         "effects": [
           {
             "op": "condition",
@@ -918,7 +918,7 @@
           "id": "lucky_break",
           "name": "Lucky Break",
           "tier": 1,
-          "text": "An ally's next failed roll is rerolled at +5.",
+          "text": "The next attack roll that you or an ally you can see fails is rerolled at +5. Outside a fight, it is +5 on their next check instead.",
           "target": "ally",
           "effects": [
             {
@@ -936,7 +936,7 @@
           "id": "switcheroo",
           "name": "Switcheroo",
           "tier": 2,
-          "text": "Swap two units in sight within 6 (an enemy gets a Brain save).",
+          "text": "Two creatures you can see, both within 6 tiles of you, swap places. An enemy can resist with a Brain save.",
           "target": "two_units",
           "effects": [
             {
@@ -953,7 +953,7 @@
           "id": "pratfall",
           "name": "Pratfall",
           "tier": 3,
-          "text": "An enemy in sight makes a Body save or falls Prone and drops its held weapon.",
+          "text": "An enemy you can see must pass a Body save or fall Prone and drop the weapon it is holding.",
           "target": "enemy",
           "effects": [
             {
@@ -1105,18 +1105,18 @@
           "check": {
             "kind": "after_rest"
           },
-          "text": "Keep a vigil for the dead at a rest (a story button, once a rest has been taken this session). Once a session: +4 Devotion XP."
+          "text": "Keep a vigil for the dead. You can do it once a session, from the story screen, after you have rested this session: +4 Devotion XP."
         },
         {
           "id": "pay_the_toll",
           "name": "Pay the Toll",
           "engine": false,
-          "text": "Put a coin on the eyes of someone who died near you (the Narrator marks it kept)."
+          "text": "Put a coin on the eyes of someone who died near you. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
         "trigger": "ally_would_die",
-        "text": "An ally would drop to 0 HP: they stay at 1 HP instead.",
+        "text": "When an ally would drop to 0 HP, they stay at 1 HP instead.",
         "effects": [
           {
             "op": "roll_floor",
@@ -1133,7 +1133,7 @@
           "id": "coin_for_the_ferry",
           "name": "Coin for the Ferry",
           "tier": 1,
-          "text": "A Downed ally in sight is stabilised and stands at 10 HP.",
+          "text": "A Downed ally you can see is stabilised and stands up with 10 HP × your Blessing power.",
           "target": "downed_ally",
           "effects": [
             {
@@ -1150,7 +1150,7 @@
           "id": "hold_the_gate",
           "name": "Hold the Gate",
           "tier": 2,
-          "text": "Until your next turn, allies in sight can't drop below 1 HP.",
+          "text": "Until your next turn, you and the allies you can see can't drop below 1 HP.",
           "target": "none",
           "effects": [
             {
@@ -1169,7 +1169,7 @@
           "id": "last_crossing",
           "name": "Last Crossing",
           "tier": 3,
-          "text": "An enemy in sight at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul instead).",
+          "text": "An enemy you can see at a quarter of its HP or less must pass a Heart save or die. A boss takes 40 Soul damage × your Blessing power instead.",
           "target": "enemy",
           "effects": [
             {
@@ -1187,7 +1187,7 @@
       "miracle": {
         "id": "turned_back",
         "name": "Turned Back at the Shore",
-        "text": "Every ally who died or fell (Downed) this fight stands at half HP.",
+        "text": "Every ally who died or was Downed this fight stands up at half HP.",
         "target": "none",
         "effects": [
           {
@@ -1310,18 +1310,18 @@
             "kind": "tithe_item",
             "category": "food"
           },
-          "text": "Give a ration to the squad's table (a story button: one food item from your pack). Once a session: +4 Devotion XP."
+          "text": "Give a ration to the squad's table: one food item from your pack. You can do it once a session, from the story screen, outside a fight: +4 Devotion XP."
         },
         {
           "id": "keep_the_fire",
           "name": "Keep the Fire",
           "engine": false,
-          "text": "Keep a fire lit through a cold night for others (the Narrator marks it kept)."
+          "text": "Keep a fire lit for others through a cold night. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
         "trigger": "ally_below_quarter",
-        "text": "An ally drops below a quarter HP: they heal 20 + 4 × Devotion (× Blessing power).",
+        "text": "When an ally drops below a quarter of their HP, they heal 20 + 4 × your Devotion, × your Blessing power.",
         "scale": "devotion",
         "scales_with": "blessing_power",
         "effects": [
@@ -1340,7 +1340,7 @@
           "id": "warm_hands",
           "name": "Warm Hands",
           "tier": 1,
-          "text": "An ally in sight heals 40.",
+          "text": "You or an ally you can see heals 40 × your Blessing power.",
           "target": "ally",
           "effects": [
             {
@@ -1356,7 +1356,7 @@
           "id": "hearthlight",
           "name": "Hearthlight",
           "tier": 2,
-          "text": "A 3×3 area in sight: allies starting a turn in it heal 10, for 3 rounds.",
+          "text": "Pick a 3 × 3 area you can see. For 3 rounds, each ally who starts a turn in it heals 10 × your Blessing power.",
           "target": "tile",
           "effects": [
             {
@@ -1381,7 +1381,7 @@
           "id": "feed_the_fire",
           "name": "Feed the Fire",
           "tier": 3,
-          "text": "An ally gets +1 AP now (the ceiling applies) and loses Weakened and Slowed.",
+          "text": "You or an ally you can see gets +1 AP right now, up to the limit of 9 AP, and loses Weakened and Slowed.",
           "target": "ally",
           "effects": [
             {
@@ -1405,7 +1405,7 @@
       "miracle": {
         "id": "everyone_home",
         "name": "Everyone Home",
-        "text": "The whole squad heals to full, Downed allies stand, every harmful condition is cleared, and each gets a 40 shield.",
+        "text": "The whole squad heals to full HP, Downed allies stand up, every harmful condition ends, and everyone gains a shield of 40 × your Blessing power.",
         "target": "none",
         "effects": [
           {
@@ -1535,18 +1535,18 @@
           "check": {
             "kind": "story"
           },
-          "text": "Bellow a challenge at the sky, out of a fight (a story button). Once a session: +4 Devotion XP."
+          "text": "Bellow a challenge at the sky. You can do it once a session, from the story screen, outside a fight: +4 Devotion XP."
         },
         {
           "id": "best_the_rival",
           "name": "Best the Rival",
           "engine": false,
-          "text": "Outdo a worshipper of the rival Thunder-Father (the Narrator marks it kept)."
+          "text": "Outdo a worshipper of the rival Thunder-Father. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
         "trigger": "you_kill",
-        "text": "You kill an enemy: 20 + 4 × Devotion Storm (× Blessing power) to the nearest other enemy.",
+        "text": "When you kill an enemy, the nearest other enemy takes 20 + 4 × your Devotion lightning damage, × your Blessing power.",
         "scale": "devotion",
         "scales_with": "blessing_power",
         "effects": [
@@ -1567,7 +1567,7 @@
           "id": "thunderclap",
           "name": "Thunderclap",
           "tier": 1,
-          "text": "Every enemy within 2 of a tile in sight is pushed 1 and makes a Heart save or is Shaken.",
+          "text": "Pick a tile you can see. Each enemy within 2 tiles of it is pushed 1 tile away, and is Shaken unless it passes a Heart save.",
           "target": "tile",
           "effects": [
             {
@@ -1590,7 +1590,7 @@
           "id": "lightning_rod",
           "name": "Lightning Rod",
           "tier": 2,
-          "text": "50 Elemental (Storm) to an enemy in sight, chaining to 1 more within 2 at half.",
+          "text": "An enemy you can see takes 50 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for half.",
           "target": "enemy",
           "effects": [
             {
@@ -1614,7 +1614,7 @@
           "id": "gather_the_clouds",
           "name": "Gather the Clouds",
           "tier": 3,
-          "text": "Until your next turn, allies' Storm riders count one stage higher.",
+          "text": "Until your next turn, the Storm tone's stage effects count 1 stage higher for your side.",
           "target": "none",
           "effects": [
             {
@@ -1632,7 +1632,7 @@
       "miracle": {
         "id": "the_sky_answers",
         "name": "The Sky Answers",
-        "text": "A 5×5 area in sight takes 150 Elemental (Storm), enemies only (the sky picks), and they are Stunned 1 round and Shaken.",
+        "text": "Pick a 5 × 5 area you can see. Every enemy in it takes 150 lightning damage × your Blessing power, is Stunned for 1 round and is Shaken. Your own side is never hit.",
         "target": "tile",
         "effects": [
           {
@@ -1773,18 +1773,18 @@
           "check": {
             "kind": "story"
           },
-          "text": "Tie a red thread on a friend's wrist, out of a fight (a story button). Once a session: +4 Devotion XP."
+          "text": "Tie a red thread on a friend's wrist. You can do it once a session, from the story screen, outside a fight: +4 Devotion XP."
         },
         {
           "id": "bring_two_together",
           "name": "Bring Two Together",
           "engine": false,
-          "text": "Reconcile two people at odds (the Narrator marks it kept)."
+          "text": "Reconcile two people who are at odds. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
         "trigger": "ally_hit_adjacent",
-        "text": "An ally is hit while next to you: half the damage moves to you.",
+        "text": "When an ally next to you is hit, half the damage moves to you.",
         "effects": [
           {
             "op": "damage_share",
@@ -1800,7 +1800,7 @@
           "id": "red_thread",
           "name": "Red Thread",
           "tier": 1,
-          "text": "Link two allies in sight for 2 rounds; damage to either is split between them.",
+          "text": "Links two allies you can see for 2 rounds. When either one is hit, half the damage moves to the other.",
           "target": "two_allies",
           "effects": [
             {
@@ -1817,7 +1817,7 @@
           "id": "sweet_nothings",
           "name": "Sweet Nothings",
           "tier": 2,
-          "text": "An enemy in sight makes a Heart save or can't attack you or your linked allies next turn.",
+          "text": "An enemy you can see must pass a Heart save or be Smitten for 1 round: it can't attack you, or any ally linked to you by Red Thread.",
           "target": "enemy",
           "effects": [
             {
@@ -1835,7 +1835,7 @@
           "id": "together",
           "name": "Together",
           "tier": 3,
-          "text": "Two adjacent allies each get +2 to hit and +2 Defense until your next turn.",
+          "text": "Two allies standing next to each other each get +2 to hit and +2 Defense until your next turn.",
           "target": "two_allies",
           "effects": [
             {
@@ -1855,7 +1855,7 @@
       "miracle": {
         "id": "love_conquers",
         "name": "Love Conquers",
-        "text": "Every non-boss enemy in sight surrenders, no save; a boss (or one that can't yield) makes a Heart save or is Commanded to hold (no attacks) for 1 round.",
+        "text": "Every enemy in sight that is not a boss surrenders, with no save. A boss, or any enemy that can't surrender, must pass a Heart save or be Commanded to hold for 1 round: it makes no attacks.",
         "target": "none",
         "effects": [
           {
@@ -1985,18 +1985,18 @@
           "check": {
             "kind": "after_rest"
           },
-          "text": "Read out every debt you owe after a rest (a story button, once a rest has been taken this session). Once a session: +4 Devotion XP."
+          "text": "Read out every debt you owe. You can do it once a session, from the story screen, after you have rested this session: +4 Devotion XP."
         },
         {
           "id": "repay_a_debt",
           "name": "Repay a Debt",
           "engine": false,
-          "text": "Pay back what you owe someone, in full (the Narrator marks it kept)."
+          "text": "Pay back what you owe someone, in full. The Narrator decides when you have done it. Once a session: +4 Devotion XP."
         }
       ],
       "intervention": {
         "trigger": "enemy_crits_you",
-        "text": "An enemy crits you: it becomes a normal hit.",
+        "text": "When an enemy scores a critical hit on you, it becomes a normal hit.",
         "effects": [
           {
             "op": "negate_failure",
@@ -2011,7 +2011,7 @@
           "id": "foreknowing",
           "name": "Foreknowing",
           "tier": 1,
-          "text": "The next attack against an ally in sight misses.",
+          "text": "The next attack against you or an ally you can see misses.",
           "target": "ally",
           "effects": [
             {
@@ -2028,7 +2028,7 @@
           "id": "unravel",
           "name": "Unravel",
           "tier": 2,
-          "text": "Every buff, shield and helpful state on an enemy in sight ends.",
+          "text": "An enemy you can see loses every buff and its shield. It also stops being Braced and loses any shot it is holding.",
           "target": "enemy",
           "effects": [
             {
@@ -2044,7 +2044,7 @@
           "id": "cut_short",
           "name": "Cut Short",
           "tier": 3,
-          "text": "An enemy in sight makes a Heart save or loses its next turn (bosses lose 2 AP).",
+          "text": "An enemy you can see must pass a Heart save or be Stunned and lose its next turn. A boss loses 2 AP on its next turn instead, with no save.",
           "target": "enemy",
           "effects": [
             {
@@ -2066,7 +2066,7 @@
       "miracle": {
         "id": "rewoven",
         "name": "Rewoven",
-        "text": "The squad takes another full turn now, and every ally's HP is restored to what it was at the start of this round, if that was higher.",
+        "text": "Every ally whose HP was higher at the start of this round gets that HP back, and the Downed among them stand up. Then the whole squad takes another full turn, right now.",
         "target": "none",
         "effects": [
           {

@@ -2,10 +2,20 @@
 // The host's browser is authoritative (it runs the engine and the Narrator with the host's own key). The room
 // object relays guests' actions to the host, delivers each player's filtered view, keeps the latest views and the
 // host's save for reconnects, and reports who is online. It never sees an API key.
+// A socket that is closing or gone must never stop a message reaching the others (docs/design/handoffs/coop-stall.md):
+// every send goes through post(), which never throws.
 import { DurableObject } from 'cloudflare:workers';
 
 interface Env { ROOMS: DurableObjectNamespace<Room>; ASSETS?: Fetcher; SITE?: KVNamespace }
 interface Tag { pid: string; role: 'host' | 'guest'; name: string }
+
+const CLOSING = 2, CLOSED = 3; // WebSocket.readyState
+/** Send to one socket, and never throw. A socket the room has replaced (or whose player has gone without a word) stays
+ *  in the room's list, closing, until the other end answers; send() on it throws. That used to end the loop it was in,
+ *  so the player's newer socket never got its view and the fight stood still for them. Returns whether it was sent. */
+function post(ws: Pick<WebSocket, 'send'>, s: string): boolean {
+  try { ws.send(s); return true; } catch { return false; }
+}
 
 export default {
   async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -84,14 +94,14 @@ export class Room extends DurableObject<Env> {
     server.serializeAttachment({ pid, role, name } satisfies Tag);
     if (role === 'host') {
       const save = await this.ctx.storage.get('save');
-      if (save) server.send(JSON.stringify({ t: 'snapshot', state: save }));
-      for (const ws of this.ctx.getWebSockets('guest')) { const a = ws.deserializeAttachment() as Tag; server.send(JSON.stringify({ t: 'presence', pid: a.pid, name: a.name, online: true })); }
+      if (save) post(server, JSON.stringify({ t: 'snapshot', state: save }));
+      for (const ws of this.live('guest')) { const a = ws.deserializeAttachment() as Tag | null; if (a) post(server, JSON.stringify({ t: 'presence', pid: a.pid, name: a.name, online: true })); }
       this.toGuests({ t: 'host', online: true });
     } else {
       const view = await this.ctx.storage.get('view:' + pid);
-      if (view) server.send(JSON.stringify({ t: 'view', state: view }));
-      const hostOn = this.ctx.getWebSockets('host').length > 0;
-      server.send(JSON.stringify({ t: 'host', online: hostOn }));
+      if (view) post(server, JSON.stringify({ t: 'view', state: view }));
+      const hostOn = this.live('host').length > 0;
+      post(server, JSON.stringify({ t: 'host', online: hostOn }));
       this.toHost({ t: 'presence', pid, name, online: true });
     }
     return new Response(null, { status: 101, webSocket: client });
@@ -105,28 +115,37 @@ export class Room extends DurableObject<Env> {
     if (m.t === 'ping') return;
     if (a.role === 'host') {
       if (m.t === 'view' && typeof m.pid === 'string') {
-        const s = JSON.stringify({ t: 'view', state: m.state });
-        for (const g of this.ctx.getWebSockets(m.pid)) g.send(s);
+        // resync: the host's answer to a guest's check-in (below), marked so the guest can count them
+        const s = JSON.stringify(m.resync ? { t: 'view', state: m.state, resync: true } : { t: 'view', state: m.state });
+        for (const g of this.ctx.getWebSockets(m.pid)) post(g, s);
         await this.ctx.storage.put('view:' + m.pid, m.state);
       } else if (m.t === 'save') {
         await this.ctx.storage.put('save', m.state);
       } else if (m.t === 'err' && typeof m.pid === 'string') {
-        for (const g of this.ctx.getWebSockets(m.pid)) g.send(JSON.stringify({ t: 'err', message: m.message, nonce: m.nonce }));
+        for (const g of this.ctx.getWebSockets(m.pid)) post(g, JSON.stringify({ t: 'err', message: m.message, nonce: m.nonce }));
       }
     } else if (m.t === 'act') {
-      if (!this.ctx.getWebSockets('host').length) { ws.send(JSON.stringify({ t: 'err', message: 'The host is offline. Your action wasn\'t sent.' })); return; }
+      if (!this.live('host').length) { post(ws, JSON.stringify({ t: 'err', message: 'The host is offline. Your action wasn\'t sent.' })); return; }
       this.toHost({ t: 'act', from: a.pid, action: m.action, nonce: m.nonce });
+    } else if (m.t === 'sync') {
+      // A guest's check-in: the version of the game it has (m.v). The host answers with the view if that isn't its
+      // own (apps/web/src/game/store.ts answerSync); with the host away, the last view the room kept goes out instead.
+      if (this.live('host').length) { this.toHost({ t: 'sync', from: a.pid, name: a.name, v: m.v }); return; }
+      const view = await this.ctx.storage.get<{ v?: number }>('view:' + a.pid);
+      if (view && view.v !== m.v) post(ws, JSON.stringify({ t: 'view', state: view, resync: true }));
     }
   }
 
   async webSocketClose(ws: WebSocket) {
     const a = ws.deserializeAttachment() as Tag | null;
     if (!a) return;
-    if (a.role === 'host') { if (this.ctx.getWebSockets('host').filter((x) => x !== ws).length === 0) this.toGuests({ t: 'host', online: false }); }
-    else if (this.ctx.getWebSockets(a.pid).filter((x) => x !== ws).length === 0) this.toHost({ t: 'presence', pid: a.pid, name: a.name, online: false });
+    if (a.role === 'host') { if (this.live('host').filter((x) => x !== ws).length === 0) this.toGuests({ t: 'host', online: false }); }
+    else if (this.live(a.pid).filter((x) => x !== ws).length === 0) this.toHost({ t: 'presence', pid: a.pid, name: a.name, online: false });
   }
   async webSocketError(ws: WebSocket) { await this.webSocketClose(ws); }
 
-  private toHost(m: unknown) { const s = JSON.stringify(m); for (const h of this.ctx.getWebSockets('host')) h.send(s); }
-  private toGuests(m: unknown) { const s = JSON.stringify(m); for (const g of this.ctx.getWebSockets('guest')) g.send(s); }
+  /** The sockets with this tag (a player id, 'host' or 'guest') that are not closing or closed. */
+  private live(tag: string): WebSocket[] { return this.ctx.getWebSockets(tag).filter((x) => x.readyState !== CLOSING && x.readyState !== CLOSED); }
+  private toHost(m: unknown) { const s = JSON.stringify(m); for (const h of this.ctx.getWebSockets('host')) post(h, s); }
+  private toGuests(m: unknown) { const s = JSON.stringify(m); for (const g of this.ctx.getWebSockets('guest')) post(g, s); }
 }

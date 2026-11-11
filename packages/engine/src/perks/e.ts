@@ -81,7 +81,7 @@ function bondsOf(h: Pick<Holder, 'c' | 'key' | 'u' | 'g' | 'cb'>, consent: boole
 function bondAction(max: (h: Holder) => number, consent: boolean, label: string) {
   return {
     id: 'bond', label, scope: ['story', 'world'] as any, pick: 'squad' as const, pickLabel: 'The squadmate', ap: 0, target: 'none' as const, uses: { per: BOND_SCOPE as any, n: 999 },
-    text: consent ? 'Name a squadmate (their player must agree; the Narrator confirms).' : 'Name a squadmate to bond with.',
+    text: consent ? 'Name a squadmate to bond with. Their player must agree, and the Narrator confirms it.' : 'Name a squadmate to bond with.',
     preview: (h: Holder, args: any) => { const t = pickChar(h, args.choice || args.text || args.npc); return typeof t === 'string' ? { ok: false, why: t } : { lines: ['Bond with ' + t.name + '.'] }; },
     run: (h: Holder, args: any) => {
       const t = pickChar(h, args.choice || args.text || args.npc); if (typeof t === 'string') return t;
@@ -173,7 +173,7 @@ register({
   id: 'blueprint', claims: 'all',
   actions: [{
     id: 'sketch', label: 'Sketch the ground', scope: ['world', 'story'], ap: (h) => (h.cb ? 1 : 0), uses: { per: 'per_scene', n: 1 }, target: 'none',
-    text: 'Sketch the ground before the assault: every squadmate here gets +1 Movement in round 1 of the next fight this scene (II: +2).',
+    text: 'Once a scene: sketch the ground before the assault. I: every squadmate here gets +1 Movement in round 1 of the next fight this scene. II: +2 Movement.',
     run: (h) => {
       const g = gameOf(h); if (!g) return 'No story.';
       const saw = Object.values(g.characters || {}).filter((c: any) => !c.dead).map((c: any) => c.id);
@@ -381,8 +381,8 @@ register({
   id: 'on_my_mark', claims: 'all',
   actions: [{
     id: 'order', label: 'On My Mark', scope: ['combat'], ap: 1, uses: { per: 'per_round', n: 1 }, target: 'ally',
-    text: 'Order an ally: they take one action now, outside their turn, paid from their next turn\'s AP (at most 4).',
-    available: (h) => (h.cb && h.u && ownTurn(h.cb, h.u) ? true : h.u ? 'On your turn.' : false),
+    text: 'Once a round, on your turn: order an ally to take one action now, outside their turn. They can spend up to 4 AP, and it comes off their next turn.',
+    available: (h) => (h.cb && h.u && ownTurn(h.cb, h.u) ? true : h.u ? 'Only on your turn.' : false),
     preview: (h, args) => {
       const cb = h.cb, t = unitById(cb, args.targetId); if (!cb || !t) return {};
       if (t === h.u) return { ok: false, why: 'Order someone else.' };
@@ -427,8 +427,8 @@ register({
   id: 'supreme_command', claims: 'all',
   actions: [{
     id: 'supreme_command', label: 'Supreme Command', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'none',
-    text: 'Order the whole squad: every ally takes a free 2 AP action now, in initiative order.',
-    available: (h) => (h.cb && h.u && ownTurn(h.cb, h.u) ? true : h.u ? 'On your turn.' : false),
+    text: 'Once a fight, on your turn: order the whole squad. Every ally takes a free 2 AP action now, in initiative order.',
+    available: (h) => (h.cb && h.u && ownTurn(h.cb, h.u) ? true : h.u ? 'Only on your turn.' : false),
     preview: (h) => { const n = (h.cb?.units || []).filter((x) => x !== h.u && x.side === h.u?.side && alive(x) && !x.companion).length; return n ? { lines: [n + ' allies act now, 2 AP each.'] } : { ok: false, why: 'No one to command.' }; },
     run: (h) => {
       const cb = h.cb!, u = h.u!;
@@ -451,11 +451,11 @@ register({
   id: 'the_voice', claims: 'all', narrator: (e) => e?.op === 'condition',
   actions: [{
     id: 'the_voice', label: 'The Voice', scope: ['combat'], ap: 0, uses: { per: 'per_session', n: 1 }, target: 'none',
-    text: 'Give an order (halt, hold fire, drop it, kneel, fall back, or say anything else): rank-and-file enemies who hear it and fail a Heart save obey on their next turn.',
+    text: 'Once a session: give an order (halt, hold fire, drop it, kneel, fall back, or one in your own words). Rank-and-file enemies who hear it make a Heart save. Those who fail obey on their next turn.',
     preview: (h, args) => {
       const cb = h.cb, u = h.u; if (!cb || !u) return {};
       const order = ORDERS[String(args.choice || '').trim().toLowerCase()] || (args.text ? 'other' : '');
-      if (!order) return { ok: false, why: 'Pick an order: halt, hold fire, drop it, kneel, fall back, or say one.' };
+      if (!order) return { ok: false, why: 'Pick an order: halt, hold fire, drop it, kneel or fall back, or type your own.' };
       const n = cb.units.filter((t) => t.side !== u.side && alive(t) && ['minion', 'soldier'].includes(t.tier || 'minion') && dist(t.pos, u.pos) <= HEARING).length;
       return n ? { lines: [n + ' enemies hear you (Heart save vs ' + (12 + unitStrength(u, 'authority')) + ').'] } : { ok: false, why: 'No rank-and-file enemy within ' + HEARING + ' tiles.' };
     },
@@ -467,7 +467,7 @@ register({
         if (t.side === u.side || !alive(t) || !['minion', 'soldier'].includes(t.tier || 'minion') || dist(t.pos, u.pos) > HEARING) continue;
         out.push(applyCond(cb, rng, u, t, 'commanded', 1, 'heart', { via: 'authority', arg: order === 'other' ? 'halt' : order }).replace(/^ · /, ''));
       }
-      say(cb, u.name + ' gives an order' + said + ' (The Voice: ' + (order === 'other' ? 'the Narrator rules it' : order) + '): ' + out.join('; ') + '.');
+      say(cb, u.name + ' gives an order' + said + ' (The Voice: ' + (order === 'other' ? 'the Narrator decides what it does' : order) + '): ' + out.join('; ') + '.');
       if (order === 'other') note(h, 'order' + said + ': enemies who failed the save (Commanded) obey it for one action; the engine held them in place (halt)');
       return null;
     },
@@ -506,7 +506,7 @@ register({
   id: 'between_heartbeats', claims: 'all',
   actions: [{
     id: 'ready', label: 'Between Heartbeats', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'none', arm: true,
-    text: 'Ready it: shot, move (move:<tile>), prone, stim (pick the ally) or reload. It fires before the first enemy action in your sight, for 2 AP that aren\'t yours.',
+    text: 'Once a fight: ready one action: a shot, a move (type "move:" and the tile), going Prone, a stim on an ally you pick, or a reload. You take it just before the first enemy you can see acts, with 2 free AP.',
     available: (h) => (uses(h).left('per_combat', 1, h.key + '#fired') > 0 ? true : 'Used this fight.'),
     run: () => null,
   }],
@@ -534,7 +534,7 @@ register({
   id: 'spoon_feed', claims: 'all',
   actions: [{
     id: 'spoon_feed', label: 'Spoon-Feed', scope: ['combat'], ap: 2, target: 'enemy',
-    text: 'Explain an enemy\'s weakness: allies within 6 tiles get +2 to hit it until your next turn.',
+    text: 'Explain the weakness of an enemy you can see. Allies within 6 tiles of you get +2 to hit it until your next turn.',
     preview: (h, args) => {
       const cb = h.cb, t = unitById(cb, args.targetId); if (!cb || !t || !h.u) return {};
       if (!sideSees(cb, h.u.side, t)) return { ok: false, why: 'You can\'t see it.' };
@@ -568,7 +568,7 @@ register({
   id: 'flat_line', claims: 'all',
   actions: [{
     id: 'pick', label: 'Flat Line', scope: ['combat'], ap: 0, target: 'enemy',
-    text: 'Pick the enemy your calm unnerves (until the end of your first turn).',
+    text: 'Pick the enemy your calm unnerves. You can choose until the end of your first turn.',
     available: (h) => (stateOf(h).locked ? false : true),
     run: (h, args) => { const t = unitById(h.cb, args.targetId)!; stateOf(h).pick = t.id; say(h.cb, h.u!.name + ' fixes ' + t.name + ' with a flat stare (Flat Line).'); return null; },
   }],
@@ -635,7 +635,7 @@ register({
   id: 'lay_down_arms', claims: 'all', narrator: [],
   actions: [
     { id: 'lay_down_arms', label: 'Lay Down Arms', scope: ['combat'], ap: 2, target: 'enemy', range: HEARING,
-      text: 'Plead with a humanoid enemy who can hear you (II: up to three): a failed Heart save and it lowers its weapon (no attacks on its next turn).',
+      text: 'Plead with a humanoid enemy who can hear you. It makes a Heart save. If it fails, it lowers its weapon and can\'t attack on its next turn. II: plead with up to three enemies at once.',
       preview: (h, args) => {
         const cb = h.cb; if (!cb) return {};
         const ids = [...new Set([args.targetId, ...(args.targetIds || [])].filter(Boolean) as string[])].slice(0, tierII(h) ? 3 : 1);
@@ -650,7 +650,7 @@ register({
         return null;
       } },
     { id: 'plea', label: 'Lay Down Arms', scope: ['world', 'story'], ap: (h) => (h.cb ? 2 : 0), target: 'none',
-      text: 'Plead with a hostile person to stand down: the engine rolls their Heart save, the Narrator plays the result.',
+      text: 'Plead with a hostile person to stand down. They make a Heart save, and the Narrator plays out the result.',
       run: (h, args, rng) => {
         if (h.cb) { const t = unitById(h.cb, args.targetId); if (t && !humanoid(t)) return t.name + ' doesn\'t listen to pleas.'; return storyPlea(h, t ? { name: t.name, tier: t.tier } : null, rng, args.text); }
         const g = gameOf(h), want = charmedKey(args.npc || args.choice || ''), n = (g?.story?.npcs || []).find((x: any) => charmedKey(x.name) === want || charmedKey(x.id) === want);
@@ -675,9 +675,9 @@ register({
   id: 'field_surgeon', claims: 'all', priority: 200,
   actions: [
     { id: 'repair_ally', label: 'Field Repair an ally', scope: ['combat'], ap: (h) => actionAp({ u: h.u }, 'field_repair', 2).ap, target: 'ally', range: 1,
-      text: 'Patch up an adjacent ally: +10 HP per Improvisation point × your Healing given, one spare-parts charge (Improvisation 3+).',
+      text: 'Patch up an ally next to you: they heal 10 HP per Improvisation point, raised by your healing bonuses. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : true),
-      preview: (h, args) => { const t = unitById(h.cb, args.targetId); if (t === h.u) return { ok: false, why: 'Pick an ally (your weapon: Field Repair).' }; return { lines: ['+' + surgeonHeal(h) + ' HP' + (t && isMachine(t) ? ' (full power on a machine)' : '') + '.'] }; },
+      preview: (h, args) => { const t = unitById(h.cb, args.targetId); if (t === h.u) return { ok: false, why: 'Pick an ally. To fix your own weapon, use Field Repair.' }; return { lines: ['+' + surgeonHeal(h) + ' HP' + (t && isMachine(t) ? ' (full power on a machine)' : '') + '.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
         const p = pettyGate(h, t, rng); if (p) { u.ap += actionAp({ u }, 'field_repair', 2).ap; return null; }
@@ -688,7 +688,7 @@ register({
         return null;
       } },
     { id: 'patch', label: 'Patch up a squadmate', scope: ['world', 'story'], ap: 0, target: 'none',
-      text: 'Out of a fight, 10 minutes and one spare-parts charge: a squadmate (name them) heals half their max HP.',
+      text: 'Out of a fight: spend 10 minutes and one spare-parts charge to heal a squadmate you name for half their max HP. Needs Improvisation 3.',
       run: (h, args) => {
         const t = pickChar(h, args.choice || args.text || args.npc); if (typeof t === 'string') return t;
         if ((h.c?.skills?.proficiency || 0) < 3) return 'Needs Improvisation 3.';
@@ -715,7 +715,7 @@ register({
   id: 'angel_of_the_trenches', claims: 'all', priority: 10,
   actions: [{
     id: 'hold', label: 'Angel: hold position', scope: ['combat'], ap: 0, target: 'none', arm: true,
-    text: 'Toggle: while set, Angel of the Trenches won\'t pull you from your position.', run: () => null,
+    text: 'While this is on, Angel of the Trenches won\'t move you from your position. Use it again to turn it off.', run: () => null,
   }],
   on: {
     damage_in: (ctx, h) => {
@@ -870,7 +870,7 @@ register({
   id: 'born_officer', claims: 'all', narrator: [1, 2, 4],
   actions: [{
     id: 'command', label: 'Command', scope: ['combat', 'world'], ap: 1, uses: { per: 'per_round', n: 1 }, target: 'ally',
-    text: 'An ally you can see takes a free 1 AP move (pick a tile) or a free Shoot or Strike (pick the enemy).',
+    text: 'Once a round: an ally you can see takes a free move worth 1 AP (pick the tile), or a free Shoot or Strike (pick the enemy).',
     preview: (h, args) => {
       const cb = h.cb, u = h.u, t = unitById(cb, args.targetId); if (!cb || !u || !t) return {};
       if (t === u) return { ok: false, why: 'Command someone else.' };
@@ -938,7 +938,7 @@ register({
   },
   actions: [{
     id: 'thrown_stim', label: 'Thrown Stim', scope: ['combat', 'world'], ap: (h) => actionAp({ u: h.u }, 'stabilise', isMedicChar(h.c) ? 1 : 2).ap, uses: { per: 'per_combat', n: 1 }, target: 'ally', range: 3,
-    text: 'Stabilise a Downed ally up to 3 tiles away in line of sight with a thrown stim.',
+    text: 'Once a fight: throw a stim to stabilise a Downed ally up to 3 tiles away. You need line of sight. Uses one stim.',
     available: (h) => (!h.u ? false : (h.c?.stims || 0) <= 0 ? 'No stims left.' : true),
     preview: (h, args) => {
       const cb = h.cb, t = unitById(cb, args.targetId); if (!cb || !t || !h.u) return {};

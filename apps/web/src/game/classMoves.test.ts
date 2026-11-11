@@ -77,7 +77,7 @@ describe('pickers for the new moves (buttons only)', () => {
 
 describe('the Class tab reads each move\'s state', () => {
   it('an on/off pair names the one in force; Eye of the Storm reads ARMED; costs and uses come from the engine', () => {
-    expect(pkState({ actionId: 'duck_on', why: 'Already set.' } as any)).toEqual({ tag: ' ✓', why: 'In force now (on: the default).' });
+    expect(pkState({ actionId: 'duck_on', why: 'Already set.' } as any)).toEqual({ tag: ' ✓', why: 'In force now. On is the default.' });
     expect(pkState({ actionId: 'shrug_off', why: 'Already set.' } as any).why).toMatch(/off for this fight/);
     expect(pkState({ actionId: 'eye_of_the_storm', why: 'Already armed.' } as any).tag).toBe(' · ARMED');
     expect(pkState({ actionId: 'rally', why: 'Used until the next scene.' } as any)).toEqual({ tag: '', why: 'Used until the next scene.' });
@@ -95,7 +95,7 @@ describe('the Class tab reads each move\'s state', () => {
     const was = bindGame(f.g); let groups: any[]; try { groups = actionGroups(f.cb, f.unit(u.id), f.g.characters[u.charId!], { g: f.g }); } finally { bindGame(was); }
     const sig = groups!.find((gr) => gr[3] === 'sigils')[1];
     expect(sig.find((it: any) => it[0] === 'vent')[2]).toBe('0 AP'); expect(sig.find((it: any) => it[0] === 'core')[2]).toBe('1 AP');
-    expect(sig.find((it: any) => it[0] === 'core')[3]).toMatch(/Core Change: 2 → 1 AP/);
+    expect(sig.find((it: any) => it[0] === 'core')[3]).toMatch(/Core Change lowers the cost from 2 to 1 AP/);
     const plain = fightWith([cls('fighter', 3, MIND)], [{}]); const p = plain.turn(plain.pc);
     expect(magicAp(plain.unit(p.id), 'vent')).toBe(1); expect(magicAp(plain.unit(p.id), 'core')).toBe(2);
   });

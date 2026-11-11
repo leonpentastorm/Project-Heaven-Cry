@@ -119,7 +119,7 @@ describe('Fighter', () => {
   it('Shove: refused (nothing spent) when the push is blocked, or the target isn\'t adjacent', () => {
     const f = fightWith([cls('fighter', 3)], [{}, {}]);
     const u = at(f, f.pc, '4,2'); at(f, f.foes[0], '5,2'); at(f, f.foes[1], '6,2'); f.turn(u);
-    expect(() => perk(f, u, 'class:fighter.shove', { targetId: f.foes[0].id, choice: 'push' })).toThrow(/knock them Prone instead/);
+    expect(() => perk(f, u, 'class:fighter.shove', { targetId: f.foes[0].id, choice: 'push' })).toThrow(/Knock them Prone instead/);
     at(f, f.foes[0], '8,2');
     expect(() => perk(f, u, 'class:fighter.shove', { targetId: f.foes[0].id })).toThrow(/Out of range/);
     expect(f.unit(u.id).ap).toBe(6);
@@ -404,10 +404,10 @@ describe('Guardian', () => {
     expect(f.unit(a.id).pos).toBe('6,2'); expect(f.unit(a.id).ap).toBe(ap0); expect(f.unit(g.id).ap).toBe(5);
     expect(fx(f, 'command_move').length).toBe(1);
     f.turn(g);
-    expect(() => perk(f, f.unit(g.id), 'class:guardian.command', { targetId: a.id, tile: '9,2' })).toThrow(/Up to 2 tiles/);
+    expect(() => perk(f, f.unit(g.id), 'class:guardian.command', { targetId: a.id, tile: '9,2' })).toThrow(/They can move 2 tiles at most/);
     const h = fightWith([cls('guardian', 3, { skills: { authority: 0 } }), {}], [{ at: 'P11' }]);
     const [g2, a2] = h.pcs; at(h, a2, '4,2'); h.turn(g2);
-    expect(() => perk(h, h.unit(g2.id), 'class:guardian.command', { targetId: a2.id, tile: '5,2' })).toThrow(/Leadership Squad/);
+    expect(() => perk(h, h.unit(g2.id), 'class:guardian.command', { targetId: a2.id, tile: '5,2' })).toThrow(/Needs 1 point of Authority/);
   });
 });
 

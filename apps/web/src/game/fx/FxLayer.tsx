@@ -8,7 +8,7 @@ import type { FxEvent, GameState } from '@engine';
 import { preloadCombatSfx, reducedMotion } from '../sfx';
 import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
-import { canDraw, clearFx, fightStream, forgetSpotlights, fxBusyUntil, FX_IDLE, holdMovers, isHeld, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
+import { canDraw, clearFx, fightStream, forgetSpotlights, fxBusyUntil, FX_IDLE, holdMovers, isHeld, noteQueued, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 import { meleeMarksOf, syncMeleeMarks, clearMeleeMarks } from './melee-techniques';
 import { closeKeptBoxes } from '../cutIn';
@@ -39,6 +39,9 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
   // what is new, and what happened while away is not replayed late.
   const fight = React.useRef<{ key: string; n: number } | null>(null);
   const latest = React.useRef({ game, screen }); latest.current = { game, screen };
+  // The batches waiting for the grid before they are queued, oldest first: a later one never overtakes an earlier one
+  // (a fight's opening waits out the combat-in transition; the next state's effects used to be queued ahead of it).
+  const line = React.useRef<object[]>([]);
   // When the combat screen came up (a new fight's opening waits for the combat-in transition to finish).
   const screenAt = React.useRef({ screen, at: 0 }); if (screenAt.current.screen !== screen) screenAt.current = { screen, at: Date.now() };
   React.useEffect(() => { setLayer(ref.current); if (game) preloadCombatSfx(); return () => setLayer(null); }, [!!game]);
@@ -105,7 +108,7 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
     } else if (s.key.startsWith('cb|') && top < h.n) { opening = true; forgetSpotlights(s.key); fresh = s.list.slice(-24); } // the same fight started over (its numbering restarted)
     else fresh = s.list.filter((e) => e.n > h.n);
     seen.current = { key: s.key, n: top, code: game.code };
-    if (s.key.startsWith('cb|')) { fight.current = { key: s.key, n: top }; setProcessed(s.key, top); }
+    if (s.key.startsWith('cb|')) { fight.current = { key: s.key, n: top }; if (fresh.length) noteQueued(s.key, top); setProcessed(s.key, top); }
     if (!fresh.length) return;
     marksPending.current = true; // the standing marks wait for these to be queued and played
     // Wait for the grid to be on screen (a screen change may still be sliding in), then play; give up after ~3 s. A new
@@ -113,15 +116,20 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
     // and mid-flip, so the effects would be hidden and drawn in the wrong places.
     const stream = s.key, readyAt = opening ? screenAt.current.at + (reducedMotion() ? 220 : COMBAT_IN_MS) : 0;
     let tries = 0;
+    const ticket = {}; line.current.push(ticket);
+    const leave = () => { line.current = line.current.filter((x) => x !== ticket); };
     const go = () => {
-      if (latest.current.game?.code !== game.code) { marksPending.current = false; return; }
-      const busy = Date.now() < readyAt || (opening && !!document.querySelector('.phc-combat-in'));
+      // Another game, or the tab went out of sight while this batch waited (the queue was cleared then and these
+      // count as played: fx/play.ts clearFx): nothing to play.
+      if (latest.current.game?.code !== game.code || document.hidden) { leave(); marksPending.current = false; return; }
+      const first = line.current[0] === ticket;
+      const busy = !first || Date.now() < readyAt || (opening && !!document.querySelector('.phc-combat-in'));
       // A decided fight (won, lost, or every one of the viewer's fighters down): only its last moments play, at normal
       // speed; the steps the engine ran after it was decided aren't replayed.
       const cb = latest.current.game?.combat as any, me = latest.current.game ? Object.values(latest.current.game.characters || {}).filter((c: any) => c.owner === getState().me.id).map((c: any) => c.id) : [];
       const mine = cb ? (cb.units || []).filter((u: any) => u.charId && me.includes(u.charId)) : [];
       const decided = !!cb && (!!cb.over || (mine.length > 0 && mine.every((u: any) => u.dead || u.downed)));
-      if ((!busy && canDraw()) || tries++ > 30) { queueFx(fresh, stream, decided ? { keep: DECIDED_KEEP } : {}); marksPending.current = false; syncMarks(); return; }
+      if ((!busy && canDraw()) || (tries++ > 30 && first)) { leave(); queueFx(fresh, stream, decided ? { keep: DECIDED_KEEP } : {}); marksPending.current = !!line.current.length; syncMarks(); return; }
       setTimeout(go, busy ? 60 : 150);
     };
     go();

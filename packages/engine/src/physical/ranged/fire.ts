@@ -180,7 +180,7 @@ technique({
     let at = -1;
     if (t.args.opt != null && t.args.opt !== '') {
       at = Number(t.args.opt);
-      if (!Number.isInteger(at) || at < 0 || at >= points.length) return 'Fire from a point of the move: 0 to ' + (points.length - 1) + '.';
+      if (!Number.isInteger(at) || at < 0 || at >= points.length) return 'Pick the point of the move you fire from: 0 to ' + (points.length - 1) + '.';
     } else {
       let best = -1; points.forEach((k, i) => { const pc = chanceFrom(t, k, tgt); if (pc > best) { best = pc; at = i; } });
       if (best < 0) return 'No point of that move gives you the shot.';

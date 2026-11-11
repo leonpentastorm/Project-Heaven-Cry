@@ -8,6 +8,18 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.20.0 — 11 November 2026
+
+The playtest pass. It goes live together with 0.19.1 below, which was merged but never deployed on its own.
+
+- **Every card says what it does, in plain words.** 1,411 player-facing texts were rewritten for a player in the middle of a fight: Calls, class moves, conditions, objects, perks, traits, Sigil words, Outbursts, prayers, weapons, and the labels, hints and refusal reasons written in the game itself. Each was checked against what the game actually does. Where the old card and the game disagreed (118 places), the card now says what the game does; the list is `docs/design/handoffs/text-pass-mismatches.md`.
+- **One action keeps every effect it makes.** A hostile phase with more than 40 effects lost the oldest ones before any screen saw them (units jumped to where they ended). The list is now trimmed between actions, never during one.
+- **Co-op:** the room no longer stops passing the game on when a player's old connection has died without a word (the guest sat on an old state while the host moved on); a guest that falls behind catches up by itself every few seconds; and a screen that is waiting for effects that will never play shows the real state after a bound instead of staying locked. The stall first seen on 10 November was not reproduced in 75 test fights, so it is listed as persistent, with these safety nets: `docs/design/handoffs/coop-stall.md`.
+- **The perk and trait audit** (`docs/design/handoffs/perk-audit.md`): all 180 put through a fight, with what the card says against what happened. It is the ground for the new perk card.
+- **For the artist:** `art/briefs/ART-REQUESTS.md`, the running list of art that is wanted, with direction and links to the guides.
+- **Rules 1.14 is written** (speaking in a fight, Overdraw, Heart Overload, Resonance, the perk card's three shelves) and is being built; none of it is in this release.
+- **Test tools:** a fast pace for the browser suites that don't look at animation (`FAST=1`).
+
 ## 0.19.1 — 10 November 2026
 
 A hotfix for 0.19.0.
@@ -15,6 +27,14 @@ A hotfix for 0.19.0.
 - **The game crashed on start for a save that held Grapple or Origami Hands.** Rules 1.13 renamed them (Iron Grip, Both Hands) and every screen that lists perks looked the old id up and found nothing. A save is now settled as it loads: renamed perks follow their new id with their tier, and a perk or trait the game no longer has is taken off the sheet. Browser test: `apps/web/e2e/old-save.mjs`.
 - **Trick Shot's Ricochet, Spare, Nonlethal and the class toggles on attacks were missing** since attacks became techniques (0.18.0): they show again with any technique and are sent with it.
 - **Hidden is shown on your own card** (it was in force but nothing said so).
+- **A fight plays every effect, in order.** A hostile phase longer than about 7 seconds was sped up and its oldest effects skipped: a skipped push dropped a unit on its end tile, HP fell before the hit showed, and the hostiles' moves ran on into your turn. Now nothing is skipped or sped up in a fight (the speed setting is the only speed); HP bars (damage and healing), the combat log and whose turn it is all follow what has played, and YOUR TURN comes after the last hostile effect. Timed browser test: `apps/web/e2e/turn-order.mjs`.
+- **On the tokens:** a shield shows as a pale bar over the HP bar and Guard as pips; a token's label lists its conditions with what each one does, and so do the condition chips.
+- **Plainer cards:** the four held shots (Overwatch, Deny, Cover Me, Dead to Rights), the reactions and the terse technique cards are written as full sentences; no card or tooltip names a rules revision or an item number any more; four tooltips that repeated the text already on screen are gone.
+- **Revert on the level-up screen:** the points and perk steps a visit spent come back, until a fight or a class settles them.
+- **The story screen's skill panel shows attribute levels:** skills are grouped under their attribute, in the new order.
+- **The recoloured Acuity and Improvisation pictures show everywhere** (the old ones were served from cache under the same name; skill pictures now carry a version).
+- **A thrown weapon swishes** (it could play a gunshot), **the combat log scrolls** back through the fight, and **the AP an action will take pulses** on the bar instead of going hollow.
+- **The Twin Pays** covers the Begin's 2 AP as well (spec item 1007).
 - **A Legendary Deed** grants 1 Attribute point, and one Attribute point per deed may stand 1 above the level's ceiling (spec item 1006).
 - **Both Hands** has its own icon.
 - The rules spec in the repository is the source of truth; the Claude Doc is frozen at revision 1.1.

@@ -7,6 +7,7 @@
 <span style="{{pointChipStyle}}">{{pointChip}}</span>
 <span style="{{stepChipStyle}}">{{stepChip}}</span>
 <span class="phc-lu-class-chip" style="{{classChipStyle}}; display: inline-flex; align-items: center; gap: 6px"><sc-if value="{{hasClassIcon}}"><img src="{{classIcon}}" alt="" style="width: 16px; height: 16px"></sc-if>{{classChip}}</span>
+<sc-if value="{{canRevert}}"><button type="button" class="phc-lu-revert" onClick="{{revert}}" style="{{revertStyle}}" title="Take back the points and perk steps you spent here. A fight or earning a class settles them for good.">↶ Revert</button></sc-if>
 <button type="button" class="phc-lu-done" onClick="{{done}}" style="{{doneStyle}}">{{doneLabel}}</button>
 </div>
 </header>
