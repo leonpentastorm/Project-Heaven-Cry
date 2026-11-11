@@ -1,7 +1,7 @@
 # The Outburst rework, round 2 (rules 1.19)
 
 11 Nov 2026. For Leon and whoever picks Soul magic up next. The rules are in `docs/rules/PHC-Core-Rules-v1.0.md`
-("Rules revision 1.19", section 14 items 1100 to 1121). This is what was asked, what was built, what was measured,
+("Rules revision 1.19", section 14 items 1200 to 1221). This is what was asked, what was built, what was measured,
 what is not met, and what only Leon can settle. **Nothing here is committed by this session; nothing was built with
 `npm run build`, deployed or run in a browser.** Sigil was not touched.
 
@@ -347,7 +347,7 @@ Each has my recommendation, and the recommendation is what is built.
 ## 13. Files
 
 - Spec: `docs/rules/PHC-Core-Rules-v1.0.md` ("Rules revision 1.19"; a pointer at the head of the Soul magic section
-  and in rules 1.17; items 1100 to 1121).
+  and in rules 1.17; items 1200 to 1221).
 - Data: `data/feelings.json` (revision 20: all 25, `plain_step`, `once_each`), `data/soul_modules.json` (revision 20:
   `cycle`, `damage` and its `modes`, `stage_riders`, the schools' `identity`, options and `stack`,
   `second_school.same_school`), `data/classes.json` (Shape's text), `data/perks.json` (Heart Overload II's text),

@@ -415,7 +415,7 @@
       "id": "blackpoint_700",
       "name": ".700 Blackpoint anti-materiel",
       "category": "heavy",
-      "damage": 68,
+      "damage": 66,
       "damage_type": "physical",
       "range_tiles": 40,
       "magazine": 3,

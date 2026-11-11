@@ -1204,7 +1204,7 @@ function markRelease(h: Holder, ctx: any, what: 'surge' | 'status' | 'mend') {
 // Rules 1.19: a character takes one free Pump a turn at most, so Shape no longer adds a second one. What it does now:
 // (1) on a Damage design you have the turn's free Pump even without Empathy 3 (the first Pump of the turn that would
 // cost AP, while the turn's free stage is still there: ctx.capLeft); (2) the turn's free Pump, whoever gave it, steps
-// SHAPE_PLUS more on a Damage design (kept on the hold: held.plus). Items 522 and 1108, PROVISIONAL.
+// SHAPE_PLUS more on a Damage design (kept on the hold: held.plus). Items 522 and 1208, PROVISIONAL.
 const SHAPE_PLUS = 0.1; // PROVISIONAL (item 1108)
 register({
   id: 'channeler.shape', claims: 'all', priority: 900,

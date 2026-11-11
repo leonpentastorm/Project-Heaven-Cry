@@ -100,7 +100,7 @@ describe('rules 1.18: the weapon numbers', () => {
   it('the guns that were over the ceiling, and the automatic guns whose Burst lost a roll', () => {
     const d = (id: string) => (WEAPON[id] as any).damage;
     expect(d('long_rifle')).toBe(48); expect(d('adamantile_battle_rifle')).toBe(30); expect(d('ccec_marksman_rifle')).toBe(33);
-    expect(d('core_rifle')).toBe(29); expect(d('blackpoint_700')).toBe(68); expect(d('frontier_hand_cannon')).toBe(38);
+    expect(d('core_rifle')).toBe(29); expect(d('blackpoint_700')).toBe(66); expect(d('frontier_hand_cannon')).toBe(38);
     expect(d('hellraiser_service_rifle')).toBe(30); expect(d('lever_carbine')).toBe(32); expect(d('legion_bullpup')).toBe(28); expect(d('hellraiser_lmg')).toBe(25); // not changed
     expect(d('decrkm_smg')).toBe(19); expect(d('legion_pdw')).toBe(20); expect(d('whisper_smg')).toBe(16); expect(d('mandestra_drum_gun')).toBe(19); expect(d('decrkm_autopistol')).toBe(17);
     expect(d('brigade_auto_shotgun')).toEqual({ within_4: 40, within_8: 24 });

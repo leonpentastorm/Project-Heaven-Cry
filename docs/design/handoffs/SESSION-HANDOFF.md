@@ -43,6 +43,15 @@ part), `rules114`, `sigil14`, `classes`, `classes-moves` green. Five old suites 
 stale, to be repaired or retired. Not done: `npm run e2e -- all` on the final tree, the guns' ceiling, the version
 bump. Nothing of this is live.
 
+**12 Nov, early.** Leon answered the magic questions (in `damage-step-magic.md`) and three more pieces were built:
+rules 1.18, the guns' ceiling (`damage-step-guns.md`: the best gun 143 to 146% of the plain rifle, was 204 to 221;
+nine questions; fights are longer and the Boss fight with cover now runs 10.6 to 13.8 rounds, not refitted), rules
+1.19, Outburst round 2 (`outburst-rework-2.md`; twelve questions; its section 14 items are 1200 to 1221), and the
+glyph that vanished on an opportunity attack (a display bug; bug list item 2), with Edge Word limited to your own
+turn and the blow played before the step it interrupts. Known and not fixed: the fit tool's "under fire" rows read
+wrong on the 26 x 26 simulator ground (an enemy 13 tiles off never fires); whether real fights have that gap is
+unchecked. Nothing of this is live.
+
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music
