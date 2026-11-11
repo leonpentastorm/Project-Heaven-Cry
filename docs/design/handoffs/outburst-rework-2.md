@@ -369,3 +369,14 @@ Each has my recommendation, and the recommendation is what is built.
 **For the lead:** `CLAUDE.md` ("The game in one screen", the Mana line) still gives rules 1.8's Release multipliers and
 "Empathy" free Pumps; it could carry "rules 1.19: ×0.8 +0.2 a stage, base 36, each feeling once, one free Pump a turn,
 the schools read the stage". `CHANGELOG.md` and the version are yours.
+
+
+## Leon's answers (12 Nov 2026)
+
+1. Each feeling once per Outburst: **yes.**
+5. Heart Overload's free Begin: **stays as it is; change after a playtest if it is still too much.**
+2. The plain Pump: **+0.2.**
+7. The Buff heal base: not settled alone. **A pass on heals and shields, for Sigil and the Outburst both** (rules 1.20,
+   hand-off `heal-shield-pass.md`).
+
+The other questions were not answered; their recommendations stand.
