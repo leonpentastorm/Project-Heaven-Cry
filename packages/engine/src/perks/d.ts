@@ -19,6 +19,7 @@ import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, previewOutburst, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
   RESONANCE_BONUS, resonates, fadePattern, evokeGrowth, practiceOnce, type Affected,
+  takeFreeStage,
 } from '../magic';
 import { asBolt, schoolRider, resonanceExtra } from '../classes/soul';
 import { blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
@@ -190,6 +191,7 @@ register({
     strain: (ctx, h) => {
       const s = stateOf(h), m = h.u?.mg; if (!me(h, ctx.u) || ctx.why !== 'begin' || !s.raise) return;
       const id = s.raise; s.raise = null; if (!m?.held || m.held.design !== id || m.held.stage >= 1) return;
+      if (!takeFreeStage(h.u!)) return; // rules 1.19: one free stage a turn; if a free Pump took it, this Begin holds at stage 0
       m.held.stage = 1;
       emitFx(ctx.cb, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: 1, mult: stageMult(1), free: true, max: false, tone: m.held.tone || 'raw', overload: true });
       log(ctx.cb, 'Heart Overload: it holds at stage 1 (×' + stageMult(1) + ').');

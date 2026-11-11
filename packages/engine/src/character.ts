@@ -354,6 +354,13 @@ export function pairingError(school: string, school2: string | undefined, mods: 
   if (!school2 || school2 === school || schoolSide(school, mods) === schoolSide(school2, mods)) return null;
   return 'The second school must work on the same side as the first (' + (SCHOOL[school]?.name || school) + ' works on ' + (schoolSide(school, mods) === 'ally' ? 'allies' : 'foes') + ', ' + (SCHOOL[school2]?.name || school2) + ' on ' + (schoolSide(school2, mods) === 'ally' ? 'allies' : 'foes') + ').';
 }
+/** Rules 1.19: may this character take a design's own school a second time? Shelved for everyone (soul_modules.json
+ * second_school.same_school.shelved); when an advanced class opens it, the class sets `soulKnown.sameSchool`. */
+export function sameSchoolError(c: Character): string | null {
+  const ss = (SOUL_RULES as any).second_school?.same_school;
+  if (!ss || ss.shelved) return 'The same school twice in one design is not open yet.';
+  return (c.soulKnown as any)?.sameSchool ? null : 'The same school twice in one design needs an advanced class.';
+}
 /** Every design rule of rules 1.5 (magic/design, Beloved Spells, the Twinbound twin): schools known, a second school at
  * Will Power 5 on the same side, modules known and within `slots`, one shape (Size needs one), a known tone (the first
  * is free at Lore Master 1 (rules 1.8): `learnTone` names it), options checked. Pure: returns the clean design or an error. */
@@ -364,7 +371,10 @@ export function checkOutburstDesign(c: Character, d: Partial<OutburstDesign> | n
   const mods = [...new Set(d.modules || [])];
   if (d.school2) {
     if ((c.skills.will_power || 0) < 5) return 'Two schools need Will Power 5.';
-    if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) return 'Pick a second school you know.';
+    // Rules 1.19: a design's own school a second time is carried by the engine and defined in the spec, but shelved (it
+    // comes back as an advanced-class feature): nobody can build one.
+    if (d.school2 === d.school) { const why = sameSchoolError(c); if (why) return why; }
+    if (!SCHOOL[d.school2] || !k.schools.includes(d.school2)) return 'Pick a second school you know.';
     const pe = pairingError(d.school, d.school2, mods); if (pe) return pe;
   }
   if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) return 'Use only modules you know.';
@@ -621,7 +631,12 @@ export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as 
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };
 /** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
-export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', P(c, 'empathy') >= 7 ? 2 : P(c, 'empathy') >= 3 ? 1 : 0)));
+/** Empathy's free Pump each round (rules 1.19: one from Empathy 3; Empathy 7 no longer gives a second: see swellFree).
+ * The table is soul_modules.json cycle.free_pumps; whatever items add, a character takes one free Pump a turn at most
+ * (magic.ts FREE_PER_TURN). */
+export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { empathy: number; pumps: number }[] || [{ empathy: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'empathy') >= r.empathy ? Math.max(n, r.pumps) : n), 0))));
+/** Rules 1.19: from Empathy 7 a held Outburst swells without Strain. */
+export const swellFree = (c: Character) => P(c, 'empathy') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.empathy ?? 99);
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');

@@ -20,6 +20,7 @@ it('diag', () => {
         const bc = buildCharacter(r.rows[0].build, v, lv);
         if (bc.c.weapon !== w) { console.log(w + ' not usable by the build: ' + bc.notes.filter((q) => /refused/.test(q)).join(' | ')); continue; }
         console.log('L' + lv + ' ' + v + ' ' + rar + ' ' + (w + (off ? ' x2' : '')).padEnd(28) + r.rows.map((q) => q.rot + ' ' + String(q.pctRifle).padStart(3) + '%').join(' · ') + ' | best ' + r.best.rot + ' ' + r.best.pctRifle + '% hit ' + r.best.hitPct + ' rolls ' + r.best.shotsPerTurn + ' ' + JSON.stringify(r.best.actions) + (r.rows.some((q) => q.errors) ? ' ERRORS' : '') + (process.env.NOTES ? ' | ' + bc.notes.join(' | ') : ''));
+        if (process.env.DETAIL) for (const q of r.rows) console.log('     ' + q.rot + ': ' + q.pctRifle + '% hit ' + q.hitPct + ' rolls/turn ' + q.shotsPerTurn + ' dmg/hit ' + q.dmgPerHit + ' ap ' + JSON.stringify(q.apShare) + ' ' + JSON.stringify(q.actions));
         out.push({ level: lv, variant: v, rarity: rar, weapon: w, dual: !!off, rows: r.rows });
       } catch (e) { console.log(w + ' FAILED ' + String(e?.stack || e).slice(0, 300)); }
     }

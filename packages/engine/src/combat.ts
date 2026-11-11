@@ -1128,7 +1128,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     if (!tgt.dead && fx.op === 'on_hit' && !opts.tech) injury += onHit(cb, att, tgt, fx);
     // The Evoker blade's Edge Word (item 487): a hit leaves one glyph free of AP this turn (charge and Flux as usual),
     // drawn on your own tile as any glyph; not on an attack that already drew one (Sword Form: one free glyph an attack).
-    if (fx.op === 'edge_word' && att.mg?.evoker && !att.edgeWord && !(att.ps as any)?.['class:blade_scribe.sword_form']?.edge) { att.edgeWord = true; injury += ' · Edge Word: your next glyph this turn costs 0 AP'; }
+    if (fx.op === 'edge_word' && active(cb)?.id === att.id && att.mg?.evoker && !att.edgeWord && !(att.ps as any)?.['class:blade_scribe.sword_form']?.edge) { att.edgeWord = true; injury += ' · Edge Word: your next glyph this turn costs 0 AP'; }
     if (r.prevented) injury += ' · no damage';
     // Riders (rules 1.3): incendiary rounds and burning weapons set the target Burning (a hit's rider: no save);
     // enhanced rounds and mana arms release bots (+1 on the meter); explosives splash; the flamer's cone.
@@ -1462,7 +1462,12 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
         if (h.side === u.side || !alive(h) || dist(h.pos, was) > 1 || dist(h.pos, k) <= 1 || !canReact(cb, h)) continue;
         // 'reaction_window' {reactor, mover, kind, cancel}: an item may cancel a reaction (or take its own).
         const rw: any = emit(cb, 'reaction_window', { reactor: h, mover: u, kind: 'opportunity', cancel: false, at: k, cb, rng }); if (rw.cancel) continue;
-        flush(); useReaction(cb, h); cb.log.push(h.name + ' takes an opportunity attack.'); opportunityStrike(cb, rng!, h, u, was);
+        // The walk so far plays up to the tile it is leaving, then the blow; the step out plays after it, and only if
+        // the mover is still on its feet (a mover dropped there never showed the step it didn't finish).
+        if (seg[seg.length - 1] === k) { seg.pop(); tileSight.pop(); }
+        u.pos = was; flush(); u.pos = k;
+        useReaction(cb, h); cb.log.push(h.name + ' takes an opportunity attack.'); opportunityStrike(cb, rng!, h, u, was);
+        if (!u.dead && !u.downed) { seg.push(k); tileSight.push(sightHere(cb, u)); }
       }
       if (!mc.skipOW && !u.dead && !u.downed) { const before = cb.log.length; triggerOverwatch(cb, rng!, u, seg, tileSight); if (cb.log.length !== before) restart(); }
       // Heart Overwatch (rules 1.5): a watching Soul mage releases at an enemy entering its design's reach.

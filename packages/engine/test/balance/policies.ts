@@ -308,7 +308,10 @@ export function sigilAfter(x: Ctx, step: Step, ok: boolean) {
 // is 2 or more stages short, and Heart Overload's free Begin right after a Release at stage 2 or higher.
 // opts.stage = k: plain Pumps only, no Overdraw and no Heart Overload, released at exactly stage k (the measurements by stage).
 // opts.feel: every Pump takes the best feeling it knows, and it holds for stage 4 (the peak); x.peak plays the same.
-const feelStrain = (f: string | null) => (f ? Number((FEELING[f]?.pour as any)?.strain || 0) : 0);
+// Rules 1.19: each feeling goes in once; one free Pump a turn; steady play never pours a feeling that costs more than
+// 1 Strain, never Fear without an enemy next to it (it throws the caster back), and never Relief (it is not played).
+// Rules 1.19: Pride's Strain comes after a Release that takes nobody down (on the range: always), so it is counted as Strain.
+const feelStrain = (f: string | null) => (f ? Number((FEELING[f]?.pour as any)?.strain || 0) + Number((FEELING[f]?.pour as any)?.strain_unless_down || 0) : 0);
 const feelHurts = (f: string | null) => (f ? Number((FEELING[f]?.pour as any)?.self_damage || 0) : 0);
 export const outburst: Policy = (x) => {
   const u = x.u, m = u.mg, o = x.opts || {};
@@ -352,11 +355,15 @@ export const outburst: Policy = (x) => {
     let feel: string | null = null;
     if (!forced) {
       // what the Release is worth after this Pump: its multiplier × its chance to land (Calm can't miss)
-      const hit = rel?.pct ?? 0.65, has = (f: string | null) => (m.held.felt || []).includes('calm') || f === 'calm';
-      const worth = (f: string | null) => { const pp = W(x.g, () => previewPump(x.cb, u, f)); return pp.ok ? pp.mult * (has(f) ? 1 : hit) : 0; };
+      // rules 1.19: Calm rolls twice and keeps the better (no critical); Joy is a critical from 18 up
+      const felt = m.held.felt || [], calmIn = felt.includes('calm'), seen = rel?.pct ?? 0.65, p1 = calmIn ? 1 - Math.sqrt(Math.max(0, 1 - seen)) : seen;
+      const land = (f: string | null) => { const calm = calmIn || f === 'calm', joy = felt.includes('joy') || f === 'joy'; const hit = calm ? 1 - (1 - p1) ** 2 : p1; return hit + (calm ? 0 : Math.min(hit, joy ? 0.15 : 0.05) * 0.5); };
+      const worth = (f: string | null) => { const pp = W(x.g, () => previewPump(x.cb, u, f)); return pp.ok ? pp.mult * land(f) : 0; };
       let bm = worth(null);
       for (const f of m.feelings || []) {
         const fs = feelStrain(f); if (fs && m.strain + fs + (carry ? 1 : 0) > m.strainLimit + (peak ? 2 : 0)) continue;
+        if (!peak && fs > 1) continue; // rules 1.19: steady play pours nothing that costs more than 1 Strain (Abandon, Pride with no kill in sight): a heart can't keep that up
+        if (f === 'fear' && !x.foes.some((q: any) => dist(u.pos, q.pos) <= 1)) continue; // Fear throws the caster 2 tiles back: only with an enemy next to it
         if (feelHurts(f) && (!peak || u.hp < u.maxHp * 0.4)) continue; // HP does not come back: steady play does not pay in it
         const v = worth(f); if (v > bm + 1e-9) { bm = v; feel = f; }
       }
@@ -367,7 +374,7 @@ export const outburst: Policy = (x) => {
     if (pp.ok && u.ap - pp.ap >= keep) {
       // Overdraw (Will Power 3): once a turn a Pump adds 2 stages; the first of a fight costs no Strain, the rest 1.
       // Only when the turn's Pumps can't reach the goal without it: its second stage is a plain one (no feeling in it).
-      const canPump = Math.floor(u.ap - keep + 1e-9) + (m.freePumps || 0) + (m.firstUsed || x.cb.overworld ? 0 : 1);
+      const canPump = Math.floor(u.ap - keep + 1e-9) + Math.min(Math.max(0, 1 - (m.freeUsed || 0)), (m.freePumps || 0) + (m.firstUsed || x.cb.overworld ? 0 : 1)); // rules 1.19: one free Pump a turn
       const od = !forced && (x.c?.skills?.will_power || 0) >= 3 && stage <= goal - 2 && goal - stage > canPump && x.memo.odStamp !== x.cb.round && (!x.memo.odUsed || m.strain + feelStrain(feel) + 1 + (carry ? 1 : 0) <= m.strainLimit + (peak ? 2 : 0));
       if (od) { const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}), mods: ['skill:will_power.3#overdraw'] }, kind: 'setup', label: 'Overdraw' + (feel ? ' (' + (FEELING[feel]?.name || feel) + ')' : ''), seq: 'part' }); if (s) { x.memo.odStamp = x.cb.round; x.memo.odUsed = true; return s; } }
       const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}) }, kind: 'setup', label: feel ? 'Pump (' + (FEELING[feel]?.name || feel) + ')' : 'Pump', seq: 'part' });

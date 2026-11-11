@@ -37,4 +37,12 @@ describe('a hostile caster struck by an opportunity attack while it walks its Li
     expect(fx.map((f) => f.k)).not.toContain('evoke');
     expect((cb.glyphs || []).map((g) => [g.pos, g.by])).toEqual([['6,5', e.id]]);
   });
+  it('the blow lands before the step out: a caster it drops shows no walk, one it doesn\'t walks on after it', () => {
+    const dead = turn(10).fx.map((f) => f.k); expect(dead).toContain('melee'); expect(dead).not.toContain('move');
+    const live = turn(500).fx.map((f) => f.k); expect(live.indexOf('melee')).toBeLessThan(live.indexOf('move'));
+  });
+  it('Edge Word is for your own turn: an opportunity attack leaves no free glyph', () => {
+    const { cb, log } = turn(500); const p = cb.units.find((x) => x.side === 'pc')!;
+    expect(p.edgeWord).toBeFalsy(); expect(log.some((l) => /Edge Word/.test(l))).toBe(false);
+  });
 });

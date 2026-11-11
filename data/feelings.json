@@ -224,15 +224,15 @@
       "n": 6,
       "family": "holy",
       "step": {
-        "base": -0.2,
-        "text": "−0.2"
+        "base": -0.4,
+        "text": "−0.4"
       },
       "trigger": {
         "event": "calm_turn",
         "text": "You end a turn having Steadied, or with 0 Strain."
       },
       "pour": {
-        "text": "−0.2: the multiplier goes down. In return a Bolt or Lance rolls twice and keeps the better roll. It can't be a critical. On a Wave, Burst or Aura, which never roll, it only costs you.",
+        "text": "−0.4: the multiplier goes down. In return a Bolt or Lance rolls twice and keeps the better roll. It can't be a critical. On a Wave, Burst or Aura, which never roll, it only costs you.",
         "advantage": true,
         "no_crit": true,
         "effects": [
@@ -349,8 +349,8 @@
         "text": "You take down an Elite or Boss."
       },
       "pour": {
-        "text": "+0.6 to the multiplier. If the Release takes nobody down, you take 1 Strain after it.",
-        "strain_unless_down": 1,
+        "text": "+0.6 to the multiplier. If the Release takes nobody down, you take 2 Strain after it.",
+        "strain_unless_down": 2,
         "effects": [
           {
             "op": "feeling_pour",
@@ -531,16 +531,16 @@
       "family": "cold",
       "step": {
         "base": 0.2,
-        "alone_extra": 0.3,
+        "alone_extra": 0.2,
         "alone_range": 3,
-        "text": "+0.2; +0.5 with no ally within 3 tiles"
+        "text": "+0.2; +0.4 with no ally within 3 tiles"
       },
       "trigger": {
         "event": "last_standing",
         "text": "You are the last of your side standing."
       },
       "pour": {
-        "text": "+0.2, or +0.5 with no ally within 3 tiles of you.",
+        "text": "+0.2, or +0.4 with no ally within 3 tiles of you.",
         "effects": [
           {
             "op": "feeling_pour",

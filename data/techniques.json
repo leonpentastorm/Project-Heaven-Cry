@@ -1427,26 +1427,26 @@
       },
       "rounds": 3,
       "needs": {},
-      "text": "Three rounds at one target, two rolls. The second roll is at −2 to hit.",
+      "text": "Three rounds at one target, two rolls. The second roll is at −4 to hit.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "you may split the two rolls between two targets standing next to each other, and the barrel cools 1 Heat after."
+          "text": "you may split the two rolls between two targets standing next to each other."
         },
         {
           "props": [
             "quick"
           ],
-          "text": "the second roll is at −1 instead of −2.",
+          "text": "the second roll is at −3 instead of −4.",
           "stack": true
         },
         {
           "props": [
             "heavy"
           ],
-          "text": "the weapon holds all three rounds on the target: three rolls, each at −1 more than the last.",
+          "text": "the second roll is at −1 instead of −4.",
           "when": "braced",
           "stack": true
         }
@@ -1459,11 +1459,11 @@
       "particular": false,
       "numbers": {
         "rolls": 2,
-        "later_penalty": 2,
-        "quick_penalty": 1,
-        "heavy_rolls": 3,
+        "later_penalty": 4,
+        "quick_penalty": 3,
+        "heavy_rolls": 2,
         "heavy_step": 1,
-        "auto_heat_cool": 1,
+        "auto_heat_cool": 0,
         "auto_split_targets": 2,
         "auto_split_range": 1
       },
@@ -1950,7 +1950,7 @@
       },
       "rounds": "all",
       "needs": {},
-      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most 4 rolls), each at −1 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
+      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most 3 rolls), each at −3 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
       "lines": [
         {
           "props": [
@@ -1990,8 +1990,8 @@
       "particular": true,
       "numbers": {
         "per_roll": 3,
-        "max_rolls": 4,
-        "step": 1,
+        "max_rolls": 3,
+        "step": 3,
         "pressure": 1,
         "heat_under": 1,
         "spread_mult": 2,

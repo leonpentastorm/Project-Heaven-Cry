@@ -1307,7 +1307,7 @@ register({
   on: {
     outburst_cost: (ctx, h) => { if (ctx.u !== h.u || !h.c) return; const k = keyOfDesign(h.c, ctx.design?.id); if (!k) return; const n = (cs(h.c).heartfed?.scene === sceneOf(h) ? cs(h.c).heartfed[k] : 0) || 0; if (n && ctx.mp > 0) ctx.mp = Math.max(5, ctx.mp * (1 - 0.1 * n)); },
     // A fed Pump: no AP, and not one of Empathy's free Pumps either.
-    outburst_pump: (ctx, h) => { if (ctx.u === h.u && FEEDING === h.u!.id) { ctx.ap = 0; ctx.free = false; } },
+    outburst_pump: (ctx, h) => { if (ctx.u === h.u && FEEDING === h.u!.id && ctx.capLeft !== false) { ctx.ap = 0; ctx.free = false; } }, // rules 1.19: one free stage a turn (a fed Pump is one)
     outburst_release: (ctx, h) => {
       if (ctx.u !== h.u || !h.c) return; const k = keyOfDesign(h.c, ctx.design?.id); if (!k) return; const g = gauges(h), n = g[k] || 0; if (!n) return;
       g[k] = 0; say(ctx.cb, 'Fed: ' + ctx.design.name + ' takes the rest of the ' + k + ' with it (' + n + ' lost).');

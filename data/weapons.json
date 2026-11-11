@@ -120,7 +120,7 @@
       "id": "decrkm_smg",
       "name": "Decrkm SMG (.32 Decrkm)",
       "category": "smg",
-      "damage": 15,
+      "damage": 19,
       "damage_type": "physical",
       "range_tiles": 8,
       "magazine": 30,
@@ -176,7 +176,8 @@
           "agility"
         ],
         "teaches": "rake"
-      }
+      },
+      "provisional": true
     },
     {
       "id": "hellraiser_service_rifle",
@@ -1116,7 +1117,7 @@
       "id": "decrkm_autopistol",
       "name": "Decrkm auto-pistol",
       "category": "pistol",
-      "damage": 14,
+      "damage": 17,
       "damage_type": "physical",
       "range_tiles": 6,
       "magazine": 20,
@@ -1343,7 +1344,7 @@
       "id": "legion_pdw",
       "name": "Legion PDW",
       "category": "smg",
-      "damage": 16,
+      "damage": 20,
       "damage_type": "physical",
       "range_tiles": 8,
       "magazine": 25,
@@ -1404,7 +1405,7 @@
       "id": "whisper_smg",
       "name": "Whisper SMG",
       "category": "smg",
-      "damage": 13,
+      "damage": 16,
       "damage_type": "physical",
       "range_tiles": 7,
       "magazine": 30,
@@ -1465,7 +1466,7 @@
       "id": "mandestra_drum_gun",
       "name": "Mandestra drum-gun",
       "category": "smg",
-      "damage": 15,
+      "damage": 19,
       "damage_type": "physical",
       "range_tiles": 7,
       "magazine": 70,
@@ -1523,7 +1524,7 @@
       "id": "adamantile_battle_rifle",
       "name": "Adamantile battle rifle",
       "category": "rifle",
-      "damage": 33,
+      "damage": 31,
       "damage_type": "physical",
       "range_tiles": 18,
       "magazine": 15,
@@ -1817,8 +1818,8 @@
       "name": "Brigade auto-shotgun",
       "category": "shotgun",
       "damage": {
-        "within_4": 35,
-        "within_8": 20
+        "within_4": 38,
+        "within_8": 22
       },
       "damage_type": "physical",
       "range_tiles": 8,
