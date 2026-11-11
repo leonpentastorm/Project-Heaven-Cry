@@ -33,7 +33,7 @@ A three-agent workflow (`wf_330a0dc7-9eb`) on roadmap items 2b and 2c (`docs/ROA
 2. **The camera** (today's tile size, follows the play, drag and keys, edge arrows, small map, overview on M): done.
 3. **An adversarial review in a real browser:** still running at 13:40.
 
-**Their work is UNCOMMITTED in the working tree (about 113 files).** If the session died before it was committed:
+**Their work was saved as a checkpoint commit, `2762b0a` ("CHECKPOINT, not verified"), while the review was still editing.** Anything the review changed after that is either in a later commit or still uncommitted in the working tree. To finish it:
 
 1. `git status --short` to see it. Do not throw it away: it is two finished builds and a partial review.
 2. `npm run check`. If it is green, the builds are sound at the unit level.
