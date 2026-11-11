@@ -21,7 +21,7 @@ for (let i = 0; i < 3; i++) { if (await p.locator('[data-phc-cutin]').count()) {
 await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/ai', on: true });
 g = await G(); const me = g.combat.units.find((u) => u.side === 'pc'), [x, y] = me.pos.split(',').map(Number);
 // five soldiers with rifles in a ring a few tiles off: a long hostile phase
-for (const [dx, dy] of [[3, 0], [3, 2], [3, -2], [5, 1], [5, -1]]) await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'hellraiser_service_rifle', at: ref((x + dx) + ',' + (y + dy)) });
+for (const [dx, dy] of [[3, 0], [3, 2], [3, -2], [5, 1], [5, -1]]) await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'hellraiser_service_rifle', at: ref((x + dx) + ',' + (y + dy)), level: 1 }); // level 1 against a level 12: the squad must live through the phase (rules 1.15 enemies scale by level)
 g = await G(); ok('the hostiles stand ready (' + g.combat.units.filter((u) => u.side === 'foe' && !u.dead).length + ')', g.combat.units.filter((u) => u.side === 'foe' && !u.dead).length >= 4);
 await p.waitForTimeout(600);
 const res = await p.evaluate(async (meId) => {
