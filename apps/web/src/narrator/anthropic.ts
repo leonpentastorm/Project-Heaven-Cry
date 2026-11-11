@@ -2,11 +2,12 @@
 // sent only to api.anthropic.com (or the Anthropic-format site the host typed). One call per Narrator turn, the turn
 // handed in through a tool, cached system layers. Other services: providers.ts.
 import Anthropic from '@anthropic-ai/sdk';
-import type { GameState, NarratorTurn } from '@engine';
+import type { GameState, NarratorTurn, FightRuling } from '@engine';
 import { missionBoard } from '@engine';
 import { noteExchange } from '../game/debug';
 import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, submitTool, WIKI_TOOL, wikiAnswer, RECALL_TOOL, recallAnswer } from './context';
 import { rememberTurn } from './craft';
+import { FIGHT_SYSTEM, FIGHT_MAX_TOKENS, FIGHT_TIMEOUT_MS, fightAsk, fightTool, parseFightAnswer, scriptedFightAnswer, type FightResult } from './fight';
 import { MAX_LOOKUPS, REWRITE_TOOL, REWRITE_SYSTEM, rewriteAsk, POLISH_SYSTEM, polishAsk } from './prompts';
 /** The most one Narrator turn may cost, all rounds of lookups included (spec: The Narrator's memory). */
 export const COST_CEILING_USD = 0.5;
@@ -29,7 +30,8 @@ export const MODELS = [
 
 export interface NarratorResult { turn: NarratorTurn; usage: { input: number; output: number; cacheRead: number; costUsd: number } }
 export interface RewriteResult { text: string; refused: string; usage?: NarratorResult['usage'] }
-export interface NarratorProvider { turn(g: GameState): Promise<NarratorResult>; rewrite?(g: GameState, text: string, ask: string): Promise<RewriteResult> }
+export interface NarratorProvider { turn(g: GameState): Promise<NarratorResult>; rewrite?(g: GameState, text: string, ask: string): Promise<RewriteResult>;
+  /** Rules 1.14: the answer to an attempt made in a fight (a small call: fight.ts). */ fight?(g: GameState, r: FightRuling): Promise<FightResult> }
 
 /** An Anthropic client on the player's key. baseURL: a third-party site that speaks Anthropic's format (a Claude
  * reseller); those often check x-api-key rather than the bearer token, so both are sent there. */
@@ -143,6 +145,24 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
       const u = res.usage || {}, input = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0), output = u.output_tokens || 0;
       return { text: String(use.text || text), refused: String(use.refused || ''), usage: { input, output, cacheRead: u.cache_read_input_tokens || 0, costUsd: bill((input * price.input + output * price.output) / 1e6) } };
     },
+    // Rules 1.14: an attempt in a fight. One small call (the fight as it stands and the words; no campaign, no memory,
+    // no lookups), low effort, a short reply, no retries: the fight is waiting, and the host gives the attempt back
+    // after FIGHT_TIMEOUT_MS. The engine validates the answer.
+    async fight(g, r) {
+      const tool = fightTool(g, r);
+      const res: any = await client.messages.create({
+        model, max_tokens: FIGHT_MAX_TOKENS, ...(baseURL ? {} : { output_config: { effort: 'low' } }), tools: [tool],
+        system: [{ type: 'text', text: FIGHT_SYSTEM }],
+        messages: [{ role: 'user', content: fightAsk(g, r) }],
+      } as any, { timeout: FIGHT_TIMEOUT_MS, maxRetries: 0 }).catch((e: unknown) => { throw new Error(explain(e, who)); });
+      const u = res.usage || {}, input = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0), output = u.output_tokens || 0;
+      const usage = { input, output, cacheRead: u.cache_read_input_tokens || 0, costUsd: bill((input * price.input + output * price.output) / 1e6) };
+      const use = res.content?.find((b: any) => b.type === 'tool_use' && b.name === tool.name)?.input;
+      const text = (res.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('').trim();
+      let raw: any = use; if (!raw) { try { raw = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1)); } catch { raw = text ? { lines: text.split(/\n+/).slice(0, 2) } : null; } }
+      // An answer that can't be read was still billed: the spend meter counts it.
+      try { return { answer: parseFightAnswer(raw), usage }; } catch (e) { (e as any).usage = usage; throw e; }
+    },
   };
   return prov;
 }
@@ -175,6 +195,7 @@ export async function polish(apiKey: string, text: string, charName: string, mod
 /** A scripted Narrator for tests and offline demos: it plays a short M813 opening, a check, a fight and the aftermath. */
 export function scriptedProvider(): NarratorProvider {
   return {
+    async fight(g, r) { return { answer: scriptedFightAnswer(g, r), usage: { input: 0, output: 0, cacheRead: 0, costUsd: 0 } }; },
     async rewrite(_g, text, ask) { return /steal|million|kill/i.test(ask) ? { text, refused: 'that would change what happened.' } : { text: text + ' (Reworded: ' + ask + ')', refused: '' }; },
     async turn(g) {
       const chars = Object.values(g.characters), first = chars[0];

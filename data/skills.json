@@ -3264,13 +3264,13 @@
           "name": "Overdraw",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Once per combat, a Pump adds 2 stages instead of 1 (at stage 2 or lower), and the heart pays +1 Strain after it.",
+          "text": "Once a turn, a Pump can be an Overdraw: it adds 2 stages instead of 1, so it needs stage 2 or lower. It costs only the Pump's own AP. Your first Overdraw of a fight costs no Strain. Each one after it costs you 1 Strain once the Pump is done.",
           "effects": [
             {
               "op": "grant_action",
               "action": "overdraw",
               "ap": 0,
-              "uses": "per_combat"
+              "uses": "per_turn"
             },
             {
               "op": "perk_choice",

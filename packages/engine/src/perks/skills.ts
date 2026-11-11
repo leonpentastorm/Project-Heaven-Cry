@@ -130,22 +130,39 @@ register({
   brief: () => null,
 });
 
-// ---------- Will Power · Overdraw (Mastery 1; rules 1.5, item 539) ----------
-// 1.2's "a Soul spell at +50% damage, then a Mana Short check" named a roll 1.5 removed. Re-derived: once a fight, a
-// toggle on a Pump ("Overdraw"): that Pump adds 2 stages, not 1 (to stage 4 at most, so it needs stage 2 or lower),
-// for its own AP, and the heart pays: +1 Strain once the Pump is done (it can burn and short like any Strain).
+// ---------- Will Power · Overdraw (Mastery 1; rules 1.14, item 1010) ----------
+// Once a turn, a toggle on a Pump ("Overdraw"): that Pump adds 2 stages, not 1 (to stage 4 at most, so it needs stage 2
+// or lower), for the Pump's own AP. The first Overdraw of a fight costs no Strain; each one after it costs 1 Strain
+// once the Pump is done (it can burn and short like any Strain). Rules 1.5 had it once a fight, always for 1 Strain;
+// that counter (this item's own per_combat cell) is not read any more, so a save that spent it is not locked out.
+const OD_STRAIN = 1; // PROVISIONAL (item 1010)
+/** Has this fight's Strain-free Overdraw been spent? */
+const odFreeLeft = (h: Holder) => uses(h).left('per_combat', 1, h.key + '#free') > 0;
+const odStrain = (h: Holder) => (odFreeLeft(h) ? 0 : OD_STRAIN);
+const odWhy = (h: Holder): string | true | false => {
+  const m = h.u?.mg; if (!m?.held) return false;
+  if (uses(h).left('per_turn', 1) <= 0) return 'Once a turn.';
+  if (m.held.stage > MAX_STAGE - 2) return 'Stage ' + (MAX_STAGE - 2) + ' or lower.';
+  return true;
+};
 register({
   id: 'skill:will_power.3', kind: 'skill', claims: 'all', noDefaultActions: true, // used from Pump (the Overdraw chip)
-  toggles: [{ id: 'overdraw', label: 'Overdraw (+2 stages, +1 Strain, once a fight)', on: ['combat/pump'],
-    available: (h) => { const m = h.u?.mg; if (!m?.held) return false; if (m.held.stage > MAX_STAGE - 2) return 'Stage ' + (MAX_STAGE - 2) + ' or lower.'; return uses(h).left('per_combat', 1) > 0 ? true : 'Once a fight.'; },
-    preview: () => 'This Pump adds 2 stages; +1 Strain after it.' }],
+  toggles: [{ id: 'overdraw', label: 'Overdraw (+2 stages, once a turn)', on: ['combat/pump'],
+    available: (h) => odWhy(h),
+    preview: (h) => 'This Pump adds 2 stages. ' + (odStrain(h) ? 'You take ' + odStrain(h) + ' Strain after it.' : 'Your first Overdraw of the fight costs no Strain.') }],
   on: {
     outburst_pump: (ctx, h) => {
-      const m = h.u?.mg; if (!mine(h, ctx.u) || ctx.preview || !m?.held || !modOn(h, 'overdraw') || m.held.stage > MAX_STAGE - 1) return;
-      if (!uses(h).take('per_combat', 1)) return;
-      m.held.stage = Math.min(MAX_STAGE, m.held.stage + 1); stateOf(h).owed = 1;
+      const m = h.u?.mg; if (!mine(h, ctx.u) || !m?.held || !modOn(h, 'overdraw')) return;
+      if (ctx.preview) { // the Pump's card: the stage it will reach, and what it costs the heart
+        if (odWhy(h) === true) { ctx.stages = 2; ctx.note = 'Overdraw: 2 stages. ' + (odStrain(h) ? 'You take ' + odStrain(h) + ' Strain after it.' : 'No Strain: your first Overdraw of the fight.'); }
+        return;
+      }
+      // The Pump has added its own stage already: the second needs room (stage 2 or lower before the Pump).
+      if (m.held.stage > MAX_STAGE - 1 || !uses(h).take('per_turn', 1)) return;
+      const free = uses(h).take('per_combat', 1, h.key + '#free');
+      m.held.stage = Math.min(MAX_STAGE, m.held.stage + 1); stateOf(h).owed = free ? 0 : OD_STRAIN;
       emitFx(h.cb!, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: m.held.stage, mult: stageMult(m.held.stage), free: true, max: m.held.stage >= MAX_STAGE, tone: m.held.tone || 'raw', overdraw: true });
-      say(h.cb, h.u!.name + ' overdraws the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ').');
+      say(h.cb, h.u!.name + ' overdraws the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ')' + (free ? ', no Strain the first time in a fight' : '') + '.');
     },
     action_done: (ctx, h) => {
       const st = stateOf(h), u = h.u; if (!mine(h, ctx.u) || !u || !st.owed || !h.cb) return; const n = st.owed; st.owed = 0;

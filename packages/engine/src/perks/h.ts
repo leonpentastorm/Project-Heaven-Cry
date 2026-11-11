@@ -6,6 +6,7 @@
 // engine can; what it can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags H…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, note, pendRuling, postStory, has, charOfUnit, skillRollMod, gainEcho, wearing, type Holder } from '../effects';
+import { wordsGate, raiseWords } from '../fighttalk';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf, maxHp, maxMp, hasEmanator, restockResources } from '../character';
@@ -461,8 +462,9 @@ const RTC_PRICE = 0.6;
 register({
   id: 'company_man', kind: 'trait', claims: ['price_mod'], narrator: ['narrator'],
   actions: [{
-    id: 'rtc_extraction', label: 'Call RTC extraction', scope: ['combat', 'world', 'story'], target: 'none', ap: 0, uses: { per: 'per_campaign', n: 1 },
-    text: 'Once a campaign: RTC pulls you out of anywhere. In a fight you must be conscious, you leave the fight, and you get no XP from it.',
+    // In a fight it ends your turn: the card shows the AP it takes, all you have left (it showed free: the perk audit, finding 3).
+    id: 'rtc_extraction', label: 'Call RTC extraction', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (inFight(h) ? Math.max(0, h.u!.ap) : 0), uses: { per: 'per_campaign', n: 1 },
+    text: 'Once a campaign: RTC pulls you out of anywhere. In a fight it takes all the AP you have left, you must be conscious, you leave the fight, and you get no XP from it.',
     run: (h) => {
       if (inFight(h)) {
         const u = h.u!, cb = h.cb!; if (u.downed) return 'Only while conscious.';
@@ -541,10 +543,11 @@ register({
   actions: [
     {
       id: 'weakness', label: 'Look it up', scope: ['combat', 'world', 'story'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Once a session: look up one supernatural creature\'s weakness in the grimoire. Pick the creature in a fight, or type its name.',
+      text: 'Once a session: look up one supernatural creature\'s weakness in the grimoire. Pick the creature in a fight, or type its name. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',
+      preview: (h) => (inFight(h) ? wordsGate(h) : {}),
       run: (h, a) => {
         const t = a.targetId && h.cb ? h.cb.units.find((x) => x.id === a.targetId) : null, what = t?.name || String(a.text || a.npc || 'the creature').slice(0, 80);
-        if (inFight(h)) { say(h.cb, h.u!.name + ' leafs through the grimoire for ' + what + '\'s weakness.'); note(h, 'Occultist: ' + h.u!.name + ' learns ' + what + '\'s weakness (if it is supernatural): name it in the report; it applies next time.'); return null; }
+        if (inFight(h)) { say(h.cb, h.u!.name + ' leafs through the grimoire for ' + what + '\'s weakness.'); return raiseWords(h, { text: 'What is ' + what + '\'s weakness?', ask: 'Occultist: name the weakness of ' + what + ' in your lines, if it is supernatural. Refuse if it isn\'t (the use comes back).', targetId: t?.id, per: 'per_session', actionId: 'weakness' }); }
         const eid = postStory(h, 'looks up ' + what + ' in the grimoire.');
         if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Occultist: tell ' + h.c.name + ' privately (perkLines) the weakness of ' + what + ', if it is supernatural; refuse if it isn\'t.', eid || undefined);
         return null;

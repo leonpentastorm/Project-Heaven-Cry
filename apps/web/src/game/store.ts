@@ -1,7 +1,8 @@
 // Client store. The host's browser holds the authoritative GameState, applies every action through the engine,
 // runs the AI Narrator with the host's key, and sends each player their filtered view through the room relay.
 // Guests send actions to the host and render the view they get back.
-import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded } from '@engine';
+import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded, fightRulingOf } from '@engine';
+import { FIGHT_TIMEOUT_MS } from '../narrator/fight';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, type Conn } from './net';
@@ -77,6 +78,7 @@ export function setNarrator(patch: Partial<ClientState['narrator']>) {
   const keep = { provider: n.provider, model: n.model, baseUrl: n.baseUrl, effort: n.effort };
   write(LS.key, n.remember ? { ...keep, key: n.key } : keep);
   if (S.role === 'host' && hostState?.narrator.error && !notReadyReason(n)) act({ type: 'narrator/retry' });
+  queueMicrotask(maybeFightRule); // rules 1.14: a fight under way learns whether a Narrator is connected now
 }
 
 // ---------- rooms ----------
@@ -96,6 +98,7 @@ export function hostRoom(code = roomCode()) {
   set({ role: 'host', code, game: viewFor(hostState, S.me.id), screen: screenFor(hostState), conn: 'connecting' });
   conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'host', token: hostToken(code) }, onMessage, onConn);
   persist();
+  fightAsked = null; queueMicrotask(maybeFightRule); // rules 1.14: a fight saved while an attempt waited asks the Narrator again
 }
 export function joinRoom(code: string) {
   if (!S.me.name) return toast('Enter your name first.');
@@ -228,6 +231,7 @@ function runHost(a: Action, by: string, nonce: string | null) {
   persist();
   broadcast(false);
   queueMicrotask(maybeNarrate);
+  queueMicrotask(maybeFightRule);
   queueMicrotask(carryOutVote);
 }
 
@@ -271,6 +275,40 @@ async function maybeNarrate() {
   } finally { narrating = false; queueMicrotask(maybeNarrate); }
 }
 export const retryNarrator = () => act({ type: 'narrator/retry' });
+
+// ---------- the Narrator's answer inside a fight (rules 1.14; host only) ----------
+// An attempt opens one pending fight ruling and the fight waits. With an AI Narrator the host's browser asks for the
+// answer once, in a small call (narrator/fight.ts), and applies it with narrator/fight-ruling; the engine validates it.
+// An error, or no answer in FIGHT_TIMEOUT_MS, gives the attempt back (narrator/fight-skip) and says so in the log, so a
+// dead key never locks a fight. A human Narrator answers on their own screen: nothing is called here.
+let fightAsked: string | null = null;
+/** Is an AI Narrator set up in this browser (a key, a model; or the scripted one)? */
+const narratorSetUp = () => S.narrator.scripted || !notReadyReason(S.narrator);
+async function maybeFightRule() {
+  const g = hostState;
+  if (S.role !== 'host' || !g || g.phase !== 'combat' || !g.combat || g.settings.mode !== 'ai') return;
+  // The engine refuses attempts while no Narrator is connected: tell it when that changes (only in a fight).
+  if (!g.sandbox && !!g.narrator.offline === narratorSetUp()) { runHost({ type: 'narrator/ready', ready: narratorSetUp() }, S.me.id, null); return; }
+  const r = fightRulingOf(g.combat); if (!r || fightAsked === r.id) return;
+  fightAsked = r.id;
+  const waiting = () => !!hostState && fightRulingOf(hostState.combat)?.id === r.id;
+  const giveBack = (note: string) => { if (waiting()) runHost({ type: 'narrator/fight-skip', id: r.id, note }, S.me.id, null); };
+  const p = g.sandbox ? null : provider();
+  if (!p || !p.fight) { giveBack('No Narrator is connected.'); return; }
+  let timer: any = null;
+  try {
+    const res = await Promise.race([p.fight(g, r), new Promise<never>((_, rej) => { timer = setTimeout(() => rej(new Error('fight-timeout')), FIGHT_TIMEOUT_MS); })]);
+    if (res.usage && (res.usage.input || res.usage.output)) runHost({ type: 'narrator/usage', ...res.usage, kind: 'fight' }, S.me.id, null);
+    if (!waiting()) return; // the host skipped the wait meanwhile
+    try { hostState = apply(hostState!, { type: 'narrator/fight-ruling', id: r.id, lines: res.answer.lines, effect: res.answer.effect }, S.me.id); }
+    catch { giveBack('The Narrator\'s answer could not be used.'); return; }
+    const prev = S.game; set({ game: viewFor(hostState, S.me.id) }); followPhase(prev, S.game!); persist(); broadcast(false);
+    queueMicrotask(maybeNarrate); // the answer may have ended the fight (a surrender): whatever follows runs as after any action
+  } catch (e) {
+    const spent = (e as any)?.usage; if (spent) runHost({ type: 'narrator/usage', ...spent, kind: 'fight' }, S.me.id, null);
+    giveBack((e as Error)?.message === 'fight-timeout' ? 'The Narrator took too long to answer.' : 'The Narrator could not be reached.');
+  } finally { clearTimeout(timer); }
+}
 export async function polishText(text: string, charName: string) {
   if (S.role !== 'host' || notReadyReason(S.narrator)) throw new Error('Only the host\'s key can polish.');
   return polishWith(S.narrator, text, charName);

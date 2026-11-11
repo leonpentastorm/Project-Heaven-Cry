@@ -16,7 +16,7 @@ import {
   type Combat, type Unit, dist, xy, key, refOf, alive, active, unitSees, lineOfSight, moveUnit, coverTileFor, objectsOf, standable, emitFx,
 } from '../combat';
 import {
-  applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
+  applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, previewOutburst, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
   RESONANCE_BONUS, resonates, fadePattern, evokeGrowth, practiceOnce, type Affected,
 } from '../magic';
@@ -124,38 +124,97 @@ register({
 });
 
 // =====================================================================================================================
-// Heart Overload (Will Power). A toggle on Begin an Outburst (or a snap cast): pay its MP in HP instead, 2 HP a point
-// (II: 1). True HP loss. Plan 6a-4 (GAMEBREAKING: HP-paid Buff heals were net positive): an HP-paid cast can't heal or
-// shield (a healing or shielding design is refused with the toggle on; any other heal or shield it makes comes to 0).
-// Rules 1.5 (item 534): it may be held and Pumped now (1.2's "can't be held" made it a snap-only ×0.6 perk); Pumps
-// cost AP, never MP, so only the Begin is paid in blood. HP for AP (a Pump paid in blood) was weighed and refused: it
-// would turn HP into stage 4 every turn. No Emanator: the perk does nothing; the toggle stays off and isn't offered
-// (spec §14 item 371, Leon 7 Nov 2026).
+// Heart Overload (Will Power; rules 1.14, item 1011). Once a turn, right after you Release an Outburst at stage 2 or
+// higher, you may Begin the same design again at once for 0 AP: its mana and Strain are paid as usual, and it holds at
+// stage 0 (II: stage 1). Blood for mana: if you lack the mana for that free Begin, it may be paid in HP, 1 HP a point
+// (true HP loss); an Outburst paid in blood can't heal or shield (plan 6a-4: HP-paid heals were net positive), so a
+// design that heals or shields is never offered blood. It needs an Emanator in hand.
+// How it is offered: the Release arms it for that design; the next Begin of that design this turn is the free one,
+// unless the player switches "Begin again for 0 AP" off on the Begin. Anything else the character does first (a move,
+// an attack, a Begin of another design, a snap cast) ends the offer; words don't. Both switches are on by default
+// while they apply, so the design's card shows the real price before the click (PROVISIONAL: the spec leaves the
+// shape of the offer open). Rules 1.5's "Pay with HP on any Begin" (2 HP a point, II: 1) is gone.
 // =====================================================================================================================
+const HO_STAGE = 2, HO_HP_PER_MP = 1; // PROVISIONAL (item 1011)
+/** Actions that are only words: they don't end the offer. */
+const HO_WORDS = new Set(['combat/say']); // plain speech is free (rules 1.14); an attempt is an action
+/** The design the free Begin is offered on right now, or null. */
+function hoOffer(h: Holder): string | null {
+  const a = stateOf(h).again, u = h.u;
+  if (!a || !u || !h.cb || ow(h.cb) || a.stamp !== turnStamp(h) || active(h.cb) !== u) return null;
+  if (!u.mg?.emanator || u.mg.held || uses(h).left('per_turn', 1) <= 0) return null;
+  return a.design;
+}
+/** Is this Begin the free one (the armed design, held, with the switch on)? */
+const hoFree = (h: Holder, ctx: any, hold: boolean) => me(h, ctx.u) && hold && !!ctx.design && hoOffer(h) === ctx.design.id && modOn(h, 'again');
+const hoName = (h: Holder) => { const id = hoOffer(h); return (h.u?.mg?.designs || []).find((d: any) => d.id === id)?.name || 'the same design'; };
+/** Set while hoBlood asks what the free Begin's mana comes to (it runs 'outburst_cost' again): nothing is written to
+ * the fight for it, so it is safe from a screen's preview. */
+let hoAsking = false;
+/** The free Begin's mana, when the heart doesn't have it and blood may pay (never for a design that heals or shields). */
+function hoBlood(h: Holder): number {
+  const id = hoOffer(h), m = h.u?.mg, d: any = (m?.designs || []).find((x: any) => x.id === id); if (!m || !d || mends(migrateDesign(d))) return 0;
+  if (hoAsking) return 0;
+  const c: any = h.cb, had = 'mods' in c, was = c.mods; c.mods = ['!' + h.key + '#pay_hp']; hoAsking = true;
+  try { const pv = previewOutburst(h.cb!, h.u!, d.id, undefined, false); return m.mp < pv.cost ? pv.cost * HO_HP_PER_MP : 0; }
+  finally { hoAsking = false; if (had) c.mods = was; else delete c.mods; }
+}
 register({
-  id: 'heart_overload', claims: 'all', priority: 300,
+  id: 'heart_overload', claims: 'all', priority: 300, noDefaultActions: true, // used from Begin (its switches)
   toggles: [{
-    id: 'pay_hp', label: 'Pay with HP', on: ['combat/outburst'],
-    available: (h) => !!h.u?.mg?.emanator, // no Emanator: nothing to pay, so no toggle at all (item 371)
-    preview: (h) => (h.tier === 'II' ? '1 HP' : '2 HP') + ' per point of mana; blood can\'t heal or shield.',
+    id: 'again', label: 'Heart Overload: Begin again for 0 AP', on: ['combat/outburst'], defaultOn: true,
+    available: (h) => !!hoOffer(h), // only right after the Release that earned it
+    preview: (h) => 'Begin ' + hoName(h) + ' again now for 0 AP. You pay its mana and Strain as usual. It holds at stage ' + (h.tier === 'II' ? 1 : 0) + '. Once a turn.',
+  }, {
+    id: 'pay_hp', label: 'Heart Overload: pay the mana in HP', on: ['combat/outburst'], defaultOn: true,
+    available: (h) => hoBlood(h) > 0, // only for the free Begin, and only when the mana is short
+    preview: (h) => 'You don\'t have the mana to Begin ' + hoName(h) + ' again. Pay ' + hoBlood(h) + ' HP instead (' + HO_HP_PER_MP + ' HP a point). An Outburst paid in blood can\'t heal or shield.',
   }],
   on: {
     outburst_cost: (ctx, h) => {
-      if (!me(h, ctx.u) || !modOn(h, 'pay_hp') || !h.u!.mg?.emanator || ctx.classMove) return;
-      if (mends(ctx.design)) { ctx.fail ||= 'Heart Overload: blood can\'t mend. Turn off Pay with HP to heal or shield.'; return; } // outburst_cost's fail (hooks gap D5)
-      const rate = h.tier === 'II' ? 1 : 2; ctx.hp = (ctx.hp || 0) + Math.round(ctx.mp) * rate; ctx.mp = 0;
+      if (!hoFree(h, ctx, !ctx.release)) return;
+      ctx.ap = 0; if (hoAsking) return; // only the mana is being asked for
+      const mp = Math.max(0, Math.round(ctx.mp));
+      if (h.u!.mg!.mp < mp && modOn(h, 'pay_hp') && !mends(ctx.design)) { ctx.hp = (ctx.hp || 0) + mp * HO_HP_PER_MP; ctx.mp = 0; }
     },
     outburst_begin: (ctx, h) => {
-      if (!me(h, ctx.u) || !modOn(h, 'pay_hp')) return;
-      if (ctx.hp > 0) { stateOf(h).paid = ctx.design.id; log(ctx.cb, h.u!.name + ' pays ' + ctx.hp + ' HP from the heart (Heart Overload).'); }
+      if (!me(h, ctx.u)) return; const s = stateOf(h);
+      const free = hoFree(h, ctx, !!ctx.hold) && uses(h).take('per_turn', 1);
+      s.again = null; s.raise = null;
+      if (!free) return;
+      if (h.tier === 'II') s.raise = ctx.design.id;
+      log(ctx.cb, h.u!.name + '\'s heart doesn\'t stop: ' + ctx.design.name + ' begins again for 0 AP (Heart Overload).');
+      if (ctx.hp > 0) { s.paid = ctx.design.id; log(ctx.cb, h.u!.name + ' pays ' + ctx.hp + ' HP for the mana (Heart Overload): this Outburst can\'t heal or shield.'); }
+    },
+    // II: the free Begin holds at stage 1. The held Outburst exists by the Begin's Strain (magic.ts beginOutburst).
+    strain: (ctx, h) => {
+      const s = stateOf(h), m = h.u?.mg; if (!me(h, ctx.u) || ctx.why !== 'begin' || !s.raise) return;
+      const id = s.raise; s.raise = null; if (!m?.held || m.held.design !== id || m.held.stage >= 1) return;
+      m.held.stage = 1;
+      emitFx(ctx.cb, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: 1, mult: stageMult(1), free: true, max: false, tone: m.held.tone || 'raw', overload: true });
+      log(ctx.cb, 'Heart Overload: it holds at stage 1 (×' + stageMult(1) + ').');
     },
     outburst_release: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const s = stateOf(h);
-      if (!s.paid || s.paid !== ctx.design?.id) { s.noMend = null; if (s.paid && !h.u!.mg?.held) s.paid = null; return; }
+      if (!me(h, ctx.u)) return; const s = stateOf(h), u = h.u!;
+      // The offer: your own Release, on your turn, at stage 2 or higher, with an Emanator in hand; once a turn.
+      s.again = null;
+      if (!ctx.wild && !ctx.reaction && !ow(ctx.cb) && ctx.design && ctx.stage >= HO_STAGE && u.mg?.emanator && active(ctx.cb) === u && uses(h).left('per_turn', 1) > 0) {
+        s.again = { design: ctx.design.id, stamp: turnStamp(h), fresh: true };
+        log(ctx.cb, 'Heart Overload: ' + u.name + ' may Begin ' + ctx.design.name + ' again now for 0 AP.');
+      }
+      // Blood can't mend: an Outburst whose Begin was paid in HP heals and shields nothing.
+      if (!s.paid || s.paid !== ctx.design?.id) { s.noMend = null; if (s.paid && !u.mg?.held) s.paid = null; return; }
       s.paid = null;
       if (mends(ctx.design)) log(ctx.cb, 'Heart Overload: blood can\'t mend. This Outburst heals and shields nothing.');
       s.noMend = ctx.cb.log.length;
     },
+    // "At once": the offer lasts until the character's next action. The Release's own action leaves it standing.
+    action_done: (ctx, h) => {
+      const s = stateOf(h); if (!s.again || !me(h, ctx.u)) return;
+      if (s.again.fresh) { s.again.fresh = false; return; }
+      if (!HO_WORDS.has(String(ctx.a?.type || ''))) s.again = null;
+    },
+    turn_end: (ctx, h) => { if (me(h, ctx.u)) stateOf(h).again = null; },
     heal_in: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.by) && s.noMend != null && s.noMend === ctx.cb?.log.length) ctx.n = 0; },
     shield_grant: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.by) && s.noMend != null && s.noMend === ctx.cb?.log.length) ctx.n = 0; },
   },
@@ -163,34 +222,51 @@ register({
 });
 
 // =====================================================================================================================
-// Resonance (Will Power). Rules 1.5 (item 535): the rule called Resonance gives a later release in the same round +0.2
-// for each earlier ally releaser (at most +0.4). The perk widens its window so the two are different things: I: an
-// ally's release in the round before counts for your Resonance too (your heart keeps their beat a round longer). II:
-// and allies keep yours: your release counts for theirs in the next round as well. The rule's +0.2 a releaser and its
-// +0.4 ceiling stand; a wild release neither gives nor gets it, nor does an enemy. 1.2's MP discount (20% / 40%) is gone.
+// Resonance (Will Power; rules 1.14, item 1012). I: each Outburst you Release gives your NEXT Release in this fight
+// +10% to its effect, building up to +20%. You lose what you have built when you end a turn in which you neither held
+// nor Released an Outburst. II: it builds up to +30%, and an ally's Release that you can see adds a step too.
+// The bonus multiplies the Release the way its stage does ('outburst_release' mult: damage, healing, shields, the
+// second school), and the previews carry it ('release_cost' mult / 'outburst_cost' relMult, with a note).
+// The shared Resonance rule of rules 1.5 (allies releasing in the same round: +0.2 each on the stage multiplier, +0.4
+// at most) is unchanged and adds to this. Rules 1.5's perk (the wider window) is gone. Readings where the spec is
+// silent (PROVISIONAL): a wild release neither uses nor builds it; the Twinbound twin is not "an ally" for tier II.
 // =====================================================================================================================
-interface RelMark { id: string; side: string; round: number }
-/** Releases seen this fight (every holder of the perk keeps the same list on its own state). */
-const relSeen = (h: Holder): RelMark[] => (stateOf(h).seen ||= []);
-function lastRound(cb: Combat, list: RelMark[], u: Unit, exclude: (x: RelMark) => boolean): string[] {
-  const now = new Set(((cb as any).soulRel?.round === cb.round ? (cb as any).soulRel.by : []).map((x: any) => x.id));
-  return [...new Set(list.filter((x) => x.round === cb.round - 1 && x.side === u.side && x.id !== u.id && !now.has(x.id) && !exclude(x)).map((x) => x.id))];
-}
+const RES_STEP = 0.1, RES_STEPS = { I: 2, II: 3 }; // PROVISIONAL (item 1012)
+const resCap = (h: Holder) => (h.tier === 'II' ? RES_STEPS.II : RES_STEPS.I);
+/** Steps built (each +10% on the next Release), never over this tier's ceiling. */
+const resSteps = (h: Holder): number => (ow(h.cb) ? 0 : Math.max(0, Math.min(resCap(h), Math.floor(Number(stateOf(h).steps) || 0))));
+const resPct = (n: number) => Math.round(n * RES_STEP * 100);
+const resMult = (n: number) => 1 + Math.round(n * RES_STEP * 100) / 100;
+const resNote = (n: number) => 'Resonance +' + resPct(n) + '%';
+const resBuild = (h: Holder, why: string) => {
+  const s = stateOf(h), was = resSteps(h), now = Math.min(resCap(h), was + 1); s.steps = now;
+  if (now > was && h.cb) log(h.cb, h.u!.name + '\'s next Release: +' + resPct(now) + '% (Resonance' + why + ').');
+};
 register({
   id: 'resonance', claims: 'all', priority: 50,
   on: {
+    // The previews: a held Release, and a snap cast.
+    release_cost: (ctx, h) => { const n = resSteps(h); if (me(h, ctx.u) && ctx.preview && n > 0) { ctx.mult = (ctx.mult || 1) * resMult(n); if (Array.isArray(ctx.notes)) ctx.notes.push(resNote(n)); } },
+    outburst_cost: (ctx, h) => { const n = resSteps(h); if (me(h, ctx.u) && ctx.release && n > 0) { ctx.relMult = (ctx.relMult || 1) * resMult(n); ctx.relAll = (ctx.relAll || 1) * resMult(n); if (Array.isArray(ctx.relNotes)) ctx.relNotes.push(resNote(n)); } },
+    outburst_begin: (ctx, h) => { if (me(h, ctx.u)) stateOf(h).kept = turnStamp(h); },
+    turn_start: (ctx, h) => { if (me(h, ctx.u) && h.u!.mg?.held) stateOf(h).kept = turnStamp(h); },
     outburst_release: (ctx, h) => {
-      const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb) || !resonates(r)) return; // the players' side only (item 549)
-      const list = relSeen(h);
-      if (!ctx.wild) {
-        // I: my release hears allies who released last round. II: an ally's release hears mine from last round.
-        let extra: string[] = [];
-        if (me(h, r)) extra = lastRound(cb, list, r, () => false);
-        else if (h.tier === 'II' && r.side === u.side) extra = lastRound(cb, list, r, (x) => x.id !== u.id);
-        if (extra.length) { const f = resonanceExtra(cb, r, ctx.stage, RESONANCE_BONUS * extra.length); if (f > 1) { ctx.mult = (ctx.mult || 1) * f; log(cb, r.name + ' still feels ' + extra.map((id) => cb.units.find((x) => x.id === id)?.name || id).join(', ') + ' (Resonance).'); emitFx(cb, 'resonance', { unit: r.id, at: r.pos, with: extra, bonus: Math.round((f - 1) * 100) / 100, perk: true }); } }
-        list.push({ id: r.id, side: r.side, round: cb.round });
-        while (list.length > 24) list.shift();
+      const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb) || ctx.wild) return;
+      if (me(h, r)) {
+        const s = stateOf(h), n = resSteps(h); s.kept = turnStamp(h);
+        if (n > 0) { ctx.mult = (ctx.mult || 1) * resMult(n); log(cb, u.name + '\'s heart keeps the beat: +' + resPct(n) + '% to this Release (Resonance).'); emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: [], bonus: Math.round(n * RES_STEP * 100) / 100, perk: true }); }
+        resBuild(h, '');
+        return;
       }
+      // II: an ally's Release that you can see adds a step too.
+      if (h.tier !== 'II' || r.side !== u.side || !alive(u) || (r.ctrl && r.ctrl === u.charId) || !unitSees(cb, u, r.pos)) return;
+      resBuild(h, ', from ' + r.name + '\'s Release');
+    },
+    turn_end: (ctx, h) => {
+      if (!me(h, ctx.u) || ow(ctx.cb)) return; const s = stateOf(h);
+      if (s.kept === turnStamp(h) || h.u!.mg?.held) return;
+      if (resSteps(h) > 0) log(ctx.cb, h.u!.name + '\'s heart falls quiet: the Resonance built is lost.');
+      s.steps = 0;
     },
   },
   brief: () => null,

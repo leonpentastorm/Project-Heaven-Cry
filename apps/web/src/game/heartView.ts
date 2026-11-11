@@ -6,7 +6,7 @@
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
 import { SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
-  previewOutburst, previewOutburstPlan, previewPump, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START,
+  previewOutburst, previewOutburstPlan, previewPump, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
 import { heldOutburstOf } from './resources';
@@ -106,16 +106,36 @@ export function dryHeart(cb: any, uid: string, fn: (c: any, u: any) => string | 
 }
 
 // ---------- the combat Outbursts tab, not holding: design cards with Begin and Snap ----------
-export interface DesignCard extends DesignInfo { beginAp: number; snapAp: number; beginWhy: string; snapWhy: string; canBegin: boolean; costText: string }
+export interface DesignCard extends DesignInfo { beginAp: number; snapAp: number; beginWhy: string; snapWhy: string; canBegin: boolean; costText: string;
+  /** Heart Overload (rules 1.14): right after a Release at stage 2 or higher, this design may Begin again for 0 AP.
+   * `again` is the card's line for it ('' when it isn't offered here); `bloodHp` the HP the Begin costs when the mana is short. */
+  again: string; bloodHp: number }
+/** A preview with these switches set on the action (as the click would carry them), read on the live fight. */
+function withMods<T>(cb: any, mods: string[], fn: () => T): T {
+  const had = 'mods' in cb, was = cb.mods; cb.mods = mods;
+  try { return fn(); } finally { if (had) cb.mods = was; else delete cb.mods; }
+}
+/** The switches items put on an action of this unit's ('combat/outburst', 'combat/pump'), or none. */
+function switches(cb: any, u: any, on: string): { id: string; itemKey: string; why: string | null; on: boolean; preview: string | null }[] {
+  try { return togglesFor({ u, cb } as any, on, {}, cb?.mods || []); } catch { return []; }
+}
+const HO_AGAIN = 'perk:heart_overload#again', OVERDRAW = 'skill:will_power.3#overdraw';
 export function designCards(cb: any, u: any): DesignCard[] {
   const mg = u?.mg; if (!mg) return [];
   const mana = cb?.mana ?? MANA_START;
+  // Heart Overload's free Begin is on by default while it is offered: the card shows it, and the price without it tells
+  // which design it is for.
+  const offered = switches(cb, u, 'combat/outburst').some((t) => t.id === HO_AGAIN && !t.why);
   return (mg.designs || []).map((d: any) => {
     const info = designInfo(mg, d, mana), b = previewOutburst(cb, u, d.id, undefined, false), sn = previewOutburstPlan(cb, u, d.id, undefined);
     const snapWhy = sn.ok || /Pick a|direction/.test(sn.why || '') ? '' : sn.why || '';
-    const beginAp = b.ap || (d.modules.includes('swift') ? SOUL_AP.swiftBegin : SOUL_AP.begin), snapAp = sn.ap || beginAp + SOUL_AP.release;
-    return { ...info, mp: b.cost || info.mp, beginAp, snapAp, beginWhy: b.ok ? '' : b.why || 'Not now.', snapWhy, canBegin: !!b.ok,
-      costText: 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : '') + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain' };
+    const plainAp = d.modules.includes('swift') ? SOUL_AP.swiftBegin : SOUL_AP.begin;
+    const free = offered && b.ap === 0 && withMods(cb, ['!' + HO_AGAIN], () => previewOutburst(cb, u, d.id, undefined, false)).ap > 0;
+    const beginAp = free ? 0 : b.ap || plainAp, snapAp = sn.ap || plainAp + SOUL_AP.release, bloodHp = free ? b.hp || 0 : 0;
+    const again = free ? 'Heart Overload: Begin ' + info.name + ' again for 0 AP' + (bloodHp ? '. You don\'t have the mana: it costs ' + bloodHp + ' HP, and it can\'t heal or shield' : '') + '.' : '';
+    return { ...info, mp: bloodHp ? 0 : b.cost || info.mp, beginAp, snapAp, beginWhy: b.ok ? '' : b.why || 'Not now.', snapWhy, canBegin: !!b.ok, again, bloodHp,
+      costText: (free ? 'Heart Overload: Begin again 0 AP' + (bloodHp ? ' · ' + bloodHp + ' HP for the mana' : '') : 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : ''))
+        + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain' };
   });
 }
 
@@ -124,6 +144,10 @@ export interface HeartBtn { id: string; label: string; cost: string; ok: boolean
 export interface HeartPanel {
   name: string; designId: string; tone: string; toneName: string; ink: string; form: Form; formName: string; icon: string; shape: string;
   stage: number; maxStage: number; mult: number; resonance: number;
+  /** What items add to the Release's multiplier, already inside `mult` ("Resonance +10%": the perk, rules 1.14). */
+  multNotes: string[];
+  /** Overdraw (rules 1.14): '' when the character doesn't have it, else its line now (ready, or why not this Pump). */
+  overdraw: string;
   stages: { n: number; mult: number; on: boolean; now: boolean; next: boolean; feeling: string | null }[];
   /** Rules 1.8: the feelings poured in, what they change ("now HEALS"), the feeling buttons and Revert Pump. */
   felt: string[]; does: string[]; feelings: FeelingBtn[]; revert: HeartBtn;
@@ -138,7 +162,11 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const d = (m.designs || []).find((x: any) => x.id === m.held.design);
   const info = d ? designInfo(m, d, cb?.mana) : null;
   const plan = previewOutburstPlan(cb, u, 'held', undefined, mods ? { mods } : {});
-  const pp = previewPump(cb, u);
+  // The Pump as it would go with the switches set on it (Overdraw: 2 stages), and Overdraw's own state this turn.
+  const pp = mods ? withMods(cb, mods, () => previewPump(cb, u)) : previewPump(cb, u);
+  const od = switches(cb, u, 'combat/pump').find((t) => t.id === OVERDRAW);
+  const overdraw = !od ? '' : od.why ? 'Overdraw: ' + od.why : 'Overdraw is ready this turn. ' + (od.preview || '');
+  const notes: string[] = plan.multNotes || [];
   const felt: string[] = m.held.felt || [], feltAt: number[] = m.held.feltAt || [], fAt = (n: number) => { const i = feltAt.lastIndexOf(n); return i >= 0 ? felt[i] : null; };
   const rv = revertBtn(cb, u);
   const stage = h.stage, maxStage = h.maxStage || MAX_STAGE;
@@ -153,15 +181,16 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const freeLeft = H.held?.freePumps ?? null;
   return {
     name: h.name, designId: h.designId, tone: h.tone, toneName: h.toneName, ink: toneInk(h.tone), form: (info?.form || 'bolt') as Form, formName: info?.formName || h.form, icon: info?.icon || formIconUri('bolt', toneInk(h.tone)), shape: info ? info.line : '',
-    stage, maxStage, mult: plan.mult || STAGE_MULT[stage], resonance: plan.resonanceBonus || 0,
-    stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === stage + 1, feeling: n <= stage ? fAt(n) : null })),
+    stage, maxStage, mult: plan.mult || STAGE_MULT[stage], resonance: plan.resonanceBonus || 0, multNotes: notes, overdraw,
+    stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === pp.stage, feeling: n <= stage ? fAt(n) : null })),
     felt, does: plan.does || [], feelings: feelingButtons(cb, u),
     revert: { id: 'revert', label: '↶ Revert', cost: 'FREE', ok: rv.ok, why: rv.ok ? '' : rv.why, title: 'Take back your last Pump this turn: its stage, its feeling, and the AP and Strain it cost.' },
     freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
     pump: { id: 'pump', label: 'Pump', ap: pp.ap, cost: pp.ok ? (pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
-      title: pp.ok ? 'A plain Pump: stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight.' : pp.free ? '. This is a free Pump from Empathy: ' + freeLeft + ' left this round.' : '.') : pp.why || '' },
-    release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (info?.form === 'aura' ? '. It goes off all around you, with no aim.' : '. Pick the aim on the grid.') },
+      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight.' : pp.free ? '. This is a free Pump from Empathy: ' + freeLeft + ' left this round.' : '.')
+        + (pp.note ? ' ' + pp.note : overdraw && !od?.why ? ' ' + overdraw : '') : pp.why || '' },
+    release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (notes.length ? '. ' + notes.join(', ') + ' is in that number, built by the Releases before this one' : '') + (info?.form === 'aura' ? '. It goes off all around you, with no aim.' : '. Pick the aim on the grid.') },
     steadyBtn: { id: 'steady', label: 'Steady', cost: SOUL_AP.steady + ' AP', ok: !st.err, why: st.err || '', title: 'Lose 1 Strain, and the Outburst doesn\'t swell at the start of your next turn.' },
     letgo: { id: 'letgo', label: 'Let go', cost: 'FREE', ok: !lg.err, why: lg.err || '', strainOff: off, title: 'Drop the Outburst without releasing it. The power you built is lost, and you lose ' + off + ' Strain.' },
     feed: { id: 'feed', label: 'Feed', cost: SOUL_AP.feed + ' AP', ok: !fd.err, why: fd.err || '', title: 'Absorb the glyph on your tile: +1 stage, and the glyph is gone.' },
@@ -215,6 +244,8 @@ export function aimOverlay(cb: any, u: any, src: string | 'held', aim?: string |
   const chip = !plan.ok && plan.why && !/Pick a|direction/.test(plan.why) ? String(plan.why).split(/[:.(]/)[0].toUpperCase() : shapeW + (isArea || who ? ' · ' + (who || 'NO ONE') : '');
   const summary = (plan.affected || []).map((a) => { const k = affectedMark(a); return k.title; });
   if (plan.resonance) summary.unshift('Resonance: +' + plan.resonanceBonus + ' to the multiplier, because an ally Released this round.');
+  // The perk (rules 1.14): what the Releases before this one add to it (your own; an ally's you saw, at tier II), already in the numbers shown.
+  for (const n of plan.multNotes || []) summary.unshift(n + ' to this Release, built by the Releases before it.');
   // Rules 1.8: what the feelings change, and the residue the release would leave (its tiles get a dashed edge in its colour).
   if (plan.does?.length) summary.unshift('Feelings: ' + plan.does.join(' · ') + '.');
   if (plan.residue) summary.push(feelingName(plan.residue.feeling) + ' residue on ' + plan.residue.tiles.length + ' tile' + (plan.residue.tiles.length === 1 ? '' : 's') + ' for 2 rounds: ' + plan.residue.text);
@@ -281,7 +312,7 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
     stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: '×' + r2(p.mult),
     // What the feelings change ("now HEALS · now CHAINS") on its own wrapping line under the header, so the counter
     // stays short at any stage and the words never run off the panel.
-    doesText: [...p.does, ...(p.resonance ? ['Resonance +' + p.resonance] : [])].join(' · '), hasDoes: p.does.length > 0 || !!p.resonance,
+    doesText: [...p.does, ...(p.multNotes || []), ...(p.resonance ? [(p.multNotes || []).length ? 'allies +' + p.resonance : 'Resonance +' + p.resonance] : [])].join(' · '), hasDoes: p.does.length > 0 || !!p.resonance || (p.multNotes || []).length > 0,
     doesStyle: 'min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: 11.5px; line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; color: ' + (p.does.length ? doesInk : p.ink),
     multKey: 'm' + r2(p.mult) + '-' + p.felt.length, multCls: 'phc-mult-shake phc-mult-s' + Math.min(4, p.stage),
     stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),

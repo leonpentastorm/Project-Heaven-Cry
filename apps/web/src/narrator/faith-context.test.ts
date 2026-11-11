@@ -70,6 +70,8 @@ describe('the Narrator and faith', () => {
     // Physical 2.0 (rules 1.12): the WEAPON TECHNIQUES paragraph and each character's ready techniques, about 0.15k:
     // the cap moves to 25.3k on purpose.
     // Legendary Deeds (item 1006): the legends[] field and its line, about 0.07k: the cap moves to 25.4k on purpose.
-    expect(e.stable).toBeLessThan(25400);
+    // Speaking in a fight (rules 1.14): the FIGHTS line now says speech is free and attempts are answered inside the
+    // fight, about 0.07k: the cap moves to 25.5k on purpose.
+    expect(e.stable).toBeLessThan(25500);
   });
 });

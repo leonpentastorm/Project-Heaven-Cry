@@ -101,7 +101,7 @@ const gun = (await me()).weapon;
 ok('the gun (' + gun + ') grants its reload: ' + names.filter((n) => RELOAD.test(n)).join(', '), names.some((n) => RELOAD.test(n)));
 await p.locator('#phc-tab-perks').click().catch(() => {});
 await p.waitForTimeout(150);
-ok('the PERKS tab lists Litany, and not the passive Breaching Strike', (await p.locator('[role="tabpanel"]').getByRole('button', { name: /Litany/ }).count()) > 0 && (await p.locator('[role="tabpanel"]').getByRole('button', { name: /Breaching Strike/ }).count()) === 0);
+ok('the PERKS tab lists Litany to use, and the passive Breaching Strike on the Always on shelf', (await p.locator('[role="tabpanel"]').getByRole('button', { name: /Litany/ }).count()) > 0 && /Breaching Strike/.test(await p.locator('[data-shelf="always"]').innerText().catch(() => '')));
 await snap(p, '02-perks-tab');
 // a sabre in hand: no reload any more
 await act({ type: 'sandbox/give', charId: cid, item: 'sabre', equip: true });

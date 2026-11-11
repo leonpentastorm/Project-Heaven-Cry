@@ -9,7 +9,7 @@
 // item's brief() remainder in the character brief.
 import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pushAp, grantShield, boundGame, skillRollMod, type Holder } from '../effects';
 import { SKILL, WEAPON, ITEM } from '../data';
-import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight } from '../combat';
+import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
 import { applyCond, condOn } from '../magic';
 import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../character';
@@ -126,6 +126,8 @@ function runnableTiles(cb: Combat): Set<string> {
   for (const o of objs) if (/hole|pit|gap/.test(o.kind)) out.add(o.pos);
   return out;
 }
+/** What the mid-run attack costs with the weapon in hand (the Wall Run strike's card). */
+const strikeAp = (h: Holder): number => { const w = h.u ? WEAPON[h.u.weapon] : null; return w ? attackApCost(w, isMelee(w) ? 'melee' : 'shot') : 0; };
 register({
   id: 'wall_run', claims: 'all',
   on: {
@@ -153,8 +155,10 @@ register({
     },
   },
   actions: [{
-    id: 'wall_strike', label: 'Wall Run strike', scope: ['combat'], ap: 0, target: 'enemy',
-    text: 'Run to a tile you pick (it can be on a wall), attack from there, then finish the move on a second tile you pick. Each part of the run costs its normal AP.',
+    // The card shows the attack's AP (it showed free and took 3: the perk audit, finding 2). The run is priced by the
+    // move rules as it is walked, so run() gives the shown AP back and the attack and the moves take their own.
+    id: 'wall_strike', label: 'Wall Run strike', scope: ['combat'], ap: (h) => strikeAp(h), target: 'enemy',
+    text: 'Run to a tile you pick (it can be on a wall), attack from there, then finish the move on a second tile you pick. The AP shown is the attack. Each tile of the run costs its normal AP on top.',
     available: (h) => (h.tier !== 'II' ? false : true),
     preview: (h, a) => {
       if (!h.cb || !h.u) return {}; if (!a.tile) return { ok: false, why: 'Pick the tile to strike from.' };
@@ -163,6 +167,7 @@ register({
     },
     run: (h, a, rng) => {
       const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId);
+      u.ap = Math.round((u.ap + strikeAp(h)) * 10) / 10; // the shown AP back: the attack below takes its own
       const k = a.tile && (/,/.test(a.tile) ? a.tile : refKey(a.tile, cb.map)); if (!k || !t) return 'Pick a tile and a target.';
       const end = a.choice ? (/,/.test(a.choice) ? a.choice : refKey(a.choice, cb.map)) : null;
       const s = stateOf(h); s.mid = true; s.carry = 0;
