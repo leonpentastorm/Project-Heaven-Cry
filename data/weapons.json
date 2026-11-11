@@ -40,7 +40,7 @@
       ],
       "grants": {
         "name": "Snap Shot",
-        "text": "Swap to it and fire in one action for 2 AP.",
+        "text": "For 2 AP, draw this pistol and fire it in one action.",
         "effect": {
           "op": "narrator"
         }
@@ -93,7 +93,7 @@
       ],
       "grants": {
         "name": "Fan the Hammer",
-        "text": "3 AP: up to 3 shots at one target at −2 each.",
+        "text": "For 3 AP, fire up to 3 shots at one target, each at −2 to hit.",
         "effect": {
           "op": "multi_shot",
           "ap": 3,
@@ -219,7 +219,7 @@
       ],
       "grants": {
         "name": "Suppressing Fire",
-        "text": "3 AP: mark a 3-tile line until your next turn; enemies shooting from it or moving through it are at −2, and the first to move through it takes a shot.",
+        "text": "For 3 AP, mark a line 3 tiles long until your next turn. Enemies that shoot from it or move through it have −2 to hit, and the first one to move through it takes a shot from you.",
         "effect": {
           "op": "narrator"
         }
@@ -333,7 +333,7 @@
       ],
       "grants": {
         "name": "Door Key",
-        "text": "Double damage to doors and cover.",
+        "text": "Deals double damage to doors and cover.",
         "effect": {
           "op": "cover_damage_mult",
           "value": 2
@@ -387,7 +387,7 @@
       ],
       "grants": {
         "name": "One Breath",
-        "text": "Aimed shots get +3 instead of +2 if you haven't moved this turn.",
+        "text": "If you haven't moved this turn, an Aimed Shot gets +3 to hit instead of +2.",
         "effect": {
           "op": "aimed_still_bonus",
           "value": 1
@@ -445,7 +445,7 @@
       ],
       "grants": {
         "name": "Through and Through",
-        "text": "A hit carries on to the next target in line at half damage, breaking half cover it passes.",
+        "text": "A hit carries on to the next target in the line of fire for half damage, and breaks any half cover it passes through.",
         "effect": {
           "op": "narrator"
         }
@@ -503,7 +503,7 @@
       ],
       "grants": {
         "name": "Emplace",
-        "text": "Brace (1 AP) also gives +1 to hit.",
+        "text": "While you are Braced (1 AP), this weapon also has +1 to hit.",
         "effect": {
           "op": "braced_bonus",
           "value": 1
@@ -619,7 +619,7 @@
       ],
       "grants": {
         "name": "Bolt Rest",
-        "text": "Every shot is cranked and rested: a Shot costs 3 AP and loads the next bolt as part of it, and an Aimed Shot costs no more than a Shot.",
+        "text": "A shot costs 3 AP and loads the next bolt as part of it. An Aimed Shot costs 3 AP too, no more than a plain shot.",
         "effect": {
           "op": "aimed_ap",
           "value": 3
@@ -674,7 +674,7 @@
       ],
       "grants": {
         "name": "Finish It",
-        "text": "+50% damage against a target that is Dazed, Bleeding or Downed.",
+        "text": "Deals +50% damage to a target that is Dazed, Bleeding or Downed.",
         "effect": {
           "op": "vs_status_damage",
           "statuses": [
@@ -731,7 +731,7 @@
       ],
       "grants": {
         "name": "Riposte",
-        "text": "Reaction: when a melee attack misses you, strike back.",
+        "text": "When a melee attack misses you, strike back at the attacker. Uses your reaction.",
         "effect": {
           "op": "narrator"
         }
@@ -780,7 +780,7 @@
       ],
       "grants": {
         "name": "Chop Through",
-        "text": "After a kill, a free strike at another adjacent enemy.",
+        "text": "After a kill, make a free attack against another enemy next to you.",
         "effect": {
           "op": "narrator"
         }
@@ -829,7 +829,7 @@
       ],
       "grants": {
         "name": "Knockdown",
-        "text": "A hit knocks the target prone.",
+        "text": "A hit knocks the target Prone.",
         "effect": {
           "op": "on_hit",
           "apply": "prone"
@@ -881,7 +881,7 @@
       ],
       "grants": {
         "name": "Charge",
-        "text": "After 3+ tiles of movement this turn, +50% damage.",
+        "text": "If you have moved 3 tiles or more this turn, your attack deals +50% damage.",
         "effect": {
           "op": "narrator"
         }
@@ -930,7 +930,7 @@
       ],
       "grants": {
         "name": "Grapple",
-        "text": "2 AP: the target can't move until it breaks free.",
+        "text": "For 2 AP, grab the target: it can't move until it breaks free.",
         "effect": {
           "op": "narrator"
         }
@@ -976,14 +976,14 @@
         "area_radius_2",
         "consumable"
       ],
-      "text": "40 to everyone within 2 tiles.",
+      "text": "Deals 40 damage to everyone within 2 tiles of where it lands.",
       "mastery_family": "thrown",
       "hands": "1H",
       "durability": null,
       "mod_slots": [],
       "grants": {
         "name": "Cook It",
-        "text": "Spend 1 AP more; the blast radius is 3.",
+        "text": "Spend 1 AP more on the throw and the blast reaches 3 tiles instead of 2.",
         "effect": {
           "op": "narrator"
         }
@@ -1028,14 +1028,14 @@
         "blocks_sight_2_rounds",
         "consumable"
       ],
-      "text": "Blocks sight within 3 tiles for 2 rounds.",
+      "text": "Smoke blocks sight within 3 tiles of where it lands, for 2 rounds.",
       "mastery_family": "thrown",
       "hands": "1H",
       "durability": null,
       "mod_slots": [],
       "grants": {
         "name": "Cover Me",
-        "text": "Allies who start a turn inside the smoke move +1 tile.",
+        "text": "Allies who start a turn inside the smoke can move 1 tile further that turn.",
         "effect": {
           "op": "narrator"
         }
@@ -1078,7 +1078,7 @@
         "area_radius_2",
         "consumable"
       ],
-      "text": "Blinded for 1 round within 2 tiles (Body save).",
+      "text": "Everyone within 2 tiles of where it lands is Blinded for 1 round unless they pass a Body save.",
       "applies": {
         "condition": "blinded",
         "save": "body"
@@ -1089,7 +1089,7 @@
       "mod_slots": [],
       "grants": {
         "name": "Sudden Dark",
-        "text": "Blinded targets also lose their reaction.",
+        "text": "Targets it Blinds also lose their reaction.",
         "effect": {
           "op": "narrator"
         }
@@ -1133,7 +1133,7 @@
       "accuracy": 0,
       "price_credits": 500,
       "properties": [],
-      "text": "+2 to hit within 2 tiles.",
+      "text": "+2 to hit against targets within 2 tiles.",
       "mastery_family": "sidearms",
       "hands": "1H",
       "durability": 300,
@@ -1144,7 +1144,7 @@
       ],
       "grants": {
         "name": "Point Blank",
-        "text": "+2 to hit within 2 tiles.",
+        "text": "+2 to hit against targets within 2 tiles.",
         "effect": {
           "op": "hit_bonus",
           "within": 2,
@@ -1191,14 +1191,14 @@
       "accuracy": 0,
       "price_credits": 150,
       "properties": [],
-      "text": "+2 to the first shot of a fight.",
+      "text": "+2 to hit on your first shot of each fight.",
       "mastery_family": "sidearms",
       "hands": "1H",
       "durability": 300,
       "mod_slots": [],
       "grants": {
         "name": "Ace in the Sleeve",
-        "text": "+2 to the first shot of a fight.",
+        "text": "+2 to hit on your first shot of each fight.",
         "effect": {
           "op": "first_shot_bonus",
           "value": 2
@@ -1243,7 +1243,7 @@
       "accuracy": 0,
       "price_credits": 450,
       "properties": [],
-      "text": "A hit costs the target 1 AP on its next turn.",
+      "text": "A hit takes 1 AP from the target's next turn.",
       "mastery_family": "sidearms",
       "hands": "1H",
       "durability": 300,
@@ -1254,7 +1254,7 @@
       ],
       "grants": {
         "name": "Stopping Power",
-        "text": "A hit costs the target 1 AP on its next turn.",
+        "text": "A hit takes 1 AP from the target's next turn.",
         "effect": {
           "op": "on_hit",
           "apply": "ap_loss",
@@ -1361,7 +1361,7 @@
       "accuracy": 0,
       "price_credits": 750,
       "properties": [],
-      "text": "+2 to hit within 3 tiles.",
+      "text": "+2 to hit against targets within 3 tiles.",
       "mastery_family": "smgs",
       "hands": "1H",
       "durability": 300,
@@ -1372,7 +1372,7 @@
       ],
       "grants": {
         "name": "Clear the Room",
-        "text": "+2 to hit within 3 tiles.",
+        "text": "+2 to hit against targets within 3 tiles.",
         "effect": {
           "op": "hit_bonus",
           "within": 3,
@@ -1425,7 +1425,7 @@
       "properties": [
         "silent"
       ],
-      "text": "Firing never reveals you while Hidden.",
+      "text": "Firing this weapon never reveals you while you are Hidden.",
       "mastery_family": "smgs",
       "hands": "2H",
       "durability": 300,
@@ -1435,7 +1435,7 @@
       ],
       "grants": {
         "name": "Quiet Work",
-        "text": "Firing never reveals you while Hidden.",
+        "text": "Firing this weapon never reveals you while you are Hidden.",
         "effect": {
           "op": "narrator"
         }
@@ -1481,7 +1481,7 @@
       "accuracy": 0,
       "price_credits": 1100,
       "properties": [],
-      "text": "Full auto also catches enemies up to 2 tiles from the line.",
+      "text": "Full auto also catches enemies up to 2 tiles to either side of the line of fire.",
       "mastery_family": "smgs",
       "hands": "2H",
       "durability": 300,
@@ -1491,7 +1491,7 @@
       ],
       "grants": {
         "name": "Wide Spray",
-        "text": "Full auto also catches enemies up to 2 tiles from the line.",
+        "text": "Full auto also catches enemies up to 2 tiles to either side of the line of fire.",
         "effect": {
           "op": "auto_width",
           "value": 2
@@ -1540,7 +1540,7 @@
       "accuracy": 0,
       "price_credits": 1300,
       "properties": [],
-      "text": "Shots ignore 5 armour.",
+      "text": "Shots ignore 5 points of the target's armour.",
       "mastery_family": "rifles",
       "hands": "2H",
       "durability": 400,
@@ -1552,7 +1552,7 @@
       ],
       "grants": {
         "name": "Armour-Breaker",
-        "text": "Shots ignore 5 armour.",
+        "text": "Shots ignore 5 points of the target's armour.",
         "effect": {
           "op": "ignore_armour",
           "value": 5
@@ -1598,7 +1598,7 @@
       "accuracy": 0,
       "price_credits": 1600,
       "properties": [],
-      "text": "Aimed shots crit on 18–20.",
+      "text": "Aimed Shots score a critical hit on a roll of 18, 19 or 20.",
       "mastery_family": "rifles",
       "hands": "2H",
       "durability": 400,
@@ -1609,7 +1609,7 @@
       ],
       "grants": {
         "name": "Dead Steady",
-        "text": "Aimed shots crit on 18–20.",
+        "text": "Aimed Shots score a critical hit on a roll of 18, 19 or 20.",
         "effect": {
           "op": "aimed_crit_min",
           "value": 18
@@ -1658,7 +1658,7 @@
       "accuracy": 0,
       "price_credits": 1100,
       "properties": [],
-      "text": "After a shot, move 1 tile for free.",
+      "text": "After a shot, you can move 1 tile for free.",
       "mastery_family": "rifles",
       "hands": "2H",
       "durability": 400,
@@ -1669,7 +1669,7 @@
       ],
       "grants": {
         "name": "Shoot and Scoot",
-        "text": "After a shot, move 1 tile for free.",
+        "text": "After a shot, you can move 1 tile for free.",
         "effect": {
           "op": "narrator"
         }
@@ -1719,14 +1719,14 @@
       "properties": [
         "damage_falloff"
       ],
-      "text": "3 AP: both shells in one attack, +50% damage.",
+      "text": "For 3 AP, fire both shells as one attack that deals +50% damage.",
       "mastery_family": "shotguns",
       "hands": "2H",
       "durability": 300,
       "mod_slots": [],
       "grants": {
         "name": "Both Barrels",
-        "text": "3 AP: both shells in one attack, +50% damage.",
+        "text": "For 3 AP, fire both shells as one attack that deals +50% damage.",
         "effect": {
           "op": "multi_shot",
           "ap": 3,
@@ -1780,14 +1780,14 @@
       "properties": [
         "damage_falloff"
       ],
-      "text": "Firing at an adjacent enemy doesn't provoke.",
+      "text": "Firing at an enemy next to you doesn't provoke an opportunity attack.",
       "mastery_family": "shotguns",
       "hands": "1H",
       "durability": 300,
       "mod_slots": [],
       "grants": {
         "name": "Close Quarters",
-        "text": "Firing at an adjacent enemy doesn't provoke.",
+        "text": "Firing at an enemy next to you doesn't provoke an opportunity attack.",
         "effect": {
           "op": "narrator"
         }
@@ -1838,7 +1838,7 @@
       "properties": [
         "damage_falloff"
       ],
-      "text": "A burst can split between two adjacent targets.",
+      "text": "A burst can be split between two targets standing next to each other.",
       "mastery_family": "shotguns",
       "hands": "2H",
       "durability": 300,
@@ -1849,7 +1849,7 @@
       ],
       "grants": {
         "name": "Room Sweeper",
-        "text": "A burst can split between two adjacent targets.",
+        "text": "A burst can be split between two targets standing next to each other.",
         "effect": {
           "op": "narrator"
         }
@@ -1897,7 +1897,7 @@
       "properties": [
         "minus2_to_hit_unless_emplaced"
       ],
-      "text": "The first full auto each fight costs +1 AP; after that, full auto costs 3.",
+      "text": "Your first full auto of each fight costs 1 AP more. After that, full auto costs 3 AP.",
       "mastery_family": "heavy",
       "hands": "2H",
       "durability": 500,
@@ -1906,7 +1906,7 @@
       ],
       "grants": {
         "name": "Spin Up",
-        "text": "The first full auto each fight costs +1 AP; after that, full auto costs 3.",
+        "text": "Your first full auto of each fight costs 1 AP more. After that, full auto costs 3 AP.",
         "effect": {
           "op": "narrator"
         }
@@ -1955,7 +1955,7 @@
       "properties": [
         "area_radius_2"
       ],
-      "text": "Indirect fire: no line of sight needed if an ally sees the tile, at −2.",
+      "text": "You can fire at a tile you can't see, as long as an ally can see it, at −2 to hit.",
       "mastery_family": "heavy",
       "hands": "2H",
       "durability": 500,
@@ -1964,7 +1964,7 @@
       ],
       "grants": {
         "name": "Lob",
-        "text": "Indirect fire: no line of sight needed if an ally sees the tile, at −2.",
+        "text": "You can fire at a tile you can't see, as long as an ally can see it, at −2 to hit.",
         "effect": {
           "op": "narrator"
         }
@@ -2073,14 +2073,14 @@
         "applies_burning",
         "ignores_half_cover"
       ],
-      "text": "3 AP: a 3-tile line burns for 2 rounds.",
+      "text": "For 3 AP, set a line 3 tiles long burning for 2 rounds.",
       "mastery_family": "heavy",
       "hands": "2H",
       "durability": 500,
       "mod_slots": [],
       "grants": {
         "name": "Wall of Fire",
-        "text": "3 AP: a 3-tile line burns for 2 rounds.",
+        "text": "For 3 AP, set a line 3 tiles long burning for 2 rounds.",
         "effect": {
           "op": "narrator"
         }
@@ -2125,14 +2125,14 @@
         "consumable",
         "placed"
       ],
-      "text": "Placed against cover, it destroys it outright.",
+      "text": "Placed against a piece of cover, it destroys that cover outright.",
       "mastery_family": "thrown",
       "hands": "1H",
       "durability": null,
       "mod_slots": [],
       "grants": {
         "name": "Shaped Charge",
-        "text": "Placed against cover, it destroys it outright.",
+        "text": "Placed against a piece of cover, it destroys that cover outright.",
         "effect": {
           "op": "narrator"
         }
@@ -2181,7 +2181,7 @@
         "no_recoil",
         "quiver"
       ],
-      "text": "Indirect shot at −2, like Lob.",
+      "text": "You can shoot over full cover at a target that someone on your side can see, at −2 to hit.",
       "mastery_family": "bows",
       "hands": "2H",
       "durability": 200,
@@ -2190,7 +2190,7 @@
       ],
       "grants": {
         "name": "Arc",
-        "text": "Indirect shot at −2, like Lob.",
+        "text": "You can shoot over full cover at a target that someone on your side can see, at −2 to hit.",
         "effect": {
           "op": "narrator"
         }
@@ -2242,7 +2242,7 @@
         "no_heat",
         "no_recoil"
       ],
-      "text": "3 AP: two bolts, each with its own roll.",
+      "text": "For 3 AP, fire two bolts. Each rolls to hit on its own.",
       "mastery_family": "bows",
       "hands": "2H",
       "durability": 200,
@@ -2251,7 +2251,7 @@
       ],
       "grants": {
         "name": "Volley",
-        "text": "3 AP: two bolts, each with its own roll.",
+        "text": "For 3 AP, fire two bolts. Each rolls to hit on its own.",
         "effect": {
           "op": "multi_shot",
           "ap": 3,
@@ -2299,7 +2299,7 @@
       "properties": [
         "throwable_6_tiles"
       ],
-      "text": "3 AP: one throw each at up to two targets.",
+      "text": "For 3 AP, throw one knife each at up to two targets.",
       "mastery_family": "light_blades",
       "hands": "1H",
       "durability": 250,
@@ -2308,7 +2308,7 @@
       ],
       "grants": {
         "name": "Fan of Knives",
-        "text": "3 AP: one throw each at up to two targets.",
+        "text": "For 3 AP, throw one knife each at up to two targets.",
         "effect": {
           "op": "narrator"
         }
@@ -2352,7 +2352,7 @@
       "properties": [
         "throwable_5_tiles"
       ],
-      "text": "Double damage to shields and cover.",
+      "text": "Deals double damage to shields and cover.",
       "mastery_family": "light_blades",
       "hands": "1H",
       "durability": 250,
@@ -2362,7 +2362,7 @@
       ],
       "grants": {
         "name": "Splitter",
-        "text": "Double damage to shields and cover.",
+        "text": "Deals double damage to shields and cover.",
         "effect": {
           "op": "cover_damage_mult",
           "value": 2
@@ -2406,7 +2406,7 @@
       "accuracy": 0,
       "price_credits": 300,
       "properties": [],
-      "text": "+1 Defense while your off hand holds a shield.",
+      "text": "+1 Defense while you hold a shield in your off hand.",
       "mastery_family": "light_blades",
       "hands": "1H",
       "durability": 250,
@@ -2416,7 +2416,7 @@
       ],
       "grants": {
         "name": "Shield Partner",
-        "text": "+1 Defense while your off hand holds a shield.",
+        "text": "+1 Defense while you hold a shield in your off hand.",
         "effect": {
           "op": "defense_with_shield",
           "value": 1
@@ -2459,7 +2459,7 @@
       "accuracy": 1,
       "price_credits": 550,
       "properties": [],
-      "text": "Strike a target 2 tiles away.",
+      "text": "Your melee attacks reach a target 2 tiles away.",
       "mastery_family": "light_blades",
       "hands": "1H",
       "durability": 250,
@@ -2469,7 +2469,7 @@
       ],
       "grants": {
         "name": "Lunge",
-        "text": "Strike a target 2 tiles away.",
+        "text": "Your melee attacks reach a target 2 tiles away.",
         "effect": {
           "op": "reach",
           "value": 2
@@ -2511,7 +2511,7 @@
       "accuracy": 0,
       "price_credits": 500,
       "properties": [],
-      "text": "A hit lowers the target's armour by 5 for the fight (to −10 at most).",
+      "text": "A hit lowers the target's armour by 5 for the rest of the fight, to 10 below its starting armour at most.",
       "mastery_family": "heavy_melee",
       "hands": "2H",
       "durability": 300,
@@ -2521,7 +2521,7 @@
       ],
       "grants": {
         "name": "Bite the Plate",
-        "text": "A hit lowers the target's armour by 5 for the fight (to −10 at most).",
+        "text": "A hit lowers the target's armour by 5 for the rest of the fight, to 10 below its starting armour at most.",
         "effect": {
           "op": "on_hit",
           "apply": "armour_break",
@@ -2565,7 +2565,7 @@
       "accuracy": 0,
       "price_credits": 900,
       "properties": [],
-      "text": "4 AP: strike every adjacent enemy.",
+      "text": "For 4 AP, attack every enemy next to you.",
       "mastery_family": "heavy_melee",
       "hands": "2H",
       "durability": 300,
@@ -2575,7 +2575,7 @@
       ],
       "grants": {
         "name": "Sweep",
-        "text": "4 AP: strike every adjacent enemy.",
+        "text": "For 4 AP, attack every enemy next to you.",
         "effect": {
           "op": "sweep",
           "ap": 4
@@ -2621,7 +2621,7 @@
         "polearm",
         "reach_2"
       ],
-      "text": "Reaction: strike an enemy that steps into your reach.",
+      "text": "When an enemy steps into your reach, strike it. Uses your reaction.",
       "mastery_family": "heavy_melee",
       "hands": "2H",
       "durability": 300,
@@ -2631,7 +2631,7 @@
       ],
       "grants": {
         "name": "Keep Back",
-        "text": "Reaction: strike an enemy that steps into your reach.",
+        "text": "When an enemy steps into your reach, strike it. Uses your reaction.",
         "effect": {
           "op": "narrator"
         }
@@ -2676,7 +2676,7 @@
       "properties": [
         "armor_ignore_5"
       ],
-      "text": "A hit causes Bleeding.",
+      "text": "A hit leaves the target Bleeding.",
       "mastery_family": "heavy_melee",
       "hands": "2H",
       "durability": 300,
@@ -2685,7 +2685,7 @@
       ],
       "grants": {
         "name": "Rip",
-        "text": "A hit causes Bleeding.",
+        "text": "A hit leaves the target Bleeding.",
         "effect": {
           "op": "on_hit",
           "apply": "bleed"
@@ -2727,14 +2727,14 @@
       "accuracy": 0,
       "price_credits": 60,
       "properties": [],
-      "text": "1 AP: a jab for half damage.",
+      "text": "For 1 AP, throw a jab that deals half damage.",
       "mastery_family": "unarmed",
       "hands": "1H",
       "durability": 200,
       "mod_slots": [],
       "grants": {
         "name": "Rabbit Punch",
-        "text": "1 AP: a jab for half damage.",
+        "text": "For 1 AP, throw a jab that deals half damage.",
         "effect": {
           "op": "narrator"
         }
@@ -2780,14 +2780,14 @@
       "accuracy": 0,
       "price_credits": 1200,
       "properties": [],
-      "text": "A hit pushes the target 2 tiles.",
+      "text": "A hit pushes the target 2 tiles away from you.",
       "mastery_family": "unarmed",
       "hands": "1H",
       "durability": 200,
       "mod_slots": [],
       "grants": {
         "name": "Haymaker",
-        "text": "A hit pushes the target 2 tiles.",
+        "text": "A hit pushes the target 2 tiles away from you.",
         "effect": {
           "op": "on_hit",
           "apply": "push",
@@ -2845,14 +2845,14 @@
         "consumable",
         "applies_burning"
       ],
-      "text": "You choose which tiles in the radius burn.",
+      "text": "Deals 15 fire damage to everyone within 2 tiles of where it lands and sets them Burning. The tile it lands on catches fire.",
       "mastery_family": "thrown",
       "hands": "1H",
       "durability": null,
       "mod_slots": [],
       "grants": {
         "name": "Firebreak",
-        "text": "You choose which tiles in the radius burn.",
+        "text": "You choose which tiles in the blast catch fire.",
         "effect": {
           "op": "narrator"
         }
@@ -2897,14 +2897,14 @@
         "area_radius_2",
         "consumable"
       ],
-      "text": "Mana arms in the radius stay jammed until cleared (2 AP).",
+      "text": "Within 2 tiles of where it lands, robots and drones are Stunned for 1 round and mana weapons jam. For 2 rounds, drawing a glyph in that area costs 1 AP more.",
       "mastery_family": "thrown",
       "hands": "1H",
       "durability": null,
       "mod_slots": [],
       "grants": {
         "name": "Static",
-        "text": "Mana arms in the radius stay jammed until cleared (2 AP).",
+        "text": "Mana weapons caught in the blast stay jammed until they are cleared for 2 AP.",
         "effect": {
           "op": "narrator"
         }
@@ -2953,7 +2953,7 @@
         "ignores_armour",
         "mana_meter_on_hit"
       ],
-      "text": "Spend 3 charge on one shot: 80 Elemental damage.",
+      "text": "Spend 3 charge on one shot to deal 80 Elemental damage.",
       "mastery_family": "mana_arms",
       "hands": "2H",
       "durability": 250,
@@ -2962,7 +2962,7 @@
       ],
       "grants": {
         "name": "Overcharge",
-        "text": "Spend 3 charge on one shot: 80 Elemental damage.",
+        "text": "Spend 3 charge on one shot to deal 80 Elemental damage.",
         "effect": {
           "op": "narrator"
         }
@@ -3010,7 +3010,7 @@
       "accuracy": 0,
       "price_credits": 1500,
       "properties": [],
-      "text": "Each sigil-etched magazine holds one Sigil, released by its first hit (with the magic pass).",
+      "text": "Each sigil-etched magazine holds one Sigil spell. The first hit from that magazine releases it.",
       "mastery_family": "mana_arms",
       "hands": "1H",
       "durability": 250,
@@ -3021,7 +3021,7 @@
       ],
       "grants": {
         "name": "Stored Spell",
-        "text": "Each sigil-etched magazine holds one Sigil, released by its first hit (with the magic pass).",
+        "text": "Each sigil-etched magazine holds one Sigil spell. The first hit from that magazine releases it.",
         "effect": {
           "op": "narrator"
         }
@@ -3070,7 +3070,7 @@
       "properties": [
         "counts_as_evoker"
       ],
-      "text": "After a hit, your next glyph this turn costs 0 AP (drawn on your own tile; its charge and Flux still apply). Counts as an Evoker.",
+      "text": "After a hit, your next glyph this turn costs 0 AP. You still draw it on your own tile and still pay its charge and Flux. Counts as an Evoker.",
       "mastery_family": "mana_arms",
       "hands": "1H",
       "durability": 250,
@@ -3080,7 +3080,7 @@
       ],
       "grants": {
         "name": "Edge Word",
-        "text": "After a hit, your next glyph this turn costs 0 AP (drawn on your own tile; its charge and Flux still apply). Not on an attack that already drew one (Sword Form). Counts as an Evoker.",
+        "text": "After a hit, your next glyph this turn costs 0 AP. You still draw it on your own tile and still pay its charge and Flux. It doesn't apply after an attack that already drew a glyph (Sword Form). Counts as an Evoker.",
         "effect": {
           "op": "edge_word"
         }
@@ -3128,7 +3128,7 @@
       "properties": [
         "counts_as_emanator"
       ],
-      "text": "Kills charge it (up to 3); spend all charge on a hit for +15 damage per charge. Counts as an Emanator.",
+      "text": "Each kill gives it 1 charge, up to 3. On a hit you can spend all its charge for +15 damage per charge. Counts as an Emanator.",
       "mastery_family": "mana_arms",
       "hands": "1H",
       "durability": 250,
@@ -3137,7 +3137,7 @@
       ],
       "grants": {
         "name": "Charged Strike",
-        "text": "Kills charge it (up to 3); spend all charge on a hit for +15 damage per charge. Counts as an Emanator.",
+        "text": "Each kill gives it 1 charge, up to 3. On a hit you can spend all its charge for +15 damage per charge. Counts as an Emanator.",
         "effect": {
           "op": "narrator"
         }
@@ -3192,7 +3192,7 @@
       "properties": [
         "damage_falloff"
       ],
-      "text": "A blessed shell lands a held Blessing on the target tile, radius 1 (with the magic pass).",
+      "text": "A blessed shell carries a Blessing you are holding to the tile it hits and the tiles next to it.",
       "mastery_family": "mana_arms",
       "hands": "2H",
       "durability": 250,
@@ -3201,7 +3201,7 @@
       ],
       "grants": {
         "name": "Blessed Shell",
-        "text": "A blessed shell lands a held Blessing on the target tile, radius 1 (with the magic pass).",
+        "text": "A blessed shell carries a Blessing you are holding to the tile it hits and the tiles next to it.",
         "effect": {
           "op": "narrator"
         }
@@ -3247,7 +3247,7 @@
       "properties": [
         "reach_2"
       ],
-      "text": "2 AP, once per fight: allies within 3 tiles get a shield of 15 × your Healing given.",
+      "text": "For 2 AP, once per fight, allies within 3 tiles gain a shield of 15 × your Healing given.",
       "mastery_family": "mana_arms",
       "hands": "2H",
       "durability": 250,
@@ -3256,7 +3256,7 @@
       ],
       "grants": {
         "name": "Rally",
-        "text": "2 AP, once per fight: allies within 3 tiles get a shield of 15 × your Healing given.",
+        "text": "For 2 AP, once per fight, allies within 3 tiles gain a shield of 15 × your Healing given.",
         "effect": {
           "op": "narrator"
         }
@@ -3309,7 +3309,7 @@
       ],
       "grants": {
         "name": "Staff Evoker",
-        "text": "Counts as an Evoker while held in both hands. The Grand Sigilist plants a staff to raise a Grand form.",
+        "text": "Counts as an Evoker while you hold it in both hands. A Grand Sigilist plants a staff to raise a Grand form.",
         "effect": {
           "op": "narrator"
         }

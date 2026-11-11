@@ -368,7 +368,7 @@ describe('the preview standard (section 7)', () => {
     expect(p).toMatchObject({ stage: 3, mult: 1.8, form: 'burst', tone: 'fire', element: 'fire', riderStage: 3, reach: 4, needsAim: true, resonance: false });
     expect(p.area.length).toBe(9); expect(p.reachTiles.length).toBeGreaterThan(9);
     const foe = p.affected.find((a) => a.unit === f.foes[0].id)!, ally = p.affected.find((a) => a.unit === f.pcs[1].id)!;
-    expect(foe).toMatchObject({ enemy: true, dmg: Math.round(20 * 1.8 * 0.7), dmgAfterArmour: Math.round(20 * 1.8 * 0.7) - 5, rider: 'Burning 2 rounds.' });
+    expect(foe).toMatchObject({ enemy: true, dmg: Math.round(20 * 1.8 * 0.7), dmgAfterArmour: Math.round(20 * 1.8 * 0.7) - 5, rider: 'Burning for 2 rounds.' });
     expect(foe.roll).toBeNull(); expect(ally.ally).toBe(true); expect(ally.rider).toBe('');
     me(f).mg!.strain = 4; const w = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '6,5'));
     expect(w.burnWarning).toBe(3 * 8); expect(w.shortWarning).toBe(true);

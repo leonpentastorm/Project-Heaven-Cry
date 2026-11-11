@@ -76,12 +76,12 @@ register({
   actions: [
     {
       id: 'bone_talk', label: 'Bone Talk', scope: ['combat'], target: 'enemy', ap: 2, range: HEARING,
-      text: 'Threaten an enemy with one physical detail: Heart save or Shaken (Tier II: every enemy in earshot who sees you).',
+      text: 'Threaten an enemy who can see and hear you. It makes a Heart save or is Shaken. II: every enemy in earshot who sees you makes the save.',
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
         if (!unitSees(h.cb!, t, h.u.pos)) return { ok: false, why: t.name + ' has to see you.' };
         const tn = 12 + unitStrength(h.u, 'intimidation');
-        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '; the whole group in earshot rolls.' : '.')] };
+        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '. Every enemy in earshot who sees you rolls too.' : '.')] };
       },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
@@ -94,7 +94,7 @@ register({
     },
     {
       id: 'bone_talk_story', label: 'Bone Talk', scope: ['story', 'world'], target: 'text', ap: 0,
-      text: 'Threaten someone with one specific physical detail (type it): they answer one question truthfully, or are Shaken for the scene.',
+      text: 'Threaten someone with one specific physical detail (type it). They answer one question truthfully, or they are Shaken for the scene.',
       run: (h, a) => {
         const who = a.npc || 'them', eid = postStory(h, (a.npc ? a.npc + ': ' : '') + (a.text || ''));
         if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Bone Talk' + (tierII(h) ? ' II (a group: the leader answers for all)' : '') + ' on ' + who + ': "' + String(a.text || '').slice(0, 140) + '". If it names one specific physical detail, ' + who + ' answers one question truthfully, or refuses and is Shaken this scene (conditions [{target, id:"shaken"}]' + (tierII(h) ? ', each of the group' : '') + '). No save: their choice. Refuse if the threat is vague.', eid || undefined);
@@ -162,10 +162,10 @@ register({
   actions: [
     {
       id: 'offer_mercy', label: 'Offer mercy', scope: ['combat'], target: 'enemy', ap: 0,
-      text: 'An enemy you can see at a quarter of its HP or less: Heart save or it surrenders. Once per enemy.',
+      text: 'Offer mercy to an enemy you can see that is at a quarter of its HP or less. It makes a Heart save. If it fails, it surrenders. Once per enemy.',
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
-        if (t.hp * 4 > t.maxHp) return { ok: false, why: t.name + ' isn\'t beaten enough (a quarter of its HP).' };
+        if (t.hp * 4 > t.maxHp) return { ok: false, why: t.name + ' isn\'t beaten enough yet. It must be at a quarter of its HP or less.' };
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
         if (!unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' };
@@ -175,7 +175,7 @@ register({
     },
     {
       id: 'mercy_setting', label: 'Open Hand: offer mercy…', pick: ['always', 'ask', 'never'], pickLabel: 'When to offer mercy', scope: ['combat', 'story'], target: 'none', ap: 0,
-      text: 'Choose always (offered the moment they break), ask (you offer on your turn) or never.',
+      text: 'Choose when you offer mercy. Always: it is offered the moment an enemy drops to a quarter of its HP. Ask: you offer it yourself on your turn. Never: you don\'t offer it.',
       preview: (h, a) => ({ lines: ['Now: ' + mercyMode(h) + (a.choice ? ' → ' + a.choice : '') + '.'] }),
       run: (h, a) => {
         const next = ['always', 'ask', 'never'].includes(a.choice || '') ? a.choice! : ({ always: 'ask', ask: 'never', never: 'always' } as any)[mercyMode(h)];
@@ -207,7 +207,7 @@ function cleanShield(h: Holder, why: string) {
 const innocent = (t: Unit) => (t.tags || []).includes('civilian') || (t.side as string) === 'neutral';
 register({
   id: 'clean_hands', claims: 'all',
-  toggles: [{ id: 'spare', label: 'Spare', on: ['combat/attack'], preview: (h) => 'A blow that takes their last HP subdues them; you gain a shield of ' + cleanPct(h) + '% of your max HP' }],
+  toggles: [{ id: 'spare', label: 'Spare', on: ['combat/attack'], preview: (h) => 'If this attack takes an enemy\'s last HP, it is subdued instead of killed, and you gain a shield of ' + cleanPct(h) + '% of your max HP.' }],
   on: {
     damage_in: (ctx, h) => { if (ctx.phase === 'would_drop_to_0' && ctx.src?.by === h.u && ctx.t.side !== h.u!.side && modOn(h, 'spare')) ctx.src.nonlethal = true; },
     on_surrender: (ctx, h) => { if (ctx.by === h.u || (ctx.by == null && ctx.t?.lastHitBy === h.u?.id)) cleanShield(h, 'spared ' + ctx.t.name); },
@@ -224,7 +224,7 @@ register({
   },
   actions: [{
     id: 'clean_story', label: 'I spared them', scope: ['story', 'world'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 2 },
-    text: 'Out of a fight: claim a moment you spared someone or protected an innocent. If the Narrator agrees, you start the next fight with a shield (15% of your max HP; II: 25%).',
+    text: 'Out of a fight, up to twice a scene: claim a moment when you spared someone or protected an innocent. If the Narrator agrees, you start the next fight with a shield. I: 15% of your max HP. II: 25%.',
     run: (h, a) => { const t = String(a.text || a.npc || 'someone').slice(0, 120), eid = postStory(h, 'spares or protects: ' + t + '.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Clean Hands: ' + h.c.name + ' spared or protected ' + t + '. Accept if it truly happened (a shield when the next fight starts); refuse if not.', eid || undefined); return null; },
   }],
   brief: () => 'out of a fight: accept or refuse their Clean Hands claims (spared/protected)',
@@ -239,8 +239,8 @@ register({
   id: 'judgement_day', claims: 'all',
   actions: [{
     id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 3, uses: { per: 'per_combat', n: 1 }, needsSight: true,
-    text: 'Judge an enemy you can see: its next attack on your side fails; your attacks on it deal +50% for the fight.',
-    preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails; +50% damage from you.'] }; },
+    text: 'Once a fight: judge an enemy you can see. Its next attack on your side fails, and your attacks on it deal +50% damage for the rest of the fight.',
+    preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails. Your attacks on it deal +50% damage.'] }; },
     run: (h, a) => {
       const t = h.cb!.units.find((x) => x.id === a.targetId)!; stateOf(h).judged = { id: t.id, spent: false };
       emitFx(h.cb!, 'cond', { target: t.id, at: t.pos, id: 'marked' });
@@ -271,8 +271,8 @@ register({
   actions: [
     {
       id: 'true_name', label: 'True Name', scope: ['combat'], target: 'enemy', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Name an upper-realm being, curse or creature: +50% damage from your side for the scene; it can\'t lie to you.',
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && !nameable(t)) return { ok: false, why: t.name + ' has no true name to speak (not upper-realm, cursed or a creature).' }; return { lines: ['+50% damage to it from your side for the rest of the scene.'] }; },
+      text: 'Once a session: speak the true name of an upper-realm being, a cursed being or a creature. Your side deals +50% damage to it for the scene, and it can\'t lie to you.',
+      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && !nameable(t)) return { ok: false, why: t.name + ' has no true name to speak. It must be upper-realm, cursed or a creature.' }; return { lines: ['+50% damage to it from your side for the rest of the scene.'] }; },
       run: (h, a) => {
         const t = h.cb!.units.find((x) => x.id === a.targetId)!;
         cst(h.c).true_name = { id: t.npcId || t.name, unit: t.id, scene: sceneN(h) };
@@ -282,7 +282,7 @@ register({
     },
     {
       id: 'true_name_story', label: 'True Name', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Name a being, curse or creature here (type who): it can\'t lie to you this scene, and takes +50% if it comes to a fight.',
+      text: 'Once a session: speak the true name of a being, a curse or a creature here (type who). It can\'t lie to you this scene, and it takes +50% damage from your side if it comes to a fight.',
       available: (h) => (uses(h).left('per_session', 1, h.key + '#true_name') > 0 ? true : 'Used this session.'),
       run: (h, a) => {
         const who = a.npc || String(a.text || '').trim(); uses(h).take('per_session', 1, h.key + '#true_name');
@@ -326,11 +326,11 @@ register({
   },
   actions: [{
     id: 'close_case', label: 'Close the case', scope: ['combat'], target: 'enemy', ap: (h) => (h.u && (h.u.analysis || 0) >= 3 ? 1 : 2),
-    text: 'Read an enemy an ally already analyzed, completely (Analyze range, line of sight).',
+    text: 'Read an enemy that has already been Analyzed, completely. It must be within Analyze range and in your sight.',
     available: (h) => (inFight(h) && h.cb!.units.some((t) => t.side !== h.u!.side && up(t) && t.analyzedBy && !closed(h).includes(t.id)) ? true : false),
     preview: (h, a) => {
       const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
-      if (!t.analyzedBy) return { ok: false, why: 'Analyze it first (the Analyze action).' };
+      if (!t.analyzedBy) return { ok: false, why: 'It has to be Analyzed first.' };
       if (closed(h).includes(t.id)) return { ok: false, why: 'Already read.' };
       if (dist(h.u.pos, t.pos) > 4 + (h.u.analysis || 0) || !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'Out of Analyze range or sight.' };
       return {};
@@ -391,8 +391,8 @@ register({
   },
   actions: [{
     id: 'name_line', label: 'Name your line', scope: ['story'], target: 'text', ap: 0,
-    text: 'Type the one line you won\'t cross. While it holds, +1 on Heart saves (II: +2, and allies +1).',
-    available: (h) => (ro(h.c).red_line_crossed ? 'You crossed it: a new line next session.' : holds(h.c) ? 'Your line holds: "' + String(line(h.c)).slice(0, 60) + '".' : true),
+    text: 'Type the one line you won\'t cross. I: while it holds, you get +1 on Heart saves. II: you get +2, and your allies get +1.',
+    available: (h) => (ro(h.c).red_line_crossed ? 'You crossed your line. You can name a new one next session.' : holds(h.c) ? 'Your line holds: "' + String(line(h.c)).slice(0, 60) + '".' : true),
     run: (h, a) => { cst(h.c).red_line = String(a.text || '').trim().slice(0, 140); postStory(h, 'names a line they won\'t cross: "' + cst(h.c).red_line + '".'); },
   }],
   brief: (h) => (holds(h.c) ? 'watch their line "' + String(line(h.c)).slice(0, 60) + '"; if crossed, traitState red_line_crossed:true' : null),
@@ -426,9 +426,9 @@ register({
   },
   actions: [{
     id: 'neutralise_agent', label: 'Neutralise agent', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (inFight(h) ? 2 : 0),
-    text: 'Neutralise one identified chemical for the allies around you (2 tiles): it ends on them; they\'re immune for the fight.',
+    text: 'Neutralise one identified chemical for allies within 2 tiles of you. Its effect on them ends, and they are immune to it for the rest of the fight.',
     available: (h) => (!tierII(h) ? false : inFight(h) ? (agentsHere(h).length ? true : 'No identified agent here.') : true),
-    preview: (h, a) => (inFight(h) ? { lines: ['Neutralises ' + (a.choice || agentsHere(h)[0] || 'nothing') + ' for allies within 2 tiles.'] } : { lines: ['The Narrator describes it; the party is safe from it this scene.'] }),
+    preview: (h, a) => (inFight(h) ? { lines: ['Neutralises ' + (a.choice || agentsHere(h)[0] || 'nothing') + ' for allies within 2 tiles.'] } : { lines: ['The party is safe from it this scene. The Narrator describes how.'] }),
     run: (h, a) => {
       if (!inFight(h)) {
         const what = a.choice || a.text || (ro(h.c).identified || [])[0] || 'the agent';
@@ -511,19 +511,19 @@ register({
   actions: [
     {
       id: 'shake_it_off', label: 'Shake It Off', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_combat', n: 1 },
-      text: 'Free, once per combat: remove one Heart debuff from yourself.',
+      text: 'Once a fight, for 0 AP: remove one Heart debuff from yourself.',
       available: (h) => (inFight(h) && heartCondsOn(h.u!).length ? true : 'No Heart debuff on you.'),
       run: (h, a) => { const l = heartCondsOn(h.u!), id = a.choice && l.includes(a.choice) ? a.choice : l[0]; endCond(h.u!, id, h.cb!); say(h.cb, h.u!.name + ' has seen worse: shakes off ' + id + ' (Daggerfall Veteran).'); },
     },
     {
       id: 'shake_it_off_story', label: 'Shake It Off', scope: ['story', 'world'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'Once a scene: shake off a Heart condition (Shaken…).',
+      text: 'Once a scene: shake off one Heart condition on you, such as Shaken.',
       available: (h) => (storyHeart(h).length ? true : 'No Heart condition on you.'),
       run: (h) => { const id = storyHeart(h)[0]; setStoryCond(h.g, h.c!, id, 'scene', true); postStory(h, 'has seen worse: shakes off ' + id + '.'); },
     },
     {
       id: 'seen_it_before', label: 'Seen It Before', scope: ['combat', 'story'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Once per session: how will the enemy move next? In a fight the engine shows each visible enemy\'s next move; in the story the Narrator answers truthfully.',
+      text: 'Once a session: learn how the enemy will move next. In a fight, you are shown the next move of every enemy you can see. In the story, the Narrator answers truthfully.',
       run: (h, a, rng) => {
         if (inFight(h)) { const l = foresee(h, rng); say(h.cb, h.u!.name + ' has seen it before: ' + (l.length ? l.join('; ') : 'no enemy in sight to read') + '.'); return; }
         const eid = postStory(h, 'asks how the enemy force will move next.' + (a.text ? ' "' + a.text.slice(0, 120) + '"' : ''), { private: true });
@@ -544,7 +544,7 @@ register({
   id: 'chain_smoker', claims: [0, 3],
   actions: [{
     id: 'light_up', label: 'Light Up', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (h.cb ? 2 : 0),
-    text: '+2 Composure for the scene and remove one Heart debuff.',
+    text: 'Light a cigarette: +2 Composure for the scene, and remove one Heart debuff from yourself.',
     run: (h) => {
       cst(h.c).lit_scene = sceneN(h);
       if (inFight(h)) {
@@ -581,7 +581,7 @@ register({
   actions: [
     {
       id: 'verse', label: 'Verse', scope: ['combat'], target: 'enemy', ap: 1, range: HEARING, uses: { per: 'per_scene', n: 1 },
-      text: 'Answer in metaphor: the listener saves (Heart) or is Confused; allies in earshot get +1 Composure this scene.',
+      text: 'Once a scene: answer an enemy in metaphor. It makes a Heart save or is Confused. Allies in earshot get +1 Composure for the scene.',
       preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'implication')) + ' or Confused.'] }; },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
@@ -592,8 +592,8 @@ register({
     },
     {
       id: 'verse_story', label: 'Verse', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'Answer in metaphor (type it): the listener resists or is Confused; allies here get +1 Composure this scene.',
-      available: (h) => (uses(h).left('per_scene', 1, h.key + '#verse') > 0 ? true : 'Once a scene.'),
+      text: 'Once a scene: answer in metaphor (type it). The listener resists or is Confused. Allies here get +1 Composure for the scene.',
+      available: (h) => (uses(h).left('per_scene', 1, h.key + '#verse') > 0 ? true : 'Used this scene.'),
       run: (h, a, rng) => {
         uses(h).take('per_scene', 1, h.key + '#verse');
         const g = h.g, c = h.c!, who = a.npc || '', n = who ? npcsOf(g).find((x) => nameMatch(x.name, who) || x.id === who) : null;
@@ -651,7 +651,7 @@ const attacked = (h: Holder) => !!(h.u?.ps?.[h.key] as any)?.attacked;
 const markAttacked = (h: Holder) => { if (!attacked(h)) { stateOf(h).attacked = true; } };
 register({
   id: 'pacifist', claims: 'all',
-  toggles: [{ id: 'nonlethal', label: 'Nonlethal', on: ['combat/attack'], defaultOn: true, preview: () => 'A foe this drops is subdued, not killed' }],
+  toggles: [{ id: 'nonlethal', label: 'Nonlethal', on: ['combat/attack'], defaultOn: true, preview: () => 'An enemy this attack drops is subdued, not killed.' }],
   on: {
     attack_target: (ctx, h) => { if (ctx.att === h.u && ctx.tgt?.side !== h.u!.side) markAttacked(h); },
     on_damaged: (ctx, h) => { if (ctx.src?.by === h.u && ctx.t.side !== h.u!.side) markAttacked(h); },
@@ -747,7 +747,7 @@ register({
   },
   actions: [{
     id: 'track', label: 'Track', scope: ['story', 'world'], target: 'text', ap: 0,
-    text: 'Follow a trail less than a day old (type whose): the Narrator says where it leads, no roll.',
+    text: 'Follow a trail less than a day old (type whose). No roll: the Narrator tells you where it leads.',
     run: (h, a) => {
       const who = (a.npc || String(a.text || '')).trim().slice(0, 60), s = cst(h.c);
       const l: string[] = Array.isArray(s.tracked) && s.tracked_scene === sceneN(h) ? s.tracked : []; if (!l.includes(who)) l.push(who);
@@ -776,12 +776,12 @@ register({
   actions: [
     {
       id: 'lucky_foot', label: 'Lucky Foot', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 }, arm: true,
-      text: 'Armed: the first enemy attack that would hit you is rerolled (once per session). Click to stand it down or arm it again.',
+      text: 'Once a session: while this is on, the first enemy attack that would hit you is rerolled. Use it again to turn it off.',
       run: () => null,
     },
     {
       id: 'lucky_foot_story', label: 'Lucky Foot', scope: ['story'], target: 'text', ap: 0,
-      text: 'Once per session: make the Narrator reroll an NPC\'s roll against you (type which).',
+      text: 'Once a session: make the Narrator reroll one roll made against you (type which).',
       available: (h) => (luckyLeft(h) ? true : 'Used this session.'),
       run: (h, a) => {
         uses(h).take('per_session', 1, LUCKY(h));
@@ -852,7 +852,7 @@ register({
   actions: [
     {
       id: 'repair_drone', label: 'Repair drone', scope: ['combat'], target: 'ally', ap: 2, range: 1,
-      text: 'Adjacent: one spare-parts charge, 10 HP × your Improvisation Mastery level.',
+      text: 'Repair your drone when it is next to you: it heals 10 HP for each Mastery level you have in Improvisation. Uses one spare-parts charge.',
       available: (h) => (inFight(h) && h.cb!.units.some((v) => myComp(h, v, 'drone') && !v.dead) ? true : false),
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t) return {};
@@ -870,7 +870,7 @@ register({
     },
     {
       id: 'rebuild_drone', label: 'Rebuild drone', scope: ['story', 'world'], target: 'none', ap: 0,
-      text: 'Out of a fight: repair the drone with one spare part, or rebuild a destroyed one after a rest with a drone frame or 3 spare parts.',
+      text: 'Out of a fight: repair your drone with one spare part. A destroyed drone can be rebuilt after a rest, with a drone frame or 3 spare parts.',
       available: (h) => {
         const d = compOf(h.c, 'drone'); if (!d || !h.c) return false;
         const max = COMPANION_KINDS.drone?.hp ?? 30;

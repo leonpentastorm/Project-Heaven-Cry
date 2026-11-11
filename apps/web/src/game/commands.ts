@@ -74,17 +74,17 @@ export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
 /** "2 AP · 1/combat" */
 /** Vent and core swap as the engine prices them (magic.ts ventAp / coreAp: Bleed the Flux, Core Change). */
 export const magicAp = (u: any, a: 'vent' | 'core'): number => { try { return u ? (a === 'vent' ? ventAp(u) : coreAp(u)) : SPELL_AP[a]; } catch { return SPELL_AP[a]; } };
-const apNote = (u: any, a: 'vent' | 'core') => { const n = magicAp(u, a), base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux: ' : 'Core Change: ') + base + ' → ' + n + ' AP. ' : ''; };
+const apNote = (u: any, a: 'vent' | 'core') => { const n = magicAp(u, a), base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux' : 'Core Change') + ' lowers the cost from ' + base + ' to ' + n + ' AP. ' : ''; };
 export const pkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : e.ap + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
 /** A move's standing state for its button (Class Roster Revision 3): an on/off policy pair names the one in force
  *  (its twin is greyed "on now"), Eye of the Storm reads ARMED once armed, a spent once-a-scene move "used". */
 export function pkState(e: PerkActionEntry): { tag: string; why: string | null } {
   const pol = /^(.*)_(on|off)$/.exec(e.actionId);
-  if (pol && e.why === 'Already set.') return { tag: ' ✓', why: 'In force now (' + (pol[2] === 'on' ? 'on: the default' : 'off for this fight') + ').' };
-  if (e.why === 'Already armed.') return { tag: ' · ARMED', why: 'Armed: your next Release this turn uses it.' };
+  if (pol && e.why === 'Already set.') return { tag: ' ✓', why: 'In force now. ' + (pol[2] === 'on' ? 'On is the default.' : 'It stays off for this fight.') };
+  if (e.why === 'Already armed.') return { tag: ' · ARMED', why: 'Armed. Your next Release this turn uses it.' };
   return { tag: '', why: e.why };
 }
-export const pkText = (e: PerkActionEntry) => e.text + (e.engine ? '' : ' The Narrator rules what the engine doesn\'t.');
+export const pkText = (e: PerkActionEntry) => e.text + (e.engine ? '' : ' The Narrator decides the rest.');
 /** The class a character holds, for the Class tab's name and emblem: an active advanced class, else the base class (a
  *  shelved advanced class shows nothing). With no character, a move's origin (an action entry's cls, e.g. medic for
  *  the Bard's Triage) stands in, mapped to the Revision 3 class that holds it now. */
@@ -106,8 +106,8 @@ export function reloadItems(u: any): ActionItem[] {
   const w: any = (WEAPON as any)[u.weapon], unit = (w && w.reload_unit) || 'magazine', now = w && w.magazine != null ? ' ' + u.ammo + ' / ' + w.magazine + ' loaded now.' : '';
   if (!R.tactical) return [['reload', R.label, R.ap + ' AP', R.text + now, R.why]];
   return [
-    ['reload', (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (speed)', R.ap + ' AP · the ' + unit + ' drops', 'Swap in your fullest spare ' + unit + ' (' + (u.mags || []).length + ' left). The one in the gun drops into the pile on your tile with its rounds still in it: worth picking up, Load refills it.' + now, R.why],
-    [RELOAD_TAC, (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (tactical)', R.tactical.ap + ' AP · the ' + unit + ' goes in your pack', 'Swap in your fullest spare ' + unit + ' for ' + PILE.tactical_reload_extra_ap + ' AP more: the one in the gun goes back in your pack with its rounds still in it.' + now, R.tactical.why],
+    ['reload', (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (speed)', R.ap + ' AP · the ' + unit + ' drops', 'Swap in your fullest spare ' + unit + ' (' + (u.mags || []).length + ' left). The one in the gun drops onto your tile with its rounds still in it. You can pick it up later and refill it with Load.' + now, R.why],
+    [RELOAD_TAC, (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (tactical)', R.tactical.ap + ' AP · the ' + unit + ' goes in your pack', 'Swap in your fullest spare ' + unit + ' for ' + PILE.tactical_reload_extra_ap + ' AP more. The one in the gun goes back in your pack with its rounds still in it.' + now, R.tactical.why],
   ];
 }
 /** Reload both guns (Two guns): speed at the engine's price, tactical +1 AP when both guns take magazines. */
@@ -116,10 +116,10 @@ export function reloadBothItems(u: any): ActionItem[] {
   if (!w || !ow || w.magazine == null || ow.magazine == null) return [];
   // The engine's refusals for a full gun (combat.ts reloadHands), before the AP check.
   const mainFull = (u.ammo ?? 0) >= (w.magazine || 0) && w.reload === 'magazine', offFull = (u.offAmmo ?? 0) >= (ow.magazine || 0);
-  const full = mainFull && offFull ? 'Already full.' : offFull ? 'The off-hand gun is full: reload the main gun alone.' : mainFull ? 'The main gun is full: reload the off-hand gun alone.' : null;
+  const full = mainFull && offFull ? 'Already full.' : offFull ? 'The off-hand gun is full. Reload the main gun alone.' : mainFull ? 'The main gun is full. Reload the off-hand gun alone.' : null;
   const ap = reloadBothAp(u), tac = ap + PILE.tactical_reload_extra_ap, need = (n: number) => full || ((u.ap ?? 0) < n ? 'Needs ' + n + ' AP.' : null);
-  const out: ActionItem[] = [['reload2', 'Reload both guns' + (ow.reload !== 'loose' ? ' (speed)' : ''), ap + ' AP' + (ow.reload !== 'loose' ? ' · the magazines drop' : ''), 'Each gun takes its own spare; the old magazines drop into the pile on your tile.', need(ap)]];
-  if (ow.reload !== 'loose' && w.reload !== 'loose' && Array.isArray(u.mags)) out.push([RELOAD2_TAC, 'Reload both (tactical)', tac + ' AP · the magazines go in your pack', 'Each gun takes its own spare; the old magazines go back in your pack.', need(tac)]);
+  const out: ActionItem[] = [['reload2', 'Reload both guns' + (ow.reload !== 'loose' ? ' (speed)' : ''), ap + ' AP' + (ow.reload !== 'loose' ? ' · the magazines drop' : ''), 'Each gun takes its own spare magazine. The old magazines drop onto your tile.', need(ap)]];
+  if (ow.reload !== 'loose' && w.reload !== 'loose' && Array.isArray(u.mags)) out.push([RELOAD2_TAC, 'Reload both (tactical)', tac + ' AP · the magazines go in your pack', 'Each gun takes its own spare magazine. The old magazines go back in your pack.', need(tac)]);
   return out;
 }
 /** A visible pile on your tile or next to it (Pick up's reach), from the fight's objects in this player's view. */
@@ -150,10 +150,10 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   const held = mg && mg.held, heldD = held ? designs.find((d: any) => d.id === held.design) || null : null;
   const band = manaBand(cb ? cb.mana ?? MANA_START : MANA_START);
   const ITEMS: ActionGroup[] = [
-    ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + ' tiles', 'Each AP moves you ' + mv + ' tiles (Movement). Rough tiles count double. Leaving an enemy\'s reach without Disengaging invites an opportunity attack.'],
-      ['sprint', 'Sprint', '2 AP', cur && cur.noSprint ? 'Not while Overburdened or in Juggernaut armour.' : 'Up to ' + Math.floor(3 * mv) + ' tiles (3 × Movement) for 2 AP.'],
-      ['disengage', 'Disengage', '1 AP', 'Step 1 tile with no opportunity attacks.'],
-      ['prone', cur && cur.prone ? 'Stand up' : 'Drop prone', '1 AP', 'Prone: ranged attacks against you −2, melee +2; you can\'t move until you stand.']], null, 'move'],
+    ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + ' tiles', 'Each AP moves you ' + mv + ' tiles (your Movement). Rough tiles count double. If you leave an enemy\'s reach without Disengaging, it gets an opportunity attack.'],
+      ['sprint', 'Sprint', '2 AP', cur && cur.noSprint ? 'You can\'t Sprint while Overburdened or in Juggernaut armour.' : 'Move up to ' + Math.floor(3 * mv) + ' tiles (3 × your Movement).'],
+      ['disengage', 'Disengage', '1 AP', 'Step 1 tile. No enemy gets an opportunity attack.'],
+      ['prone', cur && cur.prone ? 'Stand up' : 'Drop prone', '1 AP', 'While you are Prone, ranged attacks against you are at −2 to hit and melee attacks at +2. You can\'t move until you stand up.']], null, 'move'],
     ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), [
       // Physical 2.0 (rules 1.12; game/techView.ts): one block per held weapon, its plain attack (Cut, Shot) and its
       // Techniques pad, then Hold a shot. They replace the old Shot / Aimed / Burst / Full auto / Overwatch / weapon
@@ -161,38 +161,38 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       // A companion, a puppet or a unit with a fixed action list (the drone) can't use techniques (the engine's gate), so
       // it keeps the old rows.
       ...(legacy ? [...(melee ? [['melee', 'Strike', attackApCost(w, 'melee') + ' AP', 'd20 + ' + w.skill.replace('_', ' ') + ' vs Defense. ' + w.damage + ' damage.'] as ActionItem]
-        : [['shot', 'Shot', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'd20 + Dexterity vs Defense; −5 if they\'re behind half cover. ' + (w && typeof w.damage === 'number' ? w.damage + ' damage. ' : '') + 'Heat +1.'] as ActionItem,
-          ['aimed', 'Aimed shot', '3 AP', '+2 to hit; crits on 19–20.'] as ActionItem,
-          ...(modes.includes('burst') ? [['burst', 'Burst', '3 AP', '3 rounds at one target, each later round −1 more.'] as ActionItem] : []),
-          ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', '10 rounds: one roll at −2 against every enemy near the line to your target.'] as ActionItem] : [])]),
+        : [['shot', 'Shot', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'd20 + Dexterity against Defense, at −5 if the target is behind half cover. ' + (w && typeof w.damage === 'number' ? w.damage + ' damage. ' : '') + 'Heat +1.'] as ActionItem,
+          ['aimed', 'Aimed shot', '3 AP', '+2 to hit, and a critical hit on 19–20.'] as ActionItem,
+          ...(modes.includes('burst') ? [['burst', 'Burst', '3 AP', 'Fire 3 rounds at one target. The second is at −1 to hit and the third at −2.'] as ActionItem] : []),
+          ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', 'Fire 10 rounds. Every enemy near the line to your target is attacked with one roll at −2 to hit.'] as ActionItem] : [])]),
         ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : [])]
         : [...withBoth(blockItems(blocks0) as ActionItem[], dual, cur),
           // a gun in the hand still hits: the butt of the weapon (the engine's bare-hand strike; Leon, 10 Nov 2026)
-          ...(w && !melee ? [['melee', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee') + ' AP', 'An enemy next to you: d20 + Raw Power vs Defense, the damage of a bare-hand strike. No round spent, no Heat.'] as ActionItem] : [])]),
-      ...(offW && !dual ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action: AP = the higher cost + 1. Main hand −1, off hand −3 (better by 1 per 3 points in its skill).'] as ActionItem] : []),
+          ...(w && !melee ? [['melee', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee') + ' AP', 'Hit an enemy next to you with the gun itself: d20 + Raw Power against Defense, for the damage of a bare-hand strike. It uses no round and adds no Heat.'] as ActionItem] : [])]),
+      ...(offW && !dual ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.'] as ActionItem] : []),
       // with a gun in a hand, reloading and clearing a jam sit with the shots (Leon, 10 Nov 2026: no tab switch mid-fight)
       ...(gunTab ? [...reloadItems(cur).filter((it) => !dual || !String(it[0]).startsWith('reload2')), ...clearItems] : []),
-      ['shove', 'Shove', '2 AP', 'An adjacent enemy: d20 + Raw Power vs 10 + its best of Raw Power and Athletics. Pushed 1 tile, or prone if blocked. Shove them into fire.'],
+      ['shove', 'Shove', '2 AP', 'Shove an enemy next to you: d20 + Raw Power against 10 + the better of its Raw Power and Athletics. If you win, it is pushed 1 tile, or knocked Prone if the way is blocked.'],
       ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
-      ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Cover, a barricade, a door, a barrel, a lamp: no roll, your weapon\'s damage to its HP. Broken cover becomes rubble; barrels explode.']], HOSTILE_INK, 'attack'],
+      ['cover', 'Shoot an object', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'Shoot cover, a barricade, a door, a barrel or a lamp. There is no roll: it takes your weapon\'s damage. Broken cover becomes rubble, and barrels explode.']], HOSTILE_INK, 'attack'],
     ['UTILITY', [
       // rules 1.12: what nails a unit in place (Run Through's pin) holds until 2 AP is spent to pull free
       ...pullFreeItems(cb, cur),
       ...(gunTab ? [] : reloadItems(cur)),
       ...(W('load') ? [['load', W('load')!.label, loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : W('load')!.text, W('load')!.why] as ActionItem] : []),
       ...(gunTab ? [] : clearItems),
-      ...(W('repair') ? [['repair', 'Field Repair', W('repair')!.ap + ' AP', 'Proficiency 3+, one spare-parts charge (' + (cur && cur.parts || 0) + ' left): +10% durability, +5% per Proficiency above 3. Weapon ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.', W('repair')!.why] as ActionItem] : []),
-      ['pickup', 'Pick up', PICKUP_AP + ' AP', 'Take what you tick from the pile on your tile or next to it (the stack with a count): magazines with their rounds, loose rounds, weapons, whatever was dropped. Everything is ticked to start.', cur && cur.side === 'pc' && !cur.charId ? 'Only a character picks things up.' : cb && cur && !pileInReach(cb, cur) ? 'Nothing on the ground next to you.' : undefined],
-      ['door', 'Open or close a door', '1 AP', 'An adjacent door. Closed, it blocks movement and sight. Locked doors need a check after the fight, or enough damage.'],
-      ['stim', 'Stim an ally', '1–2 AP', 'Adjacent ally: stabilise a Downed ally at 1 HP (1 AP for a Bard, 2 for others), or heal 30 × your Healing given. Stops Bleeding. Uses a stim' + (ch ? ' (' + ch.stims + ' left)' : '') + '.'],
-      ...(ch && musicTraitOf(ch) && songOf(ch) ? [['song', 'Play my song', '2 AP', 'Your Musek Blestor: your favourite song takes over the room until the fight ends, and your music trait\'s bonus is on while it plays. It can replace another holder\'s kept-on song, never a spotlight.'] as ActionItem] : []),
+      ...(W('repair') ? [['repair', 'Field Repair', W('repair')!.ap + ' AP', 'Needs Improvisation 3 and one spare-parts charge (' + (cur && cur.parts || 0) + ' left). Your weapon regains 10% durability, plus 5% for each Improvisation point above 3. Weapon durability: ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.', W('repair')!.why] as ActionItem] : []),
+      ['pickup', 'Pick up', PICKUP_AP + ' AP', 'Take what you tick from the pile on your tile or next to it: magazines with their rounds, loose rounds, weapons, whatever was dropped. Everything starts ticked.', cur && cur.side === 'pc' && !cur.charId ? 'Only a player character can pick things up.' : cb && cur && !pileInReach(cb, cur) ? 'Nothing on the ground next to you.' : undefined],
+      ['door', 'Open or close a door', '1 AP', 'Open or close a door next to you. A closed door blocks movement and sight. A locked door needs a check after the fight, or enough damage to break it.'],
+      ['stim', 'Stim an ally', '1–2 AP', 'Use a stim on an ally next to you. A Downed ally is stabilised at 1 HP (1 AP for a Bard, 2 AP for anyone else). Anyone else heals 30 HP × your Healing given. It also stops Bleeding. Uses one stim' + (ch ? ' (' + ch.stims + ' left)' : '') + '.'],
+      ...(ch && musicTraitOf(ch) && songOf(ch) ? [['song', 'Play my song', '2 AP', 'Your Musek Blestor plays your favourite song for the whole room until the fight ends, and your music trait\'s bonus is active while it plays. It can replace another player\'s song, but never a spotlight track.'] as ActionItem] : []),
       // Rules 1.3 (lane 0B): these show only when they apply.
-      ...(cur && cur.conds?.burning > 0 ? [['extinguish', 'Put out the fire', '1 AP', 'Burning: 10 damage at the start of each of your turns until someone spends 1 AP to put it out.'] as ActionItem] : []),
-      ...(cur && cur.conds?.grappled > 0 ? [['escape', 'Break free', '2 AP', 'Grappled: d20 + the better of Raw Power and Athletics against the grappler\'s.'] as ActionItem] : []),
-      ...(cur && (cur.conds?.disarmed > 0 || cur.conds?.lowered > 0) ? [['recover', cur.conds?.disarmed > 0 ? 'Recover your weapon' : 'Raise your weapon', cur.conds?.disarmed > 0 ? '2 AP' : '1 AP', 'Until then you attack with your fists.'] as ActionItem] : []),
+      ...(cur && cur.conds?.burning > 0 ? [['extinguish', 'Put out the fire', '1 AP', 'You are Burning: you take 10 damage at the start of each of your turns until someone spends 1 AP to put it out.'] as ActionItem] : []),
+      ...(cur && cur.conds?.grappled > 0 ? [['escape', 'Break free', '2 AP', 'You are Grappled. Roll d20 + the better of your Raw Power and Athletics against the grappler\'s to break free.'] as ActionItem] : []),
+      ...(cur && (cur.conds?.disarmed > 0 || cur.conds?.lowered > 0) ? [['recover', cur.conds?.disarmed > 0 ? 'Recover your weapon' : 'Raise your weapon', cur.conds?.disarmed > 0 ? '2 AP' : '1 AP', 'Until you do, you attack with your fists.'] as ActionItem] : []),
       ...(dual ? [] : reloadBothItems(cur)), // two guns: with the both-hands block on the Attack tab
-      ...(cur && !cur.hidden && cur.side === 'pc' ? [['hide', 'Hide', '2 AP', 'Only out of every enemy\'s sight, and never while Marked. Hidden: enemies can\'t target you; your first attack from hiding is an ambush (crit on 19–20, × your Ambush multiplier). Enemies look for you at the end of their turns.', (cb && cb.units.some((v: any) => v.side !== cur.side && !v.dead && !v.downed && unitSees(cb, v, cur.pos))) ? 'An enemy can see you.' : cur.conds?.marked > 0 ? 'Marked.' : null] as ActionItem] : []),
-      ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy: its HP, Defense, armour and status, for the whole squad, the rest of the fight. Range ' + (4 + (cur && cur.analysis || 0)) + ' tiles; needs line of sight. No roll.']], null, 'utility'],
+      ...(cur && !cur.hidden && cur.side === 'pc' ? [['hide', 'Hide', '2 AP', 'You can Hide only when no enemy can see you, and never while Marked. While Hidden, enemies can\'t target you, and your first attack is an ambush: a critical hit on 19–20, and damage × your Ambush multiplier. Enemies look for you at the end of their turns.', (cb && cb.units.some((v: any) => v.side !== cur.side && !v.dead && !v.downed && unitSees(cb, v, cur.pos))) ? 'An enemy can see you.' : cur.conds?.marked > 0 ? 'You are Marked.' : null] as ActionItem] : []),
+      ['analyze', 'Analyze', (cur ? analyzeCost(cur) : 2) + ' AP', 'Read one enemy within ' + (4 + (cur && cur.analysis || 0)) + ' tiles that you can see. The whole squad sees its HP, Defense, armour and status for the rest of the fight. No roll.']], null, 'utility'],
   ];
   // Perks and traits, then class moves: each item's actions as the engine lists them (hidden when they don't apply).
   const pk = perkEntries(opts.g, cb, cur, ch, 'combat');
@@ -209,24 +209,24 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
     const evoWhy = mg.evoker ? undefined : NEEDS_EVOKER, emaWhy = mg.emanator ? undefined : NEEDS_EMANATOR;
     const MG: ActionGroup[] = [];
     if (sig) MG.push(['MAGIC · SIGILS', [
-      ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then click your own tile: one glyph a tile. Step and draw again to walk a Line (2 to 4 in a straight row). It costs the word\'s charge from your Evoker and adds its Flux.', evoWhy],
-      ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a Line of glyphs (a Subject and another word). Where you stand sets the way it opens: behind an end, it fires along the Line; beside it, across. Charge ' + mg.charge + '/' + CORE_CHARGE + '.', evoWhy],
+      ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then click your own tile. A tile holds one glyph. Step and draw again to walk a Line of 2 to 4 glyphs in a straight row. Each glyph costs its word\'s charge from your Evoker and adds its Flux.', evoWhy],
+      ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a Line of glyphs. It needs a Subject and at least one other word. Where you stand aims it: from an end, it fires along the Line; from the side, across it. Charge ' + mg.charge + '/' + CORE_CHARGE + '.', evoWhy],
       ['scuff', 'Scuff', SPELL_AP.scuff + ' AP', 'Wipe out the glyphs on the tile you stand on.'],
-      ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, magicAp(cur, 'vent') + ' AP', 'Pour your Flux into the air: the mana meter rises by as much. Past ' + FLUX_MAX + ' Flux the Evoker overloads.' + apNote(cur, 'vent'), evoWhy],
-      ['core', 'Swap core', magicAp(cur, 'core') + ' AP', apNote(cur, 'core') + 'Load a fresh mana core: ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy]], SIGIL_GLOW, 'sigils']);
+      ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, magicAp(cur, 'vent') + ' AP', 'Pour all your Flux into the air. The mana meter rises by the same amount. If your Flux goes past ' + FLUX_MAX + ', the Evoker overloads.' + apNote(cur, 'vent'), evoWhy],
+      ['core', 'Swap core', magicAp(cur, 'core') + ' AP', apNote(cur, 'core') + 'Load a fresh mana core with ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy]], SIGIL_GLOW, 'sigils']);
     if (soul) MG.push(['MAGIC · OUTBURSTS', [
       // Rules 1.5, the heart cycle: Begin (or a snap cast) when nothing is held; Pump, Release, Steady, Let go, Feed and
       // Heart Overwatch while holding. Costs and refusals are the engine's (game/heartView.ts runs its previews).
-      ...(designs.length && !held ? [['outburst', 'Outburst', designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Pull the bots through your heart: Begin a design (2 AP, Swift 1) and hold it at stage 0, then Pump it up (1 AP a stage, to stage 4) and Release it (1 AP). Or Snap it: Begin and Release at once, 3 AP at ×0.6.' + (mg.emanator ? '' : ' No Emanator in hand: it draws on the air (no MP, +2 Strain).')] as ActionItem] : []),
+      ...(designs.length && !held ? [['outburst', 'Outburst', designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×0.6.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +2 Strain.')] as ActionItem] : []),
       ...(held ? (() => { const hp = cb ? heartPanel(cb, cur) : null; if (!hp) return [['release', 'Release · stage ' + held.stage, SPELL_AP.release + ' AP', 'Let the held Outburst go.'] as ActionItem];
-        return [['pump', 'Pump · stage ' + hp.stage + (hp.pump.ok ? ' → ' + (hp.stage + 1) : ''), hp.pump.cost, 'A heartbeat: +1 stage (stage multipliers ×' + stageMult(0) + ' to ×' + stageMult(4) + '). Free while the round\'s Empathy Pumps last.', hp.pump.ok ? null : hp.pump.why] as ActionItem,
+        return [['pump', 'Pump · stage ' + hp.stage + (hp.pump.ok ? ' → ' + (hp.stage + 1) : ''), hp.pump.cost, 'Raise the held Outburst by 1 stage. Stages run from ×' + stageMult(0) + ' at stage 0 to ×' + stageMult(4) + ' at stage 4. A Pump costs 0 AP while you have free Pumps from Empathy left this round.', hp.pump.ok ? null : hp.pump.why] as ActionItem,
           ['release', 'Release · stage ' + hp.stage + ' ×' + hp.mult, hp.release.cost, 'Fire ' + hp.name + ' at the stage reached (' + hp.shape + ').', hp.release.ok ? null : hp.release.why] as ActionItem,
           ['steady', 'Steady the heart', hp.steadyBtn.cost, hp.steadyBtn.title, hp.steadyBtn.ok ? null : hp.steadyBtn.why] as ActionItem,
           ['letgo', 'Let it go' + (hp.letgo.strainOff ? ' · −' + hp.letgo.strainOff + ' Strain' : ''), 'free', hp.letgo.title, hp.letgo.ok ? null : hp.letgo.why] as ActionItem,
           ...(hp.feedShow ? [['feed', 'Feed the glyph', hp.feed.cost, hp.feed.title, hp.feed.ok ? null : hp.feed.why] as ActionItem] : []),
           ['heartwatch', hp.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 'free', hp.watchBtn.title, hp.watchBtn.ok ? null : hp.watchBtn.why] as ActionItem]; })() : []),
-      ...(mg.emanator || (ch && focusHand(ch, 'emanator')) ? [['syphon', 'Syphon', SPELL_AP.syphon + ' AP', 'Draw MP from the air (' + band.syphon_mp + ' in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus). The meter drops.', emaWhy] as ActionItem,
-        ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs mana 10 or more (Normal air or richer); the meter drops by 10.', emaWhy] as ActionItem] : [])], SOUL_INK, 'outbursts']);
+      ...(mg.emanator || (ch && focusHand(ch, 'emanator')) ? [['syphon', 'Syphon', SPELL_AP.syphon + ' AP', 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops.', emaWhy] as ActionItem,
+        ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs ambient mana of 10 or more (Normal air or richer). The mana meter drops by 10.', emaWhy] as ActionItem] : [])], SOUL_INK, 'outbursts']);
     ITEMS.push(...MG.filter((gr) => gr[1].length));
   }
   // Faith (rules 1.6): Whispers, Hymns and the Miracle, in Virtue ink.
@@ -234,7 +234,7 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
   if (pray.length) ITEMS.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
   // Calls (the nine talking skills' actions in a fight): one row per Call the unit has a point for; no tab without one.
   const cl = callItems(opts.g, cb, cur);
-  if (cl.length) ITEMS.push(['CALLS · SPOKEN TO ONE WHO CAN HEAR YOU', cl as ActionItem[], null, 'calls']);
+  if (cl.length) ITEMS.push(['CALLS · SPOKEN TO SOMEONE WHO CAN HEAR YOU', cl as ActionItem[], null, 'calls']);
   // A unit with a fixed action list (the drone: move and a plain shot; spec 14 item 370) shows only those.
   const allowed: string[] | undefined = cur && cur.allowedActions;
   const LIST = allowed ? ITEMS.map(([n, items, ink, tab]) => [n, items.filter((it) => allowed.includes(it[0])), ink, tab] as ActionGroup).filter((gr) => gr[1].length) : ITEMS;
@@ -271,20 +271,20 @@ export function whyNot(u: any, action: string, cost: string): string | null {
   const gun = !!w && w.magazine != null;
   if (['shot', 'aimed', 'burst', 'auto', 'overwatch', 'cover'].includes(action) && w && !isMelee(w)) {
     if (u.jammed) return 'Jammed: clear it first.';
-    if (gun && (u.ammo ?? 0) <= 0) return 'Empty: reload.';
+    if (gun && (u.ammo ?? 0) <= 0) return 'Empty: reload first.';
   }
   if (['move', 'sprint', 'disengage'].includes(action) && u.prone) return 'Prone: stand up first.';
-  if (action === 'sprint' && u.noSprint) return 'Can\'t sprint in this load.';
+  if (action === 'sprint' && u.noSprint) return 'You can\'t Sprint while Overburdened or in Juggernaut armour.';
   if (action === 'reload' || action === RELOAD_TAC) { if (!gun) return 'Nothing to reload.'; if ((u.ammo ?? 0) >= w.magazine) return 'Already full.'; if (u.jammed) return 'Jammed: clear it first.'; if (w.reload === 'loose' ? !(u.loose > 0) : Array.isArray(u.mags) && !u.mags.length) return 'Nothing left to load.'; }
   if (action === 'clear' && !u.jammed) return 'Not jammed.';
   if (action.startsWith(PK) || action.startsWith(PR)) return null; // perk actions and prayers carry the engine's own reason (catalogue)
   if (action === 'skill') {
-    if (!['multi_shot', 'sweep'].includes(skFx.op)) return skFx.op === 'narrator' || !skFx.op ? 'The Narrator rules it: use Say.' : 'Always on.';
+    if (!['multi_shot', 'sweep'].includes(skFx.op)) return skFx.op === 'narrator' || !skFx.op ? 'The Narrator decides this one. Use Say to describe it.' : 'This is always on.';
     if (u.jammed && skFx.op === 'multi_shot') return 'Jammed: clear it first.';
-    if (skFx.op === 'multi_shot' && gun && (u.ammo ?? 0) <= 0) return 'Empty: reload.';
+    if (skFx.op === 'multi_shot' && gun && (u.ammo ?? 0) <= 0) return 'Empty: reload first.';
   }
   if (['release', 'pump', 'steady', 'letgo', 'feed', 'heartwatch'].includes(action) && !(mg && mg.held)) return 'Nothing held.';
-  if (action === 'outburst' && mg && mg.held) return 'Already holding one.';
+  if (action === 'outburst' && mg && mg.held) return 'You are already holding an Outburst.';
   if (action === 'vent' && mg && !(mg.flux > 0)) return 'No Flux to vent.';
   if (action === 'core' && mg && !(mg.cores > 0)) return 'No spare cores.';
   if (action === 'repair' && !(u.parts > 0)) return 'No spare parts.';
@@ -323,13 +323,13 @@ export function smartCommands(u: any): Command[] {
   cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
   const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name
   if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
-  else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an adjacent enemy', key: '3' });
+  else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an enemy next to you', key: '3' });
   else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
   if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });
   else if (mg && (mg.emanator || mg.designs?.length) && mg.designs?.length) cmds.push({ action: 'outburst', label: 'Outburst', sub: Math.round(mg.mp) + ' MP in the heart', key: '4' });
   else if (mg && (mg.evoker || mg.words?.length)) cmds.push({ action: 'draw', label: 'Draw a glyph', sub: 'Evoker ' + mg.charge + ' charge', key: '4' });
   else if (!legacy) cmds.push(melee ? { action: 'tpad:main', label: 'Techniques', sub: 'What your ' + (w ? w.name : 'fists') + ' can do', key: '4' } : { action: TWATCH, label: 'Hold a shot', sub: 'Watch for their move', key: '4' });
-  else if (sk && (skFx.op === 'multi_shot' || skFx.op === 'sweep')) cmds.push({ action: 'skill', label: sk.name, sub: skFx.ap + ' AP · ' + (skFx.op === 'multi_shot' ? (skFx.shots || 3) + ' shots at one target' : 'every adjacent enemy'), key: '4', off: u.jammed || u.ap < (skFx.ap || 0) || (skFx.op === 'multi_shot' && w.magazine != null && u.ammo <= 0) });
+  else if (sk && (skFx.op === 'multi_shot' || skFx.op === 'sweep')) cmds.push({ action: 'skill', label: sk.name, sub: skFx.ap + ' AP · ' + (skFx.op === 'multi_shot' ? (skFx.shots || 3) + ' shots at one target' : 'every enemy next to you'), key: '4', off: u.jammed || u.ap < (skFx.ap || 0) || (skFx.op === 'multi_shot' && w.magazine != null && u.ammo <= 0) });
   else cmds.push({ action: 'overwatch', label: 'Overwatch', sub: 'Hold a shot for their move', key: '4' });
   // A unit with a fixed action list (the drone, item 370) keeps only those commands, renumbered.
   if (Array.isArray(u.allowedActions)) return cmds.filter((c) => u.allowedActions.includes(c.action)).map((c, i) => ({ ...c, key: String(i + 1) }));
@@ -432,9 +432,9 @@ export function pullFreeTargets(cb: any, cur: any): any[] {
 function pullFreeItems(cb: any, cur: any): ActionItem[] {
   const ts = pullFreeTargets(cb, cur); if (!ts.length) return [];
   const t = ts[0], ap = t.nailed.ap, self = t.id === cur.id;
-  const text = self ? 'You are nailed in place. Pull free: you can move again, and a weapon left in you drops at your feet.'
+  const text = self ? 'You are nailed in place. Pull free to move again. A weapon left in you drops at your feet.'
     : t.side === cur.side ? 'Pull ' + t.name + ' free of what nails them in place. Pick them as the target if more than one is held.'
-      : 'Pull the weapon out of ' + t.name + ': it goes to a free hand, else to the ground. This frees them.';
+      : 'Pull the weapon out of ' + t.name + '. It goes to your free hand, or to the ground if you have none. This also frees them.';
   return [['pullfree', self ? 'Pull free' : t.side === cur.side ? 'Pull an ally free' : 'Pull the weapon out', ap + ' AP', text, cur.ap < ap ? 'Needs ' + ap + ' AP.' : null] as ActionItem];
 }
 

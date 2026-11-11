@@ -295,6 +295,8 @@ export function stampFxHp(cb: Combat) {
 export const FX_CAP = 40;
 /** Shots and swings inside a burst, auto, skill or paired attack are marked chain (the client spaces them tighter). */
 let fxChain = 0;
+/** Keep the last FX_CAP effects of earlier actions (called before a new action runs). */
+export function trimFx(cb: Combat) { const list = cb.fx; if (list && list.length > FX_CAP) list.splice(0, list.length - FX_CAP); }
 export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): FxEvent {
   // A turn's ring and a stance's word show only to a side that sees the unit as it happens (not at the batch's end: it
   // may walk into the fog or fall later in the same batch): seen {pc, foe}, 1 or 0, stamped now.
@@ -303,7 +305,8 @@ export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): F
   // L: how many log lines were written before this effect (a screen reveals the log as the effects play)
   const n = (cb.fxSeq = (cb.fxSeq || 0) + 1), list = (cb.fx ||= []), ev: FxEvent = { k, ...data, n, L: cb.log.length };
   list.push(ev);
-  if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
+  // The list is trimmed between actions (trimFx, called by the reducer before each one), never during one: a long
+  // hostile phase is one action and may emit far more than FX_CAP effects, and every one of them must reach the screens.
   for (const f of fxTaps) f(cb, ev);
   return ev;
 }

@@ -267,18 +267,18 @@ describe('word mastery and inflections (items 915-916)', () => {
     draw(f, f.pc, ['spark', 'spark', 'seek'], ['6,5', '5,5', '4,5']); evoke(f, f.pc, '4,5', '10,5');
     expect(growth(f).uses).toEqual({ spark: 10, seek: 30 });
     const last = f.cb.log.find((l) => / evokes /.test(l))!;
-    expect(last).toMatch(/SPARK is Practised \(10 uses\)/); expect(last).toMatch(/masters SEEK \(30 uses\)\. Its inflection is always on: \+1 range\./);
+    expect(last).toMatch(/SPARK is Practised \(10 uses\)/); expect(last).toMatch(/masters SEEK \(30 uses\)\. Its inflection is always on: SEEK has \+1 range\./);
     expect(f.unit(f.pc.id).mg!.inflect).toEqual(['seek']); // on at once, for the rest of the fight
     const v = sigilGrowthView(charOf(f));
-    expect(v.words.find((w) => w.word === 'seek')).toMatchObject({ uses: 30, tier: 'mastered', inflection: { text: '+1 range.', unlocked: true } });
+    expect(v.words.find((w) => w.word === 'seek')).toMatchObject({ uses: 30, tier: 'mastered', inflection: { text: 'SEEK has +1 range.', unlocked: true } });
     expect(v.words.find((w) => w.word === 'spark')).toMatchObject({ tier: 'practised', inflection: { unlocked: false } });
   });
   it('every one of the 40 words has a provisional inflection the engine runs', () => {
     expect(SIGILS.length).toBe(40);
     for (const w of SIGILS) { const inf = (w as any).inflection; expect(inf?.text, w.id).toBeTruthy(); expect(inf.provisional).toBe(true); for (const e of inf.effects) { expect(e.op).toBe('inflection'); expect(INFLECTION_STATS.has(e.stat), w.id + ' ' + e.stat).toBe(true); } }
-    expect(SIGIL.fire.inflection.text).toBe('Burning lasts +1 round.'); expect(SIGIL.seek.inflection.text).toBe('+1 range.');
-    expect(SIGIL.spread.inflection.text).toBe('+1 radius at 4 glyphs.'); expect(SIGIL.ward.inflection.text).toBe('Shield +10%.');
-    expect(SIGIL.step.inflection.text).toBe('+1 tile.'); expect(SIGIL.kin.inflection.text).toMatch(/^Also skips Downed enemies you mark/);
+    expect(SIGIL.fire.inflection.text).toBe('When FIRE\'s Burning is put out, it keeps burning for 1 more round.'); expect(SIGIL.seek.inflection.text).toBe('SEEK has +1 range.');
+    expect(SIGIL.spread.inflection.text).toBe('In a 4-glyph spell, SPREAD reaches 1 tile further.'); expect(SIGIL.ward.inflection.text).toBe('WARD\'s shield is 10% bigger.');
+    expect(SIGIL.step.inflection.text).toBe('STEP teleports 1 tile further.'); expect(SIGIL.kin.inflection.text).toMatch(/^KIN also spares Downed and surrendered enemies/);
   });
   it('SEEK: +1 range once Mastered', () => {
     const f = rig(['spark', 'seek'], ['14,9']);

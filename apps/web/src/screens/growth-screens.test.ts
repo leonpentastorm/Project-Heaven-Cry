@@ -72,7 +72,7 @@ describe('the Magic tab: word mastery (rules 1.10.3)', () => {
     let r = L.renderVals();
     const card = (w: string) => r.mg.sig.words.find((x: any) => x.key === w);
     expect(card('fire').tierText).toBe('NEW · 0 USES / 10'); expect(card('fire').starAlt).toBe('NEW');
-    expect(card('fire').inflText).toMatch(/^AT 30 USES · Burning lasts \+1 round/); expect(card('fire').inflStyle).toMatch(/dashed/);
+    expect(card('fire').inflText).toMatch(/^AT 30 USES · When FIRE's Burning is put out, it keeps burning for 1 more round/); expect(card('fire').inflStyle).toMatch(/dashed/);
     c().sigilGrowth.uses = { fire: 12, seek: 31 }; r = L.renderVals();
     expect(card('fire').tierText).toBe('PRACTISED · 12 USES / 30');
     expect(decodeURIComponent(card('fire').star)).toContain('fill="none"');

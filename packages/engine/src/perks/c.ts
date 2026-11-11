@@ -71,13 +71,13 @@ register({
   toggles: [
     { id: 'reload', label: 'Reload on the move', on: ['combat/move'],
       available: (h) => { const u = h.u; if (!u || !reloadEntry(u)) return false; if (uses(h).left('per_turn', 1, h.key + RR_RELOAD) <= 0) return 'Used this turn.'; return canReloadNow(u) ? true : reloadEntry(u)!.why || true; },
-      preview: () => 'The reload rides on the move: no extra AP.' },
+      preview: () => 'Reload as you move, for no extra AP. Once a turn.' },
     { id: 'clear', label: 'Clear the jam on the move', on: ['combat/move'],
       available: (h) => { const u = h.u; if (!u || !tierII(h) || !canJam(WEAPON[u.weapon])) return false; if (!u.jammed) return 'Not jammed.'; return uses(h).left('per_turn', 1, h.key + RR_CLEAR) > 0 ? true : 'Used this turn.'; } },
   ],
   actions: [{
     id: 'move_reload', label: 'Move and reload', scope: ['world'], ap: 0, target: 'tile',
-    text: 'Walk to a tile and reload on the way, for the walk\'s AP only (once a round; Tier II clears a jam too).',
+    text: 'Once a round: walk to a tile and reload on the way. You pay only the AP for the walk. II: this also clears a jam.',
     available: (h) => (!h.u || !reloadEntry(h.u) ? false : canReloadNow(h.u) || (tierII(h) && canClearNow(h.u)) ? true : reloadEntry(h.u)!.why || 'Nothing to reload.'),
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, to = tileOf(cb, args.tile); if (!to) return 'Pick a tile.';
@@ -131,7 +131,7 @@ register({
   id: 'catch', claims: 'all',
   actions: [{
     id: 'throw_back', label: 'Throw it back', scope: ['combat'], ap: (h) => (tierII(h) ? 0 : 1), target: 'tile',
-    text: 'Throw the caught item at a tile in throwing range, with its normal effect.',
+    text: 'Throw the item you caught at a tile in throwing range. It has its normal effect. II: this costs 0 AP.',
     available: (h) => (h.u && stateOf(h).caught ? true : false),
     preview: (h) => { const c = stateOf(h).caught; return c ? { lines: ['Throw back the caught ' + (WEAPON[c.item]?.name || c.item).toLowerCase() + '.'] } : {}; },
     run: (h, args, rng) => {
@@ -188,7 +188,7 @@ register({
   id: 'sleight_of_hand', claims: 'all',
   actions: [
     { id: 'plant', label: 'Plant an item', scope: ['combat', 'world'], ap: (h) => (tierII(h) ? 1 : 2), target: 'unit', range: 1,
-      text: 'Plant a grenade (it goes off at the start of their next turn), a tracker (they stay Marked) or an item (a Narrator fact) on someone next to you, unseen.',
+      text: 'Slip something onto someone next to you without being seen. A grenade goes off at the start of their next turn. A tracker keeps them Marked. For any other item, the Narrator decides what it means.',
       preview: (h, args) => { const p = plantable(h, args.choice); return typeof p === 'string' ? { ok: false, why: p } : { lines: ['Plant ' + (p.kind === 'grenade' ? 'a primed ' + WEAPON[p.item].name.toLowerCase() : p.item) + ', unseen.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t || t === u) return 'Pick someone next to you.';
@@ -208,7 +208,7 @@ register({
       } },
     { id: 'plant_story', label: 'Plant an item', scope: ['story'], ap: 0, target: 'text',
       text: 'Say who and what: the item leaves your pack and the Narrator knows it was planted, unseen.',
-      available: (h) => { const g = h.g, f = g?.story?.focus; return !tierII(h) && f && h.c && f.charId === h.c.id ? 'Mid-conversation needs Sleight of Hand II.' : true; },
+      available: (h) => { const g = h.g, f = g?.story?.focus; return !tierII(h) && f && h.c && f.charId === h.c.id ? 'Planting in the middle of a conversation needs Sleight of Hand II.' : true; },
       run: (h, args) => {
         const c = h.c; if (!c) return 'Only a character can.';
         const text = String(args.text || '').slice(0, 160), pack = packOf(c);
@@ -246,8 +246,8 @@ register({
   id: 'jury_rig', claims: 'all',
   actions: [
     { id: 'one_more', label: 'One more time', scope: ['combat'], ap: (h) => (h.u ? attackApCost(WEAPON[h.u.weapon], isMelee(WEAPON[h.u.weapon]) ? 'melee' : 'shot') : 2), target: 'enemy',
-      text: 'Your broken weapon works once more: one shot or one full-damage strike (the attack\'s own AP). Then it\'s broken again.',
-      available: (h) => (!h.u || !broken(h.u) ? false : cs(h.c).juryUsed || stateOf(h).juryUsed ? 'Used for this breakage: repair it first.' : true),
+      text: 'Your broken weapon works one more time: one shot or one full-damage strike, at the attack\'s normal AP cost. Then it is broken again.',
+      available: (h) => (!h.u || !broken(h.u) ? false : cs(h.c).juryUsed || stateOf(h).juryUsed ? 'Already used on this broken weapon. Repair it first.' : true),
       preview: (h, args) => {
         const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId); if (!t) return {};
         const keep = u.dur; u.dur = u.maxDur; try { const pv = previewAttack(cb, u, t, isMelee(WEAPON[u.weapon]) ? 'melee' : args.choice === 'aimed' ? 'aimed' : 'shot'); return pv.ok ? { ap: pv.ap, lines: ['One more ' + (isMelee(WEAPON[u.weapon]) ? 'strike' : 'shot') + ': ' + pv.pct + '% to hit.'] } : { ok: false, why: pv.why }; } finally { u.dur = keep; }
@@ -263,7 +263,7 @@ register({
         checkOver(cb); return null;
       } },
     { id: 'repair_drone', label: 'Patch the drone', scope: ['combat', 'world'], ap: (h) => (h.u ? actionAp({ u: h.u }, 'field_repair', 2).ap : 2), target: 'ally', range: 1,
-      text: 'Field Repair on a drone at double strength: (10% + 5% per Improvisation above 3) × 2 of its max HP, one spare-parts charge.',
+      text: 'Repair a drone next to you at double strength: it regains 20% of its max HP, plus 10% for each Improvisation point above 3. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => { if (!tierII(h) || !h.u || !h.cb) return false; if (!h.cb.units.some((v) => v.companion === 'drone' && !v.dead && v.side === h.u!.side)) return false; return (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare parts.' : true; },
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t || t.companion !== 'drone' ? { ok: false, why: 'Pick a drone next to you.' } : t.hp >= t.maxHp ? { ok: false, why: 'Already in full repair.' } : {}; },
       run: (h, args) => {
@@ -314,7 +314,7 @@ register({
   id: 'trick_shot', claims: 'all',
   toggles: [{ id: 'ricochet', label: 'Ricochet', on: ['combat/attack'],
     available: (h) => (!h.u || isMelee(WEAPON[h.u.weapon]) ? false : tsLeft(h) ? true : 'Used this turn.'),
-    preview: () => 'Ignores half cover; a hit bounces half its damage into an enemy within 2 tiles.' }],
+    preview: () => 'Once a turn: this shot ignores half cover. If it hits, half the damage bounces into another enemy within 2 tiles of the target.' }],
   on: {
     attack_preview: (ctx, h) => { if (ctx.att === h.u && !ctx.melee && modOn(h, 'ricochet') && tsLeft(h)) ctx.ignoreCover = true; },
     on_hit: (ctx, h) => {
@@ -342,7 +342,7 @@ register({
   stat: (h, stat, ctx) => (stat === 'field_repair_amount' ? { mult: 2 } : stat === 'ap_cost:field_repair' ? 1 - (ctx?.base ?? 2) : 0),
   actions: [
     { id: 'bench_repair', label: 'Bench repair', scope: ['story', 'world'], ap: 0, target: 'none',
-      text: 'Out of combat: one spare-parts charge brings your weapon back to full durability.',
+      text: 'Out of a fight: spend one spare-parts charge to bring your weapon back to full durability.',
       available: (h) => { const c = h.c; if (!c) return false; const max = maxDur(c); if (!max) return false; return (c.weaponState?.dur ?? max) >= max ? 'Already in full repair.' : !packOf(c).some((p) => (p.item || p.id) === 'spare_parts' && p.qty > 0) ? 'No spare parts.' : true; },
       run: (h) => {
         const c = h.c!, pack = packOf(c).map((x) => ({ ...x })), i = pack.findIndex((p) => (p.item || p.id) === 'spare_parts' && p.qty > 0); if (i < 0) return 'No spare parts.';
@@ -352,9 +352,9 @@ register({
         say(h.cb, c.name + ' strips and rebuilds the ' + (WEAPON[c.weapon]?.name || 'weapon').toLowerCase() + ' (Overhaul): full durability.');
         return null;
       } },
-    { id: 'extra_slot', label: 'Overhaul: extra mod slot', pickLabel: 'The mod in your pack (its id)', scope: ['story', 'world'], ap: 0, target: 'none',
-      text: 'After a long rest: your weapon gains a permanent second slot of a type it has (once per weapon). Pick the mod from your pack to fit there.',
-      available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon]) return false; if (cs(c).overhauled?.[c.weapon]) return 'This weapon already has its extra slot.'; return cs(c).overhaulBench ? true : 'After a long rest.'; },
+    { id: 'extra_slot', label: 'Overhaul: extra mod slot', pickLabel: 'The mod in your pack', scope: ['story', 'world'], ap: 0, target: 'none',
+      text: 'After a long rest: your weapon gains a permanent second mod slot of a type it already has. Once per weapon. Pick the mod from your pack to fit there.',
+      available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon]) return false; if (cs(c).overhauled?.[c.weapon]) return 'This weapon already has its extra slot.'; return cs(c).overhaulBench ? true : 'Only after a long rest.'; },
       preview: (h, args) => { const e = extraFitCheck(h.c!, args.choice, 1); return e ? { ok: false, why: e } : {}; },
       run: (h, args) => {
         const c = h.c!; (charState(c).overhauled ||= {})[c.weapon] = true; delete charState(c).overhaulBench;
@@ -398,8 +398,8 @@ function fitExtra(c: Character, choice: string | undefined, why: string): string
   void why; return null;
 }
 const extraModAction = (label: string, avail: (h: Holder) => boolean | string) => ({
-  id: 'extra_mod', label, scope: ['story', 'world'] as ('story' | 'world')[], pickLabel: 'The mod in your pack (its id)', ap: 0, target: 'none' as const,
-  text: 'Fit a second mod in a slot type your weapon already has (out of combat).',
+  id: 'extra_mod', label, scope: ['story', 'world'] as ('story' | 'world')[], pickLabel: 'The mod in your pack', ap: 0, target: 'none' as const,
+  text: 'Out of a fight: fit a second mod into a slot type your weapon already has.',
   available: (h: Holder) => (!h.c ? false : avail(h)),
   preview: (h: Holder, args: any) => { const e = extraFitCheck(h.c!, args.choice); return e ? { ok: false, why: e } : {}; },
   run: (h: Holder, args: any) => fitExtra(h.c!, args.choice, label),
@@ -471,7 +471,7 @@ register({
   id: 'holy_ordnance', claims: 'all',
   actions: [{
     id: 'bless', label: 'Bless a magazine', scope: ['combat', 'world'], ap: 3, target: 'ally', range: 1,
-    text: 'Bless the magazine in an adjacent ally\'s gun (or your own): +20% damage to upper-realm and cursed beings (II: +40%, two magazines).',
+    text: 'Bless the magazine in your gun, or in the gun of an ally next to you. I: its rounds deal +20% damage to upper-realm and cursed beings. II: +40%, and the next magazine loaded is blessed too.',
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t ? {} : !blessable(t) ? { ok: false, why: t.name + ' holds no gun with a magazine.' } : { lines: [t.name + '\'s ' + (WEAPON[t.weapon]?.name || 'gun') + ': +' + (tierII(h) ? 40 : 20) + '% vs upper-realm and cursed beings' + (tierII(h) ? ', two magazines' : '') + '.'] }; },
     run: (h, args) => {
       const cb = h.cb!, t = unitById(cb, args.targetId)!, mult = tierII(h) ? 1.4 : 1.2, mags = tierII(h) ? 2 : 1;
@@ -550,7 +550,7 @@ register({
   },
   actions: [{
     id: 'fan', label: 'Fan the Hammer (every round)', scope: ['combat'], ap: 3, target: 'enemy', uses: { per: 'per_turn', n: 1 },
-    text: '3 AP: every round still loaded at one target, each at −2 (Recoil applies).',
+    text: 'Once a turn: fire every round still loaded at one target. Each shot is at −2 to hit, and recoil applies.',
     available: (h) => (!h.u || !fanGun(h.u) ? false : h.u.ammo <= 0 ? 'Empty: reload first.' : true),
     preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return { ap: 3 }; const pv = previewAttack(h.cb!, u, t, 'shot', { free: true }); return pv.ok ? { ap: 3, lines: [u.ammo + ' rounds at −2 each, first at ' + Math.max(5, pv.pct - 10) + '%.'] } : { ok: false, ap: 3, why: pv.why }; },
     run: (h, args, rng) => {
@@ -676,7 +676,7 @@ register({
   stat: (h, stat) => (stat === 'throw_range' ? 2 : 0),
   actions: [{
     id: 'hurl', label: 'Throw someone', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'unit', range: 1,
-    text: 'Throw an adjacent ally or enemy under your carry weight to a tile in range: it and whoever it lands on take damage by weight.',
+    text: 'Throw an ally or enemy next to you to a tile in range. They must weigh less than you can carry. The one thrown and whoever they land on take damage by weight.',
     preview: (h, args) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId); if (!t) return {};
       if (t === u) return { ok: false, why: 'Pick someone else.' };
@@ -706,7 +706,7 @@ register({
     // it lands on take the same damage by weight; a barrel that breaks goes off as barrels do.
     id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'tile', range: 1,
     pickLabel: 'Where it lands',
-    text: 'Throw an adjacent object under your carry weight to a tile in range: it and whoever it lands on take damage by weight.',
+    text: 'Throw an object next to you to a tile in range. It must weigh less than you can carry. The object and whoever it lands on take damage by weight.',
     preview: (h, args) => {
       const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile), o = k0 ? objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null && !(x as any).dead) : null;
       if (!o) return { ok: false, why: 'Pick an object next to you that can be lifted (a crate, a barrel, a lamp, a terminal).' };
@@ -762,7 +762,7 @@ register({
   id: 'demolitionist', claims: [4],
   actions: [
     { id: 'set_explosive', label: 'Set explosive', scope: ['combat'], ap: (h) => (h.u ? actionAp({ u: h.u }, 'set_explosive', 2).ap : 2), target: 'tile',
-      text: 'Place a charge on your tile or next to you and shape its blast: circle, line or cone (away from you). Now, or on a trigger.',
+      text: 'Place a charge on your tile or next to you and shape its blast: a circle, or a line or cone that points away from you. It goes off at once, or waits until you Detonate.',
       available: (h) => (!h.u ? false : explosiveOf(h.u) ? true : 'No explosive in your kit.'),
       preview: (h, args) => {
         const u = h.u!, cb = h.cb!, k = tileOf(cb, args.tile), p = parseCharge(args.choice), item = explosiveOf(u, p.item); if (!k || !item) return {};
@@ -780,7 +780,7 @@ register({
         checkOver(cb); return null;
       } },
     { id: 'detonate', label: 'Detonate', scope: ['combat'], ap: 1, target: 'none',
-      text: 'Blow every charge you set on a trigger.',
+      text: 'Set off every charge you placed to wait for your trigger.',
       available: (h) => (stateOf(h).charges?.length ? true : false),
       run: (h, args, rng) => {
         const cb = h.cb!, list = stateOf(h).charges || []; delete stateOf(h).charges;
@@ -804,7 +804,7 @@ register({
   id: 'blade_recluse', claims: [0],
   actions: [
     { id: 'name_blade', label: 'Name your weapon', scope: ['story', 'world'], ap: 0, target: 'none',
-      text: 'Your weapon in hand becomes the One Blade: its family\'s kills count 1.25, it can\'t be Disarmed and gets an extra mod slot.',
+      text: 'The weapon in your hand becomes your One Blade. Each kill with it counts as 1.25 kills towards its weapon mastery, it can\'t be Disarmed, and it gains an extra mod slot.',
       available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon] || c.weapon === 'fists') return false; return cs(c).oneBlade?.weapon === c.weapon ? 'Already your One Blade.' : true; },
       run: (h) => { const c = h.c!, w: any = WEAPON[c.weapon]; charState(c).oneBlade = { weapon: c.weapon, fam: w.mastery_family || null }; say(h.cb, c.name + ' names the ' + w.name + ' the One Blade.'); note(h, c.name + ' named the ' + w.name + ' as the One Blade'); return null; } },
     extraModAction('Fit a second mod (One Blade)', (h) => (cs(h.c).oneBlade?.weapon === h.c!.weapon ? (extraUsed(h.c!) < extraSlots(h.c!) ? true : 'No extra slot free.') : 'Only on your named weapon.')),

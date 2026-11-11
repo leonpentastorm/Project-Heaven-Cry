@@ -21,3 +21,14 @@ describe('effects carry the HP they change', () => {
     throw new Error('no shot hit in 12 seeds');
   });
 });
+
+describe('one action keeps every effect it emits', () => {
+  it('a hostile phase with more than 40 effects reaches the screens whole; older ones are trimmed before the next action', async () => {
+    const { emitFx, trimFx, FX_CAP } = await import('../src');
+    const f = fightWith([{}], [{ tier: 'soldier', at: 'F6' }]);
+    const cb = f.cb, n0 = (cb.fx || []).at(-1)?.n || 0;
+    for (let i = 0; i < FX_CAP + 30; i++) emitFx(cb, 'hurt', { target: f.foe.id, at: f.foe.pos, dmg: 0 });
+    expect((cb.fx || []).filter((e) => e.n > n0).length).toBe(FX_CAP + 30);
+    trimFx(cb); expect(cb.fx!.length).toBe(FX_CAP);
+  });
+});

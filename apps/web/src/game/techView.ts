@@ -72,11 +72,11 @@ export function needsText(id: string): string {
   // the Momentum rework (Leon, 10 Nov 2026): a Strike and an Opener spend 1 each; the free ones (Cut, Pull Out) and a
   // technique whose data says it costs none (Ambush) don't
   const spends = d.system === 'melee' && !d.free && d.numbers?.momentum_cost !== 0;
-  if (d.group === 'opener') out.push('An Opener: only as your first melee technique of the turn.' + (spends ? ' It spends 1 Momentum; your first Opener of a fight is free.' : ''));
-  if (d.group === 'strike' && spends) out.push('A Strike: it spends 1 Momentum.');
+  if (d.group === 'opener') out.push('An Opener can only be your first melee technique of the turn.' + (spends ? ' It costs 1 Momentum, but your first Opener of a fight is free.' : ''));
+  if (d.group === 'strike' && spends) out.push('A Strike costs 1 Momentum.');
   if (n.momentum) out.push('Needs ' + n.momentum + ' Momentum or more, and spends all of it. It ends your chain for the turn.');
   if (n.held && !/^Only on a target/.test(d.text || '')) out.push('Needs a target you have Grappled or Bound.');
-  if (n.pressed) out.push('Needs a Pressed target (Pressure 2 or more); it lowers that Pressure by 2. One Take a turn.');
+  if (n.pressed) out.push('Needs a Pressed target (Pressure 2 or more), and lowers that Pressure by 2. You can make one Take a turn.');
   if (n.hidden) out.push('Only while you are Hidden.');
   if (n.last_round && !/^Only with the last/.test(d.text || '')) out.push('Only with the last round in the weapon.');
   if (n.stowed) out.push('Used with a weapon in your pack, not the one in your hand.');
@@ -85,7 +85,7 @@ export function needsText(id: string): string {
 const chipOf = (e: PadEntry): TechChip => {
   const rounds = e.rounds === 'all' ? 'all rounds' : e.rounds ? e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
   const mark = e.signature ? '◆' : e.lent ? '◇' : '';
-  const markTitle = e.signature ? '' : e.lent ? 'This weapon\'s signature: lent while you hold it (drill it to keep it).' : '';
+  const markTitle = e.signature ? '' : e.lent ? 'This is the weapon\'s signature technique. You can use it while you hold the weapon. Drill it to keep it.' : '';
   const why = e.ok ? '' : (e.why || 'Not now.').replace(/\.+$/, '') + '.';
   // the property behind the line, explained in the engine's own words (its glossary): "Point: …"
   const ln = e.line ? (TECHNIQUE[e.id]?.lines || []).find((l: any) => l.text === e.line) : null;
@@ -120,7 +120,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
       const chips = groups.flatMap((gr) => gr.chips).filter((c) => !c.reaction), gd = pv && pv.guard;
       return { hand, weaponId: shieldId, name: (ITEM as any)[shieldId]?.name || 'Shield', icon: gearIconUri(shieldId), iconOff: gearIconUri(shieldId, GEAR_INK_OFF), system: 'melee', shield: true, meterKind: 'guard',
         meter: gd ? 'Guard ' + gd.now + ' / ' + gd.max : 'No Guard pool', pips: gd ? Array.from({ length: gd.max }, (_, i) => ({ key: 'g' + i, on: i < gd.now })) : [],
-        meterHint: gd ? 'Each Guard point takes ' + gd.soak + ' damage off a hit. Brace gives ' + gd.braceGain + ', the Guard technique ' + gd.gain + '; Raise Shield turns Momentum into Guard.' : 'A Guard pool needs a point of Durability.',
+        meterHint: gd ? 'Each Guard point takes ' + gd.soak + ' damage off a hit. Brace gives ' + gd.braceGain + ' Guard and the Guard technique gives ' + gd.gain + '. Raise Shield turns Momentum into Guard.' : 'You need a point of Durability to hold Guard.',
         plain: null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch: [] };
     }
     const weaponId = hand === 'off' ? u.offWeapon : u.weapon, w: any = (WEAPON as any)[weaponId]; if (!w) return null;
@@ -153,7 +153,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
   if (bm && bo && !bo.shield && bm.system === bo.system) {
     let pe: PadEntry[] = []; try { pe = pairedPad(cb, u, g); } catch { pe = []; }
     const chips = pe.map(chipOf);
-    blocks.push({ hand: 'both', weaponId: bm.weaponId, name: 'Both hands', icon: bm.icon, iconOff: bm.iconOff, system: bm.system, meter: bm.name + ' + ' + bo.name, pips: [], meterHint: 'Main hand −1, off hand −3 (better by 1 for every 3 Dexterity, to −1). The dearer of the two costs, +1 AP.',
+    blocks.push({ hand: 'both', weaponId: bm.weaponId, name: 'Both hands', icon: bm.icon, iconOff: bm.iconOff, system: bm.system, meter: bm.name + ' + ' + bo.name, pips: [], meterHint: 'The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1. It costs the higher of the two AP costs, plus 1.',
       plain: null, groups: chips.length ? [{ key: 'paired' as any, label: 'WITH BOTH WEAPONS · EACH IN TURN', chips }] : [], usable: chips.filter((c) => c.ok).length, total: chips.length, watch: [] });
   }
   return blocks;
@@ -167,13 +167,13 @@ export function blockItems(blocks: WeaponBlock[]): [string, string, string, stri
   // (each block's header names the weapon and its hand, so the rows don't repeat it)
   for (const b of blocks) {
     if (b.plain) out.push([techAction(b.hand, b.plain.id), b.plain.name, b.plain.apText, b.plain.help, b.plain.ok ? null : b.plain.why]);
-    if (b.hand === 'both') out.push(['paired', b.system === 'melee' ? 'Strike with both' : 'Fire both', 'AP +1', 'One attack with each weapon, at one target: the dearer of the two costs + 1 AP. Main hand −1, off hand −3 (better by 1 for every 3 Dexterity, to −1).']);
+    if (b.hand === 'both') out.push(['paired', b.system === 'melee' ? 'Strike with both' : 'Fire both', 'AP +1', 'Make one attack with each weapon at the same target. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.']);
     if (b.hand === 'both' && !b.total) continue; // no shared technique: only the paired attack
-    if (b.shield) { out.push([padAction(b.hand), 'Shield techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', 'What you can do with the ' + b.name + ': Shield Bash and Raise Shield are picked in the pad; its reactions happen by themselves.', b.total ? null : 'No shield techniques.']); continue; }
-    out.push([padAction(b.hand), 'Techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', (b.hand === 'both' ? 'A technique made with each weapon in turn, main hand −1 and off hand −3, for 1 AP more' : 'What you can do with the ' + b.name) + ': pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
+    if (b.shield) { out.push([padAction(b.hand), 'Shield techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', 'What you can do with the ' + b.name + '. Pick Shield Bash or Raise Shield in the pad. Its reactions happen by themselves.', b.total ? null : 'No shield techniques.']); continue; }
+    out.push([padAction(b.hand), 'Techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', (b.hand === 'both' ? 'Use one technique with each weapon in turn, the main hand at −1 to hit and the off hand at −3, for 1 AP more' : 'What you can do with the ' + b.name) + '. Pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
   }
   const watch = watchChips(blocks);
-  if (watch.length) out.push([TWATCH, 'Hold a shot', '', 'Hold a shot until its trigger: Overwatch, Deny, Cover Me, Dead to Rights. It fires on the enemy\'s turn.', watch.some((c) => c.ok) ? null : watch[0].why]);
+  if (watch.length) out.push([TWATCH, 'Hold a shot', '', 'Hold a shot until its trigger happens: Overwatch, Deny, Cover Me or Dead to Rights. It fires on the enemy\'s turn, as your reaction.', watch.some((c) => c.ok) ? null : watch[0].why]);
   return out;
 }
 /** The Watches of every ranged weapon held, each with its hand (the first ranged hand that offers it). */
@@ -303,9 +303,9 @@ export function lineTiles(a: string, b: string): string[] {
  * toggles. The first is what is sent when nothing was picked; '' means "send nothing" (the plain use). */
 export const TECH_OPTS: Record<string, [string, string, string][]> = {
   called_shot: [['leg', 'LEG', 'Slowed on a hit.'], ['arm', 'ARM', 'Its weapon is lowered on a hit.'], ['head', 'HEAD', 'Dazed on a hit.']],
-  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Reach line only: the weapon stays in the target, which is nailed in place until it is pulled out.']],
-  bash: [['', 'DAZE', 'Heavy line: the target is Dazed.'], ['push', 'PUSH', 'Heavy line: the target is pushed 2 tiles instead.']],
-  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'Bare, next to you: it is Grappled as well.']],
+  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Only with a Reach weapon: you leave the weapon in the target and are unarmed. The target stays Pinned until the weapon is pulled out.']],
+  bash: [['', 'DAZE', 'The target is Dazed.'], ['push', 'PUSH', 'With a Heavy weapon: the target is pushed 2 tiles instead.']],
+  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'With bare hands, on a target next to you: you go Prone with it, and it is Grappled as well.']],
   // Raise Shield: how much Momentum to turn into Guard (all of it when nothing is picked; the engine caps it at the pool)
   raise_shield: [['1', 'TURN 1', '1 Momentum becomes 1 Guard.'], ['2', 'TURN 2', '2 Momentum become 2 Guard.'], ['', 'ALL', 'All your Momentum becomes Guard, as much as the pool holds.']],
   drag: [['', 'AUTO', 'Pull it to you, or swap places when it is next to you.'], ['pull', 'PULL', 'Pull it toward you.'], ['swap', 'SWAP', 'Change places with it.']],

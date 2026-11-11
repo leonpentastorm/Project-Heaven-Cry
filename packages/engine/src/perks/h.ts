@@ -132,7 +132,7 @@ register({
   },
   actions: [{
     id: 'invoke_law', label: 'I Am the Law', scope: ['story', 'world'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-    text: 'Invoke law or rank: an official here must answer one question truthfully (once a scene). Type the question.',
+    text: 'Once a scene: invoke law or rank. An official here must answer one question truthfully. Type the question.',
     run: (h, a) => {
       const q = String(a.text || '').trim().slice(0, 200), eid = postStory(h, 'invokes the law' + (a.npc ? ' to ' + a.npc : '') + (q ? ': "' + q + '"' : '.'));
       if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'I Am the Law: ' + h.c.name + ' invokes law or rank' + (a.npc ? ' to ' + a.npc : '') + '. If an official is present, they must answer one question truthfully' + (q ? ': "' + q + '"' : ' (the player asks next)') + '. Refuse if no official is there.', eid || undefined);
@@ -163,7 +163,7 @@ register({
   actions: [{
     id: 'spanner', label: 'Spanner in the Works', scope: ['story', 'world'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
     available: (h) => (uses(h).left('per_scene', 1, h.key + '#wreck') > 0 ? true : 'Already used this scene.'),
-    text: 'You wrecked someone\'s plan or property: +1 Echo (once a scene). Say what you wrecked.',
+    text: 'Once a scene, when you have wrecked someone\'s plan or property: gain 1 Echo. Say what you wrecked.',
     run: (h, a) => {
       const what = String(a.text || '').trim().slice(0, 160) || 'someone\'s plan';
       if (!wreckEcho(h, what)) return 'Already used this scene.';
@@ -264,7 +264,7 @@ function useInspired(c: Character, rollId: string): number {
 const oilActions = [{
   id: MP, label: 'Masterpiece', scope: ['combat', 'world', 'story'] as const, target: 'none' as const, pick: 'squad' as const, pickLabel: 'The ally the work is for', ap: 0, uses: { per: 'per_session' as const, n: 1 },
   available: (h: Holder) => (bothOils(h) && h.itemId === 'oil_in_my_mind' ? true : false),
-  text: 'Make a work of art: one ally gets +2 on their next roll (once a session). Pick the ally (in the story, type their name).',
+  text: 'Once a session: make a work of art for one ally. They get +2 on their next roll. Pick the ally, or type their name in the story.',
   run: (h: Holder, a: any) => {
     const g = h.g; if (!g || !h.c) return 'No story.';
     let ally: Character | undefined;
@@ -342,7 +342,7 @@ register({
   stat: (h, stat) => { const m = /^skill:(.+)$/.exec(stat); return m ? lunarMod(h.c, m[1]) : 0; },
   actions: [{
     id: 'drink', label: 'Drink', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (inFight(h) ? 1 : 0),
-    text: 'Take a drink (a fight: 1 AP). Tipsy at 1, Drunk at 3, Wasted at 5.',
+    text: 'Take a drink. In a fight it costs 1 AP. You are Tipsy at 1 drink, Drunk at 3 and Wasted at 5.',
     available: (h) => {
       const l: Lunar | undefined = ro(h.c).lunar, have = (l?.open || 0) > 0 || packOf(h.c!).some((x) => (x.item || x.id) === 'bottle_of_spirits' && x.qty > 0);
       return have || !inFight(h) ? true : 'No bottle.';
@@ -462,7 +462,7 @@ register({
   id: 'company_man', kind: 'trait', claims: ['price_mod'], narrator: ['narrator'],
   actions: [{
     id: 'rtc_extraction', label: 'Call RTC extraction', scope: ['combat', 'world', 'story'], target: 'none', ap: 0, uses: { per: 'per_campaign', n: 1 },
-    text: 'Once a campaign, RTC pulls you out of anywhere (in a fight: you leave it, conscious only; no XP from it).',
+    text: 'Once a campaign: RTC pulls you out of anywhere. In a fight you must be conscious, you leave the fight, and you get no XP from it.',
     run: (h) => {
       if (inFight(h)) {
         const u = h.u!, cb = h.cb!; if (u.downed) return 'Only while conscious.';
@@ -487,7 +487,7 @@ register({
       st.rtcThread = applyMemOp(g, { op: 'thread', title: 'RTC contract: ' + c.name, kind: 'debt', status: 'open', who: [c.name], text: c.name + ' works for the Company (RTC): it sends jobs they can\'t refuse, and once a campaign it will pull them out of anywhere.', importance: 3 } as any) || 'seeded';
     },
   },
-  brief: () => 'RTC sells to them at ' + Math.round(RTC_PRICE * 100) + '% of list (provisional); RTC sends jobs they can\'t refuse',
+  brief: () => 'RTC sells to them at ' + Math.round(RTC_PRICE * 100) + '% of list price; RTC sends jobs they can\'t refuse',
 });
 
 // ---------- Market Blood ----------
@@ -499,7 +499,7 @@ register({
   id: 'market_blood', kind: 'trait', claims: ['price_mod'], narrator: ['gate_check', 'narrator'],
   actions: [{
     id: 'appraise', label: 'Price it', scope: ['world', 'story'], target: 'none', ap: 0,
-    text: 'Touch an item and know its true value, and whether it\'s fake. Type the item (or leave it empty for your whole pack).',
+    text: 'Touch an item to learn its true value and whether it is a fake. Type the item, or leave it empty to price your whole pack.',
     run: (h, a) => {
       const c = h.c; if (!c) return 'No character.';
       const want = String(a.text || a.npc || '').trim().toLowerCase();
@@ -523,7 +523,7 @@ register({
   id: 'inner_ring_heir', kind: 'trait', claims: ['start_funds_mult'], narrator: ['narrator'],
   actions: [{
     id: 'favour', label: 'Call in a family favour', scope: ['world', 'story'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 },
-    text: 'Once a session, ask the family for something. Type the favour.',
+    text: 'Once a session: ask your family for a favour. Type what you ask for.',
     run: (h, a) => {
       const ask = String(a.text || '').trim().slice(0, 200), eid = postStory(h, 'calls home' + (ask ? ': "' + ask + '"' : '.'));
       if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Family favour (once a session): ' + h.c.name + ' asks the inner-ring family' + (ask ? ' for "' + ask + '"' : '') + '. Say what the family does, and what it will ask in return.', eid || undefined);
@@ -541,7 +541,7 @@ register({
   actions: [
     {
       id: 'weakness', label: 'Look it up', scope: ['combat', 'world', 'story'], target: 'none', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Once a session, learn any supernatural creature\'s weakness from the grimoire (pick it in a fight, or type it).',
+      text: 'Once a session: look up one supernatural creature\'s weakness in the grimoire. Pick the creature in a fight, or type its name.',
       run: (h, a) => {
         const t = a.targetId && h.cb ? h.cb.units.find((x) => x.id === a.targetId) : null, what = t?.name || String(a.text || a.npc || 'the creature').slice(0, 80);
         if (inFight(h)) { say(h.cb, h.u!.name + ' leafs through the grimoire for ' + what + '\'s weakness.'); note(h, 'Occultist: ' + h.u!.name + ' learns ' + what + '\'s weakness (if it is supernatural): name it in the report; it applies next time.'); return null; }
@@ -552,7 +552,7 @@ register({
     },
     {
       id: 'ward_area', label: 'Ward Area', scope: ['world', 'story'], target: 'none', ap: 0, uses: { per: 'out_of_combat', n: 1 },
-      text: 'Out of a fight, spend 10 minutes warding this place against the supernatural.',
+      text: 'Out of a fight: spend 10 minutes to ward this place against the supernatural.',
       run: (h) => {
         const eid = postStory(h, 'spends ten minutes warding the area.');
         if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Ward Area: ' + h.c.name + ' wards this place against the supernatural (10 minutes). Say what it keeps out, and for how long.', eid || undefined);
@@ -574,7 +574,7 @@ register({
   actions: [{
     id: 'seat', label: 'Back in a seat', scope: ['world', 'story'], target: 'none', ap: 0,
     available: (h) => (grounded(h) ? true : false),
-    text: 'You\'re driving or flying again: Grounded ends.',
+    text: 'You are driving or flying again, so Grounded ends.',
     run: (h) => {
       const eid = postStory(h, 'gets back behind the stick.');
       if (h.c) delete h.c.state!.grounded;

@@ -1,7 +1,7 @@
 // Presentation events (combat.ts FxEvent): the effects layer animates from these, so the main actions must emit them,
 // and emitting them must never change a roll.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, type Sheet, type GameState, newCharacter, newGame, apply, positionsOf, standable, zoneMap, storyObjects, startCombat, resolveAttack, reload, clearJam, useWeaponSkill, FX_CAP, emitFx, type Combat } from '../src';
+import { ARCHETYPES, type Sheet, type GameState, newCharacter, newGame, apply, positionsOf, standable, zoneMap, storyObjects, startCombat, resolveAttack, reload, clearJam, useWeaponSkill, FX_CAP, emitFx, trimFx, type Combat } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
   const a = ARCHETYPES.find((x) => x.id === archId)!;
@@ -52,13 +52,15 @@ describe('presentation events', () => {
     expect(evs[0]).toMatchObject({ k: 'volley', mode: 'skill' });
     expect(evs.filter((x) => x.k === 'shot' && x.chain).length).toBeGreaterThan(0);
   });
-  it('events never change the dice, and the queue is capped', () => {
+  it('events never change the dice, and the queue is capped between actions', () => {
     const a = fight(), b = fight();
     a.u.ap = 9; b.u.ap = 9; b.cb.fx = undefined;
     const ra = resolveAttack(a.cb, { state: 11 }, a.u, a.e, 'shot', a.c), rb = resolveAttack(b.cb, { state: 11 }, b.u, b.e, 'shot', b.c);
     expect(ra).toEqual(rb);
-    for (let i = 0; i < 100; i++) emitFx(a.cb, 'x');
-    expect(a.cb.fx!.length).toBe(FX_CAP); expect(a.cb.fx![FX_CAP - 1].n).toBe(a.cb.fxSeq);
+    // one action keeps all it emits (a long hostile phase); the list is trimmed before the next action
+    const had = a.cb.fx!.length; for (let i = 0; i < 100; i++) emitFx(a.cb, 'x');
+    expect(a.cb.fx!.length).toBe(had + 100);
+    trimFx(a.cb); expect(a.cb.fx!.length).toBe(FX_CAP); expect(a.cb.fx![FX_CAP - 1].n).toBe(a.cb.fxSeq);
   });
   it('area-map actions keep their events in the story', () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 'fx');

@@ -122,7 +122,7 @@ export function faithPanel(v: FaithView | null): FaithPanel | null {
     gate: [n === GATE[1] && 'HYMN I', n === GATE[2] && 'HYMN II', n === GATE[3] && 'HYMN III', n === GATE.miracle && 'MIRACLE'].filter(Boolean).join(' · ') || undefined }));
   const pieces = Object.entries(v.pieces || {}).filter(([, n]) => n > 0).map(([id, n]) => ({ patron: id, name: FAITH_PATRON[id]?.name || id, text: (FAITH_PATRON[id]?.name || id) + ' ' + Math.min(3, n) + '/3', mark: patronMarkUri(id) }));
   return {
-    faithful, title: faithful && p ? p.name : 'ATHEIST · PILGRIM', sub: faithful && p ? p.archetype || '' : 'Prays by dice; teachers of the faiths unlock their Hymns',
+    faithful, title: faithful && p ? p.name : 'ATHEIST · PILGRIM', sub: faithful && p ? p.archetype || '' : 'You pray by rolling dice. Teachers of each faith can unlock its Hymns.',
     mark: p ? patronMarkUri(p.id) : witnessedUri(), accent: accentOf(p?.id, p?.accent), meter, devotion: v.devotion,
     patronId: faithful && p ? p.id : null, portrait: faithful && p ? patronPortrait(p.id) : null, portraitLarge: faithful && p ? patronPortrait(p.id, true) : null,
     devotionText: faithful ? devotionLabel(v.devotionXp, v.devotion) : '', xp: v.devotionXp,

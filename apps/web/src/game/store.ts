@@ -52,6 +52,8 @@ function set(patch: Partial<ClientState>) { S = { ...S, ...patch }; subs.forEach
 export const toast = (text: string, ok = false) => { const k = battlePace(); set({ toast: { text, at: Date.now(), ok } }); setTimeout(() => { if (S.toast && Date.now() - S.toast.at >= 4500 * k) set({ toast: null }); }, 5000 * k); };
 
 let conn: Conn | null = null;
+/** The room link's vital signs, for a stalled room (window.__phc.net(); docs/design/handoffs/coop-stall.md). */
+const net = { lastAt: 0, last: '', got: 0, resyncs: 0 };
 let hostState: GameState | null = null;
 
 // ---------- identity, library, navigation ----------
@@ -138,10 +140,13 @@ function hostToken(code: string) { const k = 'phc.hosttoken.' + code; let t = re
 function onConn(state: Conn['state'], note = '') {
   if (S.role === 'host') set({ conn: state === 'open' ? 'online' : state === 'closed' ? 'connecting' : 'error', connNote: note });
   else set({ conn: state === 'open' ? 'online' : state === 'closed' ? 'connecting' : 'error', connNote: note });
-  if (state === 'open' && S.role === 'host' && hostState) broadcast(true);
+  // The link is back: everyone gets the state as it is now. A beat later, so it goes out after whatever the link kept
+  // while it was down (net.ts sends that as soon as this returns): the newest view must be the last to arrive.
+  if (state === 'open' && S.role === 'host' && hostState) setTimeout(() => broadcast(true), 0);
 }
 
 function onMessage(m: any) {
+  net.lastAt = Date.now(); net.last = String(m?.t || ''); net.got++;
   if (S.role === 'host') {
     if (m.t === 'snapshot' && m.state && (!hostState || m.state.v > hostState.v) && m.state.code === S.code) { hostState = migrateLoaded(m.state); set({ game: viewFor(hostState!, S.me.id), screen: screenFor(hostState!) }); }
     if (m.t === 'presence') {
@@ -149,11 +154,38 @@ function onMessage(m: any) {
       else if (!m.online && hostState?.players.some((p) => p.id === m.pid)) runHost({ type: 'player/online', id: m.pid, online: false }, S.me.id, null);
     }
     if (m.t === 'act') runHost(m.action, m.from, m.nonce);
+    if (m.t === 'sync') answerSync(String(m.from || ''), Number(m.v));
   } else {
-    if (m.t === 'view') { const prev = S.game; set({ game: migrateLoaded(m.state), conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
+    if (m.t === 'view') { if (m.resync) net.resyncs++; const prev = S.game; set({ game: migrateLoaded(m.state), conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
     if (m.t === 'err') toast(m.message);
     if (m.t === 'host') set({ conn: m.online ? 'online' : 'host-away' });
   }
+}
+
+// ---------- keeping a guest in step (docs/design/handoffs/coop-stall.md) ----------
+// A view that never arrives leaves a guest on an old state for good: nothing else would send it again until the host's
+// next action, and in a fight the host may be waiting for that very guest. So a guest says every few seconds which
+// version of the game it has (more often in a fight), and the host sends the view again when that is not its own.
+/** How often a guest checks in: in a fight, and otherwise (ms). */
+export const SYNC_FIGHT_MS = 5000, SYNC_IDLE_MS = 30000;
+let syncAt = 0;
+/** A guest's check-in, when one is due (called on a timer; exported for the tests). */
+export function syncTick(now = Date.now()) {
+  if (S.role !== 'guest' || !conn || conn.state !== 'open') return false;
+  const g = S.game, fight = !!g && g.phase === 'combat' && !!g.combat && !g.combat.over;
+  if (now - syncAt < (fight ? SYNC_FIGHT_MS : SYNC_IDLE_MS)) return false;
+  syncAt = now; conn.send({ t: 'sync', v: g ? g.v : -1 });
+  return true;
+}
+if (typeof setInterval !== 'undefined') setInterval(() => syncTick(), 1000);
+/** The host answers a guest's check-in: a player of this room on another version gets its view again, and one the
+ *  host has down as away (its return was lost) is back. Someone who is not in the room gets nothing: joining is by
+ *  arriving (the room's presence message), never by this. */
+function answerSync(pid: string, v: number) {
+  if (!hostState || !pid || pid === S.me.id) return;
+  const p = hostState.players.find((x) => x.id === pid); if (!p) return;
+  if (!p.online) { runHost({ type: 'player/join', id: pid, name: p.name }, S.me.id, null); return; } // runHost sends everyone their view
+  if (v !== hostState.v) conn?.send({ t: 'view', pid, state: viewFor(hostState, pid), resync: true });
 }
 
 /** A guest sees the host close the Proving Ground: opened from the title, the room closes too (to the title); opened
@@ -248,7 +280,9 @@ export async function polishText(text: string, charName: string) {
 setTimeout(() => { const r = read(LS.room, null), invite = new URLSearchParams(location.search).get('room'); if (r?.code && S.me.name && (!invite || invite.toUpperCase() === r.code)) resumeRoom(); }, 0);
 
 /** Testing hook: lets the end-to-end test swap in the scripted Narrator. */
-(globalThis as any).__phc = { getState, act, setNarrator, toast, go };
+(globalThis as any).__phc = { getState, act, setNarrator, toast, go,
+  /** The room link now: this player's role, the link's state, the last message and how long ago, the game's version. */
+  net: () => ({ role: S.role, conn: S.conn, link: conn?.state || 'none', last: net.last, lastAgoMs: net.lastAt ? Date.now() - net.lastAt : -1, got: net.got, resyncs: net.resyncs, v: S.game?.v ?? -1, hostV: hostState?.v ?? -1 }) };
 
 // ---------- rerolls and edits (spec: Rerolls and edits) ----------
 // The host's copies of the state from just before each of the Narrator's latest turns, by the line the turn opened with.

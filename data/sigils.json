@@ -43,49 +43,49 @@
         "diagonal"
       ],
       "bends": false,
-      "group": "a stroke: the glyphs drawn as one Line (each glyph records its strokeId); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the 1.4 reading: glyphs of one side that touch (diagonals too); a group that isn't one straight row of 2-4 is no shape",
+      "group": "A Line is one stroke: glyphs drawn one after another in a straight row. Glyphs from different strokes never join into one Line, even when they touch.",
       "stroke": {
-        "extends": "a new glyph extends a stroke when it is next to the stroke's end glyph and continues its axis (same direction), and the stroke has fewer than max glyphs; a 1-glyph stroke extends in any of the 8 directions",
-        "otherwise": "a new stroke, even if it touches other glyphs",
-        "picker_default": "the candidate stroke holding the drawer's most recent glyph; none: a new Line (an ally's stroke only by an explicit pick)",
-        "stack": "a second glyph on a tile joins the stroke of the glyph already there",
-        "split": "removing a middle glyph splits the stroke; the part with the oldest glyph keeps the id",
+        "extends": "A new glyph joins a stroke when it is drawn next to the stroke's last glyph and carries on in the same direction, and the stroke has fewer than 4 glyphs. A single glyph can be extended in any of the 8 directions.",
+        "otherwise": "Any other glyph starts a new stroke, even if it touches other glyphs.",
+        "picker_default": "When a new glyph could join more than one stroke, it joins the one that holds your most recent glyph. If none of them is yours, it starts a new Line; it joins an ally's stroke only when you pick that stroke yourself.",
+        "stack": "A second glyph on a tile joins the stroke of the glyph already there.",
+        "split": "Removing a glyph from the middle of a stroke splits it in two.",
         "provisional": true
       },
       "junction": {
         "gate_skill": "brain_power",
         "gate_points": 10,
-        "text": "at Brain Power Mastered, a glyph may belong to two strokes (a crossing): it extends two strokes at once, or extends one and starts a new one; evoking either Line counts it as a word of that Line, and it fades when the second Line is Evoked",
+        "text": "With Brain Power Mastered, one glyph can belong to two strokes where they cross: it extends two strokes at once, or extends one and starts a new one. It counts as a word of whichever Line is Evoked, and it fades when the second Line is Evoked.",
         "provisional": true
       }
     },
     "draw": {
       "where": "own_tile",
       "glyphs_per_tile": 1,
-      "cost": "the word's charge + Glyph AP + 1 Flux (TWICE 2)",
-      "two_glyph_hook": "a perk, trait or skill may let its caster put a second glyph on a tile (only the Stroke Gambler's half-glyphs do so far); two on a tile alone are a Stack"
+      "cost": "Drawing a glyph costs the word's charge, your Glyph AP and 1 Flux (2 Flux for TWICE).",
+      "two_glyph_hook": "A perk, trait or skill can let you put a second glyph on a tile; so far only the Stroke Gambler's half-glyphs do. Two glyphs alone on one tile are a Stack."
     },
     "glyph_lasts": "2 + floor(sigil_duration_bonus) rounds",
     "evoke": {
       "ap": 1,
       "charge": "1 per glyph - sigil_core_saving, min 1",
-      "stand": "within 1 tile of any glyph of the Line; not on a middle glyph"
+      "stand": "Stand within 1 tile of any glyph of the Line, but not on a middle glyph."
     },
     "facing": {
-      "along": "on an end glyph, or next to an end and further along the Line than it: the area runs past the far end, as wide as the Line (lanes centred on its axis; for an even count the extra lane on the right of the firing direction)",
-      "across": "next to the glyphs from the side: row k is the Line moved k steps away from you (perpendicular; for a diagonal Line the orthogonal step away, north or south when both lead away)",
-      "width": "the whole Line (one lane per glyph)",
-      "depth": "the Reach range (+ range bonus), or 1 for Touch",
-      "finished_line": "you stand on the last glyph drawn, so a finished Line fires back the way you came; the preview draws it",
-      "stack": "with the two-glyph hook only: all around the Stack, out to the range, in sight"
+      "along": "Stand on an end glyph, or next to an end and further along the Line than it, to fire along the Line. The area runs out past the far end and is as many tiles wide as the Line has glyphs, centred on the Line; with an even number, the extra tile is on the right of the firing direction.",
+      "across": "Stand beside the Line to fire across it. The area runs straight away from you, one lane for each glyph. For a diagonal Line it runs straight north, south, east or west, whichever leads away from you; when two do, it runs north or south.",
+      "width": "The area is as wide as the whole Line: one lane for each glyph.",
+      "depth": "The area is as deep as the Reach word's range plus your range bonus, or 1 tile with no Reach word (Touch).",
+      "finished_line": "You finish a Line standing on its last glyph, so a finished Line fires back the way you walked. The preview shows the area before you confirm.",
+      "stack": "A Stack fires all around itself, out to its range, at whatever it can see. Only a caster who can put two glyphs on one tile can make one."
     },
     "touch": {
       "depth": 1,
       "range_bonus": false,
       "blocked": false
     },
-    "self_target": "always allowed (your own tile), whatever the Reach: Touch's one exception; PUSH refused there; QUICKEN skips you",
-    "range_bonus": "floor(0.5 x Rumination) + perks, added once to a Reach word's range, never to Touch",
+    "self_target": "You can always target your own tile, whatever the Reach. PUSH can't land there, and QUICKEN doesn't affect you.",
+    "range_bonus": "Half your Rumination, rounded down, plus any perks. It is added once to a Reach word's range, and never to Touch.",
     "one_reach_word": true,
     "repeats": {
       "allowed": true,
@@ -95,7 +95,7 @@
         "heal",
         "shield"
       ],
-      "subjects": "repeated Subjects sum their damage, healing and shields; each copy's rider applies once",
+      "subjects": "Repeated Subjects add their damage, healing and shields together. Each copy's extra effect still applies only once.",
       "except": [
         "kin",
         "a second, different Reach word"
@@ -107,23 +107,23 @@
           "watch",
           "stay"
         ],
-        "why": "A turret already lasts."
+        "why": "WATCH and STAY can't be in the same spell: a turret already lasts."
       },
       {
         "rule": "different_reach",
-        "why": "One Reach word per spell."
+        "why": "A spell can have only one Reach word."
       },
       {
         "words": [
           "kin",
           "kin"
         ],
-        "why": "KIN takes one copy."
+        "why": "A spell can hold only one KIN."
       },
       {
         "word": "push",
         "on_own_tile": true,
-        "why": "A cone needs a way to face."
+        "why": "PUSH can't land on your own tile: a cone needs a direction."
       }
     ],
     "resolve_order": [
@@ -133,24 +133,24 @@
       "after",
       "stays"
     ],
-    "multipliers": "Subjects' sum x Reach x Burst x Delivery (field/turret 0.5, chain 0.75 a jump) x 0.9 per repeated glyph x Sigil multiplier (x Elemental for Elemental; x Healing given for MEND and WARD) x critical; then armour",
+    "multipliers": "A spell's strength is its Subjects added together, × the Reach word, × the Burst word, × the Delivery word (×0.5 for a field or turret, ×0.75 for each CHAIN jump), × 0.9 for each repeated glyph, × your Sigil multiplier. Elemental damage is also × your Elemental multiplier, MEND and WARD are also × your Healing given, and a critical hit doubles the damage. Armour comes off last.",
     "mixes": {
-      "condense+spread": "x1.5 on the landing tile, x0.6 around it",
-      "condense+push": "x1.5 on the landing tile, x0.7 in the cone",
-      "spread+push": "the radius and the cone; anyone in both is hit once, at the better multiplier",
-      "stay+pull": "whirlpool: the field drags everyone in it toward you each round",
-      "wait+watch": "a hidden turret",
-      "watch+chain": "the Tesla tower"
+      "condense+spread": "CONDENSE with SPREAD: ×1.5 on the tile where the spell lands and ×0.6 around it.",
+      "condense+push": "CONDENSE with PUSH: ×1.5 on the tile where the spell lands and ×0.7 in the cone.",
+      "spread+push": "SPREAD with PUSH: the spell covers both the radius and the cone. Anyone in both is hit once, at the better multiplier.",
+      "stay+pull": "STAY with PULL: a whirlpool. Each round the field drags everyone in it toward you.",
+      "wait+watch": "WAIT with WATCH: a hidden turret.",
+      "watch+chain": "WATCH with CHAIN: a turret whose shots jump from target to target."
     },
-    "workings_with_burst": "RAISE and NULL cover the Burst's tiles; VEIL and LIGHT cover their own radius or the Burst's, whichever is larger; STEP shifts everyone caught by the same offset",
+    "workings_with_burst": "With a Burst word, RAISE and NULL cover the Burst's tiles. VEIL and LIGHT cover their own radius or the Burst's, whichever is larger. STEP moves everyone it catches the same distance in the same direction.",
     "limits": {
       "traps_per_caster": 2,
       "turrets_per_caster": 1,
       "raise_per_caster": 1,
       "quicken_per_target_per_round": 1
     },
-    "fizzle": "the spell goes off but finds nothing it may affect: nothing happens; charge, AP and Flux are spent and its glyphs fade",
-    "skips": "harmful effects skip the Downed and the surrendered; Boons don't",
+    "fizzle": "A spell that goes off but finds nothing it can affect fizzles: nothing happens, the charge, AP and Flux are still spent, and its glyphs fade.",
+    "skips": "Harmful effects skip Downed and surrendered creatures. Boons still reach them.",
     "friendly_fire": true,
     "starting": {
       "words": 2,
@@ -178,7 +178,7 @@
       }
     ],
     "study": {
-      "text": "Every Evoke earns study (base, +1 per glyph past 2, +1 if it struck an enemy; a fizzle earns none). At the first threshold, then every step more, the character may learn a word of their choice within the cap; picks with no free slot are banked. Copying a glyph or a scuffed glyph's trace (Read, or Analyzing the enemy that drew it) gives copy study and puts the word on the known-to-study list, once per glyph per character. Each Mastery level of the mastery skills gives mastery_study once; Mastered gives one free word over the cap, once per skill.",
+      "text": "Every Evoke earns study: 1, +1 for each glyph past the second, and +1 if the spell hit an enemy. A fizzle earns none. At 6 study, and every 8 after that, you can learn a new word of your choice, up to the number of words you can know; a pick you have no room for waits until you do. Copying a word you don't know earns 2 study and adds it to your list of words to study, once for each glyph: read the glyph, read the trace a scuffed glyph leaves for 2 rounds, or Analyze the enemy that drew it. Each Mastery level in Brain Power, Rumination or Eloquence gives 5 study, and Mastering one of them gives a free word that doesn't count against your limit.",
       "per_evoke": 1,
       "per_glyph_past_2": 1,
       "hit_enemy": 1,
@@ -202,7 +202,7 @@
       "provisional": true
     },
     "word_mastery": {
-      "text": "Every Evoke that includes a word you know adds 1 to its use count (repeats once). Practised at practised uses; a Mastered word at mastered uses turns its inflection on for you.",
+      "text": "Each Evoke adds 1 use to every word in the spell that you know, however many copies of it the spell holds. A word is Practised at 10 uses and Mastered at 30. A Mastered word's inflection is always on for you.",
       "practised": 10,
       "mastered": 30,
       "provisional": true
@@ -210,13 +210,13 @@
   },
   "elements": {
     "fire": {
-      "rider": "A critical sets Burning.",
+      "rider": "A critical hit sets the target Burning.",
       "look": "A white-hot core flaring orange at the edges, embers lifting off the tile, a scorch left for a beat.",
       "sound": "A dry whoomph, then crackle.",
       "motion": "flare"
     },
     "freeze": {
-      "rider": "Slowed (Body save).",
+      "rider": "The target is Slowed unless it passes a Body save.",
       "look": "Pale blue-white frost spreading in sharp crystals from the impact, a breath of mist, the target rimed.",
       "sound": "A glassy crack and a high ring.",
       "motion": "crystallise"
@@ -228,7 +228,7 @@
       "motion": "arc"
     },
     "stone": {
-      "rider": "Sigil damage: armour applies.",
+      "rider": "Sigil damage: armour counts in full.",
       "look": "Grey-brown shards and dust bursting up from the ground, a short heavy shake.",
       "sound": "A deep thud and grinding crunch.",
       "motion": "erupt"
@@ -240,13 +240,13 @@
       "motion": "sweep"
     },
     "spark": {
-      "rider": "None: the cheap attack.",
+      "rider": "No extra effect. It is the cheapest attack.",
       "look": "A small bright pinpoint flash and a few scattered sparks.",
       "sound": "A quick tick-snap.",
       "motion": "pop"
     },
     "acid": {
-      "rider": "Corroded: 5 a turn and Defense -2, 3 rounds (a Body save ends it early).",
+      "rider": "The target is Corroded: 5 damage a turn and −2 Defense for 3 rounds. A Body save at the end of its turn ends it early.",
       "look": "Sickly yellow-green droplets that hiss and pit the target, a thin smoke while it burns.",
       "sound": "A wet splash, then a long hiss.",
       "motion": "splash"
@@ -315,7 +315,7 @@
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Heat. 30 Elemental damage; on a critical the target is Burning.",
+      "text": "Deals 30 Elemental damage. On a critical hit the target starts Burning.",
       "damage": 30,
       "damage_type": "elemental",
       "element": "fire",
@@ -323,12 +323,12 @@
         "condition": "burning"
       },
       "new": false,
-      "grand": "Lava floor: 10 fire damage on entering or starting a turn inside; Burning on a failed Body save.",
+      "grand": "Lava floor. Anyone who enters the area or starts a turn in it takes 10 fire damage, and starts Burning unless they pass a Body save.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Burning lasts +1 round.",
+        "text": "When FIRE's Burning is put out, it keeps burning for 1 more round.",
         "effects": [
           {
             "op": "inflection",
@@ -347,7 +347,7 @@
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Cold. 25 Elemental damage; the target is Slowed (Body save).",
+      "text": "Deals 25 Elemental damage. The target is Slowed unless it passes a Body save.",
       "damage": 25,
       "damage_type": "elemental",
       "element": "freeze",
@@ -356,12 +356,12 @@
         "save": "body"
       },
       "new": false,
-      "grand": "Ice sheet: difficult ground; a Body save each move or fall Prone.",
+      "grand": "Ice sheet. The area is difficult ground, and anyone who moves through it must pass a Body save or fall Prone.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The Slowed it puts on lasts +1 round.",
+        "text": "Slowed from FREEZE lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -380,18 +380,18 @@
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Lightning. 30 Elemental damage; ignores half cover.",
+      "text": "Deals 30 Elemental damage. It ignores half cover.",
       "damage": 30,
       "damage_type": "elemental",
       "element": "shock",
       "ignores": "half_cover",
       "new": false,
-      "grand": "Storm field: 15 damage at turn start to anyone in Medium armour or heavier; robots Stunned.",
+      "grand": "Storm field. Anyone wearing Medium armour or heavier who starts a turn in the area takes 15 lightning damage, and robots that start a turn there are Stunned for 1 round.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+1 to hit.",
+        "text": "A spell with SHOCK in it has +1 to hit.",
         "effects": [
           {
             "op": "inflection",
@@ -410,17 +410,17 @@
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Earth. 35 Sigil damage; armour applies.",
+      "text": "Deals 35 Sigil damage. Armour counts in full against it.",
       "damage": 35,
       "damage_type": "sigil",
       "element": "stone",
       "new": false,
-      "grand": "Earthworks: up to 4 half-cover pillars rise where you choose.",
+      "grand": "Earthworks. Up to 4 pillars rise in the area, on the tiles you choose. Each one is half cover.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+10% damage.",
+        "text": "STONE deals 10% more damage.",
         "effects": [
           {
             "op": "inflection",
@@ -439,18 +439,18 @@
       "class": "subject_element",
       "charge": 1,
       "flux": 1,
-      "text": "Wind. 15 Sigil damage; pushes the target 2 tiles away from where the spell came from.",
+      "text": "Deals 15 Sigil damage and pushes the target 2 tiles away from where the spell came from.",
       "damage": 15,
       "damage_type": "sigil",
       "element": "gale",
       "push_tiles": 2,
       "new": false,
-      "grand": "Cyclone: anyone entering is pushed 2 tiles outward; shots through it -5.",
+      "grand": "Cyclone. Anyone who enters the area is pushed 2 tiles outward, and shots that pass through it have −5 to hit.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Pushes +1 tile.",
+        "text": "GALE pushes the target 1 tile further.",
         "effects": [
           {
             "op": "inflection",
@@ -469,17 +469,17 @@
       "class": "subject_element",
       "charge": 1,
       "flux": 1,
-      "text": "A snap of current. 15 Elemental damage. The cheapest attack.",
+      "text": "Deals 15 Elemental damage. It is the cheapest attack word.",
       "damage": 15,
       "damage_type": "elemental",
       "element": "spark",
       "new": false,
-      "grand": "Static: attack rolls of 1-3 inside jam the weapon.",
+      "grand": "Static. An attack made from inside the area jams the attacker's weapon if the die shows 1, 2 or 3.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+10% damage.",
+        "text": "SPARK deals 10% more damage.",
         "effects": [
           {
             "op": "inflection",
@@ -498,7 +498,7 @@
       "class": "subject_element",
       "charge": 2,
       "flux": 1,
-      "text": "Corrosion. 15 Elemental damage, and the target is Corroded (no save to land it): 5 damage at the start of each of its turns and Defense -2, for 3 rounds; a Body save at the end of each of its turns ends it early.",
+      "text": "Deals 15 Elemental damage and leaves the target Corroded, with no save: 5 damage at the start of each of its turns and −2 Defense, for 3 rounds. A Body save at the end of each of its turns ends it early.",
       "damage": 15,
       "damage_type": "elemental",
       "element": "acid",
@@ -508,13 +508,13 @@
         "save_ends": "body"
       },
       "new": true,
-      "grand": "Etching ground: cover inside (crates, low walls, pillars, earthworks, walls) loses 15 HP at each round start and crumbles at 0; your side gets +2 to hit enemies inside.",
+      "grand": "Etching ground. At the start of each round, cover in the area (crates, barrels, low walls, pillars, barricades and Sigil walls) loses 15 HP and crumbles at 0. Your side has +2 to hit enemies standing in the area.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Corroded lasts +1 round.",
+        "text": "Corroded from ACID lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -533,18 +533,18 @@
       "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
-      "text": "The target is Pinned (Body save).",
+      "text": "The target is Pinned unless it passes a Body save.",
       "applies": {
         "condition": "pinned",
         "save": "body"
       },
       "new": false,
-      "grand": "Tar: Pinned on entering (Body save).",
+      "grand": "Tar. Anyone who enters the area must pass a Body save or be Pinned and stop where they are.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The Body save to escape being Pinned is 1 harder (TN +1).",
+        "text": "The Body save against BIND is 1 harder.",
         "effects": [
           {
             "op": "inflection",
@@ -563,18 +563,18 @@
       "class": "subject_affliction",
       "charge": 1,
       "flux": 1,
-      "text": "The target is Blinded (Body save).",
+      "text": "The target is Blinded unless it passes a Body save.",
       "applies": {
         "condition": "blinded",
         "save": "body"
       },
       "new": false,
-      "grand": "Fog: no one inside sees beyond 1 tile.",
+      "grand": "Fog. Nobody inside the area can see further than 1 tile.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Blinded lasts +1 round.",
+        "text": "Blinded from BLIND lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -593,18 +593,18 @@
       "class": "subject_affliction",
       "charge": 1,
       "flux": 1,
-      "text": "The target is Slowed (Body save). No damage.",
+      "text": "The target is Slowed unless it passes a Body save. It deals no damage.",
       "applies": {
         "condition": "slowed",
         "save": "body"
       },
       "new": false,
-      "grand": "Mire: Movement halved inside.",
+      "grand": "Mire. Movement is halved inside the area.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The Body save against it is 1 harder (TN +1).",
+        "text": "The Body save against SLOW is 1 harder.",
         "effects": [
           {
             "op": "inflection",
@@ -623,18 +623,18 @@
       "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
-      "text": "The target gets a Left Brain Debuff (Brain save).",
+      "text": "The target gets a Left Brain Debuff unless it passes a Brain save.",
       "applies": {
         "condition": "left_brain_debuff",
         "save": "brain"
       },
       "new": false,
-      "grand": "Maze: Brain save at turn start or stagger 1 tile in a random direction.",
+      "grand": "Maze. Anyone who starts a turn in the area must pass a Brain save or stagger 1 tile in a random direction.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The Left Brain Debuff lasts +1 round.",
+        "text": "The Left Brain Debuff from MUDDLE lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -653,18 +653,18 @@
       "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
-      "text": "The target is Shaken (Heart save).",
+      "text": "The target is Shaken unless it passes a Heart save.",
       "applies": {
         "condition": "shaken",
         "save": "heart"
       },
       "new": false,
-      "grand": "Haunting: enemies inside are Shaken (Heart save each turn).",
+      "grand": "Haunting. Each enemy that starts a turn in the area is Shaken unless it passes a Heart save.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Shaken lasts +1 round.",
+        "text": "Shaken from DREAD lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -683,19 +683,19 @@
       "class": "subject_affliction",
       "charge": 2,
       "flux": 1,
-      "text": "No Sigils, Outbursts or prayers for 1 round (Brain save).",
+      "text": "The target is Silenced for 1 round unless it passes a Brain save: it can't use Sigils, Outbursts or prayers.",
       "applies": {
         "condition": "silenced",
         "save": "brain",
         "rounds": 1
       },
       "new": false,
-      "grand": "Dead zone: no Sigils, Outbursts or prayers inside, yours included.",
+      "grand": "Dead zone. Nobody inside the area can use Sigils, Outbursts or prayers, you included.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The Brain save against it is 1 harder (TN +1).",
+        "text": "The Brain save against SILENCE is 1 harder.",
         "effects": [
           {
             "op": "inflection",
@@ -714,7 +714,7 @@
       "class": "subject_affliction",
       "charge": 3,
       "flux": 1,
-      "text": "Brain save, or the target obeys one order on its next turn: halt, kneel, drop its weapon, or move up to 3 tiles where you choose (never into harm).",
+      "text": "The target must pass a Brain save or obey one order on its next turn: halt, kneel, drop its weapon, or move up to 3 tiles to a place you choose. An order can never send it into harm.",
       "applies": {
         "condition": "commanded",
         "save": "brain"
@@ -727,13 +727,13 @@
       ],
       "move_tiles": 3,
       "new": true,
-      "grand": "Parade ground: enemies starting a turn inside make a Brain save or halt: Pinned for that turn (no moving; they can still act).",
+      "grand": "Parade ground. Each enemy that starts a turn in the area must pass a Brain save or halt: it is Pinned for that turn, so it can't move but can still act.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "A move order walks them +1 tile.",
+        "text": "A move order from COMMAND can send the target 1 tile further.",
         "effects": [
           {
             "op": "inflection",
@@ -752,15 +752,15 @@
       "class": "subject_boon",
       "charge": 2,
       "flux": 1,
-      "text": "A shield of 30 (x Sigil multiplier x Healing given) until the end of the fight; the higher shield stands.",
+      "text": "The target gains a shield of 30 × your Sigil multiplier × your Healing given, until the end of the fight. Shields don't add up: the bigger one stays.",
       "shield": 30,
       "new": false,
-      "grand": "Dome: allies inside +2 Defense and a 20 shield at each turn start (does not stack).",
+      "grand": "Dome. Each ally who starts a turn in the area gets +2 Defense and a shield of 20. The shield doesn't add to one they already have.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Shield +10%.",
+        "text": "WARD's shield is 10% bigger.",
         "effects": [
           {
             "op": "inflection",
@@ -779,15 +779,15 @@
       "class": "subject_boon",
       "charge": 3,
       "flux": 1,
-      "text": "Heals 25 (x Sigil multiplier x Healing given).",
+      "text": "Heals the target for 25 × your Sigil multiplier × your Healing given.",
       "heal": 25,
       "new": false,
-      "grand": "Spring: allies starting a turn inside heal 10 x Healing multiplier.",
+      "grand": "Spring. Each ally who starts a turn in the area heals 10 × your Healing given.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Heals +10%.",
+        "text": "MEND heals 10% more.",
         "effects": [
           {
             "op": "inflection",
@@ -806,7 +806,7 @@
       "class": "subject_boon",
       "charge": 3,
       "flux": 1,
-      "text": "The target is Quickened: +2 AP on its next turn, within the ceiling of 9. At most once per target per round, and never on yourself.",
+      "text": "The target is Quickened: +2 AP on its next turn, up to the limit of 9 AP. It never works on you, and each target can be Quickened only once a round.",
       "applies": {
         "condition": "quickened",
         "save": null
@@ -815,13 +815,13 @@
       "not_self": true,
       "once_per_target_per_round": true,
       "new": true,
-      "grand": "Quickstep: allies (not you) starting a turn inside get +1 AP that turn, within the AP ceiling of 9.",
+      "grand": "Quickstep. Each ally other than you who starts a turn in the area gets +1 AP that turn, up to the limit of 9 AP.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Costs 1 less charge to draw.",
+        "text": "QUICKEN costs 1 less charge to draw.",
         "effects": [
           {
             "op": "inflection",
@@ -840,7 +840,7 @@
       "class": "subject_boon",
       "charge": 2,
       "flux": 1,
-      "text": "The target is Sharpened: its next attack gets +3 to hit and x1.25 damage (until that attack or the end of its next turn).",
+      "text": "The target is Sharpened: its next attack has +3 to hit and deals ×1.25 damage. It lasts until that attack or the end of the target's next turn.",
       "applies": {
         "condition": "sharpened",
         "save": null
@@ -848,13 +848,13 @@
       "to_hit": 3,
       "damage_mult": 1.25,
       "new": true,
-      "grand": "Whetstone: attacks your side makes from inside deal +5, or +10 with melee and unarmed strikes (you included).",
+      "grand": "Whetstone. Weapon attacks your side makes from inside the area deal +5 damage, or +10 with melee and unarmed attacks. This includes your own.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Costs 1 less charge to draw.",
+        "text": "SHARPEN costs 1 less charge to draw.",
         "effects": [
           {
             "op": "inflection",
@@ -873,17 +873,17 @@
       "class": "subject_boon",
       "charge": 2,
       "flux": 1,
-      "text": "Ends one condition on the target, the newest first.",
+      "text": "Ends one harmful condition on the target, the newest first.",
       "cleanse": 1,
       "cleanse_order": "newest",
       "new": true,
-      "grand": "Clear water: allies starting a turn inside lose their newest harmful condition.",
+      "grand": "Clear water. Each ally who starts a turn in the area loses their newest harmful condition.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Costs 1 less charge to draw.",
+        "text": "CLEANSE costs 1 less charge to draw.",
         "effects": [
           {
             "op": "inflection",
@@ -902,17 +902,17 @@
       "class": "subject_working",
       "charge": 2,
       "flux": 1,
-      "text": "Smoke-bots fill radius 1 around the target: blocks sight, 2 rounds + the Sigil duration bonus.",
+      "text": "Smoke fills every tile within 1 of the target and blocks sight. It lasts 2 rounds plus your Sigil duration bonus.",
       "blocks_sight_radius": 1,
       "lasts_rounds": 2,
       "duration_bonus": true,
       "new": false,
-      "grand": "Smoke field: blocks all sight; everyone inside counts as Hidden.",
+      "grand": "Smoke field. The area blocks all sight, and everyone inside counts as Hidden.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The smoke lasts +1 round.",
+        "text": "VEIL's smoke lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -931,16 +931,16 @@
       "class": "subject_working",
       "charge": 1,
       "flux": 1,
-      "text": "Lights radius 4 for the scene; reveals the Hidden in it.",
+      "text": "Lights every tile within 4 of the target for the rest of the scene and reveals anyone Hidden there.",
       "reveals_hidden_radius": 4,
       "lasts": "scene",
       "new": false,
-      "grand": "Noon: Hidden revealed; enemies inside -2 to hit.",
+      "grand": "Noon. Hidden enemies in the area are revealed, and enemies inside have −2 to hit.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Radius +1.",
+        "text": "LIGHT reaches 1 tile further.",
         "effects": [
           {
             "op": "inflection",
@@ -959,17 +959,17 @@
       "class": "subject_working",
       "charge": 2,
       "flux": 1,
-      "text": "Teleport: whoever it affects moves to a free tile you pick, up to 4 tiles from where they stand, past anything in between. An enemy resists with a Body save. On yourself it's a blink.",
+      "text": "Teleports whoever the spell affects to a free tile you pick, up to 4 tiles from where they stand, past anything in between. An enemy can resist with a Body save. Cast on yourself, it is a blink.",
       "teleport_tiles": 4,
       "save_enemy": "body",
       "new": true,
-      "grand": "Fold: for your side, a move that starts and stays inside costs 1 AP at most, however far.",
+      "grand": "Fold. Any move your side makes that starts and stays inside the area costs 1 AP at most, however far it goes.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+1 tile.",
+        "text": "STEP teleports 1 tile further.",
         "effects": [
           {
             "op": "inflection",
@@ -988,7 +988,7 @@
       "class": "subject_working",
       "charge": 3,
       "flux": 1,
-      "text": "A solid barrier on each empty tile it covers: blocks movement and sight, 30 HP a tile, 3 rounds + the Sigil duration bonus. One RAISE working per caster.",
+      "text": "A solid wall rises on each empty tile the spell covers. A wall blocks movement and sight, has 30 HP and lasts 3 rounds plus your Sigil duration bonus. You can keep only one RAISE spell's walls standing: new walls replace the old ones.",
       "barrier": {
         "hp": 30,
         "rounds": 3,
@@ -1001,13 +1001,13 @@
       "empty_tiles_only": true,
       "one_per_caster": true,
       "new": true,
-      "grand": "Ramparts: up to 8 wall segments rise on the edge ring (every other edge tile, never on anyone): solid, 30 HP each; they fall with the form.",
+      "grand": "Ramparts. Up to 8 walls rise around the edge of the area, on every other edge tile and never on a creature. Each is solid with 30 HP, and they fall when the Grand form ends.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Walls +10% HP.",
+        "text": "RAISE's walls have 10% more HP.",
         "effects": [
           {
             "op": "inflection",
@@ -1026,7 +1026,7 @@
       "class": "subject_working",
       "charge": 3,
       "flux": 1,
-      "text": "Dispel: removes the placed Sigil magic on the tiles it covers: glyphs (anyone's), fields, traps, turrets, and the smoke, light and walls of Workings. Keystones, Grand forms and class zones stay.",
+      "text": "Dispels the Sigil magic placed on the tiles the spell covers: anyone's glyphs, fields, traps and turrets, and the smoke, light and walls of other spells. Keystones, Grand forms and class zones stay.",
       "dispel": [
         "glyph",
         "field",
@@ -1042,13 +1042,13 @@
         "class_zone"
       ],
       "new": true,
-      "grand": "Clean ground: placed Sigil magic inside (glyphs, fields, traps, turrets, smoke, light, walls; not Keystones) is wiped when it goes up and at each round start, and no glyph can be drawn inside, yours included.",
+      "grand": "Clean ground. Sigil magic placed in the area (glyphs, fields, traps, turrets, smoke, light and walls, but not Keystones) is wiped when the Grand form goes up and again at the start of each round. Nobody can draw a glyph inside, you included.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Costs 1 less charge to draw.",
+        "text": "NULL costs 1 less charge to draw.",
         "effects": [
           {
             "op": "inflection",
@@ -1067,20 +1067,20 @@
       "class": "subject_working",
       "charge": 2,
       "flux": 1,
-      "text": "The target is Hidden until it attacks, or for 2 rounds. A Marked target can't be hidden.",
+      "text": "The target becomes Hidden until it attacks, or for 2 rounds. It does nothing to a Marked target.",
       "applies": {
         "condition": "hidden",
         "save": null,
         "rounds": 2
       },
       "new": true,
-      "grand": "Hall of masks: enemies outside can't target your side inside from more than 3 tiles away.",
+      "grand": "Hall of masks. Enemies outside the area can't target your side inside it from more than 3 tiles away.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Hidden lasts +1 round.",
+        "text": "Hidden from MASK lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -1099,7 +1099,7 @@
       "class": "reach",
       "charge": 2,
       "flux": 1,
-      "text": "A bolt, flying straight: range 8. The first creature or full cover in its way takes it or stops it; needs sight of the target.",
+      "text": "A straight bolt with range 8. You must see the target. The first creature in its path takes the hit, and full cover in its path stops it.",
       "missile": "bolt",
       "range": 8,
       "mult": 1.0,
@@ -1110,12 +1110,12 @@
       },
       "order": "travel",
       "new": false,
-      "grand": "Hunting ground: allies' attacks on enemies inside ignore half cover.",
+      "grand": "Hunting ground. Your side's attacks against enemies in the area ignore half cover.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+1 range.",
+        "text": "SEEK has +1 range.",
         "effects": [
           {
             "op": "inflection",
@@ -1134,7 +1134,7 @@
       "class": "reach",
       "charge": 2,
       "flux": 1,
-      "text": "A lob over everything: range 6, x0.8. Nothing blocks it; needs sight of the tile it lands on.",
+      "text": "A lob with range 6, at ×0.8 strength. Nothing in its path blocks it, but you must see the tile it lands on.",
       "missile": "lob",
       "range": 6,
       "mult": 0.8,
@@ -1145,13 +1145,13 @@
       },
       "order": "travel",
       "new": true,
-      "grand": "Mortar pit: at the start of each of your turns the staff shells the tile within 6 of it that catches the most enemies: 15 Sigil damage there, 5 to enemies next to it. It reaches out of the zone.",
+      "grand": "Mortar pit. At the start of each of your turns the staff shells the tile within 6 tiles of it that catches the most enemies: 15 Sigil damage on that tile and 5 to enemies next to it. It can hit outside the area.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+1 range.",
+        "text": "ARC has +1 range.",
         "effects": [
           {
             "op": "inflection",
@@ -1170,7 +1170,7 @@
       "class": "reach",
       "charge": 3,
       "flux": 1,
-      "text": "It appears at the target: range 8, x0.6, no sight needed. Nothing blocks it.",
+      "text": "The spell appears at the target: range 8, at ×0.6 strength. You don't need to see the target, and nothing blocks it.",
       "missile": "appear",
       "range": 8,
       "mult": 0.6,
@@ -1181,13 +1181,13 @@
       },
       "order": "travel",
       "new": true,
-      "grand": "Second sight: Hidden enemies within 4 tiles of the staff are revealed at each turn start.",
+      "grand": "Second sight. Hidden enemies within 4 tiles of the staff are revealed at the start of every turn.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+1 range.",
+        "text": "SENSE has +1 range.",
         "effects": [
           {
             "op": "inflection",
@@ -1206,7 +1206,7 @@
       "class": "reach",
       "charge": 2,
       "flux": 1,
-      "text": "Cast from an ally's tile, as if you stood where they stand: an ally within 8 in your sight; the spell reaches that ally and the tiles next to them.",
+      "text": "The spell is cast from an ally's tile, as if you stood there. Pick an ally within 8 tiles that you can see: the spell can hit that ally's tile and the tiles next to it.",
       "missile": "relay",
       "range": 8,
       "mult": 1.0,
@@ -1218,13 +1218,13 @@
       },
       "order": "travel",
       "new": true,
-      "grand": "Relay net: your side's attacks from inside get +1 to hit for each other ally inside with a line to the target (+3 at most).",
+      "grand": "Relay net. An attack your side makes from inside the area gets +1 to hit for each other ally inside who has a clear line to the target, up to +3.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+1 range: an ally up to 1 tile further away.",
+        "text": "RELAY reaches an ally 1 tile further away.",
         "effects": [
           {
             "op": "inflection",
@@ -1243,7 +1243,7 @@
       "class": "delivery",
       "charge": 1,
       "flux": 1,
-      "text": "Field: the spell strikes once when Evoked, at full, then stands on what it covers for 2 rounds (+ the Sigil duration bonus): whoever enters it or starts a turn in it takes it at full the first time, x0.5 once the field has affected them (its strike included). Once per creature per round.",
+      "text": "A field. The spell hits once at full strength when Evoked, then stays on its tiles for 2 rounds plus your Sigil duration bonus. Anyone who enters the field or starts a turn in it is hit, once a round: at full strength the first time the field affects them (the hit when Evoked counts), at ×0.5 after that.",
       "placed": "field",
       "lasts_rounds": 2,
       "duration_bonus": true,
@@ -1257,12 +1257,12 @@
         "watch"
       ],
       "new": false,
-      "grand": "Stasis: conditions inside do not tick down.",
+      "grand": "Stasis. Conditions on anyone inside the area don't count down.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The field lasts +1 round.",
+        "text": "STAY's field lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -1281,7 +1281,7 @@
       "class": "delivery",
       "charge": 3,
       "flux": 2,
-      "text": "Two missiles at two targets you pick, each with its own Burst. The glyph adds 1 extra Flux.",
+      "text": "Two missiles at two targets you pick, each with its own Burst. Drawing this glyph adds 2 Flux instead of 1.",
       "missiles": 2,
       "per_copy": {
         "missiles": 1,
@@ -1289,12 +1289,12 @@
       },
       "order": "how_many",
       "new": false,
-      "grand": "Echo field: the first spell your side lands inside each round rings again on the enemies it hit, at half its damage per target (5 at least).",
+      "grand": "Echo field. Once a round, the first spell your side lands in the area hits again on each enemy it hit, for half its damage per target (at least 5).",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The glyph adds no extra Flux.",
+        "text": "Drawing TWICE adds 1 Flux, like any other glyph.",
         "effects": [
           {
             "op": "inflection",
@@ -1313,19 +1313,19 @@
       "class": "delivery",
       "charge": 1,
       "flux": 1,
-      "text": "After the hit, drags each target it affected 3 tiles toward you (a turret's, toward the turret).",
+      "text": "After the hit, each target the spell affected is dragged 3 tiles toward you. A turret's spell drags toward the turret.",
       "pull_tiles": 3,
       "per_copy": {
         "pull_tiles": 3
       },
       "order": "after",
       "new": false,
-      "grand": "Vortex: enemies within 4 tiles are pulled 1 tile toward the staff at their turn start.",
+      "grand": "Vortex. Each enemy within 4 tiles of the staff is pulled 1 tile toward it at the start of its turn.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Drags +1 tile.",
+        "text": "PULL drags targets 1 tile further.",
         "effects": [
           {
             "op": "inflection",
@@ -1344,7 +1344,7 @@
       "class": "delivery",
       "charge": 2,
       "flux": 1,
-      "text": "Trap: set on the tile you aim at, hidden from the other side (they can spot it). It goes off once when someone of the other side steps on it or starts a turn on it; 3 rounds (+ the Sigil duration bonus). Your side never sets it off.",
+      "text": "A trap on the tile you aim at, hidden from the enemy until they spot it. It goes off once, when an enemy steps on it or starts a turn on it; your side never sets it off. It lasts 3 rounds plus your Sigil duration bonus. You can keep 2 traps at a time: a third replaces the oldest.",
       "placed": "trap",
       "lasts_rounds": 3,
       "duration_bonus": true,
@@ -1355,13 +1355,13 @@
       },
       "order": "stays",
       "new": true,
-      "grand": "Minefield: every enemy, the first time it enters each round, takes 10 Sigil damage and its walk stops.",
+      "grand": "Minefield. The first time each round an enemy enters the area, it takes 10 Sigil damage and stops moving.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The trap lasts +1 round.",
+        "text": "WAIT's trap lasts 1 round longer.",
         "effects": [
           {
             "op": "inflection",
@@ -1380,7 +1380,7 @@
       "class": "delivery",
       "charge": 3,
       "flux": 1,
-      "text": "Turret: on the tile you aim at, it casts the spell at the nearest creature it can reach (allies too) at the start of each of your turns, x0.5, for 2 rounds (+ the Sigil duration bonus). 10 HP; Scuff or a hit destroys it.",
+      "text": "A turret on the tile you aim at. At the start of each of your turns it casts the spell at ×0.5 strength at the nearest creature it can reach, allies included. It lasts 2 rounds plus your Sigil duration bonus and has 10 HP; a hit or a Scuff destroys it. You can keep 1 turret at a time: a new one replaces it.",
       "placed": "turret",
       "lasts_rounds": 2,
       "duration_bonus": true,
@@ -1395,13 +1395,13 @@
         "stay"
       ],
       "new": true,
-      "grand": "Sentinel: at the start of each of your turns the staff strikes the nearest enemy inside for 15 Sigil damage; an enemy leaving the zone takes a 10 strike, once a round each.",
+      "grand": "Sentinel. At the start of each of your turns the staff hits the nearest enemy in the area for 15 Sigil damage. An enemy that leaves the area takes 10, once a round each.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The turret has Defense +1.",
+        "text": "WATCH's turret has +1 Defense.",
         "effects": [
           {
             "op": "inflection",
@@ -1420,7 +1420,7 @@
       "class": "delivery",
       "charge": 2,
       "flux": 1,
-      "text": "After the hit, the spell jumps forward to the next creature within 3 tiles that is no closer to you (or the turret), x0.75 of the last hit; never back to one it hit; jumps can't be blocked. Allies too.",
+      "text": "After the hit, the spell jumps on to the next creature within 3 tiles that is no closer to you (or to the turret), at ×0.75 of the last hit. It never jumps back to a creature it already hit, nothing blocks a jump, and it can jump to allies.",
       "jumps": 1,
       "jump_radius": 3,
       "jump_mult": 0.75,
@@ -1429,13 +1429,13 @@
       },
       "order": "after",
       "new": true,
-      "grand": "Conductor: when your side hurts an enemy inside, 10 lightning damage arcs to the nearest other enemy inside within 3 tiles (once a round for each enemy it reaches).",
+      "grand": "Conductor. When your side damages an enemy in the area, 10 lightning damage arcs to the nearest other enemy inside within 3 tiles. Each enemy can be arced to once a round.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Jumps reach +1 tile further.",
+        "text": "CHAIN jumps 1 tile further.",
         "effects": [
           {
             "op": "inflection",
@@ -1454,20 +1454,20 @@
       "class": "delivery",
       "charge": 2,
       "flux": 1,
-      "text": "Life drain: after the hit you heal half the damage the spell dealt, in all.",
+      "text": "After the hit, you heal half of all the damage the spell dealt.",
       "leech": 0.5,
       "per_copy": {
         "leech": 0.25
       },
       "order": "after",
       "new": true,
-      "grand": "Bloodwell: each hit your side lands on an enemy inside heals the one who landed it 5 (once a round for each attacker and enemy).",
+      "grand": "Bloodwell. Each hit your side lands on an enemy in the area heals the attacker for 5, once a round for each attacker and enemy.",
       "grand_provisional": true,
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "You heal +10% more of the damage (half becomes 0.55).",
+        "text": "LEECH heals you for 55% of the damage instead of half.",
         "effects": [
           {
             "op": "inflection",
@@ -1486,7 +1486,7 @@
       "class": "burst",
       "charge": 1,
       "flux": 1,
-      "text": "One target, x1.5.",
+      "text": "One target, at ×1.5 strength.",
       "area": "single",
       "mult": 1.5,
       "per_copy": {
@@ -1494,12 +1494,12 @@
       },
       "order": "cover",
       "new": false,
-      "grand": "Crush: enemies starting a turn inside next to another creature take 10 Sigil damage.",
+      "grand": "Crush. Each enemy that starts a turn in the area next to another creature takes 10 Sigil damage.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "x1.6 instead of x1.5.",
+        "text": "CONDENSE is ×1.6 instead of ×1.5.",
         "effects": [
           {
             "op": "inflection",
@@ -1518,7 +1518,7 @@
       "class": "burst",
       "charge": 2,
       "flux": 1,
-      "text": "Everyone within 2 tiles of where it lands (5 x 5), x0.6. It can land on empty ground.",
+      "text": "Hits everyone within 2 tiles of where the spell lands (a 5 × 5 area), at ×0.6 strength. It can land on empty ground.",
       "area": "radius",
       "radius": 2,
       "mult": 0.6,
@@ -1529,12 +1529,12 @@
       },
       "order": "cover",
       "new": false,
-      "grand": "Bloom: a spell your side lands inside also deals 10 Sigil damage to every enemy inside it didn't hit.",
+      "grand": "Bloom. When your side lands a spell in the area, every enemy inside that the spell didn't hit takes 10 Sigil damage.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "+1 radius at 4 glyphs.",
+        "text": "In a 4-glyph spell, SPREAD reaches 1 tile further.",
         "effects": [
           {
             "op": "inflection",
@@ -1553,7 +1553,7 @@
       "class": "burst",
       "charge": 1,
       "flux": 1,
-      "text": "A cone from where it lands, carrying on the way the spell faced, 3 tiles long and widening, x0.7. It can land on empty ground. Refused on your own tile.",
+      "text": "A widening cone 3 tiles long, at ×0.7 strength. It starts where the spell lands and carries on in the direction the spell was travelling. It can land on empty ground, but never on your own tile.",
       "area": "cone",
       "cone_length": 3,
       "mult": 0.7,
@@ -1565,12 +1565,12 @@
       },
       "order": "cover",
       "new": false,
-      "grand": "Gust: enemies starting a turn inside are blown 1 tile outward, away from the staff.",
+      "grand": "Gust. Each enemy that starts a turn in the area is blown 1 tile outward, away from the staff.",
       "max_copies": null,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "The cone is +1 tile longer.",
+        "text": "PUSH's cone is 1 tile longer.",
         "effects": [
           {
             "op": "inflection",
@@ -1589,16 +1589,16 @@
       "class": "filter",
       "charge": 2,
       "flux": 1,
-      "text": "Your side is never affected: you and your allies can't be picked (your own tile is the one exception, and KIN spares you there) and nothing in the spell touches you. It backfires on Boons. It changes who the spell affects, not how it flies.",
+      "text": "The spell never affects your side. You can't aim it at an ally, and nothing in it touches you or your allies; your own tile is the one place on your side you can still aim, and KIN spares you there. Keep it out of healing and shielding spells: it skips your allies there too. It changes who the spell affects, not where it goes.",
       "filter": "spare_own_side",
-      "grand": "Sanctum: allies inside take no damage from your side's spells and attacks.",
+      "grand": "Sanctum. Allies inside the area take no damage from your side's spells and attacks.",
       "grand_provisional": true,
       "max_copies": 1,
       "new": true,
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "Also skips Downed enemies you mark: Downed and surrendered enemies are spared like your side.",
+        "text": "KIN also spares Downed and surrendered enemies.",
         "effects": [
           {
             "op": "inflection",

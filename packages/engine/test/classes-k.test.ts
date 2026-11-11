@@ -294,7 +294,7 @@ describe('Heartfed', () => {
     expect(mp - f.pc.mg!.mp).toBe(Math.max(5, Math.round(plain * 0.6)));
     perk(f, f.pc, 'heartfed.fed'); perk(f, f.pc, 'heartfed.fed');
     expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(2); expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(2);
-    expect(() => perk(f, f.pc, 'heartfed.fed')).toThrow(/Twice a turn/);
+    expect(() => perk(f, f.pc, 'heartfed.fed')).toThrow(/Used twice this turn already/);
     act(f, f.unit(u.id), { type: 'combat/release', aim: foe.pos });
     expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(0); expect(logHas(f.cb, /takes the rest of the rage/)).toBe(true);
   });

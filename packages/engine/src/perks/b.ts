@@ -154,12 +154,12 @@ register({
   },
   actions: [{
     id: 'wall_strike', label: 'Wall Run strike', scope: ['combat'], ap: 0, target: 'enemy',
-    text: 'Run up to the tile you pick (it may be on the wall), attack from there, then finish the move on the tile in your choice.',
+    text: 'Run to a tile you pick (it can be on a wall), attack from there, then finish the move on a second tile you pick. Each part of the run costs its normal AP.',
     available: (h) => (h.tier !== 'II' ? false : true),
     preview: (h, a) => {
       if (!h.cb || !h.u) return {}; if (!a.tile) return { ok: false, why: 'Pick the tile to strike from.' };
       const k = /,/.test(a.tile) ? a.tile : refKey(a.tile, h.cb.map); if (!k) return { ok: false, why: 'Pick the tile to strike from.' };
-      return { lines: ['Run to ' + refOf(k) + ', attack, then finish the move' + (a.choice ? ' at ' + refOf(/,/.test(a.choice) ? a.choice : refKey(a.choice, h.cb.map) || a.choice) : '') + '. Each leg pays its own AP.'] };
+      return { lines: ['Run to ' + refOf(k) + ', attack, then finish the move' + (a.choice ? ' at ' + refOf(/,/.test(a.choice) ? a.choice : refKey(a.choice, h.cb.map) || a.choice) : '') + '. Each part of the run costs its normal AP.'] };
     },
     run: (h, a, rng) => {
       const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId);
@@ -465,13 +465,13 @@ register({
   actions: [
     {
       id: 'vanishing_act', label: 'Vanishing Act', scope: ['combat'], ap: 2, uses: { per: 'per_combat', n: 1 }, target: 'none',
-      text: 'Drop out of sight where you stand, even in plain view. Hidden until you attack or someone touches you.',
+      text: 'Once a fight: drop out of sight where you stand, even in plain view. You stay Hidden until you attack or someone touches you.',
       available: (h) => (h.u?.hidden ? 'Already Hidden.' : h.u && condOn(h.u, 'marked') ? 'Marked: you can\'t hide.' : true),
       run: (h) => { const cb = h.cb!, u = h.u!; const out = hide(cb, u, 'Vanishing Act'); if (!u.hidden) return 'You can\'t hide now.'; stateOf(h).entry = u.hideEntry; log(cb, u.name + ' is simply gone' + out + '.'); return null; },
     },
     {
       id: 'vanish', label: 'Vanishing Act', scope: ['world'], ap: 2, uses: { per: 'per_scene', n: 1 }, target: 'none',
-      text: 'Once a scene: vanish in plain view. Sneaking and hidden; only someone who walks up to you can notice you.',
+      text: 'Once a scene: vanish in plain view. You are sneaking and Hidden, and only someone who walks up to you can notice you.',
       run: (h) => {
         const g = gameOf(h), c = h.c; if (!g || !c) return 'Not here.';
         (g.story.sneak ||= {})[c.id] = true; (g.story.hidden ||= {})[c.id] = true; stateOf(h).scene = g.story.scene?.n;
@@ -708,7 +708,7 @@ register({
   id: 'dead_signal', claims: 'all',
   actions: [{
     id: 'disable_device', label: 'Dead Signal', scope: ['combat', 'world'], ap: 1, target: 'object', range: 3,
-    text: 'In stealth, 1 AP: silently disable one electronic device within 3 tiles.',
+    text: 'While you are in stealth: silently disable one electronic device within 3 tiles.',
     available: (h) => inStealth(h),
     preview: (h, a) => {
       const o = deviceAt(h, a); if (!o) return { ok: false, why: 'Pick an electronic device.' };
@@ -777,13 +777,13 @@ register({
   },
   actions: [{
     id: 'retreat', label: 'Retreat', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'tile',
-    text: 'Sprint to a tile farther from every enemy you can see: 0 AP, no opportunity attacks, then +2 Defense.',
-    available: (h) => (h.u && has(h.u, 'forlorn_hope') ? 'No Way Back.' : h.u?.sprinted ? 'One Sprint a turn.' : true),
+    text: 'Once a fight: Sprint for 0 AP to a tile that is farther from every enemy you can see. The move draws no opportunity attacks, and you gain +2 Defense until the end of your next turn.',
+    available: (h) => (h.u && has(h.u, 'forlorn_hope') ? 'No Way Back: you can\'t retreat.' : h.u?.sprinted ? 'You already Sprinted this turn.' : true),
     preview: (h, a) => {
       if (!h.cb || !h.u || !a.tile) return {}; const k = /,/.test(a.tile) ? a.tile : refKey(a.tile, h.cb.map); if (!k) return { ok: false, why: 'Pick a tile.' };
       const seen = foesOf(h.cb, h.u).filter((f) => sideSees(h.cb!, h.u!.side, f)), bad = seen.find((f) => dist(k, f.pos) <= dist(h.u!.pos, f.pos));
-      if (bad) return { ok: false, why: 'A retreat ends farther from every enemy you can see (' + bad.name + ').' };
-      return { lines: ['Retreat to ' + refOf(k) + ': 0 AP, no opportunity attacks, Withdrawing.'] };
+      if (bad) return { ok: false, why: 'A retreat must end farther from every enemy you can see (' + bad.name + ').' };
+      return { lines: ['Retreat to ' + refOf(k) + ' for 0 AP. No opportunity attacks, then +2 Defense.'] };
     },
     run: (h, a, rng) => {
       const cb = h.cb!, u = h.u!, k = /,/.test(a.tile!) ? a.tile! : refKey(a.tile!, cb.map)!; const s = stateOf(h); s.retreat = true;
@@ -853,7 +853,7 @@ register({
     rest: (ctx, h) => {
       if (!ctx.settlement || !h.c || !ctx.chars.includes(h.c)) return; const g = gameOf(h) || ctx.g; if (!g) return;
       const d = d20(g.rng), m = checkMod(h.c, 'vigilant') + skillRollMod({ c: h.c }, 'vigilant', { roll: 'check', tags: (() => { try { return zoneTags(g); } catch { return []; } })() }).add, ok = d === 20 || (d !== 1 && d + m >= 12);
-      postStory(h, 'VIGILANT · d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (d + m) + ' vs 12 · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
+      postStory(h, 'VIGILANCE · d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (d + m) + ' vs 12 · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
       if (!ok) { const i = ctx.chars.indexOf(h.c); if (i >= 0) ctx.chars.splice(i, 1); }
     },
     // The prosthetic arm (the start item, while carried): an arm injury hits metal, not flesh. No −2 to attacks; the
@@ -871,8 +871,8 @@ register({
   // The prosthetic arm takes mods (the audit's proposal: 2 slots, fitting needs Proficiency 3; PROVISIONAL, spec 14).
   // What a fitted mod does in the arm is the Narrator's: the brief names them.
   actions: [{
-    id: 'fit_arm', label: 'Fit a mod to the arm', pickLabel: 'The mod in your pack (its id)', scope: ['story', 'world'], ap: 0, target: 'none',
-    text: 'Out of a fight, Improvisation 3: fit a mod from your pack into the prosthetic arm (2 slots). The Narrator rules what it does there.',
+    id: 'fit_arm', label: 'Fit a mod to the arm', pickLabel: 'The mod in your pack', scope: ['story', 'world'], ap: 0, target: 'none',
+    text: 'Out of a fight: fit a mod from your pack into your prosthetic arm. The arm has 2 slots. Needs Improvisation 3. The Narrator decides what the mod does there.',
     available: (h) => { const c = h.c; if (!c || !hasArm(c)) return false; if ((c.skills.proficiency || 0) < 3) return 'Needs Improvisation 3.'; return armMods(c).length >= ARM_SLOTS ? 'Both arm slots are taken.' : true; },
     preview: (h, a) => { const e = armFitCheck(h.c!, a.choice); return e ? { ok: false, why: e } : { lines: ['Fits into the prosthetic arm (' + (armMods(h.c!).length + 1) + '/' + ARM_SLOTS + ').'] }; },
     run: (h, a) => {

@@ -11,7 +11,7 @@
       "blocks_sight": false,
       "cover": "half",
       "hp": 30,
-      "text": "Crates, sandbags, low wreckage: half cover. Can be shot to pieces.",
+      "text": "Crates, sandbags or low wreckage. It gives half cover and can be shot to pieces.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -23,7 +23,7 @@
       "blocks_sight": false,
       "cover": "half",
       "hp": 60,
-      "text": "Waist-high masonry or plating: half cover.",
+      "text": "Waist-high masonry or plating. It gives half cover.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -35,7 +35,7 @@
       "blocks_sight": true,
       "cover": "full",
       "hp": 80,
-      "text": "A pillar, pylon or hull plate: full cover, blocks sight.",
+      "text": "A pillar, pylon or hull plate. It gives full cover and blocks sight.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -47,7 +47,7 @@
       "blocks_sight": true,
       "cover": "full",
       "hp": 60,
-      "text": "Something built to keep people out. Break it, climb it, or find another way.",
+      "text": "Something built to keep people out: it blocks the way and blocks sight. Break it, climb it or find another way round.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -60,7 +60,7 @@
       "cover": null,
       "hp": 40,
       "door": true,
-      "text": "Closed, it blocks movement and sight. Opening or closing costs 1 AP in a fight. A locked door needs a key, a check or a lot of damage.",
+      "text": "A closed door blocks movement and sight. Opening or closing it costs 1 AP in a fight. A locked door needs a key, a check or a lot of damage.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -72,7 +72,7 @@
       "blocks_sight": false,
       "cover": null,
       "hp": null,
-      "text": "A pit, shaft or breach. Nobody walks across; what happens to someone who falls is the Narrator's call.",
+      "text": "A pit, shaft or breach that nobody can walk across. The Narrator decides what happens to someone who falls in.",
       "adjudication": "hybrid",
       "provisional": true
     },
@@ -90,7 +90,7 @@
         "detect_tn": 12,
         "detect_range": 2
       },
-      "text": "Hidden until spotted: passive Vigilant (10 + modifier) against its TN, within 2 tiles. Stepping on it deals its damage and springs it. Disarming is a check.",
+      "text": "Hidden until someone spots it: a character within 2 tiles spots it if 10 + their Vigilance modifier reaches its TN. Stepping on it sets it off and deals its damage. Disarming it takes a check.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -105,7 +105,7 @@
       "hazard": {
         "damage": 10
       },
-      "text": "Burning ground: 10 damage to anyone who starts a turn in it.",
+      "text": "Burning ground. Anyone who starts their turn in it takes 10 damage.",
       "adjudication": "engine",
       "provisional": true,
       "light": 2
@@ -121,7 +121,7 @@
       "hazard": {
         "damage": 8
       },
-      "text": "Chemicals or bad mana: 8 damage to anyone who starts a turn in it.",
+      "text": "Spilled chemicals or bad mana. Anyone who starts their turn in it takes 8 damage.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -137,7 +137,7 @@
         "damage": 40,
         "radius": 2
       },
-      "text": "Half cover until it isn't: at 0 HP it explodes for 40 within 2 tiles and leaves fire.",
+      "text": "It gives half cover until it is destroyed. At 0 HP it explodes: 40 damage to everyone within 2 tiles, and it leaves fire behind.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -150,7 +150,7 @@
       "cover": null,
       "hp": null,
       "difficult": true,
-      "text": "What's left of broken cover: slow ground, no cover.",
+      "text": "What is left of broken cover. It slows movement and gives no cover.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -162,7 +162,7 @@
       "blocks_sight": false,
       "cover": "half",
       "hp": 40,
-      "text": "A locker, chest or cargo box. What's inside is the Narrator's; opening a locked one is a check.",
+      "text": "A locker, chest or cargo box. The Narrator decides what is inside, and opening a locked one takes a check.",
       "adjudication": "hybrid",
       "provisional": true
     },
@@ -174,7 +174,7 @@
       "blocks_sight": false,
       "cover": null,
       "hp": 30,
-      "text": "A console or machine. Using it is a check, usually Proficiency.",
+      "text": "A console or machine. Using it takes a check, usually Improvisation.",
       "adjudication": "hybrid",
       "provisional": true,
       "light": 1,
@@ -189,7 +189,7 @@
       "cover": null,
       "hp": 10,
       "light": 3,
-      "text": "A work lamp, flare or brazier: lights 3 tiles around it, so darkness doesn't halve sight there. Shoot it out to make the dark.",
+      "text": "A work lamp, flare or brazier. It lights the tiles within 3 of it, so darkness doesn't halve sight there. Shoot it out to bring the dark back.",
       "adjudication": "engine",
       "provisional": true,
       "electronic": true
@@ -202,7 +202,7 @@
       "blocks_sight": false,
       "cover": null,
       "hp": null,
-      "text": "Something worth a closer look. Examine it, and the Narrator writes the ways to deal with it.",
+      "text": "Something worth a closer look. Examine it, and the Narrator tells you the ways to deal with it.",
       "adjudication": "hybrid",
       "provisional": true
     },
@@ -214,7 +214,7 @@
       "blocks_sight": false,
       "cover": null,
       "hp": null,
-      "text": "Where this map leads elsewhere. Travel is the Narrator's call.",
+      "text": "A way off this map. The Narrator decides where it leads.",
       "adjudication": "hybrid",
       "provisional": true
     },
@@ -228,7 +228,7 @@
       "hp": 10,
       "electronic": true,
       "provisional": true,
-      "text": "Watches a cone of the room. Slicers can blind it; shot, it goes dark."
+      "text": "It watches a cone of the room. A character with the Slicer trait can blind it, and shooting it puts it out."
     },
     {
       "id": "alarm",
@@ -240,7 +240,7 @@
       "hp": 10,
       "electronic": true,
       "provisional": true,
-      "text": "Raises the alarm when tripped. Slicers can silence it."
+      "text": "It raises the alarm when tripped. A character with the Slicer trait can silence it."
     },
     {
       "id": "turret",
@@ -252,7 +252,7 @@
       "hp": 60,
       "electronic": true,
       "provisional": true,
-      "text": "A fixed gun on a mount. The Narrator runs it as an enemy; Slicers can take it over (a static device)."
+      "text": "A fixed gun on a mount. The Narrator runs it as an enemy, and a character with the Slicer trait can take it over."
     },
     {
       "id": "sigil_wall",
@@ -262,7 +262,7 @@
       "blocks_sight": true,
       "cover": "full",
       "hp": 30,
-      "text": "A wall of packed bots raised by a RAISE Sigil: blocks movement and sight, 30 HP, crumbles after 3 rounds + the caster's Sigil duration bonus; NULL unmakes it.",
+      "text": "A wall of packed bots raised by a RAISE Sigil. It blocks movement and sight and has 30 HP. It crumbles after 3 rounds plus the caster's Sigil duration bonus, and the word NULL unmakes it at once.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -274,7 +274,7 @@
       "blocks_sight": false,
       "cover": null,
       "hp": null,
-      "text": "A crate, a body, a locker: something holding things. Search it (1 AP, adjacent) to take everything inside; a locked one opens through its approaches first.",
+      "text": "A crate, a body or a locker with things inside. Search it from the next tile for 1 AP to take everything. A locked one has to be opened first, through one of its approaches.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -286,7 +286,7 @@
       "blocks_sight": false,
       "cover": null,
       "hp": null,
-      "text": "A Sigil word drawn into the world long ago: carved on a door or a ruin, a Keystone, a warding post, an old plate fixed to a wall. Investigate it (2 AP, adjacent): Acuity or Rumination, the TN by its age and damage. Success copies the word for study; a critical teaches it.",
+      "text": "A Sigil word drawn into the world long ago: carved on a door or a ruin, a Keystone, a warding post, an old plate fixed to a wall. Investigate it from the next tile for 2 AP with Acuity or Rumination; the TN depends on its age and damage. A success copies the word for you to study, and a critical success teaches it to you outright.",
       "adjudication": "engine",
       "provisional": true,
       "mark": {
@@ -341,7 +341,7 @@
         "detect_tn": 12,
         "detect_range": 2
       },
-      "text": "Things on the ground: dropped magazines, loose rounds, weapons and whatever else fell there, one pile to a tile. Pick up (1 AP, your tile or an adjacent one) takes what you tick, everything by default. Players see it when the party can see the tile.",
+      "text": "Things lying on the ground: dropped magazines, loose rounds, weapons and anything else that fell there. Each tile has one pile. Picking up costs 1 AP, from your own tile or the next one, and takes everything unless you untick some of it. You see a pile when your party can see its tile.",
       "adjudication": "engine",
       "provisional": true
     }

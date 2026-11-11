@@ -96,11 +96,11 @@ register({
   id: 'shrug_it_off', claims: 'all',
   actions: [{
     id: 'shrug_it_off', label: 'Shrug It Off', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (tierII(h) ? 1 : 2),
-    text: 'Remove one Body debuff from yourself' + ' (Tier II: 1 AP and a shield of 10% of your max HP).',
+    text: 'Remove one Body debuff from yourself. II: this costs 1 AP instead of 2, and you gain a shield of 10% of your max HP.',
     available: (h) => (inFight(h) ? (shrugList(h.u!).length ? true : 'No Body debuff to shrug off.') : true),
     preview: (h, a) => {
       if (inFight(h)) { const l = shrugList(h.u!); const pick = a.choice && l.includes(a.choice) ? a.choice : l[0]; return { lines: ['Removes ' + (pick || 'nothing') + (tierII(h) ? '; shield ' + Math.floor(0.1 * h.u!.maxHp) : '') + '.'] }; }
-      const l = storyBody(h); return { lines: [l.length ? 'Ends ' + l[0] + '.' : 'The Narrator rules whether it shakes off what ails you.'] };
+      const l = storyBody(h); return { lines: [l.length ? 'Ends ' + l[0] + '.' : 'The Narrator decides whether you shake off what ails you.'] };
     },
     run: (h, a) => {
       if (inFight(h)) {
@@ -202,10 +202,10 @@ register({
       id: 'earthbreaker', label: 'Earthbreaker', scope: ['combat'], target: 'tile', ap: 4, uses: { per: 'per_combat', n: 1 },
       preview: (h, a) => {
         if (!h.cb || !h.u) return; const k = tileOf(h.cb, a.tile); if (!k) return { ok: false, why: 'Pick a tile.' };
-        if (dist(h.u.pos, k) > reachOf(h.u)) return { ok: false, why: 'Out of reach (' + reachOf(h.u) + ').' };
+        if (dist(h.u.pos, k) > reachOf(h.u)) return { ok: false, why: 'Out of reach: your reach is ' + reachOf(h.u) + '.' };
         const ar = area3(k), hit = h.cb.units.filter((v) => v !== h.u && !v.dead && !v.surrendered && ar.includes(v.pos));
         const objs = objectsOf(h.cb).filter((o) => o.hp != null && o.hp > 0 && ar.includes(o.pos));
-        return { tiles: ar, targets: hit.map((v) => v.id), lines: [hit.map((v) => v.name + (v.side === h.u!.side ? ' (ally!)' : '')).join(', ') || 'No one in the area', objs.length ? objs.length + ' object(s) break' : 'no cover to break'] };
+        return { tiles: ar, targets: hit.map((v) => v.id), lines: [hit.map((v) => v.name + (v.side === h.u!.side ? ' (ally!)' : '')).join(', ') || 'No one in the area.', objs.length ? (objs.length === 1 ? '1 object breaks.' : objs.length + ' objects break.') : 'No cover to break.'] };
       },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, k = tileOf(cb, a.tile)!, ar = area3(k);
@@ -224,7 +224,7 @@ register({
         say(cb, out + '.'); checkOver(cb); return null;
       },
     },
-    { id: 'earthbreaker_story', label: 'Earthbreaker', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 }, text: 'Smash the floor, a wall or the cover around you (the Narrator rules what breaks).',
+    { id: 'earthbreaker_story', label: 'Earthbreaker', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 }, text: 'Once a scene: smash the floor, a wall or the cover around you. The Narrator decides what breaks.',
       run: (h, a) => { postStory(h, a.text || 'brings the ground down.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Earthbreaker out of a fight: ' + (a.text || 'smashes floor, walls or cover in reach') + '. Rule what breaks.'); return null; } },
   ],
   brief: () => 'out of a fight, once a scene: smashes floor, walls or cover in reach (you rule what breaks)',
@@ -385,9 +385,9 @@ register({
   actions: [
     {
       id: 'self_repair', label: 'Field Repair (self)', scope: ['combat'], target: 'none', ap: 2,
-      text: 'Patch your own machine body: +10 HP per Improvisation point, one spare-parts charge (Improvisation 3+).',
+      text: 'Patch your own machine body: heal 10 HP per Improvisation point. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : h.u.hp >= h.u.maxHp ? 'Already whole.' : true),
-      preview: (h) => ({ lines: ['+' + 10 * (h.u?.proficiency || 0) + ' HP (not halved by Plug).'] }),
+      preview: (h) => ({ lines: ['Heals ' + 10 * (h.u?.proficiency || 0) + ' HP. This repair is not halved the way other healing on you is.'] }),
       run: (h) => {
         const u = h.u!, n = 10 * (u.proficiency || 0), was = u.hp;
         u.parts = (u.parts || 0) - 1; u.hp = Math.min(u.maxHp, u.hp + n);
@@ -397,7 +397,7 @@ register({
     },
     {
       id: 'repair_story', label: 'Field Repair (10 min)', scope: ['story', 'world'], target: 'none', ap: 0,
-      text: 'Ten minutes with a spare-parts charge: +10 HP per Improvisation point.',
+      text: 'Spend ten minutes and one spare-parts charge: heal 10 HP per Improvisation point. Needs Improvisation 3.',
       available: (h) => (!h.c ? false : (h.c.skills.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !packOf(h.c).some((x) => (x.item || x.id) === 'spare_parts' && x.qty > 0) ? 'No spare-parts charges.' : true),
       run: (h) => {
         const c = h.c!; let left = 1;
@@ -618,7 +618,7 @@ register({
   },
   actions: [{
     id: 'augment_pick', label: 'Choose your augment', pick: ['arm', 'eye', 'legs'], pickLabel: 'Arm, eye or legs', scope: ['story', 'world'], target: 'none', ap: 0,
-    text: 'Pick your chrome once: arm (+20% Physical damage), eye (+2 Vision, sight in the dark) or legs (+1 Movement, jumps).',
+    text: 'Pick your augment. The choice is permanent. Arm: +20% Physical damage. Eye: +2 Vision and you see in the dark. Legs: +1 Movement and you can jump.',
     available: (h) => (augOf(h) ? false : true),
     preview: (_h, a) => (AUG.includes(String(a.choice)) ? { lines: ['The ' + a.choice + ' augment.'] } : { ok: false, why: 'Choose arm, eye or legs.' }),
     run: (h, a) => { if (!h.c || !AUG.includes(String(a.choice))) return 'Choose arm, eye or legs.'; charState(h.c).augment = a.choice; postStory(h, 'runs on a catalogue ' + a.choice + '.', { private: true }); return null; },

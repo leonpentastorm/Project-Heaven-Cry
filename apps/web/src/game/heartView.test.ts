@@ -78,7 +78,7 @@ describe('the HEART panel', () => {
     const { cb, u } = fight();
     beginOutburst(cb, rng, u, 'sb', undefined, true);
     u.mg.strain = u.mg.strainLimit + 1;
-    expect(heartPanel(cb, u)!.warn).toMatch(/^OVER THE LIMIT: the heart burns 8 true/);
+    expect(heartPanel(cb, u)!.warn).toMatch(/^OVER THE LIMIT: the heart burns you for 8 true damage/);
     u.mg.strain = u.mg.strainLimit + 3;
     expect(heartPanel(cb, u)!.warn).toMatch(/^MANA SHORT/);
   });

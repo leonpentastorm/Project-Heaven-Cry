@@ -9,7 +9,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "5 damage at the start of each turn; a stim ends it.",
+      "text": "You take 5 damage at the start of each of your turns, for 3 rounds. A stim ends it early.",
       "effects": [
         {
           "op": "stat_mod",
@@ -34,7 +34,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "10 damage at the start of each turn, until someone spends 1 AP to put it out.",
+      "text": "You take 10 damage at the start of each of your turns until the fire is put out. You, or anyone next to you, can put it out for 1 AP.",
       "effects": [
         {
           "op": "stat_mod",
@@ -58,7 +58,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "−25% damage dealt.",
+      "text": "You deal 25% less damage. Lasts 2 rounds.",
       "effects": [
         {
           "op": "stat_mod",
@@ -81,7 +81,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "Half Movement.",
+      "text": "Your Movement is halved. Lasts 2 rounds.",
       "effects": [
         {
           "op": "stat_mod",
@@ -104,7 +104,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
-      "text": "No Sigils, Outbursts or prayers.",
+      "text": "You can't draw or Evoke Sigils, use Outbursts, pray or make Calls. Lasts 1 round.",
       "effects": [
         {
           "op": "forbid_action",
@@ -132,7 +132,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "−1 AP.",
+      "text": "You have 1 AP less on your turn. Lasts 2 rounds.",
       "effects": [
         {
           "op": "stat_mod",
@@ -155,7 +155,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "Can't move; −2 to hit.",
+      "text": "You can't move and you have −2 to hit. Lasts until the end of your next turn.",
       "effects": [
         {
           "op": "stat_mod",
@@ -183,7 +183,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "Lose your next turn.",
+      "text": "You lose your next turn, and you can't use reactions until it has passed.",
       "effects": [
         {
           "op": "stat_mod",
@@ -206,7 +206,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "−2 AP on your next turn.",
+      "text": "You have 2 AP less on your next turn.",
       "effects": [
         {
           "op": "stat_mod",
@@ -229,7 +229,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
-      "text": "−4 to hit; you see only adjacent tiles.",
+      "text": "You have −4 to hit and can only see the tiles next to you. Lasts 1 round.",
       "effects": [
         {
           "op": "tn_mod",
@@ -257,7 +257,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "Melee against you +2, ranged against you −2; 1 AP to stand.",
+      "text": "You are on the ground. Melee attacks against you have +2 to hit and ranged attacks against you have −2. Standing up costs 1 AP.",
       "effects": [
         {
           "op": "tn_mod",
@@ -285,7 +285,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
-      "text": "−2 on Mind skill checks; Sigils cost +1 AP.",
+      "text": "You have −2 on checks with Mind skills, and drawing a glyph or Evoking costs 1 AP more. Lasts 2 rounds.",
       "effects": [
         {
           "op": "skill_mod_tag",
@@ -313,7 +313,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
-      "text": "−2 on Expression and Soul checks; Soul spells cost +20% mana.",
+      "text": "You have −2 on checks with Expression and Soul skills, and your Soul spells cost 20% more MP. Lasts 2 rounds.",
       "effects": [
         {
           "op": "skill_mod_tag",
@@ -346,7 +346,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
-      "text": "Each attack has a 50% chance to go at someone at random (anyone else it could attack).",
+      "text": "Each attack you make has a 50% chance to go at a random target instead: anyone else you could have attacked. Lasts 1 round.",
       "effects": [
         {
           "op": "stat_mod",
@@ -369,7 +369,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": true,
-      "text": "Can't move toward or attack the source; −2 to hit anyone else.",
+      "text": "You are Afraid of whoever caused it: you can't move toward them or attack them, and you have −2 to hit anyone else. Lasts 2 rounds.",
       "effects": [
         {
           "op": "tn_mod",
@@ -397,7 +397,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": true,
-      "text": "−2 on Heart saves and social checks.",
+      "text": "You have −2 on Heart saves and on social checks. Lasts 3 rounds in a fight, or the rest of the scene outside one.",
       "effects": [
         {
           "op": "stat_mod",
@@ -426,7 +426,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Enemies can't target you until they spot you; your first attack from Hidden uses the Ambush multiplier, then you're revealed.",
+      "text": "Enemies can't target you until they spot you. Your first attack from hiding is an Ambush and gets the Ambush damage bonus; after it you are revealed.",
       "effects": [
         {
           "op": "stat_mod",
@@ -448,7 +448,7 @@
       ],
       "stacks": false,
       "adjudication": "hybrid",
-      "notes": "MASK (rules 1.4) sets Hidden for 2 rounds or until the target attacks; it can't hide a Marked target."
+      "notes": "The Sigil word MASK makes its target Hidden for 2 rounds, or until the target attacks. MASK can't hide a Marked target."
     },
     {
       "id": "marked",
@@ -456,7 +456,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "The marker's squad gets +1 to hit you, and you can't become Hidden.",
+      "text": "The squad of whoever Marked you gets +1 to hit you, and you can't become Hidden. It lasts until the fight ends or the Mark is lifted.",
       "effects": [
         {
           "op": "tn_mod",
@@ -485,7 +485,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Set by class moves and heavy weapons; ends when you move.",
+      "text": "You have set yourself or your weapon in place. The move or weapon that Braced you says what you gain. It ends when you move.",
       "effects": [
         {
           "op": "narrator",
@@ -507,7 +507,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "AP held for one reaction shot before your next turn.",
+      "text": "You are holding AP for one reaction shot at an enemy that moves where you can see it. It ends when you take the shot or when your next turn starts.",
       "effects": [
         {
           "op": "grant_action",
@@ -532,7 +532,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your patron is watching until the fight ends or your patron intervenes: attack rolls with a tag your patron likes get +2; taboo actions cost double Devotion XP. A successful Hymn of your own patron, or a Miracle, gives it (Faith 5); your patron's intervention ends it.",
+      "text": "Your patron is watching you. Your attacks that carry a tag your patron likes get +2 to hit, and a taboo action costs double Devotion XP. You become Witnessed, if you have Faith 5, when a Hymn of your own patron succeeds or you work a Miracle. It lasts until the fight ends or your patron intervenes.",
       "effects": [
         {
           "op": "attack_mod",
@@ -563,7 +563,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "At 0 HP you can't act; roll death saves at the start of each turn.",
+      "text": "You are at 0 HP and can't act. At the start of each of your turns you roll a death save: 10 or more on a d20 is a success. Three successes and you stabilise at 1 HP; three failures and you die. Each hit you take while Downed adds a failure. An ally can stabilise you with a stim.",
       "effects": [
         {
           "op": "stat_mod",
@@ -588,7 +588,7 @@
       "kind": "debuff",
       "family": "body",
       "save": "body",
-      "text": "Held by an adjacent enemy. You can't move away; attacks other than against the grappler take a −2 to the roll. Break free with an opposed Raw Power or Athletics check (2 AP).",
+      "text": "An enemy next to you is holding you. You can't move, and you have −2 to hit anyone but the one holding you. Breaking free costs 2 AP and an opposed roll, each side using the better of Raw Power and Athletics. It also ends if the holder moves away or goes down.",
       "effects": [
         {
           "op": "forbid",
@@ -617,7 +617,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You must spend your next attack on the one who taunted you, if you can reach or see them.",
+      "text": "Your next attack must be aimed at the one who Taunted you, if you can see them. Lasts 1 round, and ends early if they go down.",
       "effects": [
         {
           "op": "forbid",
@@ -640,7 +640,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You obey one short order (one word or one action) on your next turn, unless it would harm you directly. The Sigil word COMMAND gives the orders halt, kneel, drop its weapon, or move up to 3 tiles.",
+      "text": "On your next turn you obey one short order, unless it would directly harm you. The Sigil word COMMAND can order you to halt, kneel, drop your weapon or move up to 3 tiles.",
       "effects": [
         {
           "op": "narrator",
@@ -663,7 +663,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": "brain",
-      "text": "The caster controls your next turn's actions (AP still yours). You can't be made to harm yourself or drop to 0 HP by your own hand.",
+      "text": "The caster decides what you do on your next turn, using your AP. You can't be made to harm yourself. Lasts 1 round, and ends early if the caster goes down.",
       "effects": [
         {
           "op": "narrator",
@@ -686,7 +686,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You drop or lower your weapon. Recovering it costs 2 AP (1 AP if it is in your tile). Drawing another weapon into the main hand, or swapping the off-hand one there, also ends it; the downed weapon stays in the pile on your tile.",
+      "text": "Your weapon is on the ground, in the pile on your tile, and you can't attack with it. Recovering it costs 2 AP. Drawing another weapon into your main hand, or moving your off-hand weapon there, also ends it; the dropped weapon stays in the pile.",
       "effects": [
         {
           "op": "forbid",
@@ -715,7 +715,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "A wound from a critical hit. Head: Dazed for 1 turn. Torso: Bleeding. Arm: −2 to attacks with it. Leg: half Movement. Arm and leg injuries last until treated (a long rest with a Medic, surgery).",
+      "text": "A wound from a critical hit; what it does depends on where it lands. Head: Dazed for 1 turn. Torso: Bleeding. Arm: −2 to attacks with that arm. Leg: half Movement. Arm and leg injuries stay until they are treated, by surgery or a long rest with a medic.",
       "params": {
         "location": [
           "head",
@@ -746,7 +746,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "You've set a heavy weapon on a bipod, mount or cover edge. +2 to attacks with it and Recoil halved; moving ends Emplaced.",
+      "text": "Your heavy weapon is set on a bipod, a mount or the edge of cover. You have +2 to hit with it and its Recoil is halved. It ends when you move.",
       "effects": [
         {
           "op": "attack_mod",
@@ -774,7 +774,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "One augment, prosthetic or implant stops working: it gives no bonuses and its actions are unavailable.",
+      "text": "One of your augments, prosthetics or implants has stopped working: it gives no bonus and you can't use its actions. It stays that way until it is repaired, by a field repair or a long rest.",
       "effects": [
         {
           "op": "narrator",
@@ -797,7 +797,7 @@
       "kind": "debuff",
       "family": "body",
       "save": "body",
-      "text": "−1 AP and no reactions (Spray and Pray; lighter than Pinned).",
+      "text": "You have 1 AP less on your turn and can't use reactions. Lasts 1 round.",
       "effects": [
         {
           "op": "stat_mod",
@@ -825,7 +825,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "+2 Defense until the end of your next turn (a fighting retreat).",
+      "text": "You are making a fighting retreat: +2 Defense until the end of your next turn.",
       "effects": [
         {
           "op": "stat_mod",
@@ -849,7 +849,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "Your weapon is lowered (the light Disarmed): raising it costs 1 AP; until then you strike with your fists.",
+      "text": "Your weapon is lowered, and until you raise it you can only strike with your fists. Raising it costs 1 AP.",
       "effects": [
         {
           "op": "forbid",
@@ -872,7 +872,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Standing on borrowed time (Bite the Bullet): hits add death-save failures.",
+      "text": "You are standing on borrowed time, thanks to Bite the Bullet. Every hit you take adds a failed death save.",
       "effects": [
         {
           "op": "narrator",
@@ -895,7 +895,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
-      "text": "5 damage at the start of each turn; Defense −2. A Body save at the end of each of your turns ends it early.",
+      "text": "You take 5 damage at the start of each of your turns and have −2 Defense. Lasts 3 rounds. At the end of each of your turns you roll a Body save, and a success ends it early.",
       "effects": [
         {
           "op": "stat_mod",
@@ -927,7 +927,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "+2 AP on your next turn, within the AP ceiling of 9. At most once a round; never self-cast.",
+      "text": "You have 2 more AP on your next turn, up to the limit of 9 AP. You can be Quickened once a round at most, and never by your own spell.",
       "effects": [
         {
           "op": "stat_mod",
@@ -953,7 +953,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your next attack gets +3 to hit and ×1.25 damage.",
+      "text": "Your next attack has +3 to hit and deals ×1.25 damage. It lasts until that attack or the end of your next turn.",
       "effects": [
         {
           "op": "attack_mod",
@@ -984,7 +984,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": "heart",
-      "text": "You can't attack the one who smote you, or the allies linked to them (The Matchmaker's Sweet Nothings).",
+      "text": "You can't attack the one who Smote you, or any ally linked to them. Lasts 1 round. It comes from The Matchmaker's Sweet Nothings.",
       "effects": [
         {
           "op": "forbid",
@@ -1007,7 +1007,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your next attack or spell roll gets +2 (Hope).",
+      "text": "Your next attack or spell roll has +2. It lasts until that roll or the end of your next turn. It comes from the feeling Hope.",
       "effects": [
         {
           "op": "attack_mod",
@@ -1034,7 +1034,7 @@
       "kind": "condition",
       "family": "heart",
       "save": false,
-      "text": "-2 to attack the one who scorned you (Contempt).",
+      "text": "You have −2 to hit the one who Scorned you. Lasts 2 rounds. It comes from the feeling Contempt.",
       "effects": [
         {
           "op": "attack_mod",
@@ -1056,9 +1056,9 @@
     }
   ],
   "families": {
-    "body": "Physical debuffs; resisted with a Body save.",
-    "brain": "Mental debuffs; resisted with a Brain save.",
-    "heart": "Emotional debuffs; resisted with a Heart save."
+    "body": "Physical conditions. You resist them with a Body save.",
+    "brain": "Mental conditions. You resist them with a Brain save.",
+    "heart": "Emotional conditions. You resist them with a Heart save."
   },
   "family_ref": "An effect may name 'family:<body|brain|heart>' instead of a single condition id; it means any condition of that family."
 }
