@@ -7,7 +7,7 @@
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, analyzeCost, ROUNDS_PER_AP, musicTraitOf, songOf, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, unitSees, perkActionsFor, bindGame, type PerkActionEntry,
   focusHand, NEEDS_EVOKER, NEEDS_EMANATOR, reloadBothAp, PILE, PICKUP_AP, dist } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
-import { heartPanel } from './heartView';
+import { heartPanel, designCards } from './heartView';
 import { faithView, beliefOf, FAITH_MIN } from '@engine';
 import { prayerButtons, FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
@@ -211,7 +211,8 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
     if (soul) MG.push(['MAGIC · OUTBURSTS', [
       // Rules 1.5, the heart cycle: Begin (or a snap cast) when nothing is held; Pump, Release, Steady, Let go, Feed and
       // Heart Overwatch while holding. Costs and refusals are the engine's (game/heartView.ts runs its previews).
-      ...(designs.length && !held ? [['outburst', 'Outburst', designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs', 'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×0.6.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +2 Strain.')] as ActionItem] : []),
+      // Heart Overload's free Begin is said on the row itself, so it is seen without opening the designs (11 Nov 2026).
+      ...(designs.length && !held ? [['outburst', 'Outburst', (() => { try { const c = designCards(cb, cur).find((x: any) => x.again); if (c) return 'Heart Overload: ' + c.name + ' again, 0 AP'; } catch { /* the plain line */ } return designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs'; })(), 'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×0.6.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +2 Strain.')] as ActionItem] : []),
       ...(held ? (() => { const hp = cb ? heartPanel(cb, cur) : null; if (!hp) return [['release', 'Release · stage ' + held.stage, SPELL_AP.release + ' AP', 'Let the held Outburst go.'] as ActionItem];
         return [['pump', 'Pump · stage ' + hp.stage + (hp.pump.ok ? ' → ' + (hp.stage + 1) : ''), hp.pump.cost, 'Raise the held Outburst by 1 stage. Stages run from ×' + stageMult(0) + ' at stage 0 to ×' + stageMult(4) + ' at stage 4. A Pump costs 0 AP while you have free Pumps from Empathy left this round.', hp.pump.ok ? null : hp.pump.why] as ActionItem,
           ['release', 'Release · stage ' + hp.stage + ' ×' + hp.mult, hp.release.cost, 'Fire ' + hp.name + ' at the stage reached (' + hp.shape + ').', hp.release.ok ? null : hp.release.why] as ActionItem,
