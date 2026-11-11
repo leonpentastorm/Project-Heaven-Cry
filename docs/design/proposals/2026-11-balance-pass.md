@@ -267,3 +267,17 @@ Not to be worked on before the balance pass itself begins:
    roughly 20% more damage per AP than one, paid for with the shield, two-handed weapons, and 2 more skill points on
    the second weapon. To measure: add paired techniques to `packages/engine/test/balance-baseline.test.ts`.
 2. **The fight simulator** (instrument 1 of section 3): not built. The plain-attack baseline exists.
+
+## 10. The peak rule (Leon, 11 Nov 2026)
+
+A standing rule of the pass, beside the targets:
+
+1. **Every class has its moment.** Each class may go past the soft targets (350 a hit, 500 on a mega critical, and
+   its share of sustained damage) with **the most expensive move the class has**. The targets describe ordinary play;
+   the peak is what the class pays its highest price for.
+2. **Power and price are read together.** For every move the pass records what it does and what it costs (AP,
+   Momentum, Guard, mana, Strain, cores, Flux, uses a fight, turns of set-up, Devotion). Two cases get looked at:
+   a move that is **powerful but not expensive enough**, and a move that is **expensive but not powerful enough**.
+3. What this adds to the instruments: the reference builds are measured twice, once on their ordinary turn and once
+   on their peak turn (the dearest move, fully set up), and the report lists each class's peak with its full price.
+4. A move that passes the targets and is **not** its class's dearest move is an outlier by definition.
