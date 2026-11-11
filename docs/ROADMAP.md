@@ -40,9 +40,12 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
      plays, so its effect is seen at full size; back to the player's own unit when their turn comes. It moves once per
      beat, smoothly, never while the player is aiming or dragging.
    - **The player moves it too:** drag the map, the arrow or WASD keys, the wheel; a key to jump back to their unit.
-   - **Nothing happens unseen:** an arrow at the screen's edge points at an effect or a unit that acts off screen (and
-     a click on it goes there); a small map in the corner shows the whole field, units as dots, the camera's frame,
-     and takes clicks. Fog of war holds: an unseen hostile's turn moves nobody's camera and shows on neither.
+   - **Nothing happens unseen:** an arrow at the screen's edge, in the side's colour, points at each unit or effect
+     acting off screen (a click goes there); a click on a portrait in the initiative strip moves the camera to that
+     unit. **A held overview, not a small map** (Leon, 11 Nov 2026: a small map of 26 × 26 is about 6 pixels a tile,
+     "is it even usable"): hold a key, or use the zoom control, and the whole field fits the window; release to come
+     back; a click on a tile while it is held sends the camera there. A small corner map can come later as an
+     option, off by default. Fog of war holds: an unseen hostile's turn moves nobody's camera and draws no arrow.
    - **To settle while building** (proposed defaults in brackets): whether the camera follows hostile turns at all or
      only shows their effects on the player's side of the field [follow what the squad can see]; whether co-op players
      each have their own camera [yes]; the overview's place in the settings; reduced-motion players [cuts, no glides].
