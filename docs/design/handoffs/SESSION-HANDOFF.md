@@ -28,6 +28,13 @@ full report is in the workflow journal: `/root/.claude/projects/-home-user-Proje
 (gone if the container is reclaimed). Two more asks from Leon are in the balance pass: section 14 (Sigil hits at
 150% to 200%, the biggest in the game) and section 15 (two-key hotkeys: 11 move, 12 sprint, 41 draw, 42 evoke).
 
+**11 Nov, evening (usage back).** The checkpoint is verified: `npm run check` green, `main` (0.22.0) merged in,
+all 31 browser suites green (five needed a second run; `turn-order` had a stale set-up, fixed). Bug list status is
+the table at the top of `BUGLIST-0.22.md`. Two agents were started in the working tree: the weapon effects sweep
+(bugs 3 to 7) and the damage step for Sigil and Outburst (balance pass sections 13 and 14; its report goes to
+`damage-step-magic.md` here). Guns' ceiling (a bit under 150%) is the part of the damage step not started.
+Nothing of this is live.
+
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music

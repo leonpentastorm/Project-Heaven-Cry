@@ -13,6 +13,23 @@ Effect testing room, item 1, is the fastest way), then fix, then add a test.
 
 Leon's words are quoted; the notes under each are a first reading, not a diagnosis.
 
+## Status, 11 Nov 2026 (evening)
+
+| # | Bug | State |
+| --- | --- | --- |
+| 1 | Effect testing room | **Built.** Button on the Proving Ground's gearing-up screen; `sandbox/fxtest`; engine tests and the `fx-room` browser suite pass. |
+| 2 | Opportunity attack makes the Sigilist's glyphs vanish | Not started. |
+| 3, 5, 6, 7 | Thumper Suppress, Lob timing, fog preview, Suppress order | An agent is on it (with the sweep). |
+| 4 | Sweep of every weapon × technique | An agent is on it: `apps/web/e2e/fx-sweep.mjs`. |
+| 8 | Effects float when the map scrolls | The camera build moves drawn effects with the map (`fx/dom.ts`); the `camera` suite passes. Leon to confirm by eye. |
+| 9 | Last blow skips its animation | **Fixed**: a decided fight no longer plays only its last six effects. Checked in `fx-room`. |
+| 10 | Enemy acts while your turn card is up | **Fixed (cause found in code)**: on a new fight the card was timed by an estimate; it now waits for the effects. Not reproduced by a test: Leon to confirm. |
+| 11 | Next wave: drop dead, enemy turn with no effects | **Fixed (cause found in code)**: an opening of more than 40 effects played none, one of more than 24 lost its start. Leon to confirm. |
+| 12 | AP cost on the bar | **Not reproduced.** Attacks, techniques, perks, Outburst, prayers all show their cost in the browser. Need from Leon: which action. |
+| 13 | Portraits change | **Fixed**: a face, once given, is kept for that enemy in that room. |
+| 14 | Music picks "gunfire" | **Not understood.** Need from Leon: the track title shown, and whether he had picked a song. |
+| new | Two-key codes (11, 42) | **Built**; each action button shows its code; checked in `fx-room`. |
+
 ## A. A new tool, build it first (it makes the rest quick to check)
 
 1. **"Add a button named Effect testing in the Proving Ground that sends you to a room with an enemy dummy with
