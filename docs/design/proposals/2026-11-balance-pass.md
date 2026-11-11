@@ -257,3 +257,13 @@ word.
 17. The four legacy numbers stay. 18. Leon playtests; each request for a playtest comes with what to test.
 
 **Also to investigate (Leon):** how good or bad dual wielding is.
+
+## 9. Parked until the pass starts (Leon, 11 Nov 2026)
+
+Not to be worked on before the balance pass itself begins:
+
+1. **Dual wielding.** First read, not measured: a both-hands technique makes both weapons attack for the dearer
+   weapon's AP + 1, at −1 to hit on the main hand and −1 to −3 on the off hand (by Dexterity). For two sabres that is
+   roughly 20% more damage per AP than one, paid for with the shield, two-handed weapons, and 2 more skill points on
+   the second weapon. To measure: add paired techniques to `packages/engine/test/balance-baseline.test.ts`.
+2. **The fight simulator** (instrument 1 of section 3): not built. The plain-attack baseline exists.
