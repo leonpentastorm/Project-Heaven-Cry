@@ -42,10 +42,13 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - **The player moves it too:** drag the map, the arrow or WASD keys, the wheel; a key to jump back to their unit.
    - **Nothing happens unseen:** an arrow at the screen's edge, in the side's colour, points at each unit or effect
      acting off screen (a click goes there); a click on a portrait in the initiative strip moves the camera to that
-     unit. **A held overview, not a small map** (Leon, 11 Nov 2026: a small map of 26 × 26 is about 6 pixels a tile,
-     "is it even usable"): hold a key, or use the zoom control, and the whole field fits the window; release to come
-     back; a click on a tile while it is held sends the camera there. A small corner map can come later as an
-     option, off by default. Fog of war holds: an unseen hostile's turn moves nobody's camera and draws no arrow.
+     unit. **A small map in the corner** shows the whole field: units as dots in their side's colour, the camera's
+     frame, and it takes clicks (Leon, 11 Nov 2026: "keep the mini map… I will playtest and think about it later if
+     it's unusable"; at 26 × 26 it is about 6 pixels a tile, so it is for where things are, not what they are).
+     **And the overview key:** the whole field fits the window while it is on, a click on a tile sends the camera
+     there. The M key already opens the area map outside a fight; in a fight the same key is the overview, so one key
+     means "show me the whole map" everywhere. Fog of war holds: an unseen hostile's turn moves nobody's camera and
+     draws no arrow or dot.
    - **To settle while building** (proposed defaults in brackets): whether the camera follows hostile turns at all or
      only shows their effects on the player's side of the field [follow what the squad can see]; whether co-op players
      each have their own camera [yes]; the overview's place in the settings; reduced-motion players [cuts, no glides].
