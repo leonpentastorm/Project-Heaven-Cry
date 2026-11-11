@@ -20,7 +20,7 @@ import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
 import { reloadCard } from './reload';
 import { bangMark, bangDue, tickDue, noteSight, noteOverwatch, tagChip, aimLine, resetSight, HOSTILE_INK, OTHER_INK } from './sight';
-import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
+import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, trace, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
 
 import { activeCamera } from '../cameraView';
 import { fxTiles, glideMs, movesCamera } from '../camera';
@@ -106,6 +106,7 @@ const sawThen = (e: FxEvent) => (e.seen && typeof e.seen.pc === 'number' ? !!e.s
  *  changes a sound's pitch. */
 const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => {
   const tp = fxTempo(), k = fxScale();
+  trace('sfx', { s }, (o.delay || 0) * k);
   sfx(s, { ...o, pan: panOf(p), ...(tp !== 1 ? { rate: (o.rate || 1) * tp } : {}), ...(o.delay && k !== 1 ? { delay: o.delay * k } : {}) });
 };
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
@@ -549,8 +550,22 @@ function volleySound(cat: string, mode: string, weapon = ''): { s: Sfx; rate?: n
 let volley: { unit: string; silent: boolean; until: number } | null = null;
 
 // ---------- the pieces of a shot ----------
+/** How fast each kind of projectile flies (px per ms) and the longest its flight is drawn (ms). */
+const flySpeed = (look: Look) => (look === 'lob' ? 0.55 : look === 'arrow' || look === 'thrown' ? 0.9 : look === 'rocket' ? 0.9 : 2.2);
+const flyMs = (look: Look, dist: number) => Math.max(60, Math.min(look === 'lob' ? 650 : 320, dist / flySpeed(look)));
+/** What a shot event fires, as it is drawn (a thrown melee weapon is never a gunshot: the shot handler's rule). */
+const shotGun = (e: FxEvent): Gun => (e.thrown && gunOf(e.weapon || '', e.cat || '').look !== 'lob' ? { sound: 'swish', rate: 0.8, look: 'thrown' } : gunOf(e.weapon || '', e.cat || ''));
+/** How long after a shot's event starts its round lands (ms at Fast, the bow's draw included): the time everything that
+ *  follows from the landing must wait for (the blast, the wounds around it, the HP bars). Leon, 11 Nov 2026: a lobbed
+ *  grenade's blast went off while the grenade was still in the air. 0 when the tiles aren't on screen. */
+function landsIn(e: FxEvent): number {
+  const a = centre(e.from), b = centre(e.to); if (!a || !b) return 0;
+  const g = shotGun(e), muz = g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown' ? a.s * 0.42 : 0;
+  return (drawsArrow(e) ? DRAW_MS : 0) + flyMs(g.look, Math.max(0, Math.hypot(b.x - a.x, b.y - a.y) - muz));
+}
 function muzzle(from: Pt, to: Pt, color = MUZZLE) {
   const a = angle(from, to), r = (a * 180) / Math.PI + 90, off = from.s * 0.42;
+  trace('muzzle');
   const p = { x: from.x + Math.cos(a) * off, y: from.y + Math.sin(a) * off };
   burst('muzzle', { x: p.x + Math.cos(a) * from.s * 0.3, y: p.y + Math.sin(a) * from.s * 0.3 }, from.s * 1.05, 140, { color, rot: r, from: 0.7, to: 1.2, fade: 0 });
   burst('flare', p, from.s * 1.15, 150, { color: HOT, from: 0.6, to: 1.5 });
@@ -558,6 +573,7 @@ function muzzle(from: Pt, to: Pt, color = MUZZLE) {
 }
 /** A projectile from a to b over ms (straight, or lobbed). */
 function projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms: number, look: Look, s: number, color?: string) {
+  trace('proj', { look, ms: Math.round(slow(ms)) });
   if (reducedMotion()) return;
   const ang = Math.atan2(b.y - a.y, b.x - a.x), deg = (ang * 180) / Math.PI;
   const el = document.createElement('div');
@@ -583,6 +599,7 @@ function missPoint(from: Pt, to: Pt): { x: number; y: number } {
 /** A target is hit: flash, sparks or blood, a decal that stays a few seconds, the token shakes, a number rises. */
 function impact(e: FxEvent, p: Pt, tid: string | null, o: { crit?: boolean; melee?: boolean; color?: string; sound?: Sfx | null; dmg?: number } = {}) {
   const u = unit(tid), robot = !!u?.robot, tok = tokOrGhost(tid, e.to || u?.pos, !!e.killed || !!u?.dead);
+  trace('impact', { dmg: o.dmg ?? null, melee: !!o.melee });
   burst(o.crit ? 'flash_crit' : 'flash_star', p, p.s * (o.crit ? 1.9 : 1.1), o.crit ? 260 : 170, { color: o.color || WHITE, from: 0.3, to: 1.2, rot: Math.random() * 90 });
   burst(Math.random() < 0.5 ? 'spark_burst' : 'spark_burst_2', p, p.s * 0.8, 260, { color: o.color || (robot ? '#FFD27A' : '#C2272F'), from: 0.4, to: 1.15 });
   decal(e.to || u?.pos, robot || o.color ? 'scorch' : 'blood_' + (1 + Math.floor(Math.random() * 3)), robot || o.color ? '#1A1A1A' : '#7A0E16');
@@ -619,6 +636,7 @@ function mapFlash(k: string | undefined, p: Pt, ms = 350) {
 }
 function explosion(k: string | undefined, radius = 1, kind: 'frag' | 'fire' | 'smoke' | 'flash' | 'zap' = 'frag', point?: Pt) {
   const p = point || centre(k); if (!p) return;
+  trace('boom', { kind });
   const size = p.s * (1.2 + radius * 1.1);
   if (kind === 'smoke') { burst('puff', p, size, 1600, { from: 0.3, to: 1.4, fade: 0 }); play('vent', p, { rate: 0.8 }); return; }
   if (kind === 'flash') { burst('flare', p, size * 2, 400, { color: WHITE, from: 0.2, to: 2 }); mapFlash(k, p, 350); play('explosion', p, { rate: 1.4, gain: 0.6 }); return; }
@@ -729,7 +747,7 @@ const H: Record<string, Handler> = {
   shot(e) {
     // a thrown weapon is never a gunshot, whatever the event names as the weapon (a gun in the other hand, a blade that
     // is also a focus): a swish, no muzzle flash, no casing
-    const g: Gun = e.thrown && gunOf(e.weapon || '', e.cat || '').look !== 'lob' ? { sound: 'swish', rate: 0.8, look: 'thrown' } : gunOf(e.weapon || '', e.cat || ''), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
+    const g: Gun = shotGun(e), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
     const silent = !!(volley && volley.unit === e.unit && volley.silent && e.chain && performance.now() < volley.until);
     // A bow's shot waits for the draw: the arrow comes from the quiver behind the portrait to the front, then flies.
     const draw = drawsArrow(e) ? DRAW_MS : 0;
@@ -754,8 +772,7 @@ const H: Record<string, Handler> = {
       if (br && from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
       const start = mp || (from ? { x: from.x, y: from.y } : null);
       const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
-      const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' || g.look === 'thrown' ? 0.9 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
-      const ft = start ? Math.max(60, Math.min(g.look === 'lob' ? 650 : 320, dist / speed)) : 0;
+      const ft = start ? flyMs(g.look, dist) : 0;
       const coverP = e.cover ? centre(e.cover) : null;
       const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
       if (start) {
@@ -764,7 +781,8 @@ const H: Record<string, Handler> = {
         else if (!(g.look === 'thrown' && e.thrown)) projectile(start, end, ft, g.look === 'thrown' ? 'arrow' : g.look, toP.s, g.color); // a thrown melee weapon's flight is its melee_fx; any other melee-category shot keeps a tracer
       }
       after(() => {
-        if (e.object) { burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
+        // (a charge that lands on a tile goes off as the next event: no knock on wood, only the dust it lands in)
+        if (e.object) { if (g.blast) { dust(toP, toP.s); return; } burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
         // A charge that misses still goes off where it lands (a smaller blast, no scorch: the engine hurt nobody there);
         // a flamer's miss is a gout of fire on the floor, not a blast.
         const wide = !e.hit && !coverP;
@@ -782,6 +800,7 @@ const H: Record<string, Handler> = {
   },
   melee(e) {
     const from = at(e.from), toP = centre(e.to), cat = e.cat || 'unarmed';
+    trace('swing', { cat });
     play(cat === 'heavy_melee' ? 'swish' : 'swish', from || toP, { rate: (cat === 'heavy_melee' ? 0.75 : cat === 'unarmed' ? 1.2 : 1) * jitter(0.08) });
     if (!toP) return;
     if (e.killed && e.target) tokOrGhost(e.target, e.to, true);
@@ -1364,7 +1383,12 @@ function baseBeat(e: FxEvent): number {
     case 'move': { const n = moveSteps(e, units.get(e.unit)?.side === 'pc'); return n ? Math.min(1100, Math.max(160, n * (e.how === 'sprint' ? 75 : 115))) : 60; } // a walk wholly in the fog: a breath, not a pause
     case 'sight': return e.by ? 0 : e.how === 'reveal' ? 480 : e.how === 'hide' ? 380 : e.how === 'lost' ? 300 : 120; // by: on its walker's step (runQueue)
     case 'overwatch': return 560;
-    case 'shot': return (e.chain || e._quick ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
+    case 'shot': {
+      // A round that goes off where it lands (a launcher's, a grenade's) holds the stage until it lands: the blast, the
+      // wounds around it and the cover it breaks are the next events, and they played while it was still in the air.
+      const draw = drawsArrow(e) ? DRAW_MS : 0, base = e.chain || e._quick ? 170 : e.object ? 150 : 400;
+      return (shotGun(e).blast ? Math.max(base, landsIn(e) - draw + 30) : base) + draw;
+    }
     case 'melee': return e.chain || e._quick ? 240 : 420; // _quick: a Sweep's, Cleave's or Flurry's later strikes (fx/melee-techniques.ts quickStrikes)
     case 'volley': return e.mode === 'auto' ? 260 : 90;
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(1200, (e.dur || 1000) * 0.85);
@@ -1423,16 +1447,17 @@ if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 /** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). tempo: 0.85 for
  *  an action slowed after a spotlight cut-in. */
-export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1) {
-  const ev = { n: 0, ...e } as FxEvent;
-  try { if (mineOnly(ev)) withTempo(tempo, () => H[ev.k]?.(ev)); } catch (err) { console.warn('fx', ev.k, err); }
+export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1, due?: number) {
+  const ev = { n: 0, ...e } as FxEvent, at = due ?? performance.now();
+  withEvent(ev.n, () => trace('ev', { k: ev.k, id: ev.id, tech: ev.tech, weapon: ev.weapon, cat: ev.cat, mode: ev.mode, hit: ev.hit, object: ev.object, thrown: ev.thrown, chain: ev.chain, dmg: ev.dmg, why: ev.why, hp: !!ev.hp }), at);
+  try { if (mineOnly(ev)) withEvent(ev.n, () => withTempo(tempo, () => H[ev.k]?.(ev)), at); } catch (err) { console.warn('fx', ev.k, err); }
   try { if (ev.k === 'object' && ev.at) releaseTile(String(ev.at)); else if (ev.k === 'explode' && ev.at) releaseCloud(ev); } catch { /* */ }
   // The turn intro (turnIntro.tsx) times enemy-turn banners on this clock instead of estimating. stream names whose
   // numbering n belongs to (FxLayer's stream key: 'cb|…' for a fight, 'st|…' for the area map).
   if (ev.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: ev.n, stream: stream || '' } })); } catch { /* */ }
-  try { window.dispatchEvent(new CustomEvent(FX_EVENT, { detail: ev })); } catch { /* */ }
+  try { withEvent(ev.n, () => window.dispatchEvent(new CustomEvent(FX_EVENT, { detail: ev })), at); } catch { /* */ }
   // its HP changes show a beat into it (the hit lands), not as it starts
-  if (ev.n && ev.hp) { const n = ev.n; window.setTimeout(() => notePlayed(stream, n), slow(ev.k === 'shot' || ev.k === 'melee' ? 260 : 80)); } else notePlayed(stream, ev.n, ev.k === 'turn' && ev.unit ? String(ev.unit) : undefined);
+  if (ev.n && ev.hp) { const n = ev.n, wait = withTempo(tempo, () => slow(ev.k === 'shot' ? Math.max(260, landsIn(ev)) : ev.k === 'melee' ? 260 : 80)); window.setTimeout(() => { withEvent(n, () => trace('hp'), at + wait); notePlayed(stream, n); }, wait); } else notePlayed(stream, ev.n, ev.k === 'turn' && ev.unit ? String(ev.unit) : undefined);
 }
 /** How much faster than normal a backlog may play: past this, the oldest effects are skipped instead (they never play in a
  *  blur: "the battle keeps going in super speed"). */
@@ -1599,11 +1624,12 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
     }
     if (e.k === 'turn') lastTurn = t;
     const camLook = look;
-    const wait = t - now, go = () => { if (camLook) camLook(); if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp); };
+    let due = t;
+    const wait = t - now, go = () => { if (camLook) camLook(); if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp, due); };
     // A walk's clock: a sight change its walker's eyes made plays on that step (a hostile found or lost mid-walk), not
     // after the whole walk.
     if (e.k === 'move' && e.unit && mineOnly(e)) { const id = String(e.unit); (walks.get(id) || walks.set(id, []).get(id)!).push({ t, path: (e.path || [e.from, e.to]).filter(Boolean), ms: (e.how === 'sprint' ? 75 : 115) * fxPace() / tp }); }
-    if (e.k === 'sight' && e.by && e.byAt) { const at = stepTime(walks, String(e.by), String(e.byAt)); if (at != null && at < t) { if (at - now <= 4) go(); else schedule(go, at); continue; } }
+    if (e.k === 'sight' && e.by && e.byAt) { const at = stepTime(walks, String(e.by), String(e.byAt)); if (at != null && at < t) { due = at; if (at - now <= 4) go(); else schedule(go, at); continue; } }
     if (wait <= 4) go();
     else schedule(go, t);
     // A slowed event's whole beat follows the tempo (a bow's draw included: its after() is slowed too). Otherwise a bow's

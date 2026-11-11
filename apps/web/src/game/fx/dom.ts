@@ -72,7 +72,24 @@ export function withTempo<T>(tp: number, f: () => T): T { const was = tempo; tem
 export const slow = (ms: number) => { const k = fxScale(); return k === 1 ? ms : ms * k; };
 /** Run f after ms, unless the effects were cleared meanwhile. The wait follows the pace and tempo, and f runs under the
  *  same tempo. */
-export const after = (f: () => void, ms: number) => { const g0 = gen, tp = tempo; setTimeout(() => { if (g0 === gen) withTempo(tp, f); }, slow(ms)); };
+export const after = (f: () => void, ms: number) => { const g0 = gen, tp = tempo, n = cur, d = slow(ms), due = clock == null ? null : clock + d; setTimeout(() => { if (g0 === gen) withEvent(n, () => withTempo(tp, f), due); }, d); };
+
+// ---------- the trace (apps/web/e2e/fx-sweep.mjs) ----------
+// What was drawn and heard, and when: a test sets window.__phcFxTrace = [] and reads it back. Each entry is
+// { w: what ('ev' an event's handler started, 'proj' a projectile and its flight time, 'muzzle', 'boom', 'impact',
+// 'swing', 'throw', 'burst' a sprite, 'float' a floating word or number, 'sfx' a sound, 'hp' the HP bars took an event's
+// change), n: the engine event it belongs to, t: when it was due (ms), rt: when it ran (performance.now()), … }.
+// t is the plan, not the clock: the time the queue gave the event plus the waits of the later steps that led here, so
+// it is the same on a busy machine and at any combat speed (scaled by the pace). A sound's t and rt are when it is heard
+// (its delay added). Nothing is recorded unless a test asks.
+let cur = 0, clock: number | null = null;
+/** Run f as part of engine event n, due at `at` on the plan's clock (its later steps, scheduled with after(), keep the
+ *  event and move the clock on by their own wait). */
+export function withEvent<T>(n: number, f: () => T, at?: number | null): T { const was = cur, wasAt = clock; cur = n; if (at !== undefined) clock = at; try { return f(); } finally { cur = was; clock = wasAt; } }
+export function trace(w: string, d: Record<string, unknown> = {}, wait = 0) {
+  const T = typeof window !== 'undefined' ? (window as any).__phcFxTrace : null;
+  if (Array.isArray(T)) { const rt = performance.now(); T.push({ w, n: cur, t: (clock ?? rt) + wait, rt: rt + wait, ...d }); }
+}
 
 // ---------- finding tiles and tokens ----------
 /** The on-screen tile for a grid key ("x,y"): a button.phc-tok whose aria-label starts with its reference ("C7 · …" or
@@ -151,6 +168,7 @@ export function anim(el: Element, frames: Keyframe[], opts: KeyframeAnimationOpt
 /** A sprite burst at a point: scale from a to b and fade, rotated. */
 export function burst(name: string, p: { x: number; y: number }, size: number, ms: number, o: { color?: string; rot?: number; from?: number; to?: number; fade?: number; blend?: string; delay?: number } = {}) {
   const run = () => {
+    trace('burst', { name });
     const el = sprite(name, o.color), box = put(el, p, size, size, ms);
     if (o.blend) box.style.mixBlendMode = o.blend;
     const r = (o.rot || 0) + 'deg', from = o.from ?? 0.4, to = o.to ?? 1.2;
@@ -205,6 +223,7 @@ export function floatText(text: string, p0: { x: number; y: number; s: number },
     const ms = o.ms || (o.big ? 1300 : 1000), now = performance.now(), rise = p.s * (o.rise ?? 0.5), h = fs * 1.4;
     for (let i = floats.length - 1; i >= 0; i--) if (now - floats[i].t0 > floats[i].ms * fxScale() + 50) floats.splice(i, 1);
     const y0 = p.y - p.s * 0.35;
+    trace('float', { text });
     if (sameNews(floats, text, p.x, y0, p.s, now)) return;
     const span = document.createElement('span');
     span.textContent = text;

@@ -280,6 +280,12 @@ function roundOf(r: TechRec | null, e: any): string {
 }
 const bowDraw = (e: any) => (!e.ricochet && !reducedMotion() && brassOf(e.weapon || '', e.cat || '').bow === 'bow' ? DRAW_MS : 0);
 
+/** The time a base shot's tracer takes (play.ts fire(): px per ms by look, clamped). */
+function flightOf(a: XY | null, b: XY | null, look = 'bullet'): number {
+  if (!a || !b) return 0;
+  const sp = look === 'lob' ? 0.55 : look === 'arrow' ? 1.1 : look === 'rocket' ? 0.9 : 2.2;
+  return Math.max(60, Math.min(look === 'lob' ? 650 : 320, Math.hypot(b.x - a.x, b.y - a.y) / sp));
+}
 /** How long each ranged event holds the stage (ms at Fast), or undefined to leave it to the others (physBeat, the base).
  *  A plain technique adds at most ~130 ms; Mag Dump and the Rake play shorter than today (one stream, not 4 shots). */
 export function rangedBeat(e: FxEvent): number | undefined {
@@ -289,7 +295,13 @@ export function rangedBeat(e: FxEvent): number | undefined {
   switch (e.k) {
     case 'technique': return r && r.id === 'snap_shot' ? (physBeat(e) ?? 120) + 60 : undefined;
     case 'shot': {
-      const lk = looseKind(e); if (lk) return lk === 'flush' ? 270 : 260; // no impact to wait for (the flush: its flinch)
+      const lk = looseKind(e);
+      if (lk) {
+        // no impact to wait for (the flush: its flinch); a launcher's round is slower than a bullet, and what follows
+        // (the Arc's wound, the cover it breaks) waits for it to come down
+        const hold = lk === 'flush' ? 270 : 260, look = gunLook(String(e.weapon || ''), String(e.cat || ''));
+        return look === 'lob' || look === 'rocket' ? Math.max(hold, flightOf(centre(e.from), centre(e.to), look) + 30) : hold;
+      }
       if (!r) return undefined;
       const vi = viOf.get(canon(e)) ?? 0;
       if (r.id === 'mag_dump' && streams(e, r)) return vi === 0 ? 300 : 110;
@@ -334,11 +346,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
   const actorAt = (e: any, k: string | null | undefined) => (seesActor(e?.unit) ? at(k) : null);
   const jit = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
   /** The time a base shot's tracer takes (play.ts fire(): px per ms by look, clamped). */
-  const flight = (a: XY | null, b: XY | null, look = 'bullet') => {
-    if (!a || !b) return 0;
-    const sp = look === 'lob' ? 0.55 : look === 'arrow' ? 1.1 : look === 'rocket' ? 0.9 : 2.2;
-    return Math.max(60, Math.min(look === 'lob' ? 650 : 320, Math.hypot(b.x - a.x, b.y - a.y) / sp));
-  };
+  const flight = flightOf;
   const word = (text: string, p: Pt, color: string, dy = -0.6, o: { delay?: number; ms?: number; big?: boolean; rise?: number } = {}) => floatText(text, { x: p.x, y: p.y + dy * p.s, s: p.s }, color, { small: !o.big, big: o.big, ms: o.ms ?? 640, delay: o.delay, rise: o.rise });
   const upper = (x: unknown) => String(x || '').replace(/_/g, ' ').toUpperCase();
 
@@ -390,6 +398,26 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     burst('dust', q, s * 1.05 * k, 520, { color: '#E7EBF3', from: 0.5, to: 1.15, fade: 0.3 });
     burst('dirt', { x: q.x, y: q.y - s * 0.1 }, s * 0.8 * k, 460, { color: '#E2C394', from: 0.55, to: 1.2, fade: 0.2 });
   }
+  /** What a weapon's round looks like in flight, for the extra rounds drawn here (Leon, 11 Nov 2026: a grenade
+   *  launcher's Suppress drew bullet tracers): a launcher's is lobbed, a tube's is a rocket, a bow's an arrow, a flamer's
+   *  a gout of fire; everything else is a tracer. */
+  const ownLook = (g: { look: string }) => (g.look === 'arrow' || g.look === 'lob' || g.look === 'rocket' || g.look === 'flame' ? g.look : 'bullet');
+  /** Draw one such round from a to b over ms. */
+  function fly(g: { look: string; color?: string }, a: XY, b: XY, ms: number, s: number) {
+    const look = ownLook(g);
+    if (look === 'flame') { for (let i = 0; i < 4; i++) { const t = (i + 1) / 4; burst('flame', { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } return; }
+    K.projectile(a, b, ms, look, s, look === 'bullet' ? g.color : undefined);
+  }
+  /** Where such a round comes down without hitting anyone: a charge goes off small (as a base shot's miss does), a
+   *  bullet or an arrow kicks up dirt. */
+  function lands(g: { look: string; blast?: string }, q: XY, s: number, k = 1) {
+    if (g.blast && ownLook(g) !== 'bullet' && ownLook(g) !== 'flame') K.explosion(undefined, 0.6, g.blast, { x: q.x, y: q.y, s });
+    else if (ownLook(g) === 'flame') burst('flame', q, s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 });
+    else kick(q, s, k);
+  }
+  /** The weapon a unit last fired (its shots say), for a round drawn from an event that doesn't name one. */
+  const fired = new Map<string, { weapon: string; cat: string }>();
+  const gunFor = (id: string | null | undefined) => { const f = id ? fired.get(String(id)) : null; return f ? K.gunOf(f.weapon, f.cat) : { look: 'bullet' }; };
   /** A round fired with no attack roll: a tracer that misses on purpose (never MISS), a covering burst, an arc, the
    *  round into the cover (Flush). */
   function loose(e: any, kind: NonNullable<ReturnType<typeof looseKind>>, r: TechRec | null) {
@@ -401,7 +429,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     const ang = from ? angle(from, toP) : -Math.PI / 2, s = toP.s;
     if (from && shooter) { lunge(shooter, -Math.cos(ang) * 3, -Math.sin(ang) * 3, 120); const br = brassOf(e.weapon || '', e.cat || ''); if (br.when === 'shot') ejectShell(whoOf(shooter), br.shell, ang, { delay: br.cycle }); }
     const start: XY = mp || (from ? { x: from.x, y: from.y } : { x: toP.x - Math.cos(ang) * s * 3, y: toP.y - Math.sin(ang) * s * 3 });
-    const look = g.look === 'arrow' ? 'arrow' : 'bullet';
+    const look = ownLook(g), tracer = look === 'bullet';
     // the round raised the Heat to the limit: the gun jams, as the base shot says it (JAMMED, the dry click)
     if (e.jam) { const fp = from || toP; after(() => { floatText('JAMMED', fp, HP, { small: true }); play('dry_click', fp); }, flight(start, toP, look) + 120); }
     const over = (lift: number, past: number): XY => ({ x: toP.x + Math.cos(ang) * s * past, y: toP.y + Math.sin(ang) * s * past - s * lift });
@@ -409,9 +437,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       // over its head, a fixed side (never random): the dirt kicks up behind it
       const end = over(kind === 'rout' ? 0.5 : 0.3, 1);
       const ft = flight(start, end, look);
-      K.projectile(start, end, ft, look, s, g.color);
-      play('whiz', toP, { delay: ft * 0.55, gain: 0.9, rate: kind === 'rout' ? 0.85 : 1 });
-      after(() => kick({ x: end.x, y: end.y + s * 0.3 }, s), ft);
+      fly(g, start, end, ft, s);
+      if (tracer) play('whiz', toP, { delay: ft * 0.55, gain: 0.9, rate: kind === 'rout' ? 0.85 : 1 });
+      after(() => lands(g, { x: end.x, y: end.y + s * 0.3 }, s), ft);
       const tp = at(e.to);
       if (tp && (e.loud || r?.line === 'loud')) after(() => ring({ x: tp.x, y: tp.y - s * 0.3, s }, WHITE, 360, { from: 0.4, to: 1.2, width: 2 }), ft * 0.6);
       // the near miss marked: a stroke over the head, drawn the way the round went, on a dark under-stroke
@@ -423,25 +451,26 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       const offs: XY[] = [{ x: -0.35, y: 0.3 }, { x: 0.32, y: 0.36 }, { x: 0.45, y: -0.12 }];
       offs.forEach((o, i) => after(() => {
         const end = { x: toP.x + o.x * s, y: toP.y + o.y * s };
-        K.projectile(start, end, flight(start, end, look) * 0.8, look, s * 0.7, g.color);
-        after(() => kick(end, s, 0.8), 90);
+        const cft = flight(start, end, look) * 0.8;
+        fly(g, start, end, cft, s * 0.7);
+        after(() => lands(g, end, s, 0.8), tracer ? 90 : cft);
       }, i * 55));
-      play('whiz', toP, { delay: 110, gain: 0.6, rate: 1.15 });
+      if (tracer) play('whiz', toP, { delay: 110, gain: 0.6, rate: 1.15 });
       const tp = at(e.to); if (tp) word('COVERED −2', tp, WHITE, 0.75, { delay: 160, rise: 0.2 }); // under the attacker: above it is the ally it went for
       return;
     }
     if (kind === 'arc') {
       // Flush Arc: the round drops over the cover onto the target (the hurt that follows says half damage)
-      const ft = Math.min(420, flight(start, toP, 'bullet') * 1.6);
+      const ft = tracer ? Math.min(420, flight(start, toP, 'bullet') * 1.6) : flight(start, toP, look);
       P.arcPath(start, toP, Math.max(18, s * 0.6), { color: HOT, ms: ft + 160, dash: '3 3', width: 2 });
-      K.projectile(start, toP, ft, 'bullet', s * 0.8, g.color);
+      fly(g, start, toP, ft, tracer ? s * 0.8 : s);
       after(() => K.dust(toP, s * 0.6), ft);
       return;
     }
     // Flush: the round into the cover, which bursts as it lands (the object that follows only says the damage); then the
     // target flinches away from it
     const ft = flight(start, toP, look);
-    K.projectile(start, toP, ft, look, s, g.color);
+    fly(g, start, toP, ft, s);
     const ob: any = r?.objects.find((o: any) => o.at === e.to) || null;
     if (ob && Number(ob.dmg) > 0) {
       thrown.add(ob);
@@ -543,6 +572,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     shot(e, base) {
       const r = tagOf(e), kind = looseKind(e);
       if (e.hit && e.target) hits.set(String(e.target), { unit: String(e.unit || ''), n: e.n || 0 });
+      if (e.unit && e.weapon && !e.thrown) fired.set(String(e.unit), { weapon: String(e.weapon), cat: String(e.cat || '') });
       if (kind) { loose(e, kind, r); return; }
       const id = r?.id || '', vi = viOf.get(canon(e)) ?? 0;
       const from = at(e.from), toP = centre(e.to), g = (e.thrown ? { sound: 'swish' as Sfx, rate: 0.8, look: 'thrown' } : K.gunOf(e.weapon || '', e.cat || ''));
@@ -587,12 +617,18 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         case 'suppress': {
           // one roll, three rounds: two more crack past within half a tile, dirt at its feet
           if (!from) break;
-          const a = angle(from, toP), s = toP.s;
+          const a = angle(from, toP), s = toP.s, g = K.gunOf(e.weapon || '', e.cat || ''), look = g.look;
+          // what goes past is what the weapon fires (Leon, 11 Nov 2026: a grenade launcher's Suppress drew bullet
+          // tracers): a launcher's two more rounds are lobbed and go off small beside the target, a bow's are arrows,
+          // a flamer's gout is the one the shot draws
+          if (look === 'flame' || look === 'thrown') break;
+          const own = ownLook(g);
           for (const [k, side] of [[0, -1], [1, 1]] as [number, number][]) after(() => {
             const end = { x: toP.x + Math.cos(a) * s * 0.9 - Math.sin(a) * side * s * 0.42, y: toP.y + Math.sin(a) * s * 0.9 + Math.cos(a) * side * s * 0.42 };
-            K.projectile(from, end, flight(from, end), 'bullet', s * 0.8);
-            play('whiz', toP, { delay: flight(from, end) * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
-            after(() => kick({ x: toP.x + side * s * 0.42, y: toP.y + s * 0.62 }, s, 0.85), flight(from, end)); // at its feet, below the token
+            const ft = flight(from, end, own);
+            fly(g, from, end, ft, own === 'bullet' ? s * 0.8 : s);
+            if (own === 'bullet' || own === 'arrow') play(own === 'arrow' ? 'swish' : 'whiz', toP, { delay: ft * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
+            after(() => lands(g, own === 'bullet' || own === 'arrow' ? { x: toP.x + side * s * 0.42, y: toP.y + s * 0.62 } : end, s, 0.85), ft); // at its feet, below the token
           }, 50 + k * 60);
           break;
         }
@@ -801,7 +837,8 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (e.why === 'the held lane' && e.by) {
         // the lane catches someone: one snap round from its holder
         const a = posAt(e.by), b = at(e.at || posOf(e.unit));
-        if (a && b) { K.projectile(a, b, 120, 'bullet', b.s * 0.8); play('whiz', b, { delay: 80, gain: 0.5 }); }
+        const g = gunFor(e.by);
+        if (a && b) { fly(g, a, b, ownLook(g) === 'bullet' ? 120 : flight(a, b, ownLook(g)), b.s * 0.8); if (ownLook(g) === 'bullet') play('whiz', b, { delay: 80, gain: 0.5 }); }
       }
     },
     hurt(e, base) {
@@ -810,7 +847,8 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         // Punch Through Heavy: the round carries on from the target into the next in line (half the flash)
         drawn.add(r);
         const a = posAt(r.target), b = at(e.at);
-        if (a && b) { K.projectile(a, b, 110, 'bullet', b.s * 0.8); after(() => base(e), 100); return; }
+        const g = gunFor(r.unit), ft = ownLook(g) === 'bullet' ? 110 : flight(a, b, ownLook(g));
+        if (a && b) { fly(g, a, b, ft, b.s * 0.8); after(() => base(e), ft - 10); return; }
       }
       base(e);
     },
@@ -858,8 +896,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     carry(e, base) {
       if (!e.to) return base(e); // World Play's carry (a body lifted on the area map) is not a round carrying on
       const r = tagOf(e), a = at(e.from), b = at(e.to); if (r) drawn.add(r);
-      if (a && b) K.projectile(a, b, 110, 'bullet', b.s * 0.8);
-      if (b) burst('flash_star', b, b.s * 0.6, 150, { color: WHITE, from: 0.3, to: 1, delay: 110 });
+      const g = gunFor(e.unit), ft = ownLook(g) === 'bullet' ? 110 : flight(a, b, ownLook(g));
+      if (a && b) fly(g, a, b, ft, b.s * 0.8);
+      if (b) burst('flash_star', b, b.s * 0.6, 150, { color: WHITE, from: 0.3, to: 1, delay: ft });
     },
     swap_in(e) {
       const p = actorAt(e, e.at), tk = tagOf(e)?.target ?? cur.get(String(e.unit || ''))?.target, b = posAt(tk); if (!p) return;
