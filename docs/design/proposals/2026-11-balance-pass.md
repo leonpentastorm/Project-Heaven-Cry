@@ -352,3 +352,31 @@ This is part of the damage step, not a later pass. To do, in order:
    targets in sections 5, 8 and 12 (Outburst steady at 125% of a plain weapon; the peak rule in section 10).
 4. **Rule for every feeling:** a Pump with a feeling must be better than a plain Pump in one clear way, and its cost
    must be in proportion. Draft the new numbers as one table for Leon, flagged provisional, spec first.
+
+## 14. Sigil: the biggest hit in the game (Leon, 11 Nov 2026)
+
+Leon: "increase the Sigil damage cap to about 150% to 200%. Let them spend 2 turns setting up, just make the hit the
+biggest in the game. That system needs way too much fiddling to use; if the damage is not good it is a dead system."
+
+This replaces the earlier Sigil ceiling in the damage step:
+
+1. **Target:** a full Line (4 glyphs, about 2 turns of drawing and walking) Evoked lands at **150% to 200%** of a
+   plain weapon's damage over the same turns, the highest single hit of any school. *Provisional until the table is
+   drafted:* where in that band each Line length sits (2, 3 and 4 glyphs).
+2. Guns stay a bit under 150% (rocket-class ammo excepted), Outburst steady at 125%: Sigil is slow and biggest,
+   Outburst steady, weapons immediate.
+3. Measure setup cost honestly in the simulator: AP to draw, AP to walk the Line, the turn spent not attacking, and
+   the risk of being hit off it.
+
+## 15. Fewer button presses for Sigil users: two-key hotkeys (Leon, 11 Nov 2026)
+
+Leon: "Sigilists have to press way too many buttons, switching tab 1 - 4 - 1 - 4 constantly. Make the UI have double
+hotkeys so they can press 11 to move, 12 to sprint, then 41 to draw, 42 to evoke."
+
+Not a balance number, a fight-screen change; build it with the bug list (it touches `apps/web/src/screens/combat.js`):
+
+1. First digit picks the tab, second digit picks the action in that tab, in the order shown. The tab does not have
+   to be open first, and the screen switches to it so the player sees what was picked.
+2. Every action button shows its two-digit code on the button. A lone digit still opens the tab as today; a second
+   digit within a short moment completes the code (*provisional:* about 1 second).
+3. Works for every class, not only Sigil users. Add it to the keys list on the help screen.

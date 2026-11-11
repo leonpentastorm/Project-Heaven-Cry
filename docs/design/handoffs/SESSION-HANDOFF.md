@@ -21,6 +21,13 @@ Added since the last hand-off:
 
 Order when usage is back: verify the checkpoint, then the bug list, then the damage step with the Outburst rework.
 
+Later on 11 Nov: the maps and camera workflow ended. The maps build and the camera build finished (the maps
+builder reports `npm run check` green at its end); the **adversarial browser review died when usage ran out**, so
+the camera and the big maps have never been reviewed in a browser. Run that review again first. The maps builder's
+full report is in the workflow journal: `/root/.claude/projects/-home-user-Project-Heaven-Cry/40abf8cd-77d7-5315-b669-cee39d0cd8b9/subagents/workflows/wf_330a0dc7-9eb/journal.jsonl`
+(gone if the container is reclaimed). Two more asks from Leon are in the balance pass: section 14 (Sigil hits at
+150% to 200%, the biggest in the game) and section 15 (two-key hotkeys: 11 move, 12 sprint, 41 draw, 42 evoke).
+
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music
