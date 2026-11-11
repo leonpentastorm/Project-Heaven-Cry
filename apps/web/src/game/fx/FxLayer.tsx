@@ -8,7 +8,7 @@ import type { FxEvent, GameState } from '@engine';
 import { preloadCombatSfx, reducedMotion } from '../sfx';
 import { COMBAT_IN_MS } from '../presence';
 import { setLayer } from './dom';
-import { canDraw, clearFx, fightStream, forgetSpotlights, fxBusyUntil, FX_IDLE, holdMovers, isHeld, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
+import { canDraw, clearFx, fightStream, forgetSpotlights, fxBusyUntil, FX_IDLE, holdMovers, isHeld, noteQueued, queueFx, rememberTokens, setContext, setProcessed, seenNow } from './play';
 import { ambientOf, clearAmbient, syncAmbient } from './ambient';
 import { meleeMarksOf, syncMeleeMarks, clearMeleeMarks } from './melee-techniques';
 import { closeKeptBoxes } from '../cutIn';
@@ -105,7 +105,7 @@ export function FxLayer({ game, screen }: { game: GameState | null; screen: stri
     } else if (s.key.startsWith('cb|') && top < h.n) { opening = true; forgetSpotlights(s.key); fresh = s.list.slice(-24); } // the same fight started over (its numbering restarted)
     else fresh = s.list.filter((e) => e.n > h.n);
     seen.current = { key: s.key, n: top, code: game.code };
-    if (s.key.startsWith('cb|')) { fight.current = { key: s.key, n: top }; setProcessed(s.key, top); }
+    if (s.key.startsWith('cb|')) { fight.current = { key: s.key, n: top }; if (fresh.length) noteQueued(s.key, top); setProcessed(s.key, top); }
     if (!fresh.length) return;
     marksPending.current = true; // the standing marks wait for these to be queued and played
     // Wait for the grid to be on screen (a screen change may still be sliding in), then play; give up after ~3 s. A new

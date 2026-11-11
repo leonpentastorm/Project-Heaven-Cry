@@ -278,6 +278,20 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
  *  song {unit, at} · call {unit, id, target, at, step, kind: helping|hindering, reaction?, only?} (rules 1.13: one per
  *  Call made; its save, condition and moves are their own events). */
 export interface FxEvent { n: number; k: string; [field: string]: any }
+/**
+ * HP that changed since the last effect was emitted belongs to that effect (a shot goes out, then its damage lands): it
+ * is stamped there as hp: {unit: [was, now]}, so a screen can hold a bar until the hit plays (fx/play.ts fxShownHp).
+ * Called before every new effect and once more when an action is done.
+ */
+export function stampFxHp(cb: Combat) {
+  const seen: Record<string, number> = ((cb as any).fxHp ||= {}), list = cb.fx || [];
+  let last: FxEvent | undefined; for (let i = list.length - 1; i >= 0 && !last; i--) if (!list[i].only) last = list[i];
+  for (const u of cb.units) {
+    const was = seen[u.id]; seen[u.id] = u.hp;
+    if (was == null || was === u.hp || !last) continue;
+    const m: Record<string, [number, number]> = (last.hp ||= {}); m[u.id] = [m[u.id] ? m[u.id][0] : was, u.hp];
+  }
+}
 export const FX_CAP = 40;
 /** Shots and swings inside a burst, auto, skill or paired attack are marked chain (the client spaces them tighter). */
 let fxChain = 0;
@@ -285,7 +299,9 @@ export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): F
   // A turn's ring and a stance's word show only to a side that sees the unit as it happens (not at the batch's end: it
   // may walk into the fog or fall later in the same batch): seen {pc, foe}, 1 or 0, stamped now.
   if ((k === 'turn' || k === 'stance') && data.unit && !data.seen) { const u = cb.units.find((x) => x.id === data.unit); if (u) data = { ...data, seen: { pc: sideSeesUnit(cb, 'pc', u) ? 1 : 0, foe: sideSeesUnit(cb, 'foe', u) ? 1 : 0 } }; }
-  const n = (cb.fxSeq = (cb.fxSeq || 0) + 1), list = (cb.fx ||= []), ev: FxEvent = { k, ...data, n };
+  stampFxHp(cb);
+  // L: how many log lines were written before this effect (a screen reveals the log as the effects play)
+  const n = (cb.fxSeq = (cb.fxSeq || 0) + 1), list = (cb.fx ||= []), ev: FxEvent = { k, ...data, n, L: cb.log.length };
   list.push(ev);
   if (list.length > FX_CAP) list.splice(0, list.length - FX_CAP);
   for (const f of fxTaps) f(cb, ev);
