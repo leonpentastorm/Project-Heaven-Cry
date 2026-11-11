@@ -8,6 +8,21 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.22.0 — 11 November 2026
+
+Branch `music/new-tracks`: **eight new fight songs and Gearing Up** (decision 114; spec, Music: "The fight's song" and "The Proving Ground").
+
+- **Eight new fight songs** join Gunline for ordinary fights: Brass on the Floor, Danger Close, Flank Left, Held Breath, Hold the Line, Line of Four, Mag Check and Suppressing Fire. Leon made them with Suno (Pro plan, commercial use).
+- **A picker** chooses one at random for each fight:
+  - never the song the last ordinary fight had;
+  - the same for every player in the room;
+  - kept for the whole fight, through a reload, and when Heaven Falls or Last Rounds hand back.
+
+  Heaven Falls (elites, bosses, Hard fights) and Last Rounds (half the party down) keep their rules. A fight already under way in an old save keeps Gunline.
+- **Gearing Up** loops in the Proving Ground while you gear up, gives way to the fight's song, and comes back after. It restarts from the top each time.
+- All nine loop seamlessly (loop points in `ost.ts`, measured), show their titles in the music panel and are on the Credits page.
+- **Waiting on Leon:** the loop seams were checked by measurement only, not by ear. Listen to Line of Four and Gearing Up in particular.
+
 ## 0.21.0 — 11 November 2026
 
 Rules 1.14.
