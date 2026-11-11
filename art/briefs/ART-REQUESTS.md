@@ -51,7 +51,9 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 
 ### 3. Portraits, illustrations, maps
 
-Nothing waiting.
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| M1 | **Bigger fight maps** (Leon, 11 Nov 2026: "maps are too enclosed; we need A to Z, 1 to 24"). The five painted maps are 16 × 11 tiles (the Proving Ground 16 × 12): the four M813 maps (`art/maps/m813/`: shield-line, rear-pad, outpost, outpost-1) and the Proving Ground | **Wanted** once the larger grid is built: until then these five keep their size, and the unpainted maps go to 26 × 24 | The same places, painted for a grid of up to 26 columns by 24 rows: the ground the old painting shows, plus what lies around it (approaches, flanks, a way round), so a squad can manoeuvre instead of meeting head-on | Same Heavenprint map treatment as the existing five, top-down, same tile scale and light, so tokens and object sprites sit on it unchanged. Keep the existing landmarks where they are relative to each other; the new ground is around them. Each map's tile layout guide is made by `tools/render_map_guides.py` from the campaign file once the new layout is set: paint to that guide | `art/maps/m813/<zone>.png`, `art/maps/` for the Proving Ground |
 
 ### 4. Equipment artwork (Heavenprint)
 
@@ -93,6 +95,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **11 Nov 2026:** M1 added (the five painted maps for the 26 × 24 grid).
 - **11 Nov 2026:** E1 added (Heavenprint artwork for all equipment, planned with Equipment 2.0).
 - **11 Nov 2026:** list started. W1, W2, F1, F2 opened. Breaching Strike, Nothing Gets Past and Iron Grip were
   checked against their rules 1.13 meanings and fit as they are.
