@@ -351,14 +351,26 @@ export function mapBrief(map: MapDef): string {
     ...(map.notes || []).map((n) => n.at + ': ' + n.text),
     ...(map.cover.length || (map.full || []).length ? ['Half cover at ' + (refs(map.cover) || 'none') + '; full cover at ' + (refs(map.full || []) || 'none') + '.'] : [])].join('\n');
 }
+/** A map's notes as rectangles, read once for each list of notes (a screen asks for every tile on every redraw: 676
+ *  tiles on a 26 × 26 map, and reading the references each time took a tenth of a second a turn). */
+const NOTE_RECTS = new WeakMap<object, { n: number; rects: { parts: [number, number, number, number][]; text: string }[] }>();
+function noteRects(notes: NonNullable<MapDef['notes']>) {
+  const had = NOTE_RECTS.get(notes); if (had && had.n === notes.length) return had.rects;
+  const rects = notes.map((n) => ({ text: n.text, parts: String(n.at || '').split(',').map((part) => {
+    const [a, b] = part.split(/[–-]/).map((r) => keyOf(r.trim()));
+    if (!a) return null;
+    const [x1, y1] = a.split(',').map(Number), [x2, y2] = (b || a).split(',').map(Number);
+    return [Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2)] as [number, number, number, number];
+  }).filter((r): r is [number, number, number, number] => !!r) }));
+  NOTE_RECTS.set(notes, { n: notes.length, rects });
+  return rects;
+}
 /** The map's notes that cover one tile ("N1–P6" is a rectangle; commas separate parts). Most specific first. */
 export function notesAt(map: MapDef, k: string): string[] {
+  if (!map.notes || !map.notes.length) return [];
   const [x, y] = k.split(',').map(Number), hits: { area: number; text: string }[] = [];
-  for (const n of map.notes || []) for (const part of n.at.split(',')) {
-    const [a, b] = part.split(/[–-]/).map((r) => keyOf(r.trim()));
-    if (!a) continue;
-    const [x1, y1] = a.split(',').map(Number), [x2, y2] = (b || a).split(',').map(Number);
-    if (x >= Math.min(x1, x2) && x <= Math.max(x1, x2) && y >= Math.min(y1, y2) && y <= Math.max(y1, y2)) { hits.push({ area: (Math.abs(x2 - x1) + 1) * (Math.abs(y2 - y1) + 1), text: n.text }); break; }
+  for (const n of noteRects(map.notes)) for (const r of n.parts) {
+    if (x >= r[0] && x <= r[2] && y >= r[1] && y <= r[3]) { hits.push({ area: (r[2] - r[0] + 1) * (r[3] - r[1] + 1), text: n.text }); break; }
   }
   return hits.sort((p, q) => p.area - q.area).map((h) => h.text);
 }

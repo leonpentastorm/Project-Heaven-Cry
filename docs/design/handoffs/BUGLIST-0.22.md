@@ -72,6 +72,28 @@ Leon's words are quoted; the notes under each are a first reading, not a diagnos
     (`packages/engine/src/music.ts`, `apps/web/src/game/music.tsx`): the fight song picker overrides the player's
     choice after round 1. That code is on `main`, not on this branch until the merge above.
 
+## E. What Leon's report from that session shows (room QDF3DM, 0.22.0, 11 Nov 2026)
+
+The report was taken in the Proving Ground at wave 6, attempt 2 (a retried wave), round 1, the Recruit's turn, full
+HP, 6 AP, on the old 16 × 12 map, Firefox 159 at 2813 × 1428. It is a snapshot of one moment, so it can't show an
+animation; these facts are usable:
+
+- **For 10 and 11.** The fight's effect list holds two events only (the turn card and "Recruit is Shaken"), and no
+  enemy had acted in the rules. So when an enemy is seen acting at the start of a retried wave, the rules have not
+  let it act: the screen is playing the previous attempt's leftover effects. Look at what is still queued when a
+  wave ends (`fxDebug()`), not at the turn order in the engine. The effects clock is keyed by fight name plus the
+  first log line ("WAVE 6 · attempt 2 · …"), so a new attempt is a new clock and the old one is never emptied.
+- **Also for 11.** The Recruit carries Shaken (3 rounds) from the lost attempt into the retry. If conditions are
+  carried, check whether damage over time or a pending effect is carried too: that would be the "drop dead".
+- **For 13.** The player's portrait is the Wick placeholder, and two enemies (Sigil warden, Heart adept) have no
+  portrait of their own while the troopers and the drone do. Units with no portrait get a face picked at draw time,
+  which is why it changes; give each unit its face once, when the fight is built, and keep it in the fight's state.
+- **For 14.** Music state: nothing playing, 8 picks in 9 fights, last song "flank_left". Every wave counts as a new
+  fight for the picker, so it picks again each wave; pick once a Proving Ground session, or keep the song across
+  waves.
+- **For the sweep (4).** The window is 2813 px wide: run one pass of the browser suites at that size, since effect
+  positions are computed from the board's size on screen.
+
 ## Order
 
 1. Merge `origin/main`. 2. Item 1 (the Effect testing room). 3. Items 9, 10, 11 (the fight looks broken without

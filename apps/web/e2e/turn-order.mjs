@@ -57,7 +57,11 @@ ok('YOUR TURN comes after the last hostile effect (' + res.mineAt + ' ≥ ' + (l
 const hits = res.fx.filter((e) => e.hp);
 let ahead = null; for (const r of res.rows) { if (r.shown == null) continue; const played = hits.filter((h) => h.t <= r.t + 300).at(-1); const floor = played ? played.hp[1] : res.st0; if (r.shown < floor) { ahead = { row: r, floor }; break; } }
 ok('the HP shown never falls before its hit plays' + (ahead ? ' (' + JSON.stringify(ahead) + ')' : '') + '; real HP fell at once to ' + res.rows[1]?.real + ', shown started at ' + res.rows[0]?.shown, !ahead && hits.length > 0);
-{ const early = res.rows.find((r) => r.panelMine && lastHostile && r.t < lastHostile.t && r.t > 300);
+// (From the first hostile shot, wound or walk on: the panel leaves about a quarter of a second after the first
+// hostile's banner, which on the 26 x 26 map's heavier screen lands at 290 to 360 ms after End turn; the fixed 300 ms
+// this check allowed before sat right on that edge and failed every other run. No hostile act plays before 500 ms.)
+{ const firstAct = res.fx.find((e) => e.k === 'shot' || e.k === 'hurt' || e.k === 'move');
+  const early = res.rows.find((r) => r.panelMine && lastHostile && firstAct && r.t < lastHostile.t && r.t >= firstAct.t);
   ok('the YOUR TURN panel is not up while hostile effects still play' + (early ? ' (up at ' + early.t + ' ms)' : ''), !early); }
 ok('the HP shown ends on the real HP (' + res.rows.at(-1)?.shown + ' = ' + res.rows.at(-1)?.real + ')', res.rows.at(-1)?.shown === res.rows.at(-1)?.real);
 const logSteps = new Set(res.rows.map((r) => r.logN)).size;
