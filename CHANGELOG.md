@@ -15,6 +15,11 @@ A hotfix for 0.19.0.
 - **The game crashed on start for a save that held Grapple or Origami Hands.** Rules 1.13 renamed them (Iron Grip, Both Hands) and every screen that lists perks looked the old id up and found nothing. A save is now settled as it loads: renamed perks follow their new id with their tier, and a perk or trait the game no longer has is taken off the sheet. Browser test: `apps/web/e2e/old-save.mjs`.
 - **Trick Shot's Ricochet, Spare, Nonlethal and the class toggles on attacks were missing** since attacks became techniques (0.18.0): they show again with any technique and are sent with it.
 - **Hidden is shown on your own card** (it was in force but nothing said so).
+- **Revert on the level-up screen:** the points and perk steps a visit spent come back, until a fight or a class settles them.
+- **The story screen's skill panel shows attribute levels:** skills are grouped under their attribute, in the new order.
+- **The recoloured Acuity and Improvisation pictures show everywhere** (the old ones were served from cache under the same name; skill pictures now carry a version).
+- **A thrown weapon swishes** (it could play a gunshot), **the combat log scrolls** back through the fight, and **the AP an action will take pulses** on the bar instead of going hollow.
+- **The Twin Pays** covers the Begin's 2 AP as well (spec item 1007).
 - **A Legendary Deed** grants 1 Attribute point, and one Attribute point per deed may stand 1 above the level's ceiling (spec item 1006).
 - **Both Hands** has its own icon.
 - The rules spec in the repository is the source of truth; the Claude Doc is frozen at revision 1.1.
