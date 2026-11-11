@@ -1,7 +1,7 @@
 66f59d6c954db6aae967d58ea3167cfc54e81b326309b72fb191faa2a0ccbdc4  .gitignore
 5816daf1ed064a210fdf620a1739ad1bd2b5d99d17fd9de48ca70beff9584c52  README.md
 e80b981479a3b2fe1ba4314569d7b91c6fb33dd6a4df64fdf869b9d098b13ae5  art/AGENTS.md
-9981d12cc921fc00928ecb389be4faa5a20b20d24f875e1e6ed5ff3b9ba95c22  art/README.md
+1bb8bc72499f52d96e43fb0bc8c5ba1ec98c74e39d8a21bfc61f3690abc18fd3  art/README.md
 d5bf3eef82c43e61dc9361633b12fa5a283f4c70a26ac8483366ea2cc25836f2  art/_archive/briefs/m813-tutorial/maps/archive-2026-11-06/outpost-layout.png
 73a3962469347cb7e4482796abb2320f55959bf7c4eef4591a3a35ad6fe400af  art/_archive/campaigns/m813/tutorial-v1/README.md
 5670d8faaabbf09a2054d007ff7039d218bc7a558edda3b7aecd4b803da8b8e3  art/_archive/campaigns/m813/tutorial-v1/manifest.json
@@ -823,6 +823,7 @@ fdd7c36efe3c8a23a0d6c78c6c90875df52a8941edd04ee5a7909a6b92613462  art/_archive/u
 3e2a46e3761f429c81126e838bf4f78c273bceec495c057bc5fa5db1dae8807a  art/_archive/ui/title-screen/source-renders/title-back-native.png
 0e2bf5319cf4a3236811c008052ce53a066d29e9fd59873e974a15ab6a17f105  art/_archive/ui/title-screen/source-renders/title-front-native.png
 c116fc3201c5bc293ff601b0dae0694087512777909f5ec2293fbc49c570a635  art/_archive/ui/title-screen/source-renders/title-mid-native.png
+bef2042ebde7ab348ff1b82d0394a3e3e49347dc4e87000f1a3c122a7f7b355a  art/briefs/ART-REQUESTS.md
 74862e11059029851b0152176699f3a057789d839b0d5926d75bd81980701040  art/briefs/archetype-portraits.md
 ca90bd7e555afdd1bad775f64454bf410cf6d1856070e566cc181ddbfe784138  art/briefs/first-patch-revival-redo.md
 821628bf1325a4023d390dbe8b0908751f860aab17ab4b138997f785aade81db  art/briefs/m813-mpat.md
