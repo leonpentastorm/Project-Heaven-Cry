@@ -140,7 +140,9 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 
 Rules revision 1.11 (10 Nov 2026; provisional, items 924–927). Over levels 2 to 20 that is **28 Skill points, 10 Attribute points and 6 Core points**, on top of creation's 10, 10 and 6: 38 Skill points in a career. Before 1.11 a level gave 1 Skill point, and a Core point came every 5th level (19 Skill and 4 Core points in a career): raising a capped skill needs a point of each kind, so every character's best skill rose by 1 per 5 levels and no build that started below a Core of 6 could ever reach a Mastered perk. Points you don't spend are kept. *(Rules 1.13: no Core points at creation or from levels; a career is 38 Skill and 20 Attribute points.)*
 
-Skill books and quest rewards can grant extra Skill points. A **Legendary Deed**, at the Narrator's call, grants **1 Attribute point**, and for each deed done one Attribute point may stand **1 above the level's ceiling** (never above 10). When the ceiling rises past that point, the room is free again. A skill still can't pass its Attribute.
+Skill books and quest rewards can grant extra Skill points. **Taking a level-up back.** The points and perk steps you spend on the level-up screen can be taken back with Revert, all at once, until something settles them: a fight starts, or you earn your class. After that they are spent for good.
+
+A **Legendary Deed**, at the Narrator's call, grants **1 Attribute point**, and for each deed done one Attribute point may stand **1 above the level's ceiling** (never above 10). When the ceiling rises past that point, the room is free again. A skill still can't pass its Attribute.
 
 **XP sources.** XP is tagged by source, because traits care (Born Performer gets +20% from combat and nothing from conversation).
 

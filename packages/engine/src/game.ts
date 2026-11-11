@@ -355,6 +355,7 @@ export type Action =
   // Physical 2.0 (rules 1.12; src/physical): a technique in a fight (its arguments are TechArgs: hand, targetId, tile,
   // allyId, line, ammo, opt…); out of a fight, the ready list of a system, a drill pick for a weapon, a bow's quiver
   // (arrows per type), and the Answers this character will use, in order (null: every ready Answer).
+  | { type: 'levelup/revert'; charId: string }
   | ({ type: 'combat/technique'; unitId: string; id: string } & TechArgs) | { type: 'combat/pull-free'; unitId: string; targetId?: string }
   // rules 1.13: a Call (calls/). opt: Order's things ('reload+move'); tile: Order's move, Cue's step, Warn's named tile; react: made off your turn, on your reaction (from 9 points)
   | { type: 'combat/call'; unitId: string; id: string; targetId?: string; tile?: string; opt?: string; text?: string; react?: boolean }
@@ -452,6 +453,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   }
   migrateFloor(g); // rules 1.9: an old save's floor becomes piles, once
   try { reduce(g, action, by); worldAfter(g); } finally { bindGame(was); } // rules 1.7: Downed carriers drop, objective triggers
+  if (state.phase !== 'combat' && g.phase === 'combat' && !g.sandbox) for (const c of Object.values(g.characters || {})) delete (c as any).lvlUndo; // a fight settles a level-up: no taking points back after using them
   // Rules 1.10 (Sigil 1.5): Mastery in Brain Power, Rumination or Eloquence pays its study (and the Mastered free word) once.
   for (const c of Object.values(g.characters || {})) { const notes = masterySync(c); if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); }
   if (g.sandbox && action.type.startsWith('levelup/')) sandboxResync(g, (action as { charId: string }).charId);
@@ -662,19 +664,34 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'levelup/raise': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const why = canRaise(c!, a.kind, a.id); if (why) fail(why);
+      lvlBefore(c!);
       const rankBefore = c!.classId ? classRank(c!) : 0;
       if (a.kind === 'skill') { c!.skills[a.id] = (c!.skills[a.id] || 0) + 1; c!.unspent.skill--; }
       if (a.kind === 'attr') { c!.attrs[a.id] = (c!.attrs[a.id] || 1) + 1; c!.unspent.attr--; if (a.id === 'endurance') c!.hp += 15;  const fam = ATTRS.find((x) => x.id === a.id)!.core as keyof Character['cores']; if ((c!.cores[fam] || 1) < c!.attrs[a.id]) c!.cores = { ...c!.cores, [fam]: c!.attrs[a.id] }; }
       if (a.kind === 'core') { (c!.cores as any)[a.id]++; c!.unspent.core--; }
       awardAutomatic(g, c!);
       rankReached(g, c!, rankBefore);
+      for (const n of masterySync(c!)) push(g, { kind: 'system', text: n }); // paid here so a revert sees it
+      lvlAfter(c!);
+      return;
+    }
+    case 'levelup/revert': {
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      const why = canRevertLevelUp(g, c); if (why) fail(why);
+      const u = (c as any).lvlUndo, was = JSON.parse(u.was);
+      c!.skills = was.skills; c!.attrs = was.attrs; c!.cores = was.cores; c!.unspent = was.unspent; c!.perks = was.perks;
+      if (was.sigilGrowth) (c as any).sigilGrowth = was.sigilGrowth; else delete (c as any).sigilGrowth;
+      c!.hp = Math.max(c!.hp > 0 ? 1 : 0, Math.min(c!.hp, u.hp, maxHp(c!)));
+      g.awards = (g.awards || []).filter((x) => x.charId !== c!.id || c!.perks.some((p) => p.id === x.perkId));
+      delete (c as any).lvlUndo;
+      push(g, { kind: 'system', text: c!.name + ' takes back the points spent on this level-up.' });
       return;
     }
     case 'levelup/class': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       // Class Roster Revision 3: the class of the highest attribute (a tie: the player chooses), set for good.
       const why = classPickError(c!, a.classId); if (why) fail(why);
-      c!.classId = a.classId;
+      c!.classId = a.classId; delete (c as any).lvlUndo; // a class is for good: what was spent before it stays spent
       push(g, { kind: 'system', text: c!.name + ' earns a class: ' + CLASS[a.classId].name + '.' });
       return;
     }
@@ -729,9 +746,11 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'levelup/perk': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const step = pendingPerkSteps(c!).flatMap((s) => s.choices).find((x) => x.id === a.perkId); if (!step) fail('No perk step for that perk.');
+      lvlBefore(c!);
       const held = c!.perks.find((x) => x.id === a.perkId);
       if (held) held.tier = 'II'; else c!.perks.push({ id: a.perkId, tier: 'I' });
       push(g, { kind: 'system', text: c!.name + ' takes ' + PERK[a.perkId].name + ' (Tier ' + step!.tier + ').' });
+      lvlAfter(c!);
       return;
     }
     case 'memory/edit': { if (!isHost(g, by)) fail('Only the host edits the Narrator\'s memory.'); const err = editMemory(g, a.edit); if (err) fail(err); return; }
@@ -1145,6 +1164,21 @@ function refundRuling(g: GameState, r: PendingRuling) {
 }
 /** A held item's display name from its key ('perk:id', 'trait:id', 'class:cls.move') or a bare id (never throws). */
 const itemName = (key: string) => { const full = String(itemKey(String(key || '')) || key || ''), i = full.indexOf(':'), k = i < 0 ? '' : full.slice(0, i), id = i < 0 ? full : full.slice(i + 1); return k === 'perk' ? PERK[id]?.name || id.replace(/_/g, ' ') : id.replace(/_/g, ' '); };
+// ---------- taking a level-up back (Leon, 11 Nov 2026) ----------
+// The points and perk steps spent since the level-up screen's first click can be taken back, until something else
+// settles them: a fight starts, a class is earned, or anything but the level-up screen changes the sheet's build.
+// What is kept: the build (skills, attributes, points to spend, perks, Sigil study). Revert puts that back as it was.
+const lvlBuild = (c: Character) => JSON.stringify({ skills: c.skills, attrs: c.attrs, cores: c.cores, unspent: c.unspent, perks: c.perks, sigilGrowth: (c as any).sigilGrowth ?? null });
+/** Before a level-up spend: remember the build as it was (once), unless something else changed it since the last spend. */
+function lvlBefore(c: Character) { const u = (c as any).lvlUndo; if (u && u.now !== lvlBuild(c)) delete (c as any).lvlUndo; if (!(c as any).lvlUndo) (c as any).lvlUndo = { was: lvlBuild(c), hp: c.hp }; }
+function lvlAfter(c: Character) { const u = (c as any).lvlUndo; if (u) u.now = lvlBuild(c); }
+/** Why this character's level-up can't be taken back now, or null. */
+export function canRevertLevelUp(g: GameState, c: Character | null | undefined): string | null {
+  const u = (c as any)?.lvlUndo; if (!c || !u || u.was === u.now) return 'Nothing to take back.';
+  if (u.now !== lvlBuild(c)) return 'Nothing to take back.';
+  if (g.phase === 'combat' && !g.sandbox) return 'Not during a fight.';
+  return null;
+}
 function awardAutomatic(g: GameState, c: Character) {
   for (const pid of grantAutomaticPerks(c)) {
     const p = PERK[pid];
