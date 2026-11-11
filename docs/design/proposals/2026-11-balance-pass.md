@@ -380,3 +380,8 @@ Not a balance number, a fight-screen change; build it with the bug list (it touc
 2. Every action button shows its two-digit code on the button. A lone digit still opens the tab as today; a second
    digit within a short moment completes the code (*provisional:* about 1 second).
 3. Works for every class, not only Sigil users. Add it to the keys list on the help screen.
+
+**Ruling (Leon, 11 Nov 2026):** the Sigil peak stands as the class's peak move (Elites and Bosses stay out of
+one-hit range). **Outburst gets a peak too: 150% at the biggest Pump possible** (stage 4, held and pumped all the
+way); below that it stays the steady 125% school. So the peaks are: Sigil 150% to 200% after two turns of set-up,
+Outburst 150% at full Pump, guns a bit under 150% (rocket-class ammo at 150%).
