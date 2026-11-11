@@ -238,6 +238,24 @@ describe('the fight\'s song: one of the pool, picked per fight (spec: Music, The
     expect(next.combat!.song).toBe('gunline'); expect(next.music!.lastSong).toBe('gunline'); expect(next.music!.picks).toBeUndefined();
     expect(musicFor(next).key).toBe('c:gunline');
   });
+  it('a NEW fight begun as the first action on a save from before the pool gets a pick (a retry of the same wave included)', () => {
+    for (const action of [{ type: 'sandbox/retry' }, { type: 'sandbox/restart' }] as const) {
+      const p = ground('old-retry');
+      p.act({ type: 'sandbox/fight' });
+      const old: GameState = JSON.parse(JSON.stringify(p.g));
+      delete old.combat!.song; delete old.music!.lastSong; delete old.music!.picks;
+      const name = old.combat!.name;
+      let next: GameState | null = null;
+      try { next = apply(old, action as any, 'host'); } catch { continue; }
+      if (!next.combat || next.phase !== 'combat') continue;
+      if (action.type === 'sandbox/retry') expect(next.combat.name).toBe(name); // the same name, round 1: the old heuristic's blind spot
+      expect(FIGHT_POOL).toContain(next.combat.song); expect(next.music!.picks).toBe(1); expect(next.music!.lastSong).toBe(next.combat.song);
+    }
+    // And the retry did run (the loop above skips nothing silently for it).
+    const p = ground('old-retry'); p.act({ type: 'sandbox/fight' });
+    const old: GameState = JSON.parse(JSON.stringify(p.g)); delete old.combat!.song; delete old.music!.picks;
+    expect(apply(old, { type: 'sandbox/retry' } as any, 'host').music!.picks).toBe(1);
+  });
 });
 
 describe('the Proving Ground plays Gearing Up while gearing up (spec: Music, The Proving Ground)', () => {

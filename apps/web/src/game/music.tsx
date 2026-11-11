@@ -4,7 +4,7 @@
 // The level is the panel's volume times Settings' music volume (silent when muted).
 // The host's browser tells the engine when a one-play song has finished (music/end).
 import React from 'react';
-import { musicFor, musicTraitOf, songOf, trackKey, type GameState } from '@engine';
+import { musicFor, musicTraitOf, songOf, trackKey, GEARING_UP, type GameState } from '@engine';
 import { act, toast } from './store';
 import { musicLevel, onUiPrefs, uiPrefs, setUiPrefs } from './sfx';
 import { ostPlay, ostVolume, ostPause, ostResume, ostRunning, ostPreload } from './ost';
@@ -98,6 +98,10 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   // combat-in transition, so it is ready when the music comes in.
   const fightSong = game?.phase === 'combat' ? game.combat?.song : undefined;
   React.useEffect(() => { if (fightSong) ostPreload(fightSong); }, [fightSong]);
+  // The Proving Ground: Gearing Up (the largest file) is fetched on the way in, so the gearing-up screen isn't silent
+  // for its first seconds.
+  const proving = !!game?.sandbox;
+  React.useEffect(() => { if (proving) ostPreload(GEARING_UP); }, [proving]);
 
   function fadeTo(target: number, then?: () => void, ms = FADE_MS) {
     const pl = player.current; if (!pl?.getVolume) { then?.(); return; }

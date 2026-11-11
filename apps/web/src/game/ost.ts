@@ -4,7 +4,7 @@
 // the next one at its loop points (the files end on Suno's hard cut, so a plain loop would click). Changing track
 // crossfades the two (about 1.2 s); stopping fades out. music.tsx drives it and sets the volume (Settings x panel x
 // the Narrator's duck). The browser starts sound only after a click: ostResume() on the first gesture.
-import type { OstId } from '@engine';
+import { GEARING_UP, type OstId } from '@engine';
 
 /** Each track's file and loop: a pass runs from loopIn to loopOut, the last `seam` seconds crossfading into the next. */
 export const OST_FILES: Record<OstId, { src: string; loopIn: number; loopOut: number; seam: number }> = {
@@ -53,8 +53,13 @@ let ctx: AudioContext | null = null, master: GainNode | null = null, none = fals
 let cur: Voice | null = null, level = 0;
 const fading: Voice[] = [];
 const bytes = new Map<OstId, Promise<ArrayBuffer>>();
-/** Decoded tracks, most recent last; at most two kept (a decoded track is 25 to 50 MB; Gearing Up about 70). */
+/** Decoded tracks, most recent last; at most two kept (a decoded track is 25 to 50 MB; Gearing Up about 70), and
+ * `home` besides. */
 const decoded = new Map<OstId, Promise<AudioBuffer>>();
+/** The track the fights hand back to (Gearing Up, while the Proving Ground is on): it stays decoded through a fight,
+ * whatever takes over in it (the fight's song, then Heaven Falls or Last Rounds), so the fight's end crossfades into
+ * it instead of fading out and waiting for 3 minutes of audio to be decoded again. Let go when the music stops. */
+let home: OstId | null = null;
 
 function audio(): AudioContext | null {
   if (!ctx && !none) {
@@ -79,7 +84,7 @@ function load(id: OstId): Promise<AudioBuffer> {
   p = fetchBytes(id).then((b) => new Promise<AudioBuffer>((res, rej) => { const q = c.decodeAudioData(b.slice(0), res, rej); if (q && typeof (q as any).then === 'function') (q as Promise<AudioBuffer>).then(res, rej); }));
   p.catch(() => decoded.delete(id));
   decoded.set(id, p);
-  while (decoded.size > 2) { const old = [...decoded.keys()].find((k) => k !== id && k !== cur?.id); if (!old) break; decoded.delete(old); }
+  while (decoded.size > 2) { const old = [...decoded.keys()].find((k) => k !== id && k !== cur?.id && k !== home); if (!old) break; decoded.delete(old); }
   return p;
 }
 /** Fetch a track's file ahead (not decoded), so the fight's music is ready when the fight starts. */
@@ -134,6 +139,7 @@ function revive(v: Voice, ms: number) {
 /** Play a track (crossfading from the one playing), or null to fade out. Playing the same track again does nothing. */
 export function ostPlay(id: OstId | null, fadeMs = 1200) {
   if (cur && !cur.dead && cur.id === id) return;
+  if (id === GEARING_UP) home = id; else if (!id) home = null;
   if (!id && !cur) return;
   if (!audio()) return;
   if (cur) fadeOut(cur, fadeMs);
@@ -164,4 +170,4 @@ export function ostResume(): Promise<boolean> {
 export const ostRunning = () => ctx?.state === 'running';
 
 /** Tests only: forget the audio context and everything playing. */
-export function _ostReset() { for (const v of [...fading, ...(cur ? [cur] : [])]) if (v.dying) clearTimeout(v.dying); ctx = null; master = null; none = false; cur = null; fading.length = 0; decoded.clear(); bytes.clear(); level = 0; }
+export function _ostReset() { for (const v of [...fading, ...(cur ? [cur] : [])]) if (v.dying) clearTimeout(v.dying); ctx = null; master = null; none = false; cur = null; home = null; fading.length = 0; decoded.clear(); bytes.clear(); level = 0; }

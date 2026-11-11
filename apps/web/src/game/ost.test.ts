@@ -11,13 +11,13 @@ class Param { value = 1; calls: Call[] = []; setValueAtTime(v: number, t: number
 class Node { connected: any[] = []; connect(x: any) { this.connected.push(x); } disconnect() { this.connected = []; } }
 class Gain extends Node { gain = new Param(); }
 class Src extends Node { buffer: any = null; starts: [number, number][] = []; stops: number[] = []; onended: null | (() => void) = null; start(w: number, o: number) { this.starts.push([w, o]); } stop(t?: number) { this.stops.push(t ?? -1); } }
-let made: { gains: Gain[]; srcs: Src[] };
+let made: { gains: Gain[]; srcs: Src[]; decodes: number };
 class FakeCtx { currentTime = 10; state = 'running'; destination = new Node(); createGain() { const g = new Gain(); made.gains.push(g); return g; } createBufferSource() { const s = new Src(); made.srcs.push(s); return s; }
-  decodeAudioData(_b: ArrayBuffer, res: (b: any) => void) { res({ duration: 100 }); } resume() { this.state = 'running'; return Promise.resolve(); } suspend() { this.state = 'suspended'; return Promise.resolve(); } }
+  decodeAudioData(_b: ArrayBuffer, res: (b: any) => void) { made.decodes++; res({ duration: 100 }); } resume() { this.state = 'running'; return Promise.resolve(); } suspend() { this.state = 'suspended'; return Promise.resolve(); } }
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
 beforeEach(() => {
-  _ostReset(); made = { gains: [], srcs: [] };
+  _ostReset(); made = { gains: [], srcs: [], decodes: 0 };
   (globalThis as any).AudioContext = FakeCtx;
   (globalThis as any).fetch = vi.fn(async () => ({ ok: true, status: 200, arrayBuffer: async () => new ArrayBuffer(8) }));
 });
@@ -72,6 +72,26 @@ describe('the fight music loop', () => {
     expect(made.srcs.length).toBe(after); // no new Heaven Falls passes
     expect(after).toBeGreaterThan(n);
   });
+  it('Gearing Up stays decoded through a Proving Ground fight, whatever takes over in it; other tracks keep to two', async () => {
+    ostPlay('gearing_up'); await flush(); await flush();
+    ostPlay('flank_left', 0); await flush(); await flush();
+    ostPlay('last_rounds', 0); await flush(); await flush();
+    ostPlay('heaven_falls', 0); await flush(); await flush();
+    expect(made.decodes).toBe(4);
+    await new Promise((r) => setTimeout(r, 200)); // Gearing Up's voice is long gone: coming back is a new voice, not a revive
+    const before = made.srcs.length;
+    ostPlay('gearing_up'); await flush(); await flush(); // the fight's end: no second decode of the 3-minute file
+    expect(made.decodes).toBe(4); expect(made.srcs.length).toBeGreaterThan(before);
+    // Outside the Proving Ground (the music stopped in between) nothing is held: the oldest of three goes.
+    ostPlay(null, 0); await new Promise((r) => setTimeout(r, 200)); // faded out and gone (no revive)
+    ostPlay('gunline'); await flush(); await flush();
+    ostPlay('mag_check'); await flush(); await flush();
+    ostPlay('danger_close'); await flush(); await flush();
+    const n = made.decodes;
+    expect(n).toBe(7);
+    ostPlay('gearing_up'); await flush(); await flush();
+    expect(made.decodes).toBe(n + 1);
+  });
   it('the volume eases the master gain', () => {
     ostPlay('gunline'); ostVolume(0.42, 250);
     expect(made.gains[0].gain.calls).toContainEqual(['ramp', 0.42, expect.closeTo(10.25, 5)]);
@@ -120,10 +140,21 @@ describe('the game\'s tracks and their files', () => {
     expect(f.loopOut).toBeLessThanOrEqual(secs);
     expect(secs - f.loopOut).toBeLessThan(8);
     expect(f.loopOut - f.loopIn).toBeGreaterThan(f.seam * 4);
-    // Stream copies: no ID3 tag (so no cover art) at the head, and under 4.2 MB.
+    // Stream copies: no ID3 tag (so no cover art) at the head, and under 4 MiB (audio/README.md: over that, re-encode).
     const head = readFileSync(file).subarray(0, 3).toString('latin1');
     expect(head).not.toBe('ID3');
-    expect(readFileSync(file).length).toBeLessThan(4.2 * 1024 * 1024);
+    expect(readFileSync(file).length).toBeLessThan(4 * 1024 * 1024);
+  });
+  it('no master carries the "(ingame)" book-keeping suffix in its tags (audio/README.md)', () => {
+    const MASTERS = resolve(__dirname, '../../../../audio/music');
+    for (const id of ids) {
+      const file = resolve(MASTERS, OST_FILES[id].src.replace('/music/', '').replace('.mp3', '-original.mp3'));
+      expect(existsSync(file), file).toBe(true);
+      const b = readFileSync(file), tags = Buffer.concat([b.subarray(0, 4096), b.subarray(-256)]); // ID3v2 text frames, ID3v1
+      expect(tags.toString('latin1'), id).not.toMatch(/ingame/i);
+      expect(tags.toString('utf16le'), id).not.toMatch(/ingame/i);
+      expect(tags.subarray(1).toString('utf16le'), id).not.toMatch(/ingame/i);
+    }
   });
   it('the Credits page lists every one of the game\'s tracks by its title', () => {
     const music = CREDITS.find((g) => g.group === 'Music')!.items.map((c) => c.what);
