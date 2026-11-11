@@ -353,6 +353,12 @@ This is part of the damage step, not a later pass. To do, in order:
 4. **Rule for every feeling:** a Pump with a feeling must be better than a plain Pump in one clear way, and its cost
    must be in proportion. Draft the new numbers as one table for Leon, flagged provisional, spec first.
 
+**Checked in the data (11 Nov 2026), Leon is right.** A plain Pump adds +0.4 to the multiplier. Rage adds +0.5, so
+it buys +0.1 for its Strain. Shame adds +0.6, so it buys +0.2 for 5 damage to yourself. Worse: 17 of the 25
+feelings step at 0.2 or 0.3, less than a plain Pump, so pouring them makes the Release *weaker* and the behaviour
+they add has to carry the whole price. Only Abandon (+0.8), Spite against the one who last hurt you (+0.8), and the
+scaling ones (Pride, Despair, Belonging, Loneliness alone) can clearly beat a plain Pump.
+
 ## 14. Sigil: the biggest hit in the game (Leon, 11 Nov 2026)
 
 Leon: "increase the Sigil damage cap to about 150% to 200%. Let them spend 2 turns setting up, just make the hit the
