@@ -45,7 +45,10 @@ await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
 await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 20000 });
-await p.waitForTimeout(800); if (await p.locator('[data-phc-cutin]').count()) { await p.keyboard.press('Escape'); await p.waitForTimeout(400); }
+// The your-turn card comes up when the opening has played (later on the 26 x 26 map's heavier screen than the fixed
+// 0.8 s this waited before): wait for it, send it away, and only then reach for the tools (the card covers them).
+await p.locator('[data-phc-cutin]').first().waitFor({ timeout: 6000 }).catch(() => {});
+for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await p.waitForTimeout(400); }
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
 await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-vow="stand"]').click(); await p.waitForTimeout(300);

@@ -228,6 +228,20 @@ if (stillUnseen) {
 } else console.log('     (the hostile walked into sight this time: the fog checks need it unseen)');
 await act({ type: 'sandbox/ai', on: false }); await calm(); await act({ type: 'sandbox/clear' }); await p.waitForTimeout(300);
 
+// 8b. To the level-up screen and back in the middle of a fight: the camera is on your unit again, not in the map's corner.
+await myTurn().catch(() => {});
+await p.mouse.click(5, 500); for (let i = 0; i < 6; i++) await p.keyboard.press('ArrowRight'); await settle();
+await p.evaluate((id) => window.__phc.go('levelup', { levelupChar: id }), cid);
+await p.waitForFunction(() => window.__phc.getState().screen === 'levelup', null, { timeout: 8000 }).catch(() => {});
+await p.waitForTimeout(600);
+const lvl = await p.evaluate(() => ({ cam: window.__phcCamera(), clip: document.querySelector('.phc-fx-layer')?.style.clipPath || '' }));
+ok('on the level-up screen there is no camera and the effects layer is whole again', lvl.cam === null && lvl.clip === '');
+await p.evaluate(() => window.__phc.go('combat', { levelupChar: null }));
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !!window.__phcCamera(), null, { timeout: 8000 }).catch(() => {});
+await p.waitForTimeout(900); await calm(); await settle();
+c = await cam(); g = await G();
+ok('back in the fight the camera shows your unit (' + ref(g.combat.units.find((u) => u.id === me.id).pos) + ')', !!c && c.scrolls && shows(c, g.combat.units.find((u) => u.id === me.id).pos));
+
 // 9. Screenshots at three window sizes: the camera view and the overview; the tile keeps the size a 16 x 11 map had.
 await myTurn().catch(() => {});
 await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'hellraiser_service_rifle', at: ref((mx + 4) + ',' + (my - 1)) });

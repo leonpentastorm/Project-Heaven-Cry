@@ -571,10 +571,14 @@ export class CombatLogic extends DCLogic {
     if (typeof document === 'undefined') return;
     const g = getState().game, cb = g && g.combat, sc = document.querySelector('.phc-grid-scroll'), ov = document.querySelector('.phc-cam-over[data-phc-cam="fight"]');
     if (!cb || !sc) return;
-    const key = (g.code || '') + '|' + cb.name + '|' + (cb.log[0] || ''), fresh = !CAM.live() || this._camFight !== key;
+    const key = (g.code || '') + '|' + cb.name + '|' + (cb.log[0] || '');
+    if (!CAM.live()) this._camFight = null; // the map's window is new (the screen was left and came back): start on your unit again
+    const fresh = this._camFight !== key;
     CAM.onMini = () => { if (LIVE === this) { this._fitKey = null; this.setState({}); } };
     CAM.attach(sc, ov, cb.map.w, cb.map.h); CAM.setMini(this._mini || null);
-    if (fresh && CAM.grid()) { this._camFight = key; if (CAM.home) CAM.follow([CAM.home], 'ask', true); }
+    // (Only once the map has its size and scrolls: on the way back from the level-up screen the first look comes before
+    // the layout, and the camera was left in the map's top-left corner with the player's unit out of view.)
+    if (fresh && CAM.grid() && (CAM.scrolls() || CAM.fits)) { this._camFight = key; if (CAM.home) CAM.follow([CAM.home], 'ask', true); }
     const mini = CAM.miniShown(); if (mini !== !!this._miniOn) { this._miniOn = mini; this.setState({}); }
   }
   /** The map toolbar's bindings. */
@@ -674,7 +678,14 @@ export class CombatLogic extends DCLogic {
     // the action column beside it does not jump wider and back each time the player looks at the whole map.
     const col = this._overview ? Math.floor(wide ? aW : Math.min(aW, Math.ceil(naturalSize(Math.min(w, REF_W), 1).w * usual) + 14)) : vw;
     const v0 = this._view || {};
-    if (z !== (this._zoom || 1) || vw !== v0.w || vh !== v0.h || col !== v0.col || needed !== !!this._camNeeded) { this._zoom = z; this._view = { w: vw, h: vh, col }; this._camNeeded = needed; this.setState({}); }
+    if (z !== (this._zoom || 1) || vw !== v0.w || vh !== v0.h || col !== v0.col || needed !== !!this._camNeeded) {
+      // The map is laid out anew (the first fit of this screen, a resized window, a size the player picked): the camera
+      // keeps what it was looking at. The first time that is the player's own unit (back from the level-up screen in the
+      // middle of a fight, the view was left in the map's top-left corner); after that, the tile in the middle of the view.
+      const first = !this._view, t = !first && CAM.live() && CAM.scrolls() ? CAM.tiles() : null, mid = t ? Math.round((t.x0 + t.x1) / 2) + ',' + Math.round((t.y0 + t.y1) / 2) : null;
+      this._zoom = z; this._view = { w: vw, h: vh, col }; this._camNeeded = needed; this.setState({});
+      if (!this._overview && (first || mid)) this.camAfter(() => { const k = first ? CAM.home : mid; if (k && !CAM.overview) CAM.follow([k], 'ask', true); });
+    }
     CAM.fits = !this._overview && fitsWhole(aW, aH, w, h, z);
     CAM.sync();
   }
