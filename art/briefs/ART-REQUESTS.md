@@ -30,6 +30,7 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 - **Stand-in:** the game uses something that works but isn't right (a neighbour's icon, a patched icon, a code-drawn
   shape). Replace when convenient.
 - **At risk:** exists and is right today, but a planned rules change may make it wrong. Don't draw yet.
+- **Planned:** wanted, but waiting on a design pass named in the row. Don't start.
 - **Done:** delivered and in the catalog (kept here for one release, then removed).
 
 ## Open requests
@@ -51,6 +52,15 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 ### 3. Portraits, illustrations, maps
 
 Nothing waiting.
+
+### 4. Equipment artwork (Heavenprint)
+
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| E1 | **A painted picture for every weapon and piece of gear** (Leon, 11 Nov 2026). Today: 60 weapons, 21 armour and focus items, about 100 with what is planned, and growing | **Planned, with Equipment 2.0. Don't start yet:** that pass will add, rename and re-tier gear (Masterwork and unique weapons with their own Weapon Art among them), so the list of items isn't final | The item itself as an object, in Heavenprint paint: the inspect view in the backpack and the ARMS tab, a loot card, a shop. The line icons stay for small sizes (buttons, the pack grid); the painting is the large view | Heavenprint as in the style guide, object on a plain dark ground, no hands and no figure, three-quarter view, one consistent light. Every weapon is invented, never a real one, and shows its faction's signature the way its line icon does ([`weapon-icons.md`](../style-guide/weapon-icons.md) lists each faction's signature and the family silhouettes: the painting and the line icon of one weapon must be recognisably the same object). Masterwork and unique pieces get a visibly richer treatment. Size and framing to be fixed when Equipment 2.0 fixes the screens that show them | `art/illustrations/gear/<item-id>.png` (proposed) |
+
+When Equipment 2.0 settles the item list, this row is replaced by one row an item, grouped by family, each with its
+line icon beside it as the reference.
 
 ## At risk in the balance pass
 
@@ -83,5 +93,6 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **11 Nov 2026:** E1 added (Heavenprint artwork for all equipment, planned with Equipment 2.0).
 - **11 Nov 2026:** list started. W1, W2, F1, F2 opened. Breaching Strike, Nothing Gets Past and Iron Grip were
   checked against their rules 1.13 meanings and fit as they are.
