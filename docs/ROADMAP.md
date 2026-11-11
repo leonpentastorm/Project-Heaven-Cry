@@ -24,7 +24,12 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    ~~**Still open for Leon:** the Miracle's price.~~ **Decided** (Leon, 9 Nov 2026) and built as **Miracle 2.1**, rules
    1.6.2 (items 724–737): the Miracle needs Devotion 10 and lowers Devotion by 5 levels; all eight Miracles are
    stronger and engine-run. Every number in items 701–736 is provisional for playtests.
-3. **Rewrite M813 for World Play.** Every area gets:
+2b. **Fight maps become 26 × 26** (Leon, 11 Nov 2026; queued right behind step 1 of the balance pass, which is in the
+   same engine files). Every fight map is A to Z by 1 to 26; sides deploy about 10 to 14 tiles apart with cover on the
+   approach (Sprint and range bands finally matter); the screen opens zoomed to fit and follows whoever acts. The five
+   painted maps (M813's four and the Proving Ground) go to plain colour until they are repainted (`art/briefs/ART-REQUESTS.md`
+   M1). The simulator's maps follow, so the balance numbers are measured on the real ground.
+3. **Rewrite M813 for World Play.** (Leon, 11 Nov 2026: "M813 is too broken now with all we have changed": its maps are plain colour until this is done.) Every area gets:
    - an objective with a `where`;
    - a hazard or obstacle with approaches and real failure costs;
    - someone to talk to (`wants`, `knows`, `talk`);
