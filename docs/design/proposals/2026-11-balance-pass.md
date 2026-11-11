@@ -321,3 +321,17 @@ That is 14 of 19 the engine can own, and 5 that are judgement by nature.
    stated in one plain sentence on the card). An item is `hybrid` only if a real judgement is left.
 3. A `narrator` item with no judgement left in it is a rule nobody runs: it becomes `engine` or is rewritten.
 4. The count above is printed again at the end of the pass.
+
+## 12. Stage A is measured; Leon's answers (11 Nov 2026)
+
+The baseline is `docs/design/handoffs/balance-sim-baseline.md`; the action prices `action-price-list.md`; the engine
+and Narrator split `adjudication-split.md`; the 38 questions and Leon's answers `balance-questions.md` (all in
+`docs/design/handoffs/`). The answers that change the targets above:
+
+1. **Guns sit a bit under 150% optimised.** The full 150% is for weapons whose price is ludicrously expensive
+   ammunition (a rocket launcher). Blades and other physical builds keep 150%.
+2. **A ranged technique beats the plain shot by 10 to 25% when its condition is met.**
+3. **Burst deals more than the Shot for its AP and is worse to hit.**
+4. **A hit costs Momentum at most once a round.**
+5. **"3 turns of focus"** is 3 rounds under fire from half the enemies of a standard fight for four.
+6. **The engine target** is "no rule is ever left to the Narrator", not a share of labels.

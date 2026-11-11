@@ -2,6 +2,17 @@
 
 Stage A measured the game and changed no numbers. These are all the questions it raised that only Leon can answer. **Each has a recommendation, and the recommendation is what gets built if no answer comes** (Leon: "build whatever does not need me approving if I reply late"). Answer by number, e.g. "A2 no: …"; anything not mentioned takes its recommendation.
 
+## Leon's answers (11 Nov 2026)
+
+Everything not named here takes its recommendation.
+
+- **A1 (what "3 turns of focus" means):** the recommendation: 3 rounds under fire from half the enemies of a standard fight for four (2 soldiers, or 1 elite and 1 soldier).
+- **A2 (where the optimised gun's 150% comes from):** a gun is physical too, **so its ceiling is a bit lower than 150%**. Only weapons with ludicrously expensive ammunition, like a rocket launcher, get the full 150%. The rest as recommended: base damage per weapon family is settled first (the rifle family within about 20% of the yardstick at the same AP), and techniques, perks and quality carry the rest. *Reading, to confirm in the damage step:* ordinary guns top out at about 135 to 140% optimised; the 150% is kept for launcher-class weapons whose price is the ammunition.
+- **A3 (should a ranged technique ever beat the plain shot):** yes, by 10 to 25% when its condition is met, and one shooter can meet Dead Centre's condition alone.
+- **A5 (Momentum drained by being hit):** yes: a hit costs Momentum at most once a round (settled in the resources step).
+- **B3 (Burst against the plain Shot):** Burst is **better in damage and worse to hit**. It may out-damage the Shot for its AP; it pays in accuracy.
+- **C2 (the 90% target):** restated as "no rule is ever left to the Narrator". The three labels stay; the report shows the label share and the effect-line share side by side.
+
 ## A. The yardsticks (from the fight simulator)
 
 Read with: docs/design/handoffs/balance-sim-baseline.md.
