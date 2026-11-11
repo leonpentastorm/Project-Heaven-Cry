@@ -31,6 +31,21 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    approach (Sprint and range bands finally matter); the screen opens zoomed to fit and follows whoever acts. The five
    painted maps (M813's four and the Proving Ground) go to plain colour until they are repainted (`art/briefs/ART-REQUESTS.md`,
    maps M1 to M9). The simulator's maps follow, so the balance numbers are measured on the real ground.
+2c. **The camera** (Leon, 11 Nov 2026: on a 26 × 26 map zoomed to fit, "tokens will be barely visible, let alone
+   effects like casings"; "zoom to our current is good"). Built with 2b, for the fight and the area map alike:
+   - **The view keeps today's tile size.** The map is bigger than the window and the window is a camera on it. Fit-to-
+     window stays as an **overview** the player switches to and back from (a key and the map's zoom control), never
+     the default.
+   - **The camera follows the play:** to whoever's turn it is; to the target before an attack, a spell or a push
+     plays, so its effect is seen at full size; back to the player's own unit when their turn comes. It moves once per
+     beat, smoothly, never while the player is aiming or dragging.
+   - **The player moves it too:** drag the map, the arrow or WASD keys, the wheel; a key to jump back to their unit.
+   - **Nothing happens unseen:** an arrow at the screen's edge points at an effect or a unit that acts off screen (and
+     a click on it goes there); a small map in the corner shows the whole field, units as dots, the camera's frame,
+     and takes clicks. Fog of war holds: an unseen hostile's turn moves nobody's camera and shows on neither.
+   - **To settle while building** (proposed defaults in brackets): whether the camera follows hostile turns at all or
+     only shows their effects on the player's side of the field [follow what the squad can see]; whether co-op players
+     each have their own camera [yes]; the overview's place in the settings; reduced-motion players [cuts, no glides].
 3. **Rewrite M813 for World Play.** (Leon, 11 Nov 2026: "M813 is too broken now with all we have changed": its maps are plain colour until this is done.) Every area gets:
    - an objective with a `where`;
    - a hazard or obstacle with approaches and real failure costs;
