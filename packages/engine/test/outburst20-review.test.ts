@@ -136,6 +136,15 @@ describe('The Twin Pays: an ordinary Begin after a let-go twin cast pays its swe
     const u1 = f.turn(f.pc); expect(u1.mg!.held!.stage).toBe(1); expect(u1.mg!.strain).toBe(s0); // −1 turn start, +1 swell
     const u2 = f.turn(f.pc); expect(u2.mg!.held!.stage).toBe(2); expect(u2.mg!.strain).toBe(s0);
   });
+  it('the twin pays the Begin\'s AP too (Leon, 11 Nov 2026): 0 AP, 0 MP; the next Begin costs its AP again', () => {
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: { the_twin_pays: 'mastered' } }], [{}]);
+    const u0 = f.turn(f.pc); u0.ap = 6; u0.mg!.mp = 500; u0.mg!.strainLimit = 20; const d = u0.mg!.designs[0].id, mp0 = u0.mg!.mp;
+    f.act({ type: 'combat/outburst', unitId: u0.id, design: d, hold: true, mods: ['twin'] } as any);
+    expect(f.pc.ap).toBe(6); expect(f.pc.mg!.mp).toBe(mp0); expect(f.pc.mg!.held).toBeTruthy();
+    f.act({ type: 'combat/letgo', unitId: u0.id } as any);
+    const ap1 = f.pc.ap; f.act({ type: 'combat/outburst', unitId: u0.id, design: d, hold: true, mods: ['twin'] } as any);
+    expect(f.pc.ap).toBeLessThan(ap1); // used this fight: an ordinary Begin
+  });
 });
 
 describe('Heart\'s Own: the Short is checked at the turn\'s end when the raised limit falls (item 544)', () => {

@@ -653,7 +653,9 @@ const H: Record<string, Handler> = {
     noteOverwatch({ watcher: watcherSeen ? String(e.unit) : '', target: String(e.target), tile: String(e.at), at: Math.round(performance.now()) });
   },
   shot(e) {
-    const g = gunOf(e.weapon || '', e.cat || ''), br = brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
+    // a thrown weapon is never a gunshot, whatever the event names as the weapon (a gun in the other hand, a blade that
+    // is also a focus): a swish, no muzzle flash, no casing
+    const g: Gun = e.thrown && gunOf(e.weapon || '', e.cat || '').look !== 'lob' ? { sound: 'swish', rate: 0.8, look: 'thrown' } : gunOf(e.weapon || '', e.cat || ''), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
     const silent = !!(volley && volley.unit === e.unit && volley.silent && e.chain && performance.now() < volley.until);
     // A bow's shot waits for the draw: the arrow comes from the quiver behind the portrait to the front, then flies.
     const draw = drawsArrow(e) ? DRAW_MS : 0;
@@ -675,7 +677,7 @@ const H: Record<string, Handler> = {
       if (from && shooterTok && !rico) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
       // the casing: thrown out behind the shooter (away from the target), with a wisp of smoke; a pump, a lever or a
       // bolt is worked first, so its casing comes a beat later
-      if (from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
+      if (br && from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
       const start = mp || (from ? { x: from.x, y: from.y } : null);
       const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
       const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' || g.look === 'thrown' ? 0.9 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms

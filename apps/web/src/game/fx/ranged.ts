@@ -393,7 +393,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
   /** A round fired with no attack roll: a tracer that misses on purpose (never MISS), a covering burst, an arc, the
    *  round into the cover (Flush). */
   function loose(e: any, kind: NonNullable<ReturnType<typeof looseKind>>, r: TechRec | null) {
-    const g = K.gunOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to);
+    const g = (e.thrown ? { sound: 'swish' as Sfx, rate: 0.8, look: 'thrown' } : K.gunOf(e.weapon || '', e.cat || '')), from = at(e.from), toP = centre(e.to);
     if (g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jit(0.04) });
     if (!toP) return;
     const shooter = from ? tokOf(e.unit, e.from) : null;
@@ -545,7 +545,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (e.hit && e.target) hits.set(String(e.target), { unit: String(e.unit || ''), n: e.n || 0 });
       if (kind) { loose(e, kind, r); return; }
       const id = r?.id || '', vi = viOf.get(canon(e)) ?? 0;
-      const from = at(e.from), toP = centre(e.to), g = K.gunOf(e.weapon || '', e.cat || '');
+      const from = at(e.from), toP = centre(e.to), g = (e.thrown ? { sound: 'swish' as Sfx, rate: 0.8, look: 'thrown' } : K.gunOf(e.weapon || '', e.cat || ''));
       const ft = flight(from, toP, g.look) + bowDraw(e);
       // a special round (E9; or the one Load Special put in the chamber, which only a Fire technique's first shot from
       // the hand it was loaded for fires: a plain shot, a Press, a Take or a Watch leaves it chambered, as the engine does)

@@ -5371,7 +5371,7 @@
       "ap_cost": null,
       "uses": "per_combat",
       "flavour": "Up there, someone with your face flinches. Down here, the spell lands.",
-      "text": "Once per combat, Begin an Outburst with no mana and no Strain, and hold it with no Strain: your twin in the upper realm pays for it.",
+      "text": "Once per combat, Begin an Outburst with no AP, no mana and no Strain, and hold it with no Strain: your twin in the upper realm pays for it.",
       "effects": [
         {
           "op": "cost_mod",

@@ -85,7 +85,9 @@
 <sc-if value="{{lay.logMap}}" hint-placeholder-val="{{true}}"><!--PANEL:log--><div data-phc-panel="log" style="{{lay.logStyle}}"><button type="button" class="phc-grip" onPointerDown="{{lay.grip.log}}" onKeyDown="{{lay.gripKey.log}}" aria-label="Move the combat log: drag, or use the arrow keys" title="Drag to move the combat log (arrow keys too)">⠿</button>
 <div style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">COMBAT LOG</span>
+<div class="phc-cb-logscroll" tabindex="0" role="log" aria-label="Combat log, newest at the bottom; scroll up for earlier lines" style="display: flex; flex-direction: column-reverse; gap: 6px; max-height: 210px; overflow-y: auto; overscroll-behavior: contain; padding-right: 6px">
 <sc-for list="{{log}}" as="l" hint-placeholder-count="3"><sc-if value="{{l.isPlain}}"><p style="margin: 0; font-family: 'Spectral', serif; font-size: 15px; line-height: 1.55; color: #DCE2EC">{{l.text}}</p></sc-if><sc-if value="{{l.isPatron}}" hint-placeholder-val="{{false}}"><figure data-phc-patron-line style="margin: 0; {{l.pl.style}}"><span data-phc-patron-face="{{l.pl.patron}}" style="grid-row: span 2; {{l.pl.faceBox}}"><img src="{{l.pl.face}}" alt="" style="{{l.pl.faceStyle}}"></span><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #D36A90">{{l.pl.head}}</span><span style="font-family: 'Spectral', serif; font-size: 14px; font-style: italic; line-height: 1.45; color: #E7EBF3">{{l.pl.text}}</span></figure></sc-if></sc-for>
+</div>
 </div>
 </div><!--/PANEL:log--></sc-if>
 </section>

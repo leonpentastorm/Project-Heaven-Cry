@@ -136,6 +136,7 @@ const COMBAT_CSS = [
   '.phc-cb-root .phc-a-right.phc-closing,.phc-cb-root .phc-a-left.phc-closing,.phc-cb-root .phc-a-drop.phc-closing,.phc-cb-root .phc-a-rise.phc-closing,.phc-cb-root .phc-a-pop.phc-closing,.phc-cb-root .phc-a-fade.phc-closing{animation-duration:calc(.2s * var(--phc-k, 1))}',
   '.phc-hp-fill{transition:width calc(.16s * var(--phc-k, 1)) ease-out}.phc-hp-chip{transition:width calc(.55s * var(--phc-k, 1)) cubic-bezier(.4,0,.2,1) calc(.4s * var(--phc-k, 1))}',
   '@keyframes phcPipDrain{0%{background:#FFFFFF;transform:scaleY(1.7);box-shadow:0 0 12px rgba(255,255,255,.9)}35%{background:#FFFFFF;transform:scaleY(1.2)}100%{transform:none;box-shadow:none}}.phc-pips>span.phc-pip-drain{animation:phcPipDrain calc(.55s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both;animation-delay:0s}',
+  '@keyframes phcPipCost{0%,100%{opacity:.3}50%{opacity:.75}}.phc-pip-cost{animation:phcPipCost calc(1.1s * var(--phc-k, 1)) ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pip-cost{animation:none}}',
   '@keyframes phcWaitDot{0%,80%,100%{opacity:.25}40%{opacity:1}}.phc-wait-dots>span{animation:phcWaitDot 1.2s ease-in-out infinite}.phc-wait-dots>span:nth-child(2){animation-delay:.2s}.phc-wait-dots>span:nth-child(3){animation-delay:.4s}',
   '.phc-reduce .phc-yt,.phc-reduce .phc-plan,.phc-reduce .phc-pips>span.phc-pip-drain{animation:phcPlanIn .15s ease-out both}.phc-reduce .phc-yt::after{display:none}',
   '.phc-reduce .phc-cur-ring,.phc-reduce .phc-tgt-ring,.phc-reduce .phc-wait-dots>span{animation:none}.phc-reduce .phc-cb-act{transition:none}.phc-reduce .phc-hp-chip,.phc-reduce .phc-hp-fill{transition:none}',
@@ -917,7 +918,9 @@ export class CombatLogic extends DCLogic {
     else if (ap < this._ap.v) this._drain = { from: this._ap.v, to: ap, seq: ((this._drain && this._drain.seq) || 0) + 1 };
     this._ap = { key: apKey, v: ap };
     const dr = this._drain;
-    const apPips = Array.from({ length: maxAp }, (_, i) => ({ key: 'p' + i + (dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? '-' + dr.seq : ''), cls: dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? 'phc-pip-drain' : '', style: 'height: 14px; border-radius: 4px; ' + (i < ap - Math.max(0, cost - encoreLend) ? 'background: #E7EBF3' : i < ap ? 'background: transparent; border: 2px solid #FFFFFF; box-sizing: border-box' : 'background: #1C2536') }));
+    const apPips = Array.from({ length: maxAp }, (_, i) => ({ key: 'p' + i + (dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? '-' + dr.seq : ''), cls: dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? 'phc-pip-drain' : i >= ap - Math.max(0, cost - encoreLend) && i < ap ? 'phc-pip-cost' : '',
+      // the AP the picked action will take: still lit, dimmed and pulsing (they were hollow, and read as already spent)
+      style: 'height: 14px; border-radius: 4px; ' + (i < ap - Math.max(0, cost - encoreLend) ? 'background: #E7EBF3' : i < ap ? 'background: #E7EBF3; opacity: 0.45' : 'background: #1C2536') }));
     const mv = cur ? cur.movement : 1;
     // The one action list (game/commands.ts): the tabs show it, the turn card's commands and their customise dialog pick from it.
     const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!g.sandbox, g }); // the Proving Ground has no Narrator to rule on anything
@@ -1322,10 +1325,12 @@ export class CombatLogic extends DCLogic {
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
       initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
-      log: [...cb.log.slice(-6).map((text, i) => { const pl = patronLogCard(text); return { key: cb.log.length - 6 + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {} }; }),
+      // The whole fight (the last 120 lines), newest first: the box is a reversed column, so it rests on the newest line
+      // and scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).
+      log: [...cb.log.slice(-120).map((text, i, all) => { const pl = patronLogCard(text); return { key: cb.log.length - all.length + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {} }; }),
         // Rules 1.9 (item 695): what the loot cap held back, for the host's eyes only (the engine strips lootLog from
         // everyone else's view).
-        ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])],
+        ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),
       cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
       toStory: () => go('main'), report: openReport, over: !!cb.over, overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
       overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox ? '' : ' The Narrator picks up the story.') + (me === g.hostId && cb.lootLog && cb.lootLog.length ? ' ' + lootLogLine(cb.lootLog) : ''),
