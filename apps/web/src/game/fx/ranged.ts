@@ -270,6 +270,14 @@ export function smokeTiles(key: string, r: number): string[] {
 /** What a weapon fires, as play.ts draws it (set when the handlers are wrapped): only bullets stream, rattle and spray. */
 let gunLook: (id: string, cat: string) => string = () => 'bullet';
 const streams = (e: any, r: TechRec | null) => !!r && gunLook(String(e.weapon || ''), String(e.cat || '')) === 'bullet' && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
+/** A gun that fires tracers (bullets, pellets, a core rifle's bolt; not a launcher, a bow, a flamer or a thrown blade):
+ *  its Suppress is drawn as a burst of three, the rolled round last. */
+const tracers = (e: any) => !e.thrown && !['lob', 'rocket', 'arrow', 'flame', 'thrown'].includes(gunLook(String(e.weapon || ''), String(e.cat || '')));
+/** …and whose burst is one recording (play.ts volleySound: bullets, not a shotgun's); any other gun's rounds each bang. */
+const rattles = (e: any) => gunLook(String(e.weapon || ''), String(e.cat || '')) === 'bullet' && e.cat !== 'shotgun' && !e.thrown;
+/** How long after a Suppress's first round its rolled round leaves (ms at Fast): two rounds crack past, then the one
+ *  that was rolled lands, so the hit and its number come at the end of the burst, not before two thirds of it. */
+export const SUPPRESS_LEAD = 120;
 /** The chambered special round this shot fires (Load Special), or ''. Spends it. */
 function roundOf(r: TechRec | null, e: any): string {
   if (!r || r.group !== 'fire' || !e.unit) return '';
@@ -306,10 +314,14 @@ export function rangedBeat(e: FxEvent): number | undefined {
       const vi = viOf.get(canon(e)) ?? 0;
       if (r.id === 'mag_dump' && streams(e, r)) return vi === 0 ? 300 : 110;
       if (r.id === 'rake' && streams(e, r)) return vi === 0 ? 260 : 170;
+      if (r.id === 'suppress' && tracers(e)) return 170 + SUPPRESS_LEAD; // its rolled round is the burst's last
       if (r.id === 'punch_through' && !e.chain) return 440 + bowDraw(e);
       if (r.id === 'last_round' && !e.chain) return 520 + bowDraw(e);
       return undefined;
     }
+    // Suppress's volley draws nothing of its own: its rattle starts with the first muzzle flash, not a beat before it
+    // (Leon, 11 Nov 2026: "Suppress with a gun plays the sound and damage way before the shoot VFX")
+    case 'volley': return e.mode === 'suppress' ? 0 : undefined;
     case 'bead': return seesActor(e.unit) ? 160 : 0;
     case 'spot': return 160;
     case 'bead_end': case 'watch_end': return quietEnd(e.why) || !seesActor(e.unit) ? 0 : 80;
@@ -598,7 +610,8 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         base({ ...e, chain: true });
         return;
       }
-      base(e);
+      const lead = id === 'suppress' && !!from && !!toP && tracers(e) ? SUPPRESS_LEAD : 0;
+      if (lead) after(() => base(e), lead); else base(e);
       if (!toP) {
         return;
       }
@@ -623,13 +636,16 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
           // a flamer's gout is the one the shot draws
           if (look === 'flame' || look === 'thrown') break;
           const own = ownLook(g);
+          // a gun's burst (lead): the two leave first, each with its flash, and the rolled round follows them; anything
+          // else fires its rolled round first and the two after it
           for (const [k, side] of [[0, -1], [1, 1]] as [number, number][]) after(() => {
             const end = { x: toP.x + Math.cos(a) * s * 0.9 - Math.sin(a) * side * s * 0.42, y: toP.y + Math.sin(a) * s * 0.9 + Math.cos(a) * side * s * 0.42 };
-            const ft = flight(from, end, own);
-            fly(g, from, end, ft, own === 'bullet' ? s * 0.8 : s);
+            const start: XY = lead ? K.muzzle(from, toP, g.color) : from, ft = flight(start, end, own);
+            if (lead && !rattles(e) && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // no recording covers them: each round bangs
+            fly(g, start, end, ft, own === 'bullet' ? s * 0.8 : s);
             if (own === 'bullet' || own === 'arrow') play(own === 'arrow' ? 'swish' : 'whiz', toP, { delay: ft * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
             after(() => lands(g, own === 'bullet' || own === 'arrow' ? { x: toP.x + side * s * 0.42, y: toP.y + s * 0.62 } : end, s, 0.85), ft); // at its feet, below the token
-          }, 50 + k * 60);
+          }, lead ? k * 60 : bowDraw(e) + 50 + k * 60); // (a bow's two follow the arrow it has drawn, never fly before it)
           break;
         }
         case 'called_shot':

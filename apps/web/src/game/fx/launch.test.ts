@@ -45,12 +45,19 @@ describe('what a weapon fires is what is drawn', () => {
     expect(tr.filter((e) => e.w === 'boom').length).toBe(3);
     expect(tr.some((e) => e.w === 'sfx' && /^(gun_|burst_|auto_)/.test(e.s || ''))).toBe(false);
   });
-  it('Suppress with a rifle is still three tracers, and its rattle comes with the muzzle flash', () => {
-    const tr = suppress(RIFLE);
-    expect(tr.filter((e) => e.w === 'proj').map((e) => e.look)).toEqual(['bullet', 'bullet', 'bullet']);
-    const rattle = tr.find((e) => e.w === 'sfx' && /^burst_/.test(e.s || ''))!, flash = tr.find((e) => e.w === 'muzzle')!;
-    expect(rattle).toBeTruthy(); expect(flash).toBeTruthy();
-    expect(flash.t - rattle.t).toBeLessThanOrEqual(200);
+  it('Suppress with a rifle: its rattle starts with the first muzzle flash, three rounds leave, and the hit comes with the last of them', () => {
+    const tr = suppress(RIFLE), fly = tr.filter((e) => e.w === 'proj');
+    expect(fly.map((e) => e.look)).toEqual(['bullet', 'bullet', 'bullet']);
+    const rattle = tr.find((e) => e.w === 'sfx' && /^burst_/.test(e.s || ''))!, flashes = tr.filter((e) => e.w === 'muzzle'), hit = tr.find((e) => e.w === 'impact')!;
+    expect(rattle).toBeTruthy(); expect(flashes).toHaveLength(3);
+    expect(Math.abs(flashes[0].t - rattle.t)).toBeLessThanOrEqual(20); // (it was a beat, about 100 ms, before the flash)
+    expect(hit.t).toBeGreaterThanOrEqual(Math.max(...fly.map((e) => e.t))); // (it landed before two of the three had left)
+    const press = { k: 'pressure', n: n(), unit: 'f1', at: '9,3', now: 2, was: 0, state: 'pressed', by: 'pc-a', why: 'Suppress' };
+    (window as any).__phcFxTrace = [];
+    queueFx([tech('suppress', RIFLE), { k: 'volley', n: n(), ...RIFLE, target: 'f1', to: '9,3', mode: 'suppress', shots: 3, tech: 'suppress' }, shot(RIFLE, { chain: true, tech: 'suppress', vi: 0 }), press] as any);
+    vi.advanceTimersByTime(3000);
+    const t2 = trace(); // the Pressure it gives shows after the hit, not before
+    expect(t2.find((e) => e.w === 'ev' && e.k === 'pressure')!.t).toBeGreaterThanOrEqual(t2.find((e) => e.w === 'impact')!.t);
   });
 });
 
