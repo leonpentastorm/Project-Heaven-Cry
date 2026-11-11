@@ -197,6 +197,8 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Hostiles the party has seen at least once this fight (shared sight: visibility(cb, 'pc')), kept as they come into view.
    * The fight music reads it, so an elite or boss in the fog of war changes nothing until it is seen (spec: Music). */
   sighted?: string[];
+  /** The fight's song, picked from the pool when the fight began and kept to its end (spec: Music, The fight's song). */
+  song?: import('./music').OstId;
   /** Presentation events (shots, hits, reloads, spells…) for the client's effects layer, newest last, capped at FX_CAP.
    * Numbered by fxSeq; they carry no rules and nothing reads them back (see FxEvent). */
   fx?: FxEvent[]; fxSeq?: number;

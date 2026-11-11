@@ -6,9 +6,12 @@ import type { GameState } from './game';
 import type { Character } from './character';
 import { type Combat, visibility } from './combat';
 import { SKILL, TRAITS } from './data';
+import { seedFrom } from './rng';
 
 /** The game's own fight music (spec: Music): files the web client ships (apps/web/public/music). */
-export type OstId = 'gunline' | 'heaven_falls' | 'last_rounds';
+export type OstId = 'gunline' | 'heaven_falls' | 'last_rounds'
+  | 'brass_on_the_floor' | 'danger_close' | 'flank_left' | 'held_breath' | 'hold_the_line' | 'line_of_four' | 'mag_check' | 'suppressing_fire'
+  | 'gearing_up';
 /** A track: a YouTube video (yt), or one of the game's own tracks (ost), and its credit. */
 export interface Track { yt?: string; ost?: OstId; title: string; artist: string; start?: number; length?: number; licence?: string }
 export const OST_ARTIST = 'Project Heaven Cry OST';
@@ -16,19 +19,33 @@ export const OST: Record<OstId, Track & { ost: OstId }> = {
   gunline: { ost: 'gunline', title: 'Gunline', artist: OST_ARTIST, length: 70 },
   heaven_falls: { ost: 'heaven_falls', title: 'Heaven Falls', artist: OST_ARTIST, length: 137 },
   last_rounds: { ost: 'last_rounds', title: 'Last Rounds', artist: OST_ARTIST, length: 82 },
+  brass_on_the_floor: { ost: 'brass_on_the_floor', title: 'Brass on the Floor', artist: OST_ARTIST, length: 57 },
+  danger_close: { ost: 'danger_close', title: 'Danger Close', artist: OST_ARTIST, length: 60 },
+  flank_left: { ost: 'flank_left', title: 'Flank Left', artist: OST_ARTIST, length: 62 },
+  held_breath: { ost: 'held_breath', title: 'Held Breath', artist: OST_ARTIST, length: 61 },
+  hold_the_line: { ost: 'hold_the_line', title: 'Hold the Line', artist: OST_ARTIST, length: 61 },
+  line_of_four: { ost: 'line_of_four', title: 'Line of Four', artist: OST_ARTIST, length: 70 },
+  mag_check: { ost: 'mag_check', title: 'Mag Check', artist: OST_ARTIST, length: 62 },
+  suppressing_fire: { ost: 'suppressing_fire', title: 'Suppressing Fire', artist: OST_ARTIST, length: 59 },
+  gearing_up: { ost: 'gearing_up', title: 'Gearing Up', artist: OST_ARTIST, length: 179 },
 };
+/** The ordinary fight's songs (spec: Music, The fight's song): one is picked for each fight. */
+export const FIGHT_POOL: readonly OstId[] = ['gunline', 'brass_on_the_floor', 'danger_close', 'flank_left', 'held_breath', 'hold_the_line', 'line_of_four', 'mag_check', 'suppressing_fire'];
+/** The Proving Ground's music while the squad is gearing up (spec: Music, The Proving Ground). */
+export const GEARING_UP: OstId = 'gearing_up';
 /** A track's identity, for "has the song changed?": the OST id or the YouTube id. */
 export const trackKey = (t: Track | null | undefined) => (t ? (t.ost ? 'ost:' + t.ost : 'yt:' + (t.yt || '')) : '');
 
 /**
  * Which of the game's fight tracks fits this fight (spec: Music): Last Rounds while at least half the party is Downed
- * (or dead), Heaven Falls once the party has seen an elite or a boss in it (or in a Hard or Boss fight), else Gunline.
+ * (or dead), Heaven Falls once the party has seen an elite or a boss in it (or in a Hard or Boss fight), else the
+ * fight's own song (cb.song, picked from the pool when the fight began: noteFightSong; Gunline for a fight without one).
  * The party is every fighter on the players' side. What the party has seen is cb.sighted (shared sight, kept by the
  * engine as hostiles come into view), so every player in the room gets the same track and label, and an elite or boss
  * still in the fog of war changes nothing: neither the track nor the label gives it away. Heaven Falls holds for the
  * whole fight once one has been seen; Last Rounds hands back as soon as enough of the party is up again.
  */
-export function fightTheme(cb: Pick<Combat, 'units' | 'difficulty'> & Partial<Pick<Combat, 'sighted' | 'map' | 'over'>>): { id: OstId; why: string } {
+export function fightTheme(cb: Pick<Combat, 'units' | 'difficulty'> & Partial<Pick<Combat, 'sighted' | 'map' | 'over' | 'song'>>): { id: OstId; why: string } {
   const party = cb.units.filter((u) => u.side === 'pc'), down = party.filter((u) => u.downed || u.dead).length;
   if (party.length && down * 2 >= party.length) return { id: 'last_rounds', why: down === party.length ? 'Last rounds: the party is down' : 'Last rounds: half the party is down' };
   // Old saves have no sighted list yet: what the party sees right now.
@@ -37,7 +54,26 @@ export function fightTheme(cb: Pick<Combat, 'units' | 'difficulty'> & Partial<Pi
   if (foes.some((u) => u.tier === 'boss')) return { id: 'heaven_falls', why: 'Fight: a boss' };
   if (foes.some((u) => u.tier === 'elite')) return { id: 'heaven_falls', why: 'Fight: an elite' };
   if (cb.difficulty === 'boss' || cb.difficulty === 'hard') return { id: 'heaven_falls', why: 'Fight: a hard one' };
-  return { id: 'gunline', why: 'Fight' };
+  return { id: cb.song && FIGHT_POOL.includes(cb.song) ? cb.song : 'gunline', why: 'Fight' };
+}
+/**
+ * The fight's song (spec: Music, The fight's song), called by apply() after every action: a fight without one gets one
+ * from the pool, once, and keeps it (it is in the state, so every player hears the same one, and a re-render, a
+ * reconnect or Heaven Falls / Last Rounds handing back never changes it). Never the last ordinary fight's song. The
+ * pick hashes the dice's state and the count of picks without rolling them, so it changes no roll. `carried`: the
+ * fight was already under way without a song (a save from before the pool): it keeps Gunline, which it was playing.
+ */
+export function noteFightSong(g: GameState, carried = false) {
+  const cb = g.combat;
+  if (!cb || (cb.song && FIGHT_POOL.includes(cb.song))) return;
+  const m = musicOf(g);
+  if (carried) cb.song = 'gunline';
+  else {
+    const pool = FIGHT_POOL.filter((id) => id !== m.lastSong), n = m.picks = (m.picks || 0) + 1;
+    cb.song = pool[(seedFrom(g.rng.state + ':song:' + n) >>> 0) % pool.length];
+  }
+  // A fight that begins on Heaven Falls is not an ordinary fight: its song may never be heard, so it isn't "the last".
+  if (fightTheme(cb).id !== 'heaven_falls') m.lastSong = cb.song;
 }
 export interface MusicNow {
   seq: number; layer: 'spotlight' | 'pin'; charId: string; track: Track; reason: string;
@@ -52,6 +88,8 @@ export interface MusicState {
   used: Record<string, string>;
   /** Music traits: area changes since the character's song last played. */
   silent: Record<string, number>;
+  /** The last ordinary fight's song (the next fight picks another), and how many picks were made (spec: The fight's song). */
+  lastSong?: OstId; picks?: number;
 }
 
 export const PIN_AREAS = 2;
@@ -92,7 +130,8 @@ export function musicOf(g: GameState): MusicState {
  * What the room should hear now: the spotlight or pin, else the fight's music, else the area's. Fight music: Last
  * Rounds when half the party is down (over everything but a spotlight or pin), else the campaign's own theme for that
  * named encounter, else the game's fight track (fightTheme). Campaigns' generic combat tracks are no longer played.
- * A Proving Ground gearing up is in the story phase, so it has no fight music; nor has a fight with no enemies in it.
+ * A fight with no enemies in it has no fight music. A Proving Ground gearing up (no fight on) plays Gearing Up in
+ * place of the area's music.
  */
 export function musicFor(g: GameState): { key: string; layer: 'spotlight' | 'pin' | 'encounter' | 'combat' | 'ambient'; track: Track | null; reason: string; charId?: string; seq?: number } {
   const m = g.music?.now;
@@ -106,6 +145,7 @@ export function musicFor(g: GameState): { key: string; layer: 'spotlight' | 'pin
     }
     return { key: 'c:' + th.id, layer: 'combat', track: OST[th.id], reason: th.why };
   }
+  if (g.sandbox) return { key: 'pg:' + GEARING_UP, layer: 'ambient', track: OST[GEARING_UP], reason: 'Proving Ground: gearing up' };
   const t = zone?.music?.ambient || camp?.music?.ambient || null;
   return { key: 'a:' + trackKey(t), layer: 'ambient', track: t, reason: zone ? 'Area: ' + zone.name : 'Area' };
 }
