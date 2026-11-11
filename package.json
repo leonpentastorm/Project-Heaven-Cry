@@ -3,13 +3,19 @@
   "version": "0.20.0",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "assets": "python3 tools/build_web_assets.py",
     "dev": "npm run dev -w @phc/web",
     "build": "npm run build -w @phc/web",
     "test": "npm test -w @phc/engine && npm test -w @phc/web",
     "typecheck": "tsc -p packages/engine && tsc -p apps/web --noEmit && tsc -p apps/server --noEmit",
-    "deploy": "npm run build && npm run deploy -w @phc/server"
+    "deploy": "npm run build && npm run deploy -w @phc/server",
+    "check": "python3 tools/check.py",
+    "e2e": "python3 tools/e2e.py",
+    "try": "python3 tools/try_fight.py"
   }
 }
