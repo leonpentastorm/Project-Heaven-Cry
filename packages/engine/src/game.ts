@@ -453,9 +453,9 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   return g;
 }
 // ---------- what apply() shares with the state it was given (it copies everything else) ----------
-// `campaign` (the campaign file: read in play, about 40% of a fight's state) and the lines in `archive` (every story
-// line past the 400th) are NOT copied by apply(): the new state holds the same campaign object and a new list of the
-// same archive lines. So the rule for both: REPLACE, NEVER WRITE IN PLACE (g.campaign = { ...g.campaign, zones }, never
+// `campaign` (the campaign file: read in play, about 40% of a fight's state), `sandbox.saved.campaign` (the room's own
+// campaign, parked while the Proving Ground is open) and the lines in `archive` (every story line past the 400th) are
+// NOT copied by apply(): the new state holds the same campaign objects and a new list of the same archive lines. So the rule for both: REPLACE, NEVER WRITE IN PLACE (g.campaign = { ...g.campaign, zones }, never
 // g.campaign.zones.push(…)); a write in place would change the previous state too (the one the store keeps for a
 // reroll and React is drawing). The engine's test suite turns the freeze on (test/helpers/setup.ts): both are frozen
 // deep when shared, and so is every zone map built from the campaign, so a write in place throws at its own line.
@@ -465,16 +465,20 @@ let FREEZE_ON = false; const FROZEN = new WeakSet<object>();
 export function _freezeShared(on: boolean): boolean { const was = FREEZE_ON; FREEZE_ON = on; return was; }
 const freezing = () => FREEZE_ON || (globalThis as any).__PHC_FREEZE_SHARED === true;
 function deepFreeze(o: any) { if (!o || typeof o !== 'object' || FROZEN.has(o)) return; FROZEN.add(o); Object.freeze(o); for (const v of Object.values(o)) deepFreeze(v); }
-/** The copy apply() works on: everything but the campaign and the archive's lines, in the same key order. */
+/** The copy apply() works on: everything but the campaign, the archive's lines and the campaign a Proving Ground
+ * parked in sandbox.saved (the room's own, read back whole at sandbox/end), in the same key order. */
 function workingCopy(state: GameState): GameState {
+  const parked = (state as any).sandbox?.saved?.campaign || null; // a Proving Ground opened from the title has none (null)
   const slim: any = {}; for (const k of Object.keys(state)) if (k !== 'campaign' && k !== 'archive') slim[k] = (state as any)[k];
+  if (parked) slim.sandbox = { ...slim.sandbox, saved: { ...slim.sandbox.saved, campaign: null } }; // the key keeps its place; the object goes back below
   const copy = JSON.parse(JSON.stringify(slim)), g: any = {};
+  if (parked) copy.sandbox.saved.campaign = parked;
   for (const k of Object.keys(state)) {
     if (k === 'campaign') { if (state.campaign !== undefined) g.campaign = state.campaign; }
     else if (k === 'archive') { if (state.archive !== undefined) g.archive = Array.isArray(state.archive) ? state.archive.slice() : state.archive; }
     else if (k in copy) g[k] = copy[k];
   }
-  if (freezing()) { deepFreeze(state.campaign); if (Array.isArray(state.archive)) for (const e of state.archive) deepFreeze(e); }
+  if (freezing()) { deepFreeze(state.campaign); deepFreeze(parked); if (Array.isArray(state.archive)) for (const e of state.archive) deepFreeze(e); }
   return g;
 }
 export function apply(state: GameState, action: Action, by: string): GameState {

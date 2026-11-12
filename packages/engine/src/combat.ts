@@ -874,13 +874,16 @@ function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen
   const r: any = emit(cb, 'sees', { cb, side, t, by, seen, sensed });
   return { seen: !!r.seen, sensed: !!r.sensed };
 }
-/** Does this side see the unit t where it stands now? The same answer as visibility(cb, side).seen.has(t.id) (its own
- * side always sees it), for one unit, without walking the map. */
-export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit): boolean {
+/** Does this side see the unit t where it stands now? For a unit on the map, the same answer as
+ * visibility(cb, side).seen.has(t.id) (its own side always sees it), for one unit, without walking the map. A unit
+ * standing OFF the map (a bug or an old save; no rule puts one there) is where the two part: this draws the line of
+ * sight to it all the same, visibility() only looks at the map's tiles. `onMapOnly` gives visibility()'s answer there
+ * too (noteSighted; test/sight-order.test.ts holds the two together). */
+export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false): boolean {
   if (t.side === side) return true;
   if (t.dead) return false;
-  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), walls = t.hidden ? undefined : sightBlockers(cb);
-  let isSeen = !t.hidden && eyes.some((u) => unitSees(cb, u, t.pos, walls));
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !onMap(cb, t.pos), walls = t.hidden || off ? undefined : sightBlockers(cb);
+  let isSeen = !t.hidden && !off && eyes.some((u) => unitSees(cb, u, t.pos, walls));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
@@ -902,7 +905,8 @@ export function moveFx(cb: Combat, u: Unit, path: string[], how: string, walked?
 }
 /** A mover's sight where it stands now, as moveFx's walked entry ('1' or '0' for the pc side, then the foe side). */
 export const sightHere = (cb: Combat, u: Unit) => (sideSeesUnit(cb, 'pc', u) ? '1' : '0') + (sideSeesUnit(cb, 'foe', u) ? '1' : '0');
-const seenIds = (cb: Combat, side: 'pc' | 'foe') => cb.units.filter((t) => t.side !== side && !t.dead && sideSeesUnit(cb, side, t)).map((t) => t.id);
+const onMap = (cb: Combat, k: string) => { const p = xy(k); return p[0] >= 0 && p[1] >= 0 && p[0] < cb.map.w && p[1] < cb.map.h; };
+const seenIds = (cb: Combat, side: 'pc' | 'foe', onMapOnly = false) => cb.units.filter((t) => t.side !== side && !t.dead && sideSeesUnit(cb, side, t, onMapOnly)).map((t) => t.id);
 /** What a walker's side saw after each of its steps (moveUnit): at, the walker's tile; ids, the hostiles seen then. */
 export interface WalkSight { by: string; side: 'pc' | 'foe'; steps: { at: string; ids: Set<string> }[] }
 /** The walker's tile from which this unit stayed in (in = true) or out of its side's sight to the walk's end (the step
@@ -952,7 +956,8 @@ export function sightFx(cb: Combat, skip?: string | null, why: Record<string, 'h
 export function noteSighted(cb: Combat) {
   if (cb.over) return;
   // seenIds: the same hostiles, in the same order, as visibility(cb, 'pc').seen, without walking every tile of the map
-  const seen = seenIds(cb, 'pc'), had = cb.sighted || [], add = seen.filter((id) => !had.includes(id));
+  // (onMapOnly: a hostile standing off the map is not sighted, as visibility() has it; test/sight-order.test.ts)
+  const seen = seenIds(cb, 'pc', true), had = cb.sighted || [], add = seen.filter((id) => !had.includes(id));
   if (add.length || !cb.sighted) cb.sighted = [...had, ...add];
 }
 /** Does anyone on the attacker's side see the target? */
