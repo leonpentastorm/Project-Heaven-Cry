@@ -11801,6 +11801,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-bastion.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-bastion.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-judgement_mark": {
+      "id": "module-judgement_mark",
+      "label": "a target ring with a heavy downward bar landing on it",
+      "path": "art/icons/modules/module-judgement_mark.png",
+      "sha256": "50f1caa3e06e0af6c95e77eaac9c51c485ced0790ff5c5fcf95568948609ae98",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-judgement_mark.png",
+        "128": "art/icons/modules/exports/128/module-judgement_mark.png",
+        "64": "art/icons/modules/exports/64/module-judgement_mark.png",
+        "56": "art/icons/modules/exports/56/module-judgement_mark.png",
+        "48": "art/icons/modules/exports/48/module-judgement_mark.png",
+        "44": "art/icons/modules/exports/44/module-judgement_mark.png",
+        "40": "art/icons/modules/exports/40/module-judgement_mark.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-judgement_mark.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-judgement_mark.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
