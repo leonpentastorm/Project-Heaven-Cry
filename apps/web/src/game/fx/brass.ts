@@ -7,7 +7,7 @@
 // portrait covers it, so it comes out from behind. Pure presentation: nothing here reads or changes the game.
 import { reducedMotion } from '../sfx';
 import { SIGIL_INK, SOUL_WARM } from '../glyphs';
-import { layerEl, anim, after, slow, fxTempo, withTempo } from './dom';
+import { layerEl, anim, after, slow, fxTempo, withTempo, trace } from './dom';
 
 // ---------- what each weapon throws off ----------
 /** The casing a weapon ejects: one per shot, or (revolvers, break-actions) all of them at the reload. */
@@ -449,6 +449,7 @@ function feed(who: Who, P: Pic, len: number, side: number, o: { delay?: number; 
 // ---------- the effects ----------
 /** A shot's casing (and a belt-fed gun's link) thrown out behind the shooter (away from the target), with smoke. */
 export function ejectShell(who: Who | null, shell: Shell | null, aim: number, o: { delay?: number } = {}) {
+  if (who && shell) trace('shell', { shell }); // one casing (the tests count them against the rounds spent)
   if (!who || !shell || reducedMotion()) return;
   const P = SHELLS[shell], u = who.w / 38, big = shell === 'big_rifle' || shell === 'grenade_40', len = P.w * (shell === 'grenade_40' ? 0.62 : 0.5) * BIG;
   const dir = behindOf(aim) + rnd(-0.45, 0.45);

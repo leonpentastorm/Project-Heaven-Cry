@@ -12,7 +12,7 @@ import { term } from '../effects/output';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
-  dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, checkOver,
+  dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, noteLoose, checkOver,
   moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode, displace
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
@@ -137,7 +137,7 @@ register({
       },
       run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, [loc, side] = String(a.choice).split(':');
-        const r = withTerm(u, -2, 'Called Shot', () => resolveAttack(cb, rng, u, t, 'shot', null, { free: true }));
+        const r = withTerm(u, -2, 'Called Shot', () => resolveAttack(cb, rng, u, t, 'shot', null, { free: true, fx: { move: 'gunslinger.called_shot' } }));
         if (r.refused) return r.refused;
         if (r.hit && !t.dead && !t.surrendered) say(cb, t.name + rollInjury(rng, t, cb, u, { loc: loc === 'head' || loc === 'arm' ? loc : 'leg', side }) + '.'); // the one injury table (combat.ts), with the place named
         checkOver(cb); return null;
@@ -220,7 +220,8 @@ register({
       if (w.magazine != null) u.ammo = Math.max(0, u.ammo - 10);
       u.heat += 4; if (w.heat_limit && u.heat >= w.heat_limit + beltBonus(h.u!)) u.jammed = true;
       stateOf(h).zone = { tiles: area3(c), struck: [] as string[], round: cb.round };
-      emitFx(cb, 'volley', { unit: u.id, from: u.pos, to: c, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
+      const vev: any = emitFx(cb, 'volley', { unit: u.id, from: u.pos, to: c, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
+      noteLoose(cb, u, vev.shots); // no roll: every round is drawn loose (combat.ts noteLoose)
       say(cb, u.name + ' lays down suppressing fire around ' + refOf(c) + ' (until their next turn)' + (u.jammed ? ' · the gun jams' : '') + '.');
       return null;
     },

@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { say, unsay, type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
+import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -580,10 +580,11 @@ export function spendRounds(t: Tech, n: number): boolean {
     if (t.preview) { t.pv.rounds += n; return true; }
     t.u.throwables![t.weaponId] = have - n; t.u.ammo = have - n; return true;
   }
-  if (t.u.infiniteAmmo || t.w.magazine == null || n <= 0) return true;
+  if (t.u.infiniteAmmo || t.w.magazine == null || n <= 0) { if (!t.preview && t.w.magazine != null) noteLoose(t.cb, t.u, n); return true; }
   const have = t.hand === 'off' ? t.u.offAmmo ?? 0 : t.u.ammo; if (have < n) { t.note('Needs ' + n + ' rounds, ' + have + ' loaded.'); return false; }
   if (t.preview) { t.pv.rounds += n; return true; }
   if (t.hand === 'off') t.u.offAmmo = have - n; else t.u.ammo = have - n;
+  noteLoose(t.cb, t.u, n); // the screen draws a round for each (combat.ts noteLoose)
   for (const r of ROUNDS) r.spent?.(t, n);
   return true;
 }
