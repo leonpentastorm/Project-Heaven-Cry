@@ -10349,6 +10349,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-fear.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-fear.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-love": {
+      "id": "feeling-love",
+      "label": "Love: two ribbons wrap around each other into one knot",
+      "path": "art/icons/feelings/feeling-love.png",
+      "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-love.png",
+        "128": "art/icons/feelings/exports/128/feeling-love.png",
+        "64": "art/icons/feelings/exports/64/feeling-love.png",
+        "56": "art/icons/feelings/exports/56/feeling-love.png",
+        "48": "art/icons/feelings/exports/48/feeling-love.png",
+        "44": "art/icons/feelings/exports/44/feeling-love.png",
+        "40": "art/icons/feelings/exports/40/feeling-love.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-love.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-love.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
