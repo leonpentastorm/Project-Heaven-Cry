@@ -1369,6 +1369,52 @@
           "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-longing.png",
+      "sha256": "af6dc48269c2886a6eb9721fa74b7b021c1664ffb3bac2ce72e0ecd7727a3ea9",
+      "id": "feeling-longing",
+      "family": "feelings",
+      "action": "Longing: the ribbon reaches toward a distant dot and does not touch it.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-longing.png",
+        "sha256": "a2c68aeb6d5642bf3f1cc16527aaed182ca77fc775a20b4407cf4d81c5f9e783"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-longing.png",
+        "sha256": "af6dc48269c2886a6eb9721fa74b7b021c1664ffb3bac2ce72e0ecd7727a3ea9"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-longing.txt",
+        "sha256": "3876a7b109686e23636f21f281ff4e4f4a55474059fb68c131719850ffd053eb"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-longing.png",
+        "128": "art/icons/feelings/exports/128/feeling-longing.png",
+        "64": "art/icons/feelings/exports/64/feeling-longing.png",
+        "56": "art/icons/feelings/exports/56/feeling-longing.png",
+        "48": "art/icons/feelings/exports/48/feeling-longing.png",
+        "44": "art/icons/feelings/exports/44/feeling-longing.png",
+        "40": "art/icons/feelings/exports/40/feeling-longing.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
     }
   ]
 }

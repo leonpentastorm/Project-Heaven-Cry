@@ -10699,6 +10699,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-awe.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-awe.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-longing": {
+      "id": "feeling-longing",
+      "label": "Longing: the ribbon reaches toward a distant dot and does not touch it",
+      "path": "art/icons/feelings/feeling-longing.png",
+      "sha256": "af6dc48269c2886a6eb9721fa74b7b021c1664ffb3bac2ce72e0ecd7727a3ea9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-longing.png",
+        "128": "art/icons/feelings/exports/128/feeling-longing.png",
+        "64": "art/icons/feelings/exports/64/feeling-longing.png",
+        "56": "art/icons/feelings/exports/56/feeling-longing.png",
+        "48": "art/icons/feelings/exports/48/feeling-longing.png",
+        "44": "art/icons/feelings/exports/44/feeling-longing.png",
+        "40": "art/icons/feelings/exports/40/feeling-longing.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-longing.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-longing.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

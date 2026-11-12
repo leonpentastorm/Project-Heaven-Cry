@@ -19,5 +19,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-belonging.png`: Belonging: several small knots joined along one line.
 - `feeling-dread.png`: Dread: the ribbon coils around an empty eye-shaped gap.
 - `feeling-awe.png`: Awe: rays opening above a small bowed curve.
+- `feeling-longing.png`: Longing: the ribbon reaches toward a distant dot and does not touch it.
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
