@@ -11051,6 +11051,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-homing.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-homing.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-swift": {
+      "id": "module-swift",
+      "label": "a dot with three speed lines behind it",
+      "path": "art/icons/modules/module-swift.png",
+      "sha256": "c8277227597b730341d09addf5117daf37892eddc8c4efbeb582f6b37b93bf96",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-swift.png",
+        "128": "art/icons/modules/exports/128/module-swift.png",
+        "64": "art/icons/modules/exports/64/module-swift.png",
+        "56": "art/icons/modules/exports/56/module-swift.png",
+        "48": "art/icons/modules/exports/48/module-swift.png",
+        "44": "art/icons/modules/exports/44/module-swift.png",
+        "40": "art/icons/modules/exports/40/module-swift.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-swift.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-swift.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
