@@ -36,5 +36,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-tether.png`: a straight beam between two rings
 - `module-siphon.png`: a curve drawing drops toward a centre
 - `module-phantom.png`: a dot passing through a solid block
+- `module-volatile.png`: a dot cracking open with sparks
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

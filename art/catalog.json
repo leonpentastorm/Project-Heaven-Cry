@@ -11751,6 +11751,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-phantom.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-phantom.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-volatile": {
+      "id": "module-volatile",
+      "label": "a dot cracking open with sparks",
+      "path": "art/icons/modules/module-volatile.png",
+      "sha256": "321fce4e2bd9b3c25e487ff1fe6c132f4bc58e2c2ebf021506733f21b94c5a96",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-volatile.png",
+        "128": "art/icons/modules/exports/128/module-volatile.png",
+        "64": "art/icons/modules/exports/64/module-volatile.png",
+        "56": "art/icons/modules/exports/56/module-volatile.png",
+        "48": "art/icons/modules/exports/48/module-volatile.png",
+        "44": "art/icons/modules/exports/44/module-volatile.png",
+        "40": "art/icons/modules/exports/40/module-volatile.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-volatile.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-volatile.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

@@ -123,9 +123,9 @@ fd90a1199fab581246e6a304a47e9e82887d7965a2ac8146a6070ab7702b8ea4  art/_archive/c
 9f01b2fda4f16639aff967fc68c5447e9af36d03bfd16126e7e00a9f8117b9be  art/_archive/character-portraits/patrons/v1/source-renders/the_matchmaker-native.png
 33357380b1f5f672428f390434217bdf2ba48b0ab849cccac021948cc4fc9b98  art/_archive/character-portraits/patrons/v1/source-renders/the_quartermaster-native.png
 26658bcc4b6fe3516eb2312ef25df38efbffca447a8fd23e4b2f3501a94832bd  art/_archive/character-portraits/patrons/v1/source-renders/the_toll_keeper-native.png
-c0101dbe2e08a91cba37eb34e5502b9c5ed991c795f6c0c0101d4487628bf52e  art/_archive/deliveries/2026-11-12/HANDOFF.md
-49c8d0ad43a3314025402e53fe55820005adacab185bf6fdc0d26b538865e330  art/_archive/deliveries/2026-11-12/README.md
-8ecf2297b2b8da6216c87424931faba176a6d61ec85797bc87a7a2e97145d9be  art/_archive/deliveries/2026-11-12/manifest.json
+9cbdd4d7e81efb3a0c88b119619fa01b3d322cc6a9f31f2c8517ea3d58c7c0f3  art/_archive/deliveries/2026-11-12/HANDOFF.md
+37e90d40e8e8cfd931fe89b2865816e3ea7efb3d85b30977a5a3a77d56bca982  art/_archive/deliveries/2026-11-12/README.md
+d37a623dbfb3eedb8c0ad26f088dfdec731ef05d11cd0cee4c7c37184be5971d  art/_archive/deliveries/2026-11-12/manifest.json
 01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c  art/_archive/deliveries/2026-11-12/masters/v1/both-hands.png
 27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb  art/_archive/deliveries/2026-11-12/masters/v1/brief.png
 7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845  art/_archive/deliveries/2026-11-12/masters/v1/cue.png
@@ -186,6 +186,7 @@ c8277227597b730341d09addf5117daf37892eddc8c4efbeb582f6b37b93bf96  art/_archive/d
 858d0c26cfdcc88b23ee79151369b45df48860502381ff40eea144a12b164e43  art/_archive/deliveries/2026-11-12/masters/v1/module-tether.png
 43b55b5d9ce52a9789fd78f1568b44796e051b2916a859a971f9b8a7e6ed5cb2  art/_archive/deliveries/2026-11-12/masters/v1/module-thread.png
 3be792ea3c7753b7140bc9a11a174d343822fc688590ad4e45bdd5ded1cf4606  art/_archive/deliveries/2026-11-12/masters/v1/module-time.png
+321fce4e2bd9b3c25e487ff1fe6c132f4bc58e2c2ebf021506733f21b94c5a96  art/_archive/deliveries/2026-11-12/masters/v1/module-volatile.png
 dcd109531803ecdb505b78e5116253dc751eed53fb220eb85bc018bd58fdffa9  art/_archive/deliveries/2026-11-12/masters/v1/module-volley.png
 a8f6fc2a99f57ccc818168140463b741e1e5224def3adfe0f535c43d624d2f36  art/_archive/deliveries/2026-11-12/masters/v1/module-wave.png
 7a827cf7f9fb5f6e5dbe3dbc6fef57ed8b8a401ac0eabda2721f07158a33050f  art/_archive/deliveries/2026-11-12/masters/v1/name-it.png
@@ -196,7 +197,7 @@ ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566  art/_archive/d
 5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0  art/_archive/deliveries/2026-11-12/masters/v1/threaten.png
 f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9  art/_archive/deliveries/2026-11-12/masters/v1/warn.png
 5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0  art/_archive/deliveries/2026-11-12/masters/v1/whisper-rebuke.png
-ade068c62531e4a09a01b3fc2dc466ac14ef10c28734b07826c6c21fdfbedd88  art/_archive/deliveries/2026-11-12/progress.json
+4d047bb10da96742f804f50cdd1323d255ab1ed4131e9fb24a8e8949714efba3  art/_archive/deliveries/2026-11-12/progress.json
 10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc  art/_archive/deliveries/2026-11-12/prompts/both-hands.txt
 853cb54ab9b5c838b7720d5d4ae856a5a767b88c4bcf4154fdf69958e3ed351b  art/_archive/deliveries/2026-11-12/prompts/brief-attempt-1.txt
 ebcd21f5284814bd05fe5d38d026710bf14fb3b4ff9fac31e1d7d4d8d4890876  art/_archive/deliveries/2026-11-12/prompts/brief.txt
@@ -285,7 +286,7 @@ c6cd2ee1e0fad3004e6df8c5c740919a063d653be10a7b5f12a8e48522adef2d  art/_archive/d
 86aa1aea5f6d340431228e7779a27d0fce62971be2a796e5ed5ecb8f7c040c58  art/_archive/deliveries/2026-11-12/prompts/ui-revert.txt
 fa7a5c9eabfd85350b9af09bae13530c4192f829a0cb0dbb15a6b6658c85315e  art/_archive/deliveries/2026-11-12/prompts/warn.txt
 fc0ebb8cf9e8fb31426e205cba04b988a0f1f13fa87e46825519b695cb2cfe79  art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt
-3c8a6571c14ea84566e35eeb9a7c7c29b60284421f89931736e3e3ff94664fe1  art/_archive/deliveries/2026-11-12/queue.json
+d98a7a5fecf224f0cf9d9b7b44a4161c185e07d510dd7e5bfb090877da6ca559  art/_archive/deliveries/2026-11-12/queue.json
 3ecedace2d30877e5b8eef4ec2cfc58f32521db2f894a27a2ad53a315d39d444  art/_archive/deliveries/2026-11-12/reviews/batch-01-40px.png
 6c0e74ba59dde6bd9e3d3aa87f425525011a9de692914678c1255f27a7f7bf16  art/_archive/deliveries/2026-11-12/reviews/batch-01-64px.png
 006bd8eb3ea298fc95a1293490a51b2613aced8f541b2112df47f44287b054ae  art/_archive/deliveries/2026-11-12/reviews/batch-02-40px.png
@@ -294,17 +295,17 @@ f4abf5caf06ad41a4067223981179f7419a78b9c11b5c91d8c6c43efcf3469b5  art/_archive/d
 cacf41f0a97c55623049069be7a67d48296e1d867adade5ebaae12394599b275  art/_archive/deliveries/2026-11-12/reviews/batch-03-64px.png
 f00c53bd8ed2c8caf7801aa5434693c392b10007bde7cba3bab12551cb083b87  art/_archive/deliveries/2026-11-12/reviews/batch-04-40px.png
 2423419f2cc3fccc1eaf13ca82f594d93affc74c1ccb30cdbd4bf6cf9cf8fac2  art/_archive/deliveries/2026-11-12/reviews/batch-04-64px.png
-ad1802ad08dedbf7d4a0f92f19db4ca065b9f82e6adeb2c3719c04d46e7378fc  art/_archive/deliveries/2026-11-12/reviews/batch-05-40px.png
-97a6acef0b08a5bc96d9d1b66b630ea9cfe438071788d043627243b999109b2f  art/_archive/deliveries/2026-11-12/reviews/batch-05-64px.png
+e4825d2e9580ba8d7d4ef57996cdddb67a50b78c40f47dc392a4f84958d21389  art/_archive/deliveries/2026-11-12/reviews/batch-05-40px.png
+d41d8745cca609258a074b3866b7bd13ce50cfe4cd172cb13bd3d36ee663b1a1  art/_archive/deliveries/2026-11-12/reviews/batch-05-64px.png
 3636b1ba464d94ea9cb212447683e9fc9841aa4eb516de520c92a0a2c0e46b21  art/_archive/deliveries/2026-11-12/reviews/calls-40px.png
 4900d0e3a62bee1a83750153eb4e1f599e3a361f44f73b2329b3e2ceb29ba4ba  art/_archive/deliveries/2026-11-12/reviews/calls-44px.png
 e8d2e8474476681cb92963990fe9f929f59e78dbb1019add6fd68a1677e1663c  art/_archive/deliveries/2026-11-12/reviews/calls-64px.png
 80ccbd1241650cda05e95ac65e7b18addfbed67cfd9b0cc2f6c2a42f9f4376fe  art/_archive/deliveries/2026-11-12/reviews/feelings-40px.png
 56d5908774dac4550aa526517e83ed1dab2bf371dc7f527b159c9c04c09cc0fd  art/_archive/deliveries/2026-11-12/reviews/feelings-44px.png
 f41a626b666385281276d0edff10fa9d30f2642de11b6d7968182fda59abd9ac  art/_archive/deliveries/2026-11-12/reviews/feelings-64px.png
-a89de6159f0be16c19a5b01fd295e7837842a328cd707f3a770247491aa9ab5e  art/_archive/deliveries/2026-11-12/reviews/modules-40px.png
-76ba45004bdd8771d30d8d87f5e461c13546c4c5c7ba2c1899c42e567ca8a95b  art/_archive/deliveries/2026-11-12/reviews/modules-44px.png
-afee98b1b8a230a794f3621501026a109bc590ca13625486e6efe3a160b96e4b  art/_archive/deliveries/2026-11-12/reviews/modules-64px.png
+c93bcd1050e67250d7b6fb7abf2c20f671a0d439ee10b95438d98b521e28c2bc  art/_archive/deliveries/2026-11-12/reviews/modules-40px.png
+8ad2e578256c2c6f14a67845cba465c0ba9140582029b246b52acf66545aedfb  art/_archive/deliveries/2026-11-12/reviews/modules-44px.png
+50574f5a351b43714be20d0f7335fa7805d9137898fd558ebdeadcce9022e7da  art/_archive/deliveries/2026-11-12/reviews/modules-64px.png
 fc970ac6ef6ec743b8807265b787b12e5385bfec7782a4d7d27df366bf33a1cf  art/_archive/deliveries/2026-11-12/reviews/perks-40px.png
 cf50a56a20c45a6cfa443aeb19d4a8c5c774d235ada323af7fe35e8177421f90  art/_archive/deliveries/2026-11-12/reviews/perks-44px.png
 f04adbd17992bae0a7505be8d6529a0b8d81f6e74fa1991287b8be0ebe52c527  art/_archive/deliveries/2026-11-12/reviews/perks-64px.png
@@ -381,6 +382,7 @@ e9d6474a62e9c37b296a8c73834451318b0346cf7025b310beb9afd01cd2aac4  art/_archive/d
 e8cda7b7134f88948bbfc85a5e1ba0e8c1f84a57c2832032755bfef2676c5ec4  art/_archive/deliveries/2026-11-12/sources/module-tether.png
 be784e699e61bf5e2f0430ffe3fd0e65faca1a5b5ca2636b0bc3a944a4c29ef4  art/_archive/deliveries/2026-11-12/sources/module-thread.png
 6ce6699bd26275d5875e8562226eaa73f2758056d62602ff7658ea96940fe374  art/_archive/deliveries/2026-11-12/sources/module-time.png
+88228929b8749a341eb63680faba1052ac6eab617adbc5405f45d8c56066dd42  art/_archive/deliveries/2026-11-12/sources/module-volatile.png
 7b6f498b548324ef332ebf01a6ce6acbd0d5d2001aea918d364541f3e9681281  art/_archive/deliveries/2026-11-12/sources/module-volley.png
 7824265547392b6bb070bba9ad75131028d2c65b982690400f65716def8efd1c  art/_archive/deliveries/2026-11-12/sources/module-wave.png
 b964514f8693a2c859960ea43328c5e34e6779a027599cabf51a7c3b37d81dfc  art/_archive/deliveries/2026-11-12/sources/name-it.png
@@ -1121,7 +1123,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 fd9fd865d5891d7e7880b1def9c8b3fb60cbe6697d91b5afe36cc91a20af0961  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-319a62b721a33f8b76c5c70bb377e0650eef1d7140f57161f123b72071ff41cc  art/catalog.json
+5b48c2f29a585f10e470ebc4d65e750363b4e6e93c9e9a859ecb499e7d72a2a4  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -1428,7 +1430,7 @@ d3e9c1a2b22aff103313378db7c51cfe595c1fb20c3b33d5c963bbddcc335704  art/icons/feel
 c600e91bbc9812b2df9f11024aae8a85e5191e5f394c22c7d42eed0e38c38d01  art/icons/feelings/feeling-wonder.png
 ea053edc5d4105a821b68e964185a89b21f8e39f0181750d6b24349f8a860dfa  art/icons/focus/emanator.svg
 d29029c501d9cf3b4804fed5177b7c2fe030e7668a9dcd8b69d5322c7aa01434  art/icons/focus/evoker.svg
-d099f51a444d22a1db653f623a8767da07b3e9cac1dfb15c16367aacfee29301  art/icons/modules/README.md
+934390a492ca6271bc1d426b151365a641aa31d0be0f078b14ea4124078e431d  art/icons/modules/README.md
 013474857238abee2b8d64082fec3f896d10eb268ff34fcccb40c6669523db5a  art/icons/modules/exports/128/module-anchor.png
 fdfd5ff99cf4d25802e604a3bf3ae90863e6bc574c5b367e2183c99d3e70a8e3  art/icons/modules/exports/128/module-at_once.png
 3a647fdb2ebde471d3f0c52eade0b2c04f9a963db5e039b5988401424e23a07a  art/icons/modules/exports/128/module-aura.png
@@ -1461,6 +1463,7 @@ ae14e3a94d72c623fa4689f1c1e62c65c5ce861422485fcd4bd3c90411d8ec99  art/icons/modu
 78e53744462af84c59a74da8cc505b480cbe9ca04f234c6e015929ef4ff23837  art/icons/modules/exports/128/module-tether.png
 d80711221ae97f93a4d8480f18e680ac7ebf5235f9039c43b15840f5164a962a  art/icons/modules/exports/128/module-thread.png
 b16a63647513379a867dee0d7fcca28d840d071dcd04fc17e4d92eb706655e7f  art/icons/modules/exports/128/module-time.png
+b59cd332920264b8d29cca397d6d872d7f26ab6b92648f7f0b02b543dc42a361  art/icons/modules/exports/128/module-volatile.png
 b388ecfc836306e1885afbdbdf940a3fd17f625d77b20b9b6b8bfda3911a17bc  art/icons/modules/exports/128/module-volley.png
 ac0f3939fae0a25a6238f22cbddfeb54f3c9567f683987b0ae37a3ed6863e61c  art/icons/modules/exports/128/module-wave.png
 eeac1a8ce91cc20361932b9b9185f3a725409b2b428393226fb38fa03bde9a4f  art/icons/modules/exports/256/module-anchor.png
@@ -1495,6 +1498,7 @@ a57f0b94035d7a8af2b2316cd597c19241f1297217733a3ccb49536712a87ca5  art/icons/modu
 57e2b839fe48337041073e19f546efe92f3f2bd1c589e10735dd8296985b0d43  art/icons/modules/exports/256/module-tether.png
 49183f4fd2973a840db641d0e303e6f39d6ce181b91313900e27c2fa94a79204  art/icons/modules/exports/256/module-thread.png
 ea38029797a49a51e40b28b65d422309dc19eb7f48aeab1a296b598a12c00888  art/icons/modules/exports/256/module-time.png
+b20ab9b4b4dfe4e9293ec54a4497b904515eda9d999e3151ea040912beb5f9ee  art/icons/modules/exports/256/module-volatile.png
 0ae3d78f9158bdd9652eb16c2414ae31ea32bd7bbbae10917392f226c3315bde  art/icons/modules/exports/256/module-volley.png
 000fa79313b968cf18201cf6b12ddc8bf7a1225fbf984cc5aaccf1536654bd2f  art/icons/modules/exports/256/module-wave.png
 66bc4904523da27573578904ff0cdb088b1ca524f0af75d5d401a9e791d1d812  art/icons/modules/exports/40/module-anchor.png
@@ -1529,6 +1533,7 @@ d9e623203b2998c12d0996a246616dafd24838196ec620273a844224cfb1a81c  art/icons/modu
 45421bae874badcbfd5bfeb20863d6a9c48cbf98d11620334ef8b544b36c2927  art/icons/modules/exports/40/module-tether.png
 fbf6bb9ad146aff125b006c079c77d5ef4ce367fc8056ed70de2386a2c7f9cc2  art/icons/modules/exports/40/module-thread.png
 bb1ed2d0a3b4e5c18131203a618f738e051603387ef5c14453ec0dfc734adbdd  art/icons/modules/exports/40/module-time.png
+420a01a9ee4043b1df03895eea134246e3dbe91244ffbf02d1f681b88e7829df  art/icons/modules/exports/40/module-volatile.png
 fd22256bb4b399f31aff08fe7649c3e3f80a5421d1ddc3c62cc8bc20cfdb20e9  art/icons/modules/exports/40/module-volley.png
 2e163cadbd45d47d55901aa9dd1efd7c198b2a2f2f41491f359996cc7419a059  art/icons/modules/exports/40/module-wave.png
 22bd33c2774c74e075a3b297593059c951f6769a87508327d13d53645b3890fb  art/icons/modules/exports/44/module-anchor.png
@@ -1563,6 +1568,7 @@ cdc9c80f8dcc93641a2607a55e4aa512e696ae195f028bc03498caefab32cc0b  art/icons/modu
 ad66722a5d2d79a1c427c32a0385799bb691f20f2c61cb659d1a2c77d8e495dd  art/icons/modules/exports/44/module-tether.png
 cef0159cfe33d6d9281f92c54440326136319ba74c30b2742d88c5e8ce90d734  art/icons/modules/exports/44/module-thread.png
 a67e406db0be8812f662246037f583a2661489d8b4f43f788446826afb931038  art/icons/modules/exports/44/module-time.png
+98c578ff689a32cabbbe6b9ec693c72af10882daf3f4c4047d0f9d3a098ac6fa  art/icons/modules/exports/44/module-volatile.png
 80ddec2112e023259d38dfab0be9dd2f8bba8b13546e202367018505a9d64c3c  art/icons/modules/exports/44/module-volley.png
 d5a1004807506d767942c214de52a9c5fa7819bac6435667ec4b07f26190733f  art/icons/modules/exports/44/module-wave.png
 9dd2c7e85781fd643ec70f2daae9b34de25325bbb993b67ac141b4cbc4767659  art/icons/modules/exports/48/module-anchor.png
@@ -1597,6 +1603,7 @@ a2cb27d19f7556708ef7c35d24dedfe713bb7d3a9d0a43d12de9f583c1562ea9  art/icons/modu
 8a031cf8471e432805800da9f39d38789d1c6926741295cb30fc8993d5edba59  art/icons/modules/exports/48/module-tether.png
 7b719e56c4dbed7dfb6bc52094f82152a336a1a05b543320179f1d7031cb8fde  art/icons/modules/exports/48/module-thread.png
 ebdbbe37d44de7a9989c3fd0d94137a5294bce63f952caa055a7a500c97c5b94  art/icons/modules/exports/48/module-time.png
+4a1a0fba4b78526b3d2b975005ad1655409835029a926e27b09f3bd5999d358c  art/icons/modules/exports/48/module-volatile.png
 9569f150cd71550746742124ff233dc00f306f61a834018782df9835a7f2bb4e  art/icons/modules/exports/48/module-volley.png
 1eb8361896ad4655bd395040ba28227828e58dcc5686bebaa8acca19e3e4299f  art/icons/modules/exports/48/module-wave.png
 5a434213e926612d3b16fa0ee1c4c2a8044e704fb2c89ee40e67d33978ca843e  art/icons/modules/exports/56/module-anchor.png
@@ -1631,6 +1638,7 @@ f16dd2462fec7dc0d52a46a2af68fa5c2cfde842f530ab232500a09f3a8b76c7  art/icons/modu
 8e7fd10ab2a4ca98a8c8c483de1d8134b3c74cd1a68a053603cce174c5c1d6a2  art/icons/modules/exports/56/module-tether.png
 e14fb3a84407be332e41a88b2c5f04dee9ede64038c8620b367bf2429325bd02  art/icons/modules/exports/56/module-thread.png
 1bf8dc856710083dee85dba11b04a6221bc538393e876720bc1651c3ff3b0a0f  art/icons/modules/exports/56/module-time.png
+13d6401050c712c7d6490b1ca3b43e2bdeef64e0a2562495687c805798e3c38f  art/icons/modules/exports/56/module-volatile.png
 401fe737026d272e9c60a3a479ce7e68339bf997d9c328b063117288a06484a4  art/icons/modules/exports/56/module-volley.png
 08e7778df3ad1cb34499cae89d01207841f83d7ec5f4a61e8d3c4cec889e6b3d  art/icons/modules/exports/56/module-wave.png
 7237784fb6c0da18cd1aca93e41715c681fb634df289feaaab9d9d9d0fea0ce2  art/icons/modules/exports/64/module-anchor.png
@@ -1665,6 +1673,7 @@ f8b41e0bc46f9eb3aecde28f455c9740edcec153f7654c125275b0de1d373edd  art/icons/modu
 f439623b20b18fe47e67b71dce8ee33e43cfa020ddc32f8ab54221b156ee2da0  art/icons/modules/exports/64/module-tether.png
 eef37fd6c12c6bfe2e0b2bbdfe3416844b7e29805925b89196a56a229360b77b  art/icons/modules/exports/64/module-thread.png
 f8a0748e2ad28d572847b1f284e18e03ad05b1712532e6757f2cf8c11d59b087  art/icons/modules/exports/64/module-time.png
+b06fdfdf38e1ab514d190d5ce09e0c8849b9fe1305059ecc63966c7c0f188120  art/icons/modules/exports/64/module-volatile.png
 1afcb9c1221e38bbda56930bc22d2ffb52e5efc74a2d35ece28e7af743be841f  art/icons/modules/exports/64/module-volley.png
 8c175cdd6c2178ae14db0be94a224cdbe6d47de7eabc6947d4feef1bc6b643bb  art/icons/modules/exports/64/module-wave.png
 459e5ddedd3800a233bcd875f66f36fb02064af046cc8d87547c411f10d58fb3  art/icons/modules/module-anchor.png
@@ -1699,6 +1708,7 @@ c8277227597b730341d09addf5117daf37892eddc8c4efbeb582f6b37b93bf96  art/icons/modu
 858d0c26cfdcc88b23ee79151369b45df48860502381ff40eea144a12b164e43  art/icons/modules/module-tether.png
 43b55b5d9ce52a9789fd78f1568b44796e051b2916a859a971f9b8a7e6ed5cb2  art/icons/modules/module-thread.png
 3be792ea3c7753b7140bc9a11a174d343822fc688590ad4e45bdd5ded1cf4606  art/icons/modules/module-time.png
+321fce4e2bd9b3c25e487ff1fe6c132f4bc58e2c2ebf021506733f21b94c5a96  art/icons/modules/module-volatile.png
 dcd109531803ecdb505b78e5116253dc751eed53fb220eb85bc018bd58fdffa9  art/icons/modules/module-volley.png
 a8f6fc2a99f57ccc818168140463b741e1e5224def3adfe0f535c43d624d2f36  art/icons/modules/module-wave.png
 7bfbe232cee6ea3be8b7b84b451e733ea58ea984f629aa36b3396a5d69a74f4a  art/icons/perks/README.md

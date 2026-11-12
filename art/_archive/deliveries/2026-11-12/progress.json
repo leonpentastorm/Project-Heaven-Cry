@@ -76,12 +76,12 @@
     "module-cascade",
     "module-tether",
     "module-siphon",
-    "module-phantom"
+    "module-phantom",
+    "module-volatile"
   ],
   "awaiting_after_test": "Test styles approved; optional map layout/playtest confirmation still pending",
   "production_approved": false,
   "remaining_now": [
-    "module-volatile",
     "module-bastion",
     "module-judgement_mark",
     "module-halo",
@@ -89,7 +89,7 @@
     "ui-practice",
     "ui-felt"
   ],
-  "updated_utc": "2026-11-12T04:19:37.061908+00:00",
+  "updated_utc": "2026-11-12T04:20:50.842553+00:00",
   "outburst_test_verdict": "Leon: Approve both styles and continue",
   "pending_after_test_approval": false
 }
