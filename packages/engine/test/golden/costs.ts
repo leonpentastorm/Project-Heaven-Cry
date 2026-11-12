@@ -30,7 +30,7 @@ import { expect } from 'vitest';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ALSO, A, W, HIT, label, copy, act, run, tryAct, fightSpec, place, turn, pcs, foes, charOf, units } from './harness';
-import { SECTIONS, SHOOTER, CASTER, EVEN, TECH_WEAPONS, itemFight, hooksOf, tiersOf, heartFight } from './record';
+import { SECTIONS, SHOOTER, CASTER, EVEN, TECH_WEAPONS, itemFight, hooksOf, tiersOf, heartFight, PRAY_TRIES } from './record';
 
 // ---------------------------------------------------------------------------------------------- the reading
 const flat = (o: any, pre: string, out: Record<string, string>, depth = 0) => {
@@ -308,12 +308,140 @@ export function recordAskers(T: Record<string, string>, part: 'perks' | 'traits'
   }
 }
 
+// ---------------------------------------------------------------------------------------------- credit, foes, cooldowns
+// Three sections added by the review of engine foundations 2 (hand-off: "Problems found in review and what was done").
+// They were recorded on the engine BEFORE the costs refactor (the main line) and then played on the refactored one, so
+// a line that differs between the two is a behaviour change, and each such line is listed in the hand-off.
+//
+//   credit     every action of the pad made by a unit that carries a Brief (1 AP, 2 AP), an Encore for that very action
+//              (2 AP) or both, with 0, 1, 2, 3 and 6 AP of its own: what it took from the unit, what is left of the
+//              Brief and the Encore, the AP counted as gained, and what the log said of the credit.
+//   foes       an enemy's whole turn with each gun, loaded and empty, at 2, 3 and 6 AP: what it spent and where it ended.
+//   cooldowns  when a limit comes BACK, round by round: a Hymn after a Hymn, and the AP a kill gives a holder of an AP
+//              perk on each of the five rounds after the kill that gave it.
+const CREDITS: [string, (g: any, u: any, a: any) => void][] = [
+  ['none', () => { /* the same action with the unit's own AP only: what the credits are compared with */ }],
+  ['brief1', (_g, u) => { (u.call ||= {}).brief = { cuts: [1] }; }],
+  ['brief2', (_g, u) => { (u.call ||= {}).brief = { cuts: [2] }; }],
+  ['encore', (_g, u, a) => { const key = A.encoreKey(a); if (key) (u.faith ||= {}).encore = { key, ap: 2, started: true, round: 1 }; }],
+  ['both', (_g, u, a) => { (u.call ||= {}).brief = { cuts: [1] }; const key = A.encoreKey(a); if (key) (u.faith ||= {}).encore = { key, ap: 2, started: true, round: 1 }; }],
+];
+const CREDIT_AP = [0, 1, 2, 3, 6];
+const creditLeft = (g: any, id: string): string => { const u = units(g).find((x: any) => x.id === id); return u ? 'brief[' + (u.call?.brief?.cuts || []).join('/') + '] encore[' + (u.faith?.encore ? u.faith.encore.ap : '') + '] gained' + (u.apGained || 0) + ' total' + (u.apTurnTotal ?? '') : 'gone'; };
+const creditLog = (g0: any, g1: any): string => (g1.combat?.log || []).slice((g0.combat?.log || []).length).filter((l: string) => /Briefed|Encore/.test(l)).map((l: string) => l.trim()).join(' / ');
+function playCredit(T: Record<string, string>, key: string, g0: any, cases: Case[]) {
+  for (const [name, prep, tries] of cases) for (const [cname, give] of CREDITS) {
+    const parts: string[] = [];
+    for (const ap of CREDIT_AP) {
+      const g = copy(g0), u = pcs(g)[0];
+      try { if (prep) prep(g, u); } catch (e: any) { parts.push('ap' + ap + ': PREP ' + why(e)); continue; }
+      let list: any[] = []; try { list = tries(g, u).map((a) => ({ unitId: u.id, ...a })); } catch { list = []; }
+      u.ap = ap; u.bank = 0; delete u.apGained; delete u.apTurnTotal;
+      let first = '', done = '';
+      for (const a of list) {
+        const gc = copy(g), uc = units(gc).find((x: any) => x.id === u.id); give(gc, uc, a);
+        const r = act(gc, a, HIT); const state = r.line.split(SEP)[0];
+        if (r.ok) { done = state + ' => ' + creditLeft(r.g, u.id) + (creditLog(gc, r.g) ? ' "' + creditLog(gc, r.g) + '"' : ''); break; }
+        first ||= state; if (/^THREW/.test(r.line)) break;
+      }
+      parts.push('ap' + ap + ': ' + (done || first || 'REFUSED (no arguments)'));
+    }
+    T[key + '/' + name + '/' + cname] = parts.join(' | ');
+  }
+}
+export function recordCredit(T: Record<string, string>) {
+  const sheets: [string, any, ((g: any) => void)?][] = [
+    ['rifle', { ...SHOOTER, weapon: 'hellraiser_service_rifle' }], ['lmg', { ...SHOOTER, weapon: 'hellraiser_lmg' }], ['sabre', { ...SHOOTER, weapon: 'sabre' }],
+    ['two-guns', { ...SHOOTER, weapon: 'service_pistol' }, (g) => { const u = pcs(g)[0]; u.offWeapon = 'service_pistol'; u.offAmmo = 3; u.offMags = [8, 8]; u.mags = [8, 8, 8]; charOf(g, u).offHand = { id: 'service_pistol' }; }],
+    ['sigil', { ...EVEN(), classId: 'mage', kit: 'sigil' }], ['soul', { ...EVEN(), classId: 'channeler', kit: 'soul' }],
+    ['even', { ...EVEN() }, (g) => { const c = charOf(g, pcs(g)[0]); c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 7; }],
+  ];
+  for (const [name, spec, more] of sheets) {
+    let g: any; try { g = padFight(spec); if (more) more(g); } catch (e: any) { T['credit/' + name + '/setup'] = 'THREW ' + why(e); continue; }
+    playCredit(T, 'credit/' + name, g, casesFor(g));
+  }
+  // every item action (a perk's, a trait's, a class move's) of three sheets that hold many, with each credit
+  for (const [name, spec] of [['fighter', { classId: 'fighter', level: 12, kit: 'soldier' }], ['mage', { classId: 'mage', level: 12, kit: 'sigil' }], ['guardian', { classId: 'guardian', level: 12, kit: 'soul' }]] as const) {
+    let g: any; try { g = padFight({ ...spec, attrs: { ...EVEN().attrs, [A.CLASS[spec.classId].attribute]: 9 } }); } catch (e: any) { T['credit/' + name + '/setup'] = 'THREW ' + why(e); continue; }
+    const u0 = pcs(g)[0], [f, far] = foes(g), al = pcs(g)[1];
+    let rows: any[] = []; try { rows = W(g, () => A.perkActionsFor({ u: u0, c: charOf(g, u0), cb: g.combat, g }, 'combat')); } catch { rows = []; }
+    const cases: Case[] = rows.map((e: any) => ['perk/' + e.id + '#' + e.actionId, null, () => [{ targetId: far.id }, { targetId: f.id }, { targetId: al.id }, {}, { tile: '5,6' }, { targetId: f.id, tile: f.pos }, { tile: far.pos }].map((a) => ({ type: 'combat/perk', id: e.id, actionId: e.actionId, ...a }))]);
+    if (!cases.length) T['credit/' + name + '/perk'] = 'no item action';
+    playCredit(T, 'credit/' + name, g, cases);
+  }
+}
+
+export function recordFoes(T: Record<string, string>) {
+  const guns = (Object.values(A.WEAPON) as any[]).filter((w) => w.magazine != null && w.reload).map((w) => w.id).sort();
+  for (const wid of guns) for (const tier of ['soldier', 'elite']) {
+    let g: any; try { g = fightSpec([{ ...SHOOTER }, { ...SHOOTER }], [{ tier, weapon: wid }], { level: 6, seed: 'foe/' + wid }); } catch (e: any) { T['foe/' + wid + '/' + tier + '/setup'] = 'THREW ' + why(e); continue; }
+    const [u, al] = pcs(g), f = foes(g)[0];
+    place(g, [[u, '3,6'], [al, '2,8'], [f, '8,6']]); turn(g, u, 9);
+    for (const [aname, ammo] of [['empty', 0], ['one', 1], ['full', null]] as const) for (const ap of [2, 3, 6]) {
+      const g1 = copy(g), e0 = foes(g1)[0]; g1.combat.turn = g1.combat.order.indexOf(e0.id); g1.combat.round = 2; delete g1.combat.window; e0.ap = ap; e0.bank = 0; if (ammo != null) e0.ammo = ammo;
+      const hp0 = pcs(g1).reduce((t: number, x: any) => t + x.hp, 0);
+      let r: any; (ALSO as any).ai = true; try { r = run(g1, (g2, cb) => { A.enemyTurn(cb, g2.rng); return null; }); } finally { delete (ALSO as any).ai; }
+      const e1 = r.g ? foes(r.g)[0] : null, log: string[] = r.g ? (r.g.combat.log || []).slice((g1.combat.log || []).length) : [];
+      T['foe/' + wid + '/' + tier + '/' + aname + '/ap' + ap] = r.line.split(SEP)[0] + ' => at ' + (e1 ? e1.pos : '?') + ', reloads ' + log.filter((l) => /reloads|loads \d/.test(l)).length + ', squad hp ' + (r.g ? pcs(r.g).reduce((t: number, x: any) => t + x.hp, 0) - hp0 : '?') + ', log lines ' + log.length;
+    }
+  }
+}
+
+export function recordCooldowns(T: Record<string, string>) {
+  // a Hymn after a Hymn, at each Devotion that changes the wait: the same Hymn and another one, on each of the next 8 rounds
+  for (const patron of Object.keys(A.FAITH_PATRON).sort()) for (const dev of [3, 5, 7, 10]) {
+    let g: any; try { g = padFight({ ...EVEN() }); } catch (e: any) { T['cool/hymn/' + patron + '/setup'] = 'THREW ' + why(e); continue; }
+    const u = pcs(g)[0], c = charOf(g, u), far = foes(g)[1], al = pcs(g)[1], p = A.FAITH_PATRON[patron];
+    c.belief = { kind: 'faithful', patron }; c.patron = patron; c.devotion = dev; try { A.setDevotionXp(c, A.devotionThreshold(dev)); } catch { /* the level field is enough */ }
+    const tries = PRAY_TRIES(g, u, far, al);
+    for (const h of p.hymns) {
+      const first = tryAct(g, { type: 'combat/pray', unitId: u.id, kind: 'hymn', id: h.id }, tries, HIT);
+      if (!first.ok) { T['cool/hymn/' + patron + '@' + dev + '/' + h.id] = first.line.split(SEP)[0]; continue; }
+      const back: string[] = [];
+      for (const other of p.hymns) {
+        let at = 'never in 8';
+        for (let n = 0; n <= 8; n++) {
+          const g2 = copy(first.g), u2 = units(g2).find((x: any) => x.id === u.id); g2.combat.round += n;
+          try { if (n) turn(g2, u2, 9); else u2.ap = 9; } catch { at = 'THREW'; break; }
+          if (g2.combat.order[g2.combat.turn] !== u2.id || u2.dead || u2.downed) { at = 'no turn at +' + n; break; }
+          const r = tryAct(g2, { type: 'combat/pray', unitId: u.id, kind: 'hymn', id: other.id }, PRAY_TRIES(g2, u2, units(g2).find((x: any) => x.id === far.id), units(g2).find((x: any) => x.id === al.id)), HIT);
+          if (r.ok) { at = '+' + n; break; } if (!/wait|ago|round/i.test(r.line)) { at = '+' + n + ' (' + r.line.split(SEP)[0].slice(0, 60) + ')'; break; }
+        }
+        back.push(other.id + ' back ' + at);
+      }
+      T['cool/hymn/' + patron + '@' + dev + '/' + h.id] = back.join(' | ');
+    }
+  }
+  // the AP perks: the AP of a kill on each of the five rounds after a kill (a shot and a blow)
+  const killAp = (g0: any, how: 'shot' | 'melee'): string => {
+    const g = copy(g0); { const t = foes(g)[how === 'shot' ? 1 : 0]; t.hp = 1; t.armour = 0; }
+    const r0 = act(g, { type: 'combat/attack', unitId: pcs(g)[0].id, targetId: foes(g)[how === 'shot' ? 1 : 0].id, mode: how }, HIT); if (!r0.ok) return r0.line.split(SEP)[0];
+    const out = ['+0: ' + r0.line.split(SEP)[0]];
+    for (let n = 1; n <= 5; n++) {
+      const g2 = copy(r0.g), u2 = pcs(g2)[0]; g2.combat.round += n; g2.combat.over = false;
+      try { turn(g2, u2, 6); } catch (e: any) { out.push('+' + n + ': THREW ' + why(e)); continue; }
+      const t = foes(g2)[2]; t.hp = 1; t.armour = 0; t.pos = how === 'shot' ? '7,6' : '4,6'; u2.ammo = Math.max(u2.ammo || 0, 5);
+      const ap0 = u2.ap, r = act(g2, { type: 'combat/attack', unitId: u2.id, targetId: t.id, mode: how }, HIT);
+      const u3 = r.g ? pcs(r.g)[0] : null; out.push('+' + n + ': ' + (r.ok && u3 ? 'ap' + ap0 + '>' + u3.ap + (u3.apNext ? ' next' + u3.apNext : '') : r.line.split(SEP)[0].slice(0, 60)));
+    }
+    return out.join(' | ');
+  };
+  const gives = (key: string, tier?: string) => { try { const H = hooksOf(key, tier); return ['on_kill', 'on_hit', 'action_done', 'turn_start', 'turn_start_pre'].some((h) => H.has(h)); } catch { return true; } };
+  const both = (key: string, spec: any) => { try { const g = padFight(spec); T[key + '/kill-shot'] = killAp(g, 'shot'); T[key + '/kill-blow'] = killAp(g, 'melee'); } catch (e: any) { T[key + '/setup'] = 'THREW ' + why(e); } };
+  both('cool/ap/none', { classId: 'fighter' });
+  for (const p of A.PERKS) for (const tier of tiersOf(p)) if (gives('perk:' + p.id, tier)) both('cool/ap/perk/' + p.id + '@' + tier, { classId: 'fighter', perks: { [p.id]: tier } });
+  for (const t of A.TRAITS) if (gives('trait:' + t.id)) both('cool/ap/trait/' + t.id, { traits: [t.id] });
+}
+
 // ---------------------------------------------------------------------------------------------- the files
 export const COST_SECTIONS: Record<string, () => Record<string, string>> = {
   pad: () => { const T = {}; reading(() => recordPad(T)); return T; },
   'askers-perks': () => { const T = {}; reading(() => recordAskers(T, 'perks'), true); return T; },
   'askers-traits': () => { const T = {}; reading(() => recordAskers(T, 'traits'), true); return T; },
   'askers-classes': () => { const T = {}; reading(() => recordAskers(T, 'classes'), true); return T; },
+  credit: () => { const T = {}; reading(() => recordCredit(T), true); return T; },
+  foes: () => { const T = {}; reading(() => recordFoes(T), true); return T; },
+  cooldowns: () => { const T = {}; reading(() => recordCooldowns(T), true); return T; },
   // the damage tables' own actions, read as costs
   ...Object.fromEntries(['techniques', 'sigil', 'outburst', 'faith', 'items-perks', 'items-traits-classes', 'items-shelved', 'special', 'flat', 'weapons'].map((s) => [s, () => { const T = {}; reading(() => { SECTIONS[s](T); }); return T; }])),
 };

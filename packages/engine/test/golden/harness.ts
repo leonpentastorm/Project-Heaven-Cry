@@ -59,7 +59,7 @@ if (!(globalThis as any).__goldenTap) {
   (globalThis as any).__goldenTap = true;
   onHook('attack_roll', (ctx: any) => { if (DICE.die != null) ctx.die = DICE.die; if (DICE.hit != null) ctx.hit = DICE.hit; });
   onHook('spell_roll', (ctx: any) => { if (DICE.spell) ctx.add = (ctx.add || 0) + 100; });
-  onHook('enemy_action_start', (ctx: any) => { ctx.skip = true; if (ctx.u) ctx.u.ap = 0; });
+  onHook('enemy_action_start', (ctx: any) => { if ((ALSO as any).ai) return; ctx.skip = true; if (ctx.u) ctx.u.ap = 0; }); // ALSO.ai: the costs table of enemy turns lets the AI act
   onHook('damage_out', (ctx: any) => {
     // a stand-in for an item (test only): flat damage, own multipliers and target bonuses put on the amount as a perk would
     if (BEND.on && !ctx.preview) { if (BEND.add) ctx.add += BEND.add; for (const v of BEND.mults || []) ctx.mults.push({ v, label: 'golden' }); for (const v of BEND.vs || []) ctx.vs.push({ v, label: 'golden' }); }
