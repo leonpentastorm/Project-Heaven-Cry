@@ -7,6 +7,7 @@ import { alive, dist, xy, paths, moveUnit, moveBlock, emitFx, type Combat, type 
 import { radiusOf } from '../../tactics';
 import { AP_BASE } from '../../effects/ap';
 import { PHYS_RULES } from '../data';
+import { freely } from '../../effects/cost';
 import { setBraced } from '../../unitstate';
 
 // 21. Dead Centre: one shot at +50% damage. Suppressed: its cover doesn't count. Precise: +2 to hit. Drawn: ignores 5 armour.
@@ -26,9 +27,8 @@ technique({
  * tile), as part of a technique: it costs the walker nothing (its AP and movement bank are put back after, and for a
  * unit made to run on someone else's turn, its "moved this turn" too). Returns moveUnit's refusal, or null. */
 function walkFree(u: Unit, to: string, t: Tech, keepMoved: boolean): string | null {
-  const keep = { ap: u.ap, bank: u.bank, moved: u.moved };
-  u.ap = 99; u.bank = 999; // the walk is priced at 0 AP, and nothing an item adds to it can refuse it
-  try { return moveUnit(t.cb, u, to, t.rng, 'move', { via: paths(t.cb, u.pos, u.id), part: true }); } finally { u.ap = keep.ap; u.bank = keep.bank; if (!keepMoved) u.moved = keep.moved; }
+  const moved = u.moved; // the walk is priced at 0 AP, and nothing an item adds to it can refuse it
+  try { return freely(u, () => moveUnit(t.cb, u, to, t.rng, 'move', { via: paths(t.cb, u.pos, u.id), part: true }), { bank: true }); } finally { if (!keepMoved) u.moved = moved; }
 }
 const occupied = (cb: Combat, u: Unit, k: string) => cb.units.some((x) => x !== u && !x.dead && x.pos === k);
 

@@ -144,7 +144,7 @@ register({
 register({
   id: 'fighter.shove', claims: 'all',
   actions: [{
-    id: 'class_shove', label: 'Shove', scope: ['combat'], target: 'enemy', ap: 1, range: 1, pick: ['push', 'prone'], pickLabel: 'Push it back, or knock it down',
+    id: 'class_shove', label: 'Shove', scope: ['combat'], target: 'enemy', ap: 'data', range: 1, pick: ['push', 'prone'], pickLabel: 'Push it back, or knock it down',
     text: 'Push an enemy next to you 1 tile straight back, or knock it Prone: your choice. It makes a Body save against 12 + your strength with Raw Power, and nothing happens if it succeeds.',
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
@@ -187,7 +187,7 @@ const unstoppable = (h: Holder) => !!stateOf(h).on;
 register({
   id: 'fighter.unstoppable', claims: 'all',
   actions: [{
-    id: 'unstoppable', label: 'Unstoppable', scope: ['combat'], target: 'none', ap: 1, uses: { per: 'per_scene', n: 1 },
+    id: 'unstoppable', label: 'Unstoppable', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: until your next turn starts, Fear, Shaken, Slowed and Pinned don\'t affect you, and nobody gets an opportunity attack on you. You also gain 2 Momentum.',
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h); st.on = true; st.stash = {};
@@ -290,7 +290,7 @@ register({
 register({
   id: 'infiltrator.vanish', claims: 'all',
   actions: [{
-    id: 'vanish', label: 'Vanish', scope: ['combat'], target: 'none', ap: 1, uses: { per: 'per_turn', n: 1 },
+    id: 'vanish', label: 'Vanish', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_turn', n: 1 },
     text: 'Once a turn: if no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden. You can\'t Vanish while you are Marked.',
     available: (h) => { const u = h.u; if (!u || !h.cb) return false; if (u.hidden) return 'Already Hidden.'; if (condOn(u, 'marked')) return 'Marked: you can\'t hide.'; if (seenByFoes(h.cb, u)) return 'An enemy can see you. Get out of sight first.'; return true; },
     run: (h) => { const u = h.u!, cb = h.cb!; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' }); say(cb, u.name + ' vanishes' + hide(cb, u, 'Vanish') + '.'); },
@@ -310,7 +310,7 @@ function fixable(t: Unit): string[] {
 register({
   id: 'infiltrator.field_fix', claims: 'all',
   actions: [{
-    id: 'field_fix', label: 'Field Fix', scope: ['combat'], target: 'ally', ap: 2, range: 1, pick: [...FIX], pickLabel: 'What to fix',
+    id: 'field_fix', label: 'Field Fix', scope: ['combat'], target: 'ally', ap: 'data', range: 1, pick: [...FIX], pickLabel: 'What to fix',
     text: 'Do one thing for an ally next to you: clear their jammed weapon, restore some of their weapon\'s durability, or repair a robot, drone, turret or machine for 20 HP.',
     preview: (h, args) => {
       const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Field Fix works on a squadmate. For your own jammed weapon, use Clear Jam.' };
@@ -348,7 +348,7 @@ register({
   // Three actions, one for each way (each its own grid pick): a machine token, a barricade or turret tile, your tile.
   actions: [
     {
-      id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 2, range: 1,
+      id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 'data', range: 1,
       text: 'Disable an enemy machine, turret or drone next to you for 2 rounds. It takes no turns and no reactions.',
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for 2 rounds.'] }; },
       run: (h, args, rng) => {
@@ -359,7 +359,7 @@ register({
       },
     },
     {
-      id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 2,
+      id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 'data',
       text: 'Pick a barricade or an emplaced turret next to you. For 2 rounds, the barricade stops blocking the way, or the turret is disabled.',
       preview: (h, args) => {
         const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
@@ -376,7 +376,7 @@ register({
       },
     },
     {
-      id: 'rig', label: 'Sabotage: rig your tile', scope: ['combat'], target: 'none', ap: 2,
+      id: 'rig', label: 'Sabotage: rig your tile', scope: ['combat'], target: 'none', ap: 'data',
       text: 'Rig your own tile. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.',
       preview: (h) => { const cb = h.cb!, u = h.u!; if (objectsAt(cb, u.pos).some((o) => !!kindOf(o).trap && !o.resolved && !((o as any).rig === h.key && (o as any).owner === u.id))) return { ok: false, why: 'There is already a trap here.' }; return { tiles: [u.pos], lines: ['Rig ' + refOf(u.pos) + '. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.'] }; },
       run: (h) => {
@@ -471,7 +471,7 @@ function evokerWhy(h: Holder): string | null {
 register({
   id: 'trickster.false_image', claims: 'all',
   actions: [{
-    id: 'false_image', label: 'False Image', scope: ['combat'], target: 'tile', ap: 2,
+    id: 'false_image', label: 'False Image', scope: ['combat'], target: 'tile', ap: 'data',
     text: 'Costs 1 charge. Needs an Evoker in hand. A decoy of you appears on a free tile you can see within 8 tiles (plus your Sigil range bonus) and lasts 2 rounds. Every enemy that can see it makes a Brain save, and those who fail treat the decoy as you. It fades when it is attacked or when you go down.',
     available: (h) => { if (!h.u) return false; const e = evokerWhy(h); if (e) return e; if ((h.u.mg!.charge || 0) < 1) return 'Needs 1 charge. Swap in a fresh core.'; return true; },
     preview: (h, args) => {
@@ -510,7 +510,7 @@ register({
 register({
   id: 'trickster.silver_tongue', claims: 'all',
   actions: [{
-    id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 2, range: 6,
+    id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 'data', range: 6,
     text: 'An enemy within 6 tiles that can hear you makes a Brain save. If it fails, it loses 2 AP on its next turn. A boss or a Celestial loses 1 AP instead. It doesn\'t work on machines, turrets or drones.',
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (saveTn(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
     run: (h, args, rng) => {
@@ -537,7 +537,7 @@ register({
   // Two actions (a squadmate token, or your image: a button), one use a scene between them.
   actions: [
     {
-      id: 'sleight', label: 'Sleight: swap with a squadmate', scope: ['combat'], target: 'ally', ap: 1, range: 6,
+      id: 'sleight', label: 'Sleight: swap with a squadmate', scope: ['combat'], target: 'ally', ap: 'data', range: 6,
       text: 'Once a scene: swap places with a standing ally within 6 tiles. This shares its one use a scene with the False Image swap.',
       available: sleightLeft,
       preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' is Downed and can\'t swap.' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
@@ -551,7 +551,7 @@ register({
       },
     },
     {
-      id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 1,
+      id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 'data',
       text: 'Once a scene: swap places with your False Image within 6 tiles. This shares its one use a scene with the squadmate swap.',
       available: (h) => { const l = sleightLeft(h); if (l !== true) return l; return h.cb && h.u && imageOfOwner(h.cb, h.u.id) ? true : 'You have no False Image out.'; },
       preview: (h) => {
@@ -580,7 +580,7 @@ const rallied = (cb: Combat, u: Unit) => cb.units.filter((t) => t !== u && t.sid
 register({
   id: 'bard.rally', claims: 'all',
   actions: [{
-    id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 2, uses: { per: 'per_scene', n: 1 },
+    id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
     preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(kitHeal(RALLY_HEAL, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u))) + ' HP each, and their Fear and Shaken end.'] }; },
     run: (h) => {
@@ -613,7 +613,7 @@ const ELEMENT_TONES = () => Object.values(TONE).filter((t: any) => t.element).ma
 register({
   id: 'channeler.occult_library', claims: [0],
   actions: [{
-    id: 'occult_tone', label: 'Occult Library: learn a tone', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_campaign', n: 1 }, pick: ELEMENT_TONES(), pickLabel: 'The tone',
+    id: 'occult_tone', label: 'Occult Library: learn a tone', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_campaign', n: 1 }, pick: ELEMENT_TONES(), pickLabel: 'The tone',
     text: 'Once only, out of a fight: learn one more Outburst tone of your choice. It counts as the one new thing you can learn this scene.',
     available: (h) => { const c = h.c; if (!c) return false; const kt = c.soulKnown?.tones || []; return ELEMENT_TONES().some((t) => !kt.includes(t)) ? true : 'You know every tone.'; },
     preview: (h, args) => { const c = h.c!, kt = c.soulKnown?.tones || []; if (!args.choice) return { ok: false, why: 'Pick a tone.' }; if (!ELEMENT_TONES().includes(args.choice)) return { ok: false, why: 'No such tone.' }; if (kt.includes(args.choice)) return { ok: false, why: 'You know that tone.' };
@@ -636,7 +636,7 @@ const eyeArmed = (h: Holder) => { const a = stateOf(h).armed, cb = h.cb || fight
 register({
   id: 'channeler.eye_of_the_storm', claims: 'all',
   actions: [{
-    id: 'eye_of_the_storm', label: 'Eye of the Storm', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
+    id: 'eye_of_the_storm', label: 'Eye of the Storm', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene, on your turn: your next Release this turn adds no Strain, and its tone\'s rider counts as one stage higher.',
     available: (h) => { if (!h.u) return false; if (!h.u.mg || !(h.u.mg.designs || []).length) return 'You have no Outbursts.'; if (!myTurn(h)) return 'Only on your turn.'; if (eyeArmed(h)) return 'Already armed.'; return true; },
     run: (h) => { const u = h.u!, cb = h.cb!; stateOf(h).armed = { round: cb.round }; emitFx(cb, 'eye_storm', { unit: u.id, at: u.pos }); say(cb, u.name + ' finds the eye of the storm: the next Release adds no Strain, its rider a stage higher.'); },
@@ -663,7 +663,7 @@ const authorityOf = (h: Holder) => h.c?.skills?.authority || 0;
 register({
   id: 'guardian.command', claims: 'all',
   actions: [{
-    id: 'command', label: 'Command', scope: ['combat'], target: 'ally', ap: 1, range: 6, uses: { per: 'per_turn', n: 1 }, pickLabel: 'The squadmate, then the tile',
+    id: 'command', label: 'Command', scope: ['combat'], target: 'ally', ap: 'data', range: 6, uses: { per: 'per_turn', n: 1 }, pickLabel: 'The squadmate, then the tile',
     text: 'Once a turn: an ally within 6 tiles moves up to 2 tiles to a tile you pick, right now and for none of their AP. It is a normal move, so it can draw opportunity attacks. Needs 1 point of Authority.',
     available: (h) => (!h.u ? false : authorityOf(h) < 1 ? 'Needs 1 point of Authority.' : true),
     preview: (h, args) => {

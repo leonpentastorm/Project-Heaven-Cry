@@ -14,6 +14,7 @@ import type { Rng } from '../rng';
 import type { Call } from './types';
 import { CALL } from './data';
 import { call, callMarks, callLevel, giveAp, hinder } from './core';
+import { grantAp, setAp } from '../effects/cost';
 import { asStanding } from '../unitstate';
 
 const plural = (n: number, w: string) => n + ' ' + w + (n === 1 ? '' : 's');
@@ -57,9 +58,9 @@ function doThing(t: Call, th: Thing): string | null {
   const a = t.tgt, cb = t.cb;
   if (th === 'reload') return reload(cb, a, { free: true });
   if (th === 'move') return moveUnit(cb, a, t.args.tile!, t.rng, 'move', { free: true, oa: true, shortest: true });
-  const before = a.ap; a.ap = before + 10;
+  const before = a.ap; grantAp(cb, a, 10, { max: Infinity });
   const err = th === 'stand' ? toggleProne(cb, a) : pickUp(cb, a, pileNear(cb, a) || a.pos, null, charOfUnit(a));
-  a.ap = Math.max(before, a.ap - 10); // what the action cost is waived; AP an item gave on it is kept
+  setAp(a, Math.max(before, a.ap - 10)); // what the action cost is waived; AP an item gave on it is kept
   return err;
 }
 call({

@@ -32,6 +32,7 @@ import { die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
 import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
+import { pay, refund, canPay, bill } from '../effects/cost';
 import { setCondRounds } from '../magic';
 
 // ---------- shared helpers ----------
@@ -108,7 +109,7 @@ register({
       if (!s.left || !placedStanding(cb, h.u!)) return;
       const d = Math.min(s.left, ctx.ap); if (d <= 0) return;
       ctx.ap -= d;
-      if (!ctx.preview && h.u!.ap >= ctx.ap && (h.u!.mg?.charge ?? 0) >= ctx.charge) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
+      if (!ctx.preview && canPay(cb, h.u!, bill('draw', ctx.ap, { charge: ctx.charge }))) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
     },
     // planEvoke is pure (every evoke_cost is a preview): the discount is shown here and taken up at 'evoked'.
     evoke_cost: (ctx, h) => {
@@ -298,8 +299,8 @@ register({
     available: (h) => (!h.u?.mg?.emanator ? false : true),
     run: (h) => {
       const u = h.u!, cb = h.cb!;
-      u.ap += SPELL_AP.crystallise; // the runtime took the reduced cost; crystallise() takes its full 3
-      const err = crystallise(cb, u); if (err) { u.ap -= SPELL_AP.crystallise; return err; }
+      refund(cb, u, SPELL_AP.crystallise); // the runtime took the reduced cost; crystallise() takes its full 3
+      const err = crystallise(cb, u); if (err) { pay(cb, u, SPELL_AP.crystallise); return err; }
       return null;
     },
   }],
@@ -515,7 +516,7 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
         // Rules 1.5: the Sigil decides the area, so each creature takes the held Outburst as a Bolt (its shape, Size,
         // Random and Far set aside; Ether implied: classes/soul.ts asBolt).
         m.held = { ...held };
-        u.ap += SPELL_AP.release; const err = asBolt(u, d, () => releaseOutburst(cb, rng, u, t.pos)); if (err) { u.ap -= SPELL_AP.release; break; }
+        refund(cb, u, SPELL_AP.release); const err = asBolt(u, d, () => releaseOutburst(cb, rng, u, t.pos)); if (err) { pay(cb, u, SPELL_AP.release); break; }
         released++;
       }
     }, () => (released ? 1 + Math.max(0, (held.stage ?? 0) - 1) + (held.felt || []).length : 0));
@@ -596,7 +597,7 @@ register({
   id: 'fire_sermon', claims: 'all',
   actions: [
     {
-      id: 'preach', label: 'Preach', scope: ['combat'], ap: 2, target: 'none',
+      id: 'preach', label: 'Preach', scope: ['combat'], ap: 'data', target: 'none',
       text: 'Preach until your next turn: your Blessings also leave enemies within 4 tiles Shaken (Heart save).',
       available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced.' : stateOf(h).preach ? 'Already preaching.' : true),
       run: (h, args) => { stateOf(h).preach = true; log(h.cb, h.u!.name + ' preaches' + (args.text ? ': "' + String(args.text).slice(0, 160) + '"' : '') + ' (Fire Sermon).'); },
@@ -634,7 +635,7 @@ register({
   id: 'litany', claims: 'all',
   actions: [
     {
-      id: 'litany', label: 'Litany', scope: ['combat'], ap: 2, target: 'none',
+      id: 'litany', label: 'Litany', scope: ['combat'], ap: 'data', target: 'none',
       text: 'A spoken prayer: allies within 3 tiles, you included, get a bonus on every save until your next turn.',
       available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced: no prayers.' : true),
       run: (h) => {
@@ -1032,7 +1033,7 @@ register({
 register({
   id: 'shared_breath', claims: 'all',
   actions: [{
-    id: 'link', label: 'Shared Breath', scope: ['combat'], ap: 2, target: 'ally', range: 3,
+    id: 'link', label: 'Shared Breath', scope: ['combat'], ap: 'data', target: 'ally', range: 3,
     text: 'Link with an ally: the next Heart debuff on either of you is split between you, each at half its duration.',
     preview: (h, args) => { const t = h.cb?.units.find((x) => x.id === args.targetId); if (t && (me(h, t))) return { ok: false, why: 'Link with someone else.' }; if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; },
     run: (h, args) => {
@@ -1115,7 +1116,7 @@ register({
   id: 'mirage', claims: 'all',
   actions: [
     {
-      id: 'mirage', label: 'Mirage', scope: ['combat'], ap: 2, target: 'tile',
+      id: 'mirage', label: 'Mirage', scope: ['combat'], ap: 'data', target: 'tile',
       text: 'Project a false wall, figure or sound onto a tile in range. Enemies who fail an Acuity check believe it.',
       preview: (h, args) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return { ok: false, why: sp }; return { tiles: sp.map((x) => x.tile), lines: ['A ' + sp.map((x) => x.kind).join(' and a ') + ' (Acuity vs ' + (12 + visMod(charOf(h))) + ')'] }; },
       run: (h, args, rng) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return sp; log(h.cb, castMirage(h, rng, sp)); return null; },

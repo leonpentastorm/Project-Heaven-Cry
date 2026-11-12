@@ -67,6 +67,16 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 - **The foundation lint** (`packages/engine/test/lint-foundations.test.ts`, inside `npm run check`): reads the engine's
   source and fails on a raw `d20(`, a hand-written pass/fail, a new `unit.pos =`, a private copy of a `kit.ts` helper,
   a fixed-seed rng, or a stat id that is answered and never asked. Each failure says what to call instead.
+- **The costs tables** (`packages/engine/test/golden-costs*.test.ts`, inside `npm run check`; engine foundations 2): AP
+  and every resource before and after every action a unit can take (6,230 lines in `test/golden/costs-<section>.json`),
+  each also with no AP (the refusal), a second time, next turn and three rounds on, and the pad again for every holder
+  of an item that changes a cost. A state line that moves is a change of cost or of a limit. Where a counter is kept is
+  in `*.marks.json`: when a counter moved to `uses()`, `GOLDEN_RECORD=marks npm test -w @phc/engine -- golden-costs`.
+  Three more (`golden-costs-review.test.ts`, 3,673 lines): `costs-credit` (every action under a Brief and an Encore,
+  with 0 to 6 AP of the unit's own), `costs-foes` (an enemy's whole turn with every gun; the only table where the AI
+  acts) and `costs-cooldowns` (the round each Hymn and each AP perk comes back).
+- **The cost and counter lint** (`packages/engine/test/lint-costs.test.ts`): fails on a hand-written AP check, a direct
+  write to a unit's AP, a typed `'Needs n AP.'`, a resource paid by hand or a round number kept by hand that is new.
 - **The conditions table and its lint** (engine foundations 2; both inside `npm run check`):
   `packages/engine/test/golden-conditions.test.ts` holds every condition on every tier and a character through its life
   (apply, stack, tick, cleanse, end), from each kind of source, against both immunity doors and every trait and perk

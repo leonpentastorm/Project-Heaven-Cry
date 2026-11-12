@@ -11,6 +11,7 @@ import {
   type Combat, type GameState, type Unit, type Character, type Action,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { clearPrayerLimits } from '../src';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const fx = (cb: Combat, k: string) => (cb.fx || []).filter((e: any) => e.k === k) as any[];
@@ -37,7 +38,7 @@ function holy(o: Opt = {}) {
 }
 type H = ReturnType<typeof holy>;
 /** Pray the patron's Hymn I at the ally again (the cooldown and AP put back: a later round). */
-const hymnAgain = (h: H, id = 'saints_shield') => { h.me.prayedRound = undefined; h.me.ap = 6; h.pray('hymn', id, { targetId: h.ally.id }); };
+const hymnAgain = (h: H, id = 'saints_shield') => { clearPrayerLimits(h.me); h.me.ap = 6; h.pray('hymn', id, { targetId: h.ally.id }); };
 /** The foe hits the Downed ally (Nerukhan's trigger). */
 const kickDowned = (h: H) => { Object.assign(h.ally, { hp: 0, downed: true, dead: false, saves: { ok: 0, fail: 0 } }); h.bound(() => applyDamage(h.cb, h.ally, 5, { by: h.foe, type: 'physical' } as any)); };
 

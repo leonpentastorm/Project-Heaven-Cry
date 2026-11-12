@@ -35,9 +35,11 @@ import {
   saveTn,
 } from './magic';
 import { makeObject, OBJ } from './objects';
-import { tilesAround, canStand, inBounds, inArea } from './kit';
+import { tilesAround, canStand, inBounds, inArea, work } from './kit';
 import { rawHidden } from './unitstate';
 import { condMods } from './condtable';
+import { price, priced, bill, whyNot, canPay, pay, grantAp, withAp } from './effects/cost';
+import { uses } from './effects/uses';
 
 type Fam = SigilFam;
 /** Enemy notice by tier (tactics.ts TIER_NOTICE; copied here so this module doesn't import tactics, which reads magic.ts
@@ -72,7 +74,7 @@ export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, ti
   const base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(tile || u.pos)) ? 1 : 0), charge: Math.max(0, w0.charge), flux: w0.flux, preview, tile: tile || u.pos, fail: '', cb };
   const c: any = emit(cb, 'glyph_cost', base);
   if (u.edgeWord) c.ap = 0; // the Evoker blade's Edge Word (item 487): the glyph after a hit costs no AP
-  return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux), ...(c.fail ? { fail: c.fail } : {}) };
+  return { ap: priced({ cb, u }, 'draw', Math.max(0, Math.round(c.ap * 10) / 10), undefined, { word, tile: tile || u.pos }).ap, charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux), ...(c.fail ? { fail: c.fail } : {}) };
 }
 /** How many glyphs one tile may hold for this caster: 1, unless an item raises it ('glyphs_per_tile' {u, tile, n};
  * the two-glyph hook) or the unit carries mg.glyphsPerTile. */
@@ -470,7 +472,7 @@ function affectedOn(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp: Spe
     else if (sp.kin && (t.downed || t.surrendered) && iv(sp, 'kin', 'spare_downed')) a.kinSpared = true; // KIN's inflection (rules 1.10)
     else if ((t.downed || t.surrendered) && sp.harmful && !sp.subjects.some(isBoonWord) && !sp.workings.length) a.skipped = t.downed ? 'downed' : 'surrendered';
     else if (self && sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken') a.skipped = 'quicken_self';
-    else if (sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken' && t.quickRound === cb.round) a.skipped = 'quicken_round';
+    else if (sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'quicken' && quickened(cb, t).left('per_round') <= 0) a.skipped = 'quicken_round';
     else if (sp.uniqueSubjects.length === 1 && sp.uniqueSubjects[0] === 'mask' && condOn(t, 'marked')) a.skipped = 'marked';
     if (counts(a)) { const n = boonNotes(cb, caster, sp, t); if (n.length) a.notes = n; }
     out.push(a);
@@ -487,7 +489,7 @@ export function cleanseList(t: Unit, n = 1): string[] {
 /** The Boons' and MASK's effect on one creature, in words with the data's numbers (the preview's rows). */
 function boonNotes(cb: Combat, caster: Unit | null, sp: Spell, t: Unit): string[] {
   const out: string[] = [], U = sp.uniqueSubjects;
-  if (U.includes('quicken') && !(caster && t === caster) && t.quickRound !== cb.round) out.push('+' + ((W('quicken') as any)?.ap ?? 2) + ' AP on their next turn (ceiling ' + AP_MAX + ')');
+  if (U.includes('quicken') && !(caster && t === caster) && quickened(cb, t).left('per_round') > 0) out.push('+' + ((W('quicken') as any)?.ap ?? 2) + ' AP on their next turn (ceiling ' + AP_MAX + ')');
   if (U.includes('sharpen')) { const d: any = W('sharpen') || {}; out.push('next attack +' + (d.to_hit ?? 3) + ' to hit, ×' + (d.damage_mult ?? 1.25) + ' damage'); }
   if (U.includes('cleanse')) { const l = cleanseList(t, sp.counts.cleanse || 1); out.push(l.length ? 'ends ' + l.map(condName).join(', ') : 'nothing to cleanse'); }
   if (U.includes('mask') && !condOn(t, 'marked')) out.push('Hidden until they attack, or ' + ((W('mask') as any)?.applies?.rounds ?? 2) + ' rounds');
@@ -602,6 +604,7 @@ export function evokeOrigins(cb: Combat, u: Unit, p: Pattern | string): { tile: 
 /** Plan an Evoke from where the caster stands: everything the screen shows before it is confirmed (spec: Mana, Sigils 9).
  * tile: any glyph of the pattern. aim: the target tile (TWICE: opts.aims for the rest). Pure: no dice, no changes. */
 export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts: EvokeOpts = {}): EvokePreview {
+  work('planEvoke');
   const no = (why: string, extra: Partial<EvokePreview> = {}): EvokePreview => ({ ok: false, why, charge: 0, ap: SPELL_AP.evoke, flux: 0, targets: [], needsAim: false, area: [], pickable: [], missiles: [], affected: [], fizzle: false, ...extra });
   const e = sigilReady(cb, u); if (e) return no(e);
   const p = findPattern(cb, tile, u.pos, opts.stroke); if (typeof p === 'string') return no(p);
@@ -619,10 +622,10 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   // 'evoke_cost' {u, pattern, ap, charge, preview, fail} (mutable): items change what firing costs; fail refuses it.
   const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke + (condOn(u, 'ldebuff') ? condMods('ldebuff').sigilAp || 0 : 0), charge: evokeCharge(p, u), preview: true, fail: '', cb });
   if (ec.fail) return no(ec.fail, { pattern: p, spell: sp });
-  const charge = Math.max(0, ec.charge), eap = Math.max(0, ec.ap), depth = spellRange(cb, u, sp, p);
+  const charge = Math.max(0, ec.charge), eap = priced({ cb, u }, 'evoke', Math.max(0, ec.ap)).ap, depth = spellRange(cb, u, sp, p);
   const base = { pattern: p, spell: sp, charge, ap: eap, flux: 0, facing, range: depth, targets: [] as string[] };
   if (u.mg!.charge < charge) return no('Firing needs ' + charge + ' charge (' + u.mg!.charge + ' left): swap a core.', base);
-  if (u.ap < eap) return no('Needs ' + eap + ' AP.', base);
+  { const n0 = whyNot(cb, u, eap); if (n0) return no(n0, base); }
   // The area (spec: the facing rule) and what may be picked in it.
   let area: string[] = [], laneOf: Record<string, string> = {}, relays: { ally: Unit; hops: string[] }[] = [];
   if (sp.missile === 'relay') {
@@ -883,7 +886,7 @@ export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, st
     const why = strokeRefusal(cb, u, words, r.tiles.length, r.drawers) || (r2 ? strokeRefusal(cb, u, r2.ws, r2.tiles.length, r2.drawers) : null);
     if (why) return no(why + (stroke === undefined && strokes.length ? ' Or pick new Line.' : ''), base);
   }
-  if (u.ap < gc.ap) return no('Needs ' + gc.ap + ' AP.', base);
+  { const n0 = whyNot(cb, u, gc.ap); if (n0) return no(n0, base); }
   if (m!.charge < gc.charge) return no('Not enough charge in the core (' + m!.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).', base);
   const mine = myGlyphs(cb, u), capG = groundCap(u, cb), fades = mine.length + 1 > capG ? mine[0] : null;
   return { ok: true, tile: at, ...base, fades, overload: m!.flux + gc.flux > FLUX_MAX, capLeft: Math.max(0, capG - mine.length - 1) };
@@ -895,7 +898,7 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: st
   const pv = previewDraw(cb, u, word, tile, stroke); if (!pv.ok) return pv.why || 'Can\'t draw that.';
   const gc = glyphCost(cb, u, word, false, pv.tile); if (gc.fail) return gc.fail;
   const m = u.mg!, w = W(word)!;
-  u.ap = Math.round((u.ap - gc.ap) * 10) / 10; m.charge -= gc.charge;
+  pay(cb, u, bill('draw', gc.ap, { charge: gc.charge }));
   const edge = !!u.edgeWord; delete u.edgeWord;
   const g: Glyph = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: pv.tile, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, v: SIGIL_REV, ...(pv.strokeId ? { strokeId: pv.strokeId } : {}), ...(pv.strokeId2 ? { strokeId2: pv.strokeId2 } : {}) } as Glyph;
   cb.glyphs = [...(cb.glyphs || []), g]; cb.sigilV = SIGIL_REV;
@@ -913,8 +916,8 @@ export function scuff(cb: Combat, u: Unit): string | null {
   migrateSigil(cb);
   const here = (cb.glyphs || []).filter((g) => g.pos === u.pos && !(g as any).keystone), tur = (cb.zones || []).filter((z) => z.kind === 'turret' && z.tiles[0] === u.pos);
   if (!here.length && !tur.length) return (cb.glyphs || []).some((g) => g.pos === u.pos) ? 'A Keystone can\'t be scuffed.' : 'No glyphs under you.';
-  if (u.ap < SPELL_AP.scuff) return 'Needs 1 AP.';
-  u.ap -= SPELL_AP.scuff; cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos || (g as any).keystone);
+  const ap = price({ cb, u }, 'scuff').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap); cb.glyphs = (cb.glyphs || []).filter((g) => g.pos !== u.pos || (g as any).keystone);
   // Rules 1.10: a scuffed glyph leaves a trace of its word for a while, which can be read (copied) like a glyph.
   if (here.length) cb.traces = [...(cb.traces || []), ...here.map((g): Trace => ({ id: g.id, word: g.word, pos: g.pos, side: g.side, by: g.by, who: g.who, left: STUDY.traceRounds, ...((g as any).copiedBy?.length ? { copiedBy: [...(g as any).copiedBy] } : {}) }))];
   tidyStrokes(cb.glyphs); // a middle glyph scuffed splits its stroke in two (rules 1.10, Drawing 3.8)
@@ -946,11 +949,11 @@ export function readGlyph(cb: Combat, u: Unit, tile: string): string | null {
   if (!any.length) return 'No glyph or trace there to read.';
   const list = readable(cb, u, tile);
   if (!list.length) return any.every((g) => g.side === u.side && !(cb.traces || []).includes(g as Trace)) ? 'Your side\'s glyphs: ask the one who drew it to teach you.' : any.every((g) => knowsWord(c, g.word)) ? 'You know ' + (any.length === 1 ? 'that word' : 'those words') + ' already.' : 'You have copied that already.';
-  const cost = analyzeCost(u), range = 4 + (u.analysis || 0);
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  const cost = analyzeCost(u, cb), range = 4 + (u.analysis || 0);
+  { const no = whyNot(cb, u, cost); if (no) return no; }
   if (dist(u.pos, tile) > range) return 'Out of Analyze range (' + range + ' tiles).';
   if (dist(u.pos, tile) > 1 && !lineOfSight(cb, u.pos, tile)) return 'No line of sight to it.';
-  u.ap -= cost; emitFx(cb, 'analyze', { unit: u.id, target: null, from: u.pos, to: tile, glyph: true });
+  pay(cb, u, cost); emitFx(cb, 'analyze', { unit: u.id, target: null, from: u.pos, to: tile, glyph: true });
   cb.log.push(u.name + ' reads the ' + list.map((g) => g.word.toUpperCase() + ((cb.traces || []).includes(g as Trace) ? ' trace' : ' glyph')).join(' and ') + ' at ' + refOf(tile) + ' (' + cost + ' AP).', ...copyFrom(cb, u, list));
   return null;
 }
@@ -980,7 +983,7 @@ export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string,
 }
 function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: EvokeOpts): string | null {
   const p = pv.pattern!, sp = pv.spell!, m = u.mg!, name = p.words.map((w) => w.toUpperCase()).join(' · ');
-  u.ap = Math.round((u.ap - pv.ap) * 10) / 10; m.charge -= pv.charge; m.cast = true;
+  pay(cb, u, bill('evoke', pv.ap, { charge: pv.charge })); m.cast = true;
   const head = u.name + ' evokes ' + name + ' (' + (p.shape === 'stack' ? 'a Stack' : 'a Line of ' + p.tiles.length + ', ' + pv.facing!.mode) + ', ' + pv.charge + ' charge)';
   emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, words: p.words, element: sp.element, side: u.side, facing: pv.facing!.mode, dir: pv.facing!.dir, area: pv.area,
     src: pv.missiles[0]?.origin, impact: pv.missiles[0]?.impact ?? null, targets: pv.targets, targetAt: pv.targets.map((id) => cb.units.find((x) => x.id === id)?.pos),
@@ -1083,8 +1086,8 @@ function nonDamage(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp
       else if (w === 'mend') { line += heal(t, a.heal, cb, by, 'sigil'); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'mend', amount: a.heal }); }
       else if (w === 'quicken') {
         if (by && t === by) { line += ' · QUICKEN never takes its caster'; continue; }
-        if (t.quickRound === cb.round) { line += ' · ' + t.name + ' was already Quickened this round'; continue; }
-        t.quickRound = cb.round; const q = applyCond(cb, rng, by, t, 'quickened', undefined, undefined, { skipSave: true }); line += q + (condOn(t, 'quickened') && /Quickened$/.test(q) ? ' (+' + (d.ap ?? 2) + ' AP on their next turn)' : ''); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'quicken', amount: d.ap ?? 2 });
+        if (!quickened(cb, t).take('per_round')) { line += ' · ' + t.name + ' was already Quickened this round'; continue; }
+        const q = applyCond(cb, rng, by, t, 'quickened', undefined, undefined, { skipSave: true }); line += q + (condOn(t, 'quickened') && /Quickened$/.test(q) ? ' (+' + (d.ap ?? 2) + ' AP on their next turn)' : ''); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'quicken', amount: d.ap ?? 2 });
       } else if (w === 'sharpen') { line += applyCond(cb, rng, by, t, 'sharpened', 1, undefined, { skipSave: true }); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'sharpen' }); }
       else if (w === 'cleanse') { for (let i = 0; i < (sp.counts.cleanse || 1); i++) { const id = newestCondition(t); if (!id) { if (!i) line += ' · ' + t.name + ' has nothing to cleanse'; break; } endCond(t, id, cb); line += ' · ' + t.name + ' is cleansed of ' + condName(id); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); tendHook.f?.(cb, by, t); } }
       continue;
@@ -1268,9 +1271,9 @@ export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): strin
   const z = (cb.zones || []).find((x) => x.kind === 'turret' && x.tiles[0] === tile && x.side !== u.side && (!(x as any).hidden || ((x as any).spotted || []).includes(u.side)));
   if (!z) return 'No turret you can see there.';
   const w = WEAPON[u.weapon], melee = !w || isMelee(w), ap = attackApCost(w || WEAPON.fists, melee ? 'melee' : 'shot');
-  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  { const no = whyNot(cb, u, ap); if (no) return no; }
   if (melee ? dist(u.pos, tile) > 1 : dist(u.pos, tile) > effectiveRange(w) * 3 || !lineOfSight(cb, u.pos, tile)) return melee ? 'Walk up to it first.' : 'Out of range or no line of sight.';
-  u.ap -= ap; const def = (z as any).def ?? CONTEST_BASE, sr = rollVs(cb, rng, { by: u, mod: u.attack || 0, tn: def, why: 'turret' }), r = sr.die, tot = sr.total, hit = sr.ok;
+  pay(cb, u, ap); const def = (z as any).def ?? CONTEST_BASE, sr = rollVs(cb, rng, { by: u, mod: u.attack || 0, tn: def, why: 'turret' }), r = sr.die, tot = sr.total, hit = sr.ok;
   emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: u.weapon, cat: w?.category, mode: melee ? 'melee' : 'shot', hit, crit: r === 20, fumble: r === 1, dmg: 0, killed: hit, object: true });
   if (hit) destroyPlaced(cb, z, u.name + ' hits it (d20 ' + r + ' → ' + tot + ' vs ' + def + ')'); else cb.log.push(u.name + ' misses the turret at ' + refOf(tile) + ' (d20 ' + r + ' → ' + tot + ' vs ' + def + ').');
   return null;
@@ -1289,10 +1292,12 @@ export function sigilEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean {
 }
 /** The start of a unit's turn for Sigil magic: Quickened's AP, Corroded's bite, fields and traps on its tile, and its
  * turrets fire (spec: Mana; conditions). */
+/** QUICKEN takes a unit once a round, whoever casts it: a cell on the unit (effects/uses.ts). */
+const quickened = (cb: Combat, t: Unit) => uses({ key: 'sigil:quicken', u: t, cb });
 export function sigilTurnStart(cb: Combat, rng: Rng, u: Unit) {
   migrateSigil(cb);
   if (u.dead) return;
-  if (condOn(u, 'quickened')) { const add = (W('quicken') as any)?.ap ?? 2, was = u.ap; if (!cb.overworld) u.ap = Math.min(AP_MAX, u.ap + add); endCond(u, 'quickened', cb); cb.log.push(u.name + ' is Quickened: +' + (u.ap - was) + ' AP this turn.'); }
+  if (condOn(u, 'quickened')) { const add = (W('quicken') as any)?.ap ?? 2, was = u.ap; if (!cb.overworld) grantAp(cb, u, add); endCond(u, 'quickened', cb); cb.log.push(u.name + ' is Quickened: +' + (u.ap - was) + ' AP this turn.'); }
   if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, itemAmount('condition:corroded', 'tick'), 'true', 'acid'))); }
   for (const z of [...(cb.zones || [])]) {
     if (u.dead || !z.tiles.includes(u.pos)) continue;
@@ -1423,12 +1428,12 @@ function combos(words: string[], max: number): string[][] {
 }
 /** Try a hypothetical Line (glyphs not yet drawn) and plan its Evoke, then put everything back. */
 function tryLine(cb: Combat, u: Unit, words: string[], tiles: string[], aim: string, opts: EvokeOpts = {}): EvokePreview | null {
-  const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq, ap = u.ap, charge = u.mg!.charge;
+  const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq, charge = u.mg!.charge;
   try {
     cb.glyphs = [...(glyphs || []), ...tiles.map((k, i) => ({ id: 'gl' + ((seq || 0) + 1 + i), word: words[i], pos: k, by: u.id, side: u.side, left: 2, who: u.name, v: SIGIL_REV, strokeId: 'sgl' + ((seq || 0) + 1) } as Glyph))];
-    u.pos = tiles[tiles.length - 1]; u.ap = 9; u.mg!.charge = 99;
-    const pv = planEvoke(cb, u, tiles[0], aim, opts); return pv.ok ? pv : null;
-  } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; u.ap = ap; u.mg!.charge = charge; }
+    u.pos = tiles[tiles.length - 1]; u.mg!.charge = 99;
+    const pv = withAp(u, AP_MAX, () => planEvoke(cb, u, tiles[0], aim, opts)); return pv.ok ? pv : null;
+  } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; u.mg!.charge = charge; }
 }
 /** Score a plan for an enemy: expected damage to the other side, less 1.5 × its own side's; Boons by what they mend;
  * NULL by what it unmakes. Held (−Infinity) if it would hit more of its own than of the other. */
@@ -1469,8 +1474,8 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
     const sp = compileSpell(words), L = words.length, charge = words.reduce((t, x) => t + glyphCost(cb, u, x, true, u.pos).charge, 0) + Math.max(1, L - (m.coreSave || 0));
     const fluxIn = words.reduce((t, x) => t + ((W(x) as any)?.flux ?? 1), 0), needVent = m.flux + fluxIn > FLUX_MAX, needCore = charge > m.charge;
     if (needCore && m.cores < 1) continue;
-    const cost = L * glyphApOf(u) + apForTiles(L - 1, u.bank, u.movement) + SPELL_AP.evoke + (needVent ? ventAp(u) : 0) + (needCore ? coreAp(u) : 0);
-    if (cost > u.ap) continue;
+    const cost = L * glyphApOf(u) + apForTiles(L - 1, u.bank, u.movement) + SPELL_AP.evoke + (needVent ? ventAp(u, cb) : 0) + (needCore ? coreAp(u, cb) : 0);
+    if (!canPay(cb, u, cost)) continue;
     const boon = sp.subjects.every((x) => isBoonWord(x)), pool = boon ? friends.filter((t) => t.hp < t.maxHp || (t.shield || 0) < 10) : foes;
     for (const t of pool.slice(0, 6)) {
       const self = t === u, f = self ? ([0, 1] as Dir) : dir8(u.pos, t.pos), tiles = [u.pos];
@@ -1502,8 +1507,8 @@ export function enemyAvoidMagic(cb: Combat, rng: Rng, u: Unit): boolean {
   if ((u as any).aiDodge === cb.round) return false;
   const bad = (k: string) => (cb.zones || []).some((z) => (z.kind === 'field' || z.kind === 'wall') && z.side !== u.side && z.tiles.includes(k));
   const tur = (cb.zones || []).find((z) => z.kind === 'turret' && z.side !== u.side && !secretFrom(z, u.side) && z.tiles[0] === u.pos);
-  if (tur && u.ap >= SPELL_AP.scuff) { (u as any).aiDodge = cb.round; return !scuff(cb, u); }
-  if (!bad(u.pos) || u.ap < 1) return false;
+  if (tur && canPay(cb, u, SPELL_AP.scuff)) { (u as any).aiDodge = cb.round; return !scuff(cb, u); }
+  if (!bad(u.pos) || !canPay(cb, u, 1)) return false;
   const P = paths(cb, u.pos, u.id), out = Object.entries(P.dist).filter(([k, n]) => k !== u.pos && !bad(k) && apForTiles(n, u.bank, u.movement) <= Math.min(1, u.ap)).sort((a, b) => a[1] - b[1])[0];
   (u as any).aiDodge = cb.round;
   return !!out && !moveUnit(cb, u, out[0], rng);

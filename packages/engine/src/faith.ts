@@ -21,8 +21,9 @@ import { type Character, type Belief, type Vow, mod, prayerCooldown, HYMN_COOLDO
 import type { Combat, Unit } from './combat';
 import { unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
 import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
-import { actionAp, pushAway } from './effects/core';
-import { sessionN, dayOf } from './effects/uses';
+import { pushAway } from './effects/core';
+import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot } from './effects/cost';
+import { sessionN, dayOf, uses as usesOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { mendFactor, mendFactorOf } from './effects/mending';
 import { amountOf, term, type Term } from './effects/output';
@@ -128,7 +129,17 @@ export function hymnWait(c: Character, u?: Unit | null): number {
   return Math.max(Math.min(base, HYMN_COOLDOWN.minWait), base + q - (u?.faith?.hymnCut || 0));
 }
 /** Rounds left before this fighter may pray a Hymn again (0: now). */
-export const hymnLeft = (cb: Combat, c: Character, u: Unit): number => (u.prayedRound != null ? Math.max(0, hymnWait(c, u) - (cb.round - u.prayedRound)) : 0);
+export const hymnLeft = (cb: Combat, c: Character, u: Unit): number => prayed({ c, u, cb }).coolLeft(hymnWait(c, u), HYMN_KEY);
+// The prayer limits are cells of effects/uses.ts (engine review 1, F8): a Whisper once a turn (in the story: once a
+// round), a Hymn's cooldown in rounds, a Hymn's own cooldown. In a fight they sit on the unit, in the story in
+// g.story.ps[charId].uses; nothing resets them by hand.
+const WHISPER_KEY = 'faith#whisper', HYMN_KEY = 'faith#hymn', ownKey = (id: string) => 'faith#own:' + id;
+const prayed = (x: { c?: Character | null; u?: Unit | null; cb?: Combat | null; g?: any }) => usesOf({ key: 'faith', c: x.c, u: x.u, cb: x.cb, g: x.g });
+/** End every prayer limit of a fighter (the Proving Ground's "reset the limits"; a test that is not about the cooldown). */
+export function clearPrayerLimits(u: Unit | null | undefined, g?: any, c?: Character | null) {
+  if (u?.uses) for (const k of Object.keys(u.uses)) if (k.startsWith('faith#')) delete u.uses[k];
+  const cells = c && g?.story?.ps?.[c.id]?.uses; if (cells) for (const k of Object.keys(cells)) if (k.startsWith('faith#')) delete cells[k];
+}
 /** A Hymn with a wait of its own (Hold the Gate, item 1287): its `own_cooldown` rounds, or 0. */
 export const ownCooldown = (entry: any): number => Math.max(0, Number(entry?.own_cooldown) || 0);
 
@@ -246,7 +257,7 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   if (!c) return no('Only a character can pray.');
   const pe = prayerEntry(c, kind, id); if (!pe) return no(kind === 'miracle' ? (beliefOf(c).kind === 'atheist' ? 'An Atheist never gets a Miracle.' : 'Your patron has no Miracle.') : 'No such prayer.');
   const belief = beliefOf(c), faith = faithOf(c), own = patronOf(c);
-  const ap = u ? actionAp({ u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind]).ap : AP_COST[kind];
+  const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind]).ap : AP_COST[kind];
   const target = pe.entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'); // an old-shape Blessing goes at you or an ally
   const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target) };
   const m = prayerMod(g, c, u);
@@ -274,23 +285,24 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   if (!u && (c.persistentConds || []).some((x) => x.id === 'silenced')) return no('Silenced: no prayers.', out);
   if (cb && u) {
     if (cb.order[cb.turn] !== u.id) return no('Pray on your turn.', out);
-    if (u.ap < ap) return no('Needs ' + ap + ' AP.', out);
-    if (kind === 'whisper' && u.faith?.whisperTurn === turnKey(cb)) return no('One Whisper a turn.', out);
-    if (kind === 'hymn') { const cd = hymnWait(c, u); if (u.prayedRound != null && cb.round - u.prayedRound < cd) return no('Your last Hymn was ' + (cb.round - u.prayedRound) + ' round(s) ago: wait ' + cd + '.', out); }
-    if (kind === 'hymn' && ownCooldown(pe.entry)) { const last = u.faith?.ownHymn?.[pe.entry.id], n = ownCooldown(pe.entry); if (last != null && cb.round - last < n) return no((pe.entry.name || id) + ' was prayed in round ' + last + ': not again until round ' + (last + n) + '.', out); }
+    { const n0 = whyNot(cb, u, ap); if (n0) return no(n0, out); }
+    const lim = prayed({ c, u, cb, g });
+    if (kind === 'whisper' && lim.left('per_turn', 1, WHISPER_KEY) <= 0) return no('One Whisper a turn.', out);
+    if (kind === 'hymn') { const cd = hymnWait(c, u), last = lim.cooledAt(HYMN_KEY); if (last != null && lim.coolLeft(cd, HYMN_KEY) > 0) return no('Your last Hymn was ' + (cb.round - last) + ' round(s) ago: wait ' + cd + '.', out); }
+    if (kind === 'hymn' && ownCooldown(pe.entry)) { const last = lim.cooledAt(ownKey(pe.entry.id)), n = ownCooldown(pe.entry); if (last != null && lim.coolLeft(n, ownKey(pe.entry.id)) > 0) return no((pe.entry.name || id) + ' was prayed in round ' + last + ': not again until round ' + (last + n) + '.', out); }
     if (kind === 'hymn' && pe.entry.id === 'cut_short' && args.targetId) { const why = cutShortWhy(cb, cb.units.find((x) => x.id === args.targetId), pe.entry); if (why) return no(why, out); }
   } else {
-    const st = storyFaith(g, c);
-    if (kind === 'whisper' && st.whisperRound === g.story.round) return no('One Whisper a round.', out);
-    if (kind === 'hymn' && st.hymnRound != null && g.story.round - st.hymnRound < hymnWait(c)) return no('Your last Hymn was ' + (g.story.round - st.hymnRound) + ' round(s) ago: wait ' + hymnWait(c) + '.', out);
-    if (kind === 'hymn' && ownCooldown(pe.entry)) { const last = (st as any).own?.[pe.entry.id], n = ownCooldown(pe.entry); if (last != null && g.story.round - last < n) return no((pe.entry.name || id) + ' was prayed ' + (g.story.round - last) + ' round(s) ago: wait ' + n + '.', out); }
+    const lim = prayed({ c, g });
+    if (kind === 'whisper' && lim.left('per_round', 1, WHISPER_KEY) <= 0) return no('One Whisper a round.', out);
+    { const last = lim.cooledAt(HYMN_KEY); if (kind === 'hymn' && last != null && lim.coolLeft(hymnWait(c), HYMN_KEY) > 0) return no('Your last Hymn was ' + (g.story.round - last) + ' round(s) ago: wait ' + hymnWait(c) + '.', out); }
+    if (kind === 'hymn' && ownCooldown(pe.entry)) { const last = lim.cooledAt(ownKey(pe.entry.id)), n = ownCooldown(pe.entry); if (last != null && lim.coolLeft(n, ownKey(pe.entry.id)) > 0) return no((pe.entry.name || id) + ' was prayed ' + (g.story.round - last) + ' round(s) ago: wait ' + n + '.', out); }
   }
   return { ...out, ok: true };
 }
 /** A fight's turn, as a key (a Whisper is once per turn). */
 export const turnKey = (cb: Combat) => cb.round + ':' + cb.turn;
-/** Story-side faith counters (Whisper and Hymn rounds), on the character. */
-export function storyFaith(g: GameState, c: Character): { whisperRound?: number; hymnRound?: number } {
+/** Story-side faith state, on the character (the prayer limits are not here: effects/uses.ts). */
+export function storyFaith(g: GameState, c: Character): Record<string, any> {
   const st: any = (c.state ||= {}); return (st.faith ||= {});
 }
 /** Who a prayer may go at (spec: "in sight"). */
@@ -354,7 +366,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
   if (p) for (const h of hymnsOf(p)) hymns.push({ key: p.id + '.' + h.id, patron: p.id, patronName: p.name, id: h.id, name: h.name, tier: h.tier, text: h.text, source: 'patron', preview: previewPrayer(g, who, 'hymn', p.id + '.' + h.id) });
   for (const k of diceHymns(c)) { const x = hymnByKey(c, k); if (x) hymns.push({ key: x.key, patron: x.patron.id, patronName: x.patron.name, id: x.hymn.id, name: x.hymn.name, tier: x.hymn.tier, text: x.hymn.text, source: belief.kind === 'atheist' ? 'learned' : 'kept', preview: previewPrayer(g, who, 'hymn', x.key) }); }
   const cd = hymnWait(c, cb && u ? u : null), sf = storyFaith(g, c), tv = tallyView(g, c, cb), cdl = pactCooldownLeft(g, c), gr = grudgeOf(g, c);
-  const hymnLeft = cb && u ? (u.prayedRound != null ? Math.max(0, cd - (cb.round - u.prayedRound)) : 0) : (sf.hymnRound != null ? Math.max(0, cd - (g.story.round - sf.hymnRound)) : 0);
+  const lim = cb && u ? prayed({ c, u, cb, g }) : prayed({ c, g }), hymnLeft = lim.coolLeft(cd, HYMN_KEY);
   return {
     belief, patron: p ? { id: p.id, name: p.name, costume: p.costume, archetype: p.archetype, accent: p.accent, rule: p.rule, likes: (p.likes || []).map(tag), taboos: (p.taboos || []).map((t: string) => ({ ...tag(t), ...(p.taboo_notes?.[t] ? { note: p.taboo_notes[t] as string } : {}) })) } : null,
     faith, devotion: dv,
@@ -367,7 +379,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     vow: u?.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, fulfilledWhen: v.fulfilled_when || '', needsAlly: !!v.needs_ally })),
     rites: (p?.rites || []).map((r: any) => ({ id: r.id, name: r.name, text: r.text, engine: !!r.engine, keptThisSession: c.ritesKept?.[p.id + '.' + r.id] === sessionN(g), ...riteState(g, c, r) })),
     rule: p?.rule || null,
-    cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: cb && u ? u.faith?.whisperTurn === turnKey(cb) : sf.whisperRound === g.story.round, miracleUsed: c.miracleSession === sessionN(g), hymnWait: cd, hymnCooldown: prayerCooldown(c), vowCut: !!(cb && u && u.faith?.hymnCut), vowBanked: !!(cb && u && u.faith?.vowBank) },
+    cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: lim.left(cb && u ? 'per_turn' : 'per_round', 1, WHISPER_KEY) <= 0, miracleUsed: c.miracleSession === sessionN(g), hymnWait: cd, hymnCooldown: prayerCooldown(c), vowCut: !!(cb && u && u.faith?.hymnCut), vowBanked: !!(cb && u && u.faith?.vowBank) },
     likedThisFight: tv.fight,
     devotionXp: belief.kind === 'faithful' ? (() => { const total = devotionXpOf(c), lv = devotionLevelOf(total), at = devotionThreshold(lv), next = lv < DEVOTION_MAX_LEVEL ? devotionThreshold(lv + 1) : null; return { total, level: lv, into: total - at, step: next != null ? next - at : null, next }; })() : null,
     tagXp: { fight: tv.fight, scene: tv.scene, session: tv.session, caps: { ...TAG_CAPS, session: (g as any).sandbox ? null : TAG_CAPS.session }, where: cb && !overworld(cb) ? 'fight' : 'scene' }, narratorXp: { session: tv.narr, cap: NARRATOR_XP.sessionCap },
@@ -612,7 +624,7 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, am
  * combat/reload action that succeeded, with the AP it took. */
 export function faithReloaded(cb: Combat, u: Unit, spent: number) {
   if (!(spent > 0)) return;
-  for (const f of intervening(cb, 'the_quartermaster')) { if (f !== u) continue; intervene(cb, f, 'you_reload', f, spent, () => { u.ap += spent; return ': the reload is free (' + spent + ' AP back)'; }); break; }
+  for (const f of intervening(cb, 'the_quartermaster')) { if (f !== u) continue; intervene(cb, f, 'you_reload', f, spent, () => { refund(cb, u, spent); return ': the reload is free (' + spent + ' AP back)'; }); break; }
 }
 /** The Quartermaster's MP share when your MP runs out (item 742; patrons.json, the mp_out effect): 25% of max. */
 const QM_MP_SHARE: number = (FAITH_PATRON.the_quartermaster?.intervention?.effects || []).find((e: any) => e.when === 'mp_out')?.value ?? 0.25;
@@ -865,10 +877,9 @@ function healLine(cb: Combat, by: Unit | null, t: Unit, n: number): string {
 function freeReload(cb: Combat, u: Unit): string {
   const w = WEAPON[u.weapon], ow: any = u.offWeapon ? WEAPON[u.offWeapon] : null, main = !!w && w.magazine != null, off = !!ow && ow.magazine != null && !!ow.reload; // every weapon: the off-hand gun too
   if (!main && !off) return ': nothing to reload';
-  const was = u.ap; let err: string | null = null, done = false;
-  if (main) { u.ap = 99; err = reload(cb, u, { free: true }); done = !err; }
-  if (off) { u.ap = 99; const e2 = reloadHands(cb, u, 'off'); done = done || !e2; if (!main) err = e2; }
-  u.ap = was;
+  let err: string | null = null, done = false;
+  if (main) { err = freely(u, () => reload(cb, u, { free: true })); done = !err; }
+  if (off) { const e2 = freely(u, () => reloadHands(cb, u, 'off')); done = done || !e2; if (!main) err = e2; }
   return done ? ': ' + u.name + ' reloads, free' : ': ' + err;
 }
 
@@ -883,8 +894,9 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   const pe = prayerEntry(c, kind, id)!; const patron = pe.patron;
   // The target.
   const t = pickTarget(cb, u, pv, a); if (typeof t === 'string') return t;
-  u.ap -= pv.ap;
-  if (kind === 'whisper') fs(u).whisperTurn = turnKey(cb); else if (kind === 'hymn') { u.prayedRound = cb.round; const st = fs(u); if (st.vowBank) { st.hymnCut = st.vowBank; delete st.vowBank; } else delete st.hymnCut; if (ownCooldown(pe.entry)) (st.ownHymn ||= {})[pe.entry.id] = cb.round; }
+  pay(cb, u, pv.ap);
+  const lim = prayed({ c, u, cb, g });
+  if (kind === 'whisper') lim.take('per_turn', 1, WHISPER_KEY); else if (kind === 'hymn') { lim.uncool(HYMN_KEY); lim.cool(0, HYMN_KEY); const st = fs(u); if (st.vowBank) { st.hymnCut = st.vowBank; delete st.vowBank; } else delete st.hymnCut; if (ownCooldown(pe.entry)) { lim.uncool(ownKey(pe.entry.id)); lim.cool(0, ownKey(pe.entry.id)); } }
   if (kind === 'miracle') { c.miracleSession = sessionN(g); }
   shiftMana(cb, PRAYER_MANA, 'a prayer');
   const name = (pe.entry.name || id) + (patron && kind !== 'whisper' ? ' (' + patron.name + ')' : '');
@@ -1006,16 +1018,10 @@ function restock(cb: Combat, v: Unit): string {
 }
 /** An action's words for the log (Encore): "Shot", "Move", "Perk: x"… */
 function actionWords(key: string): string { const [t, what] = key.split(':'); const n = t.replace('combat/', ''); return (n.charAt(0).toUpperCase() + n.slice(1)).replace('-', ' ') + (what ? ' (' + what + ')' : ''); }
-/** Encore (item 729), before a combat action: when it repeats the unit's Encore action, lend the AP it cost (it can be
- * taken with too little AP). Returns what to settle after, or null. */
-export function encoreBefore(cb: Combat, u: Unit, a: any): { credit: number; before: number } | null {
-  const en = u.faith?.encore; if (!en || encoreKey(a) !== en.key) return null;
-  const before = u.ap; u.ap += en.ap; return { credit: en.ap, before };
-}
-/** After it: the repeat is free up to the AP it cost before (any more it costs now is paid); the Encore is used. */
-export function encoreAfter(cb: Combat, u: Unit, x: { credit: number; before: number } | null) {
-  if (!x) return; const spent = x.before + x.credit - u.ap;
-  u.ap = x.before - spent + Math.min(x.credit, Math.max(0, spent));
+/** Encore (item 729), after the action that repeated the unit's Encore action: the repeat was free up to the AP it
+ * cost before (`credit`; the credit pay() drew on, effects/cost.ts), any more it costs now was paid; the Encore is used. */
+export function encoreUsed(cb: Combat, u: Unit, spent: number, credit: number) {
+  const x = { credit };
   const key = u.faith?.encore?.key || ''; if (u.faith) delete u.faith.encore;
   cb.log.push('Encore: ' + u.name + ' repeats ' + actionWords(key) + (spent > x.credit ? ' (' + (spent - x.credit) + ' AP more than before)' : ', free') + '.');
 }
@@ -1118,7 +1124,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     // Mother Ember
     case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, prayerAmount('heal', effVal(e, 'heal'), pw, levelTerm(u))));
     case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: tilesAround(a.tile!, 1), until: cb.round + 2, heal: Math.round(prayerAmount('heal', effVal(e, 'heal'), power, levelTerm(u))) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
-    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { const n = Number(fxOf(e, 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2), was = one!.ap; one!.ap = Math.min(AP_MAX, one!.ap + n); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +' + (one!.ap - was) + ' AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
+    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { const n = Number(fxOf(e, 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2), was = one!.ap; grantAp(cb, one!, n); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +' + (one!.ap - was) + ' AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
     case 'everyone_home': { // rules 1.6.2 (item 731): full HP, the Downed stand, every harmful condition ends, a 40 shield each
       let out = '';
       for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += land(cb, rng, u, v, e, power, (pw) => {
@@ -1404,15 +1410,15 @@ function storyPray(g: GameState, c: Character, a: Extract<FaithAction, { type: '
   const kind = a.kind, id = a.id || (kind === 'miracle' ? patronOf(c)?.miracle?.id || '' : '');
   const pv = previewPrayer(g, c.id, kind, id, a); if (!pv.ok) return pv.why || 'You can\'t pray that now.';
   const rounds = g.story.await === 'players';
-  if (rounds && B!.apLeft(g, c) < pv.ap) return 'Needs ' + pv.ap + ' AP.';
+  if (rounds) { const no = poolWhyNot(B!.apLeft(g, c), pv.ap); if (no) return no; }
   const pe = prayerEntry(c, kind, id)!, patron = pe.patron;
   let t: Character = c;
   if (a.targetId && pv.target !== 'enemy' && pv.target !== 'tile' && pv.target !== 'none' && pv.target !== 'self') {
     const x = g.characters[a.targetId]; if (!x || !pv.targets.includes(x.id)) return 'Pick someone in the squad.'; t = x;
   }
   if (rounds) B!.spendAp(g, c, pv.ap);
-  const sf = storyFaith(g, c);
-  if (kind === 'whisper') sf.whisperRound = g.story.round; else if (kind === 'hymn') { sf.hymnRound = g.story.round; if (ownCooldown(pe.entry)) (((sf as any).own ||= {}) as Record<string, number>)[pe.entry.id] = g.story.round; } else c.miracleSession = sessionN(g);
+  const lim = prayed({ c, g });
+  if (kind === 'whisper') lim.take('per_round', 1, WHISPER_KEY); else if (kind === 'hymn') { lim.uncool(HYMN_KEY); lim.cool(0, HYMN_KEY); if (ownCooldown(pe.entry)) { lim.uncool(ownKey(pe.entry.id)); lim.cool(0, ownKey(pe.entry.id)); } } else c.miracleSession = sessionN(g);
   g.story.mana = Math.max(0, (g.story.mana ?? MANA_START) + PRAYER_MANA);
   const text = String(a.text || '').trim().slice(0, 300), rng = g.rng as Rng;
   const name = (pe.entry.name || id) + (patron && kind !== 'whisper' ? ' (' + patron.name + ')' : '');

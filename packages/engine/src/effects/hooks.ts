@@ -79,7 +79,20 @@ export function ownerOf(info: ItemInfo, i: number): Owner {
 interface Slot { info: ItemInfo; fn: (ctx: any, h: Holder) => void; prio: number }
 const indexCache = new Map<string, Record<string, Slot[]>>();
 let version = 0;
-function dirty() { version++; indexCache.clear(); }
+function dirty() { version++; indexCache.clear(); listened.clear(); }
+const listened = new Map<string, boolean>();
+/** Does anything at all listen on this hook (an item's handler, a generic op, an engine system)? A hook that every
+ * action passes through (the `cost` hook) asks this first, so it costs nothing until somebody uses it. */
+export function hookUsed(name: HookName): boolean {
+  let v = listened.get(name);
+  if (v == null) {
+    v = !!GLOBAL_HOOKS[name]?.length;
+    if (!v) for (const h of REG.values()) if (h.on && (h.on as any)[name]) { v = true; break; }
+    if (!v) for (const g of GEN.values()) if (g.on && (g.on as any)[name]) { v = true; break; }
+    listened.set(name, v);
+  }
+  return v;
+}
 export const registryVersion = () => version;
 
 function buildIndex(held: Held): Record<string, Slot[]> {
@@ -146,6 +159,14 @@ export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): a
   const gl = GLOBAL_HOOKS[name]; if (gl) for (const f of gl) { f(ctx, cb); if (ctx && ctx.stop) return ctx; }
   return ctx;
 }
+/** Fire a hook for ONE unit's own items, with no fight in reach (a price asked for a row before a fight is known). */
+export function emitOwn(u: Unit, name: HookName, ctx: any): any {
+  const held = heldOfUnit(u); if (!heldAny(held)) return ctx;
+  const list = buildIndex(held)[name]; if (!list) return ctx;
+  const c = charOfUnit(u);
+  for (const s of list) { s.fn(ctx, holder(s.info, c, u, null)); if (ctx && ctx.stop) return ctx; }
+  return ctx;
+}
 // ---------- engine systems that aren't items (rules 1.6: faith.ts) ----------
 // Faith isn't something a character holds, so it can't sit in the items' index: these listeners run on every fight's
 // hooks after the items, and add to stat and check queries. Registered once at load; deterministic like the items.
@@ -153,7 +174,7 @@ type GlobalHook = (ctx: any, cb: Combat) => void;
 const GLOBAL_HOOKS: Partial<Record<HookName, GlobalHook[]>> = {};
 const GLOBAL_STATS: Record<string, ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number)[]> = {};
 const GLOBAL_CHECKS: ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[])[] = [];
-export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); }
+export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); listened.delete(name); }
 export function onStat(stat: StatId, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
 export function onCheck(fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[]) { GLOBAL_CHECKS.push(fn); }
 /** A story hook for an engine system (no item): runs after the characters' items, with the game. */

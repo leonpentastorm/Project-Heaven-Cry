@@ -35,6 +35,7 @@ import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } fr
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround, foesOf, canStand, tilesLine } from '../kit';
+import { bill, whyNot, pay, grantAp, freely } from '../effects/cost';
 import { setDowned } from '../unitstate';
 import { hideAgain, setCondRounds } from '../magic';
 
@@ -48,7 +49,7 @@ const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?
 const sceneOf = (h: { g?: any }) => h.g?.story?.scene?.n ?? 0;
 const W = (u: Unit) => WEAPON[u.weapon];
 /** Do something with the AP check out of the way (the AP was paid by the action): AP is put back after. */
-function freeAp<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
+const freeAp = freely;
 /** A target unit from the action's targetId, or a tile from choice/text/tile. */
 const aimOf = (cb: Combat, a: ActionArgs, field: 'aim' | 'tile' = 'aim'): string | null => {
   if (field === 'tile') return tileOf(cb, a.tile);
@@ -192,7 +193,7 @@ register({
   id: 'lumeri_templar.blessed_shells', claims: 'all',
   toggles: [{ id: 'load', label: 'Blessed Shells: load the Blessing into your weapon', on: ['combat/pray'], available: (h) => !!h.c?.patron }],
   actions: [{
-    id: 'bless_shell', label: 'Bless a shell', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
+    id: 'bless_shell', label: 'Bless a shell', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: pray over a shell. A Hymn above your standing with your patron is an overreach. If the prayer succeeds, the shell carries the Hymn into the next fight this scene.',
     available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < 3 ? 'Prayer needs Faith 3.' : true),
     run: (h, a, rng) => {
@@ -255,7 +256,7 @@ register({
 });
 function eyeNote(ctx: any, h: Holder) {
   const u = h.u; if (!u || !inFight(h) || ctx.att === u || ctx.att.side !== u.side || !condOn(u, 'witnessed') || dist(ctx.att.pos, u.pos) > 3) return;
-  const st = stateOf(h); if (st.noted === h.cb!.round) return; st.noted = h.cb!.round;
+  if (!uses(h).take('per_round', 1, h.key + '#noted')) return; // one note a round
   note(h, 'Under the Eye: allies near ' + u.name + ' got +2 to hit this round as on-theme for ' + (PATRON[h.c?.patron || '']?.name || 'the patron') + '; rule if it was off-theme.');
 }
 
@@ -266,7 +267,7 @@ const shotgun = (u: Unit) => W(u)?.category === 'shotgun' || /scattergun|censer/
 register({
   id: 'lumeri_templar.judgement', claims: 'all',
   actions: [{
-    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 4, uses: { per: 'per_combat', n: 1 },
+    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 },
     text: 'Once a fight, for ' + DEVOTION_XP.judgement + ' Devotion XP: make one melee or scattergun attack whose damage is multiplied by 1 + your Blessing power. The Devotion XP is spent whether you hit or miss.',
     available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionXpOf(h.c) < DEVOTION_XP.judgement ? 'Needs ' + DEVOTION_XP.judgement + ' Devotion XP.' : !(isMelee(W(h.u)) || shotgun(h.u)) ? 'Needs a melee weapon or a scattergun.' : true),
     preview: (h, a) => {
@@ -341,7 +342,7 @@ function halfWhy(cb: Combat, u: Unit, t: string | null): string | null {
 register({
   id: 'stroke_gambler.half_sigil', claims: 'all',
   actions: [{
-    id: 'half_sigil', label: 'Half-Sigil', scope: ['combat', 'world'], target: 'none', ap: 1,
+    id: 'half_sigil', label: 'Half-Sigil', scope: ['combat', 'world'], target: 'none', ap: 'data',
     text: 'Draw a random word you know as a half-glyph on your own tile. Costs 1 charge and adds 1 Flux. Two half-glyphs on one tile make a Stack for Stitch.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (!h.u.mg!.words.length ? 'You know no words.' : true)),
     preview: (h, a) => {
@@ -398,7 +399,7 @@ function backlash(cb: Combat, rng: Rng, u: Unit, v: Unit, p: Pattern): string {
 register({
   id: 'stroke_gambler.stitch', claims: 'all',
   actions: [{
-    id: 'stitch', label: 'Stitch', scope: ['combat', 'world'], target: 'tile', ap: 0,
+    id: 'stitch', label: 'Stitch', scope: ['combat', 'world'], target: 'tile', ap: 'data',
     text: 'Evoke a pattern of half-glyphs and roll a d20 for the gamble. On 1–5 the spell lands on you or your nearest ally. On 16–20 its damage doubles.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || true),
     preview: (h, a) => {
@@ -421,7 +422,7 @@ register({
       say(cb, 'STITCH d20 ' + g + (g <= 5 ? ': it turns on its maker' : g >= 16 ? ': the house pays double' : ': it holds'));
       const st = stateOf(h);
       if (g <= 5) {
-        u.ap = Math.round((u.ap - pv.ap) * 10) / 10; u.mg!.charge -= pv.charge; u.mg!.cast = true;
+        pay(cb, u, bill('evoke', pv.ap, { charge: pv.charge })); u.mg!.cast = true;
         fadePattern(cb, p);
         const v = backlashTarget(cb, u);
         emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.tiles[0], impact: v.pos, targets: [v.id], targetAt: [v.pos], words: p.words, element: p.words.find((w) => wordCls(w) === 'subject_element') || null, side: u.side, backlash: true });
@@ -482,7 +483,7 @@ function checkDesign(c: Character, d: Partial<OutburstDesign> | null, extra: num
 register({
   id: 'devoted.beloved_spells', claims: 'all',
   actions: [
-    { id: 'beloved', label: 'Mark a design Beloved', pick: 'designs', pickLabel: 'The design', scope: ['world', 'story'], target: 'none', ap: 0,
+    { id: 'beloved', label: 'Mark a design Beloved', pick: 'designs', pickLabel: 'The design', scope: ['world', 'story'], target: 'none', ap: 'data',
       text: 'Mark one of your ready designs as Beloved, or remove the mark. A Beloved design costs 30% less MP and has 1 more module slot. You can have 3 Beloved designs.',
       available: (h) => (!h.c?.outbursts?.length ? 'You have no designs.' : true),
       preview: (h, a) => {
@@ -498,7 +499,7 @@ register({
         if (h.cb) say(h.cb, line); else postStory(h, line, { private: true });
         return null;
       } },
-    { id: 'beloved_design', label: 'Design a Beloved spell', scope: ['world', 'story'], target: 'text', ap: 0,
+    { id: 'beloved_design', label: 'Design a Beloved spell', scope: ['world', 'story'], target: 'text', ap: 'data',
       text: 'Make a new Beloved design: a school and its modules, with one module more than your slots allow.',
       run: (h, a) => {
         const c = h.c!, list: string[] = cs(c).beloved || []; if (list.length >= 3) return 'Three designs are Beloved already.';
@@ -560,7 +561,7 @@ register({
 register({
   id: 'circuit_mage.closed_loop', claims: 'all',
   actions: [{
-    id: 'vent_heart', label: 'Vent into your heart (Closed Loop)', scope: ['combat', 'world'], target: 'none', ap: 1,
+    id: 'vent_heart', label: 'Vent into your heart (Closed Loop)', scope: ['combat', 'world'], target: 'none', ap: 'data',
     text: 'Vent your Flux into your own Emanator: you gain 10 MP per Flux, and none of it goes into the air.',
     available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.evoker ? 'Needs an Evoker in hand.' : !m.emanator ? 'Needs an Emanator in hand.' : !m.flux ? 'No Flux to vent.' : true; },
     preview: (h) => { const m = h.u!.mg!; return { lines: [m.flux + ' Flux → +' + Math.min(m.mpMax - m.mp, 10 * m.flux) + ' MP (' + m.mp + '/' + m.mpMax + ').'] }; },
@@ -581,7 +582,7 @@ const selfLeft = (h: Holder) => uses(h).left('per_rest', selfCap(h.c), h.key + '
 register({
   id: 'circuit_mage.self_crystallise', claims: 'all',
   actions: [
-    { id: 'self_crystallise', label: 'Self-Crystallise', scope: ['combat', 'world'], target: 'none', ap: 3,
+    { id: 'self_crystallise', label: 'Self-Crystallise', scope: ['combat', 'world'], target: 'none', ap: 'data',
       text: 'Spend 100 MP from your Emanator to make one standard core, whatever the ambient mana is. You can make as many cores per long rest as your Virtue. These cores can\'t be sold.',
       available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.emanator ? 'Needs an Emanator in hand.' : m.mp < 100 ? 'Needs 100 MP. You have ' + Math.floor(m.mp) + '.' : selfLeft(h) <= 0 ? 'You already made ' + selfCap(h.c) + (selfCap(h.c) === 1 ? ' core' : ' cores') + ' this rest. Your Virtue sets the limit.' : true; },
       run: (h) => {
@@ -638,7 +639,7 @@ function fusionCheck(h: Holder, a: ActionArgs): { ok: false; why: string } | { o
   if (!pl.ok) return no(pl.why || 'Can\'t fire that.');
   let ap = pl.ap, cost = 0, strain = 1;
   if (!held) { const pv = previewOutburst(cb, u, d.id, undefined, false); if (!pv.ok) return no(pv.why || 'Can\'t cast that.'); ap += pv.ap; cost = pv.cost; strain += pv.strain; }
-  if (u.ap < ap) return no('Needs ' + ap + ' AP.');
+  { const n0 = whyNot(cb, u, ap); if (n0) return no(n0); }
   return { ok: true, p, d, aim, ap, charge: pl.charge, held, cost, strain, plan: pl };
 }
 register({
@@ -734,7 +735,7 @@ function ksWhy(cb: Combat, u: Unit, t: string | null, w: string): string | null 
 register({
   id: 'glyph_mason.keystone', claims: 'all',
   actions: [{
-    id: 'keystone', label: 'Cut a Keystone', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 2,
+    id: 'keystone', label: 'Cut a Keystone', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 'data',
     text: 'Cut a word you know into your own tile as a Keystone. Costs 2 AP and 1 spare core. It never fades, can\'t be scuffed and stays after it is Evoked. You can have one Keystone at a time.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (h.u.mg!.cores < 1 ? 'Needs a spare standard core.' : true)),
     preview: (h, a) => {
@@ -778,7 +779,7 @@ function surveyWhy(cb: Combat, u: Unit, tile: string): string | null {
 register({
   id: 'glyph_mason.survey', claims: 'all',
   actions: [{
-    id: 'survey_evoke', label: 'Evoke from afar (Survey)', scope: ['combat', 'world'], target: 'tile', ap: 0,
+    id: 'survey_evoke', label: 'Evoke from afar (Survey)', scope: ['combat', 'world'], target: 'tile', ap: 'data',
     text: 'Evoke a pattern that includes your Keystone from up to 2 tiles away. It costs 1 charge less.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (!ksOf(h.cb!, h.u) ? 'Cut a Keystone first.' : true)),
     preview: (h, a) => {
@@ -812,11 +813,11 @@ const foundOn = (h: Holder) => { const st = stateOf(h); return !!h.cb && st.foun
 register({
   id: 'glyph_mason.foundation', claims: 'all',
   actions: [
-    { id: 'foundation', label: 'Foundation', scope: ['combat', 'world'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
+    { id: 'foundation', label: 'Foundation', scope: ['combat', 'world'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene: for the rest of this turn, glyphs you draw within 2 tiles of your Keystone cost 0 AP.',
       available: (h) => (!h.u ? false : !ksOf(h.cb!, h.u) ? 'Cut a Keystone first.' : foundOn(h) ? 'Already laid this turn.' : true),
       run: (h) => { stateOf(h).found = h.cb!.round + '.' + h.cb!.turn; say(h.cb, h.u!.name + ' lays the Foundation: glyphs near the Keystone cost no AP this turn.'); return null; } },
-    { id: 'foundation_draw', label: 'Draw near the Keystone (0 AP)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 0,
+    { id: 'foundation_draw', label: 'Draw near the Keystone (0 AP)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 'data',
       text: 'Draw a word on your own tile, within 2 tiles of your Keystone, for 0 AP. You still pay its charge and Flux.',
       available: (h) => (!h.u || !h.cb ? false : foundOn(h) && ksOf(h.cb, h.u) ? true : false),
       preview: (h, a) => {
@@ -894,7 +895,7 @@ function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any)
     // The 1.4 words (item 468).
     // COMMAND (Parade ground): a Brain save, or halt: Pinned for the turn (no moving; it can still act).
     case 'command': return ally || condOn(t, 'pinned') || bodySave(cb, rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
-    case 'quicken': { if (!ally || t === o) return ''; const was = t.ap; t.ap = Math.min(9, t.ap + 1); return t.ap > was ? ' · ' + t.name + ' quickens (+1 AP)' : ''; }
+    case 'quicken': { if (!ally || t === o) return ''; const was = t.ap; grantAp(cb, t, 1); return t.ap > was ? ' · ' + t.name + ' quickens (+1 AP)' : ''; }
     case 'cleanse': { if (!ally) return ''; const id = newestCondition(t); if (!id) return ''; endCond(t, id, cb); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); return ' · clear water washes ' + id + ' off ' + t.name; }
   }
   return '';
@@ -962,7 +963,7 @@ const GRAND_STONE = 4, GRAND_WALLS = 8;
 register({
   id: 'grand_sigilist.enlarge', claims: 'all',
   actions: [
-    { id: 'enlarge', label: 'Enlarge (Grand form)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'tile', ap: 3, uses: { per: 'per_combat', n: 1 },
+    { id: 'enlarge', label: 'Enlarge (Grand form)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'tile', ap: 'data', uses: { per: 'per_combat', n: 1 },
       text: 'Costs 3 charge. Plant your staff and enlarge a word you know into its Grand form, which covers every tile within 2 tiles. It lasts 3 rounds, plus your duration bonus. You can\'t draw or Evoke while it stands.',
       available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (staffOf(h) ? 'The staff is already planted.' : h.u.mg!.charge < 3 ? 'Needs 3 charge. Swap in a fresh core.' : true)),
       preview: (h, a) => {
@@ -1240,11 +1241,11 @@ const isTwin = (u: Unit | null | undefined) => !!u && !!(u as any).twinOf;
 register({
   id: 'heartfed.four_hearts', claims: 'all',
   actions: [
-    { id: 'key_design', label: 'Key a design to a gauge', pickLabel: 'The design\'s id, a colon, then rage, grief, fear or devotion', scope: ['world', 'story'], target: 'none', ap: 0,
+    { id: 'key_design', label: 'Key a design to a gauge', pickLabel: 'The design\'s id, a colon, then rage, grief, fear or devotion', scope: ['world', 'story'], target: 'none', ap: 'data',
       text: 'Key one of your designs to a gauge: Rage, Grief, Fear or Devotion. Points in that gauge can then feed the design.',
       preview: (h, a) => { const [id, k] = String(a.choice || '').split(':'); return !(h.c?.outbursts || []).some((d) => d.id === id) || !GAUGES.includes(k as Gauge) ? { ok: false, why: 'Type the design\'s id, a colon, then rage, grief, fear or devotion.' } : {}; },
       run: (h, a) => { const [id, k] = String(a.choice).split(':'); (charState(h.c).heartKeys ||= {})[id] = k; const d = h.c!.outbursts!.find((x) => x.id === id)!; const line = d.name + ' is keyed to ' + k + '.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
-    { id: 'gauge_story', label: 'Let it fill a gauge', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
+    { id: 'gauge_story', label: 'Let it fill a gauge', scope: ['story'], target: 'text', ap: 'data', uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene: say what this scene made you feel. The Narrator decides which gauge fills, and by how much.',
       run: (h, a) => { postStory(h, (a.text || '').slice(0, 200), { private: true }); if (h.g && h.c) pendRuling(h.g, h.c, h.key, h.c.name + ' feels it: "' + (a.text || '').slice(0, 160) + '". Add gauge points with traitState heartfed_add {rage|grief|fear|devotion: n}.'); return null; } },
   ],
@@ -1274,7 +1275,7 @@ const heldKey = (h: Holder): Gauge | null => { const hd = h.u?.mg?.held; return 
 register({
   id: 'heartfed.fed', claims: 'all', priority: 20,
   actions: [{
-    id: 'feed_feeling', label: 'Feed a feeling (a free Pump)', scope: ['combat', 'world'], target: 'none', ap: 0,
+    id: 'feed_feeling', label: 'Feed a feeling (a free Pump)', scope: ['combat', 'world'], target: 'none', ap: 'data',
     text: 'Spend 1 point from the gauge your held Outburst is keyed to: Pump it. Twice a turn at most; the first is free (one free stage a turn), the second costs the Pump\'s AP.',
     available: (h) => {
       const m = h.u?.mg; if (!m?.held) return 'Hold a keyed Outburst first.'; const k = heldKey(h); if (!k) return 'The held Outburst isn\'t keyed to a gauge.';
@@ -1341,7 +1342,7 @@ function addLink(h: Holder, id: string) {
 register({
   id: 'heartbinder.link', claims: 'all',
   actions: [
-    { id: 'link', label: 'Link', scope: ['combat', 'world'], target: 'ally', ap: 1, range: 6,
+    { id: 'link', label: 'Link', scope: ['combat', 'world'], target: 'ally', ap: 'data', range: 6,
       text: 'Bind your heart to an ally within 6 tiles that you can see, for the scene. You hold one link, or two from Will Power 5. A new link past that replaces your oldest.',
       preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Link to someone else.' }; if (!unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: [links(h).length >= maxLinks(h.c) ? 'Replaces your oldest link.' : 'Linked for the scene.'] }; },
       run: (h, a) => { const t = unitById(h.cb!, a.targetId)!; addLink(h, linkId(t)); emitFx(h.cb!, 'stance', { unit: h.u!.id, at: h.u!.pos, what: 'link', target: t.id }); say(h.cb, h.u!.name + ' binds their heart to ' + t.name + ' (Link).'); return null; } },
@@ -1369,7 +1370,7 @@ function fromLink<T>(u: Unit, f0: Unit, f: () => T): T { const was = u.pos; u.po
 register({
   id: 'heartbinder.through', claims: 'all',
   actions: [
-    { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
+    { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 'data',
       text: 'Snap-cast an Outburst from a linked ally\'s tile instead of your own. A snap cast is Begin and Release in one go, at ×' + stageMult(0) + '.',
       available: (h) => (!h.u?.mg?.designs?.length ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
@@ -1379,7 +1380,7 @@ register({
         const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×' + stageMult(0) + '.'] } : { ok: false, why: pv.why };
       },
       run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit, d = u.mg!.designs.find((x) => x.id === a.choice)!; say(cb, u.name + ' casts through ' + f.name + '.'); const e = fromLink(u, f, () => beginOutburst(cb, rng, u, d.id, aimOf(cb, a, 'tile')!, false)); if (!e) checkOver(cb); return e; } },
-    { id: 'release_through', label: 'Release through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
+    { id: 'release_through', label: 'Release through a link', scope: ['combat', 'world'], target: 'tile', ap: 'data',
       text: 'Release your held Outburst from a linked ally\'s tile instead of your own, at the stage it reached.',
       available: (h) => (!h.u?.mg?.held ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
@@ -1425,7 +1426,7 @@ register({
       ctx.n -= n; SHARING = true; try { say(ctx.cb, u.name + ' takes ' + n + ' of ' + t.name + '\'s Strain through the link (Share)' + strainUp(ctx.cb, rngOf(h, ctx), u, n, 'shared through a link') + '.'); } finally { SHARING = false; }
     },
   },
-  actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 0,
+  actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 'data',
     text: 'Choose always or never. On always, you automatically take half of every wound a linked ally suffers, and any Strain that would push them over their limit.',
     preview: (h, a) => (['always', 'never'].includes(a.choice || '') ? { lines: ['Share: ' + a.choice + '.'] } : { ok: false, why: 'Choose always or never.' }),
     run: (h, a) => { charState(h.c).shareMode = a.choice; const line = (h.c?.name || '') + ' will ' + (a.choice === 'never' ? 'not ' : '') + 'share their links\' wounds.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
@@ -1520,7 +1521,7 @@ register({
         say(cb, u.name + ' pumps the heart into ' + FORMS[x.form] + ': stage ' + x.stage + ' (×' + vesselMult(x.stage) + ')' + (free ? ', a free Pump (Empathy)' : '') + '.');
         return null;
       } },
-    { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 0,
+    { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 'data',
       text: 'Costs 20 MP. Take a body form before trouble starts. It lasts the scene and carries into a fight.',
       preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= MAX_FORMS ? { ok: false, why: TOO_MANY } : formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: FORMS[a.choice as Form] + ' is already held.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
       run: (h, a) => { const c = h.c!, f = a.choice as Form; c.mp = (c.mp ?? 0) - 20; setForms(h, [...formsOf(h), { form: f, stage: 1 }]); postStory(h, c.name + ' takes ' + FORMS[f] + ' into the body.'); if (h.g) pendRuling(h.g, c, h.key, c.name + ' holds ' + FORMS[f] + ' (a body form): rule what it does in the scene (Iron against a falling crate, Steady against a shove).'); return null; } },
@@ -1568,7 +1569,7 @@ register({
   id: 'vessel.release_strike', claims: 'all',
   toggles: [{ id: 'release', label: 'Release every body form on a hit (+15 Soul damage × each form\'s stage multiplier)', on: ['combat/attack'], available: (h) => (formsOf(h).length ? true : false) }],
   actions: [{
-    id: 'release_strike', label: 'Release', scope: ['combat', 'world'], target: 'enemy', ap: 1,
+    id: 'release_strike', label: 'Release', scope: ['combat', 'world'], target: 'enemy', ap: 'data',
     text: 'Make a melee attack that ends every body form you hold. On a hit, each form adds 15 Soul damage × its stage multiplier.',
     available: (h) => (!formsOf(h).length ? 'Hold a body form first.' : true),
     preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; const pv = previewAttack(h.cb!, h.u!, t, 'melee', { free: true }); return pv.ok ? { lines: [pv.pct + '% to hit; +' + Math.round(releaseSum(h) * (h.u!.mg?.soulMult || 1)) + ' Soul damage on a hit.'] } : { ok: false, why: pv.why }; },
@@ -1621,7 +1622,7 @@ const twinOwner = (cb: Combat, t: Unit) => unitById(cb, (t as any).twinOf);
 register({
   id: 'twinbound.manifest', claims: 'all',
   actions: [{
-    id: 'manifest', label: 'Manifest the twin', scope: ['story', 'world'], target: 'text', ap: 0, uses: { per: 'per_campaign', n: 1 },
+    id: 'manifest', label: 'Manifest the twin', scope: ['story', 'world'], target: 'text', ap: 'data', uses: { per: 'per_campaign', n: 1 },
     text: 'Once only: design your twin\'s three built-in Outbursts from the schools and modules you know. They can\'t be changed for the rest of the campaign.',
     available: (h) => (!h.c ? false : cs(h.c).twin ? 'The twin is already manifest.' : h.cb && !overworld(h.cb) ? 'Only out of a fight.' : true),
     preview: (h, a) => { const r = twinDesigns(h.c!, a.text); return typeof r === 'string' ? { ok: false, why: r } : { lines: ['The twin: ' + r.designs.map((d) => d.name).join(', ') + '.'] }; },
@@ -1656,7 +1657,7 @@ const twinHeld = { perks: [], traits: [], cls: null, rank: 1, adv: 'twinbound' }
 register({
   id: 'twinbound.call', claims: 'all',
   actions: [
-    { id: 'call', label: 'Call the twin', scope: ['combat'], target: 'tile', ap: 2,
+    { id: 'call', label: 'Call the twin', scope: ['combat'], target: 'tile', ap: 'data',
       text: 'Your twin appears on a free tile within 3 tiles of you. It acts right after you each round, with 4 AP.',
       available: (h) => (!h.u || isTwin(h.u) ? false : !cs(h.c).twin ? 'Manifest the twin first. You do that out of a fight.' : twinOf(h.cb!, h.u) ? 'The twin is already here.' : cs(h.c).twinLost === sceneOf(h) ? 'Your twin fell this scene. You can call it again next scene.' : true),
       preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !canStand(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
@@ -1676,7 +1677,7 @@ register({
     // The area map (the audit's proposal, PROVISIONAL): a token next to you, with its own 4 AP a round spent only on moves
     // (world/act move with its unit id), never more than 6 tiles from you. A fight opened on the area map starts with it
     // beside you as the called twin (combat_start below); in the story its presence is narration.
-    { id: 'call_world', label: 'Call the twin', scope: ['world'], target: 'tile', ap: 2,
+    { id: 'call_world', label: 'Call the twin', scope: ['world'], target: 'tile', ap: 'data',
       text: 'Your twin appears on a free tile within 3 tiles of you, with 4 AP of its own each round. Out of a fight it can only move. If a fight starts, it is already called.',
       available: (h) => (!h.u || !h.c || isTwin(h.u) ? false : !cs(h.c).twin ? 'Manifest the twin first.' : (h.c.companions || []).some((k) => k.kind === 'twin') ? 'The twin is already here.' : cs(h.c).twinLost === sceneOf(h) ? 'Your twin fell this scene. You can call it again next scene.' : true),
       preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !canStand(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },

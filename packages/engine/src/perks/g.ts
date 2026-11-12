@@ -23,6 +23,7 @@ import { foreseeVote } from '../game';
 import './briefs';
 import { overworld, say } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
+import { loseAp } from '../effects/cost';
 import { stagger } from '../unitstate';
 import { restoreConds } from '../magic';
 
@@ -272,7 +273,7 @@ register({
     turn_start: (ctx, h) => { if (ctx.u === h.u && h.u?.ps?.[h.key]) delete (h.u.ps[h.key] as any).hint; },
     enemy_action_start: (ctx, h) => {
       const st = h.u?.ps?.[h.key] as any; if (!st?.fooled || ctx.u.id !== st.fooled) return;
-      delete st.fooled; ctx.skip = true; ctx.u.ap = Math.max(0, ctx.u.ap - 2);
+      delete st.fooled; ctx.skip = true; loseAp(ctx.u, 2);
       say(h.cb, ctx.u.name + ' acts on the false meaning and loses its first action (Double Meaning).');
     },
   },

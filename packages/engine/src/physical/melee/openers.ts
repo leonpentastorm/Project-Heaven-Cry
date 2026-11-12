@@ -6,6 +6,7 @@ import { PHYS_RULES } from '../data';
 import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
 import { ambushReady, reveal } from '../../tactics';
 import type { Tech } from './shared';
+import { canPay } from '../../effects/cost';
 
 // 1. Lunge: step 1 tile toward the target, then strike; the step draws no opportunity attack.
 //    Point: +2 to hit. Reach: the step may be 2 tiles. Heavy: on a hit the target is pushed 1 tile.
@@ -58,7 +59,7 @@ function runPlans(t: Tech, target: Unit, baseAp: number): RunPlan[] {
     for (let i = 1; ; i++) {
       const k = key(ux + dx * i, uy + dy * i), [kx, ky] = xy(k);
       if (kx < 0 || ky < 0 || kx >= t.cb.map.w || ky >= t.cb.map.h || P.dist[k] !== i) break; // a straight line, tile by tile
-      const ap = apForTiles(i, u.bank || 0, u.movement); if (baseAp + ap > u.ap) break;
+      const ap = apForTiles(i, u.bank || 0, u.movement); if (!canPay(t.cb, u, baseAp + ap)) break;
       route.push(k);
       const tiles = i + (prior && prior.dx === dx && prior.dy === dy ? prior.n : 0);
       if (reach(k)) out.push({ route: [...route], to: k, tiles, ap });
