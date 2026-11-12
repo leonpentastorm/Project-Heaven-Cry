@@ -10674,6 +10674,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-dread.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-dread.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-awe": {
+      "id": "feeling-awe",
+      "label": "Awe: rays opening above a small bowed curve",
+      "path": "art/icons/feelings/feeling-awe.png",
+      "sha256": "6936073f0f9ec15feb00019b82c4419de3aa25d6c53016aae41a60e289a39b43",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-awe.png",
+        "128": "art/icons/feelings/exports/128/feeling-awe.png",
+        "64": "art/icons/feelings/exports/64/feeling-awe.png",
+        "56": "art/icons/feelings/exports/56/feeling-awe.png",
+        "48": "art/icons/feelings/exports/48/feeling-awe.png",
+        "44": "art/icons/feelings/exports/44/feeling-awe.png",
+        "40": "art/icons/feelings/exports/40/feeling-awe.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-awe.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-awe.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {
