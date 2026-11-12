@@ -186,6 +186,7 @@ suites was checked: it points at an element that still has one (tiles, plan chip
 | sigil14 | stale | read "One glyph per tile" from the glyph key's `title` | reads `aria-description` |
 | magic (alone only) | suite's waiting | Evoke's tiles clicked on fixed 200/250 ms pauses; beside others Confirm was not up yet | waits for the effects, the camera to stop (`camStill()` in lib.mjs), Confirm enabled, the evoke in the log |
 | playscreen (alone only) | suite's waiting | creation's "Next ›" clicked back to back; one click hung 30 s beside others | each Next waits for the step bar's `aria-current` to move |
+| camera (alone only, the second full run) | suite's waiting | the plain-click check read the tile's place once, after a settle that came before the turn's start and the Move pick could move the view again; the click landed on the unit's own tile (the keys check failed after it) | the view settled right before the read, and the tile's box read until it stays put and the camera is not gliding |
 | melee-fx (alone only, the re-run) | suite's dice | Parry needs a melee HIT; at Defense 19 the drill elite hits 3 in 10, so 8 rounds without one came about 1 run in 17 | Athletics 1 (Defense 10) for the Parry case; the note now prints the round's log |
 
-Proof: magic, playscreen and melee-fx each three times beside two others, green; the full run below.
+Proof: magic, playscreen, melee-fx and camera each three times beside two others, green; then the full run.
