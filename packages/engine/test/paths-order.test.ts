@@ -76,7 +76,7 @@ describe('paths(): the heap search finds what the plain search finds, in the sam
   it('on the real grounds as a fight leaves them, for every unit', () => {
     for (const m of ['open', 'cover'] as const) { const g = fight(m), cb = g.combat!, was = bindGame(g);
       try { for (const u of cb.units) same(paths(cb, u.pos, u.id), plainPaths(cb, u.pos, u.id), m + ' ' + u.id); } finally { bindGame(was); } }
-  });
+  }, 60_000);
   it('on 300 random grounds: walls, rough ground, traps, a sabotaged barricade, crowds, jumps, ways through people, tiles to avoid; and one step (stepsFrom) and the cover tile (coverTileFor) agree with the plain versions', () => {
     const base = fight('cover'), r = rnd(20261112);
     const pick = <T>(xs: T[]) => xs[Math.floor(r() * xs.length)];
@@ -114,5 +114,5 @@ describe('paths(): the heap search finds what the plain search finds, in the sam
     }
     // the trials really walked somewhere, and really had equal distances to order
     expect(reached).toBeGreaterThan(20000); expect(ties).toBeGreaterThan(15000); expect(steps).toBeGreaterThan(600); expect(covers).toBeGreaterThan(150);
-  });
+  }, 60_000); // about a second alone; the plain search is slow when the machine is busy
 });

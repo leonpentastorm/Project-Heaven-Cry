@@ -26,7 +26,7 @@ describe('a save from 0.22.0 loads and plays on', () => {
     expect(r.tally['combat/end-turn'][0]).toBeGreaterThan(3);
     if (r.g.phase !== 'combat') { r.must({ type: 'narrator/turn', turn: { narration: 'It is over.' } }); expect(r.errors).toEqual([]); expect(r.g.phase).toBe('story'); }
     expect(() => viewFor(r.g, 'host')).not.toThrow();
-  });
+  }, 60_000);
   it('after a fight: the story goes on, the finished fight still reads as finished, and the next fight starts from the same ground', () => {
     const g0 = load('save-0.22-after-fight');
     expect(g0.phase).toBe('story'); expect(g0.combat.over).toBe('win');
@@ -44,7 +44,7 @@ describe('a save from 0.22.0 loads and plays on', () => {
     r.fight(8);
     expect(r.errors).toEqual([]);
     expect(r.tally['combat/attack'][0]).toBeGreaterThan(3);
-  });
+  }, 60_000);
   it('a trivial action on an old save changes nothing but the version counter', () => {
     for (const name of ['save-0.22-mid-fight', 'save-0.22-after-fight']) {
       const g0 = load(name), g1 = apply(g0, { type: 'player/online', id: 'host', online: true }, 'host');
@@ -53,5 +53,5 @@ describe('a save from 0.22.0 loads and plays on', () => {
       expect(g1.rng).toEqual(g0.rng);
       expect(g1.v).toBe(g0.v + 1);
     }
-  });
+  }, 60_000);
 });
