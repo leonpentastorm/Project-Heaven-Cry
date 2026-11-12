@@ -10097,6 +10097,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/rally.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/rally.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "brief": {
+      "id": "brief",
+      "label": "Brief",
+      "path": "art/icons/calls/brief.png",
+      "sha256": "27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/calls/exports/256/brief.png",
+        "128": "art/icons/calls/exports/128/brief.png",
+        "64": "art/icons/calls/exports/64/brief.png",
+        "56": "art/icons/calls/exports/56/brief.png",
+        "48": "art/icons/calls/exports/48/brief.png",
+        "44": "art/icons/calls/exports/44/brief.png",
+        "40": "art/icons/calls/exports/40/brief.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/brief.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/brief.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

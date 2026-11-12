@@ -10,12 +10,12 @@
     "whisper-rebuke",
     "both-hands",
     "order",
-    "rally"
+    "rally",
+    "brief"
   ],
   "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
   "production_approved": false,
   "remaining_now": [
-    "brief",
     "name-it",
     "cue",
     "spot",
@@ -33,5 +33,5 @@
     "module-orbit",
     "module-echo"
   ],
-  "updated_utc": "2026-11-12T02:15:16.767201+00:00"
+  "updated_utc": "2026-11-12T02:18:47.339783+00:00"
 }

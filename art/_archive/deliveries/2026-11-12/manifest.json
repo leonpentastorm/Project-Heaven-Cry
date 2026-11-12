@@ -181,6 +181,52 @@
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
+    },
+    {
+      "path": "art/icons/calls/brief.png",
+      "sha256": "27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb",
+      "id": "brief",
+      "family": "calls",
+      "action": "Brief. Wick giving a quick briefing: crouched on one knee, one hand drawing a short plan on the ground with a finger (two small strokes and a dot on the ground line), the other hand held up with two fingers raised. Calm and quick.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/brief.png",
+        "sha256": "295aa88febf6077236cee67f309c11665dfd2945cd0efcbefd14e53002eea295"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/brief.png",
+        "sha256": "27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/brief.txt",
+        "sha256": "ebcd21f5284814bd05fe5d38d026710bf14fb3b4ff9fac31e1d7d4d8d4890876"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/brief.png",
+        "128": "art/icons/calls/exports/128/brief.png",
+        "64": "art/icons/calls/exports/64/brief.png",
+        "56": "art/icons/calls/exports/56/brief.png",
+        "48": "art/icons/calls/exports/48/brief.png",
+        "44": "art/icons/calls/exports/44/brief.png",
+        "40": "art/icons/calls/exports/40/brief.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/brief-attempt-1.png",
+          "sha256": "df9a3e74a289093f5e584fa619a5cd6c3e0380a471c05df50de2231c6a9ac0a9"
+        },
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
     }
   ]
 }

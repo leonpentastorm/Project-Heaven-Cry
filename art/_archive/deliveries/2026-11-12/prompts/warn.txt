@@ -3,3 +3,5 @@ Draw one icon in exactly the style of the attached reference images. The charact
 Warn. Wick shouting a warning: both hands cupped around his mouth, body twisted toward someone at his side, and a small sharp zig-zag danger mark above and behind him. Urgent.
 
 Preserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.
+
+CRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.

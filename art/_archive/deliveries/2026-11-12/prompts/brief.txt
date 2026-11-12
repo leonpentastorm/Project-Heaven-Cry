@@ -3,3 +3,7 @@ Draw one icon in exactly the style of the attached reference images. The charact
 Brief. Wick giving a quick briefing: crouched on one knee, one hand drawing a short plan on the ground with a finger (two small strokes and a dot on the ground line), the other hand held up with two fingers raised. Calm and quick.
 
 Preserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.
+
+CRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.
+
+EDIT FIRST ATTACHED IMAGE: Keep the kneeling Wick, the finger drawing the two ground strokes and dot, and the raised two-finger hand. COMPLETELY REMOVE BOTH LARGE ARROWS above the head. Remove all grey/light haze and the entire surrounding glow. The head top and the space above and around it are quiet, genuinely transparent. Draw no replacement overhead symbols.
