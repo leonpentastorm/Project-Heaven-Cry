@@ -89,9 +89,9 @@ foesOf(cb, u, who?)  alliesOf(cb, u, who?)                                      
 interface Who { downed?, surrendered?, hidden?: false, companions?: false, images?: false, within?, from?, seenBy?, self? }
 ```
 
-- **Replaced:** `overworld` ×18, `say` ×13, `unitById` ×6, `tileOf` ×7, `rngOf` ×10 and 12 inline `|| { state: 1 }`
+- **Replaced:** `overworld` ×16, `say` ×12, `unitById` ×6, `tileOf` ×7, `rngOf` ×11 and 12 inline `|| { state: 1 }`
   fallbacks; "tiles around" ×6 (`around`, `tilesWithin`, `areaOf`); a line of tiles ×3; "can a unit stand here" ×8
-  with five different lists; `foesOf` / `alliesOf` ×10 with four meanings; `onMap` ×2.
+  with five different lists; `foesOf` / `alliesOf` and their kin ×13 with four meanings; `onMap` ×2.
 - **One meaning each.** `foesOf(cb, u)` is the other side's units still in the fight (not dead, Downed or
   surrendered); Hidden units, companions and False Images count unless the call says `{ hidden: false }`,
   `{ companions: false }`, `{ images: false }`. The files that left companions out (`perks/b.ts`, `perks/d.ts`) say so
