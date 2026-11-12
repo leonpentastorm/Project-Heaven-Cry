@@ -182,7 +182,7 @@ register({
   id: 'marksman.special_ammo', claims: 'all',
   actions: [
     ...SPECIAL.map(([id, name]): ActionDef => ({
-      id: 'load_' + id, label: 'Load ' + name, scope: ['combat'], target: 'none', ap: (h) => (h.u ? reloadAp(h.u) : 2),
+      id: 'load_' + id, label: 'Load ' + name, scope: ['combat'], target: 'none', ap: (h) => (h.u ? reloadAp(h.u, h.cb) : 2),
       text: 'Reload with your ' + name + ' magazine. You carry one, and it is restocked when you rest.',
       available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon) || (isDrawn(h.u.weapon) ? QUIVER_WHY : null); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Used up. It is restocked at your next rest.'; return true; },
       run: (h) => {

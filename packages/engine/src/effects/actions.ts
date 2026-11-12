@@ -17,7 +17,7 @@ import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
-import { price, whyNot, pay, setAp, type Priced } from './cost';
+import { price, whyNot, pay, setAp, resWhyNot, resPay, type Priced } from './cost';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -148,6 +148,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   if (!why && h.u && (h.u.downed || h.u.dead)) why = 'Downed.';
   // The AP and every resource the action declares, with the credit a repeat carries (Encore, items 729 and 737; a Brief).
   if (!why && scope !== 'story' && h.u) why = whyNot(h.cb, h.u, cost, { as: { type: 'combat/perk', id: h.key }, c: h.c });
+  else if (!why) why = resWhyNot(cost.res, null, h.c); // no unit pays here (a story action): what the character holds (stims, Echo) is still asked for
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
     target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: h.kind === 'class' ? 'class' : 'perks', cls: h.info.classId,
@@ -222,6 +223,7 @@ export function runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?
   // THE payment: the previewed AP, and what the action declares of charge, MP, Supplies… for these arguments.
   const cost = { ...costOf(h, d, args), ap: pv.ap };
   if (h.u && sc !== 'story') { const no = whyNot(h.cb, h.u, { ...cost, ap: 0 }, { c: h.c }); if (no) return no; pay(h.cb, h.u, cost, { c: h.c }); }
+  else { const no = resWhyNot(cost.res, null, h.c); if (no) return no; resPay(cost.res, null, h.c); } // a story action: no AP and no unit, but its declared resources are refused and taken all the same
   if (!uses(h).take(per, n, h.key + '#' + d.id)) return 'Used.';
   const g = h.g ?? boundGame(), had = g?.story?.rulings?.length || 0;
   const wasActing = actingAs(d.label); let err: string | null | void;

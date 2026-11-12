@@ -338,8 +338,8 @@ function linePrice(cb: Combat, u: Unit, words: string[], tiles: string[], evokeA
   }
   const pre: ('vent' | 'core')[] = [];
   if (fx > FLUX_MAX) return null;
-  if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += ventAp(u); }
-  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += coreAp(u); }
+  if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += ventAp(u, cb); }
+  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += coreAp(u, cb); }
   ap += evokeAp;
   return canPay(null, u, ap) ? { ap, pre } : null;
 }

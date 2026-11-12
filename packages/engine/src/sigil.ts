@@ -947,7 +947,7 @@ export function readGlyph(cb: Combat, u: Unit, tile: string): string | null {
   if (!any.length) return 'No glyph or trace there to read.';
   const list = readable(cb, u, tile);
   if (!list.length) return any.every((g) => g.side === u.side && !(cb.traces || []).includes(g as Trace)) ? 'Your side\'s glyphs: ask the one who drew it to teach you.' : any.every((g) => knowsWord(c, g.word)) ? 'You know ' + (any.length === 1 ? 'that word' : 'those words') + ' already.' : 'You have copied that already.';
-  const cost = analyzeCost(u), range = 4 + (u.analysis || 0);
+  const cost = analyzeCost(u, cb), range = 4 + (u.analysis || 0);
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (dist(u.pos, tile) > range) return 'Out of Analyze range (' + range + ' tiles).';
   if (dist(u.pos, tile) > 1 && !lineOfSight(cb, u.pos, tile)) return 'No line of sight to it.';
@@ -1472,7 +1472,7 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
     const sp = compileSpell(words), L = words.length, charge = words.reduce((t, x) => t + glyphCost(cb, u, x, true, u.pos).charge, 0) + Math.max(1, L - (m.coreSave || 0));
     const fluxIn = words.reduce((t, x) => t + ((W(x) as any)?.flux ?? 1), 0), needVent = m.flux + fluxIn > FLUX_MAX, needCore = charge > m.charge;
     if (needCore && m.cores < 1) continue;
-    const cost = L * glyphApOf(u) + apForTiles(L - 1, u.bank, u.movement) + SPELL_AP.evoke + (needVent ? ventAp(u) : 0) + (needCore ? coreAp(u) : 0);
+    const cost = L * glyphApOf(u) + apForTiles(L - 1, u.bank, u.movement) + SPELL_AP.evoke + (needVent ? ventAp(u, cb) : 0) + (needCore ? coreAp(u, cb) : 0);
     if (!canPay(cb, u, cost)) continue;
     const boon = sp.subjects.every((x) => isBoonWord(x)), pool = boon ? friends.filter((t) => t.hp < t.maxHp || (t.shield || 0) < 10) : foes;
     for (const t of pool.slice(0, 6)) {

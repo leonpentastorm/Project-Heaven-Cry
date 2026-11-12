@@ -25,7 +25,7 @@ import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
 import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 import { rollVs } from '../rolls';
-import { price, costOf, freely } from '../effects/cost';
+import { price, costOf, freely, apFor } from '../effects/cost';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -105,7 +105,7 @@ register({
   on: {
     glyph_cost: (ctx, h) => {
       const u = h.u; if (ctx.u !== u || !u) return;
-      const left = Math.round((u.ap - ctx.ap) * 10) / 10; if (left < 0) return;
+      const left = Math.round((apFor(h.cb, u) - ctx.ap) * 10) / 10; if (left < 0) return; // what is left of the AP this glyph can draw on (the unit's own and the action's credit)
       let frac = Math.round((Math.ceil(left - 1e-9) - left) * 10) / 10; if (frac <= 0) return;
       if (uses(h).left('per_turn', 1) <= 0) return;
       if (!overworld(h.cb)) frac = Math.min(frac, Math.max(0, PERK_AP_CAP - (u.apGained || 0))); if (frac <= 0) return;
@@ -653,7 +653,7 @@ register({
 // bosses can't be thrown; plan 6b; PROVISIONAL) to a tile within throwing range − 1 per 20 kg, for the throw's AP. It
 // and anyone it lands on take 10 + kg ÷ 4 physical damage × Strength (PROVISIONAL). Objects and story throws: Narrator.
 const weightOf = (t: Unit) => (t.tier === 'boss' ? Infinity : t.companion === 'drone' ? 15 : t.companion ? 40 : t.tier === 'elite' ? 100 : 80);
-const throwCost = (u: Unit) => price({ u }, 'throw').ap;
+const throwCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'throw').ap;
 /** What an object weighs when thrown (PROVISIONAL, spec 14): the light, loose ones; walls, doors and fixtures can't be. */
 const THROW_KG: Record<string, number> = { crate: 25, barrel: 30, lamp: 5, camera: 3, alarm: 3, terminal: 20, container: 60 };
 /** Where a thrown object comes down: the tile, unless a unit or something solid is there (then the nearest free one). */
@@ -673,7 +673,7 @@ register({
   id: 'grenadiers_arm', claims: [0],
   stat: (h, stat) => (stat === 'throw_range' ? 2 : 0),
   actions: [{
-    id: 'hurl', label: 'Throw someone', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'unit', range: 1,
+    id: 'hurl', label: 'Throw someone', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u, h.cb) : 3), target: 'unit', range: 1,
     text: 'Throw an ally or enemy next to you to a tile in range. They must weigh less than you can carry. The one thrown and whoever they land on take damage by weight.',
     preview: (h, args) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId); if (!t) return {};
@@ -701,7 +701,7 @@ register({
     // An object next to you (tile) thrown to a tile (choice): a crate, a barrel, a lamp… by its weight (PROVISIONAL
     // weights, spec 14: objects carry none in the data). It lands there (or the nearest free tile), and it and whoever
     // it lands on take the same damage by weight; a barrel that breaks goes off as barrels do.
-    id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'tile', range: 1,
+    id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u, h.cb) : 3), target: 'tile', range: 1,
     pickLabel: 'Where it lands',
     text: 'Throw an object next to you to a tile in range. It must weigh less than you can carry. The object and whoever it lands on take damage by weight.',
     preview: (h, args) => {

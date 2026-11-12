@@ -10,7 +10,12 @@
 //                                   or null. canPay() is its yes / no.
 //   pay(cb, u, priced)              take it: AP first from a credit on this action (Encore, a Brief), then the unit's
 //                                   own; then each resource. NOTHING ELSE SUBTRACTS AP.
-//   refund(cb, u, priced)           give it back (a ruling that went the player's way, a refused inner action).
+//   refund(cb, u, priced)           give it back (a ruling that went the player's way, a refused inner action): to the
+//                                   credit it was drawn from while that action still runs, else to the unit.
+//   apMeter(cb, u)                  what an action takes in all, from the unit AND its credit: `const m = apMeter(cb, u)`
+//                                   before, `m()` after. Never measure a cost as `ap0 - u.ap`: a credit pays first.
+//   apFor(cb, u)                    the AP the unit can put toward the action now (its own and the credit): what an
+//                                   action that takes "as much as you can pay" (Load) divides. Never `u.ap`.
 //   grantAp(cb, u, n, o?)           AP given outside the perk economy (a Quicken, the area map); perk AP is
 //                                   grantPerkAp / bankAp (effects/ap.ts), which hold the +3 cap and the turn's 9.
 //   setAp(u, n)                     a turn's refill, a lost turn (0), a window's pool: the AP is SET, not paid.
@@ -22,7 +27,14 @@
 // A resource is a row of RESOURCES (data/actions.json `resources`): where it lives on the unit or the character,
 // and its name in a refusal. An action declares `cost: { ap, res: { charge: 2, mp: 10 } }`; nobody subtracts by hand.
 // The lint (test/lint-costs.test.ts) fails on a hand-written `u.ap <` check, a direct write to a unit's `.ap`, a
-// 'Needs N AP.' built outside this file, and an actionAp() call outside it.
+// 'Needs N AP.' built outside this file, an actionAp() call outside it, and a price asked without the fight.
+//
+// THE NAME OF AN ACTION ON THE `cost` HOOK is its cost site (effects/stats.ts COST_SITES: 'pull_free', 'reload_both',
+// 'break'), never the id of the row that shows it ('pullfree', 'reload2', 'cover'): price() turns a row's id into its
+// site, so the row and the action reach the hook under ONE name. ctx.row carries the id that was asked.
+//
+// WITH NO FIGHT (x.cb left out or null: a card outside a fight) only the unit's own items are asked. In a fight EVERY
+// price passes the fight (`price({ cb, u }, …)`), so another unit's item and an engine system's listener are asked too.
 import actionsJ from '../../../../data/actions.json';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
@@ -41,14 +53,21 @@ interface VerbCost { ap?: number | null; min?: number; site?: string; res?: Reco
 /** The base cost of every engine verb: the rows of data/actions.json (`items`, by id) and its `costs` map (the verbs
  * that have no row: a weapon's own, magic's, the area map's). */
 const VERBS: Record<string, VerbCost> = { ...Object.fromEntries(((actionsJ as any).items as any[]).map((a) => [a.id, a])), ...((actionsJ as any).costs || {}) };
+/** The row that shows a cost site, where the two are named differently ('pull_free' is shown by the row 'pullfree'). */
+const ROW_OF_SITE: Record<string, string> = Object.fromEntries(Object.entries(VERBS).filter(([id, v]) => v.site && v.site !== id).map(([id, v]) => [v.site as string, id]));
+/** A verb's data, by either of its names (the row's id or its cost site). */
+const verbOf = (action: string): VerbCost | undefined => VERBS[action] ?? VERBS[ROW_OF_SITE[action]];
 /** The data's number for an action (`ap`, or another field: 'ap_downed', 'ap_lowered', 'extra_ap'…). A missing one is
  * a typo or a missing line of data: it throws. */
 export function costOf(action: string, field = 'ap'): number {
-  const n = VERBS[action]?.[field];
+  const n = verbOf(action)?.[field];
   if (typeof n !== 'number') throw new Error('No ' + field + ' for the action "' + action + '" in data/actions.json.');
   return n;
 }
-export const hasCost = (action: string, field = 'ap'): boolean => typeof VERBS[action]?.[field] === 'number';
+export const hasCost = (action: string, field = 'ap'): boolean => typeof verbOf(action)?.[field] === 'number';
+/** THE name of a priced action: its cost site. A row's id ('pullfree', 'reload2', 'cover') becomes its site ('pull_free',
+ * 'reload_both', 'break'); any other name is itself. What the `cost` hook's ctx.action carries. */
+export const actionName = (action: string): string => VERBS[action]?.site || action;
 
 interface ResDef { name: string; on: 'unit' | 'character'; path: string; whole?: boolean }
 /** Every resource an action can cost (data/actions.json `resources`). */
@@ -77,17 +96,20 @@ type Who = { cb?: Combat | null; u?: Unit | null; c?: Character | null };
  * (data/actions.json). ctx: what the action knows that an item may ask about (the hand, the target, the word). It goes
  * to the stat query and onto the `cost` hook's context.
  *
- * The `cost` hook: { u, c, cb, action, base, ap, res, min, free, labels, ...ctx }. A handler changes `ap` or `res`,
- * raises `min` ("never below 1"), or sets `free`. It fires for EVERY priced action, whatever runtime it belongs to. */
+ * The `cost` hook: { u, c, cb, action, row, base, ap, res, min, free, labels, ...ctx }. A handler changes `ap` or
+ * `res`, raises `min` ("never below 1"), or sets `free`. It fires for EVERY priced action, whatever runtime it belongs
+ * to. `action` is the cost site (actionName), `row` the name that was asked. Pass the fight (x.cb) whenever there is
+ * one: without it only the unit's own items hear the hook (see the top of this file). */
 export function price(x: Who, action: string, base?: number | Cost | null, ctx: Record<string, unknown> = {}): Priced {
   const b: Cost = base == null ? { ap: costOf(action) } : typeof base === 'number' ? { ap: base } : base;
-  let ap = b.ap ?? 0; const labels: string[] = [], site = VERBS[action]?.site || action;
+  // one name, one floor, whichever of its two names the verb was asked by (the row's id or the site)
+  let ap = b.ap ?? 0; const labels: string[] = [], site = actionName(action), min = verbOf(action)?.min ?? 0;
   // the fast way out (an attack's preview runs thousands of times a turn): no site to ask, and nobody on the `cost` hook
-  if (!hookUsed('cost') && !(x.u && COST_SITES.has(site))) return { action, ap: r10(Math.max(VERBS[action]?.min ?? 0, ap)), res: b.res ? { ...b.res } : {}, labels, free: false };
+  if (!hookUsed('cost') && !(x.u && COST_SITES.has(site))) return { action: site, ap: r10(Math.max(min, ap)), res: b.res ? { ...b.res } : {}, labels, free: false };
   if (x.u && COST_SITES.has(site) && site !== 'heal') { const r = actionAp(x, site as CostSite, ap, ctx); ap = r.ap; labels.push(...r.labels); }
-  const c: any = { ...ctx, u: x.u || null, c: x.c || null, cb: x.cb || null, action, base: b.ap ?? 0, ap, res: { ...(b.res || {}) }, min: VERBS[action]?.min ?? 0, free: false, labels };
+  const c: any = { ...ctx, u: x.u || null, c: x.c || null, cb: x.cb || null, action: site, row: action, base: b.ap ?? 0, ap, res: { ...(b.res || {}) }, min, free: false, labels };
   if (!hookUsed('cost')) { /* nobody listens: nothing to ask */ } else if (x.cb) emit(x.cb, 'cost', c); else if (x.u) emitOwn(x.u, 'cost', c); // with no fight in reach, the unit's own items only
-  return { action, ap: c.free ? 0 : r10(Math.max(c.min, c.ap)), res: c.res, labels, free: !!c.free };
+  return { action: site, ap: c.free ? 0 : r10(Math.max(c.min, c.ap)), res: c.res, labels, free: !!c.free };
 }
 /** An action whose AP its own pipeline has already worked out (an attack's preview, a glyph's, an Outburst's): the
  * number as a Priced, through the `cost` hook like every other. */
@@ -153,9 +175,24 @@ export const apFor = (cb: Combat | null | undefined, u: Unit, as?: any): number 
  * a preview made outside the action; o.c: the character, for a resource kept there (stims, Echo). */
 export function whyNot(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null } = {}): string | null {
   const ap = apOf(p);
-  if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n > 0 && resLeft(u, id, o.c) < n) return needs(n, RESOURCES[id].name);
+  if (typeof p !== 'number') { const no = resWhyNot(p.res, u, o.c); if (no) return no; }
   if (ap > 0 && apFor(cb, u, o.as) < ap) return needs(ap);
   return null;
+}
+/** The same question for the resources alone, with or without a unit (a story action has none): the sentence, or null.
+ * With no unit only what the CHARACTER holds can be asked for (stims, Echo); a resource kept on a unit (charge, MP,
+ * Supplies…) can't be paid where there is no unit, and the action is refused, never run for nothing. */
+export function resWhyNot(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null): string | null {
+  for (const [id, n] of Object.entries(res || {})) {
+    if (!(n > 0)) continue; const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
+    if (!u && d.on === 'unit') return 'Only in a fight (it costs ' + n + ' ' + d.name + ').';
+    if (resLeft(u, id, c) < n) return needs(n, d.name);
+  }
+  return null;
+}
+/** Take the resources alone (a story action: no unit, no AP). Ask resWhyNot first. */
+export function resPay(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null): void {
+  for (const [id, n] of Object.entries(res || {})) if (n) resAdd(u, id, -n, c);
 }
 export const canPay = (cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null } = {}): boolean => !whyNot(cb, u, p, o);
 
@@ -174,11 +211,27 @@ export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, 
   if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, -n, o.c);
   return due;
 }
-/** Give a cost back: the AP to the unit (never to a credit), each resource to where it came from. */
+/** Give a cost back, each resource to where it came from. The AP goes back where pay() took it: while the action that
+ * paid is still running, first to its credit (Encore's part, then the Brief's: the reverse of pay), so a refunded
+ * action has not used a Brief up; the rest, and everything once the action is over, to the unit. */
 export function refund(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { c?: Character | null } = {}): void {
-  void cb; const ap = apOf(p);
+  let ap = apOf(p);
+  const cr = FREE.has(u) || !(cb as any)?.acting ? null : creditOf(cb, u);
+  if (cr && ap > 0) {
+    const e = Math.min(cr.encoreUsed, ap); cr.encoreUsed = r10(cr.encoreUsed - e); ap = r10(ap - e);
+    const b = Math.min(cr.briefUsed, ap); cr.briefUsed = r10(cr.briefUsed - b); ap = r10(ap - b);
+    cr.paid = r10(cr.paid - e - b - ap); // paid counts what the action cost in all (settleCredit)
+  }
   if (ap) (u as any).ap = r10(u.ap + ap);
   if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, n, o.c);
+}
+/** A meter for what an action takes IN ALL: `const taken = apMeter(cb, u)` before it, `taken()` after it is the AP it
+ * drew from the unit and from its credit together (less what it gave back). THE way to measure a cost: `ap0 - u.ap`
+ * leaves out what a Brief or Encore paid. */
+export function apMeter(cb: Combat | null | undefined, u: Unit): () => number {
+  const drawn = () => { const c = creditOf(cb, u); return c ? c.briefUsed + c.encoreUsed : 0; };
+  const ap0 = u.ap, c0 = drawn();
+  return () => r10(ap0 - u.ap + drawn() - c0);
 }
 
 /** Take n of a resource NOW, outside an action's declared cost (a reaction's Guard, a rider's MP in a hook). false, and

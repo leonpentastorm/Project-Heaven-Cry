@@ -30,7 +30,7 @@ import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { itemAmount } from './effects/amounts';
-import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyNot, needs, costOf } from './effects/cost';
+import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyNot, needs, costOf, apMeter } from './effects/cost';
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
@@ -1481,9 +1481,9 @@ function combatAction(g: GameState, a: Action, by: string) {
   (cb as any).acting = true; // creditFor: inside the action, the credit is what is left of this action's
   try {
   switch (a.type) {
-    case 'combat/perk': { const ap0 = u.ap; err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat');
+    case 'combat/perk': { const taken = apMeter(cb, u); err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat');
       // rules 1.14: a perk that asks for words opened the turn's attempt: it carries what the action cost (a no gives it back)
-      const fr = fightRulingOf(cb); if (!err && fr && fr.perk && fr.unit === u.id) fr.ap = Math.max(0, Math.round((ap0 - u.ap) * 10) / 10); break; }
+      const fr = fightRulingOf(cb); if (!err && fr && fr.perk && fr.unit === u.id) fr.ap = Math.max(0, taken()); break; } // all it cost, a Brief's or Encore's part too
     case 'combat/attempt': err = attempt(g, cb!, u, a.text); break;
     case 'combat/decline': if (!cb!.window) fail('There is nothing to decline.'); windowStep(cb!, true); break;
     case 'combat/move': err = moveUnit(cb!, u, a.to, g.rng, a.how || 'move'); break;
@@ -1519,8 +1519,8 @@ function combatAction(g: GameState, a: Action, by: string) {
     }
     case 'combat/reload': {
       refuseHook(cb!, u, a); // an item or rule may refuse it (Physical 2.0: a Drawn weapon's quiver is filled before the fight)
-      const ap0 = u.ap; err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical });
-      if (!err) faithReloaded(cb!, u, ap0 - u.ap); // the Quartermaster's intervention (rules 1.6.3, item 742)
+      const taken = apMeter(cb, u); err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb!, u, a.hand, !!a.tactical) : reload(cb!, u, { tactical: !!a.tactical });
+      if (!err) faithReloaded(cb!, u, taken()); // the Quartermaster's intervention (rules 1.6.3, item 742)
       break;
     }
     case 'combat/throw': err = throwItem(cb!, g.rng, u, a.item, tileKey(g, a.tile)); break;

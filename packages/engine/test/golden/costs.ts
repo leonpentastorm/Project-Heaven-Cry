@@ -459,8 +459,10 @@ function diffTables(name: string, want: Record<string, string>, got: Record<stri
 export function goldenCosts(section: string): number {
   const { state, marks } = split(COST_SECTIONS[section]()), rec = process.env.GOLDEN_RECORD, name = 'costs-' + section;
   if (rec === '1') write(name, state);
-  if (rec === '1' || rec === 'marks') { write(name + '.marks', marks); console.log('GOLDEN_RECORD: wrote test/golden/' + name + (rec === '1' ? '.json and ' + name : '') + '.marks.json (' + Object.keys(state).length + ' lines)'); }
+  const noMarks = !Object.keys(marks).length && !existsSync(fileOf(name + '.marks')); // a section that reads no marks (credit, foes, cooldowns) keeps no marks file
+  if (noMarks) { if (rec === '1') console.log('GOLDEN_RECORD: wrote test/golden/' + name + '.json (' + Object.keys(state).length + ' lines)'); }
+  else if (rec === '1' || rec === 'marks') { write(name + '.marks', marks); console.log('GOLDEN_RECORD: wrote test/golden/' + name + (rec === '1' ? '.json and ' + name : '') + '.marks.json (' + Object.keys(state).length + ' lines)'); }
   if (rec !== '1') diffTables(name, read(name), state, 'A state line moved: an action takes or gives something else, or a limit allows something else. If that was a ruling, record on purpose (GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-costs) and list the line in the hand-off.');
-  if (rec !== '1' && rec !== 'marks') diffTables(name + '.marks', read(name + '.marks'), marks, 'Only the marks moved (where a counter is kept). If that was meant: GOLDEN_RECORD=marks npm test -w @phc/engine -- golden-costs');
+  if (rec !== '1' && rec !== 'marks' && !noMarks) diffTables(name + '.marks', read(name + '.marks'), marks, 'Only the marks moved (where a counter is kept). If that was meant: GOLDEN_RECORD=marks npm test -w @phc/engine -- golden-costs');
   return Object.keys(state).length;
 }

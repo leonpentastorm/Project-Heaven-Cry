@@ -23,7 +23,7 @@ import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, immune, forbids } from './effects/core';
-import { price, priced, costOf, whyNot, canPay, pay, setAp, withAp, creditFor } from './effects/cost';
+import { price, priced, costOf, whyNot, canPay, pay, setAp, withAp, freely, apFor, creditFor } from './effects/cost';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
 import { windowStep } from './effects/actions';
@@ -787,10 +787,11 @@ export function routeTo(P: { prev: Record<string, string> }, from: string, to: s
 /** How a move is made, for the detour check: 'sneak' (the area map) costs 1 AP a tile on top. */
 export type MoveHow = 'move' | 'sprint' | 'disengage' | 'sneak';
 /** Whether a unit can pay for walking `tiles` this way now (the plain price, before item hooks). */
-export function canAffordTiles(u: Unit, tiles: number, how: MoveHow = 'move'): boolean {
+export function canAffordTiles(u: Unit, tiles: number, how: MoveHow = 'move', cb?: Combat | null): boolean {
   if (how === 'sprint') return tiles <= Math.floor(3 * u.movement);
   if (how === 'disengage') return tiles <= 1;
-  return canPay(null, u, apForTiles(tiles, u.bank || 0, u.movement) + (how === 'sneak' ? tiles : 0));
+  // with the credit the move carries (Encore's repeat, a Brief): the route is chosen with the AP the move can really pay
+  return canPay(cb, u, apForTiles(tiles, u.bank || 0, u.movement) + (how === 'sneak' ? tiles : 0), { as: { type: 'combat/move', how } });
 }
 /** The paths a move to `to` uses (rules 1.9, item 683): a player's unit (a character or a companion) goes around every
  * revealed hazard tile when that route is at most PILE.route_slack_tiles longer than the shortest AND the unit can still
@@ -802,7 +803,7 @@ export function movePaths(cb: Combat, u: Unit, to: string, how: MoveHow = 'move'
   const hz = revealedHazardTiles(cb, 'pc'); if (!hz.size) return P;
   if (!routeTo(P, u.pos, to).some((k) => k !== to && hz.has(k))) return P;
   const A = paths(cb, u.pos, u.id, new Set(hz.keys()));
-  return A.dist[to] !== undefined && A.dist[to] <= P.dist[to] + PILE.route_slack_tiles && canAffordTiles(u, A.dist[to], how) ? A : P;
+  return A.dist[to] !== undefined && A.dist[to] <= P.dist[to] + PILE.route_slack_tiles && canAffordTiles(u, A.dist[to], how, cb) ? A : P;
 }
 /** For the move preview (rules 1.9): the route a click to `to` takes, its length, and every revealed hazard tile on
  * it ("Path crosses: mines at C4"). Null when the tile can't be reached. */
@@ -1913,7 +1914,7 @@ export const weaponBraced = (u: Unit): boolean => !!u.braced && !u.guardBrace;
 /** Durability's Guard (rules 1.13; physical/guard.ts sets f): what a Brace gives a unit that has a Guard pool. */
 export const braceHook: { f: ((cb: Combat, u: Unit) => void) | null } = { f: null };
 export function brace(cb: Combat, u: Unit): string | null {
-  if (!weaponActions(u).some((x) => x.id === 'brace')) return 'This weapon has nothing to brace.';
+  if (!weaponActions(u, cb).some((x) => x.id === 'brace')) return 'This weapon has nothing to brace.';
   if (u.braced) return 'Already braced.';
   const ap = price({ cb, u }, 'brace').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
   // A weapon that has the Brace action of its own is set (Recoil halved, its penalties gone). Any other weapon is not:
@@ -2041,11 +2042,11 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   const w = WEAPON[u.weapon];
   if (w.magazine == null) return 'Nothing to reload.';
   { const no = reloadRefused(u, u.weapon, cb); if (no) return no; }
-  if (!weaponActions(u).some((x) => x.id === 'reload')) return 'This weapon doesn\'t reload.';
+  if (!weaponActions(u, cb).some((x) => x.id === 'reload')) return 'This weapon doesn\'t reload.';
   if (forbids({ u }, 'reload')) return forbids({ u }, 'reload') + ': no reloading.';
   if (o.tactical && w.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   const tactical = !!o.tactical && !!u.mags && w.reload !== 'loose';
-  const rAp = free ? 0 : reloadAp(u) + (tactical ? PILE.tactical_reload_extra_ap : 0);
+  const rAp = free ? 0 : reloadAp(u, cb) + (tactical ? PILE.tactical_reload_extra_ap : 0);
   { const no = whyNot(cb, u, rAp); if (no) return no; }
   // Every refusal comes before the hook: a refused reload is no reload (Speed Loader's use stays; spec item 564).
   // A full magazine isn't swapped (review fix: a speed reload dropped a full one, a tactical one cost 3 AP for nothing).
@@ -2083,14 +2084,14 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
 /** Reload the off-hand gun (2 AP), or both guns at once (3 AP; spec: Weapons v2, Two guns); tactical +1 (item 679).
  * Each gun takes its own spares (the same pack entry when both hands hold the same model). */
 /** Reload both guns' speed price (Two guns: 3 AP, items may change it); the tactical one is this + 1. */
-export const reloadBothAp = (u: Unit) => price({ u }, 'reload2').ap;
+export const reloadBothAp = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'reload_both').ap;
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical = false): string | null {
   { const no = (hand === 'both' ? reloadRefused(u, u.weapon, cb) : null) || reloadRefused(u, u.offWeapon, cb); if (no) return no; }
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
   if (tactical && ow.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   // The off-hand gun is priced as a reload, but it isn't the main hand's: Speed Loader leaves it alone (spec item 564).
-  const ap = (hand === 'both' ? reloadBothAp(u) : price({ cb, u }, 'reload', ow.reload_ap ?? costOf('reload'), { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
+  const ap = (hand === 'both' ? reloadBothAp(u, cb) : price({ cb, u }, 'reload', ow.reload_ap ?? costOf('reload'), { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
   { const no = whyNot(cb, u, ap); if (no) return no; }
   const pc = !!u.charId, shared = ow.id === u.weapon, have = u.offAmmo ?? 0, offFull = have >= ow.magazine;
   // A character's off-hand gun reloads only from what it carries (review fix: with no spares entry it reloaded free);
@@ -2105,7 +2106,7 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
     if (offFull) return 'The off-hand gun is full: reload the main gun alone.';
     if (u.ammo >= w.magazine && w.reload === 'magazine') return 'The main gun is full: reload the off-hand gun alone.';
     // The main gun first, as before (a refusal throws in the reducer, so nothing it did stays).
-    const seq = cb.fxSeq || 0, e = withAp(u, 99, () => reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' })); if (e && e !== 'Already full.') return e; // the two guns' one price is paid below
+    const seq = cb.fxSeq || 0, e = freely(u, () => reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' })); if (e && e !== 'Already full.') return e; // inside this action at no AP (it draws on no credit): the two guns' one price is paid below
     if (u.dead || u.downed) return null; // a held shot felled it as it reached for the magazines (Dead to Rights): no reload, nothing spent
     mainFx = (cb.fx || []).find((f) => f.n > seq && f.k === 'reload' && f.unit === u.id) || null;
   }
@@ -2196,12 +2197,12 @@ export function pickUp(cb: Combat, u: Unit, tile: string, take?: (string | numbe
 export const ROUNDS_PER_AP: number = costOf('load', 'rounds');
 export function loadMagazine(cb: Combat, u: Unit): string | null {
   const w = WEAPON[u.weapon];
-  if (!w || w.reload !== 'magazine' || !u.mags || !weaponActions(u).some((x) => x.id === 'load')) return 'Nothing to load.';
+  if (!w || w.reload !== 'magazine' || !u.mags || !weaponActions(u, cb).some((x) => x.id === 'load')) return 'Nothing to load.';
   const cap = w.magazine || 0, open = u.mags.map((n, i) => [n, i]).filter(([n]) => n < cap).sort((a, b) => b[0] - a[0]);
   if (!open.length) return 'Every spare ' + (w.reload_unit || 'magazine') + ' is full.';
   if (!u.loose) return 'No loose rounds to load.';
   const per = price({ cb, u }, 'load').ap; { const no = whyNot(cb, u, per); if (no) return no; }
-  const [n, i] = open[0], rounds = Math.min(cap - n, u.loose, Math.floor(u.ap / per) * ROUNDS_PER_AP), cost = Math.ceil(rounds / ROUNDS_PER_AP) * per;
+  const [n, i] = open[0], rounds = Math.min(cap - n, u.loose, Math.floor(apFor(cb, u) / per) * ROUNDS_PER_AP), cost = Math.ceil(rounds / ROUNDS_PER_AP) * per;
   u.mags[i] = n + rounds; u.loose -= rounds; pay(cb, u, cost); emitFx(cb, 'load', { unit: u.id, at: u.pos, rounds, dur: Math.min(2000, 900 + 250 * cost) });
   cb.log.push(u.name + ' loads ' + rounds + (rounds === 1 ? ' round' : ' rounds') + ' into a ' + (w.reload_unit || 'magazine') + ' (' + u.mags[i] + '/' + cap + ') for ' + cost + ' AP.');
   return null;
@@ -2229,13 +2230,13 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
   return null;
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
-export const analyzeCost = (u: Unit) => price({ u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
+export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
 /** How far Analyze reads: 4 tiles + Analysis. */
 export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);
 export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   if (t.side !== 'foe' || t.dead) return 'Pick a living enemy.';
   if (t.analyzedBy) return t.name + ' is already analyzed.';
-  const cost = analyzeCost(u), range = analyzeRange(u);
+  const cost = analyzeCost(u, cb), range = analyzeRange(u);
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + range + ' tiles).';
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
@@ -2261,7 +2262,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   if (who.stims <= 0) return 'No stims left.';
   if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';
   if (t.dead) return 'Too late.';
-  const cost = stimAp(u, t, isMedic);
+  const cost = stimAp(u, t, isMedic, cb);
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (forbids({ u }, 'stim')) return forbids({ u }, 'stim') + ': no stims.';
   // 'stim_start' {u, t, cb, cancel, why}: an item may stop the stim before anything is spent, revive included (Rival's
@@ -2277,7 +2278,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
 }
 
 /** A stim's AP: stabilising a Downed ally 2 (1 for a Medic), healing 1; then items ('stabilise' / 'stim' costs). */
-export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? price({ u }, 'stabilise', costOf('stim', isMedic ? 'ap_downed_medic' : 'ap_downed')).ap : price({ u }, 'stim').ap);
+export const stimAp = (u: Unit, t: Unit, isMedic: boolean, cb?: Combat | null) => (t.downed ? price({ cb, u }, 'stabilise', costOf('stim', isMedic ? 'ap_downed_medic' : 'ap_downed')).ap : price({ cb, u }, 'stim').ap);
 
 /** Enemy turn: shoot the PC its tier's fire doctrine picks among those in sight and range (rules 1.25, enemyRank: the
  * nearest, one each, or the most hurt; rules 1.23: with a weight for whoever is mending the squad,
@@ -2319,7 +2320,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     // Soul casters (rules 1.5, ai-soul.ts): Begin, Pump, hold for the big release, watch with the heart, calm the Strain.
     if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
-    if (enemyNeedsReload(u) && canPay(cb, u, reloadAp(u))) { reload(cb, u); continue; }
+    if (enemyNeedsReload(u) && canPay(cb, u, reloadAp(u, cb))) { reload(cb, u); continue; }
     if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
@@ -2565,7 +2566,7 @@ export function canJam(w: WeaponDef | undefined): boolean {
   return w.heat_limit != null;
 }
 /** Reload AP: the weapon's reload_ap (default 2; the breacher tube 3), 1 with a quick-release magazine, then items. */
-export const reloadAp = (u: Unit) => { const w: any = WEAPON[u.weapon] || {}; return price({ u }, 'reload', hasMod(u.mods, 'mod_quick_release') ? costOf('reload', 'ap_quick_release') : w.reload_ap ?? costOf('reload')).ap; };
+export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb, u }, 'reload', hasMod(u.mods, 'mod_quick_release') ? costOf('reload', 'ap_quick_release') : w.reload_ap ?? costOf('reload')).ap; };
 const RELOAD_LABEL: Record<string, string> = { magazine: 'Swap magazine', speedloader: 'Speedloader', drum: 'Swap drum', belt: 'Feed belt' };
 const LOOSE_LABEL: Record<string, string> = { arrow: 'Nock an arrow', bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
 export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'repair' | 'overwatch' | 'burst' | 'auto' | 'skill'; label: string; ap: number; why: string | null; text: string;
@@ -2573,13 +2574,13 @@ export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'rep
   tactical?: { ap: number; why: string | null } }
 /** The actions a unit's weapon grants, and why each can't be used now (null when it can). The UI shows exactly these:
  * an action the weapon doesn't grant never shows (a bow has no Clear jam; a revolver's reload is a Speedloader). */
-export function weaponActions(u: Unit): WeaponAction[] {
+export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
   const w: any = WEAPON[u.weapon]; if (!w) return [];
   const hd = w.handling || {}, deny = new Set<string>(hd.deny || []), grant = new Set<string>(hd.grant || []);
   const out: WeaponAction[] = [], add = (a: WeaponAction) => { if (!deny.has(a.id)) out.push(a); };
-  const melee = isMelee(w), need = (n: number) => whyNot(null, u, n);
+  const melee = isMelee(w), need = (n: number) => whyNot(cb, u, n);
   if (w.magazine != null && w.reload) {
-    const r = reloadAp(u), unit = w.reload_unit || 'magazine';
+    const r = reloadAp(u, cb), unit = w.reload_unit || 'magazine';
     const label = w.reload === 'loose' ? LOOSE_LABEL[w.ammo] || 'Load rounds' : RELOAD_LABEL[w.reload_unit] || 'Reload';
     const why = reloadRefused(u, w.id, null) || (u.jammed ? 'Jammed: clear it first.' : u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) ? 'Already full.' : u.mags && w.reload !== 'loose' && !u.mags.some((n) => n > 0) ? 'No loaded spare ' + unit + 's.' : w.reload === 'loose' && u.mags && !(u.loose || 0) ? 'No rounds left to load.' : need(r));
     // Rules 1.9 (item 679): a magazine weapon with tracked spares also offers the tactical reload (+1 AP; the old one goes back in the pack).
@@ -2588,16 +2589,16 @@ export function weaponActions(u: Unit): WeaponAction[] {
   }
   if (w.reload === 'magazine' && u.mags && u.mags.length) {
     const cap = w.magazine || 0, open = u.mags.filter((n) => n < cap), unit = w.reload_unit || 'magazine';
-    const lAp = price({ u }, 'load').ap, why = !open.length ? 'Every spare ' + unit + ' is full.' : !u.loose ? 'No loose rounds to load.' : need(lAp);
+    const lAp = price({ cb, u }, 'load').ap, why = !open.length ? 'Every spare ' + unit + ' is full.' : !u.loose ? 'No loose rounds to load.' : need(lAp);
     add({ id: 'load', label: unit === 'magazine' ? 'Load a magazine' : 'Fill a ' + unit, ap: lAp, why, text: 'Load loose rounds into your fullest part-empty ' + unit + ', 1 AP per ' + ROUNDS_PER_AP + ' rounds.' });
   }
-  if (canJam(w) || grant.has('clear')) { const c = price({ u }, 'clear_jam').ap; add({ id: 'clear', label: 'Clear jam', ap: c, why: !u.jammed ? 'Not jammed.' : need(c), text: 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
+  if (canJam(w) || grant.has('clear')) { const c = price({ cb, u }, 'clear_jam').ap; add({ id: 'clear', label: 'Clear jam', ap: c, why: !u.jammed ? 'Not jammed.' : need(c), text: 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
   const braces = weaponBraces(u);
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;
-  if (braces || pool) add({ id: 'brace', label: 'Brace', ap: price({ u }, 'brace').ap, why: u.braced ? 'Already braced.' : need(price({ u }, 'brace').ap), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
-  if (u.maxDur) { const c = price({ u }, 'field_repair').ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
-  const owAp = price({ u }, 'overwatch', attackApCost(w, melee ? 'melee' : 'shot')).ap;
+  if (braces || pool) add({ id: 'brace', label: 'Brace', ap: price({ cb, u }, 'brace').ap, why: u.braced ? 'Already braced.' : need(price({ cb, u }, 'brace').ap), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
+  if (u.maxDur) { const c = price({ cb, u }, 'field_repair').ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
+  const owAp = price({ cb, u }, 'overwatch', attackApCost(w, melee ? 'melee' : 'shot')).ap;
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
   for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? ((w as any).grants?.effect?.op === 'auto_ap' ? (w as any).grants.effect.value : 4) : 3, why: null, text: '' });
   // An item may replace the weapon's own skill (stat 'hide_weapon_skill' > 0: Old School's Fan the Hammer: hooks gap C6).

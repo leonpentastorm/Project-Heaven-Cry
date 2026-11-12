@@ -531,13 +531,13 @@ export function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
 }
 /** Vent's and a core swap's AP (1 and 2), through the items (stat 'ap_cost:vent' / 'ap_cost:swap_core': the Mage's
  * Bleed the Flux and Core Change, Class Roster Rev 3). The UI and the enemy planner read these. */
-export const ventAp = (u: Unit) => price({ u }, 'vent').ap;
-export const coreAp = (u: Unit) => price({ u }, 'swap_core').ap;
+export const ventAp = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'vent').ap;
+export const coreAp = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'swap_core').ap;
 /** Vent (1 AP): all the Flux goes into the air. 'vent' {u, flux, extra} (extra mutable: more goes into the air with it,
  * Bleed the Flux) after the Flux is gone. */
 export function vent(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
-  const ap = ventAp(u);
+  const ap = ventAp(u, cb);
   { const no = whyNot(cb, u, ap); if (no) return no; } if (!m.flux) return 'No Flux to vent.';
   pay(cb, u, ap); const n = m.flux; m.flux = 0;
   const vc: any = emit(cb, 'vent', { u, flux: n, extra: 0, cb });
@@ -547,7 +547,7 @@ export function vent(cb: Combat, u: Unit): string | null {
 }
 export function swapCore(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
-  const ap = coreAp(u);
+  const ap = coreAp(u, cb);
   { const no = whyNot(cb, u, ap); if (no) return no; } if (m.cores < 1) return 'No spare cores.';
   // focus: which Evoker throws out the spent core (an Evoker blade, a grand staff, else the off-hand Evoker), for the picture
   const focus = [u.weapon, u.offWeapon].find((id) => id && ((WEAPON as any)[id]?.properties || []).includes('counts_as_evoker')) || 'evoker';

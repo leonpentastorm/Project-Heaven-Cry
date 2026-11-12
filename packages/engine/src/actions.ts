@@ -69,7 +69,7 @@ export function moveAp(u: Unit, how: 'move' | 'sprint' | 'disengage'): number {
   return how === 'move' ? apForTiles(1, u.bank || 0, u.movement || 1) : priced(u, how);
 }
 /** A stim's two prices for this unit: on an ally who is up, and on a Downed one (stabilise). */
-const stimPrices = (u: Unit, medic: boolean) => ({ up: stimAp(u, { downed: false } as Unit, medic), down: stimAp(u, { downed: true } as Unit, medic) });
+const stimPrices = (u: Unit, medic: boolean, cb: Combat | null = CB) => ({ up: stimAp(u, { downed: false } as Unit, medic, cb), down: stimAp(u, { downed: true } as Unit, medic, cb) });
 
 /** Every basic action this unit has now, in list order, each with the engine's cost and reason. Rows that only show
  * when they apply (Put out the fire, Break free, Recover, Pull free, Play my song, Reload both, Hide) are left out
@@ -106,7 +106,7 @@ function rowsOf(cb: Combat | null, u: Unit, x: ActionCtx): BasicAction[] {
   if (condOn(u, 'disarmed') || condOn(u, 'lowered')) { const d = ACTION.recover, dis = condOn(u, 'disarmed'), ap = priced(u, 'recover', dis ? d.ap! : d.ap_lowered); row('recover', ap, need(u, ap), { label: dis ? d.name : d.name_alt }); }
   out.push(...reloadBothRows(cb, u, x));
   if (!u.hidden && u.side === 'pc') { const ap = priced(u, 'hide'); row('hide', ap, (cb ? hideBlock(cb, u) : null) || need(u, ap)); }
-  { const ap = analyzeCost(u); row('analyze', ap, need(u, ap), { tokens: { analyze_range: analyzeRange(u) } }); }
+  { const ap = analyzeCost(u, CB); row('analyze', ap, need(u, ap), { tokens: { analyze_range: analyzeRange(u) } }); }
   // A unit with a fixed action list (the drone: move and a plain shot) has only those.
   return u.allowedActions ? out.filter((a) => u.allowedActions!.includes(a.id)) : out;
 }
@@ -117,7 +117,7 @@ function coverAp(u: Unit): number { const w = WEAPON[u.weapon]; return w ? Math.
 export function reloadBothRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): BasicAction[] {
   const w: any = WEAPON[u.weapon], ow: any = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!w || !ow || w.magazine == null || ow.magazine == null) return [];
-  const d = ACTION.reload2, ap = reloadBothAp(u), tac = ap + PILE.tactical_reload_extra_ap, loose = ow.reload === 'loose';
+  const d = ACTION.reload2, ap = reloadBothAp(u, cb), tac = ap + PILE.tactical_reload_extra_ap, loose = ow.reload === 'loose';
   // (with no fight at hand, a card on the area map: a bare one around the unit, enough for the engine to rule on the guns)
   const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
   const whyOf = (tactical: boolean, _n: number) => dryRun(x.g || null, fight, u.id, (c2, u2) => reloadHands(c2, u2, 'both', tactical)).err;
@@ -138,7 +138,7 @@ export function loadPlan(g: any, cb: Combat | null, u: Unit): { rounds: number; 
 export function basicCost(cb: Combat | null, u: Unit, id: string, picks: { targetId?: string | null } = {}, x: ActionCtx = {}): number | null {
   if (!u || !id || (id !== 'load' && !ACTION[id.replace(/-tac$/, '')])) return null; // not a basic action: nothing is worked out
   const t = picks.targetId && cb ? cb.units.find((v) => v.id === picks.targetId) || null : null;
-  if (id === 'stim') { const p = stimPrices(u, isMedicChar(charOf(u, x))); return t ? (t.downed ? p.down : p.up) : p.up; }
+  if (id === 'stim') { const p = stimPrices(u, isMedicChar(charOf(u, x)), cb); return t ? (t.downed ? p.down : p.up) : p.up; }
   if (id === 'load') return loadPlan(x.g, cb, u)?.ap ?? null;
   if (id === 'pullfree') { const ts = pullFreeTargets(cb, u), n = (t && ts.includes(t) ? t : ts[0])?.nailed; return n ? price({ cb, u }, 'pullfree', n.ap).ap : null; }
   const r = basicActions(cb, u, x).find((a) => a.id === id);
