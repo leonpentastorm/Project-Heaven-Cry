@@ -11851,6 +11851,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-halo.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-halo.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "ui-revert": {
+      "id": "ui-revert",
+      "label": "a curved rewind arrow",
+      "path": "art/icons/modules/ui-revert.png",
+      "sha256": "12147c2777fb0fdba114d07638c97644fb86d70774601c2ac0e56893fe0478e4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/ui-revert.png",
+        "128": "art/icons/modules/exports/128/ui-revert.png",
+        "64": "art/icons/modules/exports/64/ui-revert.png",
+        "56": "art/icons/modules/exports/56/ui-revert.png",
+        "48": "art/icons/modules/exports/48/ui-revert.png",
+        "44": "art/icons/modules/exports/44/ui-revert.png",
+        "40": "art/icons/modules/exports/40/ui-revert.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/ui-revert.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/ui-revert.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

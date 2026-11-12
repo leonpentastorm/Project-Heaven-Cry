@@ -3329,6 +3329,52 @@
           "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/ui-revert.png",
+      "sha256": "12147c2777fb0fdba114d07638c97644fb86d70774601c2ac0e56893fe0478e4",
+      "id": "ui-revert",
+      "family": "modules",
+      "action": "a curved rewind arrow",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/ui-revert.png",
+        "sha256": "ae1b807c04e6edd371495e3b7dc713e1adfcc97e2137e34a3185380c41782ac4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/ui-revert.png",
+        "sha256": "12147c2777fb0fdba114d07638c97644fb86d70774601c2ac0e56893fe0478e4"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/ui-revert.txt",
+        "sha256": "86aa1aea5f6d340431228e7779a27d0fce62971be2a796e5ed5ecb8f7c040c58"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/ui-revert.png",
+        "128": "art/icons/modules/exports/128/ui-revert.png",
+        "64": "art/icons/modules/exports/64/ui-revert.png",
+        "56": "art/icons/modules/exports/56/ui-revert.png",
+        "48": "art/icons/modules/exports/48/ui-revert.png",
+        "44": "art/icons/modules/exports/44/ui-revert.png",
+        "40": "art/icons/modules/exports/40/ui-revert.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
     }
   ]
 }
