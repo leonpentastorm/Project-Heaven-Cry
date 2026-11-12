@@ -15,5 +15,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-time.png`: an hourglass made of two triangles
 - `module-inverse.png`: two arrows swapping direction, one above the other
 - `module-size.png`: a small circle inside a large one
+- `module-random.png`: three scattered dots and one loose curl (no question mark)
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

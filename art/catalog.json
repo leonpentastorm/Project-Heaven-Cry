@@ -11226,6 +11226,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-size.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-size.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-random": {
+      "id": "module-random",
+      "label": "three scattered dots and one loose curl (no question mark)",
+      "path": "art/icons/modules/module-random.png",
+      "sha256": "ab5eba8f0cbe5d98bcc18b42191f603726a4e083c7718f39fc178be3e9f3a142",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-random.png",
+        "128": "art/icons/modules/exports/128/module-random.png",
+        "64": "art/icons/modules/exports/64/module-random.png",
+        "56": "art/icons/modules/exports/56/module-random.png",
+        "48": "art/icons/modules/exports/48/module-random.png",
+        "44": "art/icons/modules/exports/44/module-random.png",
+        "40": "art/icons/modules/exports/40/module-random.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-random.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-random.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
