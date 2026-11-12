@@ -54,6 +54,16 @@ merged**; leave them.
    Never weaken a test to get past a timeout.
 6. Commit the merge, push the branch. Full `npm run check` and `npm run e2e -- all` wait for a quiet machine (section 4).
 
+**Disk (this nearly killed the mission on 12 Nov).** A worktree is a full checkout plus `node_modules`: about 2.5 GB.
+Ten of them filled the disk, and then every new agent failed at launch with hundreds of "unable to write file" lines
+and no other sign: the workflow just showed "Failed". So: (1) **before starting any worktree agent run `df -h .`** and
+want at least 8 GB free; (2) **remove a worktree as soon as its branch is merged**:
+`git worktree unlock .claude/worktrees/<name>; git worktree remove --force .claude/worktrees/<name>; git worktree prune`
+(only when `git merge-base --is-ancestor worktree-<name> claude/charming-gauss-hbq4n0` says it is merged, or its work is
+on the remote as `wip/…`); (3) reviewers' temporary worktrees under the scratchpad are deleted when the review is read;
+(4) an agent that fails at once, with no transcript, is a launch failure: look at disk and usage before anything else,
+and never relaunch in a loop.
+
 Agents: give each its own worktree (`isolation: "worktree"`). **A new worktree starts from stale `main`:** the brief
 must tell the agent to `git merge --ff-only claude/charming-gauss-hbq4n0` first, to commit to its worktree branch and
 not push, and to report the branch name. Hand long lists to an agent as a **file path**, never pasted in the prompt
