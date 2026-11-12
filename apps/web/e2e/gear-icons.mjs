@@ -6,7 +6,7 @@
 //  · the backpack in a fight, the reload card, a pile's hover and the pick-up checklist.
 // An item with no icon (a magazine, rounds, a ration pack) draws nothing in the slot.
 // Screenshots: e2e/shots/icons-*.png (1440 × 900 and 1280 × 720).
-import { chromium, player, hostAs, click, pickAction, BASE, OUT, settle } from './lib.mjs';
+import { chromium, player, hostAs, click, pickAction, BASE, OUT, settle, watch } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ICON = 'img[src^="data:image/svg+xml"]';
@@ -109,10 +109,13 @@ let e1 = 'no cover in range';
   const a0 = mine(await G()).ammo;
   for (const [, k] of near.sort((a, b) => a[0] - b[0])) { const r = await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if (mine(await G()).ammo < a0) { e1 = null; break; } if (r) e1 = r; } }
 await settle(p, 1500);
+// (the reload card is up for a moment, and at the test pace for a few milliseconds: a watcher in the page, started
+// before the reload, notes the card with the pistol's icon in it; lib.mjs watch())
+await watch(p, 'reloadIcon', '[data-fx="reload"] [data-reload-icon="service_pistol"]');
 const e2 = await act({ type: 'combat/reload', unitId: me.id });
 if (e1 || e2) console.log('     shot:', e1, '· reload:', e2, '· ammo', mine(await G()).ammo);
-const card = await p.locator('[data-fx="reload"] [data-reload-icon]').first().waitFor({ timeout: 30000 }).then(() => true).catch(() => false);
-ok('the reload card shows the pistol\'s icon in its title', card && (await p.locator('[data-fx="reload"] [data-reload-icon="service_pistol"]').count()) >= 1);
+const card = await p.waitForFunction(() => window.__e2eWatch.reloadIcon.up != null, null, { timeout: 30000 }).then(() => true).catch(() => false);
+ok('the reload card shows the pistol\'s icon in its title', card);
 await settle(p, 250); await snap('reload-1440');
 await settle(p, 1600);
 // a pile: drop the buckler on the tile, then hover it and open Pick up
