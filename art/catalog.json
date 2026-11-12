@@ -10451,6 +10451,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-split.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-split.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-ricochet": {
+      "id": "module-ricochet",
+      "label": "a zig-zag path bouncing off a wall line",
+      "path": "art/icons/modules/module-ricochet.png",
+      "sha256": "a992039155a6bfa6ff8032dbae04361f4601fec269bc4743b429b293c77210eb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-ricochet.png",
+        "128": "art/icons/modules/exports/128/module-ricochet.png",
+        "64": "art/icons/modules/exports/64/module-ricochet.png",
+        "56": "art/icons/modules/exports/56/module-ricochet.png",
+        "48": "art/icons/modules/exports/48/module-ricochet.png",
+        "44": "art/icons/modules/exports/44/module-ricochet.png",
+        "40": "art/icons/modules/exports/40/module-ricochet.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-ricochet.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-ricochet.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

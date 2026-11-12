@@ -745,6 +745,44 @@
           "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-ricochet.png",
+      "sha256": "a992039155a6bfa6ff8032dbae04361f4601fec269bc4743b429b293c77210eb",
+      "id": "module-ricochet",
+      "family": "modules",
+      "action": "a zig-zag path bouncing off a wall line",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-ricochet.png",
+        "sha256": "f956a1e62f513922f6e8bb259b144c5ab83e71139ebde9b753ccb7254a9d2d34"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-ricochet.png",
+        "sha256": "a992039155a6bfa6ff8032dbae04361f4601fec269bc4743b429b293c77210eb"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-ricochet.txt",
+        "sha256": "7a23e7f884f2618fe0b2b0cb4ba4f527dd04621a29366a95775382045f5700d7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-ricochet.png",
+        "128": "art/icons/modules/exports/128/module-ricochet.png",
+        "64": "art/icons/modules/exports/64/module-ricochet.png",
+        "56": "art/icons/modules/exports/56/module-ricochet.png",
+        "48": "art/icons/modules/exports/48/module-ricochet.png",
+        "44": "art/icons/modules/exports/44/module-ricochet.png",
+        "40": "art/icons/modules/exports/40/module-ricochet.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
     }
   ]
 }
