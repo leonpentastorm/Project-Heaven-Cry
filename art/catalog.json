@@ -11651,6 +11651,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-thread.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-thread.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-cascade": {
+      "id": "module-cascade",
+      "label": "a stair of small dots growing in size",
+      "path": "art/icons/modules/module-cascade.png",
+      "sha256": "c26a852060443c487f5e56ff3b764567862091c096a8978ef9f161a9385ed926",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-cascade.png",
+        "128": "art/icons/modules/exports/128/module-cascade.png",
+        "64": "art/icons/modules/exports/64/module-cascade.png",
+        "56": "art/icons/modules/exports/56/module-cascade.png",
+        "48": "art/icons/modules/exports/48/module-cascade.png",
+        "44": "art/icons/modules/exports/44/module-cascade.png",
+        "40": "art/icons/modules/exports/40/module-cascade.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-cascade.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-cascade.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
