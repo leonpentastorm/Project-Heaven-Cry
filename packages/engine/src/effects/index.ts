@@ -21,6 +21,9 @@ export { itemInfo, itemsOf, effectsOfHeld, allItems, perkEffects, keyOf as itemK
 export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf } from './uses';
 export { turnAp, grantPerkAp, bankAp, apDebt, pushAp, refusedGift, AP_BASE, AP_MAX, AP_MIN, PERK_AP_CAP, AP_DEBT_CAP, type ApLine } from './ap';
 export { applyDamage, healUnit, grantShield, hostileSrc, PAST_SHIELDS, pastShields, type DamageSrc, type DamageResult } from './damage';
+// the one formula (output.ts): amounts, armour, the one way in (the stacking rule is re-exported by tactics.ts, as before)
+export { PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend,
+  type Profile, type Pair, type AmountSpec, type AmountCtx, type Amount, type AmountKind, type ArmourKind, type DealSpec, type DealCtx, type DealResult } from './output';
 export { MENDING, mendFactor, mendFactorOf, noteTended, tendedLately, TEND_ROUNDS, TEND_NOTICE, MEDIC, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, RALLY_HEAL, FIELD_REPAIR_HEAL } from './mending';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
 export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';

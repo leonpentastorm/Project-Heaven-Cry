@@ -1,7 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "enemies",
-  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52); Endurance and spare magazines added for injuries, ammo and stealing (provisional); technique lists by tier (rules 1.12, provisional, item 950); Calls by tier (rules 1.13, provisional); rules 1.15: every enemy has a level (the `levels` table), the tier rows are the level 1 numbers, a damage factor by tier, the Vermin tier (provisional, items 1015 to 1024); the table fitted with the fight simulator (items 1025 to 1030)",
+  "source": "PHC Core Rules v1.0, Enemy stat blocks (provisional, item 52); Endurance and spare magazines added for injuries, ammo and stealing (provisional); technique lists by tier (rules 1.12, provisional, item 950); Calls by tier (rules 1.13, provisional); rules 1.15: every enemy has a level (the `levels` table), the tier rows are the level 1 numbers, a damage factor by tier, the Vermin tier (provisional, items 1015 to 1024); the table fitted with the fight simulator (items 1025 to 1030); rules 1.23: healer_focus by tier (provisional, item 1302); rules 1.25: a fire doctrine by tier, `doctrine`, `fire_spread` and `fire_near` (provisional, items 1400 to 1404)",
   "items": [
     {
       "id": "vermin",
@@ -68,7 +68,7 @@
       "healer_focus": 0.5,
       "doctrine": "spread",
       "fire_spread": 1,
-      "fire_near": 0,
+      "fire_near": 0.2,
       "provisional": true,
       "endurance": 3,
       "spare_mags": 2,
@@ -97,7 +97,7 @@
       "healer_focus": 1,
       "doctrine": "focus",
       "fire_spread": 0,
-      "fire_near": 0,
+      "fire_near": 0.1,
       "provisional": true,
       "endurance": 5,
       "spare_mags": 3,
@@ -132,7 +132,7 @@
       "healer_focus": 1,
       "doctrine": "focus",
       "fire_spread": 0,
-      "fire_near": 0,
+      "fire_near": 0.1,
       "provisional": true,
       "endurance": 7,
       "spare_mags": 4,

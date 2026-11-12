@@ -39,6 +39,10 @@ export function rollState(n: number): number {
   throw new Error('no seed rolls ' + n);
 }
 
+/** A stand-in for an item on 'damage_out' (see the hook below): bend({add, mults, vs}, f) runs f with it on. It pins
+ * the order in which an amount is multiplied when own multipliers and target bonuses are both there. */
+export const BEND: { on?: boolean; add?: number; mults?: number[]; vs?: number[] } = {};
+export function bend<T>(b: { add?: number; mults?: number[]; vs?: number[] }, f: () => T): T { Object.assign(BEND, { add: 0, mults: [], vs: [] }, b, { on: true }); try { return f(); } finally { BEND.on = false; } }
 // ---------- the tap ----------
 let TAP: string[] | null = null, TAP_CB: any = null;
 const n3 = (v: any) => (typeof v === 'number' && Number.isFinite(v) ? String(Math.round(v * 1000) / 1000) : String(v));
@@ -53,9 +57,11 @@ if (!(globalThis as any).__goldenTap) {
   onHook('spell_roll', (ctx: any) => { if (DICE.spell) ctx.add = (ctx.add || 0) + 100; });
   onHook('enemy_action_start', (ctx: any) => { ctx.skip = true; if (ctx.u) ctx.u.ap = 0; });
   onHook('damage_out', (ctx: any) => {
-    if (!TAP) return;
+    // a stand-in for an item (test only): flat damage, own multipliers and target bonuses put on the amount as a perk would
+    if (BEND.on && !ctx.preview) { if (BEND.add) ctx.add += BEND.add; for (const v of BEND.mults || []) ctx.mults.push({ v, label: 'golden' }); for (const v of BEND.vs || []) ctx.vs.push({ v, label: 'golden' }); }
+    if (!TAP || ctx.preview) return; // a preview's number is read from the preview itself
     const m = (ctx.mults || []).reduce((t: number, x: any) => t * x.v, 1), v = (ctx.vs || []).reduce((t: number, x: any) => t + x.v, 0);
-    TAP.push('o:' + (ctx.src?.type || '?') + '/' + (ctx.mode || '') + (ctx.preview ? '/pv' : '') + ':' + n3(ctx.base) + '+' + n3(ctx.add || 0) + 'x' + n3(m) + 'v' + n3(v)
+    TAP.push('o:' + (ctx.src?.type || '?') + '/' + (ctx.mode || '') + ':' + n3(ctx.base) + '+' + n3(ctx.add || 0) + 'x' + n3(m) + 'v' + n3(v)
       + (ctx.pierce ? 'p' + n3(ctx.pierce) : '') + (ctx.ignoreArmour ? 'I' : '') + (ctx.critBonus ? 'c' + n3(ctx.critBonus) : ''));
   });
   onHook('damage_in', (ctx: any, cb: any) => {
@@ -83,9 +89,11 @@ function delta(before: any[], cb: any): string[] {
 const isRule = (e: any) => e instanceof A.RuleError || e?.name === 'RuleError';
 const short = (s: any, n = 90) => String(s?.message ?? s).replace(/\s+/g, ' ').slice(0, n);
 
+/** A copy of the game to act on (the campaign's own data is shared: nothing in a fight writes to it). */
+export function copy(g: any): any { const { campaign, ...rest } = g; const c = JSON.parse(JSON.stringify(rest)); c.campaign = campaign; return c; }
 /** One action through the reducer on a copy of g (g itself is not changed). Returns the line for the table and the new state. */
 export function act(g: any, action: any, d: any = HIT, seed = 4242): { line: string; g: any; ok: boolean } {
-  const g0 = JSON.parse(JSON.stringify(g)); g0.rng.state = seed;
+  const g0 = g; g0.rng.state = seed; // apply() copies the state it is given: g is not changed
   const before = snap(g0.combat); let g1: any = null, err = '';
   TAP = [];
   try { g1 = dice(d, () => A.apply(g0, action, 'host')); } catch (e: any) { err = (isRule(e) ? 'REFUSED ' : 'THREW ') + short(e); }
@@ -97,13 +105,14 @@ export function act(g: any, action: any, d: any = HIT, seed = 4242): { line: str
 }
 /** Engine code run directly on a copy of g with the game bound (an enemy's attack, a hazard, a tick). f gets the copy. */
 export function run(g: any, f: (g: any, cb: any) => any, d: any = HIT, seed = 4242): { line: string; g: any; ok: boolean; ret?: any } {
-  const g0 = JSON.parse(JSON.stringify(g)); g0.rng.state = seed;
+  const g0 = copy(g); g0.rng.state = seed;
   const before = snap(g0.combat); let err = '', ret: any;
   TAP = [];
   try { ret = dice(d, () => W(g0, () => f(g0, g0.combat))); } catch (e: any) { err = (isRule(e) ? 'REFUSED ' : 'THREW ') + short(e); }
   const tap = TAP; TAP = null;
   if (err) return { line: err, g: g0, ok: false };
-  return { line: (tap.join(' ') + ' => ' + delta(before, g0.combat).join(', ')).trim() + (typeof ret === 'string' && ret && /^[A-Z]/.test(ret) && !/ · /.test(ret) ? ' [' + short(ret, 60) + ']' : ''), g: g0, ok: typeof ret !== 'string' || !ret || / · /.test(ret), ret };
+  if (typeof ret === 'string' && ret) return { line: 'REFUSED ' + short(ret), g: g0, ok: false, ret };
+  return { line: (tap.join(' ') + ' => ' + delta(before, g0.combat).join(', ')).trim(), g: g0, ok: true, ret };
 }
 /** Try an action with each set of arguments in turn; the first the rules accept is the one recorded. */
 export function tryAct(g: any, base: any, tries: any[], d: any = HIT, seed = 4242): { line: string; g: any; ok: boolean; args?: any } {
@@ -154,4 +163,16 @@ export function place(g: any, at: [any, string][]) {
   for (const u of units(g)) if (!named.has(u.id)) { u.pos = (4 + 3 * (k % 6)) + ',' + (k < 6 ? 13 : 0); k++; }
   for (const [u, p] of at) u.pos = p;
 }
-export const isMeleeW = (id: string) => /melee|unarmed/.test(A.WEAPON[id]?.category || '') || (A.WEAPON[id]?.category === 'mana' && A.isMelee?.(A.WEAPON[id]));
+export const isMeleeW = (id: string) => !!A.WEAPON[id] && A.meleeArm(A.WEAPON[id]);
+/** A plain attack made directly (previewAttack, then resolveAttack: what the reducer's combat/attack does), on a copy. */
+export function strike(g: any, uId: string, tId: string, mode: string, d: any = HIT, seed = 4242) {
+  return run(g, (g2, cb) => {
+    const u = cb.units.find((x: any) => x.id === uId), t = cb.units.find((x: any) => x.id === tId), pv = A.previewAttack(cb, u, t, mode);
+    if (!pv.ok) return pv.why || 'Refused';
+    const r = A.resolveAttack(cb, g2.rng, u, t, mode, u.charId ? g2.characters[u.charId] : null); return r.refused || null;
+  }, d, seed);
+}
+/** A technique used directly (useTechnique: what the reducer's combat/technique does), on a copy. */
+export function useTech(g: any, uId: string, id: string, args: any, d: any = HIT, seed = 4242) {
+  return run(g, (g2, cb) => A.useTechnique(cb, cb.units.find((x: any) => x.id === uId), id, { ...args }, g2.rng), d, seed);
+}

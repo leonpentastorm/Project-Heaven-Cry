@@ -23,6 +23,7 @@ import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTI
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { mendFactorOf } from './effects/mending';
+import { armourAgainst, landed } from './effects/output';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
@@ -418,7 +419,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const lm = lineMultFor(caster, sp); // rules 1.17: the Line multiplier (damage only; a character's Lines)
   const lf = caster?.mg?.mend ?? mendFactorOf(caster); // rules 1.20: healing and shields grow with the caster's level (a character's; not an enemy caster's)
   const [E, S] = [Math.round(hook('damage', el * m * lm * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * lm * sigilPower(mg, 'sigil') * sharp))];
-  const arm = (S ? Math.max(1, S - t.armour) : 0) + (E ? Math.max(1, E - Math.floor(t.armour / 2)) : 0);
+  const arm = (S ? landed(S, armourAgainst(t, 'full')) : 0) + (E ? landed(E, armourAgainst(t, 'half')) : 0); // as harm will take it: Sigil damage meets armour in full, Elemental half
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
   const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) : 0;
   const saves: Affected['saves'] = [];

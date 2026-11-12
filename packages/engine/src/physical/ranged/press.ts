@@ -4,6 +4,7 @@ import { technique, strike, canStrike, spendRounds, addPressure, addPressureTo, 
 import { alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, attackApCost, refOf, type Combat, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { applyDamage } from '../../effects/damage';
+import { landed } from '../../effects/output';
 import { reveal } from '../../tactics';
 import { physicalMult } from '../../character';
 import { PHYS_RULES } from '../data';
@@ -105,7 +106,7 @@ export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): v
  * Returns the damage (what it would be, in a preview). */
 function noRollHit(t: Tech, target: Unit, mult: number, label: string): number {
   const d = inWeapon(t, () => attackDamage(t.cb, t.u, target, 'shot', t.c, { preview: t.preview }));
-  const dmg = Math.max(1, Math.floor(d.total * mult) - d.armour);
+  const dmg = landed(d.total * mult, d.armour);
   if (t.preview) { t.note(target.name + ' takes ' + dmg + ' (' + label + ', no roll).'); return dmg; }
   const r = applyDamage(t.cb, target, dmg, { ...d.src, shield: true, credit: 'all' } as any);
   emitFx(t.cb, 'hurt', { target: target.id, at: target.pos, dmg: r.amount, why: 'weapon', killed: r.killed, by: t.u.id });

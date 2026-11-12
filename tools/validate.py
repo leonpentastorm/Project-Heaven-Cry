@@ -505,6 +505,18 @@ if isinstance(data.get("enemies"), dict):
                 errors.append(f"enemies:{t.get('id')}: {f} must be a number (the tier's level 1 value)")
         if isinstance(t.get("damage"), (int, float)) and t["damage"] <= 0:
             errors.append(f"enemies:{t.get('id')}: damage (the factor on its weapon's damage) must be above 0")
+    # Rules 1.25: the fire doctrine of each tier (how it chooses among the targets it could attack).
+    for t in items("enemies"):
+        if t.get("doctrine") not in ("nearest", "spread", "focus"):
+            errors.append(f"enemies:{t.get('id')}: doctrine must be nearest, spread or focus (rules 1.25)")
+        for f in ("fire_spread", "fire_near"):
+            v = t.get(f)
+            if not isinstance(v, (int, float)) or isinstance(v, bool) or v < 0 or v > 1:
+                errors.append(f"enemies:{t.get('id')}: {f} must be a number from 0 to 1 (rules 1.25)")
+        if t.get("doctrine") == "spread" and not t.get("fire_spread"):
+            errors.append(f"enemies:{t.get('id')}: a spread doctrine needs fire_spread above 0")
+        if t.get("doctrine") == "nearest" and not t.get("fire_near"):
+            errors.append(f"enemies:{t.get('id')}: a nearest doctrine needs fire_near above 0")
     if not isinstance(_lv, dict):
         errors.append("enemies: needs a levels block (rules 1.15)")
     else:

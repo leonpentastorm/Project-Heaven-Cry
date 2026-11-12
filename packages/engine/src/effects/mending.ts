@@ -11,11 +11,13 @@
 // target's max HP.
 // Every number is provisional (spec section 14, items 1230 on and 1300 on).
 import type { Combat, Unit } from '../combat';
-import { RULES, enemyLevelRow } from '../data';
+import { RULES } from '../data';
+import { levelFactor } from './output';
 
 export const MENDING: any = (RULES as any).mending || {};
 /** The level factor (×1.00 at level 1 … ×1.82 at level 20): enemies.json levels.table damage_mult. No level: ×1. */
-export const mendFactor = (level: number | null | undefined): number => (level == null ? 1 : enemyLevelRow(level).damage_mult ?? 1);
+/** It is the `mend` column of the one formula's Level term (effects/output.ts; data/rules.json output.level.mend). */
+export const mendFactor = (level: number | null | undefined): number => levelFactor('mend', level);
 /** The factor for what this unit gives: a character's and its side's units' (a companion, a turret: their own level,
  * which is their owner's). An enemy's is ×1: an enemy caster's spells already grow through its multipliers (rules 1.15). */
 export const mendFactorOf = (u: Unit | null | undefined): number => (u && u.side === 'pc' ? mendFactor(u.level) : 1);

@@ -3,6 +3,7 @@
 import { technique, strike, addPressure, spendRounds, save, cond, stop, stepsWithin, standingAt, stepUser, turnStamp, onHook, type Tech } from './shared';
 import { alive, dist, xy, key, emitFx, chained, burstRolls, burstCool, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
+import { landed } from '../../effects/output';
 import { physicalMult } from '../../character';
 
 // 0. Shot: one shot. Everyone knows it. Precise: +1 if you haven't moved this turn. Loud: a miss gives +1 Pressure.
@@ -228,7 +229,7 @@ function nextInLine(t: Tech, past: Unit): Unit | null {
 function carryDamage(t: Tech, next: Unit, crit: boolean): number {
   const u = t.u, w0 = u.weapon, a0 = u.ammoType;
   if (t.hand === 'off') { u.weapon = t.weaponId; u.ammoType = (u as any).offAmmoType ?? null; }
-  try { const d = attackDamage(t.cb, u, next, 'shot', t.c, { crit, preview: true }); return Math.max(1, Math.floor(d.total * t.num('heavy_carry_mult', 0.5)) - d.armour); } finally { u.weapon = w0; u.ammoType = a0; }
+  try { const d = attackDamage(t.cb, u, next, 'shot', t.c, { crit, preview: true }); return landed(d.total * t.num('heavy_carry_mult', 0.5), d.armour); } finally { u.weapon = w0; u.ammoType = a0; }
 }
 /** The carried round is a ranged hit on the next target (rules 1.12, Pressure rule 4): it marks the hit (Crossfire,
  * drill on a kill) and gives the ordinary Pressure only if it is the user's first ranged hit on that target this turn,

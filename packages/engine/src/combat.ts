@@ -1,7 +1,7 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import { fxTaps } from './fxtap';
 import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
-import { ENEMY, WEAPON, COMBAT_XP, SKILLS, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
+import { ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
@@ -16,6 +16,7 @@ import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
+import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf } from './effects/mending';
 import { turnAp, briefCredit } from './effects/ap';
 import { skillRollMod, actionAp, immune, forbids } from './effects/core';
@@ -603,10 +604,11 @@ export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...object
 /** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
 export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat, why = 'hazard', by?: Unit | null): string {
   if (u.dead) return '';
-  const d = Math.max(1, Math.floor(dmg) - (ignoreArmour ? 0 : u.armour));
+  // The one way in (effects/output.ts deal): the number as given (no Stat or Level term yet, no 'damage_out' hook:
+  // this is nobody's roll), the target's armour in full unless ignored, then the sink.
   // A shield stops a blast, a trap and a hazard as it stops a bullet or a spell (Leon, 12 Nov 2026): everything but
   // damage over time and true damage (effects/damage.ts pastShields). It used to be skipped here.
-  const r = applyDamage(cb || null, u, d, { type: why, by: by || null, shield: true, explosive: why === 'explosion', credit: 'hp' });
+  const r = deal(cb || null, by || null, u, { kind: 'damage', base: dmg, armour: 'full' }, { ignoreArmour, src: { type: why, by: by || null, shield: true, explosive: why === 'explosion', credit: 'hp' } });
   if (r.shielded && cb) emitFx(cb, 'shield', { target: u.id, at: u.pos, absorbed: r.shielded });
   if (r.downedHit) { if (cb) { emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: 0, why, killed: u.dead }); if (u.dead) fxFell(cb, u); } return ' · ' + u.name + ' takes a hit while Downed' + (u.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + u.name + "'s shield takes it (" + r.shielded + ')';
@@ -1036,6 +1038,8 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const who = charFor(att);
   return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: !!opts.ambush && tgt.side !== att.side }) };
 }
+/** A weapon mod's own number (data/items.json: the bayonet's `damage`, the weighted head's and the suppressor's `damage_add`). */
+const modNum = (id: string, field: string, fallback: number): number => { const v = (ITEM as any)[id]?.[field]; return typeof v === 'number' ? v : fallback; };
 /** The live character behind a PC unit, when a game is bound (multipliers come from it). */
 const charFor = (u: Unit): Character | null => { const G = boundGameRef(); return (u.charId && G?.characters?.[u.charId]) || null; };
 
@@ -1050,10 +1054,17 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const worn = att.maxDur ? (att.dur ?? att.maxDur) <= att.maxDur * 0.25 : false;
   const bayonet = melee && useW === WEAPON.fists && hasMod(att.mods, 'mod_bayonet');
   const ammo = !melee && useW === w ? AMMO_TYPES[ammoId(att.ammoType) || ''] || null : null;
-  const base = bayonet ? 15 : weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) + (useW.category === 'unarmed' ? att.unarmedBonus || 0 : 0) + (melee && useW === w && hasMod(att.mods, 'mod_weighted') ? 3 : 0) - (!melee && hasMod(att.mods, 'mod_suppressor') ? 2 : 0);
-  const mults: Term[] = [], vs: Term[] = [];
+  // (the bayonet's blow and the two mods' numbers are the mods' own: data/items.json `damage`, `damage_add`)
+  const base = bayonet ? modNum('mod_bayonet', 'damage', 15) : weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) + (useW.category === 'unarmed' ? att.unarmedBonus || 0 : 0) + (melee && useW === w && hasMod(att.mods, 'mod_weighted') ? modNum('mod_weighted', 'damage_add', 3) : 0) + (!melee && hasMod(att.mods, 'mod_suppressor') ? modNum('mod_suppressor', 'damage_add', -2) : 0);
+  // The one formula (effects/output.ts): the weapon's base; the Stat term of the weapon profile (a character: its weapon
+  // multiplier, which follows the weapon's scales_with, rules 1.12, with perks and gear in it; an enemy: its tier and
+  // level, rules 1.15, which is its Stat and its Level together); the Level term (×1 today); then this attack's own
+  // multipliers below, the items' ('damage_out') and the bonuses against this target.
+  const amt = openAmount({ kind: 'damage', base, profile: 'weapon', order: 'stack' }, att, { level: who ? att.level : null,
+    stat: who ? { v: weaponMult(who, useW.id), label: weaponMultLabel(useW.id) } : { v: att.lvlDmg ? att.lvlDmg : 1, label: att.tier ? 'tier and level' : 'level' } });
+  const mults: Term[] = amt.mults, vs: Term[] = amt.vs;
   const M = (v: number, label: string) => { if (v !== 1) mults.push({ v, label }); };
-  M(who ? weaponMult(who, useW.id) : 1, weaponMultLabel(useW.id)); M(!who && att.lvlDmg ? att.lvlDmg : 1, att.tier ? 'tier and level' : 'level'); M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill'); // rules 1.12: the first multiplier follows the weapon's scales_with
+  M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill');
   if (melee && useW === w && att.maxDur) M((att.dur ?? 1) <= 0 ? 0.5 : worn ? 0.9 : 1, (att.dur ?? 1) <= 0 ? 'broken' : 'worn');
   if (ammo?.damage_mult) M(ammo.damage_mult, ammo.id.replace(/_/g, '-') + ' rounds');
   // Rules 1.15: a critical is ×1.5 (an enemy's too), to ×2.0 at most with everything together. An item adds to it through
@@ -1070,13 +1081,14 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0 };
   emit(cb, 'damage_out', ctx);
   if (ctx.critBonus) { critM = critOf(ctx.critBonus); critTerm.v = critM; }
-  const st = stackDamage(mults, vs);
+  amt.add = ctx.add;
+  const st = closeAmount(amt);
   if (vs.length) mults.push({ v: Math.round(st.vsMult * 100) / 100, label: 'against this target (' + vs.map((x) => x.label).join(', ') + (vs.reduce((t, x) => t + x.v, 0) > VS_CAP ? '; capped at ×2' : '') + ')' });
-  const total = (base + ctx.add) * st.total;
+  const total = st.raw;
   const props = useW.properties || [];
   const ignoreAll = !!ctx.ignoreArmour || props.includes('ignores_armour') || !!ammo?.ignores_armor || fx.op === 'ignore_armour' && fx.value >= 99;
   const pierce = (ctx.pierce || 0) + (fx.op === 'ignore_armour' ? fx.value : 0) + (props.includes('armor_ignore_5') ? 5 : 0) + (props.includes('armor_ignore_10') || props.includes('ignores_10_armour') ? 10 : 0);
-  const armour0 = Math.max(0, tgt.armour * (ammo?.armor_mult || 1) - pierce), armour = ignoreAll ? 0 : armour0;
+  const armour = armourAgainst(tgt, 'full', { mult: ammo?.armor_mult || 1, pierce, ignore: ignoreAll, floor0: true });
   return { base, terms: ctx.add ? [{ v: ctx.add, label: 'perks (flat)' }] : [], mults, vs, total, crit: critM, pierce, armour, src };
 }
 
@@ -1172,7 +1184,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   let damage = 0, killed = false, injury = '';
   if (hit) {
     const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush });
-    damage = Math.max(1, Math.floor(d.total) - d.armour);
+    damage = landed(d.total, d.armour);
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
     damage = r.amount; killed = r.killed;
     if (killed) { ev.dmg = damage; ev.killed = true; fxFell(cb, tgt); }
@@ -2053,7 +2065,8 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
 /** A stim's AP: stabilising a Downed ally 2 (1 for a Medic), healing 1; then items ('stabilise' / 'stim' costs). */
 export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? actionAp({ u }, 'stabilise', isMedic ? 1 : 2).ap : actionAp({ u }, 'stim', 1).ap);
 
-/** Enemy turn: shoot the most hurt PC in sight and range (rules 1.23: with a weight for whoever is mending the squad,
+/** Enemy turn: shoot the PC its tier's fire doctrine picks among those in sight and range (rules 1.25, enemyRank: the
+ * nearest, one each, or the most hurt; rules 1.23: with a weight for whoever is mending the squad,
  * by the tier's healer_focus; an Elite or a Boss with a gun steps for a shot at the healer); otherwise close in. Deterministic given the RNG. The AI
  * also keeps the conditions' rules (rules 1.3): it puts itself out when Burning, breaks a grapple, recovers a dropped
  * weapon, attacks the one who Taunted it, never attacks or closes on what it fears, obeys a Commanded order, and
@@ -2131,13 +2144,16 @@ export function healerMark(cb: Combat, u: Unit): Unit | null {
  * which made every enemy open on whoever has the smallest pool (the caster, the healer) from round 1. In tenths, so a
  * scratch doesn't pull the whole line's fire: among the equally hurt the likeliest hit decides. */
 const hurtShare = (t: Unit) => Math.round((10 * Math.max(0, t.hp)) / Math.max(1, t.maxHp)) / 10;
-/** Rules 1.25, the fire doctrine: how a tier chooses among the targets it could attack (enemies.json `doctrine`).
- *   nearest  the one in front of it: the nearest first, then the most hurt (Vermin, Minions)
- *   spread   one each: a target counts as less hurt by `fire_spread` of its max HP for each OTHER unit of this enemy's
- *            side that has attacked it this round, so a line lays its fire across the squad and doubles up only on
- *            somebody that much worse off (Soldiers)
- *   focus    the most hurt (Elites, Bosses; and anything with no tier: a companion, a turned character)
- * Under all three: its Taunter first, standing before Downed, the healer weight of rules 1.23, the likeliest hit last. */
+/** Rules 1.25, the fire doctrine: how a tier chooses among the targets it could attack (enemies.json `doctrine`, with
+ * its two numbers). Every enemy takes "the most hurt" (HP as a share of max, in tenths), and its tier bends that:
+ *   fire_spread  a target counts as less hurt by this share of its max HP for each OTHER unit of this enemy's side
+ *                that has attacked it this round (1: one each before anybody doubles up)
+ *   fire_near    and by this share for each tile it stands further off than the nearest target (1: always the nearest)
+ *   nearest  the one in front of it (Vermin, Minions: fire_near 1)
+ *   spread   one each, the near ones first (Soldiers: a line lays its fire across the squad)
+ *   focus    the most hurt it can get at (Elites, Bosses; with no numbers, anything with no tier: a companion)
+ * Under all three: its Taunter first, standing before Downed, the healer weight of rules 1.23 (the healer's place is
+ * not moved by distance: an Elite hunts it across the field), the likeliest hit last. */
 export type Doctrine = 'nearest' | 'spread' | 'focus';
 export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number } => {
   const e: any = u.charId || u.companion || !u.tier ? null : ENEMY[u.tier], id: Doctrine = e?.doctrine === 'nearest' || e?.doctrine === 'spread' ? e.doctrine : 'focus';
@@ -2176,12 +2192,14 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   if (reachOnly) list = list.filter((x) => x.pv.ok);
   const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.filter((x) => x.pv.ok).map((x) => x.pv.pct));
   if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
-  const key = (x: Aim) => hurtShare(x.t) - (x.healer ? focus : 0) + d.spread * x.fire + d.near * x.far, pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  const near0 = d.near ? Math.min(...list.filter((x) => !x.t.downed).map((x) => x.far), Infinity) : 0;
+  const key = (x: Aim) => hurtShare(x.t) + d.spread * x.fire + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
   list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {
     const rest = list.filter((x) => !x.t.downed && aimOwner(x.t) !== aimOwner(top.t));
-    top.why = top.healer ? 'healer' : d.id === 'nearest' && rest.some((x) => x.far > top.far) ? 'nearest' : d.id === 'spread' && rest.some((x) => x.fire > top.fire) ? 'spread' : rest.some((x) => hurtShare(x.t) > hurtShare(top.t)) ? 'wounded' : undefined;
+    const nearer = d.near > 0 && rest.some((x) => x.far > top.far), fresher = rest.some((x) => x.fire > top.fire), worse = rest.some((x) => hurtShare(x.t) > hurtShare(top.t));
+    top.why = top.healer ? 'healer' : d.id === 'nearest' && nearer ? 'nearest' : fresher ? 'spread' : worse ? 'wounded' : nearer ? 'nearest' : undefined;
     if (!top.why) delete top.why;
   }
   return list;

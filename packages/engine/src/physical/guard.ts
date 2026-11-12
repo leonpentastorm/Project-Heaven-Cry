@@ -15,6 +15,7 @@
 import { type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage, rollInjury, braceHook } from '../combat';
 import { onHook, charOfUnit, statQuery } from '../effects/hooks';
 import { applyDamage } from '../effects/damage';
+import { landed } from '../effects/output';
 import { PHYS_RULES } from './data';
 import { technique, answer, guardOf, guardMax, guardGain, addGuard, spendGuard, holds } from './core';
 import { NOT_A_HIT } from './rules';
@@ -74,7 +75,7 @@ technique({
       answer(t, src.by, () => {
         spendGuard(cb, me, cost);
         const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
-        const dmg = Math.max(1, Math.floor(d.total) - d.armour);
+        const dmg = landed(d.total, d.armour);
         ctx.dmg = 0;
         interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
         emitFx(cb, 'shove', { unit: me.id, target: v.id, from: me.pos, to: me.pos, ok: true, interpose: true });

@@ -9,6 +9,7 @@ import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
+import { statOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
@@ -593,14 +594,16 @@ export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5
 export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
 export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
   + (c.offHand && (ITEM[c.offHand.id] as any)?.category === 'shield' && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
-export const physicalMult = (c: Character) => fx(c, 'mult_physical', 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power'));
+// The derived multipliers below are the Stat term of the one formula (effects/output.ts; data/rules.json output.profiles
+// and output.pairs hold the slopes and what each reads): 1 + attr × (Attribute − 1) + skill × Skill.
+export const physicalMult = (c: Character) => fx(c, 'mult_physical', statOf('physical', c));
 /** Rules 1.12: a weapon's damage multiplier follows what it is aimed with: 1 + 0.1 × (each `scales_with` Attribute − 1)
  * + 0.05 × the skill it hits with (a Bare weapon: both Raw Power and Athletics; weapons.json `phys`). Perks and traits
  * that raise physical damage apply as before. A weapon with no `phys` block reads as Strength and Raw Power. */
 export function weaponMult(c: Character, weaponId: string | null | undefined): number {
   const ph: any = (WEAPON[weaponId || ''] as any)?.phys; if (!ph) return physicalMult(c);
   const skills: string[] = ph.also_scales?.length ? ph.also_scales : [ph.hits_with];
-  return fx(c, 'mult_physical', 1 + (ph.scales_with as string[]).reduce((t, a) => t + 0.1 * (A(c, a) - 1), 0) + skills.reduce((t, k) => t + 0.05 * P(c, k), 0));
+  return fx(c, 'mult_physical', statOf('weapon', c, { attrs: ph.scales_with as string[], skills }));
 }
 /** What that multiplier is made of, in words ("Agility and Dexterity"): the label on the damage line. */
 export function weaponMultLabel(weaponId: string | null | undefined): string {
@@ -612,7 +615,7 @@ export function weaponMultLabel(weaponId: string | null | undefined): string {
 export const CRIT_BASE = 1.5, CRIT_MAX = 2.0, CRIT_PER_PERCEPTION = 0.03, CRIT_PER_DEXTERITY = 0.02;
 /** The Critical multiplier: 1.5 + 3% × (Perception − 1) + 2% × Dexterity, then perks, traits and gear, to 2.0 at most. */
 export const critMult = (c: Character) => Math.max(CRIT_BASE, Math.min(CRIT_MAX, Math.round(fx(c, 'crit_damage', CRIT_BASE + CRIT_PER_PERCEPTION * (A(c, 'perception') - 1) + CRIT_PER_DEXTERITY * P(c, 'dexterity')) * 1000) / 1000)); // rules 1.12 (item 953): offence reads the alpha (it was Athletics)
-export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'empathy')); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
+export const healingMult = (c: Character) => fx(c, 'mult_heal_given', statOf('healing', c)); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
 /** Rules 1.24 (items 1340, 1341; PROVISIONAL): Max MP is 100 + 75 × (Determination − 1) + 25 × (Insight − 1): the
  * Outburst's own two attributes (Will Power's and Empathy's); 100 with neither raised, 1,000 with both at 10. Virtue
  * gives none. It was 100 + 100 × (Virtue − 1) (`maxMpOld`, kept for the one-time move of a save). */
@@ -632,11 +635,11 @@ export function migrateCharacterMp(c: Character): string[] {
   return carriesEmanator(c) ? [c.name + '\'s Emanator now holds up to ' + now + ' MP (it was ' + was + '): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).'] : [];
 }
 // ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
-export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
+export const sigilMult = (c: Character) => statOf('sigil', c); // 1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power
 /** The Soul multiplier (rules 1.5): 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed). PROVISIONAL. */
-export const soulMult = (c: Character) => 1 + 0.05 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
+export const soulMult = (c: Character) => statOf('soul', c);
 // Balance pass (item 587, provisional): the same slope as the Physical multiplier (was 0.2 and 0.1; max ×2.4, was ×3.8).
-export const elementalMult = (c: Character) => 1 + 0.1 * (A(c, 'expression') - 1) + 0.05 * P(c, 'visualization');
+export const elementalMult = (c: Character) => statOf('elemental', c); // 1 + 0.1 × (Expression − 1) + 0.05 × Visualization
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 // rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
@@ -790,7 +793,7 @@ export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 
 /** Ambush multiplier: 1.5 + 0.05 × Ingenuity. */
 export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + 0.05 * P(c, 'ingenuity'));
 /** Blessing power: 1 + 0.1 × Faith. */
-export const blessingPower = (c: Character) => fx(c, 'blessing_power', 1 + 0.1 * P(c, 'faith'));
+export const blessingPower = (c: Character) => fx(c, 'blessing_power', statOf('blessing', c));
 /** The Hymn cooldown's numbers (rules 1.22; patrons.json prayer.hymn.cooldown_rule; PROVISIONAL). */
 const HCR: any = (patronsJ as any).prayer?.hymn?.cooldown_rule || {};
 export const HYMN_COOLDOWN = { base: HCR.base ?? 9, perFaith: HCR.per_faith ?? 0.75, perVirtue: HCR.per_virtue ?? 0.25, floor: HCR.floor ?? 3, minWait: HCR.min_wait ?? 2, vowCut: HCR.vow_cut ?? 1 };

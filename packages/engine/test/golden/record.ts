@@ -19,35 +19,34 @@
 //             with it held, and each action it puts on the pad
 //   flat      thrown items, blasts, barrels, traps, hazards, damage over time, the medic's kit
 import { buildCharacter, BUILDS, LEVELS, VARIANTS } from '../balance/builds';
-import { A, W, act, run, tryAct, dice, HIT, CRIT, rollState, fightOf, fightSpec, place, turn, units, pcs, foes, charOf, label, TIERS, TIER_WEAPON, isMeleeW } from './harness';
+import { A, W, act, run, tryAct, strike, useTech, copy, bend, HIT, CRIT, rollState, fightOf, fightSpec, place, turn, units, pcs, foes, charOf, TIERS, isMeleeW } from './harness';
 
 export type Table = Record<string, string>;
-const clone = (g: any) => JSON.parse(JSON.stringify(g));
+const clone = copy;
 const byId = (g: any, id: string) => units(g).find((u) => u.id === id);
 const r3 = (v: number) => Math.round(v * 1000) / 1000;
-const pvLine = (pv: any) => (!pv.ok ? 'NO ' + String(pv.why || '').slice(0, 70) : 'pv ' + r3(pv.dmg?.total ?? 0) + ' armour ' + (pv.dmg?.armour ?? 0) + ' crit ' + r3(pv.dmg?.crit ?? 0) + ' pierce ' + (pv.dmg?.pierce ?? 0) + ' ap ' + pv.ap + ' pct ' + pv.pct);
+/** Write a line, unless the action produced no number at all (a stance, a condition, a refusal that says nothing). */
+const put = (T: Table, key: string, line: string) => { if (line && line !== '=>') T[key] = line; };
+const pvLine = (pv: any) => (!pv.ok ? 'NO ' + String(pv.why || '').slice(0, 70) : 'pv ' + r3(pv.dmg?.total ?? 0) + ' a' + (pv.dmg?.armour ?? 0) + ' c' + r3(pv.dmg?.crit ?? 0) + (pv.dmg?.pierce ? ' p' + pv.dmg.pierce : ''));
 const attackMode = (wid: string) => (isMeleeW(wid) ? 'melee' : 'shot');
 /** The actor at 3,5 (a gun, a spell) or 6,5 (a blade), the target at 7,5; everyone else out of the way. */
 function face(g: any, u: any, t: any, melee: boolean) { place(g, [[u, melee ? '6,5' : '3,5'], [t, '7,5']]); }
 const meters = (g: any, u: any, t: any) => { if (u.resMax?.momentum != null) { u.res ||= {}; u.res.momentum = u.resMax.momentum; } try { t.pressure = W(g, () => A.pressureCap(t)); } catch { /* no Pressure on this unit */ } };
 
 // ---------------------------------------------------------------------------------------------- plain attacks
-/** A plain attack by unit uId on unit tId in g (already placed, uId's turn): preview, a hit and a critical. */
-function plainAttack(T: Table, key: string, g: any, uId: string, tId: string, mode: string) {
+/** A plain attack by unit uId on unit tId in g (already placed, uId's turn): the preview, a hit and (crit) a critical. */
+function plainAttack(T: Table, key: string, g: any, uId: string, tId: string, mode: string, crit = true) {
   const u = byId(g, uId), t = byId(g, tId);
-  T[key + '/preview'] = pvLine(W(g, () => A.previewAttack(g.combat, u, t, mode)));
-  T[key + '/hit'] = act(g, { type: 'combat/attack', unitId: uId, targetId: tId, mode }, HIT).line;
-  T[key + '/crit'] = act(g, { type: 'combat/attack', unitId: uId, targetId: tId, mode }, CRIT).line;
+  T[key] = [pvLine(W(g, () => A.previewAttack(g.combat, u, t, mode))), 'hit ' + strike(g, uId, tId, mode, HIT).line, ...(crit ? ['crit ' + strike(g, uId, tId, mode, CRIT).line] : [])].join(' | ');
 }
-/** An enemy's plain attack on a unit, straight through resolveAttack (no AI): a hit and a critical. */
-function foeAttack(T: Table, key: string, g: any, fId: string, tId: string) {
-  for (const [k, d] of [['hit', HIT], ['crit', CRIT]] as const) {
-    T[key + '/' + k] = run(g, (g2, cb) => {
-      const a = byId(g2, fId), p = byId(g2, tId), mode = attackMode(a.weapon);
-      a.ap = 9; a.braced = true; a.heat = 0; a.shotsThisTurn = 0; cb.turn = cb.order.indexOf(a.id);
-      const r = A.resolveAttack(cb, g2.rng, a, p, mode, null); return r.refused ? 'Refused: ' + r.refused : null;
-    }, d).line;
-  }
+/** An enemy's plain attack on a unit, straight through resolveAttack (no AI): a hit and (crit) a critical. */
+function foeAttack(T: Table, key: string, g: any, fId: string, tId: string, crit = true) {
+  const one = (d: any) => run(g, (g2, cb) => {
+    const a = byId(g2, fId), p = byId(g2, tId), mode = attackMode(a.weapon);
+    a.ap = 9; a.braced = true; a.heat = 0; a.shotsThisTurn = 0; cb.turn = cb.order.indexOf(a.id);
+    const r = A.resolveAttack(cb, g2.rng, a, p, mode, null); return r.refused || null;
+  }, d).line;
+  T[key] = ['hit ' + one(HIT), ...(crit ? ['crit ' + one(CRIT)] : [])].join(' | ');
 }
 
 // ---------------------------------------------------------------------------------------------- techniques
@@ -55,10 +54,16 @@ const TECH_TRIES = (g: any, u: any, t: any, ally: any) => [
   { targetId: t.id, tile: t.pos }, { targetId: t.id, tile: t.pos, opt: 'head' }, { targetId: t.id }, { tile: t.pos }, {},
   ...(ally ? [{ allyId: ally.id }, { allyId: ally.id, targetId: t.id }] : []), { targetId: t.id, tile: '8,5' }, { tile: '5,5' },
 ];
-function technique(T: Table, key: string, g: any, uId: string, tId: string, id: string) {
+/** Use a technique with the first arguments its own preview accepts. Returns null when no arguments are accepted. */
+function technique(T: Table, key: string, g: any, uId: string, tId: string, id: string): { line: string; ok: boolean } | null {
   const u = byId(g, uId), t = byId(g, tId), ally = pcs(g).find((x) => x.id !== uId);
-  const r = tryAct(g, { type: 'combat/technique', unitId: uId, id }, TECH_TRIES(g, u, t, ally), HIT);
-  T[key] = r.line; return r;
+  for (const args of TECH_TRIES(g, u, t, ally)) {
+    let pv: any; try { pv = W(g, () => A.previewTechnique(g.combat, u, id, { ...args }, g)); } catch { continue; }
+    if (!pv?.ok) continue;
+    const r = useTech(g, uId, id, args, HIT); if (!r.ok) continue;
+    if (r.line !== '=>') T[key] = r.line; return r;
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------------------------- Sigil
@@ -78,16 +83,12 @@ function line(g: any, uId: string, words: string[], aim: string, d: any = HIT, s
 // ---------------------------------------------------------------------------------------------- Outburst
 /** Begin a design (held), Pump it to a stage (the first Pumps with the feelings given, the rest plain) and Release it. */
 function outburst(g: any, uId: string, design: string, stage: number, aim: string, feelings: string[] = [], d: any = HIT, seed = 4242): string {
-  const steps: any[] = [{ type: 'combat/outburst', unitId: uId, design, hold: true }];
-  for (let i = 0; i < stage; i++) steps.push({ type: 'combat/pump', unitId: uId, ...(feelings[i] ? { feeling: feelings[i] } : {}) });
-  steps.push({ type: 'combat/release', unitId: uId, aim });
-  let cur = g; const out: string[] = [];
-  for (const s of steps) {
-    const r = act(cur, s, d, seed); if (!r.ok) { out.push(s.type.slice(7) + ' ' + r.line); break; }
-    if (r.line !== '=>') out.push(s.type.slice(7) + ' ' + r.line);
-    cur = r.g; const u = byId(cur, uId); if (u) u.ap = 99;
-  }
-  return out.join(' ; ');
+  return run(g, (g2, cb) => {
+    const u = byId(g2, uId); u.ap = 99;
+    let e = A.beginOutburst(cb, g2.rng, u, design, undefined, true, {}); if (e) return 'Begin: ' + e;
+    for (let i = 0; i < stage; i++) { u.ap = 99; e = A.pumpOutburst(cb, g2.rng, u, feelings[i] || null); if (e) return 'Pump ' + (i + 1) + ': ' + e; }
+    u.ap = 99; g2.rng.state = seed; e = A.releaseOutburst(cb, g2.rng, u, aim); return e ? 'Release: ' + e : null;
+  }, d, seed).line;
 }
 
 // ---------------------------------------------------------------------------------------------- prayers
@@ -96,16 +97,17 @@ function prayers(T: Table, key: string, g: any, uId: string, tId: string, max: {
   const u = byId(g, uId), t = byId(g, tId), c = charOf(g, u), p = A.FAITH_PATRON[c.patron || c.belief?.patron], ally = pcs(g).find((x) => x.id !== uId);
   if (!p) return;
   const tries = PRAY_TRIES(g, u, t, ally);
-  for (const w of A.WHISPERS) T[key + '/whisper/' + w.id] = tryAct(g, { type: 'combat/pray', unitId: uId, kind: 'whisper', id: w.id }, tries, HIT).line;
-  for (const h of p.hymns) if (h.tier <= max.hymn) T[key + '/hymn/' + h.id] = tryAct(g, { type: 'combat/pray', unitId: uId, kind: 'hymn', id: h.id }, tries, HIT).line;
-  if (max.miracle) T[key + '/miracle/' + p.miracle.id] = tryAct(g, { type: 'combat/pray', unitId: uId, kind: 'miracle', id: p.miracle.id }, tries, HIT).line;
+  for (const w of A.WHISPERS) put(T, key + '/whisper/' + w.id, tryAct(g, { type: 'combat/pray', unitId: uId, kind: 'whisper', id: w.id }, tries, HIT).line);
+  for (const h of p.hymns) if (h.tier <= max.hymn) put(T, key + '/hymn/' + h.id, tryAct(g, { type: 'combat/pray', unitId: uId, kind: 'hymn', id: h.id }, tries, HIT).line);
+  if (max.miracle) put(T, key + '/miracle/' + p.miracle.id, tryAct(g, { type: 'combat/pray', unitId: uId, kind: 'miracle', id: p.miracle.id }, tries, HIT).line);
 }
 
 // ============================================================================================== build
-export function recordBuilds(T: Table) {
-  for (const b of BUILDS) for (const v of VARIANTS) for (const L of LEVELS) {
+const MATE: Record<number, any> = {};
+export function recordBuilds(T: Table, variants: string[] = VARIANTS) {
+  for (const b of BUILDS) for (const v of variants) for (const L of LEVELS) {
     const key = 'build/' + b.id + '/' + v + '/L' + L, built = buildCharacter(b.id, v, L);
-    const g0 = fightOf([built.c, buildCharacter('plain_gun', 'normal', L).c], TIERS.map((tier) => ({ tier })), { level: L, seed: key });
+    const g0 = fightOf([built.c, ...(b.id === 'faith' || b.id === 'outburst' || b.id === 'sigil' ? [JSON.parse(JSON.stringify(MATE[L] ||= buildCharacter('plain_gun', 'normal', L).c))] : [])], TIERS.map((tier) => ({ tier })), { level: L, seed: key });
     const u0 = pcs(g0)[0], c = charOf(g0, u0), melee = isMeleeW(u0.weapon), mode = attackMode(u0.weapon);
     T[key + '/sheet'] = W(g0, () => ['weapon ' + u0.weapon + ' x' + r3(A.weaponMult(c, u0.weapon)), 'rarity ' + r3(u0.dmgMult || 1), 'sigil ' + r3(A.sigilMult(c)), 'elemental ' + r3(A.elementalMult(c)), 'soul ' + r3(A.soulMult(c)),
       'healing ' + r3(A.healingMult(c)), 'blessing ' + r3(A.blessingPower(c)), 'crit ' + r3(A.critMult(c)), 'mend ' + r3(A.mendFactorOf(u0)), 'hp ' + u0.maxHp, 'armour ' + u0.armour, 'def ' + u0.def,
@@ -113,25 +115,23 @@ export function recordBuilds(T: Table) {
     for (const tier of TIERS) {
       const g = clone(g0), u = pcs(g)[0], t = foes(g).find((x) => x.tier === tier)!;
       face(g, u, t, melee); turn(g, u);
-      plainAttack(T, key + '/plain/' + tier, g, u.id, t.id, mode);
+      plainAttack(T, key + '/plain/' + tier, g, u.id, t.id, mode, tier === 'soldier');
       // what that tier's own attack does to the build (the enemy next to it for a bite or a blade, 4 tiles off with a gun)
       const gb = clone(g0), ub = pcs(gb)[0], tb = foes(gb).find((x) => x.tier === tier)!; face(gb, tb, ub, isMeleeW(tb.weapon));
-      foeAttack(T, key + '/taken/' + tier, gb, tb.id, ub.id);
-    }
-    // every technique on the pad, on a Soldier and a Boss, its price met (Momentum full, the target Pressed as far as it goes)
-    for (const tier of ['soldier', 'boss']) {
-      const g = clone(g0), u = pcs(g)[0], t = foes(g).find((x) => x.tier === tier)!;
-      face(g, u, t, melee); turn(g, u); meters(g, u, t);
+      foeAttack(T, key + '/taken/' + tier, gb, tb.id, ub.id, false);
+      // every technique on the pad, on a Soldier, its price met (Momentum full, the target Pressed as far as it goes)
+      if (tier !== 'soldier') continue;
+      meters(g, u, t);
       const pad = W(g, () => A.techniquePad(g.combat, u, 'main', g)).flatMap((x: any) => x.entries).filter((e: any) => e.group !== 'answer' && e.group !== 'watch' && !['cut', 'shot'].includes(e.id));
-      for (const e of pad) technique(T, key + '/tech/' + e.id + '/' + tier, g, u.id, t.id, e.id);
+      for (const e of pad) technique(T, key + '/tech/' + e.id, g, u.id, t.id, e.id);
     }
     // its Lines, its Outburst, its prayers: on a Soldier
-    const gs = clone(g0), us = pcs(gs)[0], ts = foes(gs).find((x) => x.tier === 'soldier')!; place(gs, [[us, '5,5'], [ts, '9,5'], [pcs(gs)[1], '4,6']]); turn(gs, us, 99);
+    const gs = clone(g0), us = pcs(gs)[0], ts = foes(gs).find((x) => x.tier === 'soldier')!; place(gs, [[us, '5,5'], [ts, '9,5'], ...(pcs(gs)[1] ? [[pcs(gs)[1], '4,6'] as [any, string]] : [])]); turn(gs, us, 99);
     if (us.mg?.evoker && (us.mg.words || []).length) {
       const known: string[] = us.mg.words, subj = known.filter((w) => A.SIGIL[w]?.damage), max = us.mg.maxWords || 2;
       for (const s of subj) {
         const lines = [[s, 'seek'], [s, 'condense', 'seek'], [s, subj.find((x) => x !== s) || 'fire', 'condense', 'seek']].filter((l) => l.length <= max && l.every((w) => known.includes(w)));
-        for (const l of lines) T[key + '/sigil/' + l.join('+')] = line(gs, us.id, l, ts.pos);
+        for (const l of lines) put(T, key + '/sigil/' + l.join('+'), line(gs, us.id, l, ts.pos));
       }
     }
     if (us.mg?.emanator && (us.mg.designs || []).length) for (let st = 0; st <= 4; st++) T[key + '/outburst/' + us.mg.designs[0].id + '/stage' + st] = outburst(gs, us.id, us.mg.designs[0].id, st, ts.pos);
@@ -145,25 +145,26 @@ export function recordWeapons(T: Table) {
   for (const w of Object.values(A.WEAPON) as any[]) {
     if (w.category === 'thrown') continue; // thrown items go off through Throw (the flat section)
     const g0 = fightSpec([{ ...SHOOTER, weapon: w.id }], TIERS.map((tier) => ({ tier })), { level: 6, seed: 'weapon/' + w.id });
-    const melee = isMeleeW(w.id), modes = melee ? ['melee'] : ['shot', 'aimed'];
-    for (const tier of TIERS) for (const mode of modes) {
+    const melee = isMeleeW(w.id), mode = melee ? 'melee' : 'shot';
+    for (const tier of TIERS) {
       const g = clone(g0), u = pcs(g)[0], t = foes(g).find((x) => x.tier === tier)!;
       face(g, u, t, melee); turn(g, u); u.braced = true;
-      plainAttack(T, 'weapon/' + w.id + '/' + mode + '/' + tier, g, u.id, t.id, mode);
-      if (!melee && typeof w.damage === 'object' && mode === 'shot') { place(g, [[u, '1,5'], [t, '7,5']]); plainAttack(T, 'weapon/' + w.id + '/shot-at-6/' + tier, g, u.id, t.id, mode); }
+      plainAttack(T, 'weapon/' + w.id + '/' + mode + '/' + tier, g, u.id, t.id, mode, tier === 'soldier' || tier === 'elite');
+      if (!melee && tier === 'soldier') T['weapon/' + w.id + '/aimed/' + tier] = [pvLine(W(g, () => A.previewAttack(g.combat, u, t, 'aimed'))), 'hit ' + strike(g, u.id, t.id, 'aimed', { die: 19 }).line].join(' | ');
+      if (!melee && typeof w.damage === 'object' && tier === 'soldier') { place(g, [[u, '1,5'], [t, '7,5']]); plainAttack(T, 'weapon/' + w.id + '/shot-at-6/' + tier, g, u.id, t.id, mode, false); }
     }
   }
   // the things that bend a plain attack: special rounds, mods, a worn or broken blade, conditions, an ambush, rarity
-  const bend = (name: string, wid: string, set: (g: any, u: any, t: any) => void) => {
-    for (const tier of ['minion', 'soldier', 'elite']) {
+  const bend = (name: string, wid: string, set: (g: any, u: any, t: any) => void, mode = attackMode(wid)) => {
+    for (const tier of ['soldier', 'elite']) {
       const g = fightSpec([{ ...SHOOTER, weapon: wid }], TIERS.map((t) => ({ tier: t })), { level: 6, seed: 'bend/' + name }), u = pcs(g)[0], t = foes(g).find((x) => x.tier === tier)!;
       face(g, u, t, isMeleeW(wid)); turn(g, u); set(g, u, t);
-      plainAttack(T, 'weapon-bend/' + name + '/' + wid + '/' + tier, g, u.id, t.id, attackMode(wid));
+      plainAttack(T, 'weapon-bend/' + name + '/' + wid + '/' + tier, g, u.id, t.id, mode);
     }
   };
   for (const a of Object.keys(A.AMMO_TYPES)) bend('round-' + a, 'hellraiser_service_rifle', (g, u) => { u.ammoType = a; });
   for (const m of ['mod_suppressor', 'mod_bayonet']) bend(m, 'hellraiser_service_rifle', (g, u) => { u.mods = [...(u.mods || []), m]; });
-  bend('mod_bayonet-blow', 'hellraiser_service_rifle', (g, u, t) => { u.mods = [...(u.mods || []), 'mod_bayonet']; u.pos = '6,5'; });
+  bend('mod_bayonet-blow', 'hellraiser_service_rifle', (g, u, t) => { u.mods = [...(u.mods || []), 'mod_bayonet']; u.pos = '6,5'; }, 'melee');
   for (const m of ['mod_weighted', 'mod_serrated']) bend(m, 'sabre', (g, u) => { u.mods = [...(u.mods || []), m]; });
   bend('worn', 'sabre', (g, u) => { u.maxDur = u.maxDur || 40; u.dur = Math.floor(u.maxDur * 0.2); });
   bend('broken', 'sabre', (g, u) => { u.maxDur = u.maxDur || 40; u.dur = 0; });
@@ -177,7 +178,7 @@ export function recordWeapons(T: Table) {
   for (const tier of ['elite', 'boss']) for (const lv of [1, 6]) {
     const g = fightSpec([{ ...SHOOTER, weapon: 'breacher_tube' }], [{ tier, level: lv }], { level: 6, seed: 'guard' }), u = pcs(g)[0], t = foes(g)[0];
     face(g, u, t, false); turn(g, u); u.braced = true; u.dmgMult = 40;
-    T['weapon-bend/boss-guard/' + tier + '/L' + lv] = act(g, { type: 'combat/attack', unitId: u.id, targetId: t.id, mode: 'shot' }, HIT).line;
+    T['weapon-bend/boss-guard/' + tier + '/L' + lv] = act(g, { type: 'combat/attack', unitId: u.id, targetId: t.id, mode: 'shot' }, HIT).line + ' | direct ' + strike(g, u.id, t.id, 'shot', HIT).line;
   }
 }
 
@@ -202,25 +203,25 @@ export function recordEnemies(T: Table) {
 // ============================================================================================== tech
 const TECH_WEAPONS: Record<string, string[]> = {
   melee: ['sabre', 'adamantile_greatsword', 'maul', 'glaive', 'combat_knife', 'fists', 'lance', 'evoker_blade'],
-  ranged: ['hellraiser_service_rifle', 'long_rifle', 'service_pistol', 'lumeri_scattergun', 'hellraiser_lmg', 'recurve_bow', 'crossbow', 'decrkm_smg', 'smetanita_thumper', 'throwing_knives', 'core_rifle'],
+  ranged: ['hellraiser_service_rifle', 'long_rifle', 'blackpoint_700', 'longbow', 'service_pistol', 'lumeri_scattergun', 'hellraiser_lmg', 'recurve_bow', 'crossbow', 'decrkm_smg', 'smetanita_thumper', 'throwing_knives', 'core_rifle'],
 };
 export function recordTechniques(T: Table): Record<string, number> {
-  const ran: Record<string, number> = {};
-  for (const def of Object.values(A.TECHNIQUE) as any[]) {
-    ran[def.id] = 0;
-    for (const wid of TECH_WEAPONS[def.system] || []) for (const off of def.needs?.shield ? ['riot_shield'] : [null]) {
-      const g0 = fightSpec([{ ...SHOOTER, weapon: wid }, { ...SHOOTER }], [{ tier: 'soldier' }, { tier: 'elite' }, { tier: 'soldier' }], { level: 6, seed: 'tech/' + def.id });
-      const u0 = pcs(g0)[0], c = charOf(g0, u0), p = A.phys.ensurePhys(c);
-      p.known = [def.id]; p.ready = { melee: def.system === 'melee' ? [def.id] : [], ranged: def.system === 'ranged' ? [def.id] : [] }; p.uncapped = true;
-      if (off) { u0.offWeapon = off; c.offHand = { id: off }; }
-      for (const tier of ['soldier', 'elite']) {
-        const g = clone(g0), u = pcs(g)[0], t = foes(g).find((x) => x.tier === tier)!, melee = isMeleeW(wid) && wid !== 'throwing_knives';
-        place(g, [[u, melee ? '6,5' : '3,5'], [t, '7,5'], [foes(g)[2], '8,5'], [pcs(g)[1], '3,6']]); turn(g, u); u.braced = true; meters(g, u, t);
-        if (def.needs?.hidden) { u.hidden = true; u.hideEntry = 1; }
-        const r = technique(T, 'tech/' + def.id + '/' + wid + '/' + tier, g, u.id, t.id, def.id);
-        if (r.ok && /\bi:|\bh:|\bs:/.test(r.line)) ran[def.id]++;
-        if (!r.ok) delete T['tech/' + def.id + '/' + wid + '/' + tier]; // this weapon cannot make it: nothing to hold still
-      }
+  const ran: Record<string, number> = Object.fromEntries(Object.keys(A.TECHNIQUE).map((id) => [id, 0]));
+  for (const system of ['melee', 'ranged']) for (const wid of TECH_WEAPONS[system]) for (const off of [null, 'riot_shield']) {
+    const defs = (Object.values(A.TECHNIQUE) as any[]).filter((d) => d.system === system && !!d.needs?.shield === !!off); if (!defs.length) continue;
+    // one fight per weapon; each technique is made the only one known on a copy of it
+    const g0 = fightSpec([{ ...SHOOTER, weapon: wid }, { ...SHOOTER }], [{ tier: 'soldier' }, { tier: 'elite' }, { tier: 'soldier' }], { level: 6, seed: 'tech/' + wid });
+    const u0 = pcs(g0)[0]; if (off) { u0.offWeapon = off; charOf(g0, u0).offHand = { id: off }; }
+    const melee = isMeleeW(wid) && wid !== 'throwing_knives', [sold, elite, third] = foes(g0);
+    place(g0, [[u0, melee ? '6,5' : '3,5'], [sold, '7,5'], [third, '8,5'], [elite, '13,13'], [pcs(g0)[1], '3,6']]); turn(g0, u0); u0.braced = true;
+    for (const def of defs) for (const tier of ['soldier', 'elite']) {
+      const g = clone(g0), u = pcs(g)[0], p = A.phys.ensurePhys(charOf(g, u)), [s2, e2] = foes(g), t = tier === 'soldier' ? s2 : e2, away = tier === 'soldier' ? e2 : s2;
+      p.known = [def.id]; p.ready = { melee: system === 'melee' ? [def.id] : [], ranged: system === 'ranged' ? [def.id] : [] }; p.uncapped = true;
+      t.pos = '7,5'; away.pos = '13,13'; meters(g, u, t);
+      if (def.needs?.hidden) { u.hidden = true; u.hideEntry = 1; }
+      const r = technique(T, 'tech/' + def.id + '/' + wid + '/' + tier, g, u.id, t.id, def.id);
+      if (!r) break; // this weapon cannot make it
+      if (/\bi:|\bh:|\bs:/.test(r.line)) ran[def.id]++;
     }
   }
   return ran;
@@ -323,16 +324,18 @@ export function recordOutburst(T: Table) {
   }
   // the heart's own harm: the Strain burn (Pumps past the limit) and a Mana Short
   { const g = clone(g0), u = pcs(g)[0]; u.mg.strainLimit = 1; const id = give(g, { school: 'damage' }); T['outburst/strain-burn'] = outburst(g, u0.id, id, 4, sold.pos); }
-  // an enemy heart caster's Outburst
-  for (const tier of ['soldier', 'elite', 'boss']) for (const lv of [1, 12]) {
-    const g = fightSpec([{ ...SHOOTER, level: lv }], [{ tier, level: lv }], { level: lv, seed: 'outburst-foe' }), p = pcs(g)[0], f = foes(g)[0];
-    T['outburst-enemy/' + tier + '/L' + lv] = run(g, (g2, cb) => {
-      const fu = byId(g2, f.id), t = byId(g2, p.id); place(g2, [[fu, '5,5'], [t, '9,5']]);
-      const kind = Object.keys(A.HEART_CASTER || {})[0]; if (!kind || !A.heartMagic) return 'No heart casters';
-      fu.mg = A.heartMagic(fu, kind); fu.ap = 99; cb.turn = cb.order.indexOf(fu.id);
-      const d = fu.mg.designs?.[0]; if (!d) return 'No design';
-      let e = A.beginOutburst ? A.beginOutburst(cb, g2.rng, fu, d.id, t.pos) : 'no beginOutburst'; return e || null;
-    }, HIT).line;
+  // an enemy heart caster's Outburst (its own base and its tier and level factor), released at stage 0 and stage 2
+  for (const hc of A.HEART_CASTERS) for (const lv of [1, 12]) for (const st of [0, 2]) {
+    const g = fightSpec([{ ...SHOOTER, level: lv }], [{ tier: 'minion', level: lv }], { level: lv, seed: 'outburst-foe' }), p = pcs(g)[0];
+    put(T, 'outburst-enemy/' + hc.id + '/L' + lv + '/stage' + st, run(g, (g2, cb) => {
+      const made = A.startCombat('t', 'golden', [], [{ name: 'Heart', tier: hc.tier, weapon: 'service_pistol', caster: hc.id, level: lv } as any], 'standard', { state: 7 }, []);
+      const f = made.units.find((x: any) => x.side === 'foe'); f.id = 'heart1'; cb.units.push(f); cb.order.push(f.id);
+      const t = byId(g2, p.id); t.pos = '9,5'; f.pos = '5,5'; f.ap = 99; cb.turn = cb.order.indexOf(f.id);
+      const d = (f.mg?.designs || []).find((x: any) => x.school === 'damage') || f.mg?.designs?.[0]; if (!d) return 'No design';
+      let e = A.beginOutburst(cb, g2.rng, f, d.id, undefined, true, {}); if (e) return 'Begin: ' + e;
+      for (let i = 0; i < st; i++) { f.ap = 99; e = A.pumpOutburst(cb, g2.rng, f, null); if (e) return 'Pump: ' + e; }
+      f.ap = 99; e = A.releaseOutburst(cb, g2.rng, f, t.pos); return e ? 'Release: ' + e : null;
+    }, HIT).line);
   }
 }
 
@@ -359,100 +362,131 @@ export function recordFaith(T: Table) {
 }
 
 // ============================================================================================== item
-const PERKD: Record<string, any> = Object.fromEntries(A.PERKS.map((p: any) => [p.id, p]));
 const tiersOf = (p: any): string[] => (p.tiers ? Object.keys(p.tiers) : [p.tier === 'acquired' ? 'I' : p.tier]);
-function needs(p: any, tier: string, skills: Record<string, number> = {}, perks: Record<string, string> = {}) {
-  const req = [...(p.requires || []), ...(p.tiers?.[tier]?.requires || [])];
-  for (const r of req) {
-    if (r.skill) skills[r.skill] = Math.max(skills[r.skill] || 0, r.min || 1);
-    if (r.perk && PERKD[r.perk]) { perks[r.perk] = PERKD[r.perk].tier === 'acquired' ? 'I' : PERKD[r.perk].tier; needs(PERKD[r.perk], perks[r.perk], skills, perks); }
-  }
-  for (const s of p.skills || []) skills[s] = Math.max(skills[s] || 0, p.tier === 'mastered' ? 10 : p.tier === 'achieved' ? 5 : tier === 'II' ? 5 : 3);
-  return { skills, perks };
+/** What an item listens to: its lane handler's hooks and its generic ops' ('stat': it answers a number query). */
+function hooksOf(key: string, tier?: string): Set<string> {
+  const info = A.itemInfo(key, tier), hd = A.handlerOf(key), H = new Set<string>(Object.keys(hd?.on || {}));
+  if (hd?.stat) H.add('stat');
+  if (info) info.effects.forEach((e: any, i: number) => { if (A.ownerOf(info, i) !== 'generic') return; const gop = A.genericOf(e.op); for (const k of Object.keys(gop?.on || {})) H.add(k); if (gop?.stat) H.add('stat'); });
+  return H;
 }
-/** The standard fight of the item sweep: the holder at 3,6, a Soldier next to it (4,6), a squadmate at 2,6, a second Soldier 4 tiles off. */
-function itemFight(spec: any, seed: string) {
-  const g = fightSpec([{ level: 6, ...spec }, { name: 'Squadmate', level: 6 }], [{ tier: 'soldier', name: 'Soldier' }, { tier: 'soldier', name: 'Far soldier' }, { tier: 'elite', name: 'Elite' }], { level: 6, seed });
+// One sheet for every holder (every skill and attribute 5, level 6), so a line that differs from the same sheet
+// without the item is the item's doing. Legality is not checked: the sweep reads what the item does, not who may hold it.
+const EVEN = () => ({ level: 6, skills: Object.fromEntries(A.SKILLS.map((x: any) => [x.id, 5])), attrs: Object.fromEntries(A.ATTRS.map((x: any) => [x.id, 5])) });
+/** The standard fight of the item sweep: the holder at 3,6 (hurt), a Soldier next to it (4,6), a hurt squadmate at
+ * 2,6, a second Soldier 4 tiles off (7,6), an Elite further off. */
+function itemFight(spec: any) {
+  const g = fightSpec([{ ...EVEN(), ...spec }, { name: 'Squadmate', ...EVEN() }], [{ tier: 'soldier', name: 'Soldier' }, { tier: 'soldier', name: 'Far soldier' }, { tier: 'elite', name: 'Elite' }], { level: 6, seed: 'item' });
   const [u, al] = pcs(g), [f, far, el] = foes(g);
   place(g, [[u, '3,6'], [f, '4,6'], [al, '2,6'], [far, '7,6'], [el, '7,9']]); turn(g, u, 9);
   al.hp = Math.ceil(al.maxHp * 0.4); u.hp = Math.ceil(u.maxHp * 0.6);
   return g;
 }
+const ATTACK_HOOKS = ['damage_out', 'attack_roll', 'attack_preview', 'on_hit', 'on_kill', 'stat', 'spell_mult', 'spell_roll'], TAKEN_HOOKS = ['damage_in', 'on_damaged', 'on_downed', 'stat', 'attack_target'],
+  HEAL_HOOKS = ['heal_in', 'heal_given', 'stat'], SHIELD_HOOKS = ['shield_grant', 'stat'];
+type Probe = [string, string[], (g: any) => string];
+const PROBES: Probe[] = [
+  ['shot', ATTACK_HOOKS, (g) => strike(g, pcs(g)[0].id, foes(g)[1].id, 'shot', HIT).line],
+  ['shot-crit', ATTACK_HOOKS, (g) => strike(g, pcs(g)[0].id, foes(g)[1].id, 'shot', CRIT).line],
+  ['blow', ATTACK_HOOKS, (g) => strike(g, pcs(g)[0].id, foes(g)[0].id, 'melee', HIT).line],
+  // the target marked, Bleeding, Prone, Pinned and at a third of its HP; the holder at a fifth of its own
+  ['shot-primed', ATTACK_HOOKS, (g) => { const g2 = clone(g), u = pcs(g2)[0], t = foes(g2)[1]; u.hp = Math.ceil(u.maxHp * 0.2); t.hp = Math.ceil(t.maxHp / 3); t.bleed = 3; t.prone = true; t.conds = { ...(t.conds || {}), marked: 2, pinned: 2, burning: 2 }; t.weakPoint = true; return strike(g2, u.id, t.id, 'shot', HIT).line; }],
+  ['blow-primed', ATTACK_HOOKS, (g) => { const g2 = clone(g), u = pcs(g2)[0], t = foes(g2)[0]; u.hp = Math.ceil(u.maxHp * 0.2); t.hp = Math.ceil(t.maxHp / 3); t.bleed = 3; t.prone = true; t.conds = { ...(t.conds || {}), marked: 2, pinned: 2, stunned: 1 }; return strike(g2, u.id, t.id, 'melee', HIT).line; }],
+  ['spell-sigil', ATTACK_HOOKS, (g) => run(g, (g2, cb) => { A.harm(cb, g2.rng, pcs(g2)[0], foes(g2)[1], 30, 'sigil'); return null; }).line],
+  ['spell-fire', ATTACK_HOOKS, (g) => run(g, (g2, cb) => { A.harm(cb, g2.rng, pcs(g2)[0], foes(g2)[1], 30, 'elemental', 'fire'); return null; }).line],
+  ['spell-soul', ATTACK_HOOKS, (g) => run(g, (g2, cb) => { A.harm(cb, g2.rng, pcs(g2)[0], foes(g2)[1], 30, 'soul'); return null; }).line],
+  ['blast-given', ATTACK_HOOKS, (g) => run(g, (g2, cb) => { A.hurtUnit(foes(g2)[1], 40, false, cb, 'explosion', pcs(g2)[0]); return null; }).line],
+  ['taken', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { const a = foes(g2)[1], p = pcs(g2)[0]; a.ap = 9; cb.turn = cb.order.indexOf(a.id); A.resolveAttack(cb, g2.rng, a, p, 'shot', null); return null; }, HIT).line],
+  ['taken-crit', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { const a = foes(g2)[1], p = pcs(g2)[0]; a.ap = 9; cb.turn = cb.order.indexOf(a.id); A.resolveAttack(cb, g2.rng, a, p, 'shot', null); return null; }, CRIT).line],
+  ['taken-blow', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { const a = foes(g2)[0], p = pcs(g2)[0]; a.ap = 9; cb.turn = cb.order.indexOf(a.id); A.resolveAttack(cb, g2.rng, a, p, 'melee', null); return null; }, HIT).line],
+  ['taken-low', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { const a = foes(g2)[1], p = pcs(g2)[0]; p.hp = 9; a.ap = 9; cb.turn = cb.order.indexOf(a.id); A.resolveAttack(cb, g2.rng, a, p, 'shot', null); return null; }, HIT).line],
+  ['taken-blast', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { A.hurtUnit(pcs(g2)[0], 40, false, cb, 'explosion', foes(g2)[0]); return null; }).line],
+  ['taken-hazard', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { A.hurtUnit(pcs(g2)[0], 25, true, cb, 'hazard', null); return null; }).line],
+  ['taken-fire', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { A.harm(cb, g2.rng, foes(g2)[0], pcs(g2)[0], 30, 'elemental', 'fire'); return null; }).line],
+  ['taken-soul', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { A.harm(cb, g2.rng, foes(g2)[0], pcs(g2)[0], 30, 'soul'); return null; }).line],
+  ['taken-true', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { A.harm(cb, g2.rng, null, pcs(g2)[0], 30, 'true'); return null; }).line],
+  ['ally-taken', TAKEN_HOOKS, (g) => run(g, (g2, cb) => { const a = foes(g2)[1], p = pcs(g2)[1]; a.ap = 9; cb.turn = cb.order.indexOf(a.id); A.resolveAttack(cb, g2.rng, a, p, 'shot', null); return null; }, HIT).line],
+  ['heal-given', HEAL_HOOKS, (g) => run(g, (g2, cb) => { A.healUnit(cb, pcs(g2)[1], 20, pcs(g2)[0], 'stim'); return null; }).line],
+  ['heal-given-magic', HEAL_HOOKS, (g) => run(g, (g2, cb) => { A.heal(pcs(g2)[1], 20, cb, pcs(g2)[0], 'soul'); return null; }).line],
+  ['heal-taken', HEAL_HOOKS, (g) => run(g, (g2, cb) => { A.healUnit(cb, pcs(g2)[0], 20, pcs(g2)[1], 'stim'); return null; }).line],
+  ['shield-given', SHIELD_HOOKS, (g) => run(g, (g2, cb) => { A.grantShield(cb, pcs(g2)[1], 20, pcs(g2)[0]); return null; }).line],
+  ['shield-taken', SHIELD_HOOKS, (g) => run(g, (g2, cb) => { A.grantShield(cb, pcs(g2)[0], 20, pcs(g2)[1]); return null; }).line],
+];
 const ITEM_TRIES = (g: any) => {
   const [u, al] = pcs(g), [f, far] = foes(g);
   const U = [{}, { targetId: f.id }, { targetId: al.id }, { targetId: u.id }, { targetId: far.id }], TI = [{}, { tile: '3,7' }, { tile: f.pos }, { tile: '6,6' }];
   return TI.flatMap((t) => U.map((x) => ({ ...x, ...t })));
 };
-function itemProbe(T: Table, key: string, spec: any, itemKey: string | null, base: Table | null): number {
-  let g: any; try { g = itemFight(spec, 'item'); } catch (e: any) { T[key + '/setup'] = 'THREW ' + String(e?.message || e).slice(0, 80); return 0; }
-  const [u, al] = pcs(g), [f, far] = foes(g), out: Table = {};
-  out.shot = act(g, { type: 'combat/attack', unitId: u.id, targetId: far.id, mode: 'shot' }, HIT).line;
-  out['shot-crit'] = act(g, { type: 'combat/attack', unitId: u.id, targetId: far.id, mode: 'shot' }, CRIT).line;
-  out.blow = act(g, { type: 'combat/attack', unitId: u.id, targetId: f.id, mode: 'melee' }, HIT).line;
-  out.taken = run(g, (g2, cb) => { const a = byId(g2, f.id), p = byId(g2, u.id); a.ap = 9; cb.turn = cb.order.indexOf(a.id); A.resolveAttack(cb, g2.rng, a, p, 'shot', null); return null; }, HIT).line;
-  out['taken-blast'] = run(g, (g2, cb) => { A.hurtUnit(byId(g2, u.id), 40, false, cb, 'explosion', byId(g2, f.id)); return null; }).line;
-  out['taken-fire'] = run(g, (g2, cb) => { A.harm(cb, g2.rng, byId(g2, f.id), byId(g2, u.id), 30, 'elemental', 'fire'); return null; }).line;
-  out['heal-given'] = run(g, (g2, cb) => { A.healUnit(cb, byId(g2, al.id), 20, byId(g2, u.id), 'stim'); return null; }).line;
-  out['heal-taken'] = run(g, (g2, cb) => { A.healUnit(cb, byId(g2, u.id), 20, byId(g2, al.id), 'stim'); return null; }).line;
-  out['shield-given'] = run(g, (g2, cb) => { A.grantShield(cb, byId(g2, al.id), 20, byId(g2, u.id)); return null; }).line;
-  let n = 0;
-  // with the item held, only what it changed is written (base: the same character without it)
-  for (const [k, v] of Object.entries(out)) if (!base || base[k] !== v) { T[key + '/' + k] = v; n++; }
-  if (itemKey) {
-    let list: any[] = [];
-    try { list = W(g, () => A.perkActionsFor({ u, c: charOf(g, u), cb: g.combat, g }, 'combat')).filter((e: any) => e.id === itemKey); } catch { list = []; }
-    for (const e of list) {
-      const choice = e.options?.length ? e.options.slice(0, e.pickMulti || 1).map((o: any) => o.id).join(' ') : undefined;
-      const r = tryAct(g, { type: 'combat/perk', unitId: u.id, id: itemKey, actionId: e.actionId, ...(choice ? { choice } : {}), ...(e.target === 'text' ? { text: 'halt' } : {}) }, ITEM_TRIES(g), HIT);
-      if (r.ok && r.line !== '=>') { T[key + '/action/' + e.actionId] = r.line; n++; }
-      // an action that arms the next attack (or sets something up): the shot and the blow that follow it
-      if (r.ok) for (const [k, a] of [['then-shot', { type: 'combat/attack', unitId: u.id, targetId: far.id, mode: 'shot' }], ['then-blow', { type: 'combat/attack', unitId: u.id, targetId: f.id, mode: 'melee' }]] as const) {
-        const u2 = byId(r.g, u.id); if (u2) u2.ap = 9; const r2 = act(r.g, a, HIT);
-        if (r2.ok && r2.line !== out[k === 'then-shot' ? 'shot' : 'blow']) { T[key + '/action/' + e.actionId + '/' + k] = r2.line; n++; }
-      }
+/** Every action an item puts on the pad (through the reducer), and the shot and the blow that follow it when they differ. */
+function itemActions(T: Table, key: string, g: any, pick: (e: any) => boolean, base: Table, nameOf: (e: any) => string): Record<string, number> {
+  const [u] = pcs(g), [f, far] = foes(g), seen: Record<string, number> = {};
+  let list: any[] = [];
+  try { list = W(g, () => A.perkActionsFor({ u, c: charOf(g, u), cb: g.combat, g }, 'combat')).filter(pick); } catch { list = []; }
+  for (const e of list) {
+    const choice = e.options?.length ? e.options.slice(0, e.pickMulti || 1).map((o: any) => o.id).join(' ') : undefined;
+    const base0 = { ...(choice ? { choice } : {}), ...(e.target === 'text' ? { text: 'halt' } : {}) }, tries0 = ITEM_TRIES(g), tries = choice ? tries0 : [...tries0, ...tries0.map((x) => ({ ...x, choice: 'head', text: 'head' }))];
+    // the arguments the action's own preview accepts (nothing is changed by a preview), then the action once, through the reducer
+    const okArgs = tries.filter((a) => { try { return W(g, () => A.previewPerkAction({ u, c: charOf(g, u), cb: g.combat, g }, e.id, { actionId: e.actionId, ...base0, ...a }, 'combat')).ok; } catch { return false; } }).slice(0, 2);
+    const r = okArgs.length ? tryAct(g, { type: 'combat/perk', unitId: u.id, id: e.id, actionId: e.actionId, ...base0 }, okArgs, HIT) : { ok: false, line: '', g };
+    const k = key + '/' + nameOf(e); seen[e.id] = (seen[e.id] || 0);
+    if (!r.ok) continue;
+    if (r.line !== '=>') { T[k] = r.line; seen[e.id]++; }
+    for (const [kk, tid, mode] of [['then-shot', far.id, 'shot'], ['then-blow', f.id, 'melee']] as const) {
+      const u2 = byId(r.g, u.id); if (!u2 || !byId(r.g, tid)) continue; u2.ap = 9;
+      const l = strike(r.g, u.id, tid, mode, HIT).line;
+      if (l !== base[kk === 'then-shot' ? 'shot' : 'blow'] && !/^REFUSED/.test(l)) { T[k + '/' + kk] = l; seen[e.id]++; }
     }
   }
-  if (!base) return n;
-  return n;
+  return seen;
 }
-export function recordItems(T: Table): Record<string, number> {
-  const seen: Record<string, number> = {};
-  const baseOf = (spec: any): Table => { const b: Table = {}; itemProbe(b, 'b', spec, null, null); return Object.fromEntries(Object.entries(b).map(([k, v]) => [k.slice(2), v])); };
-  { const b: Table = {}; itemProbe(b, 'item/none', {}, null, null); Object.assign(T, b); }
-  for (const p of A.PERKS) for (const tier of tiersOf(p)) {
-    const { skills, perks } = needs(p, tier), attrs: Record<string, number> = {};
-    for (const [s, n] of Object.entries(skills)) { const at = A.SKILL[s]?.attribute; if (at) attrs[at] = Math.max(attrs[at] || 0, n); }
-    const core = A.SKILL[Object.keys(skills)[0]]?.core || '', classId = /mind/i.test(core) ? 'mage' : /soul/i.test(core) ? 'channeler' : 'fighter';
-    const without = { skills, attrs, perks: { ...perks }, classId }, withIt = { ...without, perks: { ...perks, [p.id]: tier } };
-    seen['perk:' + p.id + '@' + tier] = itemProbe(T, 'item/perk/' + p.id + '@' + tier, withIt, 'perk:' + p.id, baseOf(without));
+const ALL_HOOKS = new Set([...ATTACK_HOOKS, ...TAKEN_HOOKS, ...HEAL_HOOKS, ...SHIELD_HOOKS]);
+const reads = (hooks: Set<string>) => [...hooks].some((h) => ALL_HOOKS.has(h));
+const hasActions = (key: string, tier?: string) => { try { const info = A.itemInfo(key, tier); return !!info && A.actionDefs(info).some((d: any) => !d.scope || d.scope === 'combat' || d.scope === 'any' || (Array.isArray(d.scope) && d.scope.includes('combat'))); } catch { return true; } };
+function probes(g: any, hooks: Set<string> | null): Table {
+  const out: Table = {};
+  for (const [name, on, f] of PROBES) if (!hooks || on.some((h) => hooks.has(h))) out[name] = f(g);
+  return out;
+}
+export function recordItems(T: Table, part: 'perks' | 'traits-classes' | 'all' = 'all'): Record<string, number> {
+  const seen: Record<string, number> = {}, bases: Record<string, Table> = {};
+  const baseOf = (spec: any): Table => (bases[JSON.stringify(spec)] ||= probes(itemFight(spec), null));
+  if (part !== 'perks') for (const [k, v] of Object.entries(baseOf({}))) T['item/none/' + k] = v;
+  if (part !== 'traits-classes') for (const p of A.PERKS) for (const tier of tiersOf(p)) {
+    const core = A.SKILL[(p.skills || [])[0]]?.core || '', classId = /mind/i.test(core) ? 'mage' : /soul/i.test(core) ? 'channeler' : 'fighter';
+    const without = { classId, ...(classId === 'mage' ? { kit: 'sigil' } : classId === 'channeler' ? { kit: 'soul' } : {}) }, base = baseOf(without), key = 'item/perk/' + p.id + '@' + tier;
+    const hooks = hooksOf('perk:' + p.id, tier); seen['perk:' + p.id + '@' + tier] = 0;
+    if (!reads(hooks) && !hasActions('perk:' + p.id, tier)) continue; // nothing in a fight's numbers listens: no fight
+    let g: any; try { g = itemFight({ ...without, perks: { [p.id]: tier } }); } catch (e: any) { T[key + '/setup'] = 'THREW ' + String(e?.message || e).slice(0, 80); continue; }
+    let n = 0;
+    for (const [k, v] of Object.entries(probes(g, hooks))) if (base[k] !== v) { T[key + '/' + k] = v; n++; }
+    n += Object.values(itemActions(T, key + '/action', g, (e) => e.id === 'perk:' + p.id, base, (e) => e.actionId)).reduce((a, b) => a + b, 0);
+    seen['perk:' + p.id + '@' + tier] = n;
   }
-  for (const t of A.TRAITS) seen['trait:' + t.id] = itemProbe(T, 'item/trait/' + t.id, { traits: [t.id] }, 'trait:' + t.id, baseOf({}));
-  for (const cls of Object.keys(A.BASE_CLASS)) {
-    const at = A.CLASS[cls].attribute, sk = (A.CLASS[cls].skills || []) as string[];
-    for (const [rank, lv, pts] of [['I', 3, 4], ['II', 6, 6], ['III', 12, 9]] as const) {
-      const skills = Object.fromEntries(sk.map((s) => [s, pts])), attrs = { [at]: pts };
-      const withIt = { classId: cls, level: lv, skills, attrs, ...(cls === 'mage' || cls === 'trickster' ? { kit: 'sigil' } : cls === 'channeler' || cls === 'bard' ? { kit: 'soul' } : cls === 'guardian' ? {} : {}) };
-      const without = { ...withIt, classId: null };
-      const base = baseOf(without);
-      // the class as a whole (its passives on the shot, the blow and the hit taken), then each move's own action
-      let g: any; try { g = itemFight(withIt, 'item'); } catch { continue; }
-      const u = pcs(g)[0], keys: string[] = W(g, () => (u.held ? A.classMoveKeys?.(u.held) || [] : [])).map((m: any) => m.key);
-      const b: Table = {}; itemProbe(b, 'x', withIt, null, null);
-      for (const [k, v] of Object.entries(b)) if (base[k.slice(2)] !== v) T['item/class/' + cls + '@' + rank + '/' + k.slice(2)] = v;
-      const list = W(g, () => A.perkActionsFor({ u, c: charOf(g, u), cb: g.combat, g }, 'combat')).filter((e: any) => String(e.id).startsWith('class:'));
-      for (const e of list) {
-        const choice = e.options?.length ? e.options.slice(0, e.pickMulti || 1).map((o: any) => o.id).join(' ') : undefined;
-        const r = tryAct(g, { type: 'combat/perk', unitId: u.id, id: e.id, actionId: e.actionId, ...(choice ? { choice } : {}), ...(e.target === 'text' ? { text: 'halt' } : {}) }, ITEM_TRIES(g), HIT);
-        const k = 'item/class/' + cls + '@' + rank + '/' + e.id.slice(6) + '/' + e.actionId;
-        seen[e.id] = (seen[e.id] || 0) + (r.ok && r.line !== '=>' ? 1 : 0);
-        if (r.ok && r.line !== '=>') T[k] = r.line;
-        if (r.ok) for (const [kk, a] of [['then-shot', { type: 'combat/attack', unitId: u.id, targetId: foes(g)[1].id, mode: 'shot' }], ['then-blow', { type: 'combat/attack', unitId: u.id, targetId: foes(g)[0].id, mode: 'melee' }]] as const) {
-          const u2 = byId(r.g, u.id); if (u2) u2.ap = 9; const r2 = act(r.g, a, HIT);
-          if (r2.ok && r2.line !== b['x/' + (kk === 'then-shot' ? 'shot' : 'blow')]) T[k + '/' + kk] = r2.line;
-        }
-      }
-      for (const kx of keys) if (!(kx in seen)) seen[kx] = 0;
-    }
+  if (part === 'perks') return seen;
+  for (const t of A.TRAITS) {
+    const base = baseOf({}), key = 'item/trait/' + t.id;
+    const hooks = hooksOf('trait:' + t.id); seen['trait:' + t.id] = 0;
+    if (!reads(hooks) && !hasActions('trait:' + t.id)) continue;
+    let g: any; try { g = itemFight({ traits: [t.id] }); } catch (e: any) { T[key + '/setup'] = 'THREW ' + String(e?.message || e).slice(0, 80); continue; }
+    let n = 0;
+    for (const [k, v] of Object.entries(probes(g, hooks))) if (base[k] !== v) { T[key + '/' + k] = v; n++; }
+    n += Object.values(itemActions(T, key + '/action', g, (e) => e.id === 'trait:' + t.id, base, (e) => e.actionId)).reduce((a, b) => a + b, 0);
+    seen['trait:' + t.id] = n;
+  }
+  // the nine classes at each rank: the class as a whole on every probe (its passives), then each move's own action,
+  // with the class's own tool in hand
+  for (const cls of Object.keys(A.BASE_CLASS)) for (const [rank, lv, pts] of [['I', 3, 5], ['II', 6, 6], ['III', 12, 9]] as const) {
+    const at = A.CLASS[cls].attribute, kit = ['mage', 'trickster', 'infiltrator'].includes(cls) ? 'sigil' : ['channeler', 'bard', 'guardian'].includes(cls) ? 'soul' : 'soldier';
+    const without = { level: lv, kit, attrs: { ...EVEN().attrs, [at]: pts } }, base = baseOf(without), key = 'item/class/' + cls + '@' + rank;
+    let g: any; try { g = itemFight({ ...without, classId: cls }); } catch (e: any) { T[key + '/setup'] = 'THREW ' + String(e?.message || e).slice(0, 80); continue; }
+    const u = pcs(g)[0]; if (u.mg) Object.assign(u.mg, { charge: Math.max(u.mg.charge || 0, 9), mp: Math.max(u.mg.mp || 0, 200) });
+    { const c = charOf(g, u); c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 7; }
+    if (cls === 'infiltrator') { foes(g)[1].kind = 'robot'; pcs(g)[1].jammed = true; }
+    for (const k of Object.keys(u.resMax || {})) (u.res ||= {})[k] = u.resMax[k];
+    for (const m of (u.held ? A.classMoveKeys(u.held) : [])) seen[m.key] = seen[m.key] || 0;
+    for (const [k, v] of Object.entries(probes(g, null))) if (base[k] !== v) T[key + '/' + k] = v;
+    const got = itemActions(T, key, g, (e) => String(e.id).startsWith('class:'), base, (e) => e.id.slice(6) + '/' + e.actionId);
+    for (const [k, v] of Object.entries(got)) seen[k] = (seen[k] || 0) + v;
   }
   return seen;
 }
@@ -510,13 +544,61 @@ export function recordFlat(T: Table) {
   }
 }
 
-/** Everything, in one table. The second value: what was tried and produced no number (for the coverage list). */
-export function record(): { table: Table; techniques: Record<string, number>; items: Record<string, number> } {
-  const T: Table = {};
-  recordBuilds(T); recordWeapons(T); recordEnemies(T);
-  const techniques = recordTechniques(T);
-  recordSigil(T); recordOutburst(T); recordFaith(T);
-  const items = recordItems(T);
-  recordFlat(T);
-  return { table: Object.fromEntries(Object.entries(T).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))), techniques, items };
+// ============================================================================================== special
+// The places that work out a derived hit of their own (the audit's section 1.2): each one made to happen once or more.
+export function recordSpecial(T: Table) {
+  const known = (g: any, u: any, ids: string[]) => { const p = A.phys.ensurePhys(charOf(g, u)); p.known = [...ids]; p.ready = { melee: ids.filter((i) => A.TECHNIQUE[i]?.system === 'melee'), ranged: ids.filter((i) => A.TECHNIQUE[i]?.system === 'ranged') }; p.uncapped = true; };
+  // the carried round (Punch Through with a Heavy gun: the round goes on to the unit behind at half, less its armour as this round meets it)
+  for (const wid of ['blackpoint_700', 'hellraiser_lmg', 'hellraiser_rotary', 'long_rifle']) for (const ammo of [null, 'armor_piercing', 'hollow_point']) for (const behind of ['soldier', 'elite']) {
+    const g = fightSpec([{ ...SHOOTER, weapon: wid }], [{ tier: 'soldier' }, { tier: behind }], { level: 6, seed: 'carry' }), u = pcs(g)[0], [f, n] = foes(g);
+    place(g, [[u, '3,5'], [f, '7,5'], [n, '8,5']]); turn(g, u); u.braced = true; known(g, u, ['punch_through']); if (ammo) u.ammoType = ammo; n.shield = 6;
+    for (const [k, d] of [['hit', HIT], ['crit', CRIT]] as const) { const r = useTech(g, u.id, 'punch_through', { targetId: f.id, tile: f.pos }, d); if (r.ok) T['special/carried-round/' + wid + '/' + (ammo || 'standard') + '/behind-' + behind + '/' + k] = r.line; }
+  }
+  // Flush with an Arc weapon: half the weapon's damage with no roll, less armour, on a target in cover
+  for (const wid of ['smetanita_thumper', 'recurve_bow', 'longbow', 'breacher_tube', 'hellraiser_service_rifle', 'lumeri_scattergun']) for (const tier of ['soldier', 'elite']) {
+    const g = fightSpec([{ ...SHOOTER, weapon: wid }], [{ tier }], { level: 6, seed: 'flush' }), u = pcs(g)[0], f = foes(g)[0];
+    place(g, [[u, '3,5'], [f, '8,5']]); g.combat.objects = [A.makeObject('wall1', 'low_wall', '7,5'), A.makeObject('wall2', 'low_wall', '8,4')]; turn(g, u); u.braced = true; known(g, u, ['flush']); f.shield = 6;
+    const r = useTech(g, u.id, 'flush', { targetId: f.id, tile: f.pos }, HIT); if (r.ok) T['special/flush/' + wid + '/' + tier] = r.line;
+  }
+  // Interpose: the squadmate beside the one who is hit takes the blow in its place (the attack's damage against ITS armour)
+  for (const [tier, wid] of [['soldier', 'hellraiser_service_rifle'], ['elite', 'adamantile_greatsword'], ['boss', 'hellraiser_lmg']]) for (const ac of [0, 3, 5]) {
+    const g = fightSpec([{ ...SHOOTER }, { ...SHOOTER, name: 'Shield', weapon: 'sabre', skills: { ...SHOOTER.skills, durability: 4 }, attrs: { ...SHOOTER.attrs, endurance: 4 } }], [{ tier, weapon: wid }], { level: 6, seed: 'interpose' }), [p, q] = pcs(g), f = foes(g)[0];
+    face(g, f, p, isMeleeW(wid)); q.pos = '7,6'; known(g, q, ['interpose']); q.armour = A.ARMOUR[ac].value; q.resMax = { ...(q.resMax || {}), guard: 5 }; q.res = { ...(q.res || {}), guard: 1 }; q.shield = 4;
+    foeAttack(T, 'special/interpose/' + tier + '/armour-class-' + ac, g, f.id, p.id);
+  }
+  // The order of the multiplication when an item's own multipliers AND target bonuses are on the amount (a stand-in
+  // item, harness.ts bend): a weapon attack multiplies the stack first, a spell the base first. Numbers chosen so that
+  // the two orders part by a point (30 × 1.5 × 1.2 …): a change of order shows here.
+  {
+    const BENDS: [string, any][] = [['mults-1.5-1.2', { mults: [1.5, 1.2] }], ['vs-0.15-0.3', { vs: [0.15, 0.3] }], ['mults-1.5-1.2+vs-0.2', { mults: [1.5, 1.2], vs: [0.2] }], ['mult-1.1+vs-0.1-0.2+flat-3', { add: 3, mults: [1.1], vs: [0.1, 0.2] }],
+      ['mults-1.3-1.15-0.9+vs-0.35', { mults: [1.3, 1.15, 0.9], vs: [0.35] }], ['vs-capped-0.7-0.6', { vs: [0.7, 0.6] }], ['vs-negative', { vs: [-0.5, -0.6] }], ['flat-negative-50', { add: -50 }],
+      // where (base × own) × target and base × (own × target) part by a point: the rifle and the pistol on the first two, a spell of 30, 45 or 110 on the last three
+      ['mult-1.25+vs-0.2', { mults: [1.25], vs: [0.2] }], ['mult-1.25+vs-0.4', { mults: [1.25], vs: [0.4] }], ['mult-1.2+vs-0.5', { mults: [1.2], vs: [0.5] }], ['mult-1.5+vs-0.2', { mults: [1.5], vs: [0.2] }], ['mult-0.75+vs-0.2', { mults: [0.75], vs: [0.2] }]];
+    for (const wid of ['hellraiser_service_rifle', 'sabre', 'long_rifle', 'maul', 'service_pistol']) {
+      const g = fightSpec([{ ...SHOOTER, weapon: wid }], [{ tier: 'soldier' }, { tier: 'minion' }], { level: 6, seed: 'bend' }), u = pcs(g)[0], [f, m] = foes(g);
+      face(g, u, f, isMeleeW(wid)); turn(g, u); u.braced = true;
+      for (const [name, b] of BENDS) for (const d of [['hit', HIT], ['crit', CRIT]] as const) T['special/order/weapon/' + wid + '/' + name + '/' + d[0]] = bend(b, () => strike(g, u.id, f.id, attackMode(wid), d[1]).line);
+    }
+    const g = fightSpec([{ ...SHOOTER }], [{ tier: 'soldier' }, { tier: 'minion' }], { level: 6, seed: 'bend' }), u = pcs(g)[0], [f] = foes(g);
+    for (const [name, b] of BENDS) for (const n of [30, 45, 77, 110]) for (const [type, dt] of [['sigil', undefined], ['elemental', 'fire'], ['soul', undefined]] as const)
+      T['special/order/spell/' + type + '/' + n + '/' + name] = bend(b, () => run(g, (g2, cb) => { A.harm(cb, g2.rng, pcs(g2)[0], foes(g2)[0], n, type, dt); return null; }).line);
+  }
+  // Breaching Strike: a pushed enemy stopped by a body takes half the hit again (II: the body too)
+  for (const tier of ['I', 'II']) for (const wid of ['maul', 'adamantile_greatsword']) {
+    const g = fightSpec([{ ...SHOOTER, weapon: wid, perks: { breaching_strike: tier } }], [{ tier: 'soldier' }, { tier: 'elite' }], { level: 6, seed: 'breach' }), u = pcs(g)[0], [f, n] = foes(g);
+    place(g, [[u, '6,5'], [f, '7,5'], [n, '8,5']]); turn(g, u); known(g, u, ['lunge', 'shove', 'charge']); meters(g, u, f); f.sv = { body: -99, brain: -99, heart: -99 }; n.shield = 6;
+    for (const id of ['lunge', 'shove']) { const r = technique(T, 'special/breaching-strike@' + tier + '/' + wid + '/' + id, g, u.id, f.id, id); void r; }
+  }
+}
+
+/** The sections, by the name of their file under test/golden/ (one JSON each). A section may return a count per
+ * technique or item of the lines that hold a number (0: tried, and nothing to read): coverage.json keeps them. */
+export const SECTIONS: Record<string, (T: Table) => Record<string, number> | void> = {
+  'builds-normal': (T) => recordBuilds(T, ['normal']), 'builds-allin': (T) => recordBuilds(T, ['allin']), weapons: recordWeapons, enemies: recordEnemies, techniques: recordTechniques, sigil: recordSigil,
+  outburst: recordOutburst, faith: recordFaith, 'items-perks': (T) => recordItems(T, 'perks'), 'items-traits-classes': (T) => recordItems(T, 'traits-classes'), flat: recordFlat, special: recordSpecial,
+};
+/** One section's table, sorted, without the actions that produced no number (a stance, a condition, a refusal). */
+export function recordSection(name: string): { table: Table; counts: Record<string, number> | null } {
+  const T: Table = {}, counts = SECTIONS[name](T) || null;
+  return { table: Object.fromEntries(Object.entries(T).filter(([, v]) => v !== '=>' && !/^REFUSED/.test(v)).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))), counts };
 }

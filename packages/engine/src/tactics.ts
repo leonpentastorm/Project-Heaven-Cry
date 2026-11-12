@@ -43,15 +43,9 @@ export function dropHeldShot(cb: Combat | null | undefined, u: Unit, why = 'lost
   return had;
 }
 export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.properties || []).includes('silent') || !!(w as any)?.phys?.props?.includes('silent') || (u.mods || []).includes('mod_suppressor'); }; // rules 1.12: the Silent property counts
-/** Target-specific damage bonuses stack additively and are capped at ×2.0 in all (plan 6a-1, provisional): True Name,
- * Judgement Day, Case Closed, Weak Point, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel
- * each push {v: 0.15, label} (the bonus as a fraction) into ctx.vs on 'damage_out'. Situational self-multipliers
- * (Pain Eater, Brightest Light, the Ambush multiplier, Weakened) stay multiplicative in ctx.mults. */
-export const VS_CAP = 1.0;
-export function stackDamage(mults: Term[], vs: Term[]): { mult: number; vsMult: number; total: number } {
-  const mult = mults.reduce((t, m) => t * m.v, 1), vsMult = 1 + Math.min(VS_CAP, Math.max(-0.9, vs.reduce((t, x) => t + x.v, 0)));
-  return { mult, vsMult, total: mult * vsMult };
-}
+// The stacking rule (target bonuses add and are capped at +100%; own multipliers multiply) lives with the one formula:
+// effects/output.ts. Re-exported here for the callers that always took it from tactics.
+export { VS_CAP, stackDamage } from './effects/output';
 
 // ---------- reactions (spec: one per round; items may add) ----------
 /** Reactions a unit gets each round: 1, + items (stat 'reactions'); none while Suppressed, Stunned or out of the fight. */

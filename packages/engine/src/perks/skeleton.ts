@@ -15,6 +15,7 @@
 // is blocked at once (forceMove calls slam through setSlam, below).
 import { register, stateOf, applyDamage, emit, has, tierOf, type Holder } from '../effects';
 import { onHook, charOfUnit } from '../effects/hooks';
+import { landed } from '../effects/output';
 import { type Combat, type Unit, key, xy, dist, alive, moveBlockers, emitFx, attackDamage, checkOver, previewAttack, resolveAttack, isMelee } from '../combat';
 import { WEAPON } from '../data';
 import { resGain, resOf } from '../tactics';
@@ -83,7 +84,7 @@ function blockerAt(cb: Combat, k: string, mover: Unit): 'wall' | Unit | null {
 export function slam(cb: Combat, by: Unit, t: Unit, into: 'wall' | Unit, hit?: number): void {
   const tier = tierOf(by, BREACH); if (!tier || (into !== 'wall' && into.side === by.side)) return;
   let base = hit;
-  if (base == null) { const d = attackDamage(cb, by, t, 'melee', by.companion ? null : charOfUnit(by), { preview: true }); base = Math.max(1, Math.floor(d.total) - d.armour); }
+  if (base == null) { const d = attackDamage(cb, by, t, 'melee', by.companion ? null : charOfUnit(by), { preview: true }); base = landed(d.total, d.armour); }
   const dmg = Math.max(1, Math.floor(base / 2)), src: any = { by, type: 'weapon', melee: true, mode: 'melee', shield: true, credit: 'all' };
   const r = applyDamage(cb, t, dmg, src);
   emitFx(cb, 'perk', { unit: by.id, target: t.id, from: by.pos, to: t.pos, id: BREACH });

@@ -1,7 +1,7 @@
 // @ts-nocheck (a measuring tool)
 // THE DEFENCE STEP, MEASURED (rules 1.23; docs/design/handoffs/defence-step.md): the medic's kit against one
 // Soldier's turn, whole fights against the targets of rules 1.15 (the Boss refit), and the pairs under fire with the
-// enemy AI's healer weight on and off.
+// enemy AI's healer weight on and off. Rules 1.25 (the fire doctrine) is fitted and measured with the same instruments.
 //
 //   npm run check -- engine          the cheap tests below (arithmetic on the engine's numbers; one fight of each kind)
 //   DEFENCE_MEASURE=1 npx vitest run --root packages/engine test/balance/defence-measure.test.ts --silent=false
@@ -58,22 +58,33 @@ describe('the defence step: the enemy table (rules 1.23)', () => {
     for (const sq of Object.keys(SQUADS)) { const r = fightRow(sq, sq === 'healer' ? 'standard' : 'boss', 6, 'cover', 1); expect(r.errors, fightLine(r)).toBe(0); expect(fightLine(r)).not.toMatch(/undefined|NaN/); }
     const on = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2), off = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2, { focus: false });
     expect(on.errors + off.errors).toBe(0); expect(pairLine(on)).not.toMatch(/undefined|NaN/);
-    // (Bug sweep, 12 Nov 2026: an enemy technique now goes at the target a plain attack would take, the one with the least
-    // HP, so in the open both Soldiers shoot the medic from round 1 and she treats nobody: 0 heals, Down after 1.5 rounds
-    // where this read 4.2. Not refitted. The supporter who does get to work is the one behind a tank.)
+    // (Rules 1.25: the Soldiers spread, one each, so one of them is on the medic from round 1; alone in the open under a
+    // Soldier she is Down in about two rounds and gives one dose. The supporter who gets to work is the one behind a
+    // tank: the Soldiers share out the front first, and nobody goes Down in ten rounds.)
     const tank = pairFire('tank', PAIRS.tank.seconds, 6, 2, 2, { first: PAIRS.tank.first });
-    expect(tank.errors).toBe(0); expect(tank.casts, 'the healer behind a tank heals: ' + pairLine(tank)).toBeGreaterThan(1);
+    expect(tank.errors).toBe(0); expect(tank.casts, 'the healer behind a tank heals: ' + pairLine(tank)).toBeGreaterThan(4);
+    expect(tank.firstDown, 'a tank kept up by a dedicated healer holds two Soldiers: ' + pairLine(tank)).toBeGreaterThanOrEqual(9);
     expect(ENEMY.soldier.healer_focus).toBe(0.5); // (pairFire puts the weight back)
   }, 240000);
-  // Bug sweep, 12 Nov 2026 (item 1383): this read "with the healer weight the healer takes the fire the rifleman took"
-  // (on > off). An enemy technique now takes the target a plain attack would, the one with the least HP, and that is
-  // the healer with the weight on or off: the weight no longer changes this pair. Measured, not refitted.
-  it('under fire (level 6, 4 fights): the healer takes more fire than the rifleman, with the healer weight on or off', () => {
+  // Rules 1.25 (the fire doctrine; spec items 1400 to 1412). Before the bug sweep of 12 Nov 2026 this read "with the
+  // healer weight the healer takes the fire the rifleman took"; after it (every enemy on the most hurt) both Soldiers
+  // shot the healer from round 1, weight on or off, and the pair lasted 3.1 rounds. Soldiers now spread: one each.
+  it('under fire (level 6, 4 fights): two Soldiers spread, so a healer in the open gets to heal, and still draws the most fire', () => {
     const on = pairFire('mender', PAIRS.mender.seconds, 6, 2, 4), off = pairFire('mender', PAIRS.mender.seconds, 6, 2, 4, { focus: false });
     expect(on.errors + off.errors).toBe(0);
-    expect(on.healerTaken, 'on: ' + pairLine(on) + ' | off: ' + pairLine(off)).toBeGreaterThanOrEqual(off.healerTaken);
-    expect(on.firstTaken).toBeLessThanOrEqual(off.firstTaken);
+    // 6.5 rounds at 10 fights a cell (rules 1.23 measured 6.1; 3.1 with every enemy on the most hurt)
+    expect(on.firstDown, 'on: ' + pairLine(on)).toBeGreaterThanOrEqual(4.5); expect(on.casts, pairLine(on)).toBeGreaterThanOrEqual(4);
     expect(on.healerTaken).toBeGreaterThan(on.firstTaken); expect(off.healerTaken).toBeGreaterThan(off.firstTaken);
+    expect(on.healerFirst, 'she is still the first Down more often than the rifleman: ' + pairLine(on)).toBeGreaterThanOrEqual(on.firstFirst);
+  }, 240000);
+  // NOT MET by rules 1.25, and pinned as it is: the table was fitted with this pair at 4.8 rounds, which was both
+  // Soldiers' Bursts landing on the armoured rifleman (he was first in the fight's list). One each puts a whole Soldier
+  // on the unarmoured caster, and alone under one Soldier she lasts 2.5 rounds at this level.
+  it('under fire (level 6, 4 fights): the idle pair is not back at 4.8 rounds; one Soldier is enough for an idle caster', () => {
+    const idle = pairFire('idle', PAIRS.idle.seconds, 6, 2, 4);
+    expect(idle.errors).toBe(0);
+    expect(idle.firstDown, pairLine(idle)).toBeGreaterThanOrEqual(1.5); expect(idle.firstDown).toBeLessThanOrEqual(3.2); // 2.1 at 10 fights a cell
+    expect(idle.healerFirst).toBeGreaterThanOrEqual(75);
   }, 240000);
 });
 

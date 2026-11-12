@@ -409,3 +409,162 @@ then the likeliest hit. **Nothing was refitted.** Measured with `DEFENCE_PARTS=y
    caster is always shot before the 200 HP tank standing in front. Reading it as a share of max HP, or weighing
    distance, would spread the fire; the enemy table was fitted to fire that was spread by accident.
 6. The two cheap "under fire" tests in `defence-measure.test.ts` were rewritten to what is measured now.
+
+## Rules 1.25: the fire doctrine (12 Nov 2026; spec "Rules revision 1.25", items 1400 to 1412)
+
+**What was asked:** with the technique bug fixed, every enemy took the most hurt and they all piled on one character; the table of rules 1.15 and the Boss of rules 1.23 had been fitted to fire that the bug spread. Make how enemies share their fire a rule of each tier, in data, visible to the player, and fit it back to the old targets without touching the table's damage and HP.
+
+### R1. What is built
+
+One function chooses the target for a plain attack and for a technique (`enemyRank` in `combat.ts`; `enemyTargets` and `enemyPreference` are two readings of it). After reach, sight, Taunt and standing before Downed, an enemy takes the lowest of: **HP as a share of max (in tenths) + `fire_spread` × the other enemies that have attacked that target this round + `fire_near` × the tiles it stands further off than the nearest target − `healer_focus` for the healer** (distance does not move the healer). Ties go to the likeliest hit.
+
+| Tier | Doctrine | `fire_spread` | `fire_near` | `healer_focus` (rules 1.23, unchanged) | In words | Its intent says |
+|---|---|---|---|---|---|---|
+| Vermin, Minion | nearest | 0 | 1 | 0 | Whoever is in front of it; the more hurt only between two as near as each other. | ": it takes the nearest" |
+| Soldier | spread | 1 | 0.2 | 0.5 | One each before anybody doubles up; the near ones first (5 tiles further back weighs as much as an ally already on the near one); then the most hurt. | ": it spreads its fire" |
+| Elite, Boss | focus | 0 | 0.1 | 1 | The most hurt it can get at (a tenth of max HP a tile), whoever else is on them; the healer first, anywhere. | ": it goes for the wounded" |
+
+1. **A Boss's escorts keep their own doctrine.** The Boss's target has an enemy on it, so its Soldiers take the others. Escorts that follow the Boss's target would be three guns on one character from round 1: the pile-on this removes.
+2. **Kept on top:** Taunt first; Guard, reach, sight, range; the half-chance cover rule for the healer; orders; fear; a False Image is attacked in its owner's place and remembered as fire on the owner; the healer weight and the hunt of rules 1.23.
+3. **Visible:** `Intent.why` is now `healer`, `spread`, `wounded` or `nearest` and the intent text ends in the reason when there was a choice; the fight log says each doctrine line once a fight (the healer line stays once a round). One line under the tier table of rules 1.15 in the spec. **The AI Narrator's prompt was not touched** (15 tokens under its cap): it sees the log lines.
+4. **The memory:** `cb.fire` (the round, and for each target the enemies that have aimed a plain attack or a technique at it). Reset when the round changes. Deterministic; reading an intent changes nothing.
+5. **Why the fit needed distance, not only "spread".** The accident the table was fitted to was not an even spread. Bursts went at the first character in the list, which in every measured squad is the gun, then the tank: the fire sat on the two toughest characters. An even spread puts a whole Soldier on the caster, and a pure focus puts the Elites on her. What brings the old numbers back is fire that starts at the front, which is also a rule a player can use: stand the tank in front.
+
+### R2. How the numbers were chosen (trials; level 6 unless said)
+
+| Trial | A Soul healer and a rifleman, 2 Soldiers (L1 / L6 / L12) | The tank and a healer, 2 · 3 Soldiers (L1) | The fit's standard / elite / boss fight, open: someone Downed |
+|---|---|---|---|
+| When the table was fitted (rules 1.23 report) | 2.4 / 6.1 / 7.9 | 8.7 · 5.1 | 0% / 10% / 0% |
+| Every enemy on the most hurt (the game this morning) | 1.6 / 3.1 / 5.9 | 6.2 · 2.5 | 60% / 80% / 70% |
+| Soldier spread 0.3, no distance | 1.6 / 3.1 / 6.4 | 6.2 · 1.9 | not run |
+| Soldier spread 0.5, distance 0.1 | 1.8 / 3.3 / 7.2 | 9.2 · 3.9 | not run |
+| Soldier spread 1, no distance; Elite and Boss pure focus | 3.1 / 6.5 / 8.4 | 5.8 · 3.8 | 50% / 80% / 70% (10 fights) |
+| Soldier nearest; Elite and Boss pure focus | 1.6 / 3.1 / 5.9 | 10.0 · 5.8 | 40% / 90% / 50% (10 fights) |
+| Everybody nearest | not run | not run | 20% / 0% / 10% (10 fights) |
+| Soldier spread 1, distance 0.2; Elite and Boss pure focus | 3.1 / 6.5 / 8.4 | 10.0 · 5.6 | 35% / 70% / 50% (20 fights) |
+| the same, Elite and Boss distance 0.05 | the same | the same | 25% / 45% / 35% (20 fights) |
+| **Soldier spread 1, distance 0.2; Elite and Boss distance 0.1 (built)** | **3.1 / 6.5 / 8.4** | **9.9 · 5.4** | **15% / 15% / 20% (20 fights); 20% / 20% / 20% (the 10 of R4)** |
+| the same, Elite and Boss distance 0.2 | the same | the same | 15% / 5% / 15% (20 fights) |
+
+1. The Soldier's spread has to be whole (1): at 0.5 the second Soldier still doubles up on a caster who is half dead, and the pair is as short as with no doctrine.
+2. The Soldier's distance term is what keeps a healer behind a tank alive at level 1; it does nothing to a pair standing side by side.
+3. The Elite's and Boss's distance term is what brings the whole fights back. 0.1 is the smallest of those tried that does it (0.05 leaves someone Downed in 45% of elite fights), so their focus is about as strong as the table allows; 0.2 measures the same as 0.1 within two fights in twenty.
+4. The cells marked "not run" were not run. The pair columns of the trial rows above the built one were measured with the distance counted from the enemy; the built rule counts it from the nearest target and leaves the healer out of it. The built row, and the whole-fight column of the four rows from "Soldier spread 1, distance 0.2" down, are measured on the built rule.
+
+### R3. The pairs under fire, before → after
+
+`DEFENCE_PARTS=fire`, 10 fights a cell, the 16 × 11 ground, Soldiers that never fall, at most 10 rounds. **Before** is HEAD (every enemy on the most hurt, the share-of-HP reading in); **after** is rules 1.25. Round brackets: the share of fights in which nobody went Down. Square brackets: how often a supporter was the first Down.
+
+**A pair (the plain rifleman and one more):** rounds before the first Down, before → after
+
+| The second character | L1, 2 Soldiers | L1, 3 Soldiers | L6, 2 Soldiers | L6, 3 Soldiers | L12, 2 Soldiers | L12, 3 Soldiers | L20, 2 Soldiers | L20, 3 Soldiers |
+|---|---|---|---|---|---|---|---|---|
+| standing idle (the control) | 1.6 → **2.1** | 1.3 → **1.8** | 1.9 → **2.1** | 1.4 → **2.4** | 2.7 → **3.0** | 1.6 → **2.4** | 2.9 → **3.7** | 1.7 → **2.4** |
+| a Soul healer (Bard, Empathy first), healing | 1.6 [100%] → **3.1 [90%]** | 1.4 [100%] → **2.2 [80%]** | 3.1 [100%] → **6.5 [80%]** | 2.0 [90%] → **3.4 [70%]** | 5.9 [100%] → **8.4 (50%) [40%]** | 2.0 [90%] → **3.8 [80%]** | 6.1 (10%) [90%] → **8.4 (60%) [40%]** | 2.1 [90%] → **4.0 [60%]** |
+| the Outburst caster (Channeler), healing | 1.7 [100%] → **2.8 [100%]** | 1.4 [100%] → **2.0 [80%]** | 3.0 [100%] → **4.4 [100%]** | 1.9 [90%] → **2.7 [70%]** | 3.6 [100%] → **4.8 [100%]** | 1.6 [90%] → **2.9 [70%]** | 3.0 [100%] → **4.6 [90%]** | 1.3 [100%] → **2.3 [70%]** |
+| the Outburst caster, Inverse shields | 2.1 [100%] → **4.9 [90%]** | 1.4 [100%] → **2.1 [90%]** | 4.7 [100%] → **6.2 (10%) [90%]** | 2.2 [90%] → **3.6 [80%]** | 6.0 [100%] → **7.4 (30%) [70%]** | 2.1 [90%] → **4.0 [70%]** | 5.1 [100%] → **6.5 (10%) [90%]** | 1.7 [90%] → **3.0 [80%]** |
+| the Sigil caster, MEND · SEEK every turn | 1.6 [100%] → **2.0 [100%]** | 1.3 [100%] → **1.7 [90%]** | 2.1 [100%] → **2.5 [100%]** | 1.4 [100%] → **2.2 [90%]** | 3.2 [100%] → **3.4 [100%]** | 1.6 [90%] → **2.3 [90%]** | 2.5 [100%] → **3.1 [100%]** | 1.3 [100%] → **2.2 [90%]** |
+| the Sigil caster, the full MEND Line | 1.6 [100%] → **2.0 [100%]** | 1.3 [100%] → **1.7 [90%]** | 2.1 [100%] → **2.6 [100%]** | 1.4 [100%] → **2.4 [90%]** | 3.2 [100%] → **3.4 [100%]** | 1.6 [90%] → **2.4 [100%]** | 2.5 [100%] → **3.1 [100%]** | 1.3 [100%] → **2.2 [80%]** |
+| the medic: Triage every turn and one dose a turn while they last (no magic) | 1.7 [100%] → **1.7 [100%]** | 1.2 [100%] → **2.3 [90%]** | 1.8 [100%] → **2.0 [100%]** | 1.4 [100%] → **2.5 [90%]** | 2.6 [100%] → **3.5 [100%]** | 1.7 [100%] → **2.7 [100%]** | 3.1 [100%] → **3.8 [100%]** | 1.8 [100%] → **3.1 [100%]** |
+| the medic: Triage only | 1.7 [100%] → **1.7 [100%]** | 1.2 [100%] → **2.3 [80%]** | 1.8 [100%] → **2.0 [100%]** | 1.4 [100%] → **2.6 [80%]** | 2.6 [100%] → **3.6 [100%]** | 1.7 [100%] → **3.0 [100%]** | 3.1 [100%] → **3.6 [100%]** | 1.8 [100%] → **3.3 [100%]** |
+
+**A trio (the plain rifleman and two more):** rounds before the first Down, before → after
+
+| The second character | L1, 2 Soldiers | L1, 3 Soldiers | L1, 4 Soldiers | L6, 2 Soldiers | L6, 3 Soldiers | L6, 4 Soldiers | L12, 2 Soldiers | L12, 3 Soldiers | L12, 4 Soldiers | L20, 2 Soldiers | L20, 3 Soldiers | L20, 4 Soldiers |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| two Soul healers standing idle (the control) | 2.1 → **4.0** | 1.2 → **2.5** | 0.7 → **1.5** | 1.9 → **4.4** | 1.4 → **2.7** | 1.1 → **1.9** | 2.8 → **5.5** | 1.5 → **2.7** | 1.0 → **1.9** | 3.5 → **4.7** | 1.4 → **3.4** | 0.9 → **1.7** |
+| two Soul healers, healing | 6.1 [100%] → **6.9 (10%) [90%]** | 1.9 [100%] → **3.9 [90%]** | 0.9 [100%] → **1.3 [100%]** | 9.4 (70%) [30%] → **9.3 (70%) [30%]** | 3.0 [100%] → **7.0 (20%) [70%]** | 1.2 [100%] → **2.4 [100%]** | 10.0 (100%) [0%] → **9.2 (80%) [20%]** | 5.6 (30%) [70%] → **8.0 (40%) [60%]** | 2.1 [100%] → **3.9 [100%]** | 9.9 (90%) [10%] → **9.1 (80%) [20%]** | 4.9 (10%) [90%] → **8.1 (50%) [50%]** | 1.3 [100%] → **3.2 [100%]** |
+| two all-in Soul healers | 7.3 (40%) [60%] → **7.3 (50%) [50%]** | 2.6 [100%] → **5.0 [100%]** | 0.7 [100%] → **1.3 [100%]** | 7.5 (40%) [60%] → **8.8 (60%) [40%]** | 3.0 [100%] → **4.9 [100%]** | 1.1 [100%] → **2.3 [100%]** | 4.1 (20%) [80%] → **6.1 (40%) [60%]** | 0.9 [100%] → **3.0 (10%) [90%]** | 1.3 [100%] → **2.6 [100%]** | 2.0 [100%] → **2.9 [100%]** | 0.4 [100%] → **1.2 [100%]** | 0.6 [100%] → **0.8 [90%]** |
+| a Soul healer and an Inverse shielder | 7.0 [100%] → **7.9 (20%) [80%]** | 2.1 [100%] → **4.5 [100%]** | 0.7 [100%] → **1.5 [100%]** | 9.8 (80%) [20%] → **10.0 (100%) [0%]** | 4.6 [100%] → **8.1 (10%) [90%]** | 1.3 [100%] → **3.2 [100%]** | 10.0 (100%) [0%] → **9.3 (90%) [10%]** | 4.4 (10%) [90%] → **9.1 (80%) [20%]** | 1.6 [100%] → **5.1 [90%]** | 10.0 (100%) [0%] → **9.2 (90%) [10%]** | 4.2 (20%) [80%] → **4.7 (30%) [70%]** | 0.8 [100%] → **1.9 [100%]** |
+
+**The tank in the rifleman's place:** rounds before the first Down, before → after
+
+| The second character | L1, 2 Soldiers | L1, 3 Soldiers | L6, 2 Soldiers | L6, 3 Soldiers | L12, 2 Soldiers | L12, 3 Soldiers | L20, 2 Soldiers | L20, 3 Soldiers |
+|---|---|---|---|---|---|---|---|---|
+| the tank and an idle Soul healer (the control) | 2.8 → **8.2 (60%)** | 1.4 → **3.1** | 3.9 → **8.9 (70%)** | 2.0 → **5.6 (10%)** | 4.5 → **10.0 (100%)** | 1.6 → **5.8** | 8.5 (60%) → **10.0 (100%)** | 4.7 → **6.4** |
+| the tank and a dedicated Soul healer | 6.2 (20%) [80%] → **9.9 (70%) [20%]** | 2.5 (10%) [90%] → **5.4 [80%]** | 9.8 (90%) [10%] → **10.0 (100%) [0%]** | 3.5 (10%) [90%] → **9.5 (70%) [30%]** | 10.0 (100%) [0%] → **9.8 (90%) [10%]** | 4.9 [100%] → **9.5 (70%) [30%]** | 10.0 (100%) [0%] → **10.0 (100%) [0%]** | 7.4 (20%) [80%] → **9.7 (80%) [20%]** |
+
+1. **The healer and the tank-with-a-healer rows are back.** A Soul healer and a rifleman under two Soldiers: 3.1 / 6.5 / 8.4 / 8.4 (rules 1.23: 2.4 / 6.1 / 7.9 / 7.9). The tank and a dedicated healer: 9.9 / 10 / 9.8 / 10 under two (8.7 / 10 / 10 / 10) and 5.4 / 9.5 / 9.5 / 9.7 under three (5.1 / 7.5 / 9.0 / 8.0). **A dedicated healer keeps a tank up**: from level 6 nobody goes Down in ten rounds under two Soldiers, and in 70 to 80% of fights under three.
+2. **Is the healer still the one they go for?** By Soldiers, yes, one at a time: she is the first Down in 80 to 90% of the healer-and-rifleman fights at levels 1 and 6, 40% at 12 and 20 (where half the fights have nobody Down). By Elites and Bosses the rule is unchanged and pinned (`rules123-defence.test.ts`: the healer first, the walk for a shot; `rules125-doctrine.test.ts`: distance does not move her place); in the whole fights of R4 with a healer in the squad she is Downed in 15 of 240 fights (20 of 240 before), nearly all at level 1, the same picture as rules 1.23 section 3.3: behind a tank the enemies mostly have no shot at her.
+3. **Not met: the idle pair**, 2.1 / 2.1 / 3.0 / 3.7 against 4.7 / 4.8 / 4.6 / 4.1 (R5.1).
+4. **Shorter than rules 1.23:** the medic (1.7 / 2.0 / 3.5 / 3.8 against 6.5 / 4.2 / 5.4 / 5.1), the Sigil caster drawing MEND (2.0 / 2.5 / 3.4 / 3.1 against 2.2 / 3.4 / 4.8 / 4.5) and the Outburst caster healing (2.8 / 4.4 / 4.8 / 4.6 against 3.0 / 6.2 / 6.0 / 5.3). The same cause as the idle pair: a whole Soldier on an unarmoured character who does not out-heal it.
+5. **Longer than rules 1.23:** two healers under three Soldiers (3.9 / 7.0 / 8.0 / 8.1 against 2.4 / 3.5 / 4.3 / 5.7): only one Soldier of a line leans on the healer in a round now (R6.3).
+
+### R4. Whole fights, before → after
+
+`DEFENCE_PARTS=fights`, 10 fights a cell, the 26 × 26 grounds, enemies of the squad's level. **Before** is HEAD's choice of target run on today's code (`DEFENCE_DOCTRINE=soldier=focus,elite=focus,boss=focus,minion=focus,vermin=focus`; checked against a run of HEAD itself on twelve pair rows: identical to the decimal).
+
+**The fit's squad (optimised gun, tank, Sigil caster, Calls leader):** rounds to win · won · fights with someone Downed
+
+| Fight | L1, open | L1, cover | L6, open | L6, cover | L12, open | L12, cover | L20, open | L20, cover | Target |
+|---|---|---|---|---|---|---|---|---|---|
+| Standard (3 Soldiers, 1 Elite), before | 5.0 · 100% · 60% | 7.8 · 100% · 70% | 5.3 · 100% · 60% | 6.2 · 100% · 50% | 5.6 · 100% · 70% | 6.1 · 100% · 20% | 5.0 · 100% · 50% | 5.8 · 100% · 30% | 4 to 6 |
+| Standard (3 Soldiers, 1 Elite), **after** | 5.0 · 100% · 30% | 6.7 · 100% · 60% | 4.7 · 100% · 20% | 7.0 · 100% · 30% | 5.8 · 100% · 0% | 6.5 · 100% · 10% | 4.8 · 100% · 0% | 5.3 · 100% · 20% | 4 to 6 |
+| Elite (2 Elites, 2 Soldiers), before | 6.2 · 100% · 70% | 7.7 · 100% · 60% | 6.3 · 100% · 80% | 8.6 · 90% · 60% | 6.8 · 100% · 60% | 8.0 · 100% · 40% | 4.7 · 100% · 60% | 6.5 · 100% · 30% | 6 to 8 |
+| Elite (2 Elites, 2 Soldiers), **after** | 5.6 · 100% · 50% | 7.0 · 100% · 60% | 6.2 · 100% · 20% | 9.0 · 100% · 70% | 6.5 · 100% · 20% | 8.5 · 100% · 70% | 4.9 · 100% · 0% | 6.4 · 100% · 30% | 6 to 8 |
+| Boss (1 Boss, 2 Soldiers), before | 7.3 · 100% · 50% | 9.6 · 80% · 80% | 7.3 · 100% · 70% | 12.4 · 100% · 80% | 7.4 · 100% · 60% | 9.6 · 100% · 90% | 7.5 · 100% · 40% | 8.8 · 90% · 40% | 8 to 10 |
+| Boss (1 Boss, 2 Soldiers), **after** | 6.9 · 100% · 20% | 10.4 · 100% · 80% | 6.3 · 100% · 20% | 10.4 · 90% · 50% | 7.1 · 100% · 10% | 10.3 · 90% · 80% | 7.4 · 100% · 0% | 8.1 · 100% · 20% | 8 to 10 |
+
+**A second gun (the plain rifle) in the caster's place:** rounds to win · won · fights with someone Downed
+
+| Fight | L1, open | L1, cover | L6, open | L6, cover | L12, open | L12, cover | L20, open | L20, cover | Target |
+|---|---|---|---|---|---|---|---|---|---|
+| Standard (3 Soldiers, 1 Elite), before | 4.7 · 100% · 30% | 6.0 · 100% · 20% | 5.3 · 100% · 40% | 5.8 · 100% · 40% | 4.7 · 100% · 30% | 5.6 · 100% · 10% | 4.9 · 100% · 40% | 5.4 · 100% · 10% | 4 to 6 |
+| Standard (3 Soldiers, 1 Elite), **after** | 4.6 · 100% · 0% | 5.7 · 100% · 20% | 5.0 · 100% · 0% | 5.6 · 100% · 10% | 4.7 · 100% · 0% | 5.4 · 100% · 10% | 4.8 · 100% · 0% | 5.2 · 100% · 0% | 4 to 6 |
+| Elite (2 Elites, 2 Soldiers), before | 5.9 · 100% · 100% | 6.5 · 100% · 40% | 5.7 · 100% · 60% | 6.3 · 100% · 20% | 6.0 · 100% · 70% | 7.8 · 100% · 50% | 5.7 · 100% · 70% | 6.4 · 100% · 30% | 6 to 8 |
+| Elite (2 Elites, 2 Soldiers), **after** | 5.4 · 100% · 30% | 6.1 · 100% · 20% | 5.7 · 100% · 30% | 6.6 · 100% · 0% | 5.6 · 100% · 30% | 7.9 · 100% · 40% | 5.2 · 100% · 10% | 6.3 · 100% · 20% | 6 to 8 |
+| Boss (1 Boss, 2 Soldiers), before | 6.9 · 100% · 30% | 9.9 · 100% · 80% | 7.9 · 100% · 50% | 8.7 · 100% · 10% | 7.9 · 100% · 50% | 9.0 · 100% · 50% | 7.7 · 100% · 20% | 7.9 · 100% · 40% | 8 to 10 |
+| Boss (1 Boss, 2 Soldiers), **after** | 7.0 · 100% · 10% | 8.7 · 100% · 60% | 7.5 · 100% · 0% | 8.5 · 100% · 10% | 8.0 · 100% · 20% | 8.7 · 100% · 40% | 7.5 · 100% · 0% | 7.9 · 100% · 40% | 8 to 10 |
+
+**The Outburst caster in the caster's place:** rounds to win · won · fights with someone Downed
+
+| Fight | L1, open | L1, cover | L6, open | L6, cover | L12, open | L12, cover | L20, open | L20, cover | Target |
+|---|---|---|---|---|---|---|---|---|---|
+| Standard (3 Soldiers, 1 Elite), before | 5.9 · 100% · 90% | 6.6 · 100% · 60% | 4.8 · 100% · 60% | 5.0 · 100% · 30% | 5.0 · 100% · 60% | 4.7 · 100% · 10% | 4.6 · 100% · 30% | 5.2 · 100% · 30% | 4 to 6 |
+| Standard (3 Soldiers, 1 Elite), **after** | 5.4 · 100% · 40% | 6.3 · 100% · 20% | 4.6 · 100% · 0% | 5.1 · 100% · 10% | 4.4 · 100% · 10% | 5.3 · 100% · 20% | 4.3 · 100% · 0% | 4.9 · 100% · 20% | 4 to 6 |
+| Elite (2 Elites, 2 Soldiers), before | 5.5 · 100% · 50% | 7.4 · 80% · 90% | 6.3 · 100% · 70% | 6.6 · 100% · 70% | 5.5 · 100% · 40% | 6.6 · 100% · 20% | 4.7 · 100% · 60% | 5.5 · 100% · 10% | 6 to 8 |
+| Elite (2 Elites, 2 Soldiers), **after** | 6.0 · 100% · 50% | 8.0 · 70% · 90% | 5.4 · 100% · 40% | 6.4 · 100% · 50% | 5.0 · 100% · 20% | 6.8 · 100% · 20% | 4.8 · 100% · 0% | 5.5 · 100% · 20% | 6 to 8 |
+| Boss (1 Boss, 2 Soldiers), before | 6.8 · 100% · 60% | 11.0 · 90% · 60% | 8.0 · 100% · 70% | 9.3 · 100% · 40% | 5.9 · 100% · 30% | 9.6 · 100% · 50% | 6.1 · 100% · 60% | 7.7 · 100% · 40% | 8 to 10 |
+| Boss (1 Boss, 2 Soldiers), **after** | 6.4 · 100% · 20% | 8.6 · 100% · 40% | 8.6 · 100% · 20% | 9.6 · 100% · 40% | 6.4 · 100% · 20% | 7.9 · 100% · 0% | 6.2 · 100% · 0% | 7.6 · 100% · 0% | 8 to 10 |
+
+**A dedicated Soul healer in the caster's place:** rounds to win · won · fights with someone Downed
+
+| Fight | L1, open | L1, cover | L6, open | L6, cover | L12, open | L12, cover | L20, open | L20, cover | Target |
+|---|---|---|---|---|---|---|---|---|---|
+| Standard (3 Soldiers, 1 Elite), before | 7.0 · 100% · 50% | 8.7 · 90% · 40% | 7.4 · 100% · 40% | 8.6 · 90% · 30% | 7.2 · 100% · 10% | 7.6 · 70% · 50% | 6.3 · 100% · 10% | 8.6 · 100% · 20% | 4 to 6 |
+| Standard (3 Soldiers, 1 Elite), **after** | 6.5 · 100% · 0% | 7.8 · 80% · 30% | 6.9 · 100% · 10% | 8.1 · 90% · 30% | 7.0 · 100% · 0% | 8.6 · 80% · 40% | 6.3 · 100% · 0% | 7.7 · 100% · 20% | 4 to 6 |
+| Elite (2 Elites, 2 Soldiers), before | 7.6 · 100% · 60% | 11.1 · 80% · 80% | 8.4 · 100% · 40% | 10.4 · 90% · 30% | 8.3 · 100% · 30% | 11.3 · 80% · 50% | 7.9 · 100% · 60% | 7.8 · 100% · 10% | 6 to 8 |
+| Elite (2 Elites, 2 Soldiers), **after** | 8.2 · 100% · 30% | 9.7 · 100% · 50% | 8.1 · 100% · 0% | 9.8 · 100% · 30% | 8.2 · 100% · 0% | 8.6 · 80% · 40% | 7.9 · 100% · 10% | 7.6 · 100% · 10% | 6 to 8 |
+| Boss (1 Boss, 2 Soldiers), before | 10.3 · 100% · 40% | 11.6 · 100% · 20% | 11.1 · 100% · 10% | 13.0 · 50% · 60% | 11.2 · 100% · 0% | 11.2 · 50% · 50% | 10.8 · 100% · 0% | 11.0 · 100% · 10% | 8 to 10 |
+| Boss (1 Boss, 2 Soldiers), **after** | 10.3 · 100% · 10% | 11.0 · 100% · 30% | 11.3 · 100% · 0% | 12.7 · 60% · 60% | 11.2 · 100% · 0% | 13.6 · 90% · 50% | 10.6 · 100% · 0% | 12.4 · 100% · 30% | 8 to 10 |
+
+1. **Somebody Downed on open ground, the fit's squad:** standard 30 / 20 / 0 / 0% (before 60 / 60 / 70 / 50%; when the table was fitted 30 / 0 / 0 / 30%); elite 50 / 20 / 20 / 0% (before 70 / 80 / 60 / 60%; fitted 40 / 10 / 10 / 0%); boss 20 / 20 / 10 / 0% (before 50 / 70 / 60 / 40%; fitted 40 / 0 / 20 / 10%).
+2. **Rounds, the fit's squad:** standard 4.7 to 5.8 on open ground (target 4 to 6) and 5.3 to 7.0 with cover; elite 4.9 to 6.5 and 6.4 to 9.0 (target 6 to 8; the two grounds average 6.8); boss 6.3 to 7.4 and 8.1 to 10.4 (target 8 to 10; average 8.4; rules 1.23 fitted the average of the grounds to 9). The rounds hardly moved with the doctrine: who is shot changes who goes Down, not how fast the enemies fall.
+3. **Level 1 is still the dangerous level** (30 / 50 / 20% on open ground), as it was when the table was fitted (30 / 40 / 40%).
+4. **Ground with cover** is where it was: someone Downed in 10 to 80% for the fit's squad (rules 1.23: 0 to 90%). The simulator plays cover badly (rules 1.23, section 5.2).
+5. **With a healer in the squad** the fights are as long as in rules 1.23 (one damage dealer less), and the boss fight on ground with cover is still lost 4 times in 10 at level 6 (5 in 10 before).
+
+### R5. Not met, and what is estimated
+
+1. **The idle pair** (a rifleman, and a caster who does nothing, under two Soldiers): 2.1 / 2.1 / 3.0 / 3.7 rounds to the first Down, 0.4 to 2.7 short of the 4.7 / 4.8 / 4.6 / 4.1 the table was fitted with. **No doctrine reaches it.** Measured for this: the caster alone under ONE Soldier lasts 2.9 / 2.5 / 3.1 / 4.0 rounds (a Soldier's turn on her is 36 / 52 / 63 / 85 HP; on the rifleman 16 / 19 / 30 / 54), so any rule that leaves one Soldier on her gives about this. The old 4.7 needed about three quarters of the fire on the armoured rifleman (**estimated** from those numbers: he takes about 6 Soldier-turns, she about 3, and nine Soldier-turns at two a round is 4.5 rounds, the most this pair can last under any choice of target). **The table change that would do it, not made:** a Soldier's damage down by about half (**estimated**), which would put the lone rifleman at about 6 rounds where the target is 3. I do not recommend it. If a caster in the open should last longer, the lever is her armour and HP.
+2. **The medic, the Sigil healer and the Outburst healer in the open with no tank** are 0.2 to 4.8 rounds shorter than rules 1.23 measured (R3.4).
+3. **The elite fight on open ground** is 4.9 to 6.5 rounds for the fit's squad, a little under 6 to 8: as in rules 1.23, and not the doctrine's to fix.
+4. **Estimated or thin:** every cell is 10 fights (plus or minus a round; a Downed share plus or minus 15 points); the R2 trials are 10 or 20 fights at one level. "When the table was fitted" is the rules 1.23 report's table, not a new run.
+5. **Not measured:** Vermin and Minions (no measured fight has them: "nearest" for them is a ruling, not a fit); levels 3 and 9; enemy casters; the `guns-measure` foes part.
+6. **Not done:** no browser suite, no build; the AI Narrator's prompt is not told about doctrines; no icon on the map marks whom an enemy has chosen.
+
+### R6. Questions for Leon (each with what is built)
+
+1. **Soldiers spread one each, the near ones first; Elites and Bosses go for the wounded they can get at.** Is "it starts at the front" the rule you want? **Built, and recommended:** it is what brings the fitted numbers back, and it gives the player a move (put the tank in front; do not get hurt in the open near an Elite).
+2. **A Boss's escorts spread off the Boss's target** instead of following it. **Built, and recommended.** Following was not built or measured; the nearest thing measured is every enemy on the most hurt, with someone Downed in 40 to 70% of boss fights on open ground against 0 to 20% now.
+3. **Only one Soldier of a line leans on the healer in a round** (the lean is 0.5, an ally's fire is 1), where rules 1.23 had every Soldier lean. **Built, and recommended:** Soldiers are the tier that spreads; the hunt belongs to Elites and Bosses, and it is untouched. To have every Soldier lean again, the healer would be left out of the spread as she is left out of distance: one line, and two healers under three Soldiers would go back toward the 2.4 to 5.7 rounds of rules 1.23 (**estimated**, not run).
+4. **The idle pair's 4.5 rounds is given up** (R5.1). **Recommended:** retire that target; it measured the bug. The control to watch is the caster alone under one Soldier: 2.5 to 4.0 rounds.
+5. **Vermin and Minions take the nearest and never the more hurt further off.** **Built** as asked ("the one in front of them"); not measured.
+6. **The reasons are shown on the intent (the Trickster's Read) and once a fight in the log.** **Built.** Not built: a mark on the map over the chosen target for everyone to see, and a line in the AI Narrator's prompt (no room under its cap without cutting something else).
+
+### R7. Files, and how to run
+
+- Rule: `docs/rules/PHC-Core-Rules-v1.0.md` ("Rules revision 1.25"; one line under the tier table of rules 1.15; section 14 items 1400 to 1412). Data: `data/enemies.json` (`doctrine`, `fire_spread`, `fire_near` on each tier), `data/CONVENTIONS.md`, a check in `tools/validate.py`.
+- Engine: `packages/engine/src/combat.ts` (`doctrineOf`, `enemyRank`, `noteEnemyAim`, `AIM_WHY`, `AimWhy`, `Combat.fire`), `packages/engine/src/physical/ai.ts` (the technique step reads the same choice and remembers its fire).
+- Tests: `packages/engine/test/rules125-doctrine.test.ts` (22); `balance/defence-measure.test.ts` (the cheap "under fire" tests rewritten to the doctrine; the idle pair pinned as not met); one line each in `rules123-defence.test.ts` and `bugsweep-1112.test.ts` (the reason's name).
+- Measure: `DEFENCE_MEASURE=1 DEFENCE_PARTS=fire DEFENCE_LEVELS=1,6,12,20 DEFENCE_OUT=<file> npx vitest run --root packages/engine test/balance/defence-measure.test.ts -t measured`; `DEFENCE_PARTS=fights`; a trial doctrine with `DEFENCE_DOCTRINE=soldier=spread:1:0.2,elite=focus:0:0.1` (tier=doctrine:fire_spread:fire_near).

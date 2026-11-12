@@ -16,6 +16,7 @@ import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { mendFactor, MENDING } from './effects/mending';
+import { deal } from './effects/output';
 import { canReact, useReaction, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
@@ -425,20 +426,17 @@ export { harmFor };
 export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: number, type: 'sigil' | 'elemental' | 'soul' | 'true' | 'physical', dmgType?: string, armour?: 'none' | 'half' | 'full'): string {
   if (t.dead) return '';
   let dmg = Math.floor(raw), out = '';
+  // The one way in (effects/output.ts deal). The number arrives whole (the caller's formula: a Line's, an Outburst's,
+  // a prayer's; they move into the amount itself in the later steps), so there is no Stat or Level term here yet.
   // 'damage_out' for spells (hooks gap A4/F3): the same hook attacks use, before armour, so "+X% against this target"
   // and the caster's own multipliers reach Sigil, Elemental and Soul damage. ctx.spell is true and ctx.mode 'spell';
   // weapon-only handlers check ctx.src.type === 'weapon'. Hazards (burn, short, overload, wall) and blows with no
-  // attacker skip it.
-  if (att && !hurtWhy) {
-    const src: any = { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) };
-    const ctx: any = { att, tgt: t, mode: 'spell', melee: false, spell: true, src, base: dmg, add: 0, mults: [], vs: [] as any[], crit: false, preview: false, cb, mods: cb.mods || [] };
-    emit(cb, 'damage_out', ctx);
-    const vsSum = ctx.vs.reduce((a: number, x: any) => a + x.v, 0); // tactics.ts stackDamage: target bonuses add, capped at +100%
-    dmg = Math.floor(Math.max(0, dmg + ctx.add) * ctx.mults.reduce((a: number, m: any) => a * m.v, 1) * (1 + Math.min(1, Math.max(-0.9, vsSum))));
-  }
-  const ak = armour || (type === 'sigil' || type === 'physical' ? 'full' : type === 'elemental' ? 'half' : 'none'), arm = ak === 'full' ? t.armour : ak === 'half' ? Math.floor(t.armour / 2) : 0;
-  dmg = Math.max(1, dmg - arm);
-  const r = applyDamage(cb, t, dmg, { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}), ...(SPELL_FROM ? { from: SPELL_FROM } : {}), ...(NONLETHAL_BY && att === NONLETHAL_BY ? { nonlethal: true } : {}) } as any);
+  // attacker skip it. Armour by the damage's type (Sigil and physical full, Elemental half, Soul and true none)
+  // unless the caller says otherwise; then the sink.
+  const ak = armour || (type === 'sigil' || type === 'physical' ? 'full' : type === 'elemental' ? 'half' : 'none');
+  const r = deal(cb, att, t, { kind: 'damage', base: dmg, order: 'base', armour: ak, hook: !!att && !hurtWhy }, {
+    hookCtx: { mode: 'spell', spell: true, src: { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) } },
+    src: { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}), ...(SPELL_FROM ? { from: SPELL_FROM } : {}), ...(NONLETHAL_BY && att === NONLETHAL_BY ? { nonlethal: true } : {}) } as any });
   if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
   if (r.downedHit) { emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + t.name + "'s shield takes it" + out;

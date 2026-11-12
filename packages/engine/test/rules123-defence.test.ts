@@ -91,7 +91,7 @@ describe('rules 1.23: the enemies go for the healer', () => {
   it('a Soldier leans (the healer counts as hurt by half its max HP more); an Elite and a Boss put the healer first', () => {
     for (const [tier, hurt, want] of [['soldier', 120, 'Bo'], ['soldier', 90, 'Ada'], ['elite', 20, 'Bo'], ['boss', 20, 'Bo'], ['minion', 199, 'Ada'], ['vermin', 199, 'Ada']] as [string, number, string][]) {
       const f = rig({ tier, weapon: 'hellraiser_service_rifle' }); mend(f, 40); ada(f).hp = hurt; // Bo is at 200 of 200: as if at 100 to a Soldier, first to an Elite
-      G(f, () => { const it = enemyIntent(f.cb, f.foe); expect(f.unit(it.targetId!).name, tier + ', Ada at ' + hurt).toBe(want); expect(it.why, tier).toBe(want === 'Bo' ? 'healer' : undefined); });
+      G(f, () => { const it = enemyIntent(f.cb, f.foe); expect(f.unit(it.targetId!).name, tier + ', Ada at ' + hurt).toBe(want); expect(it.why, tier).toBe(want === 'Bo' ? 'healer' : hurt < 190 ? 'wounded' : undefined); }); // (rules 1.25: the other reason is said too)
     }
   });
   it('Taunt still wins', () => {
