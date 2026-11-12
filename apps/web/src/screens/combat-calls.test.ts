@@ -57,6 +57,9 @@ describe('the Calls tab', () => {
     const chips = Array.from(el.querySelectorAll('button[data-call]'));
     expect(chips.map((b) => b.getAttribute('data-call')).sort()).toEqual(['call.name_it', 'call.rally', 'call.threaten']);
     const th = el.querySelector('button[data-call="call.threaten"]')!;
+    // each chip draws its painted Call icon by catalog id (name_it is name-it); same 20px box, no icon: no img
+    expect(th.querySelector('img[data-call-icon="call.threaten"]')!.getAttribute('src')).toMatch(/\/assets\/call-threaten\.webp/);
+    expect(el.querySelector('button[data-call="call.name_it"] img')!.getAttribute('src')).toMatch(/call-name-it\.webp/);
     expect(th.querySelector('[data-call-meta]')!.textContent).toMatch(/^2 AP · \d+ tiles$/);
     expect(th.querySelector('[data-call-text]')!.textContent!.length).toBeGreaterThan(10);
     expect(th.querySelector('[data-call-save]')!.textContent).toMatch(/^Heart save, TN \d+$/);

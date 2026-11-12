@@ -2,7 +2,7 @@
 // clean SVG with no text; painted art wins once `npm run assets` has built it.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { afterEach, describe, expect, it } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it } from 'vitest';
 import { FEELING_PATHS, MODULE_PATHS, HEART_MARK_PATHS, COMING_SOON_SLOTS, feelingIcon, moduleIcon, heartMark, feelingUri, moduleUri, heartMarkUri,
   comingSoon, setHeartArt, hasPaintedArt, feelingKey, moduleKey, heartMarkKey } from './heartIcons';
 
@@ -21,6 +21,8 @@ function expectCleanSvg(svg: string, size = 24) {
   for (const t of tags) expect(t).toMatch(/^<path d="[MmLlHhVvCcQqAaZz0-9 .\-]+"( [a-z-]+="[^"]*")*\/>$/);
 }
 
+// the code-drawn icons are the fallback: these tests run with no painted art (assets.json now holds all of it)
+beforeEach(() => setHeartArt({}));
 afterEach(() => setHeartArt(null));
 
 describe('Outburst 4.0 icons', () => {
@@ -61,7 +63,7 @@ describe('Outburst 4.0 icons', () => {
     expect(hasPaintedArt('module-ricochet')).toBe(true); expect(hasPaintedArt('module-split')).toBe(false);
     // the rest still draw
     expect(feelingIcon('grief')).toMatch(/^<svg/); expect(moduleIcon('split')).toMatch(/^<svg/); expect(heartMark('felt')).toMatch(/^<svg/);
-    setHeartArt(null);
+    setHeartArt({});
     expect(feelingIcon('rage')).toMatch(/^<svg/);
   });
   it('COMING SOON: muted ink on a raised panel, the name escaped; the slot list is filled in', () => {
