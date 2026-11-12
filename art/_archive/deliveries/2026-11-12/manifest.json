@@ -139,6 +139,48 @@
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
+    },
+    {
+      "path": "art/icons/calls/rally.png",
+      "sha256": "ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566",
+      "id": "rally",
+      "family": "calls",
+      "action": "Rally. Wick rallying the squad: one fist raised high above his head, body leaning forward, three short sound lines fanning up from him. A cheer that lifts people.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/rally.png",
+        "sha256": "bd12799bccfb275bb96b6c89d306520d056373dc39997bfa3cc350268c100a77"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/rally.png",
+        "sha256": "ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/rally.txt",
+        "sha256": "6ccf28a5c8fcefa4151c661ef004785790bbad7f8c2bd91c9ed9dc866dca98a1"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/rally.png",
+        "128": "art/icons/calls/exports/128/rally.png",
+        "64": "art/icons/calls/exports/64/rally.png",
+        "56": "art/icons/calls/exports/56/rally.png",
+        "48": "art/icons/calls/exports/48/rally.png",
+        "44": "art/icons/calls/exports/44/rally.png",
+        "40": "art/icons/calls/exports/40/rally.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
     }
   ]
 }
