@@ -10046,5 +10046,32 @@
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
+  },
+  "calls": {
+    "order": {
+      "id": "order",
+      "label": "Order",
+      "path": "art/icons/calls/order.png",
+      "sha256": "92bf01b08148a8f65dba67a7a3052d340fe25277e6e2a02b02cd5a335503ab75",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/calls/exports/256/order.png",
+        "128": "art/icons/calls/exports/128/order.png",
+        "64": "art/icons/calls/exports/64/order.png",
+        "56": "art/icons/calls/exports/56/order.png",
+        "48": "art/icons/calls/exports/48/order.png",
+        "44": "art/icons/calls/exports/44/order.png",
+        "40": "art/icons/calls/exports/40/order.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/order.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/order.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    }
   }
 }
