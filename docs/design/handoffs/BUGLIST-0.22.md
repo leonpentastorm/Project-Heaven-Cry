@@ -125,3 +125,28 @@ Then back to `SESSION-HANDOFF.md` section 4 (the damage step).
 ## Storm lost its chain when the hit killed (found by Leon, 12 Nov; fixed on the branch)
 
 Live 0.22.0: an Outburst toned Storm at stage 2+ that killed its target did not chain, although the preview showed the chain. Cause: `magic.ts` only counted a target as struck if it was still alive after the hit. Fixed: a killing hit still chains from where it struck. Test: `outburst20.test.ts`, "Storm still chains when the hit kills its target". No golden table moved.
+
+
+## Found by the first full browser run (12 Nov)
+
+`npm run e2e -- all` on the merged tree (descriptors, fog in the engine, rules 1.26) left 8 suites red, each red alone
+too. Three were game bugs, the rest suites that read the old shape of the view. No check was removed or loosened.
+
+| Suite | Kind | Cause | Fix |
+| --- | --- | --- | --- |
+| physical-pack (Called Shot parts) | game bug | the action flow marked an option chip picked only for a `''` choice; Called Shot has none, so no part showed ✓ while Confirm sent LEG | `actionFlow.ts`: with nothing picked, the chip Confirm sends (the `''` choice, else the first; a line's first) shows picked. Test: `apps/web/src/game/actionFlow.test.ts` |
+| physical-pack (Pull free) | stale suite | it nailed the unit by editing the screen's view in place; since fog the view is a copy (Confirm runs on the truth) and the flow caches descriptors per state object | the suite nails the unit on `__phc.truth()` and sends a no-op action so a fresh view arrives |
+| faith (second Whisper) | game bug | `previewDescriptor` of a refused action still asked for its first pick, and the panel shows an ask before a refusal: "Click yourself or an ally" instead of "One Whisper a turn." | `descriptors.ts`: a refused action asks for nothing. Test: `descriptors.test.ts`, "a refused action asks for no pick" |
+| sandbox (Clear all enemies) | game bug | the tools counted enemies in the fogged view: a wave out of sight made the button "Clear all enemies (0)", disabled | `sandbox.tsx` `enemiesLeft()`: unseen hostiles count by their opaque marks in the turn order. Test: `sandbox.test.ts`. The suite reads wave 2 from the truth |
+| camera | stale suite | read the unseen hostile from the view (absent) and its turn-bar card by its real id (the card is keyed `?N`) | unit from the truth; the card found by its mark in the view's order; also checks the view does not hold it |
+| clarity | stale suite | read the Hidden Lurker from the view | from the truth |
+| sandbox-mp | stale suite | read Ona's fighter from the host's view, where it is absent while unseen; the team-fight loop found no current unit on Team B's turns | the host's side checked in the view when seen, and on the truth; the loop is driven from the truth |
+| sigil14 | stale suite | `field()` looked up spawned drill units in the view; the third, out of sight, was missing | from the truth |
+| sigil15 | stale suite (Analyze is fine) | the turn loop read whose turn it was from the host's view; on Ona's turn, unseen, it is `?N`, so the loop never let her draw SHOCK and Leon never Analyzed | the loop reads the truth; the glyph check stays on Leon's view |
+
+Proof: the nine (`physical-pack sandbox faith camera clarity sigil14 sigil15 sandbox-mp faith-pg`) ALL GREEN together
+and each alone. `camera` once failed its drag-click check beside the others (not a check touched here; green alone
+and in two other runs together). Also on the way: `npm run check` was red on four unit tests (`faithArt.test.ts`,
+`heartIcons.test.ts`) left stale by the 12 Nov art hand-off (`55c65c0` painted Rebuke and the feelings, so the
+painted file now wins); they now test the code drawings with an empty art map and Rebuke as painted.
+`protodata.json` is the build's regeneration from the current data.

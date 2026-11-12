@@ -130,7 +130,8 @@ async function run(speed) {
   ok('one "!" each (' + [...bangsBy].map(([u, n]) => u + '×' + n).join(', ') + '), red ink for a hostile', [...bangsBy.values()].every((n) => n === 1) && c.clar.bangs.every((b) => b.kind === 'hostile') && bangsBy.size === c.clar.bangs.length);
 
   // (c) The Lurker: still Hidden, or its own turn gave it away (an attack from hiding is a reveal too).
-  const lurker = g.combat.units.find((u) => u.name === 'Lurker');
+  // (from the host's truth: a Hidden unit is not in the player's view, fog in the engine)
+  const lurker = (await p.evaluate(() => window.__phc.truth().combat.units)).find((u) => u.name === 'Lurker');
   let me2 = g.combat.units.find((u) => u.side === 'pc');
   // (d) Overwatch: the recruit holds a shot, then ends the turn; a drill unit walking in its sight draws it.
   for (let i = 0; i < 30 && g.combat.order[g.combat.turn] !== me2.id; i++) { await pause(p, 250); g = await G(); }

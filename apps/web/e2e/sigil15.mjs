@@ -330,10 +330,12 @@ await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat'
 await ona.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 const hostStudy0 = (await growth(hc.id, host)).study || 0;
 let drew = false, analyzed = false, gr2 = null;
-const turnOf = async () => { const g = await G(host); const cb = g.combat; return { g, cb, cur: cb.units.find((u) => u.id === cb.order[cb.turn]) }; };
+// whose turn it is and where both stand, from the host's truth (fog in the engine: on Ona's turn, out of Leon's sight,
+// the host's view holds only her opaque mark); what Leon sees (the glyph) stays the view's
+const turnOf = async () => { const g = await host.evaluate(() => window.__phc.truth()); const cb = g.combat; return { g, cb, cur: cb.units.find((u) => u.id === cb.order[cb.turn]), seen: (await G(host)).combat }; };
 for (let i = 0; i < 30 && !analyzed; i++) {
   await idle(host); await idle(ona);
-  const { cb, cur } = await turnOf();
+  const { cb, cur, seen } = await turnOf();
   if (!cur) { await pause(host, 300); continue; }
   const mine = cur.charId === hc.id, hu = cb.units.find((u) => u.charId === hc.id), ou = cb.units.find((u) => u.charId === oc.id);
   if (!mine) {
@@ -346,7 +348,7 @@ for (let i = 0; i < 30 && !analyzed; i++) {
       await pause(ona, 400); await idle(ona);
       const e = await must({ type: 'combat/draw', unitId: ou.id, word: 'shock' }, 'Ona draws SHOCK', ona);
       drew = !e;
-      const pos = (await G(host)).combat.units.find((u) => u.charId === oc.id).pos;
+      const pos = (await host.evaluate(() => window.__phc.truth())).combat.units.find((u) => u.charId === oc.id).pos;
       console.log('  Ona at ' + ref(pos) + ', ' + cheb(pos, hu.pos) + ' tiles from Leon; drew: ' + drew);
     }
     await dismissCut(ona); await must({ type: 'combat/end-turn', unitId: ou.id }, 'Ona ends her turn', ona);
@@ -355,7 +357,7 @@ for (let i = 0; i < 30 && !analyzed; i++) {
   if (!drew) { await dismissCut(host); await must({ type: 'combat/end-turn', unitId: hu.id }, 'Leon waits', host); await pause(host, 600); continue; }
   // Leon's turn, the glyph on the ground: Analyze Ona through the action menu.
   await host.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(host); await idle(host);
-  const theirGlyph = (cb.glyphs || []).find((q) => q.word === 'shock');
+  const theirGlyph = (seen.glyphs || []).find((q) => q.word === 'shock');
   ok('Team B\'s SHOCK glyph is on the ground, hostile to Leon (' + (theirGlyph && theirGlyph.side) + ')', !!theirGlyph && theirGlyph.side === 'foe');
   await pickAction(host, /^Analyze/); await pause(host, 200);
   await tok(ou.pos, host).click(); await pause(host, 250);

@@ -51,7 +51,10 @@ await p.locator('#phc-tab-attack').click(); await settle(p, 300);
 ok('a gun in hand has a "Strike (weapon\'s butt)" row', /Strike \(weapon.s butt\)/.test((await panel().locator('[data-act="melee"]').first().textContent().catch(() => '')) || ''));
 // Pull free: nail the player's own unit (as Run Through or Pin Down would) and use the Utility row
 const me = (await G()).combat.units.find((u) => u.charId === cid);
-await p.evaluate((id) => { const st = window.__phc.getState(); const u = st.game.combat.units.find((x) => x.id === id); u.nailed = { by: 'x', id: 'pin_down', ap: 2 }; window.__phc.setState ? window.__phc.setState({ game: { ...st.game } }) : null; }, me.id).catch(() => {});
+// (on the host's truth: since the fog in the engine the screen's view is a copy, and Confirm's action runs against the
+// truth; then any action sends a fresh view, so the screen's per-state caches of the descriptors see the nail)
+await p.evaluate((id) => { const u = window.__phc.truth().combat.units.find((x) => x.id === id); u.nailed = { by: 'x', id: 'pin_down', ap: 2 }; }, me.id).catch(() => {});
+await act({ type: 'sandbox/ai', on: false }); await settle(p, 300);
 await p.locator('#phc-tab-utility').click(); await settle(p, 400);
 const row = panel().locator('[data-act="pullfree"]');
 if (await row.count()) {

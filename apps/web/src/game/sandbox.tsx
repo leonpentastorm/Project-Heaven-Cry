@@ -40,7 +40,7 @@ import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
-import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys } from '@engine';
+import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys, isUnseenId } from '@engine';
 const ITEMS = Object.values(ITEM);
 import { ART, zoneOf } from '../screens/shared';
 
@@ -985,7 +985,7 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   useTilePick(armed, (r) => spawn(r));
   React.useEffect(() => { if (!armed) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setArmed(false); } }; window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true); }, [armed]);
   const mana = cb?.mana ?? game.story.mana ?? 15, band = MANA_BANDS.find((b) => mana >= b.min && mana <= b.max);
-  const foes = gearing ? (game.story.npcs || []).filter((n) => n.side === 'hostile').length : (cb?.units || []).filter((u) => u.side === 'foe' && !u.dead).length;
+  const foes = enemiesLeft(game);
   return <>
     <Section title={gearing ? 'SPAWN A DRILL UNIT ON THE MAP (IDLE UNTIL THE FIGHT)' : 'SPAWN AN ENEMY INTO THE FIGHT'} keys={FIND.spawn}>
       <div style={row}>
@@ -1255,6 +1255,16 @@ function TeamEnd({ game, meId, isHost }: { game: GameState; meId: string; isHost
 }
 
 /** For the room: whether the Proving Ground can open, and why not. */
+/** How many enemies "Clear all enemies" would take away: while gearing up the hostile drill units on the map; in a fight
+ *  the hostiles standing, the ones out of sight counted by their opaque marks in the turn order (fog in the engine: the
+ *  view holds no unseen hostile; the first full browser run, 12 Nov 2026, found the button disabled at "(0)" while a
+ *  whole wave stood out of sight). */
+export function enemiesLeft(game: GameState): number {
+  if (game.phase === 'story') return (game.story.npcs || []).filter((n) => n.side === 'hostile').length;
+  const cb = game.combat; if (!cb) return 0;
+  return cb.units.filter((u) => u.side === 'foe' && !u.dead).length + cb.order.filter((id) => isUnseenId(id)).length;
+}
+
 export function provingGroundWhy(g: GameState | null, isHost: boolean): string | null {
   if (!g) return 'Connecting…';
   if (!isHost) return 'The host opens the Proving Ground.';
