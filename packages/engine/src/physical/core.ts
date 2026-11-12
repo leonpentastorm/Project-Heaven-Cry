@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { say, unsay, type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
+import { say, unsay, type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -304,7 +304,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
     if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
     if (def.needs.last_round && have !== 1) return props.includes('drawn') ? 'Only with the last arrow in the quiver.' : 'Only with the last round in the weapon.'; // a Drawn weapon's u.ammo is its quiver's total (ranged/quiver.ts)
-    if (need > 0 && u.jammed && hand === 'main') return 'Jammed: clear it first.';
+    if (need > 0 && (hand === 'off' ? u.offJammed : u.jammed)) return 'Jammed: clear it first.'; // each gun its own jam
   }
   return null;
 }
@@ -331,9 +331,9 @@ function inHand<T>(t: Tech, fn: () => T): T {
   }
   const ow = WEAPON[u.offWeapon], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, heat: u.heat };
   const pts = (t.c?.skills as any)?.[weaponPhys(ow.id).hits_with];
-  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = (u as any).offAmmoType ?? null; u.jammed = false;
+  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = (u as any).offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
   if (typeof pts === 'number') u.attack = mod(pts);
-  try { return fn(); } finally { if (!t.preview) u.offAmmo = u.ammo; const heat = u.heat; Object.assign(u, keep); if (!t.preview) u.heat = heat; }
+  try { return fn(); } finally { if (!t.preview) { u.offAmmo = u.ammo; setOffJam(u, u.jammed); } const heat = u.heat; Object.assign(u, keep); if (!t.preview) u.heat = heat; }
 }
 /** The rounds a technique uses (the ranged lane: Load Special's chambered round, sets.ts; the quiver's arrows, quiver.ts).
  * pick: the ammo type this strike fires (null type: standard), or null to leave it alone. It runs in previews too,
@@ -689,7 +689,7 @@ export function loseWeapon(t: Tech, at: string | null): void {
     return;
   }
   if (at) dropToPile(t.cb, at, [{ id, name: WEAPON[id]?.name || id, qty: 1, kind: 'weapon', weapon: id } as any], 'drop');
-  if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; }
+  if (t.hand === 'off') { delete u.offWeapon; delete u.offJammed; } else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; }
 }
 
 /** The weapon leaves the hand and stays in a unit it hit (Throw): it is carried there until that unit falls (it drops
@@ -699,7 +699,7 @@ export function loseWeaponInto(t: Tech, target: Unit): void {
   const u = t.u, id = t.hand === 'off' ? u.offWeapon : u.weapon; if (!id || id === 'fists') return;
   let item: any = null;
   if (t.c && GEAR) item = GEAR.lose(t.cb, u, t.hand, null);
-  else { if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; } }
+  else { if (t.hand === 'off') { delete u.offWeapon; delete u.offJammed; } else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; } }
   (target.stuck ||= []).push({ by: u.id, weapon: id, ...(item ? { item } : {}) });
   say(t.cb, '  The ' + (WEAPON[id]?.name || id).toLowerCase() + ' is stuck in ' + target.name + '.');
 }

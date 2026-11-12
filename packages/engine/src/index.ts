@@ -43,7 +43,7 @@ export { aiCall } from './calls/ai';
 export type { CallDef, CallArgs, CallPreview, CallPadEntry, CallHandler, CallMarks, CallKind, CallAim, CallStep } from './calls/types';
 // The client's boundary (engine review 4): the basic actions as rows with the engine's cost and reason, where a move may
 // end and an attack reaches (actions.ts); the one dry run that owns the copy, the bound game and the fog (preview.ts).
-export { ACTIONS, ACTION, basicActions, basicCost, reloadBothRows, reloadOffRows, loadPlan, moveAp, moveOptions, reachOf, reachTiles, pullFreeTargets, pileInReach, type ActionDef, type BasicAction, type ActionCtx, type MoveOptions, type Reach, type ReachWhat } from './actions';
+export { ACTIONS, ACTION, basicActions, basicCost, reloadBothRows, reloadOffRows, offHandRows, loadPlan, moveAp, moveOptions, reachOf, reachTiles, pullFreeTargets, pileInReach, type ActionDef, type BasicAction, type ActionCtx, type MoveOptions, type Reach, type ReachWhat } from './actions';
 export { preview, dryRun, previewAction, withGame, copyFight, shadowGame, fightSeenBy, previewSeenBy, fightWith, type PreviewOpts, type DryRun, type ActionVerdict } from './preview';
 // The perk card in a fight (rules 1.14; engine review 4, finding 9): each held item's shelf, trigger and state, as facts.
 export { perkCards, shelfOf, cardText, cardTrigger, coreWired, PERK_CARDS, LOG_LOOKBACK, type PerkCard, type ShelfId, type CardState } from './perkcard';

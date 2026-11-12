@@ -326,7 +326,7 @@ export type Action =
   | { type: 'combat/gift'; unitId: string; aim: string }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string; targetId?: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
   | { type: 'gear/equip'; charId: string; idx: number | string; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number | string }
-  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string } | { type: 'combat/stim'; unitId: string; targetId: string }
+  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string; /** The off-hand gun's jam (its own Clear jam). */ hand?: 'main' | 'off' } | { type: 'combat/stim'; unitId: string; targetId: string }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
   | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number | string; mod?: number | string; to?: 'main' | 'off' }
   /** Rules 1.9 gear in a fight (items 684–690): draw from the pack into a hand, or put on a light armour piece ('worn');
@@ -342,7 +342,7 @@ export type Action =
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
   | { type: 'gear/give'; charId: string; idx: number; to: string; qty?: number } | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
-  | { type: 'combat/pickup'; unitId: string; tile: string; /** Rules 1.9: the pile entries to take (keys or indices); none: everything. */ take?: (string | number)[] } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string }
+  | { type: 'combat/pickup'; unitId: string; tile: string; /** Rules 1.9: the pile entries to take (keys or indices); none: everything. */ take?: (string | number)[] } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string; /** With the off-hand weapon (its rounds, range and damage). */ hand?: 'main' | 'off' }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
   // Rules 1.7: the Talk panel's asks (1 AP) and approaches (2 AP; poi/try works too), and Search in a fight.
@@ -1542,10 +1542,10 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/search': { if (!u.charId) fail('Only a character searches.'); searchCache(g, g.characters[u.charId!], a.objId, cb!, u); break; } // rules 1.7
     case 'combat/door': err = toggleDoor(cb!, u, a.tile); break;
     case 'combat/load': err = loadMagazine(cb!, u); break;
-    case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c); break;
+    case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c, a.hand === 'off' ? 'off' : 'main'); break;
     case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); if (!err) readDrawnBy(cb!, u, t!); break; } // rules 1.10: its glyphs are read too
     case 'combat/read': err = readGlyph(cb!, u, tileKey(g, a.tile)); break;
-    case 'combat/clear': err = clearJam(cb!, u); break;
+    case 'combat/clear': err = clearJam(cb!, u, a.hand === 'off' ? 'off' : 'main'); break;
     case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
     case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile), a.stroke); break;
@@ -1803,8 +1803,9 @@ const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mod
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
  * a slow, a blind or a guard on them stays; HP, AP, conditions, Flux, Strain and a held Outburst are kept. */
 function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base: Combat['units'][number]) {
-  const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state }), x = u as any, f = fresh as any;
+  const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state }), x = u as any, f = fresh as any, offWas = u.offWeapon;
   for (const k of GEAR_FRESH) { if (f[k] === undefined) delete x[k]; else x[k] = JSON.parse(JSON.stringify(f[k])); }
+  if (u.offWeapon !== offWas) delete u.offJammed; // another off-hand weapon: the old one's jam went with it
   const dDef = fresh.def - base.def, dArm = fresh.armour - base.armour, dMove = fresh.movement - base.movement, dVis = (fresh.vision || 12) - (base.vision || 12);
   if (dDef) u.def += dDef;
   if (dArm) { setEffectiveArmour(u, effectiveArmour(u) + dArm); if (u.baseArmour != null) u.baseArmour += dArm; } // under a Break (rules 1.12) the change goes to what the Break gives back

@@ -152,6 +152,8 @@ export interface Unit {
    * loaded in it now, and (a gun loaded round by round, of another calibre than the main gun) its loose rounds. A
    * character's magazine off-hand gun always has offMags (empty: no spares; review fix: it reloaded for free). */
   offMags?: number[]; offMagTypes?: (string | null)[]; offAmmoType?: string | null; offLoose?: number;
+  /** The off-hand gun is jammed (its own jam: a fumble with it jams it, not the main gun; Clear jam with the off hand clears it). */
+  offJammed?: boolean;
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
   ctrl?: string; companion?: string;
   /** The only actions this unit has (action ids as the action list names them: 'move', 'shot'…), besides ending its
@@ -2042,11 +2044,11 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   try {
   resolveAttack(cb, rng, u, t, mainMode, who, { extra: -1, noAp: true });
   // swap the off-hand weapon in for its own swing or shot
-  const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType };
+  const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
   const skillPts = u.dexterity || 0; // rules 1.12 (item 953): an off-hand gun or light blade hits with Dexterity
-  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null;
+  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
   if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else say(cb, '(off hand: ' + p2.why + ')'); }
-  u.offAmmo = u.ammo; Object.assign(u, keep);
+  u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep);
   } finally { fxChain--; VOLLEY = wasV; }
   emit(cb, 'volley_end', { u, mode: 'paired', target: t, cb, rng }); checkOver(cb); return null;
 }
@@ -2255,8 +2257,22 @@ export function loadMagazine(cb: Combat, u: Unit): string | null {
   say(cb, u.name + ' loads ' + rounds + (rounds === 1 ? ' round' : ' rounds') + ' into a ' + (w.reload_unit || 'magazine') + ' (' + u.mags[i] + '/' + cap + ') for ' + cost + ' AP.');
   return null;
 }
-/** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. */
-export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null): string | null {
+/** The off-hand gun's jam, kept on the unit only while it is jammed. */
+export const setOffJam = (u: Unit, jam: boolean) => { if (jam) u.offJammed = true; else delete u.offJammed; };
+/** Run fn with the off-hand weapon in the main hand's place (its rounds, its jam, its ammo type; no wear, no mods), as
+ * a paired attack does; what fn spent is written back to the off hand and the main hand is put back as it was. */
+export function withOffHand<T>(u: Unit, fn: () => T): T {
+  const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow) return fn();
+  const keep = { weapon: u.weapon, ammo: u.ammo, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
+  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
+  try { return fn(); } finally { u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); }
+}
+/** Shoot an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
+export const coverOffAp = (u: Unit, cb?: Combat | null): number => { const w = u.offWeapon ? WEAPON[u.offWeapon] : null; return w ? Math.max(1, price({ cb, u }, 'break', attackApCost(w, isMelee(w) ? 'melee' : 'shot'), { hand: 'off' }).ap) : 2; };
+/** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. hand 'off':
+ * the off-hand weapon's (its own rounds, jam, range and damage). */
+export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null, hand: 'main' | 'off' = 'main'): string | null {
+  if (hand === 'off') { if (!u.offWeapon || !WEAPON[u.offWeapon]) return 'Your off hand holds no weapon.'; return withOffHand(u, () => shootCover(cb, u, tile, who)); }
   const c = objectsAt(cb, tile).find((x) => x.hp != null && x.hp > 0); if (!c) return 'Nothing there to shoot.';
   // Breaking cover is priced through the items ('ap_cost:break'; Siege Engine: hooks gap A1), at least 1 AP.
   const w = WEAPON[u.weapon], melee = isMelee(w), ap = Math.max(1, price({ cb, u }, 'break', attackApCost(w, melee ? 'melee' : 'shot')).ap);
@@ -2293,7 +2309,18 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }
-export function clearJam(cb: Combat, u: Unit): string | null {
+/** Clear a jam (2 AP, then items; it resets Heat). hand 'off': the off-hand gun's own jam, at the same price. */
+export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): string | null {
+  if (hand === 'off') {
+    const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow || isMelee(ow)) return 'Your off hand holds no gun.';
+    if (!u.offJammed) return 'Not jammed.';
+    const cost = price({ cb, u }, 'clear_jam', undefined, { hand: 'off' }).ap;
+    { const no = whyNot(cb, u, cost); if (no) return no; }
+    const jc: any = emit(cb, 'jam_clear', { u, ap: cost, keepHeat: false, cb, hand: 'off' });
+    pay(cb, u, cost); setOffJam(u, false); if (!jc.keepHeat) u.heat = 0; emitFx(cb, 'clear', { unit: u.id, at: u.pos, dur: 1000, hand: 'off' });
+    say(cb, u.name + ' clears the off-hand gun\'s jam.');
+    return null;
+  }
   if (!u.jammed) return 'Not jammed.';
   const cost = price({ cb, u }, 'clear_jam').ap;
   { const no = whyNot(cb, u, cost); if (no) return no; }

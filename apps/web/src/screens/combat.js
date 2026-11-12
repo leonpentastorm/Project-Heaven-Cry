@@ -444,22 +444,27 @@ export class CombatLogic extends DCLogic {
     if (j < 0) return;
     e.preventDefault(); this.setTab(ids[j], true); sfx('tab');
   }
-  /** Number keys 1–9 anywhere on the combat screen, on your turn (1–4 pick the quick commands while the panel is hidden). */
+  /** Number keys 1–9 (and 0 inside a code) anywhere on the combat screen, on your turn (1–4 pick the quick commands while the panel is hidden). */
   numKey(e) {
-    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !/^[1-9]$/.test(e.key) || !this._mine) return;
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !/^[0-9]$/.test(e.key) || !this._mine) return;
     if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (e.key === '0') { // only inside a code: the next nine rows of the tab named (201 the tenth row of tab 2)
+      const ch = this._chord; if (!ch || PANEL_HIDDEN || Date.now() - ch.at > CHORD_MS) return;
+      e.preventDefault(); this._chord = { ...ch, page: (ch.page || 0) + 1, at: Date.now() }; return;
+    }
     if (PANEL_HIDDEN) {
       const c = (this._quick || [])[Number(e.key) - 1];
       if (c && !c.off) { e.preventDefault(); this.pickAction(c.action); sfx('tab'); }
       return;
     }
     // Two-key codes (Leon, 11 Nov 2026): the first number is the tab, the second the action in it, in the order shown:
-    // 11 the first tab's first action, 42 the fourth tab's second. The tab doesn't have to be open. A second number that
+    // 11 the first tab's first action, 42 the fourth tab's second; past the ninth, a 0 between them per nine (201). The tab doesn't have to be open. A second number that
     // names no action there is read as a tab, as a lone number always is.
     const now = Date.now(), chord = this._chord; this._chord = null;
     if (chord && now - chord.at <= CHORD_MS) {
-      const k2 = ((this._tabItems || [])[chord.tab] || [])[Number(e.key) - 1];
+      const k2 = ((this._tabItems || [])[chord.tab] || [])[(chord.page || 0) * 9 + Number(e.key) - 1];
       if (k2) { e.preventDefault(); this.pickAction(k2); sfx('tab'); return; }
+      if (chord.page) { e.preventDefault(); return; } // a paged code that names no row: nothing (not a tab)
     }
     // Inside the Attack tab (a pad open, or the keyboard in the tab's panel): 1 the first weapon's plain attack, 2 its
     // Techniques, 3 and 4 the second weapon's, 5 Hold a shot. Elsewhere the numbers switch tabs, as before.
@@ -1390,7 +1395,9 @@ export class CombatLogic extends DCLogic {
     this._tabs = tabIds; this._tabOf = tabOf;
     // The two-key codes: each tab's actions in the order shown (the read-only perk rows have none).
     this._tabItems = groups.map((gr) => gr.items.filter((x) => !isPerkInfo(x.key)).map((x) => x.key));
-    { const codeOf = {}; this._tabItems.forEach((ks, ti) => ks.forEach((k, ki) => { if (ti < 9 && ki < 9) codeOf[k] = String(ti + 1) + (ki + 1); })); this._codeOf = codeOf; }
+    // Past the ninth row a 0 turns the page by nine (12 Nov 2026: two guns put the off hand and Both there): 201 is the
+    // tenth row of tab 2, 209 the eighteenth, 2001 the nineteenth.
+    { const codeOf = {}; this._tabItems.forEach((ks, ti) => ks.forEach((k, ki) => { if (ti < 9) codeOf[k] = String(ti + 1) + '0'.repeat(Math.floor(ki / 9)) + ((ki % 9) + 1); })); this._codeOf = codeOf; }
     if (S.tab !== this._tabShown) { // flipping: the new tab's actions slide in from the side it sits on
       this._tabCls = this._tabShown == null ? '' : tabIds.indexOf(S.tab) > tabIds.indexOf(this._tabShown) ? 'phc-slide-in-right' : 'phc-slide-in-left'; this._tabShown = S.tab;
     }

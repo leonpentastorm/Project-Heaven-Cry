@@ -24,6 +24,7 @@ function oldAction(u: any, cb: any, id: string, p: Picks): any {
     case 'shove': return { type: 'combat/shove', ...U, targetId: p.targetId };
     case 'analyze': return { type: 'combat/analyze', ...U, targetId: p.targetId };
     case 'cover': return { type: 'combat/shoot-cover', ...U, tile: p.tile };
+    case 'cover-off': return { type: 'combat/shoot-cover', ...U, tile: p.tile, hand: 'off' }; case 'clear-off': return { type: 'combat/clear', ...U, hand: 'off' }; // (added 12 Nov 2026: the off-hand weapon's own)
     case 'door': return { type: 'combat/door', ...U, tile: p.tile };
     case 'pickup': return { type: 'combat/pickup', ...U, tile: p.tile, ...(p.take ? { take: p.take } : {}) };
     case 'stim': return { type: 'combat/stim', ...U, targetId: p.targetId };
