@@ -171,7 +171,7 @@ register({
         fell = true; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
         say(cb, u.name + ' knocks ' + t.name + ' Prone (' + s.line + ').');
       } });
-      if (!fell) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ':' + (pr.startsWith(' · ' + t.name) ? pr.slice(3 + t.name.length) : ' ' + pr.replace(/^ · /, '')) + '.'); }
+      if (!fell) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + (pr.startsWith(' · ' + t.name + ' ') ? ', who' + pr.slice(3 + t.name.length) : ': ' + pr.replace(/^ · /, '')) + '.'); }
     },
   }],
   brief: () => null,
