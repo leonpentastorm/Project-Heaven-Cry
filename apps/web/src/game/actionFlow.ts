@@ -14,7 +14,7 @@ import { previewDescriptor, actionsFor, stepOn, type ActionDescriptor, type Desc
 
 /** The descriptor previews that run on this flow. A system not listed keeps its own screen code (Sigils and Outbursts:
  *  the glyph keyboard and the HEART panel; a Move's hover route), until it moves here. */
-export const FLOW_PREVIEWS = new Set(['basic', 'attack', 'perk', 'call']);
+export const FLOW_PREVIEWS = new Set(['basic', 'attack', 'perk', 'call', 'prayer']);
 /** Ids that stay with their own screen code even though their system is on the flow. */
 const OWN = new Set(['move', 'sprint', 'disengage']);
 
@@ -84,8 +84,8 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
   // whom it goes to, before the verdict (a Call: "To Keel."; a prayer: "Target: Keel and Vale.")
   const nm = (id: string) => (id === cur.id ? null : (cb.units.find((u: any) => u.id === id) || {}).name || id);
   const who = d.preview === 'call' ? (picks.targetId && picks.targetId !== cur.id ? 'To ' + nm(picks.targetId) + '. ' : d.picks.some((st) => st.key === 'targetId' && st.optional) ? 'To yourself. ' : '')
-    : d.preview === 'prayer' ? ((ids) => (ids.length ? 'Target: ' + ids.map((id) => nm(id) || 'you').join(' and ') + '. ' : picks.tile ? 'Target: tile ' + picks.tile + '. ' : ''))([picks.targetId, picks.targetId2].filter(Boolean)) : '';
-  const text = !pv.ok && pv.why && !pv.ask ? (pv.ask ? '' : who) + pv.why : pv.ask ? pv.ask + (d.preview === 'technique' || d.preview === 'call' ? ' ' + d.text : '') : who + (notes.join(' ') || d.text);
+    : d.preview === 'prayer' ? ((ids) => (ids.length ? 'Target: ' + ids.map((id) => (cb.units.find((u: any) => u.id === id) || {}).name || id).join(' and ') + '. ' : picks.tile ? 'Target: tile ' + picks.tile + '. ' : ''))([picks.targetId, picks.targetId2].filter(Boolean)) : '';
+  const text = !pv.ok && pv.why && !pv.ask ? (d.preview === 'prayer' ? '✕ ' : who) + pv.why : pv.ask ? pv.ask + (d.preview === 'technique' || d.preview === 'call' ? ' ' + d.text : '') : who + (notes.join(' ') || d.text);
   const own = S.picks && S.picks.__id === d.id ? S.picks : {};
   const chips: FlowChip[] = [];
   for (const st of d.picks) {
@@ -120,6 +120,6 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     return { tile: S.tile === k && tile.optional ? null : k };
   };
   const reach = new Set(pv.marks.tiles.filter((t) => t.kind === 'reach').map((t) => t.tile));
-  return { d, pv, picks, cost: pv.ap, reach, sel: { name: d.name + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
+  return { d, pv, picks, cost: pv.ap, reach, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
     after: { tile: null, picks: null, ...(d.preview === 'prayer' ? { target: null, target2: null } : {}) } };
 }

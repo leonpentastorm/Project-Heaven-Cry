@@ -18,7 +18,7 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility } from './combat';
 import { kindOf } from './objects';
 import { basicActions, loadPlan, moveOptions, pullFreeTargets, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
@@ -248,7 +248,7 @@ export function prayOdds(p: { mode: string; roll?: { tn: number; mod: number } }
   return p.mode === 'overreach' ? 'OVERREACH · TN ' + p.roll.tn + ' · ' + pct : 'TN ' + p.roll.tn + ' · ' + pct;
 }
 /** A prayer's target as pick steps. */
-function prayPicks(target: string, valid: string[]): PickStep[] {
+function prayPicks(target: string, valid: string[], seenTiles?: string[]): PickStep[] {
   const unit = (key: string, kind: PickKind, prompt: string, optional = false): PickStep => ({ key, kind, prompt, choices: valid, ...(optional ? { optional } : {}) });
   switch (target) {
     case 'self': case 'none': return [];
@@ -257,7 +257,7 @@ function prayPicks(target: string, valid: string[]): PickStep[] {
     case 'downed_ally': return [unit('targetId', 'ally', 'Click a Downed ally.')];
     case 'dead_ally': return [unit('targetId', 'ally', 'Click a fallen ally.')];
     case 'enemy': return [unit('targetId', 'enemy', 'Click an enemy.')];
-    case 'tile': return [{ key: 'tile', kind: 'tile', prompt: 'Click a tile in sight.' }];
+    case 'tile': return [{ key: 'tile', kind: 'tile', prompt: 'Click a tile in sight.', ...(seenTiles ? { choices: seenTiles } : {}) }];
     case 'two_units': return [unit('targetId', 'unit', 'Click two on the grid.'), unit('targetId2', 'unit', 'Click a second one.')];
     case 'two_allies': return [unit('targetId', 'ally', 'Click two on the grid.'), unit('targetId2', 'ally', 'Click a second one.')];
     default: return [unit('targetId', 'unit', 'Click a target.')];
@@ -592,13 +592,15 @@ const FAITH: ActionSystem = {
     if (!c || u.side !== 'pc' || u.companion) return [];
     if (beliefOf(c).kind !== 'faithful' && (c.skills?.faith || 0) < FAITH_MIN) return [];
     const v: any = safe(() => faithView(g, c.id), null); if (!v) return [];
+    // a place is aimed at a tile this side sees (the view's own sight when it is a player's view, else worked out)
+    const seenTiles = () => safe(() => [...(((x.cb as any).fog && (x.cb as any).fog.tiles) || visibility(x.cb, x.side).tiles)] as string[], undefined as any);
     const row = (kind: string, id: string, name: string, text: string, p: any, tier: number) => {
       const gate = kind === 'whisper' ? (p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? 12) : 'ANYONE') : kind === 'miracle' ? 'FAITH ' + MIRACLE_FAITH + ' · DEVOTION ' + (p.gate ?? GATE.miracle)
         : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ['', 'I', 'II', 'III', 'IV'][tier] + ' · DEVOTION ' + (p.gate ?? '?');
       const odds = prayOdds(p), warn = p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
         : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : '';
       const label = (kind === 'miracle' ? '✦ ' : '') + name + (kind === 'whisper' ? '' : ' · ' + (kind === 'miracle' ? 'MIRACLE' : gate.replace(/ · DEVOTION \d+$/, '')));
-      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || []), preview: 'prayer', toggleOn: 'faith/pray' });
+      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || [], p.target === 'tile' ? seenTiles() : undefined), preview: 'prayer' });
     };
     return [...v.whispers.map((w: any) => row('whisper', w.id, w.name, w.text, w.preview, 0)), ...v.hymns.map((h: any) => row('hymn', h.key, h.name, h.text, h.preview, h.tier)), ...(v.miracle ? [row('miracle', v.miracle.id, v.miracle.name, v.miracle.text, v.miracle.preview, 4)] : [])];
   },
@@ -609,7 +611,7 @@ const FAITH: ActionSystem = {
   preview(x, d, p) {
     const s = parsePrayId(d.id)!, args = { ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.targetId2 ? { targetId2: p.targetId2 } : {}), ...(p.tile ? { tile: p.tile } : {}) };
     const pv: any = safe(() => previewPrayer(x.g, x.u.id, s.kind, s.id, args), null); if (!pv) return null;
-    const lines: PreviewLine[] = [{ k: 'odds', text: prayOdds(pv) }];
+    const lines: PreviewLine[] = [{ k: 'cost', text: prayOdds(pv) }]; // (the odds are in its name too: SURE, TN 12 · 55%)
     if (pv.effectText) lines.push({ k: 'note', text: pv.effectText });
     if (pv.mode === 'overreach' && pv.overreach) lines.push({ k: 'save', text: 'Overreach: you ask above your standing. TN ' + pv.overreach.tn + '; a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP.' });
     else if (pv.mode === 'dice' && pv.roll) lines.push({ k: 'save', text: 'By dice: d20 ' + (pv.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv.roll.mod) + ' against TN ' + pv.roll.tn + '.' });

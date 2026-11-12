@@ -39,12 +39,12 @@ import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, p
 import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
-import { prayerView, vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
-import { FAITH_GOLD } from '../game/faithView';
+import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
+import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
@@ -849,17 +849,16 @@ export class CombatLogic extends DCLogic {
     const simpleTry = isMagic && SIMPLE[S.action] ? tryIt((c, u) => SIMPLE[S.action](c, u)) : null;
     // Where the chosen spell reaches and whom it would touch (for the grid overlay).
     // A prayer (Blessing 2.0; screens/faithCombat.js): its targets picked on the grid, the engine's preview as the verdict.
-    const prSel = mineTurn ? parsePray(S.action) : null, pr = prSel ? prayerView(g, cb, cur, prSel, S, vis.tiles) : null;
-    this._pr = pr;
+    const pr = flow && flow.d.preview === 'prayer' ? flow : null; // a prayer (on the flow): its picks ring in Virtue ink
     const soulAct = S.action === 'outburst' || S.action === 'release' || S.action === 'syphon' || S.action === 'crystallise' || HEART_ACTS.includes(S.action);
-    const famInk = pr ? pr.ink : soulAct ? SOUL_INK : SIGIL_GLOW;
+    const famInk = pr ? FAITH_INK : soulAct ? SOUL_INK : SIGIL_GLOW;
     // A hostile pattern shows only its tiles in sight, and only the words this side can read.
     let mReach = new Set(), tgtIds = [], patTiles = new Set(), aimTile = null;
     if (isMagic && mineTurn) {
       if (S.action === 'draw') mReach = drawReach;
       if (S.action === 'evoke' && hoverPanel) hoverPanel.tiles.forEach((k) => patTiles.add(k)); // the rest is evV's overlay
     }
-    if (pr) { tgtIds.push(...pr.chosen); if (pr.tile) aimTile = pr.tile; }
+    if (pr) { tgtIds.push(...pr.ring); if (pr.picks.tile) aimTile = pr.picks.tile; }
     const tgtSet = new Set(tgtIds);
     /** The little tag over the hovered tile while aiming a spell. */
     const magicTag = (k) => {
@@ -882,7 +881,7 @@ export class CombatLogic extends DCLogic {
     // The AP the picked action takes is always the engine's number: on the flow, its preview (the reducer's dry run, after
     // the items and anything lent: the lend is added back here so the pips can show it as lent); else the system's own.
     const flowLend = flow && flow.action ? encoreCredit(cur, flow.action) : 0;
-    const cost = flow ? flow.cost + flowLend : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : isMagic ? magicCost : isMove ? moveAp : 0;
+    const cost = flow ? flow.cost + flowLend : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : isMagic ? magicCost : isMove ? moveAp : 0;
     // Encore (items 729, 737): the selected action repeats the Miracle's named one: the engine lends its AP (previewAttack and
     // the perk previews already count it); the cost shown is what is left to pay, and the panel says it is free.
     const encoreLend = !mineTurn ? 0 : flow ? flowLend : encoreCredit(cur, tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
@@ -1193,7 +1192,6 @@ export class CombatLogic extends DCLogic {
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
     const pkiE = isPerkInfo(S.action) && mineTurn ? (() => { const sh = pkShelves(); return [...sh.rides, ...sh.always].find((r) => PKI + r.key === S.action) || null; })() : null;
     if (pkiE) { sel.name = pkiE.name + ' · ' + SHELF_LABEL[pkiE.shelf]; sel.text = pkiE.detail; sel.extra = 'Nothing to confirm: this one is here to read.'; }
-    if (pr) Object.assign(sel, pr.sel);
     // A technique (rules 1.12): its name and cost, what to pick next, then the engine's preview in words: each roll's
     // odds and damage, its notes, Momentum now → after, each unit's Pressure and state, any save and its TN.
     if (tsel) {
@@ -1358,7 +1356,7 @@ export class CombatLogic extends DCLogic {
       reaction: c.reaction ? 'true' : 'false', aria: c.name + ', ' + (c.reaction ? 'a reaction' : c.apText) + (c.rounds ? ', ' + c.rounds : '') + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')) + (c.markTitle ? '. ' + c.markTitle : ''), onKey: glyphKeyNav,
       pick: () => { if (c.reaction) return toast(c.name + ' is a reaction: it happens by itself. ' + (c.why || c.help)); if (!c.ok) return toast(c.why); sfx('toggle'); this.setState({ action: c.action, techLine: null, techOpt: null, tile: null, target: needsAlly(c.id) ? null : this.state.target }); this.revealAction(); } })) })) } : null);
     // On the flow, Confirm is the engine's verdict (the descriptor's preview, through the reducer); else the system's own.
-    const cantConfirm = !mineTurn || (flow ? !flow.ready : !!tpadOpen || (tsel ? !tPv || !tPv.ok || !!tAsk : false) || isPerkInfo(S.action) || isMove || magicCant || (pr ? !pr.ready : false) || (MAGIC.includes(S.action) && !isMagic) || (tsel || pr || isMagic ? false : S.action === 'analyze' ? !readSel : true));
+    const cantConfirm = !mineTurn || (flow ? !flow.ready : !!tpadOpen || (tsel ? !tPv || !tPv.ok || !!tAsk : false) || isPerkInfo(S.action) || isMove || magicCant || (MAGIC.includes(S.action) && !isMagic) || (tsel || isMagic ? false : S.action === 'analyze' ? !readSel : true));
     const costNet = Math.max(0, cost - encoreLend);
     const apNow = mineTurn ? (ap - costNet < 0 ? 'needs ' + costNet + ' · ' + ap + ' left' : Math.round((ap - costNet) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur, unseenNow = !cur && !cb.over && isUnseenId(cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
@@ -1548,7 +1546,6 @@ export class CombatLogic extends DCLogic {
     // A perk action that wants a target or a tile takes the click (an ally, anyone, or the tile itself).
     // Its own target first; then a picker's grid field (a second tile, another unit); else the click re-aims the target.
     if (this._vow && this._vow.click(u)) return;
-    if (this._pr && cur) { const patch = this._pr.click(u, k); if (patch) return this.setState(patch); }
     // A perk's form takes a grid click for its own fields (a second tile, another unit) once the move's target is picked.
     if (this._pk && this._pk.P && cur && (this._pk.target || this._pk.e.target === 'none' || (this._pk.e.target === 'tile' && S.tile))) {
       const p = this._pk, other = !!u && u.id !== cur.id, nv = gridPick(p.P, p.V, other ? { id: u.id, side: u.side } : null, k);
@@ -1627,7 +1624,6 @@ export class CombatLogic extends DCLogic {
       return;
     }
     if (MAGIC.includes(a)) return; // a spell for a unit with no magic is never an attack
-    if (parsePray(a)) { const p = this._pr; if (p && p.ready) act(p.payload); return this.setState({ target: null, target2: null, tile: null }); }
     // Rules 1.10: Analyze aimed at a glyph or a trace reads it (its own path: the descriptor's pick is a unit).
     if (a === 'analyze' && S.readTile) { act({ type: 'combat/read', unitId: cur.id, tile: S.readTile }); return this.setState({ readTile: null }); }
   }
