@@ -18,9 +18,9 @@ that can do a piece; no more than two pieces running at once; a reviewer only wh
 - **Merged so far (12 Nov):** rules 1.15 to 1.25 (the balance pass's first half), the one damage formula stage a,
   client boundary 1, engine foundations 1, the text-number truth sweep, performance 1. Each has a hand-off in this
   folder with a "How to add things" section.
-- **In flight, NOT pushed, each on a local branch in a git worktree** (`git worktree list`,
-  `git branch --list 'worktree-*'`). They exist only on the machine the lead ran on. If you are in a fresh container
-  they are gone: redo them from the briefs in section 5.
+- **In flight work is also on the remote as `wip/<branch name>`** (Leon, 12 Nov: "push it"): `git fetch origin 'refs/heads/wip/*:refs/remotes/origin/wip/*'`, then `git branch --list -r 'origin/wip/*'`. A loop pushed them every ten minutes while the lead was alive; a `wip/` branch is the agent's last commit, finished or not: judge it by section 3 before merging, and delete the `wip/` branch once its piece is merged.
+- **In flight, each on a local branch in a git worktree** (`git worktree list`,
+  `git branch --list 'worktree-*'`). In a fresh container use the `wip/` copies; only if a piece has none, redo it from the brief in section 5.
 
 | Piece | Branch prefix | State when this was written |
 | --- | --- | --- |
