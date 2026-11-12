@@ -11501,6 +11501,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-anchor.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-anchor.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-lure": {
+      "id": "module-lure",
+      "label": "an arrow pulling a dot inward",
+      "path": "art/icons/modules/module-lure.png",
+      "sha256": "d334bfc8fc42b7631fbfe83b2d27b0bcc1c86bd8ed1ccaa270c2f8a48016ecf2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-lure.png",
+        "128": "art/icons/modules/exports/128/module-lure.png",
+        "64": "art/icons/modules/exports/64/module-lure.png",
+        "56": "art/icons/modules/exports/56/module-lure.png",
+        "48": "art/icons/modules/exports/48/module-lure.png",
+        "44": "art/icons/modules/exports/44/module-lure.png",
+        "40": "art/icons/modules/exports/40/module-lure.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-lure.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-lure.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
