@@ -11901,6 +11901,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/ui-practice.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/ui-practice.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "ui-felt": {
+      "id": "ui-felt",
+      "label": "a ribbon opening outward, for having felt a feeling",
+      "path": "art/icons/modules/ui-felt.png",
+      "sha256": "18a8e646334b51130e99e81e8d72c1be8dcb35f9dd42775fd3912fbfef100293",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/ui-felt.png",
+        "128": "art/icons/modules/exports/128/ui-felt.png",
+        "64": "art/icons/modules/exports/64/ui-felt.png",
+        "56": "art/icons/modules/exports/56/ui-felt.png",
+        "48": "art/icons/modules/exports/48/ui-felt.png",
+        "44": "art/icons/modules/exports/44/ui-felt.png",
+        "40": "art/icons/modules/exports/40/ui-felt.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/ui-felt.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/ui-felt.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

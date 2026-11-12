@@ -82,14 +82,13 @@
     "module-judgement_mark",
     "module-halo",
     "ui-revert",
-    "ui-practice"
+    "ui-practice",
+    "ui-felt"
   ],
   "awaiting_after_test": "Test styles approved; optional map layout/playtest confirmation still pending",
   "production_approved": false,
-  "remaining_now": [
-    "ui-felt"
-  ],
-  "updated_utc": "2026-11-12T04:26:46.689805+00:00",
+  "remaining_now": [],
+  "updated_utc": "2026-11-12T04:28:08.864382+00:00",
   "outburst_test_verdict": "Leon: Approve both styles and continue",
   "pending_after_test_approval": false
 }
