@@ -50,7 +50,7 @@ function foeAttack(T: Table, key: string, g: any, fId: string, tId: string, crit
 }
 
 // ---------------------------------------------------------------------------------------------- techniques
-const TECH_TRIES = (g: any, u: any, t: any, ally: any) => [
+export const TECH_TRIES = (g: any, u: any, t: any, ally: any) => [
   { targetId: t.id, tile: t.pos }, { targetId: t.id, tile: t.pos, opt: 'head' }, { targetId: t.id }, { tile: t.pos }, {},
   ...(ally ? [{ allyId: ally.id }, { allyId: ally.id, targetId: t.id }] : []), { targetId: t.id, tile: '8,5' }, { tile: '5,5' },
 ];
@@ -92,7 +92,7 @@ function outburst(g: any, uId: string, design: string, stage: number, aim: strin
 }
 
 // ---------------------------------------------------------------------------------------------- prayers
-const PRAY_TRIES = (g: any, u: any, t: any, ally: any) => [{ targetId: t.id }, ...(ally ? [{ targetId: ally.id }, { targetId: ally.id, targetId2: t.id }] : []), { targetId: u.id }, {}, { tile: t.pos }, { targetId: t.id, tile: '8,5' }, ...(ally ? [{ targetId: ally.id, tile: '4,6' }] : [])];
+export const PRAY_TRIES = (g: any, u: any, t: any, ally: any) => [{ targetId: t.id }, ...(ally ? [{ targetId: ally.id }, { targetId: ally.id, targetId2: t.id }] : []), { targetId: u.id }, {}, { tile: t.pos }, { targetId: t.id, tile: '8,5' }, ...(ally ? [{ targetId: ally.id, tile: '4,6' }] : [])];
 function prayers(T: Table, key: string, g: any, uId: string, tId: string, max: { hymn: number; miracle: boolean }) {
   const u = byId(g, uId), t = byId(g, tId), c = charOf(g, u), p = A.FAITH_PATRON[c.patron || c.belief?.patron], ally = pcs(g).find((x) => x.id !== uId);
   if (!p) return;
@@ -140,7 +140,7 @@ export function recordBuilds(T: Table, variants: string[] = VARIANTS) {
 }
 
 // ============================================================================================== weapon
-const SHOOTER = { archetype: 'sharpshooter', level: 6, skills: { dexterity: 6, raw_power: 5, athletics: 4, brain_power: 3, will_power: 3 }, attrs: { agility: 6, strength: 5, perception: 4, intelligence: 3, determination: 3 } };
+export const SHOOTER = { archetype: 'sharpshooter', level: 6, skills: { dexterity: 6, raw_power: 5, athletics: 4, brain_power: 3, will_power: 3 }, attrs: { agility: 6, strength: 5, perception: 4, intelligence: 3, determination: 3 } };
 export function recordWeapons(T: Table) {
   for (const w of Object.values(A.WEAPON) as any[]) {
     if (w.category === 'thrown') continue; // thrown items go off through Throw (the flat section)
@@ -201,7 +201,7 @@ export function recordEnemies(T: Table) {
 }
 
 // ============================================================================================== tech
-const TECH_WEAPONS: Record<string, string[]> = {
+export const TECH_WEAPONS: Record<string, string[]> = {
   melee: ['sabre', 'adamantile_greatsword', 'maul', 'glaive', 'combat_knife', 'fists', 'lance', 'evoker_blade'],
   ranged: ['hellraiser_service_rifle', 'long_rifle', 'blackpoint_700', 'longbow', 'service_pistol', 'lumeri_scattergun', 'hellraiser_lmg', 'recurve_bow', 'crossbow', 'decrkm_smg', 'smetanita_thumper', 'throwing_knives', 'core_rifle'],
 };
@@ -228,7 +228,7 @@ export function recordTechniques(T: Table): Record<string, number> {
 }
 
 // ============================================================================================== sigil
-const CASTER = { archetype: 'sigilist', kit: 'sigil', level: 6, skills: { brain_power: 6, visualization: 4, empathy: 3 }, attrs: { intelligence: 6, expression: 4, insight: 3 } };
+export const CASTER = { archetype: 'sigilist', kit: 'sigil', level: 6, skills: { brain_power: 6, visualization: 4, empathy: 3 }, attrs: { intelligence: 6, expression: 4, insight: 3 } };
 export function recordSigil(T: Table) {
   const g0 = fightSpec([{ ...CASTER }, { ...SHOOTER }], [{ tier: 'soldier' }, { tier: 'elite' }, { tier: 'minion' }, { tier: 'boss' }], { level: 6, seed: 'sigil' });
   const u0 = pcs(g0)[0]; u0.mg.words = Object.keys(A.SIGIL); u0.mg.maxWords = 4; u0.mg.evoker = true;
@@ -278,7 +278,7 @@ export function recordSigil(T: Table) {
 
 // ============================================================================================== outburst
 const HEART = { archetype: 'stormcaller', kit: 'soul', level: 6, skills: { will_power: 6, empathy: 4, composure: 4, lore_master: 3 }, attrs: { determination: 6, insight: 4, virtue: 3 } };
-function heartFight(spec: any, foeSpecs: any[], o: any) {
+export function heartFight(spec: any, foeSpecs: any[], o: any) {
   const g = fightSpec([spec, { ...SHOOTER }], foeSpecs, o), u = pcs(g)[0];
   // the heart is given room (Strain, MP, every feeling felt) so that every stage and feeling can be reached: its multipliers are its own
   Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, strain: 0, strainLimit: 30, feelings: A.FEELINGS.map((x: any) => x.id) });
@@ -362,9 +362,9 @@ export function recordFaith(T: Table) {
 }
 
 // ============================================================================================== item
-const tiersOf = (p: any): string[] => (p.tiers ? Object.keys(p.tiers) : [p.tier === 'acquired' ? 'I' : p.tier]);
+export const tiersOf = (p: any): string[] => (p.tiers ? Object.keys(p.tiers) : [p.tier === 'acquired' ? 'I' : p.tier]);
 /** What an item listens to: its lane handler's hooks and its generic ops' ('stat': it answers a number query). */
-function hooksOf(key: string, tier?: string): Set<string> {
+export function hooksOf(key: string, tier?: string): Set<string> {
   const info = A.itemInfo(key, tier), hd = A.handlerOf(key), H = new Set<string>(Object.keys(hd?.on || {}));
   if (hd?.stat) H.add('stat');
   if (info) info.effects.forEach((e: any, i: number) => { if (A.ownerOf(info, i) !== 'generic') return; const gop = A.genericOf(e.op); for (const k of Object.keys(gop?.on || {})) H.add(k); if (gop?.stat) H.add('stat'); });
@@ -372,10 +372,10 @@ function hooksOf(key: string, tier?: string): Set<string> {
 }
 // One sheet for every holder (every skill and attribute 5, level 6), so a line that differs from the same sheet
 // without the item is the item's doing. Legality is not checked: the sweep reads what the item does, not who may hold it.
-const EVEN = () => ({ level: 6, skills: Object.fromEntries(A.SKILLS.map((x: any) => [x.id, 5])), attrs: Object.fromEntries(A.ATTRS.map((x: any) => [x.id, 5])) });
+export const EVEN = () => ({ level: 6, skills: Object.fromEntries(A.SKILLS.map((x: any) => [x.id, 5])), attrs: Object.fromEntries(A.ATTRS.map((x: any) => [x.id, 5])) });
 /** The standard fight of the item sweep: the holder at 3,6 (hurt), a Soldier next to it (4,6), a hurt squadmate at
  * 2,6, a second Soldier 4 tiles off (7,6), an Elite further off. */
-function itemFight(spec: any) {
+export function itemFight(spec: any) {
   const g = fightSpec([{ ...EVEN(), ...spec }, { name: 'Squadmate', ...EVEN() }], [{ tier: 'soldier', name: 'Soldier' }, { tier: 'soldier', name: 'Far soldier' }, { tier: 'elite', name: 'Elite' }], { level: 6, seed: 'item' });
   const [u, al] = pcs(g), [f, far, el] = foes(g);
   place(g, [[u, '3,6'], [f, '4,6'], [al, '2,6'], [far, '7,6'], [el, '7,9']]); turn(g, u, 9);
@@ -412,7 +412,7 @@ const PROBES: Probe[] = [
   ['shield-given', SHIELD_HOOKS, (g) => run(g, (g2, cb) => { A.grantShield(cb, pcs(g2)[1], 20, pcs(g2)[0]); return null; }).line],
   ['shield-taken', SHIELD_HOOKS, (g) => run(g, (g2, cb) => { A.grantShield(cb, pcs(g2)[0], 20, pcs(g2)[1]); return null; }).line],
 ];
-const ITEM_TRIES = (g: any) => {
+export const ITEM_TRIES = (g: any) => {
   const [u, al] = pcs(g), [f, far] = foes(g);
   const U = [{}, { targetId: f.id }, { targetId: al.id }, { targetId: u.id }, { targetId: far.id }], TI = [{}, { tile: '3,7' }, { tile: f.pos }, { tile: '6,6' }];
   return TI.flatMap((t) => U.map((x) => ({ ...x, ...t })));
