@@ -12,7 +12,7 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 | `attributes.json` | 9 + 3 cores | Attributes with their α/β/γ skills and derived-stat formulas; cores with their economies |
 | `skills.json` | 27 | Slot, what a point gives (`per_point.text`), unlocks at 3/5/7/9/10, Overreach, voice card |
 | `classes.json` | 9 base, 21 advanced (shelved), a pool of 39 moves | Class Roster Revision 3: one base class per attribute, its skills, role, resource and rank I to III moves; `assignment` holds the level-3 rule and the rank gates; the advanced classes are shelved |
-| `archetypes.json` | 46 | Creation presets, guidance only: 9 families including All-in (7/1/1 builds); each archetype spends every creation point (10-point skill preset, all 9 attributes, 3 cores; `tools/archetype_fill.py`) plus class leans |
+| `archetypes.json` | 46 | Creation presets, guidance only: 9 families including All-in (7/1/1 builds); each archetype spends every creation point (10-point skill preset and all 9 attributes; no Core points since rules 1.13, though each item still carries a `cores` block; `tools/archetype_fill.py`) plus class leans |
 | `traits.json` | 74 | Max 2 at creation; upsides, downsides, excludes, Narrator hooks |
 | `perks.json` | 106 | 54 Acquired (2 per skill; one perk step at each Mastery level 3/5/7/9: a Tier I or an upgrade to Tier II), 27 Mastered (one per skill, automatic at 10; provisional), 19 Achieved (combo perks: Mastery 2 in each listed skill plus a deed), 6 Ultimate (secret until granted) |
 | `conditions.json` | 40 | Debuffs (body, brain or heart family), helpful states, Downed |
@@ -31,8 +31,10 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 | `perk_cards.json` | 67 triggers | The perk card in a fight (rules 1.14): for each perk (by tier), trait and skill perk that names the moment it works, that `trigger` in the card's own words (`standing: true` when it is a state, not a moment); `core_wired` (items the core rules look for by id) and `private_count` (limited passives whose count the card can't read). Read by the engine's `perkCards()`; nothing reads a trigger out of card prose |
 | `maps.json` | limits, legend, 1 layout | Maps (rules 1.16): the size limits (26 at most, 8 at least, **provisional**), deployment (10 to 14 tiles), the legend for a map drawn as rows of characters, and the shared open-ground layout (26 × 26). A campaign zone names a layout or draws its own (`docs/design/campaign-format.md`) |
 
+Also in `data/`: `enemies.json` (the five tiers, the level table, companions and casters), `objects.json` (map objects), `world_play.json` (World Play 1.1: piles, caches, hazards, talk), `archetypes.json` above, and `campaigns/` (one file per campaign; format in `docs/design/campaign-format.md`).
+
 ## Loading order
-`rules` → `attributes` → `skills` → `conditions` → `effect_ops` → `weapon_mastery` → `weapons`, `items`, `sigils`, `soul_modules`, `patrons` → `traits`, `perks` → `classes`.
+`rules` → `attributes` → `skills` → `conditions` → `effect_ops` → `weapons`, `items`, `sigils`, `soul_modules`, `feelings`, `patrons`, `techniques`, `calls`, `actions` → `traits`, `perks`, `perk_cards` → `classes` → `enemies`, `objects`, `loot_tables`, `maps`, `world_play`, `archetypes`, `campaigns/`. (`weapon_mastery` is retired and not loaded.)
 All cross-references are by id. Run `python3 tools/validate.py data` after any edit; it must report 0 errors.
 
 ## Engine vs Narrator

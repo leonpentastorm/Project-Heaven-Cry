@@ -38,7 +38,7 @@ Every rule-bearing item carries both:
   - `{"op":"condition","condition":"<id>","target":"<self|target|ally|area>","when":"<trigger>"}`
   - `{"op":"narrator","note":"<what the Narrator must judge>"}` for anything the engine can't adjudicate
 - The full op list lives in `effect_ops.json`. "core" ops (50) are generic and the engine must implement them;
-  "bespoke" ops (about 80, about 10% of all effect uses) belong to one or two items. Implement a bespoke op as a hook on that item,
+  "bespoke" ops (113, about 14% of all effect uses) belong to one or two items; the weapon (17), item (11) and Sigil (1) tiers are the ops of weapon skills, items and Sigil words. Implement a bespoke op as a hook on that item,
   or until then hand the item's `text` to the Narrator. An op the engine doesn't recognise always falls back to
   the Narrator; it is never silently ignored.
 - Effects may also carry `when`, `context`, `duration`, `target`, `uses`, `limit` keys to scope them.
@@ -66,7 +66,7 @@ Every rule-bearing item carries both:
 - `enemies.json` `companions`: stat blocks for companions (`id`, `kind`, `hp`, `defense`, `attack_bonus`, `armour`,
   `movement`, `weapon`), used by a character's `companions: [{id, kind, name, hp?}]`.
 - `objects.json` `electronic: true` marks devices (terminal, lamp, camera, alarm, turret).
-- Condition ids the engine runs are the ones in conditions.json (the long Brain-debuff ids are accepted for `ldebuff`/`rdebuff`).
+- Condition ids the engine runs are the ones in conditions.json (the long Brain-debuff ids are accepted for `ldebuff`/`rdebuff`), and three that are not in it yet: `guarded` and `inspired` (packages/engine/src/magic.ts `CONDS`) and `hesitates` (fighttalk.ts); spec item 1513 (p) asks for one table.
 - Campaign zones may carry `tags`, `terrain`, `in_city`, `urban`, `fear`, `upper_realm`, `faction`; zone NPCs `kind` and `tags`.
 
 ## Sigil words (sigils.json, rules 1.4 and 1.10)
@@ -117,7 +117,7 @@ Every rule-bearing item carries both:
 - After any change here, the golden tables (`packages/engine/test/golden/`) say which actions moved. Record them anew only when a number was meant to move (`GOLDEN_RECORD=1`, see `docs/TESTING.md`).
 
 ## Requirements
-`requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
+`requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.
 `excludes`: array of ids this can't be taken with.
 

@@ -6,7 +6,7 @@
 
 > **Revision 1.10 (2026-11-09), Sigil 1.5:** a Line is a stroke (the glyphs drawn as one); touching glyphs of other strokes no longer poison a Line; Lines stay 2–4 glyphs; study, copying and sigil marks; word mastery and inflections; Junctions at Brain Power Mastered. See Mana, Drawing a spell, rule 3, The Magic panel and learning, and items 901 on. Design: `docs/design/sigil-1.5-spec.md`.
 
-> **Revision 1.11 (2026-11-10), level gains:** every level gives two picks (odd levels 2 Skill points; even levels 1 Skill point and 1 Attribute point) and a Core point comes every 3rd level (3, 6, 9, 12, 15, 18), not every 5th. A class rank needs a level as well as the attribute (rank II level 6, rank III level 12). At creation the budgets are unchanged, the Core-for-Attribute trade is gone, and Mind Without Fog gives 1 Core point, not 2. See Characters, Classes and items 924 on. Design: `docs/design/proposals/2026-11-skeleton.md`.
+> **Revision 1.11 (2026-11-10), level gains:** every level gives two picks (odd levels 2 Skill points; even levels 1 Skill point and 1 Attribute point) and a Core point comes every 3rd level (3, 6, 9, 12, 15, 18) *(superseded by rules 1.13: no level gives a Core point)*, not every 5th. A class rank needs a level as well as the attribute (rank II level 6, rank III level 12). At creation the budgets are unchanged, the Core-for-Attribute trade is gone, and Mind Without Fog gives 1 Core point, not 2. *(Superseded by rules 1.13: it gives 2 extra Attribute points at creation, 12 instead of 10; item 1504.)* See Characters, Classes and items 924 on. Design: `docs/design/proposals/2026-11-skeleton.md`.
 
 > **Revision 1.12 (2026-11-10), Physical 2.0:** techniques for melee weapons (Momentum, a meter on you, built by chaining different techniques and spent by Finishers) and for ranged weapons (Pressure, a meter on the target, built by fire and spent by Takes); weapon properties; ready lists; drill per weapon in place of weapon mastery; the quiver. See Weapons, Physical techniques, and items 932 on. Design: `docs/design/proposals/2026-11-melee-techniques.md`, `2026-11-ranged-techniques.md`. *(Momentum's rule was reworked the same day: it is no longer built by chaining different techniques. Superseded by "Melee: Momentum and the chain" and Revision 1.13.)*
 
@@ -24,6 +24,8 @@
 > - **The perk, unlock and trait pass:** AP gifts on alphas and betas became defences; Grapple is Iron Grip, Origami Hands is Both Hands, Weak Point is Read Them.
 > - **Names:** Analysis is Acuity (Perception), Proficiency is Improvisation (Expression), and Implication, Vigilant and Sensory are Insinuation, Vigilance and Senses; the ids did not change.
 > See Characters, Derived stats, Physical techniques (Momentum, Guard), Calls, Conditions and saves, "The perk, unlock and trait pass", and items 953 on. Design: `docs/design/proposals/2026-11-nine-doors.md`.
+
+> **Revisions 1.14 to 1.25 (10 to 12 Nov 2026)** are written as sections at the end of the body, from "Rules revision 1.14" on. Each overrides what it names in the body, and a later revision wins over an earlier one. Some body lines they change carry an in-place note; many do not, so read the revision sections before relying on a number in the body. Section 14 holds the open items.
 
 2026-11-03 · Leon PT
 
@@ -212,7 +214,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Sigil | 1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power |
 | Soul | 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (rules 1.5; 2.45 maxed) |
 | Healing given | 1 + 0.1 × (Insight − 1) + 0.1 × Empathy (rules 1.13: it was Camaraderie) |
-| Critical | 2 + 0.1 × (Perception − 1) + 0.05 × Dexterity (rules 1.12: it was Athletics; offence sits on the alpha, item 953) |
+| Critical | 2 + 0.1 × (Perception − 1) + 0.05 × Dexterity (rules 1.12: it was Athletics; offence sits on the alpha, item 953) *(Superseded by rules 1.15: ×1.5 + 3% a point of Perception above 1 + 2% a point of Dexterity, ×2.0 at most)* |
 | Ambush | 1.5 + 0.05 × Ingenuity |
 | Blessing power | 1 + 0.1 × Faith |
 
@@ -401,7 +403,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 
 **Points of interest.** Any object can carry a description and **approaches**: the ways to deal with it, each a check (one to three skills and a TN) with stakes and an optional effect the engine applies on success: remove it, open it, reveal something, or disarm it. The Narrator writes them, usually when a player **examines** the object. A player standing on or next to it may **try** an approach instead of speaking that round, and the roll goes to the dice table like any other check. Each character may try each approach once per scene. Every try is recorded on the object, so the party can come back and try another way, or someone else can, without the Narrator setting anything up again.
 
-**Speaking in a fight** costs 0 AP. What a character says or attempts that needs judgement (a bluff, a surrender offer, a prayer) goes in the combat log and is ruled on by the Narrator when the fight ends. A fight costs the AI Narrator one call: the engine runs every roll, move and enemy turn, then sends one report (key moments, who's left where, what was said).
+**Speaking in a fight** costs 0 AP. What a character says or attempts that needs judgement (a bluff, a surrender offer, a prayer) goes in the combat log and is ruled on by the Narrator when the fight ends. *(Superseded by rules 1.14: the Narrator answers inside the fight; plain speech is free, an attempt costs 1 AP once a turn and opens one ruling.)* A fight costs the AI Narrator one call: the engine runs every roll, move and enemy turn, then sends one report (key moments, who's left where, what was said).
 
 **Moving.** Movement is tiles per AP: at Agility 1 every tile costs 1 AP; Agility 3 moves 2 tiles per AP, Agility 5 three, Agility 7 four. Moving N tiles costs N ÷ Movement AP, rounded up. Tiles you've paid for but not walked carry over to the rest of the turn, so half a Movement is never wasted. Before you commit, the grid shows your path and its AP cost.
 
@@ -442,7 +444,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Syphon (refill MP from the air) | 1 |
 | Vent (dump Flux into the air) | 1 |
 | Crystallise (make a mana core) | 3 |
-| Pray | 3 |
+| Pray | 3 *(rules 1.6: a Whisper 1; a Hymn or a Miracle 3)* |
 | Speak a sentence | 0 |
 | Persuade, threaten or parley mid-fight (a skill check) | 2 |
 | Hide (only out of every enemy's sight; rules 1.3) | 2 |
@@ -574,7 +576,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | Elite | 100 | 13 | +5 | 10 | 2 | 5 | 3 |
 | Boss | 200 | 14 | +6 | 10 | 2 | 7 | 4 |
 
-Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers. A Boss counts as 3 kills for weapon mastery. Their Endurance sets their Injury resistance (10% × (Endurance − 1)), like a character's. They carry their weapon's spare magazines, which they reload from like anyone else. When a gun runs dry they fight with their fists, and what they carry is there to be stolen or looted: when they die, their weapon, their leftover magazines and what the drop tables roll land in the pile where they fell (rules 1.9, World Play: Drop tables).
+Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers. *(Superseded by rules 1.15: an enemy deals its weapon's damage × its tier's damage factor × its level's damage factor.)* A Boss counts as 3 kills for weapon mastery. Their Endurance sets their Injury resistance (10% × (Endurance − 1)), like a character's. They carry their weapon's spare magazines, which they reload from like anyone else. When a gun runs dry they fight with their fists, and what they carry is there to be stolen or looted: when they die, their weapon, their leftover magazines and what the drop tables roll land in the pile where they fell (rules 1.9, World Play: Drop tables).
 
 ## Weapons
 
@@ -1052,7 +1054,7 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
    - a **Finisher** needs Momentum 2, spends all of it, and is the last melee technique of the turn;
    - an **Answer** is a reaction: it fires on its trigger, on anyone's turn.
 5. **Walking costs Momentum:** −1 for each tile you move by a walk, a Sprint or a Disengage. A forced move (a push, a pull, a throw) costs none; neither does a Link's own move (Sidestep, Drag's step), a technique's own step or run (Lunge's step, Charge's run when the run is part of Charge), or a free step from a perk or a class move. Move with a Link to keep your Momentum.
-6. **Being hit costs Momentum:** −1 each time you take a damaging hit, from any source. Not while you are guarding: the Guard technique is up, the hit was Parried, or you hold Guard points.
+6. **Being hit costs Momentum:** −1 each time you take a damaging hit, from any source. Not while you are guarding: the Guard technique is up, the hit was Parried, or you hold Guard points. *(The engine keeps Momentum only when the Guard technique is up, the Parry won, or Guard soaked part of the hit; item 1004 is open for Leon's ruling.)*
 7. **Momentum carries from turn to turn.** Nothing drops it at the end of a turn.
 8. **A set-up** (Feint, Sidestep) marks one target for your next technique this turn, and is spent by it.
 9. **A technique's save** (Leon, 10 Nov 2026) is against 12 + **half** your strength with the skill the weapon hits with, rounded up, plus the technique's own step: 10 points in the skill (strength 9) is +5 (TN 17), 6 points +3, 2 points +1; an enemy's tier number is halved the same way (minion 0, soldier +1, elite +1). This is every save a technique itself forces, melee and ranged (Bash, Trip, Feint, Keep Back, Guard with Reach, walking away from a Bind, a Stop, Rout, Pin Down, Stopping Shot). A condition applied with its own save (Bind's grapple) keeps the full strength, as Sigils, Outbursts, prayers and speech do.
@@ -1066,7 +1068,7 @@ Guard is a pool of points that takes hits for you. Anyone with Durability has on
 3. **Bracing for Guard is not bracing the weapon.** A weapon that had the Brace action before rules 1.13 (one that must be braced, one at −2 unbraced, one whose skill is a braced bonus) is set as before: Recoil halved, its penalties gone, its techniques' Braced lines open. With any other weapon, Brace sets only you: you gain the Guard and stand in the braced stance that class moves ask for, and nothing else. The Brace technique (ranged, 16) still sets such a weapon where its own rule allows.
 4. **Guard soaks.** When a hit would take HP, each Guard point takes 10 damage off it and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
 5. **Pressure comes off Guard first:** each point of Pressure that would land on you costs 1 Guard instead, with no reaction, while you have any.
-6. **Momentum.** A hit on a unit that holds Guard points costs it no Momentum.
+6. **Momentum.** A hit on a unit that holds Guard points costs it no Momentum. *(See item 1004: the engine asks that Guard soaked part of the hit.)*
 7. **Interpose (Durability 3).** An Answer everyone with Durability 3 has, whatever is in the hands: when an ally next to you is hit by an enemy's attack, spend 1 Guard and your reaction to take the hit instead. The damage is worked out again against you, so your armour applies; your shield and the Guard you have left then soak it. A critical hit's injury follows the hit to you. It works while Suppressed (it protects). You switch it off like any Answer.
 8. **The Defender.** A Defender Interposes by the class move (and that move's policy), not by the Answer. A Defender with Reactive Plate spends Guard through the plate and its policy (spend what it takes, keep 1, off); the soak of rule 4 stands aside for that unit, so Guard is never spent twice on one hit.
 
@@ -1474,7 +1476,7 @@ Magic has its own tab on the character sheet, **MAGIC**. It lists the Sigil word
   5. **Mastery study.** Each Mastery level (3/5/7/9 points) in **Brain Power, Rumination or Eloquence** gives **+5 study**, once. **Mastered** (10) in one of them gives **one free word** that ignores the cap, once per skill.
   6. **Bonus sources** stay as before: a tutor, a Sigil plate, an ally who knows the word, or a Narrator grant, **one new thing a scene** from those. A Narrator grant that comes when the scene's new thing is spent, or with no slot free, isn't lost: the word joins your known-to-study list.
 - **Rules revision 1.10: word mastery.** Every word you know has a **use count**: each Evoke that includes it adds 1 (a word twice in one spell still adds 1). At **10** uses the word is **Practised** (a star on its chip); at **30** it is a **Mastered word** (a filled star) and its **inflection** is always on for you: one small upgrade of that word (about 10%, or +1 of something; never a new shape). The 40 inflections are in sigils.json (`inflection`), all provisional (item 916). Your inflections apply to the spells you Evoke, including words an ally drew, and to the fields, traps and turrets those spells leave. An inflection the engine doesn't run falls back to the Narrator with its text.
-- **Learning Outbursts is living.** New schools and modules come from tutors, and from experience: after a moment that shakes a character (a death, a vow, a betrayal), the Narrator may grant one module that fits it, like an Achieved perk. Designs are made out of combat; you keep 2 + floor(Empathy ÷ 2) ready.
+- **Learning Outbursts is living.** New schools and modules come from tutors, and from experience: after a moment that shakes a character (a death, a vow, a betrayal), the Narrator may grant one module that fits it, like an Achieved perk. Designs are made out of combat; you keep 2 + floor(Empathy ÷ 2) ready *(rules 1.13: 2 + floor(Will Power ÷ 2), at least 3)*.
 
 ### Sigil magic: commands written on the map (Mind, through an Evoker)
 
@@ -1513,7 +1515,7 @@ Every word answers one question:
 | SLOW | Slowed (Body save) | 1 |
 | MUDDLE | Left Brain Debuff (Brain save) | 2 |
 | DREAD | Shaken (Heart save) | 2 |
-| SILENCE | Silenced: no Sigils, Outbursts or prayers for 1 round (Brain save) | 2 |
+| SILENCE | Silenced: no Sigils, Outbursts or prayers for 1 round (Brain save) *(and no Calls: rules 1.13)* | 2 |
 | COMMAND | Brain save, or **Commanded**: the target obeys one order on its next turn, picked by you from the menu: halt, kneel (Prone), drop its weapon (Disarmed), or move up to 3 tiles where you choose (never into harm: a field, a trap you know of, a ledge) | 3 |
 
 **Boons: support** (no hit roll, no save)
@@ -1735,7 +1737,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 1. **Damage school base 28** (rules 1.17; it was 20; an enemy caster's is 18: item 1056) *(Superseded by rules 1.19 (item 1222): 40 for a character, 24 for an enemy caster)* × the **Soul multiplier** (1 + 0.05 × (Determination − 1) + 0.1 × Will Power; 2.45 maxed) × the stage multiplier × the shape's multiplier.
 2. Maxed (2.45): a snap cast 54, a full turn's stage 3 137, a stage 4 164, before feelings. *(Superseded by rules 1.19: with base 40 and the ×0.8 to ×1.6 table a snap cast is 78, a stage 3 137, a stage 4 157.)* Outburst is the steady school: about 125% of a plain rifle in normal play, about 150% with the biggest Pump possible (rules 1.17).
 3. **Raw** (no tone): Soul damage, **armour ignored**. **An element:** Elemental damage, **armour counts half** (Stone from stage 1: in full).
-4. **Hitting.** A **Bolt** and a **Lance** roll Will Power against each target's Defense (half cover −5; a natural 20 is a critical, **×1.5 to ×2.0 at most** since rules 1.17; a natural 1 misses; the roll reads the level gap, ±1 a level). **Wave, Burst and Aura don't roll**: everyone in the area is hit. **At Once** makes a Bolt or Lance land with no roll at half damage. *(Superseded by rules 1.17: at ×0.8.)* Control and Status call for saves (12 + your debuff strength), as before.
+4. **Hitting.** A **Bolt** and a **Lance** roll Will Power against each target's Defense (half cover −5; a natural 20 is a critical, **×1.5 to ×2.0 at most** since rules 1.17; a natural 1 misses; the roll reads the level gap, ±1 a level). **Wave, Burst and Aura don't roll**: everyone in the area is hit. **At Once** makes a Bolt or Lance land with no roll at half damage. *(rules 1.17: ×0.8)* *(Superseded by rules 1.17: at ×0.8.)* Control and Status call for saves (12 + your debuff strength), as before.
 
 #### 3. Strain, the burn, the Mana Short and calming the heart
 
@@ -1813,7 +1815,7 @@ The same element ids, riders and effects as Sigil 1.4 (sigils.json `elements`), 
 | Ether | survives: no sight needed; absorbs Teleport |
 | Right, Left | survive: the Status save family |
 | Time | survives: conditions +2 rounds (the "half again next turn" damage is gone) |
-| Inverse | survives: damage becomes a shield on allies |
+| Inverse | survives: damage becomes a shield on allies | *(Superseded by rules 1.20: Inverse's shield has its own number, 10 × the Soul multiplier × the stage × the level factor; it reads no damage)*
 | Size | changed: a shape +1 (Lance +2); a Bolt can't take it |
 | Random | survives: the aim picked among creatures within reach |
 | Impact | survives (no effect: the default); retired in rules 1.17 |
@@ -1882,7 +1884,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 - The first tone is free at **Lore Master 1** (was Visualization 1): picked with the starting design or the first toned design. More from tutors, plates and the Narrator, as before.
 - A toned Outburst uses the **Soul multiplier only**, never the Elemental one (Expression and Visualization). Storm Hand's Infusion and Discharge, which run through an Emanator gauntlet, also use the Soul multiplier (item 802). Sigil keeps the Elemental multiplier; Visualization stays a Mind skill (Sigil forms, the Elemental multiplier, the Trickster).
 
-**2. The stage table and the snap cast.** Stage 0 is now **×0.8** (was ×0.6): **0 → ×0.8, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2** (rules 1.17: ×0.8, ×1.2, ×1.6, ×2.0, ×2.4). A snap cast (Begin and Release at once, 3 AP) and a Begin released straight away are the same thing at ×0.8 (item 803).
+**2. The stage table and the snap cast.** Stage 0 is now **×0.8** (was ×0.6): **0 → ×0.8, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2** (rules 1.17: ×0.8, ×1.2, ×1.6, ×2.0, ×2.4) *(rules 1.19: ×0.8, ×1.0, ×1.2, ×1.4, ×1.6)*. A snap cast (Begin and Release at once, 3 AP) and a Begin released straight away are the same thing at ×0.8 (item 803).
 
 **3. Feelings.**
 1. **Pouring one in.** While you hold an Outburst, each **Pump** (1 AP, or a free one) is **plain** (+1 stage, as before) or a **feeling pump**: +1 stage and one feeling you know. A feeling pump has **its own step** on the multiplier instead of the plain +0.4 *(rules 1.19: the plain step is +0.2, and each feeling goes into an Outburst once)*: the release's multiplier is the stage table's, plus (step − 0.4) for each feeling pump (item 804). Stages from the swell, Feeding, Overdraw and Heart Surge are plain. Up to stage 4, as now. Feelings stack with themselves (Rage, Rage, Rage is three Rage steps) and combine freely with each other, the tone and the modules, each rider by its own rules ("lightning love" heals the allies it touches and chains by Storm's rule, healing along the chain).
@@ -1927,7 +1929,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 
 | Module | Gate | What it does |
 |---|---|---|
-| Split | Empathy 2 | a Bolt also strikes the nearest other creature it can reach within 2 of the aim (the same side rule), at full power |
+| Split | Empathy 2 | a Bolt also strikes the nearest other creature it can reach within 2 of the aim (the same side rule), at full power | *(rules 1.23: a Split heal or shield is divided, ×0.8 each; a harmful Split is unchanged)*
 | Ricochet | Lore Master 4 | a Bolt needs no line of sight and ignores half cover when a wall or cover tile lies within 2 of the aim (a bank shot) |
 | Fuse | Lore Master 4 | the release lands and waits: it goes off at the start of your next turn, or when a creature steps into its area, whichever is first |
 | Return | Lore Master 4 | a Bolt or Lance goes out and comes back: each target is struck twice (each strike rolls) | *(rules 1.17: the second strike is ×0.3)*
@@ -2218,7 +2220,7 @@ the fight's and the scene's do (item 722).
 column of the patron table below), **and Witnessed ends**: to be watched again you need another successful Hymn. **Once
 a fight; twice a fight from Devotion 7** (the second still needs a new Hymn first). Nerukhan's Soul, Mother Ember's heal
 and Old Overcast's Storm are **20 + 4 × Devotion** (32 at Devotion 3, 48 at 7, 60 at 10), × Blessing power as every
-faith number is. The Quartermaster answers three things: a reload of yours (free), your Evoker's core running dry (a fresh
+faith number is. *(Superseded by rules 1.20 for Mother Ember: her heal is (10 + 3 × Devotion) × Blessing power, with no level factor; the two damage interventions keep 20 + 4 × Devotion.)* The Quartermaster answers three things: a reload of yours (free), your Evoker's core running dry (a fresh
 core slots in, free) and your MP running out (25% of your max MP back). The engine emits one fx event per intervention.
 
 **Rites.** Each patron has two: an **engine rite** (a story button: a confession or a challenge at any time out of a
@@ -2238,8 +2240,8 @@ figure of a living religion.
 | **Holy Father Nerukhan** (judge-saint) | judge, mercy, protect | betray, desecrate | Jealous | Saint's Shield: an ally gains a 16 shield (rules 1.22; 12 in rules 1.20, 40 before) | Judgement: an enemy takes 56 Soul (12 Nov 2026; 42 in rules 1.22, 50 in rules 1.21); ×1.3 if it harmed the helpless (rules 1.21; it was 40 and ×2) | Absolution: an ally is cleansed of every condition and heals 9 (rules 1.22; 7 in rules 1.20, 30 before) | The Saints' Verdict: every enemy in sight takes 130 Soul (rules 1.21; it was 100) and is Stunned 1 round; those that harmed the helpless this fight take double and are Stunned 2 rounds | an enemy damages a surrendered or Downed creature: it takes 20 + 4 × Devotion Soul |
 | **The Quartermaster** (logistics god) | supply, hold, protect | flee, desecrate | Open | Resupply: an ally reloads every weapon free and regains 1 Supply *(up to their maximum)* | Dig In: an ally is dug in (half cover) until they move, and Braced | Covering Fire: a 3×3 area; enemies in it make a Body save or are Pinned 1 round | Requisition Approved: the whole squad is fully restocked (ammo, Supplies, throwables), gets 2 standard cores each, all gear repaired to full, jams and heat cleared, and +3 AP next turn | you reload (any reload): it is free, its AP comes back; your Evoker's core runs dry (charge 0): a fresh core slots in, free; your MP runs out (0): 25% of your max MP back |
 | **The Laughing Mask** (trickster) | trick, burn, flee | cower, mercy | Open | Lucky Break: an ally's next 2 failed attack rolls are each rerolled at +5 (rules 1.21; it was 1) | Switcheroo: swap two units in sight within 6 of you (an enemy gets a Brain save) | Pratfall: an enemy makes a Body save or falls Prone and drops its weapon | Encore: every ally may repeat the last action they took this round for free, and every enemy in sight is Confused 1 round | an enemy misses you: it falls Prone |
-| **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP; not again for 6 rounds (rules 1.22) | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: every ally who died or fell (Downed) this fight stands at half HP | an ally would drop to 0 HP: they stay at 1 HP |
-| **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 13 (rules 1.22; 10 in rules 1.20, 40 before) | Hearthlight: a 3×3 area; allies starting a turn in it heal 4 (10 before rules 1.20), for 3 rounds | Feed the Fire: an ally gets +2 AP now (rules 1.21; it was +1) (ceiling applies) and loses Weakened and Slowed | Everyone Home: the whole squad heals to full, the Downed stand, every harmful condition is cleared, and each gets a 40 shield | an ally drops below a quarter HP: they heal 20 + 4 × Devotion |
+| **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP *(rules 1.20: with 5 × Blessing power × the level factor)* | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP; not again for 6 rounds (rules 1.22) | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: every ally who died or fell (Downed) this fight stands at half HP | an ally would drop to 0 HP: they stay at 1 HP |
+| **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 13 (rules 1.22; 10 in rules 1.20, 40 before) | Hearthlight: a 3×3 area; allies starting a turn in it heal 4 (10 before rules 1.20), for 3 rounds | Feed the Fire: an ally gets +2 AP now (rules 1.21; it was +1) (ceiling applies) and loses Weakened and Slowed | Everyone Home: the whole squad heals to full, the Downed stand, every harmful condition is cleared, and each gets a 40 shield *(rules 1.20: 17)* | an ally drops below a quarter HP: they heal 20 + 4 × Devotion *(rules 1.20: (10 + 3 × Devotion) × Blessing power)* |
 | **Old Overcast** (thunder sky-father) | storm, kill, hold | flee, cower | Jealous | Thunderclap: enemies within 2 of a tile take 20 lightning (rules 1.21), are pushed 1 and make a Heart save or are Shaken | Lightning Rod: 56 lightning to an enemy, then 23 to one more within 2 (12 Nov 2026; 42 and 17 in rules 1.22, 50 and 20 in rules 1.21) | Gather the Clouds: until your next turn, allies' Storm riders count a stage higher | The Sky Answers: a 5×5 area in sight takes 150 Storm, enemies only (the sky picks), and they are Stunned 1 round and Shaken | you kill an enemy: 20 + 4 × Devotion Storm (lightning) to the nearest other enemy |
 | **The Matchmaker** (love goddess) | protect, mercy, heal | betray, kill (of the surrendered or Downed) | Open | Red Thread: two allies are linked for 2 rounds; damage to either is split between them | Sweet Nothings: an enemy makes a Heart save or is Smitten (can't attack you or your linked allies) next turn | Together: two adjacent allies get +2 to hit and +2 Defense until your next turn | Love Conquers: every non-boss enemy in sight surrenders, no save; a boss (or one that can't yield) makes a Heart save or is Commanded to hold 1 round | an ally next to you is hit: half the damage moves to you |
 | **The Counting Weaver** (fate-spinner) | hold, trick, judge | flee, betray | Open | Foreknowing: the next 2 attacks against an ally miss (rules 1.21; it was 1) | Unravel: every boon, shield and helpful state on an enemy ends | Cut Short: an enemy makes a Heart save or loses its next turn (bosses lose 2 AP); not the same enemy two rounds running (rules 1.21) | Rewoven: the squad takes another full turn now, and every ally's HP goes back to what it was at the start of this round, if that was higher | an enemy crits you: it becomes a normal hit |
@@ -2280,7 +2282,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Damage, in order.** Every loss of HP goes through one chain: the attack (or blast, spell, hazard) works out its damage and its armour, then **reductions** (percentages and flat ones, immunities), then the **shield**, then the **last-HP check** (a rule that keeps you standing at 1 HP acts here; several such rules apply in this order: Angel of the Trenches, Bite the Bullet, Last Wall), then HP, then what follows (wounds, Downs, kills). Kill credit goes to whoever took the last HP; Bleeding and Burning credit whoever caused them, a broken barrel whoever broke it.
 
-**Damage types.** Physical by default. Each weapon names its type (weapons.json `damage_type`): the flamer and incendiary rounds deal fire, the core rifle and Enhanced rounds Elemental, SHOCK and SPARK lightning, the bot-scrambler emp. Fire and lightning count as Elemental for *Elemental damage taken*. Grenades, launchers, satchels and barrels are **explosive**. The derived reductions apply in the chain: Elemental damage taken −10% × Pain Threshold, Ambush damage taken −10% × Reaction Speed, Critical damage taken −10% × (Perception − 1) − 5% × Durability (it shrinks the critical multiplier's bonus), each capped at 60%. Healing and shields received get +10% × Sensory. The air's Healing given multiplier applies to magical healing.
+**Damage types.** Physical by default. Each weapon names its type (weapons.json `damage_type`): the flamer and incendiary rounds deal fire, the core rifle and Enhanced rounds Elemental, SHOCK and SPARK lightning, the bot-scrambler emp. Fire and lightning count as Elemental for *Elemental damage taken*. Grenades, launchers, satchels and barrels are **explosive**. The derived reductions apply in the chain: Elemental damage taken −10% × Pain Threshold, Ambush damage taken −10% × Reaction Speed, Critical damage taken −10% × (Perception − 1) − 5% × Durability (it shrinks the critical multiplier's bonus), each capped at 60%. *(Superseded by rules 1.13: ambush damage taken is Improvisation's, critical damage taken Acuity's; see Derived stats.)* Healing and shields received get +10% × Sensory. The air's Healing given multiplier applies to magical healing.
 
 **Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel; Case Closed and Weak Point left this list with rules 1.13 *(Case Closed is back on it: Leon, 10 Nov 2026, item 1503)*) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
 
@@ -2464,7 +2466,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 - **Everything else:** a camera, an alarm, a terminal or a turret is marked `disabled`, and the Narrator is told.
 
 **Forlorn Hope.**
-- **Charge:** if you end a turn closer to the nearest enemy than you started it, +2 AP are banked for next turn, under the +3 cap.
+- **Charge:** if you end a turn closer to the nearest enemy than you started it, +2 AP are banked for next turn, under the +3 cap. *(Superseded by rules 1.14: in a fight once every 3 of your turns.)*
 - **No Way Back:**
   - you can't Disengage;
   - you can't Retreat;
@@ -2642,7 +2644,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 ### Identity, economy and upkeep traits
 
 - **Karma locks.**
-  - *Locked at its value* (Mind Without Fog): no award moves it, including Conscience's +1.
+  - *Locked at its value* (Mind Without Fog): no award moves it, including Conscience's +1. *(rules 1.13: Authority's)*
   - *Locked to a band* (Symbol of Order: Lawful, starting at +30; Rogue Element: Chaotic, starting at −30, set at the
     first session start):
     - The band edge holds. Every point an award would carry past the edge is owed as "pressure".
@@ -3162,7 +3164,7 @@ Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md`, s
 2. **A gun whose price is its ammunition may reach the full 150%.** That is a gun whose round costs 40 credits or more: the .700 Blackpoint, the thumper, the flamer, the breacher tube (a rifle round costs 2).
 3. **A technique beats the plain Shot for its AP by 10 to 25% when its condition is met; a Burst deals more than the Shot for its AP and is worse to hit** (answers 2 and 3).
 4. **The plain rifle does not move, and neither does what enemies deal** (the enemy table of rules 1.15).
-5. Guns end below a full Sigil Line (150 to 200%, rules 1.17) and level with the biggest Outburst (150%).
+5. Guns end below a full Sigil Line (150 to 200%, rules 1.17) and level with the biggest Outburst (150%). *(Rules 1.19 (item 1222): the Outburst is about 135% steady and 165% at its biggest.)*
 
 ### What made 170 to 224%
 
@@ -3394,6 +3396,8 @@ Built on 12 Nov 2026 from Leon's ask ("Do a pass on heal and shield. For both si
 
 *Rules 1.23 changes two things here: **the round limit of section 7 is withdrawn** (Leon, 12 Nov 2026), and the level factor of section 3 now covers the medic's kit too. The bands row "Nothing makes a squad unkillable" is answered by the enemy AI, not by a limit.*
 
+*Rules 1.22 changes the prayers here: a Hymn waits 9 − 0.75 × Faith − 0.25 × Virtue rounds, never under 3, so nobody prays a Hymn every turn (the bands row and the "(3 AP, every turn)" rows below were measured before it), and Absolution heals 9.*
+
 ### 1. The yardstick: one Soldier's turn
 
 Leon gave no number, so the pass needs a unit. **A Soldier-turn** is what one Soldier of the fight's level takes off the plain rifleman (service rifle, Class 3 armour, a normal share of points) in one of its turns, after armour, misses counted. Measured on the ground the rules 1.15 table was fitted on (60 fights a level):
@@ -3425,7 +3429,7 @@ They mirror the damage rulings of rules 1.17 and 1.19, with a Soldier-turn in th
 | An area: all the allies in it together | at most about 1.6 times the single heal |
 | Lifesteal (LEECH, Drain): a share of the damage dealt, the caster only | not fitted (it moves with damage) |
 | A Whisper (1 AP, once a turn) | 30 to 40% |
-| A healing Hymn (3 AP; from Virtue 4 its cooldown is one round, so it is prayed every turn) | 60 to 75% |
+| A healing Hymn (3 AP; from Virtue 4 its cooldown is one round, so it is prayed every turn) | 60 to 75% | *(Superseded by rules 1.22: a Hymn waits 9 − 0.75 × Faith − 0.25 × Virtue rounds, never under 3)*
 | A patron's healing intervention | about 150% |
 | All in (every point in the healing skill) | may pass the bands by about half |
 
@@ -3479,7 +3483,7 @@ Why a shield is ×1.2 and no more: a point of shield is a point of HP here (it i
 | Whisper: Protection | a shield of 15 | a shield of **6** |
 | Hymn: Warm Hands (Mother Ember I) | heals 40 | heals **10** (rules 1.22: **13**) |
 | Hymn: Saint's Shield (Nerukhan I) | a shield of 40 | a shield of **12** (rules 1.22: **16**) |
-| Hymn: Absolution (Nerukhan III) | every harmful condition ends; heals 30 | every harmful condition ends; heals **7** |
+| Hymn: Absolution (Nerukhan III) | every harmful condition ends; heals 30 | every harmful condition ends; heals **7** *(rules 1.22: 9)* |
 | Hymn: Hearthlight (Mother Ember II) | 10 to each ally starting a turn in it, 3 rounds | **4** |
 | Hymn: Coin for the Ferry (Toll-Keeper I) | a Downed ally stands up with 10 | with **5** |
 | Miracle: Everyone Home | everyone to full HP, a shield of 40 each | to full HP as before, a shield of **17** each |
@@ -3799,7 +3803,7 @@ The yardstick and the level factor are those of rules 1.20: one Soldier's turn (
 
 ### 4. The Boss, and the enemy's Burst
 
-1. **The Boss has 820 HP at level 1** (it was 960). Its level row is unchanged (×1.81 at level 20: 1,484 HP). 960 was fitted in rules 1.15 against a squad whose gun dealt 200% of the plain rifle; rules 1.18 took a third off that gun. A Boss still takes 23 to 27 of the yardstick's hits (it was 27 to 31). The Elite/Boss guard of rules 1.17 (one Evoke leaves a full-HP Elite or Boss on 1 HP) is unchanged.
+1. **The Boss has 820 HP at level 1** (it was 960). Its level row is unchanged (×1.81 at level 20: 1,484 HP). 960 was fitted in rules 1.15 against a squad whose gun dealt 200% of the plain rifle; rules 1.18 took a third off that gun. A Boss still takes 23 to 27 of the yardstick's hits (it was 27 to 31). The Elite/Boss guard of rules 1.17 (one Evoke leaves a full-HP Elite or Boss on 1 HP) is unchanged. *(Since rules 1.15 point 4 (item 1385) the guard holds for every action, not only an Evoke.)*
 2. **Elite and Soldier HP are unchanged** (240 and 140).
 3. **The damage factors are unchanged** (Soldier ×0.78, Elite ×1.05, Boss ×1.2), and so is the level column. Measured again where enemies close in and fire back (an enemy 13 or 14 tiles off with a long gun used to stand still; fixed on 12 Nov 2026): on the 26 × 26 ground the yardstick lasts 3.3 rounds under two Soldiers at levels 1 and 3 (target 3). From level 6 the plain rifleman of the measurements is a Marksman with Duck and Roll, and at the edge of an enemy's sight (12 tiles) one tile back is out of sight: he lasts 5.4 to 5.7 rounds. The same rifleman without that move lasts 3.5, 4.1, 3.8 and 3.0 at levels 6, 9, 12 and 20 (section 14, item 1314).
 4. **An enemy's Burst stays its own** (three rolls with an Auto weapon, each later one −1 more; two rolls at 0 and −2 with any other): the open question of rules 1.18. Measured with the characters' Burst (two rolls, the second at −4) and the factors raised to keep the three rounds (Soldier ×0.88, Elite ×1.08, Boss ×1.3): the yardstick lasts 3.0 to 3.4 rounds under two Soldiers at levels 1, 3, 6 and 20 and **4.0 and 4.2 at levels 9 and 12**. One factor a tier does not hold the table at every level, so it is not built (section 14, item 1316).
@@ -4061,9 +4065,9 @@ Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to
 | Wary | 16 |
 | Hostile | 20 |
 
-Threats, arguments and seduction that aim to break someone rather than persuade them work like debuffs: Intimidation, Eloquence or Implication against the target's Body, Brain or Heart save.
+Threats, arguments and seduction that aim to break someone rather than persuade them work like debuffs: Intimidation, Eloquence or Implication against the target's Body, Brain or Heart save. *(Superseded by rules 1.13: Insinuation is Implication's new name, and the debuff's strength is the skill that delivered it.)*
 
-**Karma** is one score from −100 (Chaotic) to +100 (Lawful). −29 to +29 is Neutral. Traits that lock Karma double the cost of leaving the locked band. The Narrator awards it (at most 30 a time) and flags unlawful acts; the engine adds Conscience and keeps the score (rules 1.3).
+**Karma** is one score from −100 (Chaotic) to +100 (Lawful). −29 to +29 is Neutral. Traits that lock Karma double the cost of leaving the locked band. The Narrator awards it (at most 30 a time) and flags unlawful acts; the engine adds Conscience and keeps the score *(rules 1.13: Authority)* (rules 1.3).
 
 **Reputation** is tracked per faction, from −100 to +100: Hated (−60 or less), Hostile (−59 to −20), Unknown (−19 to +19), Known (+20 to +59), Revered (+60 or more).
 
@@ -4446,6 +4450,8 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |
 | maps.json | object | Map limits (26 at most, 8 at least; deployment 10 to 14 tiles), the picture legend, and the shared open-ground layout (rules 1.16) |
 | effect_ops.json | 132 | Registry of every effect op: 50 core, 82 bespoke |
+
+*(The counts in this table and the paragraph below are rules 1.0's. Counted from `data/` on 12 Nov 2026: classes 9 base + 21 advanced (Class Roster Revision 3; the level-3 rule is the highest attribute); enemies 5 tiers (Vermin, rules 1.15) with the level table, companions and casters; conditions 40; weapons 60; weapon_mastery 11 families + 33 items (retired by rules 1.12); techniques 65 (33 melee, 32 ranged); items 60; soul_modules 4 schools + 38 items; patrons 8 (Faith 2.0: Whispers, Hymns I to III by Devotion 3 / 5 / 7, a Miracle at Faith 7 + Devotion 10, interventions, vows, rites, line banks); effect_ops 192 (50 core, 113 bespoke, 17 weapon, 11 item, 1 sigil; bespoke about 14% of uses). Not in the table: actions, calls, feelings, loot_tables, objects, perk_cards, world_play. skills.json carries no signature-of, and archetypes spend no Core points (rules 1.13).)*
 
 **Effect ops.** The engine implements the 50 core ops generically. The 82 bespoke ops cover about 10% of effect uses, each in one or two items: implement each as a hook on its item, or until then hand that item's text to the Narrator. An op the engine doesn't recognise always falls back to the Narrator; it is never silently ignored.
 
@@ -6357,7 +6363,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 728. **Requisition Approved**, for every character on the squad (not a companion; the Downed too): every magazine full (the loaded one and each spare, and at least as many spares as the fight began with), loose rounds and throwables back to at least what the fight began with (the engine keeps that at the fight's start), Supplies to their maximum, **2 standard cores** (into the Evoker kit's spares when the unit carries magic, else the pack), every weapon carried at full durability (the main hand, the off hand, the pack), no jam, no heat; and **+3 AP next turn**. The +3 is banked AP: it counts toward that turn's +3 perk-AP cap and the ceiling of 9 (6 + 3 = 9), so any other perk AP that turn is lost to the cap (the log says so); Stunned and Dazed still come off it. The writeback keeps what the fight's rules keep (no more loose rounds or throwables than you carried in).
 729. **Encore:** each ally (the one praying too) whose last action this round cost AP may repeat **that action** once for free: the same action type and kind (an attack's mode, a move's kind, a perk's id…), any target. It is lent the AP the action cost then (so it can be taken with too little AP); if the repeat costs more now, the rest is paid. It lasts until the end of the ally's next turn (the one praying: the rest of this turn), and ends unused with a log line. Prayers, ending a turn and declining a window can't be repeated; an ally who hasn't acted this round gets nothing. Every enemy in sight is Confused 1 round, no save. *Engine: the Encore key is kept on the unit after each action; the reducer lends and settles the AP (encoreBefore/encoreAfter).*
 730. **Turned Back at the Shore:** every ally who died or is Downed (fell) in this fight stands at half HP (rounded up), death saves cleared, the character no longer dead. No target to pick. Surrendered allies aren't touched.
-731. **Everyone Home:** every ally not dead (the Downed stand) heals to full (whatever trims a heal), every harmful condition ends (every non-boon condition, and Prone, Bleeding, Dazed and a fumble's stagger; boons such as Inspired stay; a grudge's condition ends too), and each gets a 40 shield (× Blessing power; shields don't stack: the larger stands).
+731. **Everyone Home:** every ally not dead (the Downed stand) heals to full (whatever trims a heal), every harmful condition ends (every non-boon condition, and Prone, Bleeding, Dazed and a fumble's stagger; boons such as Inspired stay; a grudge's condition ends too), and each gets a 40 shield (× Blessing power; shields don't stack: the larger stands). *(Superseded by rules 1.20: a shield of 17.)*
 732. **The Sky Answers:** a tile in sight; the 5×5 around it; the sky picks: only enemies (alive, not surrendered) in it take 150 Storm (Elemental, lightning) and are Stunned 1 round and Shaken, no save. Allies in the area are untouched. The fx area is the 25 tiles.
 733. **Love Conquers:** every enemy in sight that can yield surrenders at once, no save (a refused parley doesn't matter). One that can't yield (a boss, a machine, robot, turret or drone, or no_surrender) makes a Heart save (TN 12 + the praying character's Heart debuff) or is **Commanded to hold** for 1 round: the engine's Commanded with the order hold (no attacks on its next turn), the closest engine-run reading of "Commanded" for a patron's order to a boss.
 734. **Rewoven:** each ally's HP goes back to what it was at the start of this round, if that was higher (a Downed ally stands at it; the dead stay dead: that is the Toll-Keeper's); then every living ally takes another full turn right after this one, in initiative order, this round only (item 614). The round's HP is kept on the fight at its start and at every round's start.
@@ -6370,7 +6376,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 738. **Witnessed lasts until the fight ends or the intervention fires.** A successful Hymn of your own patron (by standing, or an overreach that lands; never a Hymn prayed by dice) or a Miracle, at Faith 5, makes you Witnessed; it no longer ends at your next turn. Another such Hymn while Witnessed changes nothing but the patron's line (it doesn't stack). It ends with the fight and is never carried into the story; story prayers still don't give it (item 604); Whispers never do (item 608). **Flag for playtest:** its +2 (item 595), taboo ×2 (item 702) and Under the Eye (item 339) now last much longer and may need tuning. *Engine: the condition doesn't tick (`noTick`, like Emplaced). A fight saved under the old rule keeps its old Witnessed, which ends at that fighter's next turn as it would have. Data: `conditions.json` witnessed (duration, ends_on, text); `patrons.json` prayer.witnessed.until.*
 739. **An intervention ends Witnessed**, after its effect: the condition ends (logged "<name> is no longer Witnessed"), so a second intervention needs another successful Hymn (or the Miracle). The patron's intervention line is spoken as before.
 740. **Once a fight; twice from Devotion 7.** Each Faithful fighter's interventions this fight are counted on the unit; the limit is 1, or 2 when the character's Devotion is 7 or more at the moment the trigger happens (a fighter who falls below 7 after the first has used its one). The Proving Ground's reset clears the count. A fight saved under the old rule (one intervention flag) counts it as one used. *Data: `patrons.json` prayer.intervention per_fight 1, per_fight_high 2, high_from_devotion 7.*
-741. **The numbers scale with Devotion:** Nerukhan's Soul, Mother Ember's heal and Old Overcast's Storm are 20 + 4 × Devotion (the Devotion when it fires: 32 at 3, 48 at 7, 60 at 10), × Blessing power (1.7 at Faith 7: 82 at Devotion 7), rounded. Supersedes item 620's flat 20 Soul, 15 heal and 20 Storm. *Data: prayer.intervention.amount (base 20, per_devotion 4); each scaled intervention has `scale: "devotion"` and its effect's per_devotion; the validator checks they agree.*
+741. **The numbers scale with Devotion:** Nerukhan's Soul, Mother Ember's heal and Old Overcast's Storm are 20 + 4 × Devotion (the Devotion when it fires: 32 at 3, 48 at 7, 60 at 10), × Blessing power (1.7 at Faith 7: 82 at Devotion 7), rounded. *(Superseded by rules 1.20 for Mother Ember's heal: (10 + 3 × Devotion) × Blessing power.)* Supersedes item 620's flat 20 Soul, 15 heal and 20 Storm. *Data: prayer.intervention.amount (base 20, per_devotion 4); each scaled intervention has `scale: "devotion"` and its effect's per_devotion; the validator checks they agree.*
 742. **The Quartermaster: you reload, your core runs dry, or your MP runs out** (Leon, 9 Nov 2026). Three triggers, one patron's intervention (they share the fight's limit, and each ends Witnessed). (a) **A reload:** your own reload action in a fight, any hand (main, off or both) and either way (speed or tactical, item 679), happens as usual and all its AP comes back. A reload that cost no AP (Resupply, Requisition Approved, a reload done for you) doesn't trigger it, so it can't fire on its own refund. A refunded reload cost nothing, so Encore doesn't take it as the last action to repeat (item 737). (b) **Your Evoker's core runs dry:** its charge goes from above 0 to 0: a fresh core from the Quartermaster slots into the Evoker (full charge, 10), free: no AP, and your spare cores are untouched. (c) **Your MP runs out:** an Emanator's MP goes from above 0 to 0 (rounded as the sheet shows it): you get 25% of your max MP back, rounded down. The engine remembers each fighter's charge and MP after every action and at every turn's start, so a fight begun at 0 isn't "running dry", and a drain off your own actions is caught by the next action or turn. The old trigger (your gun runs dry: a free reload) is retired. *Trigger ids `you_reload`, `core_dry`, `mp_out` (patrons.json `triggers`; each effect names its trigger with `when`; the MP share is the mp_out effect's value 0.25).*
 743. **The Laughing Mask: an enemy misses you.** Any attack by an enemy at you that misses (the engine's miss, a fumble included, and one Foreknowing turned aside) makes the attacker fall Prone, no save, wherever it stands. A shot that cover stops is not a miss (as everywhere in the engine). In a burst or auto volley the first missed shot fires it. Supersedes the natural 1 trigger. *Trigger id `enemy_misses_you`.*
 744. **The fx event** for every intervention is `intervention {unit, patron, trigger, target, amount, at}`: the unit whose patron acted, the trigger id, the unit it acted on (or null), and the number it moved: the scaled Soul, heal or Storm (before the target's own reductions), the AP refunded, the charge loaded (10) or the MP given back (the Quartermaster), the share of the hit moved (the Matchmaker), 1 (the Toll-Keeper's HP kept), or null (the Laughing Mask, the Counting Weaver). The web plays it (today the existing float; the patron's small cut-in is the design's section 3, for later).

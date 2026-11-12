@@ -24,7 +24,18 @@ ANIM = ['fx-room', 'fx-sweep', 'turn-order', 'melee-fx', 'reload', 'cutins', 'cl
 RULES = ['rules114', 'coop-stall', 'old-save', 'skeleton-screens', 'creation-points', 'creation-layout', 'physical',
          'physical-pack', 'perks', 'pg-levelup', 'combat-fixes', 'world-play', 'classes', 'classes-moves', 'sandbox',
          'right-panels', 'tabs', 'gear-icons', 'ground', 'music-pool']
-GROUPS = {'smoke': ['old-save', 'two-players', 'rules114', 'perks', 'turn-order'], 'anim': ANIM, 'rules': RULES, 'all': RULES + ANIM}
+# Suites no group has taken back since the rules moved on (32 on 12 Nov 2026; most were last touched before rules 1.15,
+# and soul, sigil14, heart, magic and sigil15* drive systems rules 1.17 to 1.24 reworked). 'all' does not run them: each
+# must be run by name, brought up to date and moved into RULES or ANIM, or deleted. Listed here so that a new suite in
+# no group is an error (below), not a file nobody runs.
+UNSORTED = ['combat-portraits', 'faith', 'feel', 'feelings40', 'grand', 'heart', 'layout', 'magic', 'mana-forecast',
+            'mapzoom', 'missions', 'pg-art', 'playscreen', 'playtest-tools', 'reconnect', 'resources', 'sandbox-mp',
+            'shell-guest', 'sigil14', 'sigil15', 'sigil15-growth', 'sigil15-strokes', 'slate', 'slate-music',
+            'slate-stamp', 'slate-title', 'soul', 'title', 'turn-card-side', 'ui-shell', 'voice', 'vote']
+GROUPS = {'smoke': ['old-save', 'two-players', 'rules114', 'perks', 'turn-order'], 'anim': ANIM, 'rules': RULES, 'all': RULES + ANIM, 'unsorted': UNSORTED}
+_suites = sorted(f[:-4] for f in os.listdir(os.path.join(ROOT, 'apps/web/e2e')) if f.endswith('.mjs') and f != 'lib.mjs')
+_orphans = [n for n in _suites if n not in RULES + ANIM + UNSORTED]
+if _orphans: sys.exit('suites in no group (put each in RULES, ANIM or UNSORTED in tools/e2e.py): ' + ', '.join(_orphans))
 
 args = sys.argv[1:]
 def opt(name, default=None):
