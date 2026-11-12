@@ -1,5 +1,6 @@
 // @ts-nocheck (a measuring tool; see faith-measure.test.ts)
-// The Faith step of the balance pass (rules 1.21; docs/design/handoffs/faith-fit.md): what a character who leads with
+// The Faith step of the balance pass (rules 1.21, docs/design/handoffs/faith-fit.md; re-measured for rules 1.22,
+// docs/design/handoffs/faith-round-2.md: the Hymn on its cooldown, the vow's cut, a Hymn turn and a quiet turn apart): what a character who leads with
 // prayer is worth, patron by patron, against the plain rifle on the simulator's shooting range (sim.ts: a target with a
 // Soldier's numbers at the character's level and 5,000 HP that never acts).
 //
@@ -40,9 +41,9 @@ export function faithBuild(patron: string): string {
 }
 /** The dabbler: the plain rifleman with Faith 3 and Virtue 3 GIVEN to it (an "as if": the points are not taken from
  * anything, so this is the most a gunner could gain from prayer, not what a legal sheet gains), sworn at Devotion 3. */
-export function dabblerBuild(patron = 'old_overcast'): string {
-  const id = 'dabbler:' + patron;
-  if (!BUILD[id]) { const def = { ...BUILD.plain_gun, id, label: 'Plain gun + Faith 3 (' + patron + ')', belief: { kind: 'faithful', patron }, policy: 'prayer', devotionAt: () => 3,
+export function dabblerBuild(patron = 'old_overcast', devotion = 3): string {
+  const id = 'dabbler:' + patron + (devotion !== 3 ? ':' + devotion : '');
+  if (!BUILD[id]) { const def = { ...BUILD.plain_gun, id, label: 'Plain gun + Faith 3 (' + patron + ')', belief: { kind: 'faithful', patron }, policy: 'prayer', devotionAt: () => devotion,
     tweak: (c) => { c.skills = { ...c.skills, faith: Math.max(3, c.skills.faith || 0) }; c.attrs = { ...c.attrs, virtue: Math.max(3, c.attrs.virtue || 1) }; } }; BUILDS.push(def); BUILD[id] = def; }
   return id;
 }
@@ -57,17 +58,18 @@ export function rifleTurn(level: number, n: number, rounds = 8): number {
   const c = runCell({ build: 'plain_gun', variant: 'normal', level }, 'sim_range_soldier', 'open', n, { maxRounds: rounds, tag: 'fm' + rounds });
   return c.dmg / Math.max(1, c.turns);
 }
-export interface FRow { what: string; patron: string; level: number; variant: string; perTurn: number; prayerPerTurn: number; weaponPerTurn: number; pctRifle: number; pctPrayer: number; hymns: number; whispers: number; miracles: number; apPrayer: number; apWeapon: number; apUnspent: number; bigHit: number; bigWhat: string; peakTurn: number; saveFailPct: number | null; actions: Record<string, number>; errors: number }
+export interface FRow { /** rules 1.22: a turn with a Hymn and a turn without one, damage and percent of the rifle */ hymnTurn: number; quietTurn: number; pctHymnTurn: number; pctQuietTurn: number; what: string; patron: string; level: number; variant: string; perTurn: number; prayerPerTurn: number; weaponPerTurn: number; pctRifle: number; pctPrayer: number; hymns: number; whispers: number; miracles: number; apPrayer: number; apWeapon: number; apUnspent: number; bigHit: number; bigWhat: string; peakTurn: number; saveFailPct: number | null; actions: Record<string, number>; errors: number }
 /** One patron, one way of playing, n fights of `rounds` turns on the range. */
 export function prayerRow(what: string, build: string, variant: string, level: number, n: number, yard: number, o: { opts?: any; rounds?: number; tier?: string; foes?: number; peak?: boolean } = {}): FRow {
   const c = runCell({ build, variant: variant as any, level, ...(o.opts ? { opts: o.opts } : {}), ...(o.peak ? { peak: true } : {}) }, o.tier || 'sim_range_soldier', 'open', n, { maxRounds: o.rounds || 8, tag: 'fm' + (o.rounds || 8), ...(o.foes ? { foes: o.foes } : {}) });
   const t = Math.max(1, c.turns), pr = c.dmg - c.attackDmg, conds = c.foeCondsOn + c.foeCondsResisted;
-  return { what, patron: BUILD[build].belief?.patron || '', level, variant, perTurn: r1(c.dmg / t), prayerPerTurn: r1(pr / t), weaponPerTurn: r1(c.attackDmg / t), pctRifle: pct(c.dmg / t, yard), pctPrayer: pct(pr / t, yard),
+  const ht = (c as any).hymnTurnN ? (c as any).hymnTurnDmg / (c as any).hymnTurnN : 0, qt = (c as any).quietTurnN ? (c as any).quietTurnDmg / (c as any).quietTurnN : 0;
+  return { hymnTurn: r1(ht), quietTurn: r1(qt), pctHymnTurn: pct(ht, yard), pctQuietTurn: pct(qt, yard), what, patron: BUILD[build].belief?.patron || '', level, variant, perTurn: r1(c.dmg / t), prayerPerTurn: r1(pr / t), weaponPerTurn: r1(c.attackDmg / t), pctRifle: pct(c.dmg / t, yard), pctPrayer: pct(pr / t, yard),
     hymns: Math.round((sumIf(c.actions, /^Hymn: /) / t) * 100) / 100, whispers: Math.round((sumIf(c.actions, /^Whisper: /) / t) * 100) / 100, miracles: r1(sumIf(c.actions, /^Miracle: /) / c.n),
     apPrayer: r1((c.apSpent.prayer || 0) / t), apWeapon: r1(((c.apSpent.attack || 0) + (c.apSpent.reload || 0)) / t), apUnspent: r1(c.apUnspent / t), bigHit: c.bigHit, bigWhat: c.bigHitWhat, peakTurn: c.peakTurn,
     saveFailPct: conds ? pct(c.foeCondsOn, conds) : null, actions: Object.fromEntries(Object.entries(c.actions).map(([k, v]) => [k, r1(v / c.n)])), errors: c.errors };
 }
-export const fline = (r: FRow) => r.what + ' L' + r.level + ' ' + r.variant + ': ' + r.perTurn + ' a turn (prayer ' + r.prayerPerTurn + ', weapon ' + r.weaponPerTurn + ') · ' + r.pctRifle + '% of the rifle (prayer alone ' + r.pctPrayer + '%) · Hymns a turn ' + r.hymns + ' · Whispers ' + r.whispers
+export const fline = (r: FRow) => r.what + ' L' + r.level + ' ' + r.variant + ': ' + r.perTurn + ' a turn (prayer ' + r.prayerPerTurn + ', weapon ' + r.weaponPerTurn + ') · ' + r.pctRifle + '% of the rifle (prayer alone ' + r.pctPrayer + '%) · a Hymn turn ' + r.hymnTurn + ' (' + r.pctHymnTurn + '%) · a quiet turn ' + r.quietTurn + ' (' + r.pctQuietTurn + '%) · Hymns a turn ' + r.hymns + ' · Whispers ' + r.whispers
   + ' · AP prayer ' + r.apPrayer + ' / weapon ' + r.apWeapon + ' / unspent ' + r.apUnspent + ' · biggest ' + r.bigHit + ' (' + r.bigWhat + ')' + (r.saveFailPct != null ? ' · conditions that held ' + r.saveFailPct + '%' : '') + (r.errors ? ' · ERRORS ' + r.errors : '');
 
 /** What one Soldier of the fight's level deals to this character in one of its turns: the heal and shield yardstick

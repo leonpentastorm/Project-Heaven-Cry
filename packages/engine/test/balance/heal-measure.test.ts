@@ -12,7 +12,7 @@
 //   HEAL_MEASURE_PARTS=yard,inv,fire       only these parts        HEAL_MEASURE_ROWS=Faith   only the pairs whose name matches
 import { describe, it, expect } from 'vitest';
 import { inventory, invTable, invNums, underFire, fireLine, soldierTurn, SOLDIER_TURN, RIFLEMAN_HP, H_LEVELS } from './heal-measure';
-import { SIGIL, BUFF_HEAL, BOON_AREA, MEND_ROUND_SHARE, mendFactor } from '../../src';
+import { SIGIL, BUFF_HEAL, BOON_AREA, mendFactor } from '../../src';
 
 const FULL = !!process.env.HEAL_MEASURE, N = Math.max(1, Number(process.env.HEAL_MEASURE_N) || 12);
 const LV = (process.env.HEAL_MEASURE_LEVELS || '').split(',').map(Number).filter(Boolean), PARTS = (process.env.HEAL_MEASURE_PARTS || 'yard,inv,fire').split(',');
@@ -75,10 +75,10 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
       expect(row(f, /intervention/).pctNow).toBeGreaterThanOrEqual(120); expect(row(f, /intervention/).pctNow).toBeLessThanOrEqual(180);
     }
   });
-  it('all in passes the bands by about half and stays under the round limit on the rifleman', () => {
+  it('all in passes the bands by about half (rules 1.23: there is no round limit to stay under any more)', () => {
     for (const lv of [1, 6, 20]) {
       const a = inventory('mender', 'allin', lv), steady = row(a, /steady \(Rage and Love/), big = row(a, /the biggest/);
-      expect(steady.pctNow, 'all in, level ' + lv).toBeLessThanOrEqual(240); expect(big.now).toBeLessThanOrEqual(Math.floor(RIFLEMAN_HP[lv] * MEND_ROUND_SHARE));
+      expect(steady.pctNow, 'all in, level ' + lv).toBeLessThanOrEqual(240); expect(big.now).toBeLessThanOrEqual(Math.floor(RIFLEMAN_HP[lv] * 0.5)); // (still under half of the rifleman's HP in one heal)
     }
     expect(BUFF_HEAL).toBe(7);
   });

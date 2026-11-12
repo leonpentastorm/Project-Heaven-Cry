@@ -1117,7 +1117,9 @@ const mendOf = (m: MagicUnit) => m.mend ?? 1;
 export const BUFF_HEAL: number = (SCHOOL.buff as any)?.heal ?? 7;
 export const BUFF_HEAL_ENEMY: number = (SCHOOL.buff as any)?.heal_enemy ?? 30;
 export const BOON_AREA: number = (SCHOOL.buff as any)?.area_mult ?? MENDING.area_share ?? 0.4;
-const boonArea = (m: MagicUnit, d?: OutburstDesign | null) => (d && ofChar(m) && formOf(d) !== 'bolt' ? BOON_AREA : 1);
+/** Rules 1.23: a Split heal or shield is divided: the Bolt and its split each give this much (two allies: ×1.6 in all, the area band). */
+export const SPLIT_BOON: number = (MODULE.split as any)?.boon_mult ?? 0.8;
+const boonArea = (m: MagicUnit, d?: OutburstDesign | null) => (!d || !ofChar(m) ? 1 : formOf(d) !== 'bolt' ? BOON_AREA : d.modules.includes('split') ? SPLIT_BOON : 1);
 /** The Buff school's heal on one ally at a multiplier (before the air's Healing given and what the target receives). */
 export const outburstHeal = (m: MagicUnit, d: OutburstDesign | null | undefined, sm: number) => (ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY) * m.healMult * sm * mendOf(m) * boonArea(m, d);
 /** Inverse: the shield a flipped Damage Outburst gives one ally. */

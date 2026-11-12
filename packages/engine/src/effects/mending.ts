@@ -45,7 +45,9 @@ export function tendedLately(cb: Combat, u: Unit): number {
 export const MEDIC: any = MENDING.medic || {};
 /** Triage (2 AP), a stim and Stim Throw (1 AP), Rally (2 AP, each ally), a Field Repair on an ally (per point of
  * Improvisation): each × Healing given × the level factor of the giver. */
-export const TRIAGE_HEAL: number = MEDIC.triage ?? 8;
-export const STIM_HEAL: number = MEDIC.stim ?? 12;
-export const RALLY_HEAL: number = MEDIC.rally ?? 5;
+export const TRIAGE_HEAL: number = MEDIC.triage ?? 5;
+/** Out of a fight, with time to work (once an ally a scene): Triage × this. */
+export const TRIAGE_REST_MULT: number = MEDIC.triage_out_of_fight_mult ?? 3;
+export const STIM_HEAL: number = MEDIC.stim ?? 6;
+export const RALLY_HEAL: number = MEDIC.rally ?? 6;
 export const FIELD_REPAIR_HEAL: number = MEDIC.field_repair_per_point ?? 3;

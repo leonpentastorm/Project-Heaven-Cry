@@ -12,6 +12,7 @@ import {
 } from '../effects';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
+import { FIELD_REPAIR_HEAL, mendFactorOf } from '../effects/mending';
 import {
   dist, alive, keyOf as refKey, unitSees, sideSees, lineOfSight, paths, apForTiles, previewAttack, resolveAttack, moveUnit,
   toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
@@ -677,7 +678,8 @@ register({
 // Proficiency points × your Healing given (PROVISIONAL, plan 6: the Factory Made number); a Downed ally is brought back.
 // Your heals on robotic allies (Factory Made, machines) work at full power (Factory Made's Plug halving is undone).
 // Out of a fight (area map or story), 10 minutes and a charge patch a squadmate for 50% of their max HP (PROVISIONAL).
-const surgeonHeal = (h: Holder) => Math.floor(10 * (h.c?.skills?.proficiency || h.u?.proficiency || 0) * (h.c ? healingMult(h.c) : 1));
+// Rules 1.23: 3 a point (it was 10) × Healing given × the level factor, as the rest of the medic's kit.
+const surgeonHeal = (h: Holder) => Math.floor(FIELD_REPAIR_HEAL * (h.c?.skills?.proficiency || h.u?.proficiency || 0) * (h.c ? healingMult(h.c) : 1) * mendFactorOf(h.u));
 function takePart(c: Character): boolean {
   const pack = packOf(c).map((x) => ({ ...x })), i = pack.findIndex((x) => (x.item || x.id) === 'spare_parts' && x.qty > 0); if (i < 0) return false;
   if (pack[i].qty > 1) pack[i].qty--; else pack.splice(i, 1); c.pack = pack; return true;
@@ -687,7 +689,7 @@ register({
   id: 'field_surgeon', claims: 'all', priority: 200,
   actions: [
     { id: 'repair_ally', label: 'Field Repair an ally', scope: ['combat'], ap: (h) => actionAp({ u: h.u }, 'field_repair', 2).ap, target: 'ally', range: 1,
-      text: 'Patch up an ally next to you: they heal 10 HP per Improvisation point, raised by your healing bonuses. Uses one spare-parts charge. Needs Improvisation 3.',
+      text: 'Patch up an ally next to you: they heal 3 HP per Improvisation point, raised by your healing bonuses and your level. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : true),
       preview: (h, args) => { const t = unitById(h.cb, args.targetId); if (t === h.u) return { ok: false, why: 'Pick an ally. To fix your own weapon, use Field Repair.' }; return { lines: ['+' + surgeonHeal(h) + ' HP' + (t && isMachine(t) ? ' (full power on a machine)' : '') + '.'] }; },
       run: (h, args, rng) => {

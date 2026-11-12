@@ -1267,11 +1267,12 @@
       "rules": "1.23",
       "provisional": true,
       "level_factor": true,
-      "triage": 8,
-      "stim": 12,
-      "rally": 5,
+      "triage": 5,
+      "triage_out_of_fight_mult": 3,
+      "stim": 6,
+      "rally": 6,
       "field_repair_per_point": 3,
-      "note": "The medic's kit, each × Healing given × the level factor of the giver's level: Triage (2 AP, next to you, once an ally a turn, no supplies), a stim and Stim Throw (1 AP, a stim or a Supply), Rally (2 AP, every ally within 4, once a scene), a Field Repair on an ally (2 AP, a spare-parts charge, per point of Improvisation)."
+      "note": "The medic's kit, each × Healing given × the level factor of the giver's level. Triage: 2 AP, next to you, once an ally a turn, no supplies (out of a fight, with time to work: × triage_out_of_fight_mult, once an ally a scene). A stim and Stim Throw: 1 AP and a dose (a stim, or a Supply). Rally: 2 AP, every ally within 4 tiles, once a scene. A Field Repair on an ally: 2 AP and a spare-parts charge, per point of Improvisation."
     },
     "tending": {
       "rules": "1.23",

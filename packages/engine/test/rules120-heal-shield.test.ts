@@ -6,15 +6,15 @@
 //                      Damage base); Love ×0.25 and ×0.15 of the Buff heal; in a shape ×0.4; Will Shield 12, the
 //                      Bard's Mend 9; the prayers (Health 5, Protection 6, Warm Hands 10, Saint's Shield 12,
 //                      Absolution 7, Hearthlight 4, Coin for the Ferry 5, Mother Ember 10 + 3 × Devotion)
-//   the round limit    spells and prayers together restore at most half of a creature's max HP a round; a stim and a
-//                      Miracle are not held to it
+//   the round limit    WITHDRAWN by rules 1.23 (Leon, 12 Nov 2026): nothing limits a round's healing (pinned here as
+//                      gone; the rest of rules 1.23 is in rules123-defence.test.ts)
 //   shields            the bigger one stands; a point of shield is a point of HP (taken after armour)
 // The bands themselves (percent of a Soldier-turn) are pinned in balance/heal-measure.test.ts.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {
   SIGIL, SCHOOL, MODULE, FEELING, FEELINGS, WHISPERS, FAITH_PATRON, RULES, ENEMY_LEVELS, SOUL_DAMAGE, CLASS_MOVE_POOL,
-  mendFactor, mendRoom, MEND_KINDS, MEND_ROUND_SHARE, MENDING, BUFF_HEAL, BUFF_HEAL_ENEMY, BOON_AREA, outburstHeal, inverseShield, shellShield, loveHeal,
+  mendFactor, MENDING, BUFF_HEAL, BUFF_HEAL_ENEMY, BOON_AREA, outburstHeal, inverseShield, shellShield, loveHeal,
   healUnit, grantShield, heal, heartMagic, HEART_CASTERS, drawGlyph, evoke, previewOutburstPlan, d20,
   type Unit, type OutburstDesign,
 } from '../src';
@@ -127,26 +127,22 @@ describe('rules 1.20: prayer', () => {
   });
 });
 
-describe('rules 1.20: the round limit', () => {
-  it('spells and prayers together restore at most half of a creature\'s max HP a round; the next round it is whole again', () => {
-    expect(MEND_ROUND_SHARE).toBe(0.5); expect(MEND_KINDS).toEqual(['sigil', 'soul', 'leech', 'thread', 'blessing']);
+describe('rules 1.20: the round limit is withdrawn (rules 1.23)', () => {
+  it('spells and prayers restore what they restore: nothing is cut at half of max HP, round after round', () => {
+    expect(MENDING.round_limit?.share_of_max_hp).toBeUndefined(); expect(MENDING.round_limit?.withdrawn).toMatch(/1\.23/);
     const f = rig(), t = ally(f); t.maxHp = 200; t.hp = 10;
     withGame(f.g, () => {
-      expect(mendRoom(f.cb, t)).toBe(100);
-      expect(healUnit(f.cb, t, 70, me(f), 'soul')).toMatchObject({ restored: 70, limited: false }); expect(mendRoom(f.cb, t)).toBe(30);
-      expect(healUnit(f.cb, t, 70, me(f), 'blessing')).toMatchObject({ restored: 30, limited: true }); expect(t.hp).toBe(110);
-      expect(healUnit(f.cb, t, 70, me(f), 'sigil')).toMatchObject({ restored: 0, limited: true });
-      expect(healUnit(f.cb, t, 40, me(f), 'stim').restored).toBe(40); // a stim, Triage, a perk: not spells
-      expect(heal(t, 50, f.cb, me(f))).toMatch(/heals 0 \(the most spells and prayers can mend in a round\)/);
-      f.cb.round++; expect(mendRoom(f.cb, t)).toBe(100); expect(healUnit(f.cb, t, 20, me(f), 'soul').restored).toBe(20);
+      expect(healUnit(f.cb, t, 70, me(f), 'soul')).toMatchObject({ restored: 70, limited: false });
+      expect(healUnit(f.cb, t, 70, me(f), 'blessing')).toMatchObject({ restored: 70, limited: false }); expect(t.hp).toBe(150); // (rules 1.20: 30, at the limit)
+      expect(healUnit(f.cb, t, 70, me(f), 'sigil')).toMatchObject({ restored: 50, limited: false }); expect(t.hp).toBe(200); // only max HP stops a heal
+      t.hp = 10; expect(heal(t, 150, f.cb, me(f))).toMatch(/heals 150$/);
     });
   });
-  it('a Miracle is not held to it, and a Downed ally still gets up', () => {
+  it('a Downed ally gets up with the whole heal', () => {
     const f = rig(), t = ally(f); t.maxHp = 200; t.hp = 10;
     withGame(f.g, () => {
-      healUnit(f.cb, t, 100, me(f), 'soul'); expect(mendRoom(f.cb, t)).toBe(0);
-      expect(healUnit(f.cb, t, 500, me(f), 'blessing', { noLimit: true }).restored).toBe(90);
-      t.hp = 0; t.downed = true; const r = healUnit(f.cb, t, 60, me(f), 'soul'); expect(r.revived).toBe(true); expect(t.hp).toBe(1); // nothing left this round: up at 1 HP
+      healUnit(f.cb, t, 100, me(f), 'soul');
+      t.hp = 0; t.downed = true; const r = healUnit(f.cb, t, 60, me(f), 'soul'); expect(r.revived).toBe(true); expect(t.hp).toBe(60); // (rules 1.20: 1 HP, the round's room being gone)
     });
   });
 });

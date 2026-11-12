@@ -22,7 +22,7 @@ import {
   classResources, migrateDesign,
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
-import { mendFactorOf } from '../effects/mending';
+import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL } from '../effects/mending';
 import { BUFF_HEAL } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
@@ -466,6 +466,11 @@ register({
 // PROVISIONAL once per target per turn in a fight, once per ally per scene out of one. Stabilise a Downed ally for 1 AP
 // without a stim (that is the point of the move; the base 1-AP Medic stim stays).
 const healMultOf = (h: Holder) => (h.c ? healingMult(h.c) : h.u?.mg?.healMult || 1);
+// Rules 1.23, the medic pass: Triage and a thrown stim grow with the giver's level, as spells do since rules 1.20.
+// On the area map and in the story (out of a fight, once an ally a scene) a Triage is three times a fight's.
+const lvlOf = (h: Holder) => (h.u ? mendFactorOf(h.u) : mendFactor(h.c?.level));
+const triageHeal = (h: Holder, rest = false) => TRIAGE_HEAL * healMultOf(h) * lvlOf(h) * (rest ? TRIAGE_REST_MULT : 1);
+const thrownStimHeal = (h: Holder) => STIM_HEAL * healMultOf(h) * lvlOf(h);
 function mostHurt(h: Holder): Character | null {
   const all: Character[] = Object.values(h.g?.characters || {});
   return all.filter((c) => !c.dead && c.id !== h.c?.id && c.hp < maxHp(c)).sort((a, b) => a.hp / maxHp(a) - b.hp / maxHp(b))[0] || null;
@@ -480,13 +485,13 @@ register({
   actions: [
     {
       id: 'triage', label: 'Triage', scope: ['combat', 'world'], target: 'ally', ap: 2, range: 1,
-      text: 'Heal an ally next to you for 20 HP × your Healing given and end their Bleeding. Once per ally each turn, or once per ally each scene out of a fight. Costs no Supplies.',
+      text: 'Heal an ally next to you for 5 HP × your Healing given, more as you level, and end their Bleeding. Once per ally each turn. Out of a fight you have time to work: three times as much, once per ally each scene. Costs no Supplies.',
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Triage an ally, not yourself.' }; if (t.downed) return { ok: false, why: 'They are Downed. Stabilise them instead (1 AP).' }; if (uses(h).left(triPer(h), 1, triKey(h, t)) <= 0) return { ok: false, why: triPer(h) === 'per_scene' ? 'Already treated this scene.' : 'Already treated this turn.' };
-        return { lines: ['Heal ' + t.name + ' about ' + Math.floor(20 * healMultOf(h) * (t.healRecv || 1)) + (t.bleed ? ' and stop the bleeding.' : '.')] }; },
+        return { lines: ['Heal ' + t.name + ' about ' + Math.floor(triageHeal(h, triPer(h) === 'per_scene') * (t.healRecv || 1)) + (t.bleed ? ' and stop the bleeding.' : '.')] }; },
       run: (h, args) => {
         const cb = h.cb!, t = unitById(cb, args.targetId)!; if (t === h.u) return 'Triage an ally, not yourself.';
         if (!uses(h).take(triPer(h), 1, triKey(h, t))) return triPer(h) === 'per_scene' ? 'Already treated this scene.' : 'Already treated this turn.';
-        const r = healUnit(cb, t, 20 * healMultOf(h), h.u!, 'triage'), bled = !!t.bleed; endCond(t, 'bleeding', cb);
+        const r = healUnit(cb, t, triageHeal(h, triPer(h) === 'per_scene'), h.u!, 'triage'), bled = !!t.bleed; endCond(t, 'bleeding', cb);
         emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });
         say(cb, h.u!.name + ' triages ' + t.name + ': +' + r.restored + ' HP' + (bled ? ', bleeding stopped' : '') + '.');
       },
@@ -499,14 +504,14 @@ register({
     },
     {
       id: 'triage_story', label: 'Triage', scope: ['story'], target: 'none', ap: 0,
-      text: 'Patch up an ally for 20 HP × your Healing given. Name the ally in what you say, or it goes to whoever is most hurt. Once per ally each scene.',
+      text: 'Patch up an ally for 15 HP × your Healing given, more as you level. Name the ally in what you say, or it goes to whoever is most hurt. Once per ally each scene.',
       available: (h) => (mostHurt(h) ? true : 'Nobody is hurt.'),
       run: (h, args) => {
         const t = charNamed(h, args) || mostHurt(h); if (!t) return 'Nobody is hurt.';
         if (t.id === h.c?.id) return 'Triage an ally, not yourself.';
         if (t.hp <= 0) return t.name + ' is Downed. Use a stim on them, or the Narrator decides the treatment.';
         if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.';
-        const n = storyHeal(h, t, 20 * healMultOf(h)); postStory(h, h.c!.name + ' triages ' + t.name + ': +' + n + ' HP (' + t.hp + '/' + maxHp(t) + ').');
+        const n = storyHeal(h, t, triageHeal(h, true)); postStory(h, h.c!.name + ' triages ' + t.name + ': +' + n + ' HP (' + t.hp + '/' + maxHp(t) + ').');
       },
     },
   ],
@@ -514,7 +519,7 @@ register({
 });
 
 // ---------- Stim Throw (rank II, 1 AP) ----------
-// Spend 1 Supply: an ally within 4 tiles you can see heals 30 × your Healing given and stops Bleeding; a Downed ally is
+// Spend 1 Supply: an ally within 4 tiles you can see heals 6 × your Healing given × the level factor (rules 1.23) and stops Bleeding; a Downed ally is
 // stabilised at 1 HP instead (PROVISIONAL; needs sight, ignores the throwing range).
 register({
   id: 'medic.stim_throw', claims: 'all',
@@ -526,7 +531,7 @@ register({
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!; resSpend(u, 'supplies', 1);
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos });
       if (t.downed) { healUnit(cb, t, 1, u, 'stim'); t.bleed = 0; say(cb, u.name + ' throws a stim to ' + t.name + ': stabilised at 1 HP (' + resOf(u, 'supplies') + ' Supplies left).'); return; }
-      const r = healUnit(cb, t, 30 * healMultOf(h), u, 'stim'), bled = !!t.bleed; endCond(t, 'bleeding', cb);
+      const r = healUnit(cb, t, thrownStimHeal(h), u, 'stim'), bled = !!t.bleed; endCond(t, 'bleeding', cb);
       say(cb, u.name + ' throws a stim to ' + t.name + ': +' + r.restored + ' HP' + (bled ? ', bleeding stopped' : '') + ' (' + resOf(u, 'supplies') + ' Supplies left).');
     },
   }],

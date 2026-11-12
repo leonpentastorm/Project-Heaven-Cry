@@ -2,7 +2,7 @@
 // and its tier's list (enemies.json `techniques`, on the unit as u.techs). Where it would make a plain attack it asks
 // each technique's handler how much it wants it (`ai`: a plain attack is 5) and uses the best one that beats that.
 // Planning is pure: it reads previews only, so the intent a player Analyzes is what the enemy then does.
-import { type Combat, type Unit, alive, enemyStep, sideSees, healerMark } from '../combat';
+import { type Combat, type Unit, alive, enemyStep, sideSees, healerMark, healerFocus } from '../combat';
 import { isGhost, perceivedFoes } from '../illusion';
 import { condOn } from '../magic';
 import type { TechArgs } from './types';
@@ -17,7 +17,9 @@ export function aiTechnique(cb: Combat, u: Unit): Pick | null {
   if (u.side !== 'foe' || u.charId || !u.techs?.length || !alive(u) || condOn(u, 'disarmed') || condOn(u, 'lowered')) return null;
   const foes = perceivedFoes(cb, u).filter((v) => !isGhost(v) && alive(v) && sideSees(cb, u.side, v));
   // Rules 1.23: between targets a technique wants equally, the squad's healer is tried first (a tier that looks for one).
-  const mark = healerMark(cb, u); if (mark) { const i = foes.indexOf(mark); if (i > 0) { foes.splice(i, 1); foes.unshift(mark); } }
+  // The same weight a plain attack gives it (combat.ts enemyTargets): the healer counts as hurt by healer_focus × its max HP more.
+  const mark = healerMark(cb, u), hk = mark ? mark.hp - healerFocus(u) * mark.maxHp : 0;
+  if (mark && foes.every((v) => v === mark || hk <= v.hp)) { const i = foes.indexOf(mark); if (i > 0) { foes.splice(i, 1); foes.unshift(mark); } }
   let best: Pick | null = null;
   for (const hand of ['main', 'off'] as const) for (const { id } of usable(cb, u, hand)) {
     const def = TECHNIQUE[id], h = handlerOf(id); if (!h?.ai || def.group === 'answer') continue;
@@ -25,7 +27,7 @@ export function aiTechnique(cb: Combat, u: Unit): Pick | null {
     for (const a0 of tries) {
       const s = aiScore(cb, u, id, a0); if (s.score <= PLAIN_ATTACK_SCORE || (best && s.score <= best.score)) continue;
       const pv = previewTechnique(cb, u, id, s.args); if (!pv.ok || pv.ap > u.ap) continue;
-      best = { id, args: s.args, score: s.score, target: s.args.targetId ? cb.units.find((x) => x.id === s.args.targetId) || null : null }; best.healer = !!mark && best.target === mark;
+      best = { id, args: s.args, score: s.score, target: s.args.targetId ? cb.units.find((x) => x.id === s.args.targetId) || null : null }; best.healer = !!mark && best.target === mark && foes[0] === mark;
     }
   }
   return best;

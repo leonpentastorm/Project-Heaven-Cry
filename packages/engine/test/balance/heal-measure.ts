@@ -19,7 +19,7 @@ import { POLICIES, plain, type Ctx, type Step, type Policy } from './policies';
 import {
   MAPS, ENEMY, SIGIL, MODULE, SCHOOL, FEELING, STAGE_MULT, WHISPERS, FAITH_PATRON, bindGame, dist, paths, apForTiles, lineOfSight, standable, freeTile,
   previewOutburst, heartReach, planEvoke, glyphCost, previewPrayer, patronOf, blessingPower, devotionNow,
-  mendFactor, outburstHeal, inverseShield, shellShield, loveHeal, interventionHeal, BUFF_HEAL, BOON_AREA, MEND_ROUND_SHARE, CLASS_MOVE_POOL,
+  mendFactor, outburstHeal, inverseShield, shellShield, loveHeal, interventionHeal, BUFF_HEAL, BOON_AREA, CLASS_MOVE_POOL,
 } from '../../src';
 import { startFight } from './sim';
 
@@ -263,7 +263,7 @@ export function inventory(build: string, variant: string, level: number, st = SO
   }
   return rows;
 }
-export const invNums = (build: string, variant: string, level: number) => { const { u, c, g } = unitOf(build, variant, level), m = u.mg || {}; return { hp: u.maxHp, sigil: m.sigilMult, soul: m.soulMult, heal: m.healMult, blessing: c.belief ? W(g, () => blessingPower(c)) : null, level: mendFactor(level), limit: Math.floor(RIFLEMAN_HP[level] * MEND_ROUND_SHARE) }; };
+export const invNums = (build: string, variant: string, level: number) => { const { u, c, g } = unitOf(build, variant, level), m = u.mg || {}; return { hp: u.maxHp, sigil: m.sigilMult, soul: m.soulMult, heal: m.healMult, blessing: c.belief ? W(g, () => blessingPower(c)) : null, level: mendFactor(level) }; };
 /** One build's inventory at every level, as a table (HP now · percent of a Soldier-turn; before in brackets). */
 export function invTable(build: string, variant: string, levels = H_LEVELS): string {
   const per = levels.map((lv) => inventory(build, variant, lv)), n = per[0].length;

@@ -12,6 +12,7 @@
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { tendHook } from '../effects/damage';
+import { RALLY_HEAL, mendFactorOf } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit,
@@ -575,7 +576,8 @@ register({
 
 // ======================================================================================================== BARD
 // ---------- Rally (rank III, 2 AP, once a scene) ----------
-// Every squadmate within 4 tiles (not you; Downed ones aren't standing to rally) heals 20 × your Healing given (×
+// Every squadmate within 4 tiles (not you; Downed ones aren't standing to rally) heals 6 × your Healing given × the
+// level factor (rules 1.23; it was 20 × Healing given) (×
 // their Healing received) and loses Fear and Shaken. Tending others calms your heart once a turn (rules 1.5). No
 // Emanator or Supplies needed. Refused with nobody in reach. Combat only.
 const rallied = (cb: Combat, u: Unit) => cb.units.filter((t) => t !== u && t.side === u.side && alive(t) && dist(t.pos, u.pos) <= 4);
@@ -583,13 +585,13 @@ register({
   id: 'bard.rally', claims: 'all',
   actions: [{
     id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 2, uses: { per: 'per_scene', n: 1 },
-    text: 'Once a scene: every ally within 4 tiles heals 20 HP × your Healing given and loses Fear and Shaken.',
+    text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
     preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(20 * (h.c ? healingMult(h.c) : 1)) + ' HP each, and their Fear and Shaken end.'] }; },
     run: (h) => {
       const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
       emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });
       for (const t of ts) {
-        const r = healUnit(cb, t, 20 * mult, u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
+        const r = healUnit(cb, t, RALLY_HEAL * mult * mendFactorOf(u), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
         for (const id of gone) endCond(t, id, cb);
         if (gone.length && !r.restored) tendHook.f?.(cb, u, t);
         emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });

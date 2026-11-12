@@ -16,7 +16,7 @@ import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
-import { tendedLately, TEND_NOTICE } from './effects/mending';
+import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf } from './effects/mending';
 import { turnAp, briefCredit } from './effects/ap';
 import { skillRollMod, actionAp, immune, forbids } from './effects/core';
 import { statQuery } from './effects/hooks';
@@ -1972,7 +1972,9 @@ export function clearJam(cb: Combat, u: Unit): string | null {
   cb.log.push(u.name + ' clears the jam.');
   return null;
 }
-/** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others). Else heal 30 × Healing given. */
+/** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
+ * Else heal 6 × Healing given × the level factor (rules 1.23: it was 30 × Healing given at every level). */
+export const stimHeal = (u: Unit, who: Character) => STIM_HEAL * healingMult(who) * mendFactorOf(u);
 export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean): string | null {
   if (who.stims <= 0) return 'No stims left.';
   if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';
@@ -1987,7 +1989,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   const hpWas = t.hp, wasDown = t.downed;
   if (t.bleed) { t.bleed = 0; cb.log.push('The stim stops ' + t.name + '\'s bleeding.'); }
   if (t.downed) { t.downed = false; t.hp = 1; t.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); calmTend(cb, u, t); }
-  else { const r = healUnit(cb, t, 30 * healingMult(who), u, 'stim'); cb.log.push(u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
+  else { const r = healUnit(cb, t, stimHeal(u, who), u, 'stim'); cb.log.push(u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
   emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: t.hp - (wasDown ? 0 : hpWas), revive: wasDown });
   return null;
 }
